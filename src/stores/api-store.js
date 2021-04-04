@@ -7,7 +7,7 @@ export default (scoresProvider, playerId = null, page = 1, initialState = null) 
   let currentPlayerId = playerId;
   let currentPage = page ?? 1;
 
-  const {subscribe, set} = writable(initialState);
+  const {subscribe, set} = writable(initialState ? scoresProvider.process(initialState) : null);
 
   const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
   const {subscribe: subscribePending, set: setPending} = writable(null);
@@ -25,7 +25,7 @@ export default (scoresProvider, playerId = null, page = 1, initialState = null) 
       // TODO: test only
       await delay(1000);
 
-      state = await scoresProvider({playerId, page});
+      state = await scoresProvider.getProcessed({playerId, page});
 
       currentPage = page;
       currentPlayerId = playerId;

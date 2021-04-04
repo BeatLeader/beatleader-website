@@ -9,25 +9,7 @@ export const TOP_SCORES_URL = API_URL + '/player/${playerId}/scores/top/${page}'
 
 const fetchJson = async (url, options) => fetch(url, options).then(response => response.json());
 
-const fetchScores = async (baseUrl, playerId, page = 1, signal = null) =>
-  fetchJson(substituteVars(baseUrl, {playerId, page}), {signal})
-    .then(response => {
-      if (!response?.scores) return [];
-
-      return response.scores.map(s => {
-        const {
-          songHash: hash,
-          songName: name,
-          songSubName: subName,
-          songAuthorName: authorName,
-          levelAuthorName,
-          ...score
-        } = s;
-        const song = {hash, name, subName, authorName, levelAuthorName};
-
-        return {...score, song, timeSet: dateFromString(s.timeSet)};
-      });
-    })
+const fetchScores = async (baseUrl, playerId, page = 1, signal = null) => fetchJson(substituteVars(baseUrl, {playerId, page}), {signal})
 
 export default {
   player: async (playerId, signal = null) => fetchJson(substituteVars(PLAYER_INFO_URL, {playerId}), {signal}),
