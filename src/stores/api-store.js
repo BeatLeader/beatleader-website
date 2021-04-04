@@ -11,23 +11,35 @@ export default (scoresProvider, playerId = null, page = 1, initialState = null) 
 
   const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
   const {subscribe: subscribePending, set: setPending} = writable(null);
+  const {subscribe: subscribeError, set: setError} = writable(null);
 
   const fetch = async (page, playerId = currentPlayerId, force = false) => {
     if (page === currentPage && playerId === currentPlayerId && !force) return;
 
     console.log(`${playerId} / ${page}`)
-    setIsLoading(true);
-    setPending({playerId, page});
 
-    await delay(1000);
-    state = await scoresProvider({playerId, page});
+    try {
+      setIsLoading(true);
+      setPending({playerId, page});
 
-    setIsLoading(false);
-    setPending(null);
-    currentPage = page;
-    currentPlayerId = playerId;
+      // TODO: test only
+      await delay(1000);
 
-    set(state)
+      state = await scoresProvider({playerId, page});
+
+      currentPage = page;
+      currentPlayerId = playerId;
+
+      set(state)
+    }
+    catch(err) {
+      console.error(err);
+      setError(err);
+    }
+    finally {
+      setIsLoading(false);
+      setPending(null);
+    }
 
     return true;
   }
@@ -49,6 +61,7 @@ export default (scoresProvider, playerId = null, page = 1, initialState = null) 
     getPage: () => currentPage,
     isLoading: {subscribe: subscribeIsLoading},
     pending: {subscribe: subscribePending},
+    error: {subscribe: subscribeError},
   }
 }
 
