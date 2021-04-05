@@ -4,17 +4,20 @@ export default (scoresProvider, playerId = null, page = 1, initialState = null) 
   let currentPlayerId = playerId;
   let currentPage = page ?? 1;
 
-  const setCurrentParams = ({params}) => {
+  const onNewData = ({params}) => {
+    console.warn('new data available')
+
     currentPage = params?.page ?? 1;
     currentPlayerId = params?.playerId ?? null;
   }
+
   const apiStore = createApiStore(
     scoresProvider,
     {playerId, page},
     initialState,
     {
-      onInitialized: setCurrentParams,
-      onAfterStateChange: setCurrentParams,
+      onInitialized: onNewData,
+      onAfterStateChange: onNewData,
     },
   );
 
