@@ -1,42 +1,51 @@
 import {writable} from 'svelte/store'
+import stringify from 'json-stable-stringify';
 
 const delay = async (time, val, shouldReject = false) => new Promise((resolve, reject) => setTimeout(_ => shouldReject ? reject(val) : resolve(val), time));
 
-export default (scoresProvider, playerId = null, page = 1, initialState = null) => {
-  let state = initialState;
-  let currentPlayerId = playerId;
-  let currentPage = page ?? 1;
+const hash = obj => stringify(obj);
 
-  const {subscribe, set} = writable(initialState ? scoresProvider.process(initialState) : null);
+export default (
+  provider,
+  params = null,
+  initialState = null,
+  {
+    onInitialized = null,
+    onAfterStateChange = null,
+  } = {},
+) => {
+  let state = initialState;
+
+  let currentParamsHash = hash(params);
+
+  const processedInitialState = provider.process(initialState);
+  const {subscribe, set} = writable(initialState ? processedInitialState : null);
+  if (onInitialized) onInitialized({state: processedInitialState, params});
 
   const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
   const {subscribe: subscribePending, set: setPending} = writable(null);
   const {subscribe: subscribeError, set: setError} = writable(null);
 
-  const fetch = async (page, playerId = currentPlayerId, force = false) => {
-    if (page === currentPage && playerId === currentPlayerId && !force) return;
-
-    console.log(`${playerId} / ${page}`)
+  const fetch = async (params = null, force = false) => {
+    if (currentParamsHash === hash(params) && !force) return;
 
     try {
       setIsLoading(true);
-      setPending({playerId, page});
+      setPending(params);
 
       // TODO: test only
       await delay(1000);
 
-      state = await scoresProvider.getProcessed({playerId, page});
-
-      currentPage = page;
-      currentPlayerId = playerId;
+      state = await provider.getProcessed(params);
+      currentParamsHash = hash(params);
 
       set(state)
-    }
-    catch(err) {
+
+      if (onAfterStateChange) onAfterStateChange({state, params});
+    } catch (err) {
       console.error(err);
       setError(err);
-    }
-    finally {
+    } finally {
       setIsLoading(false);
       setPending(null);
     }
@@ -45,20 +54,18 @@ export default (scoresProvider, playerId = null, page = 1, initialState = null) 
   }
 
   const refetch = async () => {
-    if (!currentPlayerId || !currentPage) return false;
+    if (!params) return false;
 
-    return fetch(currentPage, currentPlayerId, true);
+    return fetch(params, true);
   }
 
-  if (currentPlayerId && !initialState) fetch(currentPage, currentPlayerId, true)
+  if (!initialState && params) fetch(params, true)
 
   return {
     subscribe,
     fetch,
     refetch,
     getState: () => state,
-    getPlayerId: () => currentPlayerId,
-    getPage: () => currentPage,
     isLoading: {subscribe: subscribeIsLoading},
     pending: {subscribe: subscribePending},
     error: {subscribe: subscribeError},
