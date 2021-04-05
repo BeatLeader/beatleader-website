@@ -13,4 +13,5 @@ export default {
   get,
   process,
   getProcessed: async ({playerId, page = 1, signal = null} = {}) => process(await get({playerId, page, signal})),
+  type: 'top',
 }

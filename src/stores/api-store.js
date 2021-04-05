@@ -11,13 +11,19 @@ export default (
     defaultParams: defaultFetchParams = {},
     onInitialized = null,
     onAfterStateChange = null,
+    onSetPending = null,
+    onError = null
   } = {},
 ) => {
-  let state = initialState;
-
   const getFinalParams = fetchParams => ({...defaultFetchParams, ...fetchParams});
 
+  let state = initialState;
+  let currentProvider = provider;
+
+  let currentParams = fetchParams;
   let currentParamsHash = hash(getFinalParams(fetchParams));
+
+  const setProvider = provider => currentProvider = provider;
 
   const processedInitialState = provider.process(initialState);
   const {subscribe, set} = writable(initialState ? processedInitialState : null);
@@ -27,23 +33,25 @@ export default (
   const {subscribe: subscribePending, set: setPending} = writable(null);
   const {subscribe: subscribeError, set: setError} = writable(null);
 
-  const fetch = async (fetchParams = null, force = false) => {
+  const fetch = async (fetchParams = null, force = false, provider = currentProvider) => {
     const finalParams = getFinalParams(fetchParams);
 
     if (currentParamsHash === hash(finalParams) && !force) return;
 
     try {
+      setError(null);
       setIsLoading(true);
-      setPending(fetchParams);
+      setPending(onSetPending ? onSetPending(fetchParams) : fetchParams);
 
       state = await provider.getProcessed(finalParams);
+      currentParams = fetchParams;
       currentParamsHash = hash(finalParams);
 
       set(state)
 
-      if (onAfterStateChange) onAfterStateChange({state, params: fetchParams, defaultParams: defaultFetchParams});
+      if (onAfterStateChange) onAfterStateChange({state, params: currentParams, defaultParams: defaultFetchParams});
     } catch (err) {
-      setError(err);
+      setError(onError ? onError(err) : err);
     } finally {
       setIsLoading(false);
       setPending(null);
@@ -58,6 +66,9 @@ export default (
     subscribe,
     fetch,
     getState: () => state,
+    getProvider: () => currentProvider,
+    getParams: () => currentParams,
+    setProvider,
     isLoading: {subscribe: subscribeIsLoading},
     pending: {subscribe: subscribePending},
     error: {subscribe: subscribeError},

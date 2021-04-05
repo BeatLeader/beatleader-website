@@ -1,11 +1,11 @@
-<script lang="ts">
-    import recentScoresProvider from './stores/providers/recent-scores-api-provider';
+<script>
     import createApiScoresStore from './stores/api-scores-store.js';
 
     const motzelId = '76561198035381239';
     const drakonnoId = '76561198025451538';
 
     const initialPlayerId = motzelId;
+    const initialType = 'recent';
 
     const initialState =
         {
@@ -156,7 +156,7 @@
             }]
         };
 
-    let recentScoresStore = createApiScoresStore(recentScoresProvider, initialPlayerId, 1, initialState);
+    let recentScoresStore = createApiScoresStore(initialPlayerId, initialType, 1, initialState);
 
     let isLoading = recentScoresStore.isLoading;
     let pending = recentScoresStore.pending;
@@ -167,11 +167,16 @@
     }
 
     function changePlayer(playerId) {
-        recentScoresStore.fetch(1, playerId);
+        recentScoresStore.fetch(1, type, playerId);
+    }
+
+    function changeType(type) {
+      recentScoresStore.fetch(1, type);
     }
 
     $: page = $recentScoresStore ? recentScoresStore.getPage() : null;
     $: playerId = $recentScoresStore ? recentScoresStore.getPlayerId() : null;
+    $: type = $recentScoresStore ? recentScoresStore.getType() : null;
 
     $: {
         console.log($recentScoresStore)
@@ -183,6 +188,12 @@
     Player:
     <button on:click={() => changePlayer(motzelId)} disabled={$isLoading || playerId === motzelId}>motzel</button>
     <button on:click={() => changePlayer(drakonnoId)} disabled={$isLoading || playerId === drakonnoId}>Drakonno</button>
+  </div>
+
+  <div>
+    Type:
+    <button on:click={() => changeType('recent')} disabled={$isLoading || type === 'recent'}>Recent</button>
+    <button on:click={() => changeType('top')} disabled={$isLoading || type === 'top'}>Top</button>
   </div>
 
   <pre>
