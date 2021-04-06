@@ -8,11 +8,11 @@ export default (
   fetchParams = null,
   initialState = null,
   {
-    defaultParams: defaultFetchParams = {},
+    defaultFetchParams = {},
     onInitialized = null,
     onAfterStateChange = null,
     onSetPending = null,
-    onError = null
+    onError = null,
   } = {},
 ) => {
   const getFinalParams = fetchParams => ({...defaultFetchParams, ...fetchParams});
@@ -33,7 +33,7 @@ export default (
   const {subscribe: subscribePending, set: setPending} = writable(null);
   const {subscribe: subscribeError, set: setError} = writable(null);
 
-  const fetch = async (fetchParams = null, force = false, provider = currentProvider) => {
+  const fetch = async (fetchParams = null, force = false, provider = currentProvider, signal = null,) => {
     const finalParams = getFinalParams(fetchParams);
 
     if (currentParamsHash === hash(finalParams) && !force) return;
@@ -43,7 +43,7 @@ export default (
       setIsLoading(true);
       setPending(onSetPending ? onSetPending(fetchParams) : fetchParams);
 
-      state = await provider.getProcessed(finalParams);
+      state = await provider.getProcessed({...finalParams, ...(signal ? {signal} : null)});
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);
 

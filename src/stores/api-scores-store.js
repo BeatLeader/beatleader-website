@@ -2,9 +2,22 @@ import createApiStore from './api-store';
 import recentScoresProvider from './providers/recent-scores-api-provider'
 import topScoresProvider from './providers/top-scores-api-provider'
 
+class TimeoutError extends Error {
+  constructor(timeout, message) {
+    super(message);
+
+    this.name = "TimeoutError";
+    this.timeout = timeout;
+  }
+
+  toString() {
+    return `Time out Error (${this.timeout}ms)`
+  }
+}
+
 const getProviderByType = type => type === 'top' ? topScoresProvider : recentScoresProvider;
 
-export default (playerId = null, type = 'recent', page = 1, initialState = null) => {
+export default (playerId = null, type = 'recent', page = 1, initialState = null, timeout = 10000) => {
   let currentPlayerId = playerId;
   let currentPage = page ?? 1;
   let currentProvider = getProviderByType(type);
@@ -31,6 +44,13 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
       onSetPending: params => ({...params, type: pendingProvider?.type ?? currentProvider.type}),
+      onError: err => {
+        if (err?.name === 'AbortError' || err?.message === 'AbortError') {
+          return new TimeoutError(timeout, `Timeout`)
+        }
+
+        return err;
+      }
     },
   );
 
@@ -43,7 +63,12 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
 
     const shouldForce = force || pendingProvider?.type !== currentProvider?.type;
 
-    await apiStore.fetch({playerId, page}, shouldForce, pendingProvider);
+    const abortController = new AbortController();
+    const handle = setTimeout(() => abortController.abort(), timeout);
+
+    await apiStore.fetch({playerId, page}, shouldForce, pendingProvider, abortController.signal);
+
+    clearTimeout(handle);
 
     return true;
   }

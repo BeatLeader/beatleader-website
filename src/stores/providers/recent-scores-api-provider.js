@@ -1,13 +1,7 @@
 import ssApi from '../../network/ss-api'
 import process from './common/process';
-import {delay} from '../../utils/promise'
 
-const get = async ({playerId, page = 1, signal = null} = {}) => {
-  // TODO: test only
-  await delay(1000);
-
-  return ssApi.recentScores(playerId, page, signal);
-}
+const get = async ({playerId, page = 1, signal = null} = {}) =>  ssApi.recentScores(playerId, page, signal);
 
 export default {
   get,

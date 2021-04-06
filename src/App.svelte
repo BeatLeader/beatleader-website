@@ -204,7 +204,7 @@
 
   <div>
   current page: {page}, isLoading: {$isLoading}, pending: {JSON.stringify($pending)}
-  error: {JSON.stringify($error)}
+  error: {$error?.toString()}
   </div>
 </main>
 
