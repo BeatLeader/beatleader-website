@@ -1,7 +1,21 @@
 import {writable} from 'svelte/store'
 import stringify from 'json-stable-stringify';
+import {delay} from '../utils/promise'
 
 const hash = obj => stringify(obj);
+
+export class TimeoutError extends Error {
+  constructor(timeout, message) {
+    super(message);
+
+    this.name = "TimeoutError";
+    this.timeout = timeout;
+  }
+
+  toString() {
+    return `Time out Error (${this.timeout}ms)`
+  }
+}
 
 export default (
   provider,
@@ -13,7 +27,7 @@ export default (
     onAfterStateChange = null,
     onSetPending = null,
     onError = null,
-    timeout = 10000
+    timeout = 10000,
   } = {},
 ) => {
   const getFinalParams = fetchParams => ({...defaultFetchParams, ...fetchParams});
@@ -34,26 +48,28 @@ export default (
   const {subscribe: subscribePending, set: setPending} = writable(null);
   const {subscribe: subscribeError, set: setError} = writable(null);
 
-  let abortController;
+  let pendingAbortController;
 
-  const fetch = async (fetchParams = null, force = false, provider = currentProvider,) => {
-    // abort previous pending fetch if needed
-    if (abortController) abortController.abort();
-
-    const finalParams = getFinalParams(fetchParams);
-
-    if (currentParamsHash === hash(finalParams) && !force) return;
+  const fetch = async (fetchParams = null, force = false, provider = currentProvider) => {
+    const abortController = new AbortController();
 
     try {
-      abortController = new AbortController();
+      // abort previous pending fetch if needed
+      if (pendingAbortController) pendingAbortController.abort();
+
+      const finalParams = getFinalParams(fetchParams);
+
+      if (currentParamsHash === hash(finalParams) && !force) return;
 
       setError(null);
       setIsLoading(true);
       setPending(onSetPending ? onSetPending({fetchParams, abortController}) : fetchParams);
 
-      const timeoutHandle = setTimeout(() => abortController.abort(), timeout);
-      state = await provider.getProcessed({...finalParams, signal: abortController.signal});
-      clearTimeout(timeoutHandle);
+      pendingAbortController = abortController;
+      state = await Promise.race([
+        provider.getProcessed({...finalParams, signal: abortController.signal}),
+        delay(timeout, new TimeoutError(timeout), true)
+      ]);
 
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);
@@ -62,12 +78,24 @@ export default (
 
       if (onAfterStateChange) onAfterStateChange({state, fetchParams: currentParams, defaultFetchParams});
     } catch (err) {
+      if (err?.name === 'AbortError' || err?.message === 'AbortError') return false;
+
+      try {
+        if (err instanceof TimeoutError && abortController && !abortController.aborted) {
+          abortController.abort();
+        }
+      } catch (e) {
+        // swallow AbortError
+      }
+
       setError(onError ? onError(err) : err);
     } finally {
-      setIsLoading(false);
-      setPending(null);
+      if (abortController === pendingAbortController) {
+        pendingAbortController = null;
 
-      abortController = null;
+        setIsLoading(false);
+        setPending(null);
+      }
     }
 
     return true;

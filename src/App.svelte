@@ -7,6 +7,8 @@
     const initialPlayerId = motzelId;
     const initialType = 'recent';
 
+    const pages = Array(10).fill(0).map((v, idx) => idx + 1);
+
     const initialState =
         {
             scores: [{
@@ -162,7 +164,7 @@
     let pending = recentScoresStore.pending;
     let error = recentScoresStore.error;
 
-    function fetchPageAndAdvance(page) {
+    function fetchPage(page) {
         recentScoresStore.fetch(page);
     }
 
@@ -186,33 +188,116 @@
 <main>
   <div>
     Player:
-    <button on:click={() => changePlayer(motzelId)} disabled={$isLoading || playerId === motzelId}>motzel</button>
-    <button on:click={() => changePlayer(drakonnoId)} disabled={$isLoading || playerId === drakonnoId}>Drakonno</button>
+    <button on:click={() => changePlayer(motzelId)} disabled={[$pending?.playerId, playerId].includes(motzelId)}>
+      {#if $pending?.playerId === motzelId && $pending?.playerId !== playerId}
+        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      {/if}
+
+      motzel
+    </button>
+
+    <button on:click={() => changePlayer(drakonnoId)} disabled={[$pending?.playerId, playerId].includes(drakonnoId)}>
+      {#if $pending?.playerId === drakonnoId && $pending?.playerId !== playerId}
+        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      {/if}
+
+      Drakonno
+    </button>
   </div>
 
   <div>
     Type:
-    <button on:click={() => changeType('recent')} disabled={$isLoading || type === 'recent'}>Recent</button>
-    <button on:click={() => changeType('top')} disabled={$isLoading || type === 'top'}>Top</button>
+    <button on:click={() => changeType('recent')} disabled={[$pending?.type, type].includes('recent')}>
+      {#if $pending?.type === 'recent' && $pending?.type !== type}
+        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      {/if}
+      Recent
+    </button>
+    <button on:click={() => changeType('top')} disabled={[$pending?.type, type].includes('top')}>
+      {#if $pending?.type === 'top' && $pending?.type !== type}
+        <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      {/if}
+      Top
+    </button>
   </div>
 
   <pre>
 		{JSON.stringify($recentScoresStore, null, 2)}
 	</pre>
 
-  <button on:click={() => fetchPageAndAdvance(page + 1)} disabled={$isLoading}>Fetch page {page + 1}</button>
-
-  <div>
-  current page: {page}, isLoading: {$isLoading}, pending: {JSON.stringify($pending)}
-  error: {$error?.toString()}
+  <div class="pages">
+    {#each pages as p}
+      <button on:click={() => fetchPage(p)} disabled={[page, $pending?.page].includes(p)}>
+        {#if $pending?.page === p}
+          <svg class="spinner" xmlns="http://www.w3.org/2000/svg" fill="none"
+               viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        {:else}
+          {p}
+        {/if}
+      </button>
+    {/each}
   </div>
+
+  {#if $error}
+    <div class="error">{$error?.toString()}</div>
+  {/if}
 </main>
 
 <style>
+    button {
+        cursor: pointer;
+        min-width: 2rem;
+        margin-right: .5rem;
+    }
+
     pre {
         width: 800px;
         height: 600px;
         border: 1px solid red;
         overflow: scroll;
+    }
+
+    .error {
+        color: red;
+        font-weight: 500;
+    }
+
+    .spinner {
+        width: 1rem;
+        height: 1rem;
+        animation: spin 1s linear infinite;
+    }
+    .spinner circle {
+        opacity: .25;
+    }
+    .spinner path {
+        opacity: .75;
+    }
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
     }
 </style>

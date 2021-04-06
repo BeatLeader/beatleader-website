@@ -5,5 +5,5 @@ export const delay = async (time, val, shouldReject = false, signal = null) => n
     clearTimeout(handle);
 
     reject(new Error('AbortError'));
-  })
+  }, {once: true})
 });
