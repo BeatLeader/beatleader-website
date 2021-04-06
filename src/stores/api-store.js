@@ -13,6 +13,7 @@ export default (
     onAfterStateChange = null,
     onSetPending = null,
     onError = null,
+    timeout = 10000
   } = {},
 ) => {
   const getFinalParams = fetchParams => ({...defaultFetchParams, ...fetchParams});
@@ -27,34 +28,46 @@ export default (
 
   const processedInitialState = provider.process(initialState);
   const {subscribe, set} = writable(initialState ? processedInitialState : null);
-  if (onInitialized) onInitialized({state: processedInitialState, params: fetchParams, defaultParams: defaultFetchParams});
+  if (onInitialized) onInitialized({state: processedInitialState, fetchParams, defaultFetchParams});
 
   const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
   const {subscribe: subscribePending, set: setPending} = writable(null);
   const {subscribe: subscribeError, set: setError} = writable(null);
 
-  const fetch = async (fetchParams = null, force = false, provider = currentProvider, signal = null,) => {
+  let abortController;
+
+  const fetch = async (fetchParams = null, force = false, provider = currentProvider,) => {
+    // abort previous pending fetch if needed
+    if (abortController) abortController.abort();
+
     const finalParams = getFinalParams(fetchParams);
 
     if (currentParamsHash === hash(finalParams) && !force) return;
 
     try {
+      abortController = new AbortController();
+
       setError(null);
       setIsLoading(true);
-      setPending(onSetPending ? onSetPending(fetchParams) : fetchParams);
+      setPending(onSetPending ? onSetPending({fetchParams, abortController}) : fetchParams);
 
-      state = await provider.getProcessed({...finalParams, ...(signal ? {signal} : null)});
+      const timeoutHandle = setTimeout(() => abortController.abort(), timeout);
+      state = await provider.getProcessed({...finalParams, signal: abortController.signal});
+      clearTimeout(timeoutHandle);
+
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);
 
       set(state)
 
-      if (onAfterStateChange) onAfterStateChange({state, params: currentParams, defaultParams: defaultFetchParams});
+      if (onAfterStateChange) onAfterStateChange({state, fetchParams: currentParams, defaultFetchParams});
     } catch (err) {
       setError(onError ? onError(err) : err);
     } finally {
       setIsLoading(false);
       setPending(null);
+
+      abortController = null;
     }
 
     return true;

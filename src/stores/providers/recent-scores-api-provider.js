@@ -1,7 +1,7 @@
 import ssApi from '../../network/ss-api'
 import process from './common/process';
 
-const get = async ({playerId, page = 1, signal = null} = {}) =>  ssApi.recentScores(playerId, page, signal);
+const get = async ({playerId, page = 1, signal = null} = {}) => ssApi.recentScores(playerId, page, signal);
 
 export default {
   get,

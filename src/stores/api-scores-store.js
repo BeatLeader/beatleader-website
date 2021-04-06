@@ -24,11 +24,11 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
 
   let pendingProvider = null;
 
-  const onNewData = ({params}) => {
+  const onNewData = ({fetchParams}) => {
     console.warn('new data available')
 
-    currentPage = params?.page ?? 1;
-    currentPlayerId = params?.playerId ?? null;
+    currentPage = fetchParams?.page ?? 1;
+    currentPlayerId = fetchParams?.playerId ?? null;
 
     if (pendingProvider) {
       currentProvider = pendingProvider;
@@ -43,14 +43,15 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     {
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
-      onSetPending: params => ({...params, type: pendingProvider?.type ?? currentProvider.type}),
+      onSetPending: ({fetchParams}) => ({...fetchParams, type: pendingProvider?.type ?? currentProvider.type}),
       onError: err => {
         if (err?.name === 'AbortError' || err?.message === 'AbortError') {
           return new TimeoutError(timeout, `Timeout`)
         }
 
         return err;
-      }
+      },
+      timeout
     },
   );
 
@@ -63,12 +64,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
 
     const shouldForce = force || pendingProvider?.type !== currentProvider?.type;
 
-    const abortController = new AbortController();
-    const handle = setTimeout(() => abortController.abort(), timeout);
-
-    await apiStore.fetch({playerId, page}, shouldForce, pendingProvider, abortController.signal);
-
-    clearTimeout(handle);
+    await apiStore.fetch({playerId, page}, shouldForce, pendingProvider);
 
     return true;
   }
