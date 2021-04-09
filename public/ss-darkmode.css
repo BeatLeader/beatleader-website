@@ -1,0 +1,222 @@
+:root {
+    --background: #222;
+    --foreground: #252525;
+    --textColor: #EEE;
+
+    --ppColour: #8992e8;
+    --alternate: #72a8ff;
+}
+
+@media screen and (max-width: 1023px) {
+    .navbar-menu {
+      background-color: var(--background) !important;
+    }
+  
+    a.navbar-item, .navbar-link {
+      color: var(--textColor) !important;
+    }
+  
+    a.navbar-item:hover, a.navbar-item.is-active, .navbar-link:hover, .navbar-link.is-active {
+      color: var(--textColor) !important;
+      background-color: var(--foreground) !important;
+    }
+  
+    .navbar-link:not(.is-arrowless)::after {
+      border-color: #EEE;
+    }
+}
+
+html {
+    background-color: var(--background) !important;
+}
+
+body {
+    background-color: var(--background) !important;
+}
+
+.navbar.has-shadow {
+    background-color: var(--foreground) !important;
+    box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.35) !important;
+}
+
+.navbar.navbar-expand-lg.navbar-light.bg-light {
+    color: var(--foreground) !important;
+}
+
+.title {
+    color: var(--textColor) !important;
+}
+
+.box.has-shadow {
+    background-color: var(--foreground) !important;
+    color: var(--textColor) !important;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
+}
+
+.box.has-shadow:hover {
+    box-shadow: 0 15px 25px rgba(23, 23, 23, 0.63), 0 8px 15px rgba(0, 0, 0, 0.4)
+}
+
+a {
+    color: var(--alternate) !important;
+}
+
+a.navbar-item {
+    color: var(--textColor) !important;
+}
+
+a.navbar-item:hover {
+    background-color: rgba(0, 0, 0, 0.37) !important;
+}
+
+.textarea[disabled] {
+    background-color: #3a3a3a;
+    border-color: #202020;;
+    box-shadow: none;
+    color: var(--textColor) !important;
+}
+.textarea {
+    background-color: #222;
+    border-color: #202020;;
+    box-shadow: none;
+    color: var(--textColor) !important;
+}
+
+strong {
+    color: var(--textColor) !important;
+}
+
+h1 {
+    color: var(--textColor) !important;
+}
+
+h2 {
+    color: var(--textColor) !important;
+}
+
+h3 {
+    color: var(--textColor) !important;
+}
+
+th {
+    color: var(--textColor) !important;
+}
+
+span.songBottom.time {
+    color: var(--textColor) !important;
+}
+
+span.scoreTop.ppWeightedValue {
+    color: var(--textColor) !important;
+}
+
+span.scoreBottom {
+    color: var(--textColor) !important;
+}
+
+a.pagination-link {
+    color: var(--textColor) !important;
+}
+
+.diff{
+    text-align: center !important;
+}
+
+.card {
+    background-color: var(--foreground) !important;
+}
+
+.footer {
+    background-color: var(--background) !important;
+}
+
+h4 {
+    color: var(--alternate) !important;
+}
+
+label {
+    color: var(--textColor) !important;
+}
+
+table td {
+    color: var(--textColor) !important;
+}
+
+span.scoreTop.ppValue {
+    color: var(--ppColour) !important;
+}
+
+.scoreTop.ppLabel {
+    color: var(--ppColour) !important;
+}
+
+table th.pp {
+    text-align: center !important;
+}
+
+table td.pp {
+    text-align: center !important;
+}
+
+.pagination .button {
+    background-color: #2d2d2d !important;
+    border-color: var(--foreground) !important;
+}
+
+.navbar .input {
+    background-color: rgba(0, 0, 0, 0.46) !important;
+    border-color: #4a4a4a !important;
+    color: var(--textColor) !important;
+}
+
+.navbar .input:focus {
+    border-color: var(--alternate);
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6);
+}
+
+.table-bordered,
+.table-bordered td,
+.table-bordered th {
+    border: 1px solid rgba(19, 19, 19, 0.48) !important;
+}
+
+.content table td, .content table th {
+    border-color:rgba(219, 219, 219, 0.3) !important;
+}
+
+.card-body {
+    color: var(--textColor) !important;
+}
+
+#chart > svg > g:nth-child(4) > g > text {
+    color: var(--textColor) !important;
+}
+
+#chart > svg > g:nth-child(4) > g > rect {
+    color: var(--textColor) !important;
+}
+
+.btn.btn-raised.btn-primary {
+    background-color: var(--foreground) !important;
+    box-shadow: none !important;
+}
+
+::placeholder {
+    color: var(--textColor) !important;
+}
+
+.form-control {
+    color: var(--textColor) !important;
+}
+
+#chart > svg > g:nth-child(4) {
+    display: none;
+}
+
+.select select {
+    background-color: #2d2d2d !important;
+    color: var(--textColor) !important;
+}
