@@ -3,8 +3,8 @@ import tweened from '../../../svelte-utils/tweened';
 
 const TWEEN_DURATION = 300;
 
-const basicStatsTweened = {};
-function updateBasicStats(playerData) {
+const scoresStatsTweened = {};
+function updateScoresStats(playerData) {
   if (!playerData) return null;
 
   const playerInfo = playerData?.playerInfo;
@@ -25,12 +25,12 @@ function updateBasicStats(playerData) {
       const value = scoreStats?.[s.key]
       if (!value && !Number.isFinite(value)) return null;
 
-      if (!basicStatsTweened.hasOwnProperty(s.key)) basicStatsTweened[s.key] = tweened(value, TWEEN_DURATION);
-      else basicStatsTweened[s.key].set(value);
+      if (!scoresStatsTweened.hasOwnProperty(s.key)) scoresStatsTweened[s.key] = tweened(value, TWEEN_DURATION);
+      else scoresStatsTweened[s.key].set(value);
 
       return {
         label: s.label,
-        value: basicStatsTweened[s.key],
+        value: scoresStatsTweened[s.key],
         digits: s.digits ?? 0,
         suffix: s.suffix ?? '',
         fluid: true,
@@ -82,7 +82,7 @@ export default playerData => {
   return {
     playerInfo,
     prevInfo: playerData?.prevInfo ?? null,
-    basicStats: updateBasicStats(playerData),
+    scoresStats: updateScoresStats(playerData),
     ssBadges: updateSsBadges(playerData),
   }
 }
