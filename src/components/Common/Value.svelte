@@ -19,18 +19,26 @@
     export let title = '';
     export let prevTitle = null;
 
-    let resolvedValue = value?.subscribe ? null : value;
-    onMount(() => {
-      let unsubscribe = null;
+
+    let resolvedValue = value;
+    let unsubscribe = null;
+    function resolveValue(value) {
       if (value?.subscribe) {
         unsubscribe = value.subscribe(value => resolvedValue = value);
+      } else {
+        resolvedValue = value;
       }
+    }
 
+    onMount(() => {
       return () => {
         if (unsubscribe) unsubscribe();
       }
     })
 
+    $: {
+      resolveValue(value);
+    }
     $: minValue = Math.pow(10, -digits-1)
     $: formatted = (Math.abs(resolvedValue) > minValue ? prefix + formatNumber(resolvedValue, digits, withSign)
       + suffix : (withZeroPrefix ? prefix : "") + zero + (withZeroSuffix ? suffix : ""));
