@@ -1,5 +1,6 @@
 <script>
     import {formatNumber} from '../../utils/format'
+    import {onMount} from 'svelte'
 
     export let value = 0;
     export let prevValue = null;
@@ -18,13 +19,26 @@
     export let title = '';
     export let prevTitle = null;
 
+    let resolvedValue = value?.subscribe ? null : value;
+    onMount(() => {
+      let unsubscribe = null;
+      if (value?.subscribe) {
+        unsubscribe = value.subscribe(value => resolvedValue = value);
+      }
+
+      return () => {
+        if (unsubscribe) unsubscribe();
+      }
+    })
+
     $: minValue = Math.pow(10, -digits-1)
-    $: formatted = (Math.abs(value) > minValue ? prefix + formatNumber(value, digits, withSign) + suffix : (withZeroPrefix ? prefix : "") + zero + (withZeroSuffix ? suffix : ""));
-    $: showPrevValue = prevValue && prevValue !== value && value !== null;
+    $: formatted = (Math.abs(resolvedValue) > minValue ? prefix + formatNumber(resolvedValue, digits, withSign)
+      + suffix : (withZeroPrefix ? prefix : "") + zero + (withZeroSuffix ? suffix : ""));
+    $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null;
     $: prevFormatted = prevValue ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, withSign) + suffix : ""
-    $: prevDiffFormatted = prevValue ? formatNumber((value - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : ""
-    $: prevClass = (prevValue ? ((value - prevValue) * (reversePrevSign ? -1 : 1) > minValue ? "inc" : ((value - prevValue) * (reversePrevSign ? -1 : 1) < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
-    $: mainClass = (useColorsForValue && value ? (value > minValue ? "inc" : (value < -minValue ? "dec" : "zero")): "");
+    $: prevDiffFormatted = prevValue ? formatNumber((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : ""
+    $: prevClass = (prevValue ? ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) > minValue ? "inc" : ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
+    $: mainClass = (useColorsForValue && resolvedValue ? (resolvedValue > minValue ? "inc" : (resolvedValue < -minValue ? "dec" : "zero")): "");
 </script>
 
 <span class={mainClass} {title}>{formatted}</span>{#if showPrevValue} <small class={prevClass} title={prevTitle ? prevTitle : prevFormatted}>{prevDiffFormatted}</small>{/if}
