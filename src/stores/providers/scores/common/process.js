@@ -1,5 +1,5 @@
-import {dateFromString} from '../../../utils/date'
-import {extractDiffAndType} from '../../../scoresaber/format'
+import {dateFromString} from '../../../../utils/date'
+import {extractDiffAndType} from '../../../../scoresaber/format'
 
 export default response => {
   if (!response?.scores) return [];
@@ -12,13 +12,15 @@ export default response => {
       songAuthorName: authorName,
       levelAuthorName,
       difficultyRaw,
+      difficulty,
+      leaderboardId,
       ...score
     } = s;
 
     const song = {hash, name, subName, authorName, levelAuthorName};
-
     const diffInfo = extractDiffAndType(difficultyRaw);
+    const leaderboard = {leaderboardId, song, diffInfo, difficulty};
 
-    return {...score, song, diffInfo, timeSet: dateFromString(s.timeSet)};
+    return {leaderboard, score: {...score, timeSet: dateFromString(s.timeSet)}};
   });
 }

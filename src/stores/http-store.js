@@ -19,7 +19,7 @@ export class TimeoutError extends Error {
 
 export default (
   provider,
-  fetchParams = null,
+  fetchParams = {},
   initialState = null,
   {
     defaultFetchParams = {},
@@ -50,7 +50,7 @@ export default (
 
   let pendingAbortController;
 
-  const fetch = async (fetchParams = null, force = false, provider = currentProvider) => {
+  const fetch = async (fetchParams = {}, force = false, provider = currentProvider) => {
     const abortController = new AbortController();
 
     try {
@@ -59,13 +59,14 @@ export default (
 
       const finalParams = getFinalParams(fetchParams);
 
-      if (currentParamsHash === hash(finalParams) && !force) return;
+      if (currentParamsHash === hash(finalParams) && !force) return false;
 
       setError(null);
       setIsLoading(true);
       setPending(onSetPending ? onSetPending({fetchParams, abortController}) : fetchParams);
 
       pendingAbortController = abortController;
+
       state = await Promise.race([
         provider.getProcessed({...finalParams, signal: abortController.signal}),
         delay(timeout, new TimeoutError(timeout), true)
@@ -77,6 +78,8 @@ export default (
       set(state)
 
       if (onAfterStateChange) onAfterStateChange({state, fetchParams: currentParams, defaultFetchParams});
+
+      return true;
     } catch (err) {
       if (err?.name === 'AbortError' || err?.message === 'AbortError') return false;
 
@@ -98,10 +101,10 @@ export default (
       }
     }
 
-    return true;
+    return false;
   }
 
-  if (!initialState) fetch(fetchParams, true)
+  if (!initialState && fetchParams) fetch(fetchParams, true);
 
   return {
     subscribe,

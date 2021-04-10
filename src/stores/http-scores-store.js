@@ -1,10 +1,12 @@
-import createApiStore from './api-store';
-import recentScoresProvider from './providers/recent-scores-api-provider'
-import topScoresProvider from './providers/top-scores-api-provider'
+import createHttpStore from './http-store';
+import apiRecentScoresProvider from './providers/scores/api-recent'
+import apiTopScoresProvider from './providers/scores/api-top'
 
-const getProviderByType = type => type === 'top' ? topScoresProvider : recentScoresProvider;
+const getProviderByType = type => type === 'top' ? apiTopScoresProvider : apiRecentScoresProvider;
 
 export default (playerId = null, type = 'recent', page = 1, initialState = null, timeout = 10000) => {
+  console.warn(`create scores store: ${playerId} ${type}/${page}`, initialState)
+
   let currentPlayerId = playerId;
   let currentPage = page ?? 1;
   let currentProvider = getProviderByType(type);
@@ -21,7 +23,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     }
   }
 
-  const apiStore = createApiStore(
+  const httpStore = createHttpStore(
     currentProvider,
     {playerId, page},
     initialState,
@@ -34,19 +36,17 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
   );
 
   const fetch = async (page, type = currentProvider.type, playerId = currentPlayerId, force = false) => {
-    if (page === currentPage && playerId === currentPlayerId && type === currentProvider?.type && !force) return;
+    if (page === currentPage && playerId === currentPlayerId && type === currentProvider?.type && !force) return false;
 
     pendingProvider = getProviderByType(type);
 
     const shouldForce = force || pendingProvider?.type !== currentProvider?.type;
 
-    await apiStore.fetch({playerId, page}, shouldForce, pendingProvider);
-
-    return true;
+    return httpStore.fetch({playerId, page}, shouldForce, pendingProvider);
   }
 
   return {
-    ...apiStore,
+    ...httpStore,
     fetch,
     getPlayerId: () => currentPlayerId,
     getPage: () => currentPage,

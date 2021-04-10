@@ -1,0 +1,32 @@
+:root {
+    --background: #222;
+    --foreground: #252525;
+    --textColor: #eee;
+    --ppColour: #8992e8;
+    --alternate: #72a8ff;
+    --selected: #3273dc;
+    --hover: #333;
+    --highlight: #484848;
+    --decrease: #f94022;
+    --increase: #42b129;
+    --dimmed: #3e3e3e;
+    --faded: #666;
+    --color-ahead: rgb(0, 128, 0);
+    --color-behind: rgb(128, 0, 0);
+    --color-highlight: darkgreen;
+}
+
+body {
+    color: var(--textColor);
+}
+
+.sspl-page-container {
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media screen and (min-width: 1750px) {
+    .sspl-page-container {
+        max-width: 1750px !important;
+    }
+}
