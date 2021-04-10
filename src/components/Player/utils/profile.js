@@ -1,4 +1,7 @@
 import {SS_HOST} from '../../../network/scoresaber/page'
+import tweened from '../../../svelte-utils/tweened';
+
+const TWEEN_DURATION = 300;
 
 function updateBasicStats(playerData) {
   if (!playerData) return null;
@@ -49,9 +52,18 @@ function updateSsBadges(playerData) {
   return playerData.playerInfo.badges.map(b => ({src: `${SS_HOST}/imports/images/badges/${b.image}`, title: b.description}));
 }
 
-export default playerData => ({
-  playerInfo: playerData?.playerInfo ?? null,
-  prevInfo: playerData?.prevInfo ?? null,
-  basicStats: updateBasicStats(playerData),
-  ssBadges: updateSsBadges(playerData),
-})
+let rank = tweened(null, TWEEN_DURATION);
+
+export default playerData => {
+  const playerInfo = playerData?.playerInfo ?? null;
+
+  rank.set(playerInfo?.rank ?? null);
+
+  return {
+    playerInfo,
+    prevInfo: playerData?.prevInfo ?? null,
+    basicStats: updateBasicStats(playerData),
+    ssBadges: updateSsBadges(playerData),
+    rank
+  }
+}
