@@ -3,6 +3,7 @@ import tweened from '../../../svelte-utils/tweened';
 
 const TWEEN_DURATION = 300;
 
+const basicStatsTweened = {};
 function updateBasicStats(playerData) {
   if (!playerData) return null;
 
@@ -21,11 +22,15 @@ function updateBasicStats(playerData) {
 
   return statsDef
     .map(s => {
-      if (!scoreStats[s.key]) return null;
+      const value = scoreStats?.[s.key]
+      if (!value && !Number.isFinite(value)) return null;
+
+      if (!basicStatsTweened.hasOwnProperty(s.key)) basicStatsTweened[s.key] = tweened(value, TWEEN_DURATION);
+      else basicStatsTweened[s.key].set(value);
 
       return {
         label: s.label,
-        value: scoreStats[s.key],
+        value: basicStatsTweened[s.key],
         digits: s.digits ?? 0,
         suffix: s.suffix ?? '',
         fluid: true,
@@ -52,21 +57,32 @@ function updateSsBadges(playerData) {
   return playerData.playerInfo.badges.map(b => ({src: `${SS_HOST}/imports/images/badges/${b.image}`, title: b.description}));
 }
 
-let rank = tweened(null, TWEEN_DURATION);
-let pp = tweened(null, TWEEN_DURATION);
-
+const playerInfoTweened = {};
 export default playerData => {
   const playerInfo = playerData?.playerInfo ?? null;
 
-  rank.set(playerInfo?.rank ?? null);
-  pp.set(playerInfo?.pp ?? null)
+  ['pp', 'rank'].forEach(key => {
+    const value = playerInfo?.[key];
+    if (!playerInfoTweened.hasOwnProperty(key)) playerInfoTweened[key] = tweened(value, TWEEN_DURATION);
+    else playerInfoTweened[key].set(value);
+
+    if (playerInfo) playerInfo[key] = playerInfoTweened[key];
+  });
+
+  if (Number.isFinite(playerInfo?.countries?.[0]?.rank)) {
+    const key = 'countryRank'
+    const value = playerInfo.countries[0].rank;
+
+    if (!playerInfoTweened.hasOwnProperty(key)) playerInfoTweened[key] = tweened(value, TWEEN_DURATION);
+    else playerInfoTweened[key].set(value);
+
+    playerInfo.countries[0].rank = playerInfoTweened[key];
+  }
 
   return {
     playerInfo,
     prevInfo: playerData?.prevInfo ?? null,
     basicStats: updateBasicStats(playerData),
     ssBadges: updateSsBadges(playerData),
-    rank,
-    pp
   }
 }
