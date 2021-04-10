@@ -7,12 +7,13 @@
   import Badge from '../Common/Badge.svelte'
   import {fade} from 'svelte/transition'
   import processPlayerData from './utils/profile';
+  import Name from './Name.svelte'
 
   export let playerData;
   export let isLoading = false;
   export let error = null;
 
-  $: ({ playerInfo, prevInfo, basicStats, ssBadges, rank } = processPlayerData(playerData))
+  $: ({playerInfo, prevInfo, basicStats, ssBadges, rank, pp} = processPlayerData(playerData))
 </script>
 
 <section class="player-profile" class:loading={isLoading}>
@@ -36,12 +37,9 @@
 
             {#if playerInfo}
               <h1 class="title is-4">
-                {#if playerInfo.externalProfileUrl}
-                  <a href={playerInfo.externalProfileUrl}>{playerInfo.playerName}</a>
-                {:else}
-                  {playerInfo.playerName}
-                {/if}
-                <span class="pp"><Value value={playerInfo?.pp} suffix="pp" prevValue={prevInfo?.pp}
+                <Name {playerInfo} />
+
+                <span class="pp"><Value value={pp} suffix="pp" prevValue={prevInfo?.pp}
                                         prevLabel={prevInfo?.ppSince} inline={true}/></span>
 
                 {#if playerInfo.banned}<span class="status banned">Banned</span>{/if}
@@ -52,7 +50,7 @@
                   href={playerInfo.rank ? `${SS_HOST}/global/${playerInfo.rank ? Math.floor((playerInfo.rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'}
                   data-type="global" data-rank={playerInfo.rank}>
                   <i class="fas fa-globe-americas"></i>
-                  <Value value={$rank} prevValue={prevInfo?.rank} prevLabel={prevInfo?.rankSince} prefix="#"
+                  <Value value={rank} prevValue={prevInfo?.rank} prevLabel={prevInfo?.rankSince} prefix="#"
                          digits={0} zero="#0" inline={true} reversePrevSign={true}/>
                 </a>
 
@@ -138,10 +136,6 @@
 
     h1.title {
         margin-bottom: .25rem;
-    }
-
-    h1 a {
-        color: var(--textColor) !important;
     }
 
     h1 .pp {

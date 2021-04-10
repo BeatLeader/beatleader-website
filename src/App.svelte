@@ -7,7 +7,7 @@
     {id: '76561198333869741', name: 'Cerret'},
   ];
 
-  let initialPlayerId = players[0];
+  let initialPlayerId = players[0].id;
   let initialPlayerState =
     {
       "playerInfo": {

@@ -2,7 +2,6 @@ import createHttpStore from './http-store';
 import apiPlayerProvider from './providers/player/api-info'
 
 export default (playerId = null, initialState = null, timeout = 10000) => {
-  console.warn(`create player store: ${playerId}`, initialState)
   let currentPlayerId = playerId;
 
   const onNewData = ({fetchParams}) => {

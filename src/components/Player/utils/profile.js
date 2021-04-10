@@ -53,17 +53,20 @@ function updateSsBadges(playerData) {
 }
 
 let rank = tweened(null, TWEEN_DURATION);
+let pp = tweened(null, TWEEN_DURATION);
 
 export default playerData => {
   const playerInfo = playerData?.playerInfo ?? null;
 
   rank.set(playerInfo?.rank ?? null);
+  pp.set(playerInfo?.pp ?? null)
 
   return {
     playerInfo,
     prevInfo: playerData?.prevInfo ?? null,
     basicStats: updateBasicStats(playerData),
     ssBadges: updateSsBadges(playerData),
-    rank
+    rank,
+    pp
   }
 }
