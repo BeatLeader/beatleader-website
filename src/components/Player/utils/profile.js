@@ -16,7 +16,7 @@ function updateScoresStats(playerData) {
       {key: "totalScore", label: 'Total score', bgColor: 'var(--selected)'},
       {key: "rankedPlayCount", label: 'Ranked play count', bgColor: 'var(--ppColour)'},
       {key: "totalRankedScore", label: 'Total ranked score', bgColor: 'var(--ppColour)'},
-      {key: "averageRankedAccuracy", label: 'Average accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
+      {key: "averageRankedAccuracy", label: 'Average', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
     ]
     : [];
 
@@ -30,6 +30,7 @@ function updateScoresStats(playerData) {
 
       return {
         label: s.label,
+        title: s.title ?? '',
         value: scoresStatsTweened[s.key],
         digits: s.digits ?? 0,
         suffix: s.suffix ?? '',

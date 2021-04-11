@@ -2,7 +2,7 @@ import {dateFromString} from '../../../../utils/date'
 import {extractDiffAndType} from '../../../../scoresaber/format'
 
 export default response => {
-  if (!response?.scores) return [];
+  if (!response?.scores || !Array.isArray(response.scores)) return [];
 
   return response.scores.map(s => {
     const {

@@ -11,7 +11,7 @@
   <span class="no-image">?</span>
 
   {#if playerInfo}
-    <img src={playerInfo.avatar} class="avatar" alt="Avatar"/>
+    <img src={playerInfo.avatar} class="avatar" alt="" />
   {/if}
   <span class="spinner">
     <Spinner width="100%" height="100%"/>

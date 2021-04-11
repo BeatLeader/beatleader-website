@@ -7,7 +7,7 @@
     export let value = 0;
     export let color = "var(--textColor)";
     export let bgColor = "var(--background)"
-    export let title;
+    export let title = "";
     export let zero = "0";
     export let digits = 2;
     export let type = "number";
