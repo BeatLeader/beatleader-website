@@ -1,6 +1,9 @@
 <script>
+  import {createEventDispatcher} from 'svelte'
   import createScoresStore from '../../stores/http-scores-store.js';
   import Spinner from '../Common/Spinner.svelte'
+
+  const dispatch = createEventDispatcher();
 
   export let playerId;
   export let initialType = 'recent';
@@ -30,6 +33,14 @@
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
+
+  $: {
+    dispatch('type-changed', type);
+  }
+
+  $: {
+    dispatch('page-changed', page);
+  }
 
   // TODO: remove it
   const pages = Array(10).fill(0).map((v, idx) => idx + 1);

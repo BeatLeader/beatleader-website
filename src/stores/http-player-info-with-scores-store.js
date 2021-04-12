@@ -12,7 +12,7 @@ export default (playerId = null, scoresType = 'recent', initialState = null, tim
 
   const httpStore = createHttpStore(
     apiPlayerWithScoresProvider,
-    playerId ? {playerId} : null,
+    playerId ? {playerId, scoresType} : null,
     initialState,
     {
       onInitialized: onNewData,
@@ -24,7 +24,7 @@ export default (playerId = null, scoresType = 'recent', initialState = null, tim
   const fetch = async (playerId = currentPlayerId, scoresType = currentScoresType, force = false) => {
     if ((!playerId || playerId === currentPlayerId) && (!scoresType || scoresType === currentScoresType) && !force) return false;
 
-    return httpStore.fetch({playerId}, force, apiPlayerWithScoresProvider);
+    return httpStore.fetch({playerId, scoresType}, force, apiPlayerWithScoresProvider);
   }
 
   return {
