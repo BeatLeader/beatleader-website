@@ -46,17 +46,15 @@
   const pages = Array(10).fill(0).map((v, idx) => idx + 1);
 </script>
 
-<section>
-  <div class="box has-shadow">
+<div class="box has-shadow">
+  {#if $error}
+    <div class="error">{$error?.toString()}</div>
+  {/if}
 
-    {#if $error}
-      <div class="error">{$error?.toString()}</div>
-    {/if}
-
-    {#each types as t}
-      <button on:click={() => changeType(t)}
-              disabled={[type, $pending?.type].includes(t)}>{t.toUpperCase()}</button>
-    {/each}
+  {#each types as t}
+    <button on:click={() => changeType(t)}
+            disabled={[type, $pending?.type].includes(t)}>{t.toUpperCase()}</button>
+  {/each}
 
   <pre>
 		{JSON.stringify($scoresStore, null, 2)}
@@ -66,15 +64,14 @@
     {#each pages as p}
       <button on:click={() => fetchPage(p)} disabled={[page, $pending?.page].includes(p)}>
         {#if $pending?.page === p}
-          <span class="spinner"><Spinner /></span>
+          <span class="spinner"><Spinner/></span>
         {:else}
           {p}
         {/if}
       </button>
     {/each}
   </div>
-  </div>
-</section>
+</div>
 
 <style>
     button {

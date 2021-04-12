@@ -15,6 +15,9 @@ const fetchJson = async (url, options) => fetch(url, options)
         case response.status === 429:
           throw Error('Rate limit error');
 
+        case response.status === 404:
+          throw Error('Not found');
+
         case response.status >= 400 && response.status < 500:
           throw Error('Client error');
 

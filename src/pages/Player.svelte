@@ -31,10 +31,10 @@
 </script>
 
 <main>
-  <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} />
+  <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError}/>
 
   {#if $playerStore}
-  <Scores {playerId} initialState={$playerStore?.scores} initialType={type} on:type-changed={onTypeChanged} />
+    <Scores {playerId} initialState={$playerStore?.scores} initialType={type} on:type-changed={onTypeChanged}/>
   {/if}
 </main>
 
