@@ -7,16 +7,16 @@
   export let initialScoresType = 'recent';
   export let initialState = null;
 
-  let type = initialState?.scoresType ?? initialScoresType;
+  let initialType = initialState?.scoresType ?? initialScoresType;
 
-  export const changePlayer = async newPlayerId => playerStore.fetch(newPlayerId, type);
+  export const changePlayer = async newPlayerId => playerStore.fetch(newPlayerId);
 
-  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, type, initialState);
+  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, initialType, initialState);
   let playerIsLoading = playerStore?.isLoading ?? false;
   let playerError = playerStore?.error ?? null;
 
   function onTypeChanged(event) {
-    type = event.detail ?? initialScoresType;
+    playerStore.setType(event.detail ?? initialScoresType);
   }
 
   $: {
@@ -24,17 +24,16 @@
   }
 
   $: playerId = $playerStore ? playerStore?.getPlayerId() : null;
-
-  $: {
-    console.log("PlayerPage/store", $playerStore)
-  }
+  $: currentType = $playerStore ? playerStore?.getType() : null;
 </script>
 
 <main>
   <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError}/>
 
   {#if $playerStore}
-    <Scores {playerId} initialState={$playerStore?.scores} initialType={type} on:type-changed={onTypeChanged}/>
+    <Scores {playerId} initialState={$playerStore?.scores} initialType={currentType}
+            on:type-changed={onTypeChanged}
+    />
   {/if}
 </main>
 

@@ -31,6 +31,8 @@ export default (playerId = null, scoresType = 'recent', initialState = null, tim
     ...httpStore,
     fetch,
     getPlayerId: () => currentPlayerId,
+    getType: () => currentScoresType,
+    setType: type => currentScoresType = type,
   }
 }
 
