@@ -10,7 +10,7 @@
 </script>
 
 {#if playerInfo}
-  <h1 class="title is-4">
+  <h1 class="title is-4 has-text-centered-mobile">
     {#if playerInfo?.playerName}
       {#if playerInfo.externalProfileUrl}
         <a href={playerInfo.externalProfileUrl} target="_blank" rel="noopener">{playerInfo.playerName}</a>
@@ -27,7 +27,8 @@
   </h1>
 
   <h2 class="title is-5 ranks">
-    <a href={playerInfo.rank ? `${SS_HOST}/global/${playerInfo.rank ? Math.floor((playerInfo.rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
+    <a href={playerInfo.rankValue ? `${SS_HOST}/global/${playerInfo.rankValue ? Math.floor((playerInfo.rankValue-1) /
+    PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
       <i class="fas fa-globe-americas"></i>
 
       <Value value={playerInfo?.rank} prevValue={prevInfo?.rank} prevLabel={prevInfo?.rankSince} prefix="#"
@@ -36,7 +37,7 @@
     </a>
 
     {#each playerInfo.countries ?? [] as country}
-      <a href={country.rank ? `${SS_HOST}/global/${Math.floor((country.rank-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
+      <a href={country.rankValue ? `${SS_HOST}/global/${Math.floor((country.rankValue-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
         <img src={`${SS_HOST}/imports/images/flags/${country?.country?.toLowerCase()}.png`}
              alt={country?.country}
         />
@@ -46,7 +47,7 @@
                reversePrevSign={true}
         />
 
-        {#if country.subRank && country.subRank !== country.rank}
+        {#if country.subRank && country.subRank !== country.rankValue}
           <small>(#{ country.subRank })</small>
         {/if}
       </a>

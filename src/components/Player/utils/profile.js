@@ -67,7 +67,10 @@ export default playerData => {
     if (!playerInfoTweened.hasOwnProperty(key)) playerInfoTweened[key] = tweened(value, TWEEN_DURATION);
     else playerInfoTweened[key].set(value);
 
-    if (playerInfo) playerInfo[key] = playerInfoTweened[key];
+    if (playerInfo) {
+      playerInfo[key + 'Value'] = playerInfo[key];
+      playerInfo[key] = playerInfoTweened[key];
+    }
   });
 
   if (Number.isFinite(playerInfo?.countries?.[0]?.rank)) {
@@ -77,6 +80,7 @@ export default playerData => {
     if (!playerInfoTweened.hasOwnProperty(key)) playerInfoTweened[key] = tweened(value, TWEEN_DURATION);
     else playerInfoTweened[key].set(value);
 
+    playerInfo.countries[0].rankValue = value;
     playerInfo.countries[0].rank = playerInfoTweened[key];
   }
 

@@ -15,7 +15,7 @@
 
 <div class="box has-shadow" class:loading={isLoading}>
   <div class="columns">
-    <div class="column is-narrow avatar enlarge">
+    <div class="column is-narrow avatar">
       <Avatar {playerInfo} {isLoading}/>
     </div>
 
