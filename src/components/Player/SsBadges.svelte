@@ -14,7 +14,6 @@
 
 <style>
     .ss-badges {
-        max-width: 90%;
         display: flex;
         flex-wrap: wrap;
     }
@@ -22,5 +21,12 @@
     .ss-badges img {
         margin-right: .5rem;
         margin-bottom: .25rem;
+    }
+
+    @media(max-width: 767px) {
+        .ss-badges {
+            margin-top: .5rem;
+            justify-content: center;
+        }
     }
 </style>

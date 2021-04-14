@@ -20,17 +20,13 @@
     </div>
 
     <div class="column">
-      <div class="columns player-name">
-        <div class="column">
-          {#if error}
-            <div>
-              <Error {error}/>
-            </div>
-          {/if}
-
-          <PlayerStats {playerInfo} {prevInfo}/>
+      {#if error}
+        <div>
+          <Error {error}/>
         </div>
-      </div>
+      {/if}
+
+      <PlayerStats {playerInfo} {prevInfo}/>
 
       {#if scoresStats || ssBadges}
         <div class="columns">
@@ -51,5 +47,14 @@
         margin-right: 1rem;
         min-width: calc(150px + 1.5rem + 1rem);
         min-height: 190px;
+    }
+
+    @media(max-width: 767px) {
+        .column.avatar {
+            margin-right: 0;
+            min-width: calc(150px + 1.5rem);
+            padding-bottom: 0;
+            min-height: 150px;
+        }
     }
 </style>

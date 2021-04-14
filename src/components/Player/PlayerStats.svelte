@@ -100,4 +100,10 @@
     h2 a img {
         margin-bottom: 2px;
     }
+
+    @media(max-width: 767px) {
+        h2 {
+            justify-content: center;
+        }
+    }
 </style>

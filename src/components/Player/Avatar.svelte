@@ -7,7 +7,7 @@
 </script>
 
 
-<span class:loading={isLoading} class:main>
+<span class="avatar-container" class:loading={isLoading} class:main>
   <span class="no-image">?</span>
 
   {#if playerInfo}
@@ -19,6 +19,10 @@
 </span>
 
 <style>
+    .avatar-container {
+        display: flex;
+    }
+
     img {
         border-radius: 50%;
         width: 150px;
@@ -35,7 +39,7 @@
     }
 
     .main img {
-        border: 2px solid var(--increase, '#42b129');
+        box-shadow: 0 0 0 3px var(--increase, '#42b129');
     }
 
     .spinner {
@@ -66,5 +70,17 @@
         font-size: 75px;
         line-height: 1;
         z-index: 0;
+    }
+
+    @media(max-width: 767px) {
+        .avatar-container {
+            justify-content: center;
+        }
+        img {
+            left: auto;
+        }
+        .spinner {
+            left: auto;
+        }
     }
 </style>
