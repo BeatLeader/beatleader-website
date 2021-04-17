@@ -3,6 +3,7 @@
   import {PLAYER_SCORES_PER_PAGE} from '../../scoresaber/consts'
   import createScoresStore from '../../stores/http-scores-store.js';
   import Pager from '../Common/Pager.svelte'
+  import Spinner from '../Common/Spinner.svelte'
 
   const dispatch = createEventDispatcher();
 
@@ -25,7 +26,7 @@
   }
 
   function onPageChanged(event) {
-    fetchPage((event?.detail?.page ?? 0 ) + 1);
+    fetchPage((event?.detail?.page ?? 0) + 1);
   }
 
   $: {
@@ -55,8 +56,10 @@
   {/if}
 
   {#each types as t}
-    <button on:click={() => changeType(t)}
-            disabled={[type, $pending?.type].includes(t)}>{t.toUpperCase()}</button>
+    <button on:click={() => changeType(t)} disabled={[type, $pending?.type].includes(t)}>
+      {#if t === $pending?.type}<Spinner />{/if}
+      {t.toUpperCase()}
+    </button>
   {/each}
 
   <pre>
