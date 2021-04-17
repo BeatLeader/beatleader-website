@@ -4,9 +4,9 @@
   import createScoresStore from '../../stores/http-scores-store.js';
 
   import Pager from '../Common/Pager.svelte'
-  import Spinner from '../Common/Spinner.svelte'
   import SongScore from './SongScore.svelte'
   import Error from '../Common/Error.svelte'
+  import Switcher from '../Common/Switcher.svelte'
 
   const dispatch = createEventDispatcher();
 
@@ -16,7 +16,10 @@
   export let initialPage = 1;
   export let numOfScores = null;
 
-  const types = ['recent', 'top'];
+  let scoresTypes = [
+    {id: 'recent', label: 'Recent', icon: 'fa fa-clock'},
+    {id: 'top', label: 'Top', icon: 'fa fa-cubes'},
+  ];
 
   let scoresStore;
 
@@ -24,12 +27,15 @@
     scoresStore.fetch(page);
   }
 
-  function changeType(type) {
-    scoresStore.fetch(1, type);
-  }
-
   function onPageChanged(event) {
     fetchPage((event?.detail?.page ?? 0) + 1);
+  }
+
+  function onScoreTypeChanged(event) {
+    const type = event?.detail?.id;
+    if (!type) return;
+
+    scoresStore.fetch(1, type)
   }
 
   $: {
@@ -43,6 +49,8 @@
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
+  $: scoreType = scoresTypes.find(st => st.id === type);
+  $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === $pending?.type) : null
 
   $: {
     dispatch('type-changed', type);
@@ -58,12 +66,7 @@
     <div><Error error={$error} /></div>
   {/if}
 
-  {#each types as t}
-    <button on:click={() => changeType(t)} disabled={[type, $pending?.type].includes(t)}>
-      {#if t === $pending?.type}<Spinner />{/if}
-      {t.toUpperCase()}
-    </button>
-  {/each}
+  <Switcher values={scoresTypes} value={scoreType} on:change={onScoreTypeChanged} loadingValue={loadingScoreType} />
 
   <div class="song-scores">
     {#each $scoresStore as songScore (songScore?.leaderboard?.leaderboardId)}
