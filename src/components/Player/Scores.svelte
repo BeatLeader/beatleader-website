@@ -2,8 +2,11 @@
   import {createEventDispatcher} from 'svelte'
   import {PLAYER_SCORES_PER_PAGE} from '../../scoresaber/consts'
   import createScoresStore from '../../stores/http-scores-store.js';
+
   import Pager from '../Common/Pager.svelte'
   import Spinner from '../Common/Spinner.svelte'
+  import SongScore from './SongScore.svelte'
+  import Error from '../Common/Error.svelte'
 
   const dispatch = createEventDispatcher();
 
@@ -52,7 +55,7 @@
 
 <div class="box has-shadow">
   {#if $error}
-    <div class="error">{$error?.toString()}</div>
+    <div><Error error={$error} /></div>
   {/if}
 
   {#each types as t}
@@ -62,9 +65,11 @@
     </button>
   {/each}
 
-  <pre>
-		{JSON.stringify($scoresStore, null, 2)}
-	</pre>
+  <div class="song-scores">
+    {#each $scoresStore as songScore (songScore?.leaderboard?.leaderboardId)}
+      <SongScore {songScore} />
+    {/each}
+  </div>
 
   {#if Number.isFinite(page)}
     <Pager totalItems={numOfScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
@@ -76,21 +81,13 @@
 </div>
 
 <style>
+    .song-scores :global(> *:last-child) {
+        border-bottom: none !important;
+    }
+
     button {
         cursor: pointer;
         min-width: 2rem;
         margin-right: .5rem;
-    }
-
-    pre {
-        width: 800px;
-        height: 800px;
-        border: 1px solid red;
-        overflow: scroll;
-    }
-
-    .error {
-        color: red;
-        font-weight: 500;
     }
 </style>

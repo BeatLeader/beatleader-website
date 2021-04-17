@@ -21,6 +21,13 @@ export default response => {
     const diffInfo = extractDiffAndType(difficultyRaw);
     const leaderboard = {leaderboardId, song, diffInfo, difficulty};
 
-    return {leaderboard, score: {...score, timeSet: dateFromString(s.timeSet)}};
+    let unmodififiedScore = score?.unmodififiedScore ?? score?.score;
+
+    const acc = unmodififiedScore && score?.maxScore ? unmodififiedScore / score?.maxScore * 100 : null;
+    const percentage = score?.score && score?.maxScore ? score?.score / score?.maxScore * 100 : null;
+
+    const ppWeighted = score?.pp && score?.weight ? score.pp * score.weight : null;
+
+    return {leaderboard, score: {...score, timeSet: dateFromString(s.timeSet), acc, percentage, ppWeighted}};
   });
 }

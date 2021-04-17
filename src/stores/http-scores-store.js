@@ -5,8 +5,6 @@ import apiTopScoresProvider from './providers/scores/api-top'
 const getProviderByType = type => type === 'top' ? apiTopScoresProvider : apiRecentScoresProvider;
 
 export default (playerId = null, type = 'recent', page = 1, initialState = null, timeout = 10000) => {
-  console.warn(`create scores store: ${playerId} ${type}/${page}`, initialState)
-
   let currentPlayerId = playerId;
   let currentPage = page ?? 1;
   let currentProvider = getProviderByType(type);
