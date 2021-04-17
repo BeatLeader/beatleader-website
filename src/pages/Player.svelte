@@ -25,10 +25,11 @@
 
   $: playerId = $playerStore ? playerStore?.getPlayerId() : null;
   $: currentType = $playerStore ? playerStore?.getType() : null;
+  $: skeleton = !$playerStore && $playerIsLoading;
 </script>
 
 <main>
-  <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError}/>
+  <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
 
   {#if $playerStore}
     <Scores {playerId} initialState={$playerStore?.scores ?? null} initialType={currentType}

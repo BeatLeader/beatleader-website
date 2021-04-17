@@ -4,9 +4,11 @@
 
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
+  import Skeleton from '../Common/Skeleton.svelte'
 
   export let playerInfo;
   export let prevInfo;
+  export let skeleton = false;
 </script>
 
 {#if playerInfo}
@@ -26,7 +28,7 @@
     <span class="status"><Status {playerInfo}/></span>
   </h1>
 
-  <h2 class="title is-5 ranks">
+  <h2 class="title is-5">
     <a href={playerInfo.rankValue ? `${SS_HOST}/global/${playerInfo.rankValue ? Math.floor((playerInfo.rankValue-1) /
     PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
       <i class="fas fa-globe-americas"></i>
@@ -37,7 +39,8 @@
     </a>
 
     {#each playerInfo.countries ?? [] as country}
-      <a href={country.rankValue ? `${SS_HOST}/global/${Math.floor((country.rankValue-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
+      <a
+        href={country.rankValue ? `${SS_HOST}/global/${Math.floor((country.rankValue-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
         <img src={`${SS_HOST}/imports/images/flags/${country?.country?.toLowerCase()}.png`}
              alt={country?.country}
         />
@@ -52,6 +55,13 @@
         {/if}
       </a>
     {/each}
+  </h2>
+{:else if skeleton}
+  <h1 class="title is=4 has-text-centered-mobile">
+    <Skeleton width="50%"/>
+  </h1>
+  <h2 class="title is-5">
+    <Skeleton width="50%"/>
   </h2>
 {/if}
 
@@ -101,7 +111,7 @@
         margin-bottom: 2px;
     }
 
-    @media(max-width: 767px) {
+    @media (max-width: 767px) {
         h2 {
             justify-content: center;
         }

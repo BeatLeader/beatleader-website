@@ -9,6 +9,7 @@
   export let playerData;
   export let isLoading = false;
   export let error = null;
+  export let skeleton = false;
 
   $: ({playerInfo, prevInfo, scoresStats, ssBadges} = processPlayerData(playerData))
 </script>
@@ -26,13 +27,13 @@
         </div>
       {/if}
 
-      <PlayerStats {playerInfo} {prevInfo}/>
+      <PlayerStats {playerInfo} {prevInfo} {skeleton}/>
 
-      {#if scoresStats || ssBadges}
+      {#if scoresStats || ssBadges || skeleton}
         <div class="columns">
           <div class="column">
-            <ScoresStats stats={scoresStats}/>
-            <SsBadges badges={ssBadges}/>
+            <ScoresStats stats={scoresStats} {skeleton}/>
+            <SsBadges badges={ssBadges} />
           </div>
         </div>
       {/if}
