@@ -98,7 +98,7 @@
     }
 
     .score {
-        min-width: 8.5em;
+        min-width: 9em;
     }
 
     .val {
