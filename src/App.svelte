@@ -219,9 +219,4 @@
         min-width: 2rem;
         margin-right: .5rem;
     }
-
-    .spinner {
-        width: 1rem;
-        height: 1rem;
-    }
 </style>

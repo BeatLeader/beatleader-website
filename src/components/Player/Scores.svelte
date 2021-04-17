@@ -1,7 +1,8 @@
 <script>
   import {createEventDispatcher} from 'svelte'
+  import {PLAYER_SCORES_PER_PAGE} from '../../scoresaber/consts'
   import createScoresStore from '../../stores/http-scores-store.js';
-  import Spinner from '../Common/Spinner.svelte'
+  import Pager from '../Common/Pager.svelte'
 
   const dispatch = createEventDispatcher();
 
@@ -9,6 +10,7 @@
   export let initialType = 'recent';
   export let initialState = null;
   export let initialPage = 1;
+  export let numOfScores = null;
 
   const types = ['recent', 'top'];
 
@@ -20,6 +22,10 @@
 
   function changeType(type) {
     scoresStore.fetch(1, type);
+  }
+
+  function onPageChanged(event) {
+    fetchPage((event?.detail?.page ?? 0 ) + 1);
   }
 
   $: {
@@ -41,9 +47,6 @@
   $: {
     dispatch('page-changed', page);
   }
-
-  // TODO: remove it
-  const pages = Array(10).fill(0).map((v, idx) => idx + 1);
 </script>
 
 <div class="box has-shadow">
@@ -60,17 +63,13 @@
 		{JSON.stringify($scoresStore, null, 2)}
 	</pre>
 
-  <div class="pages">
-    {#each pages as p}
-      <button on:click={() => fetchPage(p)} disabled={[page, $pending?.page].includes(p)}>
-        {#if $pending?.page === p}
-          <span class="spinner"><Spinner/></span>
-        {:else}
-          {p}
-        {/if}
-      </button>
-    {/each}
-  </div>
+  {#if Number.isFinite(page)}
+    <Pager totalItems={numOfScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
+           currentPage={page-1} loadingPage={$pending?.page ? $pending.page - 1 : null}
+           mode={numOfScores ? 'pages' : 'simple'}
+           on:page-changed={onPageChanged}
+    />
+  {/if}
 </div>
 
 <style>
@@ -90,10 +89,5 @@
     .error {
         color: red;
         font-weight: 500;
-    }
-
-    .spinner {
-        width: 1rem;
-        height: 1rem;
     }
 </style>

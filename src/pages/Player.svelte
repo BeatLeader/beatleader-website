@@ -31,16 +31,12 @@
   <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError}/>
 
   {#if $playerStore}
-    <Scores {playerId} initialState={$playerStore?.scores} initialType={currentType}
+    <Scores {playerId} initialState={$playerStore?.scores ?? null} initialType={currentType}
+            numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
             on:type-changed={onTypeChanged}
     />
   {/if}
 </main>
 
 <style>
-    button {
-        cursor: pointer;
-        min-width: 2rem;
-        margin-right: .5rem;
-    }
 </style>
