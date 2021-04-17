@@ -1,164 +1,211 @@
 <script>
-    import {createEventDispatcher, onMount} from 'svelte';
-    import Spinner from './Spinner.svelte'
+  import {createEventDispatcher, onMount} from 'svelte';
+  import Spinner from './Spinner.svelte'
+  import {debounce} from '../../utils/debounce'
 
-    const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-    export let totalItems = null;
-    export let currentPage = 0;
-    export let itemsPerPage = 10;
-    export let itemsPerPageValues = [5, 10, 15, 20, 25];
-    export let displayMax = 11;
-    export let hide = false;
-    export let mode = 'pages';
-    export let loadingPage = null;
+  const WINDOW_RESIZE_DEBOUNCE_TIME = 500;
+  const MINIMUM_PAGES = 5;
 
-    let displayStart = false;
-    let displayEnd = false;
-    let prevItemsPerPage = itemsPerPage;
+  export let totalItems = null;
+  export let currentPage = 0;
+  export let itemsPerPage = 10;
+  export let itemsPerPageValues = [5, 10, 15, 20, 25];
+  export let displayMax = 11;
+  export let hide = false;
+  export let mode = 'pages';
+  export let loadingPage = null;
 
-    function dispatchEvent(page = 0, initial = false) {
-        let to = (page + 1) * itemsPerPage - 1;
-        if (isTotalItemsAvailable && to > totalItems - 1) to = totalItems - 1;
+  let displayStart = false;
+  let displayEnd = false;
+  let prevItemsPerPage = itemsPerPage;
 
-        dispatch('page-changed', {page, itemsPerPage, from: page * itemsPerPage, to, total: totalItems, initial});
+  let navEl = null;
+  let currentDisplayMax = displayMax;
+
+  function dispatchEvent(page = 0, initial = false) {
+    let to = (page + 1) * itemsPerPage - 1;
+    if (isTotalItemsAvailable && to > totalItems - 1) to = totalItems - 1;
+
+    dispatch('page-changed', {page, itemsPerPage, from: page * itemsPerPage, to, total: totalItems, initial});
+  }
+
+  onMount(() => {
+    dispatchEvent(currentPage, true);
+  })
+
+  async function onPageChanged(page) {
+    if (loadingPage) return;
+
+    dispatchEvent(page, false);
+  }
+
+  function calcPages(total, current, max) {
+    const needToDisplayFacetedPages = total > max;
+
+    const middle = Math.floor(max / 2);
+    const startPage = current > middle && needToDisplayFacetedPages ? current - middle + 1 : 0;
+
+    displayStart = current > middle && needToDisplayFacetedPages;
+    displayEnd = current + middle + 1 < total && needToDisplayFacetedPages;
+
+    if (currentPage > pagesTotal - 1) currentPage = pagesTotal - 1;
+    if (currentPage < 0) currentPage = 0;
+
+    return allPages.slice(startPage - (needToDisplayFacetedPages && !displayEnd ? middle - total + current + 1 : 0), startPage + max - (displayStart ? 1 : 0) - (displayEnd ? 1 : 0));
+  }
+
+  function getEnd(currentPage, itemsPerPage, totalItems) {
+    const end = (currentPage + 1) * itemsPerPage;
+
+    return isTotalItemsAvailable && end > totalItems ? totalItems : end;
+  }
+
+  function onItemsPerPageChanged() {
+    const firstItem = prevItemsPerPage * currentPage
+
+    prevItemsPerPage = itemsPerPage;
+    currentPage = Math.floor(firstItem / itemsPerPage);
+  }
+
+  function onWindowResize() {
+    if (!navEl) return;
+
+    const minPositionWidth = 8.5 * 16;
+    const itemWidth = 51.85;
+
+    const pagerWidth = navEl?.getBoundingClientRect()?.width ?? null;
+    if (!pagerWidth) return;
+
+    const numOfPagesThatWillFit = Math.floor((pagerWidth - minPositionWidth) / itemWidth) - 4;
+    currentDisplayMax = numOfPagesThatWillFit <= displayMax ? numOfPagesThatWillFit : displayMax;
+  }
+
+  const debouncedOnWindowResize = debounce(() => onWindowResize(), WINDOW_RESIZE_DEBOUNCE_TIME);
+
+  onMount(() => {
+    window.addEventListener('resize', debouncedOnWindowResize);
+
+    onWindowResize();
+
+    return () => {
+      window.removeEventListener('resize', debouncedOnWindowResize)
     }
+  })
 
-    onMount(() => {
-        dispatchEvent(currentPage, true);
-    })
-
-    async function onPageChanged(page) {
-        if (loadingPage) return;
-
-        dispatchEvent(page, false);
-    }
-
-    function calcPages(total, current, max) {
-        const needToDisplayFacetedPages = total > max;
-
-        const middle = Math.floor(max / 2);
-        const startPage = current > middle && needToDisplayFacetedPages ? current - middle + 1 : 0;
-
-        displayStart = current > middle && needToDisplayFacetedPages;
-        displayEnd = current + middle + 1 < total && needToDisplayFacetedPages;
-
-        if (currentPage > pagesTotal - 1) currentPage = pagesTotal - 1;
-        if (currentPage < 0) currentPage = 0;
-
-        return allPages.slice(startPage - (needToDisplayFacetedPages && !displayEnd ? middle - total + current + 1 : 0), startPage + max - (displayStart ? 1 : 0) - (displayEnd ? 1 : 0));
-    }
-
-    function getEnd(currentPage, itemsPerPage, totalItems) {
-        const end = (currentPage + 1) * itemsPerPage;
-
-        return isTotalItemsAvailable && end > totalItems ? totalItems : end;
-    }
-
-    function onItemsPerPageChanged() {
-        const firstItem = prevItemsPerPage * currentPage
-
-        prevItemsPerPage = itemsPerPage;
-        currentPage = Math.floor(firstItem / itemsPerPage);
-    }
-
-    $: isTotalItemsAvailable = Number.isFinite(totalItems);
-    $: pagesTotal = isTotalItemsAvailable ? Math.ceil(totalItems / itemsPerPage) : null;
-    $: allPages = isTotalItemsAvailable ? Array(pagesTotal).fill(null).map((val, idx) => idx + 1) : []
-    $: displayedPages = isTotalItemsAvailable ? calcPages(pagesTotal, currentPage, displayMax) : [];
-    $: startItem = currentPage * itemsPerPage + 1;
-    $: endItem = getEnd(currentPage, itemsPerPage, totalItems);
-    $: currentMode = !isTotalItemsAvailable ? 'simple' : mode;
+  $: isTotalItemsAvailable = Number.isFinite(totalItems);
+  $: pagesTotal = isTotalItemsAvailable ? Math.ceil(totalItems / itemsPerPage) : null;
+  $: allPages = isTotalItemsAvailable ? Array(pagesTotal).fill(null).map((val, idx) => idx + 1) : []
+  $: displayedPages = isTotalItemsAvailable ? calcPages(pagesTotal, currentPage, currentDisplayMax) : [];
+  $: startItem = currentPage * itemsPerPage + 1;
+  $: endItem = getEnd(currentPage, itemsPerPage, totalItems);
+  $: currentMode = !isTotalItemsAvailable || currentDisplayMax < MINIMUM_PAGES ? 'simple' : mode;
 </script>
 
 {#if (pagesTotal > 1 || currentMode === 'simple') && !hide}
-<nav class="pagination">
-    <div class="position">{startItem} - {endItem}{#if totalItems} / {totalItems}{/if}</div>
-    <ul class="pagination-list" class:simple={currentMode === 'simple'}>
-        {#if currentMode === 'simple'}
-            <li>
-                {#if currentPage !== 0}
-                    <button on:click={() => onPageChanged(0)} class="pagination-link">
-                        {#if loadingPage === 0}
-                            <Spinner />
-                        {:else}
-                            <i class="fas fa-step-backward"></i>
-                        {/if}
-                    </button>
+  <nav class="pagination" class:simple={currentMode === 'simple'} bind:this={navEl}
+       class:no-items-per-page={!itemsPerPageValues}>
+    <div class="position">{startItem} - {endItem}
+      {#if totalItems} / {totalItems}{/if}
+    </div>
+    <ul class="pagination-list">
+      {#if currentMode === 'simple'}
+        {#if currentPage !== 0}
+          <li>
+            <button on:click={() => onPageChanged(0)} class="pagination-link">
+              {#if loadingPage === 0}
+                <Spinner/>
+              {:else}
+                <i class="fas fa-step-backward"></i>
+              {/if}
+            </button>
+          </li>
 
-                    <button on:click={() => onPageChanged(currentPage - 1)} class="pagination-link">
-                        {#if loadingPage === currentPage - 1}
-                            <Spinner />
-                        {:else}
-                            <i class="fas fa-chevron-left"></i>
-                        {/if}
-                    </button>
-                {:else}
-                    <span class="pagination-link disabled"><i class="fas fa-step-backward"></i></span>
-                    <span class="pagination-link disabled"><i class="fas fa-chevron-left"></i></span>
-                {/if}
-
-                {#if !isTotalItemsAvailable || currentPage !== pagesTotal - 1}
-                    <button on:click={() => onPageChanged(currentPage + 1)} class="pagination-link">
-                        {#if loadingPage === currentPage + 1}
-                            <Spinner />
-                        {:else}
-                            <i class="fas fa-chevron-right"></i>
-                        {/if}
-                    </button>
-
-                    {#if isTotalItemsAvailable}
-                    <button on:click={() => onPageChanged(pagesTotal - 1)}
-                           class="pagination-link">
-                        {#if loadingPage === pagesTotal - 1}
-                            <Spinner />
-                        {:else}
-                            <i class="fas fa-step-forward"></i>
-                        {/if}
-                    </button>
-                    {:else}
-                        <span class="pagination-link disabled"><i class="fas fa-step-forward"></i></span>
-                    {/if}
-                {:else}
-                    <span class="pagination-link disabled"><i class="fas fa-chevron-right"></i></span>
-                    <span class="pagination-link disabled"><i class="fas fa-step-forward"></i></span>
-                {/if}
-            </li>
+          <li>
+            <button on:click={() => onPageChanged(currentPage - 1)} class="pagination-link">
+              {#if loadingPage === currentPage - 1}
+                <Spinner/>
+              {:else}
+                <i class="fas fa-chevron-left"></i>
+              {/if}
+            </button>
+          </li>
         {:else}
-            {#if displayStart}
-                <li class:is-loading={loadingPage === 0}>
-                    <button on:click={() => onPageChanged(0)} class={'pagination-link' + (currentPage === 0 ? ' is-current' : '')}>
-                        <span class="spinner"><Spinner /></span>
-                        <span class="page">1</span>
-                    </button>
-                </li>
-                <li><span class="pagination-ellipsis">…</span></li>
-            {/if}
-
-            {#each displayedPages as page}
-            <li class:is-loading={loadingPage === page - 1}>
-                <button on:click={() => onPageChanged(page-1)} class={'pagination-link' + (currentPage === page - 1 ? ' is-current' : '')}>
-                    <span class="spinner"><Spinner /></span>
-                    <span class="page">{page}</span>
-                </button>
-            </li>
-            {/each}
-
-            {#if displayEnd}
-                <li><span class="pagination-ellipsis">…</span></li>
-                <li class:is-loading={loadingPage === pagesTotal - 1}>
-                    <button on:click={() => onPageChanged(pagesTotal - 1)} class={'pagination-link' + (currentPage === pagesTotal - 1 ? ' is-current' : '')}>
-                        <span class="spinner"><Spinner /></span>
-                        <span class="page">{pagesTotal}</span>
-                    </button>
-                </li>
-            {/if}
+          <li><span class="pagination-link disabled"><i class="fas fa-step-backward"></i></span></li>
+          <li><span class="pagination-link disabled"><i class="fas fa-chevron-left"></i></span></li>
         {/if}
+
+        {#if !isTotalItemsAvailable || currentPage !== pagesTotal - 1}
+          <li>
+            <button on:click={() => onPageChanged(currentPage + 1)} class="pagination-link">
+              {#if loadingPage === currentPage + 1}
+                <Spinner/>
+              {:else}
+                <i class="fas fa-chevron-right"></i>
+              {/if}
+            </button>
+          </li>
+
+          {#if isTotalItemsAvailable}
+            <li>
+              <button on:click={() => onPageChanged(pagesTotal - 1)} class="pagination-link">
+                {#if loadingPage === pagesTotal - 1}
+                  <Spinner/>
+                {:else}
+                  <i class="fas fa-step-forward"></i>
+                {/if}
+              </button>
+            </li>
+          {:else}
+            <li><span class="pagination-link disabled"><i class="fas fa-step-forward"></i></span></li>
+          {/if}
+        {:else}
+          <li><span class="pagination-link disabled"><i class="fas fa-chevron-right"></i></span></li>
+          <li><span class="pagination-link disabled"><i class="fas fa-step-forward"></i></span></li>
+        {/if}
+      {:else}
+        {#if displayStart}
+          <li class:is-loading={loadingPage === 0}>
+            <button on:click={() => onPageChanged(0)}
+                    class={'pagination-link' + (currentPage === 0 ? ' is-current' : '')}>
+              <span class="spinner"><Spinner/></span>
+              <span class="page">1</span>
+            </button>
+          </li>
+          <li><span class="pagination-ellipsis">…</span></li>
+        {/if}
+
+        {#each displayedPages as page}
+          <li class:is-loading={loadingPage === page - 1}>
+            <button on:click={() => onPageChanged(page-1)}
+                    class={'pagination-link' + (currentPage === page - 1 ? ' is-current' : '')}>
+              <span class="spinner"><Spinner/></span>
+              <span class="page">{page}</span>
+            </button>
+          </li>
+        {/each}
+
+        {#if displayEnd}
+          <li><span class="pagination-ellipsis">…</span></li>
+          <li class:is-loading={loadingPage === pagesTotal - 1}>
+            <button on:click={() => onPageChanged(pagesTotal - 1)}
+                    class={'pagination-link' + (currentPage === pagesTotal - 1 ? ' is-current' : '')}>
+              <span class="spinner"><Spinner/></span>
+              <span class="page">{pagesTotal}</span>
+            </button>
+          </li>
+        {/if}
+      {/if}
     </ul>
     {#if itemsPerPageValues && itemsPerPageValues.length}
-    <div class="items-per-page"><select bind:value={itemsPerPage} on:change={onItemsPerPageChanged}>{#each itemsPerPageValues as ipp}<option value={ipp}>{ipp}</option>{/each}</select></div>
+      <div class="items-per-page"><select bind:value={itemsPerPage} on:change={onItemsPerPageChanged}>
+        {#each itemsPerPageValues as ipp}
+          <option value={ipp}>{ipp}</option>
+        {/each}
+      </select></div>
     {/if}
-</nav>
+  </nav>
 {/if}
 
 <style>
@@ -179,51 +226,78 @@
     .pagination {
         margin-top: 1em;
     }
+
+    .pagination.no-items-per-page {
+        justify-content: space-between !important;
+    }
+
     .pagination-list {
         max-width: none !important;
         justify-content: center;
         margin-top: 0;
-        margin-bottom: 0!important;
+        margin-bottom: 0 !important;
     }
-    .pagination-list.simple {
+
+    .pagination.simple .pagination-list {
         justify-content: flex-end;
     }
+
     span.pagination-link {
         cursor: not-allowed;
     }
+
     .pagination-link {
         border-color: var(--alternate);
     }
+
     .pagination-link.is-current, button:hover {
         color: var(--textColor);
         background-color: var(--selected);
         border-color: var(--selected);
     }
+
     .pagination-link.is-current {
         cursor: not-allowed;
     }
+
     .pagination-link:focus {
         border-color: #dbdbdb !important;
     }
+
     .pagination-link .spinner {
         display: none;
         position: absolute;
         top: .5em;
     }
+
     .is-loading .pagination-link .spinner {
         display: block;
     }
+
     .is-loading .pagination-link .page {
         visibility: hidden;
     }
+
     .position {
         min-width: 8.5em;
         order: 0
     }
+
     .pagination-list {
         order: 1
     }
+
     .items-per-page {
         order: 2
+    }
+
+    @media (max-width: 767px) {
+        .pagination {
+            justify-content: space-between;
+        }
+
+        .pagination.no-items-per-page .pagination-list {
+            justify-content: flex-end;
+        }
     }
 </style>
