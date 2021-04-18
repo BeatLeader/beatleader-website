@@ -242,6 +242,11 @@
         justify-content: flex-end;
     }
 
+    .pagination.simple .pagination-list button i {
+        position: relative;
+        top: 2px;
+    }
+
     span.pagination-link {
         cursor: not-allowed;
     }
