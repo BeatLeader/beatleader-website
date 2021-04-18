@@ -143,6 +143,7 @@
     small {
         display: block;
         text-align: center;
+        white-space: nowrap;
     }
 
     @media screen and (max-width: 767px) {

@@ -46,5 +46,6 @@
     small {
         display: block;
         text-align: center;
+        white-space: nowrap;
     }
 </style>
