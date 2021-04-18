@@ -8,7 +8,7 @@
 </script>
 
 {#if song}
-  <a href="{`${SS_HOST}/leaderboard/${encodeURIComponent(leaderboard?.leaderboardId)}`}">
+  <a href="{`${SS_HOST}/leaderboard/${encodeURIComponent(leaderboard?.leaderboardId)}`}" target="_blank" rel="noopener">
     <span class="difficulty">
         <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}/>
       </span>
