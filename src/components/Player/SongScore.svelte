@@ -21,15 +21,20 @@
                  countryRank={score.ssplCountryRank}
                  country={score.country}
       />
+
+      <div class="timeset is-hidden-mobile">
+        <FormattedDate date={score.timeSet}/>
+      </div>
+    </span>
+
+    <span class="timeset is-hidden-tablet">
+      <FormattedDate date={score.timeSet}/>
     </span>
 
     <span class="song">
       <Leaderboard {leaderboard}/>
     </span>
 
-    <span class="timeset">
-      <FormattedDate date={score.timeSet}/>
-    </span>
 
     <div class="score">
       {#if score.pp}
@@ -95,6 +100,11 @@
     .timeset {
         width: 8.5em;
         text-align: center;
+    }
+
+    .rank .timeset {
+        width: auto;
+        font-size: .75em;
     }
 
     .score {

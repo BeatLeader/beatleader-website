@@ -25,6 +25,10 @@ body {
     margin: 0 auto;
 }
 
+.box {
+    padding: 1rem;
+}
+
 @media screen and (min-width: 1750px) {
     .sspl-page-container {
         max-width: 1750px !important;
