@@ -6,7 +6,7 @@
   import FormattedDate from '../Common/FormattedDate.svelte'
   import Pp from '../Score/Pp.svelte'
   import Value from '../Common/Value.svelte'
-  import {slide} from 'svelte/transition'
+  import {fade, slide} from 'svelte/transition'
   import Badge from '../Common/Badge.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
 
@@ -17,7 +17,7 @@
 </script>
 
 {#if songScore}
-  <div class="song-score" transition:slide={{duration: 200}}>
+  <div class="song-score" in:fade={{duration: 300, delay: 200}} out:slide={{duration: 200}}>
     <span class="rank">
       <ScoreRank rank={score.rank}
                  countryRank={score.ssplCountryRank}
