@@ -24,10 +24,6 @@
   }
 
   $: badge = getBadge(showPercentageInstead ? score?.percentage : score?.acc);
-
-  $: {
-    console.log(badge);
-  }
 </script>
 
 {#if (showPercentageInstead && score?.percentage) || score?.acc}
