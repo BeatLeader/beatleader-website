@@ -50,7 +50,7 @@
         min-height: 190px;
     }
 
-    @media(max-width: 767px) {
+    @media(max-width: 768px) {
         .column.avatar {
             margin-right: 0;
             min-width: calc(150px + 1.5rem);

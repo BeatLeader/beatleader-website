@@ -202,7 +202,7 @@
 <!--        {/each}-->
 <!--      </div>-->
 
-      <hr/>
+<!--      <hr/>-->
 
       <PlayerPage bind:this={playerPageEl}
                   initialPlayerId={initialPlayerId}
@@ -215,6 +215,12 @@
 <style>
     .section {
         padding: 1rem;
+    }
+
+    @media (max-width: 400px) {
+        .section {
+            padding: .5rem 0;
+        }
     }
 
     button {

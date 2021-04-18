@@ -7,6 +7,8 @@
   import Pp from '../Score/Pp.svelte'
   import Value from '../Common/Value.svelte'
   import {slide} from 'svelte/transition'
+  import Badge from '../Common/Badge.svelte'
+  import Accuracy from '../Common/Accuracy.svelte'
 
   export let songScore = null;
 
@@ -22,12 +24,12 @@
                  country={score.country}
       />
 
-      <div class="timeset is-hidden-mobile">
+      <div class="timeset tablet-and-up">
         <FormattedDate date={score.timeSet}/>
       </div>
     </span>
 
-    <span class="timeset is-hidden-tablet">
+    <span class="timeset mobile-only">
       <FormattedDate date={score.timeSet}/>
     </span>
 
@@ -35,35 +37,44 @@
       <Leaderboard {leaderboard}/>
     </span>
 
+    {#if score.pp}
+      <span class="pp with-badge">
+          <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+            <span slot="label">
+              <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
+                  pp="{score.pp}" prevPp={score.prevPp}
+                  zero={formatNumber(0)} withZeroSuffix={true} inline={true}
+                  color="white"
+              />
+            </span>
+          </Badge>
 
-    <div class="score">
-      {#if score.pp}
-        <div class="val">
-          <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-              pp="{score.pp}" prevPp={score.prevPp}
-              zero={formatNumber(0)} withZeroSuffix={true} weighted={score.ppWeighted} inline={true}
-          />
-        </div>
-      {/if}
+          <small>
+            (<Value value={score.ppWeighted} zero={formatNumber(0)} withZeroSuffix={true} suffix="pp" inline={true}/>)
+          </small>
+        </span>
+    {/if}
 
-      {#if score.acc}
-        <div class="val">
-          <label>Accuracy:</label>
-          <Value value={score.acc} withZeroSuffix={true} prevValue={score.prevAcc} inline={true}
-                 suffix={'%' + (score.mods && score.mods.length ? ` (${score.mods})` : '')} suffixPrev="%"
-          />
-        </div>
-      {/if}
+    {#if score.acc}
+        <span class="acc with-badge">
+          <Accuracy {score} />
+        </span>
+    {/if}
 
-      {#if score.score}
-        <div class="val">
-          <label>Score:</label>
-          <Value value="{score.score}" prevValue={score.prevScore}
-                 inline={true} digits={0} prefix={score.scoreApproximate ? '~' : ''}
-          />
-        </div>
-      {/if}
-    </div>
+    {#if score.score}
+      <span class="score with-badge">
+        <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+            <span slot="label">
+              <Value value="{score.score}" prevValue={score.prevScore}
+                     inline={true} digits={0} prefix={score.scoreApproximate ? '~' : ''}
+              />
+            </span>
+        </Badge>
+
+        <small>Score</small>
+      </span>
+    {/if}
+
   </div>
 {/if}
 
@@ -87,8 +98,13 @@
         margin-right: 0;
     }
 
+    .song-score :global(.badge) {
+        margin: 0 !important;
+        padding: .125em .25em !important;
+    }
+
     .rank {
-        width: 5em;
+        width: 5.5em;
         text-align: center;
     }
 
@@ -104,25 +120,41 @@
 
     .rank .timeset {
         width: auto;
-        font-size: .75em;
+        font-size: .8em;
+    }
+
+    .pp {
+        min-width: 5em;
+    }
+
+    .acc {
+        min-width :4em;
     }
 
     .score {
-        min-width: 9em;
+        min-width: 5.25em;
     }
 
-    .val {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .with-badge {
+        text-align: center;
     }
 
-    .val + .val {
-        font-size: .875em;
+    small {
+        display: block;
+        text-align: center;
     }
 
-    .val label {
-        font-style: italic;
-        margin-right: .5em;
+    @media screen and (max-width: 767px) {
+        .rank, .timeset {
+            padding-bottom: .5em !important;
+        }
+
+        .song {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-right: 0;
+        }
     }
 </style>

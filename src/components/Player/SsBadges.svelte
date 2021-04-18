@@ -23,7 +23,7 @@
         margin-bottom: .25rem;
     }
 
-    @media(max-width: 767px) {
+    @media(max-width: 768px) {
         .ss-badges {
             margin-top: .5rem;
             justify-content: center;

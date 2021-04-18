@@ -57,7 +57,7 @@
         display: inline-block;
         width: 50%;
         text-align: center;
-        min-width: 2.5em;
+        min-width: min-content;
     }
 
     .badge .spacer {

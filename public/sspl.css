@@ -29,6 +29,20 @@ body {
     padding: 1rem;
 }
 
+.mobile-only {
+    display: none;
+}
+
+@media screen and (max-width: 767px) {
+    .mobile-only {
+        display: block;
+    }
+
+    .tablet-and-up {
+        display: none;
+    }
+}
+
 @media screen and (min-width: 1750px) {
     .sspl-page-container {
         max-width: 1750px !important;

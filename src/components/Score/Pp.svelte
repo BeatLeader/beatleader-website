@@ -7,17 +7,17 @@
   export let withZeroSuffix = false;
   export let weighted = null;
   export let playerId = null;
+  export let color = "var(--ppColour)"
 </script>
 
-<span
-  class="value"><Value value="{pp}" {zero} {withZeroSuffix} prevValue={prevPp} suffix="pp" {...$$restProps} /></span>
+<span class="value" style="--color: {color}"><Value value="{pp}" {zero} {withZeroSuffix} prevValue={prevPp} suffix="pp" {...$$restProps} /></span>
 {#if weighted !== null && weighted !== undefined}
   <small>(<Value value="{weighted}" {zero} {withZeroSuffix} suffix="pp" {...$$restProps}/>)</small>
 {/if}
 
 <style>
   .value {
-      color: var(--ppColour) !important;
+      color: var(--color) !important;
   }
 
   small {

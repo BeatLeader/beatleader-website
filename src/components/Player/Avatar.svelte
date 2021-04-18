@@ -6,7 +6,6 @@
   export let main = false;
 </script>
 
-
 <span class="avatar-container" class:loading={isLoading} class:main>
   <span class="no-image">?</span>
 
@@ -72,7 +71,7 @@
         z-index: 0;
     }
 
-    @media(max-width: 767px) {
+    @media(max-width: 768px) {
         .avatar-container {
             justify-content: center;
         }

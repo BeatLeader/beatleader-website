@@ -111,7 +111,7 @@
         margin-bottom: 2px;
     }
 
-    @media (max-width: 767px) {
+    @media (max-width: 768px) {
         h2 {
             justify-content: center;
         }
