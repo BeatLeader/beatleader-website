@@ -101,6 +101,7 @@
     .song-score :global(.badge) {
         margin: 0 !important;
         padding: .125em .25em !important;
+        width: 100%;
     }
 
     .rank {
