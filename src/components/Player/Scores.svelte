@@ -16,6 +16,8 @@
   export let initialPage = 1;
   export let numOfScores = null;
 
+  let scoresBoxEl = null;
+
   let scoresTypes = [
     {id: 'recent', label: 'Recent', icon: 'fa fa-clock'},
     {id: 'top', label: 'Top', icon: 'fa fa-cubes'},
@@ -38,6 +40,10 @@
     scoresStore.fetch(1, type)
   }
 
+  function scrollToTop() {
+    if (scoresBoxEl) scoresBoxEl.scrollIntoView({behavior: 'smooth'});
+  };
+
   $: {
     scoresStore && scoresStore.fetch(page)
   }
@@ -59,9 +65,13 @@
   $: {
     dispatch('page-changed', page);
   }
+
+  $: {
+    scrollToTop($pending)
+  }
 </script>
 
-<div class="box has-shadow">
+<div class="box has-shadow" bind:this={scoresBoxEl}>
   {#if $error}
     <div><Error error={$error} /></div>
   {/if}
