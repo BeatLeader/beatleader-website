@@ -41,7 +41,7 @@
   }
 
   function scrollToTop() {
-    if (scoresBoxEl) scoresBoxEl.scrollIntoView({behavior: 'smooth'});
+    if (scoresBoxEl) scoresBoxEl.scrollIntoView({behavior: 'auto'});
   };
 
   $: {
