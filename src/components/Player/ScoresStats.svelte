@@ -40,7 +40,7 @@
         }
 
         .badges :global(.badge .value) {
-            width: 7rem!important;
+            width: 7.25rem!important;
             min-width: fit-content;
         }
     }
