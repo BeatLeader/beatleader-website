@@ -31,12 +31,12 @@ function updateScoresStats(playerData) {
 
       return {
         label: s.label,
-        title: s.title ?? '',
+        title: opt(s, 'title', ''),
         value: scoresStatsTweened[s.key],
-        digits: s.digits ?? 0,
-        suffix: s.suffix ?? '',
+        digits: opt(s, 'digits', 0),
+        suffix: opt(s, 'suffix', ''),
         fluid: true,
-        bgColor: s.bgColor ?? 'var(--dimmed)',
+        bgColor: opt(s, 'bgColor', 'var(--dimmed)'),
       }
     })
     .concat(

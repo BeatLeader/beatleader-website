@@ -13,7 +13,7 @@ const process = response => {
   playerInfo.externalProfileUrl = null;
   playerInfo.countries = [{country, rank: countryRank}];
 
-  return {playerInfo, scoreStats: scoreStats ?? null};
+  return {playerInfo, scoreStats: scoreStats ? scoreStats : null};
 };
 
 const get = async ({playerId, signal = null} = {}) => ssApi.player(playerId, signal);

@@ -1,4 +1,4 @@
-import {capitalize} from '../utils/js'
+import {capitalize, opt} from '../utils/js'
 
 export const diffColors = {
   easy: 'MediumSeaGreen',
@@ -18,7 +18,7 @@ export function extractDiffAndType(ssDiff) {
 
   return {
     diff: match[1].toLowerCase().replace('plus', 'Plus'),
-    type: match[2] ?? 'Standard'
+    type: opt(match, '2', 'Standard'),
   };
 }
 export function getHumanDiffInfo(diffInfo) {

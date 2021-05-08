@@ -40,7 +40,7 @@
       />
     </a>
 
-    {#each playerInfo.countries ?? [] as country}
+    {#each opt(playerInfo, 'countries', []) as country}
       <a
         href={country.rankValue ? `${SS_HOST}/global/${Math.floor((country.rankValue-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
         <img

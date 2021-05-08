@@ -17,7 +17,7 @@
   let playerError = opt(playerStore, 'error', null);
 
   function onTypeChanged(event) {
-    playerStore.setType(event.detail ?? initialScoresType);
+    playerStore.setType(opt(event, 'detail', initialScoresType));
   }
 
   $: {

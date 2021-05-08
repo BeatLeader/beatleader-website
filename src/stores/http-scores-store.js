@@ -7,7 +7,7 @@ const getProviderByType = type => type === 'top' ? apiTopScoresProvider : apiRec
 
 export default (playerId = null, type = 'recent', page = 1, initialState = null, timeout = 10000) => {
   let currentPlayerId = playerId;
-  let currentPage = page ?? 1;
+  let currentPage = page ? page : 1;
   let currentProvider = getProviderByType(type);
 
   let pendingProvider = null;
