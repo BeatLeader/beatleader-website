@@ -1,13 +1,14 @@
 import createHttpStore from './http-store';
 import apiPlayerWithScoresProvider from './providers/player/api-info-with-scores'
+import {opt} from '../utils/js'
 
 export default (playerId = null, scoresType = 'recent', initialState = null, timeout = 10000) => {
   let currentPlayerId = playerId;
   let currentScoresType = scoresType;
 
   const onNewData = ({fetchParams}) => {
-    currentPlayerId = fetchParams?.playerId ?? null;
-    currentScoresType = fetchParams?.scoresType ?? null;
+    currentPlayerId = opt(fetchParams, 'playerId', null);
+    currentScoresType = opt(fetchParams, 'scoresType', null);
   }
 
   const httpStore = createHttpStore(

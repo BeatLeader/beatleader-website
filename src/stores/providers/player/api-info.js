@@ -1,7 +1,8 @@
 import ssApi, {SS_API_HOST} from '../../../network/scoresaber/api'
+import {opt} from '../../../utils/js'
 
 const process = response => {
-  if (!response?.playerInfo) return null;
+  if (!opt(response, 'playerInfo')) return null;
 
   const {playerInfo: info, scoreStats} = response;
   const {country, countryRank, avatar, permissions, ...playerInfo} = info;

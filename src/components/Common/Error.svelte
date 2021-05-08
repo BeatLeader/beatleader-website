@@ -4,7 +4,7 @@
   function getMessage(error) {
     if (error instanceof TypeError) return 'Download error';
 
-    return error?.toString() ?? 'Unknown error';
+    return error && error.toString ? error.toString() : 'Unknown error';
   }
 
   $: message = getMessage(error)

@@ -7,6 +7,7 @@
   import SongScore from './SongScore.svelte'
   import Error from '../Common/Error.svelte'
   import Switcher from '../Common/Switcher.svelte'
+  import {opt} from '../../utils/js'
 
   const dispatch = createEventDispatcher();
 
@@ -30,11 +31,11 @@
   }
 
   function onPageChanged(event) {
-    fetchPage((event?.detail?.page ?? 0) + 1);
+    fetchPage(opt(event, 'detail.page', 0) + 1);
   }
 
   function onScoreTypeChanged(event) {
-    const type = event?.detail?.id;
+    const type = opt(event, 'detail.id');
     if (!type) return;
 
     scoresStore.fetch(1, type)
@@ -50,13 +51,13 @@
 
   $: scoresStore = playerId ? createScoresStore(playerId, initialType, initialPage, initialState) : null;
 
-  $: page = $scoresStore ? scoresStore?.getPage() : null;
-  $: type = $scoresStore ? scoresStore?.getType() : null;
+  $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
+  $: type = $scoresStore && scoresStore && scoresStore.getType ? scoresStore.getType() : null;
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
   $: scoreType = scoresTypes.find(st => st.id === type);
-  $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === $pending?.type) : null
+  $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === opt($pending, 'type')) : null
 
   $: {
     dispatch('type-changed', type);
@@ -79,14 +80,14 @@
   <Switcher values={scoresTypes} value={scoreType} on:change={onScoreTypeChanged} loadingValue={loadingScoreType} />
 
   <div class="song-scores">
-    {#each $scoresStore as songScore (songScore?.leaderboard?.leaderboardId)}
+    {#each $scoresStore as songScore (opt(songScore, 'leaderboard.leaderboardId'))}
       <SongScore {songScore} />
     {/each}
   </div>
 
   {#if Number.isFinite(page)}
     <Pager totalItems={numOfScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
-           currentPage={page-1} loadingPage={$pending?.page ? $pending.page - 1 : null}
+           currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
            mode={numOfScores ? 'pages' : 'simple'}
            on:page-changed={onPageChanged}
     />

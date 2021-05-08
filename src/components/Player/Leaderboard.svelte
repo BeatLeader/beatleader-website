@@ -1,14 +1,15 @@
 <script>
   import {SS_HOST} from '../../network/scoresaber/page'
   import Difficulty from '../Song/Difficulty.svelte'
+  import {opt} from '../../utils/js'
 
   export let leaderboard = null;
 
-  $: song = leaderboard?.song ?? null;
+  $: song = opt(leaderboard, 'song', null);
 </script>
 
 {#if song}
-  <a href="{`${SS_HOST}/leaderboard/${encodeURIComponent(leaderboard?.leaderboardId)}`}" target="_blank" rel="noopener">
+  <a href="{`${SS_HOST}/leaderboard/${encodeURIComponent(opt(leaderboard, 'leaderboardId', ''))}`}" target="_blank" rel="noopener">
     <span class="difficulty">
         <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}/>
       </span>

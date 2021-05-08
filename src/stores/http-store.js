@@ -1,6 +1,7 @@
 import {writable} from 'svelte/store'
 import stringify from 'json-stable-stringify';
 import {delay} from '../utils/promise'
+import {opt} from '../utils/js'
 
 const hash = obj => stringify(obj);
 
@@ -81,7 +82,7 @@ export default (
 
       return true;
     } catch (err) {
-      if (err?.name === 'AbortError' || err?.message === 'AbortError') return false;
+      if ([opt(err, 'name'), opt(err, 'message')].includes('AbortError')) return false;
 
       try {
         if (err instanceof TimeoutError && abortController && !abortController.aborted) {

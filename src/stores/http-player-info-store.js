@@ -1,11 +1,12 @@
 import createHttpStore from './http-store';
 import apiPlayerProvider from './providers/player/api-info'
+import {opt} from '../utils/js'
 
 export default (playerId = null, initialState = null, timeout = 10000) => {
   let currentPlayerId = playerId;
 
   const onNewData = ({fetchParams}) => {
-    currentPlayerId = fetchParams?.playerId ?? null;
+    currentPlayerId = opt(fetchParams, 'playerId', null);
   }
 
   const httpStore = createHttpStore(

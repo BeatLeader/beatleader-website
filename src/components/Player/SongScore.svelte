@@ -9,11 +9,12 @@
   import {fade, slide} from 'svelte/transition'
   import Badge from '../Common/Badge.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
+  import {opt} from '../../utils/js'
 
   export let songScore = null;
 
-  $: leaderboard = songScore?.leaderboard ?? null;
-  $: score = songScore?.score ?? null;
+  $: leaderboard = opt(songScore, 'leaderboard', null);
+  $: score = opt(songScore, 'score', null);
 </script>
 
 {#if songScore}

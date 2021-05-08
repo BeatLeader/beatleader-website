@@ -2,6 +2,7 @@
   import Badge from './Badge.svelte'
   import Value from './Value.svelte'
   import {diffColors} from '../../scoresaber/format'
+  import {opt} from '../../utils/js'
 
   export let score;
   export let showPercentageInstead = false;
@@ -23,10 +24,10 @@
     return badgesDef.reduce((cum, badge) => ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) ? badge : cum, badgesDef[badgesDef.length - 1]);
   }
 
-  $: badge = getBadge(showPercentageInstead ? score?.percentage : score?.acc);
+  $: badge = getBadge(showPercentageInstead ? opt(score, 'percentage') : opt(score, 'acc'));
 </script>
 
-{#if (showPercentageInstead && score?.percentage) || score?.acc}
+{#if (showPercentageInstead && opt(score, 'percentage')) || opt(score, 'acc')}
   <Badge onlyLabel={true} color="white" bgColor={badge.color} title={badge.desc} label="">
       <span slot="label">
         <Value value={showPercentageInstead ? score.percentage : score.acc}

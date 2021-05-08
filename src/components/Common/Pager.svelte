@@ -2,6 +2,7 @@
   import {createEventDispatcher, onMount} from 'svelte';
   import Spinner from './Spinner.svelte'
   import {debounce} from '../../utils/debounce'
+  import {opt} from '../../utils/js'
 
   const dispatch = createEventDispatcher();
 
@@ -75,7 +76,7 @@
     const minPositionWidth = 8.5 * 16;
     const itemWidth = 51.85;
 
-    const pagerWidth = navEl?.getBoundingClientRect()?.width ?? null;
+    const pagerWidth = opt(navEl.getBoundingClientRect(), 'width', null);
     if (!pagerWidth) return;
 
     const numOfPagesThatWillFit = Math.floor((pagerWidth - minPositionWidth) / itemWidth) - 4;

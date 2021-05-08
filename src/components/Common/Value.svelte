@@ -23,7 +23,7 @@
     let resolvedValue = value;
     let unsubscribe = null;
     function resolveValue(value) {
-      if (value?.subscribe) {
+      if (value && value.subscribe) {
         unsubscribe = value.subscribe(value => resolvedValue = value);
       } else {
         resolvedValue = value;

@@ -1,6 +1,7 @@
 <script>
   import {SS_HOST} from '../../network/scoresaber/page'
   import {PLAYERS_PER_PAGE} from '../../scoresaber/consts'
+  import {opt} from '../../utils/js'
 
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
@@ -13,7 +14,7 @@
 
 {#if playerInfo}
   <h1 class="title is-4 has-text-centered-mobile">
-    {#if playerInfo?.playerName}
+    {#if playerInfo && playerInfo.playerName}
       {#if playerInfo.externalProfileUrl}
         <a href={playerInfo.externalProfileUrl} target="_blank" rel="noopener">{playerInfo.playerName}</a>
       {:else}
@@ -22,7 +23,8 @@
     {/if}
 
     <span class="pp">
-      <Value value={playerInfo?.pp} suffix="pp" prevValue={prevInfo?.pp} prevLabel={prevInfo?.ppSince} inline={true}/>
+      <Value value={opt(playerInfo, 'pp')} suffix="pp" prevValue={opt(prevInfo, 'pp')} prevLabel={opt(prevInfo, 'ppSince')}
+             inline={true}/>
     </span>
 
     <span class="status"><Status {playerInfo}/></span>
@@ -33,16 +35,17 @@
     PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
       <i class="fas fa-globe-americas"></i>
 
-      <Value value={playerInfo?.rank} prevValue={prevInfo?.rank} prevLabel={prevInfo?.rankSince} prefix="#"
-             digits={0} zero="#0" inline={true} reversePrevSign={true}
+      <Value value={opt(playerInfo, 'rank')} prevValue={opt(prevInfo, 'rank')} prevLabel={opt(prevInfo, 'rankSince')}
+             prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true}
       />
     </a>
 
     {#each playerInfo.countries ?? [] as country}
       <a
         href={country.rankValue ? `${SS_HOST}/global/${Math.floor((country.rankValue-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
-        <img src={`${SS_HOST}/imports/images/flags/${country?.country?.toLowerCase()}.png`}
-             alt={country?.country}
+        <img
+          src={`${SS_HOST}/imports/images/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
+             alt={opt(country, 'country')}
         />
 
         <Value value={country.rank} prevValue={country.prevRank}

@@ -26,3 +26,5 @@ export const escapeHtml = unsafe => unsafe
 export const isDateObject = date => date && Object.prototype.toString.call(date) === "[object Date]" && !isNaN(date);
 export const isPromise = p => p && Object.prototype.toString.call(p) === "[object Promise]";
 export const isString = str => Object.prototype.toString.call(str) === "[object String]";
+
+export const opt = (obj, key, defaultValue = undefined) => key.split('.').reduce((o, i) => o && o[i] !== null && o[i] !== undefined ? o[i] : defaultValue, obj);
