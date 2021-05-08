@@ -13,6 +13,7 @@
     "@rollup/plugin-node-resolve": "^11.0.0",
     "@rollup/plugin-typescript": "^8.0.0",
     "@tsconfig/svelte": "^1.0.0",
+    "eventemitter3": "^4.0.7",
     "json-stable-stringify": "^1.0.1",
     "p-queue": "^7.1.0",
     "rollup": "^2.3.4",
