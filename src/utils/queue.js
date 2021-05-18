@@ -82,5 +82,6 @@ export default (options = defaultOptions) => {
     on,
     once,
     removeListener,
+    emitter
   }
 };

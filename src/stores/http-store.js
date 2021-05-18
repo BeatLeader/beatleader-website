@@ -2,21 +2,9 @@ import {writable} from 'svelte/store'
 import stringify from 'json-stable-stringify';
 import {delay} from '../utils/promise'
 import {opt} from '../utils/js'
+import {SsrNetworkTimeoutError} from '../network/errors'
 
 const hash = obj => stringify(obj);
-
-export class TimeoutError extends Error {
-  constructor(timeout, message) {
-    super(message);
-
-    this.name = "TimeoutError";
-    this.timeout = timeout;
-  }
-
-  toString() {
-    return `Time out Error (${this.timeout}ms)`
-  }
-}
 
 export default (
   provider,
@@ -70,7 +58,7 @@ export default (
 
       state = await Promise.race([
         provider.getProcessed({...finalParams, signal: abortController.signal}),
-        delay(timeout, new TimeoutError(timeout), true)
+        delay(timeout, new SsrNetworkTimeoutError(timeout), true)
       ]);
 
       currentParams = fetchParams;
@@ -85,7 +73,7 @@ export default (
       if ([opt(err, 'name'), opt(err, 'message')].includes('AbortError')) return false;
 
       try {
-        if (err instanceof TimeoutError && abortController && !abortController.aborted) {
+        if (err instanceof SsrNetworkTimeoutError && abortController && !abortController.aborted) {
           abortController.abort();
         }
       } catch (e) {

@@ -11,10 +11,19 @@ export class SsrError extends Error {
 }
 
 export class SsrTimeoutError extends SsrError {
-  constructor(timeout, ...args) {
-    super(...args);
+  constructor(timeout, message) {
+    super(message && message.length ? message : `Timeout Error (${timeout}ms)`)
 
     this.name = "SsrTimeoutError";
     this.timeout = timeout;
+  }
+}
+
+export class SsrDataFormatError extends SsrError {
+  constructor(message, previous = null) {
+    super(message && message.length ? message : `Data format error`)
+
+    this.name = "SsrDataFormatError";
+    this.previous = previous;
   }
 }
