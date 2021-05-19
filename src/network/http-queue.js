@@ -52,7 +52,7 @@ export default (options = {}) => {
 
             return fetchFunc(url, options)
               .then(response => {
-                currentRateLimit = response.rateLimit;
+                currentRateLimit = {...response.rateLimit, waiting: 0};
 
                 return response;
               })
@@ -67,7 +67,7 @@ export default (options = {}) => {
       } catch (err) {
         if (err instanceof SsrHttpResponseError) {
           const {remaining, limit, resetAt} = err;
-          currentRateLimit = {remaining, limit, resetAt};
+          currentRateLimit = {waiting: 0, remaining, limit, resetAt};
         }
 
         if (err instanceof SsrNetworkError) {
