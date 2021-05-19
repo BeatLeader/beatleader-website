@@ -1,6 +1,5 @@
 import {writable} from 'svelte/store'
 import stringify from 'json-stable-stringify';
-import {delay} from '../utils/promise'
 import {opt} from '../utils/js'
 import {SsrNetworkTimeoutError} from '../network/errors'
 
@@ -16,7 +15,6 @@ export default (
     onAfterStateChange = null,
     onSetPending = null,
     onError = null,
-    timeout = 10000,
   } = {},
 ) => {
   const getFinalParams = fetchParams => ({...defaultFetchParams, ...fetchParams});
@@ -56,10 +54,7 @@ export default (
 
       pendingAbortController = abortController;
 
-      state = await Promise.race([
-        provider.getProcessed({...finalParams, signal: abortController.signal}),
-        delay(timeout, new SsrNetworkTimeoutError(timeout), true)
-      ]);
+      state = await provider.getProcessed({...finalParams, signal: abortController.signal});
 
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);

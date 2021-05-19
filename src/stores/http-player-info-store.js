@@ -2,7 +2,7 @@ import createHttpStore from './http-store';
 import apiPlayerProvider from './providers/player/api-info'
 import {opt} from '../utils/js'
 
-export default (playerId = null, initialState = null, timeout = 10000) => {
+export default (playerId = null, initialState = null) => {
   let currentPlayerId = playerId;
 
   const onNewData = ({fetchParams}) => {
@@ -16,7 +16,6 @@ export default (playerId = null, initialState = null, timeout = 10000) => {
     {
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
-      timeout
     },
   );
 

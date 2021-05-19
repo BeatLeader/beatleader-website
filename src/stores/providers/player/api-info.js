@@ -1,4 +1,4 @@
-import ssApi, {SS_API_HOST} from '../../../network/scoresaber/api'
+import queue from '../../../network/queues'
 import {opt} from '../../../utils/js'
 
 const process = response => {
@@ -8,7 +8,7 @@ const process = response => {
   const {country, countryRank, avatar, permissions, ...playerInfo} = info;
 
   if (avatar && !avatar.startsWith('http'))
-    playerInfo.avatar = `${SS_API_HOST}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
+    playerInfo.avatar = `${queue.SCORESABER_API.SS_API_HOST}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
 
   playerInfo.externalProfileUrl = null;
   playerInfo.countries = [{country, rank: countryRank}];
@@ -16,7 +16,7 @@ const process = response => {
   return {playerInfo, scoreStats: scoreStats ? scoreStats : null};
 };
 
-const get = async ({playerId, signal = null} = {}) => ssApi.player(playerId, signal);
+const get = async ({playerId, signal = null} = {}) => queue.SCORESABER_API.player(playerId, signal);
 
 export default {
   get,

@@ -41,13 +41,8 @@ export default (options = {}) => {
   }
 
   const retriedFetch = async (fetchFunc, url, options, priority = PRIORITY.FG_LOW) => {
-    let abortController;
-
     for (let i = 0; i <= retries; i++) {
       try {
-        abortController = new AbortController()
-        const signal = abortController.signal;
-
         return await add(async () => {
             if (lastRateLimitError) {
               await lastRateLimitError.waitBeforeRetry();
@@ -55,7 +50,7 @@ export default (options = {}) => {
               lastRateLimitError = null;
             }
 
-            return fetchFunc(url, {...options, signal})
+            return fetchFunc(url, options)
               .then(response => {
                 currentRateLimit = response.rateLimit;
 
@@ -70,10 +65,6 @@ export default (options = {}) => {
           priority,
         )
       } catch (err) {
-        if (err instanceof SsrNetworkTimeoutError) {
-          if (abortController && abortController.abort) abortController.abort();
-        }
-
         if (err instanceof SsrHttpResponseError) {
           const {remaining, limit, resetAt} = err;
           currentRateLimit = {remaining, limit, resetAt};
