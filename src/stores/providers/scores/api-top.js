@@ -1,7 +1,7 @@
 import queue from '../../../network/queues'
 import process from './common/process';
 
-const get = async ({playerId, page = 1, signal = null} = {}) => queue.SCORESABER_API.topScores(playerId, page, signal);
+const get = async ({playerId, page = 1, signal = null} = {}) => queue.SCORESABER_API.topScores(playerId, page, signal, queue.PRIORITY.FG_HIGH);
 
 export default {
   get,

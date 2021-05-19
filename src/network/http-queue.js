@@ -21,12 +21,12 @@ export default (options = {}) => {
 
   let lastRateLimitError = null;
   let rateLimitTimerId = null;
-  let currentRateLimit = null;
+  let currentRateLimit = {waiting: 0, remaining: null, limit: null, resetAt: null};
 
   const rateLimitTicker = () => {
     const expiresInMs = lastRateLimitError && lastRateLimitError.resetAt ? lastRateLimitError.resetAt - new Date() + 1000 : 0;
     if (expiresInMs <= 0) {
-      emitter.emit('waiting', {timer: 0, remaining: null, limit: null, resetAt: null});
+      emitter.emit('waiting', {waiting: 0, remaining: null, limit: null, resetAt: null});
 
       if (rateLimitTimerId) clearTimeout(rateLimitTimerId);
 
@@ -34,7 +34,7 @@ export default (options = {}) => {
     }
 
     const {remaining, limit, resetAt} = lastRateLimitError;
-    emitter.emit('waiting', {timer: expiresInMs, remaining, limit, resetAt});
+    emitter.emit('waiting', {waiting: expiresInMs, remaining, limit, resetAt});
 
     if (rateLimitTimerId) clearTimeout(rateLimitTimerId);
     rateLimitTimerId = setTimeout(rateLimitTicker, rateLimitTick);

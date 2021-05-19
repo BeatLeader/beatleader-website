@@ -16,7 +16,7 @@ const process = response => {
   return {playerInfo, scoreStats: scoreStats ? scoreStats : null};
 };
 
-const get = async ({playerId, signal = null} = {}) => queue.SCORESABER_API.player(playerId, signal);
+const get = async ({playerId, signal = null} = {}) => queue.SCORESABER_API.player(playerId, signal, queue.PRIORITY.FG_HIGH);
 
 export default {
   get,
