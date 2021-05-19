@@ -2,7 +2,7 @@ import createHttpStore from './http-store';
 import apiPlayerWithScoresProvider from './providers/player/api-info-with-scores'
 import {opt} from '../utils/js'
 
-export default (playerId = null, scoresType = 'recent', initialState = null, timeout = 10000) => {
+export default (playerId = null, scoresType = 'recent', initialState = null) => {
   let currentPlayerId = playerId;
   let currentScoresType = scoresType;
 
@@ -18,7 +18,6 @@ export default (playerId = null, scoresType = 'recent', initialState = null, tim
     {
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
-      timeout
     },
   );
 

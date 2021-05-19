@@ -5,7 +5,7 @@ import {opt} from '../utils/js'
 
 const getProviderByType = type => type === 'top' ? apiTopScoresProvider : apiRecentScoresProvider;
 
-export default (playerId = null, type = 'recent', page = 1, initialState = null, timeout = 10000) => {
+export default (playerId = null, type = 'recent', page = 1, initialState = null) => {
   let currentPlayerId = playerId;
   let currentPage = page ? page : 1;
   let currentProvider = getProviderByType(type);
@@ -30,7 +30,6 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
       onSetPending: ({fetchParams}) => ({...fetchParams, type: opt(pendingProvider, 'type', currentProvider.type)}),
-      timeout
     },
   );
 
