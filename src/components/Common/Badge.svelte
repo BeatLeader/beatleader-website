@@ -2,7 +2,7 @@
     import { fade } from 'svelte/transition';
     import Value from "./Value.svelte";
 
-    export let label;
+    export let label = null;
     export let fluid = false;
     export let value = 0;
     export let color = "var(--textColor)";

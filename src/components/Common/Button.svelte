@@ -5,12 +5,12 @@
     const dispatch = createEventDispatcher();
 
     export let label = "";
-    export let icon;
-    export let iconFa;
+    export let icon = null;
+    export let iconFa = null;
     export let disabled = false;
     export let type = 'default';
     export let cls = "";
-    export let title;
+    export let title = null;
     export let noMargin = false;
     export let color = null;
     export let bgColor = null;

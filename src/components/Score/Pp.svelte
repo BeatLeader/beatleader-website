@@ -8,6 +8,7 @@
   export let weighted = null;
   export let playerId = null;
   export let color = "var(--ppColour)"
+  export let leaderboardId = null;
 </script>
 
 <span class="value" style="--color: {color}"><Value value="{pp}" {zero} {withZeroSuffix} prevValue={prevPp} suffix="pp" {...$$restProps} /></span>

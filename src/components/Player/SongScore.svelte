@@ -22,6 +22,7 @@
     <span class="rank">
       <ScoreRank rank={score.rank}
                  countryRank={score.ssplCountryRank}
+                 countryRankTotal={null}
                  country={score.country}
       />
 
