@@ -29,7 +29,7 @@ export default (
 
   const processedInitialState = provider.process(initialState);
   const {subscribe, set} = writable(initialState ? processedInitialState : null);
-  if (onInitialized) onInitialized({state: processedInitialState, fetchParams, defaultFetchParams});
+  if (onInitialized) onInitialized({state: processedInitialState, fetchParams, defaultFetchParams, set});
 
   const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
   const {subscribe: subscribePending, set: setPending} = writable(null);
@@ -61,7 +61,7 @@ export default (
 
       set(state)
 
-      if (onAfterStateChange) onAfterStateChange({state, fetchParams: currentParams, defaultFetchParams});
+      if (onAfterStateChange) onAfterStateChange({state, fetchParams: currentParams, defaultFetchParams, set});
 
       return true;
     } catch (err) {

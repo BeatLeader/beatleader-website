@@ -45,7 +45,7 @@
             <span slot="label">
               <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
                   pp="{score.pp}" prevPp={score.prevPp}
-                  zero={formatNumber(0)} withZeroSuffix={true} inline={true}
+                  zero={formatNumber(0)} withZeroSuffix={true} inline={false}
                   color="white"
               />
             </span>
@@ -68,12 +68,14 @@
         <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
             <span slot="label">
               <Value value="{score.score}" prevValue={score.prevScore}
-                     inline={true} digits={0} prefix={score.scoreApproximate ? '~' : ''}
+                     inline={false} digits={0} prefix={score.scoreApproximate ? '~' : ''}
               />
             </span>
         </Badge>
 
-        <small>Score</small>
+        {#if score.mods && score.mods.length}
+          <small>{` (${score.mods})`}&nbsp;</small>
+        {/if}
       </span>
     {/if}
 
@@ -85,15 +87,15 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-evenly;
-        align-items: center;
+        align-items: flex-start;
         border-bottom: 1px solid var(--dimmed);
         padding-top: 1em;
+        padding-bottom: .5em;
     }
 
     .song-score > * {
         width: min-content;
         margin-right: 1em;
-        padding-bottom: 1em;
     }
 
     .song-score > *:last-child {
@@ -104,6 +106,12 @@
         margin: 0 !important;
         padding: .125em .25em !important;
         width: 100%;
+    }
+
+    .song-score :global(.badge small) {
+        font-size: .7em;
+        font-weight: normal;
+        margin-top: -2px;
     }
 
     .rank {
@@ -149,6 +157,10 @@
     }
 
     @media screen and (max-width: 767px) {
+        .song-score {
+            padding: 1em 0;
+        }
+
         .rank, .timeset {
             padding-bottom: .5em !important;
         }
@@ -159,6 +171,7 @@
             align-items: center;
             width: 100%;
             margin-right: 0;
+            padding-bottom: .75em;
         }
     }
 </style>
