@@ -14,7 +14,7 @@
         <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}/>
       </span>
 
-    <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`}/>
+    <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt=""/>
 
     <div class="songinfo">
       <span class="name">{song.name} {song.subName}</span>

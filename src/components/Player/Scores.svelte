@@ -98,10 +98,4 @@
     .song-scores :global(> *:last-child) {
         border-bottom: none !important;
     }
-
-    button {
-        cursor: pointer;
-        min-width: 2rem;
-        margin-right: .5rem;
-    }
 </style>

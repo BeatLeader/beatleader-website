@@ -37,7 +37,7 @@
 
 {#if country}
 <span class="val" style="display:{inline ? 'inline' : 'block'};">
-	<img src={`${SS_HOST}/imports/images/flags/${country}.png`}/>
+	<img src={`${SS_HOST}/imports/images/flags/${country}.png`} alt=""/>
 	<span class="value"
         title={!showCountryTotal && country && $currentCountryRank && countryRankTotal ? `#${$currentCountryRank} / ${countryRankTotal}` : ''}>
 		<Value value={$currentCountryRank} prefix="#" zero="-" digits={0}/>
