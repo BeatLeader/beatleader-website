@@ -1,6 +1,6 @@
 import {SsrError} from '../others/errors'
 import {delay} from '../utils/promise'
-import {parseRateLimitHeaders} from './fetch'
+import {parseRateLimitHeaders} from './utils'
 
 export class SsrNetworkError extends SsrError {
   constructor(message) {
