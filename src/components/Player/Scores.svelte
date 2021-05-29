@@ -24,8 +24,6 @@
     {id: 'top', label: 'Top', icon: 'fa fa-cubes'},
   ];
 
-  let scoresStore;
-
   function fetchPage(page) {
     scoresStore.fetch(page);
   }
