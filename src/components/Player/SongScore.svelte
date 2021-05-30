@@ -39,6 +39,7 @@
       <Leaderboard {leaderboard}/>
     </span>
 
+    <section class="stats">
     {#if score.pp}
       <span class="pp with-badge">
           <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
@@ -55,12 +56,16 @@
             (<Value value={score.ppWeighted} zero={formatNumber(0)} withZeroSuffix={true} suffix="pp" inline={true}/>)
           </small>
         </span>
+    {:else}
+      <span class="pp with-badge"></span>
     {/if}
 
     {#if score.acc}
         <span class="acc with-badge">
           <Accuracy {score} />
         </span>
+    {:else}
+      <span class="acc with-badge"></span>
     {/if}
 
     {#if score.score}
@@ -74,10 +79,11 @@
         </Badge>
 
         {#if score.mods && score.mods.length}
-          <small>{` (${score.mods})`}&nbsp;</small>
+          <small>{`${score.mods}`}&nbsp;</small>
         {/if}
       </span>
     {/if}
+    </section>
 
   </div>
 {/if}
@@ -87,7 +93,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-evenly;
-        align-items: flex-start;
+        align-items: center;
         border-bottom: 1px solid var(--dimmed);
         padding-top: 1em;
         padding-bottom: .5em;
@@ -112,6 +118,14 @@
         font-size: .7em;
         font-weight: normal;
         margin-top: -2px;
+    }
+
+    section.stats {
+        display: grid;
+        grid-template-columns: repeat(3, min-content);
+        grid-template-rows: min-content;
+        grid-column-gap: 1em;
+        grid-row-gap: .25em;
     }
 
     .rank {
@@ -154,6 +168,7 @@
         display: block;
         text-align: center;
         white-space: nowrap;
+        font-size: .75em;
     }
 
     @media screen and (max-width: 767px) {
