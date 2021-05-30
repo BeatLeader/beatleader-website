@@ -40,6 +40,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
     const debouncedSetState = debounce((enhanceTaskId, state) => {
       if (enhanceTaskId !== getCurrentEnhanceTaskId()) return;
 
+      console.log(state);
       set(state);
     }, 100);
 
@@ -65,9 +66,9 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
 
     for(const [idx, scoreRow] of newState.entries()) {
         beatSaverEnhancer(scoreRow)
-          .then(enhancedScoreRow => accEnhancer(enhancedScoreRow))
+          .then(enhancedScoreRow => accEnhancer(enhancedScoreRow, currentPlayerId))
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx))
-          .then(enhancedScoreRow => diffEnhancer(enhancedScoreRow))
+          .then(enhancedScoreRow => diffEnhancer(enhancedScoreRow, currentPlayerId))
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx));
 
         beatSaviorEnhancer(scoreRow, currentPlayerId)
