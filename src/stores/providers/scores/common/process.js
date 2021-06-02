@@ -22,7 +22,7 @@ export default response => {
     const diffInfo = extractDiffAndType(difficultyRaw);
     const leaderboard = {leaderboardId, song, diffInfo, difficulty};
 
-    let unmodififiedScore = opt(score, 'unmodififiedScore', opt(score, 'score'));
+    const unmodififiedScore = opt(score, 'unmodififiedScore', opt(score, 'score'));
 
     const acc = unmodififiedScore && opt(score, 'maxScore') ? unmodififiedScore / score.maxScore * 100 : null;
     const percentage = opt(score, 'score') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : null;

@@ -31,13 +31,13 @@
   $: currentType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
   $: skeleton = !$playerStore && $playerIsLoading;
 
-  function showSsApiStats(queueStats) {
-    console.log('---------------')
-    console.log(`[In queue] size=${queueStats.size}, pending=${queueStats.pending}`)
-    console.log(`[Queue progress]: ${Math.round(queueStats.progress.progress * 100)}% (${queueStats.progress.num}/${queueStats.progress.count})`)
-    console.log(`[Queue rate limit]: ${queueStats.rateLimit.waiting}ms, ${queueStats.rateLimit.remaining}/${queueStats.rateLimit.limit}, reset at ${queueStats.rateLimit.resetAt}`)
-  }
-  $: showSsApiStats($ssApiQueueStats)
+  // function showSsApiStats(queueStats) {
+  //   console.log('---------------')
+  //   console.log(`[In queue] size=${queueStats.size}, pending=${queueStats.pending}`)
+  //   console.log(`[Queue progress]: ${Math.round(queueStats.progress.progress * 100)}% (${queueStats.progress.num}/${queueStats.progress.count})`)
+  //   console.log(`[Queue rate limit]: ${queueStats.rateLimit.waiting}ms, ${queueStats.rateLimit.remaining}/${queueStats.rateLimit.limit}, reset at ${queueStats.rateLimit.resetAt}`)
+  // }
+  // $: showSsApiStats($ssApiQueueStats)
 </script>
 
 <main>

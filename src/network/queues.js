@@ -1,37 +1,43 @@
 import {writable} from 'svelte/store'
-import {default as createScoreSaberApiQueue, PRIORITY} from './scoresaber/api-queue'
+import {PRIORITY} from './http-queue'
+import createScoreSaberApiQueue from './scoresaber/api-queue'
+import createBeatSaverApiQueue from './beatsaver/api-queue'
 
-// Score Saber API queue
-let ssApiState = {
-  size: 0,
-  pending: 0,
-  rateLimit: {waiting: 0, remaining: null, limit: null, resetAt: null},
-  progress: {num: 0, count: 0, progress: 1},
-};
-const {subscribe: ssApiSubscribe, set: ssApiSet} = writable(ssApiState);
-const ssApiQueue = createScoreSaberApiQueue({concurrency: 3, timeout: 30000});
+const initQueue = queue => {
+  let queueState = {
+    size: 0,
+    pending: 0,
+    rateLimit: {waiting: 0, remaining: null, limit: null, resetAt: null},
+    progress: {num: 0, count: 0, progress: 1},
+  };
 
-ssApiQueue.on('change', ({size, pending}) => {
-  const {rateLimit: {waiting}} = ssApiState;
-  const {remaining, limit, resetAt} = ssApiQueue.getRateLimit();
-  ssApiState = {...ssApiState, size, pending, rateLimit: {waiting, remaining, limit, resetAt}};
-  ssApiSet(ssApiState);
-});
-ssApiQueue.on('progress', ({progress, num, count}) => {
-  const {rateLimit: {waiting}} = ssApiState;
-  const {remaining, limit, resetAt} = ssApiQueue.getRateLimit();
-  ssApiState = {...ssApiState, progress: {num, count, progress}, rateLimit: {waiting, remaining, limit, resetAt}}
-  ssApiSet(ssApiState);
-});
-ssApiQueue.on('waiting', ({waiting, remaining, limit, resetAt}) => {
-  ssApiState = {...ssApiState, rateLimit: {waiting, remaining, limit, resetAt}}
-  ssApiSet(ssApiState);
-})
+  const {subscribe, set} = writable(queueState);
+
+  queue.on('change', ({size, pending}) => {
+    const {rateLimit: {waiting}} = queueState;
+    const {remaining, limit, resetAt} = queue.getRateLimit();
+    queueState = {...queueState, size, pending, rateLimit: {waiting, remaining, limit, resetAt}};
+    set(queueState);
+  });
+  queue.on('progress', ({progress, num, count}) => {
+    const {rateLimit: {waiting}} = queueState;
+    const {remaining, limit, resetAt} = queue.getRateLimit();
+    queueState = {...queueState, progress: {num, count, progress}, rateLimit: {waiting, remaining, limit, resetAt}}
+    set(queueState);
+  });
+  queue.on('waiting', ({waiting, remaining, limit, resetAt}) => {
+    queueState = {...queueState, rateLimit: {waiting, remaining, limit, resetAt}}
+    set(queueState);
+  })
+
+  return {
+    subscribe,
+    ...queue,
+  }
+}
 
 export default {
-  SCORESABER_API: {
-    subscribe: ssApiSubscribe,
-    ...ssApiQueue,
-  },
+  SCORESABER_API: initQueue(createScoreSaberApiQueue({concurrency: 3, timeout: 30000})),
+  BEATSAVER: initQueue(createBeatSaverApiQueue({concurrency: 1, timeout: 10000})),
   PRIORITY,
 }

@@ -1,12 +1,25 @@
-import {delay} from '../../../../../utils/promise'
+import {getMaxScoreFromSongCharacteristics} from '../../../../../scoresaber/song'
+import {opt} from '../../../../../utils/js'
 
 export default async (data, playerId = null) => {
-  if (!data || !data.score) return data;
+  if (!data || !data.score || !opt(data, 'leaderboard.diffInfo')) return data;
 
-  await delay(Math.random() * 2000);
+  const characteristics = opt(data, 'leaderboard.beatSaver.metadata.characteristics');
+  if (!characteristics) return data;
 
-  if (!data.score.acc) data.score.acc = Math.random() * 50 + 50;
-  if (!data.score.percentage) data.score.percentage = Math.random() * 50 + 50;
+  if (!data.score.acc) {
+    const maxScore = await getMaxScoreFromSongCharacteristics(characteristics, data.leaderboard.diffInfo);
+    if (maxScore) {
+      const unmodififiedScore = opt(data.score, 'unmodififiedScore', opt(data.score, 'score'));
+
+      data.score.maxScore = maxScore;
+      data.score.acc = unmodififiedScore ? unmodififiedScore / maxScore * 100 : null;
+    }
+
+  }
+  if (!data.score.percentage && data.score.score && data.score.maxScore) {
+    data.score.percentage = data.score.score / data.score.maxScore * 100;
+  }
 
   return data;
 }

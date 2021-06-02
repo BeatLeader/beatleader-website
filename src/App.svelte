@@ -1,5 +1,10 @@
 <script>
+  import {onMount} from 'svelte'
+  import log from './utils/logger'
+  import initDb from './db/db'
+  import setupDataFixes from './db/fix-data'
   import PlayerPage from './pages/Player.svelte';
+  import {getConfig, getMainPlayerId} from './services/config'
 
   const players = [
     {id: '76561198035381239', name: 'motzel'},
@@ -14,149 +19,149 @@
         playerId: "76561198035381239",
         playerName: "motzel",
         avatar: "/api/static/avatars/76561198035381239.jpg",
-        rank: 1051,
+        rank: 1048,
         countryRank: 17,
-        pp: 10381,
+        pp: 10389.6,
         country: "PL",
         role: "",
         badges: [],
-        history: "960,962,962,950,953,952,953,960,956,958,960,960,962,965,965,968,970,971,964,965,971,972,974,982,983,985,987,994,996,998,1001,1005,1008,1009,1012,1018,1020,1020,1022,1026,1031,1034,1031,1036,1042,1048,1050,1051,1053",
+        history: "953,952,953,960,956,958,960,960,962,965,965,968,970,971,964,965,971,972,974,982,983,985,987,994,996,998,1001,1005,1008,1009,1012,1018,1020,1020,1022,1026,1031,1034,1031,1036,1042,1048,1050,1051,1053,1052,1047,1046,1047",
         permissions: 0,
         inactive: 0,
         banned: 0,
       },
       scoreStats: {
-        totalScore: 1972610241,
-        totalRankedScore: 927161437,
-        averageRankedAccuracy: 91.18558148539192,
-        totalPlayCount: 2222,
-        rankedPlayCount: 960,
+        totalScore: 1981843620,
+        totalRankedScore: 932510370,
+        averageRankedAccuracy: 91.18860217138601,
+        totalPlayCount: 2230,
+        rankedPlayCount: 964,
       },
       scores: {
         scores: [
           {
-            rank: 1004,
-            scoreId: 55385780,
-            score: 1632407,
-            unmodififiedScore: 1632407,
+            rank: 405,
+            scoreId: 57651955,
+            score: 899657,
+            unmodififiedScore: 899657,
             mods: "",
-            pp: 301.369,
-            weight: 0.00010939367591426,
-            timeSet: "2021-05-29T22:46:00.000Z",
-            leaderboardId: 297695,
-            songHash: "67935D25CAF0996A282E87AC7A21738812B629DD",
-            songName: "Paranoid Mirage",
+            pp: 324.748,
+            weight: 0.0078652877305842,
+            timeSet: "2021-06-01T20:45:55.000Z",
+            leaderboardId: 319746,
+            songHash: "BCD465BC14CD421901CEC7869800AB977918E091",
+            songName: "UMMU",
             songSubName: "",
-            songAuthorName: "Kobaryo",
-            levelAuthorName: "Soba`s",
+            songAuthorName: "t+pazolite",
+            levelAuthorName: "carrot",
             difficulty: 9,
             difficultyRaw: "_ExpertPlus_SoloStandard",
-            maxScore: 1924755,
+            maxScore: 1011195,
           },
           {
-            rank: 248,
-            scoreId: 57518567,
-            score: 1836353,
-            unmodififiedScore: 1836353,
+            rank: 187,
+            scoreId: 49950112,
+            score: 994026,
+            unmodififiedScore: 994026,
             mods: "",
-            pp: 373.249,
-            weight: 0.70028227415311,
-            timeSet: "2021-05-29T22:38:18.000Z",
-            leaderboardId: 355157,
-            songHash: "D9FA4E43AF8777116C60CFE2C473D13153754379",
-            songName: "NOVAGROUND",
+            pp: 349.819,
+            weight: 0.22394798564968,
+            timeSet: "2021-06-01T20:28:59.000Z",
+            leaderboardId: 314010,
+            songHash: "F6DC653A9FED9EEDF12C55163E508FDE404736B7",
+            songName: "Ghost Family Living In Graveyard",
             songSubName: "",
-            songAuthorName: "Quarks",
-            levelAuthorName: "shrado & abcbadq",
+            songAuthorName: "Roughsketch",
+            levelAuthorName: "Helloiamdaan & miitchel",
             difficulty: 9,
             difficultyRaw: "_ExpertPlus_SoloStandard",
-            maxScore: 2027795,
+            maxScore: 1064555,
           },
           {
-            rank: 76,
-            scoreId: 57628199,
-            score: 1308466,
-            unmodififiedScore: 1308466,
+            rank: 734,
+            scoreId: 49010154,
+            score: 773836,
+            unmodififiedScore: 773836,
+            mods: "",
+            pp: 346.453,
+            weight: 0.15133786651887,
+            timeSet: "2021-06-01T20:25:57.000Z",
+            leaderboardId: 310950,
+            songHash: "8B0954E826D02175872F9D80BF8BB96DE5A1B227",
+            songName: "THE LAUNCH OF THE MEGANTO METEOR",
+            songSubName: "",
+            songAuthorName: "Camellia",
+            levelAuthorName: "Kuurama & miitchel & ExUnReal",
+            difficulty: 9,
+            difficultyRaw: "_ExpertPlus_SoloStandard",
+            maxScore: 843755,
+          },
+          {
+            rank: 292,
+            scoreId: 50690470,
+            score: 663891,
+            unmodififiedScore: 663891,
+            mods: "",
+            pp: 291.186,
+            weight: 0.000016555405523522,
+            timeSet: "2021-06-01T20:05:52.000Z",
+            leaderboardId: 302668,
+            songHash: "91288CA5FCDA1AF6C36623EF260291F64FEEDA93",
+            songName: "Dream of Winds",
+            songSubName: "",
+            songAuthorName: "XeoN",
+            levelAuthorName: "Mystikmol",
+            difficulty: 9,
+            difficultyRaw: "_ExpertPlus_SoloStandard",
+            maxScore: 760035,
+          },
+          {
+            rank: 10,
+            scoreId: 48316806,
+            score: 1055253,
+            unmodififiedScore: 1055253,
             mods: "",
             pp: 0,
             weight: 0,
-            timeSet: "2021-05-29T22:25:18.000Z",
-            leaderboardId: 357276,
-            songHash: "A060F2B4D6E4157A28FCA33139205955A7A98847",
-            songName: "Haunted Bus",
+            timeSet: "2021-05-31T20:18:39.000Z",
+            leaderboardId: 316162,
+            songHash: "021541A8AB91C708724D5BDF28AF5E5C24213992",
+            songName: "Yggdrasil",
             songSubName: "",
-            songAuthorName: "iFeature & ReeK",
-            levelAuthorName: "Dexty, Atomo, & Jabob",
+            songAuthorName: "Brothers of Metal",
+            levelAuthorName: "Meldi",
             difficulty: 9,
             difficultyRaw: "_ExpertPlus_SoloStandard",
             maxScore: 0,
           },
           {
-            rank: 39,
-            scoreId: 57628167,
-            score: 1375123,
-            unmodififiedScore: 1375123,
+            rank: 101,
+            scoreId: 57643521,
+            score: 1506366,
+            unmodififiedScore: 1506366,
             mods: "",
-            pp: 0,
-            weight: 0,
-            timeSet: "2021-05-29T22:20:21.000Z",
-            leaderboardId: 358970,
-            songHash: "BB4EC249AC3B07160B06DAA7ADADC194937A647E",
-            songName: "Missing You",
-            songSubName: "",
-            songAuthorName: "MY FIRST STORY",
-            levelAuthorName: "Nolanimations",
-            difficulty: 9,
-            difficultyRaw: "_ExpertPlus_SoloStandard",
-            maxScore: 0,
+            pp: 278.575,
+            weight: 0.0000031025840134428,
+            timeSet: "2021-05-31T18:45:42.000Z",
+            leaderboardId: 322171,
+            songHash: "9F004C943E5CB3B007E93B148C6DA9ADF1280765",
+            songName: "YELL!",
+            songSubName: "feat. moimoi",
+            songAuthorName: "DJ Genki VS Camellia",
+            levelAuthorName: "Joshabi",
+            difficulty: 7,
+            difficultyRaw: "_Expert_SoloStandard",
+            maxScore: 1599995,
           },
           {
-            rank: 102,
-            scoreId: 57628120,
-            score: 2050468,
-            unmodififiedScore: 2050468,
-            mods: "",
-            pp: 0,
-            weight: 0,
-            timeSet: "2021-05-29T22:13:37.000Z",
-            leaderboardId: 357417,
-            songHash: "BC8E2895E7A25A8F3FB0C87BF76C6EB09DC44E84",
-            songName: "Endless Adventure",
-            songSubName: "",
-            songAuthorName: "Kobaryo",
-            levelAuthorName: "Fvrwvrd",
-            difficulty: 9,
-            difficultyRaw: "_ExpertPlus_SoloStandard",
-            maxScore: 0,
-          },
-          {
-            rank: 934,
-            scoreId: 53528645,
-            score: 1235876,
-            unmodififiedScore: 1235876,
-            mods: "",
-            pp: 338.925,
-            weight: 0.062105554092115,
-            timeSet: "2021-05-29T21:40:43.000Z",
-            leaderboardId: 327911,
-            songHash: "09F435B861416442FE61B5B2D512AFCA5C29BCF2",
-            songName: "True Hero",
-            songSubName: "",
-            songAuthorName: "Kobaryo",
-            levelAuthorName: "Cerret, Complex & Daan",
-            difficulty: 5,
-            difficultyRaw: "_Hard_SoloStandard",
-            maxScore: 1427035,
-          },
-          {
-            rank: 34,
+            rank: 33,
             scoreId: 57518291,
-            score: 2315567,
-            unmodififiedScore: 2315567,
+            score: 2344396,
+            unmodififiedScore: 2344396,
             mods: "",
             pp: 0,
             weight: 0,
-            timeSet: "2021-05-29T20:57:32.000Z",
+            timeSet: "2021-05-30T18:12:24.000Z",
             leaderboardId: 355351,
             songHash: "F353A15AF20353EB4A05622D0CDFA48BD809223E",
             songName: "Gangnam Style",
@@ -168,20 +173,20 @@
             maxScore: 0,
           },
           {
-            rank: 51,
-            scoreId: 56859947,
-            score: 1784878,
-            unmodififiedScore: 1784878,
+            rank: 20,
+            scoreId: 57635265,
+            score: 1706632,
+            unmodififiedScore: 1706632,
             mods: "",
             pp: 0,
             weight: 0,
-            timeSet: "2021-05-25T20:15:38.000Z",
-            leaderboardId: 347585,
-            songHash: "FE722346E322AE0A7BB35071EEFF78367F82AE5B",
-            songName: "Shoulda Known Better",
-            songSubName: "",
-            songAuthorName: "DJ Noriken",
-            levelAuthorName: "shrado & Fvrwvrd",
+            timeSet: "2021-05-30T17:58:18.000Z",
+            leaderboardId: 359236,
+            songHash: "6423C4D623ED204905BC8DB569E6B1D5A76C141E",
+            songName: "Get Gamered Up",
+            songSubName: "(feat. DE125 & Lil Triangle) [Short Ver.]",
+            songAuthorName: "Schwank",
+            levelAuthorName: "ItsVasili",
             difficulty: 9,
             difficultyRaw: "_ExpertPlus_SoloStandard",
             maxScore: 0,
@@ -200,25 +205,51 @@
     initialPlayerState = null;
     playerPageEl.changePlayer(newPlayerId);
   }
+
+  function onImport() {
+
+  }
+
+  let initialized = false;
+  onMount(async () => {
+    log.info('initialization...')
+
+    await initDb();
+    await setupDataFixes();
+
+    // pre-warm cache
+    await getMainPlayerId();
+    await Promise.all([
+      getConfig(),
+    ]);
+
+    log.info('initialized')
+
+    initialized = true;
+  })
 </script>
 
-<div class="section">
-  <main>
-    <div class="sspl-page-container">
-      <div>
-        Test:
-        {#each players as player}
-        <button on:click={() => changePlayer(player.id)}>{player.name}</button>
-        {/each}
-      </div>
+{#if initialized}
+  <div class="section">
+    <main>
+      <div class="sspl-page-container">
+        <button on:click={onImport}>Import SSPL</button>
 
-      <PlayerPage bind:this={playerPageEl}
-                  initialPlayerId={initialPlayerId}
-                  initialState={initialPlayerState}
-      />
-    </div>
-  </main>
-</div>
+        <div>
+          User test:
+          {#each players as player}
+            <button on:click={() => changePlayer(player.id)}>{player.name}</button>
+          {/each}
+        </div>
+
+        <PlayerPage bind:this={playerPageEl}
+                    initialPlayerId={initialPlayerId}
+                    initialState={initialPlayerState}
+        />
+      </div>
+    </main>
+  </div>
+{/if}
 
 <style>
     .section {

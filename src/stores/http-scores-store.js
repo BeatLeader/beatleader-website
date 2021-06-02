@@ -17,13 +17,6 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
 
   let pendingProvider = null;
 
-  const enhancers = [
-    {name: 'beatSaver', enhancer: beatSaverEnhancer, type: 'leaderboard', dependentOn: null},
-    {name: 'beatSavior', enhancer: beatSaviorEnhancer, type: 'score', dependentOn: null},
-    {name: 'acc', enhancer: accEnhancer, type: 'score', dependentOn: ['beatSaver']},
-    {name: 'diff', enhancer: diffEnhancer, type: 'leaderboard', dependentOn: ['acc']},
-  ];
-
   const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentPage}/${currentProvider.type}`;
 
   const onNewData = ({fetchParams, state, set}) => {
@@ -40,7 +33,6 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
     const debouncedSetState = debounce((enhanceTaskId, state) => {
       if (enhanceTaskId !== getCurrentEnhanceTaskId()) return;
 
-      console.log(state);
       set(state);
     }, 100);
 
