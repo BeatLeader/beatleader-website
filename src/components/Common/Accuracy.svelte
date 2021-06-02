@@ -32,11 +32,18 @@
       <span slot="label">
         <Value value={showPercentageInstead ? score.percentage : score.acc}
                prevValue={showPercentageInstead ? score.prevPercentage : score.prevAcc}
-               withZeroSuffix={true} title={badge.desc} inline={true} suffix="%" suffixPrev="%"
+               withZeroSuffix={true} title={badge.desc} inline={false} suffix="%" suffixPrev="%"
         />
       </span>
   </Badge>
-  <small>{score.mods && score.mods.length ? ` (${score.mods})` : ''}&nbsp;</small>
+
+  {#if score.mods && score.mods.length}
+  <small>
+      <Value value={!showPercentageInstead ? score.percentage : score.acc}
+             withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
+      />
+  </small>
+  {/if}
 {/if}
 
 <style>

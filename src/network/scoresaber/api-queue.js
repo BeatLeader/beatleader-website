@@ -1,8 +1,6 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../utils/format'
 
-export {PRIORITY};
-
 export const SS_API_HOST = 'https://new.scoresaber.com';
 export const SS_API_URL = `${SS_API_HOST}/api`;
 
