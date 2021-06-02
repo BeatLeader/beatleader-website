@@ -1,6 +1,6 @@
 import {openDB} from 'idb'
 import log from '../utils/logger'
-import {isDateObject} from '../utils/js'
+import {isDateObject, opt} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
 const SSR_DB_VERSION = 1;
@@ -133,8 +133,10 @@ async function openDatabase() {
     // enhance db object
     let _currentTransaction = null;
     const getCurrentTransaction = () => _currentTransaction;
-    const getTransactionMode = () => _currentTransaction?.mode ?? null;
-    const getTransactionStores = () => [..._currentTransaction?.objectStoreNames ?? []];
+    let mode = opt(_currentTransaction, 'mode')
+    const getTransactionMode = () => mode ? mode : null;
+    const objectStoreNames = opt(_currentTransaction, 'objectStoreNames')
+    const getTransactionStores = () => [...(objectStoreNames ? objectStoreNames : [])];
 
     // Closure code should awaits DB operations ONLY or fail
     // https://github.com/jakearchibald/idb#user-content-transaction-lifetime

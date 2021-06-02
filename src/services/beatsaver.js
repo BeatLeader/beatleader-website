@@ -11,7 +11,7 @@ const BS_SUSPENSION_KEY = 'bsSuspension';
 const BS_NOT_FOUND_KEY = 'bs404';
 const BS_NOT_FOUND_HOURS_BETWEEN_COUNTS = 1;
 
-export default (options = {}) => {
+export default () => {
     const cacheSongInfo = async songInfo => {
         if (!songInfo.hash || !songInfo.key) return null;
 
@@ -41,9 +41,10 @@ export default (options = {}) => {
     const get404Hashes = async () => cacheRepository().get(BS_NOT_FOUND_KEY);
     const set404Hashes = async hashes => cacheRepository().set(hashes, BS_NOT_FOUND_KEY);
     const setHashNotFound = async hash => {
-        const songs404 = await get404Hashes() ?? {};
+        let songs404 = await get404Hashes();
+        if (!songs404) songs404 = {};
 
-        const item = songs404[hash] ?? {firstTry: new Date(), recentTry: null, count: 0};
+        const item = songs404[hash] ? songs404[hash] : {firstTry: new Date(), recentTry: null, count: 0};
 
         if (!item.recentTry || addToDate(item.recentTry, BS_NOT_FOUND_HOURS_BETWEEN_COUNTS * HOUR) < new Date()) {
             item.recentTry = new Date();

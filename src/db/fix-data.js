@@ -11,7 +11,8 @@ const allFixes = {
 };
 
 export default async () => {
-  const appliedFixes = await getAppliedFixes() ?? [];
+  let appliedDbFixes = await getAppliedFixes();
+  const appliedFixes = appliedDbFixes ? appliedDbFixes : [];
   const neededFixes = Object.keys(allFixes).filter(f => !appliedFixes.includes(f) && (!allFixes[f].validTo || allFixes[f].validTo > new Date()));
 
   if (!neededFixes.length) return;
