@@ -1,8 +1,26 @@
 let bc;
 
+class SimpleBroadcastChannelSafari {
+  onmessage = data => {}
+
+  constructor(name) {
+    this.name = name;
+  }
+
+  postMessage(obj) {
+    this.onmessage({data: obj});
+  }
+}
+
 const createGlobalPubSub = () => {
     const subscribers = {}
-    if (!bc) bc = new BroadcastChannel('global-pub-sub');
+    return {}
+
+    if (!bc) {
+      bc = BroadcastChannel
+        ? new BroadcastChannel('global-pub-sub')
+        : new SimpleBroadcastChannelSafari('global-pub-sub');
+    }
 
     const exists = eventName => Array.isArray(subscribers[eventName]);
 
