@@ -1,0 +1,19 @@
+[build]
+    publish = "public/"
+
+[functions]
+    directory = "functions"
+
+[[redirects]]
+    from = "/cors/beat-savior/*"
+    to = "https://www.beatsavior.io/api/livescores/playerx/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}
+
+[[redirects]]
+    from = "/cors/score-saber/*"
+    to = "https://www.scoresaber.com/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}

@@ -233,8 +233,6 @@
   <div class="section">
     <main>
       <div class="sspl-page-container">
-        <button on:click={onImport}>Import SSPL</button>
-
         <div>
           User test:
           {#each players as player}
