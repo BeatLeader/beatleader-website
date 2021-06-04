@@ -29,10 +29,12 @@ export default async () => {
   const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
   if (dbConfig) await set(dbConfig, false);
 
-  return {
+  configStore =  {
     subscribe,
     set,
     get,
     getMainPlayerId: () => opt(currentConfig, 'users.main')
   }
+
+  return configStore;
 }
