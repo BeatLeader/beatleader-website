@@ -64,7 +64,7 @@ export default playerData => {
   const playerInfo = opt(playerData, 'playerInfo', null);
 
   ['pp', 'rank'].forEach(key => {
-    const value = playerInfo && playerInfo[key] ? playerInfo[key] : null;
+    const value = playerInfo && playerInfo[key] ? playerInfo[key] : 0;
     if (!playerInfoTweened.hasOwnProperty(key)) playerInfoTweened[key] = tweened(value, TWEEN_DURATION);
     else playerInfoTweened[key].set(value);
 

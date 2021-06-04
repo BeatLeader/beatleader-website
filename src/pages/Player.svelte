@@ -1,4 +1,5 @@
 <script>
+  import {navigate} from 'svelte-routing'
   import Profile from '../components/Player/Profile.svelte'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
   import Scores from '../components/Player/Scores.svelte'
@@ -8,6 +9,12 @@
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
   export let initialState = null;
+
+  const players = [
+    {id: '76561198035381239', name: 'motzel'},
+    {id: '76561198025451538', name: 'Drakonno'},
+    {id: '76561198333869741', name: 'Cerret'},
+  ];
 
   const ssApiQueueStats = queue.SCORESABER_API;
 
@@ -19,8 +26,13 @@
   let playerIsLoading = opt(playerStore, 'isLoading', false);
   let playerError = opt(playerStore, 'error', null);
 
+  let currentNavType = initialType;
+
   function onTypeChanged(event) {
-    playerStore.setType(opt(event, 'detail', initialScoresType));
+    currentNavType = opt(event, 'detail', initialScoresType)
+
+    playerStore.setType(currentNavType);
+    if (playerId && currentNavType) navigate(`/u/${playerId}/${currentNavType}`);
   }
 
   $: {
@@ -28,7 +40,7 @@
   }
 
   $: playerId = $playerStore && playerStore && playerStore.getPlayerId ? playerStore.getPlayerId() : null;
-  $: currentType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
+  $: currentStoreType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
   $: skeleton = !$playerStore && $playerIsLoading;
 
   // function showSsApiStats(queueStats) {
@@ -40,20 +52,31 @@
   // $: showSsApiStats($ssApiQueueStats)
 </script>
 
-<main>
+<article>
+  User test:
+  {#each players as player}
+    <button on:click={() => navigate(`/u/${player.id}/${currentNavType}`)}>{player.name}</button>
+  {/each}
+
   <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
 
   {#if $playerStore}
-    <Scores {playerId} initialState={opt($playerStore, 'scores', null)} initialType={currentType}
+    <Scores {playerId} initialState={opt($playerStore, 'scores', null)} initialType={currentStoreType}
             numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
             on:type-changed={onTypeChanged}
     />
   {/if}
-</main>
+</article>
 
 <style>
-  main {
+  article {
       max-width: 1024px;
       margin: 0 auto;
+  }
+
+  button {
+      cursor: pointer;
+      min-width: 2rem;
+      margin-right: .5rem;
   }
 </style>
