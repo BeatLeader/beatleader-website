@@ -1,5 +1,5 @@
 <script>
-  import {SS_HOST} from '../../network/scoresaber/page'
+  import {SS_HOST} from '../../network/scoresaber/page-queue'
   import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
   import {opt} from '../../utils/js'
 

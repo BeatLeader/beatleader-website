@@ -2,7 +2,7 @@
   import {tweened} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
   import Value from '../Common/Value.svelte'
-  import {SS_HOST} from '../../network/scoresaber/page'
+  import {SS_HOST} from '../../network/scoresaber/page-queue'
 
   export let rank;
   export let country;

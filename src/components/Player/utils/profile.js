@@ -1,4 +1,4 @@
-import {SS_HOST} from '../../../network/scoresaber/page'
+import {SS_HOST} from '../../../network/scoresaber/page-queue'
 import tweened from '../../../svelte-utils/tweened';
 import {opt} from '../../../utils/js'
 

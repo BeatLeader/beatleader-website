@@ -1,1 +1,0 @@
-export const SS_HOST = 'https://scoresaber.com';

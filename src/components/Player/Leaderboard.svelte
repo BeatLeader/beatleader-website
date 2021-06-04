@@ -1,7 +1,9 @@
 <script>
-  import {SS_HOST} from '../../network/scoresaber/page'
+  import {SS_HOST} from '../../network/scoresaber/page-queue'
   import Difficulty from '../Song/Difficulty.svelte'
   import {opt} from '../../utils/js'
+  import Value from '../Common/Value.svelte'
+  import {fade} from 'svelte/transition'
 
   export let leaderboard = null;
 
@@ -10,9 +12,14 @@
 
 {#if song}
   <a href="{`${SS_HOST}/leaderboard/${encodeURIComponent(opt(leaderboard, 'leaderboardId', ''))}`}" target="_blank" rel="noopener">
-    <span class="difficulty">
-        <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}/>
-      </span>
+    <div class="difficulty-stars">
+      <div class="difficulty">
+          <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}/>
+      </div>
+      {#if leaderboard.stars}
+        <div class="stars" transition:fade><Value value={leaderboard.stars} suffix="*" zero=""/></div>
+      {/if}
+    </div>
 
     <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt=""/>
 
@@ -35,9 +42,23 @@
         margin-right: .75em;
     }
 
+    .difficulty-stars {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 2.125em;
+    }
+
     .difficulty {
         display: flex;
         align-items: center;
+    }
+
+    .stars {
+        margin-top: .125em;
+        font-size: .75em;
+        color: var(--faded);
     }
 
     img {
