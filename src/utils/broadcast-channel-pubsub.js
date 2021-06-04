@@ -14,10 +14,9 @@ class SimpleBroadcastChannelSafari {
 
 const createGlobalPubSub = () => {
     const subscribers = {}
-    return {}
 
     if (!bc) {
-      bc = BroadcastChannel
+      bc = window.BroadcastChannel
         ? new BroadcastChannel('global-pub-sub')
         : new SimpleBroadcastChannelSafari('global-pub-sub');
     }

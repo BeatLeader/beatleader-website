@@ -1,4 +1,4 @@
-import queue from '../../../network/queues'
+import queue from '../../queues'
 import {opt} from '../../../utils/js'
 
 const process = response => {

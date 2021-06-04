@@ -3,7 +3,7 @@ import log from '../utils/logger'
 import {isDateObject, opt} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
-const SSR_DB_VERSION = 1;
+const SSR_DB_VERSION = 2;
 export let db = null;
 
 import cacheRepository from './repository/cache';
@@ -37,7 +37,7 @@ async function openDatabase() {
         dbOldVersion = oldVersion;
 
         switch (true) {
-          case newVersion >= 1:
+          case newVersion >= 1 && oldVersion <= 0:
             db.createObjectStore('players', {
               keyPath: 'id',
               autoIncrement: false,
@@ -104,7 +104,15 @@ async function openDatabase() {
             beatSavior.createIndex('beat-savior-songId', 'songId', {unique: false});
             beatSavior.createIndex('beat-savior-fileId', 'fileId', {unique: false});
 
-          // NO break here!
+            // NO break here!
+
+          case newVersion >=2 && oldVersion <= 1:
+            db.createObjectStore('beat-savior-players', {
+              keyPath: 'playerId',
+              autoIncrement: false,
+            });
+
+            // NO break here!
         }
 
         log.info("Database converted");

@@ -79,7 +79,7 @@
         </Badge>
 
         {#if score.mods && score.mods.length}
-          <small>{`${score.mods}`}&nbsp;</small>
+          <small>{`${score.mods.join(', ')}`}&nbsp;</small>
         {/if}
       </span>
     {/if}

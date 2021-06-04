@@ -1,7 +1,7 @@
 import {writable} from 'svelte/store'
 import stringify from 'json-stable-stringify';
-import {opt} from '../utils/js'
-import {SsrNetworkTimeoutError} from '../network/errors'
+import {opt} from '../../utils/js'
+import {SsrNetworkTimeoutError} from '../../network/errors'
 
 const hash = obj => stringify(obj);
 

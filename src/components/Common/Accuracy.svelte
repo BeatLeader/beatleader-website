@@ -1,7 +1,7 @@
 <script>
   import Badge from './Badge.svelte'
   import Value from './Value.svelte'
-  import {diffColors} from '../../scoresaber/format'
+  import {diffColors} from '../../utils/scoresaber/format'
   import {opt} from '../../utils/js'
 
   export let score;

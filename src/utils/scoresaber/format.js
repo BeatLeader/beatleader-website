@@ -1,4 +1,4 @@
-import {capitalize, opt} from '../utils/js'
+import {capitalize, opt} from '../js'
 
 export const diffColors = {
   easy: 'MediumSeaGreen',

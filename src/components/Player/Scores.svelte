@@ -1,7 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
-  import {PLAYER_SCORES_PER_PAGE} from '../../scoresaber/consts'
-  import createScoresStore from '../../stores/http-scores-store.js';
+  import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import createScoresStore from '../../stores/http/http-scores-store.js';
 
   import Pager from '../Common/Pager.svelte'
   import SongScore from './SongScore.svelte'

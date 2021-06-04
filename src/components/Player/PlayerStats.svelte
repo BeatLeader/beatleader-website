@@ -1,6 +1,6 @@
 <script>
   import {SS_HOST} from '../../network/scoresaber/page'
-  import {PLAYERS_PER_PAGE} from '../../scoresaber/consts'
+  import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
   import {opt} from '../../utils/js'
 
   import Value from '../Common/Value.svelte'

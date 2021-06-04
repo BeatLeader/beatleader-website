@@ -1,5 +1,5 @@
-import beatSaverService from '../../../../../services/beatsaver'
-import {opt} from '../../../../../utils/js'
+import beatSaverService from '../../../../services/beatsaver'
+import {opt} from '../../../../utils/js'
 
 const beatSaver = beatSaverService();
 

@@ -1,6 +1,6 @@
 import createHttpStore from './http-store';
-import apiPlayerProvider from './providers/player/api-info'
-import {opt} from '../utils/js'
+import apiPlayerProvider from '../../network/scoresaber/player/api-info'
+import {opt} from '../../utils/js'
 
 export default (playerId = null, initialState = null) => {
   let currentPlayerId = playerId;

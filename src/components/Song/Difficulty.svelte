@@ -1,5 +1,5 @@
 <script>
-  import {getHumanDiffInfo} from '../../scoresaber/format'
+  import {getHumanDiffInfo} from '../../utils/scoresaber/format'
 
   export let diff;
   export let useShortName = false;

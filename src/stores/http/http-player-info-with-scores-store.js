@@ -1,6 +1,6 @@
 import createHttpStore from './http-store';
-import apiPlayerWithScoresProvider from './providers/player/api-info-with-scores'
-import {opt} from '../utils/js'
+import apiPlayerWithScoresProvider from '../../network/scoresaber/player/api-info-with-scores'
+import {opt} from '../../utils/js'
 
 export default (playerId = null, scoresType = 'recent', initialState = null) => {
   let currentPlayerId = playerId;

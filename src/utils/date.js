@@ -23,8 +23,8 @@ export const dateFromString = str => {
     return isValidDate(date) ? date : null;
 }
 
-export const addToDate = (date, millis) => new Date(date.getTime() + millis)
-export const daysAgo = days => addToDate(new Date(), - days * DAY);
+export const addToDate = (millis, date = new Date()) => new Date(date.getTime() + millis)
+export const daysAgo = days => addToDate(- days * DAY);
 
 export function formatDate(val) {
     const rtf = new Intl.DateTimeFormat(getCurrentLocale(), {

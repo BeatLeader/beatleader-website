@@ -25,14 +25,14 @@ export default () => {
         return songInfo;
     }
 
-    const isSuspended = bsSuspension => !!bsSuspension && bsSuspension.activeTo > new Date() && bsSuspension.started > addToDate(new Date(), -24 * HOUR);
+    const isSuspended = bsSuspension => !!bsSuspension && bsSuspension.activeTo > new Date() && bsSuspension.started > addToDate(-24 * HOUR);
     const getCurrentSuspension = async () => cacheRepository().get(BS_SUSPENSION_KEY);
     const prolongSuspension = async bsSuspension => {
         const current = new Date();
 
         const suspension = isSuspended(bsSuspension) ? bsSuspension : {started: current, activeTo: new Date(), count: 0};
 
-        suspension.activeTo = addToDate(suspension.activeTo, Math.pow(2, suspension.count) * HOUR);
+        suspension.activeTo = addToDate(Math.pow(2, suspension.count) * HOUR, suspension.activeTo);
         suspension.count++;
 
         return await cacheRepository().set(suspension, BS_SUSPENSION_KEY);
@@ -46,7 +46,7 @@ export default () => {
 
         const item = songs404[hash] ? songs404[hash] : {firstTry: new Date(), recentTry: null, count: 0};
 
-        if (!item.recentTry || addToDate(item.recentTry, BS_NOT_FOUND_HOURS_BETWEEN_COUNTS * HOUR) < new Date()) {
+        if (!item.recentTry || addToDate(BS_NOT_FOUND_HOURS_BETWEEN_COUNTS * HOUR, item.recentTry) < new Date()) {
             item.recentTry = new Date();
             item.count++;
 

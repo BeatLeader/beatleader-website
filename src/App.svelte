@@ -1,10 +1,5 @@
 <script>
-  import {onMount} from 'svelte'
-  import log from './utils/logger'
-  import initDb from './db/db'
-  import setupDataFixes from './db/fix-data'
   import PlayerPage from './pages/Player.svelte';
-  import {getConfig, getMainPlayerId} from './services/config'
 
   const players = [
     {id: '76561198035381239', name: 'motzel'},
@@ -19,23 +14,23 @@
         playerId: "76561198035381239",
         playerName: "motzel",
         avatar: "/api/static/avatars/76561198035381239.jpg",
-        rank: 1048,
+        rank: 1040,
         countryRank: 17,
-        pp: 10389.6,
+        pp: 10408.1,
         country: "PL",
         role: "",
         badges: [],
-        history: "953,952,953,960,956,958,960,960,962,965,965,968,970,971,964,965,971,972,974,982,983,985,987,994,996,998,1001,1005,1008,1009,1012,1018,1020,1020,1022,1026,1031,1034,1031,1036,1042,1048,1050,1051,1053,1052,1047,1046,1047",
+        history: "952,953,960,956,958,960,960,962,965,965,968,970,971,964,965,971,972,974,982,983,985,987,994,996,998,1001,1005,1008,1009,1012,1018,1020,1020,1022,1026,1031,1034,1031,1036,1042,1048,1050,1051,1053,1052,1047,1046,1047,1052",
         permissions: 0,
         inactive: 0,
         banned: 0,
       },
       scoreStats: {
         totalScore: 1981843620,
-        totalRankedScore: 932510370,
-        averageRankedAccuracy: 91.18860217138601,
+        totalRankedScore: 935936835,
+        averageRankedAccuracy: 91.18285521138141,
         totalPlayCount: 2230,
-        rankedPlayCount: 964,
+        rankedPlayCount: 966,
       },
       scores: {
         scores: [
@@ -205,49 +200,34 @@
     initialPlayerState = null;
     playerPageEl.changePlayer(newPlayerId);
   }
-
-  function onImport() {
-
-  }
-
-  let initialized = false;
-  onMount(async () => {
-    log.info('initialization...')
-
-    await initDb();
-    await setupDataFixes();
-
-    // pre-warm cache
-    await getMainPlayerId();
-    await Promise.all([
-      getConfig(),
-    ]);
-
-    log.info('initialized')
-
-    initialized = true;
-  })
 </script>
 
-{#if initialized}
-  <div class="section">
-    <main>
-      <div class="sspl-page-container">
-        <div>
-          User test:
-          {#each players as player}
-            <button on:click={() => changePlayer(player.id)}>{player.name}</button>
-          {/each}
-        </div>
-
-        <PlayerPage bind:this={playerPageEl}
-                    initialPlayerId={initialPlayerId}
-                    initialState={initialPlayerState}
-        />
+<div class="section">
+  <main>
+    <div class="sspl-page-container">
+      <div>
+        User test:
+        {#each players as player}
+          <button on:click={() => changePlayer(player.id)}>{player.name}</button>
+        {/each}
       </div>
-    </main>
-  </div>
-{/if}
+
+      <PlayerPage bind:this={playerPageEl}
+                  initialPlayerId={initialPlayerId}
+                  initialState={initialPlayerState}
+      />
+    </div>
+  </main>
+</div>
+
+<footer>
+  <p>ScoreSaber Reloaded by <a href="https://github.com/motzel">motzel</a></p>
+  <p>
+    Uses <a href="https://scoresaber.com">ScoreSaber API</a>,
+    <a href="https://beatsaver.com">Beat Saver API</a>,
+    <a href="https://www.beatsavior.io">Beat Savior API</a>.
+  </p>
+</footer>
 
 <style>
     .section {
@@ -264,5 +244,11 @@
         cursor: pointer;
         min-width: 2rem;
         margin-right: .5rem;
+    }
+
+    footer {
+        margin-top: 1rem;
+        font-size: .75em;
+        text-align: center;
     }
 </style>

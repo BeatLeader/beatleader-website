@@ -1,6 +1,6 @@
 <script>
   import Profile from '../components/Player/Profile.svelte'
-  import createPlayerInfoWithScoresStore from '../stores/http-player-info-with-scores-store'
+  import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
   import Scores from '../components/Player/Scores.svelte'
   import {opt} from '../utils/js'
   import queue from '../network/queues';

@@ -1,12 +1,13 @@
 import createHttpStore from './http-store';
-import apiRecentScoresProvider from './providers/scores/api-recent'
-import apiTopScoresProvider from './providers/scores/api-top'
-import beatSaverEnhancer from './providers/scores/enhancers/leaderboard/beatsaver'
-import accEnhancer from './providers/scores/enhancers/scores/acc'
-import beatSaviorEnhancer from './providers/scores/enhancers/scores/beatsavior'
-import diffEnhancer from './providers/scores/enhancers/scores/diff'
-import {debounce} from '../utils/debounce'
-import {opt} from '../utils/js'
+import apiRecentScoresProvider from '../../network/scoresaber/scores/api-recent'
+import apiTopScoresProvider from '../../network/scoresaber/scores/api-top'
+import beatSaverEnhancer from './enhancers/leaderboard/beatsaver'
+import accEnhancer from './enhancers/scores/acc'
+import beatSaviorEnhancer from './enhancers/scores/beatsavior'
+import rankedsEnhancer from './enhancers/leaderboard/rankeds'
+import diffEnhancer from './enhancers/scores/diff'
+import {debounce} from '../../utils/debounce'
+import {opt} from '../../utils/js'
 
 const getProviderByType = type => type === 'top' ? apiTopScoresProvider : apiRecentScoresProvider;
 
@@ -58,12 +59,15 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
 
     for(const [idx, scoreRow] of newState.entries()) {
         beatSaverEnhancer(scoreRow)
-          .then(enhancedScoreRow => accEnhancer(enhancedScoreRow, currentPlayerId))
+          .then(enhancedScoreRow => accEnhancer(enhancedScoreRow, currentPlayerId, 'score'))
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx))
-          .then(enhancedScoreRow => diffEnhancer(enhancedScoreRow, currentPlayerId))
+          .then(enhancedScoreRow => diffEnhancer(enhancedScoreRow, currentPlayerId, 'score'))
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx));
 
         beatSaviorEnhancer(scoreRow, currentPlayerId)
+          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
+
+        rankedsEnhancer(scoreRow, currentPlayerId)
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
     }
   }

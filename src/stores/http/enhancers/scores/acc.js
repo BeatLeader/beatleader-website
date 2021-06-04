@@ -1,5 +1,5 @@
-import {getMaxScoreFromSongCharacteristics} from '../../../../../scoresaber/song'
-import {opt} from '../../../../../utils/js'
+import {getMaxScoreFromSongCharacteristics} from '../../../../utils/scoresaber/song'
+import {opt} from '../../../../utils/js'
 
 export default async (data, playerId = null) => {
   if (!data || !data.score || !opt(data, 'leaderboard.diffInfo')) return data;
@@ -10,10 +10,10 @@ export default async (data, playerId = null) => {
   if (!data.score.acc) {
     const maxScore = await getMaxScoreFromSongCharacteristics(characteristics, data.leaderboard.diffInfo);
     if (maxScore) {
-      const unmodififiedScore = opt(data.score, 'unmodififiedScore', opt(data.score, 'score'));
+      const unmodifiedScore = opt(data.score, 'unmodifiedScore', opt(data.score, 'score'));
 
       data.score.maxScore = maxScore;
-      data.score.acc = unmodififiedScore ? unmodififiedScore / maxScore * 100 : null;
+      data.score.acc = unmodifiedScore ? unmodifiedScore / maxScore * 100 : null;
     }
 
   }
