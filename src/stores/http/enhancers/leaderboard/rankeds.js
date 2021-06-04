@@ -1,11 +1,11 @@
-import createRankedsService from '../../../../services/scoresaber/rankeds';
+import createRankedsStore from '../../../../stores/scoresaber/rankeds'
 import {opt} from '../../../../utils/js'
 
 let rankeds;
 
 export default async (data) => {
     if (rankeds === undefined) {
-        rankeds = await createRankedsService().getRankeds();
+        rankeds = (await createRankedsStore()).get();
     }
 
     if (!rankeds) return data;

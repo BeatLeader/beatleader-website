@@ -4,7 +4,7 @@ import initDb from './db/db'
 import setupDataFixes from './db/fix-data'
 import createConfigStore from './stores/config'
 import beatSaviorService from './services/beatsavior'
-import createRankedsService from './services/scoresaber/rankeds'
+import createRankedsStore from './stores/scoresaber/rankeds'
 import ErrorComponent from './components/Common/Error.svelte'
 
 let app = null;
@@ -20,12 +20,10 @@ let app = null;
     const configStore = await createConfigStore();
     const mainPlayerId = configStore.getMainPlayerId();
 
-    const rankedsService = createRankedsService();
+    const rankedsStore = await createRankedsStore();
 
     // TODO: move it to download manager
-    await rankedsService.refreshRankeds();
-
-    await rankedsService.getRankeds()
+    await rankedsStore.refresh();
 
     // TODO: move it to download manager
     if (mainPlayerId) {
