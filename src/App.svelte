@@ -2,6 +2,7 @@
   import {Router, Route} from "svelte-routing";
   import HomePage from './pages/Home.svelte';
   import PlayerPage from './pages/Player.svelte';
+  import NotFoundPage from './pages/NotFound.svelte';
 
   export let url = "";
 </script>
@@ -24,6 +25,7 @@
         />
       </Route>
       <Route path="/" component="{HomePage}" />
+      <Route path="/*" component="{NotFoundPage}" />
     </div>
   </main>
 </Router>
