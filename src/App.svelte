@@ -9,8 +9,20 @@
 <Router url="{url}">
   <main class="section">
     <div class="sspl-page-container">
-      <Route path="/u/:initialPlayerId/:initialScoresType" component="{PlayerPage}" />
-      <Route path="/u/:initialPlayerId" component="{PlayerPage}" />
+      <Route path="/u/:initialPlayerId/*initialScoresType" let:params>
+        <PlayerPage initialPlayerId={params.initialPlayerId}
+                    initialScoresType={
+                      params.initialScoresType && params.initialScoresType.indexOf('/') > 0
+                        ? params.initialScoresType.substr(0, params.initialScoresType.indexOf('/'))
+                        : params.initialScoresType
+                    }
+                    initialScoresPage={
+                      params.initialScoresType && params.initialScoresType.indexOf('/') > 0
+                        ? params.initialScoresType.substr(params.initialScoresType.indexOf('/') + 1)
+                        : 1
+                    }
+        />
+      </Route>
       <Route path="/" component="{HomePage}" />
     </div>
   </main>
