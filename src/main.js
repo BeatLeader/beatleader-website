@@ -11,7 +11,7 @@ let app = null;
 
 (async() => {
   try {
-    log.info('starting up...')
+    log.info('starting up...', 'Main')
 
     await initDb();
     await setupDataFixes();
@@ -31,7 +31,7 @@ let app = null;
       await beatSavior.refresh(mainPlayerId);
     }
 
-    log.info('initialized')
+    log.info('initialized', 'Main')
 
     app = new App({
       target: document.body,

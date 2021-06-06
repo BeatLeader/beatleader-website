@@ -31,7 +31,7 @@
 </Router>
 
 <footer>
-  <p>ScoreSaber Reloaded by <a href="https://github.com/motzel">motzel</a></p>
+  <p>ScoreSaber Reloaded (pre-release) by <a href="https://github.com/motzel">motzel</a></p>
   <p>
     Uses <a href="https://scoresaber.com">ScoreSaber API</a>,
     <a href="https://beatsaver.com">Beat Saver API</a>,
