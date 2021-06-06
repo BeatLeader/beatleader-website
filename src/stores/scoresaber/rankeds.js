@@ -1,5 +1,6 @@
 import {writable} from 'svelte/store'
 import createRankedsService from '../../services/scoresaber/rankeds'
+import eventBus from '../../utils/broadcast-channel-pubsub'
 
 let store = null;
 
@@ -15,13 +16,16 @@ export default async (refreshOnCreate = false) => {
   const get = () => rankeds;
   const refresh = async (forceUpdate = false) => {
     await rankedsService.refreshRankeds(forceUpdate);
-
-    rankeds = await rankedsService.getRankeds();
-
-    set(rankeds);
   }
 
   if (refreshOnCreate) await refresh();
+
+  rankeds = await rankedsService.getRankeds();
+  set(rankeds);
+
+  eventBus.on('rankeds-changed', ({allRankeds}) => {
+    if (allRankeds && Object.keys(allRankeds).length) set(allRankeds);
+  })
 
   store = {
     subscribe,
