@@ -1,3 +1,5 @@
+const fs = require('fs');
+const { execSync } = require("child_process");
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -7,6 +9,12 @@ import sveltePreprocess from 'svelte-preprocess';
 import css from 'rollup-plugin-css-only';
 
 const production = !process.env.ROLLUP_WATCH;
+
+const buildVersion = execSync("git rev-parse --short HEAD").toString();
+fs.writeFileSync('build-info.js', 'export default ' + JSON.stringify({
+	buildDate: (new Date()).toISOString().substr(0, 19).replace('T', ' ') + ' UTC',
+	buildVersion
+}))
 
 function serve() {
 	let server;
