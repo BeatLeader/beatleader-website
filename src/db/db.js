@@ -3,7 +3,7 @@ import log from '../utils/logger'
 import {isDateObject, opt} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
-const SSR_DB_VERSION = 2;
+const SSR_DB_VERSION = 3;
 export let db = null;
 
 import cacheRepository from './repository/cache';
@@ -39,7 +39,7 @@ async function openDatabase() {
         switch (true) {
           case newVersion >= 1 && oldVersion <= 0:
             db.createObjectStore('players', {
-              keyPath: 'playerId',
+              keyPath: 'id',
               autoIncrement: false,
             });
 
@@ -113,6 +113,16 @@ async function openDatabase() {
             });
 
             // NO break here!
+
+          case newVersion >= 3 && oldVersion <=2:
+            db.deleteObjectStore('players');
+
+            db.createObjectStore('players', {
+              keyPath: 'playerId',
+              autoIncrement: false,
+            });
+
+            // NO break here
         }
 
         log.info("Database converted");
