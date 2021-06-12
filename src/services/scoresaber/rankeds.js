@@ -12,7 +12,10 @@ import {addToDate, formatDate, HOUR} from '../../utils/date'
 const REFRESH_INTERVAL = HOUR;
 const RANKEDS_NOTES_CACHE_KEY = 'rankedsNotes';
 
+let service = null;
 export default () => {
+  if (service) return service;
+
   const getRankeds = async () => {
     const dbRankeds = await rankedsRepository().getAll()
 
@@ -211,10 +214,12 @@ export default () => {
     }
   }
 
-  return {
+  service = {
     getRankeds,
     refreshRankeds,
     getRankedsNotesCache,
     setRankedsNotesCache,
   }
+
+  return service;
 }
