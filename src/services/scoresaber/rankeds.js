@@ -215,8 +215,8 @@ export default () => {
   }
 
   service = {
-    getRankeds,
-    refreshRankeds,
+    get: getRankeds,
+    refresh: refreshRankeds,
     getRankedsNotesCache,
     setRankedsNotesCache,
   }
