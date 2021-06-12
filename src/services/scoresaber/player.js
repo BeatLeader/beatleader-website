@@ -42,7 +42,7 @@ export default () => {
   const setPlayer = async (player) => {
     await playersRepository().set(player);
 
-    eventBus.publish('player-changed', player);
+    eventBus.publish('player-profile-changed', player);
 
     return player;
   }
@@ -77,6 +77,7 @@ export default () => {
 
     try {
       let player = await getPlayer(playerId);
+      const firstTimeFetch = !player;
 
       log.trace(`Player fetched from DB`, 'PlayerService', player);
 
@@ -103,6 +104,8 @@ export default () => {
       log.trace(`Player fetched`, 'PlayerService', fetchedPlayer);
 
       player = await updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()});
+
+      if (firstTimeFetch) eventBus.publish('player-profile-first-fetch', player);
 
       log.debug(`Player refreshing complete.`, 'PlayerService', player);
 
