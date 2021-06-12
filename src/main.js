@@ -8,8 +8,6 @@ import createRankedsStore from './stores/scoresaber/rankeds'
 import initDownloadManager from './network/download-manager'
 import ErrorComponent from './components/Common/Error.svelte'
 
-import createPlayerService from './services/scoresaber/player';
-
 let app = null;
 
 (async() => {
@@ -22,16 +20,13 @@ let app = null;
     await initDb();
     await setupDataFixes();
 
-    // pre-warm cache
+    // pre-warm cache && create singleton services
     const configStore = await createConfigStore();
     const mainPlayerId = configStore.getMainPlayerId();
 
     await createRankedsStore();
 
-    // TODO: move it out of here
-    if (mainPlayerId) createPlayerService().refresh(mainPlayerId);
-
-    // TODO: move it to download manager
+    // TODO: move it to download manager and service
     if (mainPlayerId) {
       const beatSavior = beatSaviorService();
       await beatSavior.refresh(mainPlayerId);

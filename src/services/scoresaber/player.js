@@ -35,7 +35,7 @@ export default () => {
     const players = await getAll();
     if (!players) return [];
 
-    return players.filter(player => player.playerInfo && !player.playerInfo.inactive && !player.playerInfo.banned);
+    return players.filter(player => player && player.playerInfo && !player.playerInfo.inactive && !player.playerInfo.banned);
   }
 
   const getPlayer = async playerId => await playersRepository().get(playerId);
@@ -86,7 +86,7 @@ export default () => {
   }
 
   const refresh = async (playerId, force = false, throwErrors = false) => {
-    log.trace(`Starting player "${playerId}" refreshing${force ? ' (forced)' : ''}...`, 'PlayerService')
+    log.trace(`Starting refreshing player "${playerId}" ${force ? ' (forced)' : ''}...`, 'PlayerService')
 
     if (!playerId) {
       log.warn(`Can not refresh player if an empty playerId is given`, 'PlayerService');
@@ -128,7 +128,7 @@ export default () => {
 
       player = await updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()});
 
-      log.debug(`Player refreshing complete.`, 'PlayerService', player);
+      log.debug(`Player refreshed.`, 'PlayerService', player);
 
       return player;
     } catch (e) {
@@ -138,6 +138,22 @@ export default () => {
 
       return null;
     }
+  }
+
+  const refreshAll = async (force = false, throwErrors = false) => {
+    log.trace(`Starting refreshing all active players${force ? ' (forced)' : ''}...`, 'PlayerService');
+
+    const allActivePlayers = await getAllActive();
+    if (!allActivePlayers.length) {
+      log.trace(`No active players, skipping.`, 'PlayerService');
+      return null;
+    }
+
+    const allActiveRefreshed = await Promise.all(allActivePlayers.map(player => refresh(player.playerId, force, throwErrors)));
+
+    log.trace(`Active players refreshed.`, 'PlayerService', allActiveRefreshed);
+
+    return allActiveRefreshed;
   }
 
   const destroyService = () => {
@@ -153,6 +169,7 @@ export default () => {
     update: updatePlayer,
     getProfileFreshnessDate,
     refresh,
+    refreshAll,
     destroyService,
   }
 

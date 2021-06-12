@@ -1,10 +1,11 @@
 <script>
   import {navigate} from 'svelte-routing'
-  import Profile from '../components/Player/Profile.svelte'
+  import eventBus from '../utils/broadcast-channel-pubsub'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
-  import Scores from '../components/Player/Scores.svelte'
   import {opt} from '../utils/js'
   import queue from '../network/queues';
+  import Profile from '../components/Player/Profile.svelte'
+  import Scores from '../components/Player/Scores.svelte'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
@@ -73,10 +74,16 @@
 </script>
 
 <article>
-  User test:
+  User switch test:
   {#each players as player}
     <button on:click={() => navigateToPlayer(player.id)}>{player.name}</button>
   {/each}
+
+  User add test:
+  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198025451538'})}>Add Drakonno</button>
+  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198171067154'})}>Add Sasasin</button>
+  <button on:click={() => eventBus.publish('player-remove-cmd', {playerId: '76561198171067154'})}>Remove Sasasin</button>
+  <button on:click={() => scoresService.refresh('76561198171067154')}>Refresh Sasasin's scores</button>
 
   <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
 
