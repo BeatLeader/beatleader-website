@@ -53,7 +53,7 @@ export default () => {
   const isPlayerMain = playerId => playerId === mainPlayerId;
 
   const refresh = async (playerId, forceUpdate = false, throwErrors = false) => {
-    log.trace(`Starting player "${playerId}" info refreshing${forceUpdate ? ' (forced)' : ''}...`, 'PlayerService')
+    log.trace(`Starting player "${playerId}" refreshing${forceUpdate ? ' (forced)' : ''}...`, 'PlayerService')
 
     if (!playerId) {
       log.warn(`Can not refresh player if an empty playerId is given`, 'PlayerService');
