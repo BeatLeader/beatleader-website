@@ -29,11 +29,16 @@ export default () => {
     })
   })
 
-  const getPlayer = async playerId => {
-    const player = await playersRepository().get(playerId);
+  const getAll = async () => playersRepository().getAll();
 
-    return player ? player : null;
+  const getAllActive = async () => {
+    const players = await getAll();
+    if (!players) return [];
+
+    return players.filter(player => player.playerInfo && !player.playerInfo.inactive && !player.playerInfo.banned);
   }
+
+  const getPlayer = async playerId => await playersRepository().get(playerId);
   const setPlayer = async (player) => {
     await playersRepository().set(player);
 
@@ -117,6 +122,8 @@ export default () => {
   }
 
   service = {
+    getAll,
+    getAllActive,
     get: getPlayer,
     update: updatePlayer,
     getProfileFreshnessDate,
