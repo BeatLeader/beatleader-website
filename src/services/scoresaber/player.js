@@ -3,11 +3,11 @@ import createConfigStore from '../../stores/config'
 import apiPlayerProvider from '../../network/scoresaber/player/api-info'
 import playersRepository from '../../db/repository/players'
 import log from '../../utils/logger'
-import {addToDate, formatDate, MINUTE} from '../../utils/date'
+import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
-const PLAYER_REFRESH_INTERVAL = MINUTE * 30 ;
+const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -31,7 +31,7 @@ export default () => {
 
   const getPlayer = async playerId => {
     const player = await playersRepository().get(playerId);
-    
+
     return player ? player : null;
   }
   const setPlayer = async (player) => {
@@ -49,8 +49,17 @@ export default () => {
     const dbPlayer = await getPlayer(player.playerId);
     return await setPlayer({...dbPlayer, ...player});
   }
-  
+
   const isPlayerMain = playerId => playerId === mainPlayerId;
+
+  const getProfileFreshnessDate = player => {
+    const lastUpdated = player && player.profileLastUpdated ? player.profileLastUpdated : null;
+    if (!lastUpdated) return addToDate(-SECOND);
+
+    const REFRESH_INTERVAL = isPlayerMain(player.playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : PLAYER_REFRESH_INTERVAL;
+
+    return addToDate(REFRESH_INTERVAL, lastUpdated);
+  }
 
   const refresh = async (playerId, forceUpdate = false, throwErrors = false) => {
     log.trace(`Starting player "${playerId}" refreshing${forceUpdate ? ' (forced)' : ''}...`, 'PlayerService')
@@ -65,12 +74,12 @@ export default () => {
       let player = await getPlayer(playerId);
 
       log.trace(`Player fetched from DB`, 'PlayerService', player);
-      
+
       if (!forceUpdate) {
-        const lastUpdated = player && player.profileLastUpdated ? player.profileLastUpdated : null;
-        const REFRESH_INTERVAL = isPlayerMain(playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : PLAYER_REFRESH_INTERVAL;
-        if (lastUpdated && lastUpdated > new Date() - REFRESH_INTERVAL) {
-          log.debug(`Refresh interval not yet expired, skipping. Next refresh on ${formatDate(addToDate(REFRESH_INTERVAL, lastUpdated))}`, 'PlayerService')
+        const profileFreshnessDate = getProfileFreshnessDate(player);
+        if (profileFreshnessDate > new Date()) {
+
+          log.debug(`Profile is still fresh, skipping. Next refresh on ${formatDate(profileFreshnessDate)}`, 'PlayerService')
 
           return player;
         }
@@ -110,8 +119,9 @@ export default () => {
   service = {
     get: getPlayer,
     update: updatePlayer,
+    getProfileFreshnessDate,
     refresh,
-    destroyService
+    destroyService,
   }
 
   return service;
