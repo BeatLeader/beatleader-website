@@ -7,6 +7,7 @@
   import Status from './Status.svelte'
   import Skeleton from '../Common/Skeleton.svelte'
 
+  export let name;
   export let playerInfo;
   export let prevInfo;
   export let skeleton = false;
@@ -14,11 +15,11 @@
 
 {#if playerInfo}
   <h1 class="title is-4 has-text-centered-mobile">
-    {#if playerInfo && playerInfo.playerName}
+    {#if name}
       {#if playerInfo.externalProfileUrl}
-        <a href={playerInfo.externalProfileUrl} target="_blank" rel="noopener">{playerInfo.playerName}</a>
+        <a href={playerInfo.externalProfileUrl} target="_blank" rel="noopener">{name}</a>
       {:else}
-        {playerInfo.playerName}
+        {name}
       {/if}
     {/if}
 

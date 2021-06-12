@@ -8,6 +8,8 @@ import createRankedsStore from './stores/scoresaber/rankeds'
 import initDownloadManager from './network/download-manager'
 import ErrorComponent from './components/Common/Error.svelte'
 
+import createPlayerService from './services/scoresaber/player';
+
 let app = null;
 
 (async() => {
@@ -25,6 +27,9 @@ let app = null;
     const mainPlayerId = configStore.getMainPlayerId();
 
     await createRankedsStore();
+
+    // TODO: move it out of here
+    createPlayerService().refresh(mainPlayerId);
 
     // TODO: move it to download manager
     if (mainPlayerId) {

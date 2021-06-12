@@ -80,7 +80,7 @@ export default async () => {
     if (mainPlayerId !== newMainPlayerId) {
       mainPlayerId = newMainPlayerId;
 
-      log.debug(`Main player changed to ${mainPlayerId}, `, 'DlManager')
+      log.debug(`Main player changed to ${mainPlayerId}`, 'DlManager')
     }
   })
 

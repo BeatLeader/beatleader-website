@@ -11,6 +11,8 @@
   export let error = null;
   export let skeleton = false;
 
+  $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
+  $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, prevInfo, scoresStats, ssBadges} = processPlayerData(playerData))
 </script>
 
@@ -27,7 +29,7 @@
         </div>
       {/if}
 
-      <PlayerStats {playerInfo} {prevInfo} {skeleton}/>
+      <PlayerStats {name} {playerInfo} {prevInfo} {skeleton}/>
 
       {#if scoresStats || ssBadges || skeleton}
         <div class="columns">

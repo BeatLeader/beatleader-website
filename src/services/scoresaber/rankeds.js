@@ -205,6 +205,8 @@ export default () => {
     } catch (e) {
       if (throwErrors) throw e;
 
+      log.debug(`Rankeds refreshing error`, 'RankedsService', e)
+
       return null;
     }
   }

@@ -39,7 +39,7 @@ async function openDatabase() {
         switch (true) {
           case newVersion >= 1 && oldVersion <= 0:
             db.createObjectStore('players', {
-              keyPath: 'id',
+              keyPath: 'playerId',
               autoIncrement: false,
             });
 
