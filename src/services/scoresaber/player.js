@@ -39,6 +39,24 @@ export default () => {
   }
 
   const getPlayer = async playerId => await playersRepository().get(playerId);
+
+  const addPlayer = async playerId => {
+    log.trace(`Starting to add a player "${playerId}"...`, 'PlayerService');
+
+    const player = await refresh(playerId, true);
+    if (!player) {
+      log.warn(`Can not add player "${playerId}"`, 'PlayerService');
+
+      return null;
+    }
+
+    eventBus.publish('player-profile-added', player);
+
+    log.trace(`Player "${playerId}" added.`, 'PlayerService')
+
+    return player;
+  }
+
   const setPlayer = async (player) => {
     await playersRepository().set(player);
 
@@ -46,6 +64,7 @@ export default () => {
 
     return player;
   }
+
   const updatePlayer = async (player) => {
     if (!player || !player.playerId) {
       log.warn(`Can not update player, empty playerId`, 'PlayerService', player)
@@ -66,22 +85,26 @@ export default () => {
     return addToDate(REFRESH_INTERVAL, lastUpdated);
   }
 
-  const refresh = async (playerId, forceUpdate = false, throwErrors = false) => {
-    log.trace(`Starting player "${playerId}" refreshing${forceUpdate ? ' (forced)' : ''}...`, 'PlayerService')
+  const refresh = async (playerId, force = false, throwErrors = false) => {
+    log.trace(`Starting player "${playerId}" refreshing${force ? ' (forced)' : ''}...`, 'PlayerService')
 
     if (!playerId) {
       log.warn(`Can not refresh player if an empty playerId is given`, 'PlayerService');
 
-      return;
+      return null;
     }
 
     try {
       let player = await getPlayer(playerId);
-      const firstTimeFetch = !player;
+      if (!player && !force) {
+        log.debug(`Profile is not added to DB, skipping.`, 'PlayerService')
+
+        return null;
+      }
 
       log.trace(`Player fetched from DB`, 'PlayerService', player);
 
-      if (!forceUpdate) {
+      if (!force) {
         const profileFreshnessDate = getProfileFreshnessDate(player);
         if (profileFreshnessDate > new Date()) {
 
@@ -105,8 +128,6 @@ export default () => {
 
       player = await updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()});
 
-      if (firstTimeFetch) eventBus.publish('player-profile-first-fetch', player);
-
       log.debug(`Player refreshing complete.`, 'PlayerService', player);
 
       return player;
@@ -128,6 +149,7 @@ export default () => {
     getAll,
     getAllActive,
     get: getPlayer,
+    add: addPlayer,
     update: updatePlayer,
     getProfileFreshnessDate,
     refresh,
