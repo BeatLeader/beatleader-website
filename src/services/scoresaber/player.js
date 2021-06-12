@@ -34,7 +34,15 @@ export default () => {
     
     return player ? player : null;
   }
-  const setPlayer = async (player, profileLastUpdated = new Date()) => playersRepository().set({...player, profileLastUpdated});
+  const setPlayer = async (player, profileLastUpdated = new Date()) => {
+    const playerData = {...player, profileLastUpdated}
+
+    await playersRepository().set(playerData);
+
+    eventBus.publish('player-changed', playerData);
+
+    return playerData;
+  }
   const updatePlayer = async (player, profileLastUpdated = new Date()) => {
     if (!player || !player.playerId) {
       log.warn(`Can not update player, empty playerId`, 'PlayerService', player)
@@ -84,11 +92,7 @@ export default () => {
 
       player = await updatePlayer(fetchedPlayer);
 
-      log.trace(`Player saved in DB`, 'PlayerService', player);
-
-      eventBus.publish('player-changed', player);
-
-      log.debug(`Player refreshing complete.`, 'PlayerService');
+      log.debug(`Player refreshing complete.`, 'PlayerService', player);
 
       return player;
     } catch (e) {

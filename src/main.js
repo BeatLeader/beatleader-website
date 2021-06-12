@@ -29,7 +29,7 @@ let app = null;
     await createRankedsStore();
 
     // TODO: move it out of here
-    createPlayerService().refresh(mainPlayerId);
+    if (mainPlayerId) createPlayerService().refresh(mainPlayerId);
 
     // TODO: move it to download manager
     if (mainPlayerId) {
