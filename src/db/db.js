@@ -6,17 +6,6 @@ import eventBus from '../utils/broadcast-channel-pubsub'
 const SSR_DB_VERSION = 3;
 export let db = null;
 
-import cacheRepository from './repository/cache';
-import groupsRepository from './repository/groups';
-import keyValueRepository from './repository/key-value';
-import playersRepository from './repository/players';
-import playersHistoryRepository from './repository/players-history';
-import rankedsRepository from './repository/rankeds';
-import rankedsChangesRepository from './repository/rankeds-changes';
-import scoresRepository from './repository/scores';
-import songsRepository from './repository/songs';
-import twitchRepository from './repository/twitch';
-
 export default async () => {
   IDBKeyRange.prototype.toString = function () {
     return "IDBKeyRange-" + (isDateObject(this.lower) ? this.lower.getTime() : this.lower) + '-' + (isDateObject(this.upper) ? this.upper : this.upper);
@@ -186,9 +175,6 @@ async function openDatabase() {
     }
     db.getCurrentTransaction = getCurrentTransaction;
     db.runInTransaction = runInTransaction;
-
-    // initialize all repositories in order to create cache to sync
-    [cacheRepository, groupsRepository, keyValueRepository, playersRepository, playersHistoryRepository, rankedsRepository, rankedsChangesRepository, scoresRepository, songsRepository, twitchRepository].map(repository => repository());
 
     return db;
   }

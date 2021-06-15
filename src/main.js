@@ -1,6 +1,7 @@
 import App from './App.svelte';
 import log from './utils/logger'
 import initDb from './db/db'
+import initializeRepositories from './db/repositories-init';
 import setupDataFixes from './db/fix-data'
 import createConfigStore from './stores/config'
 import beatSaviorService from './services/beatsavior'
@@ -18,6 +19,7 @@ let app = null;
     log.info('starting up...', 'Main')
 
     await initDb();
+    await initializeRepositories();
     await setupDataFixes();
 
     // pre-warm cache && create singleton services
