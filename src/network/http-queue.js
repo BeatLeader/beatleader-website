@@ -14,7 +14,7 @@ export const PRIORITY = {
 }
 
 export default (options = {}) => {
-  const {retries, rateLimitTick, queueOptions} = {retries: DEFAULT_RETRIES, rateLimitTick: 500, ...options};
+  const {retries, rateLimitTick, ...queueOptions} = {retries: DEFAULT_RETRIES, rateLimitTick: 500, ...options};
   const queue = createQueue(queueOptions);
 
   const {add, emitter, ...queueToReturn} = queue;
