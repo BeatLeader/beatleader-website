@@ -8,6 +8,8 @@ export const SS_API_PLAYER_INFO_URL = SS_API_URL + '/player/${playerId}/full';
 export const SS_API_RECENT_SCORES_URL = SS_API_URL + '/player/${playerId}/scores/recent/${page}';
 export const SS_API_TOP_SCORES_URL = SS_API_URL + '/player/${playerId}/scores/top/${page}';
 
+export const SS_API_SCORES_PER_PAGE = 8;
+
 export default (options = {}) => {
   const queue = createQueue(options);
 
@@ -24,6 +26,7 @@ export default (options = {}) => {
     recentScores,
     topScores,
     SS_API_HOST,
+    SS_API_SCORES_PER_PAGE,
     ...queueToReturn,
   }
 }

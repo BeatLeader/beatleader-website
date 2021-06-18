@@ -141,19 +141,19 @@ export default () => {
   }
 
   const refreshAll = async (force = false, throwErrors = false) => {
-    log.trace(`Starting refreshing all active players${force ? ' (forced)' : ''}...`, 'PlayerService');
+    log.trace(`Starting refreshing all players${force ? ' (forced)' : ''}...`, 'PlayerService');
 
-    const allActivePlayers = await getAllActive();
-    if (!allActivePlayers.length) {
-      log.trace(`No active players, skipping.`, 'PlayerService');
+    const allPlayers = await getAll();
+    if (!allPlayers || !allPlayers.length) {
+      log.trace(`No players in DB, skipping.`, 'PlayerService');
       return null;
     }
 
-    const allActiveRefreshed = await Promise.all(allActivePlayers.map(player => refresh(player.playerId, force, throwErrors)));
+    const allRefreshed = await Promise.all(allPlayers.map(player => refresh(player.playerId, force, throwErrors)));
 
-    log.trace(`Active players refreshed.`, 'PlayerService', allActiveRefreshed);
+    log.trace(`All players refreshed.`, 'PlayerService', allRefreshed);
 
-    return allActiveRefreshed;
+    return allRefreshed;
   }
 
   const destroyService = () => {

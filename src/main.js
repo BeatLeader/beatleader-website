@@ -16,7 +16,7 @@ let app = null;
     // TODO: remove level setting
     log.setLevel(log.TRACE);
 
-    log.info('starting up...', 'Main')
+    log.info('Starting up...', 'Main')
 
     await initDb();
     await initializeRepositories();
@@ -36,7 +36,7 @@ let app = null;
 
     await initDownloadManager();
 
-    log.info('initialized', 'Main')
+    log.info('Site initialized', 'Main')
 
     app = new App({
       target: document.body,

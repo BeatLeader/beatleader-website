@@ -2,6 +2,7 @@
   import {navigate} from 'svelte-routing'
   import eventBus from '../utils/broadcast-channel-pubsub'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
+  import createScoresService from '../services/scoresaber/scores'
   import {opt} from '../utils/js'
   import queue from '../network/queues';
   import Profile from '../components/Player/Profile.svelte'
@@ -12,8 +13,11 @@
   export let initialScoresPage = 1;
   export let initialState = null;
 
+  const scoresService = createScoresService();
+
   const players = [
     {id: '76561198035381239', name: 'motzel'},
+    {id: '76561198171067154', name: 'Sasasin'},
     {id: '76561198025451538', name: 'Drakonno'},
     {id: '76561198333869741', name: 'Cerret'},
   ];
@@ -74,14 +78,17 @@
 </script>
 
 <article>
-  User switch test:
+  User switch:
   {#each players as player}
     <button on:click={() => navigateToPlayer(player.id)}>{player.name}</button>
   {/each}
 
-  User add test:
-  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198025451538'})}>Add Drakonno</button>
-  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198171067154'})}>Add Sasasin</button>
+  || Add:
+  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198025451538'})}>Drakonno</button>
+  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198035381239'})}>motzel</button>
+  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198171067154'})}>Sasasin</button>
+
+  || Others:
   <button on:click={() => eventBus.publish('player-remove-cmd', {playerId: '76561198171067154'})}>Remove Sasasin</button>
   <button on:click={() => scoresService.refresh('76561198171067154')}>Refresh Sasasin's scores</button>
 

@@ -4,6 +4,7 @@ import createQueue, {PRIORITY} from '../utils/queue'
 import createConfigStore from '../stores/config'
 import createRankedsStore from '../stores/scoresaber/rankeds'
 import createPlayerService from '../services/scoresaber/player'
+import createScoresService from '../services/scoresaber/scores'
 import {HOUR, MINUTE} from '../utils/date'
 import {opt} from '../utils/js'
 
@@ -13,11 +14,12 @@ let initialized = false;
 let mainPlayerId = null;
 let rankedsStore = null;
 let playerService = null;
+let scoresService = null;
 
 const TYPES = {
   RANKEDS: {name: 'RANKEDS', priority: PRIORITY.LOW},
   RANKEDS_NOTES_CACHE: {name: 'RANKEDS-NOTES-CACHE', priority: PRIORITY.LOWEST},
-  PLAYER_SCORES: {name: 'PLAYER-SCORE', priority: PRIORITY.NORMAL},
+  PLAYER_SCORES: {name: 'PLAYER-SCORES', priority: PRIORITY.NORMAL},
   ACTIVE_PLAYERS: {name: 'ACTIVE-PLAYERS', priority: PRIORITY.HIGH},
   MAIN_PLAYER: {name: 'MAIN-PLAYER', priority: PRIORITY.HIGHEST},
 }
@@ -67,10 +69,13 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
       break;
 
     case TYPES.PLAYER_SCORES:
-      // if (data && data.playerId)
-        // await enqueueActivePlayersScores(queue, force, then);
-      // else
-        // await enqueuePlayerScores(queue, data.playerId, force, then);
+      log.debug(`Enqueue players scores`, 'DlManager');
+
+      if (data && data.playerId)
+        queue.add(async () => scoresService.refresh(data.playerId, force), priority);
+      else
+        queue.add(async () => scoresService.refreshAll(force), priority);
+      break;
   }
 
   if (then) {
@@ -124,6 +129,7 @@ export default async () => {
   })
 
   playerService = createPlayerService();
+  scoresService = createScoresService();
 
   eventBus.leaderStore.subscribe(async isLeader => {
     if (isLeader) {

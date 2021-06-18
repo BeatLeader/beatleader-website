@@ -111,6 +111,10 @@ async function openDatabase() {
               autoIncrement: false,
             });
 
+            const scoresStore4 = transaction.objectStore('scores');
+            scoresStore4.deleteIndex('scores-timeset');
+            scoresStore4.createIndex('scores-timeSet', 'timeSet', {unique: false});
+
             // NO break here
         }
 
