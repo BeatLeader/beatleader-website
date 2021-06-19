@@ -4,9 +4,12 @@
   import HomePage from './pages/Home.svelte';
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
+  import QueueStats from './components/Common/QueueStats.svelte'
 
   export let url = "";
 </script>
+
+<QueueStats />
 
 <Router url="{url}">
   <main class="section">

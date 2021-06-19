@@ -4,7 +4,6 @@
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
   import createScoresService from '../services/scoresaber/scores'
   import {opt} from '../utils/js'
-  import queue from '../network/queues';
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
 
@@ -21,8 +20,6 @@
     {id: '76561198025451538', name: 'Drakonno'},
     {id: '76561198333869741', name: 'Cerret'},
   ];
-
-  const ssApiQueueStats = queue.SCORESABER_API;
 
   let initialType = opt(initialState, 'scoresType', initialScoresType);
   let initialPage = parseInt(opt(initialState, 'page', initialScoresPage), 10);
@@ -67,14 +64,6 @@
   $: currentStoreType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
   $: currentStorePage = $playerStore && playerStore && playerStore.getPage ? playerStore.getPage() : 1;
   $: skeleton = !$playerStore && $playerIsLoading;
-
-  // function showSsApiStats(queueStats) {
-  //   console.log('---------------')
-  //   console.log(`[In queue] size=${queueStats.size}, pending=${queueStats.pending}`)
-  //   console.log(`[Queue progress]: ${Math.round(queueStats.progress.progress * 100)}% (${queueStats.progress.num}/${queueStats.progress.count})`)
-  //   console.log(`[Queue rate limit]: ${queueStats.rateLimit.waiting}ms, ${queueStats.rateLimit.remaining}/${queueStats.rateLimit.limit}, reset at ${queueStats.rateLimit.resetAt}`)
-  // }
-  // $: showSsApiStats($ssApiQueueStats)
 </script>
 
 <article>
@@ -87,6 +76,8 @@
   <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198025451538'})}>Drakonno</button>
   <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198035381239'})}>motzel</button>
   <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '76561198171067154'})}>Sasasin</button>
+  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '3410805615706524'})}>Black</button>
+  <button on:click={() => eventBus.publish('player-add-cmd', {playerId: '1994101560659098'})}>xoxo</button>
 
   || Others:
   <button on:click={() => eventBus.publish('player-remove-cmd', {playerId: '76561198171067154'})}>Remove Sasasin</button>
