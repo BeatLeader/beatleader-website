@@ -26,17 +26,21 @@ export const dateFromString = str => {
 export const addToDate = (millis, date = new Date()) => new Date(date.getTime() + millis)
 export const daysAgo = days => addToDate(- days * DAY);
 
-export function formatDate(val) {
+export function formatDate(val, dateStyle = 'short', timeStyle = 'medium') {
+    if (!isValidDate(val)) return null;
+
     const rtf = new Intl.DateTimeFormat(getCurrentLocale(), {
         localeMatcher: 'best fit',
-        dateStyle: 'short',
-        timeStyle: 'medium',
+        dateStyle,
+        timeStyle,
     });
 
     return rtf.format(val);
 }
 
 export function formatDateRelativeInUnits(val, unit = 'day') {
+    if (!isValidDate(val)) return null;
+
     const rtf = new Intl.RelativeTimeFormat(getCurrentLang(), {
         localeMatcher: 'best fit',
         numeric: 'auto',
@@ -47,6 +51,8 @@ export function formatDateRelativeInUnits(val, unit = 'day') {
 }
 
 export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto') {
+    if (!isValidDate(val)) return null;
+
     const rtf = new Intl.RelativeTimeFormat(getCurrentLang(), {
         localeMatcher: 'best fit',
         numeric: 'auto',

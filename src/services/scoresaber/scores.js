@@ -170,6 +170,8 @@ export default () => {
 
       const recentPlay = newScores.reduce((recentPlay, s) => opt(s, 'score.timeSet') && s.score.timeSet > recentPlay ? s.score.timeSet : recentPlay, null);
 
+      // TODO: calculate pp contribution of score
+
       let playersCacheToUpdate = [];
       let scoresCacheToUpdate = [];
       await db.runInTransaction(['scores', 'players'], async tx => {
@@ -340,6 +342,7 @@ export default () => {
     refresh,
     refreshAll,
     destroyService,
+    convertScoresToObject
   }
 
   return service;

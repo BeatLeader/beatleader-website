@@ -1,7 +1,8 @@
 <script>
-    import {formatNumber} from '../../utils/format'
+    import {formatNumber, substituteVars} from '../../utils/format'
     import {onMount} from 'svelte'
     import {fade} from 'svelte/transition'
+
 
     export let value = 0;
     export let prevValue = null;
@@ -49,9 +50,11 @@
     $: prevDiffFormatted = prevValue ? formatNumber((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : ""
     $: prevClass = (prevValue ? ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) > minValue ? "inc" : ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
     $: mainClass = (useColorsForValue && resolvedValue ? (resolvedValue > minValue ? "inc" : (resolvedValue < -minValue ? "dec" : "zero")): "");
+
+    $: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : "${value}", {value: prevFormatted})
 </script>
 
-<span class={mainClass} {title}>{formatted}</span>{#if showPrevValue} <small class={prevClass} title={prevTitle ? prevTitle : prevFormatted} transition:fade>{prevDiffFormatted}</small>{/if}
+<span class={mainClass} {title}>{formatted}</span>{#if showPrevValue} <small class={prevClass} title={prevTitleFormatted} transition:fade>{prevDiffFormatted}</small>{/if}
 
 <style>
     small.block {display: block;}

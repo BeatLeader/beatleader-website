@@ -3,8 +3,10 @@
   import Value from './Value.svelte'
   import {diffColors} from '../../utils/scoresaber/format'
   import {opt} from '../../utils/js'
+  import {formatDate} from '../../utils/date'
 
   export let score;
+  export let prevScore;
   export let showPercentageInstead = false;
 
   const badgesDef = [
@@ -31,8 +33,9 @@
   <Badge onlyLabel={true} color="white" bgColor={badge.color} title={badge.desc} label="">
       <span slot="label">
         <Value value={showPercentageInstead ? score.percentage : score.acc}
-               prevValue={showPercentageInstead ? score.prevPercentage : score.prevAcc}
+               prevValue={showPercentageInstead ? opt(prevScore, 'percentage') : opt(prevScore, 'acc')}
                withZeroSuffix={true} title={badge.desc} inline={false} suffix="%" suffixPrev="%"
+               prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
         />
       </span>
   </Badge>
