@@ -6,9 +6,9 @@
   export let noDate = "";
 
   $: dateObj = isValidDate(date) ? date : dateFromString(date);
-  $: formatted = dateObj ? formatDateRelative(dateObj.toISOString()) : noDate;
+  $: formatted = dateObj ? formatDateRelative(dateObj) : noDate;
   $: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromString(date)) : null;
-  $: prevFormatted = prevDateObj ? formatDateRelative(prevDateObj.toISOString()) : "";
+  $: prevFormatted = prevDateObj ? formatDateRelative(prevDateObj) : "";
 </script>
 
 <span title={dateObj ? formatDate(dateObj) : ''}>{formatted}</span>{#if prevDateObj }<small title={formatDate(prevDateObj)}>{prevFormatted}</small>{/if}
