@@ -1,5 +1,5 @@
 import createHttpStore from './http-store';
-import apiPlayerWithScoresProvider from '../../network/scoresaber/player/api-info-with-scores'
+import createApiPlayerWithScoresProvider from './providers/api-info-with-scores'
 import {opt} from '../../utils/js'
 
 export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialState = null) => {
@@ -13,8 +13,10 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
     currentScoresPage = opt(fetchParams, 'scoresPage', null);
   }
 
+  const provider = createApiPlayerWithScoresProvider();
+
   const httpStore = createHttpStore(
-    apiPlayerWithScoresProvider,
+    provider,
     playerId ? {playerId, scoresType, scoresPage} : null,
     initialState,
     {
@@ -32,7 +34,7 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
     )
       return false;
 
-    return httpStore.fetch({playerId, scoresType, scoresPage}, force, apiPlayerWithScoresProvider);
+    return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider);
   }
 
   return {

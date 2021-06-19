@@ -1,6 +1,6 @@
-import {dateFromString} from '../../../utils/date'
-import {extractDiffAndType} from '../../../utils/scoresaber/format'
-import {opt} from '../../../utils/js'
+import {dateFromString} from '../../../../utils/date'
+import {extractDiffAndType} from '../../../../utils/scoresaber/format'
+import {opt} from '../../../../utils/js'
 
 export default response => {
   if (!opt(response, 'scores') || !Array.isArray(response.scores)) return [];

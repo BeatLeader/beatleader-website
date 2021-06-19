@@ -72,18 +72,37 @@ export default () => {
     }
 
     const dbPlayer = await getPlayer(player.playerId);
+
     return await setPlayer({...dbPlayer, ...player});
   }
 
   const isPlayerMain = playerId => playerId === mainPlayerId;
 
-  const getProfileFreshnessDate = player => {
+  const getProfileFreshnessDate = (player, refreshInterval = null) => {
     const lastUpdated = player && player.profileLastUpdated ? player.profileLastUpdated : null;
     if (!lastUpdated) return addToDate(-SECOND);
 
-    const REFRESH_INTERVAL = isPlayerMain(player.playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : PLAYER_REFRESH_INTERVAL;
+    const REFRESH_INTERVAL = refreshInterval ? refreshInterval : (isPlayerMain(player.playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : PLAYER_REFRESH_INTERVAL);
 
     return addToDate(REFRESH_INTERVAL, lastUpdated);
+  }
+
+  const isProfileFresh = (player, refreshInterval = null) => getProfileFreshnessDate(player, refreshInterval) > new Date();
+
+  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => apiPlayerProvider.getProcessed({playerId, priority, signal});
+
+  const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = null, priority = PRIORITY.FG_LOW, signal = null) => {
+    const player = await getPlayer(playerId);
+
+    if (!player || !isProfileFresh(player, refreshInterval)) {
+      const fetchedPlayer = await fetchPlayer(playerId, priority, signal);
+
+      if (player) return updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()});
+
+      return fetchedPlayer;
+    }
+
+    return player;
   }
 
   const refresh = async (playerId, force = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
@@ -117,7 +136,7 @@ export default () => {
 
       log.trace(`Fetching player ${playerId} from ScoreSaber...`, 'PlayerService')
 
-      const fetchedPlayer = await apiPlayerProvider.getProcessed({playerId});
+      const fetchedPlayer = await fetchPlayer(playerId, priority);
 
       if (!fetchedPlayer || !fetchedPlayer.playerId || !fetchedPlayer.name || !fetchedPlayer.playerInfo || !fetchedPlayer.scoreStats) {
         log.warn(`ScoreSaber returned empty info for player ${playerId}`, 'PlayerService')
@@ -169,6 +188,9 @@ export default () => {
     add: addPlayer,
     update: updatePlayer,
     getProfileFreshnessDate,
+    isProfileFresh,
+    fetchPlayer,
+    fetchPlayerOrGetFromCache,
     refresh,
     refreshAll,
     destroyService,
