@@ -1,8 +1,8 @@
-import apiPlayerInfo from '../../../network/scoresaber/player/api-info';
 import apiRecentScoresProvider from '../../../network/scoresaber/scores/api-recent'
 import apiTopScoresProvider from '../../../network/scoresaber/scores/api-top'
 import createPlayerService from '../../../services/scoresaber/player';
 import queue from '../../../network/queues'
+import {MINUTE} from '../../../utils/date'
 
 let playerService = null;
 
@@ -16,7 +16,7 @@ export default () => {
       const fetchParams = {playerId, priority, signal, page: scoresPage}
 
       const [player, scores] = await Promise.all([
-        apiPlayerInfo.getProcessed(fetchParams),
+        playerService.fetchPlayerOrGetFromCache(playerId, MINUTE, priority, signal),
         getProviderByType(scoresType).getProcessed(fetchParams),
       ]);
 
