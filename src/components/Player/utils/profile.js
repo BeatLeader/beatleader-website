@@ -61,7 +61,7 @@ function updateSsBadges(playerData) {
 
 const playerInfoTweened = {};
 export default playerData => {
-  const playerInfo = opt(playerData, 'playerInfo', null);
+  const playerInfo = {...opt(playerData, 'playerInfo', null)};
 
   ['pp', 'rank'].forEach(key => {
     const value = playerInfo && playerInfo[key] ? playerInfo[key] : 0;
@@ -74,7 +74,9 @@ export default playerData => {
     }
   });
 
-  if (Number.isFinite(opt(playerInfo, 'countries.0.rank'))) {
+  const firstCountryRank = opt(playerInfo, 'countries.0.rank')
+  if (Number.isFinite(firstCountryRank)) {
+    playerInfo.countries = playerInfo.countries.map(c => ({...c}))
     const key = 'countryRank'
     const value = playerInfo.countries[0].rank;
 
