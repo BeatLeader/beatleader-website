@@ -5,6 +5,7 @@ import createConfigStore from '../stores/config'
 import createRankedsStore from '../stores/scoresaber/rankeds'
 import createPlayerService from '../services/scoresaber/player'
 import createScoresService from '../services/scoresaber/scores'
+import {PRIORITY as HTTP_QUEUE_PRIORITY} from '../network/http-queue'
 import {HOUR, MINUTE} from '../utils/date'
 import {opt} from '../utils/js'
 
@@ -34,6 +35,7 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
   log.debug(`Try to enqueue type ${type.name}. Forced: ${force}, data: ${JSON.stringify(data)}`, 'DlManager');
 
   const priority = force ? PRIORITY.HIGHEST : type.priority;
+  const networkPriority = priority === PRIORITY.HIGHEST ? HTTP_QUEUE_PRIORITY.BG_HIGH : HTTP_QUEUE_PRIORITY.BG_NORMAL;
 
   switch (type) {
     case TYPES.MAIN_PLAYER:
@@ -52,16 +54,16 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
 
       if (!rankedsStore) rankedsStore = await createRankedsStore();
 
-      queue.add(async () => rankedsStore.refresh(force), priority);
+      queue.add(async () => rankedsStore.refresh(force, networkPriority), priority);
       break;
 
     case TYPES.ACTIVE_PLAYERS:
       log.debug(`Enqueue active players`, 'DlManager');
 
       if (data && data.playerId)
-        queue.add(async () => playerService.refresh(data.playerId, force), priority);
+        queue.add(async () => playerService.refresh(data.playerId, force, networkPriority), priority);
       else
-        queue.add(async () => playerService.refreshAll(force), priority);
+        queue.add(async () => playerService.refreshAll(force, networkPriority), priority);
       break;
 
     case TYPES.RANKEDS_NOTES_CACHE:
@@ -72,9 +74,9 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
       log.debug(`Enqueue players scores`, 'DlManager');
 
       if (data && data.playerId)
-        queue.add(async () => scoresService.refresh(data.playerId, force), priority);
+        queue.add(async () => scoresService.refresh(data.playerId, force, networkPriority), priority);
       else
-        queue.add(async () => scoresService.refreshAll(force), priority);
+        queue.add(async () => scoresService.refreshAll(force, networkPriority), priority);
       break;
   }
 
@@ -111,7 +113,7 @@ export default async () => {
   }
 
   const queue = createQueue({
-    concurrency: 1,
+    concurrency: 2,
     timeout: HOUR * 2,
     throwOnTimeout: true,
   });

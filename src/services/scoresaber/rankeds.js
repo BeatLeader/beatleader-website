@@ -77,7 +77,7 @@ export default () => {
     return rankedsNotesCaches;
   }
 
-  const refreshRankeds = async (forceUpdate = false, throwErrors = false) => {
+  const refreshRankeds = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting rankeds refreshing${forceUpdate ? ' (forced)' : ''}...`, 'RankedsService')
 
     try {
@@ -93,7 +93,7 @@ export default () => {
       }
 
       log.trace(`Fetching current rankeds from ScoreSaber...`, 'RankedsService')
-      fetchedRankedSongs = await queues.SCORESABER_PAGE.rankeds();
+      fetchedRankedSongs = await queues.SCORESABER_PAGE.rankeds(1, null, priority);
       if (!fetchedRankedSongs || !fetchedRankedSongs.length) {
         log.warn(`ScoreSaber returned empty rankeds list`, 'RankedsService')
 

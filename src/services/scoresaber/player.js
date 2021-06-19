@@ -1,6 +1,7 @@
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
 import apiPlayerProvider from '../../network/scoresaber/player/api-info'
+import {PRIORITY} from '../../network/http-queue'
 import playersRepository from '../../db/repository/players'
 import log from '../../utils/logger'
 import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
@@ -40,10 +41,10 @@ export default () => {
 
   const getPlayer = async playerId => await playersRepository().get(playerId);
 
-  const addPlayer = async playerId => {
+  const addPlayer = async (playerId, priority = PRIORITY.FG_LOW) => {
     log.trace(`Starting to add a player "${playerId}"...`, 'PlayerService');
 
-    const player = await refresh(playerId, true);
+    const player = await refresh(playerId, true, priority);
     if (!player) {
       log.warn(`Can not add player "${playerId}"`, 'PlayerService');
 
@@ -85,7 +86,7 @@ export default () => {
     return addToDate(REFRESH_INTERVAL, lastUpdated);
   }
 
-  const refresh = async (playerId, force = false, throwErrors = false) => {
+  const refresh = async (playerId, force = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting refreshing player "${playerId}" ${force ? ' (forced)' : ''}...`, 'PlayerService')
 
     if (!playerId) {
@@ -140,7 +141,7 @@ export default () => {
     }
   }
 
-  const refreshAll = async (force = false, throwErrors = false) => {
+  const refreshAll = async (force = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting refreshing all players${force ? ' (forced)' : ''}...`, 'PlayerService');
 
     const allPlayers = await getAll();
@@ -149,7 +150,7 @@ export default () => {
       return null;
     }
 
-    const allRefreshed = await Promise.all(allPlayers.map(player => refresh(player.playerId, force, throwErrors)));
+    const allRefreshed = await Promise.all(allPlayers.map(player => refresh(player.playerId, force, priority, throwErrors)));
 
     log.trace(`All players refreshed.`, 'PlayerService', allRefreshed);
 

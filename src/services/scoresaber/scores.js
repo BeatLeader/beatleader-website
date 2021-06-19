@@ -3,6 +3,7 @@ import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
 import createPlayerService from './player';
 import createRankedsService from './rankeds';
+import {PRIORITY} from '../../network/http-queue'
 import apiRecentScoresProvider from '../../network/scoresaber/scores/api-recent'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
@@ -74,7 +75,7 @@ export default () => {
   }
   const convertScoresById = (playerId, scores) => convertScoresToObject(scores, score => getScoreKey(playerId, score));
 
-  const fetchScoresUntil = async (playerId, startPage = 1, signal = null, untilFunc = null, dontReduce = false) => {
+  const fetchScoresUntil = async (playerId, startPage = 1, priority = PRIORITY.BG_NORMAL, signal = null, untilFunc = null, dontReduce = false) => {
     log.debug(`Fetching scores of player "${playerId}" starting from page #${startPage}`, 'ScoresService');
 
     let data = [];
@@ -84,7 +85,7 @@ export default () => {
       try {
         log.trace(`Fetching scores page #${page}`, 'ScoresService');
 
-        const pageData = await apiRecentScoresProvider.getProcessed({playerId, page, signal});
+        const pageData = await apiRecentScoresProvider.getProcessed({playerId, page, signal, priority});
         log.trace(`Scores page #${page} fetched`, 'ScoresService', pageData);
 
         if (!pageData) {
@@ -121,26 +122,26 @@ export default () => {
     return dontReduce ? data : reduceScoresArr(data);
   }
 
-  const fetchAllScores = async (playerId, numOfPages, signal = null) => {
+  const fetchAllScores = async (playerId, numOfPages, priority = PRIORITY.BG_NORMAL, signal = null) => {
     log.debug(`Fetching all scores of player "${playerId}, number of pages: ${numOfPages}`, 'ScoresService');
 
     const pages = Array(numOfPages).fill(0).map((_, idx) => idx + 1);
 
-    let data = await Promise.all(pages.map(page => apiRecentScoresProvider.getProcessed({playerId, page, signal})));
+    let data = await Promise.all(pages.map(page => apiRecentScoresProvider.getProcessed({playerId, page, signal, priority})));
 
     if (!data || !data.length) return [];
 
     if (data[data.length - 1].length === SS_API_SCORES_PER_PAGE) {
       data = [
         ...data,
-        ...(await fetchScoresUntil(playerId, data.length + 1, signal, null, true)),
+        ...(await fetchScoresUntil(playerId, data.length + 1, priority, signal, null, true)),
       ];
     }
 
     return reduceScoresArr(data);
   }
 
-  const updatePlayerScores = async player => {
+  const updatePlayerScores = async (player, priority = PRIORITY.BG_NORMAL) => {
     if (!player || !player.playerId) {
       log.warn(`Can not refresh scores, empty playerId`, 'ScoresService', player);
 
@@ -156,8 +157,8 @@ export default () => {
       let newScores;
       const abortController = new AbortController();
 
-      if (numOfPages && !player.scoresLastUpdated) newScores = await fetchAllScores(player.playerId, numOfPages, abortController.signal);
-      else newScores = await fetchScoresUntil(player.playerId, 1, abortController.signal, createFetchUntilLastUpdated(player.recentPlay ? player.recentPlay : player.scoresLastUpdated))
+      if (numOfPages && !player.scoresLastUpdated) newScores = await fetchAllScores(player.playerId, numOfPages, priority, abortController.signal);
+      else newScores = await fetchScoresUntil(player.playerId, 1, priority, abortController.signal, createFetchUntilLastUpdated(player.recentPlay ? player.recentPlay : player.scoresLastUpdated))
 
       if (!newScores || !newScores.length) {
         // no new scores - just update player profile
@@ -244,7 +245,7 @@ export default () => {
     return addToDate(REFRESH_INTERVAL, lastUpdated);
   }
 
-  const refresh = async (playerId, forceUpdate = false, throwErrors = false) => {
+  const refresh = async (playerId, forceUpdate = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting player "${playerId}" scores refreshing${forceUpdate ? ' (forced)' : ''}...`, 'ScoresService')
 
     if (!playerId) {
@@ -262,7 +263,7 @@ export default () => {
     try {
       inProgress.push(playerId);
 
-      const player = await playerService.refresh(playerId);
+      const player = await playerService.refresh(playerId, false, priority);
       if (!player) {
         log.debug(`Can not refresh the scores of player "${playerId}" because it has not been added to the DB`);
         return null;
@@ -280,7 +281,7 @@ export default () => {
 
       log.trace(`Fetching player "${playerId}" scores from ScoreSaber...`, 'ScoresService')
 
-      const newScores = await updatePlayerScores(player);
+      const newScores = await updatePlayerScores(player, priority);
 
       if (!newScores) {
         log.warn(`Can not refresh player "${playerId}" scores`, 'ScoresService')
@@ -311,7 +312,7 @@ export default () => {
     }
   }
 
-  const refreshAll = async (force = false, throwErrors = false) => {
+  const refreshAll = async (force = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting refreshing all players scores${force ? ' (forced)' : ''}...`, 'ScoresService');
 
     const allActivePlayers = await playerService.getAllActive();
@@ -320,7 +321,7 @@ export default () => {
       return null;
     }
 
-    const allNewScores = await Promise.all(allActivePlayers.map(player => refresh(player.playerId, force, throwErrors)));
+    const allNewScores = await Promise.all(allActivePlayers.map(player => refresh(player.playerId, force, priority, throwErrors)));
     const allPlayersWithNewScores = allActivePlayers.map((player, idx) => ({player, newScores: allNewScores[idx]}))
 
     log.trace(`All players scores refreshed.`, 'ScoresService', allPlayersWithNewScores);

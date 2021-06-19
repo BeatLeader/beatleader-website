@@ -23,11 +23,11 @@ const process = response => {
   return {playerId, name, playerInfo, scoreStats: scoreStats ? scoreStats : null};
 };
 
-const get = async ({playerId, signal = null} = {}) => queue.SCORESABER_API.player(playerId, signal, queue.PRIORITY.FG_HIGH);
+const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.SCORESABER_API.player(playerId, signal, priority);
 
 export default {
   get,
   process,
-  getProcessed: async ({playerId, signal = null} = {}) => process(await get({playerId, signal})),
+  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({playerId, priority, signal})),
   type: 'top',
 }
