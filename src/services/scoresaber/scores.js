@@ -263,7 +263,11 @@ export default () => {
     try {
       inProgress.push(playerId);
 
-      const player = await playerService.refresh(playerId, false, priority);
+      let player;
+
+      player = await playerService.refresh(playerId, false, priority);
+      if (!player) player = await playerService.refresh(playerId, true, priority);
+
       if (!player) {
         log.debug(`Can not refresh the scores of player "${playerId}" because it has not been added to the DB`);
         return null;
