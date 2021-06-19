@@ -43,6 +43,8 @@ let app = null;
       props: {},
     });
   } catch(error) {
+    console.error(error);
+
     app = new ErrorComponent({
       target: document.body,
       props: {error, withTrace: true},
