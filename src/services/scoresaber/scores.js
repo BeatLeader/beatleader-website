@@ -27,7 +27,7 @@ export default () => {
   let rankedsService = createRankedsService();
 
   let mainPlayerId = null;
-  let inProgress = [];
+  let updateInProgress = [];
 
   let configStoreUnsubscribe = null;
   createConfigStore().then(configStore => {
@@ -254,14 +254,14 @@ export default () => {
       return null;
     }
 
-    if (inProgress.includes(playerId)) {
+    if (updateInProgress.includes(playerId)) {
       log.warn(`Player "${playerId}" scores are being fetched, skipping.`, 'ScoresService');
 
       return null;
     }
 
     try {
-      inProgress.push(playerId);
+      updateInProgress.push(playerId);
 
       let player;
 
@@ -312,7 +312,7 @@ export default () => {
       return null;
     }
     finally {
-      inProgress = inProgress.filter(pId => pId !== playerId);
+      updateInProgress = updateInProgress.filter(pId => pId !== playerId);
     }
   }
 
