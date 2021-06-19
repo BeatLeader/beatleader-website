@@ -17,7 +17,7 @@
   );
 </script>
 
-{#if $progressTween < 100}
+{#if $ssApiQueueStats.progress.count > 2 && $progressTween < 100}
   <aside transition:fade={{duration: TWEEN_DEFAULT_OPTIONS.duration * 2}}>
     <Donut color={$ssApiQueueStats.rateLimit.waiting > 0 ? "#bf2a42" : "#8f48db"}
            value={$ssApiQueueStats.rateLimit.waiting > 0 ? $ssApiQueueStats.rateLimit.waiting/1000 : $progressTween}
