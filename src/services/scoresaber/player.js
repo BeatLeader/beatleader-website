@@ -66,14 +66,22 @@ export default () => {
     return player;
   }
 
-  const updatePlayer = async (player) => {
+  const updatePlayer = async (player, waitForSaving = true) => {
     if (!player || !player.playerId) {
       log.warn(`Can not update player, empty playerId`, 'PlayerService', player)
     }
 
     const dbPlayer = await getPlayer(player.playerId);
 
-    return await setPlayer({...dbPlayer, ...player});
+    const finalPlayer = {...dbPlayer, ...player}
+
+    if (!waitForSaving) {
+      setPlayer(finalPlayer).then(_ => _)
+
+      return finalPlayer;
+    }
+
+    return await setPlayer(finalPlayer);
   }
 
   const isPlayerMain = playerId => playerId === mainPlayerId;
@@ -97,7 +105,7 @@ export default () => {
     if (!player || !isProfileFresh(player, refreshInterval)) {
       const fetchedPlayer = await fetchPlayer(playerId, priority, signal);
 
-      if (player) return updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()});
+      if (player) return updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()}, false);
 
       return fetchedPlayer;
     }
