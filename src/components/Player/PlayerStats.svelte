@@ -13,7 +13,14 @@
   export let skeleton = false;
 </script>
 
-{#if playerInfo}
+{#if skeleton}
+  <h1 class="title is=4 has-text-centered-mobile">
+    <Skeleton width="50%"/>
+  </h1>
+  <h2 class="title is-5">
+    <Skeleton width="50%"/>
+  </h2>
+{:else if playerInfo}
   <h1 class="title is-4 has-text-centered-mobile">
     {#if name}
       {#if playerInfo.externalProfileUrl}
@@ -59,13 +66,6 @@
         {/if}
       </a>
     {/each}
-  </h2>
-{:else if skeleton}
-  <h1 class="title is=4 has-text-centered-mobile">
-    <Skeleton width="50%"/>
-  </h1>
-  <h2 class="title is-5">
-    <Skeleton width="50%"/>
   </h2>
 {/if}
 
