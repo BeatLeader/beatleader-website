@@ -141,6 +141,8 @@ export default () => {
     return reduceScoresArr(data);
   }
 
+  const getRecentPlayFromScores = (scores, defaultRecentPlay = null) => scores.reduce((recentPlay, s) => opt(s, 'score.timeSet') && s.score.timeSet > recentPlay ? s.score.timeSet : recentPlay, defaultRecentPlay);
+
   const updatePlayerScores = async (player, priority = PRIORITY.BG_NORMAL) => {
     if (!player || !player.playerId) {
       log.warn(`Can not refresh scores, empty playerId`, 'ScoresService', player);
@@ -157,10 +159,15 @@ export default () => {
       let newScores;
       const abortController = new AbortController();
 
-      if (numOfPages && !player.scoresLastUpdated) newScores = await fetchAllScores(player.playerId, numOfPages, priority, abortController.signal);
-      else newScores = await fetchScoresUntil(player.playerId, 1, priority, abortController.signal, createFetchUntilLastUpdated(player.recentPlay ? player.recentPlay : player.scoresLastUpdated))
+      const playerScores = await getPlayerScores(player.playerId)
+      const currentScoresById = convertScoresById(player.playerId, playerScores);
 
-      const currentScoresById = convertScoresById(player.playerId, await getPlayerScores(player.playerId));
+      if (!player.recentPlay) player.recentPlay = getRecentPlayFromScores(playerScores, null)
+
+      const startUpdatingDate = player.recentPlay ? player.recentPlay : player.scoresLastUpdated;
+
+      if (numOfPages && !startUpdatingDate) newScores = await fetchAllScores(player.playerId, numOfPages, priority, abortController.signal);
+      else newScores = await fetchScoresUntil(player.playerId, 1, priority, abortController.signal, createFetchUntilLastUpdated(startUpdatingDate))
 
       if (!newScores || !newScores.length) {
         // no new scores - just update player profile
@@ -169,7 +176,7 @@ export default () => {
         return {recentPlay: player.recentPlay, newScores: null, scores: currentScoresById};
       }
 
-      const recentPlay = newScores.reduce((recentPlay, s) => opt(s, 'score.timeSet') && s.score.timeSet > recentPlay ? s.score.timeSet : recentPlay, player.recentPlay);
+      const recentPlay = getRecentPlayFromScores(newScores, player.recentPlay);
 
       // TODO: calculate pp contribution of score
 
