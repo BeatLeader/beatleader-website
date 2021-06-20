@@ -8,7 +8,7 @@ import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
-const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
+const PLAYER_REFRESH_INTERVAL = MINUTE * 20;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -44,7 +44,7 @@ export default () => {
   const addPlayer = async (playerId, priority = PRIORITY.FG_LOW) => {
     log.trace(`Starting to add a player "${playerId}"...`, 'PlayerService');
 
-    const player = await refresh(playerId, true, priority);
+    const player = await refresh(playerId, true, priority, false, true);
     if (!player) {
       log.warn(`Can not add player "${playerId}"`, 'PlayerService');
 
@@ -105,7 +105,7 @@ export default () => {
     return player;
   }
 
-  const refresh = async (playerId, force = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
+  const refresh = async (playerId, force = false, priority = PRIORITY.BG_NORMAL, throwErrors = false, addIfNotExists = false) => {
     log.trace(`Starting refreshing player "${playerId}" ${force ? ' (forced)' : ''}...`, 'PlayerService')
 
     if (!playerId) {
@@ -116,7 +116,7 @@ export default () => {
 
     try {
       let player = await getPlayer(playerId);
-      if (!player && !force) {
+      if (!player && !addIfNotExists) {
         log.debug(`Profile is not added to DB, skipping.`, 'PlayerService')
 
         return null;
