@@ -160,16 +160,16 @@ export default () => {
       if (numOfPages && !player.scoresLastUpdated) newScores = await fetchAllScores(player.playerId, numOfPages, priority, abortController.signal);
       else newScores = await fetchScoresUntil(player.playerId, 1, priority, abortController.signal, createFetchUntilLastUpdated(player.recentPlay ? player.recentPlay : player.scoresLastUpdated))
 
+      const currentScoresById = convertScoresById(player.playerId, await getPlayerScores(player.playerId));
+
       if (!newScores || !newScores.length) {
         // no new scores - just update player profile
         await playersRepository().set({...player, scoresLastUpdated: newLastUpdated});
-        return [];
 
+        return {recentPlay: player.recentPlay, newScores: null, scores: currentScoresById};
       }
 
-      const currentScoresById = convertScoresById(player.playerId, await getPlayerScores(player.playerId));
-
-      const recentPlay = newScores.reduce((recentPlay, s) => opt(s, 'score.timeSet') && s.score.timeSet > recentPlay ? s.score.timeSet : recentPlay, null);
+      const recentPlay = newScores.reduce((recentPlay, s) => opt(s, 'score.timeSet') && s.score.timeSet > recentPlay ? s.score.timeSet : recentPlay, player.recentPlay);
 
       // TODO: calculate pp contribution of score
 
@@ -179,8 +179,7 @@ export default () => {
         const playersStore = tx.objectStore('players')
         player = await playersStore.get(player.playerId);
         player.scoresLastUpdated = newLastUpdated;
-
-        if (recentPlay) player.recentPlay = recentPlay;
+        player.recentPlay = recentPlay;
         await playersStore.put(player);
 
         playersCacheToUpdate.push(player);
@@ -226,7 +225,7 @@ export default () => {
       playersRepository().addToCache(playersCacheToUpdate);
       scoresRepository().addToCache(scoresCacheToUpdate);
 
-      return newScores;
+      return {recentPlay, newScores, scores: {...currentScoresById, ...convertScoresToObject(scoresCacheToUpdate, score => opt(score, 'id'))}};
     } catch (err) {
       if (![opt(err, 'name'), opt(err, 'message')].includes('AbortError')) throw err;
 
@@ -279,31 +278,31 @@ export default () => {
 
           log.debug(`Player "${playerId}" scores are still fresh, skipping. Next refresh on ${formatDate(scoresFreshnessDate)}`, 'ScoresService')
 
-          return null;
+          return {recentPlay: player.recentPlay, newScores: null, scores: convertScoresById(player.playerId, await getPlayerScores(player.playerId))};
         }
       }
 
       log.trace(`Fetching player "${playerId}" scores from ScoreSaber...`, 'ScoresService')
 
-      const newScores = await updatePlayerScores(player, priority);
+      const scoresInfo = await updatePlayerScores(player, priority);
 
-      if (!newScores) {
+      if (!scoresInfo) {
         log.warn(`Can not refresh player "${playerId}" scores`, 'ScoresService')
 
         return null;
       }
 
-      log.trace(`Player "${playerId}" scores updated`, 'ScoresService', newScores);
+      log.trace(`Player "${playerId}" scores updated`, 'ScoresService', scoresInfo.newScores);
 
-      if (newScores.length) {
+      if (scoresInfo.newScores && scoresInfo.newScores.length) {
         // TODO: update country ranks
 
-        eventBus.publish('player-scores-updated', {player, newScores});
+        eventBus.publish('player-scores-updated', {player, ...scoresInfo});
       }
 
       log.debug(`Player "${playerId}" refreshing complete.`, 'ScoresService');
 
-      return newScores;
+      return scoresInfo;
     } catch (e) {
       if (throwErrors) throw e;
 
@@ -326,7 +325,7 @@ export default () => {
     }
 
     const allNewScores = await Promise.all(allActivePlayers.map(player => refresh(player.playerId, force, priority, throwErrors)));
-    const allPlayersWithNewScores = allActivePlayers.map((player, idx) => ({player, newScores: allNewScores[idx]}))
+    const allPlayersWithNewScores = allActivePlayers.map((player, idx) => allNewScores[idx] ? {player, ...allNewScores[idx]} : {player, newScores: null, scores: null, recentPlay: null})
 
     log.trace(`All players scores refreshed.`, 'ScoresService', allPlayersWithNewScores);
 
