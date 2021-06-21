@@ -1,7 +1,7 @@
 <script>
   import {navigate} from 'svelte-routing'
   import eventBus from '../utils/broadcast-channel-pubsub'
-  import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
+  import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import createScoresService from '../services/scoresaber/scores'
   import {opt} from '../utils/js'
   import Profile from '../components/Player/Profile.svelte'

@@ -1,6 +1,6 @@
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
-import apiPlayerProvider from '../../network/scoresaber/player/api-info'
+import playerApiClient from '../../network/scoresaber/player/api'
 import {PRIORITY} from '../../network/http-queue'
 import playersRepository from '../../db/repository/players'
 import log from '../../utils/logger'
@@ -97,9 +97,11 @@ export default () => {
 
   const isProfileFresh = (player, refreshInterval = null) => getProfileFreshnessDate(player, refreshInterval) > new Date();
 
-  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => apiPlayerProvider.getProcessed({playerId, priority, signal});
+  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => playerApiClient.getProcessed({playerId, priority, signal});
 
   const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = null, priority = PRIORITY.FG_LOW, signal = null) => {
+    // TODO: add temp cache for players not added to DB
+
     const player = await getPlayer(playerId);
 
     if (!player || !isProfileFresh(player, refreshInterval)) {

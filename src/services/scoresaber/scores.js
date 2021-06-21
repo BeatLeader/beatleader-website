@@ -4,7 +4,8 @@ import createConfigStore from '../../stores/config'
 import createPlayerService from './player';
 import createRankedsService from './rankeds';
 import {PRIORITY} from '../../network/http-queue'
-import apiRecentScoresProvider from '../../network/scoresaber/scores/api-recent'
+import recentScoresApiClient from '../../network/scoresaber/scores/api-recent'
+import topScoresApiClient from '../../network/scoresaber/scores/api-top'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
 import log from '../../utils/logger'
@@ -85,7 +86,7 @@ export default () => {
       try {
         log.trace(`Fetching scores page #${page}`, 'ScoresService');
 
-        const pageData = await apiRecentScoresProvider.getProcessed({playerId, page, signal, priority});
+        const pageData = await recentScoresApiClient.getProcessed({playerId, page, signal, priority});
         log.trace(`Scores page #${page} fetched`, 'ScoresService', pageData);
 
         if (!pageData) {
@@ -127,7 +128,7 @@ export default () => {
 
     const pages = Array(numOfPages).fill(0).map((_, idx) => idx + 1);
 
-    let data = await Promise.all(pages.map(page => apiRecentScoresProvider.getProcessed({playerId, page, signal, priority})));
+    let data = await Promise.all(pages.map(page => recentScoresApiClient.getProcessed({playerId, page, signal, priority})));
 
     if (!data || !data.length) return [];
 
@@ -251,6 +252,43 @@ export default () => {
     return addToDate(REFRESH_INTERVAL, lastUpdated);
   }
 
+  const getPlayerScoresPage = async (playerId, type = 'recent', page = 1) => {
+    if (page < 1) return null;
+
+    const key = type === 'top' ? 'pp' : 'timeSet';
+    const playerScores = (await getPlayerScores(playerId));
+
+    if (!playerScores || !playerScores.length) return null;
+
+    playerScores.sort((a,b) => b[key] - a[key]);
+
+    const startIdx = (page - 1) * SS_API_SCORES_PER_PAGE;
+    if (playerScores.length < startIdx + 1) return null;
+
+    return playerScores.slice(startIdx, SS_API_SCORES_PER_PAGE);
+  }
+  const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null) =>
+    (type === 'top' ? topScoresApiClient : recentScoresApiClient)
+      .getProcessed({playerId, page, priority, signal});
+
+  const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = null, priority = PRIORITY.FG_LOW, signal = null) => {
+    if (!player || !player.playerId) return null;
+
+    if (!playerService.isProfileFresh(player, refreshInterval) || !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated) {
+      const fetchedScores = await fetchScoresPage(player.playerId, type, page, priority, signal);
+
+      // TODO: update scores in DB if older than given threshold and rank/pp is different from cached one.
+      // TODO: ONLY THESE TWO FIELDS AND ONLY IF DB SCORE IS EQUAL TO FETCHED SCORE
+
+      return fetchedScores;
+    }
+
+    const scoresPage = await getPlayerScoresPage(player.playerId, type, page);
+    if (!scoresPage) return fetchScoresPage(player.playerId, type, page, priority, signal);
+
+    return scoresPage;
+  }
+
   const refresh = async (playerId, forceUpdate = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting player "${playerId}" scores refreshing${forceUpdate ? ' (forced)' : ''}...`, 'ScoresService')
 
@@ -347,9 +385,12 @@ export default () => {
   service = {
     getAll: getAllScores,
     getPlayerScores,
+    getPlayerScoresPage,
     getPlayerSongScore,
     getPlayerRankedScores,
     update: updateScore,
+    fetchScoresPage,
+    fetchScoresPageOrGetFromCache,
     refresh,
     refreshAll,
     destroyService,

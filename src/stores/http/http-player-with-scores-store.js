@@ -1,5 +1,5 @@
 import createHttpStore from './http-store';
-import createApiPlayerWithScoresProvider from './providers/api-info-with-scores'
+import createApiPlayerWithScoresProvider from './providers/api-player-with-scores'
 import {opt} from '../../utils/js'
 
 export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialState = null) => {
