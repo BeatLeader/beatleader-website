@@ -37,9 +37,12 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
     return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider);
   }
 
+  const refresh = async () => fetch(currentPlayerId, currentScoresType, currentScoresPage, true);
+
   return {
     ...httpStore,
     fetch,
+    refresh,
     getPlayerId: () => currentPlayerId,
     getType: () => currentScoresType,
     setType: type => currentScoresType = type,

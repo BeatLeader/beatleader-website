@@ -147,17 +147,17 @@ export default () => {
 
   const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => playerApiClient.getProcessed({playerId, priority, signal});
 
-  const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
+  const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     const player = await getPlayer(playerId);
 
-    if (!player) {
+    if (!force && !player) {
       // return player from browser cache if possible
       const tempCachedPlayer = await fetchCache.get(playerId, () => Promise.resolve(null));
       if (tempCachedPlayer && isProfileFresh(tempCachedPlayer, refreshInterval))
         return tempCachedPlayer;
     }
 
-    if (!player || !isProfileFresh(player, refreshInterval)) {
+    if (force || !player || !isProfileFresh(player, refreshInterval)) {
       const fetchedPlayer = await fetchPlayer(playerId, priority, signal);
 
       return updatePlayer({...player, ...fetchedPlayer, profileLastUpdated: new Date()}, false)

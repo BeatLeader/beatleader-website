@@ -54,7 +54,7 @@ export default (
 
       pendingAbortController = abortController;
 
-      state = await provider.getProcessed({...finalParams, signal: abortController.signal});
+      state = await provider.getProcessed({...finalParams, signal: abortController.signal, force});
 
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);

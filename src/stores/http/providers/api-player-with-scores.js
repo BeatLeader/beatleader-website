@@ -13,16 +13,16 @@ export default () => {
   let firstFetch = true;
 
   return {
-    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, scoresType = 'recent', scoresPage = 1, signal = null} = {}) => {
+    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, scoresType = 'recent', scoresPage = 1, signal = null, force = false} = {}) => {
       // TODO: force refresh scores for currently displayed profile (add a add/removeVisiblePlayer() method to download-manager maybe?)
       // TODO: and then increase refresh interval if player has not played recently (last 30 mins?)
 
       const refreshInterval = firstFetch ? 5 * SECOND : MINUTE;
       firstFetch = false;
 
-      const player = await playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal);
+      const player = await playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force);
 
-      const scores = await scoresService.fetchScoresPageOrGetFromCache(player, scoresType, scoresPage, refreshInterval, priority, signal)
+      const scores = await scoresService.fetchScoresPageOrGetFromCache(player, scoresType, scoresPage, refreshInterval, priority, signal, force)
 
       return {...player, scores, scoresType, scoresPage}
     },
