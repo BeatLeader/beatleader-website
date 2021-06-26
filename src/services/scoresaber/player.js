@@ -8,6 +8,7 @@ import log from '../../utils/logger'
 import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
+import createFetchCache from '../../db/cache'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 20;
@@ -31,6 +32,8 @@ export default () => {
       }
     })
   })
+
+  const fetchCache = createFetchCache('playerServiceBrowserCache', player => opt(player, 'playerInfo.playerId'));
 
   const getAll = async () => playersRepository().getAll();
 
@@ -74,6 +77,7 @@ export default () => {
     }
 
     const dbPlayer = await getPlayer(player.playerId);
+    if (!dbPlayer) return player;
 
     const finalPlayer = {...dbPlayer, ...player}
 
@@ -102,19 +106,29 @@ export default () => {
   const updatePlayerRecentPlay = async (playerId, recentPlay, recentPlayLastUpdated = new Date()) => {
     let player;
 
-    await db.runInTransaction(['scores', 'players'], async tx => {
+    await db.runInTransaction(['players'], async tx => {
       const playersStore = tx.objectStore('players')
       player = await playersStore.get(playerId);
+      if (player) {
+        player.recentPlayLastUpdated = recentPlayLastUpdated;
+        player.recentPlay = recentPlay;
 
-      player.recentPlayLastUpdated = recentPlayLastUpdated;
-      player.recentPlay = recentPlay;
-
-      await playersStore.put(player);
+        await playersStore.put(player);
+      }
     });
 
     if (player) {
       playersRepository().addToCache([player]);
+      fetchCache.set(playerId, {...player})
       eventBus.publish('player-profile-changed', player);
+    } else {
+      // update browser cache
+      const tempCachedPlayer = await fetchCache.get(playerId, () => Promise.resolve(null));
+      if (tempCachedPlayer) {
+        tempCachedPlayer.recentPlay = recentPlay;
+        tempCachedPlayer.recentPlayLastUpdated = recentPlayLastUpdated;
+        fetchCache.set(playerId, tempCachedPlayer)
+      }
     }
   }
 
@@ -134,23 +148,26 @@ export default () => {
   const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => playerApiClient.getProcessed({playerId, priority, signal});
 
   const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
-    // TODO: add temp cache for players not added to DB // consider if it's really needed?
-
     const player = await getPlayer(playerId);
+
+    if (!player) {
+      // return player from browser cache if possible
+      const tempCachedPlayer = await fetchCache.get(playerId, () => Promise.resolve(null));
+      if (tempCachedPlayer && isProfileFresh(tempCachedPlayer, refreshInterval))
+        return tempCachedPlayer;
+    }
 
     if (!player || !isProfileFresh(player, refreshInterval)) {
       const fetchedPlayer = await fetchPlayer(playerId, priority, signal);
 
-      if (player) {
-        return updatePlayer({...player, ...fetchedPlayer, profileLastUpdated: new Date()}, false)
-          .then(player => {
-            fetchPlayerAndUpdateRecentPlay(player.playerId);
+      return updatePlayer({...player, ...fetchedPlayer, profileLastUpdated: new Date()}, false)
+        .then(player => {
+          fetchCache.set(player.playerId, {...player});
 
-            return player;
-          })
-      }
+          fetchPlayerAndUpdateRecentPlay(player.playerId);
 
-      return {...player, ...fetchedPlayer};
+          return player;
+        })
     }
 
     return player;
