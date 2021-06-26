@@ -82,7 +82,7 @@
 
   || Others:
   <button on:click={() => eventBus.publish('player-remove-cmd', {playerId: '76561198171067154'})}>Remove Sasasin</button>
-  <button on:click={() => scoresService.refresh('76561198171067154')}>Refresh Sasasin's scores</button>
+  <button on:click={() => scoresService.refresh('76561198171067154',true)}>Refresh Sasasin's scores</button>
 
   {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
     <div class="box has-shadow">

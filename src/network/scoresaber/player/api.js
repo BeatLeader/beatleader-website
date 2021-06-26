@@ -7,8 +7,12 @@ const process = response => {
   const {playerInfo: info, scoreStats} = response;
   const {playerId, playerName: name, country, countryRank, avatar, permissions, ...playerInfo} = info;
 
-  if (avatar && !avatar.startsWith('http'))
-    playerInfo.avatar = `${queue.SCORESABER_API.SS_API_HOST}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
+  if (avatar) {
+    if (!avatar.startsWith('http'))
+      playerInfo.avatar = `${queue.SCORESABER_API.SS_API_HOST}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
+    else
+      playerInfo.avatar = avatar;
+  }
 
   playerInfo.banned = !!playerInfo.banned;
   playerInfo.inactive = !!playerInfo.inactive;

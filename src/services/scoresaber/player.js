@@ -1,11 +1,13 @@
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
 import playerApiClient from '../../network/scoresaber/player/api'
+import playerPageClient from '../../network/scoresaber/player/page'
 import {PRIORITY} from '../../network/http-queue'
 import playersRepository from '../../db/repository/players'
 import log from '../../utils/logger'
 import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
+import {db} from '../../db/db'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 20;
@@ -97,19 +99,58 @@ export default () => {
 
   const isProfileFresh = (player, refreshInterval = null) => getProfileFreshnessDate(player, refreshInterval) > new Date();
 
+  const updatePlayerRecentPlay = async (playerId, recentPlay, recentPlayLastUpdated = new Date()) => {
+    let player;
+
+    await db.runInTransaction(['scores', 'players'], async tx => {
+      const playersStore = tx.objectStore('players')
+      player = await playersStore.get(playerId);
+
+      player.recentPlayLastUpdated = recentPlayLastUpdated;
+      player.recentPlay = recentPlay;
+
+      await playersStore.put(player);
+    });
+
+    if (player) {
+      playersRepository().addToCache([player]);
+      eventBus.publish('player-profile-changed', player);
+    }
+  }
+
+  const fetchPlayerAndUpdateRecentPlay = async playerId => {
+    try {
+      const player = await playerPageClient.getProcessed({playerId});
+      const recentPlay = opt(player, 'playerInfo.recentPlay');
+      const recentPlayLastUpdated = opt(player, 'playerInfo.recentPlayLastUpdated');
+      if (!recentPlay || !recentPlayLastUpdated) return null;
+
+      return updatePlayerRecentPlay(playerId, recentPlay, recentPlayLastUpdated);
+    } catch (err) {
+      // swallow error
+    }
+  }
+
   const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => playerApiClient.getProcessed({playerId, priority, signal});
 
-  const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = null, priority = PRIORITY.FG_LOW, signal = null) => {
-    // TODO: add temp cache for players not added to DB
+  const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
+    // TODO: add temp cache for players not added to DB // consider if it's really needed?
 
     const player = await getPlayer(playerId);
 
     if (!player || !isProfileFresh(player, refreshInterval)) {
       const fetchedPlayer = await fetchPlayer(playerId, priority, signal);
 
-      if (player) return updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()}, false);
+      if (player) {
+        return updatePlayer({...player, ...fetchedPlayer, profileLastUpdated: new Date()}, false)
+          .then(player => {
+            fetchPlayerAndUpdateRecentPlay(player.playerId);
 
-      return fetchedPlayer;
+            return player;
+          })
+      }
+
+      return {...player, ...fetchedPlayer};
     }
 
     return player;
@@ -201,6 +242,8 @@ export default () => {
     isProfileFresh,
     fetchPlayer,
     fetchPlayerOrGetFromCache,
+    fetchPlayerAndUpdateRecentPlay,
+    updatePlayerRecentPlay,
     refresh,
     refreshAll,
     destroyService,

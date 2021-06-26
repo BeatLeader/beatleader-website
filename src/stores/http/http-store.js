@@ -28,7 +28,7 @@ export default (
 
   const setProvider = provider => currentProvider = provider;
 
-  const {subscribe, set} = writable(state);
+  const {subscribe: subscribeState, set} = writable(state);
   if (onInitialized) onInitialized({state, fetchParams, defaultFetchParams, set});
 
   const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
@@ -89,6 +89,16 @@ export default (
   }
 
   if (!initialState && fetchParams) fetch(fetchParams, true);
+
+  const subscribe = fn => {
+    const stateUnsubscribe = subscribeState(fn);
+
+    return () => {
+      stateUnsubscribe();
+
+      if (currentProvider.destroy) currentProvider.destroy();
+    }
+  }
 
   return {
     subscribe,

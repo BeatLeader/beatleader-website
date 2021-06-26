@@ -172,7 +172,9 @@ export default () => {
 
       if (!newScores || !newScores.length) {
         // no new scores - just update player profile
-        await playersRepository().set({...player, scoresLastUpdated: newLastUpdated});
+        const playerData = {...player, scoresLastUpdated: newLastUpdated, recentPlayLastUpdated: newLastUpdated}
+
+        await playersRepository().set(playerData);
 
         return {recentPlay: player.recentPlay, newScores: null, scores: currentScoresById};
       }
@@ -187,6 +189,7 @@ export default () => {
         const playersStore = tx.objectStore('players')
         player = await playersStore.get(player.playerId);
         player.scoresLastUpdated = newLastUpdated;
+        player.recentPlayLastUpdated = newLastUpdated;
         player.recentPlay = recentPlay;
         await playersStore.put(player);
 
@@ -243,14 +246,16 @@ export default () => {
 
   const isPlayerMain = playerId => playerId === mainPlayerId;
 
-  const getScoresFreshnessDate = player => {
-    const lastUpdated = player && player.scoresLastUpdated ? player.scoresLastUpdated : null;
+  const getScoresFreshnessDate = (player, refreshInterval = null, key = 'scoresLastUpdated') => {
+    const lastUpdated = player && player[key] ? player[key] : null;
     if (!lastUpdated) return addToDate(-SECOND);
 
-    const REFRESH_INTERVAL = isPlayerMain(player.playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : PLAYER_REFRESH_INTERVAL;
+    const REFRESH_INTERVAL = refreshInterval ? refreshInterval : (isPlayerMain(player.playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : PLAYER_REFRESH_INTERVAL);
 
     return addToDate(REFRESH_INTERVAL, lastUpdated);
   }
+
+  const isScoreDateFresh = (player, refreshInterval = null, key = 'scoresLastUpdated') => getScoresFreshnessDate(player, refreshInterval, key) > new Date();
 
   const getPlayerScoresPage = async (playerId, type = 'recent', page = 1) => {
     if (page < 1) return null;
@@ -263,25 +268,33 @@ export default () => {
     playerScores.sort((a,b) => b[key] - a[key]);
 
     const startIdx = (page - 1) * SS_API_SCORES_PER_PAGE;
+
     if (playerScores.length < startIdx + 1) return null;
 
-    return playerScores.slice(startIdx, SS_API_SCORES_PER_PAGE);
+    return playerScores.slice(startIdx, startIdx + SS_API_SCORES_PER_PAGE);
   }
   const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null) =>
     (type === 'top' ? topScoresApiClient : recentScoresApiClient)
       .getProcessed({playerId, page, priority, signal});
 
-  const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = null, priority = PRIORITY.FG_LOW, signal = null) => {
+  const fetchScoresPageAndUpdateIfNeeded = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null) => {
+    const fetchedScores = await fetchScoresPage(playerId, type, page, priority, signal);
+
+    // TODO: update scores in DB if older than given threshold and rank/pp is different from cached one.
+    // TODO: ONLY THESE TWO FIELDS AND ONLY IF DB SCORE IS EQUAL TO FETCHED SCORE
+
+    return fetchedScores;
+  }
+
+  const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
     if (!player || !player.playerId) return null;
 
-    if (!playerService.isProfileFresh(player, refreshInterval) || !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated) {
-      const fetchedScores = await fetchScoresPage(player.playerId, type, page, priority, signal);
-
-      // TODO: update scores in DB if older than given threshold and rank/pp is different from cached one.
-      // TODO: ONLY THESE TWO FIELDS AND ONLY IF DB SCORE IS EQUAL TO FETCHED SCORE
-
-      return fetchedScores;
-    }
+    // TODO: force fetch once an hour even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
+    if (
+      !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
+      !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
+    )
+      return fetchScoresPageAndUpdateIfNeeded(player.playerId, type, page, priority, signal);
 
     const scoresPage = await getPlayerScoresPage(player.playerId, type, page);
     if (!scoresPage) return fetchScoresPage(player.playerId, type, page, priority, signal);
@@ -389,6 +402,8 @@ export default () => {
     getPlayerSongScore,
     getPlayerRankedScores,
     update: updateScore,
+    getScoresFreshnessDate,
+    areScoresFresh: isScoreDateFresh,
     fetchScoresPage,
     fetchScoresPageOrGetFromCache,
     refresh,

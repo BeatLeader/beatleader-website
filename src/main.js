@@ -14,7 +14,7 @@ let app = null;
 (async() => {
   try {
     // TODO: remove level setting
-    log.setLevel(log.TRACE);
+    // log.setLevel(log.TRACE);
 
     log.info('Starting up...', 'Main')
 
