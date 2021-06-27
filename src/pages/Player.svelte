@@ -1,11 +1,12 @@
 <script>
   import {navigate} from 'svelte-routing'
   import eventBus from '../utils/broadcast-channel-pubsub'
-  import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
+  import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import createScoresService from '../services/scoresaber/scores'
   import {opt} from '../utils/js'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
+  import {SsrHttpNotFoundError} from '../network/errors'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
@@ -81,16 +82,22 @@
 
   || Others:
   <button on:click={() => eventBus.publish('player-remove-cmd', {playerId: '76561198171067154'})}>Remove Sasasin</button>
-  <button on:click={() => scoresService.refresh('76561198171067154')}>Refresh Sasasin's scores</button>
+  <button on:click={() => scoresService.refresh('76561198171067154',true)}>Refresh Sasasin's scores</button>
 
-  <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
+  {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
+    <div class="box has-shadow">
+      <p class="error">Player not found.</p>
+    </div>
+  {:else}
+    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
 
-  {#if $playerStore}
-    <Scores {playerId} initialState={opt($playerStore, 'scores', null)} initialType={currentStoreType}
-            initialPage={currentStorePage}
-            numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
-            on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
-    />
+    {#if $playerStore}
+      <Scores {playerId} initialState={opt($playerStore, 'scores', null)} initialType={currentStoreType}
+              initialPage={currentStorePage}
+              numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
+              on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
+      />
+    {/if}
   {/if}
 </article>
 

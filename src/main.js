@@ -14,7 +14,7 @@ let app = null;
 (async() => {
   try {
     // TODO: remove level setting
-    log.setLevel(log.TRACE);
+    // log.setLevel(log.TRACE);
 
     log.info('Starting up...', 'Main')
 
@@ -43,6 +43,8 @@ let app = null;
       props: {},
     });
   } catch(error) {
+    console.error(error);
+
     app = new ErrorComponent({
       target: document.body,
       props: {error, withTrace: true},

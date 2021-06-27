@@ -62,7 +62,7 @@ export async function fetchJson(url, options) {
 export async function fetchHtml(url, options) {
   return fetchUrl(url, options)
     .then(async response => {
-      const body = response.text();
+      const body = await response.text();
 
       return {headers: response.headers, rateLimit: parseRateLimitHeaders(response), body: new DOMParser().parseFromString(body, 'text/html')}
     })

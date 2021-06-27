@@ -1,5 +1,5 @@
 import createHttpStore from './http-store';
-import apiPlayerProvider from '../../network/scoresaber/player/api-info'
+import playerApiClient from '../../network/scoresaber/player/api'
 import {opt} from '../../utils/js'
 
 export default (playerId = null, initialState = null) => {
@@ -10,7 +10,7 @@ export default (playerId = null, initialState = null) => {
   }
 
   const httpStore = createHttpStore(
-    apiPlayerProvider,
+    playerApiClient,
     playerId ? {playerId} : null,
     initialState,
     {
@@ -22,7 +22,7 @@ export default (playerId = null, initialState = null) => {
   const fetch = async (playerId = currentPlayerId, force = false) => {
     if (!playerId || (playerId === currentPlayerId && !force)) return false;
 
-    return httpStore.fetch({playerId}, force, apiPlayerProvider);
+    return httpStore.fetch({playerId}, force, playerApiClient);
   }
 
   return {

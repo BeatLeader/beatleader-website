@@ -11,7 +11,7 @@
 
 <QueueStats />
 
-<Router url="{url}">
+<Router {url}>
   <main class="section">
     <div class="sspl-page-container">
       <Route path="/u/:initialPlayerId/*initialScoresType" let:params>

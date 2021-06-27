@@ -12,6 +12,7 @@ export default (
   {
     defaultFetchParams = {},
     onInitialized = null,
+    onBeforeStateChange = null,
     onAfterStateChange = null,
     onSetPending = null,
     onError = null,
@@ -27,9 +28,8 @@ export default (
 
   const setProvider = provider => currentProvider = provider;
 
-  const processedInitialState = provider.process(initialState);
-  const {subscribe, set} = writable(initialState ? processedInitialState : null);
-  if (onInitialized) onInitialized({state: processedInitialState, fetchParams, defaultFetchParams, set});
+  const {subscribe: subscribeState, set} = writable(state);
+  if (onInitialized) onInitialized({state, fetchParams, defaultFetchParams, set});
 
   const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
   const {subscribe: subscribePending, set: setPending} = writable(null);
@@ -54,12 +54,12 @@ export default (
 
       pendingAbortController = abortController;
 
-      state = await provider.getProcessed({...finalParams, signal: abortController.signal});
+      state = await provider.getProcessed({...finalParams, signal: abortController.signal, force});
 
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);
 
-      set(state)
+      set(onBeforeStateChange ? onBeforeStateChange(state) : state)
 
       if (onAfterStateChange) onAfterStateChange({state, fetchParams: currentParams, defaultFetchParams, set});
 
@@ -89,6 +89,16 @@ export default (
   }
 
   if (!initialState && fetchParams) fetch(fetchParams, true);
+
+  const subscribe = fn => {
+    const stateUnsubscribe = subscribeState(fn);
+
+    return () => {
+      stateUnsubscribe();
+
+      if (currentProvider.destroy) currentProvider.destroy();
+    }
+  }
 
   return {
     subscribe,

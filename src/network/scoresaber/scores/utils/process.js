@@ -1,9 +1,9 @@
-import {dateFromString} from '../../../utils/date'
-import {extractDiffAndType} from '../../../utils/scoresaber/format'
-import {opt} from '../../../utils/js'
+import {dateFromString} from '../../../../utils/date'
+import {extractDiffAndType} from '../../../../utils/scoresaber/format'
+import {opt} from '../../../../utils/js'
 
-export default response => {
-  if (!opt(response, 'scores') || !Array.isArray(response.scores)) return [];
+export default (response, setLastUpdated = null) => {
+  if (!opt(response, 'scores') || !Array.isArray(response.scores) || !opt(response, 'scores.0.scoreId')) return [];
 
   return response.scores.map(s => {
     const {
@@ -31,6 +31,8 @@ export default response => {
     const percentage = opt(score, 'originalScore') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : null;
 
     const ppWeighted = opt(score, 'pp') && opt(score, 'weight') ? score.pp * score.weight : null;
+
+    if (setLastUpdated) score.lastUpdated = setLastUpdated;
 
     return {leaderboard, score: {...score, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted}};
   });

@@ -37,6 +37,14 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
   const priority = force ? PRIORITY.HIGHEST : type.priority;
   const networkPriority = priority === PRIORITY.HIGHEST ? HTTP_QUEUE_PRIORITY.BG_HIGH : HTTP_QUEUE_PRIORITY.BG_NORMAL;
 
+  const processThen = async (promise, then = null) => {
+    promise.then(result => {
+      if(then) log.debug('Processing then command...', 'DlManager');
+
+      return then ? {result, thenResult: then()} : result;
+    })
+  }
+
   switch (type) {
     case TYPES.MAIN_PLAYER:
       if (mainPlayerId) {
@@ -54,16 +62,23 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
 
       if (!rankedsStore) rankedsStore = await createRankedsStore();
 
-      queue.add(async () => rankedsStore.refresh(force, networkPriority), priority);
+      processThen(queue.add(async () => rankedsStore.refresh(force, networkPriority), priority), then)
+        .then(_ => log.debug('Enqueued rankeds processed.', 'DlManager'));
       break;
 
     case TYPES.ACTIVE_PLAYERS:
       log.debug(`Enqueue active players`, 'DlManager');
 
-      if (data && data.playerId)
-        queue.add(async () => playerService.refresh(data.playerId, force, networkPriority), priority);
-      else
-        queue.add(async () => playerService.refreshAll(force, networkPriority), priority);
+      if (data && data.playerId) {
+        if (data.add)
+          processThen(queue.add(async () => playerService.add(data.playerId, networkPriority), priority), then)
+            .then(_ => log.debug('Enqueued active players processed.', 'DlManager'));
+        else
+          processThen(queue.add(async () => playerService.refresh(data.playerId, force, networkPriority), priority), then)
+            .then(_ => log.debug('Enqueued active players processed.', 'DlManager'));
+      } else
+        processThen(queue.add(async () => playerService.refreshAll(force, networkPriority), priority), then)
+          .then(_ => log.debug('Enqueued active players processed.', 'DlManager'));
       break;
 
     case TYPES.RANKEDS_NOTES_CACHE:
@@ -74,16 +89,12 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
       log.debug(`Enqueue players scores`, 'DlManager');
 
       if (data && data.playerId)
-        queue.add(async () => scoresService.refresh(data.playerId, force, networkPriority), priority);
+        processThen(queue.add(async () => scoresService.refresh(data.playerId, force, networkPriority), priority), then)
+          .then(_ => log.debug('Enqueued players scores processed.', 'DlManager'));
       else
-        queue.add(async () => scoresService.refreshAll(force, networkPriority), priority);
+        processThen(queue.add(async () => scoresService.refreshAll(force, networkPriority), priority), then)
+          .then(_ => log.debug('Enqueued players scores processed.', 'DlManager'));
       break;
-  }
-
-  if (then) {
-    log.debug('Processing then command...', 'DlManager');
-
-    await then();
   }
 }
 
@@ -148,7 +159,7 @@ export default async () => {
   eventBus.on('player-add-cmd', async ({playerId}) => {
     await enqueue(
       queue, TYPES.ACTIVE_PLAYERS, true,
-      {playerId},
+      {playerId, add: true},
       async () => enqueue(queue, TYPES.PLAYER_SCORES, true, {playerId}),
     );
   });
