@@ -24,6 +24,8 @@ export default async () => {
 
     currentConfig = config;
     storeSet(config);
+
+    return config;
   }
 
   const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);

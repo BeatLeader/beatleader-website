@@ -39,7 +39,7 @@ const initQueue = queue => {
 }
 
 export default {
-  SCORESABER_API: initQueue(createScoreSaberApiQueue({concurrency: 3, timeout: 35000})),
+  SCORESABER_API: initQueue(createScoreSaberApiQueue({concurrency: 3, timeout: 95000})),
   SCORESABER_PAGE: initQueue(createScoreSaberPageQueue({concurrency: 3, timeout: 30000})),
   BEATSAVER: initQueue(createBeatSaverApiQueue({concurrency: 1, timeout: 10000})),
   BEATSAVIOR: initQueue(createBeatSaviorApiQueue({concurrency: 1, timeout: 10000})),

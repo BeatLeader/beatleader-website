@@ -3,19 +3,8 @@ import log from '../utils/logger'
 import {isDateObject, opt} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
-const SSR_DB_VERSION = 2;
+const SSR_DB_VERSION = 3;
 export let db = null;
-
-import cacheRepository from './repository/cache';
-import groupsRepository from './repository/groups';
-import keyValueRepository from './repository/key-value';
-import playersRepository from './repository/players';
-import playersHistoryRepository from './repository/players-history';
-import rankedsRepository from './repository/rankeds';
-import rankedsChangesRepository from './repository/rankeds-changes';
-import scoresRepository from './repository/scores';
-import songsRepository from './repository/songs';
-import twitchRepository from './repository/twitch';
 
 export default async () => {
   IDBKeyRange.prototype.toString = function () {
@@ -113,6 +102,20 @@ async function openDatabase() {
             });
 
             // NO break here!
+
+          case newVersion >= 3 && oldVersion <=2:
+            db.deleteObjectStore('players');
+
+            db.createObjectStore('players', {
+              keyPath: 'playerId',
+              autoIncrement: false,
+            });
+
+            const scoresStore4 = transaction.objectStore('scores');
+            scoresStore4.deleteIndex('scores-timeset');
+            scoresStore4.createIndex('scores-timeSet', 'timeSet', {unique: false});
+
+            // NO break here
         }
 
         log.info("Database converted");
@@ -176,9 +179,6 @@ async function openDatabase() {
     }
     db.getCurrentTransaction = getCurrentTransaction;
     db.runInTransaction = runInTransaction;
-
-    // initialize all repositories in order to create cache to sync
-    [cacheRepository, groupsRepository, keyValueRepository, playersRepository, playersHistoryRepository, rankedsRepository, rankedsChangesRepository, scoresRepository, songsRepository, twitchRepository].map(repository => repository());
 
     return db;
   }

@@ -10,11 +10,13 @@
   import Badge from '../Common/Badge.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
   import {opt} from '../../utils/js'
+  import {formatDate} from '../../utils/date'
 
   export let songScore = null;
 
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
+  $: prevScore = opt(songScore, 'prevScore', null);
 </script>
 
 {#if songScore}
@@ -45,8 +47,9 @@
           <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
             <span slot="label">
               <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-                  pp="{score.pp}" prevPp={score.prevPp}
+                  pp="{score.pp}" prevPp={opt(prevScore, 'pp')}
                   zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                  prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
                   color="white"
               />
             </span>
@@ -62,7 +65,7 @@
 
     {#if score.acc}
         <span class="acc with-badge">
-          <Accuracy {score} />
+          <Accuracy {score} {prevScore} />
         </span>
     {:else}
       <span class="acc with-badge"></span>
@@ -72,8 +75,9 @@
       <span class="score with-badge">
         <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
             <span slot="label">
-              <Value value="{score.score}" prevValue={score.prevScore}
+              <Value value="{score.score}" prevValue={opt(prevScore, 'score')}
                      inline={false} digits={0} prefix={score.scoreApproximate ? '~' : ''}
+                     prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
               />
             </span>
         </Badge>

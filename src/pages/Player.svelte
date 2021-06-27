@@ -1,23 +1,26 @@
 <script>
   import {navigate} from 'svelte-routing'
-  import Profile from '../components/Player/Profile.svelte'
-  import createPlayerInfoWithScoresStore from '../stores/http/http-player-info-with-scores-store'
-  import Scores from '../components/Player/Scores.svelte'
+  import eventBus from '../utils/broadcast-channel-pubsub'
+  import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
+  import createScoresService from '../services/scoresaber/scores'
   import {opt} from '../utils/js'
-  import queue from '../network/queues';
+  import Profile from '../components/Player/Profile.svelte'
+  import Scores from '../components/Player/Scores.svelte'
+  import {SsrHttpNotFoundError} from '../network/errors'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
   export let initialState = null;
 
+  const scoresService = createScoresService();
+
   const players = [
     {id: '76561198035381239', name: 'motzel'},
+    {id: '76561198171067154', name: 'Sasasin'},
     {id: '76561198025451538', name: 'Drakonno'},
     {id: '76561198333869741', name: 'Cerret'},
   ];
-
-  const ssApiQueueStats = queue.SCORESABER_API;
 
   let initialType = opt(initialState, 'scoresType', initialScoresType);
   let initialPage = parseInt(opt(initialState, 'page', initialScoresPage), 10);
@@ -62,30 +65,23 @@
   $: currentStoreType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
   $: currentStorePage = $playerStore && playerStore && playerStore.getPage ? playerStore.getPage() : 1;
   $: skeleton = !$playerStore && $playerIsLoading;
-
-  // function showSsApiStats(queueStats) {
-  //   console.log('---------------')
-  //   console.log(`[In queue] size=${queueStats.size}, pending=${queueStats.pending}`)
-  //   console.log(`[Queue progress]: ${Math.round(queueStats.progress.progress * 100)}% (${queueStats.progress.num}/${queueStats.progress.count})`)
-  //   console.log(`[Queue rate limit]: ${queueStats.rateLimit.waiting}ms, ${queueStats.rateLimit.remaining}/${queueStats.rateLimit.limit}, reset at ${queueStats.rateLimit.resetAt}`)
-  // }
-  // $: showSsApiStats($ssApiQueueStats)
 </script>
 
 <article>
-  User test:
-  {#each players as player}
-    <button on:click={() => navigateToPlayer(player.id)}>{player.name}</button>
-  {/each}
+  {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
+    <div class="box has-shadow">
+      <p class="error">Player not found.</p>
+    </div>
+  {:else}
+    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
 
-  <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
-
-  {#if $playerStore}
-    <Scores {playerId} initialState={opt($playerStore, 'scores', null)} initialType={currentStoreType}
-            initialPage={currentStorePage}
-            numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
-            on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
-    />
+    {#if $playerStore}
+      <Scores {playerId} initialState={opt($playerStore, 'scores', null)} initialType={currentStoreType}
+              initialPage={currentStorePage}
+              numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
+              on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
+      />
+    {/if}
   {/if}
 </article>
 

@@ -1,16 +1,21 @@
 import {db} from '../../db/db'
 import queues from '../../network/queues';
+import eventBus from '../../utils/broadcast-channel-pubsub'
 import {arrayDifference, convertArrayToObjectByKey, opt} from '../../utils/js'
 import rankedsRepository from '../../db/repository/rankeds'
 import rankedsChangesRepository from '../../db/repository/rankeds-changes'
 import keyValueRepository from '../../db/repository/key-value'
 import songsRepository from '../../db/repository/songs'
-import {HOUR} from '../../utils/date'
+import log from '../../utils/logger'
+import {addToDate, formatDate, HOUR} from '../../utils/date'
 
 const REFRESH_INTERVAL = HOUR;
 const RANKEDS_NOTES_CACHE_KEY = 'rankedsNotes';
 
+let service = null;
 export default () => {
+  if (service) return service;
+
   const getRankeds = async () => {
     const dbRankeds = await rankedsRepository().getAll()
 
@@ -72,87 +77,105 @@ export default () => {
     return rankedsNotesCaches;
   }
 
-  const refreshRankeds = async (forceUpdate = false) => {
-    if (!forceUpdate) {
-      const lastUpdated = await getLastUpdated();
-      if (lastUpdated && lastUpdated > new Date() - REFRESH_INTERVAL) return null;
-    }
+  const refreshRankeds = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
+    log.trace(`Starting rankeds refreshing${forceUpdate ? ' (forced)' : ''}...`, 'RankedsService')
 
-    console.warn('refreshing rankeds...');
-
-    let fetchedRankedSongs;
     try {
-      fetchedRankedSongs = await queues.SCORESABER_PAGE.rankeds();
-      if (!fetchedRankedSongs || !fetchedRankedSongs.length) return null;
-    } catch (e) {
-      return null;
-    }
+      let fetchedRankedSongs;
 
-    const oldRankedSongs = await getRankeds();
+      if (!forceUpdate) {
+        const lastUpdated = await getLastUpdated();
+        if (lastUpdated && lastUpdated > new Date() - REFRESH_INTERVAL) {
+          log.debug(`Refresh interval not yet expired, skipping. Next refresh on ${formatDate(addToDate(REFRESH_INTERVAL, lastUpdated))}`, 'RankedsService')
 
-    // add firstSeen & oldStars properties
-    fetchedRankedSongs = convertArrayToObjectByKey(
-      fetchedRankedSongs.map(s => {
-        const firstSeen = oldRankedSongs[s.leaderboardId] && oldRankedSongs[s.leaderboardId].firstSeen
-          ? oldRankedSongs[s.leaderboardId].firstSeen
-          : new Date();
+          return null;
+        }
+      }
 
-        return {...s, firstSeen, oldStars: null}
-      }),
-      'leaderboardId',
-    );
+      log.trace(`Fetching current rankeds from ScoreSaber...`, 'RankedsService')
+      fetchedRankedSongs = await queues.SCORESABER_PAGE.rankeds(1, null, priority);
+      if (!fetchedRankedSongs || !fetchedRankedSongs.length) {
+        log.warn(`ScoreSaber returned empty rankeds list`, 'RankedsService')
 
-    // find differences between old and new ranked songs
-    const newRankeds = arrayDifference(
-      Object.keys(fetchedRankedSongs),
-      Object.keys(oldRankedSongs),
-    ).map(leaderboardId => ({
-      leaderboardId: parseInt(leaderboardId, 10),
-      oldStars: null,
-      stars: fetchedRankedSongs[leaderboardId].stars,
-      timestamp: Date.now(),
-    }));
+        return null;
+      }
 
-    const changed =
-      // concat new rankeds with changed rankeds
-      newRankeds
-        .concat(
-          Object.values(oldRankedSongs)
-            .filter((s) => s.stars !== fetchedRankedSongs[s.leaderboardId] ? opt(fetchedRankedSongs[s.leaderboardId], 'stars', null) : null)
-            .map(s => ({
-                leaderboardId: s.leaderboardId,
-                oldStars: s.stars,
-                stars: opt(fetchedRankedSongs[s.leaderboardId], 'stars', null),
-                timestamp: Date.now(),
-              }),
-            ),
+      log.trace('Fetching rankeds from DB', 'RankedsService');
+      const oldRankedSongs = await getRankeds();
+
+      // add firstSeen & oldStars properties
+      fetchedRankedSongs = convertArrayToObjectByKey(
+        fetchedRankedSongs.map(s => {
+          const firstSeen = oldRankedSongs[s.leaderboardId] && oldRankedSongs[s.leaderboardId].firstSeen
+            ? oldRankedSongs[s.leaderboardId].firstSeen
+            : new Date();
+
+          return {...s, firstSeen, oldStars: null}
+        }),
+        'leaderboardId',
+      );
+
+      // find differences between old and new ranked songs
+      const newRankeds = arrayDifference(
+        Object.keys(fetchedRankedSongs),
+        Object.keys(oldRankedSongs),
+      ).map(leaderboardId => ({
+        leaderboardId: parseInt(leaderboardId, 10),
+        oldStars: null,
+        stars: fetchedRankedSongs[leaderboardId].stars,
+        timestamp: Date.now(),
+      }));
+
+      if (newRankeds && newRankeds.length)
+        log.debug(`${newRankeds.length} ranked(s) found`, 'RankedsService');
+
+      const changed =
+        // concat new rankeds with changed rankeds
+        newRankeds
+          .concat(
+            Object.values(oldRankedSongs)
+              .filter((s) => s.stars !== fetchedRankedSongs[s.leaderboardId] ? opt(fetchedRankedSongs[s.leaderboardId], 'stars', null) : null)
+              .map(s => ({
+                  leaderboardId: s.leaderboardId,
+                  oldStars: s.stars,
+                  stars: opt(fetchedRankedSongs[s.leaderboardId], 'stars', null),
+                  timestamp: Date.now(),
+                }),
+              ),
+          );
+
+      if(newRankeds && changed && changed.length - newRankeds.length > 0)
+        log.debug(`${changed.length - newRankeds.length} changed ranked(s) found`, 'RankedsService');
+
+      const changedLeaderboards = changed
+        .map(s => {
+            const ranked = fetchedRankedSongs[s.leaderboardId] ? fetchedRankedSongs[s.leaderboardId] : oldRankedSongs[s.leaderboardId];
+
+            return {
+              ...ranked,
+              ...s,
+            }
+          },
         )
-    ;
+        .filter(s => s && s.hash)
+        .map(l => {
+          const {oldStars, timestamp, ...leaderboard} = l;
+          return leaderboard;
+        });
 
-    const changedLeaderboards = changed
-      .map(s => {
-          const ranked = fetchedRankedSongs[s.leaderboardId] ? fetchedRankedSongs[s.leaderboardId] : oldRankedSongs[s.leaderboardId];
+      log.trace('Saving rankeds to DB...', 'RankedsService');
 
-          return {
-            ...ranked,
-            ...s,
-          }
-        },
-      )
-      .filter(s => s && s.hash)
-      .map(l => {
-        const {oldStars, timestamp, ...leaderboard} = l;
-        return leaderboard;
-      });
-
-    try {
       await db.runInTransaction(['rankeds', 'rankeds-changes', 'key-value'], async _ => {
         await Promise.all(changedLeaderboards.map(async ranked => rankedsRepository().set(ranked)));
         await Promise.all(changed.map(async rc => rankedsChangesRepository().set(rc)));
         await setLastUpdated(new Date())
       });
 
+      log.trace('Rankeds saved', 'RankedsService');
+
       if (newRankeds.length) {
+        log.trace('Adding notes cache for new rankeds...', 'RankedsService');
+
         const newHashes = newRankeds
           .map(r => fetchedRankedSongs[r.leaderboardId] && fetchedRankedSongs[r.leaderboardId].hash
             ? fetchedRankedSongs[r.leaderboardId].hash.toLowerCase()
@@ -171,23 +194,32 @@ export default () => {
         });
 
         if (shouldNotesCacheBeSaved) await setRankedsNotesCache(rankedsNotesCache);
+
+        log.trace('Notes cache added', 'RankedsService');
       }
 
-      // TODO:
-      // if (changed.length) {
-      //   eventBus.publish('rankeds-changed', {nodeId: nodeSync().getId(), changed, allRankeds: fetchedRankedSongs});
-      // }
+      if (changed.length) {
+        eventBus.publish('rankeds-changed', {changed, allRankeds: fetchedRankedSongs});
+      }
+
+      log.debug(`Rankeds refreshing complete.`, 'RankedsService')
 
       return changed;
     } catch (e) {
+      if (throwErrors) throw e;
+
+      log.debug(`Rankeds refreshing error`, 'RankedsService', e)
+
       return null;
     }
   }
 
-  return {
-    getRankeds,
-    refreshRankeds,
+  service = {
+    get: getRankeds,
+    refresh: refreshRankeds,
     getRankedsNotesCache,
     setRankedsNotesCache,
   }
+
+  return service;
 }

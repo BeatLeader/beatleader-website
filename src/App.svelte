@@ -1,13 +1,17 @@
 <script>
   import {Router, Route} from "svelte-routing";
+  import buildInfo from '../build-info';
   import HomePage from './pages/Home.svelte';
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
+  import QueueStats from './components/Common/QueueStats.svelte'
 
   export let url = "";
 </script>
 
-<Router url="{url}">
+<QueueStats />
+
+<Router {url}>
   <main class="section">
     <div class="sspl-page-container">
       <Route path="/u/:initialPlayerId/*initialScoresType" let:params>
@@ -32,6 +36,7 @@
 
 <footer>
   <p>ScoreSaber Reloaded by <a href="https://github.com/motzel">motzel</a></p>
+  <p>Developer preview build {buildInfo.buildVersion}. Build date: {buildInfo.buildDate}</p>
   <p>
     Uses <a href="https://scoresaber.com">ScoreSaber API</a>,
     <a href="https://beatsaver.com">Beat Saver API</a>,
