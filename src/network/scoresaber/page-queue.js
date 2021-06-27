@@ -10,8 +10,11 @@ const SS_CORS_HOST = '/cors/score-saber';
 const RANKEDS_URL = SS_CORS_HOST + '/api.php?function=get-leaderboards&cat=1&limit=5000&ranked=1&page=${page}';
 const PLAYER_PROFILE = SS_CORS_HOST + '/u/${playerId}?page=1&sort=2'
 
-export const parseSsInt = text => parseInt(getFirstRegexpMatch(/([0-9,]+)\s*$/, text)?.replace(/[^\d]/g, '') ?? null, 10)
-export const parseSsFloat = text => parseFloat(getFirstRegexpMatch(/([0-9,.]+)\s*$/, text?.replace(/[^\d.]/g, '')) ?? null)
+export const parseSsInt = text => {
+  const value = getFirstRegexpMatch(/([0-9,]+)\s*$/, text)
+  return value ? parseInt(value.replace(/[^\d]/g, '') , 10) : null;
+}
+export const parseSsFloat = text => text ? parseFloat(getFirstRegexpMatch(/([0-9,.]+)\s*$/, text.replace(/[^\d.]/g, ''))) : null;
 
 export default (options = {}) => {
   const queue = createQueue(options);
