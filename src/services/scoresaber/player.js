@@ -9,6 +9,7 @@ import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
 import createFetchCache from '../../db/cache'
+import makePendingPromisePool from '../../utils/pending-promises'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 20;
@@ -20,6 +21,8 @@ export default () => {
   if (service) return service;
 
   let mainPlayerId = null;
+
+  const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
   let configStoreUnsubscribe = null;
   createConfigStore().then(configStore => {
@@ -143,7 +146,7 @@ export default () => {
 
   const fetchPlayerAndUpdateRecentPlay = async playerId => {
     try {
-      const player = await playerPageClient.getProcessed({playerId});
+      const player = await resolvePromiseOrWaitForPending(`pageClient/${playerId}`, () =>playerPageClient.getProcessed({playerId}));
       const recentPlay = opt(player, 'playerInfo.recentPlay');
       const recentPlayLastUpdated = opt(player, 'playerInfo.recentPlayLastUpdated');
       if (!recentPlay || !recentPlayLastUpdated) return null;
@@ -154,7 +157,7 @@ export default () => {
     }
   }
 
-  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => playerApiClient.getProcessed({playerId, priority, signal});
+  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/${playerId}`, () => playerApiClient.getProcessed({playerId, priority, signal}));
 
   const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     const player = await getPlayer(playerId);

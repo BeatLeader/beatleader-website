@@ -12,6 +12,9 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
 
   let playerService = createPlayerService();
 
+  let lastRecentPlay = null;
+  let playerForLastRecentPlay = null;
+
   const onNewData = ({fetchParams}) => {
     currentPlayerId = opt(fetchParams, 'playerId', null);
     currentScoresType = opt(fetchParams, 'scoresType', null);
@@ -39,21 +42,30 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
     )
       return false;
 
+    // reset recent play if player has changed
+    if (playerId !== playerForLastRecentPlay) {
+      lastRecentPlay = null;
+      playerForLastRecentPlay = playerId;
+    }
+
     return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider);
   }
 
   const refresh = async () => fetch(currentPlayerId, currentScoresType, currentScoresPage, true);
 
-  let lastRecentPlay = null;
   const playerRecentPlayUpdatedUnsubscribe = eventBus.on('player-recent-play-updated', async ({playerId, recentPlay}) => {
     if (!playerId || !currentPlayerId || playerId !== currentPlayerId) return;
 
     if (!recentPlay || !lastRecentPlay || recentPlay <= lastRecentPlay) {
-      if (recentPlay) lastRecentPlay = recentPlay;
+      if (recentPlay) {
+        lastRecentPlay = recentPlay;
+        playerForLastRecentPlay = playerId;
+      }
       return;
     }
 
     lastRecentPlay = recentPlay;
+    playerForLastRecentPlay = playerId;
 
     await refresh();
   });
