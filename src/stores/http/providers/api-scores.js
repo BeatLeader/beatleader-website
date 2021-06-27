@@ -19,6 +19,13 @@ export default () => {
     player = newPlayer;
   });
 
+  const playerRecentPlayUpdatedUnsubscribe = eventBus.on('player-recent-play-updated', async ({playerId, recentPlay, recentPlayLastUpdated}) => {
+    if (!playerId || !player || player.playerId !== playerId) return;
+
+    player.recentPlay = recentPlay;
+    player.recentPlayLastUpdated = recentPlayLastUpdated;
+  });
+
   return {
     async getProcessed({playerId, type = 'recent', page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) {
       if (!player || player.playerId !== playerId)
@@ -33,6 +40,7 @@ export default () => {
 
     destroy() {
       playerProfileChangedUnsubscribe();
+      playerRecentPlayUpdatedUnsubscribe();
     }
   }
 }

@@ -14,6 +14,7 @@ import {opt} from '../../utils/js'
 import scores from '../../db/repository/scores'
 import {SS_API_SCORES_PER_PAGE} from '../../network/scoresaber/api-queue'
 import {SsrHttpNotFoundError} from '../../network/errors'
+import createFetchCache from '../../network/cache'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
@@ -41,6 +42,9 @@ export default () => {
       }
     })
   })
+
+  const fetchCache = createFetchCache();
+  const getFetchCacheKey = (playerId, type, page) => `${playerId}-${type}-${page}`
 
   const getAllScores = async () => scoresRepository().getAll();
   const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId);
@@ -289,16 +293,28 @@ export default () => {
   const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (!player || !player.playerId) return null;
 
+    const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')
+
+    const scoresPage = await getPlayerScoresPage(player.playerId, type, page);
+
+    if (canUseBrowserCache && !scoresPage) {
+      // return player from browser cache if possible
+      const tempCachedScorePage = await fetchCache.get(getFetchCacheKey(player.playerId, type, page));
+      if (tempCachedScorePage) return tempCachedScorePage;
+    }
+
     // TODO: force fetch once an hour even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
     if (
       force ||
       !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
       !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
     )
-      return fetchScoresPageAndUpdateIfNeeded(player.playerId, type, page, priority, signal);
+      return fetchScoresPageAndUpdateIfNeeded(player.playerId, type, page, priority, signal)
+        .then(fetchedScores => {
+          fetchCache.set(getFetchCacheKey(player.playerId, type, page), fetchedScores.map(s => ({...s})), refreshInterval);
 
-    const scoresPage = await getPlayerScoresPage(player.playerId, type, page);
-    if (!scoresPage) return fetchScoresPage(player.playerId, type, page, priority, signal);
+          return fetchedScores;
+        })
 
     return scoresPage;
   }
@@ -394,6 +410,8 @@ export default () => {
   const destroyService = () => {
     serviceCreationCount--;
     if (serviceCreationCount === 0 && configStoreUnsubscribe) configStoreUnsubscribe();
+
+    fetchCache.destroy();
   }
 
   service = {

@@ -8,7 +8,7 @@ import log from '../../utils/logger'
 import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
-import createFetchCache from '../../db/cache'
+import createFetchCache from '../../network/cache'
 import makePendingPromisePool from '../../utils/pending-promises'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
@@ -36,7 +36,7 @@ export default () => {
     })
   })
 
-  const fetchCache = createFetchCache('playerServiceBrowserCache', player => opt(player, 'playerInfo.playerId'));
+  const fetchCache = createFetchCache();
 
   const getAll = async () => playersRepository().getAll();
 
@@ -106,7 +106,7 @@ export default () => {
 
   const isProfileFresh = (player, refreshInterval = null) => getProfileFreshnessDate(player, refreshInterval) > new Date();
 
-  const updatePlayerRecentPlay = async (playerId, recentPlay, recentPlayLastUpdated = new Date()) => {
+  const updatePlayerRecentPlay = async (playerId, recentPlay, recentPlayLastUpdated = new Date(), refreshInterval = MINUTE) => {
     let player;
 
     try {
@@ -123,17 +123,17 @@ export default () => {
 
       if (player) {
         playersRepository().addToCache([player]);
-        fetchCache.set(playerId, {...player})
+        fetchCache.set(playerId, {...player}, refreshInterval)
         eventBus.publish('player-profile-changed', player);
 
         eventBus.publish('player-recent-play-updated', {playerId, recentPlay, recentPlayLastUpdated});
       } else {
         // update browser cache
-        const tempCachedPlayer = await fetchCache.get(playerId, () => Promise.resolve(null));
+        const tempCachedPlayer = await fetchCache.get(playerId, true);
         if (tempCachedPlayer) {
           tempCachedPlayer.recentPlay = recentPlay;
           tempCachedPlayer.recentPlayLastUpdated = recentPlayLastUpdated;
-          fetchCache.set(playerId, tempCachedPlayer)
+          fetchCache.set(playerId, tempCachedPlayer, refreshInterval)
 
           eventBus.publish('player-recent-play-updated', {playerId, recentPlay, recentPlayLastUpdated});
         }
@@ -144,14 +144,14 @@ export default () => {
     }
   }
 
-  const fetchPlayerAndUpdateRecentPlay = async playerId => {
+  const fetchPlayerAndUpdateRecentPlay = async (playerId, refreshInterval = MINUTE) => {
     try {
       const player = await resolvePromiseOrWaitForPending(`pageClient/${playerId}`, () =>playerPageClient.getProcessed({playerId}));
       const recentPlay = opt(player, 'playerInfo.recentPlay');
       const recentPlayLastUpdated = opt(player, 'playerInfo.recentPlayLastUpdated');
       if (!recentPlay || !recentPlayLastUpdated) return null;
 
-      return updatePlayerRecentPlay(playerId, recentPlay, recentPlayLastUpdated);
+      return updatePlayerRecentPlay(playerId, recentPlay, recentPlayLastUpdated, refreshInterval);
     } catch (err) {
       // swallow error
     }
@@ -164,7 +164,7 @@ export default () => {
 
     if (!force && !player) {
       // return player from browser cache if possible
-      const tempCachedPlayer = await fetchCache.get(playerId, () => Promise.resolve(null));
+      const tempCachedPlayer = await fetchCache.get(playerId);
       if (tempCachedPlayer && isProfileFresh(tempCachedPlayer, refreshInterval))
         return tempCachedPlayer;
     }
@@ -174,9 +174,9 @@ export default () => {
 
       return updatePlayer({...player, ...fetchedPlayer, profileLastUpdated: new Date()}, false)
         .then(player => {
-          fetchCache.set(player.playerId, {...player});
+          fetchCache.set(player.playerId, {...player}, refreshInterval);
 
-          fetchPlayerAndUpdateRecentPlay(player.playerId);
+          fetchPlayerAndUpdateRecentPlay(player.playerId, refreshInterval);
 
           return player;
         })
@@ -259,6 +259,8 @@ export default () => {
   const destroyService = () => {
     serviceCreationCount--;
     if (serviceCreationCount === 0 && configStoreUnsubscribe) configStoreUnsubscribe();
+
+    fetchCache.destroy();
   }
 
   service = {
