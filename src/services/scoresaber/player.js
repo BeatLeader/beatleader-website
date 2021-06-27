@@ -106,29 +106,38 @@ export default () => {
   const updatePlayerRecentPlay = async (playerId, recentPlay, recentPlayLastUpdated = new Date()) => {
     let player;
 
-    await db.runInTransaction(['players'], async tx => {
-      const playersStore = tx.objectStore('players')
-      player = await playersStore.get(playerId);
+    try {
+      await db.runInTransaction(['players'], async tx => {
+        const playersStore = tx.objectStore('players')
+        player = await playersStore.get(playerId);
+        if (player) {
+          player.recentPlayLastUpdated = recentPlayLastUpdated;
+          player.recentPlay = recentPlay;
+
+          await playersStore.put(player);
+        }
+      });
+
       if (player) {
-        player.recentPlayLastUpdated = recentPlayLastUpdated;
-        player.recentPlay = recentPlay;
+        playersRepository().addToCache([player]);
+        fetchCache.set(playerId, {...player})
+        eventBus.publish('player-profile-changed', player);
 
-        await playersStore.put(player);
-      }
-    });
+        eventBus.publish('player-recent-play-updated', {playerId, recentPlay, recentPlayLastUpdated});
+      } else {
+        // update browser cache
+        const tempCachedPlayer = await fetchCache.get(playerId, () => Promise.resolve(null));
+        if (tempCachedPlayer) {
+          tempCachedPlayer.recentPlay = recentPlay;
+          tempCachedPlayer.recentPlayLastUpdated = recentPlayLastUpdated;
+          fetchCache.set(playerId, tempCachedPlayer)
 
-    if (player) {
-      playersRepository().addToCache([player]);
-      fetchCache.set(playerId, {...player})
-      eventBus.publish('player-profile-changed', player);
-    } else {
-      // update browser cache
-      const tempCachedPlayer = await fetchCache.get(playerId, () => Promise.resolve(null));
-      if (tempCachedPlayer) {
-        tempCachedPlayer.recentPlay = recentPlay;
-        tempCachedPlayer.recentPlayLastUpdated = recentPlayLastUpdated;
-        fetchCache.set(playerId, tempCachedPlayer)
+          eventBus.publish('player-recent-play-updated', {playerId, recentPlay, recentPlayLastUpdated});
+        }
       }
+    }
+    catch(err) {
+      // swallow error
     }
   }
 

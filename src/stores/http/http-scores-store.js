@@ -88,9 +88,12 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
     return httpStore.fetch({playerId, type, page}, force, provider);
   }
 
+  const refresh = async () => fetch(currentPage, currentType, currentPlayerId, true);
+
   return {
     ...httpStore,
     fetch,
+    refresh,
     getPlayerId: () => currentPlayerId,
     getPage: () => currentPage,
     getType: () => currentType,
