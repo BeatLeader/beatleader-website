@@ -31,7 +31,7 @@
 
 <style>
     aside {
-        position: absolute;
+        position: fixed;
         right: 1rem;
         top: .5rem;
         font-size: .65em;
