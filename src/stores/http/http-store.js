@@ -56,7 +56,7 @@ export default (
 
         provider.getCached(finalParams)
           .then(cachedState => {
-            if (beforeState === state) {
+            if (cachedState && beforeState === state) {
               stateType = 'cached';
               set(cachedState);
             }
