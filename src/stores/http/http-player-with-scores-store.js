@@ -5,7 +5,7 @@ import {opt} from '../../utils/js'
 import createPlayerService from '../../services/scoresaber/player'
 import {addToDate, MINUTE} from '../../utils/date'
 
-export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialState = null) => {
+export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentScoresType = scoresType;
   let currentScoresPage = scoresPage;
@@ -31,6 +31,7 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
     },
+    initialStateType
   );
 
   const fetch = async (playerId = currentPlayerId, scoresType = currentScoresType, scoresPage = currentScoresPage, force = false) => {
@@ -48,7 +49,7 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
       playerForLastRecentPlay = playerId;
     }
 
-    return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider);
+    return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider, !playerId || playerId !== currentPlayerId);
   }
 
   const refresh = async () => fetch(currentPlayerId, currentScoresType, currentScoresPage, true);

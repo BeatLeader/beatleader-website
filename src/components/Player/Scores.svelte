@@ -14,6 +14,7 @@
   export let playerId;
   export let initialType = 'recent';
   export let initialState = null;
+  export let initialStateType = null;
   export let initialPage = 1;
   export let numOfScores = null;
 
@@ -47,7 +48,7 @@
     scoresStore && scoresStore.fetch(page)
   }
 
-  $: scoresStore = playerId ? createScoresStore(playerId, initialType, initialPage, initialState) : null;
+  $: scoresStore = playerId ? createScoresStore(playerId, initialType, initialPage, initialState, initialStateType) : null;
 
   $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
   $: type = $scoresStore && scoresStore && scoresStore.getType ? scoresStore.getType() : null;

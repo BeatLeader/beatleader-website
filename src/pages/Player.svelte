@@ -1,8 +1,6 @@
 <script>
   import {navigate} from 'svelte-routing'
-  import eventBus from '../utils/broadcast-channel-pubsub'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
-  import createScoresService from '../services/scoresaber/scores'
   import {opt} from '../utils/js'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
@@ -12,8 +10,6 @@
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
   export let initialState = null;
-
-  const scoresService = createScoresService();
 
   const players = [
     {id: '76561198035381239', name: 'motzel'},
@@ -68,7 +64,7 @@
 </script>
 
 <article>
-  {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
+    {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
     <div class="box has-shadow">
       <p class="error">Player not found.</p>
     </div>
@@ -76,7 +72,10 @@
     <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
 
     {#if $playerStore}
-      <Scores {playerId} initialState={opt($playerStore, 'scores', null)} initialType={currentStoreType}
+      <Scores {playerId}
+              initialState={opt($playerStore, 'scores', null)}
+              initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
+              initialType={currentStoreType}
               initialPage={currentStorePage}
               numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
               on:type-changed={onTypeChanged} on:page-changed={onPageChanged}

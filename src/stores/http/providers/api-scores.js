@@ -34,6 +34,10 @@ export default () => {
       return scoresService.fetchScoresPageOrGetFromCache(player, type, page, MINUTE, priority, signal, force);
     },
 
+    async getCached({playerId, type = 'recent', page = 1} = {}) {
+      return scoresService.getPlayerScoresPage(playerId, type, page);
+    },
+
     setPlayer(newPlayer) {
       player = newPlayer
     },

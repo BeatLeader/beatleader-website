@@ -8,14 +8,14 @@ import {debounce} from '../../utils/debounce'
 import {opt} from '../../utils/js'
 import createApiScoresProvider from './providers/api-scores'
 
-export default (playerId = null, type = 'recent', page = 1, initialState = null) => {
+export default (playerId = null, type = 'recent', page = 1, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentType = type;
   let currentPage = page ? page : 1;
 
   const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentPage}/${currentType}`;
 
-  const onNewData = ({fetchParams, state, set}) => {
+  const onNewData = ({fetchParams, state, stateType, set}) => {
     currentPage = opt(fetchParams, 'page', 1);
     currentType = opt(fetchParams, 'type', null);
     currentPlayerId = opt(fetchParams, 'playerId', null);
@@ -55,6 +55,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
           .then(enhancedScoreRow => diffEnhancer(enhancedScoreRow, currentPlayerId, 'score'))
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx));
 
+      if (stateType && stateType === 'live')
         beatSaviorEnhancer(scoreRow, currentPlayerId)
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
 
@@ -74,6 +75,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
       onAfterStateChange: onNewData,
       onSetPending: ({fetchParams}) => ({...fetchParams}),
     },
+    initialStateType
   );
 
   const fetch = async (page, type = currentType, playerId = currentPlayerId, force = false) => {
@@ -85,7 +87,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null)
     )
       return false;
 
-    return httpStore.fetch({playerId, type, page}, force, provider);
+    return httpStore.fetch({playerId, type, page}, force, provider, !playerId || playerId !== currentPlayerId);
   }
 
   const refresh = async () => fetch(currentPage, currentType, currentPlayerId, true);

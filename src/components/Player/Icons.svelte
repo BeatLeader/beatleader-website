@@ -77,18 +77,18 @@
     }
 
     nav :global(button):nth-child(1) {
-        transform: translate3d(-45px, 30px, 0);
+        transform: translate3d(-50px, 30px, 0);
     }
 
     nav :global(button):nth-child(2) {
-        transform: translate3d(-45px, 4px, 0);
+        transform: translate3d(-50px, 4px, 0);
     }
 
     nav :global(button):nth-child(1):hover {
-        transform: translate3d(-45px, 30px, 0) scale(1.2);
+        transform: translate3d(-50px, 30px, 0) scale(1.2);
     }
 
     nav :global(button):nth-child(2):hover {
-        transform: translate3d(-45px, 4px, 0) scale(1.2);
+        transform: translate3d(-50px, 4px, 0) scale(1.2);
     }
 </style>
