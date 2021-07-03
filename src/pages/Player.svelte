@@ -39,7 +39,7 @@
     currentNavPage = opt(event, 'detail', initialPage)
 
     playerStore.setPage(currentNavPage);
-    if (playerId && currentNavType && currentNavPage) navigate(`/u/${playerId}/${currentNavType}/${currentNavPage}`);
+    if (playerId && currentNavType && currentNavPage) navigate(`/u/${playerId}/${currentNavType}/${currentNavPage}`, {replace: true});
   }
 
   function onTypeChanged(event) {
@@ -48,7 +48,7 @@
 
     playerStore.setType(currentNavType);
     playerStore.setPage(currentNavPage);
-    if (playerId && currentNavType) navigate(`/u/${playerId}/${currentNavType}/${currentNavPage}`);
+    if (playerId && currentNavType) navigate(`/u/${playerId}/${currentNavType}/${currentNavPage}`, {replace: true});
   }
 
   function navigateToPlayer(playerId) {

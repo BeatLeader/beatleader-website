@@ -1,10 +1,11 @@
 <script>
-  import Error from '../Common/Error.svelte'
   import processPlayerData from './utils/profile';
+  import Error from '../Common/Error.svelte'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
   import SsBadges from './SsBadges.svelte'
   import ScoresStats from './ScoresStats.svelte'
+  import Icons from './Icons.svelte'
 
   export let playerData;
   export let isLoading = false;
@@ -20,6 +21,10 @@
   <div class="columns">
     <div class="column is-narrow avatar">
       <Avatar {playerInfo} {isLoading}/>
+
+      {#if playerId}
+        <Icons {playerId}/>
+      {/if}
     </div>
 
     <div class="column">
@@ -35,7 +40,7 @@
         <div class="columns">
           <div class="column">
             <ScoresStats stats={scoresStats} {skeleton}/>
-            <SsBadges badges={ssBadges} />
+            <SsBadges badges={ssBadges}/>
           </div>
         </div>
       {/if}
@@ -52,7 +57,7 @@
         min-height: 190px;
     }
 
-    @media(max-width: 768px) {
+    @media (max-width: 768px) {
         .column.avatar {
             margin-right: 0;
             min-width: calc(150px + 1.5rem);

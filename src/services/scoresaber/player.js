@@ -49,6 +49,14 @@ export default () => {
 
   const getPlayer = async playerId => await playersRepository().get(playerId);
 
+  const removePlayer = async (playerId, purgeScores = false) => {
+    await playersRepository().delete(playerId);
+
+    // TODO: purge scores if requested
+
+    eventBus.publish('player-profile-removed', playerId);
+  }
+
   const addPlayer = async (playerId, priority = PRIORITY.FG_LOW) => {
     log.trace(`Starting to add a player "${playerId}"...`, 'PlayerService');
 
@@ -74,13 +82,13 @@ export default () => {
     return player;
   }
 
-  const updatePlayer = async (player, waitForSaving = true) => {
+  const updatePlayer = async (player, waitForSaving = true, forceAdd = false) => {
     if (!player || !player.playerId) {
       log.warn(`Can not update player, empty playerId`, 'PlayerService', player)
     }
 
     const dbPlayer = await getPlayer(player.playerId);
-    if (!dbPlayer) return player;
+    if (!dbPlayer && !forceAdd) return player;
 
     const finalPlayer = {...dbPlayer, ...player}
 
@@ -226,7 +234,7 @@ export default () => {
 
       log.trace(`Player fetched`, 'PlayerService', fetchedPlayer);
 
-      player = await updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()});
+      player = await updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()}, true, addIfNotExists);
 
       log.debug(`Player refreshed.`, 'PlayerService', player);
 
@@ -268,6 +276,7 @@ export default () => {
     getAllActive,
     get: getPlayer,
     add: addPlayer,
+    remove: removePlayer,
     update: updatePlayer,
     getProfileFreshnessDate,
     isProfileFresh,

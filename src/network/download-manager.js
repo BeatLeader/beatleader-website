@@ -155,32 +155,37 @@ export default async () => {
     }
   })
 
-  // TODO: consider whether to add a new player via the download manager or directly via the service
-  eventBus.on('player-add-cmd', async ({playerId}) => {
+  const enqueuePlayer = async playerId => {
     await enqueue(
       queue, TYPES.ACTIVE_PLAYERS, true,
       {playerId, add: true},
       async () => enqueue(queue, TYPES.PLAYER_SCORES, true, {playerId}),
     );
-  });
+  }
 
-  eventBus.on('dl-manager-pause-cmd', () => {
+  const pause = () => {
     log.debug('Pause Dl Manager', 'DlManager');
 
     queue.clear();
     queue.pause();
-  });
+  };
 
-  eventBus.on('dl-manager-unpause-cmd', () => {
+  const start = () => {
     log.debug('Unpause Dl Manager', 'DlManager');
 
     queue.clear();
     queue.start();
-  });
+  };
 
   if (eventBus.isLeader()) await startSyncing(queue);
 
   initialized = true;
 
   log.info(`Download manager initialized`, 'DlManager');
+
+  return {
+    start,
+    pause,
+    enqueuePlayer
+  }
 }

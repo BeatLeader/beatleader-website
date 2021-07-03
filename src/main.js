@@ -7,6 +7,7 @@ import createConfigStore from './stores/config'
 import beatSaviorService from './services/beatsavior'
 import createRankedsStore from './stores/scoresaber/rankeds'
 import initDownloadManager from './network/download-manager'
+import initCommandProcessor from './network/command-processor'
 import ErrorComponent from './components/Common/Error.svelte'
 
 let app = null;
@@ -34,7 +35,7 @@ let app = null;
       await beatSavior.refresh(mainPlayerId);
     }
 
-    await initDownloadManager();
+    initCommandProcessor(await initDownloadManager());
 
     log.info('Site initialized', 'Main')
 

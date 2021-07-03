@@ -1,5 +1,20 @@
 <script>
   import {navigate} from "svelte-routing";
+  import Avatar from '../components/Player/Avatar.svelte'
+  import {onMount} from 'svelte'
+  import {delay} from '../utils/promise'
+  import Error from '../components/Common/Error.svelte'
+
+  let name = "Stranger";
+  let playerInfo = null;
+  let isLoading = true;
+  let error = null;
+
+  onMount(async () => {
+    await delay(3000);
+
+    isLoading = false;
+  })
 </script>
 
 <article>
@@ -12,15 +27,15 @@
 </article>
 
 <style>
-  article {
-      max-width: 1024px;
-      margin: 0 auto;
-      text-align: center;
-  }
+    article {
+        max-width: 1024px;
+        margin: 0 auto;
+        text-align: center;
+    }
 
-  button {
-      cursor: pointer;
-      min-width: 2rem;
-      margin-right: .5rem;
-  }
+    button {
+        cursor: pointer;
+        min-width: 2rem;
+        margin-right: .5rem;
+    }
 </style>
