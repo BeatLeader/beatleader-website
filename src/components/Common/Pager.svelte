@@ -256,7 +256,7 @@
         border-color: var(--alternate);
     }
 
-    .pagination-link.is-current, button:hover {
+    .pagination-link.is-current, .pagination:not(.simple) button:hover {
         color: var(--textColor);
         background-color: var(--selected);
         border-color: var(--selected);
