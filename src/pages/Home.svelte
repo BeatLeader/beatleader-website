@@ -1,9 +1,7 @@
 <script>
   import {navigate} from "svelte-routing";
-  import Avatar from '../components/Player/Avatar.svelte'
   import {onMount} from 'svelte'
   import {delay} from '../utils/promise'
-  import Error from '../components/Common/Error.svelte'
 
   let name = "Stranger";
   let playerInfo = null;
@@ -23,20 +21,6 @@
     <button on:click={() => navigate("/u/76561198035381239/recent")}>motzel's profile</button>
     <button on:click={() => navigate("/u/76561198025451538/recent")}>Drakonnos's profile</button>
     <button on:click={() => navigate("/u/76561198333869741/recent")}>Cerret's profile</button>
-  </div>
-
-  <div class="box has-shadow" class:loading={isLoading}>
-    <Avatar {playerInfo} {isLoading}/>
-
-    <h1 class="title is-4 has-text-centered-mobile">
-      {name}
-    </h1>
-
-    {#if error}
-      <div>
-        <Error {error}/>
-      </div>
-    {/if}
   </div>
 </article>
 

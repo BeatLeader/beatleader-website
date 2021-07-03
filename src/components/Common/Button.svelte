@@ -148,7 +148,7 @@
         border-color: transparent transparent rgba(219,219,219,1) rgba(219,219,219,1)!important;
     }
 
-    :global(button .icon svg, button i) {
+    :global(button .icon svg), :global(button i) {
         display: inline-block;
         width: 1.3em;
         height: 1.3em;

@@ -9,7 +9,7 @@
 <span class="avatar-container" class:loading={isLoading} class:main>
   <span class="no-image">?</span>
 
-  {#if playerInfo}
+  {#if playerInfo && playerInfo.avatar}
     <img src={playerInfo.avatar} class="avatar" alt="" />
   {/if}
   <span class="spinner">

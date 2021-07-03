@@ -1,7 +1,6 @@
 <script>
   import {onMount} from 'svelte';
   import createPlayersStore from '../../stores/scoresaber/players'
-  import {fade} from 'svelte/transition'
   import Button from '../Common/Button.svelte'
   import createConfigStore from '../../stores/config'
   import eventBus from '../../utils/broadcast-channel-pubsub'
@@ -46,7 +45,7 @@
 </script>
 
 {#if playerId}
-  <nav transition:fade>
+  <nav>
     {#if !isMain}
       <Button title="Set as your profile" iconFa="fas fa-user-check" type="primary"
               on:click={onSetAsMain}

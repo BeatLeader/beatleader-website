@@ -22,8 +22,8 @@
     <div class="column is-narrow avatar">
       <Avatar {playerInfo} {isLoading}/>
 
-      {#if playerId}
-        <Icons {playerId}/>
+      {#if playerId && !isLoading}
+        <Icons {playerId} />
       {/if}
     </div>
 

@@ -64,7 +64,7 @@
 </script>
 
 <article>
-    {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
+  {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
     <div class="box has-shadow">
       <p class="error">Player not found.</p>
     </div>
