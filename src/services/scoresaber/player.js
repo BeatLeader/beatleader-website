@@ -266,9 +266,12 @@ export default () => {
 
   const destroyService = () => {
     serviceCreationCount--;
-    if (serviceCreationCount === 0 && configStoreUnsubscribe) configStoreUnsubscribe();
 
-    fetchCache.destroy();
+    if (serviceCreationCount === 0) {
+      if (configStoreUnsubscribe) configStoreUnsubscribe();
+
+      fetchCache.destroy();
+    }
   }
 
   service = {
