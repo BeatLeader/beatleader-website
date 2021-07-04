@@ -167,9 +167,13 @@ export default () => {
       const playerScores = await getPlayerScores(player.playerId)
       const currentScoresById = convertScoresById(player.playerId, playerScores);
 
-      if (!player.recentPlay) player.recentPlay = getRecentPlayFromScores(playerScores, null)
+      let mostRecentPlayFromScores = null;
+      if (!player.recentPlay) {
+        mostRecentPlayFromScores = getRecentPlayFromScores(playerScores, null);
+        player.recentPlay = mostRecentPlayFromScores;
+      }
 
-      const startUpdatingDate = player.recentPlay ? player.recentPlay : player.scoresLastUpdated;
+      const startUpdatingDate = mostRecentPlayFromScores ? mostRecentPlayFromScores : player.scoresLastUpdated;
 
       if (numOfPages && !startUpdatingDate) newScores = await fetchAllScores(player.playerId, numOfPages, priority, abortController.signal);
       else newScores = await fetchScoresUntil(player.playerId, 1, priority, abortController.signal, createFetchUntilLastUpdated(startUpdatingDate))
