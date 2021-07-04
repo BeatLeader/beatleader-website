@@ -3,10 +3,10 @@
 
   export let playerInfo;
   export let isLoading = false;
-  export let main = false;
+  export let centered = false;
 </script>
 
-<span class="avatar-container" class:loading={isLoading} class:main>
+<span class="avatar-container" class:loading={isLoading} class:centered>
   <span class="no-image">?</span>
 
   {#if playerInfo && playerInfo.avatar}
@@ -37,10 +37,6 @@
         transform: scale(.7);
     }
 
-    .main img {
-        box-shadow: 0 0 0 3px var(--increase, '#42b129');
-    }
-
     .spinner {
         display: none;
         position: absolute;
@@ -69,6 +65,17 @@
         font-size: 75px;
         line-height: 1;
         z-index: 0;
+        transition: transform 300ms;
+    }
+
+    .avatar-container.centered {
+        justify-content: center;
+    }
+    .avatar-container.centered img {
+        left: auto;
+    }
+    .avatar-container.centered .spinner {
+        left: auto;
     }
 
     @media(max-width: 768px) {

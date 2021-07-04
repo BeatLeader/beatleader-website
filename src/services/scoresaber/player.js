@@ -10,6 +10,7 @@ import {opt} from '../../utils/js'
 import {db} from '../../db/db'
 import createFetchCache from '../../network/cache'
 import makePendingPromisePool from '../../utils/pending-promises'
+import queue from '../../network/queues'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 20;
@@ -167,6 +168,8 @@ export default () => {
 
   const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/${playerId}`, () => playerApiClient.getProcessed({playerId, priority, signal}));
 
+  const findPlayer = async (query, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/find/${query}`, () => queue.SCORESABER_API.findPlayer(query, signal, priority));
+
   const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     const player = await getPlayer(playerId);
 
@@ -289,6 +292,7 @@ export default () => {
     fetchPlayerOrGetFromCache,
     fetchPlayerAndUpdateRecentPlay,
     updatePlayerRecentPlay,
+    findPlayer,
     refresh,
     refreshAll,
     destroyService,

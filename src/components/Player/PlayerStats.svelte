@@ -11,17 +11,18 @@
   export let playerInfo;
   export let prevInfo;
   export let skeleton = false;
+  export let centered = false;
 </script>
 
 {#if skeleton}
-  <h1 class="title is=4 has-text-centered-mobile">
+  <h1 class="title is=4 has-text-centered-mobile" class:centered>
     <Skeleton width="50%"/>
   </h1>
-  <h2 class="title is-5">
+  <h2 class="title is-5" class:centered>
     <Skeleton width="50%"/>
   </h2>
 {:else if playerInfo}
-  <h1 class="title is-4 has-text-centered-mobile">
+  <h1 class="title is-4 has-text-centered-mobile" class:centered>
     {#if name}
       {#if playerInfo.externalProfileUrl}
         <a href={playerInfo.externalProfileUrl} target="_blank" rel="noopener">{name}</a>
@@ -32,13 +33,13 @@
 
     <span class="pp">
       <Value value={opt(playerInfo, 'pp')} suffix="pp" prevValue={opt(prevInfo, 'pp')} prevLabel={opt(prevInfo, 'ppSince')}
-             inline={true}/>
+             inline={true} zero="0pp"/>
     </span>
 
     <span class="status"><Status {playerInfo}/></span>
   </h1>
 
-  <h2 class="title is-5">
+  <h2 class="title is-5" class:centered>
     <a href={playerInfo.rankValue ? `${SS_HOST}/global/${playerInfo.rankValue ? Math.floor((playerInfo.rankValue-1) /
     PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
       <i class="fas fa-globe-americas"></i>
@@ -70,6 +71,11 @@
 {/if}
 
 <style>
+    h1.centered, h2.centered {
+        text-align: center;
+        justify-content: center;
+    }
+
     h1.title {
         margin-bottom: .25rem;
     }

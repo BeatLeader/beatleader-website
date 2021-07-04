@@ -1,22 +1,16 @@
 <script>
   import {navigate} from 'svelte-routing'
+  import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import {opt} from '../utils/js'
+  import {SsrHttpNotFoundError} from '../network/errors'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
-  import {SsrHttpNotFoundError} from '../network/errors'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
   export let initialState = null;
-
-  const players = [
-    {id: '76561198035381239', name: 'motzel'},
-    {id: '76561198171067154', name: 'Sasasin'},
-    {id: '76561198025451538', name: 'Drakonno'},
-    {id: '76561198333869741', name: 'Cerret'},
-  ];
 
   let initialType = opt(initialState, 'scoresType', initialScoresType);
   let initialPage = parseInt(opt(initialState, 'page', initialScoresPage), 10);
@@ -63,7 +57,7 @@
   $: skeleton = !$playerStore && $playerIsLoading;
 </script>
 
-<article>
+<article transition:fade>
   {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
     <div class="box has-shadow">
       <p class="error">Player not found.</p>

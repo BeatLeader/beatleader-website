@@ -2,6 +2,7 @@
   import {Router, Route} from "svelte-routing";
   import buildInfo from '../build-info';
   import HomePage from './pages/Home.svelte';
+  import RankingPage from './pages/Ranking.svelte';
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
   import QueueStats from './components/Common/QueueStats.svelte'
@@ -28,6 +29,7 @@
                     }
         />
       </Route>
+      <Route path="/global" component="{RankingPage}" />
       <Route path="/" component="{HomePage}" />
       <Route path="/*" component="{NotFoundPage}" />
     </div>
@@ -61,9 +63,9 @@
         padding: 1rem;
     }
 
-    @media (max-width: 400px) {
+    @media (max-width: 450px) {
         .section {
-            padding: .5rem 0;
+            padding: .5rem;
         }
     }
 

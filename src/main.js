@@ -16,6 +16,7 @@ let app = null;
   try {
     // TODO: remove level setting
     // log.setLevel(log.TRACE);
+    // log.logOnly(['PlayerService']);
 
     log.info('Starting up...', 'Main')
 
