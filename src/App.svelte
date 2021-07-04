@@ -45,6 +45,18 @@
 </footer>
 
 <style>
+    .sspl-page-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        overflow: hidden;
+        min-height: calc(100vh - 7rem);
+    }
+
+    .sspl-page-container :global(> *) {
+        grid-area: 1 / 1 / 1 / 1;
+    }
+
     .section {
         padding: 1rem;
     }
