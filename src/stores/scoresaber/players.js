@@ -3,8 +3,9 @@ import createPlayerService from '../../services/scoresaber/player'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 
 let store = null;
-
+let storeSubCount = 0;
 export default () => {
+  storeSubCount++;
   if (store) return store;
 
   const playerService = createPlayerService();
@@ -27,9 +28,15 @@ export default () => {
     const stateUnsubscribe = subscribeState(fn);
 
     return () => {
-      stateUnsubscribe();
-      playerAddedUnsubscribe();
-      playerRemovedUnsubscribe();
+      storeSubCount --;
+
+      if (storeSubCount === 0) {
+        store = null;
+
+        stateUnsubscribe();
+        playerAddedUnsubscribe();
+        playerRemovedUnsubscribe();
+      }
     }
   }
 

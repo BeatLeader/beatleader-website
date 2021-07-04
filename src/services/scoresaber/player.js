@@ -271,6 +271,8 @@ export default () => {
       if (configStoreUnsubscribe) configStoreUnsubscribe();
 
       fetchCache.destroy();
+
+      service = null;
     }
   }
 
