@@ -17,6 +17,7 @@
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
   $: prevScore = opt(songScore, 'prevScore', null);
+  $: beatSavior = opt(songScore, 'beatSavior', null)
 </script>
 
 {#if songScore}
@@ -86,6 +87,96 @@
           <small>{`${score.mods.join(', ')}`}&nbsp;</small>
         {/if}
       </span>
+    {/if}
+
+    {#if beatSavior && beatSavior.stats}
+      {#if beatSavior.stats.accLeft}
+      <span class="beatSavior with-badge">
+        <Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)">
+            <span slot="label">
+              <Value
+                title={`Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                value="{beatSavior.stats.accLeft}"
+                inline={false} digits={2}
+              />
+            </span>
+        </Badge>
+      </span>
+      {/if}
+
+      {#if beatSavior.stats.accRight}
+      <span class="beatSavior with-badge">
+        <Badge onlyLabel={true} color="white" bgColor="rgba(32,100,168,1)">
+            <span slot="label">
+              <Value
+                title={`Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                value="{beatSavior.stats.accRight}" inline={false} digits={2}
+              />
+            </span>
+        </Badge>
+      </span>
+      {/if}
+
+      {#if beatSavior.stats.miss !== undefined}
+      <span class="beatSavior with-badge">
+        <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+            <span slot="label" title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}>
+              {#if beatSavior.stats.miss || beatSavior.stats.bombHit || beatSavior.stats.wallHit}
+                <i class="fas fa-times"></i>
+                <Value
+                  title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}
+                  value="{beatSavior.stats.miss}" inline={false} digits={0}
+                />
+              {:else if (!beatSavior.stats.wallHit && !beatSavior.stats.bombHit)}
+                FC
+              {/if}
+            </span>
+        </Badge>
+      </span>
+      {/if}
+
+      {#if beatSavior.stats.leftTimeDependence}
+      <span class="beatSavior with-badge">
+        <Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)">
+            <span slot="label">
+              <Value
+                title="Left time dependence"
+                value="{beatSavior.stats.leftTimeDependence}"
+                inline={false} digits={3}
+              />
+            </span>
+        </Badge>
+      </span>
+      {/if}
+
+      {#if beatSavior.stats.rightTimeDependence}
+      <span class="beatSavior with-badge">
+        <Badge onlyLabel={true} color="white" bgColor="rgba(32,100,168,1)">
+            <span slot="label">
+              <Value
+                title="Right time dependence"
+                value="{beatSavior.stats.rightTimeDependence}" inline={false} digits={3}
+              />
+            </span>
+        </Badge>
+      </span>
+      {/if}
+
+      {#if beatSavior.stats.pauses !== undefined}
+      <span class="beatSavior with-badge">
+        <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+            <span slot="label">
+              <i class="fas fa-pause-circle"></i>
+              <Value
+                title="Pauses"
+                prefix=""
+                value="{beatSavior.stats.pauses}" inline={false} digits={0}
+              />
+            </span>
+        </Badge>
+      </span>
+      {/if}
+
     {/if}
     </section>
 
@@ -172,6 +263,14 @@
         display: block;
         text-align: center;
         white-space: nowrap;
+        font-size: .75em;
+    }
+
+    .beatSavior.with-badge i {
+        font-size: .875em;
+    }
+
+    .beatSavior.with-badge :global(.label) {
         font-size: .75em;
     }
 

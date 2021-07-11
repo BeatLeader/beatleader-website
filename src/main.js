@@ -4,7 +4,8 @@ import initDb from './db/db'
 import initializeRepositories from './db/repositories-init';
 import setupDataFixes from './db/fix-data'
 import createConfigStore from './stores/config'
-import beatSaviorService from './services/beatsavior'
+import createPlayerService from './services/scoresaber/player'
+import createBeatSaviorService from './services/beatsavior'
 import createRankedsStore from './stores/scoresaber/rankeds'
 import initDownloadManager from './network/download-manager'
 import initCommandProcessor from './network/command-processor'
@@ -16,7 +17,7 @@ let app = null;
   try {
     // TODO: remove level setting
     // log.setLevel(log.TRACE);
-    // log.logOnly(['PlayerService']);
+    // log.logOnly(['BeatSaviorService']);
 
     log.info('Starting up...', 'Main')
 
@@ -25,16 +26,11 @@ let app = null;
     await setupDataFixes();
 
     // pre-warm cache && create singleton services
-    const configStore = await createConfigStore();
-    const mainPlayerId = configStore.getMainPlayerId();
+    await createConfigStore();
+    createPlayerService();
+    createBeatSaviorService();
 
     await createRankedsStore();
-
-    // TODO: move it to download manager and service
-    if (mainPlayerId) {
-      const beatSavior = beatSaviorService();
-      await beatSavior.refresh(mainPlayerId);
-    }
 
     initCommandProcessor(await initDownloadManager());
 

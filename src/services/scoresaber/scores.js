@@ -48,9 +48,10 @@ export default () => {
 
   const getAllScores = async () => scoresRepository().getAll();
   const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId);
+  const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
   const getPlayerSongScore = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
   const getPlayerRankedScores = async playerId => {
-    const [scores, rankeds] = await Promise.all([getPlayerScores(), rankedsService.get()]);
+    const [scores, rankeds] = await Promise.all([getPlayerScores(playerId), rankedsService.get()]);
     if (!scores) return [];
 
     return scores.filter(s => s.leaderboardId && rankeds[s.leaderboardId]);
@@ -64,11 +65,17 @@ export default () => {
   const isAnyScoreOlderThan = (scores, olderThan) => scores.some(s => s.score && s.score.timeSet && s.score.timeSet <= olderThan);
   const createFetchUntilLastUpdated = olderThan => scores => isAnyScoreOlderThan(scores, olderThan);
 
-  const convertScoresToObject = (scores, idFunc = score => opt(score, 'leaderboard.leaderboardId')) => scores.reduce((scoresObj, score) => {
-    const id = idFunc(score);
-    if (!id) return scoresObj;
+  const convertScoresToObject = (scores, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => scores.reduce((scoresObj, score) => {
+    const _id = idFunc(score);
+    if (!_id) return scoresObj;
 
-    scoresObj[id] = {...score, id};
+    if (asArray) {
+      if (!scoresObj[_id]) scoresObj[_id] = [];
+
+      scoresObj[_id].push({...score})
+    } else {
+      scoresObj[_id] = {...score};
+    }
 
     return scoresObj;
   }, {})
@@ -416,6 +423,9 @@ export default () => {
     if (serviceCreationCount === 0) {
       if(configStoreUnsubscribe) configStoreUnsubscribe();
 
+      playerService.destroyService();
+      rankedsService.destroyService();
+
       fetchCache.destroy();
 
       service = null;
@@ -425,6 +435,7 @@ export default () => {
   service = {
     getAll: getAllScores,
     getPlayerScores,
+    getPlayerScoresAsObject,
     getPlayerScoresPage,
     getPlayerSongScore,
     getPlayerRankedScores,

@@ -1,17 +1,17 @@
-import beatSaviorService from '../../../../services/beatsavior'
+import createBeatSaviorService from '../../../../services/beatsavior'
 import {opt} from '../../../../utils/js'
 
-const beatSavior = beatSaviorService();
+let beatSaviorService;
 
 export default async (data, playerId = null) => {
-  const leaderboardId = opt(data, 'leaderboard.leaderboardId');
+  if (!data || !data.score || !data.leaderboard) return data;
 
-  if (!data || !data.score || !leaderboardId) return data;
+  if (!beatSaviorService) beatSaviorService = createBeatSaviorService();
 
-  const bsData = beatSavior.get(playerId, leaderboardId);
+  const bsData = await beatSaviorService.get(playerId, data);
   if (!bsData) return data;
 
-  data.score.beatSavior = bsData;
+  data.beatSavior = bsData;
 
   return data;
 }

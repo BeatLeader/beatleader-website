@@ -5,6 +5,7 @@ import createConfigStore from '../stores/config'
 import createRankedsStore from '../stores/scoresaber/rankeds'
 import createPlayerService from '../services/scoresaber/player'
 import createScoresService from '../services/scoresaber/scores'
+import createBeatSaviorService from '../services/beatsavior'
 import {PRIORITY as HTTP_QUEUE_PRIORITY} from '../network/http-queue'
 import {HOUR, MINUTE} from '../utils/date'
 import {opt} from '../utils/js'
@@ -16,8 +17,10 @@ let mainPlayerId = null;
 let rankedsStore = null;
 let playerService = null;
 let scoresService = null;
+let beatSaviorService = null;
 
 const TYPES = {
+  BEATSAVIOR: {name: 'BEATSAVIOR', priority: PRIORITY.LOW},
   RANKEDS: {name: 'RANKEDS', priority: PRIORITY.LOW},
   RANKEDS_NOTES_CACHE: {name: 'RANKEDS-NOTES-CACHE', priority: PRIORITY.LOWEST},
   PLAYER_SCORES: {name: 'PLAYER-SCORES', priority: PRIORITY.NORMAL},
@@ -95,6 +98,14 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
         processThen(queue.add(async () => scoresService.refreshAll(force, networkPriority), priority), then)
           .then(_ => log.debug('Enqueued players scores processed.', 'DlManager'));
       break;
+
+    case TYPES.BEATSAVIOR:
+      log.debug(`Enqueue Beat Savior`, 'DlManager');
+
+      processThen(queue.add(async () => beatSaviorService.refreshAll(force, networkPriority), priority), then)
+        .then(_ => log.debug('Enqueued Beat Savior processed.', 'DlManager'));
+
+      break;
   }
 }
 
@@ -106,6 +117,7 @@ const enqueueAllJobs = async queue => {
     enqueue(queue, TYPES.RANKEDS),
     enqueue(queue, TYPES.ACTIVE_PLAYERS),
     enqueue(queue, TYPES.PLAYER_SCORES),
+    enqueue(queue, TYPES.BEATSAVIOR),
     enqueue(queue, TYPES.RANKEDS_NOTES_CACHE)
   ])
 }
@@ -143,6 +155,7 @@ export default async () => {
 
   playerService = createPlayerService();
   scoresService = createScoresService();
+  beatSaviorService = createBeatSaviorService();
 
   eventBus.leaderStore.subscribe(async isLeader => {
     if (isLeader) {
