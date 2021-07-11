@@ -30,7 +30,7 @@ const process = response => {
         trackers: {
           accuracyTracker: {accLeft, accRight, leftAverageCut, rightAverageCut, leftTimeDependence, rightTimeDependence},
           winTracker: {won, nbOfPause: pauses, rank},
-          hitTracker: {miss, missedNotes, badCuts, nbOfWallHit: wallHit, maxCombo},
+          hitTracker: {bombHit, miss, missedNotes, badCuts, nbOfWallHit: wallHit, maxCombo},
           scoreTracker: {score},
         },
       } = s;
@@ -58,6 +58,7 @@ const process = response => {
         miss,
         missedNotes,
         badCuts,
+        bombHit,
         wallHit,
         maxCombo,
         accLeft, accRight, leftAverageCut, rightAverageCut, leftTimeDependence, rightTimeDependence
