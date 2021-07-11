@@ -1,14 +1,17 @@
 import createPlayerService from '../../../services/scoresaber/player';
 import createScoresService from '../../../services/scoresaber/scores';
+import createBeatSaviorService from '../../../services/beatsavior'
 import queue from '../../../network/queues'
 import {MINUTE, SECOND} from '../../../utils/date'
 
 let playerService = null;
 let scoresService = null;
+let beatSaviorService = null;
 
 export default () => {
   playerService = createPlayerService();
   scoresService = createScoresService();
+  beatSaviorService = createBeatSaviorService();
 
   let firstFetch = true;
 
@@ -19,7 +22,10 @@ export default () => {
 
       const player = await playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force);
 
-      const scores = await scoresService.fetchScoresPageOrGetFromCache(player, scoresType, scoresPage, refreshInterval, priority, signal, force)
+      const [scores, _] = await Promise.all([
+        scoresService.fetchScoresPageOrGetFromCache(player, scoresType, scoresPage, refreshInterval, priority, signal, force),
+        beatSaviorService.refresh(playerId, false, priority)
+      ]);
 
       return {...player, scores, scoresType, scoresPage}
     },

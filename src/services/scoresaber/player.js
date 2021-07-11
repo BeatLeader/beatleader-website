@@ -39,6 +39,8 @@ export default () => {
 
   const fetchCache = createFetchCache();
 
+  const isMainPlayer = playerId => mainPlayerId && playerId === mainPlayerId;
+
   const getAll = async () => playersRepository().getAll();
 
   const getAllActive = async () => {
@@ -280,6 +282,7 @@ export default () => {
   }
 
   service = {
+    isMainPlayer,
     getAll,
     getAllActive,
     get: getPlayer,

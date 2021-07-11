@@ -26,6 +26,22 @@ export const dateFromString = str => {
 export const addToDate = (millis, date = new Date()) => new Date(date.getTime() + millis)
 export const daysAgo = days => addToDate(- days * DAY);
 
+export function truncateDate(date, precision = 'day') {
+    const newDate = new Date(date.getTime());
+
+    // no breaks here!
+    switch(precision) {
+        case 'year': newDate.setMonth(0);
+        case 'month': newDate.setDate(1);
+        case 'day': newDate.setHours(0);
+        case 'hour': newDate.setMinutes(0);
+        case 'minute': newDate.setSeconds(0);
+        case 'second': newDate.setMilliseconds(0);
+    }
+
+    return newDate;
+}
+
 export function formatDate(val, dateStyle = 'short', timeStyle = 'medium') {
     if (!isValidDate(val)) return null;
 
