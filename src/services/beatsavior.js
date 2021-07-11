@@ -24,20 +24,43 @@ export default () => {
   const playerService = createPlayerService();
   const scoresService = createScoresService();
 
+  const getPlayerBeatSaviorData = async playerId => resolvePromiseOrWaitForPending(`getPlayerBeatSaviorData/${playerId}`, () => beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId));
+
+  const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, () => scoresService.getPlayerScoresAsObject(
+    playerId,
+    score => {
+      const key = opt(score, 'leaderboard.song.hash');
+      return key ? key.toLowerCase() : null;
+    },
+    true,
+  ))
+
+  const isScoreMatchingBsData = (score, bsData, exact = true) => {
+    if (!bsData.hash || !bsData.score || !bsData.timeSet || !opt(bsData, 'stats.won')) return false;
+
+    const diff = opt(score, 'leaderboard.diffInfo.diff');
+    const scoreValue = opt(score, 'score.score');
+    const timeSet = opt(score, 'score.timeSet')
+    let hash = opt(score, 'leaderboard.song.hash');
+
+    if (!diff || !score || !timeSet || !hash) return false;
+
+    hash = hash.toLowerCase();
+
+    if (bsData.hash === hash && bsData.diff === diff) {
+      return !exact || (bsData.score === scoreValue && Math.abs(timeSet.getTime() - bsData.timeSet.getTime()) < MINUTE);
+    }
+
+    return false;
+  }
+
   const updateData = async (playerId, data) => {
     log.debug(`Updating Beat Savior data for player "${playerId}"...`, 'BeatSaviorService')
 
     // find score matches
     log.trace(`Getting player "${playerId}" scores from DB...`, 'BeatSaviorService')
 
-    const playerScores = await scoresService.getPlayerScoresAsObject(
-      playerId,
-      score => {
-        const key = opt(score, 'leaderboard.song.hash');
-        return key ? key.toLowerCase() : null;
-      },
-      true,
-    );
+    const playerScores = await getPlayerScores(playerId);
 
     if (playerScores) {
       const scoresToUpdate = data
@@ -47,32 +70,22 @@ export default () => {
           const songScores = playerScores && playerScores[d.hash] ? playerScores[d.hash] : null;
           if (!songScores) return null;
 
-          const exactScore = songScores.find(s => {
-            const diff = opt(s, 'leaderboard.diffInfo.diff');
-            const score = opt(s, 'score.score');
-            const timeSet = opt(s, 'score.timeSet')
+          const leaderboardScore = songScores.find(s => isScoreMatchingBsData(s, d, false));
+          const exactScore = songScores.find(s => isScoreMatchingBsData(s, d, false));
 
-            if (!diff || !score || !timeSet) return false;
+          if (leaderboardScore) {
+            // update BeatSavior data
+            d.leaderboardId = leaderboardScore.leaderboardId;
+            d.leaderboard.leaderboardId = leaderboardScore.leaderboardId;
+          }
 
-            if (d.diff === diff) {
-              // update BeatSavior data in the same step
-              d.leaderboardId = s.leaderboardId;
-              d.leaderboard.s = s.leaderboardId;
+          if (exactScore) {
+            d.scoreId = opt(exactScore, 'score.scoreId');
 
-              if (d.score === score && Math.abs(timeSet.getTime() - d.timeSet.getTime()) < MINUTE) {
-                d.scoreId = opt(s, 'score.scoreId');
+            return {...exactScore, beatSavior: d};
+          }
 
-                return true;
-              }
-            }
-
-            return false;
-          });
-
-          if (!exactScore) return null;
-
-          return exactScore;
-          return {...exactScore, beatSavior: d};
+          return null;
         })
         .filter(s => s);
 
@@ -172,10 +185,15 @@ export default () => {
     return allRefreshed;
   }
 
-  const get = (playerId, leaderboardId) => {
-    // TODO:
+  const get = async (playerId, score) => {
+    if (score && score.beatSavior) return score.beatSavior;
 
-    return null;
+    const playerBsData = await getPlayerBeatSaviorData(playerId);
+    if (!playerBsData || !playerBsData.length) return null;
+
+    const bsData = playerBsData.find(bsData => isScoreMatchingBsData(score, bsData, true));
+
+    return bsData ? bsData : null;
   }
 
   const destroyService = () => {

@@ -16,8 +16,8 @@ let app = null;
 (async() => {
   try {
     // TODO: remove level setting
-    log.setLevel(log.TRACE);
-    log.logOnly(['BeatSaviorService']);
+    // log.setLevel(log.TRACE);
+    // log.logOnly(['BeatSaviorService']);
 
     log.info('Starting up...', 'Main')
 
