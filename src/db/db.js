@@ -3,7 +3,7 @@ import log from '../utils/logger'
 import {isDateObject, opt} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
-const SSR_DB_VERSION = 3;
+const SSR_DB_VERSION = 4;
 export let db = null;
 
 export default async () => {
@@ -116,6 +116,15 @@ async function openDatabase() {
             scoresStore4.createIndex('scores-timeSet', 'timeSet', {unique: false});
 
             // NO break here
+
+          case newVersion >= 4 && oldVersion <=3:
+            db.deleteObjectStore('beat-savior-files');
+
+            const beatSaviorStore = transaction.objectStore('beat-savior');
+            beatSaviorStore.deleteIndex('beat-savior-fileId');
+            beatSaviorStore.deleteIndex('beat-savior-songId');
+
+          // NO break here
         }
 
         log.info("Database converted");
