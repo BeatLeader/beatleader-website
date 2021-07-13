@@ -7,6 +7,8 @@ let scoresService;
 export default async (data, playerId = null) => {
   if (!data || !data.score) return data;
 
+  if (data.prevScore) delete data.prevScore;
+
   const leaderboardId = opt(data, 'leaderboard.leaderboardId');
 
   if (!scoresService) scoresService = createScoresService();
