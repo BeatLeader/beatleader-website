@@ -4,6 +4,7 @@
   export let date = new Date();
   export let prevDate = null;
   export let noDate = "";
+  export let prevPrefix = "";
 
   $: dateObj = isValidDate(date) ? date : dateFromString(date);
   $: formatted = dateObj ? formatDateRelative(dateObj) : noDate;
@@ -11,7 +12,7 @@
   $: prevFormatted = prevDateObj ? formatDateRelative(prevDateObj) : "";
 </script>
 
-<span title={dateObj ? formatDate(dateObj) : ''}>{formatted}</span>{#if prevDateObj }<small title={formatDate(prevDateObj)}>{prevFormatted}</small>{/if}
+<span title={dateObj ? formatDate(dateObj) : ''}>{formatted}</span>{#if prevDateObj }<small title={formatDate(prevDateObj)}>{prevPrefix}{prevFormatted}</small>{/if}
 
 <style>
     small {

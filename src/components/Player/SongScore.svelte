@@ -32,12 +32,12 @@
       />
 
       <div class="timeset tablet-and-up">
-        <FormattedDate date={score.timeSet}/>
+        <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null}/>
       </div>
     </span>
 
     <span class="timeset mobile-only">
-      <FormattedDate date={score.timeSet}/>
+      <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null}/>
     </span>
 
     <span class="song">
