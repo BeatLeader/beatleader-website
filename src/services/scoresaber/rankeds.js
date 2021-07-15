@@ -214,11 +214,16 @@ export default () => {
     }
   }
 
+  const destroyService = () => {
+    service = null;
+  }
+
   service = {
     get: getRankeds,
     refresh: refreshRankeds,
     getRankedsNotesCache,
     setRankedsNotesCache,
+    destroyService,
   }
 
   return service;

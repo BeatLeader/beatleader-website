@@ -33,6 +33,8 @@ export default () => {
       if (storeSubCount === 0) {
         store = null;
 
+        playerService.destroyService();
+
         stateUnsubscribe();
         playerAddedUnsubscribe();
         playerRemovedUnsubscribe();

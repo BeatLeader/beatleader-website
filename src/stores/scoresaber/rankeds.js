@@ -4,15 +4,16 @@ import {PRIORITY} from '../../network/http-queue'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 
 let store = null;
-
+let storeSubCount = 0;
 export default async (refreshOnCreate = false) => {
+  storeSubCount++;
   if (store) return store;
 
   const rankedsService = createRankedsService();
 
   let rankeds = refreshOnCreate ? {} : await rankedsService.get();
 
-  const {subscribe, set} = writable(rankeds);
+  const {subscribe: subscribeState, set} = writable(rankeds);
 
   const get = () => rankeds;
   const refresh = async (forceUpdate = false, priority = PRIORITY.BG_NORMAL) => {
@@ -24,9 +25,26 @@ export default async (refreshOnCreate = false) => {
   rankeds = await rankedsService.get();
   set(rankeds);
 
-  eventBus.on('rankeds-changed', ({allRankeds}) => {
+  const rankedsChangedUnsubscribe = eventBus.on('rankeds-changed', ({allRankeds}) => {
     if (allRankeds && Object.keys(allRankeds).length) set(allRankeds);
   })
+
+  const subscribe = fn => {
+    const stateUnsubscribe = subscribeState(fn);
+
+    return () => {
+      storeSubCount --;
+
+      if (storeSubCount === 0) {
+        store = null;
+
+        rankedsService.destroyService();
+
+        stateUnsubscribe();
+        rankedsChangedUnsubscribe();
+      }
+    }
+  }
 
   store = {
     subscribe,
