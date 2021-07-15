@@ -32,8 +32,10 @@ export default (response, setLastUpdated = null) => {
 
     const ppWeighted = opt(score, 'pp') && opt(score, 'weight') ? score.pp * score.weight : null;
 
-    if (setLastUpdated) score.lastUpdated = setLastUpdated;
-
-    return {leaderboard, score: {...score, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted}};
+    return {
+      leaderboard,
+      score: {...score, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted},
+      lastUpdated: setLastUpdated
+    };
   });
 }

@@ -2,14 +2,14 @@ import {db} from '../../db/db'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
 import createPlayerService from './player';
-import createRankedsService from './rankeds';
+import createRankedsStore from '../../stores/scoresaber/rankeds'
 import {PRIORITY} from '../../network/http-queue'
 import recentScoresApiClient from '../../network/scoresaber/scores/api-recent'
 import topScoresApiClient from '../../network/scoresaber/scores/api-top'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
 import log from '../../utils/logger'
-import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
+import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import scores from '../../db/repository/scores'
 import {SS_API_SCORES_PER_PAGE} from '../../network/scoresaber/api-queue'
@@ -18,6 +18,7 @@ import createFetchCache from '../../network/cache'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
+const RANK_AND_PP_REFRESH_INTERVAL = HOUR * 2;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -26,8 +27,8 @@ export default () => {
   if (service) return service;
 
   let playerService = createPlayerService();
-  let rankedsService = createRankedsService();
 
+  let allRankeds = {};
   let mainPlayerId = null;
   let updateInProgress = [];
 
@@ -41,6 +42,16 @@ export default () => {
         log.debug(`Main player changed to ${mainPlayerId}`, 'ScoresService')
       }
     })
+
+  })
+
+  let rankedStoreUnsubscribe = null;
+  createRankedsStore().then(rankedStore => {
+    rankedStoreUnsubscribe = rankedStore.subscribe(rankeds => {
+      allRankeds = rankeds
+
+      log.debug(`Ranked songs updated`, 'ScoresService', allRankeds)
+    })
   })
 
   const fetchCache = createFetchCache();
@@ -51,7 +62,7 @@ export default () => {
   const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
   const getPlayerSongScore = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
   const getPlayerRankedScores = async playerId => {
-    const [scores, rankeds] = await Promise.all([getPlayerScores(playerId), rankedsService.get()]);
+    const [scores, rankeds] = await Promise.all([getPlayerScores(playerId), allRankeds]);
     if (!scores) return [];
 
     return scores.filter(s => s.leaderboardId && rankeds[s.leaderboardId]);
@@ -155,6 +166,21 @@ export default () => {
 
   const getRecentPlayFromScores = (scores, defaultRecentPlay = null) => scores.reduce((recentPlay, s) => opt(s, 'score.timeSet') && s.score.timeSet > recentPlay ? s.score.timeSet : recentPlay, defaultRecentPlay);
 
+  const addScoreIndexFields = (playerId, score) => {
+    const id = getScoreKey(playerId, score);
+    const leaderboardId = opt(score, 'leaderboard.leaderboardId');
+    const timeSet = opt(score, 'score.timeSet');
+    const pp = opt(score, 'score.pp');
+
+    return {
+      ...score,
+      id,
+      playerId,
+      leaderboardId,
+      timeSet,
+      pp
+    }
+  }
   const updatePlayerScores = async (player, priority = PRIORITY.BG_NORMAL) => {
     if (!player || !player.playerId) {
       log.warn(`Can not refresh scores, empty playerId`, 'ScoresService', player);
@@ -234,11 +260,7 @@ export default () => {
           }
 
           // needed by DB indexes
-          score.id = id;
-          score.playerId = player.playerId;
-          score.leaderboardId = leaderboardId;
-          score.timeSet = scoreTimeSet;
-          score.pp = scorePp;
+          score = addScoreIndexFields(player.playerId, score);
 
           return score;
         }).filter(s => s);
@@ -295,8 +317,38 @@ export default () => {
   const fetchScoresPageAndUpdateIfNeeded = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null) => {
     const fetchedScores = await fetchScoresPage(playerId, type, page, priority, signal);
 
-    // TODO: update scores in DB if older than given threshold and rank/pp is different from cached one.
-    // TODO: ONLY THESE TWO FIELDS AND ONLY IF DB SCORE IS EQUAL TO FETCHED SCORE
+    const playerScores = await getPlayerScores(playerId);
+    if (fetchedScores && playerScores && playerScores.length) {
+      const playerScoresObj = convertScoresToObject(playerScores)
+
+      // update rank and pp in DB
+      const updatedDbScores = fetchedScores
+        .map(score => {
+          score = addScoreIndexFields(playerId, score);
+
+          const leaderboardId = opt(score, 'leaderboard.leaderboardId')
+          if (!leaderboardId) return null;
+
+          const cachedScore = playerScoresObj[leaderboardId];
+
+          const cachedScoreId = opt(cachedScore, 'score.scoreId');
+          const scoreId = opt(score, 'score.scoreId')
+
+          if (!cachedScoreId || cachedScoreId !== scoreId) return null;
+
+          const pp = opt(score, 'score.pp')
+          const rank = opt(score, 'score.rank')
+
+          cachedScore.lastUpdated = score.lastUpdated ? score.lastUpdated : new Date();
+          if (pp) cachedScore.score.pp = pp;
+          if (rank) cachedScore.score.rank = rank;
+
+          return addScoreIndexFields(playerId, cachedScore);
+        })
+        .filter(score => score)
+
+      if (updatedDbScores.length) Promise.all(updatedDbScores.map(s => updateScore(s))).then(_ => {});
+    }
 
     return fetchedScores;
   }
@@ -314,9 +366,18 @@ export default () => {
       if (tempCachedScorePage) return tempCachedScorePage;
     }
 
-    // TODO: force fetch once an hour even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
+    // force fetch from time to time even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
+    const shouldPageBeRefetched = scoresPage && scoresPage.reduce((shouldRefresh, score) => {
+      if (!score.pp && allRankeds[score.leaderboard]) return true;
+
+      if (!score.lastUpdated || score.lastUpdated < addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return true;
+
+      return shouldRefresh
+    }, false)
+
     if (
       force ||
+      shouldPageBeRefetched ||
       !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
       !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
     )
@@ -422,9 +483,9 @@ export default () => {
     serviceCreationCount--;
     if (serviceCreationCount === 0) {
       if(configStoreUnsubscribe) configStoreUnsubscribe();
+      if (rankedStoreUnsubscribe) rankedStoreUnsubscribe();
 
       playerService.destroyService();
-      rankedsService.destroyService();
 
       fetchCache.destroy();
 
