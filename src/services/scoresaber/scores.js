@@ -181,6 +181,32 @@ export default () => {
       pp
     }
   }
+  const updateRankAndPp = async scoresToUpdate => {
+    if (!scoresToUpdate || !scoresToUpdate.length) return;
+
+    for(const score of scoresToUpdate) {
+      try {
+        await db.runInTransaction(['scores'], async tx => {
+          const scoresStore = tx.objectStore('scores');
+
+          const dbScore = await scoresStore.get(score.id);
+          if (dbScore && dbScore.score && dbScore.score.scoreId === score.scoreId) {
+            dbScore.lastUpdated = score.lastUpdated;
+            dbScore.pp = score.pp;
+            dbScore.score.pp = score.pp;
+            dbScore.score.rank = score.rank;
+
+            delete dbScore.prevScore;
+
+            await scoresStore.put(dbScore);
+          }
+        });
+      } catch (err) {
+        // swallow error
+      }
+    }
+  }
+
   const updatePlayerScores = async (player, priority = PRIORITY.BG_NORMAL) => {
     if (!player || !player.playerId) {
       log.warn(`Can not refresh scores, empty playerId`, 'ScoresService', player);
@@ -252,7 +278,7 @@ export default () => {
             : null;
 
           if (prevScore) {
-            const prevScoreScorePart = prevScore.score;
+            const prevScoreScorePart = {...prevScore.score};
             if (prevScoreScorePart && prevScoreScorePart.timeSet && prevScoreScorePart.score !== undefined && prevScoreScorePart.score < scoreValue) {
               const prevHistory = opt(prevScore, 'history.length') ? prevScore.history.filter(h => h.timeSet) : [];
               score.history = [prevScoreScorePart].concat(prevHistory).slice(0,3);
@@ -322,7 +348,7 @@ export default () => {
       const playerScoresObj = convertScoresToObject(playerScores)
 
       // update rank and pp in DB
-      const updatedDbScores = fetchedScores
+      const scoresToUpdate = fetchedScores
         .map(score => {
           score = addScoreIndexFields(playerId, score);
 
@@ -338,16 +364,14 @@ export default () => {
 
           const pp = opt(score, 'score.pp')
           const rank = opt(score, 'score.rank')
+          const lastUpdated = score.lastUpdated ? score.lastUpdated : new Date()
+          const id = score.id;
 
-          cachedScore.lastUpdated = score.lastUpdated ? score.lastUpdated : new Date();
-          if (pp) cachedScore.score.pp = pp;
-          if (rank) cachedScore.score.rank = rank;
-
-          return addScoreIndexFields(playerId, cachedScore);
+          return {id, scoreId, pp, rank, lastUpdated}
         })
         .filter(score => score)
 
-      if (updatedDbScores.length) Promise.all(updatedDbScores.map(s => updateScore(s))).then(_ => {});
+      if (scoresToUpdate.length) updateRankAndPp(scoresToUpdate).then(_ => {});
     }
 
     return fetchedScores;
