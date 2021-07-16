@@ -66,7 +66,7 @@
         left: 0;
         text-align: center;
         font-size: .75rem;
-        z-index: 100;
+        z-index: 15;
         width: calc(100% - 1rem);
     }
 
