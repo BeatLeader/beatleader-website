@@ -21,6 +21,8 @@
   const configService = createConfigService();
   const playerService = createPlayerService();
 
+  let mainPlayerId = null;
+
   const setPlayerData = newPlayer => {
     if (newPlayer) {
       player = newPlayer;
@@ -46,7 +48,9 @@
   }
 
   onMount(async () => {
-    playerId = await configService.getMainPlayerId();
+    mainPlayerId = await configService.getMainPlayerId();
+
+    playerId = mainPlayerId;
 
     return () => {
       configService.destroyService();
@@ -59,7 +63,9 @@
 
 <article transition:fade>
   <div class="box has-shadow">
-    <h1 class="title is-3 has-text-centered">Hello</h1>
+    {#if !mainPlayerId || playerId === mainPlayerId}
+      <h1 class="title is-3 has-text-centered">Hello</h1>
+    {/if}
 
     <div class="avatar">
       <Avatar playerInfo={player ? player.playerInfo : null} {isLoading} centered={true}/>
@@ -69,7 +75,9 @@
 
     {#if player}
       <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/recent`)}/>
-      <div class="another-search"><a on:click={() => {name = DEFAULT_NAME; playerId = null; player = null;}}>Another search</a></div>
+      <div class="another-search"><a on:click={() => {name = DEFAULT_NAME; playerId = null; player = null;}}>
+        {player.playerId === mainPlayerId ? 'Find another profile' : 'Another search'}
+      </a></div>
     {:else if !!name}
       <h2 class="title is-4 has-text-centered">{name}</h2>
       <h3 class="title is-6 has-text-centered">Find a player profile</h3>
@@ -81,10 +89,6 @@
         <Error {error}/>
       </div>
     {/if}
-
-    <h3 class="title is-6">OR</h3>
-
-    <Button iconFa="fas fa-user" label="Browse ranking" type="default" on:click={() => navigate(`/global`)}/>
   </div>
 </article>
 
@@ -115,7 +119,7 @@
     }
 
     .another-search {
-        font-size: .75em;
+        font-size: .875em;
     }
 
     button {

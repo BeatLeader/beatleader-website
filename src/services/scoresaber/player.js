@@ -1,6 +1,7 @@
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
 import playerApiClient from '../../network/scoresaber/player/api'
+import playerFindApiClient from '../../network/scoresaber/player-find/api'
 import playerPageClient from '../../network/scoresaber/player/page'
 import {PRIORITY} from '../../network/http-queue'
 import playersRepository from '../../db/repository/players'
@@ -42,6 +43,9 @@ export default () => {
   const isMainPlayer = playerId => mainPlayerId && playerId === mainPlayerId;
 
   const getAll = async () => playersRepository().getAll();
+
+  // TODO: just for now
+  const getFriends = async () => (await getAll()).filter(player => player && player.playerId && !isPlayerMain(player.playerId)).map(p => p.playerId);
 
   const getAllActive = async () => {
     const players = await getAll();
@@ -170,7 +174,7 @@ export default () => {
 
   const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/${playerId}`, () => playerApiClient.getProcessed({playerId, priority, signal}));
 
-  const findPlayer = async (query, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/find/${query}`, () => queue.SCORESABER_API.findPlayer(query, signal, priority));
+  const findPlayer = async (query, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/find/${query}`, () => playerFindApiClient.getProcessed({query, signal, priority}));
 
   const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     const player = await getPlayer(playerId);
@@ -285,6 +289,7 @@ export default () => {
     isMainPlayer,
     getAll,
     getAllActive,
+    getFriends,
     get: getPlayer,
     add: addPlayer,
     remove: removePlayer,

@@ -4,19 +4,19 @@
 </script>
 
 <article transition:fade>
-  <h1 class="title is-3">404 | Page not found.</h1>
+  <div class="box has-shadow">
+    <h1 class="title is-3">404 | Not found</h1>
 
-  <p><a href="" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
+    <p><a href="" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
+  </div>
 </article>
 
 <style>
-  article {
-      max-width: 1024px;
-      margin: 0 auto;
-      text-align: center;
-  }
+    article {
+        text-align: center;
+    }
 
-  p {
-      text-align: center;
-  }
+    p {
+        text-align: center;
+    }
 </style>

@@ -3,9 +3,11 @@
   import buildInfo from '../build-info';
   import HomePage from './pages/Home.svelte';
   import RankingPage from './pages/Ranking.svelte';
+  import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
   import QueueStats from './components/Common/QueueStats.svelte'
+  import Nav from './components/Nav.svelte'
 
   export let url = "";
 </script>
@@ -13,7 +15,9 @@
 <QueueStats />
 
 <Router {url}>
-  <main class="section">
+  <Nav />
+
+  <main>
     <div class="sspl-page-container">
       <Route path="/u/:initialPlayerId/*initialScoresType" let:params>
         <PlayerPage initialPlayerId={params.initialPlayerId}
@@ -29,6 +33,7 @@
                     }
         />
       </Route>
+      <Route path="/friends" component="{FriendsPage}" />
       <Route path="/global" component="{RankingPage}" />
       <Route path="/" component="{HomePage}" />
       <Route path="/*" component="{NotFoundPage}" />
@@ -57,10 +62,6 @@
 
     .sspl-page-container :global(> *) {
         grid-area: 1 / 1 / 1 / 1;
-    }
-
-    .section {
-        padding: 1rem;
     }
 
     @media (max-width: 450px) {

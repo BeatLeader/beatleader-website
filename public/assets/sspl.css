@@ -19,6 +19,9 @@
 
 body {
     color: var(--textColor);
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .sspl-page-container {

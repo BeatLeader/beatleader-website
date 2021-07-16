@@ -12,6 +12,8 @@
   export let prevInfo;
   export let skeleton = false;
   export let centered = false;
+
+  $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
 </script>
 
 {#if skeleton}
@@ -40,8 +42,7 @@
   </h1>
 
   <h2 class="title is-5" class:centered>
-    <a href={playerInfo.rankValue ? `${SS_HOST}/global/${playerInfo.rankValue ? Math.floor((playerInfo.rankValue-1) /
-    PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
+    <a href={rank ? `${SS_HOST}/global/${rank ? Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
       <i class="fas fa-globe-americas"></i>
 
       <Value value={opt(playerInfo, 'rank')} prevValue={opt(prevInfo, 'rank')} prevLabel={opt(prevInfo, 'rankSince')}
@@ -50,8 +51,7 @@
     </a>
 
     {#each opt(playerInfo, 'countries', []) as country}
-      <a
-        href={country.rankValue ? `${SS_HOST}/global/${Math.floor((country.rankValue-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
+      <a href={country.rankValue || country.rank ? `${SS_HOST}/global/${Math.floor(((country.rankValue ? country.rankValue : country.rank)-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
         <img
           src={`${SS_HOST}/imports/images/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
              alt={opt(country, 'country')}

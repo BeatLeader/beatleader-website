@@ -3,6 +3,7 @@
   import createPlayerService from '../../services/scoresaber/player'
   import {SsrHttpNotFoundError} from '../../network/errors'
   import Autocomplete from '../Common/Autocomplete.svelte'
+  import MenuLine from './MenuLine.svelte'
 
   const dispatch = createEventDispatcher();
 
@@ -28,9 +29,8 @@
     try {
       const data = await search(value);
 
-      return data && data.players ? data.players : [];
-    }
-    catch(err) {
+      return data ? data : [];
+    } catch (err) {
       if (err instanceof SsrHttpNotFoundError) return [];
 
       throw err;
@@ -58,13 +58,7 @@
                 on:selected={e => onItemSelected(e.detail)}
   >
     <svelte:fragment slot="row" let:item>
-      <div class="player">
-        <span class="rank">#{item.rank}</span>
-        <span class="player">
-          <img src={`https://scoresaber.com/imports/images/flags/${item && item.country ? item.country.toLowerCase() : '' }.png`} loading="lazy">
-          <span>{item.playerName}</span>
-        </span>
-      </div>
+      <MenuLine player={item} />
     </svelte:fragment>
   </Autocomplete>
 </section>
