@@ -6,13 +6,10 @@
   import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
-  import QueueStats from './components/Common/QueueStats.svelte'
   import Nav from './components/Nav.svelte'
 
   export let url = "";
 </script>
-
-<QueueStats />
 
 <Router {url}>
   <Nav />
@@ -57,7 +54,7 @@
         grid-template-columns: 1fr;
         grid-template-rows: 1fr;
         overflow: hidden;
-        min-height: calc(100vh - 7rem);
+        min-height: calc(100vh - 8rem);
     }
 
     .sspl-page-container :global(> *) {

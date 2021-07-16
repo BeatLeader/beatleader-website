@@ -3,6 +3,7 @@
   import createFriendsStore from '../stores/scoresaber/friends'
   import Dropdown from './Common/Dropdown.svelte'
   import MenuLine from './Player/MenuLine.svelte'
+  import QueueStats from './Common/QueueStats.svelte'
 
   function onFriendClick(event) {
     navigate(`/u/${event.detail.playerId}/recent/1`)
@@ -34,6 +35,8 @@
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
     Ranking
   </div>
+
+  <QueueStats />
 </nav>
 
 <style>
@@ -46,7 +49,7 @@
         height: 3rem;
         background-color: var(--foreground);
         border-bottom: 1px solid var(--dimmed);
-        z-index: 1000;
+        z-index: 50;
     }
 
     nav > * {
