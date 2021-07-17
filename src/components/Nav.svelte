@@ -1,13 +1,26 @@
 <script>
+  import eventBus from '../utils/broadcast-channel-pubsub'
+  import { getContext } from 'svelte'
   import {navigate} from 'svelte-routing'
+  import { ROUTER, } from 'svelte-routing/src/contexts'
   import createFriendsStore from '../stores/scoresaber/friends'
   import Dropdown from './Common/Dropdown.svelte'
   import MenuLine from './Player/MenuLine.svelte'
   import QueueStats from './Common/QueueStats.svelte'
 
+  const { activeRoute } = getContext(ROUTER);
+
   function onFriendClick(event) {
+    if (!event.detail) return;
+
     friendsMenuShown = false;
-    navigate(`/u/${event.detail.playerId}/recent/1`)
+
+    if (!$activeRoute || !$activeRoute.uri || !$activeRoute.uri.startsWith('/u/'))
+    {
+      navigate(`/u/${event.detail.playerId}`)
+    } else {
+      eventBus.publish('navigate-to-player-cmd', event.detail.playerId)
+    }
   }
 
   const friends = createFriendsStore();

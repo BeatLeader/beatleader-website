@@ -1,4 +1,6 @@
 <script>
+  import eventBus from '../utils/broadcast-channel-pubsub'
+  import {onDestroy} from 'svelte'
   import {navigate} from 'svelte-routing'
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
@@ -27,6 +29,12 @@
   let currentNavType = initialType;
   let currentNavPage = initialPage;
 
+  const navigateUnsubscribe = eventBus.on('navigate-to-player-cmd', (playerId, isLocal) => {
+    if (!isLocal || !playerId || !playerId.length) return;
+
+    navigateToPlayer(playerId);
+  })
+
   function onPageChanged(event) {
     currentNavPage = opt(event, 'detail', initialPage)
 
@@ -46,12 +54,12 @@
   function navigateToPlayer(playerId) {
     currentNavPage = 1;
     playerStore.setPage(currentNavPage);
-    navigate(`/u/${playerId}/${currentNavType}`)
+    navigate(`/u/${playerId}/${currentNavType}/1`)
   }
 
-  $: {
-    changePlayer(initialPlayerId);
-  }
+  onDestroy(() => navigateUnsubscribe())
+
+  $: changePlayer(initialPlayerId);
 
   $: playerId = $playerStore && playerStore && playerStore.getPlayerId ? playerStore.getPlayerId() : null;
   $: currentStoreType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
