@@ -60,7 +60,7 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        height: 3rem;
+        height: 2.75rem;
         background-color: var(--foreground);
         border-bottom: 1px solid var(--dimmed);
         z-index: 50;
@@ -70,6 +70,7 @@
         display: inline-flex;
         justify-content: flex-start;
         align-items: center;
+        height: 100%;
         font-size: 1rem;
         padding: .5rem 1rem;
         cursor: pointer;
@@ -92,5 +93,15 @@
         width: 1.25rem;
         height: 1.25rem;
         margin-right: .5rem;
+    }
+
+    @media screen and (max-width: 450px) {
+        nav > * {
+            flex: 1;
+            border-right: 1px solid var(--dimmed);
+        }
+        nav > *:last-child {
+            border-right: none;
+        }
     }
 </style>
