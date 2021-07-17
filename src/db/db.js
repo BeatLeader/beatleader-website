@@ -150,44 +150,21 @@ async function openDatabase() {
       },
     });
 
-    // enhance db object
-    let _currentTransaction = null;
-    const getCurrentTransaction = () => _currentTransaction;
-    let mode = opt(_currentTransaction, 'mode')
-    const getTransactionMode = () => mode ? mode : null;
-    const objectStoreNames = opt(_currentTransaction, 'objectStoreNames')
-    const getTransactionStores = () => [...(objectStoreNames ? objectStoreNames : [])];
-
     // Closure code should awaits DB operations ONLY or fail
     // https://github.com/jakearchibald/idb#user-content-transaction-lifetime
-    const runInTransaction = async (objectStores, closure, mode = 'readwrite', options = {durability: 'strict'}) => {
+    db.runInTransaction = async (objectStores, closure, mode = 'readwrite', options = {durability: 'strict'}) => {
       try {
-        if (_currentTransaction) return Promise.reject('Another transaction in progress');
+        const tx = db.transaction(objectStores, mode, options);
 
-        _currentTransaction = db.transaction(objectStores, mode, options);
+        const result = await closure(tx);
 
-        _currentTransaction.getMode = getTransactionMode;
-        _currentTransaction.getStores = getTransactionStores;
+        await tx.done;
 
-        try {
-          const result = await closure(_currentTransaction);
-
-          await _currentTransaction.done;
-
-          return result;
-        }
-        finally {
-          _currentTransaction = null;
-        }
-      }
-      catch(e) {
-        _currentTransaction = null;
-
+        return result;
+      } catch (e) {
         throw e;
       }
     }
-    db.getCurrentTransaction = getCurrentTransaction;
-    db.runInTransaction = runInTransaction;
 
     return db;
   }

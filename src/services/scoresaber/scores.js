@@ -407,7 +407,7 @@ export default () => {
     )
       return fetchScoresPageAndUpdateIfNeeded(player.playerId, type, page, priority, signal)
         .then(fetchedScores => {
-          fetchCache.set(getFetchCacheKey(player.playerId, type, page), fetchedScores.map(s => ({...s})), refreshInterval);
+          if (!scoresPage) fetchCache.set(getFetchCacheKey(player.playerId, type, page), fetchedScores.map(s => ({...s})), refreshInterval);
 
           return fetchedScores;
         })

@@ -149,8 +149,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
     return Object.values(repositoryCache.getAll()).filter(filterItems);
   }
 
-  const set = async (value, key) => {
-    const tx = db.getCurrentTransaction();
+  const set = async (value, key = undefined, tx = null) => {
     const txStores = tx ? [...tx.objectStoreNames] : null;
 
     let putKey;

@@ -165,9 +165,9 @@ export default () => {
 
       log.trace('Saving rankeds to DB...', 'RankedsService');
 
-      await db.runInTransaction(['rankeds', 'rankeds-changes', 'key-value'], async _ => {
-        await Promise.all(changedLeaderboards.map(async ranked => rankedsRepository().set(ranked)));
-        await Promise.all(changed.map(async rc => rankedsChangesRepository().set(rc)));
+      await db.runInTransaction(['rankeds', 'rankeds-changes', 'key-value'], async tx => {
+        await Promise.all(changedLeaderboards.map(async ranked => rankedsRepository().set(ranked, undefined, tx)));
+        await Promise.all(changed.map(async rc => rankedsChangesRepository().set(rc, undefined, tx)));
         await setLastUpdated(new Date())
       });
 
