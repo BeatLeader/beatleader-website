@@ -185,11 +185,13 @@ export default () => {
     if (!scoresToUpdate || !scoresToUpdate.length) return;
 
     for(const score of scoresToUpdate) {
+      let dbScore = null;
+
       try {
         await db.runInTransaction(['scores'], async tx => {
           const scoresStore = tx.objectStore('scores');
 
-          const dbScore = await scoresStore.get(score.id);
+          dbScore = await scoresStore.get(score.id);
           if (dbScore && dbScore.score && dbScore.score.scoreId === score.scoreId) {
             dbScore.lastUpdated = score.lastUpdated;
             dbScore.pp = score.pp;
@@ -201,6 +203,8 @@ export default () => {
             await scoresStore.put(dbScore);
           }
         });
+
+        if (dbScore) scoresRepository().addToCache([dbScore]);
       } catch (err) {
         // swallow error
       }
