@@ -96,12 +96,22 @@
     }
 
     @media screen and (max-width: 450px) {
+        nav {
+            height: 3.5rem;
+        }
+
         nav > * {
             flex: 1;
             border-right: 1px solid var(--dimmed);
+            flex-direction: column;
+            font-size: .75rem;
         }
         nav > *:last-child {
             border-right: none;
+        }
+
+        nav svg {
+            margin-right: 0;
         }
     }
 </style>
