@@ -14,6 +14,8 @@
 
   let initialType = opt(initialState, 'scoresType', initialScoresType);
   let initialPage = parseInt(opt(initialState, 'page', initialScoresPage), 10);
+
+  if (!initialType || !initialType.length) initialType = 'recent';
   if (isNaN(initialPage)) initialPage = 1;
 
   export const changePlayer = async newPlayerId => playerStore.fetch(newPlayerId);
