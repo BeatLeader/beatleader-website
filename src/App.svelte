@@ -8,6 +8,7 @@
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
   import Nav from './components/Nav.svelte'
+  import Ranking from './pages/Ranking.svelte'
 
   export let url = "";
 </script>
@@ -32,7 +33,9 @@
         />
       </Route>
       <Route path="/friends" component="{FriendsPage}" />
-      <Route path="/global" component="{RankingPage}" />
+      <Route path="/global/*page" let:params>
+        <Ranking page={params.page} />
+      </Route>
       <Route path="/search" component="{SearchPage}" />
       <Route path="/" component="{HomePage}" />
       <Route path="/*" component="{NotFoundPage}" />

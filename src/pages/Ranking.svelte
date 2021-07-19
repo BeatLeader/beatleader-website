@@ -1,23 +1,136 @@
 <script>
   import {navigate} from "svelte-routing";
   import {fade} from 'svelte/transition'
+  import createRankingStore from '../stores/http/http-ranking-store'
+  import Avatar from '../components/Common/Avatar.svelte'
+  import Value from '../components/Common/Value.svelte'
+  import {opt} from '../utils/js'
+  import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
+  import Change from '../components/Common/Change.svelte'
+
+  export let page = 1;
+
+  if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+  if (!page || isNaN(page) || page <= 0) page = 1;
+
+  const rankingStore = createRankingStore(page);
 </script>
 
 <article transition:fade>
   <div class="box has-shadow">
-    <h1 class="title is-3">Not implemented yet :-(</h1>
-    <p>Come back later.</p>
+    <h1 class="title is-5">Global leaderboard</h1>
 
-    <p><a href="" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
+    {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
+      <section class="ranking-grid">
+        {#each $rankingStore.data as player}
+          <div class="player-card">
+            <div class="player-and-rank">
+              <Avatar {player}/>
+              <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') ===
+               2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >=
+               10000 ? 'small' : '')))}`}>
+                #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
+              </div>
+            </div>
+
+            <PlayerNameWithFlag {player}/>
+
+            <div class="player-pp-and-change">
+              <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
+              <span class="change">
+                <Change value={opt(player, 'others.difference')} digits={0}/>
+              </span>
+            </div>
+          </div>
+        {/each}
+      </section>
+    {/if}
   </div>
 </article>
 
 <style>
-    article {
-        text-align: center;
+    .ranking-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(18em, 1fr));
+        grid-gap: .75em;
     }
 
-    p {
-        text-align: center;
+    .player-card {
+        display: inline-grid;
+        grid-template-columns: 5.25em 1fr;
+        grid-template-rows: 1fr 1fr;
+        max-width: 100%;
+        padding: .5em;
+        border: 1px solid var(--dimmed);
+        border-radius: 4px;
+        background-color: var(--background);
+        cursor: pointer;
+    }
+
+    .player-card:hover {
+        background-color: var(--faded);
+    }
+
+    .player-card .player-and-rank {
+        grid-column-start: 1;
+        grid-column-end: 1;
+        grid-row-start: 1;
+        grid-row-end: span 2;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .player-card .player-and-rank :global(figure) {
+        width: 4em;
+        height: 4em;
+    }
+
+    .player-card .player-and-rank :global(.rank) {
+        position: absolute;
+        bottom: .5em;
+        right: .75em;
+        padding: 0 .25em;
+        font-size: 1em;
+        font-weight: 500;
+        background-color: var(--dimmed);
+        border-radius: 3px;
+    }
+
+    .player-card .player-and-rank :global(.rank.small) {
+        font-size: .875em;
+    }
+
+    .player-card .player-and-rank :global(.rank.gold) {
+        font-size: 1.1em;
+        background-color: darkgoldenrod;
+    }
+
+    .player-card .player-and-rank :global(.rank.silver) {
+        font-size: 1.1em;
+        background-color: #888;
+    }
+
+    .player-card .player-and-rank :global(.rank.brown) {
+        font-size: 1.1em;
+        background-color: saddlebrown;
+    }
+
+    .player-card .player-pp-and-change {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.1em;
+        font-weight: 500;
+        color: var(--ppColour);
+    }
+
+    .player-card .change {
+        font-size: .875em;
+    }
+
+    @media screen and (max-width: 500px) {
+        .ranking-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>

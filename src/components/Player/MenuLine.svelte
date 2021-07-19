@@ -1,5 +1,6 @@
 <script>
   import {opt} from '../../utils/js'
+  import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte'
 
   export let player = null;
   export let withRank = true;
@@ -13,10 +14,7 @@
   {#if withRank}
     <span class="rank">#{rank}</span>
   {/if}
-  <span class="player">
-    <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy">
-    <span>{player.name}</span>
-  </span>
+  <PlayerNameWithFlag {player} />
 </div>
 {/if}
 
@@ -35,14 +33,5 @@
         flex-basis: 4rem;
         flex-shrink: 0;
         flex-grow: 0;
-    }
-
-    div.player span.player {
-        white-space: nowrap;
-        overflow-x: hidden;
-    }
-
-    div.player span.player img {
-        margin-right: .125rem;
     }
 </style>
