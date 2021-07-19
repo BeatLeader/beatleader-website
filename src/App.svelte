@@ -2,6 +2,7 @@
   import {Router, Route} from "svelte-routing";
   import buildInfo from '../build-info';
   import HomePage from './pages/Home.svelte';
+  import SearchPage from './pages/Search.svelte';
   import RankingPage from './pages/Ranking.svelte';
   import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
@@ -32,6 +33,7 @@
       </Route>
       <Route path="/friends" component="{FriendsPage}" />
       <Route path="/global" component="{RankingPage}" />
+      <Route path="/search" component="{SearchPage}" />
       <Route path="/" component="{HomePage}" />
       <Route path="/*" component="{NotFoundPage}" />
     </div>
@@ -44,7 +46,8 @@
   <p>
     Uses <a href="https://scoresaber.com">ScoreSaber API</a>,
     <a href="https://beatsaver.com">Beat Saver API</a>,
-    <a href="https://www.beatsavior.io">Beat Savior API</a>.
+    <a href="https://www.beatsavior.io">Beat Savior API</a>,
+    <a href="https://heroicons.com/">heroicons</a>
   </p>
 </footer>
 

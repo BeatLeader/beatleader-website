@@ -68,4 +68,9 @@
     .dropdown-menu .dropdown-item:hover {
         background-color: var(--selected);
     }
+
+    .dropdown-content .menu-label {
+        padding: .5em;
+        font-size: 1em;
+    }
 </style>
