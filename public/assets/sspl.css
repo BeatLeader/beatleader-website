@@ -37,12 +37,6 @@ body {
     display: none;
 }
 
-@media screen and (max-width: 450px) {
-    body {
-        padding: 0 1rem 4rem 1rem;
-    }
-}
-
 @media screen and (max-width: 767px) {
     .mobile-only {
         display: block;

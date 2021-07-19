@@ -118,7 +118,6 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        width: 100%;
         height: 2.75rem;
         background-color: var(--foreground);
         border-bottom: 1px solid var(--dimmed);
@@ -161,12 +160,6 @@
     @media screen and (max-width: 450px) {
         nav {
             height: 3.5rem;
-            position: fixed;
-            top: calc(100vh - 3.5rem);
-            left: -.5rem;
-            width: calc(100vw + .5rem);
-            border-bottom: none;
-            border-top: 1px solid var(--dimmed);
         }
 
         nav > * {
@@ -181,10 +174,6 @@
 
         nav svg, nav .avatar {
             margin-right: 0;
-        }
-
-        .friends :global(.dropdown-menu) {
-            top: -4.5rem;
         }
     }
 </style>
