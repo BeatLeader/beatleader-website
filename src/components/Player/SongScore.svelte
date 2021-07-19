@@ -257,6 +257,10 @@
         text-align: center;
     }
 
+    .timeset :global(small) {
+        line-height: 1;
+    }
+
     .rank .timeset {
         width: auto;
         font-size: .8em;
@@ -312,7 +316,7 @@
 
         .song {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             width: 100%;
             margin-right: 0;
