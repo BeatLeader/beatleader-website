@@ -42,7 +42,7 @@
   </h1>
 
   <h2 class="title is-5" class:centered>
-    <a href={rank ? `${SS_HOST}/global/${rank ? Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
+    <a href={rank ? `${SS_HOST}/global/${rank ? Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'} target="_blank" rel="noopener">
       <i class="fas fa-globe-americas"></i>
 
       <Value value={opt(playerInfo, 'rank')} prevValue={opt(prevInfo, 'rank')} prevLabel={opt(prevInfo, 'rankSince')}
@@ -51,7 +51,7 @@
     </a>
 
     {#each opt(playerInfo, 'countries', []) as country}
-      <a href={country.rankValue || country.rank ? `${SS_HOST}/global/${Math.floor(((country.rankValue ? country.rankValue : country.rank)-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'}>
+      <a href={country.rankValue || country.rank ? `${SS_HOST}/global/${Math.floor(((country.rankValue ? country.rankValue : country.rank)-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'} target="_blank" rel="noopener">
         <img
           src={`${SS_HOST}/imports/images/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
              alt={opt(country, 'country')}
