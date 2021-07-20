@@ -2,7 +2,7 @@
   import {getContext} from 'svelte'
   import {navigate} from "svelte-routing";
   import {ROUTER} from 'svelte-routing/src/contexts'
-  import {fade} from 'svelte/transition'
+  import {fade, fly} from 'svelte/transition'
   import createRankingStore from '../stores/http/http-ranking-store'
   import {opt} from '../utils/js'
   import eventBus from '../utils/broadcast-channel-pubsub'
@@ -12,10 +12,16 @@
   import Change from '../components/Common/Change.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
   import Pager from '../components/Common/Pager.svelte'
+  import {scrollToTargetAdjusted} from '../utils/browser'
 
   export let page = 1;
 
+  if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+  if (!page || isNaN(page) || page <= 0) page = 1;
+
   const {activeRoute} = getContext(ROUTER);
+
+  let boxEl = null;
 
   function navigateToPlayer(playerId) {
     if (!playerId) return;
@@ -27,8 +33,9 @@
     }
   }
 
-  if (page && !Number.isFinite(page)) page = parseInt(page, 10);
-  if (!page || isNaN(page) || page <= 0) page = 1;
+  function scrollToTop() {
+    if (boxEl) scrollToTargetAdjusted(boxEl, 44)
+  }
 
   const rankingStore = createRankingStore(page);
 
@@ -41,17 +48,20 @@
 
   $: isLoading = rankingStore.isLoading;
   $: pending = rankingStore.pending;
-  $: numOfPlayers = $rankingStore ? $rankingStore.total : null
+  $: numOfPlayers = $rankingStore ? $rankingStore.total : null;
+
+  $: scrollToTop($pending);
 </script>
 
 <article transition:fade>
-  <div class="box has-shadow">
+  <div class="box has-shadow" bind:this={boxEl}>
     <h1 class="title is-5">Global leaderboard</h1>
 
     {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
       <section class="ranking-grid">
-        {#each $rankingStore.data as player}
-          <div class="player-card" on:click={() => navigateToPlayer(player.playerId)}>
+        {#each $rankingStore.data as player, idx (player.playerId)}
+          <div class="player-card" on:click={() => navigateToPlayer(player.playerId)} in:fly={{delay: idx *
+          10, x: 100}}>
             <div class="player-and-rank">
               <Avatar {player}/>
               <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`}>
