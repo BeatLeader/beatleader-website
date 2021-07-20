@@ -2,12 +2,12 @@
   import {createEventDispatcher} from 'svelte'
   import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
   import createScoresStore from '../../stores/http/http-scores-store.js';
-
+  import {opt} from '../../utils/js'
+  import {scrollToTargetAdjusted} from '../../utils/browser'
   import Pager from '../Common/Pager.svelte'
   import SongScore from './SongScore.svelte'
   import Error from '../Common/Error.svelte'
   import Switcher from '../Common/Switcher.svelte'
-  import {opt} from '../../utils/js'
 
   const dispatch = createEventDispatcher();
 
@@ -41,7 +41,7 @@
   }
 
   function scrollToTop() {
-    if (scoresBoxEl) scoresBoxEl.scrollIntoView({behavior: 'auto'});
+    if (scoresBoxEl) scrollToTargetAdjusted(scoresBoxEl, 44)
   }
 
   $: {
