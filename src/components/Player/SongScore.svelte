@@ -253,7 +253,7 @@
 
     .song {
         flex-grow: 1;
-        min-width: 18em;
+        min-width: 15.25em;
     }
 
     .timeset {
