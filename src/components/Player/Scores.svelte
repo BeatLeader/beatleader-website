@@ -79,8 +79,10 @@
   <Switcher values={scoresTypes} value={scoreType} on:change={onScoreTypeChanged} loadingValue={loadingScoreType} />
 
   <div class="song-scores">
-    {#each $scoresStore as songScore (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {songScore} />
+    {#each $scoresStore as songScore}
+      {#key opt(songScore, 'leaderboard.leaderboardId')}
+        <SongScore {songScore} />
+      {/key}
     {/each}
   </div>
 
