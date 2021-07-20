@@ -229,6 +229,10 @@
         margin-top: -2px;
     }
 
+    .song-score :global(.inc), .song-score :global(.dec) {
+        color: inherit;
+    }
+
     section.stats, .beat-savior-data {
         display: grid;
         grid-template-columns: 1rem repeat(3, minmax(0, 1fr));
