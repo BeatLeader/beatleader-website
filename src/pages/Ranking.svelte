@@ -8,6 +8,7 @@
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {SS_API_PLAYERS_PER_PAGE} from '../network/scoresaber/api-queue'
   import {scrollToTargetAdjusted} from '../utils/browser'
+  import config from '../config'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import Change from '../components/Common/Change.svelte'
@@ -59,6 +60,10 @@
   $: changePage(page)
   $: scrollToTop($pending);
 </script>
+
+<svelte:head>
+  <title>Global ranking - {config.name}</title>
+</svelte:head>
 
 <article transition:fade>
   <div class="box has-shadow" bind:this={boxEl}>

@@ -2,8 +2,8 @@
   import {navigate} from "svelte-routing";
   import {onDestroy} from 'svelte'
   import {fade} from 'svelte/transition'
-  import createConfigService from '../services/config'
   import createPlayerService from '../services/scoresaber/player'
+  import config from '../config'
   import Avatar from '../components/Player/Avatar.svelte'
   import Error from '../components/Common/Error.svelte'
   import PlayerStats from '../components/Player/PlayerStats.svelte'
@@ -50,6 +50,10 @@
 
   $: updatePlayer(playerId)
 </script>
+
+<svelte:head>
+  <title>Player search - {config.name}</title>
+</svelte:head>
 
 <article transition:fade>
   <div class="box has-shadow">

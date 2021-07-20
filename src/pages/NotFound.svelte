@@ -1,7 +1,12 @@
 <script>
   import {navigate} from "svelte-routing";
   import {fade} from 'svelte/transition'
+  import config from '../config'
 </script>
+
+<svelte:head>
+  <title>404 | Not found - {config.name}</title>
+</svelte:head>
 
 <article transition:fade>
   <div class="box has-shadow">

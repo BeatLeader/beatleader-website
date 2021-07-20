@@ -5,6 +5,7 @@
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import {opt} from '../utils/js'
+  import config from '../config'
   import {SsrHttpNotFoundError} from '../network/errors'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
@@ -66,6 +67,10 @@
   $: currentStorePage = $playerStore && playerStore && playerStore.getPage ? playerStore.getPage() : 1;
   $: skeleton = !$playerStore && $playerIsLoading;
 </script>
+
+<svelte:head>
+  <title>{opt($playerStore, 'name', 'Player')} - {config.name}</title>
+</svelte:head>
 
 <article transition:fade>
   {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
