@@ -1,5 +1,6 @@
 import createBeatSaviorService from '../../../../services/beatsavior'
 import {opt} from '../../../../utils/js'
+import {PRIORITY} from '../../../../network/http-queue'
 
 let beatSaviorService;
 
@@ -7,6 +8,8 @@ export default async (data, playerId = null) => {
   if (!data || !data.score || !data.leaderboard) return data;
 
   if (!beatSaviorService) beatSaviorService = createBeatSaviorService();
+
+  await beatSaviorService.refresh(playerId, false, PRIORITY.FG_LOW);
 
   const bsData = await beatSaviorService.get(playerId, data);
   if (!bsData) return data;

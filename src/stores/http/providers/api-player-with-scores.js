@@ -22,10 +22,7 @@ export default () => {
 
       const player = await playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force);
 
-      const [scores, _] = await Promise.all([
-        scoresService.fetchScoresPageOrGetFromCache(player, scoresType, scoresPage, refreshInterval, priority, signal, force),
-        beatSaviorService.refresh(playerId, false, priority)
-      ]);
+      const scores = await scoresService.fetchScoresPageOrGetFromCache(player, scoresType, scoresPage, refreshInterval, priority, signal, force);
 
       return {...player, scores, scoresType, scoresPage}
     },
