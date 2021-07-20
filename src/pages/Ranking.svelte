@@ -56,8 +56,8 @@
   $: pending = rankingStore.pending;
   $: numOfPlayers = $rankingStore ? $rankingStore.total : null;
 
-  $: scrollToTop($pending);
   $: changePage(page)
+  $: scrollToTop($pending);
 </script>
 
 <article transition:fade>
