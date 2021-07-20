@@ -1,19 +1,47 @@
 <script>
+  import {getContext} from 'svelte'
   import {navigate} from "svelte-routing";
+  import {ROUTER} from 'svelte-routing/src/contexts'
   import {fade} from 'svelte/transition'
   import createRankingStore from '../stores/http/http-ranking-store'
-  import Avatar from '../components/Common/Avatar.svelte'
-  import Value from '../components/Common/Value.svelte'
   import {opt} from '../utils/js'
-  import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
+  import eventBus from '../utils/broadcast-channel-pubsub'
+  import {SS_API_PLAYERS_PER_PAGE} from '../network/scoresaber/api-queue'
+  import Value from '../components/Common/Value.svelte'
+  import Avatar from '../components/Common/Avatar.svelte'
   import Change from '../components/Common/Change.svelte'
+  import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
+  import Pager from '../components/Common/Pager.svelte'
 
   export let page = 1;
+
+  const {activeRoute} = getContext(ROUTER);
+
+  function navigateToPlayer(playerId) {
+    if (!playerId) return;
+
+    if (!$activeRoute || !$activeRoute.uri || !$activeRoute.uri.startsWith('/u/')) {
+      navigate(`/u/${playerId}`)
+    } else {
+      eventBus.publish('navigate-to-player-cmd', playerId)
+    }
+  }
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
 
   const rankingStore = createRankingStore(page);
+
+  function onPageChanged(event) {
+    if (event.detail.initial) return;
+
+    page = event.detail.page + 1;
+    rankingStore.fetch(page);
+  }
+
+  $: isLoading = rankingStore.isLoading;
+  $: pending = rankingStore.pending;
+  $: numOfPlayers = $rankingStore ? $rankingStore.total : null
 </script>
 
 <article transition:fade>
@@ -23,12 +51,10 @@
     {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
       <section class="ranking-grid">
         {#each $rankingStore.data as player}
-          <div class="player-card">
+          <div class="player-card" on:click={() => navigateToPlayer(player.playerId)}>
             <div class="player-and-rank">
               <Avatar {player}/>
-              <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') ===
-               2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >=
-               10000 ? 'small' : '')))}`}>
+              <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`}>
                 #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
               </div>
             </div>
@@ -44,7 +70,15 @@
           </div>
         {/each}
       </section>
+    {:else}
+      <p>No players found.</p>
     {/if}
+
+    <Pager totalItems={numOfPlayers} itemsPerPage={SS_API_PLAYERS_PER_PAGE} itemsPerPageValues={null}
+           currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+           mode={numOfPlayers ? 'pages' : 'simple'}
+           on:page-changed={onPageChanged}
+    />
   </div>
 </article>
 
