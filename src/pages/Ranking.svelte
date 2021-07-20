@@ -7,12 +7,13 @@
   import {opt} from '../utils/js'
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {SS_API_PLAYERS_PER_PAGE} from '../network/scoresaber/api-queue'
+  import {scrollToTargetAdjusted} from '../utils/browser'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import Change from '../components/Common/Change.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
   import Pager from '../components/Common/Pager.svelte'
-  import {scrollToTargetAdjusted} from '../utils/browser'
+  import Spinner from '../components/Common/Spinner.svelte'
 
   export let page = 1;
 
@@ -21,6 +22,7 @@
 
   const {activeRoute} = getContext(ROUTER);
 
+  let currentPage = page;
   let boxEl = null;
 
   function navigateToPlayer(playerId) {
@@ -39,11 +41,15 @@
 
   const rankingStore = createRankingStore(page);
 
-  function onPageChanged(event) {
-    if (event.detail.initial) return;
+  function changePage(newPage) {
+    currentPage = newPage;
+    rankingStore.fetch(currentPage);
+  }
 
-    page = event.detail.page + 1;
-    rankingStore.fetch(page);
+  function onPageChanged(event) {
+    if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
+
+    navigate(`/global/${event.detail.page + 1}`);
   }
 
   $: isLoading = rankingStore.isLoading;
@@ -51,11 +57,16 @@
   $: numOfPlayers = $rankingStore ? $rankingStore.total : null;
 
   $: scrollToTop($pending);
+  $: changePage(page)
 </script>
 
 <article transition:fade>
   <div class="box has-shadow" bind:this={boxEl}>
-    <h1 class="title is-5">Global leaderboard</h1>
+    <h1 class="title is-5">
+      Global leaderboard
+
+      {#if $isLoading}<Spinner />{/if}
+    </h1>
 
     {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
       <section class="ranking-grid">
@@ -80,15 +91,15 @@
           </div>
         {/each}
       </section>
-    {:else}
+
+      <Pager totalItems={numOfPlayers} itemsPerPage={SS_API_PLAYERS_PER_PAGE} itemsPerPageValues={null}
+             currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+             mode={numOfPlayers ? 'pages' : 'simple'}
+             on:page-changed={onPageChanged}
+      />
+    {:else if (!$isLoading)}
       <p>No players found.</p>
     {/if}
-
-    <Pager totalItems={numOfPlayers} itemsPerPage={SS_API_PLAYERS_PER_PAGE} itemsPerPageValues={null}
-           currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-           mode={numOfPlayers ? 'pages' : 'simple'}
-           on:page-changed={onPageChanged}
-    />
   </div>
 </article>
 
