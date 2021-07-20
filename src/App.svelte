@@ -3,7 +3,7 @@
   import buildInfo from '../build-info';
   import HomePage from './pages/Home.svelte';
   import SearchPage from './pages/Search.svelte';
-  import RankingPage from './pages/Ranking.svelte';
+  import RankingPage from './pages/Ranking.svelte'
   import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
@@ -32,7 +32,9 @@
         />
       </Route>
       <Route path="/friends" component="{FriendsPage}" />
-      <Route path="/global" component="{RankingPage}" />
+      <Route path="/global/*page" let:params>
+        <RankingPage page={params.page} />
+      </Route>
       <Route path="/search" component="{SearchPage}" />
       <Route path="/" component="{HomePage}" />
       <Route path="/*" component="{NotFoundPage}" />

@@ -42,7 +42,7 @@
 
   function scrollToTop() {
     if (scoresBoxEl) scoresBoxEl.scrollIntoView({behavior: 'auto'});
-  };
+  }
 
   $: {
     scoresStore && scoresStore.fetch(page)

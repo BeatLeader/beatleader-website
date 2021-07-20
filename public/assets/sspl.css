@@ -33,6 +33,14 @@ body {
     padding: 1rem;
 }
 
+.inc {
+    color: var(--increase);
+}
+
+.dec {
+    color: var(--decrease);
+}
+
 .mobile-only {
     display: none;
 }

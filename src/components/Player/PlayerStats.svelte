@@ -42,7 +42,7 @@
   </h1>
 
   <h2 class="title is-5" class:centered>
-    <a href={rank ? `${SS_HOST}/global/${rank ? Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'} target="_blank" rel="noopener">
+    <a href={rank ? `/global/${rank ? Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
       <i class="fas fa-globe-americas"></i>
 
       <Value value={opt(playerInfo, 'rank')} prevValue={opt(prevInfo, 'rank')} prevLabel={opt(prevInfo, 'rankSince')}

@@ -2,7 +2,7 @@
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {getContext, onMount} from 'svelte'
   import {navigate} from 'svelte-routing'
-  import { ROUTER, } from 'svelte-routing/src/contexts'
+  import { ROUTER } from 'svelte-routing/src/contexts'
   import createFriendsStore from '../stores/scoresaber/friends'
   import createConfigStore from '../stores/config'
   import createPlayerService from '../services/scoresaber/player'
