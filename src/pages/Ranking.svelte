@@ -16,6 +16,7 @@
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
 
+  export let type = 'global';
   export let page = 1;
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
@@ -23,6 +24,7 @@
 
   const {activeRoute} = getContext(ROUTER);
 
+  let currentType = type;
   let currentPage = page;
   let boxEl = null;
 
@@ -40,24 +42,40 @@
     if (boxEl) scrollToTargetAdjusted(boxEl, 44)
   }
 
-  const rankingStore = createRankingStore(page);
+  const rankingStore = createRankingStore(type, page);
 
-  function changePage(newPage) {
+  function changeTypeAndPage(newType, newPage) {
+    currentType = newType;
+
+    newPage = parseInt(newPage, 10);
+    if (isNaN(newPage)) newPage = 1;
+
     currentPage = newPage;
-    rankingStore.fetch(currentPage);
+    rankingStore.fetch(currentType, currentPage);
   }
 
   function onPageChanged(event) {
     if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-    navigate(`/global/${event.detail.page + 1}`);
+    navigate(`/ranking/${currentType}/${event.detail.page + 1}`);
+  }
+
+  function onPlayerClick(event, player) {
+    const target = event.target;
+    if (target && target.classList.contains('country')) return;
+
+    navigateToPlayer(player.playerId)
+  }
+
+  function onCountryClick(event) {
+    navigate(`/ranking/${event.detail.country}`)
   }
 
   $: isLoading = rankingStore.isLoading;
   $: pending = rankingStore.pending;
   $: numOfPlayers = $rankingStore ? $rankingStore.total : null;
 
-  $: changePage(page)
+  $: changeTypeAndPage(type, page)
   $: scrollToTop($pending);
 </script>
 
@@ -68,7 +86,7 @@
 <article transition:fade>
   <div class="box has-shadow" bind:this={boxEl}>
     <h1 class="title is-5">
-      Global leaderboard
+      {type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} leaderboard
 
       {#if $isLoading}<Spinner />{/if}
     </h1>
@@ -76,8 +94,7 @@
     {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
       <section class="ranking-grid">
         {#each $rankingStore.data as player, idx (player.playerId)}
-          <div class="player-card" on:click={() => navigateToPlayer(player.playerId)} in:fly={{delay: idx *
-          10, x: 100}}>
+          <div class="player-card" on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
             <div class="player-and-rank">
               <Avatar {player}/>
               <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`}>
@@ -85,7 +102,7 @@
               </div>
             </div>
 
-            <PlayerNameWithFlag {player}/>
+            <PlayerNameWithFlag {player} on:flag-click={e => onCountryClick(e)}/>
 
             <div class="player-pp-and-change">
               <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>

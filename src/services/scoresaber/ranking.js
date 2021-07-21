@@ -1,5 +1,6 @@
-import playersRankingApiClient from '../../network/scoresaber/players/api-ranking-global'
-import playersRankingPagesApiClient from '../../network/scoresaber/players/api-ranking-global-pages'
+import playersGlobalRankingApiClient from '../../network/scoresaber/players/api-ranking-global'
+import playersGlobalRankingPagesApiClient from '../../network/scoresaber/players/api-ranking-global-pages'
+import playersCountryRankingPageClient from '../../network/scoresaber/players/page-ranking-country'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {PRIORITY} from '../../network/http-queue'
 import {SS_API_PLAYERS_PER_PAGE} from '../../network/scoresaber/api-queue'
@@ -10,9 +11,11 @@ export default () => {
 
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
-  const fetchGlobal = async (page = 1, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/rankingGlobal/${page}`, () => playersRankingApiClient.getProcessed({page, signal, priority}));
+  const fetchGlobal = async (page = 1, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/ranking/global/${page}`, () => playersGlobalRankingApiClient.getProcessed({page, signal, priority}));
 
-  const fetchGlobalPages = async (priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/rankingGlobalPages`, () => playersRankingPagesApiClient.getProcessed({signal, priority}));
+  const fetchCountry = async (country, page = 1, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`pageClient/ranking/${country}/${page}`, () => playersCountryRankingPageClient.getProcessed({country, page, signal, priority}));
+
+  const fetchGlobalPages = async (priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/rankingGlobalPages`, () => playersGlobalRankingPagesApiClient.getProcessed({signal, priority}));
 
   const fetchGlobalCount = async (priority = PRIORITY.FG_LOW, signal = null) => {
     const pages = await fetchGlobalPages(priority, signal);
@@ -20,6 +23,7 @@ export default () => {
 
     return pages * SS_API_PLAYERS_PER_PAGE;
   }
+
   const destroyService = () => {
     service = null;
   }
@@ -28,6 +32,7 @@ export default () => {
     getGlobal: fetchGlobal,
     getGlobalCount: fetchGlobalCount,
     getGlobalPages: fetchGlobalPages,
+    getCountry: fetchCountry,
     PLAYERS_PER_PAGE: SS_API_PLAYERS_PER_PAGE,
     destroyService,
   }

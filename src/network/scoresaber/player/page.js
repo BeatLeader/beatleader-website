@@ -5,7 +5,7 @@ import {opt} from '../../../utils/js'
 const process = response => {
   const apiProcessedResponse = api.process(response && response.player ? response.player : null);
 
-  if (!opt(response, 'player.playerInfo')) return null;
+  if (!opt(apiProcessedResponse, 'player.playerInfo')) return null;
 
   const recentPlay = opt(response, 'player.recentPlay');
   const recentPlayLastUpdated = opt(response, 'player.recentPlayLastUpdated');

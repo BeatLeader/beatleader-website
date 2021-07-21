@@ -32,8 +32,8 @@
         />
       </Route>
       <Route path="/friends" component="{FriendsPage}" />
-      <Route path="/global/*page" let:params>
-        <RankingPage page={params.page} />
+      <Route path="/ranking/:type/*page" let:params>
+        <RankingPage type={params.type} page={params.page} />
       </Route>
       <Route path="/search" component="{SearchPage}" />
       <Route path="/" component="{HomePage}" />

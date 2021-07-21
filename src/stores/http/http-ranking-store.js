@@ -1,11 +1,13 @@
 import createHttpStore from './http-store';
 import {opt} from '../../utils/js'
-import createApiRankingProvider from './providers/api-ranking-global'
+import createApiRankingProvider from './providers/api-ranking'
 
-export default (page = 1, initialState = null, initialStateType = 'initial') => {
+export default (type = 'global', page = 1, initialState = null, initialStateType = 'initial') => {
+  let currentType = type ? type : 'global';
   let currentPage = page ? page : 1;
 
   const onNewData = ({fetchParams}) => {
+    currentType = opt(fetchParams, 'type', 'global');
     currentPage = opt(fetchParams, 'page', 1);
   }
 
@@ -13,7 +15,7 @@ export default (page = 1, initialState = null, initialStateType = 'initial') => 
 
   const httpStore = createHttpStore(
     provider,
-    {page},
+    {type, page},
     initialState,
     {
       onInitialized: onNewData,
@@ -23,18 +25,19 @@ export default (page = 1, initialState = null, initialStateType = 'initial') => 
     initialStateType
   );
 
-  const fetch = async (page = currentPage, force = false) => {
-    if ((!page || page === currentPage) && !force) return false;
+  const fetch = async (type = currentType, page = currentPage, force = false) => {
+    if ((!type || type === currentType) && (!page || page === currentPage) && !force) return false;
 
-    return httpStore.fetch({page}, force, provider);
+    return httpStore.fetch({type, page}, force, provider);
   }
 
-  const refresh = async () => fetch(currentPage, true);
+  const refresh = async () => fetch(currentType, currentPage, true);
 
   return {
     ...httpStore,
     fetch,
     refresh,
+    getType: () => currentType,
     getPage: () => currentPage,
   }
 }

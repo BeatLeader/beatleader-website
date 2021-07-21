@@ -1,14 +1,19 @@
 <script>
+  import {createEventDispatcher} from 'svelte';
   import {opt} from '../../utils/js'
 
   export let player;
+
+  const dispatch = createEventDispatcher();
 
   $: country = opt(player, 'playerInfo.countries.0.country')
   $: name = opt(player, 'name')
 </script>
 
 <span class="player-name" title={name} on:click>
-  <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy">
+  <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
+       class="country"
+       on:click|preventDefault={() => country ? dispatch('flag-click', {country: country.toLowerCase()}) : null}>
   <span>{name}</span>
 </span>
 

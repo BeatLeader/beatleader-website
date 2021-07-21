@@ -1,4 +1,5 @@
 <script>
+  import {navigate} from 'svelte-routing'
   import {SS_HOST} from '../../network/scoresaber/page-queue'
   import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
   import {opt} from '../../utils/js'
@@ -12,6 +13,22 @@
   export let prevInfo;
   export let skeleton = false;
   export let centered = false;
+
+  function navigateToCountryRanking(countryObj) {
+    const rank = opt(countryObj, 'rankValue', opt(countryObj, 'rank', null));
+    if (!rank) return;
+
+    const country = opt(countryObj, 'country', null);
+    if (!country) return;
+
+    navigate(`/ranking/${country.toLowerCase()}/${Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1}`)
+  }
+
+  function navigateToGlobalRanking(rank) {
+    if (!rank) return;
+
+    navigate(`/ranking/global/${Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1}`)
+  }
 
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
 </script>
@@ -42,7 +59,7 @@
   </h1>
 
   <h2 class="title is-5" class:centered>
-    <a href={rank ? `/global/${rank ? Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1 : ''}` : '#'}>
+    <a on:click={() => navigateToGlobalRanking(rank)}>
       <i class="fas fa-globe-americas"></i>
 
       <Value value={opt(playerInfo, 'rank')} prevValue={opt(prevInfo, 'rank')} prevLabel={opt(prevInfo, 'rankSince')}
@@ -51,7 +68,7 @@
     </a>
 
     {#each opt(playerInfo, 'countries', []) as country}
-      <a href={country.rankValue || country.rank ? `${SS_HOST}/global/${Math.floor(((country.rankValue ? country.rankValue : country.rank)-1) / PLAYERS_PER_PAGE) + 1}?country=${country.country}` : '#'} target="_blank" rel="noopener">
+      <a on:click={() => navigateToCountryRanking(country)}>
         <img
           src={`${SS_HOST}/imports/images/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
              alt={opt(country, 'country')}

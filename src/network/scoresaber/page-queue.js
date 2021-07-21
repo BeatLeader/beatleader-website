@@ -9,10 +9,11 @@ export const SS_HOST = 'https://scoresaber.com';
 const SS_CORS_HOST = '/cors/score-saber';
 const RANKEDS_URL = SS_CORS_HOST + '/api.php?function=get-leaderboards&cat=1&limit=5000&ranked=1&page=${page}';
 const PLAYER_PROFILE = SS_CORS_HOST + '/u/${playerId}?page=1&sort=2'
+const COUNTRY_RANKING = SS_CORS_HOST + '/global/${page}?country=${country}'
 
 export const parseSsInt = text => {
-  const value = getFirstRegexpMatch(/([0-9,]+)\s*$/, text)
-  return value ? parseInt(value.replace(/[^\d]/g, '') , 10) : null;
+  const value = getFirstRegexpMatch(/(-?[0-9,]+)\s*$/, text)
+  return value ? parseInt(value.replace(/[^\d-]/g, '') , 10) : null;
 }
 export const parseSsFloat = text => text ? parseFloat(getFirstRegexpMatch(/([0-9,.]+)\s*$/, text.replace(/[^\d.]/g, ''))) : null;
 
@@ -268,11 +269,54 @@ export default (options = {}) => {
 
   const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW) => fetchHtml(substituteVars(PLAYER_PROFILE, {playerId}), {signal}, priority)
     .then(r => r.body)
-    .then(page => processPlayerProfile(playerId, page));
+    .then(doc => processPlayerProfile(playerId, doc));
+
+  const processCountryRanking = (country, doc) => {
+    const data = [...doc.querySelectorAll('.ranking.global .player a')]
+      .map(a => {
+        const tr = a.closest("tr");
+        const id = getFirstRegexpMatch(/\/(\d+)$/, a.href)
+
+        const avatar = getImgUrl(opt(tr.querySelector('td.picture img'), 'src', null));
+
+        let country = getFirstRegexpMatch(/^.*?\/flags\/([^.]+)\..*$/, opt(tr.querySelector('td.player img'), 'src', null));
+        country = country ? country.toUpperCase() : null;
+
+        let difference = parseSsInt(opt(tr.querySelector('td.diff'), 'innerText', null));
+        difference = !isNaN(difference) ? difference : null
+
+        let playerName = opt(a.querySelector('.songTop.pp'), 'innerText');
+        playerName = playerName ? playerName.trim() : null;
+
+        let pp = parseSsFloat(opt(tr.querySelector('td.pp .scoreTop.ppValue'), 'innerText'));
+        pp = !isNaN(pp) ? pp : null;
+
+        let rank = parseSsInt(getFirstRegexpMatch(/^\s*#(\d+)\s*$/, opt(tr.querySelector('td.rank'), 'innerText', null)));
+        rank = !isNaN(rank) ? rank : null
+
+        return {
+          avatar,
+          country,
+          difference,
+          history: [],
+          playerId: id,
+          playerName,
+          pp,
+          rank,
+        }
+      })
+
+    return {players: data};
+  }
+
+  const countryRanking = async (country, page = 1, signal = null, priority = PRIORITY.FG_LOW) => fetchHtml(substituteVars(COUNTRY_RANKING, {country, page}), {signal}, priority)
+    .then(r => r.body)
+    .then(doc => processCountryRanking(country, doc));
 
   return {
     rankeds,
     player,
+    countryRanking,
     ...queueToReturn,
   }
 }
