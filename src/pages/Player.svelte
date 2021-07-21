@@ -6,7 +6,7 @@
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import {opt} from '../utils/js'
   import config from '../config'
-  import {SsrHttpNotFoundError} from '../network/errors'
+  import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
 
@@ -73,7 +73,7 @@
 </svelte:head>
 
 <article transition:fade>
-  {#if $playerError && $playerError instanceof SsrHttpNotFoundError}
+  {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <div class="box has-shadow">
       <p class="error">Player not found.</p>
     </div>
