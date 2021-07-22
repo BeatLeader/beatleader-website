@@ -13,6 +13,8 @@ import ErrorComponent from './components/Common/Error.svelte'
 
 let app = null;
 
+import createPageQueue from './network/scoresaber/page-queue'
+
 (async() => {
   try {
     // TODO: remove level setting
@@ -24,6 +26,9 @@ let app = null;
     await initDb();
     await initializeRepositories();
     await setupDataFixes();
+
+    console.log((await createPageQueue().leaderboard(359156)).scores[0]);
+    throw 'test error';
 
     // pre-warm cache && create singleton services
     await createConfigStore();
