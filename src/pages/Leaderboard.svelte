@@ -113,29 +113,31 @@
 
             <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
 
-            <div class="score with-badge">
-              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+            <div class="score-metrics">
+              <div class="score with-badge">
+                <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                    <span slot="label">
+                      <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
+
+                      <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                    </span>
+                </Badge>
+              </div>
+
+              <div class="percentage with-badge">
+                <Accuracy score={score.score} showPercentageInstead={true} secondMetricInsteadOfDiff={true} />
+              </div>
+
+              <div class="pp with-badge">
+                <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                   <span slot="label">
-                    <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
-
-                    <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                    <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
+                        zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                        color="white"
+                    />
                   </span>
-              </Badge>
-            </div>
-
-            <div class="percentage with-badge">
-              <Accuracy score={score.score} showPercentageInstead={true} secondMetricInsteadOfDiff={true} />
-            </div>
-
-            <div class="pp with-badge">
-              <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-                <span slot="label">
-                  <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
-                      zero={formatNumber(0)} withZeroSuffix={true} inline={false}
-                      color="white"
-                  />
-                </span>
-              </Badge>
+                </Badge>
+              </div>
             </div>
           </div>
         {/each}
@@ -166,6 +168,10 @@
         overflow: hidden;
         border-bottom: 1px solid var(--faded);
         padding-bottom: .5em;
+    }
+
+    .player-score .score-metrics {
+        display: contents;
     }
 
     .player-score :global(.badge) {
@@ -220,5 +226,60 @@
     .with-badge {
         height: 100%;
         text-align: center;
+    }
+
+    @media screen and (max-width: 767px) {
+        .scores-grid .player-score {
+            grid-template-columns: minmax(2em, max-content) auto auto auto auto auto;
+            width: 100%;
+        }
+
+        .player-score .player {
+            grid-column: 2 / span 4;
+            grid-row: 1 / 2;
+        }
+
+        .player-score .timeset {
+            grid-row: 1 / 2;
+            grid-column: 6 / 7;
+            text-align: right;
+            font-size: .875em;
+            line-height: 1;
+        }
+
+        .player-score .score-metrics {
+            grid-column: 1 / span 6;
+            grid-row: 2 / 3;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-gap: .5em;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .player-score .score-metrics > * {
+            min-width: 5em;
+            max-width: 6.5em;
+        }
+
+        .player-score .score-metrics *:first-child {
+            justify-self: left;
+        }
+
+        .player-score .score-metrics *:last-child {
+            justify-self: right;
+        }
+    }
+
+    @media screen and (max-width: 409px) {
+        .player-score .player {
+            grid-column: 2 / span 5;
+        }
+
+        .player-score .timeset {
+            grid-column: 1 / span 6;
+            grid-row: 3 / 4;
+            text-align: center;
+        }
     }
 </style>

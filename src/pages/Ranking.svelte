@@ -149,10 +149,8 @@
     }
 
     .player-card .player-and-rank {
-        grid-column-start: 1;
-        grid-column-end: 1;
-        grid-row-start: 1;
-        grid-row-end: span 2;
+        grid-column: 1 / 2;
+        grid-row: 1 / span 2;
         position: relative;
         overflow: hidden;
     }
