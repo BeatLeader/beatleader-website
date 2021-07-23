@@ -9,7 +9,7 @@ let globalPagesLastRefreshed = null;
 let total = null;
 
 export default () => {
-  rankingService = createRankingService();
+  if (!rankingService) rankingService = createRankingService();
 
   const getProcessed = async ({type = 'global', page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) => {
     if (type === 'global' && (!total || !globalPagesLastRefreshed || addToDate(-PAGES_REFRESH_INTERVAL) > globalPagesLastRefreshed)) {

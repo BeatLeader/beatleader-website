@@ -28,7 +28,7 @@ export default (response, setLastUpdated = null) => {
     else if (!mods) mods = null;
 
     const acc = unmodifiedScore && opt(score, 'maxScore') ? unmodifiedScore / score.maxScore * 100 : null;
-    const percentage = opt(score, 'originalScore') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : null;
+    const percentage = opt(score, 'score') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : null;
 
     const ppWeighted = opt(score, 'pp') && opt(score, 'weight') ? score.pp * score.weight : null;
 

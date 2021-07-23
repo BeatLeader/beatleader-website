@@ -1,5 +1,6 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../utils/format'
+import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
 
 export const SS_API_HOST = 'https://new.scoresaber.com';
 export const SS_API_URL = `${SS_API_HOST}/api`;
@@ -10,9 +11,6 @@ export const SS_API_TOP_SCORES_URL = SS_API_URL + '/player/${playerId}/scores/to
 export const SS_API_FIND_PLAYER_URL = SS_API_URL + '/players/by-name/${query}'
 export const SS_API_RANKING_GLOBAL_URL = SS_API_URL + '/players/${page}'
 export const SS_API_RANKING_GLOBAL_PAGES_URL = SS_API_URL + '/players/pages'
-
-export const SS_API_SCORES_PER_PAGE = 8;
-export const SS_API_PLAYERS_PER_PAGE = 50;
 
 export default (options = {}) => {
   const queue = createQueue(options);
@@ -41,7 +39,8 @@ export default (options = {}) => {
     recentScores,
     topScores,
     SS_API_HOST,
-    SS_API_SCORES_PER_PAGE,
+    PLAYER_SCORES_PER_PAGE,
+    PLAYERS_PER_PAGE,
     ...queueToReturn,
   }
 }

@@ -3,7 +3,7 @@ import playersGlobalRankingPagesApiClient from '../../network/scoresaber/players
 import playersCountryRankingPageClient from '../../network/scoresaber/players/page-ranking-country'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {PRIORITY} from '../../network/http-queue'
-import {SS_API_PLAYERS_PER_PAGE} from '../../network/scoresaber/api-queue'
+import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
 
 let service = null;
 export default () => {
@@ -21,7 +21,7 @@ export default () => {
     const pages = await fetchGlobalPages(priority, signal);
     if (!pages || !Number.isFinite(pages)) return 0;
 
-    return pages * SS_API_PLAYERS_PER_PAGE;
+    return pages * PLAYERS_PER_PAGE;
   }
 
   const destroyService = () => {
@@ -33,7 +33,7 @@ export default () => {
     getGlobalCount: fetchGlobalCount,
     getGlobalPages: fetchGlobalPages,
     getCountry: fetchCountry,
-    PLAYERS_PER_PAGE: SS_API_PLAYERS_PER_PAGE,
+    PLAYERS_PER_PAGE,
     destroyService,
   }
 

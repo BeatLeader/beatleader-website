@@ -1,52 +1,36 @@
 import queue from '../../queues'
 import {opt} from '../../../utils/js'
-import {dateFromString} from '../../../utils/date'
-import {extractDiffAndType} from '../../../utils/scoresaber/format'
 
 const process = response => {
-  console.warn('PROCESS', response); throw 'test error';
+  if (!opt(response, 'scores') || !Array.isArray(response.scores)) return null;
 
-  if (!opt(response, 'scores') || !Array.isArray(response.scores) || !opt(response, 'scores.0.scoreId')) return [];
-
-  return response.scores.map(s => {
-    const {
-      songHash: hash,
-      songName: name,
-      songSubName: subName,
-      songAuthorName: authorName,
-      levelAuthorName,
-      difficultyRaw,
-      difficulty,
-      leaderboardId,
-      ...originalScore
-    } = s;
-
-    const song = {hash, name, subName, authorName, levelAuthorName};
-    const diffInfo = extractDiffAndType(difficultyRaw);
-    const leaderboard = {leaderboardId, song, diffInfo, difficulty};
-
-    let {unmodififiedScore: unmodifiedScore, mods, ...score} = originalScore;
+  const scores = response.scores.map(s => {
+    let {unmodififiedScore: unmodifiedScore, mods, ...score} = s.score;
 
     if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
     else if (!mods) mods = null;
 
-    const acc = unmodifiedScore && opt(score, 'maxScore') ? unmodifiedScore / score.maxScore * 100 : null;
-    const percentage = opt(score, 'originalScore') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : null;
+    const acc = unmodifiedScore && opt(score, 'maxScore') ? unmodifiedScore / score.maxScore * 100 : opt(score, 'acc', null);
+    const percentage = opt(score, 'score') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : opt(score, 'percentage', null);
 
     const ppWeighted = opt(score, 'pp') && opt(score, 'weight') ? score.pp * score.weight : null;
 
     return {
-      leaderboard,
-      score: {...score, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted},
-      lastUpdated: null
+      ...s,
+      score: {...score, unmodifiedScore: unmodifiedScore || null, mods, acc, percentage, ppWeighted},
     };
   });
+
+  return {
+    ...response,
+    scores
+  }
 }
 
-const get = async ({country, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.SCORESABER_PAGE.countryRanking(country, page, signal, priority);
+const get = async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.SCORESABER_PAGE.leaderboard(leaderboardId, page, signal, priority);
 
 export default {
   get,
   process,
-  getProcessed: async ({country, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({country, page, priority, signal})),
+  getProcessed: async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({leaderboardId, page, priority, signal}))
 }

@@ -6,7 +6,6 @@
   import createRankingStore from '../stores/http/http-ranking-store'
   import {opt} from '../utils/js'
   import eventBus from '../utils/broadcast-channel-pubsub'
-  import {SS_API_PLAYERS_PER_PAGE} from '../network/scoresaber/api-queue'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import config from '../config'
   import Value from '../components/Common/Value.svelte'
@@ -15,6 +14,7 @@
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
+  import {PLAYERS_PER_PAGE} from '../utils/scoresaber/consts'
 
   export let type = 'global';
   export let page = 1;
@@ -114,7 +114,7 @@
         {/each}
       </section>
 
-      <Pager totalItems={numOfPlayers} itemsPerPage={SS_API_PLAYERS_PER_PAGE} itemsPerPageValues={null}
+      <Pager totalItems={numOfPlayers} itemsPerPage={PLAYERS_PER_PAGE} itemsPerPageValues={null}
              currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
              mode={numOfPlayers ? 'pages' : 'simple'}
              on:page-changed={onPageChanged}
