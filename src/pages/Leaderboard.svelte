@@ -93,7 +93,7 @@
   <div class="box has-shadow" bind:this={boxEl}>
     {#if !$leaderboardStore && $isLoading}<Spinner/>{/if}
 
-    <div class="leaderboard">
+    <div class="leaderboard" style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `--background-image: url(${$leaderboardStore.leaderboard.song.imageUrl})` : ''}>
       {#if $leaderboardStore}
 
         {#if leaderboard && song && withHeader}
@@ -113,14 +113,10 @@
           {#if leaderboard.stats}
             <div class="stats">
               {#if leaderboard.stats.length}
+                <div transition:fly={{x:100, duration: 500}}>
                   <span class="time" transition:fade={{duration: 500}}>
                       <i class="fas fa-clock"></i> <Duration value={leaderboard.stats.length}/>
                   </span>
-              {/if}
-              {#if leaderboard.stats.scores || leaderboard.stats.totalScores}
-                <div transition:fly={{x:100, duration: 500}}>
-                  {#if leaderboard.stats.scores} <i class="fas fa-align-justify"></i> Scores: <strong><Value value={leaderboard.stats.scores} digits={0}/></strong> {/if}
-                  {#if leaderboard.stats.totalScores !== leaderboard.stats.scores}&nbsp;/ <strong><Value value={leaderboard.stats.totalScores} digits={0}/></strong>{/if}
                 </div>
               {/if}
 
@@ -165,13 +161,9 @@
         {/if}
 
         {#if scores && scores.length}
-          {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
-            <img class="bg" src={$leaderboardStore.leaderboard.song.imageUrl} />
-          {/if}
-
           <div class="scores-grid">
           {#each scores as score, idx}
-            <div class="player-score" in:fly={{delay: idx * 20, x: 100}} out:fly={{duration:0}}>
+            <div class="player-score" in:fly={{delay: idx * 20, x: 100}}>
               <div class="rank with-badge">
                 <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
@@ -242,13 +234,18 @@
         padding: 1em;
     }
 
-    img.bg {
+    .leaderboard:before {
         position: absolute;
+        content: ' ';
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         opacity: .1;
+        background-image: var(--background-image);
+        background-repeat: no-repeat;
+        background-size: cover;
+        pointer-events: none;
     }
 
     header {
