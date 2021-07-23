@@ -94,8 +94,8 @@
     {#if $leaderboardStore}
       {#if scores && scores.length}
         <div class="scores-grid">
-        {#each scores as score}
-          <div class="player-score">
+        {#each scores as score, idx}
+          <div class="player-score" in:fly={{delay: idx * 20, x: 100}}>
             <div class="rank with-badge">
               <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
               'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
