@@ -123,7 +123,7 @@
           {#if leaderboard.stats}
             <div class="stats">
               {#if leaderboard.stats.length}
-                <div transition:fly={{x:100, duration: 500}}>
+                <div transition:fade>
                   <span class="time" transition:fade={{duration: 500}}>
                       <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats.length}/>
                   </span>
@@ -131,43 +131,43 @@
               {/if}
 
               {#if leaderboard.stats.notes}
-                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-music"></i> Notes: <strong>
+                <div transition:fade><i class="fas fa-music"></i> Notes: <strong>
                   <Value value={leaderboard.stats.notes} digits={0}/>
                 </strong></div>
               {/if}
 
               {#if leaderboard.stats.bpm}
-                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-drum"></i> BPM: <strong>
+                <div transition:fade><i class="fas fa-drum"></i> BPM: <strong>
                   <Value value={leaderboard.stats.bpm} digits={0}/>
                 </strong></div>
               {/if}
 
               {#if leaderboard.stats.njs}
-                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-tachometer-alt"></i> NJS: <strong>
+                <div transition:fade><i class="fas fa-tachometer-alt"></i> NJS: <strong>
                   <Value value={leaderboard.stats.njs} digits={0}/>
                 </strong></div>
               {/if}
 
               {#if Number.isFinite(leaderboard.stats.njsOffset)}
-                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
+                <div transition:fade><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
                   <Value value={leaderboard.stats.njsOffset} digits={2}/>
                 </strong></div>
               {/if}
 
               {#if leaderboard.stats.nps}
-                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-fire"></i> NPS: <strong>
+                <div transition:fade><i class="fas fa-fire"></i> NPS: <strong>
                   <Value value={leaderboard.stats.nps} digits={2}/>
                 </strong></div>
               {/if}
 
               {#if leaderboard.stats.bombs}
-                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-bomb"></i> Bombs: <strong>
+                <div transition:fade><i class="fas fa-bomb"></i> Bombs: <strong>
                   <Value value={leaderboard.stats.bombs} digits={0} zero="0"/>
                 </strong></div>
               {/if}
 
               {#if leaderboard.stats.obstacles}
-                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-skull"></i> Obstacles: <strong>
+                <div transition:fade><i class="fas fa-skull"></i> Obstacles: <strong>
                   <Value value={leaderboard.stats.obstacles} digits={0} zero="0"/>
                 </strong></div>
               {/if}
