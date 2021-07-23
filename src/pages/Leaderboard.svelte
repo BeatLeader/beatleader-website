@@ -120,9 +120,9 @@
                 </div>
               {/if}
 
-              {#if leaderboard.stats.noteCount}
+              {#if leaderboard.stats.notes}
                 <div transition:fly={{x:100, duration: 500}}><i class="fas fa-music"></i> Notes: <strong>
-                  <Value value={leaderboard.stats.noteCount} digits={0}/>
+                  <Value value={leaderboard.stats.notes} digits={0}/>
                 </strong></div>
               {/if}
 

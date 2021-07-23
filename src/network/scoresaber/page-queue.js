@@ -404,7 +404,7 @@ export default (options = {}) => {
       {id: 'scores', label: 'Scores', value: null},
       {id: 'status', label: 'Status', value: null},
       {id: 'totalScores', label: 'Total Scores', value: null},
-      {id: 'noteCount', label: 'Note Count', value: null},
+      {id: 'notes', label: 'Note Count', value: null},
       {id: 'bpm', label: 'BPM', value: null},
       {id: 'stars', label: 'Star Difficulty', value: null},
       {id: 'levelAuthorName', label: 'Mapped by', value: null},
@@ -420,7 +420,7 @@ export default (options = {}) => {
       .reduce((cum, sid) => {
         let value = Array.isArray(sid.value) ? sid.value[1] : null;
 
-        if (value !== null && ['scores', 'totalScores', 'bpm', 'noteCount'].includes(sid.id)) {
+        if (value !== null && ['scores', 'totalScores', 'bpm', 'notes'].includes(sid.id)) {
           value = parseSsFloat(value);
 
           if (value !== null) {

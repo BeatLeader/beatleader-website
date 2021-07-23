@@ -57,7 +57,7 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
 
           if (bsStats.notes && bsStats.length) bsStats.nps = bsStats.notes / bsStats.length;
 
-          newState.leaderboard.stats = {...newState.leaderboard.stats, ...bsStats};
+          newState.leaderboard.stats = {...newState.leaderboard.stats, ...bsStats, bpm: opt(newState, 'leaderboard.beatSaver.metadata.bpm')};
 
           setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
           debouncedSetState(enhanceTaskId, newState);
