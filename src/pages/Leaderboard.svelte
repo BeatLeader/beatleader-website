@@ -91,73 +91,98 @@
       <Spinner/>
     {/if}
 
-    {#if $leaderboardStore}
-      {#if scores && scores.length}
-        <div class="scores-grid">
-        {#each scores as score, idx}
-          <div class="player-score" in:fly={{delay: idx * 20, x: 100}}>
-            <div class="rank with-badge">
-              <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
-              'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
-              >= 10000 ? 'small' : 'var(--dimmed)')))}>
-                  <span slot="label">
-                    #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
-                  </span>
-              </Badge>
-            </div>
+    <div class="leaderboard">
+      {#if $leaderboardStore}
+        {#if scores && scores.length}
+          {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
+            <img class="bg" src={$leaderboardStore.leaderboard.song.imageUrl} />
+          {/if}
 
-            <div class="player">
-              <Avatar player={score.player}/>
-              <PlayerNameWithFlag player={score.player}/>
-            </div>
-
-            <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
-
-            <div class="score-metrics">
-              <div class="score with-badge">
-                <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+          <div class="scores-grid">
+          {#each scores as score, idx}
+            <div class="player-score" in:fly={{delay: idx * 20, x: 100}}>
+              <div class="rank with-badge">
+                <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+                'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
+                >= 10000 ? 'small' : 'var(--dimmed)')))}>
                     <span slot="label">
-                      <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
-
-                      <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                      #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
                     </span>
                 </Badge>
               </div>
 
-              <div class="percentage with-badge">
-                <Accuracy score={score.score} showPercentageInstead={true} secondMetricInsteadOfDiff={true} />
+              <div class="player">
+                <Avatar player={score.player}/>
+                <PlayerNameWithFlag player={score.player}/>
               </div>
 
-              <div class="pp with-badge">
-                <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-                  <span slot="label">
-                    <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
-                        zero={formatNumber(0)} withZeroSuffix={true} inline={false}
-                        color="white"
-                    />
-                  </span>
-                </Badge>
+              <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
+
+              <div class="score-metrics">
+                <div class="score with-badge">
+                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                      <span slot="label">
+                        <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
+
+                        <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                      </span>
+                  </Badge>
+                </div>
+
+                <div class="percentage with-badge">
+                  <Accuracy score={score.score} showPercentageInstead={true} secondMetricInsteadOfDiff={true} />
+                </div>
+
+                <div class="pp with-badge">
+                  <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+                    <span slot="label">
+                      <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
+                          zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                          color="white"
+                      />
+                    </span>
+                  </Badge>
+                </div>
               </div>
             </div>
+          {/each}
           </div>
-        {/each}
-        </div>
-      {/if}
+        {/if}
 
-      <hr style="background-color: red"/>
-      page={$leaderboardStore.page}, totalItems={$leaderboardStore.totalItems}
-    {:else if (!$isLoading)}
-      <p>Leaderboard not found</p>
-    {/if}
+        <hr style="background-color: red"/>
+        page={$leaderboardStore.page}, totalItems={$leaderboardStore.totalItems}
+      {:else if (!$isLoading)}
+        <p>Leaderboard not found</p>
+      {/if}
+    </div>
   </div>
 </article>
 
 <style>
+    .leaderboard {
+        position: relative;
+        margin-left: -1em;
+        margin-top: -1em;
+        margin-bottom: -1em;
+        width: calc(100% + 2em);
+        padding: 1em;
+    }
+
+    img.bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: .1;
+    }
+
     .scores-grid {
         display: grid;
         grid-template-columns: 1fr;
         grid-row-gap: .5em;
         max-width: 100%;
+        position: relative;
     }
 
     .scores-grid .player-score {
