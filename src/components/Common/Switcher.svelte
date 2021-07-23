@@ -22,6 +22,8 @@
                 loading={loadingValue === currentValue}
                 label={currentValue.label}
                 type={currentValue === value ? 'primary' : 'default'}
+                color={currentValue.color ? 'white' : null}
+                bgColor={currentValue.color ? currentValue.color : null}
                 notSelected={currentValue !== value}
                 on:click={() => onChange(currentValue)}
         />

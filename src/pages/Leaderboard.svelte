@@ -20,6 +20,7 @@
   import Accuracy from '../components/Common/Accuracy.svelte'
   import Difficulty from '../components/Song/Difficulty.svelte'
   import Duration from '../components/Song/Duration.svelte'
+  import Switcher from '../components/Common/Switcher.svelte'
 
   export let leaderboardId;
   export let type = 'global';
@@ -28,6 +29,8 @@
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
+
+  if (leaderboardId && !Number.isFinite(leaderboardId)) leaderboardId = parseInt(leaderboardId, 10);
 
   const {activeRoute} = getContext(ROUTER);
 
@@ -54,9 +57,10 @@
   const leaderboardStore = createLeaderboardStore(leaderboardId, type, page);
 
   function changeParams(newLeaderboardId, newType, newPage) {
+    if (newLeaderboardId && !Number.isFinite(newLeaderboardId)) newLeaderboardId = parseInt(newLeaderboardId, 10);
     currentLeaderboardId = newLeaderboardId;
-    currentType = newType;
 
+    currentType = newType;
     newPage = parseInt(newPage, 10);
     if (isNaN(newPage)) newPage = 1;
 
@@ -70,8 +74,11 @@
     navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${event.detail.page + 1}`);
   }
 
-  function onPlayerClick(event, player) {
-    navigateToPlayer(player.playerId)
+  function onDiffChange(event) {
+    const newLeaderboardId = opt(event, 'detail.leaderboardId');
+    if (!newLeaderboardId) return;
+
+    changeParams(newLeaderboardId, currentType, 1);
   }
 
   $: isLoading = leaderboardStore.isLoading;
@@ -83,6 +90,11 @@
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
+  $: diffs = opt($leaderboardStore, 'diffs', []).map(d => ({...d, label: d.name}))
+  $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
+  $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
+
+  $: console.log(leaderboard)
 </script>
 
 <svelte:head>
@@ -166,6 +178,12 @@
         </header>
         {/if}
 
+        {#if diffs && diffs.length}
+          <div class="diff-switch">
+            <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
+          </div>
+        {/if}
+
         {#if scores && scores.length}
           <div class="scores-grid">
           {#each scores as score, idx}
@@ -231,6 +249,10 @@
 </article>
 
 <style>
+    .diff-switch {
+        margin-bottom: 1em;
+    }
+
     .leaderboard {
         position: relative;
         margin-left: -1em;
