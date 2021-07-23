@@ -3,11 +3,12 @@
   import buildInfo from '../build-info';
   import HomePage from './pages/Home.svelte';
   import SearchPage from './pages/Search.svelte';
-  import RankingPage from './pages/Ranking.svelte'
+  import RankingPage from './pages/Ranking.svelte';
+  import LeaderboardPage from './pages/Leaderboard.svelte';
   import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
-  import Nav from './components/Nav.svelte'
+  import Nav from './components/Nav.svelte';
 
   export let url = "";
 </script>
@@ -34,6 +35,9 @@
       <Route path="/friends" component="{FriendsPage}" />
       <Route path="/ranking/:type/*page" let:params>
         <RankingPage type={params.type} page={params.page} />
+      </Route>
+      <Route path="/leaderboard/:type/:leaderboardId/*page" let:params>
+        <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} />
       </Route>
       <Route path="/search" component="{SearchPage}" />
       <Route path="/" component="{HomePage}" />
