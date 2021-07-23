@@ -6,8 +6,10 @@
   import {formatDate} from '../../utils/date'
 
   export let score;
-  export let prevScore;
+  export let prevScore = null;
   export let showPercentageInstead = false;
+  export let noSecondMetric = false;
+  export let secondMetricInsteadOfDiff = false;
 
   const badgesDef = [
     {name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -19,34 +21,43 @@
   ];
 
   badgesDef.forEach(badge => {
-    badge.desc = `${badge.name} (${!badge.min ? '< ' + badge.max + '%' : (!badge.max ? '> ' + badge.min + '%' : badge.min + '% - ' + badge.max + '%')})`;
+    badge.desc = `${showPercentageInstead ? 'Percentage' : 'Accuracy'} ${badge.name} (${!badge.min ? `< ${badge.max}%` : (!badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`)})`;
   });
 
   function getBadge(acc) {
+    if (!acc) return null;
+
     return badgesDef.reduce((cum, badge) => ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) ? badge : cum, badgesDef[badgesDef.length - 1]);
   }
 
   $: badge = getBadge(showPercentageInstead ? opt(score, 'percentage') : opt(score, 'acc'));
 </script>
 
-{#if (showPercentageInstead && opt(score, 'percentage')) || opt(score, 'acc')}
-  <Badge onlyLabel={true} color="white" bgColor={badge.color} title={badge.desc} label="">
-      <span slot="label">
-        <Value value={showPercentageInstead ? score.percentage : score.acc}
-               prevValue={showPercentageInstead ? opt(prevScore, 'percentage') : opt(prevScore, 'acc')}
-               withZeroSuffix={true} title={badge.desc} inline={false} suffix="%" suffixPrev="%"
-               prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
-        />
-      </span>
-  </Badge>
-
-  {#if score.mods && score.mods.length}
-  <small>
-      <Value value={!showPercentageInstead ? score.percentage : score.acc}
-             withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
+<Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
+    <span slot="label">
+      <Value value={showPercentageInstead ? score.percentage : score.acc}
+             prevValue={showPercentageInstead ? opt(prevScore, 'percentage') : opt(prevScore, 'acc')}
+             title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
+             prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
       />
-  </small>
-  {/if}
+      {#if !noSecondMetric && secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage))}
+        <small>
+          <Value value={showPercentageInstead ? score.acc : score.percentage}
+                 withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
+                 title={showPercentageInstead ? 'Accuracy' : 'Percentage'}
+          />
+        </small>
+      {/if}
+    </span>
+</Badge>
+
+{#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length}
+<small>
+    <Value value={!showPercentageInstead ? score.percentage : score.acc}
+           withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
+           title={showPercentageInstead ? 'Accuracy' : 'Percentage'}
+    />
+</small>
 {/if}
 
 <style>

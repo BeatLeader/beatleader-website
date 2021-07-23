@@ -1,17 +1,19 @@
 <script>
+  import {navigate} from 'svelte-routing'
   import {SS_HOST} from '../../network/scoresaber/page-queue'
+  import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
   import Difficulty from '../Song/Difficulty.svelte'
   import {opt} from '../../utils/js'
-  import Value from '../Common/Value.svelte'
-  import {fade} from 'svelte/transition'
 
   export let leaderboard = null;
+  export let rank = null;
 
   $: song = opt(leaderboard, 'song', null);
+  $: page = rank && Number.isFinite(rank) ? Math.floor(rank / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
 </script>
 
 {#if song}
-  <a href="{`${SS_HOST}/leaderboard/${encodeURIComponent(opt(leaderboard, 'leaderboardId', ''))}`}" target="_blank" rel="noopener">
+  <a on:click={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
     <div class="cover-difficulty">
       <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt=""/>
 

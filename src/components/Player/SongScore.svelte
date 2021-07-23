@@ -41,7 +41,7 @@
     </span>
 
     <span class="song">
-      <Leaderboard {leaderboard}/>
+      <Leaderboard {leaderboard} rank={score.rank}/>
     </span>
 
     <section class="stats">
@@ -61,7 +61,7 @@
             </Badge>
 
             <small>
-              (<Value value={score.ppWeighted} zero={formatNumber(0)} withZeroSuffix={true} suffix="pp" inline={true}/>)
+              (<Value value={score.ppWeighted} zero={formatNumber(0)} withZeroSuffix={true} suffix="pp" inline={true} title="Weighted PP"/>)
             </small>
           </span>
       {:else}
@@ -88,7 +88,7 @@
         </Badge>
 
         {#if score.mods && score.mods.length}
-          <small>{`${score.mods.join(', ')}`}&nbsp;</small>
+          <small title="Mods">{`${score.mods.join(', ')}`}&nbsp;</small>
         {/if}
       </span>
     {/if}

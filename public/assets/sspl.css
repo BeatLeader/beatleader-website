@@ -45,6 +45,8 @@ body {
     display: none;
 }
 
+*[title]:not([title=""]) {cursor: help;}
+
 @media screen and (max-width: 767px) {
     .mobile-only {
         display: block;

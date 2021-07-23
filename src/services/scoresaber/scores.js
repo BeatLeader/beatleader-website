@@ -12,9 +12,9 @@ import log from '../../utils/logger'
 import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import scores from '../../db/repository/scores'
-import {SS_API_SCORES_PER_PAGE} from '../../network/scoresaber/api-queue'
 import {SsrHttpNotFoundError} from '../../network/errors'
 import createFetchCache from '../../network/cache'
+import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
@@ -120,7 +120,7 @@ export default () => {
         if (!Array.isArray(pageData)) break;
 
         if (
-          pageData.length < SS_API_SCORES_PER_PAGE ||
+          pageData.length < PLAYER_SCORES_PER_PAGE ||
           (untilFunc && untilFunc(pageData))
         ) {
           // push only relevant scores and return
@@ -154,7 +154,7 @@ export default () => {
 
     if (!data || !data.length) return [];
 
-    if (data[data.length - 1].length === SS_API_SCORES_PER_PAGE) {
+    if (data[data.length - 1].length === PLAYER_SCORES_PER_PAGE) {
       data = [
         ...data,
         ...(await fetchScoresUntil(playerId, data.length + 1, priority, signal, null, true)),
@@ -219,7 +219,7 @@ export default () => {
     }
 
     const numOfScores = opt(player, 'scoreStats.totalPlayCount', null);
-    const numOfPages = numOfScores ? Math.ceil(numOfScores / SS_API_SCORES_PER_PAGE) : null;
+    const numOfPages = numOfScores ? Math.ceil(numOfScores / PLAYER_SCORES_PER_PAGE) : null;
 
     const newLastUpdated = new Date();
 
@@ -334,11 +334,11 @@ export default () => {
 
     playerScores.sort((a,b) => b[key] - a[key]);
 
-    const startIdx = (page - 1) * SS_API_SCORES_PER_PAGE;
+    const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
 
     if (playerScores.length < startIdx + 1) return null;
 
-    return playerScores.slice(startIdx, startIdx + SS_API_SCORES_PER_PAGE);
+    return playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE);
   }
   const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null) =>
     (type === 'top' ? topScoresApiClient : recentScoresApiClient)
