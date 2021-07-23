@@ -8,18 +8,18 @@
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import config from '../config'
+  import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
+  import {formatNumber} from '../utils/format'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
   import Pp from '../components/Score/Pp.svelte'
-  import {formatNumber} from '../utils/format'
   import Badge from '../components/Common/Badge.svelte'
   import Accuracy from '../components/Common/Accuracy.svelte'
   import Difficulty from '../components/Song/Difficulty.svelte'
   import Duration from '../components/Song/Duration.svelte'
-  import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
 
   export let leaderboardId;
   export let type = 'global';
@@ -35,6 +35,7 @@
   let currentType = type;
   let currentPage = page;
   let boxEl = null;
+  let leaderboard = null;
 
   function navigateToPlayer(playerId) {
     if (!playerId) return;
@@ -75,11 +76,12 @@
 
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
+  $: enhanced = leaderboardStore.enhanced
 
   $: changeParams(leaderboardId, type, page)
   $: scrollToTop($pending);
   $: scores = opt($leaderboardStore, 'scores', null)
-  $: leaderboard = opt($leaderboardStore, 'leaderboard', null)
+  $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
 </script>
 
@@ -113,7 +115,7 @@
               {#if leaderboard.stats.length}
                 <div transition:fly={{x:100, duration: 500}}>
                   <span class="time" transition:fade={{duration: 500}}>
-                      <i class="fas fa-clock"></i> <Duration value={leaderboard.stats.length}/>
+                      <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats.length}/>
                   </span>
                 </div>
               {/if}
@@ -133,6 +135,12 @@
               {#if leaderboard.stats.njs}
                 <div transition:fly={{x:100, duration: 500}}><i class="fas fa-tachometer-alt"></i> NJS: <strong>
                   <Value value={leaderboard.stats.njs} digits={0}/>
+                </strong></div>
+              {/if}
+
+              {#if leaderboard.stats.njsOffset}
+                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
+                  <Value value={leaderboard.stats.njsOffset} digits={2}/>
                 </strong></div>
               {/if}
 
@@ -277,7 +285,7 @@
 
     header .stats {
         display: grid;
-        grid-template-columns: repeat(auto-fill, 7.5em);
+        grid-template-columns: repeat(auto-fit, 8em);
         grid-column-gap: 1em;
         grid-row-gap: .5em;
         justify-items: center;
