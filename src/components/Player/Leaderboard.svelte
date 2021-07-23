@@ -9,7 +9,7 @@
   export let rank = null;
 
   $: song = opt(leaderboard, 'song', null);
-  $: page = rank && Number.isFinite(rank) ? Math.floor(rank / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
+  $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
 </script>
 
 {#if song}
