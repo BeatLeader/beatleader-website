@@ -118,13 +118,13 @@
                   <span slot="label">
                     <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
 
-                    <small>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                    <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
                   </span>
               </Badge>
             </div>
 
             <div class="percentage with-badge">
-              <Accuracy score={score.score} showPercentageInstead={true} noSecondMetric={true} />
+              <Accuracy score={score.score} showPercentageInstead={true} secondMetricInsteadOfDiff={true} />
             </div>
 
             <div class="pp with-badge">
@@ -172,6 +172,7 @@
         margin: 0 !important;
         padding: .125em .25em !important;
         width: 100%;
+        height: 100%;
     }
 
     .player-score :global(.badge span) {
@@ -217,6 +218,7 @@
     }
 
     .with-badge {
+        height: 100%;
         text-align: center;
     }
 </style>

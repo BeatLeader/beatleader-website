@@ -9,6 +9,7 @@
   export let prevScore = null;
   export let showPercentageInstead = false;
   export let noSecondMetric = false;
+  export let secondMetricInsteadOfDiff = false;
 
   const badgesDef = [
     {name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -20,7 +21,7 @@
   ];
 
   badgesDef.forEach(badge => {
-    badge.desc = `${badge.name} (${!badge.min ? '< ' + badge.max + '%' : (!badge.max ? '> ' + badge.min + '%' : badge.min + '% - ' + badge.max + '%')})`;
+    badge.desc = `${showPercentageInstead ? 'Percentage' : 'Accuracy'} ${badge.name} (${!badge.min ? `< ${badge.max}%` : (!badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`)})`;
   });
 
   function getBadge(acc) {
@@ -38,13 +39,22 @@
                withZeroSuffix={true} title={badge.desc} inline={false} suffix="%" suffixPrev="%"
                prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
         />
+        {#if secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage))}
+          <small>
+            <Value value={showPercentageInstead ? score.acc : score.percentage}
+                   withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
+                   title={showPercentageInstead ? 'Accuracy' : 'Percentage'}
+            />
+          </small>
+        {/if}
       </span>
   </Badge>
 
-  {#if !noSecondMetric && score.mods && score.mods.length}
+  {#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length}
   <small>
       <Value value={!showPercentageInstead ? score.percentage : score.acc}
              withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
+             title={showPercentageInstead ? 'Accuracy' : 'Percentage'}
       />
   </small>
   {/if}
