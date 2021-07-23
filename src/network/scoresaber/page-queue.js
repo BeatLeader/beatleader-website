@@ -216,13 +216,15 @@ export default (options = {}) => {
         switch (scoreInfoMatch[1]) {
           case "score":
             ret.acc = null;
-            ret.mods = scoreInfoMatch[3] ? scoreInfoMatch[3] : "";
+            scoreInfoMatch[3] = scoreInfoMatch[3] ? scoreInfoMatch[3].replace('-','').trim() : null
+            ret.mods = scoreInfoMatch[3] && scoreInfoMatch[3].length ? scoreInfoMatch[3].split(',').filter(m => m && m.trim().length) : null;
             ret.score = parseSsFloat(scoreInfoMatch[2]);
             break;
 
           case "accuracy":
             ret.score = null;
-            ret.mods = scoreInfoMatch[3] ? scoreInfoMatch[3] : "";
+            scoreInfoMatch[3] = scoreInfoMatch[3] ? scoreInfoMatch[3].replace('-','').trim() : null
+            ret.mods = scoreInfoMatch[3] && scoreInfoMatch[3].length ? scoreInfoMatch[3].split(',').filter(m => m && m.trim().length) : null;
             ret.acc = parseSsFloat(scoreInfoMatch[2]);
             break;
         }
@@ -358,8 +360,9 @@ export default (options = {}) => {
       ret.score.timeSetString = opt(tr.querySelector('td.timeset'), 'innerText', null);
       if (ret.score.timeSetString) ret.score.timeSetString = ret.score.timeSetString.trim();
 
-      ret.score.mods = opt(tr.querySelector('td.mods'), 'innerText')
-      ret.score.mods = ret.score.mods ? ret.score.mods.replace('-','').split(',').filter(m => m && m.trim().length).join(',') : null;
+      ret.score.mods = opt(tr.querySelector('td.mods'), 'innerText');
+      ret.score.mods = ret.score.mods ? ret.score.mods.replace('-','').trim() : null
+      ret.score.mods = ret.score.mods && ret.score.mods.length ? ret.score.mods.split(',').filter(m => m && m.trim().length) : null;
 
       ret.score.pp = parseValue('td.pp .scoreTop.ppValue');
 

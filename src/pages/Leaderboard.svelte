@@ -15,6 +15,10 @@
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
+  import Pp from '../components/Score/Pp.svelte'
+  import {formatNumber} from '../utils/format'
+  import Badge from '../components/Common/Badge.svelte'
+  import Accuracy from '../components/Common/Accuracy.svelte'
 
   export let leaderboardId;
   export let type = 'global';
@@ -75,7 +79,6 @@
   $: scores = opt($leaderboardStore, 'scores', null)
 
   $: console.log($leaderboardStore)
-  $: console.log($isLoading)
 </script>
 
 <svelte:head>
@@ -89,17 +92,54 @@
     {/if}
 
     {#if $leaderboardStore}
-      {JSON.stringify($leaderboardStore.diffs)}
-      <hr/>
-      {JSON.stringify($leaderboardStore.leaderboard)}
-      {JSON.stringify($leaderboardStore.stats)}
-      <hr style="background-color:red"/>
-
       {#if scores && scores.length}
+        <div class="scores-grid">
         {#each scores as score}
-          {JSON.stringify(score)}
-          <hr />
+          <div class="player-score">
+            <div class="rank with-badge">
+              <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+              'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
+              >= 10000 ? 'small' : 'var(--dimmed)')))}>
+                  <span slot="label">
+                    #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
+                  </span>
+              </Badge>
+            </div>
+
+            <div class="player">
+              <Avatar player={score.player}/>
+              <PlayerNameWithFlag player={score.player}/>
+            </div>
+
+            <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
+
+            <div class="score with-badge">
+              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                  <span slot="label">
+                    <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
+
+                    <small>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                  </span>
+              </Badge>
+            </div>
+
+            <div class="percentage with-badge">
+              <Accuracy score={score.score} showPercentageInstead={true} noSecondMetric={true} />
+            </div>
+
+            <div class="pp with-badge">
+              <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+                <span slot="label">
+                  <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
+                      zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                      color="white"
+                  />
+                </span>
+              </Badge>
+            </div>
+          </div>
         {/each}
+        </div>
       {/if}
 
       <hr style="background-color: red"/>
@@ -111,88 +151,72 @@
 </article>
 
 <style>
-    .ranking-grid {
+    .scores-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(18em, 1fr));
-        grid-gap: .75em;
-    }
-
-    .player-card {
-        display: inline-grid;
-        grid-template-columns: 5.25em 1fr;
-        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr;
+        grid-row-gap: .5em;
         max-width: 100%;
-        padding: .5em;
-        border: 1px solid var(--dimmed);
-        border-radius: 4px;
-        background-color: var(--background);
-        cursor: pointer;
     }
 
-    .player-card:hover {
-        background-color: var(--faded);
-    }
-
-    .player-card .player-and-rank {
-        grid-column-start: 1;
-        grid-column-end: 1;
-        grid-row-start: 1;
-        grid-row-end: span 2;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .player-card .player-and-rank :global(figure) {
-        width: 4em;
-        height: 4em;
-    }
-
-    .player-card .player-and-rank :global(.rank) {
-        position: absolute;
-        bottom: .5em;
-        right: .75em;
-        padding: 0 .25em;
-        font-size: 1em;
-        font-weight: 500;
-        background-color: var(--dimmed);
-        border-radius: 3px;
-    }
-
-    .player-card .player-and-rank :global(.rank.small) {
-        font-size: .875em;
-    }
-
-    .player-card .player-and-rank :global(.rank.gold) {
-        font-size: 1.1em;
-        background-color: darkgoldenrod;
-    }
-
-    .player-card .player-and-rank :global(.rank.silver) {
-        font-size: 1.1em;
-        background-color: #888;
-    }
-
-    .player-card .player-and-rank :global(.rank.brown) {
-        font-size: 1.1em;
-        background-color: saddlebrown;
-    }
-
-    .player-card .player-pp-and-change {
-        display: flex;
-        justify-content: space-between;
+    .scores-grid .player-score {
+        display: grid;
+        grid-template-columns: minmax(2em, max-content) auto minmax(6.5em, min-content) 6em 4.5em 5.5em;
+        grid-gap: .5em;
         align-items: center;
-        font-size: 1.1em;
-        font-weight: 500;
-        color: var(--ppColour);
+        overflow: hidden;
+        border-bottom: 1px solid var(--faded);
+        padding-bottom: .5em;
     }
 
-    .player-card .change {
+    .player-score :global(.badge) {
+        margin: 0 !important;
+        padding: .125em .25em !important;
+        width: 100%;
+    }
+
+    .player-score :global(.badge span) {
+        width: 100%;
+    }
+
+    .player-score :global(.badge small) {
+        display: block;
+        font-size: .7em;
+        font-weight: normal;
+        margin-top: -2px;
+    }
+
+    .player-score :global(.inc), .song-score :global(.dec) {
+        color: inherit;
+    }
+
+    .player-score .rank {
         font-size: .875em;
     }
 
-    @media screen and (max-width: 500px) {
-        .ranking-grid {
-            grid-template-columns: 1fr;
-        }
+    .player-score .player {
+        display: flex;
+        align-items: center;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .player-score .player :global(figure) {
+        width: 1.5em;
+        height: 1.5em;
+        min-width: 1.5em;
+        margin-right: .5em;
+    }
+
+    .player-score .player :global(.player-name) {
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .player-score .timeset {
+        text-align: center;
+    }
+
+    .with-badge {
+        text-align: center;
     }
 </style>

@@ -6,8 +6,9 @@
   import {formatDate} from '../../utils/date'
 
   export let score;
-  export let prevScore;
+  export let prevScore = null;
   export let showPercentageInstead = false;
+  export let noSecondMetric = false;
 
   const badgesDef = [
     {name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -40,7 +41,7 @@
       </span>
   </Badge>
 
-  {#if score.mods && score.mods.length}
+  {#if !noSecondMetric && score.mods && score.mods.length}
   <small>
       <Value value={!showPercentageInstead ? score.percentage : score.acc}
              withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
