@@ -9,3 +9,5 @@ export function formatNumber(num, digits = 2, addSign = false) {
     })
   );
 }
+
+export const padNumber = (num, pad = 2) => (Array(pad).fill('0').join('') + num).slice(-pad);

@@ -10,19 +10,21 @@
   import config from '../config'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
-  import Change from '../components/Common/Change.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
-  import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
   import Pp from '../components/Score/Pp.svelte'
   import {formatNumber} from '../utils/format'
   import Badge from '../components/Common/Badge.svelte'
   import Accuracy from '../components/Common/Accuracy.svelte'
+  import Difficulty from '../components/Song/Difficulty.svelte'
+  import Duration from '../components/Song/Duration.svelte'
+  import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
 
   export let leaderboardId;
   export let type = 'global';
   export let page = 1;
+  export let withHeader = true;
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
@@ -77,8 +79,10 @@
   $: changeParams(leaderboardId, type, page)
   $: scrollToTop($pending);
   $: scores = opt($leaderboardStore, 'scores', null)
+  $: leaderboard = opt($leaderboardStore, 'leaderboard', null)
+  $: song = opt($leaderboardStore, 'leaderboard.song', null)
 
-  $: console.log($leaderboardStore)
+  $: console.log($leaderboardStore, scores)
 </script>
 
 <svelte:head>
@@ -87,12 +91,79 @@
 
 <article transition:fade>
   <div class="box has-shadow" bind:this={boxEl}>
-    {#if $isLoading}
-      <Spinner/>
-    {/if}
+    {#if !$leaderboardStore && $isLoading}<Spinner/>{/if}
 
     <div class="leaderboard">
       {#if $leaderboardStore}
+
+        {#if leaderboard && song && withHeader}
+        <header transition:fade>
+          <h1 class="title is-4">
+            {song.name} {song.subName ? song.subName : ''}
+            <span>{song.authorName}</span>
+            <small>{song.levelAuthorName}</small>
+          </h1>
+
+          <h2 class="title is-6" class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
+            {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
+            {#if song.stars}<Value value={song.stars} digits={2} zero="" suffix="★"/>{/if}
+            {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
+          </h2>
+
+          {#if leaderboard.stats}
+            <div class="stats">
+              {#if leaderboard.stats.length}
+                  <span class="time" transition:fade={{duration: 500}}>
+                      <i class="fas fa-clock"></i> <Duration value={leaderboard.stats.length}/>
+                  </span>
+              {/if}
+              {#if leaderboard.stats.scores || leaderboard.stats.totalScores}
+                <div transition:fly={{x:100, duration: 500}}>
+                  {#if leaderboard.stats.scores} <i class="fas fa-align-justify"></i> Scores: <strong><Value value={leaderboard.stats.scores} digits={0}/></strong> {/if}
+                  {#if leaderboard.stats.totalScores !== leaderboard.stats.scores}&nbsp;/ <strong><Value value={leaderboard.stats.totalScores} digits={0}/></strong>{/if}
+                </div>
+              {/if}
+
+              {#if leaderboard.stats.noteCount}
+                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-music"></i> Notes: <strong>
+                  <Value value={leaderboard.stats.noteCount} digits={0}/>
+                </strong></div>
+              {/if}
+
+              {#if leaderboard.stats.bpm}
+                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-drum"></i> BPM: <strong>
+                  <Value value={leaderboard.stats.bpm} digits={0}/>
+                </strong></div>
+              {/if}
+
+              {#if leaderboard.stats.njs}
+                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-tachometer-alt"></i> NJS: <strong>
+                  <Value value={leaderboard.stats.njs} digits={0}/>
+                </strong></div>
+              {/if}
+
+              {#if leaderboard.stats.nps}
+                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-fire"></i> NPS: <strong>
+                  <Value value={leaderboard.stats.nps} digits={2}/>
+                </strong></div>
+              {/if}
+
+              {#if leaderboard.stats.bombs}
+                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-bomb"></i> Bombs: <strong>
+                  <Value value={leaderboard.stats.bombs} digits={0} zero="0"/>
+                </strong></div>
+              {/if}
+
+              {#if leaderboard.stats.obstacles}
+                <div transition:fly={{x:100, duration: 500}}><i class="fas fa-skull"></i> Obstacles: <strong>
+                  <Value value={leaderboard.stats.obstacles} digits={0} zero="0"/>
+                </strong></div>
+              {/if}
+            </div>
+          {/if}
+        </header>
+        {/if}
+
         {#if scores && scores.length}
           {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
             <img class="bg" src={$leaderboardStore.leaderboard.song.imageUrl} />
@@ -100,7 +171,7 @@
 
           <div class="scores-grid">
           {#each scores as score, idx}
-            <div class="player-score" in:fly={{delay: idx * 20, x: 100}}>
+            <div class="player-score" in:fly={{delay: idx * 20, x: 100}} out:fly={{duration:0}}>
               <div class="rank with-badge">
                 <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
@@ -147,12 +218,15 @@
             </div>
           {/each}
           </div>
-        {/if}
 
-        <hr style="background-color: red"/>
-        page={$leaderboardStore.page}, totalItems={$leaderboardStore.totalItems}
+          <Pager totalItems={$leaderboardStore.totalItems} itemsPerPage={LEADERBOARD_SCORES_PER_PAGE} itemsPerPageValues={null}
+                 currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+                 on:page-changed={onPageChanged}
+          />
+        {/if}
       {:else if (!$isLoading)}
-        <p>Leaderboard not found</p>
+        <p>Leaderboard not found.</p>
       {/if}
     </div>
   </div>
@@ -177,6 +251,57 @@
         opacity: .1;
     }
 
+    header {
+        color: var(--alternate);
+        margin-bottom: 1em;
+    }
+
+    header .title {
+        color: inherit !important;
+    }
+
+    header h1 {
+        font-size: 1.5em!important;
+        margin-bottom: .5em;
+    }
+
+    header h1 span {
+        font-size: .875em;
+    }
+
+    header h2.title {
+        font-size: 1em!important;
+        margin-top: 0;
+        color: var(--increase, #42b129) !important;
+        margin-bottom: .5em;
+    }
+
+    header h2.title.unranked {
+        color: var(--decrease, #f94022) !important;
+    }
+
+    header .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        grid-gap: 1em;
+        justify-items: center;
+        align-items: center;
+        color: var(--textColor, #fff) !important;
+    }
+
+    header small {
+        font-size: 0.75em;
+        color: var(--ppColour);
+    }
+
+    header .diff :global(.reversed) {
+        display: inline-block;
+        padding: .1em .25em .25em .25em;
+        margin-left: .5em;
+        margin-right: .5em;
+        border-radius: .25em;
+    }
+
     .scores-grid {
         display: grid;
         grid-template-columns: 1fr;
@@ -187,7 +312,7 @@
 
     .scores-grid .player-score {
         display: grid;
-        grid-template-columns: minmax(2em, max-content) auto minmax(6.5em, min-content) 6em 4.5em 5.5em;
+        grid-template-columns: minmax(2em, max-content) auto minmax(6.85em, min-content) 6em 4.5em 5.5em;
         grid-gap: .5em;
         align-items: center;
         overflow: hidden;
