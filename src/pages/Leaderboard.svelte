@@ -93,8 +93,6 @@
   $: diffs = opt($leaderboardStore, 'diffs', []).map(d => ({...d, label: d.name}))
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
-
-  $: console.log(leaderboard)
 </script>
 
 <svelte:head>
@@ -150,7 +148,7 @@
                 </strong></div>
               {/if}
 
-              {#if leaderboard.stats.njsOffset}
+              {#if Number.isFinite(leaderboard.stats.njsOffset)}
                 <div transition:fly={{x:100, duration: 500}}><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
                   <Value value={leaderboard.stats.njsOffset} digits={2}/>
                 </strong></div>
