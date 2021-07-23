@@ -41,7 +41,7 @@
     </span>
 
     <span class="song">
-      <Leaderboard {leaderboard}/>
+      <Leaderboard {leaderboard} rank={score.rank}/>
     </span>
 
     <section class="stats">
