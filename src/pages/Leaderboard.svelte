@@ -182,7 +182,7 @@
 
               <div class="player">
                 <Avatar player={score.player}/>
-                <PlayerNameWithFlag player={score.player}/>
+                <PlayerNameWithFlag player={score.player} on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}/>
               </div>
 
               <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
@@ -359,6 +359,10 @@
         align-items: center;
         max-width: 100%;
         overflow-x: hidden;
+    }
+
+    .player-score .player :global(.player-name) {
+        cursor: pointer;
     }
 
     .player-score .player :global(figure) {
