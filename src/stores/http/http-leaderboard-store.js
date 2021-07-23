@@ -1,9 +1,11 @@
 import createHttpStore from './http-store';
 import beatSaverEnhancer from './enhancers/leaderboard/beatsaver'
+import accEnhancer from './enhancers/scores/acc'
 import {opt} from '../../utils/js'
 import createLeaderboardPageProvider from './providers/page-leaderboard'
 import {writable} from 'svelte/store'
 import {findDiffInfoWithDiffAndType} from '../../utils/scoresaber/song'
+import {debounce} from '../../utils/debounce'
 
 export default (leaderboardId, type = 'global', page = 1, initialState = null, initialStateType = 'initial') => {
   let currentLeaderboardId = leaderboardId ? leaderboardId : null;
@@ -12,30 +14,64 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
 
   const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
 
-  const onNewData = ({fetchParams, state}) => {
+  const onNewData = ({fetchParams, state, set}) => {
     currentLeaderboardId = opt(fetchParams, 'leaderboardId', null);
     currentType = opt(fetchParams, 'type', 'global');
     currentPage = opt(fetchParams, 'page', 1);
 
     if (!state) return;
 
-    (async(leaderboardId, type, page) => {
-      beatSaverEnhancer(state)
+    const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
+
+    const debouncedSetState = debounce((enhanceTaskId, state) => {
+      if (enhanceTaskId !== getCurrentEnhanceTaskId()) return;
+
+      set(state);
+    }, 100);
+
+    const enhanceTaskId = getCurrentEnhanceTaskId();
+    const newState = {...state, scores: [...state.scores]};
+
+    const setStateRow = (scoreRow, idx, fields = ['player', 'score']) => {
+      if (enhanceTaskId !== getCurrentEnhanceTaskId() || !newState || !newState[idx] || !scoreRow) return null;
+
+      fields = !Array.isArray(fields) ? [fields] : fields;
+
+      fields.map(field => {
+        const stateValue = opt(newState[idx], field, {});
+        const rowValue = opt(scoreRow, field, {});
+
+        newState[idx][field] = {...stateValue, ...rowValue};
+      })
+
+      debouncedSetState(enhanceTaskId, newState);
+      return newState[idx];
+
+    }
+
+    if (newState.leaderboard)
+      beatSaverEnhancer(newState)
         .then(_ => {
-          if (leaderboardId === currentLeaderboardId && type === currentType && page === currentPage) {
-            if (!state.leaderboard) return null;
+          const bsStats = findDiffInfoWithDiffAndType(opt(newState.leaderboard.beatSaver, 'metadata.characteristics'), newState.leaderboard.diffInfo);
+          if (!bsStats) return null;
 
-            const bsStats = findDiffInfoWithDiffAndType(opt(state.leaderboard.beatSaver, 'metadata.characteristics'), state.leaderboard.diffInfo);
-            if (!bsStats) return null;
+          if (bsStats.notes && bsStats.length) bsStats.nps = bsStats.notes / bsStats.length;
 
-            if (bsStats.notes && bsStats.length) bsStats.nps = bsStats.notes / bsStats.length;
+          newState.leaderboard.stats = {...bsStats};
 
-            state.leaderboard.stats = {...bsStats};
+          setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
+          debouncedSetState(enhanceTaskId, newState);
 
-            setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
+          return newState.leaderboard.beatSaver;
+        })
+        .then(bsData => {
+          if (!bsData || !newState.scores || !newState.scores.length) return;
+
+          for (const [idx, scoreRow] of newState.scores.entries()) {
+            accEnhancer({...scoreRow, leaderboard: newState.leaderboard})
+              .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx))
           }
         })
-    })(currentLeaderboardId, currentType, currentPage)
   }
 
   const provider = createLeaderboardPageProvider();

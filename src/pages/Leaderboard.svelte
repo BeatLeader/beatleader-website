@@ -199,7 +199,7 @@
                 </div>
 
                 <div class="percentage with-badge">
-                  <Accuracy score={score.score} showPercentageInstead={true} secondMetricInsteadOfDiff={true} />
+                  <Accuracy score={score.score} showPercentageInstead={true} noSecondMetric={true} />
                 </div>
 
                 <div class="pp with-badge">
