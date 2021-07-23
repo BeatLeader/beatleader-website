@@ -81,12 +81,10 @@
   $: scores = opt($leaderboardStore, 'scores', null)
   $: leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
-
-  $: console.log($leaderboardStore, scores)
 </script>
 
 <svelte:head>
-  <title>Leaderboard - {config.name}</title>
+  <title>{`${opt(song, 'name', 'Leaderboard')} / ${page} - ${config.name}`}</title>
 </svelte:head>
 
 <article transition:fade>
