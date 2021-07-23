@@ -99,9 +99,9 @@
         {#if leaderboard && song && withHeader}
         <header transition:fade>
           <h1 class="title is-4">
-            {song.name} {song.subName ? song.subName : ''}
-            <span>{song.authorName}</span>
-            <small>{song.levelAuthorName}</small>
+            <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
+            <span class="author">{song.authorName}</span>
+            <small class="level-author">{song.levelAuthorName}</small>
           </h1>
 
           <h2 class="title is-6" class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
@@ -262,7 +262,7 @@
         margin-bottom: .5em;
     }
 
-    header h1 span {
+    header h1 span.name {
         font-size: .875em;
     }
 
@@ -279,8 +279,9 @@
 
     header .stats {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-        grid-gap: 1em;
+        grid-template-columns: repeat(auto-fill, 7.5em);
+        grid-column-gap: 1em;
+        grid-row-gap: .5em;
         justify-items: center;
         align-items: center;
         color: var(--textColor, #fff) !important;
@@ -376,6 +377,10 @@
     }
 
     @media screen and (max-width: 767px) {
+        header .stats {
+          justify-items: left;
+        }
+
         .scores-grid .player-score {
             grid-template-columns: minmax(2em, max-content) auto auto auto auto auto;
             width: 100%;
