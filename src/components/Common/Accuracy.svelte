@@ -25,17 +25,19 @@
   });
 
   function getBadge(acc) {
+    if (!acc) return null;
+
     return badgesDef.reduce((cum, badge) => ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) ? badge : cum, badgesDef[badgesDef.length - 1]);
   }
 
   $: badge = getBadge(showPercentageInstead ? opt(score, 'percentage') : opt(score, 'acc'));
 </script>
 
-<Badge onlyLabel={true} color="white" bgColor={badge.color} title={badge.desc} label="">
+<Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
     <span slot="label">
       <Value value={showPercentageInstead ? score.percentage : score.acc}
              prevValue={showPercentageInstead ? opt(prevScore, 'percentage') : opt(prevScore, 'acc')}
-             title={badge.desc} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
+             title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
              prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
       />
       {#if secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage))}
