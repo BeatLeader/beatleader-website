@@ -2,6 +2,7 @@ import leaderboardPageClient from '../../network/scoresaber/leaderboard/page-lea
 import makePendingPromisePool from '../../utils/pending-promises'
 import {PRIORITY} from '../../network/http-queue'
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+import {MINUTE} from '../../utils/date'
 
 let service = null;
 export default () => {
@@ -12,7 +13,7 @@ export default () => {
   const fetchPage = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     // TODO: add fetch cache support
 
-    return resolvePromiseOrWaitForPending(`pageClient/leaderboard/${leaderboardId}/${page}`, () => leaderboardPageClient.getProcessed({leaderboardId, page, signal, priority}));
+    return resolvePromiseOrWaitForPending(`pageClient/leaderboard/${leaderboardId}/${page}`, () => leaderboardPageClient.getProcessed({leaderboardId, page, signal, priority, cacheTtl: MINUTE}));
   }
 
   const getFriendsLeaderboard = async (leaderboardId, priority = PRIORITY.FG_LOW, signal = null) => {
