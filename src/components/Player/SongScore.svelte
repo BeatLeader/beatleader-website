@@ -1,25 +1,46 @@
 <script>
   import {formatNumber} from '../../utils/format'
-
+  import {fade, slide} from 'svelte/transition'
+  import {opt} from '../../utils/js'
+  import {formatDate} from '../../utils/date'
+  import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import Badge from '../Common/Badge.svelte'
+  import Accuracy from '../Common/Accuracy.svelte'
   import Leaderboard from './Leaderboard.svelte'
   import ScoreRank from './ScoreRank.svelte'
   import FormattedDate from '../Common/FormattedDate.svelte'
   import Pp from '../Score/Pp.svelte'
   import Value from '../Common/Value.svelte'
-  import {fade, slide} from 'svelte/transition'
-  import Badge from '../Common/Badge.svelte'
-  import Accuracy from '../Common/Accuracy.svelte'
-  import {opt} from '../../utils/js'
-  import {formatDate} from '../../utils/date'
+  import LeaderboardPage from '../../pages/Leaderboard.svelte'
 
   export let songScore = null;
 
-  let showBeatSavior = false;
+  let showDetails = false;
+
+  let inBuiltLeaderboardPage = null;
+
+  function updateInBuiltLeaderboardPage(rank) {
+    if (!rank) {
+      inBuiltLeaderboardPage = null;
+      return;
+    }
+
+    inBuiltLeaderboardPage = Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1;
+  }
+
+  function onInBuiltLeaderboardPageChanged(event) {
+    const newPage = opt(event, 'detail.page');
+    if (!Number.isFinite(newPage)) return;
+
+    inBuiltLeaderboardPage = newPage;
+  }
 
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
   $: prevScore = opt(songScore, 'prevScore', null);
   $: beatSavior = opt(songScore, 'beatSavior', null)
+
+  $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, showDetails)
 </script>
 
 {#if songScore}
@@ -45,7 +66,13 @@
     </span>
 
     <section class="stats">
-      <span></span>
+      {#if !beatSavior || !beatSavior.stats}
+        <span class="beat-savior-reveal" on:click={() => showDetails = !showDetails}>
+          <i class={`fas ${showDetails ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        </span>
+      {:else}
+        <span></span>
+      {/if}
 
       {#if score.pp}
         <span class="pp with-badge">
@@ -94,8 +121,8 @@
     {/if}
 
       {#if beatSavior && beatSavior.stats}
-        <span class="beat-savior-reveal" on:click={() => showBeatSavior = !showBeatSavior}>
-          <i class={`fas ${showBeatSavior ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        <span class="beat-savior-reveal" on:click={() => showDetails = !showDetails}>
+          <i class={`fas ${showDetails ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
         </span>
 
         {#if beatSavior.stats.accLeft}
@@ -143,7 +170,7 @@
         </span>
         {/if}
 
-        {#if showBeatSavior}
+        {#if showDetails}
         <div class="beat-savior-data" transition:slide>
           <span></span>
 
@@ -195,6 +222,18 @@
     </section>
 
   </div>
+  {#if showDetails}
+    <div class="details">
+      <LeaderboardPage leaderboardId={leaderboard.leaderboardId}
+                       type="global"
+                       page={inBuiltLeaderboardPage}
+                       scrollOffset={176}
+                       dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
+                       on:page-changed={onInBuiltLeaderboardPageChanged}
+
+      />
+    </div>
+  {/if}
 {/if}
 
 <style>

@@ -1,5 +1,5 @@
 <script>
-  import {getContext} from 'svelte'
+  import {getContext, createEventDispatcher} from 'svelte'
   import {navigate} from "svelte-routing";
   import {ROUTER} from 'svelte-routing/src/contexts'
   import {fade, fly} from 'svelte/transition'
@@ -26,6 +26,12 @@
   export let type = 'global';
   export let page = 1;
   export let withHeader = true;
+  export let dontNavigate = false;
+  export let withoutDiffSwitcher = false;
+  export let withoutHeader = false;
+  export let scrollOffset = 45;
+
+  const dispatch = createEventDispatcher();
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
@@ -51,7 +57,7 @@
   }
 
   function scrollToTop() {
-    if (boxEl) scrollToTargetAdjusted(boxEl, 44)
+    if (boxEl) scrollToTargetAdjusted(boxEl, scrollOffset)
   }
 
   const leaderboardStore = createLeaderboardStore(leaderboardId, type, page);
@@ -71,7 +77,11 @@
   function onPageChanged(event) {
     if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-    navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${event.detail.page + 1}`);
+    const newPage = event.detail.page + 1
+
+    if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}`);
+
+    dispatch('page-changed', {leaderboardId: currentLeaderboardId, type: currentType, page: newPage})
   }
 
   function onDiffChange(event) {
@@ -108,6 +118,7 @@
 
         {#if leaderboard && song && withHeader}
         <header transition:fade>
+          {#if !withoutHeader}
           <h1 class="title is-4">
             <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
             <span class="author">{song.authorName}</span>
@@ -119,6 +130,7 @@
             {#if song.stars}<Value value={song.stars} digits={2} zero="" suffix="★"/>{/if}
             {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
           </h2>
+          {/if}
 
           {#if leaderboard.stats}
             <div class="stats">
@@ -176,7 +188,7 @@
         </header>
         {/if}
 
-        {#if diffs && diffs.length}
+        {#if !withoutDiffSwitcher && diffs && diffs.length}
           <div class="diff-switch">
             <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
           </div>
@@ -276,7 +288,7 @@
 
     header {
         color: var(--alternate);
-        margin-bottom: 1em;
+        margin-bottom: 1.5em;
     }
 
     header .title {
@@ -305,7 +317,7 @@
 
     header .stats {
         display: grid;
-        grid-template-columns: repeat(auto-fit, 8em);
+        grid-template-columns: repeat(auto-fit, 11em);
         grid-column-gap: 1em;
         grid-row-gap: .5em;
         justify-items: center;
@@ -406,6 +418,12 @@
         text-align: center;
     }
 
+    @media screen and (max-width: 1023px) {
+        header .stats {
+            grid-template-columns: repeat(auto-fit, 9em);
+        }
+    }
+
     @media screen and (max-width: 767px) {
         header .stats {
           justify-items: left;
@@ -454,6 +472,11 @@
     }
 
     @media screen and (max-width: 409px) {
+        header .stats {
+            justify-items: left;
+            grid-template-columns: repeat(auto-fit, 8em);
+        }
+
         .player-score .player {
             grid-column: 2 / span 5;
         }
