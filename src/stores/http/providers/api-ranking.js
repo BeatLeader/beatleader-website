@@ -1,5 +1,5 @@
 import createRankingService from '../../../services/scoresaber/ranking';
-import queue from '../../../network/queues'
+import queue from '../../../network/queues/queues'
 import {addToDate, HOUR} from '../../../utils/date'
 
 const PAGES_REFRESH_INTERVAL = HOUR;

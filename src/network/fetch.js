@@ -81,11 +81,11 @@ export async function fetchUrl(url, options = {}, cors = true) {
   }
 }
 
-export async function fetchJson(url, options = {cacheTtl: null}) {
-  const {cacheKey, cacheTtl, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'json');
+export async function fetchJson(url, options = {cacheTtl: null, maxAge: null}) {
+  const {cacheKey, cacheTtl, maxAge, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'json');
 
   if (cacheKey && cacheTtl) {
-    const cachedResponse = networkCache.get(cacheKey);
+    const cachedResponse = networkCache.get(cacheKey, maxAge);
     if (cachedResponse !== undefined) return {...cachedResponse, cached: true};
   }
 
@@ -100,11 +100,11 @@ export async function fetchJson(url, options = {cacheTtl: null}) {
     })
 }
 
-export async function fetchHtml(url, options = {cacheTtl: null}) {
-  const {cacheKey, cacheTtl, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'html');
+export async function fetchHtml(url, options = {cacheTtl: null, maxAge: null}) {
+  const {cacheKey, cacheTtl, maxAge, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'html');
 
   if (cacheKey && cacheTtl) {
-    const cachedResponse = networkCache.get(cacheKey);
+    const cachedResponse = networkCache.get(cacheKey, maxAge);
     if (cachedResponse !== undefined) return {...cachedResponse, cached: true};
   }
 

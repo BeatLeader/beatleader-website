@@ -1,7 +1,7 @@
-import {PRIORITY} from '../network/http-queue';
+import {PRIORITY} from '../network/queues/http-queue';
 import createPlayerService from './scoresaber/player'
 import createScoresService from './scoresaber/scores'
-import beatSaviorApiClient from '../network/beatsavior/api';
+import beatSaviorApiClient from '../network/clients/beatsavior/api';
 import beatSaviorRepository from '../db/repository/beat-savior'
 import beatSaviorPlayersRepository from '../db/repository/beat-savior-players'
 import {addToDate, DAY, formatDate, HOUR, MINUTE, SECOND} from '../utils/date'

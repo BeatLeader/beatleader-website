@@ -1,6 +1,7 @@
-import queue from '../../queues'
+import queue from '../../../queues/queues'
 import api from './api'
-import {opt} from '../../../utils/js'
+import {opt} from '../../../../utils/js'
+import createClient from '../../generic'
 
 const process = response => {
   const apiProcessedResponse = api.process(response && response.player ? response.player : null);
@@ -22,10 +23,8 @@ const process = response => {
   return apiProcessedResponse;
 };
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => queue.SCORESABER_PAGE.player(playerId, signal, priority, cacheTtl);
+const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.SCORESABER_PAGE.player(playerId, priority, queueOptions);
 
-export default {
-  get,
-  process,
-  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => process(await get({playerId, priority, signal, cacheTtl})),
-}
+const client = createClient(get, process);
+
+export default client;

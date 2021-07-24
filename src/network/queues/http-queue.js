@@ -1,7 +1,8 @@
-import {default as createQueue, PRIORITY as QUEUE_PRIORITY} from '../utils/queue';
-import {SsrError, SsrTimeoutError} from '../others/errors'
-import {SsrHttpRateLimitError, SsrHttpResponseError, SsrNetworkError, SsrNetworkTimeoutError} from './errors'
-import {fetchHtml, fetchJson} from './fetch';
+import {default as createQueue, PRIORITY as QUEUE_PRIORITY} from '../../utils/queue';
+import {SsrError, SsrTimeoutError} from '../../others/errors'
+import {SsrHttpRateLimitError, SsrHttpResponseError, SsrNetworkError, SsrNetworkTimeoutError} from '../errors'
+import {fetchHtml, fetchJson} from '../fetch';
+import makePendingPromisePool from '../../utils/pending-promises'
 
 const DEFAULT_RETRIES = 2;
 
@@ -12,6 +13,8 @@ export const PRIORITY = {
   BG_NORMAL: QUEUE_PRIORITY.LOW,
   BG_LOW: QUEUE_PRIORITY.LOWEST,
 }
+
+const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
 export default (options = {}) => {
   const {retries, rateLimitTick, ...queueOptions} = {retries: DEFAULT_RETRIES, rateLimitTick: 500, ...options};
@@ -92,8 +95,8 @@ export default (options = {}) => {
     throw new SsrError('Unknown error');
   }
 
-  const queuedFetchJson = async (url, options, priority = PRIORITY.FG_LOW) => retriedFetch(fetchJson, url, options, priority);
-  const queuedFetchHtml = async (url, options, priority = PRIORITY.FG_LOW) => retriedFetch(fetchHtml, url, options, priority);
+  const queuedFetchJson = async (url, options, priority = PRIORITY.FG_LOW) => resolvePromiseOrWaitForPending(url, () => retriedFetch(fetchJson, url, options, priority));
+  const queuedFetchHtml = async (url, options, priority = PRIORITY.FG_LOW) => resolvePromiseOrWaitForPending(url, () => retriedFetch(fetchHtml, url, options, priority));
 
   const getRateLimit = () => currentRateLimit;
 

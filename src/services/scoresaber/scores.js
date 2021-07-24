@@ -3,9 +3,9 @@ import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
 import createPlayerService from './player';
 import createRankedsStore from '../../stores/scoresaber/rankeds'
-import {PRIORITY} from '../../network/http-queue'
-import recentScoresApiClient from '../../network/scoresaber/scores/api-recent'
-import topScoresApiClient from '../../network/scoresaber/scores/api-top'
+import {PRIORITY} from '../../network/queues/http-queue'
+import recentScoresApiClient from '../../network/clients/scoresaber/scores/api-recent'
+import topScoresApiClient from '../../network/clients/scoresaber/scores/api-top'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
 import log from '../../utils/logger'
@@ -390,7 +390,7 @@ export default () => {
 
     if (canUseBrowserCache && !scoresPage) {
       // return player from browser cache if possible
-      const tempCachedScorePage = await fetchCache.get(getFetchCacheKey(player.playerId, type, page));
+      const tempCachedScorePage = fetchCache.get(getFetchCacheKey(player.playerId, type, page));
       if (tempCachedScorePage) return tempCachedScorePage;
     }
 

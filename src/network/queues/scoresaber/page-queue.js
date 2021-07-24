@@ -1,10 +1,10 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
-import {substituteVars} from '../../utils/format'
-import {extractDiffAndType} from '../../utils/scoresaber/format'
-import cfDecryptEmail from '../../utils/cf-email-decrypt'
-import {capitalize, getFirstRegexpMatch, opt} from '../../utils/js'
-import {dateFromString} from '../../utils/date'
-import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+import {substituteVars} from '../../../utils/format'
+import {extractDiffAndType} from '../../../utils/scoresaber/format'
+import cfDecryptEmail from '../../../utils/cf-email-decrypt'
+import {capitalize, getFirstRegexpMatch, opt} from '../../../utils/js'
+import {dateFromString} from '../../../utils/date'
+import {LEADERBOARD_SCORES_PER_PAGE} from '../../../utils/scoresaber/consts'
 
 export const SS_HOST = 'https://scoresaber.com';
 const SS_CORS_HOST = '/cors/score-saber';
@@ -24,7 +24,7 @@ export default (options = {}) => {
 
   const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
-  const processRankeds = data => {
+  const processRankeds = (data) => {
     if (!data || !data.songs || !Array.isArray(data.songs)) return null;
 
     return data.songs.map(s => {
@@ -56,9 +56,12 @@ export default (options = {}) => {
     }
   }
 
-  const rankeds = async (page = 1, signal = null, priority = PRIORITY.BG_NORMAL, cacheTtl = null) => fetchJson(substituteVars(RANKEDS_URL, {page}), {signal, cacheTtl}, priority)
-    .then(r => r.body)
-    .then(data => processRankeds(data));
+  const rankeds = async (page = 1, priority = PRIORITY.BG_NORMAL, options = {}) => fetchJson(substituteVars(RANKEDS_URL, {page}), options, priority)
+    .then(r => {
+      r.body = processRankeds(r.body);
+
+      return r;
+    })
 
   const processPlayerProfile = (playerId, doc) => {
     cfDecryptEmail(doc);
@@ -271,9 +274,12 @@ export default (options = {}) => {
     };
   }
 
-  const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchHtml(substituteVars(PLAYER_PROFILE_URL, {playerId}), {signal, cacheTtl}, priority)
-    .then(r => r.body)
-    .then(doc => processPlayerProfile(playerId, doc));
+  const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchHtml(substituteVars(PLAYER_PROFILE_URL, {playerId}), options, priority)
+    .then(r => {
+      r.body = processPlayerProfile(playerId, r.body);
+
+      return r
+    })
 
   const processCountryRanking = (country, doc) => {
     cfDecryptEmail(doc);
@@ -315,9 +321,12 @@ export default (options = {}) => {
     return {players: data};
   }
 
-  const countryRanking = async (country, page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchHtml(substituteVars(COUNTRY_RANKING_URL, {country, page}), {signal, cacheTtl}, priority)
-    .then(r => r.body)
-    .then(doc => processCountryRanking(country, doc));
+  const countryRanking = async (country, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchHtml(substituteVars(COUNTRY_RANKING_URL, {country, page}), options, priority)
+    .then(r => {
+      r.body = processCountryRanking(country, r.body)
+
+      return r;
+    })
 
   const parseSsLeaderboardScores = doc => {
     cfDecryptEmail(doc);
@@ -479,9 +488,12 @@ export default (options = {}) => {
     }
   }
 
-  const leaderboard = async (leaderboardId, page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchHtml(substituteVars(LEADERBOARD_URL, {leaderboardId, page}), {signal, cacheTtl}, priority)
-    .then(r => r.body)
-    .then(doc => processLeaderboard(leaderboardId, page, doc));
+  const leaderboard = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchHtml(substituteVars(LEADERBOARD_URL, {leaderboardId, page}), options, priority)
+    .then(r => {
+      r.body = processLeaderboard(leaderboardId, page, r.body);
+
+      return r;
+    })
 
   return {
     rankeds,

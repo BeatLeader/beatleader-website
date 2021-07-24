@@ -1,8 +1,8 @@
-import playersGlobalRankingApiClient from '../../network/scoresaber/players/api-ranking-global'
-import playersGlobalRankingPagesApiClient from '../../network/scoresaber/players/api-ranking-global-pages'
-import playersCountryRankingPageClient from '../../network/scoresaber/players/page-ranking-country'
+import playersGlobalRankingApiClient from '../../network/clients/scoresaber/players/api-ranking-global'
+import playersGlobalRankingPagesApiClient from '../../network/clients/scoresaber/players/api-ranking-global-pages'
+import playersCountryRankingPageClient from '../../network/clients/scoresaber/players/page-ranking-country'
 import makePendingPromisePool from '../../utils/pending-promises'
-import {PRIORITY} from '../../network/http-queue'
+import {PRIORITY} from '../../network/queues/http-queue'
 import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
 
 let service = null;

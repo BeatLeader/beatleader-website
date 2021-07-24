@@ -1,6 +1,6 @@
 import createPlayerService from '../../../services/scoresaber/player';
 import createScoresService from '../../../services/scoresaber/scores';
-import queue from '../../../network/queues'
+import queue from '../../../network/queues/queues'
 import {MINUTE} from '../../../utils/date'
 import eventBus from '../../../utils/broadcast-channel-pubsub'
 

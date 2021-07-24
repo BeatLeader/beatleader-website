@@ -1,15 +1,14 @@
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createConfigStore from '../../stores/config'
-import playerApiClient from '../../network/scoresaber/player/api'
-import playerFindApiClient from '../../network/scoresaber/players/api-player-find'
-import playerPageClient from '../../network/scoresaber/player/page'
-import {PRIORITY} from '../../network/http-queue'
+import playerApiClient from '../../network/clients/scoresaber/player/api'
+import playerFindApiClient from '../../network/clients/scoresaber/players/api-player-find'
+import playerPageClient from '../../network/clients/scoresaber/player/page'
+import {PRIORITY} from '../../network/queues/http-queue'
 import playersRepository from '../../db/repository/players'
 import log from '../../utils/logger'
 import {addToDate, formatDate, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
-import createFetchCache from '../../network/cache'
 import makePendingPromisePool from '../../utils/pending-promises'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
@@ -36,8 +35,6 @@ export default () => {
       }
     })
   })
-
-  const fetchCache = createFetchCache();
 
   const isMainPlayer = playerId => mainPlayerId && playerId === mainPlayerId;
 
@@ -121,7 +118,7 @@ export default () => {
 
   const isProfileFresh = (player, refreshInterval = null) => getProfileFreshnessDate(player, refreshInterval) > new Date();
 
-  const updatePlayerRecentPlay = async (playerId, recentPlay, recentPlayLastUpdated = new Date(), refreshInterval = MINUTE) => {
+  const updatePlayerRecentPlay = async (playerId, recentPlay, recentPlayLastUpdated = new Date()) => {
     let player;
 
     try {
@@ -138,20 +135,9 @@ export default () => {
 
       if (player) {
         playersRepository().addToCache([player]);
-        fetchCache.set(playerId, {...player}, refreshInterval)
         eventBus.publish('player-profile-changed', player);
 
         eventBus.publish('player-recent-play-updated', {playerId, recentPlay, recentPlayLastUpdated});
-      } else {
-        // update browser cache
-        const tempCachedPlayer = await fetchCache.get(playerId, true);
-        if (tempCachedPlayer) {
-          tempCachedPlayer.recentPlay = recentPlay;
-          tempCachedPlayer.recentPlayLastUpdated = recentPlayLastUpdated;
-          fetchCache.set(playerId, tempCachedPlayer, refreshInterval)
-
-          eventBus.publish('player-recent-play-updated', {playerId, recentPlay, recentPlayLastUpdated});
-        }
       }
     }
     catch(err) {
@@ -159,41 +145,36 @@ export default () => {
     }
   }
 
-  const fetchPlayerAndUpdateRecentPlay = async (playerId, refreshInterval = MINUTE) => {
+  const fetchPlayerAndUpdateRecentPlay = async playerId => {
     try {
       const player = await resolvePromiseOrWaitForPending(`pageClient/${playerId}`, () =>playerPageClient.getProcessed({playerId}));
       const recentPlay = opt(player, 'playerInfo.recentPlay');
       const recentPlayLastUpdated = opt(player, 'playerInfo.recentPlayLastUpdated');
       if (!recentPlay || !recentPlayLastUpdated) return null;
 
-      return updatePlayerRecentPlay(playerId, recentPlay, recentPlayLastUpdated, refreshInterval);
+      return updatePlayerRecentPlay(playerId, recentPlay, recentPlayLastUpdated);
     } catch (err) {
       // swallow error
     }
   }
 
-  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/${playerId}`, () => playerApiClient.getProcessed({playerId, priority, signal}));
+  const isResponseCached = response => playerApiClient.isResponseCached(response);
+  const getDataFromResponse = response => playerApiClient.getDataFromResponse(response);
 
-  const findPlayer = async (query, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/find/${query}`, () => playerFindApiClient.getProcessed({query, signal, priority}));
+  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) => resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}`, () => playerApiClient.getProcessed({...options, playerId, priority, fullResponse}));
+
+  const findPlayer = async (query, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) => resolvePromiseOrWaitForPending(`apiClient/find/${query}/${fullResponse}`, () => playerFindApiClient.getProcessed({...options, query, priority, fullResponse}));
 
   const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     const player = await getPlayer(playerId);
 
-    if (!force && !player) {
-      // return player from browser cache if possible
-      const tempCachedPlayer = await fetchCache.get(playerId);
-      if (tempCachedPlayer && isProfileFresh(tempCachedPlayer, refreshInterval))
-        return tempCachedPlayer;
-    }
+    if (!player || !isProfileFresh(player, refreshInterval)) {
+      const fetchedPlayerResponse = await fetchPlayer(playerId, priority, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval, fullResponse: true});
+      if (isResponseCached(fetchedPlayerResponse)) return fetchedPlayerResponse;
 
-    if (force || !player || !isProfileFresh(player, refreshInterval)) {
-      const fetchedPlayer = await fetchPlayer(playerId, priority, signal);
-
-      return updatePlayer({...player, ...fetchedPlayer, profileLastUpdated: new Date()}, false)
+      return updatePlayer({...player, ...getDataFromResponse(fetchedPlayerResponse), profileLastUpdated: new Date()}, false)
         .then(player => {
-          fetchCache.set(player.playerId, {...player}, refreshInterval);
-
-          fetchPlayerAndUpdateRecentPlay(player.playerId, refreshInterval);
+          fetchPlayerAndUpdateRecentPlay(player.playerId);
 
           return player;
         })
@@ -279,8 +260,6 @@ export default () => {
     if (serviceCreationCount === 0) {
       if (configStoreUnsubscribe) configStoreUnsubscribe();
 
-      fetchCache.destroy();
-
       service = null;
     }
   }
@@ -304,6 +283,8 @@ export default () => {
     refresh,
     refreshAll,
     destroyService,
+    isResponseCached,
+    getDataFromResponse,
   }
 
   return service;

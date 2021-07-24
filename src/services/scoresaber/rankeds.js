@@ -1,5 +1,5 @@
 import {db} from '../../db/db'
-import queues from '../../network/queues';
+import queues from '../../network/queues/queues';
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import {arrayDifference, convertArrayToObjectByKey, opt} from '../../utils/js'
 import rankedsRepository from '../../db/repository/rankeds'

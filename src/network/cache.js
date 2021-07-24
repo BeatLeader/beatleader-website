@@ -52,7 +52,10 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   const forgetUnsubscribe = eventBus.on('net-cache-key-forget', ({key}, isLocal) => !isLocal ? forget(key, false) : null);
   const flushUnsubscribe = eventBus.on('net-cache-flush', (_, isLocal) => !isLocal ? flush(false) : null);
 
-  const has = (key, withExpired = false) => cache.hasOwnProperty(key) && cache[key] && cache[key].expiryAt && (withExpired || cache[key].expiryAt >= new Date());
+  const has = (key, maxAge = null, withExpired = false) =>
+    cache.hasOwnProperty(key) && cache[key] &&
+    (withExpired || !cache[key].expiryAt || cache[key].expiryAt >= new Date()) &&
+    (!Number.isFinite(maxAge) || !cache[key].cachedAt || addToDate(maxAge, cache[key].cachedAt) >= new Date());
 
   const set = (key, value, expiryIn = null, emitEvent = true) => {
     expiryIn = expiryIn ? expiryIn : defaultExpiryIn;
@@ -66,7 +69,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
     return value;
   };
 
-  const get = (key, withExpired = false, withDates = false) => has(key, withExpired) ? (withDates ? cache[key] : cache[key].value) : undefined;
+  const get = (key, maxAge = null, withExpired = false, valueOnly = true) => has(key, maxAge, withExpired) ? (valueOnly ? cache[key].value : cache[key]) : undefined;
 
   const getAll = () => cache;
 

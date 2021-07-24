@@ -1,5 +1,5 @@
 import createLeaderboardService from '../../../services/scoresaber/leaderboard';
-import queue from '../../../network/queues'
+import queue from '../../../network/queues/queues'
 
 let leaderboardService = null;
 

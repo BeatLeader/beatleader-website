@@ -1,5 +1,6 @@
-import queue from '../network/queues';
-import {PRIORITY} from '../network/http-queue';
+import hashApiClient from '../network/clients/beatsaver/api-hash';
+import keyApiClient from '../network/clients/beatsaver/api-key';
+import {PRIORITY} from '../network/queues/http-queue';
 import log from '../utils/logger'
 import {SsrHttpNotFoundError, SsrNetworkError} from '../network/errors'
 
@@ -97,7 +98,7 @@ export default () => {
 
         const songInfo = await songsRepository().get(hash);
 
-        return fetchSong(songInfo, () => queue.BEATSAVER.byHash(hash, signal, priority), forceUpdate, cacheOnly, hash, hash)
+        return fetchSong(songInfo, () => hashApiClient.getProcessed({hash, signal, priority}), forceUpdate, cacheOnly, hash, hash)
     }
 
     const byKey = async (key, forceUpdate = false, cacheOnly = false, signal = null, priority = PRIORITY.FG_LOW) => {
@@ -105,7 +106,7 @@ export default () => {
 
         const songInfo = await songsRepository().getFromIndex('songs-key', key);
 
-        return fetchSong(songInfo, () => queue.BEATSAVER.byKey(key, signal, priority), forceUpdate, cacheOnly, key)
+        return fetchSong(songInfo, () => keyApiClient.getProcessed({key, signal, priority}), forceUpdate, cacheOnly, key)
     }
 
     return {

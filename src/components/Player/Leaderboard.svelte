@@ -1,6 +1,6 @@
 <script>
   import {navigate} from 'svelte-routing'
-  import {SS_HOST} from '../../network/scoresaber/page-queue'
+  import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
   import Difficulty from '../Song/Difficulty.svelte'
   import {opt} from '../../utils/js'

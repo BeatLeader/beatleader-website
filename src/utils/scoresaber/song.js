@@ -1,4 +1,4 @@
-import queue from '../../network/queues'
+import queue from '../../network/queues/queues'
 import {opt} from '../js'
 
 export const getMaxScore = (blocks, maxScorePerBlock = 115) =>

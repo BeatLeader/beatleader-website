@@ -1,6 +1,6 @@
 import createBeatSaviorService from '../../../../services/beatsavior'
 import {opt} from '../../../../utils/js'
-import {PRIORITY} from '../../../../network/http-queue'
+import {PRIORITY} from '../../../../network/queues/http-queue'
 
 let beatSaviorService;
 

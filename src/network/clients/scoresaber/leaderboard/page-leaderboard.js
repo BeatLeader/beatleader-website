@@ -1,5 +1,6 @@
-import queue from '../../queues'
-import {opt} from '../../../utils/js'
+import queue from '../../../queues/queues'
+import {opt} from '../../../../utils/js'
+import createClient from '../../generic'
 
 const process = response => {
   if (!opt(response, 'scores') || !Array.isArray(response.scores)) return null;
@@ -27,10 +28,8 @@ const process = response => {
   }
 }
 
-const get = async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => queue.SCORESABER_PAGE.leaderboard(leaderboardId, page, signal, priority, cacheTtl);
+const get = async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.SCORESABER_PAGE.leaderboard(leaderboardId, page, priority, queueOptions);
 
-export default {
-  get,
-  process,
-  getProcessed: async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => process(await get({leaderboardId, page, priority, signal, cacheTtl}))
-}
+const client = createClient(get, process);
+
+export default client;
