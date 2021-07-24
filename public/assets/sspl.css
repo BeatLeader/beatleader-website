@@ -62,3 +62,15 @@ body {
         max-width: 1750px !important;
     }
 }
+
+@media screen and (max-width: 360px) {
+    body {
+        padding: 0;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    html {
+        font-size: 15px;
+    }
+}
