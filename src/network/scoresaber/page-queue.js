@@ -56,7 +56,7 @@ export default (options = {}) => {
     }
   }
 
-  const rankeds = async (page = 1, signal = null, priority = PRIORITY.BG_NORMAL) => fetchJson(substituteVars(RANKEDS_URL, {page}), {signal}, priority)
+  const rankeds = async (page = 1, signal = null, priority = PRIORITY.BG_NORMAL, cacheTtl = null) => fetchJson(substituteVars(RANKEDS_URL, {page}), {signal, cacheTtl}, priority)
     .then(r => r.body)
     .then(data => processRankeds(data));
 
@@ -271,7 +271,7 @@ export default (options = {}) => {
     };
   }
 
-  const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW) => fetchHtml(substituteVars(PLAYER_PROFILE_URL, {playerId}), {signal}, priority)
+  const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchHtml(substituteVars(PLAYER_PROFILE_URL, {playerId}), {signal, cacheTtl}, priority)
     .then(r => r.body)
     .then(doc => processPlayerProfile(playerId, doc));
 
@@ -315,7 +315,7 @@ export default (options = {}) => {
     return {players: data};
   }
 
-  const countryRanking = async (country, page = 1, signal = null, priority = PRIORITY.FG_LOW) => fetchHtml(substituteVars(COUNTRY_RANKING_URL, {country, page}), {signal}, priority)
+  const countryRanking = async (country, page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchHtml(substituteVars(COUNTRY_RANKING_URL, {country, page}), {signal, cacheTtl}, priority)
     .then(r => r.body)
     .then(doc => processCountryRanking(country, doc));
 
@@ -479,7 +479,7 @@ export default (options = {}) => {
     }
   }
 
-  const leaderboard = async (leaderboardId, page = 1, signal = null, priority = PRIORITY.FG_LOW) => fetchHtml(substituteVars(LEADERBOARD_URL, {leaderboardId, page}), {signal}, priority)
+  const leaderboard = async (leaderboardId, page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchHtml(substituteVars(LEADERBOARD_URL, {leaderboardId, page}), {signal, cacheTtl}, priority)
     .then(r => r.body)
     .then(doc => processLeaderboard(leaderboardId, page, doc));
 

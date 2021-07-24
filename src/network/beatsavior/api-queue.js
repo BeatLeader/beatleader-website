@@ -12,9 +12,9 @@ export default (options = {}) => {
 
   const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
-  const fetchPlayer = async (url, signal = null, priority = PRIORITY.FG_LOW) => resolvePromiseOrWaitForPending(url, () => fetchJson(url, {signal}, priority));
+  const fetchPlayer = async (url, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => resolvePromiseOrWaitForPending(url, () => fetchJson(url, {signal, cacheTtl}, priority));
 
-  const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW) => fetchPlayer(substituteVars(PLAYER_URL, {playerId}), signal, priority).then(r => r.body)
+  const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchPlayer(substituteVars(PLAYER_URL, {playerId}), signal, priority, cacheTtl).then(r => r.body)
 
   return {
     player,

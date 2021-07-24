@@ -10,6 +10,10 @@ import {
 } from './errors'
 import {SsrDataFormatError} from '../others/errors'
 import {parseRateLimitHeaders} from './utils'
+import {MINUTE} from '../utils/date'
+import createNetworkCache from './cache';
+
+const networkCache = createNetworkCache();
 
 const checkResponse = response => {
   if (response.ok) {
@@ -35,6 +39,36 @@ const checkResponse = response => {
   }
 }
 
+const getOptionsWithCacheKey = (url, options, cacheType = null) => {
+  if (options && options.cacheKey) {
+    if (!options.cacheTtl) options.cacheTtl = MINUTE;
+
+    return options;
+  }
+
+  if (options && options.method && options.method.toLowerCase() !== 'get') {
+    delete options.cacheKey;
+
+    delete options.cacheTtl;
+
+    return options;
+  }
+
+  const newOptions = options ? {...options} : {};
+
+  if (!newOptions || !newOptions.hasOwnProperty('cacheTtl')) {
+    newOptions.cacheTtl = MINUTE;
+  }
+
+  return {...newOptions, cacheKey: `${cacheType ? cacheType + ':' : ''}${url}`};
+}
+
+const setCacheIfNeeded = (response, cacheKey, cacheTtl) => {
+  if (cacheKey && cacheTtl) networkCache.set(cacheKey, response, cacheTtl);
+
+  return {...response, cached: false};
+}
+
 export async function fetchUrl(url, options = {}, cors = true) {
   try {
     const response = await fetch(url, {...options, ...(cors ? {mode: 'cors'} : null)});
@@ -47,23 +81,37 @@ export async function fetchUrl(url, options = {}, cors = true) {
   }
 }
 
-export async function fetchJson(url, options) {
-  return fetchUrl(url, options)
+export async function fetchJson(url, options = {cacheTtl: null}) {
+  const {cacheKey, cacheTtl, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'json');
+
+  if (cacheKey && cacheTtl) {
+    const cachedResponse = networkCache.get(cacheKey);
+    if (cachedResponse !== undefined) return {...cachedResponse, cached: true};
+  }
+
+  return fetchUrl(url, fetchOptions)
     .then(async response => {
       const body = await response.json();
 
-      return {headers: response.headers, rateLimit: parseRateLimitHeaders(response), body}
+      return setCacheIfNeeded({headers: response.headers, rateLimit: parseRateLimitHeaders(response), body}, cacheKey, cacheTtl);
     })
     .catch(err => {
       throw (err instanceof SyntaxError ? new SsrDataFormatError('JSON parse error', err) : err);
     })
 }
 
-export async function fetchHtml(url, options) {
-  return fetchUrl(url, options)
+export async function fetchHtml(url, options = {cacheTtl: null}) {
+  const {cacheKey, cacheTtl, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'html');
+
+  if (cacheKey && cacheTtl) {
+    const cachedResponse = networkCache.get(cacheKey);
+    if (cachedResponse !== undefined) return {...cachedResponse, cached: true};
+  }
+
+  return fetchUrl(url, fetchOptions)
     .then(async response => {
       const body = await response.text();
 
-      return {headers: response.headers, rateLimit: parseRateLimitHeaders(response), body: new DOMParser().parseFromString(body, 'text/html')}
+      return setCacheIfNeeded({headers: response.headers, rateLimit: parseRateLimitHeaders(response), body: new DOMParser().parseFromString(body, 'text/html')}, cacheKey, cacheTtl);
     })
 }

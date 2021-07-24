@@ -22,10 +22,10 @@ const process = response => {
   return apiProcessedResponse;
 };
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.SCORESABER_PAGE.player(playerId, signal, priority);
+const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => queue.SCORESABER_PAGE.player(playerId, signal, priority, cacheTtl);
 
 export default {
   get,
   process,
-  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({playerId, priority, signal})),
+  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => process(await get({playerId, priority, signal, cacheTtl})),
 }

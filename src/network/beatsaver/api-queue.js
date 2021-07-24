@@ -13,10 +13,10 @@ export default (options = {}) => {
 
   const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
-  const fetchSong = async (url, signal = null, priority = PRIORITY.FG_LOW) => resolvePromiseOrWaitForPending(url, () => fetchJson(url, {signal}, priority));
+  const fetchSong = async (url, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => resolvePromiseOrWaitForPending(url, () => fetchJson(url, {signal, cacheTtl}, priority));
 
-  const byHash = async (hash, signal = null, priority = PRIORITY.FG_LOW) => fetchSong(substituteVars(SONG_BY_HASH_URL, {hash}), signal, priority).then(r => r.body)
-  const byKey = async (key, signal = null, priority = PRIORITY.FG_LOW) => fetchSong(substituteVars(SONG_BY_KEY_URL, {key}), signal, priority).then(r => r.body)
+  const byHash = async (hash, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchSong(substituteVars(SONG_BY_HASH_URL, {hash}), signal, priority, cacheTtl).then(r => r.body)
+  const byKey = async (key, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchSong(substituteVars(SONG_BY_KEY_URL, {key}), signal, priority, cacheTtl).then(r => r.body)
 
   return {
     byHash,

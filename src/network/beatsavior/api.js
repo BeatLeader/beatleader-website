@@ -83,11 +83,11 @@ const process = response => {
     .filter(s => s);
 };
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.BEATSAVIOR.player(playerId, signal, priority);
+const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => queue.BEATSAVIOR.player(playerId, signal, priority, cacheTtl);
 
 export default {
   get,
   process,
-  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({playerId, priority, signal})),
+  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => process(await get({playerId, priority, signal, cacheTtl})),
   SONG_DATA_TYPES
 }

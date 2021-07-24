@@ -17,19 +17,19 @@ export default (options = {}) => {
 
   const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
-  const fetchScores = async (baseUrl, playerId, page = 1, signal = null, priority = PRIORITY.FG_LOW) => fetchJson(substituteVars(baseUrl, {playerId, page,}), {signal}, priority);
+  const fetchScores = async (baseUrl, playerId, page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchJson(substituteVars(baseUrl, {playerId, page,}), {signal, cacheTtl}, priority);
 
-  const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW) => fetchJson(substituteVars(SS_API_PLAYER_INFO_URL, {playerId}), {signal}, priority).then(r => r.body);
+  const player = async (playerId, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchJson(substituteVars(SS_API_PLAYER_INFO_URL, {playerId}), {signal, cacheTtl}, priority).then(r => r.body);
 
-  const recentScores = async (playerId, page = 1, signal = null, priority = PRIORITY.FG_LOW) => fetchScores(SS_API_RECENT_SCORES_URL, playerId, page, signal, priority).then(r => r.body);
+  const recentScores = async (playerId, page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchScores(SS_API_RECENT_SCORES_URL, playerId, page, signal, priority, cacheTtl).then(r => r.body);
 
-  const topScores = async (playerId, page = 1, signal = null, priority = PRIORITY.FG_LOW) => fetchScores(SS_API_TOP_SCORES_URL, playerId, page, signal, priority).then(r => r.body);
+  const topScores = async (playerId, page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchScores(SS_API_TOP_SCORES_URL, playerId, page, signal, priority, cacheTtl).then(r => r.body);
 
-  const findPlayer = async (query, signal = null, priority = PRIORITY.FG_LOW) => fetchJson(substituteVars(SS_API_FIND_PLAYER_URL, {query: encodeURIComponent(query)}), {signal}, priority).then(r => r.body);
+  const findPlayer = async (query, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchJson(substituteVars(SS_API_FIND_PLAYER_URL, {query: encodeURIComponent(query)}), {signal, cacheTtl}, priority).then(r => r.body);
 
-  const rankingGlobal = async (page = 1, signal = null, priority = PRIORITY.FG_LOW) => fetchJson(substituteVars(SS_API_RANKING_GLOBAL_URL, {page}), {signal}, priority).then(r => r.body);
+  const rankingGlobal = async (page = 1, signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchJson(substituteVars(SS_API_RANKING_GLOBAL_URL, {page}), {signal, cacheTtl}, priority).then(r => r.body);
 
-  const rankingGlobalPages = async (signal = null, priority = PRIORITY.FG_LOW) => fetchJson(SS_API_RANKING_GLOBAL_PAGES_URL, {signal}, priority).then(r => r.body);
+  const rankingGlobalPages = async (signal = null, priority = PRIORITY.FG_LOW, cacheTtl = null) => fetchJson(SS_API_RANKING_GLOBAL_PAGES_URL, {signal, cacheTtl}, priority).then(r => r.body);
 
   return {
     player,

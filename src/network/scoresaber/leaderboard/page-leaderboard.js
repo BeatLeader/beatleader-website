@@ -27,10 +27,10 @@ const process = response => {
   }
 }
 
-const get = async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.SCORESABER_PAGE.leaderboard(leaderboardId, page, signal, priority);
+const get = async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => queue.SCORESABER_PAGE.leaderboard(leaderboardId, page, signal, priority, cacheTtl);
 
 export default {
   get,
   process,
-  getProcessed: async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({leaderboardId, page, priority, signal}))
+  getProcessed: async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => process(await get({leaderboardId, page, priority, signal, cacheTtl}))
 }

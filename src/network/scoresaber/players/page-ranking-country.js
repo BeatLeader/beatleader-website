@@ -10,10 +10,10 @@ const process = response => {
   return apiProcessedResponse;
 }
 
-const get = async ({country, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.SCORESABER_PAGE.countryRanking(country, page, signal, priority);
+const get = async ({country, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => queue.SCORESABER_PAGE.countryRanking(country, page, signal, priority, cacheTtl);
 
 export default {
   get,
   process,
-  getProcessed: async ({country, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({country, page, priority, signal})),
+  getProcessed: async ({country, page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, cacheTtl = null} = {}) => process(await get({country, page, priority, signal, cacheTtl})),
 }
