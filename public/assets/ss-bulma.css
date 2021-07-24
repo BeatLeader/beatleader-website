@@ -9048,3 +9048,130 @@ label.panel-block:hover {
 }
 
 /*# sourceMappingURL=bulma.css.map */
+
+:root {
+  --background: #222;
+  --foreground: #252525;
+  --textColor: #EEE;
+
+  --ppColour: #8992e8;
+  --alternate: #72a8ff;
+}
+
+html {
+  background-color: var(--background) !important;
+}
+
+body {
+  background-color: var(--background) !important;
+}
+
+.title {
+  color: var(--textColor) !important;
+}
+
+.box.has-shadow {
+  background-color: var(--foreground) !important;
+  color: var(--textColor) !important;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
+}
+
+.box.has-shadow:hover {
+  box-shadow: 0 15px 25px rgba(23, 23, 23, 0.63), 0 8px 15px rgba(0, 0, 0, 0.4)
+}
+
+a {
+  color: var(--alternate) !important;
+}
+
+a.navbar-item {
+  color: var(--textColor) !important;
+}
+
+a.navbar-item:hover {
+  background-color: rgba(0, 0, 0, 0.37) !important;
+}
+
+strong {
+  color: var(--textColor) !important;
+}
+
+h1 {
+  color: var(--textColor) !important;
+}
+
+h2 {
+  color: var(--textColor) !important;
+}
+
+h3 {
+  color: var(--textColor) !important;
+}
+
+th {
+  color: var(--textColor) !important;
+}
+
+a.pagination-link {
+  color: var(--textColor) !important;
+}
+
+.diff{
+  text-align: center !important;
+}
+
+.card {
+  background-color: var(--foreground) !important;
+}
+
+.footer {
+  background-color: var(--background) !important;
+}
+
+h4 {
+  color: var(--alternate) !important;
+}
+
+label {
+  color: var(--textColor) !important;
+}
+
+.pagination .button {
+  background-color: #2d2d2d !important;
+  border-color: var(--foreground) !important;
+}
+
+.card-body {
+  color: var(--textColor) !important;
+}
+
+#chart > svg > g:nth-child(4) > g > text {
+  color: var(--textColor) !important;
+}
+
+#chart > svg > g:nth-child(4) > g > rect {
+  color: var(--textColor) !important;
+}
+
+.btn.btn-raised.btn-primary {
+  background-color: var(--foreground) !important;
+  box-shadow: none !important;
+}
+
+::placeholder {
+  color: var(--textColor) !important;
+}
+
+.form-control {
+  color: var(--textColor) !important;
+}
+
+#chart > svg > g:nth-child(4) {
+  display: none;
+}
+
+.select select {
+  background-color: #2d2d2d !important;
+  color: var(--textColor) !important;
+}
