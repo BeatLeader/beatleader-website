@@ -10,9 +10,6 @@ import createRankedsStore from './stores/scoresaber/rankeds'
 import initDownloadManager from './network/download-manager'
 import initCommandProcessor from './network/command-processor'
 import ErrorComponent from './components/Common/Error.svelte'
-import {PRIORITY} from './network/queues/http-queue'
-import {MINUTE} from './utils/date'
-import {delay} from './utils/promise'
 
 let app = null;
 
@@ -30,33 +27,11 @@ let app = null;
 
     // pre-warm cache && create singleton services
     await createConfigStore();
-    const player = createPlayerService();
+    createPlayerService();
     createBeatSaviorService();
-
-    // let foo = await player.fetchPlayer('76561198035381239', PRIORITY.FG_LOW, {cacheTtl: MINUTE, maxAge: null, fullResponse: true})
-    // console.log(
-    //   player.isResponseCached(foo),
-    //   player.getDataFromResponse(foo)
-    // )
-    // await delay(1000);
-    // foo = await player.fetchPlayer('76561198035381239', PRIORITY.FG_LOW, {cacheTtl: MINUTE, maxAge: 1500, fullResponse: true})
-    // console.log(
-    //   player.isResponseCached(foo),
-    //   player.getDataFromResponse(foo)
-    // )
-    // foo = await player.fetchPlayer('76561198035381239', PRIORITY.FG_LOW, {cacheTtl: MINUTE, maxAge: 1000, fullResponse: true})
-    // console.log(
-    //   player.isResponseCached(foo),
-    //   player.getDataFromResponse(foo)
-    // )
-
-
-    throw 'xxx';
-
     await createRankedsStore();
 
-    // TODO: enable it
-    // initCommandProcessor(await initDownloadManager());
+    initCommandProcessor(await initDownloadManager());
 
     log.info('Site initialized', 'Main')
 

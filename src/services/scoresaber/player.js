@@ -170,7 +170,7 @@ export default () => {
 
     if (!player || !isProfileFresh(player, refreshInterval)) {
       const fetchedPlayerResponse = await fetchPlayer(playerId, priority, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval, fullResponse: true});
-      if (isResponseCached(fetchedPlayerResponse)) return fetchedPlayerResponse;
+      if (isResponseCached(fetchedPlayerResponse)) return getDataFromResponse(fetchedPlayerResponse);
 
       return updatePlayer({...player, ...getDataFromResponse(fetchedPlayerResponse), profileLastUpdated: new Date()}, false)
         .then(player => {

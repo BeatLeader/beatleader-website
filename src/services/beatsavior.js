@@ -208,6 +208,7 @@ export default () => {
   }
 
   service = {
+    fetchPlayer,
     refresh,
     refreshAll,
     get,

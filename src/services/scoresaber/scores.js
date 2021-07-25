@@ -13,7 +13,6 @@ import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import scores from '../../db/repository/scores'
 import {SsrHttpNotFoundError} from '../../network/errors'
-import createFetchCache from '../../network/cache'
 import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
@@ -54,9 +53,6 @@ export default () => {
     })
   })
 
-  const fetchCache = createFetchCache();
-  const getFetchCacheKey = (playerId, type, page) => `${playerId}-${type}-${page}`
-
   const getAllScores = async () => scoresRepository().getAll();
   const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId);
   const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
@@ -68,7 +64,7 @@ export default () => {
     return scores.filter(s => s.leaderboardId && rankeds[s.leaderboardId]);
   }
   const getPlayerRankedsToUpdate = async (playerId, prevUpdate = null) => {
-    // TODO:
+    // TODO
   }
   const updateScore = async score => scoresRepository().set(score);
 
@@ -340,12 +336,15 @@ export default () => {
 
     return playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE);
   }
-  const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null) =>
+  const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) =>
     (type === 'top' ? topScoresApiClient : recentScoresApiClient)
-      .getProcessed({playerId, page, priority, signal});
+      .getProcessed({...options, playerId, page, priority});
 
-  const fetchScoresPageAndUpdateIfNeeded = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null) => {
-    const fetchedScores = await fetchScoresPage(playerId, type, page, priority, signal);
+  const fetchScoresPageAndUpdateIfNeeded = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
+    const fetchedScoresResponse = await fetchScoresPage(playerId, type, page, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
+    if (topScoresApiClient.isResponseCached(fetchedScoresResponse)) return topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
+
+    const fetchedScores = topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
     const playerScores = await getPlayerScores(playerId);
     if (fetchedScores && playerScores && playerScores.length) {
@@ -388,12 +387,6 @@ export default () => {
 
     const scoresPage = await getPlayerScoresPage(player.playerId, type, page);
 
-    if (canUseBrowserCache && !scoresPage) {
-      // return player from browser cache if possible
-      const tempCachedScorePage = fetchCache.get(getFetchCacheKey(player.playerId, type, page));
-      if (tempCachedScorePage) return tempCachedScorePage;
-    }
-
     // force fetch from time to time even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
     const shouldPageBeRefetched = scoresPage && scoresPage.reduce((shouldRefresh, score) => {
       if (!score.pp && allRankeds[score.leaderboard]) return true;
@@ -405,16 +398,12 @@ export default () => {
 
     if (
       force ||
+      !scoresPage ||
       shouldPageBeRefetched ||
       !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
       !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
     )
-      return fetchScoresPageAndUpdateIfNeeded(player.playerId, type, page, priority, signal)
-        .then(fetchedScores => {
-          if (!scoresPage) fetchCache.set(getFetchCacheKey(player.playerId, type, page), fetchedScores.map(s => ({...s})), refreshInterval);
-
-          return fetchedScores;
-        })
+      return fetchScoresPageAndUpdateIfNeeded(player.playerId, type, page, priority, signal, canUseBrowserCache && !shouldPageBeRefetched, refreshInterval);
 
     return scoresPage;
   }
@@ -514,8 +503,6 @@ export default () => {
       if (rankedStoreUnsubscribe) rankedStoreUnsubscribe();
 
       playerService.destroyService();
-
-      fetchCache.destroy();
 
       service = null;
     }

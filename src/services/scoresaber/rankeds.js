@@ -1,5 +1,6 @@
 import {db} from '../../db/db'
 import queues from '../../network/queues/queues';
+import rankedsPageClient from '../../network/clients/scoresaber/rankeds/page';
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import {arrayDifference, convertArrayToObjectByKey, opt} from '../../utils/js'
 import rankedsRepository from '../../db/repository/rankeds'
@@ -93,7 +94,7 @@ export default () => {
       }
 
       log.trace(`Fetching current rankeds from ScoreSaber...`, 'RankedsService')
-      fetchedRankedSongs = await queues.SCORESABER_PAGE.rankeds(1, null, priority);
+      fetchedRankedSongs = await rankedsPageClient.getProcessed({priority});
       if (!fetchedRankedSongs || !fetchedRankedSongs.length) {
         log.warn(`ScoreSaber returned empty rankeds list`, 'RankedsService')
 

@@ -81,11 +81,13 @@ export async function fetchUrl(url, options = {}, cors = true) {
   }
 }
 
-export async function fetchJson(url, options = {cacheTtl: null, maxAge: null}) {
-  const {cacheKey, cacheTtl, maxAge, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'json');
+export async function fetchJson(url, {cacheTtl = null, maxAge = null, ...restOptions} = {}) {
+  const options = getOptionsWithCacheKey(url, {cacheTtl, maxAge, ...restOptions}, 'json');
 
-  if (cacheKey && cacheTtl) {
-    const cachedResponse = networkCache.get(cacheKey, maxAge);
+  const {cacheKey: fetchCacheKey, cacheTtl: fetchCacheTtl, maxAge: fetchMaxAge, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'json');
+
+  if (fetchCacheKey && fetchCacheTtl) {
+    const cachedResponse = networkCache.get(fetchCacheKey, fetchMaxAge);
     if (cachedResponse !== undefined) return {...cachedResponse, cached: true};
   }
 
@@ -93,18 +95,20 @@ export async function fetchJson(url, options = {cacheTtl: null, maxAge: null}) {
     .then(async response => {
       const body = await response.json();
 
-      return setCacheIfNeeded({headers: response.headers, rateLimit: parseRateLimitHeaders(response), body}, cacheKey, cacheTtl);
+      return setCacheIfNeeded({headers: response.headers, rateLimit: parseRateLimitHeaders(response), body}, fetchCacheKey, fetchCacheTtl);
     })
     .catch(err => {
       throw (err instanceof SyntaxError ? new SsrDataFormatError('JSON parse error', err) : err);
     })
 }
 
-export async function fetchHtml(url, options = {cacheTtl: null, maxAge: null}) {
-  const {cacheKey, cacheTtl, maxAge, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'html');
+export async function fetchHtml(url, {cacheTtl = null, maxAge = null, ...restOptions} = {}) {
+  const options = getOptionsWithCacheKey(url, {cacheTtl, maxAge, ...restOptions}, 'json');
 
-  if (cacheKey && cacheTtl) {
-    const cachedResponse = networkCache.get(cacheKey, maxAge);
+  const {cacheKey: fetchCacheKey, cacheTtl: fetchCacheTtl, maxAge: fetchMaxAge, ...fetchOptions} = getOptionsWithCacheKey(url, options, 'html');
+
+  if (fetchCacheKey && fetchCacheTtl) {
+    const cachedResponse = networkCache.get(fetchCacheKey, fetchMaxAge);
     if (cachedResponse !== undefined) return {...cachedResponse, cached: true};
   }
 
@@ -112,6 +116,6 @@ export async function fetchHtml(url, options = {cacheTtl: null, maxAge: null}) {
     .then(async response => {
       const body = await response.text();
 
-      return setCacheIfNeeded({headers: response.headers, rateLimit: parseRateLimitHeaders(response), body: new DOMParser().parseFromString(body, 'text/html')}, cacheKey, cacheTtl);
+      return setCacheIfNeeded({headers: response.headers, rateLimit: parseRateLimitHeaders(response), body: new DOMParser().parseFromString(body, 'text/html')}, fetchCacheKey, fetchCacheTtl);
     })
 }

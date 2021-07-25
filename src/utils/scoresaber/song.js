@@ -1,5 +1,7 @@
-import queue from '../../network/queues/queues'
+import createBeatSaverService from '../../services/beatsaver'
 import {opt} from '../js'
+
+const beatSaverService = createBeatSaverService();
 
 export const getMaxScore = (blocks, maxScorePerBlock = 115) =>
   Math.floor(
@@ -32,7 +34,7 @@ export function getMaxScoreFromSongCharacteristics(songCharacteristics, diffInfo
 }
 
 export async function getSongMaxScore(hash, diffInfo, cacheOnly = false, forceUpdate = false, maxScorePerBlock = 115) {
-  const songInfo = await queue.BEATSAVER.byHash(hash, forceUpdate, cacheOnly);
+  const songInfo = await beatSaverService.byHash(hash, forceUpdate, cacheOnly);
   const songCharacteristics = opt(songInfo, 'metadata.characteristics');
   return getMaxScoreFromSongCharacteristics(songCharacteristics, diffInfo, maxScorePerBlock)
 }
