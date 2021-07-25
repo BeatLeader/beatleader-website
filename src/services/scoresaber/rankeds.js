@@ -135,14 +135,14 @@ export default () => {
         newRankeds
           .concat(
             Object.values(oldRankedSongs)
-              .filter((s) => s.stars !== fetchedRankedSongs[s.leaderboardId] ? opt(fetchedRankedSongs[s.leaderboardId], 'stars', null) : null)
+              .filter(s => s.stars !== (fetchedRankedSongs[s.leaderboardId] ? opt(fetchedRankedSongs[s.leaderboardId], 'stars', null) : null))
               .map(s => ({
                   leaderboardId: s.leaderboardId,
                   oldStars: s.stars,
                   stars: opt(fetchedRankedSongs[s.leaderboardId], 'stars', null),
                   timestamp: Date.now(),
                 }),
-              ),
+              )
           );
 
       if(newRankeds && changed && changed.length - newRankeds.length > 0)
