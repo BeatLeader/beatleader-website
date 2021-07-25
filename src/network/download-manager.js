@@ -6,7 +6,7 @@ import createRankedsStore from '../stores/scoresaber/rankeds'
 import createPlayerService from '../services/scoresaber/player'
 import createScoresService from '../services/scoresaber/scores'
 import createBeatSaviorService from '../services/beatsavior'
-import {PRIORITY as HTTP_QUEUE_PRIORITY} from '../network/http-queue'
+import {PRIORITY as HTTP_QUEUE_PRIORITY} from './queues/http-queue'
 import {HOUR, MINUTE} from '../utils/date'
 import {opt} from '../utils/js'
 

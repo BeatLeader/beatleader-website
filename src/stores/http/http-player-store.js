@@ -1,5 +1,5 @@
 import createHttpStore from './http-store';
-import playerApiClient from '../../network/scoresaber/player/api'
+import playerApiClient from '../../network/clients/scoresaber/player/api'
 import {opt} from '../../utils/js'
 
 export default (playerId = null, initialState = null, initialStateType = 'initial') => {

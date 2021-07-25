@@ -1,5 +1,5 @@
 <script>
-  import queue from '../../network/queues'
+  import queue from '../../network/queues/queues'
   import {tweened} from 'svelte/motion'
   import {cubicOut} from 'svelte/easing';
   import Donut from './Donut.svelte'

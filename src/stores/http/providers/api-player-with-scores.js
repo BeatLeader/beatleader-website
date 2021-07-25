@@ -1,7 +1,7 @@
 import createPlayerService from '../../../services/scoresaber/player';
 import createScoresService from '../../../services/scoresaber/scores';
 import createBeatSaviorService from '../../../services/beatsavior'
-import queue from '../../../network/queues'
+import queue from '../../../network/queues/queues'
 import {MINUTE, SECOND} from '../../../utils/date'
 
 let playerService = null;

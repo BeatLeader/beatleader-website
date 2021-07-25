@@ -1,5 +1,5 @@
-import {opt} from '../../../../utils/js'
-import queue from '../../../queues'
+import {opt} from '../../../../../utils/js'
+import queue from '../../../../queues/queues'
 
 export default response => {
   if (!opt(response, 'players')) return null;

@@ -4,6 +4,8 @@
   import {SsrHttpNotFoundError} from '../../network/errors'
   import Autocomplete from '../Common/Autocomplete.svelte'
   import MenuLine from './MenuLine.svelte'
+  import queues from '../../network/queues/queues'
+  import {MINUTE} from '../../utils/date'
 
   const dispatch = createEventDispatcher();
 
@@ -20,7 +22,7 @@
       return [];
     }
 
-    return playerService.findPlayer(query);
+    return playerService.findPlayer(query, queues.PRIORITY.FG_HIGH, {cacheTtl: 5 * MINUTE});
   }
 
   async function searchFunc(value) {

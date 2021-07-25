@@ -1,5 +1,6 @@
-import queue from '../../queues'
-import {opt} from '../../../utils/js'
+import queue from '../../../queues/queues'
+import createClient from '../../generic'
+import {opt} from '../../../../utils/js'
 
 const process = response => {
   if (!opt(response, 'playerInfo')) return null;
@@ -27,11 +28,11 @@ const process = response => {
   return {playerId, name, playerInfo, scoreStats: scoreStats ? scoreStats : null};
 };
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.SCORESABER_API.player(playerId, signal, priority);
+const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.SCORESABER_API.player(playerId, priority, queueOptions);
+
+const client = createClient(get, process);
 
 export default {
-  get,
-  process,
-  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({playerId, priority, signal})),
+  ...client,
   type: 'top',
 }

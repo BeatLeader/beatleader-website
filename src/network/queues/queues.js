@@ -5,6 +5,10 @@ import createScoreSaberPageQueue from './scoresaber/page-queue'
 import createBeatSaverApiQueue from './beatsaver/api-queue'
 import createBeatSaviorApiQueue from './beatsavior/api-queue'
 
+export const getResponseBody = response => response ? response.body : null;
+export const isResponseCached = response => !!(response && response.cached)
+export const updateResponseBody = (response, body) => response ? {...response, body} : null;
+
 const initQueue = queue => {
   let queueState = {
     size: 0,

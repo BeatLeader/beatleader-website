@@ -29,7 +29,6 @@ let app = null;
     await createConfigStore();
     createPlayerService();
     createBeatSaviorService();
-
     await createRankedsStore();
 
     initCommandProcessor(await initDownloadManager());

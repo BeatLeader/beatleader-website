@@ -1,5 +1,6 @@
-import queue from '../queues'
-import {dateFromString} from '../../utils/date'
+import queue from '../../queues/queues'
+import {dateFromString} from '../../../utils/date'
+import createClient from '../generic'
 
 const SONG_DATA_TYPES = {
   None: 0,
@@ -83,11 +84,11 @@ const process = response => {
     .filter(s => s);
 };
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => queue.BEATSAVIOR.player(playerId, signal, priority);
+const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATSAVIOR.player(playerId, priority, queueOptions);
+
+const client = createClient(get, process);
 
 export default {
-  get,
-  process,
-  getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, signal = null} = {}) => process(await get({playerId, priority, signal})),
+  ...client,
   SONG_DATA_TYPES
-}
+};

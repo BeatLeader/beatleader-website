@@ -1,6 +1,6 @@
 import {writable} from 'svelte/store'
 import createRankedsService from '../../services/scoresaber/rankeds'
-import {PRIORITY} from '../../network/http-queue'
+import {PRIORITY} from '../../network/queues/http-queue'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 
 let store = null;
