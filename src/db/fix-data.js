@@ -20,8 +20,8 @@ const allFixes = {
 
         keyValueStore.delete('rankedsLastUpdated');
 
-        const allAppliedFixes = await keyValueStore.get(FIXES_KEY) ?? [];
-        allAppliedFixes.push(fixName);
+        const allAppliedFixes = await keyValueStore.get(FIXES_KEY);
+        (allAppliedFixes ? allAppliedFixes : []).push(fixName);
         await keyValueStore.put(allAppliedFixes, FIXES_KEY);
       });
     },
