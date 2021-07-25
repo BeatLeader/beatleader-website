@@ -78,6 +78,7 @@
 
   <Switcher values={scoresTypes} value={scoreType} on:change={onScoreTypeChanged} loadingValue={loadingScoreType} />
 
+  {#if $scoresStore}
   <div class="song-scores">
     {#each $scoresStore as songScore}
       {#key opt(songScore, 'leaderboard.leaderboardId')}
@@ -85,6 +86,9 @@
       {/key}
     {/each}
   </div>
+  {:else}
+    <p>No scores.</p>
+  {/if}
 
   {#if Number.isFinite(page)}
     <Pager totalItems={numOfScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
