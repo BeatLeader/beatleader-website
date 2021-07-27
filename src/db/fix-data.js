@@ -20,8 +20,9 @@ const allFixes = {
 
         keyValueStore.delete('rankedsLastUpdated');
 
-        const allAppliedFixes = await keyValueStore.get(FIXES_KEY);
-        (allAppliedFixes ? allAppliedFixes : []).push(fixName);
+        let allAppliedFixes = await keyValueStore.get(FIXES_KEY);
+        allAppliedFixes = allAppliedFixes && Array.isArray(allAppliedFixes) ? allAppliedFixes : [];
+        allAppliedFixes.push(fixName);
         await keyValueStore.put(allAppliedFixes, FIXES_KEY);
       });
     },
@@ -30,7 +31,7 @@ const allFixes = {
 
 export default async () => {
   let appliedDbFixes = await getAppliedFixes();
-  const appliedFixes = appliedDbFixes ? appliedDbFixes : [];
+  const appliedFixes = appliedDbFixes && Array.isArray(appliedDbFixes) ? appliedDbFixes : [];
   const neededFixes = Object.keys(allFixes).filter(f => !appliedFixes.includes(f) && (!allFixes[f].validTo || allFixes[f].validTo > new Date()));
 
   if (!neededFixes.length) return;
