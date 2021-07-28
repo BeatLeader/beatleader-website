@@ -3,48 +3,27 @@
   import {fade, slide} from 'svelte/transition'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
-  import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
   import Badge from '../Common/Badge.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
-  import Leaderboard from './Leaderboard.svelte'
+  import SongInfo from './SongInfo.svelte'
   import ScoreRank from './ScoreRank.svelte'
   import FormattedDate from '../Common/FormattedDate.svelte'
   import Pp from '../Score/Pp.svelte'
   import Value from '../Common/Value.svelte'
-  import LeaderboardPage from '../../pages/Leaderboard.svelte'
+  import SongScoreDetails from './SongScoreDetails.svelte'
 
   export let songScore = null;
 
   let showDetails = false;
 
-  let inBuiltLeaderboardPage = null;
-
-  function updateInBuiltLeaderboardPage(rank) {
-    if (!rank) {
-      inBuiltLeaderboardPage = null;
-      return;
-    }
-
-    inBuiltLeaderboardPage = Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1;
-  }
-
-  function onInBuiltLeaderboardPageChanged(event) {
-    const newPage = opt(event, 'detail.page');
-    if (!Number.isFinite(newPage)) return;
-
-    inBuiltLeaderboardPage = newPage;
-  }
-
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
   $: prevScore = opt(songScore, 'prevScore', null);
   $: beatSavior = opt(songScore, 'beatSavior', null)
-
-  $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, showDetails)
 </script>
 
 {#if songScore}
-  <div class="song-score" in:fade={{duration: 300, delay: 200}} out:slide={{duration: 200}}>
+  <div class="song-score" in:fade={{duration: 300, delay: 200}} out:slide={{duration: 200}} class:with-details={showDetails}>
     <span class="rank">
       <ScoreRank rank={score.rank}
                  countryRank={score.ssplCountryRank}
@@ -62,7 +41,7 @@
     </span>
 
     <span class="song">
-      <Leaderboard {leaderboard} rank={score.rank}/>
+      <SongInfo {leaderboard} rank={score.rank}/>
     </span>
 
     <section class="stats">
@@ -169,69 +148,13 @@
           </Badge>
         </span>
         {/if}
-
-        {#if showDetails}
-        <div class="beat-savior-data" transition:slide>
-          <span></span>
-
-          {#if beatSavior.stats.leftTimeDependence}
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)">
-                <span slot="label">
-                  <Value
-                    title="Left time dependence"
-                    value="{beatSavior.stats.leftTimeDependence}"
-                    inline={false} digits={3}
-                  />
-                </span>
-            </Badge>
-          </span>
-          {/if}
-
-          {#if beatSavior.stats.rightTimeDependence}
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="rgba(32,100,168,1)">
-                <span slot="label">
-                  <Value
-                    title="Right time dependence"
-                    value="{beatSavior.stats.rightTimeDependence}" inline={false} digits={3}
-                  />
-                </span>
-            </Badge>
-          </span>
-          {/if}
-
-          {#if beatSavior.stats.pauses !== undefined}
-        <span class="beatSavior with-badge">
-          <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-              <span slot="label">
-                <i class="fas fa-pause-circle"></i>
-                <Value
-                  title="Pauses"
-                  prefix=""
-                  value="{beatSavior.stats.pauses}" inline={false} digits={0}
-                />
-              </span>
-          </Badge>
-        </span>
-        {/if}
-
-        </div>
-        {/if}
       {/if}
     </section>
 
   </div>
   {#if showDetails}
-    <div class="details">
-      <LeaderboardPage leaderboardId={leaderboard.leaderboardId}
-                       type="global"
-                       page={inBuiltLeaderboardPage}
-                       scrollOffset={176}
-                       dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
-                       on:page-changed={onInBuiltLeaderboardPageChanged}
-
-      />
+    <div transition:slide>
+      <SongScoreDetails {songScore} />
     </div>
   {/if}
 {/if}
@@ -245,6 +168,10 @@
         border-bottom: 1px solid var(--dimmed);
         padding-top: 1em;
         padding-bottom: .5em;
+    }
+
+    .song-score.with-details {
+        border-bottom: none;
     }
 
     .song-score > * {
