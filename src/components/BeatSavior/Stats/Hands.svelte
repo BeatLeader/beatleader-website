@@ -1,4 +1,5 @@
 <script>
+  import config from '../../../config'
   import HandAcc from '../HandAcc.svelte'
   import Value from '../../Common/Value.svelte'
   import Badge from '../../Common/Badge.svelte'
@@ -13,7 +14,7 @@
 
       {#if stats.leftTimeDependence}
         <div class="td">
-          <Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)">
+          <Badge onlyLabel={true} color="white" bgColor={config.leftSaberColor}>
                 <span slot="label">
                   <Value
                     title="Left time dependence"
@@ -31,7 +32,7 @@
 
       {#if stats.rightTimeDependence}
         <div class="td">
-          <Badge onlyLabel={true} color="white" bgColor="rgba(32,100,168,1)">
+          <Badge onlyLabel={true} color="white" bgColor={config.rightSaberColor}>
                 <span slot="label">
                   <Value
                     title="Right time dependence"

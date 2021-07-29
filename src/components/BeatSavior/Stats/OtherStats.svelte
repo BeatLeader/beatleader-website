@@ -1,7 +1,9 @@
 <script>
-  import Value from '../../Common/Value.svelte'
+  import config from '../../../config'
   import {opt} from '../../../utils/js'
   import {formatNumber} from '../../../utils/format'
+  import Value from '../../Common/Value.svelte'
+  import Badge from '../../Common/Badge.svelte'
 
   export let beatSavior = null;
 
@@ -21,33 +23,66 @@
 </script>
 
 {#if stats}
-  <div class="stats">
+  <div class="stats" style="--left-saber-color: {config.leftSaberColor}; --right-saber-color: {config.rightSaberColor}">
     {#if !stats.won}
-      <span class="block"><strong class:fail={true}>FAIL</strong></span>
+      <Badge color="red" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
+        <svelte:fragment slot="label">
+          FAIL
+        </svelte:fragment>
+      </Badge>
     {/if}
-
-      <span title="Max combo" class="block">{#if !fc}<i class="fas fa-cube"></i> {/if}<strong class:full-combo={fc}>{#if fc}FC{:else}<Value value={stats.maxCombo} digits={0} title="Max combo"/>{/if}</strong></span>
 
     {#if !fc}
-      <span title={totalMissesTitle} class="block"><i class="fas fa-ban"></i> <strong><Value value={stats.miss} digits={0} title={totalMissesTitle}/></strong></span>
-
-      <span title={missedNotesTitle} class="block"><i class="fas fa-eye-slash"></i> <strong><Value value={stats.missedNotes} digits={0} title={missedNotesTitle}/></strong></span>
-
-      <span title={badCutsTitle} class="block"><i class="fas fa-times"></i> <strong><Value value={stats.badCuts} digits={0} title={badCutsTitle}/></strong></span>
+      <Badge label="Max combo" value={stats.maxCombo}  color="white" bgColor="var(--dimmed)" fluid={true} digits={0} />
+    {:else}
+      <Badge color="darkorange" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
+        <svelte:fragment slot="label">
+          FC
+        </svelte:fragment>
+      </Badge>
     {/if}
 
-    <span title="Pauses" class="block"><i class="fas fa-pause-circle"></i> <strong><Value value={stats.nbOfPause} digits={0} title="Pauses"/></strong></span>
+    <Badge label="Pauses" value={stats.pauses} digits={0} color="white" bgColor="var(--dimmed)" fluid={true} />
 
-    <span title="Bomb hit" class="block"><i class="fas fa-bomb"></i> <strong><Value value={stats.bombHit} digits={0} title="Bomb hit"/></strong></span>
+    {#if !fc}
+      <Badge label="Total misses" color="white" bgColor="var(--dimmed)" fluid={true}>
+        <svelte:fragment slot="value">
+          <Value value={stats.miss} digits={0} zero="-"/>
+          {#if stats.miss}
+            <span class="left addon"><Value value={leftMiss} digits={0}/></span>
+            <span class="right addon"><Value value={rightMiss} digits={0}/></span>
+          {/if}
+        </svelte:fragment>
+      </Badge>
+      <Badge label="Missed notes" color="white" bgColor="var(--dimmed)" fluid={true}>
+        <svelte:fragment slot="value">
+          <Value value={stats.missedNotes} digits={0} />
+          {#if stats.missedNotes}
+            <span class="left addon"><Value value={leftMissedNotes} digits={0}/></span>
+            <span class="right addon"><Value value={rightMissedNotes} digits={0}/></span>
+          {/if}
+        </svelte:fragment>
+      </Badge>
+      <Badge label="Bad cuts" color="white" bgColor="var(--dimmed)" fluid={true}>
+        <svelte:fragment slot="value">
+          <Value value={stats.badCuts} digits={0} />
+          {#if stats.badCuts}
+            <span class="left addon"><Value value={leftBadCuts} digits={0}/></span>
+            <span class="right addon"><Value value={rightBadCuts} digits={0}/></span>
+          {/if}
+        </svelte:fragment>
+      </Badge>
 
-    <span title="Wall hit" class="block"><i class="fas fa-gopuram"></i> <strong><Value value={stats.nbOfWallHit} digits={0} title="Wall hit"/></strong></span>
+      <Badge label="Bomb hit" value={stats.bombHit} digits={0} color="white" bgColor="var(--dimmed)" fluid={true} />
+      <Badge label="Wall hit" value={stats.wallHit} digits={0} color="white" bgColor="var(--dimmed)" fluid={true} />
+    {/if}
   </div>
 {/if}
 
 <style>
     .stats {
         display: flex;
-        justify-content: space-evenly;
+        justify-content: center;
         align-items: center;
         align-self: flex-start;
         flex-wrap: wrap;
@@ -59,15 +94,29 @@
         text-align: center;
     }
 
+    .stats :global(.badge .value) {
+        font-weight: 500;
+    }
+
     .stats .block {
         margin-bottom: 0;
     }
 
-    .full-combo {
-        color: darkorange !important;
+    .stats .addon {
+        padding: 0 .25em;
+        margin-left: .5em;
+        border-radius: 4px;
+        background-color: var(--foreground);
+        font-size: .7em;
+        font-weight: normal;
     }
-
-    .fail {
-        color: var(--decrease) !important;
+    .stats .addon + .addon {
+        margin-left: 0;
+    }
+    .stats .addon.left {
+        background-color: var(--left-saber-color);
+    }
+    .stats .addon.right {
+        background-color: var(--right-saber-color);
     }
 </style>

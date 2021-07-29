@@ -1,10 +1,9 @@
 <script>
+  import config from '../../config'
   import {formatNumber} from '../../utils/format'
   import Donut from '../Common/Donut.svelte'
 
   const MAX_BLOCK_VALUE = 115;
-  const DEFAULT_LEFT_COLOR = 'rgba(168,32,32,1)';
-  const DEFAULT_RIGHT_COLOR = 'rgba(32,100,168,1)';
 
   export let value;
   export let cut;
@@ -15,7 +14,7 @@
     const keys = ['r', 'g', 'b', 'a']
 
     const isOk = color && keys.reduce((ok, key) => ok && Number.isFinite(color[key]) && color[key] >= 0 && color[key] <= 1, true);
-    if (!isOk) return hand === 'left' ? DEFAULT_LEFT_COLOR : DEFAULT_RIGHT_COLOR;
+    if (!isOk) return hand === 'left' ? config.leftSaberColor : config.rightSaberColor;
 
     return 'rgba(' + keys.reduce((prev, key) => prev.concat(key !== 'a' ? Math.round(color[key] * 255) : color[key]), []) + ')';
   }

@@ -3,6 +3,7 @@
   import {fade, slide} from 'svelte/transition'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
+  import config from '../../config'
   import Badge from '../Common/Badge.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
   import SongInfo from './SongInfo.svelte'
@@ -106,7 +107,7 @@
 
         {#if beatSavior.stats.accLeft}
         <span class="beatSavior with-badge">
-          <Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)">
+          <Badge onlyLabel={true} color="white" bgColor={config.leftSaberColor}>
               <span slot="label">
                 <Value
                   title={`Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
@@ -120,7 +121,7 @@
 
         {#if beatSavior.stats.accRight}
         <span class="beatSavior with-badge">
-          <Badge onlyLabel={true} color="white" bgColor="rgba(32,100,168,1)">
+          <Badge onlyLabel={true} color="white" bgColor={config.rightSaberColor}>
               <span slot="label">
                 <Value
                   title={`Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
