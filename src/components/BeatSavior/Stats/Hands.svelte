@@ -14,15 +14,9 @@
 
       {#if stats.leftTimeDependence}
         <div class="td">
-          <Badge onlyLabel={true} color="white" bgColor={config.leftSaberColor}>
-                <span slot="label">
-                  <Value
-                    title="Left time dependence"
-                    value="{stats.leftTimeDependence}"
-                    inline={false} digits={3}
-                  />
-                </span>
-          </Badge>
+          <Badge label="TD" title="Left time dependence" value={stats.leftTimeDependence}
+                 color="white" bgColor={config.leftSaberColor}
+                 digits={3} fluid={true} />
         </div>
       {/if}
     </div>
@@ -32,14 +26,9 @@
 
       {#if stats.rightTimeDependence}
         <div class="td">
-          <Badge onlyLabel={true} color="white" bgColor={config.rightSaberColor}>
-                <span slot="label">
-                  <Value
-                    title="Right time dependence"
-                    value="{stats.rightTimeDependence}" inline={false} digits={3}
-                  />
-                </span>
-          </Badge>
+          <Badge label="TD" title="Right time dependence" value={stats.rightTimeDependence}
+                 color="white" bgColor={config.rightSaberColor}
+                 digits={3} fluid={true} />
         </div>
       {/if}
     </div>
@@ -54,7 +43,8 @@
     }
 
     .td {
-        font-size: .75em;
+        font-size: .8em;
+        margin-top: .25em;
     }
 
     .right .td {
@@ -62,12 +52,6 @@
     }
 
     .td :global(.badge) {
-        margin: 0 !important;
-        padding: .125em .25em !important;
-        width: 2.75em;
-    }
-
-    .td :global(.badge .label) {
-        font-size: .875em;
+        margin: 0;
     }
 </style>

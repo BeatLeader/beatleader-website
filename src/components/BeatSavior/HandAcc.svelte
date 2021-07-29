@@ -64,7 +64,7 @@
     }
 
     .donut {
-        width: 4.5em;
+        width: 4em;
         margin: 0 .5em;
     }
 </style>

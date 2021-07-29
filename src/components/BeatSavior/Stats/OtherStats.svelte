@@ -32,9 +32,7 @@
       </Badge>
     {/if}
 
-    {#if !fc}
-      <Badge label="Max combo" value={stats.maxCombo}  color="white" bgColor="var(--dimmed)" fluid={true} digits={0} />
-    {:else}
+    {#if fc}
       <Badge color="darkorange" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
         <svelte:fragment slot="label">
           FC
@@ -42,10 +40,8 @@
       </Badge>
     {/if}
 
-    <Badge label="Pauses" value={stats.pauses} digits={0} color="white" bgColor="var(--dimmed)" fluid={true} />
-
     {#if !fc}
-      <Badge label="Total misses" color="white" bgColor="var(--dimmed)" fluid={true}>
+      <Badge label="Total mistakes" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
           <Value value={stats.miss} digits={0} zero="-"/>
           {#if stats.miss}
@@ -76,6 +72,9 @@
       <Badge label="Bomb hit" value={stats.bombHit} digits={0} color="white" bgColor="var(--dimmed)" fluid={true} />
       <Badge label="Wall hit" value={stats.wallHit} digits={0} color="white" bgColor="var(--dimmed)" fluid={true} />
     {/if}
+
+    <Badge label="Max combo" value={stats.maxCombo}  color="white" bgColor="var(--dimmed)" fluid={true} digits={0} />
+    <Badge label="Pauses" value={stats.pauses} digits={0} color="white" bgColor="var(--dimmed)" fluid={true} />
   </div>
 {/if}
 
@@ -86,6 +85,7 @@
         align-items: center;
         align-self: flex-start;
         flex-wrap: wrap;
+        font-size: .9em;
     }
 
     .stats > * {
@@ -107,7 +107,7 @@
         margin-left: .5em;
         border-radius: 4px;
         background-color: var(--foreground);
-        font-size: .7em;
+        font-size: .75em;
         font-weight: normal;
     }
     .stats .addon + .addon {

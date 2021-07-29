@@ -70,6 +70,7 @@
 
     .badge span.label {
         font-weight: 500;
+        font-size: 1em;
         color: inherit;
         margin: 0;
     }

@@ -213,6 +213,10 @@
         grid-template-columns: 1rem repeat(3, minmax(0, 1fr));
     }
 
+    .beatSavior {
+        font-size: .85em;
+    }
+
     .rank {
         width: 5.5em;
         text-align: center;
