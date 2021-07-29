@@ -1,8 +1,4 @@
 <script>
-  import 'swiper/swiper.min.css';
-  import 'swiper/components/pagination/pagination.min.css';
-  import 'swiper/components/navigation/navigation.min.css';
-
   import {fade} from 'svelte/transition'
   import {opt} from '../../utils/js'
   import Hands from './Stats/Hands.svelte'
