@@ -1,6 +1,11 @@
 export const substituteVars = (url, vars) => Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), vars[key]), url);
 
-export function formatNumber(num, digits = 2, addSign = false) {
+export function formatNumber(num, digits = 2, addSign = false, notANumber = null) {
+  if (!Number.isFinite(num)) {
+    console.log(num)
+    return notANumber;
+  }
+
   return (
     (addSign && num > 0 ? '+' : '') +
     num.toLocaleString('pl-PL', {

@@ -14,6 +14,7 @@
     "@rollup/plugin-typescript": "^8.0.0",
     "@tsconfig/svelte": "^1.0.0",
     "broadcast-channel": "^3.6.0",
+    "chart.js": "^3.5.0",
     "eventemitter3": "^4.0.7",
     "idb": "^6.1.2",
     "json-stable-stringify": "^1.0.1",
@@ -27,6 +28,7 @@
     "svelte-check": "^1.0.0",
     "svelte-preprocess": "^4.0.0",
     "svelte-routing": "^1.6.0",
+    "swiper": "^6.8.0",
     "tslib": "^2.0.0",
     "typescript": "^4.0.0"
   },

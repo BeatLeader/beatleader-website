@@ -21,8 +21,8 @@
   let scoresBoxEl = null;
 
   let scoresTypes = [
-    {id: 'recent', label: 'Recent', icon: 'fa fa-clock'},
-    {id: 'top', label: 'Top', icon: 'fa fa-cubes'},
+    {id: 'recent', label: 'Recent', iconFa: 'fa fa-clock'},
+    {id: 'top', label: 'Top', iconFa: 'fa fa-cubes'},
   ];
 
   function fetchPage(page) {

@@ -18,14 +18,16 @@
   <div class="switch-types">
     {#if values && values.length}
       {#each values as currentValue }
-        <Button iconFa={currentValue.icon}
-                loading={loadingValue === currentValue}
-                label={currentValue.label}
-                type={currentValue === value ? 'primary' : 'default'}
-                color={currentValue.color ? 'white' : null}
-                bgColor={currentValue.color ? currentValue.color : null}
-                notSelected={currentValue !== value}
-                on:click={() => onChange(currentValue)}
+        <Button
+          icon={currentValue.icon}
+          iconFa={currentValue.iconFa}
+          loading={loadingValue === currentValue}
+          label={currentValue.label}
+          type={currentValue === value ? 'primary' : 'default'}
+          color={currentValue.color ? 'white' : null}
+          bgColor={currentValue.color ? currentValue.color : null}
+          notSelected={currentValue !== value}
+          on:click={() => onChange(currentValue)}
         />
       {/each}
     {/if}
