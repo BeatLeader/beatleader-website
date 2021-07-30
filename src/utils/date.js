@@ -1,3 +1,4 @@
+import {getCurrentLocale} from '../others/i18n'
 import {isString} from "./js";
 
 export const SECOND = 1000;
@@ -5,9 +6,7 @@ export const MINUTE = 60 * SECOND;
 export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 
-// TODO: temporarily
 const getCurrentLang = () => 'en';
-const getCurrentLocale = () => 'pl-PL';
 
 export const isValidDate = d =>d instanceof Date && !isNaN(d);
 
