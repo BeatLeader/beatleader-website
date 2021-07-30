@@ -17,11 +17,17 @@
     --error: red;
 }
 
+html {
+    height: --webkit-fill-available;
+}
+
 body {
     color: var(--textColor);
     max-width: 1024px;
     margin: 0 auto;
     padding: 0 1rem;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
 }
 
 .sspl-page-container {
