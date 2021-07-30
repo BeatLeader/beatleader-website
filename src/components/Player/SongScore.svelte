@@ -21,6 +21,7 @@
   $: score = opt(songScore, 'score', null);
   $: prevScore = opt(songScore, 'prevScore', null);
   $: beatSavior = opt(songScore, 'beatSavior', null)
+  $: comparePlayers = opt(songScore, 'comparePlayers', null)
 </script>
 
 {#if songScore}
@@ -98,7 +99,7 @@
           <small title="Mods">{`${score.mods.join(', ')}`}&nbsp;</small>
         {/if}
       </span>
-    {/if}
+      {/if}
 
       {#if beatSavior && beatSavior.stats}
         <span class="beat-savior-reveal" class:opened={showDetails} on:click={() => showDetails = !showDetails} title="Show details">
@@ -149,6 +150,100 @@
           </Badge>
         </span>
         {/if}
+      {/if}
+
+      {#if showDetails && comparePlayers && Array.isArray(comparePlayers)}
+        {#each comparePlayers as comparePlayer (comparePlayer.playerId)}
+          <span></span>
+          <span class="compare-player-name"><span>vs {comparePlayer.playerName}</span></span>
+
+          <span></span>
+          {#if comparePlayer.score && comparePlayer.score.pp}
+            <span class="pp with-badge compare">
+            <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+              <span slot="label">
+                <Pp playerId={comparePlayer.playerId} leaderboardId={leaderboard.leaderboardId}
+                    pp="{comparePlayer.score.pp}" withZeroSuffix={true} inline={false}
+                    title={"Played on " + formatDate(opt(comparePlayer, 'score.timeSet'), 'short', 'short')}
+                    color="white"
+                />
+              </span>
+            </Badge>
+          </span>
+          {:else}
+            <span class="pp with-badge"></span>
+          {/if}
+
+          {#if comparePlayer.score.acc}
+            <span class="acc with-badge compare">
+              <Accuracy score={comparePlayer.score} noSecondMetric={true} />
+            </span>
+          {:else}
+            <span class="acc with-badge"></span>
+          {/if}
+
+          {#if comparePlayer.score.score}
+            <span class="score with-badge compare">
+              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                  <span slot="label">
+                    <Value value={comparePlayer.score.score}
+                           inline={false} digits={0}
+                           title={`Played on ${formatDate(opt(comparePlayer.score, 'timeSet'), 'short', 'short')}${comparePlayer.score.mods && comparePlayer.score.mods.length ? ' with mods: ' + comparePlayer.score.mods.join(', ') : ''}`}
+                    />
+                  </span>
+              </Badge>
+            </span>
+          {/if}
+
+          {#if comparePlayer.beatSavior && comparePlayer.beatSavior.stats}
+              <span></span>
+
+              {#if comparePlayer.beatSavior.stats.accLeft}
+                <span class="beatSavior with-badge compare">
+                  <Badge onlyLabel={true} color="white" bgColor={config.leftSaberColor}>
+                      <span slot="label">
+                        <Value
+                          title={`Left accuracy: ${comparePlayer.beatSavior.stats.leftAverageCut ? comparePlayer.beatSavior.stats.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                          value="{comparePlayer.beatSavior.stats.accLeft}"
+                          inline={false} digits={2}
+                        />
+                      </span>
+                  </Badge>
+                </span>
+              {/if}
+
+              {#if comparePlayer.beatSavior.stats.accRight}
+                <span class="beatSavior with-badge compare">
+                  <Badge onlyLabel={true} color="white" bgColor={config.rightSaberColor}>
+                      <span slot="label">
+                        <Value
+                          title={`Right accuracy: ${comparePlayer.beatSavior.stats.rightAverageCut ? comparePlayer.beatSavior.stats.rightAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                          value="{comparePlayer.beatSavior.stats.accRight}" inline={false} digits={2}
+                        />
+                      </span>
+                  </Badge>
+                </span>
+              {/if}
+
+              {#if comparePlayer.beatSavior.stats.miss !== undefined}
+                <span class="beatSavior with-badge compare">
+                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                      <span slot="label" title={`Missed notes: ${comparePlayer.beatSavior.stats.missedNotes}, Bad cuts: ${comparePlayer.beatSavior.stats.badCuts}, Bomb hit: ${comparePlayer.beatSavior.stats.bombHit}, Wall hit: ${comparePlayer.beatSavior.stats.wallHit}`}>
+                        {#if comparePlayer.beatSavior.stats.miss || comparePlayer.beatSavior.stats.bombHit || comparePlayer.beatSavior.stats.wallHit}
+                          <i class="fas fa-times"></i>
+                          <Value
+                            title={`Missed notes: ${comparePlayer.beatSavior.stats.missedNotes}, Bad cuts: ${comparePlayer.beatSavior.stats.badCuts}, Bomb hit: ${comparePlayer.beatSavior.stats.bombHit}, Wall hit: ${comparePlayer.beatSavior.stats.wallHit}`}
+                            value="{comparePlayer.beatSavior.stats.miss}" inline={false} digits={0}
+                          />
+                        {:else if (!comparePlayer.beatSavior.stats.wallHit && !comparePlayer.beatSavior.stats.bombHit)}
+                          FC
+                        {/if}
+                      </span>
+                  </Badge>
+                </span>
+              {/if}
+          {/if}
+        {/each}
       {/if}
     </section>
 
@@ -282,6 +377,28 @@
     }
     .beat-savior-reveal.opened {
         transform: rotateZ(180deg);
+    }
+
+    .compare-player-name {
+        grid-column: 2 / span 3;
+        color: var(--faded);
+        text-align: center;
+        font-size: .875em;
+        line-height: 1;
+        border-bottom: 1px solid var(--faded);
+        margin-bottom: .75em;
+    }
+
+    .compare-player-name > span {
+        display: inline-block;
+        position: relative;
+        top: .5em;
+        background-color: var(--foreground);
+        padding: 0 .5em;
+    }
+
+    .stats .compare {
+        opacity: .7;
     }
 
     @media screen and (max-width: 767px) {

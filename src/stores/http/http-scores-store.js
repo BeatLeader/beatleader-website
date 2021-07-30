@@ -3,6 +3,7 @@ import beatSaverEnhancer from './enhancers/leaderboard/beatsaver'
 import accEnhancer from './enhancers/scores/acc'
 import beatSaviorEnhancer from './enhancers/scores/beatsavior'
 import rankedsEnhancer from './enhancers/leaderboard/rankeds'
+import compareEnhancer, {initCompareEnhancer} from './enhancers/scores/compare'
 import diffEnhancer from './enhancers/scores/diff'
 import {debounce} from '../../utils/debounce'
 import {opt} from '../../utils/js'
@@ -31,16 +32,19 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     const enhanceTaskId = getCurrentEnhanceTaskId();
     const newState = [...state];
 
-    const setStateRow = (scoreRow, idx, fields = ['leaderboard', 'score']) => {
+    const setStateRow = (scoreRow, idx, fields = ['leaderboard', 'score'], defaultVal = {}) => {
       if (enhanceTaskId !== getCurrentEnhanceTaskId() || !newState || !newState[idx] || !scoreRow) return null;
 
       fields = !Array.isArray(fields) ? [fields] : fields;
 
       fields.map(field => {
-        const stateValue = opt(newState[idx], field, {});
-        const rowValue = opt(scoreRow, field, {});
+        const stateValue = opt(newState[idx], field, defaultVal);
+        const rowValue = opt(scoreRow, field, defaultVal);
 
-        newState[idx][field] = {...stateValue, ...rowValue};
+        if (Array.isArray(stateValue))
+          newState[idx][field] = stateValue.map((s, idx) => ({...s, ...rowValue[idx] ? rowValue[idx] : null}));
+        else
+          newState[idx][field] = {...stateValue, ...rowValue};
       })
 
       debouncedSetState(enhanceTaskId, newState);
@@ -53,11 +57,14 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
           .then(enhancedScoreRow => accEnhancer(enhancedScoreRow, currentPlayerId, 'score'))
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx))
           .then(enhancedScoreRow => diffEnhancer(enhancedScoreRow, currentPlayerId, 'score'))
-          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx));
+          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx))
+          .then(async enhancedScoreRow => {await initCompareEnhancer(); return enhancedScoreRow;})
+          .then(enhancedScoreRow => compareEnhancer(enhancedScoreRow, currentPlayerId))
+          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, ['comparePlayers'], []))
 
-      if (stateType && stateType === 'live')
-        beatSaviorEnhancer(scoreRow, currentPlayerId)
-          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
+        if (stateType && stateType === 'live')
+          beatSaviorEnhancer(scoreRow, currentPlayerId)
+            .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
 
         rankedsEnhancer(scoreRow, currentPlayerId)
           .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
