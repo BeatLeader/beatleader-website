@@ -9,9 +9,32 @@
   import PlayerPage from './pages/Player.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
   import Nav from './components/Nav.svelte';
+  import Dialog from './components/Common/Dialog.svelte'
+  import Button from './components/Common/Button.svelte'
 
   export let url = "";
+
+  let showModal = true;
 </script>
+
+<a on:click={() => showModal=true}>test</a>
+
+{#if showModal}
+<Dialog closeable={true} on:confirm={() => showModal = false}>
+  <svelte:fragment slot="header">
+    Are you sure?
+  </svelte:fragment>
+
+  <svelte:fragment slot="content">
+    This is just a test.
+  </svelte:fragment>
+
+  <svelte:fragment slot="footer">
+    <Button label="Save" type="primary" on:click={() => showModal = false} />
+    <Button label="Cancel" on:click={() => showModal = false} />
+  </svelte:fragment>
+</Dialog>
+{/if}
 
 <Router {url}>
   <Nav />
