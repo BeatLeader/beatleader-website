@@ -47,7 +47,7 @@
 
     <section class="stats">
       {#if !beatSavior || !beatSavior.stats}
-        <span class="beat-savior-reveal clickable" on:click={() => showDetails = !showDetails} title="Show details">
+        <span class="beat-savior-reveal clickable" on:click={() => showDetails = !showDetails} title="Show leaderboard">
           <i class={`fas ${showDetails ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
         </span>
       {:else}
