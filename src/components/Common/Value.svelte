@@ -35,7 +35,7 @@
     }
 
     function getFormattedValue(value, minValue) {
-      return Math.abs(resolvedValue) > minValue
+      return Math.abs(value) > minValue
         ? prefix + formatNumber(resolvedValue, digits, withSign) + suffix
         : (withZeroPrefix ? prefix : "") + zero + (withZeroSuffix ? suffix : "")
     }
@@ -48,7 +48,7 @@
 
     $: resolveValue(value);
     $: minValue = Math.pow(10, -digits-1)
-    $: formatted = getFormattedValue(value, minValue, configStore && $configStore);
+    $: formatted = getFormattedValue(resolvedValue, minValue, configStore && $configStore);
     $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null;
     $: prevFormatted = prevValue ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, withSign) + suffix : ""
     $: prevDiffFormatted = prevValue ? formatNumber((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : ""
