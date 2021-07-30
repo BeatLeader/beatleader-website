@@ -30,7 +30,7 @@
   {#if cutsRounded && hand === 'left'}
     <div class="cuts">
       {#each cutsRounded as c, idx}
-        <span title={idx === 0 ? 'Before' : (idx === 1 ? 'Accuracy' : 'After')}>{c}</span>
+        <span title={idx === 0 ? 'Preswing' : (idx === 1 ? 'Accuracy' : 'Postswing')}>{c}</span>
       {/each}
     </div>
   {/if}
@@ -42,7 +42,7 @@
   {#if cutsRounded && hand === 'right'}
     <div class="cuts">
       {#each cutsRounded as c, idx}
-        <span title={idx === 0 ? 'Before' : (idx === 1 ? 'Accuracy' : 'After')}>{c}</span>
+        <span title={idx === 0 ? 'Preswing' : (idx === 1 ? 'Accuracy' : 'Postswing')}>{c}</span>
       {/each}
     </div>
   {/if}
