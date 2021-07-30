@@ -10,7 +10,7 @@
   $: name = opt(player, 'name')
 </script>
 
-<span class="player-name" title={name} on:click>
+<span class="player-name clickable" title={name} on:click>
   <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
        class="country"
        on:click|preventDefault={() => country ? dispatch('flag-click', {country: country.toLowerCase()}) : null}>

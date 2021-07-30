@@ -57,7 +57,7 @@ select {
     display: none;
 }
 
-*[title]:not([title=""]) {cursor: help;}
+*[title]:not([title=""]):not(.clickable) {cursor: help;}
 
 .beatsavior-icon {
     width: 100%;

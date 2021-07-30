@@ -59,7 +59,7 @@
   </h1>
 
   <h2 class="title is-5" class:centered>
-    <a on:click={() => navigateToGlobalRanking(rank)}>
+    <a on:click={() => navigateToGlobalRanking(rank)} title="Go to global ranking" class="clickable">
       <i class="fas fa-globe-americas"></i>
 
       <Value value={opt(playerInfo, 'rank')} prevValue={opt(prevInfo, 'rank')} prevLabel={opt(prevInfo, 'rankSince')}
@@ -68,7 +68,7 @@
     </a>
 
     {#each opt(playerInfo, 'countries', []) as country}
-      <a on:click={() => navigateToCountryRanking(country)}>
+      <a on:click={() => navigateToCountryRanking(country)} title="Go to country ranking" class="clickable">
         <img
           src={`${SS_HOST}/imports/images/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
              alt={opt(country, 'country')}

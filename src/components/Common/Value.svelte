@@ -18,7 +18,7 @@
     export let inline = false;
     export let useColorsForValue = false;
     export let prevLabel = "";
-    export let title = '';
+    export let title = null;
     export let prevTitle = null;
 
     let configStore = null;

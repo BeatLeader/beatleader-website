@@ -70,7 +70,7 @@
     $: btnMargin = noMargin ? 0 : "0 0 .45em 0";
 </script>
 
-<button style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click={() => dispatch('click', selectedOption)} {disabled} {title} class={'button ' + (type?type:'default') + ' ' + cls}
+<button style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click={() => dispatch('click', selectedOption)} {disabled} {title} class={'button clickable ' + (type?type:'default') + ' ' + cls}
  class:not-selected={notSelected}>
     {#if icon}<span class="icon">{@html icon}</span>{/if}
     {#if iconFa && !loading}<i class={iconFa}></i>{/if}

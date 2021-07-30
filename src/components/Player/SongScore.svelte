@@ -47,7 +47,7 @@
 
     <section class="stats">
       {#if !beatSavior || !beatSavior.stats}
-        <span class="beat-savior-reveal" on:click={() => showDetails = !showDetails}>
+        <span class="beat-savior-reveal clickable" on:click={() => showDetails = !showDetails} title="Show details">
           <i class={`fas ${showDetails ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
         </span>
       {:else}
@@ -101,8 +101,8 @@
     {/if}
 
       {#if beatSavior && beatSavior.stats}
-        <span class="beat-savior-reveal" on:click={() => showDetails = !showDetails}>
-          <i class={`fas ${showDetails ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+        <span class="beat-savior-reveal" class:opened={showDetails} on:click={() => showDetails = !showDetails} title="Show details">
+          <i class="fas fa-chevron-down"></i>
         </span>
 
         {#if beatSavior.stats.accLeft}
@@ -278,6 +278,10 @@
 
     .beat-savior-reveal {
         cursor: pointer;
+        transition: transform 500ms;
+    }
+    .beat-savior-reveal.opened {
+        transform: rotateZ(180deg);
     }
 
     @media screen and (max-width: 767px) {

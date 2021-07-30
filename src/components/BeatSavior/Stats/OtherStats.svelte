@@ -45,8 +45,8 @@
         <svelte:fragment slot="value">
           <Value value={stats.miss} digits={0} zero="-"/>
           {#if stats.miss}
-            <span class="left addon"><Value value={leftMiss} digits={0}/></span>
-            <span class="right addon"><Value value={rightMiss} digits={0}/></span>
+            <span class="left addon"><Value value={leftMiss} digits={0} title="Left hand total mistakes"/></span>
+            <span class="right addon"><Value value={rightMiss} digits={0} title="Right hand total mistakes"/></span>
           {/if}
         </svelte:fragment>
       </Badge>
@@ -54,8 +54,8 @@
         <svelte:fragment slot="value">
           <Value value={stats.missedNotes} digits={0} />
           {#if stats.missedNotes}
-            <span class="left addon"><Value value={leftMissedNotes} digits={0}/></span>
-            <span class="right addon"><Value value={rightMissedNotes} digits={0}/></span>
+            <span class="left addon"><Value value={leftMissedNotes} digits={0} title="Left hand missed notes"/></span>
+            <span class="right addon"><Value value={rightMissedNotes} digits={0} title="Right hand missed notes"/></span>
           {/if}
         </svelte:fragment>
       </Badge>
@@ -63,8 +63,8 @@
         <svelte:fragment slot="value">
           <Value value={stats.badCuts} digits={0} />
           {#if stats.badCuts}
-            <span class="left addon"><Value value={leftBadCuts} digits={0}/></span>
-            <span class="right addon"><Value value={rightBadCuts} digits={0}/></span>
+            <span class="left addon"><Value value={leftBadCuts} digits={0} title="Left hand bad cuts"/></span>
+            <span class="right addon"><Value value={rightBadCuts} digits={0} title="Right hand bad cuts"/></span>
           {/if}
         </svelte:fragment>
       </Badge>

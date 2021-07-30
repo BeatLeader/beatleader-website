@@ -8,14 +8,15 @@
   export let stars = null;
 
   $: diffInfo = diff ? getHumanDiffInfo(diff) : null;
+  $: title = useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName;
 </script>
 
 {#if diffInfo}
   <span class="{'diff ' + (reverseColors ? 'reversed' : '')}"
         style="color: {reverseColors ? 'white' : diffInfo.color}; background-color: {reverseColors ? diffInfo.color : 'transparent'}"
-        title="{useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName}">
+        {title}>
     {#if stars}
-      <Value value={stars} suffix="*" zero=""/>
+      <Value value={stars} suffix="*" zero="" {title}/>
     {:else}
       {useShortName ? diffInfo.shortName : diffInfo.fullName}
     {/if}
