@@ -2,7 +2,7 @@
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {getContext, onMount} from 'svelte'
   import {navigate} from 'svelte-routing'
-  import { ROUTER } from 'svelte-routing/src/contexts'
+  import {ROUTER} from 'svelte-routing/src/contexts'
   import createFriendsStore from '../stores/scoresaber/friends'
   import createConfigStore from '../stores/config'
   import createPlayerService from '../services/scoresaber/player'
@@ -11,8 +11,9 @@
   import QueueStats from './Common/QueueStats.svelte'
   import {opt} from '../utils/js'
   import {fade} from 'svelte/transition'
+  import Settings from './Others/Settings.svelte'
 
-  const { activeRoute } = getContext(ROUTER);
+  const {activeRoute} = getContext(ROUTER);
 
   const playerService = createPlayerService();
 
@@ -22,8 +23,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    if (!$activeRoute || !$activeRoute.uri || !$activeRoute.uri.startsWith('/u/'))
-    {
+    if (!$activeRoute || !$activeRoute.uri || !$activeRoute.uri.startsWith('/u/')) {
       navigate(`/u/${playerId}`)
     } else {
       eventBus.publish('navigate-to-player-cmd', playerId)
@@ -62,6 +62,8 @@
   const friends = createFriendsStore();
 
   let friendsMenuShown = false;
+
+  let showSettings = false;
 
   $: mainPlayerId = opt($configStore, 'users.main');
   $: updateMainPlayer(mainPlayerId)
@@ -102,16 +104,30 @@
     Ranking
   </div>
 
-  <div on:click={() => navigate('/search')}>
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-    </svg>
+  <div class="right">
+    <div on:click={() => navigate('/search')}>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
 
-    Search
+      Search
+    </div>
+
+    <div on:click={() => showSettings = true}>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+
+      Settings
+    </div>
   </div>
 
   <QueueStats />
 </nav>
+
+<Settings bind:show={showSettings} />
 
 <style>
     nav {
@@ -126,7 +142,7 @@
         z-index: 50;
     }
 
-    nav > * {
+    nav > *, nav > .right > * {
         display: inline-flex;
         justify-content: flex-start;
         align-items: center;
@@ -136,7 +152,7 @@
         cursor: pointer;
     }
 
-    nav > *:hover {
+    nav > *:not(.right):hover, nav > .right > *:hover {
         background-color: var(--selected);
     }
 
@@ -159,18 +175,25 @@
         border-radius: 50%;
     }
 
+    nav .right {
+        flex: 1;
+        padding: 0;
+        display: flex;
+        justify-content: flex-end;
+    }
+
     @media screen and (max-width: 450px) {
         nav {
             height: 3.5rem;
         }
 
-        nav > * {
+        nav > *:not(.right), nav > .right > * {
             flex: 1;
             border-right: 1px solid var(--dimmed);
             flex-direction: column;
             font-size: .75rem;
         }
-        nav > *:last-child {
+        nav > *:last-child, nav > .right > *:last-child {
             border-right: none;
         }
 

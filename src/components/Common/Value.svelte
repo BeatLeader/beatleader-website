@@ -1,8 +1,8 @@
 <script>
-    import {formatNumber, substituteVars} from '../../utils/format'
     import {onMount} from 'svelte'
+    import createConfigStore from '../../stores/config'
+    import {formatNumber, substituteVars} from '../../utils/format'
     import {fade} from 'svelte/transition'
-
 
     export let value = 0;
     export let prevValue = null;
@@ -21,6 +21,8 @@
     export let title = '';
     export let prevTitle = null;
 
+    let configStore = null;
+    (async () => configStore = await createConfigStore())();
 
     let resolvedValue = value;
     let unsubscribe = null;
@@ -32,19 +34,21 @@
       }
     }
 
+    function getFormattedValue(value, minValue) {
+      return Math.abs(resolvedValue) > minValue
+        ? prefix + formatNumber(resolvedValue, digits, withSign) + suffix
+        : (withZeroPrefix ? prefix : "") + zero + (withZeroSuffix ? suffix : "")
+    }
+
     onMount(() => {
       return () => {
         if (unsubscribe) unsubscribe();
       }
     })
 
-    $: {
-      resolveValue(value);
-    }
+    $: resolveValue(value);
     $: minValue = Math.pow(10, -digits-1)
-    $: formatted = Math.abs(resolvedValue) > minValue
-      ? prefix + formatNumber(resolvedValue, digits, withSign) + suffix
-      : (withZeroPrefix ? prefix : "") + zero + (withZeroSuffix ? suffix : "");
+    $: formatted = getFormattedValue(value, minValue, configStore && $configStore);
     $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null;
     $: prevFormatted = prevValue ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, withSign) + suffix : ""
     $: prevDiffFormatted = prevValue ? formatNumber((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : ""

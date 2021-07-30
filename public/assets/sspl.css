@@ -30,6 +30,12 @@ body {
     min-height: -webkit-fill-available;
 }
 
+select {
+    color: var(--textColor);
+    background-color: var(--foreground);
+    outline: none;
+}
+
 .sspl-page-container {
     width: 100%;
     margin: 0 auto;
