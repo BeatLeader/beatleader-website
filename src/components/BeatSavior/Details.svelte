@@ -36,8 +36,7 @@
         overflow-x: hidden;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        grid-template-rows: repeat(auto-fill, minmax(5em, 1fr));
-        grid-gap: 1em;
+        grid-gap: 1.5em;
         align-items: center;
         justify-items: center;
     }
@@ -45,7 +44,6 @@
     @media screen and (max-width: 767px) {
         .beat-savior {
             grid-template-columns: 1fr;
-            grid-template-rows: repeat(auto-fill, minmax(0, 1fr));
             grid-gap: 1.5em;
         }
 
