@@ -23,6 +23,7 @@
 {#if ($ssApiQueueStats.progress.count > 2 && $progressTween < 100) || waiting }
   <aside transition:fade={{duration: TWEEN_DEFAULT_OPTIONS.duration * 2}}>
     <Donut color={waiting > 0 ? "#bf2a42" : "#8f48db"}
+           background="var(--background)"
            value={waiting > 0 ? waiting/1000 : $progressTween}
            valueProps={{digits:0, suffix: waiting > 0 ? '' : '%'}}
            percentage={waiting && $ssApiQueueStats.progress.count <= 2 ? 1 : $progressTween/100}

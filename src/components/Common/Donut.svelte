@@ -6,6 +6,7 @@
   export let value = 0;
   export let percentage = 0;
   export let color = '#6fdb6f';
+  export let background = 'transparent';
   export let digits = 2;
   export let valueProps = {};
   export let animDuration = 1000;
@@ -14,7 +15,7 @@
   $: percentageValueFormatted = (configStore, $configStore, formatNumber(percentage * 100, digits));
 </script>
 
-<div class="donut" style="--percentage:{percentageValue ? percentageValue : 0};--duration: {animDuration}" title={percentageValueFormatted + '%'}>
+<div class="donut" style="--percentage:{percentageValue ? percentageValue : 0};--duration: {animDuration}; --backgroundColor: {background}" title={percentageValueFormatted + '%'}>
   <span><Value {value} {...valueProps} /></span>
   <svg width="100%" height="100%" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
     <g>
@@ -32,6 +33,7 @@
         width: 4.5em;
         height: 4.5em;
         font-size: .875em;
+        background-color: var(--backgroundColor, 'transparent');
     }
 
     svg {
