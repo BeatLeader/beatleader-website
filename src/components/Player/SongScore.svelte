@@ -143,7 +143,8 @@
                   <i class="fas fa-times"></i>
                   <Value
                     title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}
-                    value="{beatSavior.stats.miss}" inline={false} digits={0}
+                    value="{beatSavior.stats.miss + beatSavior.stats.wallHit + beatSavior.stats.bombHit}"
+                    inline={false} digits={0}
                   />
                 {:else if (!beatSavior.stats.wallHit && !beatSavior.stats.bombHit)}
                   FC

@@ -11,6 +11,7 @@
   $: stats = beatSavior ? beatSavior.stats : null;
   $: fc = stats && !stats.miss && !stats.wallHit && !stats.bombHit;
 
+  $: totalMistakes = stats.miss + stats.wallHit + stats.bombHit;
   $: leftBadCuts = opt(beatSavior, 'trackers.hitTracker.leftBadCuts', null)
   $: leftMissedNotes = opt(beatSavior, 'trackers.hitTracker.leftMiss', null)
   $: leftMiss = (leftBadCuts || 0) + (leftMissedNotes || 0)
@@ -44,7 +45,7 @@
     {#if !fc}
       <Badge label="Total mistakes" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
-          <Value value={stats.miss} digits={0} zero="-"/>
+          <Value value={totalMistakes} digits={0} />
           {#if stats.miss}
             <span class="left addon"><Value value={leftMiss} digits={0} title="Left hand total mistakes"/></span>
             <span class="right addon"><Value value={rightMiss} digits={0} title="Right hand total mistakes"/></span>
