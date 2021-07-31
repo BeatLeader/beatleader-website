@@ -1,16 +1,12 @@
 <script>
-  import {DEFAULT_LOCALE, getSupportedLocales} from '../../others/i18n'
   import produce from 'immer'
-  import createConfigStore from '../../stores/config'
+  import {configStore, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config'
   import Dialog from '../Common/Dialog.svelte'
   import Button from '../Common/Button.svelte'
 
   export let show = false;
 
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
-
-  let configStore = null;
-  (async () => configStore = await createConfigStore())();
 
   const scoreComparisonMethods = [
     {name: 'In place', value: 'in-place'},

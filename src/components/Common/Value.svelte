@@ -1,6 +1,6 @@
 <script>
     import {onMount} from 'svelte'
-    import createConfigStore from '../../stores/config'
+    import {configStore} from '../../stores/config'
     import {formatNumber, substituteVars} from '../../utils/format'
     import {fade} from 'svelte/transition'
 
@@ -20,9 +20,6 @@
     export let prevLabel = "";
     export let title = null;
     export let prevTitle = null;
-
-    let configStore = null;
-    (async () => configStore = await createConfigStore())();
 
     let resolvedValue = value;
     let unsubscribe = null;

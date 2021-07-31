@@ -1,9 +1,22 @@
 import {writable} from 'svelte/store'
 import keyValueRepository from '../db/repository/key-value';
 import {opt} from '../utils/js'
-import {DEFAULT_LOCALE, setCurrentLocale} from '../others/i18n'
 
 const STORE_CONFIG_KEY = 'config';
+
+export const DEFAULT_LOCALE = 'en-US';
+
+export let configStore = null;
+
+const locales = {
+  'de-DE': {id: 'de-DE', name: 'Deutschland'},
+  'es-ES': {id: 'es-ES', name: 'España'},
+  'pl-PL': {id: 'pl-PL', name: 'Polska'},
+  'en-GB': {id: 'en-GB', name: 'United Kingdom'},
+  'en-US': {id: 'en-US', name: 'United States'},
+};
+export const getCurrentLocale = () => configStore ? configStore.getLocale() : DEFAULT_LOCALE;
+export const getSupportedLocales = () => Object.values(locales);
 
 const DEFAULT_CONFIG = {
   users: {
@@ -15,8 +28,6 @@ const DEFAULT_CONFIG = {
   },
   locale: DEFAULT_LOCALE,
 }
-
-export let configStore = null;
 
 export default async () => {
   if (configStore) return configStore;
@@ -33,8 +44,6 @@ export default async () => {
 
     currentConfig = config;
     storeSet(config);
-
-    setCurrentLocale(getLocale());
 
     return config;
   }

@@ -4,7 +4,7 @@
   import {navigate} from 'svelte-routing'
   import {ROUTER} from 'svelte-routing/src/contexts'
   import createFriendsStore from '../stores/scoresaber/friends'
-  import createConfigStore from '../stores/config'
+  import {configStore} from '../stores/config'
   import createPlayerService from '../services/scoresaber/player'
   import Dropdown from './Common/Dropdown.svelte'
   import MenuLine from './Player/MenuLine.svelte'
@@ -17,7 +17,6 @@
 
   const playerService = createPlayerService();
 
-  let configStore = null;
   let player = null;
 
   function navigateToPlayer(playerId) {
@@ -48,8 +47,6 @@
   }
 
   onMount(async () => {
-    configStore = await createConfigStore();
-
     const playerChangedUnsubscribe = eventBus.on('player-profile-changed', player => {
       if (mainPlayerId && player && player.playerId === mainPlayerId) updateMainPlayer(mainPlayerId)
     })

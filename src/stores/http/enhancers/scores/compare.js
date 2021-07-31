@@ -1,4 +1,4 @@
-import createConfigStore from '../../../config'
+import {configStore} from '../../../config'
 import createScoresService from '../../../../services/scoresaber/scores'
 import accEnhancer from './acc'
 import beatSaviorEnhancer from './beatsavior'
@@ -17,7 +17,6 @@ export const initCompareEnhancer = async () => {
 
   scoresService = createScoresService();
 
-  const configStore = await createConfigStore();
   configStoreUnsubscribe = configStore.subscribe(async config => {
     const newMainPlayerId = opt(config, 'users.main')
     if (mainPlayerId !== newMainPlayerId) {

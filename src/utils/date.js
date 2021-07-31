@@ -1,5 +1,5 @@
-import {getCurrentLocale} from '../others/i18n'
 import {isString} from "./js";
+import {getCurrentLocale} from '../stores/config'
 
 export const SECOND = 1000;
 export const MINUTE = 60 * SECOND;

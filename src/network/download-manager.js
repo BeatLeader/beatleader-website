@@ -1,7 +1,7 @@
 import eventBus from '../utils/broadcast-channel-pubsub'
 import log from '../utils/logger'
 import createQueue, {PRIORITY} from '../utils/queue'
-import createConfigStore from '../stores/config'
+import {configStore} from '../stores/config'
 import createRankedsStore from '../stores/scoresaber/rankeds'
 import createPlayerService from '../services/scoresaber/player'
 import createScoresService from '../services/scoresaber/scores'
@@ -141,7 +141,6 @@ export default async () => {
     throwOnTimeout: true,
   });
 
-  const configStore = await createConfigStore();
   mainPlayerId = configStore.getMainPlayerId();
 
   configStore.subscribe(config => {

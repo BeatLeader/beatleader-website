@@ -1,6 +1,6 @@
 import {db} from '../../db/db'
 import eventBus from '../../utils/broadcast-channel-pubsub'
-import createConfigStore from '../../stores/config'
+import {configStore} from '../../stores/config'
 import createPlayerService from './player';
 import createRankedsStore from '../../stores/scoresaber/rankeds'
 import {PRIORITY} from '../../network/queues/http-queue'
@@ -31,17 +31,13 @@ export default () => {
   let mainPlayerId = null;
   let updateInProgress = [];
 
-  let configStoreUnsubscribe = null;
-  createConfigStore().then(configStore => {
-    configStoreUnsubscribe = configStore.subscribe(config => {
-      const newMainPlayerId = opt(config, 'users.main')
-      if (mainPlayerId !== newMainPlayerId) {
-        mainPlayerId = newMainPlayerId;
+  const configStoreUnsubscribe = configStore.subscribe(config => {
+    const newMainPlayerId = opt(config, 'users.main')
+    if (mainPlayerId !== newMainPlayerId) {
+      mainPlayerId = newMainPlayerId;
 
-        log.debug(`Main player changed to ${mainPlayerId}`, 'ScoresService')
-      }
-    })
-
+      log.debug(`Main player changed to ${mainPlayerId}`, 'ScoresService')
+    }
   })
 
   let rankedStoreUnsubscribe = null;
