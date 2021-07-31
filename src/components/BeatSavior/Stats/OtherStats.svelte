@@ -1,5 +1,5 @@
 <script>
-  import config from '../../../config'
+  import ssrConfig from '../../../ssr-config'
   import {opt} from '../../../utils/js'
   import {formatNumber} from '../../../utils/format'
   import Value from '../../Common/Value.svelte'
@@ -23,7 +23,7 @@
 </script>
 
 {#if stats}
-  <div class="stats" style="--left-saber-color: {config.leftSaberColor}; --right-saber-color: {config.rightSaberColor}">
+  <div class="stats" style="--left-saber-color: {ssrConfig.leftSaberColor}; --right-saber-color: {ssrConfig.rightSaberColor}">
     {#if !stats.won}
       <Badge color="red" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
         <svelte:fragment slot="label">

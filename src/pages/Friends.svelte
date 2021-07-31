@@ -1,11 +1,11 @@
 <script>
   import {navigate} from "svelte-routing";
   import {fade} from 'svelte/transition'
-  import config from '../config'
+  import ssrConfig from '../ssr-config'
 </script>
 
 <svelte:head>
-  <title>Friends - {config.name}</title>
+  <title>Friends - {ssrConfig.name}</title>
 </svelte:head>
 
 <article transition:fade>

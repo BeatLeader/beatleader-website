@@ -3,7 +3,7 @@
   import {onDestroy} from 'svelte'
   import {fade} from 'svelte/transition'
   import createPlayerService from '../services/scoresaber/player'
-  import config from '../config'
+  import ssrConfig from '../ssr-config'
   import Avatar from '../components/Player/Avatar.svelte'
   import Error from '../components/Common/Error.svelte'
   import PlayerStats from '../components/Player/PlayerStats.svelte'
@@ -52,7 +52,7 @@
 </script>
 
 <svelte:head>
-  <title>Player search - {config.name}</title>
+  <title>Player search - {ssrConfig.name}</title>
 </svelte:head>
 
 <article transition:fade>

@@ -1,5 +1,5 @@
 <script>
-  import config from '../../config'
+  import ssrConfig from '../../ssr-config'
   import {formatNumber} from '../../utils/format'
   import Donut from '../Common/Donut.svelte'
 
@@ -14,7 +14,7 @@
     const keys = ['r', 'g', 'b', 'a']
 
     const isOk = color && keys.reduce((ok, key) => ok && Number.isFinite(color[key]) && color[key] >= 0 && color[key] <= 1, true);
-    if (!isOk) return hand === 'left' ? config.leftSaberColor : config.rightSaberColor;
+    if (!isOk) return hand === 'left' ? ssrConfig.leftSaberColor : ssrConfig.rightSaberColor;
 
     return 'rgba(' + keys.reduce((prev, key) => prev.concat(key !== 'a' ? Math.round(color[key] * 255) : color[key]), []) + ')';
   }

@@ -7,7 +7,7 @@
   import {opt} from '../utils/js'
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {scrollToTargetAdjusted} from '../utils/browser'
-  import config from '../config'
+  import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
   import {formatNumber} from '../utils/format'
   import Value from '../components/Common/Value.svelte'
@@ -106,7 +106,7 @@
 </script>
 
 <svelte:head>
-  <title>{`${opt(song, 'name', 'Leaderboard')} / ${page} - ${config.name}`}</title>
+  <title>{`${opt(song, 'name', 'Leaderboard')} / ${page} - ${ssrConfig.name}`}</title>
 </svelte:head>
 
 <article transition:fade>

@@ -3,7 +3,7 @@
   import {fade, slide} from 'svelte/transition'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
-  import config from '../../config'
+  import ssrConfig from '../../ssr-config'
   import {configStore} from '../../stores/config'
   import Badge from '../Common/Badge.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
@@ -109,7 +109,7 @@
 
         {#if beatSavior.stats.accLeft}
         <span class="beatSavior with-badge">
-          <Badge onlyLabel={true} color="white" bgColor={config.leftSaberColor}>
+          <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
               <span slot="label">
                 <Value
                   title={`Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
@@ -123,7 +123,7 @@
 
         {#if beatSavior.stats.accRight}
         <span class="beatSavior with-badge">
-          <Badge onlyLabel={true} color="white" bgColor={config.rightSaberColor}>
+          <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
               <span slot="label">
                 <Value
                   title={`Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
@@ -201,7 +201,7 @@
 
               {#if comparePlayer.beatSavior.stats.accLeft}
                 <span class="beatSavior with-badge compare">
-                  <Badge onlyLabel={true} color="white" bgColor={config.leftSaberColor}>
+                  <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
                       <span slot="label">
                         <Value
                           title={`Left accuracy: ${comparePlayer.beatSavior.stats.leftAverageCut ? comparePlayer.beatSavior.stats.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
@@ -215,7 +215,7 @@
 
               {#if comparePlayer.beatSavior.stats.accRight}
                 <span class="beatSavior with-badge compare">
-                  <Badge onlyLabel={true} color="white" bgColor={config.rightSaberColor}>
+                  <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
                       <span slot="label">
                         <Value
                           title={`Right accuracy: ${comparePlayer.beatSavior.stats.rightAverageCut ? comparePlayer.beatSavior.stats.rightAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
