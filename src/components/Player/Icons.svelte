@@ -1,19 +1,13 @@
 <script>
-  import {onMount} from 'svelte';
   import createPlayersStore from '../../stores/scoresaber/players'
-  import Button from '../Common/Button.svelte'
-  import createConfigStore from '../../stores/config'
+  import {configStore} from '../../stores/config'
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {opt} from '../../utils/js'
+  import Button from '../Common/Button.svelte'
 
   export let playerId;
 
   let playersStore = createPlayersStore();
-
-  let configStore = null;
-  onMount(async () => {
-    configStore = await createConfigStore();
-  })
 
   function onSetAsMain() {
     if (!configStore || !playerId) return;

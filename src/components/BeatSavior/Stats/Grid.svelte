@@ -1,4 +1,5 @@
 <script>
+  import {configStore} from '../../../stores/config'
   import {formatNumber} from '../../../utils/format'
   import Value from '../../Common/Value.svelte'
 
@@ -12,8 +13,7 @@
     {#each accGrid as gridVal}
       <span>
         {#if Number.isFinite(gridVal)}
-          <Value value={gridVal} digits={2} title={Number.isFinite(gridVal) ? formatNumber(gridVal/MAX_BLOCK_VALUE*100)+'%' : ''}/>
-        {:else}
+          <Value value={gridVal} digits={2} title={Number.isFinite(gridVal) ? (configStore, $configStore, formatNumber(gridVal/MAX_BLOCK_VALUE*100))+'%' : ''}/>
         {/if}
       </span>
     {/each}

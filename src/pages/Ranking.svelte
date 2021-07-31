@@ -7,7 +7,7 @@
   import {opt} from '../utils/js'
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {scrollToTargetAdjusted} from '../utils/browser'
-  import config from '../config'
+  import ssrConfig from '../ssr-config'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import Change from '../components/Common/Change.svelte'
@@ -80,7 +80,7 @@
 </script>
 
 <svelte:head>
-  <title>Global ranking - {config.name}</title>
+  <title>{type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} ranking - {ssrConfig.name}</title>
 </svelte:head>
 
 <article transition:fade>

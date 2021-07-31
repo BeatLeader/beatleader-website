@@ -1,6 +1,7 @@
 <script>
-  import config from '../../config'
+  import ssrConfig from '../../ssr-config'
   import {formatNumber} from '../../utils/format'
+  import {configStore} from '../../stores/config'
   import Donut from '../Common/Donut.svelte'
 
   const MAX_BLOCK_VALUE = 115;
@@ -14,7 +15,7 @@
     const keys = ['r', 'g', 'b', 'a']
 
     const isOk = color && keys.reduce((ok, key) => ok && Number.isFinite(color[key]) && color[key] >= 0 && color[key] <= 1, true);
-    if (!isOk) return hand === 'left' ? config.leftSaberColor : config.rightSaberColor;
+    if (!isOk) return hand === 'left' ? ssrConfig.leftSaberColor : ssrConfig.rightSaberColor;
 
     return 'rgba(' + keys.reduce((prev, key) => prev.concat(key !== 'a' ? Math.round(color[key] * 255) : color[key]), []) + ')';
   }
@@ -22,7 +23,7 @@
   $: accValue = Number.isFinite(value) && value >= 0 && value <= 115 ? value : 0;
   $: percentage = accValue / MAX_BLOCK_VALUE;
   $: rgba = getRgba(color);
-  $: cutsRounded = cut && Array.isArray(cut) ? cut.map(c => Number.isFinite(c) ? formatNumber(c) : 0) : null;
+  $: cutsRounded = (configStore, $configStore, cut && Array.isArray(cut) ? cut.map(c => Number.isFinite(c) ? formatNumber(c) : 0) : null);
 </script>
 
 {#if cutsRounded}

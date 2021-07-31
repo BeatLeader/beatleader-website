@@ -1,6 +1,6 @@
 <script>
     import {onMount} from 'svelte'
-    import createConfigStore from '../../stores/config'
+    import {configStore} from '../../stores/config'
     import {formatNumber, substituteVars} from '../../utils/format'
     import {fade} from 'svelte/transition'
 
@@ -21,9 +21,6 @@
     export let title = null;
     export let prevTitle = null;
 
-    let configStore = null;
-    (async () => configStore = await createConfigStore())();
-
     let resolvedValue = value;
     let unsubscribe = null;
     function resolveValue(value) {
@@ -34,9 +31,9 @@
       }
     }
 
-    function getFormattedValue(value, minValue) {
-      return Math.abs(value) > minValue
-        ? prefix + formatNumber(resolvedValue, digits, withSign) + suffix
+    function getFormattedValue(value, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix) {
+      return Number.isFinite(value) && Math.abs(value) > minValue
+        ? prefix + formatNumber(value, digits, withSign) + suffix
         : (withZeroPrefix ? prefix : "") + zero + (withZeroSuffix ? suffix : "")
     }
 
@@ -48,10 +45,10 @@
 
     $: resolveValue(value);
     $: minValue = Math.pow(10, -digits-1)
-    $: formatted = getFormattedValue(resolvedValue, minValue, configStore && $configStore);
+    $: formatted = getFormattedValue(resolvedValue, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix, configStore && $configStore);
     $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null;
-    $: prevFormatted = prevValue ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, withSign) + suffix : ""
-    $: prevDiffFormatted = prevValue ? formatNumber((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : ""
+    $: prevFormatted = (configStore, $configStore, prevValue ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, withSign) + suffix : "")
+    $: prevDiffFormatted = (configStore, $configStore, prevValue ? formatNumber((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : "")
     $: prevClass = (prevValue ? ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) > minValue ? "inc" : ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
     $: mainClass = (useColorsForValue && resolvedValue ? (resolvedValue > minValue ? "inc" : (resolvedValue < -minValue ? "dec" : "zero")): "");
 

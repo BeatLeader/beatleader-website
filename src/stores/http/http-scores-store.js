@@ -3,10 +3,12 @@ import beatSaverEnhancer from './enhancers/leaderboard/beatsaver'
 import accEnhancer from './enhancers/scores/acc'
 import beatSaviorEnhancer from './enhancers/scores/beatsavior'
 import rankedsEnhancer from './enhancers/leaderboard/rankeds'
+import compareEnhancer, {initCompareEnhancer} from './enhancers/scores/compare'
 import diffEnhancer from './enhancers/scores/diff'
 import {debounce} from '../../utils/debounce'
 import {opt} from '../../utils/js'
 import createApiScoresProvider from './providers/api-scores'
+import produce, {applyPatches} from 'immer'
 
 export default (playerId = null, type = 'recent', page = 1, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
@@ -14,6 +16,10 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
   let currentPage = page ? page : 1;
 
   const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentPage}/${currentType}`;
+  const getPatchId = (playerId, scoreRow) => `${playerId}/${opt(scoreRow, 'leaderboard.leaderboardId')}`
+
+  let enhancePatches = {};
+  let currentEnhanceTaskId = null;
 
   const onNewData = ({fetchParams, state, stateType, set}) => {
     currentPage = opt(fetchParams, 'page', 1);
@@ -22,45 +28,55 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
 
     if (!state || !Array.isArray(state)) return;
 
+    const enhanceTaskId = getCurrentEnhanceTaskId();
+    if (currentEnhanceTaskId !== enhanceTaskId) {
+      enhancePatches = {}
+      currentEnhanceTaskId = enhanceTaskId;
+    }
+
+    const stateProduce = (state, patchId, producer) => produce(state, producer, patches => {
+      if (!enhancePatches[patchId]) enhancePatches[patchId] = [];
+
+      enhancePatches[patchId].push(...patches)
+    })
+
     const debouncedSetState = debounce((enhanceTaskId, state) => {
-      if (enhanceTaskId !== getCurrentEnhanceTaskId()) return;
+      if (currentEnhanceTaskId !== enhanceTaskId) return;
 
       set(state);
     }, 100);
 
-    const enhanceTaskId = getCurrentEnhanceTaskId();
     const newState = [...state];
 
-    const setStateRow = (scoreRow, idx, fields = ['leaderboard', 'score']) => {
-      if (enhanceTaskId !== getCurrentEnhanceTaskId() || !newState || !newState[idx] || !scoreRow) return null;
+    const setStateRow = (enhanceTaskId, scoreRow) => {
+      if (currentEnhanceTaskId !== enhanceTaskId) return null;
 
-      fields = !Array.isArray(fields) ? [fields] : fields;
+      const patchId = getPatchId(currentPlayerId, scoreRow)
+      const stateRowIdx = newState.findIndex(s => getPatchId(currentPlayerId, s) === patchId)
+      if (stateRowIdx < 0) return;
 
-      fields.map(field => {
-        const stateValue = opt(newState[idx], field, {});
-        const rowValue = opt(scoreRow, field, {});
-
-        newState[idx][field] = {...stateValue, ...rowValue};
-      })
+      newState[stateRowIdx] = applyPatches(newState[stateRowIdx], enhancePatches[patchId]);
 
       debouncedSetState(enhanceTaskId, newState);
 
-      return newState[idx];
+      return newState[stateRowIdx];
     }
 
-    for(const [idx, scoreRow] of newState.entries()) {
-        beatSaverEnhancer(scoreRow)
-          .then(enhancedScoreRow => accEnhancer(enhancedScoreRow, currentPlayerId, 'score'))
-          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx))
-          .then(enhancedScoreRow => diffEnhancer(enhancedScoreRow, currentPlayerId, 'score'))
-          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx));
+    for (const scoreRow of newState) {
+      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaverEnhancer(draft))
+        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
+        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => diffEnhancer(draft, currentPlayerId)))
+        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId)))
+        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+
+      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft))
+        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
       if (stateType && stateType === 'live')
-        beatSaviorEnhancer(scoreRow, currentPlayerId)
-          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
-
-        rankedsEnhancer(scoreRow, currentPlayerId)
-          .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx, 'leaderboard'));
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaviorEnhancer(draft, currentPlayerId))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
     }
   }
 

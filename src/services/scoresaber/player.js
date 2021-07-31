@@ -1,5 +1,5 @@
 import eventBus from '../../utils/broadcast-channel-pubsub'
-import createConfigStore from '../../stores/config'
+import {configStore} from '../../stores/config'
 import playerApiClient from '../../network/clients/scoresaber/player/api'
 import playerFindApiClient from '../../network/clients/scoresaber/players/api-player-find'
 import playerPageClient from '../../network/clients/scoresaber/player/page'
@@ -24,16 +24,13 @@ export default () => {
 
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
-  let configStoreUnsubscribe = null;
-  createConfigStore().then(configStore => {
-    configStoreUnsubscribe = configStore.subscribe(config => {
-      const newMainPlayerId = opt(config, 'users.main')
-      if (mainPlayerId !== newMainPlayerId) {
-        mainPlayerId = newMainPlayerId;
+  const configStoreUnsubscribe = configStore.subscribe(config => {
+    const newMainPlayerId = opt(config, 'users.main')
+    if (mainPlayerId !== newMainPlayerId) {
+      mainPlayerId = newMainPlayerId;
 
-        log.debug(`Main player changed to ${mainPlayerId}`, 'PlayerService')
-      }
-    })
+      log.debug(`Main player changed to ${mainPlayerId}`, 'PlayerService')
+    }
   })
 
   const isMainPlayer = playerId => mainPlayerId && playerId === mainPlayerId;

@@ -1,7 +1,6 @@
 <script>
-  import config from '../../../config'
+  import ssrConfig from '../../../ssr-config'
   import HandAcc from '../HandAcc.svelte'
-  import Value from '../../Common/Value.svelte'
   import Badge from '../../Common/Badge.svelte'
 
   export let stats = null;
@@ -15,7 +14,7 @@
       {#if stats.leftTimeDependence}
         <div class="td">
           <Badge label="TD" title="Left hand time dependence" value={stats.leftTimeDependence}
-                 color="white" bgColor={config.leftSaberColor}
+                 color="white" bgColor={ssrConfig.leftSaberColor}
                  digits={3} fluid={true} />
         </div>
       {/if}
@@ -27,7 +26,7 @@
       {#if stats.rightTimeDependence}
         <div class="td">
           <Badge label="TD" title="Right hand time dependence" value={stats.rightTimeDependence}
-                 color="white" bgColor={config.rightSaberColor}
+                 color="white" bgColor={ssrConfig.rightSaberColor}
                  digits={3} fluid={true} />
         </div>
       {/if}

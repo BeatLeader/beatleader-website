@@ -7,9 +7,10 @@
   import {opt} from '../utils/js'
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {scrollToTargetAdjusted} from '../utils/browser'
-  import config from '../config'
+  import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
   import {formatNumber} from '../utils/format'
+  import {configStore} from '../stores/config'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
@@ -106,7 +107,7 @@
 </script>
 
 <svelte:head>
-  <title>{`${opt(song, 'name', 'Leaderboard')} / ${page} - ${config.name}`}</title>
+  <title>{`${opt(song, 'name', 'Leaderboard')} / ${page} - ${ssrConfig.name}`}</title>
 </svelte:head>
 
 <article transition:fade>
@@ -234,8 +235,7 @@
                   <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                     <span slot="label">
                       <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
-                          zero={formatNumber(0)} withZeroSuffix={true} inline={false}
-                          color="white"
+                          inline={false} color="white"
                       />
                     </span>
                   </Badge>

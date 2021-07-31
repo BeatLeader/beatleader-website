@@ -1,6 +1,7 @@
 <script>
-  import Value from '../Common/Value.svelte'
   import {formatNumber} from '../../utils/format'
+  import {configStore} from '../../stores/config'
+  import Value from '../Common/Value.svelte'
 
   export let value = 0;
   export let percentage = 0;
@@ -10,7 +11,7 @@
   export let animDuration = 1000;
 
   $: percentageValue = (1 - percentage) * 440;
-  $: percentageValueFormatted = formatNumber(percentage * 100, digits);
+  $: percentageValueFormatted = (configStore, $configStore, formatNumber(percentage * 100, digits));
 </script>
 
 <div class="donut" style="--percentage:{percentageValue ? percentageValue : 0};--duration: {animDuration}" title={percentageValueFormatted + '%'}>

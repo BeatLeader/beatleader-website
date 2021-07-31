@@ -1,11 +1,11 @@
 <script>
   import {navigate} from "svelte-routing";
   import {fade} from 'svelte/transition'
-  import config from '../config'
+  import ssrConfig from '../ssr-config'
 </script>
 
 <svelte:head>
-  <title>404 | Not found - {config.name}</title>
+  <title>404 | Not found - {ssrConfig.name}</title>
 </svelte:head>
 
 <article transition:fade>

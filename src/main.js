@@ -9,6 +9,8 @@ import createBeatSaviorService from './services/beatsavior'
 import createRankedsStore from './stores/scoresaber/rankeds'
 import initDownloadManager from './network/download-manager'
 import initCommandProcessor from './network/command-processor'
+import {enablePatches, setAutoFreeze} from 'immer'
+import {initCompareEnhancer} from './stores/http/enhancers/scores/compare'
 import ErrorComponent from './components/Common/Error.svelte'
 
 let app = null;
@@ -25,11 +27,20 @@ let app = null;
     await initializeRepositories();
     await setupDataFixes();
 
+    // WORKAROUND for immer.js esm (see https://github.com/immerjs/immer/issues/557)
+    window.process = {env: {NODE_ENV: "production"}};
+
+    // setup immer.js
+    enablePatches();
+    setAutoFreeze(false);
+
     // pre-warm cache && create singleton services
     await createConfigStore();
     createPlayerService();
     createBeatSaviorService();
     await createRankedsStore();
+
+    await initCompareEnhancer();
 
     initCommandProcessor(await initDownloadManager());
 

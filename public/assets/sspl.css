@@ -23,6 +23,7 @@ html {
 
 body {
     color: var(--textColor);
+    background-color: var(--background)!important;
     max-width: 1024px;
     margin: 0 auto;
     padding: 0 1rem;

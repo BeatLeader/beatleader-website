@@ -5,14 +5,14 @@ import {PRIORITY} from '../../../../network/queues/http-queue'
 let beatSaviorService;
 
 export default async (data, playerId = null) => {
-  if (!data || !data.score || !data.leaderboard) return data;
+  if (!data || !data.score || !data.leaderboard) return;
 
   if (!beatSaviorService) beatSaviorService = createBeatSaviorService();
 
   await beatSaviorService.refresh(playerId, false, PRIORITY.FG_LOW);
 
   const bsData = await beatSaviorService.get(playerId, data);
-  if (!bsData) return data;
+  if (!bsData) return;
 
   if (!data.score.acc) {
     const acc = opt(bsData, 'trackers.scoreTracker.rawRatio');
@@ -25,6 +25,4 @@ export default async (data, playerId = null) => {
   }
 
   data.beatSavior = bsData;
-
-  return data;
 }

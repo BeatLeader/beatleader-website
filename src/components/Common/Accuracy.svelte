@@ -1,9 +1,10 @@
 <script>
-  import Badge from './Badge.svelte'
-  import Value from './Value.svelte'
+  import {configStore} from '../../stores/config'
   import {diffColors} from '../../utils/scoresaber/format'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
+  import Badge from './Badge.svelte'
+  import Value from './Value.svelte'
 
   export let score;
   export let prevScore = null;
@@ -38,9 +39,9 @@
       <Value value={showPercentageInstead ? score.percentage : score.acc}
              prevValue={showPercentageInstead ? opt(prevScore, 'percentage') : opt(prevScore, 'acc')}
              title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
-             prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
+             prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
       />
-      {#if !noSecondMetric && secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage))}
+      {#if !noSecondMetric && secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage)) && score.acc !== score.percentage}
         <small>
           <Value value={showPercentageInstead ? score.acc : score.percentage}
                  withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
@@ -51,7 +52,7 @@
     </span>
 </Badge>
 
-{#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length}
+{#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length  && score.acc !== score.percentage}
 <small>
     <Value value={!showPercentageInstead ? score.percentage : score.acc}
            withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"

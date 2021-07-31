@@ -5,7 +5,7 @@
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import {opt} from '../utils/js'
-  import config from '../config'
+  import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
@@ -69,7 +69,7 @@
 </script>
 
 <svelte:head>
-  <title>{opt($playerStore, 'name', 'Player')} - {config.name}</title>
+  <title>{opt($playerStore, 'name', 'Player')} - {ssrConfig.name}</title>
 </svelte:head>
 
 <article transition:fade>
