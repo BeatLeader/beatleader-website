@@ -156,7 +156,7 @@
       {#if (showDetails || (configStore && opt($configStore, 'scoreComparison.method') === 'in-place') ) && comparePlayers && Array.isArray(comparePlayers)}
         {#each comparePlayers as comparePlayer (comparePlayer.playerId)}
           <span></span>
-          <span class="compare-player-name"><span>vs {comparePlayer.playerName}</span></span>
+          <span class="compare-player-name"><span>vs {comparePlayer.playerName} (<FormattedDate date={opt(comparePlayer, 'score.timeSet')}/>)</span></span>
 
           <span></span>
           {#if comparePlayer.score && comparePlayer.score.pp}
@@ -165,7 +165,6 @@
               <span slot="label">
                 <Pp playerId={comparePlayer.playerId} leaderboardId={leaderboard.leaderboardId}
                     pp="{comparePlayer.score.pp}" withZeroSuffix={true} inline={false}
-                    title={"Played on " + formatDate(opt(comparePlayer, 'score.timeSet'), 'short', 'short')}
                     color="white"
                 />
               </span>
@@ -189,7 +188,7 @@
                   <span slot="label">
                     <Value value={comparePlayer.score.score}
                            inline={false} digits={0}
-                           title={`Played on ${formatDate(opt(comparePlayer.score, 'timeSet'), 'short', 'short')}${comparePlayer.score.mods && comparePlayer.score.mods.length ? ' with mods: ' + comparePlayer.score.mods.join(', ') : ''}`}
+                           title={comparePlayer.score.mods && comparePlayer.score.mods.length ? `Mods: ${comparePlayer.score.mods.join(', ')}` : ''}
                     />
                   </span>
               </Badge>
