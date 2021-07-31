@@ -8,12 +8,10 @@ export default async (data) => {
         rankeds = (await createRankedsStore()).get();
     }
 
-    if (!rankeds) return data;
+    if (!rankeds) return;
 
     const leaderboardId = opt(data, 'leaderboard.leaderboardId');
-    if (!leaderboardId) return data;
+    if (!leaderboardId) return;
 
     data.leaderboard.stars = rankeds[leaderboardId] && rankeds[leaderboardId].stars ? rankeds[leaderboardId].stars : null;
-
-    return data;
 }

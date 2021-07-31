@@ -2,7 +2,9 @@ import createConfigStore from '../../../config'
 import createScoresService from '../../../../services/scoresaber/scores'
 import accEnhancer from './acc'
 import beatSaviorEnhancer from './beatsavior'
+import beatSaverEnhancer from '../leaderboard/beatsaver'
 import {opt} from '../../../../utils/js'
+import produce from 'immer'
 
 let scoresService = null;
 let mainPlayerId = null;
@@ -26,20 +28,25 @@ export const initCompareEnhancer = async () => {
   })
 }
 
-const getPlayerScores = (playerId = mainPlayerId) => playerId && playerScores[playerId] ? playerScores[playerId] : null;
-
 export default async (data, playerId = null) => {
-  if (!data || !data.score || data.comparePlayers || !mainPlayerId || mainPlayerId === playerId) return data;
+  if (!data || !data.score || data.comparePlayers || !mainPlayerId || mainPlayerId === playerId) return;
 
   const leaderboardId = opt(data, 'leaderboard.leaderboardId');
-  if (!leaderboardId) return data;
+  if (!leaderboardId) return;
 
-  const comparePlayerScores = getPlayerScores(mainPlayerId);
-  if (!comparePlayerScores || !comparePlayerScores[leaderboardId]) return data;
+  const comparePlayerScores = await playerScores[mainPlayerId];
+  if (!comparePlayerScores || !comparePlayerScores[leaderboardId]) return;
 
-  const mainPlayerScore = await beatSaviorEnhancer(await accEnhancer(comparePlayerScores[leaderboardId]), mainPlayerId);
+  const mainPlayerScore = await produce(
+    await produce(
+      await produce(
+        comparePlayerScores[leaderboardId],
+        draft => beatSaverEnhancer(draft),
+      ),
+      draft => accEnhancer(draft, true),
+    ),
+    draft => beatSaviorEnhancer(draft, mainPlayerId),
+  );
 
   data.comparePlayers = [{...mainPlayerScore, playerId: mainPlayerId, playerName: 'Me'}];
-
-  return data;
 }

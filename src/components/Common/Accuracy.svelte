@@ -40,7 +40,7 @@
              title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
              prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
       />
-      {#if !noSecondMetric && secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage))}
+      {#if !noSecondMetric && secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage)) && score.acc !== score.percentage}
         <small>
           <Value value={showPercentageInstead ? score.acc : score.percentage}
                  withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
@@ -51,7 +51,7 @@
     </span>
 </Badge>
 
-{#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length}
+{#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length  && score.acc !== score.percentage}
 <small>
     <Value value={!showPercentageInstead ? score.percentage : score.acc}
            withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
