@@ -21,7 +21,7 @@
 </script>
 
 {#if ($ssApiQueueStats.progress.count > 2 && $progressTween < 100) || waiting }
-  <aside transition:fade={{duration: TWEEN_DEFAULT_OPTIONS.duration * 2}}>
+  <aside transition:fade={{duration: TWEEN_DEFAULT_OPTIONS.duration * 2}} class:waiting={waiting}>
     <Donut color={waiting > 0 ? "#bf2a42" : "#8f48db"}
            background="var(--background)"
            value={waiting > 0 ? waiting/1000 : $progressTween}
@@ -39,5 +39,13 @@
         right: 0;
         top: .25rem;
         font-size: .65em;
+    }
+
+    aside :global(.donut > span) {
+        font-size: 1.2em;
+    }
+
+    aside.waiting :global(.donut > span) {
+        font-size: 1.4em;
     }
 </style>

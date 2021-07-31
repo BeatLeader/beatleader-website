@@ -33,7 +33,8 @@
         width: 4.5em;
         height: 4.5em;
         font-size: .875em;
-        background-color: var(--backgroundColor, 'transparent');
+        background-color: var(--backgroundColor);
+        border-radius: 50%;
     }
 
     svg {
