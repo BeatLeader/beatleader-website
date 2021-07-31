@@ -10,10 +10,13 @@ const DEFAULT_CONFIG = {
     main: null,
     country: null,
   },
+  scoreComparison: {
+    method: 'in-place',
+  },
   locale: DEFAULT_LOCALE,
 }
 
-let configStore = null;
+export let configStore = null;
 
 export default async () => {
   if (configStore) return configStore;

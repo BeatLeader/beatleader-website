@@ -4,6 +4,7 @@
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
   import config from '../../config'
+  import {configStore} from '../../stores/config'
   import Badge from '../Common/Badge.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
   import SongInfo from './SongInfo.svelte'
@@ -152,7 +153,7 @@
         {/if}
       {/if}
 
-      {#if showDetails && comparePlayers && Array.isArray(comparePlayers)}
+      {#if (showDetails || (configStore && opt($configStore, 'scoreComparison.method') === 'in-place') ) && comparePlayers && Array.isArray(comparePlayers)}
         {#each comparePlayers as comparePlayer (comparePlayer.playerId)}
           <span></span>
           <span class="compare-player-name"><span>vs {comparePlayer.playerName}</span></span>
