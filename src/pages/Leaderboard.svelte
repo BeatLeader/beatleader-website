@@ -31,6 +31,7 @@
   export let withoutDiffSwitcher = false;
   export let withoutHeader = false;
   export let scrollOffset = 45;
+  export let fixedBrowserTitle = null;
 
   const dispatch = createEventDispatcher();
 
@@ -107,7 +108,7 @@
 </script>
 
 <svelte:head>
-  <title>{`${opt(song, 'name', 'Leaderboard')} / ${page} - ${ssrConfig.name}`}</title>
+  <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${page} - ${ssrConfig.name}}`}</title>
 </svelte:head>
 
 <article transition:fade>

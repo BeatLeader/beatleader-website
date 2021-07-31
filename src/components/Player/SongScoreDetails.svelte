@@ -6,6 +6,7 @@
   import Switcher from '../Common/Switcher.svelte'
 
   export let songScore;
+  export let fixedBrowserTitle = null;
 
   const switcherOptions = [
     {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'},
@@ -76,6 +77,7 @@
                          scrollOffset={176}
                          dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
                          on:page-changed={onInBuiltLeaderboardPageChanged}
+                         {fixedBrowserTitle}
 
         />
       {/if}

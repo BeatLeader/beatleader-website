@@ -66,10 +66,11 @@
   $: currentStoreType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
   $: currentStorePage = $playerStore && playerStore && playerStore.getPage ? playerStore.getPage() : 1;
   $: skeleton = !$playerStore && $playerIsLoading;
+  $: browserTitle = `${opt($playerStore, 'name', 'Player')} - ${ssrConfig.name}`
 </script>
 
 <svelte:head>
-  <title>{opt($playerStore, 'name', 'Player')} - {ssrConfig.name}</title>
+  <title>{browserTitle}</title>
 </svelte:head>
 
 <article transition:fade>
@@ -88,6 +89,7 @@
               initialPage={currentStorePage}
               numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
               on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
+              fixedBrowserTitle={browserTitle}
       />
     {/if}
   {/if}

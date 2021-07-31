@@ -17,6 +17,7 @@
   export let initialStateType = null;
   export let initialPage = 1;
   export let numOfScores = null;
+  export let fixedBrowserTitle = null;
 
   let scoresBoxEl = null;
 
@@ -82,7 +83,7 @@
   <div class="song-scores">
     {#each $scoresStore as songScore}
       {#key opt(songScore, 'leaderboard.leaderboardId')}
-        <SongScore {songScore} />
+        <SongScore {songScore} {fixedBrowserTitle} />
       {/key}
     {/each}
   </div>
