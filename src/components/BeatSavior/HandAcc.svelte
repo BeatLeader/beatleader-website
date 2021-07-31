@@ -1,6 +1,7 @@
 <script>
   import ssrConfig from '../../ssr-config'
   import {formatNumber} from '../../utils/format'
+  import {configStore} from '../../stores/config'
   import Donut from '../Common/Donut.svelte'
 
   const MAX_BLOCK_VALUE = 115;
@@ -22,7 +23,7 @@
   $: accValue = Number.isFinite(value) && value >= 0 && value <= 115 ? value : 0;
   $: percentage = accValue / MAX_BLOCK_VALUE;
   $: rgba = getRgba(color);
-  $: cutsRounded = cut && Array.isArray(cut) ? cut.map(c => Number.isFinite(c) ? formatNumber(c) : 0) : null;
+  $: cutsRounded = (configStore, $configStore, cut && Array.isArray(cut) ? cut.map(c => Number.isFinite(c) ? formatNumber(c) : 0) : null);
 </script>
 
 {#if cutsRounded}

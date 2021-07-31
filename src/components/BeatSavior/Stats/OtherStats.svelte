@@ -2,6 +2,7 @@
   import ssrConfig from '../../../ssr-config'
   import {opt} from '../../../utils/js'
   import {formatNumber} from '../../../utils/format'
+  import {configStore} from '../../../stores/config'
   import Value from '../../Common/Value.svelte'
   import Badge from '../../Common/Badge.svelte'
 
@@ -17,9 +18,9 @@
   $: rightMissedNotes = opt(beatSavior, 'trackers.hitTracker.rightMiss', null)
   $: rightMiss = (rightBadCuts || 0) + (rightMissedNotes || 0)
 
-  $: totalMissesTitle = `Total misses (left: ${formatNumber(leftMiss, 0)} | right: ${formatNumber(rightMiss, 0)})`
-  $: missedNotesTitle = `Missed notes (left: ${formatNumber(leftMissedNotes, 0)} | right: ${formatNumber(rightMissedNotes, 0)})`
-  $: badCutsTitle = `Bad cuts (left: ${formatNumber(leftBadCuts, 0)} | right: ${formatNumber(rightBadCuts, 0)})`
+  $: totalMissesTitle = (configStore, $configStore, `Total misses (left: ${formatNumber(leftMiss, 0)} | right: ${formatNumber(rightMiss, 0)})`)
+  $: missedNotesTitle = (configStore, $configStore, `Missed notes (left: ${formatNumber(leftMissedNotes, 0)} | right: ${formatNumber(rightMissedNotes, 0)})`)
+  $: badCutsTitle = (configStore, $configStore, `Bad cuts (left: ${formatNumber(leftBadCuts, 0)} | right: ${formatNumber(rightBadCuts, 0)})`)
 </script>
 
 {#if stats}

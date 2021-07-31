@@ -62,15 +62,15 @@
               <span slot="label">
                 <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
                     pp="{score.pp}" prevPp={opt(prevScore, 'pp')}
-                    zero={formatNumber(0)} withZeroSuffix={true} inline={false}
-                    prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
+                    inline={false}
+                    prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
                     color="white"
                 />
               </span>
             </Badge>
 
             <small>
-              (<Value value={score.ppWeighted} zero={formatNumber(0)} withZeroSuffix={true} suffix="pp" inline={true} title="Weighted PP"/>)
+              (<Value value={score.ppWeighted} zero="" suffix="pp" inline={true} title="Weighted PP"/>)
             </small>
           </span>
       {:else}
@@ -91,7 +91,7 @@
             <span slot="label">
               <Value value="{score.score}" prevValue={opt(prevScore, 'score')}
                      inline={false} digits={0} prefix={score.scoreApproximate ? '~' : ''}
-                     prevTitle={"${value} on " + formatDate(opt(prevScore, 'timeSet'), 'short', 'short')}
+                     prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
               />
             </span>
         </Badge>
@@ -112,7 +112,7 @@
           <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
               <span slot="label">
                 <Value
-                  title={`Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                  title={`Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
                   value="{beatSavior.stats.accLeft}"
                   inline={false} digits={2}
                 />
@@ -126,7 +126,7 @@
           <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
               <span slot="label">
                 <Value
-                  title={`Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                  title={`Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
                   value="{beatSavior.stats.accRight}" inline={false} digits={2}
                 />
               </span>
@@ -203,7 +203,7 @@
                   <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
                       <span slot="label">
                         <Value
-                          title={`Left accuracy: ${comparePlayer.beatSavior.stats.leftAverageCut ? comparePlayer.beatSavior.stats.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                          title={`Left accuracy: ${comparePlayer.beatSavior.stats.leftAverageCut ? comparePlayer.beatSavior.stats.leftAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
                           value="{comparePlayer.beatSavior.stats.accLeft}"
                           inline={false} digits={2}
                         />
@@ -217,7 +217,7 @@
                   <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
                       <span slot="label">
                         <Value
-                          title={`Right accuracy: ${comparePlayer.beatSavior.stats.rightAverageCut ? comparePlayer.beatSavior.stats.rightAverageCut.map(v => formatNumber(v)).join('/') : ''}`}
+                          title={`Right accuracy: ${comparePlayer.beatSavior.stats.rightAverageCut ? comparePlayer.beatSavior.stats.rightAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
                           value="{comparePlayer.beatSavior.stats.accRight}" inline={false} digits={2}
                         />
                       </span>
