@@ -62,7 +62,7 @@
               <span slot="label">
                 <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
                     pp="{score.pp}" prevPp={opt(prevScore, 'pp')}
-                    inline={false}
+                    zero={(configStore, $configStore, formatNumber(0))} withZeroSuffix={true} inline={false}
                     prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
                     color="white"
                 />
@@ -70,7 +70,7 @@
             </Badge>
 
             <small>
-              (<Value value={score.ppWeighted} zero="" suffix="pp" inline={true} title="Weighted PP"/>)
+              (<Value value={score.ppWeighted} zero={(configStore, $configStore, formatNumber(0))} withZeroSuffix={true} suffix="pp" inline={true} title="Weighted PP"/>)
             </small>
           </span>
       {:else}
