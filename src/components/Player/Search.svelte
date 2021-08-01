@@ -15,9 +15,9 @@
   const playerService = createPlayerService();
 
   async function search(query) {
-    const matches = query.match(/^\s*https:\/\/(?:new\.)?scoresaber.com\/u\/(\d+)/);
-    if (matches) {
-      dispatch('selected', matches[1])
+    const matches = query.match(/^(?:\s*https:\/\/(?:new\.)?scoresaber.com\/u\/(\d+))|\s*(\d+)\s*/);
+    if (matches && (matches[1] || matches[2])) {
+      dispatch('selected', matches[1] ? matches[1] : matches[2])
 
       return [];
     }
