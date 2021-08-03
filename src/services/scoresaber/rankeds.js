@@ -11,7 +11,6 @@ import log from '../../utils/logger'
 import {addToDate, formatDate, HOUR} from '../../utils/date'
 
 const REFRESH_INTERVAL = HOUR;
-const RANKEDS_NOTES_CACHE_KEY = 'rankedsNotes';
 
 let service = null;
 export default () => {
@@ -25,58 +24,6 @@ export default () => {
 
   const getLastUpdated = async () => keyValueRepository().get('rankedsLastUpdated');
   const setLastUpdated = async date => keyValueRepository().set(date, 'rankedsLastUpdated');
-
-  const getRankedsNotesSongCacheFromCharacteristics = songCharacteristics =>
-    songCharacteristics
-      ? songCharacteristics.reduce((scCum, ch) => {
-        scCum[ch.name] = ch && ch.difficulties
-          ? Object.keys(ch.difficulties).reduce((dCum, diffKey) => {
-            const notes = ch.difficulties[diffKey] && ch.difficulties[diffKey].notes ? ch.difficulties[diffKey].notes : null;
-            if (!notes) return dCum;
-
-            dCum[diffKey] = notes;
-
-            return dCum;
-          }, {})
-          : {};
-
-        return scCum;
-      }, {})
-      : null;
-
-  const setRankedsNotesCache = async rankedsNotesCache => keyValueRepository().set(rankedsNotesCache, RANKEDS_NOTES_CACHE_KEY);
-  const getRankedsNotesCache = async (forceUpdate = true) => {
-    // try to get current cache
-    const currentCache = await keyValueRepository().get(RANKEDS_NOTES_CACHE_KEY);
-    if (currentCache && !forceUpdate) return currentCache;
-
-    // prepare cache
-    const bsSongs = convertArrayToObjectByKey(
-      (await songsRepository().getAll()).map(s => ({
-        hash: s.hash.toLowerCase(),
-        characteristics: opt(s, 'metadata.characteristics'),
-      })),
-      'hash',
-    );
-    const rankedsWithLowerCaseHashes = Object.values(await getRankeds()).map(r => ({...r, hash: r.hash.toLowerCase()}));
-    const rankedsNotesCaches = rankedsWithLowerCaseHashes.reduce((cum, ranked) => {
-      if (!ranked.leaderboardId) return cum;
-
-      const hash = ranked.hash;
-
-      const songCharacteristics = bsSongs[hash] && bsSongs[hash].characteristics ? bsSongs[hash].characteristics : null;
-      const songNotesCount = getRankedsNotesSongCacheFromCharacteristics(songCharacteristics);
-
-      if (!cum[hash] && songNotesCount) cum[hash] = songNotesCount;
-
-      return cum;
-    }, {});
-
-    // store cache
-    await keyValueRepository().set(rankedsNotesCaches, RANKEDS_NOTES_CACHE_KEY);
-
-    return rankedsNotesCaches;
-  }
 
   const refreshRankeds = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting rankeds refreshing${forceUpdate ? ' (forced)' : ''}...`, 'RankedsService')
@@ -174,31 +121,6 @@ export default () => {
 
       log.trace('Rankeds saved', 'RankedsService');
 
-      if (newRankeds.length) {
-        log.trace('Adding notes cache for new rankeds...', 'RankedsService');
-
-        const newHashes = newRankeds
-          .map(r => fetchedRankedSongs[r.leaderboardId] && fetchedRankedSongs[r.leaderboardId].hash
-            ? fetchedRankedSongs[r.leaderboardId].hash.toLowerCase()
-            : null,
-          )
-          .filter(hash => hash);
-        const rankedsNotesCache = await getRankedsNotesCache();
-
-        // set empty notes cache for newly downloaded rankeds in order to be downloaded
-        let shouldNotesCacheBeSaved = false;
-        newHashes.forEach(hash => {
-          if (rankedsNotesCache[hash]) return;
-
-          rankedsNotesCache[hash] = null;
-          shouldNotesCacheBeSaved = true;
-        });
-
-        if (shouldNotesCacheBeSaved) await setRankedsNotesCache(rankedsNotesCache);
-
-        log.trace('Notes cache added', 'RankedsService');
-      }
-
       if (changed.length) {
         eventBus.publish('rankeds-changed', {changed, allRankeds: fetchedRankedSongs});
       }
@@ -222,8 +144,6 @@ export default () => {
   service = {
     get: getRankeds,
     refresh: refreshRankeds,
-    getRankedsNotesCache,
-    setRankedsNotesCache,
     destroyService,
   }
 
