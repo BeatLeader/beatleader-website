@@ -64,6 +64,9 @@ export default () => {
     const fetchSong = async (songInfo, fetchFunc, forceUpdate = false, cacheOnly = false, errSongId = '', hash = null) => {
         if (!forceUpdate && songInfo) return songInfo;
 
+        // TODO: temporarily disable Beat Saver fetching (API changes)
+        return null;
+
         if(cacheOnly) return null;
 
         let bsSuspension = await getCurrentSuspension();
