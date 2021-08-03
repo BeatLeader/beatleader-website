@@ -85,6 +85,11 @@ export default [
 			{
 				name: 'copy-comlink',
 				generateBundle() {
+					const buildDir = './public/build'
+					if (!fs.existsSync(buildDir)){
+						fs.mkdirSync(buildDir);
+					}
+
 					fs.copyFileSync(
 						path.resolve('./node_modules/comlink/dist/umd/comlink.min.js'),
 						path.resolve('./public/build/comlink.min.js'),
