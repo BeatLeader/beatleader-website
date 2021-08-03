@@ -30,7 +30,7 @@
     finalScoresStats = (ssStats ? ssStats : [])
       .filter(stat => stat.label !== 'Average' || !playerStats)
       .concat(
-        (playerStats && playerStats.topPp ? [{
+        (playerStats && playerStats.topPp && Number.isFinite(playerStats.topPp) ? [{
           label: 'Best PP',
           title: null,
           value: playerStats.topPp,
