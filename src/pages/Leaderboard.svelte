@@ -48,6 +48,13 @@
   let boxEl = null;
   let leaderboard = null;
 
+  let typeOptions = [
+    {id: 'global', label: 'Global', iconFa: 'fas fa-globe-americas'},
+    {id: 'friends', label: 'Friends', iconFa: 'fas fa-user-friends'}
+  ];
+
+  let currentTypeOption = typeOptions[0];
+
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
@@ -72,6 +79,8 @@
     newPage = parseInt(newPage, 10);
     if (isNaN(newPage)) newPage = 1;
 
+    currentTypeOption = typeOptions[currentType === 'global' ? 0 : 1];
+
     currentPage = newPage;
     leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage);
   }
@@ -90,7 +99,16 @@
     const newLeaderboardId = opt(event, 'detail.leaderboardId');
     if (!newLeaderboardId) return;
 
-    changeParams(newLeaderboardId, currentType, 1);
+    if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/${1}`);
+    else changeParams(newLeaderboardId, currentType, 1);
+  }
+
+  function onTypeChanged(event) {
+    const newType = opt(event, 'detail.id');
+    if (!newType) return;
+
+    if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/${1}`);
+    else changeParams(currentLeaderboardId, newType, 1);
   }
 
   $: isLoading = leaderboardStore.isLoading;
@@ -190,11 +208,14 @@
         </header>
         {/if}
 
-        {#if !withoutDiffSwitcher && diffs && diffs.length}
-          <div class="diff-switch">
-            <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
-          </div>
-        {/if}
+        <nav class="diff-switch">
+          {#if !withoutDiffSwitcher && diffs && diffs.length}
+              <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
+          {/if}
+
+          <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
+                    loadingValue={currentlyLoadedDiff} />
+        </nav>
 
         {#if scores && scores.length}
           <div class="scores-grid">
@@ -248,9 +269,11 @@
 
           <Pager totalItems={$leaderboardStore.totalItems} itemsPerPage={LEADERBOARD_SCORES_PER_PAGE} itemsPerPageValues={null}
                  currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'} hide={currentType !== 'global'}
                  on:page-changed={onPageChanged}
           />
+        {:else}
+          <p transition:fade>No scores found.</p>
         {/if}
       {:else if (!$isLoading)}
         <p>Leaderboard not found.</p>
@@ -261,8 +284,15 @@
 
 <style>
     .diff-switch {
+        display: flex;
+        justify-content: center;
         margin-bottom: 1em;
     }
+
+    .diff-switch :global(> *:not(:last-child)) {
+        margin-right: 1em;
+    }
+
 
     .leaderboard {
         position: relative;
@@ -428,6 +458,15 @@
     @media screen and (max-width: 767px) {
         header .stats {
           justify-items: left;
+        }
+
+        .diff-switch {
+            flex-direction: column;
+        }
+
+        .diff-switch :global(> *:not(:last-child)) {
+            margin-right: 0;
+            margin-bottom: .5em;
         }
 
         .scores-grid .player-score {

@@ -50,6 +50,7 @@ export default () => {
   })
 
   const getAllScores = async () => scoresRepository().getAll();
+  const getLeaderboardScores = async leaderboardId => scoresRepository().getAllFromIndex('scores-leaderboardId', leaderboardId);
   const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId);
   const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
   const getPlayerSongScore = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
@@ -506,6 +507,7 @@ export default () => {
 
   service = {
     getAll: getAllScores,
+    getLeaderboardScores,
     getPlayerScores,
     getPlayerScoresAsObject,
     getPlayerScoresPage,

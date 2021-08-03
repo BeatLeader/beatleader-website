@@ -35,7 +35,7 @@ export default () => {
 
   const isMainPlayer = playerId => mainPlayerId && playerId === mainPlayerId;
 
-  const getAll = async () => playersRepository().getAll();
+  const getAll = async (force = false) => playersRepository().getAll(force);
 
   // TODO: just for now
   const getFriends = async () => (await getAll()).filter(player => player && player.playerId && !isPlayerMain(player.playerId)).map(p => p.playerId);
