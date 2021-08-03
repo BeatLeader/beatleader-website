@@ -27,21 +27,4 @@
         margin-right: .5em;
         margin-bottom: .5em;
     }
-
-    @media (max-width: 599px) {
-        .badges :global(.badge) {
-            display: flex;
-            width: 100%!important;
-        }
-
-        .badges :global(.badge .label) {
-            flex-grow: 1;
-            min-width: fit-content;
-        }
-
-        .badges :global(.badge .value) {
-            width: 7.25rem!important;
-            min-width: fit-content;
-        }
-    }
 </style>

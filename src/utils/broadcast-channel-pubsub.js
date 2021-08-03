@@ -8,8 +8,10 @@ let bc;
 const createGlobalPubSub = () => {
     const subscribers = {}
 
+    const isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+
     const nodeId = uuid();
-    log.info(`Create pub/sub channel for node ${nodeId}`, 'PubSub')
+    log.info(`Create pub/sub channel for node ${nodeId} (${isWorker ? 'worker' : 'browser'})`, 'PubSub')
 
     bc = new BroadcastChannel('global-pub-sub', {webWorkerSupport: false});
     const elector = createLeaderElection(bc);
@@ -55,7 +57,9 @@ const createGlobalPubSub = () => {
     }
 
     // add close handler (also prevents back-forward cache)
-    window.addEventListener('beforeunload', () => removeNode(), {capture: true});
+    if (!(typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope)) {
+        window.addEventListener('beforeunload', () => removeNode(), {capture: true});
+    }
 
     publish('node-added', nodeId)
     log.info(`Node ${nodeId} has been created`, 'PubSub')
@@ -77,6 +81,7 @@ const createGlobalPubSub = () => {
         publish,
         leaderStore,
         isLeader() {return isLeader},
+        getNodeId() {return nodeId},
     }
 }
 

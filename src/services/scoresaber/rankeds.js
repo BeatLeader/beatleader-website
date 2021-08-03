@@ -45,10 +45,10 @@ export default () => {
       : null;
 
   const setRankedsNotesCache = async rankedsNotesCache => keyValueRepository().set(rankedsNotesCache, RANKEDS_NOTES_CACHE_KEY);
-  const getRankedsNotesCache = async () => {
+  const getRankedsNotesCache = async (forceUpdate = true) => {
     // try to get current cache
     const currentCache = await keyValueRepository().get(RANKEDS_NOTES_CACHE_KEY);
-    if (currentCache) return currentCache;
+    if (currentCache && !forceUpdate) return currentCache;
 
     // prepare cache
     const bsSongs = convertArrayToObjectByKey(

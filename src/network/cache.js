@@ -7,11 +7,12 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   let cache = {};
   let cacheSize = size;
 
+  const isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope
+
   const defaultExpiryIn = expiryIn;
 
   const packValue = value => {
     if (!value || typeof value !== 'object') return value;
-    // || !value.headers || !value.headers instanceof Headers) return value;
 
     const newValue = {...value};
 
@@ -41,7 +42,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
     }
 
     if (value.body) {
-      newValue.body = new DOMParser().parseFromString(value.body, 'text/html');
+      newValue.body = !isWorker ? new DOMParser().parseFromString(value.body, 'text/html') : value.body;
     }
 
     return newValue;

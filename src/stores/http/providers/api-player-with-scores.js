@@ -3,6 +3,7 @@ import createScoresService from '../../../services/scoresaber/scores';
 import createBeatSaviorService from '../../../services/beatsavior'
 import queue from '../../../network/queues/queues'
 import {MINUTE, SECOND} from '../../../utils/date'
+import {worker} from '../../../utils/worker-wrappers'
 
 let playerService = null;
 let scoresService = null;
@@ -34,6 +35,8 @@ export default () => {
       ]);
 
       if (!player || !scores) return null;
+
+      if (worker) worker.calcPlayerStats(playerId);
 
       return {...player, scores, scoresType, scoresPage}
     },

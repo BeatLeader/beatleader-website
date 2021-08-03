@@ -161,7 +161,8 @@ export default async () => {
       queue.clear();
       queue.start();
 
-      log.info(`Node is a leader, queue processing enabled`, 'DlManager')
+      const nodeId = eventBus.getNodeId();
+      log.info(`Node ${nodeId} is a leader, queue processing enabled`, 'DlManager')
 
       await startSyncing(queue)
     }

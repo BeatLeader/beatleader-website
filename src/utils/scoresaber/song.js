@@ -15,6 +15,34 @@ export const getMaxScore = (blocks, maxScorePerBlock = 115) =>
     Math.min(blocks, 1) * maxScorePerBlock
   );
 
+export function getAccFromScore(score, maxSongScore = null, percentageInsteadOfAcc = false) {
+  if (!score) return null;
+
+  const scoreMult = !percentageInsteadOfAcc && score.unmodifiedScore && score.score ? score.score / score.unmodifiedScore : 1
+
+  return maxSongScore
+    ? score.score / maxSongScore / scoreMult * 100
+    : (score.maxScore
+      ? score.score / score.maxScore / scoreMult * 100
+      : null)
+}
+
+export const getAccFromRankedScore = (score, rankedsCache, percentageInsteadOfAcc = false) => {
+  if (!score || !rankedsCache) return getAccFromScore(score.score, null, percentageInsteadOfAcc);
+  const hash = opt(score, 'leaderboard.song.hash') ? score.leaderboard.song.hash.toLowerCase() : null;
+
+  const diffInfo = opt(score, 'leaderboard.diffInfo');
+
+  if (!hash || !diffInfo || !diffInfo.type || !diffInfo.diff) return getAccFromScore(score.score, null, percentageInsteadOfAcc);
+
+  const notesCount = rankedsCache[hash] && rankedsCache[hash][diffInfo.type] && rankedsCache[hash][diffInfo.type][diffInfo.diff]
+    ? rankedsCache[hash][diffInfo.type][diffInfo.diff]
+    : null;
+  if (!Number.isFinite(notesCount) || isNaN(notesCount)) return getAccFromScore(score.score, null, percentageInsteadOfAcc);
+
+  return getAccFromScore(score.score, getMaxScore(notesCount), percentageInsteadOfAcc);
+}
+
 export function findDiffInfoWithDiffAndType(characteristics, diffAndType) {
   if (!characteristics || !Array.isArray(characteristics) || !diffAndType || !diffAndType.type) return null;
 

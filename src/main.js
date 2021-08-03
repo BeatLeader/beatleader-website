@@ -12,6 +12,7 @@ import initCommandProcessor from './network/command-processor'
 import {enablePatches, setAutoFreeze} from 'immer'
 import {initCompareEnhancer} from './stores/http/enhancers/scores/compare'
 import ErrorComponent from './components/Common/Error.svelte'
+import initializeWorkers from './utils/worker-wrappers'
 
 let app = null;
 
@@ -33,6 +34,8 @@ let app = null;
     // setup immer.js
     enablePatches();
     setAutoFreeze(false);
+
+    await initializeWorkers();
 
     // pre-warm cache && create singleton services
     await createConfigStore();
