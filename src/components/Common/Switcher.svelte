@@ -37,6 +37,7 @@
 <style>
     .switch-types {
         display: flex;
+        flex-wrap: wrap;
         justify-content: center;
         align-items: center;
         font-size: .75rem;
