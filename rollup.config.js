@@ -131,6 +131,11 @@ export default [
 					this.addWatchFile(path.resolve('./src/workers/stats-worker.js'));
 				},
 				generateBundle() {
+					const buildDir = './public/build'
+					if (!fs.existsSync(buildDir)){
+						fs.mkdirSync(buildDir);
+					}
+
 					fs.copyFileSync(
 						path.resolve('./src/workers/stats-worker.js'),
 						path.resolve('./public/build/stats-worker.js'),

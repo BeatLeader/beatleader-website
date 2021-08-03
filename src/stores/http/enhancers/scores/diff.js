@@ -29,9 +29,5 @@ export default async (data, playerId = null) => {
   const diffInfo = opt(data, 'leaderboard.diffInfo');
   const characteristics = opt(data, 'leaderboard.beatSaver.metadata.characteristics');
 
-  if (diffInfo && characteristics) {
-    prevScore = calculateAcc(prevScore, characteristics, diffInfo);
-  }
-
-  data.prevScore = prevScore;
+  data.prevScore = calculateAcc(prevScore, characteristics, diffInfo, leaderboardId);
 }

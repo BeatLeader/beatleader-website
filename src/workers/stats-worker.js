@@ -1,25 +1,21 @@
 import {expose} from 'comlink'
 import initDb from '../db/db'
 import initializeRepositories from '../db/repositories-init'
-import createRankedsService from '../services/scoresaber/rankeds'
 import scoresRepository from '../db/repository/scores'
 import eventBus from '../utils/broadcast-channel-pubsub'
 import {opt} from '../utils/js'
 import {diffColors} from '../utils/scoresaber/format'
-import {getAccFromRankedScore, getAccFromScore} from '../utils/scoresaber/song'
+import {getAccFromScore} from '../utils/scoresaber/song'
 
 const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId, true);
 
 let db = null;
-let rankedsService = null;
 
 async function init() {
   if (db) return;
 
   db = await initDb();
   await initializeRepositories();
-
-  rankedsService = createRankedsService();
 }
 
 const calcPlayerStats = async playerId => {
@@ -32,8 +28,6 @@ const calcPlayerStats = async playerId => {
   const rankedScores = scores
     .filter(score => opt(score, 'score.pp') && ((opt(score, 'score.score') && opt(score, 'score.maxScore')) || opt(score, 'score.acc')));
 
-  const rankedsCache = await rankedsService.getRankedsNotesCache();
-
   const stats = rankedScores.reduce((cum, s) => {
     const pp = opt(s, 'score.pp');
     const score = opt(s, 'score.score', 0)
@@ -45,7 +39,7 @@ const calcPlayerStats = async playerId => {
     let acc = scoreAcc ? scoreAcc : accFromScore;
     if (!acc || isNaN(acc)) return cum;
 
-    const fixedAcc = getAccFromRankedScore(s, rankedsCache);
+    const fixedAcc = getAccFromScore(s);
     if (Number.isFinite(fixedAcc)) acc = fixedAcc;
 
     s.score.acc = acc;

@@ -6,6 +6,7 @@ import createLeaderboardPageProvider from './providers/page-leaderboard'
 import {writable} from 'svelte/store'
 import {findDiffInfoWithDiffAndType} from '../../utils/scoresaber/song'
 import {debounce} from '../../utils/debounce'
+import produce, {applyPatches} from 'immer'
 
 export default (leaderboardId, type = 'global', page = 1, initialState = null, initialStateType = 'initial') => {
   let currentLeaderboardId = leaderboardId ? leaderboardId : null;
@@ -14,6 +15,12 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
 
   const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
 
+  const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
+  const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${opt(scoreRow, 'player.playerId')}`
+
+  let enhancePatches = {};
+  let currentEnhanceTaskId = null;
+
   const onNewData = ({fetchParams, state, set}) => {
     currentLeaderboardId = opt(fetchParams, 'leaderboardId', null);
     currentType = opt(fetchParams, 'type', 'global');
@@ -21,32 +28,38 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
 
     if (!state) return;
 
-    const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
+    const enhanceTaskId = getCurrentEnhanceTaskId();
+    if (currentEnhanceTaskId !== enhanceTaskId) {
+      enhancePatches = {}
+      currentEnhanceTaskId = enhanceTaskId;
+    }
+
+    const stateProduce = (state, patchId, producer) => produce(state, producer, patches => {
+      if (!enhancePatches[patchId]) enhancePatches[patchId] = [];
+
+      enhancePatches[patchId].push(...patches)
+    })
 
     const debouncedSetState = debounce((enhanceTaskId, state) => {
-      if (enhanceTaskId !== getCurrentEnhanceTaskId()) return;
+      if (currentEnhanceTaskId !== enhanceTaskId) return;
 
       set(state);
     }, 100);
 
-    const enhanceTaskId = getCurrentEnhanceTaskId();
-    const newState = {...state, scores: [...state.scores]};
+    const newState = {...state};
 
-    const setStateRow = (scoreRow, idx, fields = ['player', 'score']) => {
-      if (enhanceTaskId !== getCurrentEnhanceTaskId() || !newState || !newState[idx] || !scoreRow) return null;
+    const setStateRow = (enhanceTaskId, scoreRow) => {
+      if (currentEnhanceTaskId !== enhanceTaskId) return null;
 
-      fields = !Array.isArray(fields) ? [fields] : fields;
+      const patchId = getPatchId(currentLeaderboardId, scoreRow)
+      const stateRowIdx = newState.scores.findIndex(s => getPatchId(currentLeaderboardId, s) === patchId)
+      if (stateRowIdx < 0) return;
 
-      fields.map(field => {
-        const stateValue = opt(newState[idx], field, {});
-        const rowValue = opt(scoreRow, field, {});
-
-        newState[idx][field] = {...stateValue, ...rowValue};
-      })
+      newState.scores[stateRowIdx] = applyPatches(newState.scores[stateRowIdx], enhancePatches[patchId]);
 
       debouncedSetState(enhanceTaskId, newState);
-      return newState[idx];
 
+      return newState[stateRowIdx];
     }
 
     if (newState.leaderboard)
@@ -64,12 +77,12 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
 
           return newState.leaderboard.beatSaver;
         })
-        .then(bsData => {
-          if (!bsData || !newState.scores || !newState.scores.length) return;
+        .then(_ => {
+          if (!newState.scores || !newState.scores.length) return;
 
-          for (const [idx, scoreRow] of newState.scores.entries()) {
-            accEnhancer({...scoreRow, leaderboard: newState.leaderboard})
-              .then(enhancedScoreRow => setStateRow(enhancedScoreRow, idx))
+          for (const scoreRow of newState.scores) {
+            stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => accEnhancer(draft))
+              .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
           }
         })
   }

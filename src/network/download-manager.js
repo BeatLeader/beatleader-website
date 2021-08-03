@@ -22,7 +22,6 @@ let beatSaviorService = null;
 const TYPES = {
   BEATSAVIOR: {name: 'BEATSAVIOR', priority: PRIORITY.LOW},
   RANKEDS: {name: 'RANKEDS', priority: PRIORITY.LOW},
-  RANKEDS_NOTES_CACHE: {name: 'RANKEDS-NOTES-CACHE', priority: PRIORITY.LOWEST},
   PLAYER_SCORES: {name: 'PLAYER-SCORES', priority: PRIORITY.NORMAL},
   ACTIVE_PLAYERS: {name: 'ACTIVE-PLAYERS', priority: PRIORITY.HIGH},
   MAIN_PLAYER: {name: 'MAIN-PLAYER', priority: PRIORITY.HIGHEST},
@@ -84,10 +83,6 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
           .then(_ => log.debug('Enqueued active players processed.', 'DlManager'));
       break;
 
-    case TYPES.RANKEDS_NOTES_CACHE:
-      // await enqueueRankedsNotesCache(queue, then);
-      break;
-
     case TYPES.PLAYER_SCORES:
       log.debug(`Enqueue players scores`, 'DlManager');
 
@@ -118,7 +113,6 @@ const enqueueAllJobs = async queue => {
     enqueue(queue, TYPES.ACTIVE_PLAYERS),
     enqueue(queue, TYPES.PLAYER_SCORES),
     enqueue(queue, TYPES.BEATSAVIOR),
-    enqueue(queue, TYPES.RANKEDS_NOTES_CACHE)
   ])
 }
 
