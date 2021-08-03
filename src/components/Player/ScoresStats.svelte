@@ -8,7 +8,7 @@
 
 {#if stats}
   <div class="badges has-text-centered-mobile">
-    {#each stats as stat}
+    {#each stats as stat (stat.label)}
       <Badge {...stat}/>
     {/each}
   </div>
