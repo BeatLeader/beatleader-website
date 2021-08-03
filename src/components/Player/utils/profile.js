@@ -5,7 +5,7 @@ import {opt} from '../../../utils/js'
 const TWEEN_DURATION = 300;
 
 const scoresStatsTweened = {};
-function updateScoresStats(playerData) {
+function updateScoresStats(playerData, playerStats) {
   if (!playerData) return null;
 
   const playerInfo = opt(playerData, 'playerInfo');
@@ -17,7 +17,7 @@ function updateScoresStats(playerData) {
       {key: "totalScore", label: 'Total score', bgColor: 'var(--selected)'},
       {key: "rankedPlayCount", label: 'Ranked play count', bgColor: 'var(--ppColour)'},
       {key: "totalRankedScore", label: 'Total ranked score', bgColor: 'var(--ppColour)'},
-      {key: "averageRankedAccuracy", label: 'Average', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
+      {key: "averageRankedAccuracy", label: 'Average', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'}
     ]
     : [];
 
@@ -50,7 +50,99 @@ function updateScoresStats(playerData) {
         }]
         : [],
     )
-    .filter(s => s);
+    .concat(
+      (playerStats && playerStats.topPp && Number.isFinite(playerStats.topPp) ? [{
+        label: 'Best PP',
+        title: null,
+        value: playerStats.topPp,
+        digits: 2,
+        suffix: 'pp',
+        fluid: true,
+        bgColor: 'var(--ppColour)',
+      }] : [])
+    )
+    .filter(s => s && (!playerStats || s.label !== 'Average'));
+}
+
+function updateAccStats(playerStats) {
+  if (!playerStats) return null;
+
+  return (playerStats ? ['topAcc', 'avgAcc', 'medianAcc', 'stdDeviation'] : [])
+    .reduce((cum, key) => {
+      const value = playerStats[key] ? playerStats[key] : null;
+      if (!value && !Number.isFinite(value)) return cum;
+
+      const tweenKey = key === 'avgAcc' ? 'averageRankedAccuracy' : key
+      if (!scoresStatsTweened.hasOwnProperty(tweenKey)) scoresStatsTweened[tweenKey] = tweened(value, TWEEN_DURATION);
+      else scoresStatsTweened[tweenKey].set(value);
+
+      let metricData = null;
+
+      switch(key) {
+        case 'avgAcc':
+          metricData = {
+            label: 'Average',
+            title: 'Average ranked accuracy',
+            bgColor: 'var(--selected)'
+          };
+          break;
+
+        case 'medianAcc':
+          metricData = {
+            label: 'Median',
+            title: 'Median ranked accuracy',
+            bgColor: 'var(--ppColour)'
+          };
+          break;
+
+        case 'stdDeviation':
+          metricData = {
+            label: 'Std deviation',
+            title: 'Standard deviation ranked accuracy',
+            bgColor: 'var(--decrease)'
+          };
+          break;
+
+        case 'topAcc':
+          metricData = {
+            label: 'Best',
+            title: 'Best ranked accuracy',
+            bgColor: 'var(--selected)'
+          };
+          break;
+      }
+
+      if (metricData)
+        cum.push({
+          ...metricData,
+          value: scoresStatsTweened[tweenKey],
+          digits: 2,
+          suffix: '%',
+          fluid: true,
+        });
+
+      return cum;
+    }, [])
+}
+
+function updateAccBadges(playerStats) {
+  if (!playerStats || !playerStats.badges) return null;
+
+  return playerStats.badges
+    .map(badge => {
+      const value = badge.value;
+
+      if (!scoresStatsTweened.hasOwnProperty(badge.label)) scoresStatsTweened[badge.label] = tweened(value, TWEEN_DURATION);
+      else scoresStatsTweened[badge.label].set(value);
+
+      return {
+        ...badge,
+        value: scoresStatsTweened[badge.label],
+        title: !badge.min ? `< ${badge.max}%` : (!badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`),
+        fluid: true,
+        digits: 0,
+      }
+    })
 }
 
 function updateSsBadges(playerData) {
@@ -60,7 +152,9 @@ function updateSsBadges(playerData) {
 }
 
 const playerInfoTweened = {};
-export default playerData => {
+export default (playerData, playerStats) => {
+  if (!playerData && !playerStats) return {};
+
   const playerInfo = {...opt(playerData, 'playerInfo', null)};
 
   ['pp', 'rank'].forEach(key => {
@@ -90,7 +184,9 @@ export default playerData => {
   return {
     playerInfo,
     prevInfo: opt(playerData, 'prevInfo', null),
-    scoresStats: updateScoresStats(playerData),
+    scoresStats: updateScoresStats(playerData, playerStats),
+    accStats: updateAccStats(playerStats),
+    accBadges: updateAccBadges(playerStats),
     ssBadges: updateSsBadges(playerData),
   }
 }

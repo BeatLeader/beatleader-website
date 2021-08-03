@@ -8,8 +8,10 @@
 
 {#if stats}
   <div class="badges has-text-centered-mobile">
-    {#each stats as stat (stat.label+stat.value)}
+    {#each stats as stat}
+      {#key stat.label}
       <Badge {...stat}/>
+      {/key}
     {/each}
   </div>
 {:else if skeleton}
