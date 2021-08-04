@@ -17,7 +17,7 @@ import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
-const RANK_AND_PP_REFRESH_INTERVAL = HOUR * 2;
+const RANK_AND_PP_REFRESH_INTERVAL = HOUR;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -177,6 +177,8 @@ export default () => {
   const updateRankAndPp = async scoresToUpdate => {
     if (!scoresToUpdate || !scoresToUpdate.length) return;
 
+    log.debug('Update rank and pp for bunch of scores', 'ScoresService', scoresToUpdate);
+
     for(const score of scoresToUpdate) {
       let dbScore = null;
 
@@ -186,7 +188,7 @@ export default () => {
 
           dbScore = await scoresStore.get(score.id);
           if (dbScore && dbScore.score && dbScore.score.scoreId === score.scoreId) {
-            dbScore.lastUpdated = score.lastUpdated;
+            dbScore.lastUpdated = new Date();
             dbScore.pp = score.pp;
             dbScore.score.pp = score.pp;
             dbScore.score.rank = score.rank;
@@ -259,7 +261,9 @@ export default () => {
 
         playersCacheToUpdate.push(player);
 
-        scoresCacheToUpdate = newScores.map(score => {
+        const scoresStore = tx.objectStore('scores');
+
+        for(let score of newScores) {
           const id = getScoreKey(player.playerId, score);
           const leaderboardId = opt(score, 'leaderboard.leaderboardId');
           const scoreValue = opt(score, 'score.score');
@@ -270,14 +274,11 @@ export default () => {
             return null;
           }
 
-          const prevScore = currentScoresById && currentScoresById[id] && currentScoresById[id].score
-            ? currentScoresById[id]
-            : null;
-
-          if (prevScore) {
-            const prevScoreScorePart = {...prevScore.score};
+          const dbScore = await scoresStore.get(id)
+          if (dbScore) {
+            const prevScoreScorePart = {...dbScore.score};
             if (prevScoreScorePart && prevScoreScorePart.timeSet && prevScoreScorePart.score !== undefined && prevScoreScorePart.score < scoreValue) {
-              const prevHistory = opt(prevScore, 'history.length') ? prevScore.history.filter(h => h.timeSet) : [];
+              const prevHistory = opt(dbScore, 'history.length') ? dbScore.history.filter(h => h.timeSet) : [];
               score.history = [prevScoreScorePart].concat(prevHistory).slice(0,3);
             }
           }
@@ -285,11 +286,10 @@ export default () => {
           // needed by DB indexes
           score = addScoreIndexFields(player.playerId, score);
 
-          return score;
-        }).filter(s => s);
+          scoresCacheToUpdate.push(score);
 
-        const scoresStore = tx.objectStore('scores');
-        await Promise.all(scoresCacheToUpdate.map(score => scoresStore.put(score)));
+          await scoresStore.put(score);
+        }
       });
 
       // update cache
@@ -364,12 +364,14 @@ export default () => {
 
           const pp = opt(score, 'score.pp')
           const rank = opt(score, 'score.rank')
-          const lastUpdated = score.lastUpdated ? score.lastUpdated : new Date()
           const id = score.id;
+          const lastUpdated = cachedScore ? cachedScore.lastUpdated : null;
 
-          return {id, scoreId, pp, rank, lastUpdated}
+          if (lastUpdated && lastUpdated > addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return null;
+
+          return {id, scoreId, pp, rank}
         })
-        .filter(score => score)
+        .filter(score => score && score.scoreId && score.rank)
 
       if (scoresToUpdate.length) updateRankAndPp(scoresToUpdate).then(_ => {});
     }

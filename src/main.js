@@ -20,7 +20,7 @@ let app = null;
   try {
     // TODO: remove level setting
     // log.setLevel(log.TRACE);
-    // log.logOnly(['BeatSaviorService']);
+    // log.logOnly(['ScoresService']);
 
     log.info('Starting up...', 'Main')
 

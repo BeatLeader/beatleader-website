@@ -2,7 +2,7 @@ import {dateFromString} from '../../../../../utils/date'
 import {extractDiffAndType} from '../../../../../utils/scoresaber/format'
 import {opt} from '../../../../../utils/js'
 
-export default (response, setLastUpdated = null) => {
+export default response => {
   if (!opt(response, 'scores') || !Array.isArray(response.scores) || !opt(response, 'scores.0.scoreId')) return [];
 
   return response.scores.map(s => {
@@ -35,7 +35,7 @@ export default (response, setLastUpdated = null) => {
     return {
       leaderboard,
       score: {...score, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted},
-      lastUpdated: setLastUpdated
+      lastUpdated: new Date()
     };
   });
 }
