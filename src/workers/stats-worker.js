@@ -29,18 +29,16 @@ const calcPlayerStats = async playerId => {
     .filter(score => opt(score, 'score.pp') && ((opt(score, 'score.score') && opt(score, 'score.maxScore')) || opt(score, 'score.acc')));
 
   const stats = rankedScores.reduce((cum, s) => {
+    const leaderboardId = opt(s, 'leaderboard.leaderboardId')
     const pp = opt(s, 'score.pp');
-    const score = opt(s, 'score.score', 0)
-    const accFromScore = getAccFromScore(s.score);
+    const score = opt(s, 'score.unmodifiedScore', opt(s, 'score.score', 0))
+    const accFromScore = getAccFromScore({...s.score, leaderboardId});
     const scoreAcc = opt(s, 'score.acc');
 
     if (!accFromScore && !scoreAcc) return cum;
 
-    let acc = scoreAcc ? scoreAcc : accFromScore;
+    let acc = accFromScore ? accFromScore : scoreAcc;
     if (!acc || isNaN(acc)) return cum;
-
-    const fixedAcc = getAccFromScore(s);
-    if (Number.isFinite(fixedAcc)) acc = fixedAcc;
 
     s.score.acc = acc;
     cum.totalScore += score;
