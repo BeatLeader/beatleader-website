@@ -154,10 +154,10 @@
 
           {#if leaderboard.stats}
             <div class="stats">
-              {#if leaderboard.stats.length}
+              {#if leaderboard.stats.seconds}
                 <div transition:fade>
                   <span class="time" transition:fade={{duration: 500}}>
-                      <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats.length}/>
+                      <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats.seconds}/>
                   </span>
                 </div>
               {/if}

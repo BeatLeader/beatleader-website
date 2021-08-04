@@ -1,15 +1,14 @@
 import {opt} from '../../../../utils/js'
 import {
-  getFixedLeaderboardMaxScore,
-  getMaxScoreFromSongCharacteristics,
+  getFixedLeaderboardMaxScore, getMaxScore,
 } from '../../../../utils/scoresaber/song'
 
-export default (score, characteristics, diffInfo, leaderboardId) => {
+export default (score, bmStats, leaderboardId) => {
   if (!score.acc) {
     let maxScore;
 
-    if (characteristics && diffInfo) {
-      maxScore = getMaxScoreFromSongCharacteristics(characteristics, diffInfo);
+    if (bmStats && bmStats.notes) {
+      maxScore = getMaxScore(bmStats.notes)
     } else if(leaderboardId) {
       maxScore = getFixedLeaderboardMaxScore(leaderboardId)
     }

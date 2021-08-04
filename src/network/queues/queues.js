@@ -3,6 +3,7 @@ import {PRIORITY} from './http-queue'
 import createScoreSaberApiQueue from './scoresaber/api-queue'
 import createScoreSaberPageQueue from './scoresaber/page-queue'
 import createBeatSaverApiQueue from './beatsaver/api-queue'
+import createBeatMapsApiQueue from './beatmaps/api-queue'
 import createBeatSaviorApiQueue from './beatsavior/api-queue'
 
 export const getResponseBody = response => response ? response.body : null;
@@ -46,6 +47,7 @@ export default {
   SCORESABER_API: initQueue(createScoreSaberApiQueue({concurrency: 3, timeout: 95000})),
   SCORESABER_PAGE: initQueue(createScoreSaberPageQueue({concurrency: 3, timeout: 30000})),
   BEATSAVER: initQueue(createBeatSaverApiQueue({concurrency: 1, timeout: 10000})),
+  BEATMAPS: initQueue(createBeatMapsApiQueue({concurrency: 1, timeout: 10000})),
   BEATSAVIOR: initQueue(createBeatSaviorApiQueue({concurrency: 1, timeout: 10000})),
   PRIORITY,
 }

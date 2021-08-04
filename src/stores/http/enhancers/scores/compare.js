@@ -2,7 +2,7 @@ import {configStore} from '../../../config'
 import createScoresService from '../../../../services/scoresaber/scores'
 import accEnhancer from './acc'
 import beatSaviorEnhancer from './beatsavior'
-import beatSaverEnhancer from '../leaderboard/beatsaver'
+import beatMapsEnhancer from '../common/beatmaps'
 import {opt} from '../../../../utils/js'
 import produce from 'immer'
 
@@ -40,7 +40,7 @@ export default async (data, playerId = null) => {
     await produce(
       await produce(
         comparePlayerScores[leaderboardId],
-        draft => beatSaverEnhancer(draft),
+        draft => beatMapsEnhancer(draft),
       ),
       draft => accEnhancer(draft, true),
     ),
