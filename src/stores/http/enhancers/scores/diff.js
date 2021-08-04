@@ -1,6 +1,7 @@
 import createScoresService from '../../../../services/scoresaber/scores';
 import calculateAcc from '../common/acc-calc'
 import {opt} from '../../../../utils/js'
+import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../../../utils/scoresaber/song'
 
 let scoresService;
 
@@ -27,7 +28,7 @@ export default async (data, playerId = null) => {
   if (!prevScore) return;
 
   const diffInfo = opt(data, 'leaderboard.diffInfo');
-  const characteristics = opt(data, 'leaderboard.beatSaver.metadata.characteristics');
+  const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(opt(data.leaderboard.beatMaps, 'versions.0.diffs'), diffInfo);
 
-  data.prevScore = calculateAcc(prevScore, characteristics, diffInfo, leaderboardId);
+  data.prevScore = calculateAcc(prevScore, bmStats, leaderboardId);
 }

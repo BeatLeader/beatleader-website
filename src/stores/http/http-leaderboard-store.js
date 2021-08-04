@@ -1,10 +1,10 @@
 import createHttpStore from './http-store';
-import beatSaverEnhancer from './enhancers/leaderboard/beatsaver'
+import beatMapsEnhancer from './enhancers/common/beatmaps'
 import accEnhancer from './enhancers/scores/acc'
 import {opt} from '../../utils/js'
 import createLeaderboardPageProvider from './providers/page-leaderboard'
 import {writable} from 'svelte/store'
-import {findDiffInfoWithDiffAndType} from '../../utils/scoresaber/song'
+import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/scoresaber/song'
 import {debounce} from '../../utils/debounce'
 import produce, {applyPatches} from 'immer'
 
@@ -63,19 +63,18 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
     }
 
     if (newState.leaderboard)
-      beatSaverEnhancer(newState)
+      beatMapsEnhancer(newState)
         .then(_ => {
-          const bsStats = findDiffInfoWithDiffAndType(opt(newState.leaderboard.beatSaver, 'metadata.characteristics'), newState.leaderboard.diffInfo);
-          if (!bsStats) return null;
+          const bpm = opt(newState, 'leaderboard.beatMaps.metadata.bpm', null);
+          const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(opt(newState.leaderboard.beatMaps, 'versions.0.diffs'), newState.leaderboard.diffInfo);
+          if (!bmStats) return null;
 
-          if (bsStats.notes && bsStats.length) bsStats.nps = bsStats.notes / bsStats.length;
-
-          newState.leaderboard.stats = {...newState.leaderboard.stats, ...bsStats, bpm: opt(newState, 'leaderboard.beatSaver.metadata.bpm')};
+          newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
 
           setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
           debouncedSetState(enhanceTaskId, newState);
 
-          return newState.leaderboard.beatSaver;
+          return newState.leaderboard.beatMaps;
         })
         .then(_ => {
           if (!newState.scores || !newState.scores.length) return;

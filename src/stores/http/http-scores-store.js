@@ -1,5 +1,5 @@
 import createHttpStore from './http-store';
-import beatSaverEnhancer from './enhancers/leaderboard/beatsaver'
+import beatMapsEnhancer from './enhancers/common/beatmaps'
 import accEnhancer from './enhancers/scores/acc'
 import beatSaviorEnhancer from './enhancers/scores/beatsavior'
 import rankedsEnhancer from './enhancers/leaderboard/rankeds'
@@ -63,7 +63,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     }
 
     for (const scoreRow of newState) {
-      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaverEnhancer(draft))
+      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
         .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
         .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
         .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => diffEnhancer(draft, currentPlayerId)))
