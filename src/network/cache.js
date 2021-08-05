@@ -1,4 +1,4 @@
-import eventBus from '../utils/broadcast-channel-pubsub'
+// import eventBus from '../utils/broadcast-channel-pubsub'
 import {addToDate, MINUTE} from '../utils/date'
 
 const DEFAULT_CACHE_SIZE = 100;
@@ -49,9 +49,9 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   }
 
   // update data cached on another node
-  const setUnsubscribe = eventBus.on('net-cache-key-set', ({key, value, expiryIn}, isLocal) => !isLocal ? set(key, unpackValue(value), expiryIn, false) : null);
-  const forgetUnsubscribe = eventBus.on('net-cache-key-forget', ({key}, isLocal) => !isLocal ? forget(key, false) : null);
-  const flushUnsubscribe = eventBus.on('net-cache-flush', (_, isLocal) => !isLocal ? flush(false) : null);
+  // const setUnsubscribe = eventBus.on('net-cache-key-set', ({key, value, expiryIn}, isLocal) => !isLocal ? set(key, unpackValue(value), expiryIn, false) : null);
+  // const forgetUnsubscribe = eventBus.on('net-cache-key-forget', ({key}, isLocal) => !isLocal ? forget(key, false) : null);
+  // const flushUnsubscribe = eventBus.on('net-cache-flush', (_, isLocal) => !isLocal ? flush(false) : null);
 
   const has = (key, maxAge = null, withExpired = false) =>
     cache.hasOwnProperty(key) && cache[key] &&
@@ -63,7 +63,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
 
     cache[key] = {key, cachedAt: new Date(), expiryIn, expiryAt: addToDate(expiryIn, new Date()), value};
 
-    if (emitEvent) eventBus.publish('net-cache-key-set', {key, value: packValue(value), expiryIn});
+    // if (emitEvent) eventBus.publish('net-cache-key-set', {key, value: packValue(value), expiryIn});
 
     garbageCollect();
 
@@ -79,7 +79,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   const forget = (key, emitEvent = true) => {
     delete cache[key];
 
-    if (emitEvent) eventBus.publish('net-cache-key-forget', {key});
+    // if (emitEvent) eventBus.publish('net-cache-key-forget', {key});
 
     return cache;
   }
@@ -87,7 +87,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   const flush = (emitEvent = true) => {
     cache = {};
 
-    if (emitEvent) eventBus.publish('net-cache-flush', {});
+    // if (emitEvent) eventBus.publish('net-cache-flush', {});
 
     return cache;
   }
@@ -103,9 +103,9 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   }
 
   const destroy = () => {
-    setUnsubscribe();
-    forgetUnsubscribe();
-    flushUnsubscribe();
+    // setUnsubscribe();
+    // forgetUnsubscribe();
+    // flushUnsubscribe();
   }
 
   return {
