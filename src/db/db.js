@@ -1,6 +1,6 @@
 import {openDB} from 'idb'
 import log from '../utils/logger'
-import {isDateObject, opt} from '../utils/js'
+import {isDateObject} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
 const SSR_DB_VERSION = 6;

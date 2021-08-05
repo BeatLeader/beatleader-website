@@ -13,7 +13,7 @@ const createGlobalPubSub = () => {
     const nodeId = uuid();
     log.info(`Create pub/sub channel for node ${nodeId} (${isWorker ? 'worker' : 'browser'})`, 'PubSub')
 
-    bc = new BroadcastChannel('global-pub-sub', {webWorkerSupport: false});
+    bc = new BroadcastChannel('global-pub-sub', {webWorkerSupport: true});
     const elector = createLeaderElection(bc);
 
     let isLeader = false;
