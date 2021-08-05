@@ -1,5 +1,5 @@
 import keyValueRepository from './repository/key-value';
-import createBeatMapsService from '../services/beatsaver'
+import createBeatMapsService from '../services/beatmaps'
 import log from '../utils/logger';
 import {db} from './db'
 import {opt} from '../utils/js'
@@ -47,7 +47,7 @@ const allFixes = {
           const beatSaverSong = cursor.value;
 
           if (opt(beatSaverSong, 'metadata.characteristics')) {
-            const beatMapsSong = beatmapsService.convertBeatSaverToBeatMaps(beatSaverSong);
+            const beatMapsSong = beatmapsService.convertOldBeatSaverToBeatMaps(beatSaverSong);
             if (beatMapsSong) {
               songsBeatMapsStore.put(beatMapsSong)
 

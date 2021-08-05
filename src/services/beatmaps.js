@@ -3,10 +3,10 @@ import keyApiClient from '../network/clients/beatmaps/api-key';
 import {PRIORITY} from '../network/queues/http-queue';
 import log from '../utils/logger'
 import {SsrHttpNotFoundError, SsrNetworkError} from '../network/errors'
-
 import songsBeatMapsRepository from "../db/repository/songs-beatmaps";
 import cacheRepository from "../db/repository/cache";
-import {addToDate, HOUR} from '../utils/date'
+import {addToDate, dateFromString, HOUR} from '../utils/date'
+import {capitalize, opt} from '../utils/js'
 
 const BM_SUSPENSION_KEY = 'bmSuspension';
 const BM_NOT_FOUND_KEY = 'bm404';
@@ -109,8 +109,107 @@ export default () => {
         return fetchSong(songInfo, () => keyApiClient.getProcessed({key, signal, priority}), forceUpdate, cacheOnly, key)
     }
 
+    const convertOldBeatSaverToBeatMaps = song => {
+        let {key, hash, name, metadata: {characteristics}} = song;
+
+        if (!key || !hash || !name || !characteristics || !Array.isArray(characteristics)) return null;
+
+        if (hash.toLowerCase) hash = hash.toLowerCase();
+
+        const diffs = characteristics.reduce((diffs, ch) => {
+            if (!ch.name || !ch.difficulties) return diffs;
+            const characteristic = ch.name;
+
+            return diffs.concat(
+              Object.entries(ch.difficulties)
+                .map(([difficulty, obj]) => {
+                    if (!obj) return null;
+                    difficulty = capitalize(difficulty);
+
+                    const seconds = opt(obj, 'length', null);
+                    const notes = opt(obj, 'notes', null)
+
+                    const nps = notes && seconds ? notes / seconds : null;
+
+                    return {
+                        njs: opt(obj, 'njs', null),
+                        offset: opt(obj, 'njsOffset', null),
+                        notes,
+                        bombs: opt(obj, 'bombs', null),
+                        obstacles: opt(obj, 'obstacles', null),
+                        nps,
+                        length: opt(obj, 'duration', null),
+                        characteristic,
+                        difficulty,
+                        events: null,
+                        chroma: null,
+                        me: null,
+                        ne: null,
+                        cinema: null,
+                        seconds,
+                        paritySummary: {
+                            errors: null,
+                            warns: null,
+                            resets: null,
+                        },
+                        stars: null,
+                    };
+                }))
+              .filter(diff => diff)
+        }, []);
+
+        return {
+            lastUpdated: dateFromString(opt(song, 'uploaded', new Date())),
+            oldBeatSaverId: opt(song, '_id', null),
+            id: key,
+            hash,
+            key,
+            name,
+            description: '',
+            uploader: {
+                id: null,
+                name: opt(song, 'uploader.username', null),
+                hash: null,
+                avatar: null
+            },
+            metadata: {
+                bpm: opt(song, 'metadata.bpm', null),
+                duration: opt(song, 'metadata.duration', null),
+                songName: opt(song, 'metadata.songName', ''),
+                songSubName: opt(song, 'metadata.songSubName', ''),
+                songAuthorName: opt(song, 'metadata.songAuthorName', ''),
+                levelAuthorName: opt(song, 'metadata.levelAuthorName', '')
+            },
+            stats: {
+                plays: opt(song, 'stats.plays', 0),
+                downloads: opt(song, 'stats.downloads', 0),
+                upvotes: opt(song, 'stats.upVotes', 0),
+                downvotes: opt(song, 'stats.downVotes', 0),
+                score: null
+            },
+            uploaded: opt(song, 'uploaded', null),
+            automapper: !!opt(song, 'metadata.automapper', false),
+            ranked: null,
+            qualified: null,
+            versions: [
+                {
+                    hash,
+                    key,
+                    state: "Published",
+                    createdAt: opt(song, 'uploaded', null),
+                    sageScore: null,
+                    diffs,
+                    downloadURL: `https://cdn.beatsaver.com/${hash}.zip`,
+                    coverURL: `https://cdn.beatsaver.com/${hash}.jpg`,
+                    previewURL: `https://cdn.beatsaver.com/${hash}.mp3`
+                }
+            ]
+        }
+    }
+
     return {
         byHash,
         byKey,
+        convertOldBeatSaverToBeatMaps
     }
 }

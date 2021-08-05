@@ -2,7 +2,6 @@ import {writable} from 'svelte/store'
 import {PRIORITY} from './http-queue'
 import createScoreSaberApiQueue from './scoresaber/api-queue'
 import createScoreSaberPageQueue from './scoresaber/page-queue'
-import createBeatSaverApiQueue from './beatsaver/api-queue'
 import createBeatMapsApiQueue from './beatmaps/api-queue'
 import createBeatSaviorApiQueue from './beatsavior/api-queue'
 
@@ -46,7 +45,6 @@ const initQueue = queue => {
 export default {
   SCORESABER_API: initQueue(createScoreSaberApiQueue({concurrency: 3, timeout: 95000})),
   SCORESABER_PAGE: initQueue(createScoreSaberPageQueue({concurrency: 3, timeout: 30000})),
-  BEATSAVER: initQueue(createBeatSaverApiQueue({concurrency: 1, timeout: 10000})),
   BEATMAPS: initQueue(createBeatMapsApiQueue({concurrency: 1, timeout: 10000})),
   BEATSAVIOR: initQueue(createBeatSaviorApiQueue({concurrency: 1, timeout: 10000})),
   PRIORITY,

@@ -48,10 +48,10 @@
 
 <footer>
   <p>ScoreSaber Reloaded by <a href="https://github.com/motzel">motzel</a></p>
-  <p>Developer preview build {buildInfo.buildVersion}. Build date: {buildInfo.buildDate}</p>
+  <p>Developer preview build {buildInfo.buildVersion} Build date: {buildInfo.buildDate}</p>
   <p>
     Uses <a href="https://scoresaber.com">ScoreSaber API</a>,
-    <a href="https://beatmaps.io">Beat Maps API</a>,
+    <a href="https://beatsaver.com">Beat Saver API</a>,
     <a href="https://www.beatsavior.io">Beat Savior API</a>,
     <a href="https://heroicons.com/">heroicons</a>
   </p>
