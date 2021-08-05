@@ -91,8 +91,8 @@
 
     .icons {
         font-size: .5em;
-        min-width: 4.65em;
-        width: 4.65em;
+        min-width: 4.66em;
+        width: 4.66em;
         margin-right: 0;
         align-self: flex-end;
     }
