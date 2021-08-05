@@ -17,7 +17,8 @@
 {#if song}
   <section>
   <div class="cover-difficulty">
-    <a on:click={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+    <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
+       on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
       <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt=""/>
     </a>
 
@@ -27,7 +28,8 @@
   </div>
 
   <div class="songinfo">
-    <a on:click={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+    <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
+       on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
       <span class="name">{song.name} {song.subName}</span>
       <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
     </a>

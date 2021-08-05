@@ -50,8 +50,8 @@
   let leaderboard = null;
 
   let typeOptions = [
-    {id: 'global', label: 'Global', iconFa: 'fas fa-globe-americas'},
-    {id: 'friends', label: 'Friends', iconFa: 'fas fa-user-friends'}
+    {id: 'global', label: 'Global', iconFa: 'fas fa-globe-americas', url: `/leaderboard/global/${currentLeaderboardId}/1`},
+    {id: 'friends', label: 'Friends', iconFa: 'fas fa-user-friends', url: `/leaderboard/friends/${currentLeaderboardId}/1`},
   ];
 
   let currentTypeOption = typeOptions[0];
@@ -121,7 +121,7 @@
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
-  $: diffs = opt($leaderboardStore, 'diffs', []).map(d => ({...d, label: d.name}))
+  $: diffs = opt($leaderboardStore, 'diffs', []).map(d => ({...d, label: d.name, url: `/leaderboard/${currentType}/${d.leaderboardId}`}))
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
   $: hash = opt($leaderboardStore, 'leaderboard.song.hash')

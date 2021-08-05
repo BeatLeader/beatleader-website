@@ -27,6 +27,7 @@
           color={currentValue.color ? 'white' : null}
           bgColor={currentValue.color ? currentValue.color : null}
           notSelected={currentValue !== value}
+          url={currentValue.url}
           on:click={() => onChange(currentValue)}
         />
       {/each}
@@ -44,7 +45,7 @@
         text-align: center;
     }
 
-    :global(.switch-types button) {
+    :global(.switch-types .button) {
         font-weight: 500;
         margin-right: .125rem !important;
     }

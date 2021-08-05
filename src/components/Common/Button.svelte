@@ -18,6 +18,7 @@
     export let options = null;
     export let selectedOption = null;
     export let loading = false;
+    export let url = null;
 
     if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -70,6 +71,17 @@
     $: btnMargin = noMargin ? 0 : "0 0 .45em 0";
 </script>
 
+{#if url && url.length}
+    <a href={url}
+      style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click|preventDefault={() => dispatch('click', selectedOption)} {disabled} {title} class={'button clickable ' + (type?type:'default') + ' ' + cls}
+            class:not-selected={notSelected} class:disabled={disabled}>
+        {#if icon}<span class="icon">{@html icon}</span>{/if}
+        {#if iconFa && !loading}<i class={iconFa}></i>{/if}
+        {#if loading}<i><Spinner /></i>{/if}
+        <span>{label}</span>
+        <slot></slot>
+    </a>
+{:else}
 <button style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click={() => dispatch('click', selectedOption)} {disabled} {title} class={'button clickable ' + (type?type:'default') + ' ' + cls}
  class:not-selected={notSelected}>
     {#if icon}<span class="icon">{@html icon}</span>{/if}
@@ -78,9 +90,14 @@
     <span>{label}</span>
     <slot></slot>
 </button>
+{/if}
 
 <style>
-    button {
+    a.button {
+        display: inline-block;
+    }
+
+    .button {
         position: relative;
         display: inline-flex;
         align-items: center;
@@ -101,23 +118,27 @@
         transition: opacity .25s;
     }
 
-    button:hover {
+    .button:hover {
         color: var(--active-color, #fff);
         border-color: var(--active-border, #b5b5b5)
     }
 
-    button:active {
+    .button:active {
         background-color: var(--active-bg-color, #fff);
     }
 
-    button[disabled] {
+    a.button[disabled] {
+        opacity: 1;
+    }
+
+    button[disabled], a.button.disabled {
         cursor: not-allowed;
         opacity: .35;
         color: var(--active-color, white);
         background-color: var(--bg-color, #3273dc);
     }
 
-    button .icon:first-child:not(:last-child), button i:first-child:not(:last-child) {
+    .button .icon:first-child:not(:last-child), .button i:first-child:not(:last-child) {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -127,13 +148,13 @@
         margin-right: var(--margin, .45em);
     }
 
-    button :global(.dropdown-trigger button) {
+    .button :global(.dropdown-trigger button) {
         color: inherit!important;
         background-color: inherit!important;
     }
 
     .not-selected {
-        opacity: .35;
+        opacity: .35!important;
     }
 
     .not-selected:hover {
