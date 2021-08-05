@@ -80,10 +80,10 @@
   <Switcher values={scoresTypes} value={scoreType} on:change={onScoreTypeChanged} loadingValue={loadingScoreType} />
 
   {#if $scoresStore}
-  <div class="song-scores">
-    {#each $scoresStore as songScore}
+  <div class="song-scores grid-transition-helper">
+    {#each $scoresStore as songScore, idx}
       {#key opt(songScore, 'leaderboard.leaderboardId')}
-        <SongScore {songScore} {fixedBrowserTitle} />
+        <SongScore {songScore} {fixedBrowserTitle} {idx} />
       {/key}
     {/each}
   </div>

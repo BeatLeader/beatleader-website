@@ -222,9 +222,10 @@
         </nav>
 
         {#if scores && scores.length}
-          <div class="scores-grid">
+          <div class="scores-grid grid-transition-helper">
           {#each scores as score, idx}
-            <div class="player-score" in:fly={{delay: idx * 20, x: 100}}>
+            {#key opt(score, 'player.playerId')}
+            <div class={`player-score row-${idx}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
               <div class="rank with-badge">
                 <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
@@ -268,6 +269,7 @@
                 </div>
               </div>
             </div>
+              {/key}
           {/each}
           </div>
 
