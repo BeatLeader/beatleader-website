@@ -22,6 +22,7 @@
   import Difficulty from '../components/Song/Difficulty.svelte'
   import Duration from '../components/Song/Duration.svelte'
   import Switcher from '../components/Common/Switcher.svelte'
+  import Icons from '../components/Song/Icons.svelte'
 
   export let leaderboardId;
   export let type = 'global';
@@ -123,6 +124,7 @@
   $: diffs = opt($leaderboardStore, 'diffs', []).map(d => ({...d, label: d.name}))
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
+  $: hash = opt($leaderboardStore, 'leaderboard.song.hash')
 </script>
 
 <svelte:head>
@@ -149,6 +151,8 @@
             {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
             {#if song.stars}<Value value={song.stars} digits={2} zero="" suffix="★"/>{/if}
             {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
+
+            <span class="icons"><Icons {hash} /></span>
           </h2>
           {/if}
 
@@ -344,6 +348,10 @@
 
     header h2.title.unranked {
         color: var(--decrease, #f94022) !important;
+    }
+
+    header .icons {
+        font-size: .65em;
     }
 
     header .stats {
