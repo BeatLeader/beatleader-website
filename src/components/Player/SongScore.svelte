@@ -422,6 +422,10 @@
         margin-bottom: .25em;
     }
 
+    .icons:empty {
+        margin-bottom: 0!important;
+    }
+
     @media screen and (max-width: 767px) {
         .song-score {
             padding: 1em 0;

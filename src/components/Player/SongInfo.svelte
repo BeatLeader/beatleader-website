@@ -96,4 +96,8 @@
         margin-right: 0;
         align-self: flex-end;
     }
+
+    .icons:empty {
+        margin-bottom: 0;
+    }
 </style>
