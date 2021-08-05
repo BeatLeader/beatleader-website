@@ -58,6 +58,14 @@ select {
     display: none;
 }
 
+.tablet-only {
+    display: none;
+}
+
+.up-to-tablet {
+    display: none;
+}
+
 *[title]:not([title=""]):not(.clickable) {cursor: help;}
 
 .beatsavior-icon {
@@ -75,6 +83,22 @@ select {
     }
 
     .tablet-and-up {
+        display: none;
+    }
+}
+
+@media screen and (min-width:768px) and (max-width: 1023px) {
+    .tablet-only {
+        display: block;
+    }
+}
+
+@media screen and (max-width: 1023px) {
+    .up-to-tablet {
+        display: block;
+    }
+
+    .desktop-and-up {
         display: none;
     }
 }

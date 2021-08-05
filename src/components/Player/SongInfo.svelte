@@ -2,42 +2,53 @@
   import {navigate} from 'svelte-routing'
   import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
-  import Difficulty from '../Song/Difficulty.svelte'
   import {opt} from '../../utils/js'
+  import Difficulty from '../Song/Difficulty.svelte'
+  import Icons from '../Song/Icons.svelte'
 
   export let leaderboard = null;
   export let rank = null;
+  export let hash = null;
 
   $: song = opt(leaderboard, 'song', null);
   $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
 </script>
 
 {#if song}
-  <a on:click={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
-    <div class="cover-difficulty">
+  <section>
+  <div class="cover-difficulty">
+    <a on:click={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
       <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt=""/>
+    </a>
 
-      <div class="difficulty">
-          <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true} stars={leaderboard.stars}/>
-      </div>
+    <div class="difficulty">
+      <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true} stars={leaderboard.stars}/>
     </div>
+  </div>
 
-    <div class="songinfo">
+  <div class="songinfo">
+    <a on:click={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
       <span class="name">{song.name} {song.subName}</span>
-      <div class="author">{song.authorName} <small>{song.levelAuthorName}</small>
-      </div>
+      <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+    </a>
+  </div>
+
+  {#if hash && hash.length}
+    <div class="icons desktop-and-up">
+      <Icons {hash}/>
     </div>
-  </a>
+  {/if}
+  </section>
 {/if}
 
 <style>
-    a {
+    section {
         display: flex;
         justify-content: flex-start;
         align-items: center;
     }
 
-    a > * {
+    section > * {
         margin-right: .75em;
     }
 
@@ -66,6 +77,7 @@
         text-align: left;
         font-size: .95rem;
         font-weight: 500;
+        flex-grow: 1;
     }
 
     .songinfo {
@@ -75,5 +87,13 @@
     .songinfo small {
         font-size: 0.75em;
         color: var(--ppColour);
+    }
+
+    .icons {
+        font-size: .5em;
+        min-width: 4.65em;
+        width: 4.65em;
+        margin-right: 0;
+        align-self: flex-end;
     }
 </style>

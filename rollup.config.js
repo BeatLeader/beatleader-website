@@ -8,6 +8,7 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import css from 'rollup-plugin-css-only';
+import svg from 'rollup-plugin-svg';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -58,6 +59,8 @@ export default [
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
 			css({output: 'bundle.css'}),
+
+			svg(),
 
 			// If you have external dependencies installed from
 			// npm, you'll most likely need these plugins. In

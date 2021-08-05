@@ -13,6 +13,7 @@
   import Pp from '../Score/Pp.svelte'
   import Value from '../Common/Value.svelte'
   import SongScoreDetails from './SongScoreDetails.svelte'
+  import Icons from '../Song/Icons.svelte'
 
   export let songScore = null;
   export let fixedBrowserTitle = null;
@@ -24,10 +25,15 @@
   $: prevScore = opt(songScore, 'prevScore', null);
   $: beatSavior = opt(songScore, 'beatSavior', null)
   $: comparePlayers = opt(songScore, 'comparePlayers', null)
+  $: hash = opt(leaderboard, 'song.hash')
 </script>
 
 {#if songScore}
   <div class="song-score" in:fade={{duration: 300, delay: 200}} out:slide={{duration: 200}} class:with-details={showDetails}>
+    <div class="icons tablet-only">
+      <Icons {hash}/>
+    </div>
+
     <span class="rank">
       <ScoreRank rank={score.rank}
                  countryRank={score.ssplCountryRank}
@@ -45,8 +51,12 @@
     </span>
 
     <span class="song">
-      <SongInfo {leaderboard} rank={score.rank}/>
+      <SongInfo {leaderboard} rank={score.rank} {hash}/>
     </span>
+
+    <div class="icons mobile-only">
+      <Icons {hash}/>
+    </div>
 
     <section class="stats">
       {#if !beatSavior || !beatSavior.stats}
@@ -248,7 +258,6 @@
         {/each}
       {/if}
     </section>
-
   </div>
   {#if showDetails}
     <div transition:slide>
@@ -405,6 +414,14 @@
         opacity: .7;
     }
 
+    .icons {
+        width: 100%;
+        font-size: .75em;
+        text-align: right;
+        margin-right: 0;
+        margin-bottom: .25em;
+    }
+
     @media screen and (max-width: 767px) {
         .song-score {
             padding: 1em 0;
@@ -421,6 +438,11 @@
             width: 100%;
             margin-right: 0;
             padding-bottom: .75em;
+        }
+
+        .icons {
+            text-align: left;
+            margin-bottom: .5em;
         }
     }
 </style>
