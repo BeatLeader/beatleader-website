@@ -45,9 +45,7 @@
     if (scoresBoxEl) scrollToTargetAdjusted(scoresBoxEl, 44)
   }
 
-  $: {
-    scoresStore && scoresStore.fetch(page)
-  }
+  $: scoresStore && scoresStore.fetch(page)
 
   $: scoresStore = playerId ? createScoresStore(playerId, initialType, initialPage, initialState, initialStateType) : null;
 
@@ -59,17 +57,9 @@
   $: scoreType = scoresTypes.find(st => st.id === type);
   $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === opt($pending, 'type')) : null
 
-  $: {
-    dispatch('type-changed', type);
-  }
-
-  $: {
-    dispatch('page-changed', page);
-  }
-
-  $: {
-    scrollToTop($pending)
-  }
+  $: dispatch('type-changed', type);
+  $: dispatch('page-changed', page);
+  $: scrollToTop($pending)
 </script>
 
 <div class="box has-shadow" bind:this={scoresBoxEl}>
