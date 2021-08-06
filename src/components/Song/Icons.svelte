@@ -1,24 +1,15 @@
 <script>
-    import {onMount} from 'svelte';
-    // import eventBus from '../../utils/broadcast-channel-pubsub';
     import createBeatSaverService from '../../services/beatmaps'
     import {copyToClipboard} from '../../utils/clipboard';
     import beatSaverSvg from "../../resources/beatsaver.svg";
     import Button from "../Common/Button.svelte";
 
     export let hash;
-    export let twitchUrl;
-    export let bsExistsForPlayer = null;
 
     let songKey;
     let shownIcons = ["bsr", "bs", "preview", "oneclick"];
 
     let beatSaverService = createBeatSaverService();
-
-    // async function refreshConfig() {
-    //     const config = await getConfig('songBrowser');
-    //     shownIcons = config && config.showIcons ? config.showIcons : shownIcons;
-    // }
 
     async function updateSongKey(hash) {
         if (!hash) {
@@ -31,12 +22,6 @@
             songKey = songInfo.key;
         }
     }
-
-    onMount(async () => {
-        // await refreshConfig();
-
-        // return eventBus.on('config-changed', refreshConfig);
-    });
 
     $: updateSongKey(hash)
 </script>
