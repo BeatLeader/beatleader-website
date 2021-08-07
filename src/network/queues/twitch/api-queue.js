@@ -9,8 +9,8 @@ const AUTHORIZATION_URL = `${TWITCH_AUTH_URL}/authorize?client_id=${CLIENT_ID}&r
 const VALIDATE_URL = `${TWITCH_AUTH_URL}/validate`
 
 const TWITCH_API_URL = 'https://api.twitch.tv/helix';
-const PROFILE_URL = TWITCH_API_URL + '/users/${login}';
-const VIDEOS_URL = TWITCH_API_URL + '/videos?user_id=${userId}&type=${type}';
+const PROFILE_URL = TWITCH_API_URL + '/users?login=${login}';
+const VIDEOS_URL = TWITCH_API_URL + '/videos?user_id=${userId}&type=${type}&first=100';
 const STREAMS_URL = TWITCH_API_URL + '/streams?user_id=${userId}';
 
 export default (options = {}) => {
