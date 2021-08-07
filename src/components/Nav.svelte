@@ -15,6 +15,7 @@
   const playerService = createPlayerService();
 
   let player = null;
+  let settingsNotificationBadge = null;
 
   function navigateToPlayer(playerId) {
     if (!playerId) return;
@@ -44,8 +45,11 @@
       if (mainPlayerId && player && player.playerId === mainPlayerId) updateMainPlayer(mainPlayerId)
     })
 
+    const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => settingsNotificationBadge = message);
+
     return () => {
       playerChangedUnsubscribe();
+      settingsBadgeUnsubscribe();
     }
   })
 
@@ -103,7 +107,7 @@
       Search
     </a>
 
-    <div on:click={() => showSettings = true}>
+    <div class="settings" title={settingsNotificationBadge} on:click={() => showSettings = true}>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -111,6 +115,8 @@
       </svg>
 
       Settings
+
+      {#if settingsNotificationBadge}<div class="notification-badge"></div>{/if}
     </div>
   </div>
 
@@ -174,6 +180,20 @@
         padding: 0;
         display: flex;
         justify-content: flex-end;
+    }
+
+    .settings {
+        position: relative;
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: .65rem;
+        left: 1.75rem;
+        width: .5em;
+        height: .5em;
+        background-color: red;
+        border-radius: 50%;
     }
 
     @media screen and (max-width: 450px) {

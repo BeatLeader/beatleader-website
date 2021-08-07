@@ -3,14 +3,18 @@
   import {configStore, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config'
   import createTwitchService from '../../services/twitch'
   import {ROUTER} from 'svelte-routing/src/contexts'
-  import {getContext} from 'svelte'
+  import {getContext, onMount} from 'svelte'
   import Dialog from '../Common/Dialog.svelte'
   import Button from '../Common/Button.svelte'
   import {opt} from '../../utils/js'
+  import eventBus from '../../utils/broadcast-channel-pubsub'
+  import {DAY} from '../../utils/date'
 
   export let show = false;
 
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
+
+  let twitchToken = null;
 
   let twitchService = createTwitchService();
 
@@ -49,7 +53,36 @@
     show = false;
   }
 
+  let showTwitchLinkBtn = true;
+  let twitchBtnLabel = 'Link to Twitch'
+  let twitchBtnTitle = null;
+  let twitchBtnDisabled = true;
+
+  function refreshTwitchButton(twitchToken) {
+    const tokenExpireInDays = twitchToken ? Math.floor(twitchToken.expires_in / DAY) : null;
+    const tokenExpireSoon = tokenExpireInDays <= 7;
+
+    eventBus.publish('settings-notification-badge', twitchToken && tokenExpireSoon  ? 'Twitch token is required for renewal' : null);
+
+    showTwitchLinkBtn = !twitchToken || tokenExpireSoon;
+
+    twitchBtnLabel = !twitchToken || !tokenExpireSoon ? 'Link to Twitch' : 'Renew Twitch token'
+    twitchBtnTitle = twitchToken && tokenExpireInDays > 0 ? `Days left: ${tokenExpireInDays}` : null;
+    twitchBtnDisabled = !tokenExpireSoon;
+  }
+
+  onMount(async () => {
+    const twitchTokenRefreshedUnsubscriber = eventBus.on('twitch-token-refreshed', newTwitchToken => twitchToken = newTwitchToken)
+
+    twitchToken = await twitchService.getCurrentToken();
+
+    return () => {
+      twitchTokenRefreshedUnsubscriber();
+    }
+  })
+
   $: onConfigUpdated(configStore && $configStore ? $configStore : null);
+  $: refreshTwitchButton(twitchToken)
 </script>
 
 {#if show}
@@ -75,19 +108,15 @@
             </select>
           </section>
 
-          <section class="option others">
-            <label
-              title="If there is a Twitch VOD available then an icon will appear next to the score which will take you directly to the appropriate VOD location.">Others</label>
-            <Button iconFa="fab fa-twitch" label='Link to Twitch' disabled={false}
-                    type="twitch"
-                    on:click={() => window.location.href = twitchService.getAuthUrl(opt($activeRoute, 'uri', ''))}/>
-          </section>
+          {#if showTwitchLinkBtn}
+            <section class="option twitch">
+              <label title="If there is a Twitch VOD available then an icon will appear next to the score which will take you directly to the appropriate VOD location.">Twitch</label>
+              <Button type="twitch" iconFa="fab fa-twitch"
+                      label={twitchBtnLabel} title={twitchBtnTitle} disabled={twitchBtnDisabled}
+                      on:click={() => window.location.href = twitchService.getAuthUrl(opt($activeRoute, 'uri', ''))}/>
+            </section>
+          {/if}
         </section>
-
-        <aside>
-
-        </aside>
-
       {:else}
         Loading...
       {/if}
@@ -124,7 +153,7 @@
         margin-bottom: .25em;
     }
 
-    .others :global(.button) {
+    .twitch :global(.button) {
         font-size: .875em;
         width: max-content;
     }

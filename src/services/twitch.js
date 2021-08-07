@@ -6,6 +6,8 @@ import log from '../utils/logger'
 import {HOUR} from '../utils/date'
 import {getFirstRegexpMatch} from '../utils/js'
 
+const TWITCH_TOKEN_KEY = 'twitchToken';
+
 const REFRESH_INTERVAL = HOUR;
 
 let service = null;
@@ -48,10 +50,14 @@ export default () => {
       expires_in: expiresIn,
     }
 
-    await keyValueRepository().set(twitchToken, 'twitchToken');
+    await keyValueRepository().set(twitchToken, TWITCH_TOKEN_KEY);
+
+    eventBus.publish('twitch-token-refreshed', twitchToken)
 
     return twitchToken
   }
+
+  const getCurrentToken = async () => keyValueRepository().get(TWITCH_TOKEN_KEY, true);
 
   const refresh = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting Twitch videos refreshing${forceUpdate ? ' (forced)' : ''}...`, 'TwitchService')
@@ -75,6 +81,7 @@ export default () => {
     getAuthUrl,
     getTwitchTokenFromUrl,
     processToken,
+    getCurrentToken,
     refresh,
     destroyService,
   }
