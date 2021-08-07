@@ -9,7 +9,7 @@ export default (options = {}) => {
 
   const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
-  const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(PLAYER_URL, {playerId}), priority, options)
+  const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(PLAYER_URL, {playerId}), options, priority)
 
   return {
     player,

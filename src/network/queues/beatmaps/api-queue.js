@@ -10,8 +10,8 @@ export default (options = {}) => {
 
   const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
-  const byHash = async (hash, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(SONG_BY_HASH_URL, {hash}), priority, options)
-  const byKey = async (key, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(SONG_BY_KEY_URL, {key}), priority, options)
+  const byHash = async (hash, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(SONG_BY_HASH_URL, {hash}), options, priority)
+  const byKey = async (key, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(SONG_BY_KEY_URL, {key}), options, priority)
 
   return {
     byHash,
