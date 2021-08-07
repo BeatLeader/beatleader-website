@@ -1,11 +1,9 @@
 <script>
-  import {getContext, createEventDispatcher} from 'svelte'
+  import {createEventDispatcher} from 'svelte'
   import {navigate} from "svelte-routing";
-  import {ROUTER} from 'svelte-routing/src/contexts'
   import {fade, fly} from 'svelte/transition'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import {opt} from '../utils/js'
-  import eventBus from '../utils/broadcast-channel-pubsub'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
@@ -41,8 +39,6 @@
 
   if (leaderboardId && !Number.isFinite(leaderboardId)) leaderboardId = parseInt(leaderboardId, 10);
 
-  const {activeRoute} = getContext(ROUTER);
-
   let currentLeaderboardId = leaderboardId;
   let currentType = type;
   let currentPage = page;
@@ -59,11 +55,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    if (!$activeRoute || !$activeRoute.uri || !$activeRoute.uri.startsWith('/u/')) {
-      navigate(`/u/${playerId}`)
-    } else {
-      eventBus.publish('navigate-to-player-cmd', playerId)
-    }
+    navigate(`/u/${playerId}/recent/1`)
   }
 
   function scrollToTop() {
@@ -128,7 +120,7 @@
 </script>
 
 <svelte:head>
-  <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${page} - ${ssrConfig.name}}`}</title>
+  <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}}`}</title>
 </svelte:head>
 
 <article transition:fade>

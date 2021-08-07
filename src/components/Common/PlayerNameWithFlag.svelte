@@ -11,7 +11,7 @@
   $: playerId = opt(player, 'playerId')
 </script>
 
-<a href={`/u/${playerId}`} class="player-name clickable" title={name} on:click|preventDefault>
+<a href={`/u/${playerId}/recent/1`} class="player-name clickable" title={name} on:click|preventDefault>
   <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
        class="country"
        on:click|preventDefault={() => country ? dispatch('flag-click', {country: country.toLowerCase()}) : null}>

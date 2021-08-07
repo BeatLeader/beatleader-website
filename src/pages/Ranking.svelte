@@ -31,11 +31,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    if (!$activeRoute || !$activeRoute.uri || !$activeRoute.uri.startsWith('/u/')) {
-      navigate(`/u/${playerId}`)
-    } else {
-      eventBus.publish('navigate-to-player-cmd', playerId)
-    }
+    navigate(`/u/${playerId}/recent/1`)
   }
 
   function scrollToTop() {
@@ -64,11 +60,15 @@
     const target = event.target;
     if (target && target.classList.contains('country')) return;
 
+    if (!player) return;
+
     navigateToPlayer(player.playerId)
   }
 
-  function onCountryClick(event) {
-    navigate(`/ranking/${event.detail.country}`)
+  function onCountryClick(player) {
+    if (!player) return;
+
+    navigateToPlayer(player.playerId);
   }
 
   $: isLoading = rankingStore.isLoading;
@@ -80,7 +80,7 @@
 </script>
 
 <svelte:head>
-  <title>{type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} ranking - {ssrConfig.name}</title>
+  <title>{type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} ranking / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
 <article transition:fade>
@@ -102,7 +102,7 @@
               </div>
             </div>
 
-            <PlayerNameWithFlag {player} on:flag-click={e => onCountryClick(e)}/>
+            <PlayerNameWithFlag {player} on:flag-click={e => onCountryClick(player)}/>
 
             <div class="player-pp-and-change">
               <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>

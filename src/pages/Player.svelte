@@ -1,6 +1,4 @@
 <script>
-  import eventBus from '../utils/broadcast-channel-pubsub'
-  import {onDestroy} from 'svelte'
   import {navigate} from 'svelte-routing'
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
@@ -9,71 +7,89 @@
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
+  import {scrollToTargetAdjusted} from '../utils/browser'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
-  export let initialState = null;
 
-  let initialType = opt(initialState, 'scoresType', initialScoresType);
-  let initialPage = parseInt(opt(initialState, 'page', initialScoresPage), 10);
+  let playerEl = null;
 
-  if (!initialType || !initialType.length) initialType = 'recent';
-  if (isNaN(initialPage)) initialPage = 1;
+  let playerStore = createPlayerInfoWithScoresStore(
+    initialPlayerId,
+    ['recent', 'top'].includes(initialScoresType) ? initialScoresType : 'recent',
+    !isNaN(parseInt(initialScoresPage, 10)) ? parseInt(initialScoresPage, 10) : 1
+  );
 
-  export const changePlayer = async newPlayerId => playerStore.fetch(newPlayerId);
+  async function changeParams(newPlayerId, newType, newPage) {
+    if (!newPlayerId) return;
 
-  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, initialType, initialPage, initialState);
-  let playerIsLoading = opt(playerStore, 'isLoading', false);
-  let playerError = opt(playerStore, 'error', null);
+    newType = ['recent', 'top'].includes(newType) ? newType : 'recent'
+    newPage = parseInt(newPage, 10);
+    if (!Number.isFinite(newPage)) newPage = 1;
 
-  let currentNavType = initialType;
-  let currentNavPage = initialPage;
-
-  const navigateUnsubscribe = eventBus.on('navigate-to-player-cmd', (playerId, isLocal) => {
-    if (!isLocal || !playerId || !playerId.length) return;
-
-    navigateToPlayer(playerId);
-  })
+    if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
+      playerStore.fetch(newPlayerId, newType, newPage)
+    } else {
+      playerStore.setType(newType)
+      playerStore.setPage(newPage);
+    }
+  }
 
   function onPageChanged(event) {
-    currentNavPage = opt(event, 'detail', initialPage)
+    let newPage = opt(event, 'detail', currentPage);
+    if (!newPage) return;
 
-    playerStore.setPage(currentNavPage);
-    if (playerId && currentNavType && currentNavPage) navigate(`/u/${playerId}/${currentNavType}/${currentNavPage}`, {replace: true});
+    if (!Number.isFinite(newPage)) newPage = 1;
+
+    navigate(`/u/${currentPlayerId}/${currentType}/${newPage}`);
   }
 
   function onTypeChanged(event) {
-    currentNavType = opt(event, 'detail', initialType)
-    currentNavPage = 1;
+    let newType = opt(event, 'detail', currentType);
+    if (!newType) return;
 
-    playerStore.setType(currentNavType);
-    playerStore.setPage(currentNavPage);
-    if (playerId && currentNavType) navigate(`/u/${playerId}/${currentNavType}/${currentNavPage}`, {replace: true});
+    newType = ['recent', 'top'].includes(newType) ? newType : 'recent';
+
+    navigate(`/u/${currentPlayerId}/${newType}/1`);
   }
 
-  function navigateToPlayer(playerId) {
-    currentNavPage = 1;
-    playerStore.setPage(currentNavPage);
-    navigate(`/u/${playerId}/${currentNavType}/1`)
+  function scrollToTop() {
+    if (playerEl) scrollToTargetAdjusted(playerEl, 44)
   }
 
-  onDestroy(() => navigateUnsubscribe())
+  $: changeParams(initialPlayerId, initialScoresType, initialScoresPage)
 
-  $: changePlayer(initialPlayerId);
+  $: paramsStore = playerStore ? playerStore.params : null;
 
-  $: playerId = $playerStore && playerStore && playerStore.getPlayerId ? playerStore.getPlayerId() : null;
-  $: currentStoreType = $playerStore && playerStore && playerStore.getType ? playerStore.getType() : null;
-  $: currentStorePage = $playerStore && playerStore && playerStore.getPage ? playerStore.getPage() : 1;
+  $: currentPlayerId = $paramsStore.currentPlayerId;
+  $: currentType = $paramsStore.currentScoresType;
+  $: currentPage = $paramsStore.currentScoresPage;
+
+  $: playerIsLoading = playerStore ? playerStore.isLoading : null;
+  $: playerError = playerStore ? playerStore.error : null;
   $: skeleton = !$playerStore && $playerIsLoading;
-  $: browserTitle = `${opt($playerStore, 'name', 'Player')} - ${ssrConfig.name}`
+  $: browserTitle = `${opt($playerStore, 'name', 'Player')} / ${currentType} / ${currentPage} - ${ssrConfig.name}`
+
+  let scoresPlayerId = null;
+  let scoresState = null;
+  $: if ($playerStore && !$playerIsLoading) {
+    if (scoresPlayerId && scoresPlayerId === currentPlayerId) {
+      scoresState = null;
+    } else {
+      scoresState = opt($playerStore, 'scores', null);
+      scrollToTop();
+    }
+
+    scoresPlayerId = currentPlayerId;
+  }
 </script>
 
 <svelte:head>
   <title>{browserTitle}</title>
 </svelte:head>
 
-<article transition:fade>
+<article bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <div class="box has-shadow">
       <p class="error">Player not found.</p>
@@ -81,12 +97,12 @@
   {:else}
     <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
 
-    {#if $playerStore}
-      <Scores {playerId}
-              initialState={opt($playerStore, 'scores', null)}
+    {#if scoresPlayerId}
+      <Scores playerId={scoresPlayerId}
+              initialState={scoresState}
               initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
-              initialType={currentStoreType}
-              initialPage={currentStorePage}
+              initialType={$paramsStore.currentScoresType}
+              initialPage={$paramsStore.currentScoresPage}
               numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
               on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
               fixedBrowserTitle={browserTitle}

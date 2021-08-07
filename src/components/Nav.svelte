@@ -1,8 +1,7 @@
 <script>
   import eventBus from '../utils/broadcast-channel-pubsub'
-  import {getContext, onMount} from 'svelte'
+  import {onMount} from 'svelte'
   import {navigate} from 'svelte-routing'
-  import {ROUTER} from 'svelte-routing/src/contexts'
   import createFriendsStore from '../stores/scoresaber/friends'
   import {configStore} from '../stores/config'
   import createPlayerService from '../services/scoresaber/player'
@@ -13,8 +12,6 @@
   import {fade} from 'svelte/transition'
   import Settings from './Others/Settings.svelte'
 
-  const {activeRoute} = getContext(ROUTER);
-
   const playerService = createPlayerService();
 
   let player = null;
@@ -22,11 +19,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    if (!$activeRoute || !$activeRoute.uri || !$activeRoute.uri.startsWith('/u/')) {
-      navigate(`/u/${playerId}`)
-    } else {
-      eventBus.publish('navigate-to-player-cmd', playerId)
-    }
+    navigate(`/u/${playerId}/recent/1`)
   }
 
   function onFriendClick(event) {
@@ -68,7 +61,7 @@
 
 <nav>
   {#if player}
-  <a href={`/u/${player.playerId}`} on:click|preventDefault={() => navigateToPlayer(player.playerId)} transition:fade>
+  <a href={`/u/${player.playerId}/recent/1`} on:click|preventDefault={() => navigateToPlayer(player.playerId)} transition:fade>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />
     {:else}

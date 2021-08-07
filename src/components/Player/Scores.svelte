@@ -11,13 +11,21 @@
 
   const dispatch = createEventDispatcher();
 
-  export let playerId;
+  export let playerId = null;
   export let initialType = 'recent';
   export let initialState = null;
   export let initialStateType = null;
   export let initialPage = 1;
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
+
+  let scoresStore = createScoresStore(
+    playerId,
+    ['recent', 'top'].includes(initialType) ? initialType : 'recent',
+    !isNaN(parseInt(initialPage, 10)) ? parseInt(initialPage, 10) : 1,
+    initialState,
+    initialStateType
+  );
 
   let scoresBoxEl = null;
 
@@ -26,28 +34,35 @@
     {id: 'top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/top/1`},
   ];
 
-  function fetchPage(page) {
-    scoresStore.fetch(page);
+  function changeParams(newPlayerId, newType, newPage, newInitialState, newInitialStateType) {
+    if (!newPlayerId) return null;
+
+    newType = ['recent', 'top'].includes(newType) ? newType : 'recent'
+    newPage = parseInt(newPage, 10);
+    if (!Number.isFinite(newPage)) newPage = 1;
+
+    scoresStore.fetch(newPage, newType, newPlayerId);
+
+    return {playerId: newPlayerId, type: newType, page: newPage}
   }
 
   function onPageChanged(event) {
-    fetchPage(opt(event, 'detail.page', 0) + 1);
+    if (!opt(event, 'detail.initial', false)) scrollToTop();
+    const page = opt(event, 'detail.page', 0) + 1
+    dispatch('page-changed', page);
   }
 
   function onScoreTypeChanged(event) {
-    const type = opt(event, 'detail.id');
-    if (!type) return;
-
-    scoresStore.fetch(1, type)
+    scrollToTop();
+    const type = opt(event, 'detail.id')
+    dispatch('type-changed', type);
   }
 
   function scrollToTop() {
     if (scoresBoxEl) scrollToTargetAdjusted(scoresBoxEl, 44)
   }
 
-  $: scoresStore && scoresStore.fetch(page)
-
-  $: scoresStore = playerId ? createScoresStore(playerId, initialType, initialPage, initialState, initialStateType) : null;
+  $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
 
   $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
   $: type = $scoresStore && scoresStore && scoresStore.getType ? scoresStore.getType() : null;
@@ -57,9 +72,7 @@
   $: scoreType = scoresTypes.find(st => st.id === type);
   $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === opt($pending, 'type')) : null
 
-  $: dispatch('type-changed', type);
-  $: dispatch('page-changed', page);
-  $: scrollToTop($pending)
+  $: scoresStore && scoresStore.fetch(page, type)
 </script>
 
 <div class="box has-shadow" bind:this={scoresBoxEl}>
@@ -71,10 +84,8 @@
 
   {#if $scoresStore}
   <div class="song-scores grid-transition-helper">
-    {#each $scoresStore as songScore, idx}
-      {#key opt(songScore, 'leaderboard.leaderboardId')}
-        <SongScore {songScore} {fixedBrowserTitle} {idx} />
-      {/key}
+    {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
+      <SongScore {songScore} {fixedBrowserTitle} {idx} />
     {/each}
   </div>
   {:else}

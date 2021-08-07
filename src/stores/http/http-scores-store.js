@@ -44,7 +44,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
       if (currentEnhanceTaskId !== enhanceTaskId) return;
 
       set(state);
-    }, 100);
+    }, 200);
 
     const newState = [...state];
 

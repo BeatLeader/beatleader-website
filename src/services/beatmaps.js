@@ -73,7 +73,7 @@ export default () => {
 
             const songInfo = await fetchFunc();
             if (!songInfo) {
-                log.warn(`Song "${errSongId}" is no longer available at BeatMaps.`);
+                log.warn(`Song "${errSongId}" is no longer available at BeatSaver.`);
                 return null;
             }
 
@@ -87,7 +87,7 @@ export default () => {
                 try {await prolongSuspension(bsSuspension)} catch {}
             }
 
-            log.warn(`Error fetching BeatMaps song "${errSongId}"`);
+            log.warn(`Error fetching BeatSaver song "${errSongId}"`);
 
             return null;
         }

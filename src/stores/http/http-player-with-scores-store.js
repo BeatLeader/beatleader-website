@@ -4,11 +4,14 @@ import createApiPlayerWithScoresProvider from './providers/api-player-with-score
 import {opt} from '../../utils/js'
 import createPlayerService from '../../services/scoresaber/player'
 import {addToDate, MINUTE} from '../../utils/date'
+import {writable} from 'svelte/store'
 
 export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentScoresType = scoresType;
   let currentScoresPage = scoresPage;
+
+  const {subscribe: subscribeParams, set: setParams} = writable(null);
 
   let playerService = createPlayerService();
 
@@ -19,6 +22,8 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
     currentPlayerId = opt(fetchParams, 'playerId', null);
     currentScoresType = opt(fetchParams, 'scoresType', null);
     currentScoresPage = opt(fetchParams, 'scoresPage', null);
+
+    setParams({currentPlayerId, currentScoresType, currentScoresPage})
   }
 
   const provider = createApiPlayerWithScoresProvider();
@@ -106,11 +111,18 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
     subscribe,
     fetch,
     refresh,
+    params: {subscribe: subscribeParams},
     getPlayerId: () => currentPlayerId,
     getType: () => currentScoresType,
-    setType: type => currentScoresType = type,
+    setType: type => {
+      currentScoresType = type;
+      setParams({currentPlayerId, currentScoresType, currentScoresPage})
+    },
     getPage: () => currentScoresPage,
-    setPage: page => currentScoresPage = page,
+    setPage: page => {
+      currentScoresPage = page
+      setParams({currentPlayerId, currentScoresType, currentScoresPage})
+    },
   }
 }
 
