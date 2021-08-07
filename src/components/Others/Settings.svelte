@@ -1,12 +1,20 @@
 <script>
   import produce from 'immer'
   import {configStore, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config'
+  import createTwitchService from '../../services/twitch'
+  import {ROUTER} from 'svelte-routing/src/contexts'
+  import {getContext} from 'svelte'
   import Dialog from '../Common/Dialog.svelte'
   import Button from '../Common/Button.svelte'
+  import {opt} from '../../utils/js'
 
   export let show = false;
 
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
+
+  let twitchService = createTwitchService();
+
+  const {activeRoute} = getContext(ROUTER);
 
   const scoreComparisonMethods = [
     {name: 'In place', value: 'in-place'},
@@ -66,7 +74,20 @@
               {/each}
             </select>
           </section>
+
+          <section class="option others">
+            <label
+              title="If there is a Twitch VOD available then an icon will appear next to the score which will take you directly to the appropriate VOD location.">Others</label>
+            <Button iconFa="fab fa-twitch" label='Link to Twitch' disabled={false}
+                    type="twitch"
+                    on:click={() => window.location.href = twitchService.getAuthUrl(opt($activeRoute, 'uri', ''))}/>
+          </section>
         </section>
+
+        <aside>
+
+        </aside>
+
       {:else}
         Loading...
       {/if}
@@ -101,6 +122,11 @@
         text-transform: uppercase;
         color: var(--faded) !important;
         margin-bottom: .25em;
+    }
+
+    .others :global(.button) {
+        font-size: .875em;
+        width: max-content;
     }
 
     @media screen and (max-width: 600px) {

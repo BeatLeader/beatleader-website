@@ -6,7 +6,6 @@ import {arrayDifference, convertArrayToObjectByKey, opt} from '../../utils/js'
 import rankedsRepository from '../../db/repository/rankeds'
 import rankedsChangesRepository from '../../db/repository/rankeds-changes'
 import keyValueRepository from '../../db/repository/key-value'
-import songsRepository from '../../db/repository/songs'
 import log from '../../utils/logger'
 import {addToDate, formatDate, HOUR} from '../../utils/date'
 

@@ -3,7 +3,7 @@ import {
   SsrHttpNotFoundError,
   SsrHttpRateLimitError,
   SsrHttpResponseError,
-  SsrHttpServerError,
+  SsrHttpServerError, SsrHttpUnauthenticatedError,
   SsrHttpUnauthorizedError,
   SsrHttpUnprocessableEntityError,
   SsrNetworkError,
@@ -22,6 +22,8 @@ const checkResponse = response => {
   }
 
   switch (true) {
+    case response.status === 401:
+      throw new SsrHttpUnauthenticatedError(response);
     case response.status === 403:
       throw new SsrHttpUnauthorizedError(response);
     case response.status === 404:
