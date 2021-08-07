@@ -20,7 +20,7 @@ let app = null;
   try {
     // TODO: remove level setting
     // log.setLevel(log.TRACE);
-    // log.logOnly(['ScoresService']);
+    // log.logOnly(['TwitchService']);
 
     log.info('Starting up...', 'Main')
 

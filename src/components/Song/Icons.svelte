@@ -5,9 +5,10 @@
     import Button from "../Common/Button.svelte";
 
     export let hash;
+    export let twitchUrl = null;
 
     let songKey;
-    let shownIcons = ["bsr", "bs", "preview", "oneclick"];
+    let shownIcons = ["bsr", "bs", "preview", "oneclick", "twitch"];
 
     let beatSaverService = createBeatSaverService();
 
@@ -25,6 +26,12 @@
 
     $: updateSongKey(hash)
 </script>
+
+{#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
+    <a class="video" href="{twitchUrl}" target="_blank">
+        <Button iconFa="fab fa-twitch" type="twitch" title="Twitch VOD preview"/>
+    </a>
+{/if}
 
 {#if songKey && songKey.length}
     {#if shownIcons.includes('bsr')}

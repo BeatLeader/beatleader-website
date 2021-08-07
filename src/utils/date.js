@@ -1,5 +1,6 @@
 import {isString} from "./js";
 import {getCurrentLocale} from '../stores/config'
+import {padNumber} from './format'
 
 export const SECOND = 1000;
 export const MINUTE = 60 * SECOND;
@@ -20,6 +21,27 @@ export const dateFromString = str => {
     const date = str ? new Date(Date.parse(str)) : null;
 
     return isValidDate(date) ? date : null;
+}
+
+export const durationToMillis = duration => {
+    const match = duration.match(/^\s*(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)\s*$/);
+    if (!match) return null;
+
+    return (match[1] ? parseInt(match[1], 10) * 1000 * 60 * 60 : 0) +
+      (match[2] ? parseInt(match[2], 10) * 1000 * 60 : 0) +
+      (match[3] ? parseInt(match[3], 10) * 1000 : 0);
+}
+
+export const millisToDuration = millis => {
+    const hours = padNumber(Math.floor(millis / (1000 * 60 * 60)));
+    millis -= hours * 1000 * 60 * 60;
+
+    const minutes = padNumber(Math.floor(millis  / (1000 * 60)));
+    millis -= minutes * 1000 * 60;
+
+    const seconds = padNumber(Math.floor(millis / 1000));
+
+    return `${hours}h${minutes}m${seconds}s`;
 }
 
 export const addToDate = (millis, date = new Date()) => new Date(date.getTime() + millis)

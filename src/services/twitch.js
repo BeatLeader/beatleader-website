@@ -6,7 +6,7 @@ import profileApiClient from '../network/clients/twitch/api-profile'
 import videosApiClient from '../network/clients/twitch/api-videos'
 import eventBus from '../utils/broadcast-channel-pubsub'
 import log from '../utils/logger'
-import {addToDate, formatDate, MINUTE} from '../utils/date'
+import {addToDate, dateFromString, durationToMillis, formatDate, millisToDuration, MINUTE} from '../utils/date'
 import {PRIORITY} from '../network/queues/http-queue'
 import makePendingPromisePool from '../utils/pending-promises'
 
@@ -129,8 +129,14 @@ export default () => {
   const getPlayerProfile = async playerId => await twitchRepository().get(playerId) ?? null;
   const updatePlayerProfile = async twitchProfile => twitchRepository().set(twitchProfile);
 
-  const refresh = async (playerId, forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
+  const refresh = async (playerId, forceUpdate = false, priority = queues.PRIORITY.FG_LOW, throwErrors = false) => {
     log.trace(`Starting Twitch videos refreshing${forceUpdate ? ' (forced)' : ''}...`, 'TwitchService')
+
+    if (!playerId) {
+      log.debug(`No playerId provided, skipping`, 'TwitchService')
+
+      return null;
+    }
 
     try {
       let twitchProfile = await twitchRepository().get(playerId);
@@ -194,6 +200,21 @@ export default () => {
       }
   }
 
+  async function findTwitchVideo(playerTwitchProfile, timeset, songLength) {
+    if (!playerTwitchProfile || !playerTwitchProfile.videos || !timeset || !songLength) return null;
+
+    const songStarted = addToDate(-songLength * 1000, timeset)
+    const video = playerTwitchProfile.videos
+      .map(v => ({
+        ...v,
+        created_at: dateFromString(v.created_at),
+        ended_at: addToDate(durationToMillis(v.duration), dateFromString(v.created_at)),
+      }))
+      .find(v => v.created_at <= songStarted && songStarted < v.ended_at);
+
+    return video ? {...video, url: video.url + '?t=' + millisToDuration(songStarted - video.created_at)} : null;
+  }
+
   const destroyService = () => {
     serviceCreationCount--;
 
@@ -210,6 +231,7 @@ export default () => {
     getCurrentToken,
     getPlayerProfile,
     updatePlayerProfile,
+    findTwitchVideo,
     refresh,
     destroyService,
   }
