@@ -5,6 +5,7 @@ import beatSaviorEnhancer from './enhancers/scores/beatsavior'
 import rankedsEnhancer from './enhancers/leaderboard/rankeds'
 import compareEnhancer from './enhancers/scores/compare'
 import diffEnhancer from './enhancers/scores/diff'
+import twitchEnhancer from './enhancers/scores/twitch'
 import {debounce} from '../../utils/debounce'
 import {opt} from '../../utils/js'
 import createApiScoresProvider from './providers/api-scores'
@@ -69,6 +70,8 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
         .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => diffEnhancer(draft, currentPlayerId)))
         .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
         .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId)))
+        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
         .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
       stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft))

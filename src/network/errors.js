@@ -83,6 +83,14 @@ export class SsrHttpRateLimitError extends SsrHttpClientError {
   }
 }
 
+export class SsrHttpUnauthenticatedError extends SsrHttpClientError {
+  constructor(...args) {
+    super(...args);
+
+    this.name = "SsrHttpUnauthenticatedError";
+  }
+}
+
 export class SsrHttpUnauthorizedError extends SsrHttpClientError {
   constructor(...args) {
     super(...args);

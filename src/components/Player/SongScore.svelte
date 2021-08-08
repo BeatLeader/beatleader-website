@@ -27,6 +27,7 @@
   $: beatSavior = opt(songScore, 'beatSavior', null)
   $: comparePlayers = opt(songScore, 'comparePlayers', null)
   $: hash = opt(leaderboard, 'song.hash')
+  $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
 </script>
 
 {#if songScore}
@@ -35,7 +36,7 @@
        class:with-details={showDetails}
   >
       <div class="icons up-to-tablet">
-        <Icons {hash}/>
+        <Icons {hash} {twitchUrl}/>
       </div>
 
     <div class="main">

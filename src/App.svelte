@@ -7,6 +7,7 @@
   import LeaderboardPage from './pages/Leaderboard.svelte';
   import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
+  import TwitchPage from './pages/Twitch.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
   import Nav from './components/Nav.svelte';
 
@@ -40,6 +41,7 @@
         <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} />
       </Route>
       <Route path="/search" component="{SearchPage}" />
+      <Route path="/twitch" component="{TwitchPage}" />
       <Route path="/" component="{HomePage}" />
       <Route path="/*" component="{NotFoundPage}" />
     </div>
