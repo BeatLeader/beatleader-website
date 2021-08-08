@@ -83,7 +83,7 @@ export default () => {
     return resolvePromiseOrWaitForPending(`videosApiClient/${userId}/${fullResponse}`, () => videosApiClient.getProcessed({...options, accessToken: token.accessToken, userId, priority, fullResponse}));
   }
 
-  const getPlayerProfile = async playerId => await twitchRepository().get(playerId) ?? null;
+  const getPlayerProfile = async playerId => twitchRepository().get(playerId);
   const updatePlayerProfile = async twitchProfile => twitchRepository().set(twitchProfile);
 
   const refresh = async (playerId, forceUpdate = false, priority = queues.PRIORITY.FG_LOW, throwErrors = false) => {
