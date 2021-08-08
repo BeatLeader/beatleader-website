@@ -8,7 +8,13 @@ import twitchRepository from './repository/twitch'
 const FIXES_KEY = 'data-fix';
 
 const getAppliedFixes = async () => keyValueRepository().get(FIXES_KEY, true);
-const storeAppliedFixes = async fixes => keyValueRepository().set(fixes, FIXES_KEY);
+const setAppliedFixes = async fixes => keyValueRepository().set(fixes, FIXES_KEY);
+const addAppliedFix = async fixName => {
+  let allAppliedFixes = await getAppliedFixes();
+  allAppliedFixes = allAppliedFixes && Array.isArray(allAppliedFixes) ? allAppliedFixes : [];
+  allAppliedFixes.push(fixName);
+  await setAppliedFixes(allAppliedFixes);
+}
 
 const allFixes = {
   'rankeds-20210725': {
@@ -119,6 +125,8 @@ const allFixes = {
           playerId
         }
       )))
+
+      await addAppliedFix(fixName);
 
       log.info('Twitch profiles added.', 'DBFix')
     }
