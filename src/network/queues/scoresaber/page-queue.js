@@ -298,7 +298,7 @@ export default (options = {}) => {
         difference = !isNaN(difference) ? difference : null
 
         let playerName = opt(a.querySelector('.songTop.pp'), 'innerText');
-        playerName = playerName ? playerName.trim() : null;
+        playerName = playerName || playerName === '' ? playerName.trim() : null;
 
         let pp = parseSsFloat(opt(tr.querySelector('td.pp .scoreTop.ppValue'), 'innerText'));
         pp = !isNaN(pp) ? pp : null;
