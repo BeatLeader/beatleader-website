@@ -9,6 +9,7 @@
   export let leaderboard = null;
   export let rank = null;
   export let hash = null;
+  export let twitchUrl = null
 
   $: song = opt(leaderboard, 'song', null);
   $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
@@ -37,7 +38,7 @@
 
   {#if hash && hash.length}
     <div class="icons desktop-and-up">
-      <Icons {hash}/>
+      <Icons {hash} {twitchUrl} />
     </div>
   {/if}
   </section>

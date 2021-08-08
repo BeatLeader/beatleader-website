@@ -57,7 +57,7 @@
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard} rank={score.rank} {hash}/>
+        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl}/>
       </span>
 
       <section class="stats">
