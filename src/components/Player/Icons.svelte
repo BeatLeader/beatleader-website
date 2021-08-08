@@ -1,13 +1,21 @@
 <script>
   import createPlayersStore from '../../stores/scoresaber/players'
+  import createTwitchService from '../../services/twitch'
   import {configStore} from '../../stores/config'
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {opt} from '../../utils/js'
   import Button from '../Common/Button.svelte'
+  import {onMount} from 'svelte'
+  import TwitchLinkModal from './TwitchLinkModal.svelte'
 
   export let playerId;
 
   let playersStore = createPlayersStore();
+  const twitchService = createTwitchService();
+
+  let twitchToken = null;
+
+  let showLinkingModal = false;
 
   function onSetAsMain() {
     if (!configStore || !playerId) return;
@@ -34,12 +42,24 @@
     }
   }
 
+  async function onTwitchLink(event) {
+    if (!opt(event, 'detail.id')) return;
+
+    await twitchService.updatePlayerProfile({...event.detail, playerId, profileLastUpdated: new Date()})
+
+    showLinkingModal = false;
+  }
+
+  onMount(async () => {
+    twitchToken = await twitchService.getCurrentToken();
+  })
+
   $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
   $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
 </script>
 
 {#if playerId}
-  <nav>
+  <nav class:main={isMain}>
     {#if !isMain}
       <Button title="Set as your profile" iconFa="fas fa-user-check" type="primary"
               on:click={onSetAsMain}
@@ -50,7 +70,19 @@
               on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')}
       />
     {/if}
+
+    {#if twitchToken}
+      <Button type="twitch" iconFa="fab fa-twitch" title="Link Twitch profile"
+              on:click={() => showLinkingModal = true}
+      />
+    {/if}
   </nav>
+{/if}
+
+{#if twitchToken}
+  <TwitchLinkModal {playerId} show={showLinkingModal}
+                   on:link={onTwitchLink} on:cancel={() => showLinkingModal = false}
+  />
 {/if}
 
 <style>
@@ -70,18 +102,34 @@
     }
 
     nav :global(button):nth-child(1) {
-        transform: translate3d(-50px, 30px, 0);
-    }
-
-    nav :global(button):nth-child(2) {
-        transform: translate3d(-50px, 4px, 0);
+        transform: translate3d(-50px, 60px, 0);
     }
 
     nav :global(button):nth-child(1):hover {
-        transform: translate3d(-50px, 30px, 0) scale(1.2);
+        transform: translate3d(-50px, 60px, 0) scale(1.2);
+    }
+
+    nav.main :global(button):nth-child(1) {
+        transform: translate3d(-55px, 15px, 0);
+    }
+
+    nav.main :global(button):nth-child(1):hover {
+        transform: translate3d(-55px, 15px, 0) scale(1.2);
+    }
+
+    nav :global(button):nth-child(2) {
+        transform: translate3d(-60px, 24px, 0);
     }
 
     nav :global(button):nth-child(2):hover {
-        transform: translate3d(-50px, 4px, 0) scale(1.2);
+        transform: translate3d(-60px, 24px, 0) scale(1.2);
+    }
+
+    nav :global(button):nth-child(3) {
+        transform: translate3d(-55px, 0px, 0);
+    }
+
+    nav :global(button):nth-child(3):hover {
+        transform: translate3d(-55px, 0px, 0) scale(1.2);
     }
 </style>
