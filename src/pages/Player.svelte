@@ -55,7 +55,7 @@
   }
 
   function scrollToTop() {
-    if (playerEl) scrollToTargetAdjusted(playerEl, 44)
+    if (playerEl) scrollToTargetAdjusted(playerEl, 55)
   }
 
   $: changeParams(initialPlayerId, initialScoresType, initialScoresPage)
