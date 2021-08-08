@@ -3,8 +3,10 @@
     import {copyToClipboard} from '../../utils/clipboard';
     import beatSaverSvg from "../../resources/beatsaver.svg";
     import Button from "../Common/Button.svelte";
+    import {capitalize} from '../../utils/js'
 
     export let hash;
+    export let diffInfo = null;
     export let twitchUrl = null;
 
     let songKey;
@@ -25,6 +27,8 @@
     }
 
     $: updateSongKey(hash)
+    $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
+    $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -52,7 +56,7 @@
     {/if}
 
     {#if shownIcons.includes('preview')}
-        <a href="https://skystudioapps.com/bs-viewer/?id={songKey}" target="_blank">
+        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank">
             <Button iconFa="fa fa-play-circle" title="Map preview"/>
         </a>
     {/if}

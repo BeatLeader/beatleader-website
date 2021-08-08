@@ -13,6 +13,7 @@
 
   $: song = opt(leaderboard, 'song', null);
   $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
+  $: diffInfo = opt(leaderboard, 'diffInfo')
 </script>
 
 {#if song}
@@ -38,7 +39,7 @@
 
   {#if hash && hash.length}
     <div class="icons desktop-and-up">
-      <Icons {hash} {twitchUrl} />
+      <Icons {hash} {twitchUrl} {diffInfo} />
     </div>
   {/if}
   </section>

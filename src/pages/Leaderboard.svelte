@@ -117,6 +117,7 @@
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
   $: hash = opt($leaderboardStore, 'leaderboard.song.hash')
+  $: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo')
 </script>
 
 <svelte:head>
@@ -144,7 +145,7 @@
             {#if song.stars}<Value value={song.stars} digits={2} zero="" suffix="★"/>{/if}
             {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
 
-            <span class="icons"><Icons {hash} /></span>
+            <span class="icons"><Icons {hash} {diffInfo} /></span>
           </h2>
           {/if}
 

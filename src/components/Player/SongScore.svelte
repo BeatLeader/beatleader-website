@@ -28,6 +28,7 @@
   $: comparePlayers = opt(songScore, 'comparePlayers', null)
   $: hash = opt(leaderboard, 'song.hash')
   $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
+  $: diffInfo = opt(leaderboard, 'diffInfo')
 </script>
 
 {#if songScore}
@@ -36,7 +37,7 @@
        class:with-details={showDetails}
   >
       <div class="icons up-to-tablet">
-        <Icons {hash} {twitchUrl}/>
+        <Icons {hash} {twitchUrl} {diffInfo} />
       </div>
 
     <div class="main">
