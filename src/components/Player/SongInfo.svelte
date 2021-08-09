@@ -11,6 +11,8 @@
   export let hash = null;
   export let twitchUrl = null
 
+  let replaceImgWithDefault = null;
+
   $: song = opt(leaderboard, 'song', null);
   $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
   $: diffInfo = opt(leaderboard, 'diffInfo')
@@ -21,7 +23,11 @@
   <div class="cover-difficulty">
     <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
        on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
-      <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt=""/>
+      {#if replaceImgWithDefault}
+        <img src="/assets/song-default.png" alt="" />
+      {:else}
+        <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => replaceImgWithDefault = true}/>
+      {/if}
     </a>
 
     <div class="difficulty">
