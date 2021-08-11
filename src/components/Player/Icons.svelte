@@ -109,14 +109,6 @@
         transform: translate3d(-40px, 60px, 0) scale(1.2);
     }
 
-    nav.main :global(button):nth-child(1) {
-        transform: translate3d(-50px, 15px, 0);
-    }
-
-    nav.main :global(button):nth-child(1):hover {
-        transform: translate3d(-50px, 15px, 0) scale(1.2);
-    }
-
     nav :global(button):nth-child(2) {
         transform: translate3d(-50px, 24px, 0);
     }
