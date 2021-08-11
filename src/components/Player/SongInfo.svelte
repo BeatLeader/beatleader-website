@@ -11,11 +11,13 @@
   export let hash = null;
   export let twitchUrl = null
 
-  let replaceImgWithDefault = null;
+  let ssCoverDoesNotExists = false;
+  let beatSaverCoverDoesNotExists = false;
 
   $: song = opt(leaderboard, 'song', null);
   $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
   $: diffInfo = opt(leaderboard, 'diffInfo')
+  $: beatSaverCoverUrl = opt(leaderboard, 'beatMaps.versions.0.coverURL')
 </script>
 
 {#if song}
@@ -23,10 +25,14 @@
   <div class="cover-difficulty">
     <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
        on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
-      {#if replaceImgWithDefault}
-        <img src="/assets/song-default.png" alt="" />
+      {#if ssCoverDoesNotExists}
+        {#if beatSaverCoverDoesNotExists || !beatSaverCoverUrl}
+          <img src="/assets/song-default.png" alt=""/>
+        {:else}
+          <img src={beatSaverCoverUrl} alt="" on:error={() => beatSaverCoverDoesNotExists = true}/>
+        {/if}
       {:else}
-        <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => replaceImgWithDefault = true}/>
+        <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => ssCoverDoesNotExists = true}/>
       {/if}
     </a>
 
