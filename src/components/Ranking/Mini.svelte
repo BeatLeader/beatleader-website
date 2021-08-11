@@ -23,6 +23,7 @@
   async function onParamsChanged(rank, country, numOfPlayers) {
     try {
       miniRanking = null;
+      comparePp = null;
 
       if (!rank) return;
 
@@ -30,8 +31,8 @@
 
       const ranking = await rankingService.getMiniRanking(rank, country, numOfPlayers);
 
-      miniRanking = ranking;
       comparePp = opt(ranking.find(p => opt(p, 'playerInfo.rank') === rank), 'playerInfo.pp')
+      miniRanking = ranking
     } finally {
       isLoading = false
     }
