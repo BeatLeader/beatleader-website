@@ -25,7 +25,7 @@
 
       message = 'Token has been validated correctly. Redirecting...';
 
-      navigate(token.url)
+      navigate(token.url && token.url.length ? token.url : '/')
     } catch (err) {
       if (err instanceof SsrHttpUnauthenticatedError) {
         try {
