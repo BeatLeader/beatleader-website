@@ -239,20 +239,6 @@
               <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
 
               <div class="score-metrics">
-                <div class="score with-badge">
-                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-                      <span slot="label">
-                        <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
-
-                        <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
-                      </span>
-                  </Badge>
-                </div>
-
-                <div class="percentage with-badge">
-                  <Accuracy score={score.score} showPercentageInstead={true} noSecondMetric={true} />
-                </div>
-
                 <div class="pp with-badge">
                   <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                     <span slot="label">
@@ -260,6 +246,20 @@
                           inline={false} color="white"
                       />
                     </span>
+                  </Badge>
+                </div>
+
+                <div class="percentage with-badge">
+                  <Accuracy score={score.score} showPercentageInstead={true} noSecondMetric={true} />
+                </div>
+
+                <div class="score with-badge">
+                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                      <span slot="label">
+                        <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
+
+                        <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                      </span>
                   </Badge>
                 </div>
               </div>
@@ -384,7 +384,7 @@
 
     .scores-grid .player-score {
         display: grid;
-        grid-template-columns: minmax(2em, max-content) auto minmax(6.85em, min-content) 6em 4.5em 5.5em;
+        grid-template-columns: minmax(2em, max-content) auto minmax(6.9em, min-content) 5.5em 4.5em 6em;
         grid-gap: .5em;
         align-items: center;
         overflow: hidden;
