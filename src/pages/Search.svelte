@@ -12,6 +12,8 @@
 
   const DEFAULT_NAME = 'Stranger';
 
+  document.body.classList.add('slim');
+
   let playerId = null;
   let name = DEFAULT_NAME;
   let player = null;
@@ -85,7 +87,6 @@
 <style>
     article {
         width: 100%;
-        max-width: 1024px;
         margin: 0 auto;
         text-align: center;
     }

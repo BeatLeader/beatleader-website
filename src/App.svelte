@@ -18,7 +18,7 @@
   <Nav />
 
   <main>
-    <div class="sspl-page-container">
+    <div class="ssr-page-container">
       <Route path="/u/:initialPlayerId/*initialScoresType" let:params>
         <PlayerPage initialPlayerId={params.initialPlayerId}
                     initialScoresType={
@@ -60,7 +60,11 @@
 </footer>
 
 <style>
-    .sspl-page-container {
+    main {
+        margin-top: 1em;
+    }
+
+    .ssr-page-container {
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: 1fr;
@@ -68,7 +72,7 @@
         min-height: calc(100vh - 8rem);
     }
 
-    .sspl-page-container :global(> *) {
+    .ssr-page-container :global(> *) {
         grid-area: 1 / 1 / 1 / 1;
     }
 

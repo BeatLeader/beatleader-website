@@ -63,7 +63,7 @@
   $: updateMainPlayer(mainPlayerId)
 </script>
 
-<nav>
+<nav class="ssr-page-container">
   {#if player}
   <a href={`/u/${player.playerId}/recent/1`} on:click|preventDefault={() => navigateToPlayer(player.playerId)} transition:fade>
     {#if opt(player, 'playerInfo.avatar')}

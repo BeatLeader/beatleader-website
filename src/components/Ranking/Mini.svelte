@@ -18,6 +18,8 @@
   let isLoading = false;
   let comparePp = null;
 
+  const prevTitle = "vs ${value}"
+
   async function onParamsChanged(rank, country, numOfPlayers) {
     try {
       miniRanking = null;
@@ -61,7 +63,7 @@
           <PlayerNameWithFlag {player} on:click={() => navigate(`/u/${player.playerId}/recent/1`)}/>
 
           <div class="pp">
-            <Value value={opt(player, 'playerInfo.pp')} prevValue={comparePp} zero="" suffix="pp"/>
+            <Value value={opt(player, 'playerInfo.pp')} prevValue={comparePp} zero="" suffix="pp" {prevTitle} />
           </div>
         {/each}
       </div>
@@ -71,7 +73,8 @@
 
 <style>
     section {
-        width: 29em;
+        width: 100%;
+
         padding: .5em;
         font-size: .875em;
     }

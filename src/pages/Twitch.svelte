@@ -8,6 +8,8 @@
   import Error from '../components/Common/Error.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
 
+  document.body.classList.add('slim');
+
   let twitchService = createTwitchService();
 
   let message = null;

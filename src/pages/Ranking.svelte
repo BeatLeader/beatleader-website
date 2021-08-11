@@ -19,6 +19,8 @@
   export let type = 'global';
   export let page = 1;
 
+  document.body.classList.add('slim');
+
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
 
