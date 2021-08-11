@@ -106,6 +106,8 @@
     else changeParams(currentLeaderboardId, newType, 1);
   }
 
+  let ssCoverDoesNotExists = false;
+
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
@@ -120,6 +122,7 @@
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
   $: hash = opt($leaderboardStore, 'leaderboard.song.hash')
   $: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo')
+  $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
 </script>
 
 <svelte:head>
@@ -130,7 +133,7 @@
   <div class="box has-shadow" bind:this={boxEl}>
     {#if !$leaderboardStore && $isLoading}<Spinner/>{/if}
 
-    <div class="leaderboard" style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `--background-image: url(${$leaderboardStore.leaderboard.song.imageUrl})` : ''}>
+    <div class="leaderboard" style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `--background-image: url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl})` : ''}>
       {#if $leaderboardStore}
 
         {#if leaderboard && song && withHeader}
@@ -280,6 +283,10 @@
         <p>Leaderboard not found.</p>
       {/if}
     </div>
+
+    {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
+      <img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} on:error={() => ssCoverDoesNotExists = true} />
+    {/if}
   </div>
 </article>
 
@@ -514,6 +521,10 @@
         .player-score .score-metrics *:last-child {
             justify-self: right;
         }
+    }
+
+    img.dummy {
+        display: none;
     }
 
     @media screen and (max-width: 409px) {

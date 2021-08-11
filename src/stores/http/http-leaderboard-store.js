@@ -65,8 +65,11 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
     if (newState.leaderboard)
       beatMapsEnhancer(newState)
         .then(_ => {
+          const versions = opt(newState.leaderboard.beatMaps, 'versions')
+          const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
+
           const bpm = opt(newState, 'leaderboard.beatMaps.metadata.bpm', null);
-          const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(opt(newState.leaderboard.beatMaps, 'versions.0.diffs'), newState.leaderboard.diffInfo);
+          const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(opt(newState.leaderboard.beatMaps, `versions.${versionsLastIdx}.diffs`), newState.leaderboard.diffInfo);
           if (!bmStats) return null;
 
           newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
