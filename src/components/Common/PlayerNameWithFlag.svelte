@@ -1,6 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte';
   import {opt} from '../../utils/js'
+  import Flag from './Flag.svelte'
 
   export let player;
 
@@ -12,9 +13,7 @@
 </script>
 
 <a href={`/u/${playerId}/recent/1`} class="player-name clickable" title={name} on:click|preventDefault>
-  <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
-       class="country"
-       on:click|preventDefault={() => country ? dispatch('flag-click', {country: country.toLowerCase()}) : null}>
+  <Flag {country} on:flag-click />
   <span>{name}</span>
 </a>
 
@@ -28,7 +27,7 @@
         overflow-x: hidden;
     }
 
-    .player-name img {
+    .player-name :global(> img) {
         margin-right: .125rem;
     }
 </style>

@@ -5,9 +5,10 @@
   import {opt} from '../utils/js'
   import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
+  import {scrollToTargetAdjusted} from '../utils/browser'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
-  import {scrollToTargetAdjusted} from '../utils/browser'
+  import MiniRanking from '../components/Ranking/Mini.svelte'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
@@ -96,6 +97,12 @@
     </div>
   {:else}
     <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
+
+    <MiniRanking rank={opt($playerStore, 'playerInfo.rank')} numOfPlayers={5} />
+
+    {#each opt($playerStore, 'playerInfo.countries', []) as countryInfo (countryInfo.country)}
+      <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} />
+    {/each}
 
     {#if scoresPlayerId}
       <Scores playerId={scoresPlayerId}
