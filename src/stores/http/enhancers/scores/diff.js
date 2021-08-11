@@ -28,7 +28,9 @@ export default async (data, playerId = null) => {
   if (!prevScore) return;
 
   const diffInfo = opt(data, 'leaderboard.diffInfo');
-  const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(opt(data.leaderboard.beatMaps, 'versions.0.diffs'), diffInfo);
+  const versions = opt(data, 'leaderboard.beatMaps.versions')
+  const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
+  const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(opt(data, `leaderboard.beatMaps.versions.${versionsLastIdx}.diffs`), diffInfo);
 
   data.prevScore = calculateAcc(prevScore, bmStats, leaderboardId);
 }
