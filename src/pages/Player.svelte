@@ -5,13 +5,16 @@
   import {opt} from '../utils/js'
   import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
+  import {scrollToTargetAdjusted} from '../utils/browser'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
-  import {scrollToTargetAdjusted} from '../utils/browser'
+  import MiniRanking from '../components/Ranking/Mini.svelte'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
+
+  document.body.classList.remove('slim');
 
   let playerEl = null;
 
@@ -89,6 +92,7 @@
   <title>{browserTitle}</title>
 </svelte:head>
 
+<section>
 <article bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <div class="box has-shadow">
@@ -111,14 +115,54 @@
   {/if}
 </article>
 
+<aside>
+  <div class="box has-shadow">
+    <MiniRanking rank={opt($playerStore, 'playerInfo.rank')} numOfPlayers={5} />
+  </div>
+
+  {#each opt($playerStore, 'playerInfo.countries', []) as countryInfo (countryInfo.country)}
+    <div class="box has-shadow">
+      <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} />
+    </div>
+  {/each}
+</aside>
+</section>
+
 <style>
+  section {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+  }
+
   article {
-      width: 100%;
+      width: calc(100% - 25em);
+      overflow-x: hidden;
+  }
+
+  aside {
+      width: 25em;
+      margin-left: 1em;
+  }
+
+  aside .box {
+      padding: 0;
+      margin-bottom: 1em;
   }
 
   button {
       cursor: pointer;
       min-width: 2rem;
       margin-right: .5rem;
+  }
+
+  @media screen and (max-width: 1749px) {
+      article {
+          width: 100%;
+      }
+
+      aside {
+          display: none;
+      }
   }
 </style>

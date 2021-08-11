@@ -2,6 +2,8 @@
   import {navigate} from "svelte-routing";
   import {fade} from 'svelte/transition'
   import ssrConfig from '../ssr-config'
+
+  document.body.classList.add('slim');
 </script>
 
 <svelte:head>

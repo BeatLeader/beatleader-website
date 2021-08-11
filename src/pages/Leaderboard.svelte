@@ -32,6 +32,8 @@
   export let scrollOffset = 45;
   export let fixedBrowserTitle = null;
 
+  if (!dontNavigate) document.body.classList.add('slim');
+
   const dispatch = createEventDispatcher();
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
