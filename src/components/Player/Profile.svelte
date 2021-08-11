@@ -64,7 +64,7 @@
         position: relative;
         text-align: center;
         margin-right: 1rem;
-        min-width: calc(150px + 1.5rem + 1rem);
+        min-width: 150px;
         min-height: 190px;
     }
 

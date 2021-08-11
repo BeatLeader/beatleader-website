@@ -89,11 +89,11 @@
     nav {
         position: absolute;
         top: 0;
-        left: 0;
-        text-align: center;
+        left: calc(50% - 50px);
+        text-align: left;
         font-size: .75rem;
         z-index: 15;
-        width: calc(100% - 1rem);
+        width: 100px;
     }
 
     nav :global(button) {
@@ -102,34 +102,34 @@
     }
 
     nav :global(button):nth-child(1) {
-        transform: translate3d(-50px, 60px, 0);
+        transform: translate3d(-40px, 60px, 0);
     }
 
     nav :global(button):nth-child(1):hover {
-        transform: translate3d(-50px, 60px, 0) scale(1.2);
+        transform: translate3d(-40px, 60px, 0) scale(1.2);
     }
 
     nav.main :global(button):nth-child(1) {
-        transform: translate3d(-55px, 15px, 0);
+        transform: translate3d(-50px, 15px, 0);
     }
 
     nav.main :global(button):nth-child(1):hover {
-        transform: translate3d(-55px, 15px, 0) scale(1.2);
+        transform: translate3d(-50px, 15px, 0) scale(1.2);
     }
 
     nav :global(button):nth-child(2) {
-        transform: translate3d(-60px, 24px, 0);
+        transform: translate3d(-50px, 24px, 0);
     }
 
     nav :global(button):nth-child(2):hover {
-        transform: translate3d(-60px, 24px, 0) scale(1.2);
+        transform: translate3d(-50px, 24px, 0) scale(1.2);
     }
 
     nav :global(button):nth-child(3) {
-        transform: translate3d(-55px, 0px, 0);
+        transform: translate3d(-47px, 0px, 0);
     }
 
     nav :global(button):nth-child(3):hover {
-        transform: translate3d(-55px, 0px, 0) scale(1.2);
+        transform: translate3d(-47px, 0px, 0) scale(1.2);
     }
 </style>
