@@ -21,6 +21,7 @@
     export let title = null;
     export let prevTitle = null;
     export let prevAbsolute = false;
+    export let forcePrev = false;
 
     let resolvedValue = value;
     let unsubscribe = null;
@@ -47,7 +48,7 @@
     $: resolveValue(value);
     $: minValue = Math.pow(10, -digits-1)
     $: formatted = getFormattedValue(resolvedValue, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix, configStore && $configStore);
-    $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null || prevAbsolute;
+    $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null || prevAbsolute || forcePrev;
     $: prevFormatted = (configStore, $configStore, prevValue ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, withSign) + suffix : "")
     $: prevDiff = prevValue !== null ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;
     $: prevDiffFormatted = prevDiff !== null ? (configStore, $configStore, resolvedValue, prevDiff ? formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix) : "") : null
@@ -56,7 +57,7 @@
     $: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : "${value}", {value: prevFormatted})
 </script>
 
-<span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue} <small class={prevClass} title={prevTitleFormatted}><slot name="prev" value={prevValue} formatted={prevFormatted} diffFormatted={prevDiffFormatted} diff={prevDiff}>{prevDiffFormatted}</slot></small>{/if}
+<span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue} <small class={prevClass} title={prevTitleFormatted}><slot name="prev" value={prevValue} formatted={prevFormatted} diff={prevDiff} diffFormatted={prevDiffFormatted}>{prevDiffFormatted}</slot></small>{/if}
 
 <style>
     small.block {display: block;}

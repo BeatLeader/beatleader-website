@@ -369,6 +369,10 @@
         text-align: center;
     }
 
+    .with-badge :global(.badge) {
+        height: 100%;
+    }
+
     small {
         display: block;
         text-align: center;
