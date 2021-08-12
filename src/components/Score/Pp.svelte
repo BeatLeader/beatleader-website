@@ -2,7 +2,6 @@
   import Value from '../Common/Value.svelte'
 
   export let pp = 0;
-  export let prevPp = null;
   export let zero = '-';
   export let withZeroSuffix = false;
   export let weighted = null;
@@ -11,10 +10,9 @@
   export let leaderboardId = null;
 </script>
 
-<span class="value" style="--color: {color}"><Value value="{pp}" {zero} {withZeroSuffix} prevValue={prevPp} suffix="pp" {...$$restProps} /></span>
-{#if weighted !== null && weighted !== undefined}
-  <small>(<Value value="{weighted}" {zero} {withZeroSuffix} suffix="pp" {...$$restProps}/>)</small>
-{/if}
+<span class="value" style="--color: {color}"><Value value="{pp}" {zero} {withZeroSuffix} prevValue={weighted} prevTitle="Weighted PP" prevAbsolute={!!weighted} suffix="pp" {...$$restProps}>
+  <svelte:fragment slot="prev" let:formatted>({formatted})</svelte:fragment>
+</Value></span>
 
 <style>
   .value {

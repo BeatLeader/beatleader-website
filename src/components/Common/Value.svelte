@@ -20,6 +20,7 @@
     export let prevLabel = "";
     export let title = null;
     export let prevTitle = null;
+    export let prevAbsolute = false;
 
     let resolvedValue = value;
     let unsubscribe = null;
@@ -46,16 +47,16 @@
     $: resolveValue(value);
     $: minValue = Math.pow(10, -digits-1)
     $: formatted = getFormattedValue(resolvedValue, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix, configStore && $configStore);
-    $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null;
+    $: showPrevValue = prevValue && prevValue !== resolvedValue && resolvedValue !== null || prevAbsolute;
     $: prevFormatted = (configStore, $configStore, prevValue ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, withSign) + suffix : "")
-    $: prevDiffFormatted = (configStore, $configStore, resolvedValue, prevValue ? formatNumber((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1), digits, true) + (suffixPrev ? suffixPrev : suffix) : "")
-    $: prevClass = (prevValue ? ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) > minValue ? "inc" : ((resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
+    $: prevDiff = prevValue !== null ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;
+    $: prevDiffFormatted = prevDiff !== null ? (configStore, $configStore, resolvedValue, prevDiff ? formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix) : "") : null
+    $: prevClass = (prevDiff !== null ? (prevDiff > minValue ? "inc" : (prevDiff < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
     $: mainClass = (useColorsForValue && resolvedValue ? (resolvedValue > minValue ? "inc" : (resolvedValue < -minValue ? "dec" : "zero")): "");
-
     $: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : "${value}", {value: prevFormatted})
 </script>
 
-<span class={mainClass} {title}>{formatted}</span>{#if showPrevValue} <small class={prevClass} title={prevTitleFormatted}>{prevDiffFormatted}</small>{/if}
+<span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue} <small class={prevClass} title={prevTitleFormatted}><slot name="prev" value={prevValue} formatted={prevFormatted} diffFormatted={prevDiffFormatted} diff={prevDiff}>{prevDiffFormatted}</slot></small>{/if}
 
 <style>
     small.block {display: block;}
