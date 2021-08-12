@@ -28,6 +28,7 @@
             </slot>
         </span>
     {/if}
+    {#if $$slots.additional}<slot name="additional"></slot>{/if}
 </span>
 
 <style>

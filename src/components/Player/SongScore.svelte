@@ -88,7 +88,7 @@
 
         {#if score.acc}
             <span class="acc with-badge">
-              <Accuracy {score} {prevScore} />
+              <Accuracy {score} {prevScore} noSecondMetric={true} />
             </span>
         {:else}
           <span class="acc with-badge"></span>
@@ -104,10 +104,6 @@
                 />
               </span>
           </Badge>
-
-          {#if score.mods && score.mods.length}
-            <small title="Mods">{`${score.mods.join(', ')}`}&nbsp;</small>
-          {/if}
         </span>
         {/if}
 

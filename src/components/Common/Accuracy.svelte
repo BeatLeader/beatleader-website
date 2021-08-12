@@ -32,6 +32,7 @@
   }
 
   $: badge = getBadge(showPercentageInstead ? opt(score, 'percentage') : opt(score, 'acc'));
+  $: mods = opt(score, 'mods')
 </script>
 
 <Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
@@ -50,6 +51,8 @@
         </small>
       {/if}
     </span>
+
+    <small class="mods" slot="additional" title={mods ? 'Mods: ' + mods.join(', ') : null}>{#if mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
 
 {#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length  && score.acc !== score.percentage}
@@ -67,4 +70,14 @@
         text-align: center;
         white-space: nowrap;
     }
+
+    .mods {
+        max-width: 1.5em;
+        max-height: 2em;
+        line-height: 1;
+        white-space: normal!important;
+        overflow: hidden;
+    }
+
+    .mods:empty {display: none}
 </style>
