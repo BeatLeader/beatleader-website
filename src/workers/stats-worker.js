@@ -1,21 +1,19 @@
 import {expose} from 'comlink'
 import initDb from '../db/db'
-import initializeRepositories from '../db/repositories-init'
 import scoresRepository from '../db/repository/scores'
 import eventBus from '../utils/broadcast-channel-pubsub'
 import {opt} from '../utils/js'
 import {diffColors} from '../utils/scoresaber/format'
 import {getAccFromScore} from '../utils/scoresaber/song'
 
-const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId, true);
-
 let db = null;
+
+const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId, true);
 
 async function init() {
   if (db) return;
 
   db = await initDb();
-  await initializeRepositories();
 }
 
 const calcPlayerStats = async playerId => {
