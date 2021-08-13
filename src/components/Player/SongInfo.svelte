@@ -50,7 +50,7 @@
   </div>
 
   {#if hash && hash.length}
-    <div class="icons desktop-and-up">
+    <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
       <Icons {hash} {twitchUrl} {diffInfo} />
     </div>
   {/if}
@@ -106,11 +106,15 @@
     }
 
     .icons {
-        font-size: .5em;
+        font-size: .65em;
         min-width: 4.66em;
         width: 4.66em;
         margin-right: 0;
         align-self: flex-end;
+    }
+
+    .icons.wide {
+        min-width: 6.85em;
     }
 
     .icons:empty {
