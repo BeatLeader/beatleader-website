@@ -191,24 +191,25 @@ export default () => {
             continue;
           }
 
-          const score = await scoresStore.get(scoreUpdate.id)
+          const dbScore = await scoresStore.get(scoreUpdate.id)
 
-          const scoreLastUpdated = score.lastUpdated;
+          const scoreLastUpdated = dbScore.lastUpdated;
 
           if (
             (!scoreLastUpdated || scoreLastUpdated < scoreUpdate.fetchedAt) &&
             (
-              opt(score, 'score.scoreId') === scoreUpdate.scoreId ||
-              (opt(score, 'score.score') === scoreUpdate.score && opt(score, 'score.timeSet') && opt(score, 'score.timeSet').getTime() === scoreUpdate.timeSet.getTime())
+              opt(dbScore, 'score.scoreId') === scoreUpdate.scoreId ||
+              (opt(dbScore, 'score.unmodifiedScore') <= scoreUpdate.unmodifiedScore && opt(dbScore, 'score.timeSet') && dbScore.score.timeSet.getTime() === scoreUpdate.timeSet.getTime())
             )
           ) {
-            score.lastUpdated = scoreUpdate.fetchedAt;
-            score.pp = scoreUpdate.pp;
-            score.score.score = scoreUpdate.score;
-            score.score.pp = scoreUpdate.pp;
-            score.score.rank = scoreUpdate.rank;
+            dbScore.lastUpdated = scoreUpdate.fetchedAt;
+            dbScore.pp = scoreUpdate.pp;
+            dbScore.score.pp = scoreUpdate.pp;
+            dbScore.score.unmodifiedScore = scoreUpdate.unmodifiedScore;
+            dbScore.score.score = scoreUpdate.score;
+            dbScore.score.rank = scoreUpdate.rank;
 
-            await scoresStore.put(score);
+            await scoresStore.put(dbScore);
           }
 
           cursor = await cursor.continue();
@@ -384,16 +385,14 @@ export default () => {
           score = addScoreIndexFields(playerId, score);
 
           const leaderboardId = opt(score, 'leaderboard.leaderboardId')
-          if (!leaderboardId) return null;
+          if (!leaderboardId || !score.id) return null;
 
           const cachedScore = playerScoresObj[leaderboardId];
 
-          const cachedScoreId = opt(cachedScore, 'score.scoreId');
           const scoreId = opt(score, 'score.scoreId')
 
-          if (!cachedScoreId || cachedScoreId !== scoreId) return null;
-
           const scoreValue = opt(score, 'score.score')
+          const unmodifiedScore = opt(score, 'score.unmodifiedScore');
           const pp = opt(score, 'score.pp')
           const rank = opt(score, 'score.rank')
           const timeSet = opt(score, 'score.timeSet')
@@ -402,7 +401,7 @@ export default () => {
 
           if (lastUpdated && lastUpdated > addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return null;
 
-          return {id, scoreId, leaderboardId, pp, rank, score: scoreValue, timeSet, fetchedAt: score.lastUpdated}
+          return {id, scoreId, leaderboardId, pp, rank, score: scoreValue, unmodifiedScore, timeSet, fetchedAt: score.lastUpdated}
         })
         .filter(score => score && score.scoreId && score.rank)
 
