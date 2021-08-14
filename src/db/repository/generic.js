@@ -2,11 +2,17 @@ import cache from '../cache';
 import {db} from '../db';
 import {convertArrayToObjectByKey} from '../../utils/js'
 import makePendingPromisePool from '../../utils/pending-promises'
+import eventBus from '../../utils/broadcast-channel-pubsub'
 
 export const ALL_KEY = '__ALL';
 const NONE_KEY = '__NONE';
 
+let repositories = {};
+
 export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
+  const repositoryName = `${storeName}:${eventBus.getNodeId()}`;
+  if (repositories[repositoryName]) return repositories[repositoryName];
+
   let dataAvailableFor = {};
 
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
@@ -18,7 +24,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
     return key ? key : outOfLineKey;
   }
 
-  let repositoryCache = cache(storeName, getObjKey);
+  let repositoryCache = cache(repositoryName, getObjKey);
 
   const getCacheKeyFor =  (query, indexName) => (indexName ? indexName : ALL_KEY) + '-' + (query ? query : NONE_KEY);
 
@@ -88,11 +94,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
       repositoryCache.forgetByFilter(filterItems);
     }
 
-    const value = repositoryCache.getByFilter(getFromDb, isAllDataAvailable() || isIndexDataAvailable(cacheKey) || isIndexDataAvailable(fullIndexCacheKey) ? filterItems : null);
-
-    setDataAvailabilityStatus(cacheKey);
-
-    return value;
+    return repositoryCache.getByFilter(getFromDb, isAllDataAvailable() || isIndexDataAvailable(cacheKey) || isIndexDataAvailable(fullIndexCacheKey) ? filterItems : null);
   };
 
   const getAll = async(refreshCache = false) => {
@@ -109,9 +111,11 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
     if (!isAllDataAvailable()) {
       const data = convertArrayToObjectByKey(await getFromDb(), inlineKeyName);
 
+      const ret = Object.values(repositoryCache.setAll(data)).filter(filterUndefined);
+
       setAllDataAvailabilityStatus();
 
-      return Object.values(repositoryCache.setAll(data)).filter(filterUndefined);
+      return ret;
     }
 
     return Object.values(repositoryCache.getAll()).filter(filterUndefined);
@@ -123,7 +127,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
 
     const cacheKey = getCacheKeyFor(query, indexName);
 
-    const getFromDb = () => resolvePromiseOrWaitForPending(cacheKey, () => db.getAllFromIndex(storeName, indexName, query));
+    const getFromDb = async () => resolvePromiseOrWaitForPending(cacheKey, () => db.getAllFromIndex(storeName, indexName, query));
 
     if (query && query instanceof IDBKeyRange) return getFromDb();
 
@@ -136,7 +140,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
       repositoryCache.forgetByFilter(filterItems);
     }
 
-    if (!isAllDataAvailable() && !isIndexDataAvailable(cacheKey)) {
+    const getFromDbAndUpdateCache = async () => resolvePromiseOrWaitForPending(`${cacheKey}-updateDb`, async () => {
       const data = await getFromDb();
 
       repositoryCache.merge(convertArrayToObjectByKey(data, inlineKeyName));
@@ -144,7 +148,9 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
       setDataAvailabilityStatus(cacheKey);
 
       return data;
-    }
+    })
+
+    if (!isAllDataAvailable() && !isIndexDataAvailable(cacheKey)) return await getFromDbAndUpdateCache();
 
     return Object.values(repositoryCache.getAll()).filter(filterItems);
   }
@@ -198,5 +204,25 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
 
   const getCache = () => repositoryCache;
 
-  return {getStoreName, hasOutOfLineKey, getAllKeys, get, getFromIndex, getAll, getAllFromIndex, set, delete: del, deleteObject, openCursor, getKeyName, forgetCacheKey, forgetObject, flushCache, getCachedKeys, setCache, addToCache, getCache};
+  return repositories[repositoryName] = {
+    getStoreName,
+    hasOutOfLineKey,
+    getAllKeys,
+    get,
+    getFromIndex,
+    getAll,
+    getAllFromIndex,
+    set,
+    delete: del,
+    deleteObject,
+    openCursor,
+    getKeyName,
+    forgetCacheKey,
+    forgetObject,
+    flushCache,
+    getCachedKeys,
+    setCache,
+    addToCache,
+    getCache,
+  };
 };

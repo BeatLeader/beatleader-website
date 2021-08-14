@@ -1,10 +1,6 @@
 import createRepository from './generic';
 
-let repository;
-
-export default () => repository
-  ? repository
-  : repository = createRepository(
+export default () => createRepository(
     'scores',
     'id',
     {
@@ -12,5 +8,5 @@ export default () => repository
       'scores-leaderboardId': 'leaderboardId',
       'scores-playerId': 'playerId',
       'scores-pp': 'pp',
-    }
-  );
+    },
+  )
