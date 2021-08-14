@@ -121,7 +121,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
     return Object.values(repositoryCache.getAll()).filter(filterUndefined);
   }
 
-  const getAllFromIndex = async(indexName, query = undefined, refreshCache = false, test=false) => {
+  const getAllFromIndex = async(indexName, query = undefined, refreshCache = false) => {
     if (hasOutOfLineKey()) throw `getAllFromIndex() is not available for stores with out-of-line key`;
     if (!isFieldForIndexDefined(indexName)) throw `Index ${indexName} has no field set`;
 

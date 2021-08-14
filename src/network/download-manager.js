@@ -23,6 +23,7 @@ const TYPES = {
   BEATSAVIOR: {name: 'BEATSAVIOR', priority: PRIORITY.LOW},
   RANKEDS: {name: 'RANKEDS', priority: PRIORITY.LOW},
   PLAYER_SCORES: {name: 'PLAYER-SCORES', priority: PRIORITY.NORMAL},
+  PLAYER_SCORES_UPDATE_QUEUE: {name: 'PLAYER_SCORES_UPDATE_QUEUE', priority: PRIORITY.LOWEST},
   ACTIVE_PLAYERS: {name: 'ACTIVE-PLAYERS', priority: PRIORITY.HIGH},
   MAIN_PLAYER: {name: 'MAIN-PLAYER', priority: PRIORITY.HIGHEST},
 }
@@ -101,6 +102,14 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
         .then(_ => log.debug('Enqueued Beat Savior processed.', 'DlManager'));
 
       break;
+
+    case TYPES.PLAYER_SCORES_UPDATE_QUEUE:
+      log.debug(`Enqueue player scores rank && pp updates`, 'DlManager');
+
+      processThen(queue.add(async () => scoresService.updateRankAndPpFromTheQueue(), priority), then)
+        .then(_ => log.debug('Enqueued player scores rank & pp updates processed.', 'DlManager'));
+
+      break;
   }
 }
 
@@ -113,6 +122,9 @@ const enqueueAllJobs = async queue => {
     enqueue(queue, TYPES.ACTIVE_PLAYERS),
     enqueue(queue, TYPES.PLAYER_SCORES),
     enqueue(queue, TYPES.BEATSAVIOR),
+
+    // it should be at the end of the queue
+    enqueue(queue, TYPES.PLAYER_SCORES_UPDATE_QUEUE),
   ])
 }
 

@@ -8,6 +8,7 @@ import recentScoresApiClient from '../../network/clients/scoresaber/scores/api-r
 import topScoresApiClient from '../../network/clients/scoresaber/scores/api-top'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
+import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
 import log from '../../utils/logger'
 import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
@@ -59,9 +60,6 @@ export default () => {
     if (!scores) return [];
 
     return scores.filter(s => s.leaderboardId && rankeds[s.leaderboardId]);
-  }
-  const getPlayerRankedsToUpdate = async (playerId, prevUpdate = null) => {
-    // TODO
   }
   const updateScore = async score => scoresRepository().set(score);
 
@@ -174,36 +172,69 @@ export default () => {
       pp
     }
   }
-  const updateRankAndPp = async scoresToUpdate => {
+
+  const updateRankAndPpFromTheQueue = async () => {
+    log.debug('Processing rank and pp update queue', 'ScoresService');
+
+    await db.runInTransaction(['scores-update-queue', 'scores'], async tx => {
+      let cursor = await tx.objectStore('scores-update-queue').openCursor();
+      const scoresStore = tx.objectStore('scores');
+
+      while (cursor) {
+        try {
+          const scoreUpdate = {...cursor.value};
+
+          await cursor.delete();
+
+          if (!scoreUpdate.id) {
+            cursor = await cursor.continue();
+            continue;
+          }
+
+          const score = await scoresStore.get(scoreUpdate.id)
+
+          const scoreLastUpdated = score.lastUpdated;
+
+          if (
+            (!scoreLastUpdated || scoreLastUpdated < scoreUpdate.fetchedAt) &&
+            (
+              opt(score, 'score.scoreId') === scoreUpdate.scoreId ||
+              (opt(score, 'score.score') === scoreUpdate.score && opt(score, 'score.timeSet') && opt(score, 'score.timeSet').getTime() === scoreUpdate.timeSet.getTime())
+            )
+          ) {
+            score.lastUpdated = scoreUpdate.fetchedAt;
+            score.pp = scoreUpdate.pp;
+            score.score.score = scoreUpdate.score;
+            score.score.pp = scoreUpdate.pp;
+            score.score.rank = scoreUpdate.rank;
+
+            await scoresStore.put(score);
+          }
+
+          cursor = await cursor.continue();
+        } catch (err) {
+          // swallow error
+          if (cursor) cursor = await cursor.continue();
+        }
+      }
+    })
+
+    log.debug('Rank and pp update queue processed.', 'ScoresService');
+  }
+
+  const addRankAndPpToUpdateQueue = async scoresToUpdate => {
     if (!scoresToUpdate || !scoresToUpdate.length) return;
 
-    log.debug('Update rank and pp for bunch of scores', 'ScoresService', scoresToUpdate);
+    log.debug('Queueing rank and pp update for bunch of scores', 'ScoresService', scoresToUpdate);
 
-    for(const score of scoresToUpdate) {
-      let dbScore = null;
-
-      try {
-        await db.runInTransaction(['scores'], async tx => {
-          const scoresStore = tx.objectStore('scores');
-
-          dbScore = await scoresStore.get(score.id);
-          if (dbScore && dbScore.score && dbScore.score.scoreId === score.scoreId) {
-            dbScore.lastUpdated = new Date();
-            dbScore.pp = score.pp;
-            dbScore.score.pp = score.pp;
-            dbScore.score.rank = score.rank;
-
-            delete dbScore.prevScore;
-
-            await scoresStore.put(dbScore);
-          }
-        });
-
-        if (dbScore) scoresRepository().addToCache([dbScore]);
-      } catch (err) {
-        // swallow error
-      }
+    try {
+      await Promise.all(scoresToUpdate.map(async s => scoresUpdateQueueRepository().set(s)))
     }
+    catch(err) {
+      // swallow error
+    }
+
+    log.debug('Scores rank & pp queued for update.', 'ScoresService', scoresToUpdate)
   }
 
   const updatePlayerScores = async (player, priority = PRIORITY.BG_NORMAL) => {
@@ -343,7 +374,7 @@ export default () => {
 
     const fetchedScores = topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
-    const playerScores = await getPlayerScores(playerId);
+    const playerScores = await getPlayerScores(playerId, true);
     if (fetchedScores && playerScores && playerScores.length) {
       const playerScoresObj = convertScoresToObject(playerScores)
 
@@ -362,18 +393,20 @@ export default () => {
 
           if (!cachedScoreId || cachedScoreId !== scoreId) return null;
 
+          const scoreValue = opt(score, 'score.score')
           const pp = opt(score, 'score.pp')
           const rank = opt(score, 'score.rank')
+          const timeSet = opt(score, 'score.timeSet')
           const id = score.id;
           const lastUpdated = cachedScore ? cachedScore.lastUpdated : null;
 
           if (lastUpdated && lastUpdated > addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return null;
 
-          return {id, scoreId, pp, rank}
+          return {id, scoreId, leaderboardId, pp, rank, score: scoreValue, timeSet, fetchedAt: score.lastUpdated}
         })
         .filter(score => score && score.scoreId && score.rank)
 
-      if (scoresToUpdate.length) updateRankAndPp(scoresToUpdate).then(_ => {});
+      if (scoresToUpdate.length) addRankAndPpToUpdateQueue(scoresToUpdate).then(_ => {});
     }
 
     return fetchedScores;
@@ -522,6 +555,7 @@ export default () => {
     fetchScoresPageOrGetFromCache,
     refresh,
     refreshAll,
+    updateRankAndPpFromTheQueue,
     destroyService,
     convertScoresToObject
   }

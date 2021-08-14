@@ -3,7 +3,7 @@ import log from '../utils/logger'
 import {isDateObject} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
-const SSR_DB_VERSION = 6;
+const SSR_DB_VERSION = 7;
 export let db = null;
 
 export default async () => {
@@ -139,6 +139,15 @@ async function openDatabase() {
             const songsBeatMapsStorev6 = transaction.objectStore('songs-beatmaps');
             songsBeatMapsStorev6.deleteIndex('songs-beatmaps--key');
             songsBeatMapsStorev6.createIndex('songs-beatmaps-key', 'key', {unique: true});
+
+          // NO break here
+
+          case newVersion >= 7 && oldVersion <=6:
+            const scoresUpdateQueue = db.createObjectStore('scores-update-queue', {
+              keyPath: 'id',
+              autoIncrement: false,
+            });
+            scoresUpdateQueue.createIndex('scores-update-queue-fetchedAt', 'fetchedAt', {unique: false});
 
           // NO break here
         }
