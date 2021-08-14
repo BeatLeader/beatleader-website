@@ -176,6 +176,8 @@ export default () => {
   const updateRankAndPpFromTheQueue = async () => {
     log.debug('Processing rank and pp update queue', 'ScoresService');
 
+    let updatedScores = [];
+
     await db.runInTransaction(['scores-update-queue', 'scores'], async tx => {
       let cursor = await tx.objectStore('scores-update-queue').openCursor();
       const scoresStore = tx.objectStore('scores');
@@ -210,6 +212,8 @@ export default () => {
             dbScore.score.rank = scoreUpdate.rank;
 
             await scoresStore.put(dbScore);
+
+            updatedScores.push(dbScore)
           }
 
           cursor = await cursor.continue();
@@ -219,6 +223,8 @@ export default () => {
         }
       }
     })
+
+    if (updatedScores.length) scoresRepository().addToCache(updatedScores);
 
     log.debug('Rank and pp update queue processed.', 'ScoresService');
   }
