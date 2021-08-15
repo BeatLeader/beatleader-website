@@ -205,6 +205,26 @@
                   <Value value={leaderboard.stats.obstacles} digits={0} zero="0"/>
                 </strong></div>
               {/if}
+
+              {#if leaderboard.stats.paritySummary}
+                {#if leaderboard.stats.paritySummary.errors}
+                  <div transition:fade><i class="fas fa-exclamation-circle"></i> Errors: <strong>
+                    <Value value={leaderboard.stats.paritySummary.errors} digits={0} zero="0"/>
+                  </strong></div>
+                {/if}
+
+                {#if leaderboard.stats.paritySummary.warns}
+                  <div transition:fade><i class="fas fa-exclamation-triangle"></i> Warnings: <strong>
+                    <Value value={leaderboard.stats.paritySummary.warns} digits={0} zero="0"/>
+                  </strong></div>
+                {/if}
+
+                {#if leaderboard.stats.paritySummary.resets}
+                  <div transition:fade><i class="fas fa-redo"></i> Resets: <strong>
+                    <Value value={leaderboard.stats.paritySummary.resets} digits={0} zero="0"/>
+                  </strong></div>
+                {/if}
+              {/if}
             </div>
           {/if}
         </header>
