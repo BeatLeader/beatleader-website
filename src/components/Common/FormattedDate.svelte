@@ -6,13 +6,14 @@
   export let prevDate = null;
   export let noDate = "";
   export let prevPrefix = "";
+  export let absolute = false;
 
   $: dateObj = isValidDate(date) ? date : dateFromString(date)
-  $: dateTitle = (configStore, $configStore, dateObj ? formatDate(dateObj) : null)
-  $: formatted = dateObj ? formatDateRelative(dateObj) : noDate
+  $: dateTitle = (configStore, $configStore, dateObj && !absolute ? formatDate(dateObj) : null)
+  $: formatted = dateObj ? (absolute ? formatDate(dateObj) : formatDateRelative(dateObj)) : noDate
   $: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromString(date)) : null
-  $: prevDateTitle = (configStore, $configStore, prevDateObj ? formatDate(prevDateObj) : null)
-  $: prevFormatted = prevDateObj ? formatDateRelative(prevDateObj) : "";
+  $: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? formatDate(prevDateObj) : null)
+  $: prevFormatted = prevDateObj ? (absolute ? formatDate(prevDateObj) : formatDateRelative(prevDateObj)) : "";
 </script>
 
 <span
