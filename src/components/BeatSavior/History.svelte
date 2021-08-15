@@ -2,9 +2,9 @@
   import {createEventDispatcher} from 'svelte'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
+  import {formatNumber, padNumber} from '../../utils/format'
   import FormattedDate from '../Common/FormattedDate.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
-  import {padNumber} from '../../utils/format'
 
   export let runs;
   export let selectedId;
@@ -39,7 +39,9 @@
 
       if (!acc || !percentage || !timeSet) return null;
 
-      return {...run, name: formatDate(timeSet), acc: acc * 100, percentage: percentage * 100, won, mods, failedAt}
+      const name = `${formatDate(timeSet)} / ${formatNumber(acc*100)}%${!won ? ` / FAILED AT ${failedAt}` : `${run.beatSaviorId === bestId ? ' / BEST' : ''}`}`
+
+      return {...run, name, acc: acc * 100, percentage: percentage * 100, won, mods, failedAt}
     })
       .filter(run => run)
   }
@@ -58,6 +60,13 @@
       left: 0,
       behavior: 'smooth'
     });
+  }
+
+  async function onSelectChange(e) {
+    const selectedItem = processedRuns ? processedRuns.find(r => r.beatSaviorId === selectedId) : null;
+    if (!selectedItem) return;
+
+    dispatch('selected', selectedItem)
   }
 
   $: processedRuns = processRuns(runs)
@@ -89,9 +98,19 @@
       </div>
     {/each}
   </section>
+
+  <select bind:value={selectedId} on:change={onSelectChange}>
+    {#each processedRuns as run (run.beatSaviorId)}
+      <option value={run.beatSaviorId}>{run.name}</option>
+    {/each}
+  </select>
 {/if}
 
 <style>
+    select {
+        display: none;
+        font-size: 1em;
+    }
     section :global(.badge) {
         width: 100%;
     }
@@ -128,6 +147,17 @@
 
     .best {
         color: var(--increase);
+    }
+
+    @media screen and (max-width: 767px) {
+        section {
+            display: none;
+        }
+
+        select {
+            display: inline-block;
+            max-width: 100%;
+        }
     }
 
 </style>

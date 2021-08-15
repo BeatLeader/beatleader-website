@@ -111,6 +111,19 @@
             grid-gap: 1.5em;
         }
 
+        .beat-savior.with-history {
+            grid-template-columns: 1fr;
+        }
+
+        .beat-savior.with-history nav {
+            grid-row: 1/2;
+            max-width: 100%;
+        }
+
+        .beat-savior.with-history > :global(.stats) {
+            grid-row: 2/3;
+        }
+
         .beat-savior > :global(.stats) {
             grid-row: 1/2;
         }
