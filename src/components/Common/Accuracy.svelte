@@ -37,11 +37,13 @@
 
 <Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
     <span slot="label">
+      <slot name="label-before"></slot>
       <Value value={showPercentageInstead ? score.percentage : score.acc}
              prevValue={showPercentageInstead ? opt(prevScore, 'percentage') : opt(prevScore, 'acc')}
              title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
              prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
       />
+      <slot name="label-after"></slot>
       {#if !noSecondMetric && secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage)) && score.acc !== score.percentage}
         <small>
           <Value value={showPercentageInstead ? score.acc : score.percentage}
