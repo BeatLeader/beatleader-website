@@ -6,6 +6,7 @@ import rankedsEnhancer from './enhancers/leaderboard/rankeds'
 import compareEnhancer from './enhancers/scores/compare'
 import diffEnhancer from './enhancers/scores/diff'
 import twitchEnhancer from './enhancers/scores/twitch'
+import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
 import {debounce} from '../../utils/debounce'
 import {opt} from '../../utils/js'
 import createApiScoresProvider from './providers/api-scores'
@@ -75,6 +76,9 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
         .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
       stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft))
+        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+
+      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
         .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
       if (stateType && stateType === 'live')

@@ -26,6 +26,9 @@ const DEFAULT_CONFIG = {
   scoreComparison: {
     method: 'in-place',
   },
+  preferences: {
+    secondaryPp: 'attribution',
+  },
   locale: DEFAULT_LOCALE,
 }
 
