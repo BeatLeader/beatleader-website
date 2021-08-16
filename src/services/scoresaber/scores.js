@@ -176,10 +176,9 @@ export default () => {
   const updateRankAndPpFromTheQueue = async () => {
     log.debug('Processing rank and pp update queue', 'ScoresService');
 
-    let updatedScores = [];
-
     await db.runInTransaction(['scores-update-queue', 'scores'], async tx => {
-      let cursor = await tx.objectStore('scores-update-queue').openCursor();
+      // get all scores updates at least 3 minutes old (some time to download new scores)
+      let cursor = await tx.objectStore('scores-update-queue').index('scores-update-queue-fetchedAt').openCursor(IDBKeyRange.upperBound(addToDate(-3 * MINUTE)));
       const scoresStore = tx.objectStore('scores');
 
       while (cursor) {
@@ -194,26 +193,29 @@ export default () => {
           }
 
           const dbScore = await scoresStore.get(scoreUpdate.id)
+          if (!dbScore) {
+            cursor = await cursor.continue();
+            continue;
+          }
 
           const scoreLastUpdated = dbScore.lastUpdated;
 
           if (
             (!scoreLastUpdated || scoreLastUpdated < scoreUpdate.fetchedAt) &&
             (
-              opt(dbScore, 'score.scoreId') === scoreUpdate.scoreId ||
-              (opt(dbScore, 'score.unmodifiedScore') <= scoreUpdate.unmodifiedScore && opt(dbScore, 'score.timeSet') && dbScore.score.timeSet.getTime() === scoreUpdate.timeSet.getTime())
-            )
+              opt(dbScore, 'score.scoreId') === opt(scoreUpdate, 'score.scoreId') ||
+              (opt(dbScore, 'score.unmodifiedScore') <= opt(scoreUpdate, 'score.unmodifiedScore'))
+            ) &&
+            opt(scoreUpdate, 'score.scoreId') && opt(scoreUpdate, 'score.pp') && opt(scoreUpdate, 'score.timeSet')
           ) {
-            dbScore.lastUpdated = scoreUpdate.fetchedAt;
-            dbScore.pp = scoreUpdate.pp;
-            dbScore.score.pp = scoreUpdate.pp;
-            dbScore.score.unmodifiedScore = scoreUpdate.unmodifiedScore;
-            dbScore.score.score = scoreUpdate.score;
-            dbScore.score.rank = scoreUpdate.rank;
+            dbScore.score = scoreUpdate.score;
+
+            dbScore.pp = scoreUpdate.score.pp;
+            dbScore.timeSet = scoreUpdate.score.timeSet;
+            dbScore.lastUpdated = new Date();
 
             await scoresStore.put(dbScore);
-
-            updatedScores.push(dbScore)
+            scoresRepository().addToCache([dbScore])
           }
 
           cursor = await cursor.continue();
@@ -223,8 +225,6 @@ export default () => {
         }
       }
     })
-
-    if (updatedScores.length) scoresRepository().addToCache(updatedScores);
 
     log.debug('Rank and pp update queue processed.', 'ScoresService');
   }
@@ -269,7 +269,9 @@ export default () => {
         player.recentPlay = mostRecentPlayFromScores;
       }
 
-      const startUpdatingDate = mostRecentPlayFromScores ? mostRecentPlayFromScores : player.scoresLastUpdated;
+      const startUpdatingDate = !player.scoresLastUpdated || (mostRecentPlayFromScores && mostRecentPlayFromScores < player.scoresLastUpdated)
+        ? mostRecentPlayFromScores
+        : player.scoresLastUpdated;
 
       if (numOfPages && !startUpdatingDate) newScores = await fetchAllScores(player.playerId, numOfPages, priority, abortController.signal);
       else newScores = await fetchScoresUntil(player.playerId, 1, priority, abortController.signal, createFetchUntilLastUpdated(startUpdatingDate))
@@ -287,17 +289,16 @@ export default () => {
 
       // TODO: calculate pp contribution of score
 
-      let playersCacheToUpdate = [];
-      let scoresCacheToUpdate = [];
+      let updatedScores = [];
       await db.runInTransaction(['scores', 'players'], async tx => {
         const playersStore = tx.objectStore('players')
         player = await playersStore.get(player.playerId);
         player.scoresLastUpdated = newLastUpdated;
         player.recentPlayLastUpdated = newLastUpdated;
         player.recentPlay = recentPlay;
-        await playersStore.put(player);
 
-        playersCacheToUpdate.push(player);
+        await playersStore.put(player);
+        playersRepository().addToCache([player]);
 
         const scoresStore = tx.objectStore('scores');
 
@@ -305,6 +306,7 @@ export default () => {
           const id = getScoreKey(player.playerId, score);
           const leaderboardId = opt(score, 'leaderboard.leaderboardId');
           const scoreValue = opt(score, 'score.score');
+          const unmodifiedScore = opt(score, 'score.unmodifiedScore')
           const scoreTimeSet = opt(score, 'score.timeSet');
           const scorePp = opt(score, 'score.pp');
 
@@ -315,7 +317,7 @@ export default () => {
           const dbScore = await scoresStore.get(id)
           if (dbScore) {
             const prevScoreScorePart = {...dbScore.score};
-            if (prevScoreScorePart && prevScoreScorePart.timeSet && prevScoreScorePart.score !== undefined && prevScoreScorePart.score < scoreValue) {
+            if (prevScoreScorePart && prevScoreScorePart.timeSet && prevScoreScorePart.score !== undefined && prevScoreScorePart.unmodifiedScore < unmodifiedScore) {
               const prevHistory = opt(dbScore, 'history.length') ? dbScore.history.filter(h => h.timeSet) : [];
               score.history = [prevScoreScorePart].concat(prevHistory).slice(0,3);
             }
@@ -324,17 +326,14 @@ export default () => {
           // needed by DB indexes
           score = addScoreIndexFields(player.playerId, score);
 
-          scoresCacheToUpdate.push(score);
-
           await scoresStore.put(score);
+          scoresRepository().addToCache([score]);
+
+          updatedScores.push(score);
         }
       });
 
-      // update cache
-      playersRepository().addToCache(playersCacheToUpdate);
-      scoresRepository().addToCache(scoresCacheToUpdate);
-
-      return {recentPlay, newScores, scores: {...currentScoresById, ...convertScoresToObject(scoresCacheToUpdate, score => opt(score, 'id'))}};
+      return {recentPlay, newScores, scores: {...currentScoresById, ...convertScoresToObject(updatedScores, score => opt(score, 'id'))}};
     } catch (err) {
       if (![opt(err, 'name'), opt(err, 'message')].includes('AbortError')) throw err;
 
@@ -388,28 +387,39 @@ export default () => {
       // update rank and pp in DB
       const scoresToUpdate = fetchedScores
         .map(score => {
-          score = addScoreIndexFields(playerId, score);
+          try {
+            score = addScoreIndexFields(playerId, score);
 
-          const leaderboardId = opt(score, 'leaderboard.leaderboardId')
-          if (!leaderboardId || !score.id) return null;
+            const leaderboardId = opt(score, 'leaderboard.leaderboardId')
+            if (!leaderboardId || !score.id) return null;
 
-          const cachedScore = playerScoresObj[leaderboardId];
+            const scoreObj = opt(score, 'score')
+            if (!scoreObj || !Object.keys(scoreObj).length) return null;
 
-          const scoreId = opt(score, 'score.scoreId')
+            const cachedScore = playerScoresObj[leaderboardId];
+            if (!cachedScore) return null;
 
-          const scoreValue = opt(score, 'score.score')
-          const unmodifiedScore = opt(score, 'score.unmodifiedScore');
-          const pp = opt(score, 'score.pp')
-          const rank = opt(score, 'score.rank')
-          const timeSet = opt(score, 'score.timeSet')
-          const id = score.id;
-          const lastUpdated = cachedScore ? cachedScore.lastUpdated : null;
+            const id = score.id;
+            const lastUpdated = cachedScore.lastUpdated;
 
-          if (lastUpdated && lastUpdated > addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return null;
+            if (lastUpdated && lastUpdated > addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return null;
 
-          return {id, scoreId, leaderboardId, pp, rank, score: scoreValue, unmodifiedScore, timeSet, fetchedAt: score.lastUpdated}
+            if (
+              (!lastUpdated || lastUpdated < score.fetchedAt) &&
+              (
+                opt(cachedScore, 'score.scoreId') === opt(score, 'score.scoreId') ||
+                (opt(cachedScore, 'score.unmodifiedScore') <= opt(score, 'score.unmodifiedScore'))
+              )
+            ) {
+              scoresRepository().addToCache([{...cachedScore, score: {...scoreObj}}]);
+            }
+
+            return {id, leaderboardId, fetchedAt: score.fetchedAt, score: {...scoreObj}}
+          } catch {
+            return null;
+          }
         })
-        .filter(score => score && score.scoreId && score.rank)
+        .filter(score => score)
 
       if (scoresToUpdate.length) addRankAndPpToUpdateQueue(scoresToUpdate).then(_ => {});
     }

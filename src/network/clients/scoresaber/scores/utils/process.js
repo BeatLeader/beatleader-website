@@ -35,7 +35,8 @@ export default response => {
     return {
       leaderboard,
       score: {...score, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted},
-      lastUpdated: new Date()
+      fetchedAt: new Date(),
+      lastUpdated: new Date(),
     };
   });
 }
