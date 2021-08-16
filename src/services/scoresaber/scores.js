@@ -206,7 +206,7 @@ export default () => {
               opt(dbScore, 'score.scoreId') === opt(scoreUpdate, 'score.scoreId') ||
               (opt(dbScore, 'score.unmodifiedScore') <= opt(scoreUpdate, 'score.unmodifiedScore'))
             ) &&
-            opt(scoreUpdate, 'score.scoreId') && opt(scoreUpdate, 'score.pp') && opt(scoreUpdate, 'score.timeSet')
+            opt(scoreUpdate, 'score.scoreId') && !!opt(scoreUpdate, 'score.timeSet')
           ) {
             dbScore.score = scoreUpdate.score;
 
@@ -380,7 +380,7 @@ export default () => {
 
     const fetchedScores = topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
-    const playerScores = await getPlayerScores(playerId, true);
+    const playerScores = await getPlayerScores(playerId);
     if (fetchedScores && playerScores && playerScores.length) {
       const playerScoresObj = convertScoresToObject(playerScores)
 
