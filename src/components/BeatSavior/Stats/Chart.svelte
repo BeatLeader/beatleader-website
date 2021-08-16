@@ -15,14 +15,11 @@
   async function setupChart(canvas, chartData) {
     if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
-    canvas.height = parseInt(height, 10);
-
-    if (chart) chart.destroy();
-
     const accColor = theme && theme.alternate ? theme.alternate : "#3e95cd";
 
     const data = Object.values(chartData).map(v => v * 100);
-    const minValue = Math.floor(data.reduce((min, cur) => cur < min ? cur : min, 100));
+    const minValue = Math.floor(Math.max(Math.floor(data.reduce((min, cur) => cur < min ? cur : min, 100)), 0) * 0.99);
+    const maxValue = Math.ceil(Math.min(Math.ceil(data.reduce((max, cur) => cur > max ? cur : max, 0)), 100));
 
     const datasets = [
       {
@@ -37,55 +34,63 @@
       },
     ];
 
-    chart = new Chart(
-      canvas,
-      {
-        responsive: true,
-        maintainAspectRatio: false,
-        data: {
-          labels: Object.keys(chartData).map(v => Math.floor(v / 60) + ':' + (v % 60).toString().padStart(2, '0')),
-          datasets,
-        },
-        options: {
-          interaction: {
-            mode: 'index',
-            intersect: false,
-          },
-          plugins: {
-            legend: {
-              display: false,
-            },
-            tooltip: {
-              callbacks: {
-                label(ctx) {
-                  return formatNumber(ctx.parsed.y) + '%'
+    const labels = Object.keys(chartData).map(v => Math.floor(v / 60) + ':' + (v % 60).toString().padStart(2, '0'))
+
+    if (!chart)
+    {
+      chart = new Chart(
+            canvas,
+            {
+              responsive: true,
+              maintainAspectRatio: false,
+              data: {labels, datasets},
+              options: {
+                interaction: {
+                  mode: 'index',
+                  intersect: false,
                 },
-              }
-            },
-          },
-          scales: {
-            x: {
-              scaleLabel: {
-                display: false,
-              },
-              ticks: {
-                autoSkip: true,
-                autoSkipPadding: 4,
-              },
-            },
-            y: {
-              min: minValue,
-              max: 100,
-              ticks: {
-                callback: function(val) {
-                  return val+'%'
+                plugins: {
+                  legend: {
+                    display: false,
+                  },
+                  tooltip: {
+                    callbacks: {
+                      label(ctx) {
+                        return formatNumber(ctx.parsed.y) + '%'
+                      },
+                    }
+                  },
                 },
-              }
-            }
-          },
-        },
-      },
-    );
+                scales: {
+                  x: {
+                    scaleLabel: {
+                      display: false,
+                    },
+                    ticks: {
+                      autoSkip: true,
+                      autoSkipPadding: 4,
+                    },
+                  },
+                  y: {
+                    min: minValue,
+                    max: maxValue,
+                    ticks: {
+                      callback: function(val) {
+                        return val+'%'
+                      },
+                    }
+                  }
+                },
+              },
+            },
+          );
+    }
+    else {
+      chart.data = {labels, datasets}
+      chart.options.scales.y.min = minValue;
+      chart.options.scales.y.max = maxValue;
+      chart.update()
+    }
   }
 
   $: data = opt(beatSavior, 'trackers.scoreGraphTracker.graph', null)
