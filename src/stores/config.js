@@ -26,13 +26,24 @@ const DEFAULT_CONFIG = {
   scoreComparison: {
     method: 'in-place',
   },
+  preferences: {
+    secondaryPp: 'attribution',
+  },
   locale: DEFAULT_LOCALE,
+}
+
+const newSettingsAvailableDefinition = {
+  'scoreComparison.method': 'Method of displaying the comparison of scores',
+  'preferences.secondaryPp': 'Setting the second PP metric',
+  'locale': 'Locale selection',
 }
 
 export default async () => {
   if (configStore) return configStore;
 
   let currentConfig = {...DEFAULT_CONFIG};
+
+  let newSettingsAvailable = undefined;
 
   const {subscribe, set: storeSet} = writable(currentConfig);
 
@@ -42,6 +53,8 @@ export default async () => {
 
     if (persist) await keyValueRepository().set(config, STORE_CONFIG_KEY);
 
+    newSettingsAvailable = undefined;
+
     currentConfig = config;
     storeSet(config);
 
@@ -50,8 +63,14 @@ export default async () => {
 
   const getLocale = () => opt(currentConfig, 'locale', DEFAULT_LOCALE);
 
+  const determineNewSettingsAvailable = dbConfig => Object.entries(newSettingsAvailableDefinition)
+    .map(([key, description]) => opt(dbConfig, key) === undefined ? description : null)
+    .filter(d => d)
+
   const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
+  const newSettings= determineNewSettingsAvailable(dbConfig);
   if (dbConfig) await set(dbConfig, false);
+  newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
   configStore =  {
     subscribe,
@@ -59,6 +78,7 @@ export default async () => {
     get,
     getMainPlayerId: () => opt(currentConfig, 'users.main'),
     getLocale,
+    getNewSettingsAvailable: () => newSettingsAvailable,
   }
 
   return configStore;

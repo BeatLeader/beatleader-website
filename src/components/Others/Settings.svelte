@@ -13,6 +13,7 @@
   export let show = false;
 
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
+  const DEFAULT_SECONDARY_PP_METRICS = 'attribution'
 
   let twitchToken = null;
 
@@ -25,8 +26,14 @@
     {name: 'In details', value: 'in-details'},
   ];
 
+  const secondaryPpMetrics = [
+    {name: 'Weighted PP', value: 'weighted'},
+    {name: 'Actual contribution to the total PP', value: 'attribution'},
+  ];
+
   let currentLocale = DEFAULT_LOCALE;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
+  let currentSecondaryPpMetrics = DEFAULT_SECONDARY_PP_METRICS;
 
   function onConfigUpdated(config) {
     if (config && config.locale) currentLocale = config.locale;
@@ -38,7 +45,8 @@
 
     $configStore = produce($configStore, draft => {
       draft.locale = currentLocale;
-      draft.scoreComparison.method = currentScoreComparisonMethod
+      draft.scoreComparison.method = currentScoreComparisonMethod;
+      draft.preferences.secondaryPp = currentSecondaryPpMetrics;
     })
 
     show = false;
@@ -103,6 +111,15 @@
             <label title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details">Score comparison</label>
             <select bind:value={currentScoreComparisonMethod}>
               {#each scoreComparisonMethods as option (option.value)}
+                <option value={option.value}>{option.name}</option>
+              {/each}
+            </select>
+          </section>
+
+          <section class="option">
+            <label title="Second PP metric displayed next to the score, either weighted PP or actual contribution of the score to the total PP (cached players only)">Secondary PP metrics</label>
+            <select bind:value={currentSecondaryPpMetrics}>
+              {#each secondaryPpMetrics as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
             </select>
