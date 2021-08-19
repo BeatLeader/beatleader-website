@@ -19,7 +19,7 @@
   $: secondaryMetricsTitle = secondaryMetricsType === 'attribution' ? 'Actual contribution of the score to the total PP' : 'Weighted PP'
 </script>
 
-<span class="value" style="--color: {color}"><Value value="{pp}" {zero} {withZeroSuffix} prevValue={secondaryMetrics} withSign={secondaryMetricsType === 'attribution'} prevTitle={secondaryMetricsTitle} prevAbsolute={secondaryMetrics !== null} suffix="pp" {...$$restProps}>
+<span class="value" style="--color: {color}"><Value value="{pp}" {zero} {withZeroSuffix} prevValue={secondaryMetrics} prevWithSign={secondaryMetricsType === 'attribution'} prevTitle={secondaryMetricsTitle} prevAbsolute={secondaryMetrics !== null} suffix="pp" {...$$restProps}>
   <svelte:fragment slot="prev" let:formatted let:value>
     {#if secondaryMetricsType === 'attribution'}
       [ {value === 0 ? `+${formatNumber(Math.abs(value))}pp` : formatted} ]
