@@ -69,7 +69,7 @@
         grid-template-columns: 1fr;
         grid-template-rows: 1fr;
         overflow: hidden;
-        min-height: calc(100vh - 8rem);
+        min-height: calc(100vh - 9rem);
     }
 
     .ssr-page-container :global(> *) {
