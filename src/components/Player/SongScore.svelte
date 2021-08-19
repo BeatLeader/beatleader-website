@@ -75,7 +75,7 @@
               <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                 <span slot="label">
                   <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-                      pp="{score.pp}" weighted={score.ppWeighted} attribution={score.ppAttribution}
+                      pp="{score.pp}" weighted={score.ppWeighted} attribution={score.ppAttribution} whatIf={score.whatIfPp}
                       zero={(configStore, $configStore, formatNumber(0))} withZeroSuffix={true} inline={false}
                       color="white"
                   />
@@ -351,6 +351,10 @@
 
     .pp {
         min-width: 5em;
+    }
+
+    .pp.with-badge {
+        position: relative;
     }
 
     .acc {
