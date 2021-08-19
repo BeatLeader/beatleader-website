@@ -16,8 +16,14 @@
   export let whatIf = null;
 
   let tooltipOpacity = 0;
+  let tooltipX = null;
+  let tooltipY = null;
 
-  const onHover = () => tooltipOpacity = 1;
+  const onHover = event => {
+    tooltipY = event.detail.rect.top + 24;
+    tooltipX = event.detail.rect.left - 8;
+    tooltipOpacity = 1;
+  }
   const onUnhover = () => tooltipOpacity = 0;
 
   $: secondaryMetricsPref = opt($configStore, 'preferences.secondaryPp', 'attribution')
@@ -27,7 +33,7 @@
 </script>
 
 <span class="pp" style="--color: {color}">
-  {#if whatIf}<span class="whatif-tooltip" style="--opacity: {tooltipOpacity}">
+  {#if whatIf}<span class="whatif-tooltip" style="--opacity: {tooltipOpacity}; --x: {tooltipX+'px'}; --y: {tooltipY+'px'}">
     If you play like this:
     <span class="whatif-value">
       {formatNumber(whatIf.currentTotalPp)} + <strong>{formatNumber(whatIf.diff)}</strong> =<strong class="total">{formatNumber(whatIf.newTotalPp)}pp</strong>
@@ -39,7 +45,7 @@
            prevWithSign={secondaryMetricsType === 'attribution'} prevTitle={secondaryMetricsTitle}
            prevAbsolute={secondaryMetrics !== null} suffix="pp" {...$$restProps}>
       <span slot="value" let:formatted class="main-value"  class:whatIfAvailable={whatIf} use:hoverable on:hover={onHover} on:unhover={onUnhover}>
-        {formatted} <i class="far fa-question-circle"></i>
+        {formatted} <i class="fas fa-question"></i>
       </span>
       <svelte:fragment slot="prev" let:formatted let:value>
         {#if secondaryMetricsType === 'attribution'}
@@ -72,17 +78,17 @@
     .whatIfAvailable > i {
         display: inline;
         position: absolute;
-        top: .1em;
-        right: .1em;
-        font-size: .75em;
+        top: .45em;
+        right: .25em;
+        font-size: .55em;
     }
 
     .whatif-tooltip {
-        position: absolute;
-        top: 2em;
-        left: .5em;
+        position: fixed;
+        top: var(--y);
+        left: var(--x);
         z-index: 10;
-        width: 18em;
+        width: 18em!important;
         padding: .25em;
         font-size: .875em;
         font-weight: normal;

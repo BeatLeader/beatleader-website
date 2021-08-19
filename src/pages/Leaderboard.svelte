@@ -266,6 +266,7 @@
                   <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                     <span slot="label">
                       <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
+                          whatIf={opt(score, 'score.whatIfPp')}
                           inline={false} color="white"
                       />
                     </span>
@@ -479,6 +480,10 @@
     .with-badge {
         height: 100%;
         text-align: center;
+    }
+
+    .pp.with-badge {
+        position: relative;
     }
 
     @media screen and (max-width: 1023px) {

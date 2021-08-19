@@ -2,8 +2,10 @@ export function hoverable(node) {
     function handleMouseover(event) {
         node.classList.add('hovered');
 
+        const rect = node.getBoundingClientRect();
+
         node.dispatchEvent(new CustomEvent('hover', {
-            detail: { target: event.target, clientX: event.clientX, clientY: event.clientY, pageX: event.pageX, pageY: event.pageY }
+            detail: { target: event.target, clientX: event.clientX, clientY: event.clientY, pageX: event.pageX, pageY: event.pageY, rect }
         }));
     }
 
