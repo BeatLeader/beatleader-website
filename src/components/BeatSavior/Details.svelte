@@ -89,20 +89,10 @@
         align-self: start;
         max-width: 10.5em;
         max-height: 17em;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
+        overflow: hidden;
 
-    .beat-savior.with-history nav::-webkit-scrollbar {
-        width: .25rem;
-    }
-    body::-webkit-scrollbar-track {
-        background: var(--foreground, #fff);
-    }
-    .beat-savior.with-history nav::-webkit-scrollbar-thumb {
-        background-color: var(--selected, #3273dc) ;
-        border-radius: 6px;
-        border: 3px solid var(--selected, #3273dc);
+        display: flex;
+        flex-direction: column;
     }
 
     @media screen and (max-width: 767px) {
@@ -118,6 +108,8 @@
         .beat-savior.with-history nav {
             grid-row: 1/2;
             max-width: 100%;
+            flex-direction: row;
+            width: 100%;
         }
 
         .beat-savior.with-history > :global(.stats) {

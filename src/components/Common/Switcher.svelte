@@ -23,6 +23,7 @@
           iconFa={currentValue.iconFa}
           loading={loadingValue === currentValue}
           label={currentValue.label}
+          title={currentValue.title}
           type={currentValue === value ? 'primary' : 'default'}
           color={currentValue.color ? 'white' : null}
           bgColor={currentValue.color ? currentValue.color : null}
