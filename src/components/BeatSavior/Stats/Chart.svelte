@@ -4,6 +4,9 @@
   import {opt} from '../../../utils/js'
 
   export let beatSavior = null;
+  export let name = null;
+  export let compareTo = null;
+  export let compareToName = null;
   export let height = "200px";
 
   let canvas = null;
@@ -12,18 +15,26 @@
   let themeName = 'darkss';
   let theme = null;
 
-  async function setupChart(canvas, chartData) {
+  async function setupChart(canvas, chartData, compareChartData, name, compareToName) {
     if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
-    const accColor = theme && theme.alternate ? theme.alternate : "#3e95cd";
+    const accColor = theme && theme.alternate ? theme.alternate : "#72a8ff";
+    const compareColor = theme && theme.dimmed ? theme.alternate : "#3e3e3e";
 
     const data = Object.values(chartData).map(v => v * 100);
-    const minValue = Math.floor(Math.max(Math.floor(data.reduce((min, cur) => cur < min ? cur : min, 100)), 0) * 0.99);
-    const maxValue = Math.ceil(Math.min(Math.ceil(data.reduce((max, cur) => cur > max ? cur : max, 0)), 100));
+    const mainMinValue = Math.floor(Math.max(Math.floor(data.reduce((min, cur) => cur < min ? cur : min, 100)), 0) * 0.99);
+    const mainMaxValue = Math.ceil(Math.min(Math.ceil(data.reduce((max, cur) => cur > max ? cur : max, 0)), 100));
+
+    const compareData = compareChartData ? Object.values(compareChartData).map(v => v * 100) : null;
+    const compareMinValue = compareChartData ? Math.floor(Math.max(Math.floor(compareData.reduce((min, cur) => cur < min ? cur : min, 100)), 0) * 0.99) : 100;
+    const compareMaxValue = compareChartData ? Math.ceil(Math.min(Math.ceil(compareData.reduce((max, cur) => cur > max ? cur : max, 0)), 100)) : 0;
+
+    const minValue = Math.min(mainMinValue, compareMinValue)
+    const maxValue = Math.max(mainMaxValue, compareMaxValue)
 
     const datasets = [
       {
-        label: 'Accuracy',
+        label: name ? name : 'Selected',
         data,
         cubicInterpolationMode: 'monotone',
         tension: 0.4,
@@ -34,7 +45,19 @@
       },
     ];
 
-    const labels = Object.keys(chartData).map(v => Math.floor(v / 60) + ':' + (v % 60).toString().padStart(2, '0'))
+    if (compareData) datasets.push({
+      label: compareToName ? compareToName : 'Compared',
+      data: compareData,
+      cubicInterpolationMode: 'monotone',
+      tension: 0.4,
+      borderColor: compareColor,
+      borderWidth: 2,
+      pointRadius: 0,
+      type: 'line',
+    })
+
+    const labels = Object.keys(compareData && compareData.length > data.length ? compareChartData : chartData)
+      .map(v => Math.floor(v / 60) + ':' + (v % 60).toString().padStart(2, '0'))
 
     if (!chart)
     {
@@ -87,6 +110,7 @@
     }
     else {
       chart.data = {labels, datasets}
+      chart.options.plugins.legend.display = !!compareData;
       chart.options.scales.y.min = minValue;
       chart.options.scales.y.max = maxValue;
       chart.update()
@@ -94,7 +118,8 @@
   }
 
   $: data = opt(beatSavior, 'trackers.scoreGraphTracker.graph', null)
-  $: setupChart(canvas, data)
+  $: compareData = opt(beatSavior, 'beatSaviorId') !== opt(compareTo, 'beatSaviorId') ? opt(compareTo, 'trackers.scoreGraphTracker.graph', null) : null
+  $: setupChart(canvas, data, compareData, name, compareToName)
 </script>
 
 {#if data}

@@ -9,6 +9,7 @@
   export let runs;
   export let selectedId;
   export let bestId;
+  export let compareToId;
 
   const dispatch = createEventDispatcher();
 
@@ -74,45 +75,72 @@
 </script>
 
 {#if processedRuns && processedRuns.length}
-  <section bind:this={itemsEl}>
-    {#each processedRuns as run (run.beatSaviorId)}
-      <div data-id={run.beatSaviorId} class="item" class:selected={run.beatSaviorId === selectedId}
-           on:click={() => dispatch('selected', run)}
-      >
-        <Accuracy score={run} noSecondMetric={true}>
-          <small slot="label-before">
-            <FormattedDate date={run.timeSet} absolute={true}/>
-          </small>
-          <small class:fail={!run.won} class:best={run.beatSaviorId === bestId} slot="label-after">
-            {#if !run.won}
-              {#if run.failedAt}
-                FAILED AT {run.failedAt}
-              {:else}
-                FAIL
+  <div class="scroll-wrapper">
+    <section bind:this={itemsEl}>
+      {#each processedRuns as run (run.beatSaviorId)}
+        <div data-id={run.beatSaviorId} class="item"
+             class:selected={run.beatSaviorId === selectedId} class:compare={run.beatSaviorId === compareToId}
+             on:click={() => dispatch('selected', run)}
+        >
+          <Accuracy score={run} noSecondMetric={true}>
+            <small slot="label-before">
+              <FormattedDate date={run.timeSet} absolute={true}/>
+            </small>
+            <small class:fail={!run.won} class:best={run.beatSaviorId === bestId} slot="label-after">
+              {#if !run.won}
+                {#if run.failedAt}
+                  FAILED AT {run.failedAt}
+                {:else}
+                  FAIL
+                {/if}
+              {:else if run.beatSaviorId === bestId}
+                BEST
               {/if}
-            {:else if run.beatSaviorId === bestId}
-              BEST
-            {/if}
-          </small>
-        </Accuracy>
-      </div>
-    {/each}
-  </section>
+            </small>
+          </Accuracy>
+          <i class="fas fa-balance-scale-left"></i>
+        </div>
+      {/each}
+    </section>
+  </div>
 
-  <select bind:value={selectedId} on:change={onSelectChange}>
-    {#each processedRuns as run (run.beatSaviorId)}
-      <option value={run.beatSaviorId}>{run.name}</option>
-    {/each}
-  </select>
+  <div class="select-wrapper">
+    <select bind:value={selectedId} on:change={onSelectChange}>
+      {#each processedRuns as run (run.beatSaviorId)}
+        <option value={run.beatSaviorId}>{run.name}</option>
+      {/each}
+    </select>
+  </div>
 {/if}
 
 <style>
-    select {
+    .scroll-wrapper {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin-top: .25em;
+    }
+
+    .select-wrapper {
         display: none;
         font-size: 1em;
     }
+
     section :global(.badge) {
         width: 100%;
+    }
+
+    .scroll-wrapper::-webkit-scrollbar {
+        width: .25rem;
+    }
+    body::-webkit-scrollbar-track {
+        background: var(--foreground, #fff);
+    }
+    .scroll-wrapper::-webkit-scrollbar-thumb {
+        background-color: var(--selected, #3273dc) ;
+        border-radius: 6px;
+        border: 3px solid var(--selected, #3273dc);
     }
 
     small {
@@ -122,17 +150,30 @@
     }
 
     .item {
-        opacity: .4;
+        position: relative;
+        opacity: .25;
         transition: opacity 200ms;
         cursor: pointer !important;
     }
 
-    .item.selected, .item:hover {
+    .item.selected {
         opacity: 1;
     }
 
-    .item:hover {
-        opacity: .75;
+    .item > i.fas {
+        display: none;
+        position: absolute;
+        right: .25em;
+        bottom: 1em;
+        font-size: .75em;
+    }
+
+    .item:hover:not(.selected) {
+        opacity: .6;
+    }
+
+    .item.compare > i.fas {
+        display: inline;
     }
 
     .item :global(*) {
@@ -149,14 +190,29 @@
         color: var(--increase);
     }
 
+    :global(.switch-types .button) {
+        margin-bottom: 0!important;
+    }
+
+    :global(.switch-types .button i) {
+        align-items: flex-end!important;
+    }
+
     @media screen and (max-width: 767px) {
-        section {
+        .scroll-wrapper {
             display: none;
         }
 
-        select {
+        .select-wrapper {
             display: inline-block;
+            flex: 1;
+            margin-left: .5em;
+        }
+
+        select {
+            width: 100%;
             max-width: 100%;
+            height: 100%;
         }
     }
 

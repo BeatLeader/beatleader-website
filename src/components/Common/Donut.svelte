@@ -3,6 +3,7 @@
   import {configStore} from '../../stores/config'
   import Value from '../Common/Value.svelte'
 
+  export let name = null;
   export let value = 0;
   export let percentage = 0;
   export let color = '#6fdb6f';
@@ -11,12 +12,24 @@
   export let valueProps = {};
   export let animDuration = 1000;
 
+  export let compareToValue = null;
+  export let compareToPercentage = null;
+  export let compareToName = null;
+
   $: percentageValue = (1 - percentage) * 440;
   $: percentageValueFormatted = (configStore, $configStore, formatNumber(percentage * 100, digits));
+
+  $: compareToPercentageValueFormatted = (configStore, $configStore, compareToPercentage ? formatNumber(compareToPercentage * 100, digits) : null);
 </script>
 
-<div class="donut" style="--percentage:{percentageValue ? percentageValue : 0};--duration: {animDuration}; --backgroundColor: {background}" title={percentageValueFormatted + '%'}>
-  <span><Value {value} {...valueProps} /></span>
+<div class="donut" style="--percentage:{percentageValue ? percentageValue : 0};--duration: {animDuration}; --backgroundColor: {background}">
+  <span>
+    <Value {value} {...valueProps} title={percentageValueFormatted + '%'} prevTitle={compareToPercentageValueFormatted + '%'} prevValue={compareToValue} prevAbsolute={true} prevWithSign={false}>
+      <svelte:fragment slot="prev" let:formatted let:value>
+        {#if value}<small>{formatted}</small>{/if}
+      </svelte:fragment>
+    </Value>
+  </span>
   <svg width="100%" height="100%" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
     <g>
       <circle id="circle" class="circle_animation" r="69.85699" cy="81" cx="81" stroke-width="12" stroke="{color}" fill="none"/>
@@ -37,6 +50,10 @@
         border-radius: 50%;
     }
 
+    .donut > span {
+        z-index: 1;
+    }
+
     svg {
         position: absolute;
         top: 0;
@@ -52,5 +69,11 @@
 
         -webkit-animation: donut var(--duration)ms ease-out forwards;
         animation: donut var(--duration)ms ease-out forwards;
+    }
+
+    .donut > span :global(small) {
+        line-height: 1;
+        text-align: center;
+        color: var(--faded);
     }
 </style>

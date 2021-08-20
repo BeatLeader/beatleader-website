@@ -10,6 +10,10 @@
   export let cut;
   export let color;
   export let hand = "left";
+  export let name = null
+  export let compareToValue = null;
+  export let compareToCut = null;
+  export let compareToName = null;
 
   function getRgba(color) {
     const keys = ['r', 'g', 'b', 'a']
@@ -22,8 +26,12 @@
 
   $: accValue = Number.isFinite(value) && value >= 0 && value <= 115 ? value : 0;
   $: percentage = accValue / MAX_BLOCK_VALUE;
-  $: rgba = getRgba(color);
   $: cutsRounded = (configStore, $configStore, cut && Array.isArray(cut) ? cut.map(c => Number.isFinite(c) ? formatNumber(c) : 0) : null);
+  $: rgba = getRgba(color);
+
+  $: compareToAccValue = Number.isFinite(compareToValue) && compareToValue >= 0 && compareToValue <= 115 ? compareToValue : 0;
+  $: compareToPercentage = compareToAccValue / MAX_BLOCK_VALUE;
+  $: compareToCutsRounded = (configStore, $configStore, compareToCut && Array.isArray(compareToCut) ? compareToCut.map(c => Number.isFinite(c) ? formatNumber(c) : 0) : null);
 </script>
 
 {#if cutsRounded}
@@ -31,19 +39,29 @@
   {#if cutsRounded && hand === 'left'}
     <div class="cuts">
       {#each cutsRounded as c, idx}
-        <span title={idx === 0 ? 'Preswing' : (idx === 1 ? 'Accuracy' : 'Postswing')}>{c}</span>
+        <span title={idx === 0 ? 'Preswing' : (idx === 1 ? 'Accuracy' : 'Postswing')}>
+          {#if compareToCutsRounded && compareToCutsRounded[idx]}
+            <small>{compareToCutsRounded[idx]}</small>
+          {/if}
+          {c}
+        </span>
       {/each}
     </div>
   {/if}
 
   <div class="donut">
-    <Donut value={value} {percentage} color={rgba}/>
+    <Donut value={value} {percentage} color={rgba} {compareToValue} {compareToPercentage} {name} {compareToName} />
   </div>
 
   {#if cutsRounded && hand === 'right'}
     <div class="cuts">
       {#each cutsRounded as c, idx}
-        <span title={idx === 0 ? 'Preswing' : (idx === 1 ? 'Accuracy' : 'Postswing')}>{c}</span>
+        <span title={idx === 0 ? 'Preswing' : (idx === 1 ? 'Accuracy' : 'Postswing')}>
+          {c}
+          {#if compareToCutsRounded && compareToCutsRounded[idx]}
+            <small>{compareToCutsRounded[idx]}</small>
+          {/if}
+        </span>
       {/each}
     </div>
   {/if}
@@ -67,5 +85,9 @@
     .donut {
         width: 4em;
         margin: 0 .5em;
+    }
+
+    small {
+        color: var(--faded)
     }
 </style>

@@ -7,6 +7,8 @@
   import Grid from './Stats/Grid.svelte'
   import Chart from './Stats/Chart.svelte'
   import History from './History.svelte'
+  import Switcher from '../Common/Switcher.svelte'
+  import {formatNumber} from '../../utils/format'
 
   export let beatSavior;
   export let leaderboard;
@@ -14,6 +16,16 @@
 
   let allSongRuns = [];
   let selectedRun = beatSavior;
+  let previouslySelected = null;
+  let compareTo = null;
+
+  const switcherOptions = [
+    {id: 'none', title: 'No comparision', iconFa: 'fas fa-times'},
+    {id: 'best', title: 'Compare to the best', iconFa: 'fas fa-cubes'},
+    {id: 'last-clicked', title: 'Compare to previously selected', iconFa: 'fas fa-mouse'},
+  ];
+
+  let selectedSwitcherOption = switcherOptions[1];
 
   function extractGridAcc(beatSavior) {
     const gridAcc = opt(beatSavior, 'trackers.accuracyTracker.gridAcc');
@@ -40,31 +52,69 @@
   }
 
   function onRunSelected(event) {
-    if (!event || !event.detail) return;
+    if (!event || !event.detail || (selectedRun && event.detail.beatSaviorId === selectedRun.beatSaviorId)) return;
 
+    previouslySelected = selectedRun ? {...selectedRun} : null;
     selectedRun = event.detail;
   }
 
+  function onSwitcherChanged(e) {
+    selectedSwitcherOption = e.detail;
+  }
+
+  function updateCompareTo(type, selected, best, previous) {
+    switch (type) {
+      case 'none':
+        compareTo = null;
+        break;
+
+      case 'best':
+        compareTo = opt(best, 'beatSaviorId') !== opt(selected, 'beatSaviorId') ? best : null;
+        break;
+
+      case 'last-clicked':
+        compareTo = opt(previous, 'beatSaviorId') !== opt(selected, 'beatSaviorId') ? previous : null;
+        break;
+    }
+  }
+
+  function getRunName(run) {
+    if (!run) return null;
+
+    const acc = opt(run, 'trackers.scoreTracker.rawRatio')
+
+    return `${formatNumber(acc*100)}%${run.beatSaviorId === best.beatSaviorId ? ' (BEST)' : ''} run`
+  }
+
+  $: best = beatSavior;
   $: if (beatSavior && !selectedRun) selectedRun = beatSavior;
   $: accGrid = extractGridAcc(selectedRun)
   $: playerId = opt(selectedRun, 'playerId')
   $: getAllLeaderboardPlays(playerId, leaderboard)
+  $: updateCompareTo(opt(selectedSwitcherOption, 'id', 'none'), selectedRun, best, previouslySelected)
+  $: accCompareGrid = extractGridAcc(compareTo)
+
+  $: name = getRunName(selectedRun)
+  $: compareToName = getRunName(compareTo)
 </script>
 
 {#if selectedRun}
   <section class="beat-savior" class:with-history={allSongRuns && allSongRuns.length > 1} transition:fade>
     {#if allSongRuns && allSongRuns.length > 1}
       <nav>
-        <History runs={allSongRuns} selectedId={selectedRun.beatSaviorId} bestId={opt(beatSavior, 'beatSaviorId')}
+        <Switcher values={switcherOptions} value={selectedSwitcherOption} on:change={onSwitcherChanged}/>
+
+        <History runs={allSongRuns} selectedId={selectedRun.beatSaviorId}
+                 compareToId={opt(compareTo, 'beatSaviorId')} bestId={opt(beatSavior, 'beatSaviorId')}
                  on:selected={onRunSelected}
         />
       </nav>
     {/if}
 
-    <Hands stats={selectedRun.stats}/>
-    <OtherStats beatSavior={selectedRun}/>
-    <Grid {accGrid}/>
-    <Chart beatSavior={selectedRun}/>
+    <Hands stats={selectedRun.stats} compareTo={compareTo ? compareTo.stats : null} {name} {compareToName}/>
+    <OtherStats beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName}/>
+    <Grid {accGrid} compareTo={accCompareGrid} {name} {compareToName} />
+    <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
   </section>
 {/if}
 
@@ -89,20 +139,10 @@
         align-self: start;
         max-width: 10.5em;
         max-height: 17em;
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
+        overflow: hidden;
 
-    .beat-savior.with-history nav::-webkit-scrollbar {
-        width: .25rem;
-    }
-    body::-webkit-scrollbar-track {
-        background: var(--foreground, #fff);
-    }
-    .beat-savior.with-history nav::-webkit-scrollbar-thumb {
-        background-color: var(--selected, #3273dc) ;
-        border-radius: 6px;
-        border: 3px solid var(--selected, #3273dc);
+        display: flex;
+        flex-direction: column;
     }
 
     @media screen and (max-width: 767px) {
@@ -118,6 +158,8 @@
         .beat-savior.with-history nav {
             grid-row: 1/2;
             max-width: 100%;
+            flex-direction: row;
+            width: 100%;
         }
 
         .beat-savior.with-history > :global(.stats) {
