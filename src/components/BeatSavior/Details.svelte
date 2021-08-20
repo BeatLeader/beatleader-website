@@ -8,6 +8,8 @@
   import Chart from './Stats/Chart.svelte'
   import History from './History.svelte'
   import Switcher from '../Common/Switcher.svelte'
+  import {formatDate} from '../../utils/date'
+  import {formatNumber} from '../../utils/format'
 
   export let beatSavior;
   export let leaderboard;
@@ -77,6 +79,14 @@
     }
   }
 
+  function getRunName(run) {
+    if (!run) return null;
+
+    const acc = opt(run, 'trackers.scoreTracker.rawRatio')
+
+    return `${formatNumber(acc*100)}%${run === best ? ' (BEST)' : ''}`
+  }
+
   $: best = beatSavior;
   $: if (beatSavior && !selectedRun) selectedRun = beatSavior;
   $: accGrid = extractGridAcc(selectedRun)
@@ -84,7 +94,8 @@
   $: getAllLeaderboardPlays(playerId, leaderboard)
   $: updateCompareTo(opt(selectedSwitcherOption, 'id', 'none'), selectedRun, best, previouslySelected)
 
-  $: console.warn('compare', opt(compareTo,'trackers.scoreTracker.rawRatio'), compareTo)
+  $: name = getRunName(selectedRun)
+  $: compareToName = getRunName(compareTo)
 </script>
 
 {#if selectedRun}
@@ -103,7 +114,7 @@
     <Hands stats={selectedRun.stats}/>
     <OtherStats beatSavior={selectedRun}/>
     <Grid {accGrid}/>
-    <Chart beatSavior={selectedRun}/>
+    <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
   </section>
 {/if}
 
