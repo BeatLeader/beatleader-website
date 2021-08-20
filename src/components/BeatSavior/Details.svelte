@@ -84,7 +84,7 @@
 
     const acc = opt(run, 'trackers.scoreTracker.rawRatio')
 
-    return `${formatNumber(acc*100)}%${run === best ? ' (BEST)' : ''}`
+    return `${formatNumber(acc*100)}%${run === best ? ' (BEST)' : ''} run`
   }
 
   $: best = beatSavior;
@@ -93,6 +93,7 @@
   $: playerId = opt(selectedRun, 'playerId')
   $: getAllLeaderboardPlays(playerId, leaderboard)
   $: updateCompareTo(opt(selectedSwitcherOption, 'id', 'none'), selectedRun, best, previouslySelected)
+  $: accCompareGrid = extractGridAcc(compareTo)
 
   $: name = getRunName(selectedRun)
   $: compareToName = getRunName(compareTo)
@@ -113,7 +114,7 @@
 
     <Hands stats={selectedRun.stats}/>
     <OtherStats beatSavior={selectedRun}/>
-    <Grid {accGrid}/>
+    <Grid {accGrid} compareTo={accCompareGrid} {name} {compareToName} />
     <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
   </section>
 {/if}
