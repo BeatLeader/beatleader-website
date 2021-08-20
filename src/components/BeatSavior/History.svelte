@@ -98,6 +98,7 @@
               {/if}
             </small>
           </Accuracy>
+          <i class="fas fa-balance-scale-left"></i>
         </div>
       {/each}
     </section>
@@ -149,6 +150,7 @@
     }
 
     .item {
+        position: relative;
         opacity: .25;
         transition: opacity 200ms;
         cursor: pointer !important;
@@ -158,8 +160,20 @@
         opacity: 1;
     }
 
-    .item:hover:not(.selected), .item.compare:not(.selected) {
+    .item > i.fas {
+        display: none;
+        position: absolute;
+        right: .25em;
+        bottom: 1em;
+        font-size: .75em;
+    }
+
+    .item:hover:not(.selected) {
         opacity: .6;
+    }
+
+    .item.compare > i.fas {
+        display: inline;
     }
 
     .item :global(*) {

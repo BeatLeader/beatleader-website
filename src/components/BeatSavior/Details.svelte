@@ -25,7 +25,7 @@
     {id: 'last-clicked', title: 'Compare to previously selected', iconFa: 'fas fa-mouse'},
   ];
 
-  let selectedSwitcherOption = switcherOptions[0];
+  let selectedSwitcherOption = switcherOptions[1];
 
   function extractGridAcc(beatSavior) {
     const gridAcc = opt(beatSavior, 'trackers.accuracyTracker.gridAcc');
@@ -112,7 +112,7 @@
     {/if}
 
     <Hands stats={selectedRun.stats} compareTo={compareTo ? compareTo.stats : null} {name} {compareToName}/>
-    <OtherStats beatSavior={selectedRun}/>
+    <OtherStats beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName}/>
     <Grid {accGrid} compareTo={accCompareGrid} {name} {compareToName} />
     <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
   </section>
