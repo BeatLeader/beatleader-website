@@ -8,7 +8,6 @@
   import Chart from './Stats/Chart.svelte'
   import History from './History.svelte'
   import Switcher from '../Common/Switcher.svelte'
-  import {formatDate} from '../../utils/date'
   import {formatNumber} from '../../utils/format'
 
   export let beatSavior;
@@ -53,7 +52,7 @@
   }
 
   function onRunSelected(event) {
-    if (!event || !event.detail) return;
+    if (!event || !event.detail || (selectedRun && event.detail.beatSaviorId === selectedRun.beatSaviorId)) return;
 
     previouslySelected = selectedRun ? {...selectedRun} : null;
     selectedRun = event.detail;
@@ -70,11 +69,11 @@
         break;
 
       case 'best':
-        if (best !== selected) compareTo = best;
+        compareTo = opt(best, 'beatSaviorId') !== opt(selected, 'beatSaviorId') ? best : null;
         break;
 
       case 'last-clicked':
-        if (previous !== selected) compareTo = previous;
+        compareTo = opt(previous, 'beatSaviorId') !== opt(selected, 'beatSaviorId') ? previous : null;
         break;
     }
   }
@@ -84,7 +83,7 @@
 
     const acc = opt(run, 'trackers.scoreTracker.rawRatio')
 
-    return `${formatNumber(acc*100)}%${run === best ? ' (BEST)' : ''} run`
+    return `${formatNumber(acc*100)}%${run.beatSaviorId === best.beatSaviorId ? ' (BEST)' : ''} run`
   }
 
   $: best = beatSavior;
@@ -112,7 +111,7 @@
       </nav>
     {/if}
 
-    <Hands stats={selectedRun.stats}/>
+    <Hands stats={selectedRun.stats} compareTo={compareTo ? compareTo.stats : null} {name} {compareToName}/>
     <OtherStats beatSavior={selectedRun}/>
     <Grid {accGrid} compareTo={accCompareGrid} {name} {compareToName} />
     <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
