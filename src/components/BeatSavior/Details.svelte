@@ -7,6 +7,7 @@
   import Grid from './Stats/Grid.svelte'
   import Chart from './Stats/Chart.svelte'
   import History from './History.svelte'
+  import Switcher from '../Common/Switcher.svelte'
 
   export let beatSavior;
   export let leaderboard;
@@ -14,6 +15,16 @@
 
   let allSongRuns = [];
   let selectedRun = beatSavior;
+  let previouslySelected = null;
+  let compareTo = null;
+
+  const switcherOptions = [
+    {id: 'none', title: 'No comparision', iconFa: 'fas fa-times'},
+    {id: 'best', title: 'Compare to the best', iconFa: 'fas fa-cubes'},
+    {id: 'last-clicked', title: 'Compare to previously selected', iconFa: 'fas fa-mouse'},
+  ];
+
+  let selectedSwitcherOption = switcherOptions[0];
 
   function extractGridAcc(beatSavior) {
     const gridAcc = opt(beatSavior, 'trackers.accuracyTracker.gridAcc');
@@ -42,20 +53,48 @@
   function onRunSelected(event) {
     if (!event || !event.detail) return;
 
+    previouslySelected = selectedRun ? {...selectedRun} : null;
     selectedRun = event.detail;
   }
 
+  function onSwitcherChanged(e) {
+    selectedSwitcherOption = e.detail;
+  }
+
+  function updateCompareTo(type, selected, best, previous) {
+    switch (type) {
+      case 'none':
+        compareTo = null;
+        break;
+
+      case 'best':
+        if (best !== selected) compareTo = best;
+        break;
+
+      case 'last-clicked':
+        if (previous !== selected) compareTo = previous;
+        break;
+    }
+  }
+
+  $: best = beatSavior;
   $: if (beatSavior && !selectedRun) selectedRun = beatSavior;
   $: accGrid = extractGridAcc(selectedRun)
   $: playerId = opt(selectedRun, 'playerId')
   $: getAllLeaderboardPlays(playerId, leaderboard)
+  $: updateCompareTo(opt(selectedSwitcherOption, 'id', 'none'), selectedRun, best, previouslySelected)
+
+  $: console.warn('compare', opt(compareTo,'trackers.scoreTracker.rawRatio'), compareTo)
 </script>
 
 {#if selectedRun}
   <section class="beat-savior" class:with-history={allSongRuns && allSongRuns.length > 1} transition:fade>
     {#if allSongRuns && allSongRuns.length > 1}
       <nav>
-        <History runs={allSongRuns} selectedId={selectedRun.beatSaviorId} bestId={opt(beatSavior, 'beatSaviorId')}
+        <Switcher values={switcherOptions} value={selectedSwitcherOption} on:change={onSwitcherChanged}/>
+
+        <History runs={allSongRuns} selectedId={selectedRun.beatSaviorId}
+                 compareToId={opt(compareTo, 'beatSaviorId')} bestId={opt(beatSavior, 'beatSaviorId')}
                  on:selected={onRunSelected}
         />
       </nav>

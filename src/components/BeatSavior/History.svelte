@@ -5,23 +5,15 @@
   import {formatNumber, padNumber} from '../../utils/format'
   import FormattedDate from '../Common/FormattedDate.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
-  import Switcher from '../Common/Switcher.svelte'
 
   export let runs;
   export let selectedId;
   export let bestId;
+  export let compareToId;
 
   const dispatch = createEventDispatcher();
 
   let itemsEl = null;
-
-  const switcherOptions = [
-    {id: 'none', title: 'No comparision', iconFa: 'fas fa-times'},
-    {id: 'best', title: 'Compare to the best', iconFa: 'fas fa-cubes'},
-    {id: 'last-clicked', title: 'Compare to previously selected', iconFa: 'fas fa-mouse'},
-  ];
-
-  let selectedSwitcherOption = switcherOptions[0];
 
   function processRuns(runs) {
     if (!runs || !runs.length) return null;
@@ -78,21 +70,16 @@
     dispatch('selected', selectedItem)
   }
 
-  function onSwitcherChanged(e) {
-    console.warn(e)
-  }
-
   $: processedRuns = processRuns(runs)
   $: if(itemsEl && selectedId && bestId === selectedId) scrollToBestId(bestId)
 </script>
 
 {#if processedRuns && processedRuns.length}
-  <Switcher values={switcherOptions} value={selectedSwitcherOption} on:change={onSwitcherChanged}/>
-
   <div class="scroll-wrapper">
     <section bind:this={itemsEl}>
       {#each processedRuns as run (run.beatSaviorId)}
-        <div data-id={run.beatSaviorId} class="item" class:selected={run.beatSaviorId === selectedId}
+        <div data-id={run.beatSaviorId} class="item"
+             class:selected={run.beatSaviorId === selectedId} class:compare={run.beatSaviorId === compareToId}
              on:click={() => dispatch('selected', run)}
         >
           <Accuracy score={run} noSecondMetric={true}>
@@ -162,7 +149,7 @@
     }
 
     .item {
-        opacity: .4;
+        opacity: .25;
         transition: opacity 200ms;
         cursor: pointer !important;
     }
@@ -171,7 +158,7 @@
         opacity: 1;
     }
 
-    .item:hover:not(.selected), .item.compare {
+    .item:hover:not(.selected), .item.compare:not(.selected) {
         opacity: .6;
     }
 
