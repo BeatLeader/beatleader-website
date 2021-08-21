@@ -7,7 +7,7 @@
   export let name = null;
   export let compareTo = null;
   export let compareToName = null;
-  export let height = "200px";
+  export let height = "250px";
 
   let canvas = null;
   let chart = null;

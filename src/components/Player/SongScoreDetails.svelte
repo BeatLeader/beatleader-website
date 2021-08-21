@@ -5,6 +5,7 @@
   import LeaderboardPage from '../../pages/Leaderboard.svelte'
   import Switcher from '../Common/Switcher.svelte'
 
+  export let playerId;
   export let songScore;
   export let fixedBrowserTitle = null;
 
@@ -67,7 +68,7 @@
 
     <div class="tab">
       {#if selectedOption && selectedOption.id === 'beatsavior'}
-        <BeatSaviorDetails {beatSavior} {leaderboard}/>
+        <BeatSaviorDetails {playerId} {beatSavior} {leaderboard}/>
       {/if}
 
       {#if selectedOption && selectedOption.id === 'leaderboard'}

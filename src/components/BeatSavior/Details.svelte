@@ -1,6 +1,7 @@
 <script>
   import {fade} from 'svelte/transition'
-  import {opt} from '../../utils/js'
+  import {convertArrayToObjectByKey, opt} from '../../utils/js'
+  import createPlayerService from '../../services/scoresaber/player'
   import beatSaviorRepository from '../../db/repository/beat-savior'
   import Hands from './Stats/Hands.svelte'
   import OtherStats from './Stats/OtherStats.svelte'
@@ -9,15 +10,21 @@
   import History from './History.svelte'
   import Switcher from '../Common/Switcher.svelte'
   import {formatNumber} from '../../utils/format'
+  import Button from '../Common/Button.svelte'
 
   export let beatSavior;
   export let leaderboard;
   export let playerId;
 
+  const playerService = createPlayerService();
+
+  let allSongRunsWithOtherPlayers = [];
   let allSongRuns = [];
   let selectedRun = beatSavior;
   let previouslySelected = null;
   let compareTo = null;
+
+  let withOtherPlayers = false;
 
   const switcherOptions = [
     {id: 'none', title: 'No comparision', iconFa: 'fas fa-times'},
@@ -44,11 +51,28 @@
 
     if (!hash || !diff) return;
 
+    const allCachedPlayers = convertArrayToObjectByKey(await playerService.getAll(), 'playerId');
+
     hash = hash.toLowerCase();
 
-    allSongRuns = (await beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId))
-      .filter(bs => bs && bs.hash === hash && bs.diff === diff)
+    allSongRunsWithOtherPlayers = (await beatSaviorRepository().getAllFromIndex('beat-savior-hash', hash))
+      .filter(bs => bs && bs.diff === diff && ((bs.leaderboardId && allCachedPlayers && allCachedPlayers[bs.playerId]) || bs.playerId === playerId))
+      .map(bs => ({...bs, playerName: opt(allCachedPlayers, `${bs.playerId}.name`, null)}))
       .sort((a, b) => b.timeSet && a.timeSet ? b.timeSet - a.timeSet : 0);
+
+    allSongRuns = withOtherPlayers
+      ? allSongRunsWithOtherPlayers
+      : allSongRunsWithOtherPlayers.filter(bs => bs.playerId === playerId)
+
+    if (!selectedRun || !allSongRuns.find(r => r.beatSaviorId === selectedRun.beatSaviorId)) {
+      selectedRun = best ? allSongRuns.find(r => r.beatSaviorId === best.beatSaviorId) : allSongRuns[0];
+    }
+
+    if (previouslySelected && allSongRuns.find(r => r.beatSaviorId === previouslySelected.beatSaviorId))
+      previouslySelected = selectedRun;
+
+    if (compareTo && allSongRuns.find(r => r.beatSaviorId === compareTo.beatSaviorId))
+      compareTo = null;
   }
 
   function onRunSelected(event) {
@@ -81,30 +105,40 @@
   function getRunName(run) {
     if (!run) return null;
 
+    const updatedRun = allSongRuns.find(r => r.beatSaviorId === run.beatSaviorId);
+    if (updatedRun) run = updatedRun;
+
     const acc = opt(run, 'trackers.scoreTracker.rawRatio')
 
-    return `${formatNumber(acc*100)}%${run.beatSaviorId === best.beatSaviorId ? ' (BEST)' : ''} run`
+    return `${withOtherPlayers && run.playerName ? run.playerName + ' / ' : ''}${formatNumber(acc * 100)}%${run.beatSaviorId === best.beatSaviorId ? ' (BEST)' : ''} run`
   }
 
   $: best = beatSavior;
   $: if (beatSavior && !selectedRun) selectedRun = beatSavior;
   $: accGrid = extractGridAcc(selectedRun)
-  $: playerId = opt(selectedRun, 'playerId')
-  $: getAllLeaderboardPlays(playerId, leaderboard)
+  $: getAllLeaderboardPlays(playerId, leaderboard, withOtherPlayers)
   $: updateCompareTo(opt(selectedSwitcherOption, 'id', 'none'), selectedRun, best, previouslySelected)
   $: accCompareGrid = extractGridAcc(compareTo)
-
   $: name = getRunName(selectedRun)
   $: compareToName = getRunName(compareTo)
 </script>
 
 {#if selectedRun}
-  <section class="beat-savior" class:with-history={allSongRuns && allSongRuns.length > 1} transition:fade>
-    {#if allSongRuns && allSongRuns.length > 1}
+  <section class="beat-savior" class:with-history={allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1} transition:fade>
+    {#if allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1}
       <nav>
-        <Switcher values={switcherOptions} value={selectedSwitcherOption} on:change={onSwitcherChanged}/>
+        <header>
+          <Switcher values={switcherOptions} value={selectedSwitcherOption} on:change={onSwitcherChanged}/>
 
-        <History runs={allSongRuns} selectedId={selectedRun.beatSaviorId}
+          {#if withOtherPlayers || (allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > allSongRuns.length)}
+            <Button iconFa="fas fa-users" type={withOtherPlayers ? 'primary' : 'default'}
+                    title="Show/hide scores of other players" noMargin={true}
+                    on:click={() => withOtherPlayers = !withOtherPlayers}
+            />
+          {/if}
+        </header>
+
+        <History withPlayerName={withOtherPlayers} runs={allSongRuns} selectedId={selectedRun.beatSaviorId}
                  compareToId={opt(compareTo, 'beatSaviorId')} bestId={opt(beatSavior, 'beatSaviorId')}
                  on:selected={onRunSelected}
         />
@@ -143,6 +177,12 @@
 
         display: flex;
         flex-direction: column;
+    }
+
+    header {
+        display: flex;
+        justify-content: space-between;
+        font-size: .75rem;
     }
 
     @media screen and (max-width: 767px) {

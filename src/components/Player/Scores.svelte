@@ -85,7 +85,7 @@
   {#if $scoresStore}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {songScore} {fixedBrowserTitle} {idx} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} />
     {/each}
   </div>
   {:else}

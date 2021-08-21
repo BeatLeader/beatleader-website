@@ -6,16 +6,18 @@
   import FormattedDate from '../Common/FormattedDate.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
 
+  export let playerId;
   export let runs;
   export let selectedId;
   export let bestId;
   export let compareToId;
+  export let withPlayerName = false;
 
   const dispatch = createEventDispatcher();
 
   let itemsEl = null;
 
-  function processRuns(runs) {
+  function processRuns(runs, withPlayerName = false) {
     if (!runs || !runs.length) return null;
 
     return runs.map(run => {
@@ -40,7 +42,7 @@
 
       if (!acc || !percentage || !timeSet) return null;
 
-      const name = `${formatDate(timeSet)} / ${formatNumber(acc*100)}%${!won ? ` / FAILED AT ${failedAt}` : `${run.beatSaviorId === bestId ? ' / BEST' : ''}`}`
+      const name = `${withPlayerName && run.playerName ? run.playerName + ' / ' : ''}${formatDate(timeSet)} / ${formatNumber(acc*100)}%${!won ? ` / FAILED AT ${failedAt}` : `${run.beatSaviorId === bestId ? ' / BEST' : ''}`}`
 
       return {...run, name, acc: acc * 100, percentage: percentage * 100, won, mods, failedAt}
     })
@@ -70,7 +72,7 @@
     dispatch('selected', selectedItem)
   }
 
-  $: processedRuns = processRuns(runs)
+  $: processedRuns = processRuns(runs, withPlayerName)
   $: if(itemsEl && selectedId && bestId === selectedId) scrollToBestId(bestId)
 </script>
 
@@ -84,6 +86,10 @@
         >
           <Accuracy score={run} noSecondMetric={true}>
             <small slot="label-before">
+              {#if withPlayerName && run.playerName}
+                <div class="player-name">{run.playerName}</div>
+              {/if}
+
               <FormattedDate date={run.timeSet} absolute={true}/>
             </small>
             <small class:fail={!run.won} class:best={run.beatSaviorId === bestId} slot="label-after">
@@ -196,6 +202,10 @@
 
     :global(.switch-types .button i) {
         align-items: flex-end!important;
+    }
+
+    .player-name {
+        font-size: .8em;
     }
 
     @media screen and (max-width: 767px) {

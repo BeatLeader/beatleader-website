@@ -15,6 +15,7 @@
   import SongScoreDetails from './SongScoreDetails.svelte'
   import Icons from '../Song/Icons.svelte'
 
+  export let playerId = null;
   export let songScore = null;
   export let fixedBrowserTitle = null;
   export let idx = 0;
@@ -256,7 +257,7 @@
 
     {#if showDetails}
       <div transition:slide>
-        <SongScoreDetails {songScore} {fixedBrowserTitle} />
+        <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle} />
       </div>
     {/if}
   </div>
