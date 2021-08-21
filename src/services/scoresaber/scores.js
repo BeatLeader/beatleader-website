@@ -32,6 +32,30 @@ export default () => {
   let mainPlayerId = null;
   let updateInProgress = [];
 
+  let refreshCallCounter = 0;
+
+  const refreshingFinished = async (samplingTime = 100, timeout = 30000) => new Promise((resolve, reject) => {
+    let callCounter = 0;
+    const maxCallCount = samplingTime ? timeout / samplingTime : timeout;
+
+    const sampler = () => {
+      if (refreshCallCounter === 0) {
+        resolve(true);
+        return;
+      }
+
+      callCounter++;
+      if (callCounter > maxCallCount) {
+        reject(timeout);
+        return;
+      }
+
+      setTimeout(sampler, samplingTime);
+    }
+
+    sampler();
+  })
+
   const configStoreUnsubscribe = configStore.subscribe(config => {
     const newMainPlayerId = opt(config, 'users.main')
     if (mainPlayerId !== newMainPlayerId) {
@@ -176,57 +200,66 @@ export default () => {
   const updateRankAndPpFromTheQueue = async () => {
     log.debug('Processing rank and pp update queue', 'ScoresService');
 
-    await db.runInTransaction(['scores-update-queue', 'scores'], async tx => {
-      // get all scores updates at least 3 minutes old (some time to download new scores)
-      let cursor = await tx.objectStore('scores-update-queue').index('scores-update-queue-fetchedAt').openCursor(IDBKeyRange.upperBound(addToDate(-3 * MINUTE)));
-      const scoresStore = tx.objectStore('scores');
+    try {
+      log.debug('Rank and pp update queue, waiting for the scores to finish refreshing.', 'ScoresService');
+      await refreshingFinished();
+      log.debug('Rank and pp update queue, scores refreshed, start queue processing.', 'ScoresService');
 
-      while (cursor) {
-        try {
-          const scoreUpdate = {...cursor.value};
+      await db.runInTransaction(['scores-update-queue', 'scores'], async tx => {
+        // get all scores updates at least one minute old (some time to download new scores)
+        let cursor = await tx.objectStore('scores-update-queue').index('scores-update-queue-fetchedAt').openCursor(IDBKeyRange.upperBound(addToDate(-1 * MINUTE)));
+        const scoresStore = tx.objectStore('scores');
 
-          await cursor.delete();
+        while (cursor) {
+          try {
+            const scoreUpdate = {...cursor.value};
 
-          if (!scoreUpdate.id) {
+            await cursor.delete();
+
+            if (!scoreUpdate.id) {
+              cursor = await cursor.continue();
+              continue;
+            }
+
+            const dbScore = await scoresStore.get(scoreUpdate.id)
+            if (!dbScore) {
+              cursor = await cursor.continue();
+              continue;
+            }
+
+            const scoreLastUpdated = dbScore.lastUpdated;
+
+            if (
+              (!scoreLastUpdated || scoreLastUpdated < scoreUpdate.fetchedAt) &&
+              (
+                opt(dbScore, 'score.scoreId') === opt(scoreUpdate, 'score.scoreId') ||
+                (opt(dbScore, 'score.unmodifiedScore') <= opt(scoreUpdate, 'score.unmodifiedScore'))
+              ) &&
+              opt(scoreUpdate, 'score.scoreId') && !!opt(scoreUpdate, 'score.timeSet')
+            ) {
+              dbScore.score = scoreUpdate.score;
+
+              dbScore.pp = scoreUpdate.score.pp;
+              dbScore.timeSet = scoreUpdate.score.timeSet;
+              dbScore.lastUpdated = new Date();
+
+              await scoresStore.put(dbScore);
+              scoresRepository().addToCache([dbScore])
+            }
+
             cursor = await cursor.continue();
-            continue;
+          } catch (err) {
+            // swallow error
+            if (cursor) cursor = await cursor.continue();
           }
-
-          const dbScore = await scoresStore.get(scoreUpdate.id)
-          if (!dbScore) {
-            cursor = await cursor.continue();
-            continue;
-          }
-
-          const scoreLastUpdated = dbScore.lastUpdated;
-
-          if (
-            (!scoreLastUpdated || scoreLastUpdated < scoreUpdate.fetchedAt) &&
-            (
-              opt(dbScore, 'score.scoreId') === opt(scoreUpdate, 'score.scoreId') ||
-              (opt(dbScore, 'score.unmodifiedScore') <= opt(scoreUpdate, 'score.unmodifiedScore'))
-            ) &&
-            opt(scoreUpdate, 'score.scoreId') && !!opt(scoreUpdate, 'score.timeSet')
-          ) {
-            dbScore.score = scoreUpdate.score;
-
-            dbScore.pp = scoreUpdate.score.pp;
-            dbScore.timeSet = scoreUpdate.score.timeSet;
-            dbScore.lastUpdated = new Date();
-
-            await scoresStore.put(dbScore);
-            scoresRepository().addToCache([dbScore])
-          }
-
-          cursor = await cursor.continue();
-        } catch (err) {
-          // swallow error
-          if (cursor) cursor = await cursor.continue();
         }
-      }
-    })
+      })
 
-    log.debug('Rank and pp update queue processed.', 'ScoresService');
+      log.debug('Rank and pp update queue processed.', 'ScoresService');
+    }
+    catch(err) {
+      log.debug('Rank and pp update queue has NOT been processed.', 'ScoresService');
+    }
   }
 
   const addRankAndPpToUpdateQueue = async scoresToUpdate => {
@@ -456,21 +489,23 @@ export default () => {
   }
 
   const refresh = async (playerId, forceUpdate = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
-    log.trace(`Starting player "${playerId}" scores refreshing${forceUpdate ? ' (forced)' : ''}...`, 'ScoresService')
-
-    if (!playerId) {
-      log.warn(`Can not refresh player scores if an empty playerId is given`, 'ScoresService');
-
-      return null;
-    }
-
-    if (updateInProgress.includes(playerId)) {
-      log.warn(`Player "${playerId}" scores are being fetched, skipping.`, 'ScoresService');
-
-      return null;
-    }
+    refreshCallCounter++;
 
     try {
+      log.trace(`Starting player "${playerId}" scores refreshing${forceUpdate ? ' (forced)' : ''}...`, 'ScoresService')
+
+      if (!playerId) {
+        log.warn(`Can not refresh player scores if an empty playerId is given`, 'ScoresService');
+
+        return null;
+      }
+
+      if (updateInProgress.includes(playerId)) {
+        log.warn(`Player "${playerId}" scores are being fetched, skipping.`, 'ScoresService');
+
+        return null;
+      }
+
       updateInProgress.push(playerId);
 
       let player;
@@ -523,6 +558,8 @@ export default () => {
     }
     finally {
       updateInProgress = updateInProgress.filter(pId => pId !== playerId);
+
+      refreshCallCounter--;
     }
   }
 
