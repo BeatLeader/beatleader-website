@@ -21,14 +21,11 @@ export default () => {
 
         delete songInfo.description;
 
-        // there are duplicated keys in a new Beat Saver, so check if key already exists with a different hash
+        // there are duplicated keys for a different hashes in a new Beat Saver, so check if key already exists with a different hash
         const existing = await songsBeatMapsRepository().getAllFromIndex('songs-beatmaps-key', songInfo.key);
         if (existing && existing.length) {
-            // check if it is an old converted map
-            if (existing[0].oldBeatSaverId) {
-                // remove old map from DB
-                await songsBeatMapsRepository().delete(existing[0].hash);
-            }
+            // remove old map from DB
+            await songsBeatMapsRepository().delete(existing[0].hash);
         }
 
         await songsBeatMapsRepository().set(songInfo);
