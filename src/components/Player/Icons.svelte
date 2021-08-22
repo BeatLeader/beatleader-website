@@ -61,12 +61,12 @@
 {#if playerId}
   <nav class:main={isMain}>
     {#if !isMain}
-      <Button title="Set as your profile" iconFa="fas fa-user-check" type="primary"
+      <Button title="Set as your profile" iconFa="fas fa-home" type="primary"
               on:click={onSetAsMain}
       />
 
       <Button title={isFriend ? "Remove from Friends" : "Add to Friends"}
-              iconFa="far fa-star" type={isFriend ? "danger" : "primary"}
+              iconFa={isFriend ? "fas fa-user-minus" : "fas fa-user-plus"} type={isFriend ? "danger" : "primary"}
               on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')}
       />
     {/if}
