@@ -5,6 +5,7 @@ import eventBus from '../utils/broadcast-channel-pubsub'
 import {opt} from '../utils/js'
 import {diffColors} from '../utils/scoresaber/format'
 import {getAccFromScore} from '../utils/scoresaber/song'
+import {getTotalPpFromSortedPps, WEIGHT_COEFFICIENT} from '../utils/scoresaber/pp'
 
 let db = null;
 
@@ -16,41 +17,47 @@ async function init() {
   db = await initDb();
 }
 
-const calcPlayerStats = async playerId => {
-  await init();
-
+const getRankedScores = async playerId => {
   const scores = await getPlayerScores(playerId)
 
   if (!scores || !scores.length) return null;
 
-  const rankedScores = scores
-    .filter(score => opt(score, 'score.pp') && ((opt(score, 'score.score') && opt(score, 'score.maxScore')) || opt(score, 'score.acc')));
+  return scores.filter(score => opt(score, 'score.pp'));
+}
 
-  const stats = rankedScores.reduce((cum, s) => {
-    const leaderboardId = opt(s, 'leaderboard.leaderboardId')
-    const pp = opt(s, 'score.pp');
-    const score = opt(s, 'score.unmodifiedScore', opt(s, 'score.score', 0))
-    const accFromScore = getAccFromScore({...s.score, leaderboardId});
-    const scoreAcc = opt(s, 'score.acc');
+const calcPlayerStats = async playerId => {
+  await init();
 
-    if (!accFromScore && !scoreAcc) return cum;
+  const rankedScores = await getRankedScores(playerId);
+  if (!rankedScores) return null;
 
-    let acc = accFromScore ? accFromScore : scoreAcc;
-    if (!acc || isNaN(acc)) return cum;
+  const stats = rankedScores
+    .filter(score => (opt(score, 'score.score') && opt(score, 'score.maxScore')) || opt(score, 'score.acc'))
+    .reduce((cum, s) => {
+      const leaderboardId = opt(s, 'leaderboard.leaderboardId')
+      const pp = opt(s, 'score.pp');
+      const score = opt(s, 'score.unmodifiedScore', opt(s, 'score.score', 0))
+      const accFromScore = getAccFromScore({...s.score, leaderboardId});
+      const scoreAcc = opt(s, 'score.acc');
 
-    s.score.acc = acc;
-    cum.totalScore += score;
-    cum.totalAcc += acc;
+      if (!accFromScore && !scoreAcc) return cum;
 
-    if (cum.topAcc < acc) cum.topAcc = acc;
-    if (cum.topPp < pp) cum.topPp = pp;
+      let acc = accFromScore ? accFromScore : scoreAcc;
+      if (!acc || isNaN(acc)) return cum;
 
-    cum.badges.forEach(badge => {
-      if ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) badge.value++;
-    })
+      s.score.acc = acc;
+      cum.totalScore += score;
+      cum.totalAcc += acc;
 
-    return cum;
-  }, {
+      if (cum.topAcc < acc) cum.topAcc = acc;
+      if (cum.topPp < pp) cum.topPp = pp;
+
+      cum.badges.forEach(badge => {
+        if ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) badge.value++;
+      })
+
+      return cum;
+    }, {
     playerId,
     badges: [
       {label: 'SS+', min: 95, max: null, value: 0, bgColor: diffColors.expertPlus},
@@ -82,9 +89,45 @@ const calcPlayerStats = async playerId => {
   return stats;
 }
 
+const calcPpBoundary = async (playerId, expectedPp = 1) => {
+  const rankedScores = await getRankedScores(playerId);
+  if (!rankedScores) return null;
+
+  const calcRawPpAtIdx = (bottomScores, idx, expected) => {
+    const oldBottomPp = getTotalPpFromSortedPps(bottomScores, idx);
+    const newBottomPp = getTotalPpFromSortedPps(bottomScores, idx + 1);
+
+    // 0.965^idx * rawPpToFind = expected + oldBottomPp - newBottomPp;
+    // rawPpToFind = (expected + oldBottomPp - newBottomPp) / 0.965^idx;
+    return (expected + oldBottomPp - newBottomPp) / Math.pow(WEIGHT_COEFFICIENT, idx);
+  }
+
+  const rankedScorePps = rankedScores.map(s => s.pp).sort((a, b) => b - a);
+
+  let idx = rankedScorePps.length - 1;
+
+  while (idx >= 0) {
+    const bottomSlice = rankedScorePps.slice(idx);
+    const bottomPp = getTotalPpFromSortedPps(bottomSlice, idx);
+
+    bottomSlice.unshift(rankedScorePps[idx]);
+    const modifiedBottomPp = getTotalPpFromSortedPps(bottomSlice, idx);
+    const diff = modifiedBottomPp - bottomPp;
+
+    if (diff > expectedPp) {
+      return calcRawPpAtIdx(rankedScorePps.slice(idx + 1), idx + 1, expectedPp);
+    }
+
+    idx--;
+  }
+
+  return calcRawPpAtIdx(rankedScorePps, 0, expectedPp);
+}
+
 const worker = {
   init,
   calcPlayerStats,
+  calcPpBoundary,
 }
 
 expose(worker);

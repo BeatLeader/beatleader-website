@@ -1,12 +1,13 @@
 <script>
   import processPlayerData from './utils/profile';
+  import eventBus from '../../utils/broadcast-channel-pubsub'
+  import {worker} from '../../utils/worker-wrappers'
   import Error from '../Common/Error.svelte'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
   import SsBadges from './SsBadges.svelte'
   import ScoresStats from './ScoresStats.svelte'
   import Icons from './Icons.svelte'
-  import eventBus from '../../utils/broadcast-channel-pubsub'
 
   export let playerData;
   export let isLoading = false;
@@ -16,14 +17,44 @@
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => playerStats = stats)
 
+  let onePpBoundery = null;
+
   function clearPlayerStatsOnChange() {
     playerStats = null;
+  }
+
+  async function calcOnePpBoundary(playerId) {
+    if (!playerId) {
+      onePpBoundery = null;
+      return;
+    }
+
+    onePpBoundery = await worker.calcPpBoundary(playerId);
+  }
+
+  function generateScoresStats(stats, onePp) {
+    return (stats && stats.length ? stats : [])
+      .concat(
+        onePp
+          ? [{
+            label: '+ 1pp',
+            title: 'Determines how many raw PPs in the new play you need to achieve to increase your total PP by 1pp',
+            value: onePpBoundery,
+            digits: 2,
+            suffix: ' raw pp new play',
+            fluid: true,
+            bgColor: 'var(--dimmed)',
+          }]
+          : [],
+      )
   }
 
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
+  $: calcOnePpBoundary(playerId);
+  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
 </script>
 
 <div class="box has-shadow" class:loading={isLoading}>
@@ -48,7 +79,7 @@
       {#if scoresStats || ssBadges || skeleton}
         <div class="columns">
           <div class="column stats">
-            <ScoresStats stats={scoresStats} {skeleton}/>
+            <ScoresStats stats={scoresStatsFinal} {skeleton}/>
             {#if accStats}<ScoresStats stats={accStats}/>{/if}
             {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
             <SsBadges badges={ssBadges}/>

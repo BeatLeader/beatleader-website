@@ -1,7 +1,6 @@
 import createScoresService from './scores'
 import makePendingPromisePool from '../../utils/pending-promises'
-
-const WEIGHT_COEFFICIENT = 0.965;
+import {getTotalPpFromSortedPps} from '../../utils/scoresaber/pp'
 
 let service = null;
 let serviceCreationCount = 0;
@@ -12,8 +11,6 @@ export default () => {
   const scoresService = createScoresService();
 
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
-
-  const getTotalPpFromSortedPps = ppArray => ppArray.reduce((cum, pp, idx) => cum + Math.pow(WEIGHT_COEFFICIENT, idx) * pp, 0);
 
   const getTotalPp = scores => scores && Array.isArray(scores)
     ? getTotalPpFromSortedPps(
