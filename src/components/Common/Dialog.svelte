@@ -27,12 +27,16 @@
 
   <footer>
     <slot name="footer">
-      {#if type === 'alert'}
-        <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
-      {:else if type === 'confirm'}
-        <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
-        <Button label="Ok" type="primary" on:click={() => dispatch('cancel')}/>
-      {/if}
+      <span class="left"><slot name="footer-left"></slot></span>
+
+      <span class="right"><slot name="footer-right">
+        {#if type === 'alert'}
+          <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
+        {:else if type === 'confirm'}
+          <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
+          <Button label="Ok" type="primary" on:click={() => dispatch('cancel')}/>
+        {/if}
+      </slot></span>
     </slot>
   </footer>
 </Modal>
@@ -70,6 +74,17 @@
     footer {
         margin-top: 2em;
         display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    footer .left, footer .right {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    footer .right {
         justify-content: flex-end;
     }
 

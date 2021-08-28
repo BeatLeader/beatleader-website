@@ -13,6 +13,10 @@ export default (dlManager) => {
 
   const playerService = createPlayerService();
 
+  eventBus.on('data-imported', () => {
+    if (window) window.location.reload()
+  });
+
   eventBus.on('player-add-cmd', async ({playerId}) => {
     await dlManager.enqueuePlayer(playerId);
   });

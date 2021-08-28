@@ -90,7 +90,7 @@
       {/if}
     </svelte:fragment>
 
-    <svelte:fragment slot="footer">
+    <svelte:fragment slot="footer-right">
       <Button iconFa="fab fa-twitch" label="Link" type="twitch" on:click={() => dispatch('link', twitchProfile)} disabled={!twitchProfile}/>
       <Button label="Cancel" on:click={onCancel}/>
     </svelte:fragment>

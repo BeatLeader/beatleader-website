@@ -4,11 +4,13 @@
   import createTwitchService from '../../services/twitch'
   import {ROUTER} from 'svelte-routing/src/contexts'
   import {getContext, onMount} from 'svelte'
-  import Dialog from '../Common/Dialog.svelte'
-  import Button from '../Common/Button.svelte'
   import {opt} from '../../utils/js'
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {DAY} from '../../utils/date'
+  import {exportJsonData, importDataHandler} from '../../utils/export-import'
+  import Dialog from '../Common/Dialog.svelte'
+  import Button from '../Common/Button.svelte'
+  import File from '../Common/File.svelte'
 
   export let show = false;
 
@@ -70,13 +72,54 @@
     const tokenExpireInDays = twitchToken ? Math.floor(twitchToken.expires_in / DAY) : null;
     const tokenExpireSoon = tokenExpireInDays <= 7;
 
-    eventBus.publish('settings-notification-badge', twitchToken && tokenExpireSoon  ? 'Twitch token is required for renewal' : null);
+    eventBus.publish('settings-notification-badge', twitchToken && tokenExpireSoon ? 'Twitch token is required for renewal' : null);
 
     showTwitchLinkBtn = !twitchToken || tokenExpireSoon;
 
     twitchBtnLabel = !twitchToken || !tokenExpireSoon ? 'Link to Twitch' : 'Renew Twitch token'
     twitchBtnTitle = twitchToken && tokenExpireInDays > 0 ? `Days left: ${tokenExpireInDays}` : null;
     twitchBtnDisabled = !tokenExpireSoon;
+  }
+
+
+  let isExporting = false;
+  let isImporting = false;
+  let importBtn = null;
+
+  async function onExport() {
+    try {
+      isExporting = true;
+
+      await exportJsonData();
+    } finally {
+      isExporting = false;
+    }
+  }
+
+  async function onImport(e) {
+    try {
+      isImporting = true;
+      if (importBtn) importBtn.$set({disabled: true});
+
+      importDataHandler(
+        e,
+        msg => {
+          isImporting = false;
+
+          alert(msg)
+
+          importBtn.$set({disabled: false});
+        },
+        async json => {
+          isImporting = false;
+          if (importBtn) importBtn.$set({disabled: false});
+
+          eventBus.publish('data-imported', {});
+        },
+      );
+    } catch {
+      isImporting = false;
+    }
   }
 
   onMount(async () => {
@@ -139,7 +182,13 @@
       {/if}
     </svelte:fragment>
 
-    <svelte:fragment slot="footer">
+    <svelte:fragment slot="footer-left">
+      <File iconFa="fas fa-file-export" title="Import SSR data from file" loading={isImporting} disabled={isImporting}
+            accept="application/json" bind:this={importBtn} on:change={onImport}/>
+      <Button iconFa="fas fa-file-import" title="Export SSR data to file" on:click={onExport} loading={isExporting} disabled={isExporting}/>
+    </svelte:fragment>
+
+    <svelte:fragment slot="footer-right">
       <Button iconFa="fas fa-save" label="Save" type="primary" on:click={onSave} disabled={!configStore}/>
       <Button label="Cancel" on:click={onCancel}/>
     </svelte:fragment>

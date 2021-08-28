@@ -28,3 +28,24 @@ export const isPromise = p => p && Object.prototype.toString.call(p) === "[objec
 export const isString = str => Object.prototype.toString.call(str) === "[object String]";
 
 export const opt = (obj, key, defaultValue = undefined) => key.split('.').reduce((o, i) => o && o[i] !== null && o[i] !== undefined ? o[i] : defaultValue, obj);
+export const optSet = (obj, key, value, createKeys = true) => {
+  const keys = key.split('.');
+  const last = keys.pop();
+  if (!last) return false;
+
+  const startObj = obj || {};
+
+  let current = startObj;
+  for(const i of keys) {
+    const propertyExists = current.hasOwnProperty(i);
+    if (!propertyExists && !createKeys) return obj;
+
+    if (!propertyExists || current[i] === null || current[i] === undefined) current[i] = {};
+
+    current = current[i];
+  }
+
+  current[last] = value;
+
+  return startObj;
+}
