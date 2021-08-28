@@ -57,45 +57,6 @@ export default () => {
   const updateData = async (playerId, data) => {
     log.debug(`Updating Beat Savior data for player "${playerId}"...`, 'BeatSaviorService')
 
-    // find score matches
-    log.trace(`Getting player "${playerId}" scores from DB...`, 'BeatSaviorService')
-
-    const playerScores = await getPlayerScores(playerId);
-
-    if (playerScores) {
-      const scoresToUpdate = data
-        .map(d => {
-          if (!d.hash || !d.score || !d.timeSet || !opt(d, 'stats.won')) return null;
-
-          const songScores = playerScores && playerScores[d.hash] ? playerScores[d.hash] : null;
-          if (!songScores) return null;
-
-          const leaderboardScore = songScores.find(s => isScoreMatchingBsData(s, d, false));
-          const exactScore = songScores.find(s => isScoreMatchingBsData(s, d, false));
-
-          if (leaderboardScore) {
-            // update BeatSavior data
-            d.leaderboardId = leaderboardScore.leaderboardId;
-            d.leaderboard.leaderboardId = leaderboardScore.leaderboardId;
-          }
-
-          if (exactScore) {
-            d.scoreId = opt(exactScore, 'score.scoreId');
-
-            return {...exactScore, beatSavior: d};
-          }
-
-          return null;
-        })
-        .filter(s => s);
-
-      log.debug(`Update player "${playerId}" scores with Beat Savior data...`, 'BeatSaviorService')
-
-      await Promise.all(scoresToUpdate.map(async s => scoresService.update(s)))
-    }
-
-    log.debug(`Update player "${playerId}" Beat Savior data...`, 'BeatSaviorService')
-
     await Promise.all(data.map(async d => beatSaviorRepository().set(d)));
 
     log.debug(`Update player "${playerId}" Beat Savior last refresh date...`, 'BeatSaviorService')
