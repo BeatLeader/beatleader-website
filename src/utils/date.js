@@ -63,6 +63,17 @@ export function truncateDate(date, precision = 'day') {
     return newDate;
 }
 
+export function toSSDate(date) {
+    return new Date(Date.parse(date.toLocaleString('pl-PL', { timeZone: 'Australia/Brisbane',hour12: false,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+    }).replace(/(\d+)\.(\d+)\.(\d+),\s(\d+):(\d+):(\d+)/, "$3-$2-$1")));
+}
+
 export function formatDate(val, dateStyle = 'short', timeStyle = 'medium') {
     if (!isValidDate(val)) return null;
 

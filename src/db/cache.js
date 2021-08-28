@@ -48,6 +48,7 @@ export default (name, getObjKey) => {
     }
 
     const value = await fetchFunc();
+    if (value === undefined) return value;
 
     const key = getObjKey(value);
 
