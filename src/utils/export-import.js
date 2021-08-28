@@ -76,7 +76,12 @@ const repositories = [
 	},
 ];
 
-export const exportJsonData = async (filename = 'ssr-db-export-' + (new Date()).toISOString().replace(/:/g, '_') + '.json') => {
+const getOrigin = () => {
+	const url = window ? new URL(window.location.href) : null;
+	return url ? url.origin : null;
+}
+
+export const exportJsonData = async (filename = 'ssr-db-' + (new Date()).toISOString().replace(/:/g, '_') + '.json') => {
 	const inLineKeysRepositories = getInLineKeysRepositories();
 	const outOfLineKeysRepositories = getOutOfLineKeysRepositories();
 
@@ -84,7 +89,7 @@ export const exportJsonData = async (filename = 'ssr-db-export-' + (new Date()).
 		.reduce((cum, repositoryData, idx) => {
 			cum.stores[inLineKeysRepositories[idx].repository().getStoreName()] = repositoryData;
 			return cum;
-		}, {name: EXPORT_NAME, version: db.version, exportedOn: new Date(), stores: {}});
+		}, {name: EXPORT_NAME, origin: getOrigin(), version: db.version, exportedOn: new Date(), stores: {}});
 
 	await Promise.all(
 		outOfLineKeysRepositories.map(async repositoryItem => {
