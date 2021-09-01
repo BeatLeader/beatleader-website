@@ -44,7 +44,7 @@
     {/if}
 
     {#if shownIcons.includes('bs')}
-        <a href="https://beatsaver.com/beatmap/{songKey}" target="_blank">
+        <a href="https://beatsaver.com/maps/{songKey}" target="_blank">
             <Button icon={beatSaverSvg} title="Go to Beat Saver"/>
         </a>
     {/if}
