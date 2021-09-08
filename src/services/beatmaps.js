@@ -13,20 +13,17 @@ const BM_NOT_FOUND_KEY = 'bm404';
 const BM_NOT_FOUND_HOURS_BETWEEN_COUNTS = 1;
 
 export default () => {
-    const cacheSongInfo = async songInfo => {
-        if (!songInfo.hash || !songInfo.key) return null;
+    const cacheSongInfo = async (songInfo, originalHash) => {
+        if (!songInfo) return null;
 
-        songInfo.hash = songInfo.hash.toLowerCase();
+        const hash = originalHash && originalHash.length ? originalHash : songInfo.hash;
+
+        if (!hash || !songInfo.key) return null;
+
+        songInfo.hash = hash.toLowerCase();
         songInfo.key = songInfo.key.toLowerCase();
 
         delete songInfo.description;
-
-        // there are duplicated keys for a different hashes in a new Beat Saver, so check if key already exists with a different hash
-        const existing = await songsBeatMapsRepository().getAllFromIndex('songs-beatmaps-key', songInfo.key);
-        if (existing && existing.length) {
-            // remove old map from DB
-            await songsBeatMapsRepository().delete(existing[0].hash);
-        }
 
         await songsBeatMapsRepository().set(songInfo);
 
@@ -84,7 +81,7 @@ export default () => {
                 return null;
             }
 
-            return cacheSongInfo(songInfo);
+            return cacheSongInfo(songInfo, hash);
         } catch (err) {
             if (hash && err instanceof SsrHttpNotFoundError) {
                 await setHashNotFound(hash);
