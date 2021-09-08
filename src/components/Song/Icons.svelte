@@ -33,31 +33,31 @@
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
     <a class="video" href="{twitchUrl}" target="_blank">
-        <Button iconFa="fab fa-twitch" type="twitch" title="Twitch VOD preview"/>
+        <Button iconFa="fab fa-twitch" type="twitch" title="Twitch VOD preview" noMargin={true}/>
     </a>
 {/if}
 
 {#if songKey && songKey.length}
     {#if shownIcons.includes('bsr')}
-        <Button iconFa="fas fa-exclamation" title="Copy !bsr"
+        <Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true}
                 on:click={copyToClipboard('!bsr ' + songKey)}/>
     {/if}
 
     {#if shownIcons.includes('bs')}
         <a href="https://beatsaver.com/maps/{songKey}" target="_blank">
-            <Button icon={beatSaverSvg} title="Go to Beat Saver"/>
+            <Button icon={beatSaverSvg} title="Go to Beat Saver" noMargin={true}/>
         </a>
     {/if}
 
     {#if shownIcons.includes('oneclick')}
         <a href="beatsaver://{songKey}">
-            <Button iconFa="far fa-hand-pointer" title="One click install"/>
+            <Button iconFa="far fa-hand-pointer" title="One click install" noMargin={true}/>
         </a>
     {/if}
 
     {#if shownIcons.includes('preview')}
         <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank">
-            <Button iconFa="fa fa-play-circle" title="Map preview"/>
+            <Button iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
         </a>
     {/if}
 {/if}

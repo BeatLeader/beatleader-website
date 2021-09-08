@@ -141,7 +141,7 @@ select {
     }
 
     .tablet-and-up {
-        display: none;
+        display: none!important;
     }
 }
 
@@ -157,7 +157,7 @@ select {
     }
 
     .desktop-and-up {
-        display: none;
+        display: none!important;
     }
 }
 

@@ -430,7 +430,7 @@
         font-size: .75em;
         text-align: right;
         margin-right: 0;
-        margin-bottom: .25em;
+        margin-bottom: .5em;
     }
 
     .icons:empty {

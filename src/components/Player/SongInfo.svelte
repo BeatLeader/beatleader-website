@@ -106,11 +106,24 @@
     }
 
     .icons {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
         font-size: .65em;
         min-width: 4.66em;
         width: 4.66em;
         margin-right: 0;
         align-self: flex-end;
+    }
+
+    .icons.wide :global(> *:not(:first-child)) {
+        margin-left: .25em;
+        margin-bottom: .25em;
+    }
+
+    .icons:not(.wide) :global(> *:not(:nth-child(2n + 1))) {
+        margin-left: .25em;
+        margin-bottom: .25em;
     }
 
     .icons.wide {
