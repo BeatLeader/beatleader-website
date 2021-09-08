@@ -49,6 +49,7 @@
       )
   }
 
+  $: isCached = !!(playerData && playerData.scoresLastUpdated)
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: name = playerData && playerData.name ? playerData.name : null;
@@ -77,13 +78,13 @@
       <PlayerStats {name} {playerInfo} {prevInfo} {skeleton}/>
 
       {#if scoresStats || ssBadges || skeleton}
-        <div class="columns">
-          <div class="column stats">
-            <ScoresStats stats={scoresStatsFinal} {skeleton}/>
+        <div class="stats" class:enhanced={isCached}>
+          <ScoresStats stats={scoresStatsFinal} {skeleton}/>
+          <div>
             {#if accStats}<ScoresStats stats={accStats}/>{/if}
             {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
-            <SsBadges badges={ssBadges}/>
           </div>
+          <SsBadges badges={ssBadges}/>
         </div>
       {/if}
     </div>
@@ -99,7 +100,15 @@
         min-height: 190px;
     }
 
-    @media (max-width: 768px) {
+    @media screen and (min-width: 1200px) {
+        .stats.enhanced {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-gap: 1em;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
         .column.avatar {
             margin-right: 0;
             min-width: calc(150px + 1.5rem);
