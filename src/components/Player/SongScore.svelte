@@ -285,7 +285,7 @@
 
     {#if showDetails}
       <div transition:slide>
-        <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle} beatSaviorOnly={'beatsavior' === type} noBeatSaviorHistory={true} />
+        <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle} beatSaviorOnly={'beatsavior' === type} noBeatSaviorHistory={type === 'beatsavior'} />
       </div>
     {/if}
   </div>
