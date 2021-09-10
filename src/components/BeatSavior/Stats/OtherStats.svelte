@@ -1,7 +1,7 @@
 <script>
   import ssrConfig from '../../../ssr-config'
   import {opt} from '../../../utils/js'
-  import {formatNumber} from '../../../utils/format'
+  import {formatNumber, padNumber} from '../../../utils/format'
   import {configStore} from '../../../stores/config'
   import Value from '../../Common/Value.svelte'
   import Badge from '../../Common/Badge.svelte'
@@ -10,6 +10,26 @@
   export let name = null;
   export let compareTo = null;
   export let compareToName = null;
+
+  function formatFailedAt(beatSavior) {
+    const endTime = opt(beatSavior, 'trackers.winTracker.endTime');
+    const won = opt(beatSavior, 'trackers.winTracker.won', false);
+    if (!endTime || won) return null;
+
+    let failedAt = null;
+    if (endTime) {
+      let minutes = padNumber(Math.floor(endTime / 60));
+      let seconds = padNumber(Math.round(endTime - minutes * 60));
+      if (seconds >= 60) {
+        minutes = padNumber(minutes + 1)
+        seconds = padNumber(0);
+      }
+
+      failedAt = `${minutes}:${seconds}`
+    }
+
+    return failedAt
+  }
 
   $: stats = beatSavior ? beatSavior.stats : null;
   $: fc = stats && !stats.miss && !stats.wallHit && !stats.bombHit;
@@ -31,6 +51,7 @@
   $: compareToRightBadCuts = opt(compareTo, 'trackers.hitTracker.rightBadCuts', null)
   $: compareToRightMissedNotes = opt(compareTo, 'trackers.hitTracker.rightMiss', null)
   $: compareToRightMiss = compareTo ? (compareToRightBadCuts || 0) + (compareToRightMissedNotes || 0) : null
+  $: failedAt = formatFailedAt(beatSavior)
 </script>
 
 {#if stats}
@@ -38,7 +59,7 @@
     {#if !stats.won}
       <Badge color="red" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
         <svelte:fragment slot="label">
-          FAIL
+          FAIL {#if failedAt} AT {failedAt}{/if}
         </svelte:fragment>
       </Badge>
     {/if}

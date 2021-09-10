@@ -8,11 +8,13 @@
   export let playerId;
   export let songScore;
   export let fixedBrowserTitle = null;
+  export let beatSaviorOnly = false;
+  export let noBeatSaviorHistory = false;
 
   const switcherOptions = [
     {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'},
-    {id: 'leaderboard', label: 'Leaderboard', iconFa: 'fas fa-cubes'},
   ];
+  if (!beatSaviorOnly) switcherOptions.push({id: 'leaderboard', label: 'Leaderboard', iconFa: 'fas fa-cubes'})
 
   let selectedOption = switcherOptions[0];
   let inBuiltLeaderboardPage = null;
@@ -68,7 +70,7 @@
 
     <div class="tab">
       {#if selectedOption && selectedOption.id === 'beatsavior'}
-        <BeatSaviorDetails {playerId} {beatSavior} {leaderboard}/>
+        <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} noHistory={noBeatSaviorHistory}/>
       {/if}
 
       {#if selectedOption && selectedOption.id === 'leaderboard'}

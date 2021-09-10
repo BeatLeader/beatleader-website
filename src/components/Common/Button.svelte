@@ -94,7 +94,8 @@
 
 <style>
     a.button {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
     }
 
     .button {

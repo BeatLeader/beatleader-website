@@ -15,6 +15,7 @@
   export let beatSavior;
   export let leaderboard;
   export let playerId;
+  export let noHistory = false;
 
   const playerService = createPlayerService();
 
@@ -124,8 +125,8 @@
 </script>
 
 {#if selectedRun}
-  <section class="beat-savior" class:with-history={allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1} transition:fade>
-    {#if allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1}
+  <section class="beat-savior" class:with-history={!noHistory && allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1} transition:fade>
+    {#if !noHistory && allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1}
       <nav>
         <header>
           <Switcher values={switcherOptions} value={selectedSwitcherOption} on:change={onSwitcherChanged}/>

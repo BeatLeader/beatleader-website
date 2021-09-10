@@ -1,5 +1,5 @@
 <script>
-  import {formatNumber} from '../../utils/format'
+  import {formatNumber, padNumber} from '../../utils/format'
   import {fade, fly, slide} from 'svelte/transition'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
@@ -19,8 +19,29 @@
   export let songScore = null;
   export let fixedBrowserTitle = null;
   export let idx = 0;
+  export let type = null;
 
   let showDetails = false;
+
+  function formatFailedAt(beatSavior) {
+    const endTime = opt(beatSavior, 'trackers.winTracker.endTime');
+    const won = opt(beatSavior, 'trackers.winTracker.won', false);
+    if (!endTime || won) return null;
+
+    let failedAt = null;
+    if (endTime) {
+      let minutes = padNumber(Math.floor(endTime / 60));
+      let seconds = padNumber(Math.round(endTime - minutes * 60));
+      if (seconds >= 60) {
+        minutes = padNumber(minutes + 1)
+        seconds = padNumber(0);
+      }
+
+      failedAt = `${minutes}:${seconds}`
+    }
+
+    return failedAt
+  }
 
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
@@ -30,6 +51,7 @@
   $: hash = opt(leaderboard, 'song.hash')
   $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
   $: diffInfo = opt(leaderboard, 'diffInfo')
+  $: failedAt = formatFailedAt(beatSavior)
 </script>
 
 {#if songScore}
@@ -41,25 +63,27 @@
         <Icons {hash} {twitchUrl} {diffInfo} />
       </div>
 
-    <div class="main">
+    <div class="main" class:beat-savior={type === 'beatsavior'}>
       <span class="rank">
-        <ScoreRank rank={score.rank}
-                   countryRank={score.ssplCountryRank}
-                   countryRankTotal={null}
-                   country={score.country}
-        />
+        {#if type !== 'beatsavior'}
+          <ScoreRank rank={score.rank}
+                     countryRank={score.ssplCountryRank}
+                     countryRankTotal={null}
+                     country={score.country}
+          />
+        {/if}
 
         <div class="timeset tablet-and-up">
-          <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null}/>
+          <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={type === 'beatsavior'}/>
         </div>
       </span>
 
       <span class="timeset mobile-only">
-        <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null}/>
+        <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={type === 'beatsavior'}/>
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl}/>
+        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={type === 'beatsavior'} />
       </span>
 
       <section class="stats">
@@ -83,6 +107,10 @@
                 </span>
               </Badge>
             </span>
+        {:else if type === 'beatsavior' && beatSavior && !opt(beatSavior, 'trackers.winTracker.won', false)}
+          <span class="pp with-badge">
+            <Badge onlyLabel={true} color="white" bgColor="var(--decrease)" label="FAIL" title={failedAt ? `Failed at ${failedAt}` : null} />
+          </span>
         {:else}
           <span class="pp with-badge"></span>
         {/if}
@@ -257,7 +285,7 @@
 
     {#if showDetails}
       <div transition:slide>
-        <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle} />
+        <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle} beatSaviorOnly={'beatsavior' === type} noBeatSaviorHistory={true} />
       </div>
     {/if}
   </div>
@@ -338,6 +366,10 @@
     .timeset {
         width: 8.5em;
         text-align: center;
+    }
+
+    .main.beat-savior .timeset {
+        width: auto;
     }
 
     .timeset :global(small) {

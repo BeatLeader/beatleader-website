@@ -35,7 +35,9 @@ export default () => {
     },
 
     async getCached({playerId, type = 'recent', page = 1} = {}) {
-      return scoresService.getPlayerScoresPage(playerId, type, page);
+      return 'beatsavior' === type
+        ? scoresService.getPlayerBeatSaviorScoresPage(playerId, page)
+        : scoresService.getPlayerScoresPage(playerId, type, page);
     },
 
     setPlayer(newPlayer) {

@@ -4,6 +4,7 @@
   import createScoresStore from '../../stores/http/http-scores-store.js';
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
+  import createBeatSaviorService from '../../services/beatsavior'
   import Pager from '../Common/Pager.svelte'
   import SongScore from './SongScore.svelte'
   import Error from '../Common/Error.svelte'
@@ -19,9 +20,11 @@
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
 
+  const beatSaviorService = createBeatSaviorService();
+
   let scoresStore = createScoresStore(
     playerId,
-    ['recent', 'top'].includes(initialType) ? initialType : 'recent',
+    ['recent', 'top', 'beatsavior'].includes(initialType) ? initialType : 'recent',
     !isNaN(parseInt(initialPage, 10)) ? parseInt(initialPage, 10) : 1,
     initialState,
     initialStateType
@@ -29,15 +32,20 @@
 
   let scoresBoxEl = null;
 
-  let scoresTypes = [
+  let pagerTotalScores = numOfScores;
+
+  const allScoresTypes = [
     {id: 'recent', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/recent/1`},
     {id: 'top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/top/1`},
+    {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/1`},
   ];
+
+  let scoresTypes = allScoresTypes;
 
   function changeParams(newPlayerId, newType, newPage, newInitialState, newInitialStateType) {
     if (!newPlayerId) return null;
 
-    newType = ['recent', 'top'].includes(newType) ? newType : 'recent'
+    newType = scoresTypes.map(st => st.id).includes(newType) ? newType : 'recent'
     newPage = parseInt(newPage, 10);
     if (!Number.isFinite(newPage)) newPage = 1;
 
@@ -62,17 +70,36 @@
     if (scoresBoxEl) scrollToTargetAdjusted(scoresBoxEl, 44)
   }
 
-  $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
+  function updateTotalScores(numOfScores) {
+    pagerTotalScores = numOfScores
+  }
 
+  async function updateAvailableScoresTypes(playerId) {
+    if (!playerId) return;
+
+    if (await beatSaviorService.isDataForPlayerAvailable(playerId)) {
+      scoresTypes = allScoresTypes;
+    } else {
+      scoresTypes = allScoresTypes.filter(st => st.id !== 'beatsavior');
+    }
+  }
+
+  // TODO: refresh when beat savior data is fetched for the first time
+  // $: updateAvailableScoresTypes(playerId)
+
+  $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
   $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
   $: type = $scoresStore && scoresStore && scoresStore.getType ? scoresStore.getType() : null;
+  $: totalScores = $scoresStore && scoresStore && scoresStore.getTotalScores ? scoresStore.getTotalScores() : null;
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
   $: scoreType = scoresTypes.find(st => st.id === type);
+
   $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === opt($pending, 'type')) : null
 
   $: scoresStore && scoresStore.fetch(page, type)
+  $: updateTotalScores(totalScores !== null && totalScores !== undefined ? totalScores : numOfScores)
 </script>
 
 <div class="box has-shadow" bind:this={scoresBoxEl}>
@@ -82,20 +109,20 @@
 
   <Switcher values={scoresTypes} value={scoreType} on:change={onScoreTypeChanged} loadingValue={loadingScoreType} />
 
-  {#if $scoresStore}
+  {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} {type} />
     {/each}
   </div>
   {:else}
     <p>No scores.</p>
   {/if}
 
-  {#if Number.isFinite(page)}
-    <Pager totalItems={numOfScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
+  {#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
+    <Pager totalItems={pagerTotalScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
            currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-           mode={numOfScores ? 'pages' : 'simple'}
+           mode={pagerTotalScores ? 'pages' : 'simple'}
            on:page-changed={onPageChanged}
     />
   {/if}

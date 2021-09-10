@@ -10,6 +10,7 @@
   export let rank = null;
   export let hash = null;
   export let twitchUrl = null
+  export let notClickable = false;
 
   let ssCoverDoesNotExists = false;
   let beatSaverCoverDoesNotExists = false;
@@ -23,8 +24,7 @@
 {#if song}
   <section>
   <div class="cover-difficulty">
-    <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
-       on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+    {#if notClickable}
       {#if ssCoverDoesNotExists}
         {#if beatSaverCoverDoesNotExists || !beatSaverCoverUrl}
           <img src="/assets/song-default.png" alt=""/>
@@ -34,7 +34,20 @@
       {:else}
         <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => ssCoverDoesNotExists = true}/>
       {/if}
-    </a>
+    {:else}
+      <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
+         on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+        {#if ssCoverDoesNotExists}
+          {#if beatSaverCoverDoesNotExists || !beatSaverCoverUrl}
+            <img src="/assets/song-default.png" alt=""/>
+          {:else}
+            <img src={beatSaverCoverUrl} alt="" on:error={() => beatSaverCoverDoesNotExists = true}/>
+          {/if}
+        {:else}
+          <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => ssCoverDoesNotExists = true}/>
+        {/if}
+      </a>
+    {/if}
 
     <div class="difficulty">
       <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true} stars={leaderboard.stars}/>
@@ -42,11 +55,16 @@
   </div>
 
   <div class="songinfo">
-    <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
-       on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+    {#if notClickable}
       <span class="name">{song.name} {song.subName}</span>
       <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
-    </a>
+    {:else}
+      <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
+         on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+        <span class="name">{song.name} {song.subName}</span>
+        <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+      </a>
+    {/if}
   </div>
 
   {#if hash && hash.length}

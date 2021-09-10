@@ -17,16 +17,33 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
   let currentType = type;
   let currentPage = page ? page : 1;
 
+  let totalScores = null;
+
   const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentPage}/${currentType}`;
   const getPatchId = (playerId, scoreRow) => `${playerId}/${opt(scoreRow, 'leaderboard.leaderboardId')}`
 
   let enhancePatches = {};
   let currentEnhanceTaskId = null;
 
+  const onBeforeStateChange = (state) => {
+    if (state && state.scores) {
+      totalScores = opt(state, 'total', null);
+      return state.scores;
+    }
+
+    totalScores = null;
+
+    return state;
+  }
   const onNewData = ({fetchParams, state, stateType, set}) => {
     currentPage = opt(fetchParams, 'page', 1);
     currentType = opt(fetchParams, 'type', null);
     currentPlayerId = opt(fetchParams, 'playerId', null);
+
+    if (state && state.scores) {
+      state = onBeforeStateChange(state);
+      set(state);
+    }
 
     if (!state || !Array.isArray(state)) return;
 
@@ -95,6 +112,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     initialState,
     {
       onInitialized: onNewData,
+      onBeforeStateChange,
       onAfterStateChange: onNewData,
       onSetPending: ({fetchParams}) => ({...fetchParams}),
     },
@@ -122,6 +140,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     getPlayerId: () => currentPlayerId,
     getPage: () => currentPage,
     getType: () => currentType,
+    getTotalScores: () => totalScores,
   }
 }
 

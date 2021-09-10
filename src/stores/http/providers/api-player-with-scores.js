@@ -31,7 +31,9 @@ export default () => {
     getCached: async ({playerId, scoresType = 'recent', scoresPage = 1} = {}) => {
       const [player, scores] = await Promise.all([
         playerService.get(playerId),
-        scoresService.getPlayerScoresPage(playerId, scoresType, scoresPage)
+        'beatsavior' === scoresType
+          ? scoresService.getPlayerBeatSaviorScoresPage(playerId, scoresPage)
+          : scoresService.getPlayerScoresPage(playerId, scoresType, scoresPage)
       ]);
 
       if (!player || !scores) return null;

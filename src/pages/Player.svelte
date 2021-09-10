@@ -14,20 +14,22 @@
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
 
+  const SCORES_TYPES = ['recent', 'top', 'beatsavior']
+
   document.body.classList.remove('slim');
 
   let playerEl = null;
 
   let playerStore = createPlayerInfoWithScoresStore(
     initialPlayerId,
-    ['recent', 'top'].includes(initialScoresType) ? initialScoresType : 'recent',
+    SCORES_TYPES.includes(initialScoresType) ? initialScoresType : 'recent',
     !isNaN(parseInt(initialScoresPage, 10)) ? parseInt(initialScoresPage, 10) : 1
   );
 
   async function changeParams(newPlayerId, newType, newPage) {
     if (!newPlayerId) return;
 
-    newType = ['recent', 'top'].includes(newType) ? newType : 'recent'
+    newType = SCORES_TYPES.includes(newType) ? newType : 'recent'
     newPage = parseInt(newPage, 10);
     if (!Number.isFinite(newPage)) newPage = 1;
 
@@ -52,7 +54,7 @@
     let newType = opt(event, 'detail', currentType);
     if (!newType) return;
 
-    newType = ['recent', 'top'].includes(newType) ? newType : 'recent';
+    newType = SCORES_TYPES.includes(newType) ? newType : 'recent';
 
     navigate(`/u/${currentPlayerId}/${newType}/1`);
   }

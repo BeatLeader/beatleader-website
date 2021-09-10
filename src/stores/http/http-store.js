@@ -56,8 +56,8 @@ export default (
         provider.getCached(finalParams)
           .then(cachedState => {
             if (cachedState && beforeState === state) {
-              stateType = 'cached';
-              set(cachedState);
+              state = cachedState;
+              set(onBeforeStateChange ? onBeforeStateChange(cachedState, stateType) : cachedState);
             }
           })
       }
@@ -68,8 +68,8 @@ export default (
 
       pendingAbortController = abortController;
 
-      state = await provider.getProcessed({...finalParams, signal: abortController.signal, force});
       stateType = 'live';
+      state = await provider.getProcessed({...finalParams, signal: abortController.signal, force});
 
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);

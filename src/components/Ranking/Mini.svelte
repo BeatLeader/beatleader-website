@@ -30,6 +30,7 @@
       isLoading = true;
 
       const ranking = await rankingService.getMiniRanking(rank, country, numOfPlayers);
+      if (!ranking) return;
 
       comparePp = opt(ranking.find(p => opt(p, 'playerInfo.rank') === rank), 'playerInfo.pp')
       miniRanking = ranking

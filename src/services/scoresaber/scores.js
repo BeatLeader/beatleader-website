@@ -8,6 +8,7 @@ import recentScoresApiClient from '../../network/clients/scoresaber/scores/api-r
 import topScoresApiClient from '../../network/clients/scoresaber/scores/api-top'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
+import beatSaviorRepository from '../../db/repository/beat-savior';
 import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
 import log from '../../utils/logger'
 import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
@@ -403,6 +404,7 @@ export default () => {
 
     return playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE);
   }
+
   const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) =>
     (type === 'top' ? topScoresApiClient : recentScoresApiClient)
       .getProcessed({...options, playerId, page, priority});
@@ -460,8 +462,62 @@ export default () => {
     return fetchedScores;
   }
 
+  const getPlayerBeatSaviorScoresPage = async (playerId, page = 1) => {
+    if (page < 1) page = 1;
+
+    const playerScores = await beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId);
+
+    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
+
+    playerScores.sort((a,b) => b.timeSet - a.timeSet);
+
+    const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
+
+    if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
+
+    return {
+      total: playerScores.length,
+      scores: playerScores
+        .slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
+        .map(bs => {
+          const leaderboard = bs.leaderboard;
+          if (!leaderboard.leaderboardId) leaderboard.leaderboardId = bs.beatSaviorId;
+
+          const rawScore = opt(bs, 'trackers.scoreTracker.rawScore', 0);
+          const rawRatio = opt(bs, 'trackers.scoreTracker.rawRatio', 0);
+          const maxScore = rawRatio & rawScore ? rawScore / rawRatio : 0;
+
+          return {
+            beatSavior: bs,
+            id: bs.beatSaviorId,
+            leaderboard,
+            leaderboardId: leaderboard.leaderboardId,
+            playerId: bs.playerId,
+            pp: 0,
+            score: {
+              acc: rawRatio * 100,
+              maxScore,
+              mods: opt(bs, 'trackers.scoreTracker.modifiers', null),
+              percentage: opt(bs, 'trackers.scoreTracker.rawRatio', 0) * 100,
+              pp: 0,
+              ppWeighted: 0,
+              rank: null,
+              score: opt(bs, 'trackers.scoreTracker.score', 0),
+              scoreId: bs.beatSaviorId,
+              timeSet: bs.timeSet,
+              unmodifiedScore: rawScore,
+              weight: 0,
+            },
+            timeSet: bs.timeSet,
+          }
+        })
+    };
+  }
+
   const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (!player || !player.playerId) return null;
+
+    if ('beatsavior' === type) return getPlayerBeatSaviorScoresPage(player.playerId, page)
 
     const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')
 
@@ -598,6 +654,7 @@ export default () => {
     getPlayerScores,
     getPlayerScoresAsObject,
     getPlayerScoresPage,
+    getPlayerBeatSaviorScoresPage,
     getPlayerSongScore,
     getPlayerRankedScores,
     update: updateScore,

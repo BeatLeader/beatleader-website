@@ -157,6 +157,10 @@ export default () => {
     return bsData ? bsData : null;
   }
 
+  const getAllPlayerScores = async playerId => beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId);
+
+  const isDataForPlayerAvailable = async playerId => await beatSaviorRepository().getFromIndex('beat-savior-playerId', playerId) !== undefined;
+
   const destroyService = () => {
     serviceCreationCount--;
 
@@ -173,6 +177,8 @@ export default () => {
     refresh,
     refreshAll,
     get,
+    getAllPlayerScores,
+    isDataForPlayerAvailable,
     destroyService,
   }
 
