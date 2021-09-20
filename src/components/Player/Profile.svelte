@@ -1,20 +1,22 @@
 <script>
-  import {onMount, tick} from 'svelte'
+  import {onMount, tick, getContext} from 'svelte'
   import processPlayerData from './utils/profile';
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
-  import { Swipe, SwipeItem } from "svelte-swipe";
-  import Error from '../Common/Error.svelte'
+  import {Swipe, SwipeItem} from "svelte-swipe";
+  import {opt} from '../../utils/js'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
-  import SsBadges from './SsBadges.svelte'
-  import ScoresStats from './ScoresStats.svelte'
   import Icons from './Icons.svelte'
+  import ScoreSaberStats from './ProfileCards/ScoreSaberStats.svelte'
+  import MiniRanking from './ProfileCards/MiniRanking.svelte'
 
   export let playerData;
   export let isLoading = false;
   export let error = null;
   export let skeleton = false;
+
+  const pageContainer = getContext('pageContainer');
 
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => playerStats = stats)
@@ -24,13 +26,6 @@
   let swipeComponent = null;
   let swipeHolderHeight = 0;
   let activeSwipeItem = null;
-  const swipeConfig = {
-    autoplay: false,
-    delay: 5000,
-    showIndicators: true,
-    transitionDuration: 300,
-    defaultIndex: 0,
-  };
 
   function onHeightChanged({detail}) {
     swipeHolderHeight = detail.height + 32;
@@ -67,6 +62,7 @@
   }
 
   let shouldRefreshHeight = true;
+
   async function forceRefreshHeight(noResizeEvent = false) {
     if (swipeComponent) swipeComponent.goTo(0);
 
@@ -97,6 +93,28 @@
   $: calcOnePpBoundary(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
 
+  $: swipeCards = [
+    {
+      component: ScoreSaberStats,
+      props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
+    },
+  ].concat(
+    $pageContainer.name !== 'xxl'
+    ? [{
+      component: MiniRanking,
+      props: {playerInfo: opt(playerData, 'playerInfo')},
+    }]
+    : []
+  )
+
+  $: swipeConfig = {
+    autoplay: false,
+    delay: 5000,
+    showIndicators: swipeCards.length > 1,
+    transitionDuration: 300,
+    defaultIndex: 0,
+  }
+
 </script>
 
 <div class="box has-shadow" class:loading={isLoading}>
@@ -110,61 +128,21 @@
     </div>
 
     <div class="column">
-      <PlayerStats {name} {playerInfo} {prevInfo} {skeleton}/>
+      <PlayerStats {name} {playerInfo} {prevInfo} {skeleton} {error}/>
 
       <div class="swipe-container"  style="height:{swipeHolderHeight}px">
+        {#key swipeCards ? swipeCards.length : 0}
         <Swipe bind:this={swipeComponent} bind:active_item={activeSwipeItem} {...swipeConfig}>
-          <SwipeItem
-            active={activeSwipeItem === 0 && shouldRefreshHeight}
-            allow_dynamic_height={true}
-            on:swipe_item_height_change={onHeightChanged}>
-            <div>
-              {#if error}
-                <div>
-                  <Error {error}/>
-                </div>
-              {/if}
-
-              {#if scoresStats || ssBadges || skeleton}
-                <div class="stats" class:enhanced={isCached}>
-                  <ScoresStats stats={scoresStatsFinal} {skeleton}/>
-                  <div>
-                    {#if accStats}<ScoresStats stats={accStats}/>{/if}
-                    {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
-                  </div>
-                  <SsBadges badges={ssBadges}/>
-                </div>
-              {/if}
-            </div>
-          </SwipeItem>
-
-          <SwipeItem
-            active={activeSwipeItem === 1}
-            allow_dynamic_height={true}
-            on:swipe_item_height_change={onHeightChanged}>
-            <div>
-              SECOND
-            </div>
-          </SwipeItem>
-
-          <SwipeItem
-            active={activeSwipeItem === 2}
-            allow_dynamic_height={true}
-            on:swipe_item_height_change={onHeightChanged}>
-            <div>
-              THIRD
-            </div>
-          </SwipeItem>
-
-          <SwipeItem
-            active={activeSwipeItem === 3}
-            allow_dynamic_height={true}
-            on:swipe_item_height_change={onHeightChanged}>
-            <div>
-              FOURTH
-            </div>
-          </SwipeItem>
+          {#each swipeCards as card, cardIdx}
+            <SwipeItem
+              active={activeSwipeItem === cardIdx && (cardIdx !== 0 || shouldRefreshHeight)}
+              allow_dynamic_height={true}
+              on:swipe_item_height_change={onHeightChanged}>
+              <svelte:component this={card.component} {...card.props} />
+            </SwipeItem>
+          {/each}
         </Swipe>
+        {/key}
       </div>
     </div>
   </div>
@@ -183,30 +161,12 @@
         min-height: 120px;
     }
 
-    @media screen and (min-width: 1200px) {
-        .stats.enhanced {
-            display: grid;
-            grid-template-columns: auto auto;
-            grid-gap: 1em;
-        }
-    }
-
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 767px) {
         .column.avatar {
             margin-right: 0;
             min-width: calc(150px + 1.5rem);
             padding-bottom: 0;
             min-height: 150px;
-        }
-    }
-
-    @media (max-width: 599px) {
-        .stats {
-            text-align: center;
-        }
-
-        .stats :global(.badges) {
-            display: contents;
         }
     }
 </style>

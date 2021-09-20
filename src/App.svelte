@@ -1,6 +1,8 @@
 <script>
+  import {setContext} from 'svelte'
   import {Router, Route} from "svelte-routing";
   import buildInfo from '../build-info';
+  import createContainerStore from './stores/container';
   import HomePage from './pages/Home.svelte';
   import SearchPage from './pages/Search.svelte';
   import RankingPage from './pages/Ranking.svelte';
@@ -12,12 +14,20 @@
   import Nav from './components/Nav.svelte';
 
   export let url = "";
+
+  let mainEl = null;
+
+  const containerStore = createContainerStore();
+
+  setContext('pageContainer', containerStore);
+
+  $: if (mainEl) containerStore.observe(mainEl)
 </script>
 
 <Router {url}>
   <Nav />
 
-  <main>
+  <main bind:this={mainEl}>
     <div class="ssr-page-container">
       <Route path="/u/:initialPlayerId/*initialScoresType" let:params>
         <PlayerPage initialPlayerId={params.initialPlayerId}

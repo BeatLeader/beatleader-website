@@ -58,7 +58,7 @@
     $: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : "${value}", {value: prevFormatted})
 </script>
 
-<span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue} <small class={prevClass} title={prevTitleFormatted}><slot name="prev" value={prevValue} formatted={prevFormatted} diff={prevDiff} diffFormatted={prevDiffFormatted}>{prevDiffFormatted}</slot></small>{/if}
+<span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue} <small class={`has-pointer-events ${prevClass}`} title={prevTitleFormatted}><slot name="prev" value={prevValue} formatted={prevFormatted} diff={prevDiff} diffFormatted={prevDiffFormatted}>{prevDiffFormatted}</slot></small>{/if}
 
 <style>
     small.block {display: block;}

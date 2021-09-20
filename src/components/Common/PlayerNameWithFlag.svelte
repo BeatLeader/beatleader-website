@@ -12,7 +12,7 @@
   $: playerId = opt(player, 'playerId')
 </script>
 
-<a href={`/u/${playerId}/recent/1`} class="player-name clickable" title={name} on:click|preventDefault>
+<a href={`/u/${playerId}/recent/1`} class="player-name clickable has-pointer-events" title={name} on:click|preventDefault>
   <Flag {country} on:flag-click />
   <span>{name}</span>
 </a>

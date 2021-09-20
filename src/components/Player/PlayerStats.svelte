@@ -7,12 +7,14 @@
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
   import Skeleton from '../Common/Skeleton.svelte'
+  import Error from '../Common/Error.svelte'
 
   export let name;
   export let playerInfo;
   export let prevInfo;
   export let skeleton = false;
   export let centered = false;
+  export let error = null;
 
   function getCountryRankingUrl(countryObj) {
     const rank = opt(countryObj, 'rankValue', opt(countryObj, 'rank', null));
@@ -93,6 +95,16 @@
       </a>
     {/each}
   </h2>
+
+  {#if error}
+    <div>
+      <Error {error}/>
+    </div>
+  {/if}
+{:else if error}
+  <div>
+    <Error {error}/>
+  </div>
 {/if}
 
 <style>
