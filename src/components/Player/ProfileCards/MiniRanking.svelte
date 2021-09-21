@@ -35,7 +35,7 @@
         padding-right: 0!important;
     }
 
-    @media (max-width: 599px) {
+    @media (max-width: 1023px) {
         .mini-ranking {
             grid-template-columns: 1fr;
         }

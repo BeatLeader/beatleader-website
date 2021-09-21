@@ -39,7 +39,7 @@
     }
 
     h3 i {
-        margin-right: .5em;
+        margin-right: .25em;
         padding: .25em;
         color: white;
         background-color: #9146ff;

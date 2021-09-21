@@ -1,9 +1,8 @@
 <script>
-  import {onMount, tick, getContext} from 'svelte'
+  import {getContext} from 'svelte'
   import processPlayerData from './utils/profile';
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
-  import {Swipe, SwipeItem} from "svelte-swipe";
   import {opt} from '../../utils/js'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
@@ -11,6 +10,7 @@
   import ScoreSaberStats from './ProfileCards/ScoreSaberStats.svelte'
   import MiniRanking from './ProfileCards/MiniRanking.svelte'
   import TwitchVideos from './ProfileCards/TwitchVideos.svelte'
+  import Carousel from '../Common/Carousel.svelte'
 
   export let playerData;
   export let isLoading = false;
@@ -24,14 +24,6 @@
   eventBus.on('player-stats-calculated', stats => playerStats = stats)
 
   let onePpBoundery = null;
-
-  let swipeComponent = null;
-  let swipeHolderHeight = 0;
-  let activeSwipeItem = null;
-
-  function onHeightChanged({detail}) {
-    swipeHolderHeight = detail.height + 32;
-  }
 
   function clearPlayerStatsOnChange() {
     playerStats = null;
@@ -63,35 +55,11 @@
       )
   }
 
-  let shouldRefreshHeight = true;
-
-  async function forceRefreshHeight(noResizeEvent = false) {
-    if (swipeComponent) swipeComponent.goTo(0);
-
-    shouldRefreshHeight = false;
-    await tick();
-    shouldRefreshHeight = true;
-
-    // swipe component bug workaround on small screens
-    if (!noResizeEvent) window.dispatchEvent(new Event('resize'));
-  }
-
-  onMount(() => {
-    const callForceRefreshHeight = () => forceRefreshHeight(true);
-
-    window.addEventListener('resize', callForceRefreshHeight);
-
-    return () => {
-      window.removeEventListener('resize', callForceRefreshHeight)
-    }
-  })
-
   $: isCached = !!(playerData && playerData.scoresLastUpdated)
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
-  $: (scoresStats, accStats, accBadges, ssBadges, forceRefreshHeight(), setTimeout(() => forceRefreshHeight(), 600))
   $: calcOnePpBoundary(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
 
@@ -99,6 +67,7 @@
     {
       component: ScoreSaberStats,
       props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
+      delay: 500,
     },
   ]
     .concat(
@@ -115,17 +84,8 @@
           component: TwitchVideos,
           props: {videos: twitchVideos},
         }]
-        : []
+        : [],
     )
-
-  $: swipeConfig = {
-    autoplay: false,
-    delay: 5000,
-    showIndicators: swipeCards.length > 1,
-    transitionDuration: 300,
-    defaultIndex: 0,
-  }
-
 </script>
 
 <div class="box has-shadow" class:loading={isLoading}>
@@ -141,20 +101,7 @@
     <div class="column">
       <PlayerStats {name} {playerInfo} {prevInfo} {skeleton} {error}/>
 
-      <div class="swipe-container"  style="height:{swipeHolderHeight}px">
-        {#key swipeCards ? playerId + swipeCards.length : 0}
-        <Swipe bind:this={swipeComponent} bind:active_item={activeSwipeItem} {...swipeConfig}>
-          {#each swipeCards as card, cardIdx (card.component)}
-            <SwipeItem
-              active={activeSwipeItem === cardIdx && (cardIdx !== 0 || shouldRefreshHeight)}
-              allow_dynamic_height={true}
-              on:swipe_item_height_change={onHeightChanged}>
-              <svelte:component this={card.component} {...card.props} />
-            </SwipeItem>
-          {/each}
-        </Swipe>
-        {/key}
-      </div>
+      <Carousel cards={swipeCards} />
     </div>
   </div>
 </div>
@@ -166,10 +113,6 @@
         margin-right: 1rem;
         min-width: 150px;
         min-height: 190px;
-    }
-
-    .swipe-container {
-        min-height: 120px;
     }
 
     @media screen and (max-width: 767px) {
