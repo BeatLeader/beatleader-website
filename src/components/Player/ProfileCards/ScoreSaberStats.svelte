@@ -1,0 +1,42 @@
+<script>
+  import ScoresStats from '../ScoresStats.svelte'
+  import SsBadges from '../SsBadges.svelte'
+
+  export let scoresStats = null;
+  export let accStats = null;
+  export let accBadges = null;
+  export let ssBadges = null;
+  export let skeleton = false;
+  export let isCached = false;
+</script>
+
+{#if scoresStats || ssBadges || skeleton}
+  <div class="stats" class:enhanced={isCached}>
+    <ScoresStats stats={scoresStats} {skeleton}/>
+    <div>
+      {#if accStats}<ScoresStats stats={accStats}/>{/if}
+      {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
+    </div>
+    <SsBadges badges={ssBadges}/>
+  </div>
+{/if}
+
+<style>
+    @media screen and (min-width: 1200px) {
+        .stats.enhanced {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-gap: 1em;
+        }
+    }
+
+    @media (max-width: 599px) {
+        .stats {
+            text-align: center;
+        }
+
+        .stats :global(.badges) {
+            display: contents;
+        }
+    }
+</style>

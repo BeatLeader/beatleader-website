@@ -1,7 +1,9 @@
 <script>
+  import {onMount} from 'svelte'
   import {navigate} from 'svelte-routing'
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
+  import createTwitchService from '../services/twitch'
   import {opt} from '../utils/js'
   import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
@@ -9,6 +11,8 @@
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
   import MiniRanking from '../components/Ranking/Mini.svelte'
+  import eventBus from '../utils/broadcast-channel-pubsub'
+  import TwitchVideos from '../components/Player/TwitchVideos.svelte'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
@@ -25,6 +29,9 @@
     SCORES_TYPES.includes(initialScoresType) ? initialScoresType : 'recent',
     !isNaN(parseInt(initialScoresPage, 10)) ? parseInt(initialScoresPage, 10) : 1
   );
+
+  const twitchService = createTwitchService();
+  let twitchVideos = [];
 
   async function changeParams(newPlayerId, newType, newPage) {
     if (!newPlayerId) return;
@@ -63,6 +70,25 @@
     if (playerEl) scrollToTargetAdjusted(playerEl, 55)
   }
 
+  async function updateTwitchProfile(playerId) {
+    if (!playerId) return;
+
+    const twitchProfile = await twitchService.refresh(playerId);
+    twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
+  }
+
+  onMount(async () => {
+    const twitchUnsubscribe = eventBus.on('player-twitch-videos-updated', ({playerId: twitchPlayerId, twitchProfile}) => {
+      if (twitchPlayerId !== currentPlayerId) return;
+
+      twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
+    })
+
+    return () => {
+      twitchUnsubscribe();
+    }
+  })
+
   $: changeParams(initialPlayerId, initialScoresType, initialScoresPage)
 
   $: paramsStore = playerStore ? playerStore.params : null;
@@ -75,6 +101,8 @@
   $: playerError = playerStore ? playerStore.error : null;
   $: skeleton = !$playerStore && $playerIsLoading;
   $: browserTitle = `${opt($playerStore, 'name', 'Player')} / ${currentType} / ${currentPage} - ${ssrConfig.name}`
+
+  $: updateTwitchProfile(currentPlayerId);
 
   let scoresPlayerId = null;
   let scoresState = null;
@@ -101,7 +129,7 @@
       <p class="error">Player not found.</p>
     </div>
   {:else}
-    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} />
+    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos} />
 
     {#if scoresPlayerId}
       <Scores playerId={scoresPlayerId}
@@ -127,6 +155,12 @@
       <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} />
     </div>
   {/each}
+
+  {#if twitchVideos && twitchVideos.length}
+    <div class="box has-shadow">
+      <TwitchVideos videos={twitchVideos} />
+    </div>
+  {/if}
 </aside>
 </section>
 
@@ -135,6 +169,7 @@
       display: flex;
       justify-content: flex-start;
       align-items: flex-start;
+      overflow-x: hidden;
   }
 
   article {

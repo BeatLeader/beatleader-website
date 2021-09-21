@@ -1,18 +1,24 @@
 <script>
+  import {getContext} from 'svelte'
   import processPlayerData from './utils/profile';
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
-  import Error from '../Common/Error.svelte'
+  import {opt} from '../../utils/js'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
-  import SsBadges from './SsBadges.svelte'
-  import ScoresStats from './ScoresStats.svelte'
   import Icons from './Icons.svelte'
+  import ScoreSaberStats from './ProfileCards/ScoreSaberStats.svelte'
+  import MiniRanking from './ProfileCards/MiniRanking.svelte'
+  import TwitchVideos from './ProfileCards/TwitchVideos.svelte'
+  import Carousel from '../Common/Carousel.svelte'
 
   export let playerData;
   export let isLoading = false;
   export let error = null;
   export let skeleton = false;
+  export let twitchVideos = null;
+
+  const pageContainer = getContext('pageContainer');
 
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => playerStats = stats)
@@ -56,6 +62,30 @@
   $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
   $: calcOnePpBoundary(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
+
+  $: swipeCards = [
+    {
+      component: ScoreSaberStats,
+      props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
+      delay: 500,
+    },
+  ]
+    .concat(
+      $pageContainer.name !== 'xxl'
+        ? [{
+          component: MiniRanking,
+          props: {playerInfo: opt(playerData, 'playerInfo')},
+        }]
+        : [],
+    )
+    .concat(
+      $pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
+        ? [{
+          component: TwitchVideos,
+          props: {videos: twitchVideos},
+        }]
+        : [],
+    )
 </script>
 
 <div class="box has-shadow" class:loading={isLoading}>
@@ -69,24 +99,9 @@
     </div>
 
     <div class="column">
-      {#if error}
-        <div>
-          <Error {error}/>
-        </div>
-      {/if}
+      <PlayerStats {name} {playerInfo} {prevInfo} {skeleton} {error}/>
 
-      <PlayerStats {name} {playerInfo} {prevInfo} {skeleton}/>
-
-      {#if scoresStats || ssBadges || skeleton}
-        <div class="stats" class:enhanced={isCached}>
-          <ScoresStats stats={scoresStatsFinal} {skeleton}/>
-          <div>
-            {#if accStats}<ScoresStats stats={accStats}/>{/if}
-            {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
-          </div>
-          <SsBadges badges={ssBadges}/>
-        </div>
-      {/if}
+      <Carousel cards={swipeCards} />
     </div>
   </div>
 </div>
@@ -100,30 +115,12 @@
         min-height: 190px;
     }
 
-    @media screen and (min-width: 1200px) {
-        .stats.enhanced {
-            display: grid;
-            grid-template-columns: auto auto;
-            grid-gap: 1em;
-        }
-    }
-
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 767px) {
         .column.avatar {
             margin-right: 0;
             min-width: calc(150px + 1.5rem);
             padding-bottom: 0;
             min-height: 150px;
-        }
-    }
-
-    @media (max-width: 599px) {
-        .stats {
-            text-align: center;
-        }
-
-        .stats :global(.badges) {
-            display: contents;
         }
     }
 </style>

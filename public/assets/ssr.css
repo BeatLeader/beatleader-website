@@ -135,6 +135,10 @@ select {
     grid-row: 12/12;
 }
 
+.has-pointer-events {
+    pointer-events: fill;
+}
+
 @media screen and (max-width: 767px) {
     .mobile-only {
         display: block;

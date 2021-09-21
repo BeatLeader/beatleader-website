@@ -124,4 +124,8 @@
         padding: 0!important;
         min-width: auto;
     }
+
+    .badge[title]:not([title=""]) {
+        pointer-events: fill;
+    }
 </style>
