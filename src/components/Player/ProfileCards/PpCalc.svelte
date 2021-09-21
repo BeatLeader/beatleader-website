@@ -1,10 +1,10 @@
 <script>
+  import {onMount} from 'svelte'
   import {debounce} from '../../../utils/debounce'
+  import {formatNumber} from '../../../utils/format'
   import createRankedService from '../../../services/scoresaber/rankeds'
   import createPpService from '../../../services/scoresaber/pp'
   import Badge from '../../Common/Badge.svelte'
-  import {onMount} from 'svelte'
-  import {formatNumber} from '../../../utils/format'
   import Value from '../../Common/Value.svelte'
 
   export let playerId = null;
@@ -70,16 +70,22 @@
   const debouncedPpCalc = debounce((playerId, ppValue) => calcOnePpBoundary(playerId, ppValue), DEBOUNCE_THRESHOLD);
   const onStarsPercentChange = debounce(() => calcPpFromStars(stars, accuracy), DEBOUNCE_THRESHOLD)
 
-  onMount(async () => {
-    rankeds = await rankedService.get();
-    maxStars = Math.ceil(Object.values(rankeds).reduce((max, r) => r.stars > max ? r.stars : max, 0) + 1);
+  async function resetCalc(playerId) {
+    if (!playerId || !maxStars) return;
+
+    ppValue = 1;
+    accuracy = ACC_THRESHOLDS[0];
 
     const whatIf = (await ppService.getWhatIfScore(playerId, -1, ppService.PP_PER_STAR * maxStars * ppService.ppFactorFromAcc(100)));
     if (whatIf) maxPp = whatIf.diff;
+  }
 
-    await calcOnePpBoundary(playerId, ppValue)
+  onMount(async () => {
+    rankeds = await rankedService.get();
+    maxStars = Math.ceil(Object.values(rankeds).reduce((max, r) => r.stars > max ? r.stars : max, 0) + 1);
   })
 
+  $: resetCalc(playerId)
   $: debouncedPpCalc(playerId, ppValue);
   $: calcStarsAndAccFromRawPp(rawPp);
 </script>
