@@ -10,11 +10,13 @@
   import Icons from './Icons.svelte'
   import ScoreSaberStats from './ProfileCards/ScoreSaberStats.svelte'
   import MiniRanking from './ProfileCards/MiniRanking.svelte'
+  import TwitchVideos from './ProfileCards/TwitchVideos.svelte'
 
   export let playerData;
   export let isLoading = false;
   export let error = null;
   export let skeleton = false;
+  export let twitchVideos = null;
 
   const pageContainer = getContext('pageContainer');
 
@@ -98,14 +100,23 @@
       component: ScoreSaberStats,
       props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
     },
-  ].concat(
-    $pageContainer.name !== 'xxl'
-    ? [{
-      component: MiniRanking,
-      props: {playerInfo: opt(playerData, 'playerInfo')},
-    }]
-    : []
-  )
+  ]
+    .concat(
+      $pageContainer.name !== 'xxl'
+        ? [{
+          component: MiniRanking,
+          props: {playerInfo: opt(playerData, 'playerInfo')},
+        }]
+        : [],
+    )
+    .concat(
+      $pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
+        ? [{
+          component: TwitchVideos,
+          props: {videos: twitchVideos},
+        }]
+        : []
+    )
 
   $: swipeConfig = {
     autoplay: false,
@@ -131,9 +142,9 @@
       <PlayerStats {name} {playerInfo} {prevInfo} {skeleton} {error}/>
 
       <div class="swipe-container"  style="height:{swipeHolderHeight}px">
-        {#key swipeCards ? swipeCards.length : 0}
+        {#key swipeCards ? playerId + swipeCards.length : 0}
         <Swipe bind:this={swipeComponent} bind:active_item={activeSwipeItem} {...swipeConfig}>
-          {#each swipeCards as card, cardIdx}
+          {#each swipeCards as card, cardIdx (card.component)}
             <SwipeItem
               active={activeSwipeItem === cardIdx && (cardIdx !== 0 || shouldRefreshHeight)}
               allow_dynamic_height={true}
