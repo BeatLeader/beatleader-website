@@ -57,7 +57,7 @@
            data-swipe-threshold="50"
   >
     <div class="cards-wrapper">
-      {#each cards as card}
+      {#each cards as card, cardIdx (card.name + cardIdx)}
         <div>
           <svelte:component this={card.component} {...card.props}/>
         </div>
@@ -95,7 +95,8 @@
         height: max-content;
         transition: transform 300ms;
         transition-timing-function: ease-out;
-        transform: translate3d(calc(var(--width, 0) * var(--item, 0) * -1), 0, 0)
+        transform: translate3d(calc(var(--width, 0) * var(--item, 0) * -1), 0, 0);
+        overflow: hidden;
     }
 
     .bullets {

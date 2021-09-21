@@ -10,6 +10,7 @@
   import ScoreSaberStats from './ProfileCards/ScoreSaberStats.svelte'
   import MiniRanking from './ProfileCards/MiniRanking.svelte'
   import TwitchVideos from './ProfileCards/TwitchVideos.svelte'
+  import PpCalc from './ProfileCards/PpCalc.svelte'
   import Carousel from '../Common/Carousel.svelte'
 
   export let playerData;
@@ -65,6 +66,7 @@
 
   $: swipeCards = [
     {
+      name: 'stats',
       component: ScoreSaberStats,
       props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
       delay: 500,
@@ -73,14 +75,26 @@
     .concat(
       $pageContainer.name !== 'xxl'
         ? [{
+          name: 'ranking',
           component: MiniRanking,
           props: {playerInfo: opt(playerData, 'playerInfo')},
         }]
         : [],
     )
     .concat(
+      onePpBoundery
+        ?
+        [{
+          name: 'ppcalc',
+          component: PpCalc,
+          props: {playerId, worker},
+        }]
+        : [],
+    )
+    .concat(
       $pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
         ? [{
+          name: 'twitch',
           component: TwitchVideos,
           props: {videos: twitchVideos},
         }]
