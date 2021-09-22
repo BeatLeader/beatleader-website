@@ -20,7 +20,7 @@ let app = null;
   try {
     // TODO: remove level setting
     // log.setLevel(log.TRACE);
-    // log.logOnly(['TwitchService']);
+    // log.logOnly(['AccSaberService']);
 
     log.info('Starting up...', 'Main')
 

@@ -6,6 +6,7 @@ import createRankedsStore from '../stores/scoresaber/rankeds'
 import createPlayerService from '../services/scoresaber/player'
 import createScoresService from '../services/scoresaber/scores'
 import createBeatSaviorService from '../services/beatsavior'
+import createAccSaberService from '../services/accsaber'
 import {PRIORITY as HTTP_QUEUE_PRIORITY} from './queues/http-queue'
 import {HOUR, MINUTE} from '../utils/date'
 import {opt} from '../utils/js'
@@ -18,10 +19,12 @@ let rankedsStore = null;
 let playerService = null;
 let scoresService = null;
 let beatSaviorService = null;
+let accSaberService = null;
 
 const TYPES = {
   BEATSAVIOR: {name: 'BEATSAVIOR', priority: PRIORITY.LOW},
   RANKEDS: {name: 'RANKEDS', priority: PRIORITY.LOW},
+  ACCSABER: {name: 'ACCSABER', priority: PRIORITY.NORMAL},
   PLAYER_SCORES: {name: 'PLAYER-SCORES', priority: PRIORITY.NORMAL},
   PLAYER_SCORES_UPDATE_QUEUE: {name: 'PLAYER_SCORES_UPDATE_QUEUE', priority: PRIORITY.LOWEST},
   ACTIVE_PLAYERS: {name: 'ACTIVE-PLAYERS', priority: PRIORITY.HIGH},
@@ -110,6 +113,14 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
         .then(_ => log.debug('Enqueued player scores rank & pp updates processed.', 'DlManager'));
 
       break;
+
+    case TYPES.ACCSABER:
+      log.debug(`Enqueue AccSaber updates`, 'DlManager');
+
+      processThen(queue.add(async () => accSaberService.refreshAll(), priority), then)
+        .then(_ => log.debug('Enqueued AccSaber updates processed.', 'DlManager'));
+
+      break;
   }
 }
 
@@ -122,6 +133,7 @@ const enqueueAllJobs = async queue => {
     enqueue(queue, TYPES.ACTIVE_PLAYERS),
     enqueue(queue, TYPES.PLAYER_SCORES),
     enqueue(queue, TYPES.BEATSAVIOR),
+    enqueue(queue, TYPES.ACCSABER),
 
     // it should be at the end of the queue
     enqueue(queue, TYPES.PLAYER_SCORES_UPDATE_QUEUE),
@@ -161,6 +173,7 @@ export default async () => {
   playerService = createPlayerService();
   scoresService = createScoresService();
   beatSaviorService = createBeatSaviorService();
+  accSaberService = createAccSaberService();
 
   eventBus.leaderStore.subscribe(async isLeader => {
     if (isLeader) {

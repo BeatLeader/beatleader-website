@@ -5,6 +5,7 @@ import createScoreSaberPageQueue from './scoresaber/page-queue'
 import createBeatMapsApiQueue from './beatmaps/api-queue'
 import createBeatSaviorApiQueue from './beatsavior/api-queue'
 import createTwitchApiQueue from './twitch/api-queue'
+import createAccSaberApiQueue from './accsaber/api-queue'
 
 export const getResponseBody = response => response ? response.body : null;
 export const isResponseCached = response => !!(response && response.cached)
@@ -49,5 +50,6 @@ export default {
   BEATMAPS: initQueue(createBeatMapsApiQueue({concurrency: 1, timeout: 10000, intervalCap: 10, interval: 1000})),
   BEATSAVIOR: initQueue(createBeatSaviorApiQueue({concurrency: 1, timeout: 10000, intervalCap: 60, interval: 60000})),
   TWITCH: initQueue(createTwitchApiQueue({concurrency: 8, timeout: 8000, intervalCap: 800, interval: 60000})),
+  ACCSABER: initQueue(createAccSaberApiQueue({concurrency: 2, timeout: 10000, intervalCap: 10, interval: 10000})),
   PRIORITY,
 }
