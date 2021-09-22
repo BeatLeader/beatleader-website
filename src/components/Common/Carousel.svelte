@@ -57,10 +57,12 @@
            data-swipe-threshold="50"
   >
     <div class="cards-wrapper">
-      {#each cards as card, cardIdx (card.name + cardIdx)}
-        <div>
-          <svelte:component this={card.component} {...card.props}/>
-        </div>
+      {#each cards as card, cardIdx}
+        {#key (card.name + cardIdx)}
+          <div>
+            <svelte:component this={card.component} {...card.props}/>
+          </div>
+        {/key}
       {/each}
     </div>
 

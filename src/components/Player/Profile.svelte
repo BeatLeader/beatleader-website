@@ -3,6 +3,7 @@
   import processPlayerData from './utils/profile';
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
+  import createAccSaberService from '../../services/accsaber'
   import {opt} from '../../utils/js'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
@@ -11,6 +12,7 @@
   import MiniRanking from './ProfileCards/MiniRanking.svelte'
   import TwitchVideos from './ProfileCards/TwitchVideos.svelte'
   import PpCalc from './ProfileCards/PpCalc.svelte'
+  import AccSaber from './ProfileCards/AccSaber.svelte'
   import Carousel from '../Common/Carousel.svelte'
 
   export let playerData;
@@ -20,6 +22,11 @@
   export let twitchVideos = null;
 
   const pageContainer = getContext('pageContainer');
+
+  let accSaberPlayerInfo = null;
+  let accSaberCategories = null;
+  const accSaberService = createAccSaberService();
+  accSaberService.getCategories().then(categories => accSaberCategories = categories);
 
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => playerStats = stats)
@@ -56,6 +63,12 @@
       )
   }
 
+  async function updateAccSaberPlayerInfo(playerId) {
+    if (!playerId) return;
+
+    accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
+  }
+
   $: isCached = !!(playerData && playerData.scoresLastUpdated)
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -63,6 +76,7 @@
   $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
   $: calcOnePpBoundary(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
+  $: updateAccSaberPlayerInfo(playerId)
 
   $: swipeCards = [
     {
@@ -88,6 +102,16 @@
           name: 'ppcalc',
           component: PpCalc,
           props: {playerId, worker},
+        }]
+        : [],
+    )
+    .concat(
+      accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
+        ?
+        [{
+          name: 'accsaber',
+          component: AccSaber,
+          props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
         }]
         : [],
     )

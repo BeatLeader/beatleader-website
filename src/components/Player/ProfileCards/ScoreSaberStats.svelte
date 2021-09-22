@@ -12,12 +12,12 @@
 
 {#if scoresStats || ssBadges || skeleton}
   <div class="stats" class:enhanced={isCached}>
-    <ScoresStats stats={scoresStats} {skeleton}/>
+    {#if scoresStats}<ScoresStats stats={scoresStats} {skeleton}/>{/if}
     <div>
       {#if accStats}<ScoresStats stats={accStats}/>{/if}
       {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
     </div>
-    <SsBadges badges={ssBadges}/>
+    {#if ssBadges}<SsBadges badges={ssBadges}/>{/if}
   </div>
 {/if}
 

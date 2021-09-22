@@ -5,8 +5,7 @@ import accSaberCategoriesRepository from '../db/repository/accsaber-categories'
 import accSaberRankingApiClient from '../network/clients/accsaber/api-ranking';
 import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import keyValueRepository from '../db/repository/key-value'
-import eventBus from '../utils/broadcast-channel-pubsub'
-import {arrayDifference, capitalize, convertArrayToObjectByKey, opt} from '../utils/js'
+import {capitalize} from '../utils/js'
 import log from '../utils/logger'
 import {addToDate, formatDate, HOUR} from '../utils/date'
 

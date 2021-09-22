@@ -11,6 +11,7 @@
     export let zero = "0";
     export let digits = 2;
     export let type = "number";
+    export let prefix = "";
     export let suffix = "";
     export let onlyLabel = false;
     export let clickable = false;
@@ -24,7 +25,7 @@
         <span class="spacer"></span>
         <span class="value">
             <slot name="value">
-                {#if type === 'number'}<Value value={value} {zero} {digits} {suffix} />{:else}{value}{/if}
+                {#if type === 'number'}<Value value={value} {zero} {digits} {prefix} {suffix} />{:else}{value}{/if}
             </slot>
         </span>
     {/if}
