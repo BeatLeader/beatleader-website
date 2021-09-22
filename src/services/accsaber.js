@@ -11,11 +11,23 @@ import {addToDate, formatDate, HOUR} from '../utils/date'
 
 const REFRESH_INTERVAL = HOUR;
 
+const CATEGORIES_ORDER = ['overall', 'true', 'standard', 'tech'];
+
 let service = null;
 export default () => {
   if (service) return service;
 
-  const getCategories = async () => accSaberCategoriesRepository().getAll();
+
+  const getCategories = async () => {
+    const categories = await accSaberCategoriesRepository().getAll();
+
+    const getIdx = category => {
+      const idx = CATEGORIES_ORDER.findIndex(v => v === category?.name);
+
+      return idx >= 0 ? idx : 100000;
+    }
+    return categories.sort((a,b) => getIdx(a) - getIdx(b));
+  }
 
   const getPlayer = async playerId => accSaberPlayersRepository().getAllFromIndex('accsaber-players-playerId', playerId);
   const getRanking = async (category = 'overall') => accSaberPlayersRepository().getAllFromIndex('accsaber-players-category', category);
