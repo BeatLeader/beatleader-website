@@ -2,12 +2,14 @@ import {db} from '../db/db'
 import queues from '../network/queues/queues';
 import accSaberCategoriesApiClient from '../network/clients/accsaber/api-categories';
 import accSaberRankingApiClient from '../network/clients/accsaber/api-ranking';
+import accSaberScoresApiClient from '../network/clients/accsaber/api-scores';
 import accSaberCategoriesRepository from '../db/repository/accsaber-categories'
 import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import keyValueRepository from '../db/repository/key-value'
 import {capitalize} from '../utils/js'
 import log from '../utils/logger'
 import {addToDate, formatDate, HOUR} from '../utils/date'
+import {PRIORITY} from '../network/queues/http-queue'
 
 const REFRESH_INTERVAL = HOUR;
 
@@ -16,7 +18,6 @@ const CATEGORIES_ORDER = ['overall', 'true', 'standard', 'tech'];
 let service = null;
 export default () => {
   if (service) return service;
-
 
   const getCategories = async () => {
     const categories = await accSaberCategoriesRepository().getAll();
@@ -48,6 +49,8 @@ export default () => {
 
     return true;
   }
+
+  const fetchScoresPage = async (playerId, page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) => accSaberScoresApiClient.getProcessed({...options, playerId, page, priority});
 
   const refreshCategories = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting AccSaber categories refreshing${forceUpdate ? ' (forced)' : ''}...`, 'AccSaberService')
@@ -245,6 +248,7 @@ export default () => {
     getPlayer,
     getCategories,
     getRanking,
+    fetchScoresPage,
     refreshCategories,
     refreshRanking,
     refreshAll,

@@ -5,12 +5,14 @@
   import {opt} from '../../utils/js'
   import Difficulty from '../Song/Difficulty.svelte'
   import Icons from '../Song/Icons.svelte'
+  import Badge from '../Common/Badge.svelte'
 
   export let leaderboard = null;
   export let rank = null;
   export let hash = null;
   export let twitchUrl = null
   export let notClickable = false;
+  export let category = null;
 
   let ssCoverDoesNotExists = false;
   let beatSaverCoverDoesNotExists = false;
@@ -50,7 +52,9 @@
     {/if}
 
     <div class="difficulty">
-      <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true} stars={leaderboard.stars}/>
+      <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}
+                  stars={leaderboard.complexity ?? leaderboard.stars} starsSuffix={leaderboard.complexity ? '' : '*'}
+      />
     </div>
   </div>
 
@@ -63,6 +67,12 @@
          on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
         <span class="name">{song.name} {song.subName}</span>
         <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+
+        {#if category}
+          <span class="category">
+            <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" label={category} fluid={true} />
+          </span>
+        {/if}
       </a>
     {/if}
   </div>
@@ -121,6 +131,14 @@
     .songinfo small {
         font-size: 0.75em;
         color: var(--ppColour);
+    }
+
+    .category {
+        font-size: .75em;
+    }
+
+    .songinfo .category :global(.badge) {
+        width: auto;
     }
 
     .icons {

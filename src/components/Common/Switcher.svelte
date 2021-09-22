@@ -46,8 +46,9 @@
         text-align: center;
     }
 
-    :global(.switch-types .button) {
+    .switch-types :global(.button) {
         font-weight: 500;
         margin-right: .125rem !important;
+        margin-bottom: .125rem !important;
     }
 </style>

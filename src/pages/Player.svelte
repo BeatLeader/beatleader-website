@@ -18,7 +18,7 @@
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
 
-  const SCORES_TYPES = ['recent', 'top', 'beatsavior']
+  const SCORES_TYPES = ['recent', 'top', 'beatsavior', 'accsaber']
 
   document.body.classList.remove('slim');
 

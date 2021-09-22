@@ -8,13 +8,15 @@
   export let playerId;
   export let songScore;
   export let fixedBrowserTitle = null;
-  export let beatSaviorOnly = false;
   export let noBeatSaviorHistory = false;
+  export let noSsLeaderboard = false;
+  export let showAccSaberLeaderboard = false;
 
-  const switcherOptions = [
-    {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'},
-  ];
-  if (!beatSaviorOnly) switcherOptions.push({id: 'leaderboard', label: 'Leaderboard', iconFa: 'fas fa-cubes'})
+  const switcherOptions = [];
+  if (showAccSaberLeaderboard) switcherOptions.push({id: 'accsaber', label: 'Leaderboard', icon: '<div class="accsaber-icon"></div>'})
+  switcherOptions.push({id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'});
+  if (!noSsLeaderboard) switcherOptions.push({id: 'leaderboard', label: 'Leaderboard', iconFa: 'fas fa-cubes'})
+
 
   let selectedOption = switcherOptions[0];
   let inBuiltLeaderboardPage = null;

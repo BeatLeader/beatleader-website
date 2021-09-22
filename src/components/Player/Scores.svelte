@@ -24,7 +24,7 @@
 
   let scoresStore = createScoresStore(
     playerId,
-    ['recent', 'top', 'beatsavior'].includes(initialType) ? initialType : 'recent',
+    ['recent', 'top', 'beatsavior', 'accsaber'].includes(initialType) ? initialType : 'recent',
     !isNaN(parseInt(initialPage, 10)) ? parseInt(initialPage, 10) : 1,
     initialState,
     initialStateType
@@ -38,6 +38,7 @@
     {id: 'recent', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/recent/1`},
     {id: 'top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/top/1`},
     {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/1`},
+    {id: 'accsaber', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/1`},
   ];
 
   let scoresTypes = allScoresTypes;
@@ -82,6 +83,8 @@
     } else {
       scoresTypes = allScoresTypes.filter(st => st.id !== 'beatsavior');
     }
+
+    // TODO: check for AccSaber availability
   }
 
   // TODO: refresh when beat savior data is fetched for the first time
