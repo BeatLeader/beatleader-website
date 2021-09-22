@@ -5,6 +5,7 @@
   export let cards = null;
 
   let mainEl = null;
+  let swipeHandlersBinded = false;
   let currentItem = 0;
   let carouselHeight = 0;
 
@@ -35,11 +36,6 @@
   }
 
   onMount(() => {
-    if (mainEl) {
-      mainEl.addEventListener('swiped-left', swipeLeft);
-      mainEl.addEventListener('swiped-right', swipeRight);
-    }
-
     return () => {
       if (mainEl) {
         mainEl.removeEventListener('swiped-left', swipeLeft);
@@ -48,7 +44,15 @@
     }
   })
 
-  $: if (mainEl) containerStore.observe(mainEl)
+  $: if (mainEl) {
+    containerStore.observe(mainEl)
+    if (!swipeHandlersBinded) {
+      mainEl.addEventListener('swiped-left', swipeLeft);
+      mainEl.addEventListener('swiped-right', swipeRight);
+
+      swipeHandlersBinded = true;
+    }
+  }
   $: cards, currentItem = 0;
   $: cardsHash = cards ? cards.map(c => c.name).join(':') : null;
   $: updateHeight(mainEl, currentItem, cards && cards[currentItem] && cardsHash ? cards[currentItem].delay || 0 : 0)
