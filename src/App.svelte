@@ -65,6 +65,7 @@
     Uses <a href="https://scoresaber.com">ScoreSaber API</a>,
     <a href="https://beatsaver.com">Beat Saver API</a>,
     <a href="https://www.beatsavior.io">Beat Savior API</a>,
+    <a href="https://accsaber.com">AccSaber API</a>,
     <a href="https://heroicons.com/">heroicons</a>
   </p>
 </footer>
