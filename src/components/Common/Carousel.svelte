@@ -10,16 +10,18 @@
 
   const containerStore = createContainerStore();
 
-  function updateHeight(carousel, item, delay = 0) {
+  async function updateHeight(carousel, item, delay = 0) {
     if (!carousel) return;
 
-    const itemNode = carousel.querySelector(`.cards-wrapper > div:nth-child(${item + 1})`);
-    if (!itemNode) return;
-
     const setHeight = () => {
+      const itemNode = carousel.querySelector(`.cards-wrapper > div:nth-child(${item + 1})`);
+      if (!itemNode) return;
+
       const rect = itemNode.getBoundingClientRect();
-      carouselHeight = rect.height;
+      if (rect.height) carouselHeight = rect.height;
     }
+
+    if (delay) setHeight();
 
     setTimeout(setHeight, delay);
   }
@@ -48,7 +50,8 @@
 
   $: if (mainEl) containerStore.observe(mainEl)
   $: cards, currentItem = 0;
-  $: updateHeight(mainEl, currentItem, cards && cards[currentItem] ? cards[currentItem].delay || 0 : 0)
+  $: cardsHash = cards ? cards.map(c => c.name).join(':') : null;
+  $: updateHeight(mainEl, currentItem, cards && cards[currentItem] && cardsHash ? cards[currentItem].delay || 0 : 0)
 </script>
 
 {#if cards && cards.length}
@@ -57,8 +60,8 @@
            data-swipe-threshold="50"
   >
     <div class="cards-wrapper">
-      {#each cards as card, cardIdx}
-        {#key (card.name + cardIdx)}
+      {#each cards as card, cardIdx (card.name)}
+        {#key card.name}
           <div>
             <svelte:component this={card.component} {...card.props}/>
           </div>

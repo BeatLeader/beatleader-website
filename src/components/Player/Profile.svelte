@@ -78,9 +78,10 @@
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
   $: updateAccSaberPlayerInfo(playerId)
 
-  $: swipeCards = [
+  $: swipeCards = playerId
+    ? [
     {
-      name: 'stats',
+      name: `stats-${playerId}`,
       component: ScoreSaberStats,
       props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
       delay: 500,
@@ -89,7 +90,7 @@
     .concat(
       $pageContainer.name !== 'xxl'
         ? [{
-          name: 'ranking',
+          name: `ranking-${playerId}`,
           component: MiniRanking,
           props: {playerInfo: opt(playerData, 'playerInfo')},
         }]
@@ -99,7 +100,7 @@
       onePpBoundery
         ?
         [{
-          name: 'ppcalc',
+          name: `ppcalc-${playerId}`,
           component: PpCalc,
           props: {playerId, worker},
         }]
@@ -109,7 +110,7 @@
       accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
         ?
         [{
-          name: 'accsaber',
+          name: `accsaber-${playerId}`,
           component: AccSaber,
           props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
         }]
@@ -118,12 +119,13 @@
     .concat(
       $pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
         ? [{
-          name: 'twitch',
+          name: `twitch-${playerId}`,
           component: TwitchVideos,
           props: {videos: twitchVideos},
         }]
         : [],
     )
+    : []
 </script>
 
 <div class="box has-shadow" class:loading={isLoading}>
