@@ -26,7 +26,6 @@
   let accSaberPlayerInfo = null;
   let accSaberCategories = null;
   const accSaberService = createAccSaberService();
-  accSaberService.getCategories().then(categories => accSaberCategories = categories);
 
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => playerStats = stats)
@@ -67,6 +66,7 @@
     if (!playerId) return;
 
     accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
+    accSaberCategories = await accSaberService.getCategories();
   }
 
   $: isCached = !!(playerData && playerData.scoresLastUpdated)

@@ -1,8 +1,8 @@
 import {db} from '../db/db'
 import queues from '../network/queues/queues';
 import accSaberCategoriesApiClient from '../network/clients/accsaber/api-categories';
-import accSaberCategoriesRepository from '../db/repository/accsaber-categories'
 import accSaberRankingApiClient from '../network/clients/accsaber/api-ranking';
+import accSaberCategoriesRepository from '../db/repository/accsaber-categories'
 import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import keyValueRepository from '../db/repository/key-value'
 import {capitalize} from '../utils/js'
@@ -104,6 +104,9 @@ export default () => {
         log.trace(`Categories last update date updated`, 'AccSaberService');
       });
 
+      accSaberCategoriesRepository().addToCache(categories);
+      keyValueRepository().setCache(getLastUpdatedKey('categories'), new Date());
+
       log.debug(`Categories refreshing completed`, 'AccSaberService');
 
       return {changed: newCategories, all: categories};
@@ -174,6 +177,9 @@ export default () => {
 
         log.trace(`Players last update date updated`, 'AccSaberService');
       });
+
+      accSaberPlayersRepository().addToCache(ranking);
+      keyValueRepository().setCache(getLastUpdatedKey(rankingType), new Date());
 
       log.debug(`${capitalize(category)} ranking refreshing completed`, 'AccSaberService');
 
