@@ -19,6 +19,7 @@
   export let initialPage = 1;
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
+  export let withAccSaber = false;
 
   const beatSaviorService = createBeatSaviorService();
 
@@ -75,20 +76,22 @@
     pagerTotalScores = numOfScores
   }
 
-  async function updateAvailableScoresTypes(playerId) {
+  async function updateAvailableScoresTypes(playerId, withAccSaber) {
     if (!playerId) return;
 
-    if (await beatSaviorService.isDataForPlayerAvailable(playerId)) {
-      scoresTypes = allScoresTypes;
-    } else {
-      scoresTypes = allScoresTypes.filter(st => st.id !== 'beatsavior');
+    let newScoresTypes = allScoresTypes;
+    if (!await beatSaviorService.isDataForPlayerAvailable(playerId)) {
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'beatsavior');
     }
 
-    // TODO: check for AccSaber availability
+    if (!withAccSaber) {
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'accsaber');
+    }
+
+    scoresTypes = newScoresTypes;
   }
 
-  // TODO: refresh when beat savior data is fetched for the first time
-  // $: updateAvailableScoresTypes(playerId)
+  $: updateAvailableScoresTypes(playerId, withAccSaber)
 
   $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
   $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
@@ -115,7 +118,7 @@
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} {type} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} {type} {withAccSaber} />
     {/each}
   </div>
   {:else}
