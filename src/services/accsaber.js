@@ -8,10 +8,11 @@ import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import keyValueRepository from '../db/repository/key-value'
 import {capitalize} from '../utils/js'
 import log from '../utils/logger'
-import {addToDate, formatDate, HOUR} from '../utils/date'
+import {addToDate, formatDate, HOUR, MINUTE} from '../utils/date'
 import {PRIORITY} from '../network/queues/http-queue'
 
 const REFRESH_INTERVAL = HOUR;
+const SCORES_NETWORK_TTL = MINUTE * 5;
 
 const CATEGORIES_ORDER = ['overall', 'true', 'standard', 'tech'];
 
@@ -50,7 +51,12 @@ export default () => {
     return true;
   }
 
-  const fetchScoresPage = async (playerId, page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) => accSaberScoresApiClient.getProcessed({...options, playerId, page, priority});
+  const fetchScoresPage = async (playerId, page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) => {
+    if (!options) options = {};
+    if (!options.hasOwnProperty('cacheTtl')) options.cacheTtl = SCORES_NETWORK_TTL;
+
+    return accSaberScoresApiClient.getProcessed({...options, playerId, page, priority});
+  }
 
   const refreshCategories = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
     log.trace(`Starting AccSaber categories refreshing${forceUpdate ? ' (forced)' : ''}...`, 'AccSaberService')
