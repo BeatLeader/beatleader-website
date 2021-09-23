@@ -17,9 +17,9 @@
   let lastHistoryHash = null;
   let playerHistory = null;
 
-  const calcHistoryHash = (rankHistory, ppHistory) =>
+  const calcHistoryHash = (rankHistory, additionalHistory) =>
     (rankHistory && rankHistory.length ? rankHistory.join(':') : '') +
-    (ppHistory ? Object.values(ppHistory).join(':') : '')
+    (additionalHistory ? Object.values(additionalHistory).map(h => Object.values(h).join(',')).join(':') : '')
   ;
 
   async function refreshPlayerHistory(playerId) {
@@ -28,7 +28,7 @@
     playerHistory = await playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId) ?? null;
   }
 
-  async function setupChart(canvas, rankHistory, ppHistory) {
+  async function setupChart(canvas, rankHistory, additionalHistory) {
     if (!canvas || !rankHistory || !Object.keys(rankHistory).length || chartHash === lastHistoryHash) return;
 
     lastHistoryHash = chartHash;
@@ -39,6 +39,8 @@
 
     const rankColor = theme && theme.alternate ? theme.alternate : "#3e95cd";
     const ppColor = theme && theme.increase ? theme.increase : "#007100";
+    const rankedPlayCountColor = theme && theme.dimmed ? theme.dimmed: "#3e3e3e";
+    const totalPlayCountColor = theme && theme.faded ? theme.faded: "#666";
     const activityColor = theme && theme.dimmed ? theme.dimmed : "#3e3e3e"
 
     const data = rankHistory;
@@ -86,9 +88,8 @@
       },
     };
 
-    let ppData = [];
-    if (ppHistory && ppHistory.length) {
-      const ppHistoryData = ppHistory.reduce((cum, historyItem) => {
+    if (additionalHistory && additionalHistory.length) {
+      const additionalHistoryData = additionalHistory.reduce((cum, historyItem) => {
         const [ssTimestamp, pp] = Object.entries(historyItem)[0];
         let diffInDays = Math.floor((toSSDate(new Date()).getTime() - ssTimestamp) / (1000 * 60 * 60 * 24));
         if (diffInDays < 0) diffInDays = 0;
@@ -98,47 +99,55 @@
         return cum;
       }, {})
 
-      if (!ppHistoryData[0] && ppHistoryData[1]) ppHistoryData[0] = ppHistoryData[1];
+      if (!additionalHistoryData[0] && additionalHistoryData[1]) additionalHistoryData[0] = additionalHistoryData[1];
 
-      if (Object.keys(ppHistoryData).length) {
-        ppData = daysAgo.map(d => ppHistoryData?.[d] ?? null)
-
-        yAxes.y1 = {
-          display: true,
-          position: 'right',
-          title: {
-            display: true,
-            text: 'PP',
-          },
-          ticks: {
-            callback: function (val) {
-              return val
-            },
-          },
-          grid: {
-            drawOnChartArea: false,
-          },
-        };
-
+      if (Object.keys(additionalHistoryData).length) {
         const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
 
-        datasets.push({
-          yAxisID: 'y1',
-          label: 'PP',
-          data: ppData,
-          fill: false,
-          borderColor: ppColor,
-          borderWidth: 2,
-          pointRadius: 1,
-          cubicInterpolationMode: 'monotone',
-          tension: 0.4,
-          type: 'line',
-          round: 2,
-          spanGaps: true,
-          segment: {
-            borderWidth: ctx => skipped(ctx, 1),
-            borderDash: ctx => skipped(ctx, [6, 6]),
-          }
+        [
+          {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true},
+          {key: 'rankedPlayCount', name: 'Ranked play count', borderColor: rankedPlayCountColor, round: 0, axisDisplay: false},
+          {key: 'totalPlayCount', name: 'Total play count', borderColor: totalPlayCountColor, round: 0, axisDisplay: false}
+          ]
+          .forEach((obj, idx) => {
+            const {key, name, axisDisplay, ...options} = obj;
+          const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key] ?? null);
+
+          const axisKey = `y${idx+1}`
+          yAxes[axisKey] = {
+            display: axisDisplay,
+            position: 'right',
+            title: {
+              display: axisDisplay,
+              text: name,
+            },
+            ticks: {
+              callback: function (val) {
+                return val
+              },
+            },
+            grid: {
+              drawOnChartArea: false,
+            },
+          };
+
+          datasets.push({
+            ...options,
+            yAxisID: axisKey,
+            label: name,
+            data: fieldData,
+            fill: false,
+            borderWidth: 2,
+            pointRadius: 1,
+            cubicInterpolationMode: 'monotone',
+            tension: 0.4,
+            type: 'line',
+            spanGaps: true,
+            segment: {
+              borderWidth: ctx => skipped(ctx, 1),
+              borderDash: ctx => skipped(ctx, [6, 6]),
+            }
+          });
         });
       }
     }
@@ -167,9 +176,11 @@
                     position: 'nearest',
                     callbacks: {
                       label(ctx) {
-                        return ctx.dataset.label === 'Rank'
-                          ? ` #${formatNumber(ctx.parsed.y, ctx.dataset.round)}`
-                          : ` ${formatNumber(ctx.parsed.y, ctx.dataset.round)}pp`
+                        switch(ctx.dataset.label) {
+                          case 'Rank': return ` ${ctx.dataset.label}: #${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
+                          case 'PP': return ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}pp`;
+                          default: return ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
+                        }
                       },
                     }
                   },
@@ -190,9 +201,9 @@
   }
 
   $: refreshPlayerHistory(playerId);
-  $: ppHistory = playerHistory && playerHistory.length ? playerHistory.map(h => ({[h.ssDate.getTime()]: h.pp})) : null;
-  $: chartHash = calcHistoryHash(rankHistory, ppHistory);
-  $: if (chartHash) setupChart(canvas, rankHistory, ppHistory)
+  $: additionalHistory = playerHistory && playerHistory.length ? playerHistory.map(h => ({[h.ssDate.getTime()]: {pp: h.pp, rankedPlayCount: h.rankedPlayCount, totalPlayCount: h.totalPlayCount}})) : null;
+  $: chartHash = calcHistoryHash(rankHistory, additionalHistory);
+  $: if (chartHash) setupChart(canvas, rankHistory, additionalHistory)
 </script>
 
 {#if rankHistory && rankHistory.length}
