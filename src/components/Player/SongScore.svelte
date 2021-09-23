@@ -20,6 +20,7 @@
   export let fixedBrowserTitle = null;
   export let idx = 0;
   export let type = null;
+  export let withAccSaber = false;
 
   let showDetails = false;
 
@@ -63,7 +64,7 @@
         <Icons {hash} {twitchUrl} {diffInfo} />
       </div>
 
-    <div class="main" class:beat-savior={type === 'beatsavior'}>
+    <div class="main" class:beat-savior={type === 'beatsavior'} class:accsaber={type === 'accsaber'}>
       <span class="rank">
         {#if type !== 'beatsavior'}
           <ScoreRank rank={score.rank}
@@ -83,7 +84,9 @@
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={type === 'beatsavior'} />
+        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior'].includes(type)}
+                  category={leaderboard?.categoryDisplayName ?? null} {type}
+        />
       </span>
 
       <section class="stats">
@@ -97,19 +100,32 @@
 
         {#if score.pp}
           <span class="pp with-badge">
-              <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-                <span slot="label">
-                  <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-                      pp="{score.pp}" weighted={score.ppWeighted} attribution={score.ppAttribution} whatIf={score.whatIfPp}
-                      zero={(configStore, $configStore, formatNumber(0))} withZeroSuffix={true} inline={false}
-                      color="white"
-                  />
-                </span>
-              </Badge>
-            </span>
+            <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+              <span slot="label">
+                <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
+                    pp="{score.pp}" weighted={score.ppWeighted} attribution={score.ppAttribution} whatIf={score.whatIfPp}
+                    zero={(configStore, $configStore, formatNumber(0))} withZeroSuffix={true} inline={false}
+                    color="white"
+                />
+              </span>
+            </Badge>
+          </span>
         {:else if type === 'beatsavior' && beatSavior && !opt(beatSavior, 'trackers.winTracker.won', false)}
           <span class="pp with-badge">
             <Badge onlyLabel={true} color="white" bgColor="var(--decrease)" label="FAIL" title={failedAt ? `Failed at ${failedAt}` : null} />
+          </span>
+        {:else if withAccSaber && type === 'accsaber' && score.ap}
+          <span class="pp with-badge">
+            <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+              <span slot="label">
+                <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
+                    pp="{score.ap}" weighted={score.weightedAp}
+                    zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                    suffix="AP"
+                    color="white"
+                />
+              </span>
+            </Badge>
           </span>
         {:else}
           <span class="pp with-badge"></span>
@@ -285,7 +301,10 @@
 
     {#if showDetails}
       <div transition:slide>
-        <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle} beatSaviorOnly={'beatsavior' === type} noBeatSaviorHistory={type === 'beatsavior'} />
+        <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle}
+                          noSsLeaderboard={['beatsavior', 'accsaber'].includes(type)}
+                          showAccSaberLeaderboard={'accsaber' === type}
+                          noBeatSaviorHistory={type === 'beatsavior'}/>
       </div>
     {/if}
   </div>

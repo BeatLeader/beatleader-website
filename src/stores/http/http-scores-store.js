@@ -82,25 +82,34 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     }
 
     for (const scoreRow of newState) {
-      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
-        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
-        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => diffEnhancer(draft, currentPlayerId)))
-        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId)))
-        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-        .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
-        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft))
-        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-      stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
-        .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-      if (stateType && stateType === 'live')
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaviorEnhancer(draft, currentPlayerId))
+      if (currentType !== 'accsaber') {
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => diffEnhancer(draft, currentPlayerId)))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId)))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+
+        if (stateType && stateType === 'live')
+          stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaviorEnhancer(draft, currentPlayerId))
+            .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+      } else {
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaviorEnhancer(draft, currentPlayerId)))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+      }
     }
   }
 

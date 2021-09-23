@@ -2,6 +2,7 @@ import {db} from '../../db/db'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import {configStore} from '../../stores/config'
 import createPlayerService from './player';
+import createAccSaberService from '../accsaber'
 import createRankedsStore from '../../stores/scoresaber/rankeds'
 import {PRIORITY} from '../../network/queues/http-queue'
 import recentScoresApiClient from '../../network/clients/scoresaber/scores/api-recent'
@@ -11,11 +12,12 @@ import scoresRepository from '../../db/repository/scores'
 import beatSaviorRepository from '../../db/repository/beat-savior';
 import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
 import log from '../../utils/logger'
-import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
+import {addToDate, dateFromString, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import scores from '../../db/repository/scores'
 import {SsrHttpNotFoundError} from '../../network/errors'
 import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
@@ -28,6 +30,7 @@ export default () => {
   if (service) return service;
 
   let playerService = createPlayerService();
+  const accSaberService = createAccSaberService();
 
   let allRankeds = {};
   let mainPlayerId = null;
@@ -514,10 +517,35 @@ export default () => {
     };
   }
 
+  const getPlayerAccSaberScoresPage = async (playerId, page = 1) => {
+    if (page < 1) page = 1;
+
+    let playerScores;
+    try {
+      playerScores = await accSaberService.fetchScoresPage(playerId, page);
+    }
+    catch (err) {
+      return {total: 0, scores: []};
+    }
+
+    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
+
+    const startIdx = (page - 1) * ACCSABER_PLAYER_SCORES_PER_PAGE;
+    if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
+
+    return {
+      total: playerScores.length,
+      itemsPerPage: ACCSABER_PLAYER_SCORES_PER_PAGE,
+      scores: playerScores
+        .slice(startIdx, startIdx + ACCSABER_PLAYER_SCORES_PER_PAGE)
+    }
+  }
+
   const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (!player || !player.playerId) return null;
 
     if ('beatsavior' === type) return getPlayerBeatSaviorScoresPage(player.playerId, page)
+    else if ('accsaber' === type) return getPlayerAccSaberScoresPage(player.playerId, page)
 
     const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')
 

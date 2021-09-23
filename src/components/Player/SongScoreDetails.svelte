@@ -1,5 +1,6 @@
 <script>
   import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import {opt} from '../../utils/js'
   import BeatSaviorDetails from '../BeatSavior/Details.svelte'
   import LeaderboardPage from '../../pages/Leaderboard.svelte'
@@ -8,13 +9,14 @@
   export let playerId;
   export let songScore;
   export let fixedBrowserTitle = null;
-  export let beatSaviorOnly = false;
   export let noBeatSaviorHistory = false;
+  export let noSsLeaderboard = false;
+  export let showAccSaberLeaderboard = false;
 
-  const switcherOptions = [
-    {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'},
-  ];
-  if (!beatSaviorOnly) switcherOptions.push({id: 'leaderboard', label: 'Leaderboard', iconFa: 'fas fa-cubes'})
+  const switcherOptions = [];
+  switcherOptions.push({id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'});
+  if (showAccSaberLeaderboard) switcherOptions.push({id: 'accsaber', label: 'Leaderboard', icon: '<div class="accsaber-icon"></div>'})
+  if (!noSsLeaderboard) switcherOptions.push({id: 'leaderboard', label: 'Leaderboard', iconFa: 'fas fa-cubes'})
 
   let selectedOption = switcherOptions[0];
   let inBuiltLeaderboardPage = null;
@@ -35,13 +37,13 @@
     selectedOption = event.detail;
   }
 
-  function updateInBuiltLeaderboardPage(rank) {
+  function updateInBuiltLeaderboardPage(rank, type) {
     if (!rank) {
       inBuiltLeaderboardPage = null;
       return;
     }
 
-    inBuiltLeaderboardPage = Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1;
+    inBuiltLeaderboardPage = Math.floor((rank - 1) / (type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE)) + 1;
   }
 
   function onInBuiltLeaderboardPageChanged(event) {
@@ -57,12 +59,12 @@
   $: beatSavior = opt(songScore, 'beatSavior', null)
 
   $: filteredOptions = getAvailableOptions(songScore);
-  $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null)
+  $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, selectedOption?.id ?? 'leaderboard')
 </script>
 
 <section class="details">
   {#if songScore}
-    {#if filteredOptions && filteredOptions.length}
+    {#if filteredOptions && filteredOptions.length > 1}
       <nav>
         <Switcher values={filteredOptions} value={selectedOption} on:change={onOptionChanged}/>
       </nav>
@@ -71,6 +73,18 @@
     <div class="tab">
       {#if selectedOption && selectedOption.id === 'beatsavior'}
         <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} noHistory={noBeatSaviorHistory}/>
+      {/if}
+
+      {#if selectedOption && selectedOption.id === 'accsaber'}
+        <LeaderboardPage leaderboardId={leaderboard.leaderboardId}
+                         type="accsaber"
+                         page={inBuiltLeaderboardPage}
+                         scrollOffset={176}
+                         dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
+                         on:page-changed={onInBuiltLeaderboardPageChanged}
+                         {fixedBrowserTitle}
+
+        />
       {/if}
 
       {#if selectedOption && selectedOption.id === 'leaderboard'}

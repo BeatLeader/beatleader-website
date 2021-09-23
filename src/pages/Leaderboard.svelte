@@ -7,8 +7,7 @@
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
-  import {formatNumber} from '../utils/format'
-  import {configStore} from '../stores/config'
+  import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../utils/accsaber/consts'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
@@ -21,6 +20,7 @@
   import Duration from '../components/Song/Duration.svelte'
   import Switcher from '../components/Common/Switcher.svelte'
   import Icons from '../components/Song/Icons.svelte'
+  import {formatNumber} from '../utils/format'
 
   export let leaderboardId;
   export let type = 'global';
@@ -47,10 +47,37 @@
   let boxEl = null;
   let leaderboard = null;
 
-  let typeOptions = [
-    {id: 'global', label: 'Global', iconFa: 'fas fa-globe-americas', url: `/leaderboard/global/${currentLeaderboardId}/1`},
-    {id: 'friends', label: 'Friends', iconFa: 'fas fa-user-friends', url: `/leaderboard/friends/${currentLeaderboardId}/1`},
-  ];
+  let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
+
+  let typeOptions =
+    (
+      type === 'accsaber'
+        ? [
+          {
+            id: 'accsaber',
+            label: 'AccSaber',
+            icon: '<div class="accsaber-icon">',
+            url: `/leaderboard/accsaber/${currentLeaderboardId}/1`,
+          }
+        ]
+        : []
+    )
+      .concat(
+        [
+          {
+            id: 'global',
+            label: 'Global',
+            iconFa: 'fas fa-globe-americas',
+            url: `/leaderboard/global/${currentLeaderboardId}/1`,
+          },
+          {
+            id: 'friends',
+            label: 'Friends',
+            iconFa: 'fas fa-user-friends',
+            url: `/leaderboard/friends/${currentLeaderboardId}/1`,
+          },
+        ],
+      );
 
   let currentTypeOption = typeOptions[0];
 
@@ -146,6 +173,15 @@
           </h1>
 
           <h2 class="title is-6" class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
+            {#if leaderboard.categoryDisplayName}
+              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+                  <span slot="label">
+                    {leaderboard.categoryDisplayName}
+                    {#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★"/>{/if}
+                  </span>
+              </Badge>
+            {/if}
+
             {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
             {#if song.stars}<Value value={song.stars} digits={2} zero="" suffix="★"/>{/if}
             {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
@@ -156,72 +192,72 @@
 
           {#if leaderboard.stats}
             <div class="stats">
-              {#if leaderboard.stats.seconds}
+              {#if leaderboard?.stats?.seconds}
                 <div transition:fade>
                   <span class="time" transition:fade={{duration: 500}}>
-                      <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats.seconds}/>
+                      <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats?.seconds}/>
                   </span>
                 </div>
               {/if}
 
-              {#if leaderboard.stats.notes}
+              {#if leaderboard?.stats?.notes}
                 <div transition:fade><i class="fas fa-music"></i> Notes: <strong>
-                  <Value value={leaderboard.stats.notes} digits={0}/>
+                  <Value value={leaderboard.stats?.notes} digits={0}/>
                 </strong></div>
               {/if}
 
-              {#if leaderboard.stats.bpm}
+              {#if leaderboard?.stats?.bpm}
                 <div transition:fade><i class="fas fa-drum"></i> BPM: <strong>
-                  <Value value={leaderboard.stats.bpm} digits={0}/>
+                  <Value value={leaderboard.stats?.bpm} digits={0}/>
                 </strong></div>
               {/if}
 
-              {#if leaderboard.stats.njs}
+              {#if leaderboard?.stats?.njs}
                 <div transition:fade><i class="fas fa-tachometer-alt"></i> NJS: <strong>
-                  <Value value={leaderboard.stats.njs} digits={0}/>
+                  <Value value={leaderboard.stats?.njs} digits={0}/>
                 </strong></div>
               {/if}
 
-              {#if Number.isFinite(leaderboard.stats.njsOffset)}
+              {#if Number.isFinite(leaderboard?.stats?.njsOffset)}
                 <div transition:fade><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
-                  <Value value={leaderboard.stats.njsOffset} digits={2}/>
+                  <Value value={leaderboard?.stats?.njsOffset} digits={2}/>
                 </strong></div>
               {/if}
 
-              {#if leaderboard.stats.nps}
+              {#if leaderboard?.stats?.nps}
                 <div transition:fade><i class="fas fa-fire"></i> NPS: <strong>
-                  <Value value={leaderboard.stats.nps} digits={2}/>
+                  <Value value={leaderboard.stats?.nps} digits={2}/>
                 </strong></div>
               {/if}
 
-              {#if leaderboard.stats.bombs}
+              {#if leaderboard?.stats?.bombs}
                 <div transition:fade><i class="fas fa-bomb"></i> Bombs: <strong>
-                  <Value value={leaderboard.stats.bombs} digits={0} zero="0"/>
+                  <Value value={leaderboard.stats?.bombs} digits={0} zero="0"/>
                 </strong></div>
               {/if}
 
-              {#if leaderboard.stats.obstacles}
+              {#if leaderboard?.stats?.obstacles}
                 <div transition:fade><i class="fas fa-skull"></i> Obstacles: <strong>
-                  <Value value={leaderboard.stats.obstacles} digits={0} zero="0"/>
+                  <Value value={leaderboard.stats?.obstacles} digits={0} zero="0"/>
                 </strong></div>
               {/if}
 
-              {#if leaderboard.stats.paritySummary}
-                {#if leaderboard.stats.paritySummary.errors}
+              {#if leaderboard?.stats?.paritySummary}
+                {#if leaderboard?.stats?.paritySummary?.errors}
                   <div transition:fade><i class="fas fa-exclamation-circle"></i> Errors: <strong>
-                    <Value value={leaderboard.stats.paritySummary.errors} digits={0} zero="0"/>
+                    <Value value={leaderboard.stats?.paritySummary?.errors} digits={0} zero="0"/>
                   </strong></div>
                 {/if}
 
-                {#if leaderboard.stats.paritySummary.warns}
+                {#if leaderboard?.stats?.paritySummary?.warns}
                   <div transition:fade><i class="fas fa-exclamation-triangle"></i> Warnings: <strong>
-                    <Value value={leaderboard.stats.paritySummary.warns} digits={0} zero="0"/>
+                    <Value value={leaderboard.stats?.paritySummary?.warns} digits={0} zero="0"/>
                   </strong></div>
                 {/if}
 
-                {#if leaderboard.stats.paritySummary.resets}
+                {#if leaderboard?.stats?.paritySummary?.resets}
                   <div transition:fade><i class="fas fa-redo"></i> Resets: <strong>
-                    <Value value={leaderboard.stats.paritySummary.resets} digits={0} zero="0"/>
+                    <Value value={leaderboard.stats?.paritySummary?.resets} digits={0} zero="0"/>
                   </strong></div>
                 {/if}
               {/if}
@@ -230,14 +266,16 @@
         </header>
         {/if}
 
+        {#if type !== 'accsaber'}
         <nav class="diff-switch">
-          {#if !withoutDiffSwitcher && diffs && diffs.length}
-              <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
-          {/if}
+            {#if !withoutDiffSwitcher && diffs && diffs.length}
+                <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
+            {/if}
 
-          <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
-                    loadingValue={currentlyLoadedDiff} />
+            <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
+                      loadingValue={currentlyLoadedDiff} />
         </nav>
+        {/if}
 
         {#if scores && scores.length}
           <div class="scores-grid grid-transition-helper">
@@ -256,7 +294,9 @@
 
               <div class="player">
                 <Avatar player={score.player}/>
-                <PlayerNameWithFlag player={score.player} on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}/>
+                <PlayerNameWithFlag player={score.player} type={type === 'accsaber' ? 'accsaber' : 'recent'}
+                                    on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                />
               </div>
 
               <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
@@ -265,16 +305,25 @@
                 <div class="pp with-badge">
                   <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                     <span slot="label">
-                      <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
-                          whatIf={opt(score, 'score.whatIfPp')}
-                          inline={false} color="white"
-                      />
+                      {#if type === 'accsaber'}
+                        <Pp playerId={opt(score, 'player.playerId')}
+                            pp="{opt(score, 'score.ap')}" weighted={opt(score, 'score.weightedAp')}
+                            zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                            suffix="AP"
+                            color="white"
+                        />
+                      {:else}
+                        <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
+                            whatIf={opt(score, 'score.whatIfPp')}
+                            inline={false} color="white"
+                        />
+                      {/if}
                     </span>
                   </Badge>
                 </div>
 
                 <div class="percentage with-badge">
-                  <Accuracy score={score.score} showPercentageInstead={true} noSecondMetric={true} />
+                  <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true} />
                 </div>
 
                 <div class="score with-badge">
@@ -292,9 +341,10 @@
           {/each}
           </div>
 
-          <Pager totalItems={$leaderboardStore.totalItems} itemsPerPage={LEADERBOARD_SCORES_PER_PAGE} itemsPerPageValues={null}
+          <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
                  currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'} hide={currentType !== 'global'}
+                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+                 hide={!['global', 'accsaber'].includes(currentType)}
                  on:page-changed={onPageChanged}
           />
         {:else}

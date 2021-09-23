@@ -6,6 +6,7 @@
   export let useShortName = false;
   export let reverseColors = false;
   export let stars = null;
+  export let starsSuffix = "*"
 
   $: diffInfo = diff ? getHumanDiffInfo(diff) : null;
   $: title = useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName;
@@ -16,7 +17,7 @@
         style="color: {reverseColors ? 'white' : diffInfo.color}; background-color: {reverseColors ? diffInfo.color : 'transparent'}"
         {title}>
     {#if stars}
-      <Value value={stars} suffix="*" zero="" {title}/>
+      <Value value={stars} suffix={starsSuffix} zero="" {title}/>
     {:else}
       {useShortName ? diffInfo.shortName : diffInfo.fullName}
     {/if}

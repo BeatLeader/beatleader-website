@@ -1,6 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import createScoresStore from '../../stores/http/http-scores-store.js';
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
@@ -19,12 +20,13 @@
   export let initialPage = 1;
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
+  export let withAccSaber = false;
 
   const beatSaviorService = createBeatSaviorService();
 
   let scoresStore = createScoresStore(
     playerId,
-    ['recent', 'top', 'beatsavior'].includes(initialType) ? initialType : 'recent',
+    ['recent', 'top', 'beatsavior', 'accsaber'].includes(initialType) ? initialType : 'recent',
     !isNaN(parseInt(initialPage, 10)) ? parseInt(initialPage, 10) : 1,
     initialState,
     initialStateType
@@ -38,6 +40,7 @@
     {id: 'recent', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/recent/1`},
     {id: 'top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/top/1`},
     {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/1`},
+    {id: 'accsaber', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/1`},
   ];
 
   let scoresTypes = allScoresTypes;
@@ -74,18 +77,22 @@
     pagerTotalScores = numOfScores
   }
 
-  async function updateAvailableScoresTypes(playerId) {
+  async function updateAvailableScoresTypes(playerId, withAccSaber) {
     if (!playerId) return;
 
-    if (await beatSaviorService.isDataForPlayerAvailable(playerId)) {
-      scoresTypes = allScoresTypes;
-    } else {
-      scoresTypes = allScoresTypes.filter(st => st.id !== 'beatsavior');
+    let newScoresTypes = allScoresTypes;
+    if (!await beatSaviorService.isDataForPlayerAvailable(playerId)) {
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'beatsavior');
     }
+
+    if (!withAccSaber) {
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'accsaber');
+    }
+
+    scoresTypes = newScoresTypes;
   }
 
-  // TODO: refresh when beat savior data is fetched for the first time
-  // $: updateAvailableScoresTypes(playerId)
+  $: updateAvailableScoresTypes(playerId, withAccSaber)
 
   $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
   $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
@@ -112,7 +119,7 @@
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} {type} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} {type} {withAccSaber} />
     {/each}
   </div>
   {:else}
@@ -120,7 +127,7 @@
   {/if}
 
   {#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
-    <Pager totalItems={pagerTotalScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
+    <Pager totalItems={pagerTotalScores} itemsPerPage={type === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
            currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
            mode={pagerTotalScores ? 'pages' : 'simple'}
            on:page-changed={onPageChanged}

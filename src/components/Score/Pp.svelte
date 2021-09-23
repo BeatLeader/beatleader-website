@@ -14,6 +14,7 @@
   export let color = "var(--ppColour)"
   export let leaderboardId = null;
   export let whatIf = null;
+  export let suffix = "pp";
 
   let tooltipOpacity = 0;
   let tooltipX = null;
@@ -29,7 +30,7 @@
   $: secondaryMetricsPref = opt($configStore, 'preferences.secondaryPp', 'attribution')
   $: secondaryMetricsType = secondaryMetricsPref === 'attribution' && attribution !== null && attribution !== undefined ? 'attribution' : 'weighted'
   $: secondaryMetrics = secondaryMetricsType === 'attribution' ? attribution : weighted
-  $: secondaryMetricsTitle = secondaryMetricsType === 'attribution' ? 'Actual contribution of the score to the total PP' : 'Weighted PP'
+  $: secondaryMetricsTitle = secondaryMetricsType === 'attribution' ? `Actual contribution of the score to the total ${suffix.toUpperCase()}` : `Weighted ${suffix.toUpperCase()}`
 </script>
 
 <span class="pp" style="--color: {color}">
@@ -43,7 +44,9 @@
   <span class="value">
     <Value value="{pp}" {zero} {withZeroSuffix} prevValue={secondaryMetrics}
            prevWithSign={secondaryMetricsType === 'attribution'} prevTitle={secondaryMetricsTitle}
-           prevAbsolute={secondaryMetrics !== null} suffix="pp" {...$$restProps}>
+           prevAbsolute={secondaryMetrics !== null} {suffix} {...$$restProps}
+           forcePrev={pp === weighted}
+    >
       <span slot="value" let:formatted class="main-value"  class:whatIfAvailable={whatIf} use:hoverable on:hover={onHover} on:unhover={onUnhover}>
         {formatted} <i class="fas fa-question"></i>
       </span>

@@ -3,7 +3,6 @@
   import processPlayerData from './utils/profile';
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
-  import createAccSaberService from '../../services/accsaber'
   import {opt} from '../../utils/js'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
@@ -20,12 +19,10 @@
   export let error = null;
   export let skeleton = false;
   export let twitchVideos = null;
+  export let accSaberPlayerInfo = null;
+  export let accSaberCategories = null;
 
   const pageContainer = getContext('pageContainer');
-
-  let accSaberPlayerInfo = null;
-  let accSaberCategories = null;
-  const accSaberService = createAccSaberService();
 
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => playerStats = stats)
@@ -62,13 +59,6 @@
       )
   }
 
-  async function updateAccSaberPlayerInfo(playerId) {
-    if (!playerId) return;
-
-    accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
-    accSaberCategories = await accSaberService.getCategories();
-  }
-
   $: isCached = !!(playerData && playerData.scoresLastUpdated)
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -76,7 +66,6 @@
   $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
   $: calcOnePpBoundary(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
-  $: updateAccSaberPlayerInfo(playerId)
 
   $: swipeCards = playerId
     ? [

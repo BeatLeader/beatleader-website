@@ -8,21 +8,26 @@
   import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
   import {scrollToTargetAdjusted} from '../utils/browser'
+  import createAccSaberService from '../services/accsaber'
+  import eventBus from '../utils/broadcast-channel-pubsub'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
   import MiniRanking from '../components/Ranking/Mini.svelte'
-  import eventBus from '../utils/broadcast-channel-pubsub'
   import TwitchVideos from '../components/Player/TwitchVideos.svelte'
 
   export let initialPlayerId = null;
   export let initialScoresType = 'recent';
   export let initialScoresPage = 1;
 
-  const SCORES_TYPES = ['recent', 'top', 'beatsavior']
+  const SCORES_TYPES = ['recent', 'top', 'beatsavior', 'accsaber']
 
   document.body.classList.remove('slim');
 
   let playerEl = null;
+
+  let accSaberPlayerInfo = null;
+  let accSaberCategories = null;
+  const accSaberService = createAccSaberService();
 
   let playerStore = createPlayerInfoWithScoresStore(
     initialPlayerId,
@@ -77,6 +82,13 @@
     twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
   }
 
+  async function updateAccSaberPlayerInfo(playerId) {
+    if (!playerId) return;
+
+    accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
+    accSaberCategories = await accSaberService.getCategories();
+  }
+
   onMount(async () => {
     const twitchUnsubscribe = eventBus.on('player-twitch-videos-updated', ({playerId: twitchPlayerId, twitchProfile}) => {
       if (twitchPlayerId !== currentPlayerId) return;
@@ -103,6 +115,7 @@
   $: browserTitle = `${opt($playerStore, 'name', 'Player')} / ${currentType} / ${currentPage} - ${ssrConfig.name}`
 
   $: updateTwitchProfile(currentPlayerId);
+  $: updateAccSaberPlayerInfo(currentPlayerId);
 
   let scoresPlayerId = null;
   let scoresState = null;
@@ -129,7 +142,9 @@
       <p class="error">Player not found.</p>
     </div>
   {:else}
-    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos} />
+    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos}
+             {accSaberCategories} {accSaberPlayerInfo}
+    />
 
     {#if scoresPlayerId}
       <Scores playerId={scoresPlayerId}
@@ -140,6 +155,7 @@
               numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
               on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
               fixedBrowserTitle={browserTitle}
+              withAccSaber={accSaberCategories && accSaberCategories.length && accSaberPlayerInfo && accSaberPlayerInfo.length}
       />
     {/if}
   {/if}
