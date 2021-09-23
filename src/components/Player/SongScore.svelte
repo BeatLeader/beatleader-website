@@ -84,7 +84,7 @@
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior', 'accsaber'].includes(type)}
+        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior'].includes(type)}
                   category={leaderboard?.categoryDisplayName ?? null} {type}
         />
       </span>

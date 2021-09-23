@@ -54,7 +54,7 @@
 
     <div class="difficulty">
       <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}
-                  stars={leaderboard.complexity ?? leaderboard.stars} starsSuffix={leaderboard.complexity ? '' : '*'}
+                  stars={leaderboard.complexity ?? leaderboard.stars} starsSuffix={leaderboard.complexity ? '' : '★'}
       />
     </div>
   </div>
