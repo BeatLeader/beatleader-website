@@ -66,13 +66,14 @@
   $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
   $: calcOnePpBoundary(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
+  $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)
 
   $: swipeCards = playerId
     ? [
     {
       name: `stats-${playerId}`,
       component: ScoreSaberStats,
-      props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
+      props: {playerId, scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton, rankHistory: rankChartData},
       delay: 500,
     },
   ]
