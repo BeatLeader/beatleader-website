@@ -56,9 +56,21 @@
 
     hash = hash.toLowerCase();
 
-    allSongRunsWithOtherPlayers = (await beatSaviorRepository().getAllFromIndex('beat-savior-hash', hash))
-      .filter(bs => bs && bs.diff === diff && ((bs.leaderboardId && allCachedPlayers && allCachedPlayers[bs.playerId]) || bs.playerId === playerId))
-      .map(bs => ({...bs, playerName: opt(allCachedPlayers, `${bs.playerId}.name`, null)}))
+    allSongRunsWithOtherPlayers = Object.entries(
+      (await beatSaviorRepository().getAllFromIndex('beat-savior-hash',
+        hash))
+        .filter(bs => bs && bs.diff === diff && ((allCachedPlayers && allCachedPlayers[bs.playerId]) || bs.playerId === playerId))
+        .map(bs => ({...bs, playerName: opt(allCachedPlayers, `${bs.playerId}.name`, null)}))
+        .reduce((cum, bs) => {
+          if (!cum[bs.playerId]) cum[bs.playerId] = [];
+
+          cum[bs.playerId].push(bs);
+          cum[bs.playerId].sort((a, b) => b?.trackers?.scoreTracker?.rawRatio - a?.trackers?.scoreTracker?.rawRatio);
+
+          return cum;
+        }, {}),
+    )
+      .reduce((cum, [playerId, bsArr]) => cum.concat(playerId === bsArr[0].playerId ? bsArr : bsArr[0]), [])
       .sort((a, b) => b.timeSet && a.timeSet ? b.timeSet - a.timeSet : 0);
 
     allSongRuns = withOtherPlayers
