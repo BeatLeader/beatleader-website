@@ -1,6 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import createScoresStore from '../../stores/http/http-scores-store.js';
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
@@ -126,7 +127,7 @@
   {/if}
 
   {#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
-    <Pager totalItems={pagerTotalScores} itemsPerPage={PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
+    <Pager totalItems={pagerTotalScores} itemsPerPage={type === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
            currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
            mode={pagerTotalScores ? 'pages' : 'simple'}
            on:page-changed={onPageChanged}

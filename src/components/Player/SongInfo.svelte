@@ -13,6 +13,7 @@
   export let twitchUrl = null
   export let notClickable = false;
   export let category = null;
+  export let type = 'global';
 
   let ssCoverDoesNotExists = false;
   let beatSaverCoverDoesNotExists = false;
@@ -37,8 +38,8 @@
         <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => ssCoverDoesNotExists = true}/>
       {/if}
     {:else}
-      <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
-         on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+      <a href={`/leaderboard/${type === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
+         on:click|preventDefault={navigate(`/leaderboard/${type === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
         {#if ssCoverDoesNotExists}
           {#if beatSaverCoverDoesNotExists || !beatSaverCoverUrl}
             <img src="/assets/song-default.png" alt=""/>
@@ -63,8 +64,8 @@
       <span class="name">{song.name} {song.subName}</span>
       <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
     {:else}
-      <a href={`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
-         on:click|preventDefault={navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+      <a href={`/leaderboard/${type === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
+         on:click|preventDefault={navigate(`/leaderboard/${type === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
         <span class="name">{song.name} {song.subName}</span>
         <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
 

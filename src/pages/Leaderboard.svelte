@@ -7,8 +7,7 @@
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
-  import {formatNumber} from '../utils/format'
-  import {configStore} from '../stores/config'
+  import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../utils/accsaber/consts'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
@@ -21,6 +20,7 @@
   import Duration from '../components/Song/Duration.svelte'
   import Switcher from '../components/Common/Switcher.svelte'
   import Icons from '../components/Song/Icons.svelte'
+  import {formatNumber} from '../utils/format'
 
   export let leaderboardId;
   export let type = 'global';
@@ -47,10 +47,37 @@
   let boxEl = null;
   let leaderboard = null;
 
-  let typeOptions = [
-    {id: 'global', label: 'Global', iconFa: 'fas fa-globe-americas', url: `/leaderboard/global/${currentLeaderboardId}/1`},
-    {id: 'friends', label: 'Friends', iconFa: 'fas fa-user-friends', url: `/leaderboard/friends/${currentLeaderboardId}/1`},
-  ];
+  let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
+
+  let typeOptions =
+    (
+      type === 'accsaber'
+        ? [
+          {
+            id: 'accsaber',
+            label: 'AccSaber',
+            icon: '<div class="accsaber-icon">',
+            url: `/leaderboard/accsaber/${currentLeaderboardId}/1`,
+          }
+        ]
+        : []
+    )
+      .concat(
+        [
+          {
+            id: 'global',
+            label: 'Global',
+            iconFa: 'fas fa-globe-americas',
+            url: `/leaderboard/global/${currentLeaderboardId}/1`,
+          },
+          {
+            id: 'friends',
+            label: 'Friends',
+            iconFa: 'fas fa-user-friends',
+            url: `/leaderboard/friends/${currentLeaderboardId}/1`,
+          },
+        ],
+      );
 
   let currentTypeOption = typeOptions[0];
 
@@ -230,14 +257,16 @@
         </header>
         {/if}
 
+        {#if type !== 'accsaber'}
         <nav class="diff-switch">
-          {#if !withoutDiffSwitcher && diffs && diffs.length}
-              <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
-          {/if}
+            {#if !withoutDiffSwitcher && diffs && diffs.length}
+                <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
+            {/if}
 
-          <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
-                    loadingValue={currentlyLoadedDiff} />
+            <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
+                      loadingValue={currentlyLoadedDiff} />
         </nav>
+        {/if}
 
         {#if scores && scores.length}
           <div class="scores-grid grid-transition-helper">
@@ -256,7 +285,9 @@
 
               <div class="player">
                 <Avatar player={score.player}/>
-                <PlayerNameWithFlag player={score.player} on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}/>
+                <PlayerNameWithFlag player={score.player} type={type === 'accsaber' ? 'accsaber' : 'recent'}
+                                    on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                />
               </div>
 
               <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
@@ -265,16 +296,25 @@
                 <div class="pp with-badge">
                   <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                     <span slot="label">
-                      <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
-                          whatIf={opt(score, 'score.whatIfPp')}
-                          inline={false} color="white"
-                      />
+                      {#if type === 'accsaber'}
+                        <Pp playerId={opt(score, 'player.playerId')}
+                            pp="{opt(score, 'score.ap')}" weighted={opt(score, 'score.weightedAp')}
+                            zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                            suffix="AP"
+                            color="white"
+                        />
+                      {:else}
+                        <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
+                            whatIf={opt(score, 'score.whatIfPp')}
+                            inline={false} color="white"
+                        />
+                      {/if}
                     </span>
                   </Badge>
                 </div>
 
                 <div class="percentage with-badge">
-                  <Accuracy score={score.score} showPercentageInstead={true} noSecondMetric={true} />
+                  <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true} />
                 </div>
 
                 <div class="score with-badge">
@@ -292,9 +332,10 @@
           {/each}
           </div>
 
-          <Pager totalItems={$leaderboardStore.totalItems} itemsPerPage={LEADERBOARD_SCORES_PER_PAGE} itemsPerPageValues={null}
+          <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
                  currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'} hide={currentType !== 'global'}
+                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+                 hide={!['global', 'accsaber'].includes(currentType)}
                  on:page-changed={onPageChanged}
           />
         {:else}

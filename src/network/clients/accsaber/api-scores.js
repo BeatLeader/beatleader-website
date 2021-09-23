@@ -51,7 +51,7 @@ const process = response => {
 const get = async ({playerId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => {
   const response = await queue.ACCSABER.scores(playerId, page, priority, queueOptions);
 
-  return {...response, body: {response: response.body, fetchOptions: {playerId}}}
+  return {...response, body: {response: response.body, fetchOptions: {playerId, page}}}
 }
 
 const client = createClient(get, process);
