@@ -6,7 +6,7 @@
 
   export let playerId = null;
   export let rankHistory = null;
-  export let height = "300px";
+  export let height = "350px";
 
   let canvas = null;
   let chart = null;
@@ -37,6 +37,7 @@
 
     if (rankHistory.length < 50) rankHistory = Array(50 - rankHistory.length).fill(null).concat(rankHistory);
 
+    const gridColor = '#2a2a2a'
     const rankColor = theme && theme.alternate ? theme.alternate : "#3e95cd";
     const ppColor = theme && theme.increase ? theme.increase : "#007100";
     const rankedPlayCountColor = theme && theme.dimmed ? theme.dimmed: "#3e3e3e";
@@ -69,6 +70,9 @@
         autoSkip: true,
         autoSkipPadding: 4,
       },
+      grid: {
+        color: gridColor
+      }
     };
 
     const yAxes = {
@@ -85,6 +89,9 @@
             return val
           },
         },
+        grid: {
+          color: gridColor,
+        }
       },
     };
 
@@ -208,14 +215,14 @@
 
 {#if rankHistory && rankHistory.length}
   <section class="chart" style="--height: {height}">
-    <canvas class="chartjs" bind:this={canvas} height="300"></canvas>
+    <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
   </section>
 {/if}
 
 <style>
     section {
         position: relative;
-        margin: auto;
+        margin: 1rem auto 0 auto;
         height: var(--height, 300px);
     }
 
