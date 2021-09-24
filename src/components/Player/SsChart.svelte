@@ -163,11 +163,13 @@
         position: 'left',
         reverse: true,
         title: {
-          display: true,
+          display: false,
           text: 'Rank',
         },
         ticks: {
-          callback: val => val
+          callback: (val) => {
+            if (val === Math.floor(val)) return val;
+          }
         },
         grid: {
           color: gridColor,
@@ -194,7 +196,7 @@
         const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
 
         [
-          {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true},
+          {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true, axisTitleDisplay: false},
           {
             key: 'rankedPlayCount',
             name: 'Ranked play count',
@@ -211,7 +213,7 @@
           },
         ]
           .forEach(obj => {
-            const {key, name, axisDisplay, usePrevAxis, ...options} = obj;
+            const {key, name, axisDisplay, axisTitleDisplay, usePrevAxis, ...options} = obj;
             const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key] ?? null);
 
             if (!usePrevAxis) lastYIdx++;
@@ -220,7 +222,7 @@
               display: axisDisplay,
               position: 'right',
               title: {
-                display: axisDisplay,
+                display: !!axisTitleDisplay,
                 text: name,
               },
               ticks: {
@@ -317,6 +319,26 @@
 
     if (!chart)
     {
+      const customYAxisPosition = {
+        id: 'customYAxisPosition',
+        afterDraw: (chart, args, opts) => {
+          const { ctx, chartArea: { top, right } } = chart;
+
+          Object.entries(opts).map(([axis, opt]) => {
+            if (chart?.scales?.[axis] && opts?.[axis]?.text && opt?.display) {
+              ctx.fillStyle = opts?.[axis]?.color ?? Chart.defaults.color
+              ctx.font = opts?.[axis]?.font ?? '12px "Helvetica Neue", Helvetica, Arial, sans-serif'
+
+              const {width} = ctx.measureText(opts[axis].text);
+              const offsetX = Math.floor((chart.scales[axis].width - width) / 2);
+
+              ctx.fillText(opts[axis].text, chart.scales[axis].left + offsetX, chart.scales[axis].top -
+                (opts?.[axis]?.offsetY ?? 15))
+            }
+          })
+        }
+      }
+
       chart = new Chart(
             canvas,
             {
@@ -325,6 +347,11 @@
               maintainAspectRatio: false,
               data: {labels, datasets},
               options: {
+                layout: {
+                  padding: {
+                    right: 0
+                  }
+                },
                 interaction: {
                   mode: 'index',
                   intersect: false,
@@ -345,12 +372,23 @@
                       },
                     }
                   },
+                  customYAxisPosition: {
+                    y: {
+                      display: true,
+                      text: 'Rank',
+                    },
+                    y1: {
+                      display: true,
+                      text: 'PP',
+                    }
+                  }
                 },
                 scales: {
                   x: xAxis,
                   ...yAxes,
                 },
               },
+              plugins: [customYAxisPosition],
             },
           );
     }
