@@ -16,9 +16,6 @@
   let canvas = null;
   let chart = null;
 
-  let themeName = 'darkss';
-  let theme = null;
-
   let lastHistoryHash = null;
   let playerHistory = null;
   let playerScores = null;
@@ -85,11 +82,11 @@
     if (rankHistory.length < 50) rankHistory = Array(50 - rankHistory.length).fill(null).concat(rankHistory);
 
     const gridColor = '#2a2a2a'
-    const rankColor = theme && theme.alternate ? theme.alternate : "#3e95cd";
-    const ppColor = theme && theme.increase ? theme.increase : "#007100";
-    const rankedPlayCountColor = theme && theme.dimmed ? theme.dimmed: "#3e3e3e";
-    const totalPlayCountColor = theme && theme.faded ? theme.faded: "#666";
-    const activityColor = theme && theme.dimmed ? theme.dimmed : "#2a2a2a"
+    const rankColor = "#3e95cd";
+    const ppColor = "#007100";
+    const rankedPlayCountColor = "#3e3e3e";
+    const totalPlayCountColor = "#666";
+    const activityColor = "#2a2a2a"
 
     const data = rankHistory;
 
