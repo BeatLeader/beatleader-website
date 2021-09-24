@@ -1,12 +1,17 @@
 <script>
   import Chart from 'chart.js/auto'
+  import {onMount} from 'svelte'
   import playersHistoryRepository from '../../db/repository/players-history'
+  import createScoresService from '../../services/scoresaber/scores'
   import {formatNumber} from '../../utils/format'
-  import {dateFromString, formatDateRelativeInUnits, toSSDate} from '../../utils/date'
+  import {addToDate, DAY, formatDateRelativeInUnits, toSSDate} from '../../utils/date'
+  import eventBus from '../../utils/broadcast-channel-pubsub'
 
   export let playerId = null;
   export let rankHistory = null;
   export let height = "350px";
+
+  const scoresService = createScoresService();
 
   let canvas = null;
   let chart = null;
@@ -16,10 +21,13 @@
 
   let lastHistoryHash = null;
   let playerHistory = null;
+  let playerScores = null;
+  let activityHistory = null;
 
-  const calcHistoryHash = (rankHistory, additionalHistory) =>
+  const calcHistoryHash = (rankHistory, additionalHistory, activityHistory) =>
     (rankHistory && rankHistory.length ? rankHistory.join(':') : '') +
-    (additionalHistory ? Object.values(additionalHistory).map(h => Object.values(h).join(',')).join(':') : '')
+    (additionalHistory ? Object.values(additionalHistory).map(h => Object.values(h).join(',')).join(':') : '') +
+    (activityHistory && activityHistory.length ? activityHistory.join(':') : '')
   ;
 
   async function refreshPlayerHistory(playerId) {
@@ -28,7 +36,46 @@
     playerHistory = await playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId) ?? null;
   }
 
-  async function setupChart(canvas, rankHistory, additionalHistory) {
+  async function refreshPlayerScores(playerId) {
+    if (!playerId) return;
+
+    playerScores = await scoresService.getPlayerScores(playerId)
+
+    const ssToday = toSSDate(new Date());
+    const oldestDate = addToDate(-49 * DAY, ssToday);
+    const lastScores = playerScores
+      .filter(score => score.timeSet && score.timeSet > oldestDate)
+      .reduce((cum, score) => {
+        const allSongScores = [score.timeSet.getTime()]
+          .concat(
+            score.history && score.history.length
+              ? score.history.filter(h => h.timeSet && h.timeSet > oldestDate).map(h => h.timeSet.getTime())
+              : []
+          );
+
+        allSongScores.forEach(t => {
+          const ssDate = toSSDate(new Date(t));
+          const ssTimestamp = ssDate.getTime();
+
+          if (!cum.hasOwnProperty(ssTimestamp)) cum[ssTimestamp] = 0;
+
+          cum[ssTimestamp]++;
+        });
+
+        return cum;
+      }, {})
+    ;
+    if (Object.keys(lastScores)?.length)
+      activityHistory = Array(50).fill(0)
+        .map((_, idx) => {
+          const agoTimeset = (addToDate(-(49 - idx) * DAY, ssToday)).getTime();
+
+          return lastScores[agoTimeset] ? lastScores[agoTimeset] : 0;
+        })
+      ;
+  }
+
+  async function setupChart(canvas, rankHistory, additionalHistory, activityHistory) {
     if (!canvas || !rankHistory || !Object.keys(rankHistory).length || chartHash === lastHistoryHash) return;
 
     lastHistoryHash = chartHash;
@@ -42,7 +89,7 @@
     const ppColor = theme && theme.increase ? theme.increase : "#007100";
     const rankedPlayCountColor = theme && theme.dimmed ? theme.dimmed: "#3e3e3e";
     const totalPlayCountColor = theme && theme.faded ? theme.faded: "#666";
-    const activityColor = theme && theme.dimmed ? theme.dimmed : "#3e3e3e"
+    const activityColor = theme && theme.dimmed ? theme.dimmed : "#2a2a2a"
 
     const data = rankHistory;
 
@@ -95,6 +142,8 @@
       },
     };
 
+    let lastYIdx = 0;
+
     if (additionalHistory && additionalHistory.length) {
       const additionalHistoryData = additionalHistory.reduce((cum, historyItem) => {
         const [ssTimestamp, pp] = Object.entries(historyItem)[0];
@@ -113,50 +162,94 @@
 
         [
           {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true},
-          {key: 'rankedPlayCount', name: 'Ranked play count', borderColor: rankedPlayCountColor, round: 0, axisDisplay: false},
-          {key: 'totalPlayCount', name: 'Total play count', borderColor: totalPlayCountColor, round: 0, axisDisplay: false}
-          ]
-          .forEach((obj, idx) => {
+          {
+            key: 'rankedPlayCount',
+            name: 'Ranked play count',
+            borderColor: rankedPlayCountColor,
+            round: 0,
+            axisDisplay: false,
+          },
+          {
+            key: 'totalPlayCount',
+            name: 'Total play count',
+            borderColor: totalPlayCountColor,
+            round: 0,
+            axisDisplay: false,
+          },
+        ]
+          .forEach(obj => {
             const {key, name, axisDisplay, ...options} = obj;
-          const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key] ?? null);
+            const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key] ?? null);
 
-          const axisKey = `y${idx+1}`
-          yAxes[axisKey] = {
-            display: axisDisplay,
-            position: 'right',
-            title: {
+            lastYIdx++;
+            const axisKey = `y${lastYIdx}`
+            yAxes[axisKey] = {
               display: axisDisplay,
-              text: name,
-            },
-            ticks: {
-              callback: function (val) {
-                return val
+              position: 'right',
+              title: {
+                display: axisDisplay,
+                text: name,
               },
-            },
-            grid: {
-              drawOnChartArea: false,
-            },
-          };
+              ticks: {
+                callback: function (val) {
+                  return val
+                },
+              },
+              grid: {
+                drawOnChartArea: false,
+              },
+            };
 
-          datasets.push({
-            ...options,
-            yAxisID: axisKey,
-            label: name,
-            data: fieldData,
-            fill: false,
-            borderWidth: 2,
-            pointRadius: 1,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.4,
-            type: 'line',
-            spanGaps: true,
-            segment: {
-              borderWidth: ctx => skipped(ctx, 1),
-              borderDash: ctx => skipped(ctx, [6, 6]),
-            }
+            datasets.push({
+              ...options,
+              yAxisID: axisKey,
+              label: name,
+              data: fieldData,
+              fill: false,
+              borderWidth: 2,
+              pointRadius: 1,
+              cubicInterpolationMode: 'monotone',
+              tension: 0.4,
+              type: 'line',
+              spanGaps: true,
+              segment: {
+                borderWidth: ctx => skipped(ctx, 1),
+                borderDash: ctx => skipped(ctx, [6, 6]),
+              },
+            });
           });
-        });
       }
+    }
+
+    if (activityHistory?.length) {
+      lastYIdx++;
+
+      const key = `y${lastYIdx}`
+
+      yAxes[key] = {
+        display: false,
+        position: 'right',
+        title: {
+          display: false,
+          text: name,
+        },
+        ticks: {
+          callback: val => val
+        },
+        grid: {
+          drawOnChartArea: false,
+        },
+      };
+
+      datasets.push({
+        yAxisID: key,
+        label: 'Scores set',
+        data: activityHistory,
+        fill: false,
+        backgroundColor: activityColor,
+        round: 0,
+        type: 'bar',
+      });
     }
 
     const labels = daysAgo.map(d => formatDateRelativeInUnits(-d, 'day'))
@@ -207,10 +300,23 @@
     }
   }
 
+  onMount(async () => {
+    const playerScoresUpdatedUnsubscriber = eventBus.on('player-scores-updated', async({playerId: updatedPlayerId}) => {
+      if (updatedPlayerId !== playerId) return;
+
+      await refreshPlayerScores(updatedPlayerId)
+    });
+
+    return () => {
+      playerScoresUpdatedUnsubscriber();
+    }
+  })
+
   $: refreshPlayerHistory(playerId);
+  $: refreshPlayerScores(playerId);
   $: additionalHistory = playerHistory && playerHistory.length ? playerHistory.map(h => ({[h.ssDate.getTime()]: {pp: h.pp, rankedPlayCount: h.rankedPlayCount, totalPlayCount: h.totalPlayCount}})) : null;
-  $: chartHash = calcHistoryHash(rankHistory, additionalHistory);
-  $: if (chartHash) setupChart(canvas, rankHistory, additionalHistory)
+  $: chartHash = calcHistoryHash(rankHistory, additionalHistory, activityHistory);
+  $: if (chartHash) setupChart(canvas, rankHistory, additionalHistory, activityHistory)
 </script>
 
 {#if rankHistory && rankHistory.length}
