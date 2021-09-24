@@ -7,13 +7,20 @@
   import {formatNumber} from '../../utils/format'
   import {addToDate, DAY, formatDateRelativeInUnits, toSSDate} from '../../utils/date'
   import eventBus from '../../utils/broadcast-channel-pubsub'
+  import createContainerStore from '../../stores/container'
+  import {debounce} from '../../utils/debounce'
 
   export let playerId = null;
   export let rankHistory = null;
   export let height = "350px";
 
+  const CHART_DEBOUNCE = 300;
+
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
+
+  let chartContainerEl = null;
+  const containerStore = createContainerStore();
 
   let canvas = null;
   let chart = null;
@@ -110,8 +117,8 @@
     beatSaviorFailedHistory = mapScoresToHistory(countScores(lastScores, score => !(score.trackers.winTracker.won ?? false)));
   }
 
-  async function setupChart(canvas, rankHistory, additionalHistory, activityHistory, beatSaviorWonHistory, beatSaviorFailedHistory) {
-    if (!canvas || !rankHistory || !Object.keys(rankHistory).length || chartHash === lastHistoryHash) return;
+  async function setupChart(hash, canvas) {
+    if (!hash || !canvas || !rankHistory || !Object.keys(rankHistory).length || chartHash === lastHistoryHash) return;
 
     lastHistoryHash = chartHash;
 
@@ -179,13 +186,12 @@
 
     let lastYIdx = 0;
 
-    if (additionalHistory && additionalHistory.length) {
-      const additionalHistoryData = additionalHistory.reduce((cum, historyItem) => {
-        const [ssTimestamp, pp] = Object.entries(historyItem)[0];
-        let diffInDays = Math.floor((toSSDate(new Date()).getTime() - ssTimestamp) / (1000 * 60 * 60 * 24));
+    if (additionalHistory && Object.keys(additionalHistory).length) {
+      const additionalHistoryData = Object.entries(additionalHistory).reduce((cum, [ssTimestamp, historyItem]) => {
+        let diffInDays = Math.floor((toSSDate(new Date()).getTime() - ssTimestamp) / DAY);
         if (diffInDays < 0) diffInDays = 0;
 
-        cum[diffInDays] = pp;
+        cum[diffInDays] = historyItem;
 
         return cum;
       }, {})
@@ -292,7 +298,7 @@
     if (beatSaviorWonHistory?.length && beatSaviorFailedHistory?.length) {
       datasets.push({
         yAxisID: scoresAxisKey,
-        label: 'Beat Savior won',
+        label: 'Beat Savior pass',
         data: beatSaviorWonHistory,
         fill: false,
         backgroundColor: '#9c27b0',
@@ -304,7 +310,7 @@
 
       datasets.push({
         yAxisID: scoresAxisKey,
-        label: 'Beat Savior failed',
+        label: 'Beat Savior fail',
         data: beatSaviorFailedHistory,
         fill: false,
         backgroundColor: '#7f4e88',
@@ -316,6 +322,19 @@
     }
 
     const labels = daysAgo.map(d => formatDateRelativeInUnits(-d, 'day'))
+
+    if (chart) {
+      chart.destroy();
+      chart = null;
+      if (chartContainerEl) {
+        const canvas = chartContainerEl.querySelector('canvas');
+        if (canvas) {
+          canvas.style.height = null;
+          var ctx = canvas.getContext("2d");
+          ctx.canvas.height = height;
+        }
+      }
+    }
 
     if (!chart)
     {
@@ -411,16 +430,25 @@
     }
   })
 
+  let debouncedChartHash = null;
+  const debounceChartHash = debounce(chartHash => debouncedChartHash = chartHash, CHART_DEBOUNCE);
+
+  $: if (chartContainerEl) containerStore.observe(chartContainerEl)
+  $: containerWidth = $containerStore?.nodeWidth;
+
   $: refreshPlayerHistory(playerId);
   $: refreshPlayerScores(playerId);
   $: refreshPlayerBeatSaviorScores(playerId);
-  $: additionalHistory = playerHistory && playerHistory.length ? playerHistory.map(h => ({[h.ssDate.getTime()]: {pp: h.pp, rankedPlayCount: h.rankedPlayCount, totalPlayCount: h.totalPlayCount}})) : null;
-  $: chartHash = calcHistoryHash(rankHistory, additionalHistory, activityHistory, (beatSaviorWonHistory ?? []).concat(beatSaviorFailedHistory ?? []));
-  $: if (chartHash) setupChart(canvas, rankHistory, additionalHistory, activityHistory, beatSaviorWonHistory, beatSaviorFailedHistory)
+
+  $: additionalHistory = playerHistory && playerHistory.length ? playerHistory.reduce((cum, h) => ({...cum, [h.ssDate.getTime()]: {pp: h.pp, rankedPlayCount: h.rankedPlayCount, totalPlayCount: h.totalPlayCount}}), {}) : null;
+
+  $: chartHash = containerWidth ? calcHistoryHash(rankHistory, additionalHistory, activityHistory, (beatSaviorWonHistory ?? []).concat(beatSaviorFailedHistory ?? [])) + containerWidth : null;
+  $: debounceChartHash(chartHash)
+  $: if (debouncedChartHash) setupChart(debouncedChartHash, canvas)
 </script>
 
 {#if rankHistory && rankHistory.length}
-  <section class="chart" style="--height: {height}">
+  <section bind:this={chartContainerEl} class="chart" style="--height: {height}">
     <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
   </section>
 {/if}
