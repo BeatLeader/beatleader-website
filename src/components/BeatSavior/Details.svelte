@@ -70,7 +70,7 @@
           return cum;
         }, {}),
     )
-      .reduce((cum, [playerId, bsArr]) => cum.concat(playerId === bsArr[0].playerId ? bsArr : bsArr[0]), [])
+      .reduce((cum, [currentPlayerId, bsArr]) => cum.concat(currentPlayerId === playerId ? bsArr : bsArr[0]), [])
       .sort((a, b) => b.timeSet && a.timeSet ? b.timeSet - a.timeSet : 0);
 
     allSongRuns = withOtherPlayers
