@@ -8,7 +8,6 @@ const scoresStatsTweened = {};
 function updateScoresStats(playerData, playerStats) {
   if (!playerData) return null;
 
-  const playerInfo = opt(playerData, 'playerInfo');
   const scoreStats = opt(playerData, 'scoreStats');
 
   const statsDef = scoreStats
@@ -39,17 +38,6 @@ function updateScoresStats(playerData, playerStats) {
         bgColor: opt(s, 'bgColor', 'var(--dimmed)'),
       }
     })
-    .concat(
-      playerInfo['role'] && playerInfo['role'].length
-        ? [{
-          label: 'Role',
-          value: playerInfo['role'],
-          fluid: true,
-          type: 'text',
-          bgColor: 'var(--dimmed)',
-        }]
-        : [],
-    )
     .concat(
       (playerStats && playerStats.topPp && Number.isFinite(playerStats.topPp) ? [{
         label: 'Best PP',

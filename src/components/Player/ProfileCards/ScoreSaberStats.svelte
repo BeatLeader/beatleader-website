@@ -20,7 +20,11 @@
       {#if accStats}<ScoresStats stats={accStats}/>{/if}
       {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
     </div>
-    {#if ssBadges}<SsBadges badges={ssBadges}/>{/if}
+    {#if ssBadges}
+      <div class="up-to-tablet">
+        <SsBadges badges={ssBadges}/>
+      </div>
+    {/if}
   </div>
 {/if}
 {#if rankHistory}

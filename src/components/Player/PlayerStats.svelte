@@ -8,6 +8,7 @@
   import Status from './Status.svelte'
   import Skeleton from '../Common/Skeleton.svelte'
   import Error from '../Common/Error.svelte'
+  import Badge from '../Common/Badge.svelte'
 
   export let name;
   export let playerInfo;
@@ -23,8 +24,9 @@
     const country = opt(countryObj, 'country', null);
     if (!country) return null;
 
-    return `/ranking/${country.toLowerCase()}/${Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1}`;
+    return `/ranking/${country.toLowerCase()}/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`;
   }
+
   function navigateToCountryRanking(countryObj) {
     const url = getCountryRankingUrl(countryObj);
 
@@ -34,10 +36,11 @@
   function navigateToGlobalRanking(rank) {
     if (!rank) return;
 
-    navigate(`/ranking/global/${Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1}`)
+    navigate(`/ranking/global/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`)
   }
 
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
+  $: playerRole = playerInfo?.role ?? null;
 </script>
 
 {#if skeleton}
@@ -95,6 +98,12 @@
       </a>
     {/each}
   </h2>
+
+  {#if playerRole}
+    <div class="player-role up-to-tablet">
+      <Badge label={playerRole} onlyLabel={true} fluid={true} bgColor="var(--dimmed)" />
+    </div>
+  {/if}
 
   {#if error}
     <div>
@@ -156,6 +165,10 @@
 
     h2 a img {
         margin-bottom: 2px;
+    }
+
+    .player-role {
+        text-align: center;
     }
 
     @media (max-width: 768px) {

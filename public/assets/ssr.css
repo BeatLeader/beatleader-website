@@ -54,18 +54,6 @@ select {
     color: var(--decrease);
 }
 
-.mobile-only {
-    display: none;
-}
-
-.tablet-only {
-    display: none;
-}
-
-.up-to-tablet {
-    display: none;
-}
-
 *[title]:not([title=""]):not(.clickable) {cursor: help;}
 
 .beatsavior-icon {
@@ -147,6 +135,18 @@ select {
     pointer-events: fill;
 }
 
+.mobile-only {
+    display: none;
+}
+
+.tablet-only {
+    display: none;
+}
+
+.up-to-tablet {
+    display: none;
+}
+
 @media screen and (max-width: 767px) {
     .mobile-only {
         display: block;
@@ -154,6 +154,12 @@ select {
 
     .tablet-and-up {
         display: none!important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .above-tablet {
+        display: none;
     }
 }
 
