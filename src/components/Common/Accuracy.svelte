@@ -81,5 +81,5 @@
         overflow: hidden;
     }
 
-    .mods:empty {display: none}
+    .mods:empty {display: none!important;}
 </style>
