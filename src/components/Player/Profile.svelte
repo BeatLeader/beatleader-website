@@ -27,7 +27,9 @@
   const pageContainer = getContext('pageContainer');
 
   let playerStats = null;
-  eventBus.on('player-stats-calculated', stats => playerStats = stats)
+  eventBus.on('player-stats-calculated', stats => {
+    if (stats?.playerId && stats?.playerId === playerData?.playerId) playerStats = stats
+  })
 
   let onePpBoundery = null;
 
