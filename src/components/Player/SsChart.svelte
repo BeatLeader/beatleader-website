@@ -5,7 +5,7 @@
   import createScoresService from '../../services/scoresaber/scores'
   import createBeatSaviorService from '../../services/beatsavior'
   import {formatNumber} from '../../utils/format'
-  import {addToDate, DAY, formatDateRelativeInUnits, toSSDate} from '../../utils/date'
+  import {addToDate, dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../utils/date'
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import createContainerStore from '../../stores/container'
   import {debounce} from '../../utils/debounce'
@@ -186,7 +186,7 @@
 
     if (additionalHistory && Object.keys(additionalHistory).length) {
       const additionalHistoryData = Object.entries(additionalHistory).reduce((cum, [ssTimestamp, historyItem]) => {
-        let diffInDays = Math.floor((toSSDate(new Date()).getTime() - ssTimestamp) / DAY);
+        let diffInDays = Math.floor((toSSDate(new Date()).getTime() - parseInt(ssTimestamp, 10)) / DAY);
         if (diffInDays < 0) diffInDays = 0;
 
         cum[diffInDays] = historyItem;
@@ -438,7 +438,15 @@
   $: refreshPlayerScores(playerId);
   $: refreshPlayerBeatSaviorScores(playerId);
 
-  $: additionalHistory = playerHistory && playerHistory.length ? playerHistory.reduce((cum, h) => ({...cum, [h.ssDate.getTime()]: {pp: h.pp, rankedPlayCount: h.rankedPlayCount, totalPlayCount: h.totalPlayCount}}), {}) : null;
+  $: additionalHistory = playerHistory && playerHistory.length
+    ? playerHistory.reduce((cum, h) => {
+      const time = dateFromString(h.ssDate)?.getTime()
+      if (!time) return cum;
+
+      const history = {[time]: {pp: h.pp, rankedPlayCount: h.rankedPlayCount, totalPlayCount: h.totalPlayCount}};
+      return {...cum, ...history};
+    }, {})
+    : null;
 
   $: chartHash = containerWidth ? calcHistoryHash(rankHistory, additionalHistory, activityHistory, (beatSaviorWonHistory ?? []).concat(beatSaviorFailedHistory ?? [])) + containerWidth : null;
   $: debounceChartHash(chartHash)

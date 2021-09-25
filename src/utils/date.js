@@ -71,7 +71,7 @@ export function toSSDate(date) {
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
-    }).replace(/(\d+)\.(\d+)\.(\d+),\s(\d+):(\d+):(\d+)/, "$3-$2-$1")));
+    }).replace(/(\d+)\.(\d+)\.(\d+)\s*(?:,|o)\s(\d+):(\d+):(\d+)/, "$3-$2-$1")));
 }
 
 export function formatDate(val, dateStyle = 'short', timeStyle = 'medium') {
