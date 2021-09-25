@@ -12,7 +12,7 @@ import scoresRepository from '../../db/repository/scores'
 import beatSaviorRepository from '../../db/repository/beat-savior';
 import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
 import log from '../../utils/logger'
-import {addToDate, dateFromString, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
+import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
 import {opt} from '../../utils/js'
 import scores from '../../db/repository/scores'
 import {SsrHttpNotFoundError} from '../../network/errors'

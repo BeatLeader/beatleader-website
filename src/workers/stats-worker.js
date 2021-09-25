@@ -115,13 +115,21 @@ const calcPpBoundary = async (playerId, expectedPp = 1) => {
     const diff = modifiedBottomPp - bottomPp;
 
     if (diff > expectedPp) {
-      return calcRawPpAtIdx(rankedScorePps.slice(idx + 1), idx + 1, expectedPp);
+      const ppBoundary = calcRawPpAtIdx(rankedScorePps.slice(idx + 1), idx + 1, expectedPp);
+
+      eventBus.publish('player-pp-boundary-calculated', {playerId, expectedPp, ppBoundary});
+
+      return ppBoundary;
     }
 
     idx--;
   }
 
-  return calcRawPpAtIdx(rankedScorePps, 0, expectedPp);
+  const ppBoundary = calcRawPpAtIdx(rankedScorePps, 0, expectedPp);
+
+  eventBus.publish('player-pp-boundary-calculated', {playerId, expectedPp, ppBoundary});
+
+  return ppBoundary;
 }
 
 const worker = {

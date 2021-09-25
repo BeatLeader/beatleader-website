@@ -11,6 +11,7 @@ import {addToDate, formatDate, MINUTE, SECOND, toSSDate, truncateDate} from '../
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
 import makePendingPromisePool from '../../utils/pending-promises'
+import {worker} from '../../utils/worker-wrappers'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 20;
@@ -119,14 +120,42 @@ export default () => {
 
     return playersHistoryRepository().getFromIndex('players-history-playerIdSsTimestamp', playerIdSsTimestamp)
       .then(async ph => {
-        if (ph && ph._idbId) await playersHistoryRepository().delete(ph._idbId)
+        if (ph && ph._idbId) {
+          await playersHistoryRepository().delete(ph._idbId);
+
+          const {_idbId, ...previous} = ph;
+
+          return previous;
+        }
+
+        return null;
       })
-      .then(() => playersHistoryRepository().set({
-        playerId, banned, countries, inactive, pp, rank, ...scoreStats,
-        localDate, ssDate,
-        playerIdLocalTimestamp,
-        playerIdSsTimestamp,
-      }))
+      .then(async previous => {
+        let accStats = {};
+
+        if (worker) {
+          const stats = await worker.calcPlayerStats(playerId);
+
+          const ppBoundary = await worker.calcPpBoundary(playerId) ?? null;
+
+          const {badges, totalScore, playCount, ...playerStats} = stats ?? {};
+
+          accStats = {
+            ...playerStats,
+            ppBoundary,
+            accBadges: badges?.reduce((cum, b) => ({...cum, [b.label]: b.value}), {}) ?? null
+          }
+        }
+
+        return playersHistoryRepository().set({
+          ...previous,
+          ...accStats,
+          playerId, banned, countries, inactive, pp, rank, ...scoreStats,
+          localDate, ssDate,
+          playerIdLocalTimestamp,
+          playerIdSsTimestamp,
+        })
+      })
       .catch(err => {}) // swallow error
   }
 
