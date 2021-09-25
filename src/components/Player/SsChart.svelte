@@ -174,9 +174,7 @@
           text: 'Rank',
         },
         ticks: {
-          callback: (val) => {
-            if (val === Math.floor(val)) return val;
-          }
+          callback: val => val === Math.floor(val) ? val : null
         },
         grid: {
           color: gridColor,
@@ -232,7 +230,7 @@
                 text: name,
               },
               ticks: {
-                callback: val => val
+                callback: val => val === Math.floor(val) ? val : null
               },
               grid: {
                 drawOnChartArea: false,
