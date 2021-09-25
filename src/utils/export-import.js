@@ -46,7 +46,7 @@ const repositories = [
 	{
 		repository: playersHistoryRepository,
 		casts: {
-			date: ['timestamp'],
+			date: ['ssDate', 'localDate'],
 		},
 	},
 	{
