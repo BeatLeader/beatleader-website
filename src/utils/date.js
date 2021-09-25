@@ -87,8 +87,6 @@ export function formatDate(val, dateStyle = 'short', timeStyle = 'medium') {
 }
 
 export function formatDateRelativeInUnits(val, unit = 'day') {
-    if (!isValidDate(val)) return null;
-
     const rtf = new Intl.RelativeTimeFormat(getCurrentLang(), {
         localeMatcher: 'best fit',
         numeric: 'auto',

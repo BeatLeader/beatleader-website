@@ -13,6 +13,8 @@
   import PpCalc from './ProfileCards/PpCalc.svelte'
   import AccSaber from './ProfileCards/AccSaber.svelte'
   import Carousel from '../Common/Carousel.svelte'
+  import SsBadges from './SsBadges.svelte'
+  import Badge from '../Common/Badge.svelte'
 
   export let playerData;
   export let isLoading = false;
@@ -64,56 +66,67 @@
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
+  $: playerRole = playerInfo?.role ?? null;
   $: calcOnePpBoundary(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
+  $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)
 
   $: swipeCards = playerId
     ? [
-    {
-      name: `stats-${playerId}`,
-      component: ScoreSaberStats,
-      props: {scoresStats: scoresStatsFinal, accStats, accBadges, ssBadges, isCached, skeleton},
-      delay: 500,
-    },
-  ]
-    .concat(
-      $pageContainer.name !== 'xxl'
-        ? [{
-          name: `ranking-${playerId}`,
-          component: MiniRanking,
-          props: {playerInfo: opt(playerData, 'playerInfo')},
-        }]
-        : [],
-    )
-    .concat(
-      onePpBoundery
-        ?
-        [{
-          name: `ppcalc-${playerId}`,
-          component: PpCalc,
-          props: {playerId, worker},
-        }]
-        : [],
-    )
-    .concat(
-      accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
-        ?
-        [{
-          name: `accsaber-${playerId}`,
-          component: AccSaber,
-          props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
-        }]
-        : [],
-    )
-    .concat(
-      $pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
-        ? [{
-          name: `twitch-${playerId}`,
-          component: TwitchVideos,
-          props: {videos: twitchVideos},
-        }]
-        : [],
-    )
+      {
+        name: `stats-${playerId}`,
+        component: ScoreSaberStats,
+        props: {
+          playerId,
+          scoresStats: scoresStatsFinal,
+          accStats,
+          accBadges,
+          ssBadges,
+          isCached,
+          skeleton,
+          rankHistory: rankChartData,
+        },
+        delay: 500,
+      },
+    ]
+      .concat(
+        $pageContainer.name !== 'xxl'
+          ? [{
+            name: `ranking-${playerId}`,
+            component: MiniRanking,
+            props: {playerInfo: opt(playerData, 'playerInfo')},
+          }]
+          : [],
+      )
+      .concat(
+        onePpBoundery
+          ?
+          [{
+            name: `ppcalc-${playerId}`,
+            component: PpCalc,
+            props: {playerId, worker},
+          }]
+          : [],
+      )
+      .concat(
+        accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
+          ?
+          [{
+            name: `accsaber-${playerId}`,
+            component: AccSaber,
+            props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
+          }]
+          : [],
+      )
+      .concat(
+        $pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
+          ? [{
+            name: `twitch-${playerId}`,
+            component: TwitchVideos,
+            props: {videos: twitchVideos},
+          }]
+          : [],
+      )
     : []
 </script>
 
@@ -124,6 +137,18 @@
 
       {#if playerId && !isLoading}
         <Icons {playerId} />
+      {/if}
+
+      {#if playerRole}
+        <div class="player-role above-tablet">
+          <Badge label={playerRole} onlyLabel={true} fluid={true} bgColor="var(--dimmed)" />
+        </div>
+      {/if}
+
+      {#if ssBadges}
+        <div class="ss-badges">
+          <SsBadges badges={ssBadges}/>
+        </div>
       {/if}
     </div>
 
@@ -140,16 +165,32 @@
         position: relative;
         text-align: center;
         margin-right: 1rem;
-        min-width: 150px;
+        min-width: 188px;
+        width: 188px;
         min-height: 190px;
+        padding-right: 0;
     }
 
-    @media screen and (max-width: 767px) {
+    .player-role {
+        width: 150px;
+        padding-top: 1rem;
+    }
+
+    .ss-badges {
+        padding-top: 1rem;
+    }
+
+    @media screen and (max-width: 768px) {
         .column.avatar {
             margin-right: 0;
-            min-width: calc(150px + 1.5rem);
+            min-width: calc(188px + 1.5rem);
             padding-bottom: 0;
             min-height: 150px;
+            width: auto;
+        }
+
+        .ss-badges {
+            display: none;
         }
     }
 </style>

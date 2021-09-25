@@ -1,13 +1,16 @@
 <script>
   import ScoresStats from '../ScoresStats.svelte'
   import SsBadges from '../SsBadges.svelte'
+  import SsChart from '../SsChart.svelte'
 
+  export let playerId = null;
   export let scoresStats = null;
   export let accStats = null;
   export let accBadges = null;
   export let ssBadges = null;
   export let skeleton = false;
   export let isCached = false;
+  export let rankHistory = null;
 </script>
 
 {#if scoresStats || ssBadges || skeleton}
@@ -17,8 +20,15 @@
       {#if accStats}<ScoresStats stats={accStats}/>{/if}
       {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
     </div>
-    {#if ssBadges}<SsBadges badges={ssBadges}/>{/if}
+    {#if ssBadges}
+      <div class="up-to-tablet">
+        <SsBadges badges={ssBadges}/>
+      </div>
+    {/if}
   </div>
+{/if}
+{#if rankHistory}
+  <SsChart {playerId} {rankHistory} />
 {/if}
 
 <style>
