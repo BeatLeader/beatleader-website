@@ -18,6 +18,7 @@ import scores from '../../db/repository/scores'
 import {SsrHttpNotFoundError} from '../../network/errors'
 import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
 import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
+import makePendingPromisePool from '../../utils/pending-promises'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
@@ -28,6 +29,8 @@ let serviceCreationCount = 0;
 export default () => {
   serviceCreationCount++;
   if (service) return service;
+
+  const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
   let playerService = createPlayerService();
   const accSaberService = createAccSaberService();
@@ -614,7 +617,7 @@ export default () => {
 
       log.trace(`Fetching player "${playerId}" scores from ScoreSaber...`, 'ScoresService')
 
-      const scoresInfo = await updatePlayerScores(player, priority);
+      const scoresInfo = await resolvePromiseOrWaitForPending(`service/updatePlayerScores/${playerId}`, () => updatePlayerScores(player, priority));
 
       if (!scoresInfo) {
         log.warn(`Can not refresh player "${playerId}" scores`, 'ScoresService')
