@@ -140,7 +140,7 @@
         z-index: 50;
     }
 
-    nav > *, nav > .right > * {
+    nav > *:not(.right), nav > .right > * {
         display: inline-flex;
         justify-content: flex-start;
         align-items: center;
