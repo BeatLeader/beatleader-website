@@ -128,7 +128,6 @@
             left: 0;
             bottom: 0;
             transform: none;
-            /* 100vw is problematic when scrollbars are visible */
             width: 100%;
             min-width: min(20em, 100vw);
             max-width: none;

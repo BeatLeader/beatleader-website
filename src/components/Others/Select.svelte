@@ -1,26 +1,21 @@
 <script>
-  export let value = "";
-  let selectElement = null;
-
-  const onDropdownIconClick = () => {
-    selectElement && selectElement.click();
-  };
+  export let value = null;
 </script>
 
-<div class="selectWrapper">
-  <select bind:this={selectElement} bind:value class="selectElement">
+<div class="select-wrapper">
+  <select bind:value class="select-element">
     <slot />
   </select>
-  <i class="fa fa-chevron-down select-arrow" on:click={onDropdownIconClick} />
+  <i class="fa fa-chevron-down select-arrow" />
 </div>
 
 <style>
-  .selectWrapper {
+  .select-wrapper {
     position: relative;
     display: block;
     cursor: pointer;
   }
-  .selectElement {
+  .select-element {
     width: 100%;
     font-size: 1em;
     padding: 0.5em 2em 0.5em 1em;
@@ -28,7 +23,7 @@
     -moz-appearance: none;
     -webkit-appearance: none;
   }
-  .selectElement::-ms-expand {
+  .select-element::-ms-expand {
     display: none;
   }
   .select-arrow {
