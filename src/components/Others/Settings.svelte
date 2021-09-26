@@ -11,6 +11,7 @@
   import Dialog from '../Common/Dialog.svelte'
   import Button from '../Common/Button.svelte'
   import File from '../Common/File.svelte'
+  import Select from "./Select.svelte"
 
   export let show = false;
 
@@ -143,29 +144,29 @@
         <section class="options">
           <section class="option">
             <label title="All numbers and dates will be formatted according to the rules of the selected country">Localization</label>
-            <select bind:value={currentLocale}>
+            <Select bind:value={currentLocale}>
               {#each getSupportedLocales() as locale (locale.id)}
                 <option value={locale.id}>{locale.name}</option>
               {/each}
-            </select>
+            </Select>
           </section>
 
           <section class="option">
             <label title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details">Score comparison</label>
-            <select bind:value={currentScoreComparisonMethod}>
+            <Select bind:value={currentScoreComparisonMethod}>
               {#each scoreComparisonMethods as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
-            </select>
+            </Select>
           </section>
 
           <section class="option">
             <label title="Second PP metric displayed next to the score, either weighted PP or actual contribution of the score to the total PP (cached players only)">Secondary PP metrics</label>
-            <select bind:value={currentSecondaryPpMetrics}>
+            <Select bind:value={currentSecondaryPpMetrics}>
               {#each secondaryPpMetrics as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
-            </select>
+            </Select>
           </section>
 
           {#if showTwitchLinkBtn}
