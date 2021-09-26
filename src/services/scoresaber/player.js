@@ -140,11 +140,10 @@ export default () => {
 
           const {badges, totalScore, playCount, ...playerStats} = stats ?? {};
 
-          accStats = {
-            ...playerStats,
-            ppBoundary,
-            accBadges: badges?.reduce((cum, b) => ({...cum, [b.label]: b.value}), {}) ?? null
-          }
+          accStats = {...playerStats}
+
+          if (ppBoundary) accStats.ppBoundary = ppBoundary;
+          if (badges?.length) accStats.accBadges = badges.reduce((cum, b) => ({...cum, [b.label]: b.value}), {});
         }
 
         return playersHistoryRepository().set({
