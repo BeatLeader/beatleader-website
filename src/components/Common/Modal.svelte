@@ -128,7 +128,7 @@
             left: 0;
             bottom: 0;
             transform: none;
-            width: 100vw;
+            width: 100%;
             min-width: min(20em, 100vw);
             max-width: none;
             min-height: 12em;
