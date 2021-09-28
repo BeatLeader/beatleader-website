@@ -34,7 +34,7 @@ const repositories = [
 		repository: keyValueRepository,
 		excludedKeys: ['twitchToken'],
 		casts: {
-			date: ['rankedsLastUpdated'],
+			date: ['rankedsLastUpdated', 'accSaberCategoriesLastUpdated', 'accSaberOverallRankingLastUpdated', 'accSaberStandardRankingLastUpdated', 'accSaberTechRankingLastUpdated', 'accSaberTrueRankingLastUpdated'],
 		},
 	},
 	{
