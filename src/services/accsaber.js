@@ -5,10 +5,12 @@ import accSaberRankingApiClient from '../network/clients/accsaber/api-ranking';
 import accSaberScoresApiClient from '../network/clients/accsaber/api-scores';
 import accSaberCategoriesRepository from '../db/repository/accsaber-categories'
 import accSaberPlayersRepository from '../db/repository/accsaber-players'
+import accSaberPlayersHistoryRepository from '../db/repository/accsaber-players-history';
 import keyValueRepository from '../db/repository/key-value'
+import createPlayerService from '../services/scoresaber/player';
 import {capitalize} from '../utils/js'
 import log from '../utils/logger'
-import {addToDate, formatDate, HOUR, MINUTE} from '../utils/date'
+import {addToDate, toAccSaberMidnight, formatDate, HOUR, MINUTE, dateFromString} from '../utils/date'
 import {PRIORITY} from '../network/queues/http-queue'
 
 const REFRESH_INTERVAL = HOUR;
@@ -19,6 +21,8 @@ const CATEGORIES_ORDER = ['overall', 'true', 'standard', 'tech'];
 let service = null;
 export default () => {
   if (service) return service;
+
+  const playerService = createPlayerService();
 
   const getCategories = async () => {
     const categories = await accSaberCategoriesRepository().getAll();
@@ -42,7 +46,7 @@ export default () => {
     if (!forceUpdate) {
       const lastUpdated = await getLastUpdated(type);
       if (lastUpdated && lastUpdated > new Date() - REFRESH_INTERVAL) {
-        log.debug(`Refresh interval not yet expired, skipping. Next refresh on ${formatDate(addToDate(REFRESH_INTERVAL, lastUpdated))}`, 'AccSaberService')
+        log.debug(`Refresh interval for ${type} not yet expired, skipping. Next refresh on ${formatDate(addToDate(REFRESH_INTERVAL, lastUpdated))}`, 'AccSaberService')
 
         return false;
       }
@@ -59,7 +63,7 @@ export default () => {
   }
 
   const refreshCategories = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
-    log.trace(`Starting AccSaber categories refreshing${forceUpdate ? ' (forced)' : ''}...`, 'AccSaberService')
+    log.debug(`Starting AccSaber categories refreshing${forceUpdate ? ' (forced)' : ''}...`, 'AccSaberService')
 
     try {
       log.trace(`Fetching categories from DB...`, 'AccSaberService');
@@ -122,7 +126,7 @@ export default () => {
 
         await tx.objectStore('key-value').put(new Date(), getLastUpdatedKey('categories'));
 
-        log.trace(`Categories last update date updated`, 'AccSaberService');
+        log.debug(`Categories last update date updated`, 'AccSaberService');
       });
 
       accSaberCategoriesRepository().addToCache(categories);
@@ -141,8 +145,74 @@ export default () => {
     }
   }
 
+  const updatePlayerHistory = async player => {
+    if (!player?.playerId) return;
+
+    try {
+      log.debug(`Updating player ${player.playerId} history`, 'AccSaberService');
+
+      const accSaberDate = toAccSaberMidnight(new Date());
+      const playerIdTimestamp = `${player.playerId}_${accSaberDate.getTime()}`;
+
+      const existingData = await accSaberPlayersHistoryRepository().get(playerIdTimestamp);
+      const lastUpdated = dateFromString(existingData?.lastUpdated);
+      if (lastUpdated && lastUpdated > new Date() - REFRESH_INTERVAL) {
+        log.debug(`Refresh interval for player ${player.playerId} history not yet expired, skipping. Next refresh on ${formatDate(addToDate(REFRESH_INTERVAL, lastUpdated))}`, 'AccSaberService')
+
+        return;
+      }
+
+      const categories = (await getCategories())?.map(c => c.name) ?? null;
+      if (!categories) {
+        log.trace(`No categories found, skip updating player ${player.playerId} history.`);
+        return;
+      }
+
+      let accStats = {};
+      for (const category of categories) {
+        const playerAccInfo = (await getRanking(category) ?? []).find(p => p.playerId === player.playerId);
+        if (!playerAccInfo) continue;
+
+        const {
+          id,
+          avatarUrl,
+          hmd,
+          playerId,
+          category: cat,
+          playerName,
+          rankLastWeek,
+          lastUpdated,
+          ...playerCategoryAccStats
+        } = playerAccInfo;
+
+        accStats[category] = playerCategoryAccStats;
+      }
+
+      if (Object.keys(accStats).length) {
+        const stats = {
+          playerId: player.playerId,
+          accSaberDate,
+          lastUpdated: new Date(),
+          playerIdTimestamp,
+          categories: accStats
+        }
+
+        await accSaberPlayersHistoryRepository().set(stats);
+      } else {
+        log.trace(`No Acc Saber data for player ${player.playerId}, skipping history updating.`, 'AccSaberService');
+
+        return;
+      }
+
+      log.debug(`Player ${player.playerId} history updated`, 'AccSaberService');
+    }
+    catch(e) {
+      log.debug(`Player ${player.playerId} history updating error.`, 'AccSaberService', e);
+    }
+  }
+
   const refreshRanking = async (category = 'overall', forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
-    log.trace(`Starting AccSaber ${category} ranking refreshing${forceUpdate ? ' (forced)' : ''}...`, 'AccSaberService')
+    log.debug(`Starting AccSaber ${category} ranking refreshing${forceUpdate ? ' (forced)' : ''}...`, 'AccSaberService')
 
     try {
       log.trace(`Fetching ${category} ranking from DB...`, 'AccSaberService');
@@ -196,7 +266,7 @@ export default () => {
 
         await tx.objectStore('key-value').put(new Date(), getLastUpdatedKey(rankingType));
 
-        log.trace(`Players last update date updated`, 'AccSaberService');
+        log.debug(`Players last update date updated`, 'AccSaberService');
       });
 
       accSaberPlayersRepository().addToCache(ranking);
@@ -235,6 +305,8 @@ export default () => {
 
         return cum;
       }, {});
+
+      Promise.all((await playerService.getAllActive()).map(async player => updatePlayerHistory(player))).then(_ => _);
 
       return dbCategories.all.map(c => ({...c, ranking: rankings?.[c.name] ?? []}));
     } catch (e) {

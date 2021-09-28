@@ -1,3 +1,6 @@
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
 import {isString} from "./js";
 import {getCurrentLocale} from '../stores/config'
 import {padNumber} from './format'
@@ -8,6 +11,11 @@ export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 
 const getCurrentLang = () => 'en';
+
+const ACCSABER_TZ = 'Europe/Berlin';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const isValidDate = d =>d instanceof Date && !isNaN(d);
 
@@ -72,6 +80,14 @@ export function toSSDate(date) {
         minute: "2-digit",
         second: "2-digit",
     }).replace(/(\d+)\.(\d+)\.(\d+)\s*(?:,|o)\s(\d+):(\d+):(\d+)/, "$3-$2-$1")));
+}
+
+export function dateFromAccSaberDateString(dateStr) {
+    return dayjs.tz(dateStr, ACCSABER_TZ).toDate();
+}
+
+export function toAccSaberMidnight(date = new Date()) {
+    return dayjs(date).tz(ACCSABER_TZ).hour(0).minute(0).second(0).millisecond(0).toDate();
 }
 
 export function formatDate(val, dateStyle = 'short', timeStyle = 'medium') {

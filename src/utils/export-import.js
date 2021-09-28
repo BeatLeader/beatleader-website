@@ -12,6 +12,7 @@ import rankedsChangesRepository from "../db/repository/rankeds-changes";
 import scoresRepository from "../db/repository/scores";
 import songsBeatMapsRepository from "../db/repository/songs-beatmaps";
 import twitchRepository from "../db/repository/twitch";
+import accSaberPlayersHistoryRepository from "../db/repository/accsaber-players-history";
 import {dateFromString} from './date'
 import log from './logger'
 import {opt} from './js'
@@ -47,6 +48,12 @@ const repositories = [
 		repository: playersHistoryRepository,
 		casts: {
 			date: ['ssDate', 'localDate'],
+		},
+	},
+	{
+		repository: accSaberPlayersHistoryRepository,
+		casts: {
+			date: ['accSaberDate', 'lastUpdated'],
 		},
 	},
 	{

@@ -3,7 +3,7 @@ import log from '../utils/logger'
 import {isDateObject} from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
-const SSR_DB_VERSION = 11;
+const SSR_DB_VERSION = 12;
 export let db = null;
 
 export default async () => {
@@ -181,6 +181,15 @@ async function openDatabase() {
             });
             accSaberPlayersStore.createIndex('accsaber-players-playerId', 'playerId', {unique: false});
             accSaberPlayersStore.createIndex('accsaber-players-category', 'category', {unique: false});
+
+          // NO break here
+
+          case newVersion >= 12 && oldVersion <= 11:
+            const accSaberPlayersHistoryStore = db.createObjectStore('accsaber-players-history', {
+              keyPath: 'playerIdTimestamp',
+              autoIncrement: false,
+            });
+            accSaberPlayersHistoryStore.createIndex('accsaber-players-history-playerId', 'playerId', {unique: false});
 
           // NO break here
         }
