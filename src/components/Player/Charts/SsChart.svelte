@@ -1,14 +1,14 @@
 <script>
   import Chart from 'chart.js/auto'
   import {onMount} from 'svelte'
-  import playersHistoryRepository from '../../db/repository/players-history'
-  import createScoresService from '../../services/scoresaber/scores'
-  import createBeatSaviorService from '../../services/beatsavior'
-  import {formatNumber} from '../../utils/format'
-  import {addToDate, dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../utils/date'
-  import eventBus from '../../utils/broadcast-channel-pubsub'
-  import createContainerStore from '../../stores/container'
-  import {debounce} from '../../utils/debounce'
+  import playersHistoryRepository from '../../../db/repository/players-history'
+  import createScoresService from '../../../services/scoresaber/scores'
+  import createBeatSaviorService from '../../../services/beatsavior'
+  import {formatNumber} from '../../../utils/format'
+  import {addToDate, dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
+  import eventBus from '../../../utils/broadcast-channel-pubsub'
+  import createContainerStore from '../../../stores/container'
+  import {debounce} from '../../../utils/debounce'
 
   export let playerId = null;
   export let rankHistory = null;
