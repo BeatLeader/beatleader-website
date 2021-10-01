@@ -1,14 +1,18 @@
 <script>
   import Chart from 'chart.js/auto'
+  import zoomPlugin from 'chartjs-plugin-zoom';
   import {formatNumber, round} from '../../../utils/format'
   import {formatDateRelative} from '../../../utils/date'
   import createContainerStore from '../../../stores/container'
   import {debounce} from '../../../utils/debounce'
   import {worker} from '../../../utils/worker-wrappers'
+  import regionsPlugin from './plugins/regions'
 
   export let playerId = null;
   export let type = 'accuracy'; // or percentage
   export let height = "350px";
+
+  Chart.register(zoomPlugin);
 
   const CHART_DEBOUNCE = 300;
 
@@ -36,12 +40,19 @@
 
     lastHistoryHash = chartHash;
 
+    let maxStars = 0;
+    let minAcc = 100;
     const chartData = await Promise.all(playerScores
       .filter(s => !!s?.score?.pp || !!s?.stars)
       .map(async s => {
+        const acc = type === 'percentage' ? (s?.score?.percentage ? s?.score?.percentage : s?.score?.acc) : s?.score?.acc ?? 0;
+
+        if (s.stars > maxStars) maxStars = s.stars;
+        if (acc < minAcc) minAcc = acc;
+
         return {
           x: s.stars,
-          y: type === 'percentage' ? (s?.score?.percentage ? s?.score?.percentage : s?.score?.acc) : s?.score?.acc ?? 0,
+          y: acc,
           leaderboardId: s.leaderboardId,
           name: s?.leaderboard?.song?.name,
           songAuthor: s?.leaderboard?.song?.authorName,
@@ -49,8 +60,11 @@
           timeSet: s.timeSet,
           mods: s?.score?.mods,
         }
-      }))
-    ;
+      }));
+
+    maxStars = Math.ceil(maxStars);
+    minAcc = Math.floor(minAcc - 1);
+    if (minAcc < 0) minAcc = 0;
 
     const mapColor = '#ffffff';
     const mapBorderColor = '#003e54';
@@ -74,30 +88,6 @@
     }
 
     if (!chart) {
-      const accAreas = {
-        id: 'accAreas',
-        beforeDraw(chart, args, options) {
-          const {ctx, chartArea: {left, top, right, bottom}, scales: {y}} = chart;
-          const ssPlusY = y.getPixelForValue(95);
-          const ssY = y.getPixelForValue(90);
-          const sPlusY = y.getPixelForValue(85);
-          const sY = y.getPixelForValue(80);
-
-          ctx.save();
-          ctx.fillStyle = ssPlusColor;
-          ctx.fillRect(left, top, right, ssPlusY - top);
-          ctx.fillStyle = ssColor;
-          ctx.fillRect(left, ssPlusY, right, ssY - ssPlusY);
-          ctx.fillStyle = sPlusColor;
-          ctx.fillRect(left, ssY, right, sPlusY - ssY);
-          ctx.fillStyle = sColor;
-          ctx.fillRect(left, sPlusY, right, sY - sPlusY);
-          ctx.fillStyle = aColor;
-          ctx.fillRect(left, sY, right, bottom - sY);
-          ctx.restore();
-        }
-      };
-
       chart = new Chart(
         canvas,
         {
@@ -163,6 +153,34 @@
                   }
                 },
               },
+              zoom: {
+                pan: {
+                  enabled: true,
+                  mode: 'xy',
+                },
+                zoom: {
+                  wheel: {
+                    enabled: true,
+                  },
+                  pinch: {
+                    enabled: true
+                  },
+                  mode: 'xy',
+                },
+                limits: {
+                  x: {min: 0, max: maxStars},
+                  y: {min: minAcc, max: 100},
+                },
+              },
+              regions: {
+                regions: [
+                  {min: 95, max: 100, color: ssPlusColor},
+                  {min: 90, max: 95, color: ssColor},
+                  {min: 85, max: 90, color: sPlusColor},
+                  {min: 80, max: 85, color: sColor},
+                  {min: 0, max: 80, color: aColor},
+                ],
+              },
             },
             scales: {
               x: {
@@ -178,6 +196,7 @@
                     return round(value, 2) + '*';
                   },
                 },
+                max: maxStars
               },
               y: {
                 type: 'linear',
@@ -196,7 +215,8 @@
                   display: true,
                   drawBorder: true,
                   drawOnChartArea: true
-                }
+                },
+                min: minAcc
               },
             },
             onClick(e, item, chart) {
@@ -205,7 +225,7 @@
               window.open(`/leaderboard/global/${item[0].element.$context.raw.leaderboardId}`, '_blank');
             },
           },
-          plugins: [accAreas],
+          plugins: [regionsPlugin],
         },
       );
     } else {
