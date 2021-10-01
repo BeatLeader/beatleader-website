@@ -1,12 +1,13 @@
 <script>
   import Chart from 'chart.js/auto'
   import zoomPlugin from 'chartjs-plugin-zoom';
-  import {formatNumber, round} from '../../../utils/format'
+  import {formatNumber, round, roundToPrecision} from '../../../utils/format'
   import {formatDateRelative} from '../../../utils/date'
   import createContainerStore from '../../../stores/container'
   import {debounce} from '../../../utils/debounce'
   import {worker} from '../../../utils/worker-wrappers'
   import regionsPlugin from './plugins/regions'
+  import {capitalize} from '../../../utils/js'
 
   export let playerId = null;
   export let type = 'accuracy'; // or percentage
@@ -57,10 +58,40 @@
           name: s?.leaderboard?.song?.name,
           songAuthor: s?.leaderboard?.song?.authorName,
           levelAuthor: s?.leaderboard?.song?.levelAuthorName,
+          diff: s?.leaderboard?.diffInfo?.diff,
           timeSet: s.timeSet,
           mods: s?.score?.mods,
         }
       }));
+
+    const avgData = Object.entries(
+      chartData.reduce((cum, point) => {
+        const roundedStars = roundToPrecision(point.x, 0.5);
+        if (!cum[roundedStars]) cum[roundedStars] = [];
+
+        cum[roundedStars].push(point.y);
+
+        return cum;
+      }, {}),
+    )
+      .reduce((cum, [stars, points]) => {
+        const sum = points.reduce((sum, point) => sum + point, 0);
+        const best = points.reduce((max, point) => point > max ? point : max, 0);
+
+        const x = parseFloat(stars);
+
+        const median = points.length > 1
+          ? (points.sort((a, b) => a - b))[Math.ceil(points.length / 2)]
+          : sum
+
+        cum.best.push({x, y: best});
+        cum.avg.push({x, y: sum / points.length});
+        cum.median.push({x, y: median});
+
+        return cum;
+      }, {avg: [], best: [], median: []})
+
+    Object.keys(avgData).forEach(key => avgData[key] = avgData[key].sort((a,b) => a.x - b.x))
 
     maxStars = Math.ceil(maxStars);
     minAcc = Math.floor(minAcc - 1);
@@ -88,6 +119,8 @@
     }
 
     if (!chart) {
+      const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
+
       chart = new Chart(
         canvas,
         {
@@ -95,15 +128,74 @@
           responsive: true,
           maintainAspectRatio: false,
           data: {
-            datasets: [{
-              label: 'Maps',
-              borderColor: mapBorderColor,
-              backgroundColor: mapColor,
-              fill: false,
-              pointRadius: 2,
-              pointHoverRadius: 3,
-              data: chartData,
-            }],
+            datasets: [
+              {
+                label: 'Maps',
+                borderColor: mapBorderColor,
+                backgroundColor: mapColor,
+                fill: false,
+                pointRadius: 2,
+                pointHoverRadius: 3,
+                data: chartData,
+              },
+
+              {
+                yAxisID: 'y',
+                label: 'Best',
+                borderColor: '#00ff00',
+                data: avgData.best,
+                fill: false,
+                borderWidth: 2,
+                pointRadius: 2,
+                pointHoverRadius: 3,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4,
+                type: 'line',
+                spanGaps: true,
+                segment: {
+                  borderWidth: ctx => skipped(ctx, 1),
+                  borderDash: ctx => skipped(ctx, [6, 6]),
+                },
+              },
+
+              {
+                yAxisID: 'y',
+                label: 'Average',
+                borderColor: '#3273dc',
+                data: avgData.avg,
+                fill: false,
+                borderWidth: 2,
+                pointRadius: 2,
+                pointHoverRadius: 3,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4,
+                type: 'line',
+                spanGaps: true,
+                segment: {
+                  borderWidth: ctx => skipped(ctx, 1),
+                  borderDash: ctx => skipped(ctx, [6, 6]),
+                },
+              },
+
+              {
+                yAxisID: 'y',
+                label: 'Median',
+                borderColor: '#8992e8',
+                data: avgData.median,
+                fill: false,
+                borderWidth: 2,
+                pointRadius: 2,
+                pointHoverRadius: 3,
+                cubicInterpolationMode: 'monotone',
+                tension: 0.4,
+                type: 'line',
+                spanGaps: true,
+                segment: {
+                  borderWidth: ctx => skipped(ctx, 1),
+                  borderDash: ctx => skipped(ctx, [6, 6]),
+                },
+              },
+            ],
           },
           options: {
             layout: {
@@ -131,11 +223,18 @@
 
                     const ret = [];
 
-                    const song = ctx.dataset.data[ctx.dataIndex];
-                    if (song) {
-                      ret.push(formatDateRelative(song.timeSet));
-                      ret.push(song.name);
-                      ret.push(`${song.songAuthor} / ${song.levelAuthor}`);
+                    switch(ctx?.dataset?.label) {
+                      case 'Maps':
+                        const song = ctx.dataset.data[ctx.dataIndex];
+                        if (song) {
+                          ret.push(formatDateRelative(song.timeSet));
+                          ret.push(`${song.name} (${capitalize(song.diff)})`);
+                          ret.push(`${song.songAuthor} / ${song.levelAuthor}`);
+                        }
+                        break;
+
+                        default:
+                          ret.push(`Stars: ${ctx?.raw?.x}*`);
                     }
 
                     return ret;
@@ -143,13 +242,22 @@
                   title: function (ctx) {
                     if (!ctx?.[0]?.raw) return '';
 
-                    const mods = ctx[0].raw?.mods ?? null;
-                    const stars = formatNumber(ctx[0].raw?.x ?? 0, 2);
-                    const acc = formatNumber(ctx[0].raw?.y ?? 0, 2);
+                    switch(ctx?.[0].dataset?.label) {
+                      case 'Maps':
+                        const mods = ctx[0].raw?.mods ?? null;
+                        const stars = formatNumber(ctx[0].raw?.x ?? 0, 2);
+                        const acc = formatNumber(ctx[0].raw?.y ?? 0, 2);
 
-                    return type === 'percentage'
-                     ? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}*`
-                      : `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}*`
+                        return type === 'percentage'
+                          ? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}*`
+                          : `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}*`
+
+                      default:
+                        if(ctx && Array.isArray(ctx))
+                          return ctx.map(d => `${d?.dataset?.label ?? ''}: ${formatNumber(d?.raw?.y ?? 0)}%`)
+                    }
+
+                    return '';
                   }
                 },
               },

@@ -53,16 +53,18 @@ const getRankedScores = async (playerId, withStars = false) => {
   }
 
   return withStars
-    ? await Promise.all(scores
-      .filter(score => score?.score?.pp)
-      .map(async score => {
-        score = await produce(await produce(score, draft => beatmapsEnhancer(draft, true)), draft => accEnhancer(draft))
+    ? (await Promise.all(scores
+        .filter(score => score?.score?.pp)
+        .map(async score => {
+          score = await produce(await produce(score, draft => beatmapsEnhancer(draft, true)), draft => accEnhancer(draft))
 
-        return {
-          ...score,
-          stars: allRankeds[score?.leaderboardId]?.stars ?? null
-        }
-      }))
+          return {
+            ...score,
+            stars: allRankeds[score?.leaderboardId]?.stars ?? null,
+          }
+        }))
+    )
+      .filter(s => s.stars)
     : scores.filter(score => score?.score?.pp);
 }
 
