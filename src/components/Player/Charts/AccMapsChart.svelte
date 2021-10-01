@@ -52,11 +52,13 @@
       }))
     ;
 
-    console.warn(chartData);
-
-    const gridColor = '#2a2a2a'
-    const mapColor = '#3e95cd';
+    const mapColor = '#ffffff';
     const mapBorderColor = '#003e54';
+    const ssPlusColor = 'rgb(143,72,219, .4)';
+    const ssColor = 'rgb(190,42,66, .4)';
+    const sPlusColor = 'rgb(255,99,71, .4)';
+    const sColor = 'rgb(89,176,244, .4)';
+    const aColor = 'rgb(60,179,113, .4)';
 
     if (chart) {
       chart.destroy();
@@ -72,6 +74,30 @@
     }
 
     if (!chart) {
+      const accAreas = {
+        id: 'accAreas',
+        beforeDraw(chart, args, options) {
+          const {ctx, chartArea: {left, top, right, bottom}, scales: {y}} = chart;
+          const ssPlusY = y.getPixelForValue(95);
+          const ssY = y.getPixelForValue(90);
+          const sPlusY = y.getPixelForValue(85);
+          const sY = y.getPixelForValue(80);
+
+          ctx.save();
+          ctx.fillStyle = ssPlusColor;
+          ctx.fillRect(left, top, right, ssPlusY - top);
+          ctx.fillStyle = ssColor;
+          ctx.fillRect(left, ssPlusY, right, ssY - ssPlusY);
+          ctx.fillStyle = sPlusColor;
+          ctx.fillRect(left, ssY, right, sPlusY - ssY);
+          ctx.fillStyle = sColor;
+          ctx.fillRect(left, sPlusY, right, sY - sPlusY);
+          ctx.fillStyle = aColor;
+          ctx.fillRect(left, sY, right, bottom - sY);
+          ctx.restore();
+        }
+      };
+
       chart = new Chart(
         canvas,
         {
@@ -152,9 +178,6 @@
                     return round(value, 2) + '*';
                   },
                 },
-                grid: {
-                  color: gridColor
-                }
               },
               y: {
                 type: 'linear',
@@ -169,11 +192,20 @@
                   },
                 },
                 grid: {
-                  color: gridColor
+                  color: "rgba(0,0,0,0.1)",
+                  display: true,
+                  drawBorder: true,
+                  drawOnChartArea: true
                 }
               },
             },
+            onClick(e, item, chart) {
+              if (!item?.[0]?.element?.$context?.raw?.leaderboardId) return;
+
+              window.open(`/leaderboard/global/${item[0].element.$context.raw.leaderboardId}`, '_blank');
+            },
           },
+          plugins: [accAreas],
         },
       );
     } else {
