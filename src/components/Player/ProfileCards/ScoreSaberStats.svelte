@@ -2,7 +2,8 @@
   import ScoresStats from '../ScoresStats.svelte'
   import SsBadges from '../SsBadges.svelte'
   import SsChart from '../Charts/SsChart.svelte'
-  import AccChart from '../Charts/AccChart.svelte'
+  import AccAvgChart from '../Charts/AccAvgChart.svelte'
+  import AccMapsChart from '../Charts/AccMapsChart.svelte'
 
   export let playerId = null;
   export let scoresStats = null;
@@ -29,8 +30,9 @@
   </div>
 {/if}
 {#if rankHistory}
+  <AccMapsChart {playerId} />
   <SsChart {playerId} {rankHistory} />
-  <AccChart {playerId} {rankHistory} />
+  <AccAvgChart {playerId} {rankHistory} />
 {/if}
 
 <style>
