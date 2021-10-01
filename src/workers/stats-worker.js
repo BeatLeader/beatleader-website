@@ -10,7 +10,7 @@ import {getTotalPpFromSortedPps, WEIGHT_COEFFICIENT} from '../utils/scoresaber/p
 import makePendingPromisePool from '../utils/pending-promises'
 import produce, {setAutoFreeze} from 'immer'
 import beatmapsEnhancer from '../stores/http/enhancers/common/beatmaps'
-import accEnhancer from '../stores/http/enhancers/common/acc-calc'
+import accEnhancer from '../stores/http/enhancers/scores/acc'
 
 let db = null;
 
@@ -56,7 +56,7 @@ const getRankedScores = async (playerId, withStars = false) => {
     ? await Promise.all(scores
       .filter(score => score?.score?.pp)
       .map(async score => {
-        score.score = await produce(await produce(score?.score, draft => beatmapsEnhancer(draft, true)), draft => accEnhancer(draft))
+        score = await produce(await produce(score, draft => beatmapsEnhancer(draft, true)), draft => accEnhancer(draft))
 
         return {
           ...score,
