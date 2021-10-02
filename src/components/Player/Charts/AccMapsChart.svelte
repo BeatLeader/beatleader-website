@@ -8,6 +8,7 @@
   import {worker} from '../../../utils/worker-wrappers'
   import regionsPlugin from './plugins/regions'
   import {capitalize} from '../../../utils/js'
+  import Spinner from '../../Common/Spinner.svelte'
 
   export let playerId = null;
   export let averageAcc = null;
@@ -28,12 +29,20 @@
   let lastHistoryHash = null;
   let playerScores = null;
 
-  const calcPlayerScoresHash = playerScores => playerScores.length + averageAcc + medianAcc;
+  let isLoading = false;
+
+  const calcPlayerScoresHash = playerScores => (playerScores?.length ?? 0) + averageAcc + medianAcc;
 
   const getPlayerRankedScores = async playerId => {
     if (!playerId) return null;
 
-    return worker.getPlayerRankedScoresWithStars(playerId);
+    isLoading = true;
+
+    const rankedScores = await worker.getPlayerRankedScoresWithStars(playerId);
+
+    isLoading = false;
+
+    return rankedScores;
   }
 
   const refreshPlayerRankedScores = async playerId => playerScores = await getPlayerRankedScores(playerId)
@@ -102,15 +111,27 @@
         return cum;
       }, {avg: [], best: [], median: []})
 
-    Object.keys(avgData).forEach(key => avgData[key] = avgData[key].sort((a,b) => a.x - b.x))
+    Object.keys(avgData).forEach(key => avgData[key] = avgData[key].sort((a, b) => a.x - b.x))
 
     maxStars = roundToPrecision(maxStars, .5) + .5;
     minAcc = Math.floor(minAcc - 1);
     if (minAcc < 0) minAcc = 0;
 
     let averageLines = [];
-    if (averageAcc) averageLines.push({min: averageAcc, max: averageAcc, color: averageLinesColor, label: 'Average', position: {vertical: 'bottom'}});
-    if (medianAcc) averageLines.push({min: medianAcc, max: medianAcc, color: averageLinesColor, label: 'Median', position: {horizontal: 'right'}})
+    if (averageAcc) averageLines.push({
+      min: averageAcc,
+      max: averageAcc,
+      color: averageLinesColor,
+      label: 'Average',
+      position: {vertical: 'bottom'},
+    });
+    if (medianAcc) averageLines.push({
+      min: medianAcc,
+      max: medianAcc,
+      color: averageLinesColor,
+      label: 'Median',
+      position: {horizontal: 'right'},
+    })
 
     if (chart) {
       chart.destroy();
@@ -230,7 +251,7 @@
 
                     const ret = [];
 
-                    switch(ctx?.dataset?.label) {
+                    switch (ctx?.dataset?.label) {
                       case 'Maps':
                         const song = ctx.dataset.data[ctx.dataIndex];
                         if (song) {
@@ -240,8 +261,8 @@
                         }
                         break;
 
-                        default:
-                          ret.push(`Stars: ${ctx?.raw?.x}★`);
+                      default:
+                        ret.push(`Stars: ${ctx?.raw?.x}★`);
                     }
 
                     return ret;
@@ -249,7 +270,7 @@
                   title: function (ctx) {
                     if (!ctx?.[0]?.raw) return '';
 
-                    switch(ctx?.[0].dataset?.label) {
+                    switch (ctx?.[0].dataset?.label) {
                       case 'Maps':
                         const mods = ctx[0].raw?.mods ?? null;
                         const stars = formatNumber(ctx[0].raw?.x ?? 0, 2);
@@ -260,12 +281,12 @@
                           : `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`
 
                       default:
-                        if(ctx && Array.isArray(ctx))
+                        if (ctx && Array.isArray(ctx))
                           return ctx.map(d => `${d?.dataset?.label ?? ''}: ${formatNumber(d?.raw?.y ?? 0)}%`)
                     }
 
                     return '';
-                  }
+                  },
                 },
               },
               zoom: {
@@ -278,7 +299,7 @@
                     enabled: true,
                   },
                   pinch: {
-                    enabled: true
+                    enabled: true,
                   },
                   mode: 'xy',
                 },
@@ -309,7 +330,7 @@
                   stepSize: 0.5,
                   callback: val => formatNumber(val, 1) + '★',
                 },
-                max: maxStars
+                max: maxStars,
               },
               y: {
                 type: 'linear',
@@ -325,7 +346,7 @@
                   color: "rgba(0,0,0,0.1)",
                   display: true,
                   drawBorder: true,
-                  drawOnChartArea: true
+                  drawOnChartArea: true,
                 },
                 min: minAcc,
               },
@@ -367,17 +388,24 @@
   $: if (debouncedChartHash) setupChart(debouncedChartHash, canvas)
 </script>
 
-{#if playerScores?.length}
-  <section bind:this={chartContainerEl} class="chart" style="--height: {height}">
-    <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
-  </section>
-{/if}
+<section bind:this={chartContainerEl} class="chart" style="--height: {height}">
+  <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
+  {#if isLoading}
+    <Spinner width="6em" height="6em" />
+  {/if}
+</section>
 
 <style>
     section {
         position: relative;
         margin: 1rem auto 0 auto;
         height: var(--height, 300px);
+    }
+
+    section :global(svg) {
+        position: absolute;
+        top: calc((350px - 6em) / 2);
+        left: calc((100% - 6em) / 2);
     }
 
     canvas {

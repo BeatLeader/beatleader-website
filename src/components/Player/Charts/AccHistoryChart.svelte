@@ -2,7 +2,7 @@
   import Chart from 'chart.js/auto'
   import playersHistoryRepository from '../../../db/repository/players-history'
   import {formatNumber} from '../../../utils/format'
-  import {addToDate, dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
+  import {dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
   import createContainerStore from '../../../stores/container'
   import {debounce} from '../../../utils/debounce'
 

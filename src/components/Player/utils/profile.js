@@ -95,7 +95,7 @@ function updateAccStats(playerStats) {
           metricData = {
             label: 'Best',
             title: 'Best ranked accuracy',
-            bgColor: 'var(--selected)'
+            bgColor: 'rgba(60,179,113,.75)'
           };
           break;
       }
