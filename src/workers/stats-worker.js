@@ -1,29 +1,74 @@
 import {expose} from 'comlink'
 import initDb from '../db/db'
 import scoresRepository from '../db/repository/scores'
+import rankedsRepository from '../db/repository/rankeds'
 import eventBus from '../utils/broadcast-channel-pubsub'
-import {opt} from '../utils/js'
+import {convertArrayToObjectByKey} from '../utils/js'
 import {diffColors} from '../utils/scoresaber/format'
 import {getAccFromScore} from '../utils/scoresaber/song'
 import {getTotalPpFromSortedPps, WEIGHT_COEFFICIENT} from '../utils/scoresaber/pp'
+import makePendingPromisePool from '../utils/pending-promises'
+import produce, {setAutoFreeze} from 'immer'
+import beatmapsEnhancer from '../stores/http/enhancers/common/beatmaps'
+import accEnhancer from '../stores/http/enhancers/scores/acc'
 
 let db = null;
 
+let rankeds = null;
+
+const resolvePromiseOrWaitForPending = makePendingPromisePool();
+
 const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId, true);
+const getRankedsFromDb = async (refreshCache = false) => {
+  const dbRankeds = await rankedsRepository().getAll(refreshCache)
+
+  return dbRankeds ? convertArrayToObjectByKey(dbRankeds, 'leaderboardId') : {}
+}
+
+const getRankeds = async (refreshCache = false) => resolvePromiseOrWaitForPending(`rankeds/${refreshCache}`, () => getRankedsFromDb())
 
 async function init() {
   if (db) return;
 
   db = await initDb();
+
+  // setup immer.js
+  // WORKAROUND for immer.js esm (see https://github.com/immerjs/immer/issues/557)
+  self.process = {env: {NODE_ENV: "production"}};
+  setAutoFreeze(false);
+
+  rankeds = getRankeds();
+
+  eventBus.on('rankeds-changed', () => rankeds = getRankeds(true));
 }
 
-const getRankedScores = async playerId => {
+const getRankedScores = async (playerId, withStars = false) => {
   const scores = await getPlayerScores(playerId)
 
   if (!scores || !scores.length) return null;
 
-  return scores.filter(score => opt(score, 'score.pp'));
+  let allRankeds = null;
+  if (withStars) {
+    allRankeds = await rankeds;
+  }
+
+  return withStars
+    ? (await Promise.all(scores
+        .filter(score => score?.score?.pp)
+        .map(async score => {
+          score = await produce(await produce(score, draft => beatmapsEnhancer(draft, true)), draft => accEnhancer(draft))
+
+          return {
+            ...score,
+            stars: allRankeds[score?.leaderboardId]?.stars ?? null,
+          }
+        }))
+    )
+      .filter(s => s.stars)
+    : scores.filter(score => score?.score?.pp);
 }
+
+const getPlayerRankedScoresWithStars = async playerId => getRankedScores(playerId, true)
 
 const calcPlayerStats = async playerId => {
   await init();
@@ -32,13 +77,13 @@ const calcPlayerStats = async playerId => {
   if (!rankedScores) return null;
 
   const stats = rankedScores
-    .filter(score => (opt(score, 'score.score') && opt(score, 'score.maxScore')) || opt(score, 'score.acc'))
+    .filter(score => (score?.score?.score && score?.score?.maxScore) || score?.score?.acc)
     .reduce((cum, s) => {
-      const leaderboardId = opt(s, 'leaderboard.leaderboardId')
-      const pp = opt(s, 'score.pp');
-      const score = opt(s, 'score.unmodifiedScore', opt(s, 'score.score', 0))
+      const leaderboardId = s?.leaderboard?.leaderboardId;
+      const pp = s?.score?.pp;
+      const score = s?.score?.unmodifiedScore ?? s?.score?.score ?? 0;
       const accFromScore = getAccFromScore({...s.score, leaderboardId});
-      const scoreAcc = opt(s, 'score.acc');
+      const scoreAcc = s?.score?.acc;
 
       if (!accFromScore && !scoreAcc) return cum;
 
@@ -136,6 +181,7 @@ const worker = {
   init,
   calcPlayerStats,
   calcPpBoundary,
+  getPlayerRankedScoresWithStars
 }
 
 expose(worker);

@@ -1,4 +1,5 @@
 <script>
+  import {createEventDispatcher} from 'svelte'
   import createRankingService from '../../services/scoresaber/ranking'
   import {opt} from '../../utils/js'
   import {navigate} from 'svelte-routing'
@@ -7,6 +8,8 @@
   import Spinner from '../Common/Spinner.svelte'
   import Flag from '../Common/Flag.svelte'
   import {fade} from 'svelte/transition'
+
+  const dispatch = createEventDispatcher();
 
   export let rank = null;
   export let country = null;
@@ -34,6 +37,8 @@
 
       comparePp = opt(ranking.find(p => opt(p, 'playerInfo.rank') === rank), 'playerInfo.pp')
       miniRanking = ranking
+
+      dispatch('height-changed');
     } finally {
       isLoading = false
     }
