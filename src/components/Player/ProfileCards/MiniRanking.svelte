@@ -8,12 +8,12 @@
 
 <div class="mini-ranking">
   <div>
-    <MiniRanking rank={opt(playerInfo, 'rank')} numOfPlayers={5} />
+    <MiniRanking rank={opt(playerInfo, 'rank')} numOfPlayers={5} on:height-changed />
   </div>
 
   {#each opt(playerInfo, 'countries', []) as countryInfo (countryInfo.country)}
     <div>
-      <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} />
+      <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} on:height-changed />
     </div>
   {/each}
 </div>

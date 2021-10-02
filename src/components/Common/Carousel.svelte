@@ -35,6 +35,10 @@
     if (currentItem > 0) currentItem--;
   }
 
+  function onCardHeightChanged() {
+    if (mainEl) updateHeight(mainEl, currentItem);
+  }
+
   onMount(() => {
     return () => {
       if (mainEl) {
@@ -67,7 +71,7 @@
       {#each cards as card, cardIdx (card.name)}
         {#key card.name}
           <div>
-            <svelte:component this={card.component} {...card.props}/>
+            <svelte:component this={card.component} {...card.props} on:height-changed={onCardHeightChanged}/>
           </div>
         {/key}
       {/each}
