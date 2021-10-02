@@ -260,9 +260,6 @@
                           ret.push(`${song.songAuthor} / ${song.levelAuthor}`);
                         }
                         break;
-
-                      default:
-                        ret.push(`Stars: ${ctx?.raw?.x}★`);
                     }
 
                     return ret;
@@ -282,7 +279,10 @@
 
                       default:
                         if (ctx && Array.isArray(ctx))
-                          return ctx.map(d => `${d?.dataset?.label ?? ''}: ${formatNumber(d?.raw?.y ?? 0)}%`)
+                          return [`Stars: ${ctx?.[0]?.raw?.x}★`]
+                            .concat(
+                              ctx.map(d => `${d?.dataset?.label ?? ''}: ${formatNumber(d?.raw?.y ?? 0)}%`),
+                            )
                     }
 
                     return '';
