@@ -90,16 +90,20 @@ export function toAccSaberMidnight(date = new Date()) {
     return dayjs(date).tz(ACCSABER_TZ).hour(0).minute(0).second(0).millisecond(0).toDate();
 }
 
-export function formatDate(val, dateStyle = 'short', timeStyle = 'medium') {
+export function formatDateWithOptions(val, options = {localeMatcher: 'best fit'}, locale = getCurrentLocale()) {
     if (!isValidDate(val)) return null;
 
-    const rtf = new Intl.DateTimeFormat(getCurrentLocale(), {
-        localeMatcher: 'best fit',
-        dateStyle,
-        timeStyle,
-    });
+    const rtf = new Intl.DateTimeFormat(locale, options);
 
     return rtf.format(val);
+}
+
+export function formatDate(val, dateStyle = 'short', timeStyle = 'medium', locale = getCurrentLocale()) {
+    return formatDateWithOptions(val, {
+        localeMatcher: 'best fit',
+        dateStyle,
+        timeStyle: timeStyle ?? undefined,
+    }, locale);
 }
 
 export function formatDateRelativeInUnits(val, unit = 'day') {

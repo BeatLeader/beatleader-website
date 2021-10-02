@@ -3,6 +3,7 @@ import queues from '../network/queues/queues';
 import accSaberCategoriesApiClient from '../network/clients/accsaber/api-categories';
 import accSaberRankingApiClient from '../network/clients/accsaber/api-ranking';
 import accSaberScoresApiClient from '../network/clients/accsaber/api-scores';
+import accSaberPlayerRankHistoryApiClient from '../network/clients/accsaber/api-player-rank-history';
 import accSaberCategoriesRepository from '../db/repository/accsaber-categories'
 import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import accSaberPlayersHistoryRepository from '../db/repository/accsaber-players-history';
@@ -37,6 +38,7 @@ export default () => {
 
   const getPlayer = async playerId => accSaberPlayersRepository().getAllFromIndex('accsaber-players-playerId', playerId);
   const getRanking = async (category = 'overall') => accSaberPlayersRepository().getAllFromIndex('accsaber-players-category', category);
+  const getPlayerHistory = async playerId => accSaberPlayersHistoryRepository().getAllFromIndex('accsaber-players-history-playerId', playerId)
 
   const getLastUpdatedKey = type => `accSaber${capitalize(type)}LastUpdated`;
   const getLastUpdated = async (type = 'all') => keyValueRepository().get(getLastUpdatedKey(type));
@@ -60,6 +62,13 @@ export default () => {
     if (!options.hasOwnProperty('cacheTtl')) options.cacheTtl = SCORES_NETWORK_TTL;
 
     return accSaberScoresApiClient.getProcessed({...options, playerId, page, priority});
+  }
+
+  const fetchPlayerRankHistory = async (playerId, priority = PRIORITY.FG_LOW, {...options} = {}) => {
+    if (!options) options = {};
+    if (!options.hasOwnProperty('cacheTtl')) options.cacheTtl = SCORES_NETWORK_TTL;
+
+    return accSaberPlayerRankHistoryApiClient.getProcessed({...options, playerId, priority});
   }
 
   const refreshCategories = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
@@ -326,7 +335,9 @@ export default () => {
     getPlayer,
     getCategories,
     getRanking,
+    getPlayerHistory,
     fetchScoresPage,
+    fetchPlayerRankHistory,
     refreshCategories,
     refreshRanking,
     refreshAll,

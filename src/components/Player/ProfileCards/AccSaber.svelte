@@ -1,15 +1,20 @@
 <script>
   import Badge from '../../Common/Badge.svelte'
   import {fade} from 'svelte/transition'
+  import AccSaberChart from '../Charts/AccSaberChart.svelte'
 
   export let categories = null;
   export let playerInfo = null;
 
   $: playerInfoByCategory = categories && playerInfo && categories.length && playerInfo.length
     ? categories
-      .map(c => ({...c, playerInfo: playerInfo.find(p => p.category === c.name)}))
+      .map(c => ({
+        ...c,
+        playerInfo: playerInfo.find(p => p.category === c.name),
+      }))
       .filter(c => c.playerInfo)
     : null;
+  $: playerId = playerInfo?.[0]?.playerId ?? null;
 </script>
 
 {#if playerInfoByCategory}
@@ -21,43 +26,60 @@
       </a>
     </h3>
 
-    <div>
-      {#each playerInfoByCategory as category (category.name)}
-        <Badge label={category.displayName ?? category.name} value={category.playerInfo.rank} prefix="#"
-               digits={0} fluid={true} bgColor="var(--dimmed)"
-        />
-      {/each}
-    </div>
-
-    <div>
-      {#each playerInfoByCategory as category (category.name)}
-        <Badge label={category.displayName ?? category.name} value={category.playerInfo.ap} suffix=" AP"
-               fluid={true} bgColor="var(--ppColour)"
-        />
-      {/each}
-    </div>
-
-    <div>
-      {#each playerInfoByCategory as category (category.name)}
-        <Badge label={category.displayName ?? category.name} value={category.playerInfo.averageAcc * 100} suffix="%"
-               fluid={true} bgColor="var(--selected)"
-        />
-      {/each}
-    </div>
-
-    <div>
-      {#each playerInfoByCategory as category (category.name)}
-        <Badge label={category.displayName ?? category.name} value={category.playerInfo.rankedPlays} suffix=" play(s)"
-               digits={0} fluid={true} bgColor="var(--faded)"
-        />
-      {/each}
-    </div>
-
-    {#if playerInfoByCategory?.[0]?.playerInfo?.hmd}
+    <div class="stats">
       <div>
-        <Badge label="HMD" value={playerInfoByCategory[0].playerInfo.hmd} fluid={true} bgColor="var(--alternate)" type="text"/>
+        <div>
+          {#each playerInfoByCategory as category (category.name)}
+            <Badge label={category.displayName ?? category.name} value={category.playerInfo.rank} prefix="#"
+                   digits={0} fluid={true} bgColor="var(--dimmed)"
+            />
+          {/each}
+        </div>
+
+        <div>
+          {#each playerInfoByCategory as category (category.name)}
+            <Badge label={category.displayName ?? category.name} value={category.playerInfo.ap} suffix=" AP"
+                   fluid={true} bgColor="var(--ppColour)"
+            />
+          {/each}
+        </div>
+
+        {#if playerInfoByCategory?.[0]?.playerInfo?.hmd}
+          <div class="hmd-full">
+            <Badge label="HMD" value={playerInfoByCategory[0].playerInfo.hmd} fluid={true} bgColor="var(--alternate)"
+                   type="text"/>
+          </div>
+        {/if}
       </div>
-    {/if}
+
+      <div>
+        <div>
+          {#each playerInfoByCategory as category (category.name)}
+            <Badge label={category.displayName ?? category.name} value={category.playerInfo.averageAcc * 100} suffix="%"
+                   fluid={true} bgColor="var(--selected)"
+            />
+          {/each}
+        </div>
+
+        <div>
+          {#each playerInfoByCategory as category (category.name)}
+            <Badge label={category.displayName ?? category.name} value={category.playerInfo.rankedPlays}
+                   suffix=" play(s)"
+                   digits={0} fluid={true} bgColor="var(--faded)"
+            />
+          {/each}
+        </div>
+      </div>
+
+      {#if playerInfoByCategory?.[0]?.playerInfo?.hmd}
+        <div class="hmd-small">
+          <Badge label="HMD" value={playerInfoByCategory[0].playerInfo.hmd} fluid={true} bgColor="var(--alternate)"
+                 type="text"/>
+        </div>
+      {/if}
+    </div>
+
+    <AccSaberChart {playerId} on:height-changed/>
   </section>
 {/if}
 
@@ -85,5 +107,29 @@
     img {
         width: 2em;
         height: 2em;
+    }
+
+    .stats .hmd-full {
+        display: none;
+    }
+
+    .stats .hmd-small {
+        display: block;
+    }
+
+    @media screen and (min-width: 1200px) {
+        .stats {
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-column-gap: 1em;
+        }
+
+        .stats .hmd-full {
+            display: block;
+        }
+
+        .stats .hmd-small {
+            display: none;
+        }
     }
 </style>

@@ -226,6 +226,11 @@ chart.js@^3.5.0:
   resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-3.5.0.tgz#6eb075332d4ebbbb20a94e5a07a234052ed6c4fb"
   integrity sha512-J1a4EAb1Gi/KbhwDRmoovHTRuqT8qdF0kZ4XgwxpGethJHUdDrkqyPYwke0a+BuvSeUxPf8Cos6AX2AB8H8GLA==
 
+chartjs-adapter-luxon@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/chartjs-adapter-luxon/-/chartjs-adapter-luxon-1.1.0.tgz#0a0d9213db5de0ad3285fae896b4c4b74db9007b"
+  integrity sha512-CS+xBWEyXYVLBZ3dSY/MwlSXhz8er4JjkApazY84ft/++oOLsmkt6TaXBCsUFudum7QdoYmpxiL/gSp20+emkw==
+
 chartjs-plugin-zoom@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/chartjs-plugin-zoom/-/chartjs-plugin-zoom-1.1.1.tgz#8a28923a17fcb5eb57a0dc94c5113bf402677647"
@@ -568,6 +573,11 @@ lower-case@^2.0.2:
   integrity sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==
   dependencies:
     tslib "^2.0.3"
+
+luxon@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.0.2.tgz#11f2cd4a11655fdf92e076b5782d7ede5bcdd133"
+  integrity sha512-ZRioYLCgRHrtTORaZX1mx+jtxKtKuI5ZDvHNAmqpUzGqSrR+tL4FVLn/CUGMA3h0+AKD1MAxGI5GnCqR5txNqg==
 
 magic-string@^0.25.7:
   version "0.25.7"
