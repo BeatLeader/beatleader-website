@@ -13,6 +13,13 @@
   export let skeleton = false;
   export let isCached = false;
   export let rankHistory = null;
+
+  $: avgStat = accStats?.find(s => s.label === 'Average') ?? null
+  $: medianStat = accStats?.find(s => s.label === 'Median') ?? null
+  $: avgAccTween = avgStat?.value ?? null
+  $: medianAccTween = medianStat?.value ?? null
+  $: averageAcc = $avgAccTween
+  $: medianAcc = $medianAccTween
 </script>
 
 {#if scoresStats || ssBadges || skeleton}
@@ -30,7 +37,7 @@
   </div>
 {/if}
 {#if rankHistory}
-  <AccMapsChart {playerId} />
+  <AccMapsChart {playerId} {medianAcc} {averageAcc} />
   <SsChart {playerId} {rankHistory} />
   <AccAvgChart {playerId} {rankHistory} />
 {/if}

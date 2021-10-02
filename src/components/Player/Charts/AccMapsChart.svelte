@@ -10,6 +10,8 @@
   import {capitalize} from '../../../utils/js'
 
   export let playerId = null;
+  export let averageAcc = null;
+  export let medianAcc = null;
   export let type = 'accuracy'; // or percentage
   export let height = "350px";
 
@@ -26,7 +28,7 @@
   let lastHistoryHash = null;
   let playerScores = null;
 
-  const calcPlayerScoresHash = playerScores => playerScores.length;
+  const calcPlayerScoresHash = playerScores => playerScores.length + averageAcc + medianAcc;
 
   const getPlayerRankedScores = async playerId => {
     if (!playerId) return null;
@@ -38,6 +40,15 @@
 
   async function setupChart(hash, canvas) {
     if (!hash || !canvas || !playerScores?.length || chartHash === lastHistoryHash) return;
+
+    const mapColor = '#ffffff';
+    const mapBorderColor = '#003e54';
+    const ssPlusColor = 'rgba(143,72,219, .4)';
+    const ssColor = 'rgba(190,42,66, .4)';
+    const sPlusColor = 'rgba(255,99,71, .4)';
+    const sColor = 'rgba(89,176,244, .4)';
+    const aColor = 'rgba(60,179,113, .4)';
+    const averageLinesColor = 'rgba(255,255,255,.35)'
 
     lastHistoryHash = chartHash;
 
@@ -97,13 +108,9 @@
     minAcc = Math.floor(minAcc - 1);
     if (minAcc < 0) minAcc = 0;
 
-    const mapColor = '#ffffff';
-    const mapBorderColor = '#003e54';
-    const ssPlusColor = 'rgba(143,72,219, .4)';
-    const ssColor = 'rgba(190,42,66, .4)';
-    const sPlusColor = 'rgba(255,99,71, .4)';
-    const sColor = 'rgba(89,176,244, .4)';
-    const aColor = 'rgba(60,179,113, .4)';
+    let averageLines = [];
+    if (averageAcc) averageLines.push({min: averageAcc, max: averageAcc, color: averageLinesColor, label: 'Average', position: {vertical: 'bottom'}});
+    if (medianAcc) averageLines.push({min: medianAcc, max: medianAcc, color: averageLinesColor, label: 'Median', position: {horizontal: 'right'}})
 
     if (chart) {
       chart.destroy();
@@ -287,7 +294,7 @@
                   {min: 85, max: 90, color: sPlusColor},
                   {min: 80, max: 85, color: sColor},
                   {min: 0, max: 80, color: aColor},
-                ],
+                ].concat(averageLines),
               },
             },
             scales: {
