@@ -15,6 +15,7 @@
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
+  const MAGIC_INACTIVITY_RANK = 999999;
 
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
@@ -133,7 +134,7 @@
     const totalPlayCountColor = "#666";
     const activityColor = "#333"
 
-    const data = rankHistory;
+    const data = rankHistory.map(h => h === MAGIC_INACTIVITY_RANK ? null : h);
 
     const datasets = [
       {
