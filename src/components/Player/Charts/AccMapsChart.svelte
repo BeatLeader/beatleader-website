@@ -241,7 +241,7 @@
                         break;
 
                         default:
-                          ret.push(`Stars: ${ctx?.raw?.x}*`);
+                          ret.push(`Stars: ${ctx?.raw?.x}★`);
                     }
 
                     return ret;
@@ -256,8 +256,8 @@
                         const acc = formatNumber(ctx[0].raw?.y ?? 0, 2);
 
                         return type === 'percentage'
-                          ? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}*`
-                          : `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}*`
+                          ? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`
+                          : `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`
 
                       default:
                         if(ctx && Array.isArray(ctx))
@@ -307,9 +307,7 @@
                 ticks: {
                   min: 0,
                   stepSize: 0.5,
-                  callback: function (value, index, values) {
-                    return round(value, 2) + '*';
-                  },
+                  callback: val => formatNumber(val, 1) + '★',
                 },
                 max: maxStars
               },
@@ -321,9 +319,7 @@
                 },
                 ticks: {
                   max: 100,
-                  callback: function (value, index, values) {
-                    return round(value, 2) + '%';
-                  },
+                  callback: val => formatNumber(val, 2) + '%',
                 },
                 grid: {
                   color: "rgba(0,0,0,0.1)",
@@ -331,7 +327,7 @@
                   drawBorder: true,
                   drawOnChartArea: true
                 },
-                min: minAcc
+                min: minAcc,
               },
             },
             onClick(e, item, chart) {
