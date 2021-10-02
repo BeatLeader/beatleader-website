@@ -99,11 +99,11 @@
 
     const mapColor = '#ffffff';
     const mapBorderColor = '#003e54';
-    const ssPlusColor = 'rgb(143,72,219, .4)';
-    const ssColor = 'rgb(190,42,66, .4)';
-    const sPlusColor = 'rgb(255,99,71, .4)';
-    const sColor = 'rgb(89,176,244, .4)';
-    const aColor = 'rgb(60,179,113, .4)';
+    const ssPlusColor = 'rgba(143,72,219, .4)';
+    const ssColor = 'rgba(190,42,66, .4)';
+    const sPlusColor = 'rgba(255,99,71, .4)';
+    const sColor = 'rgba(89,176,244, .4)';
+    const aColor = 'rgba(60,179,113, .4)';
 
     if (chart) {
       chart.destroy();
@@ -142,12 +142,12 @@
               {
                 yAxisID: 'y',
                 label: 'Best',
-                borderColor: '#00ff00',
+                borderColor: 'rgba(60,179,113, .75)',
                 data: avgData.best,
                 fill: false,
                 borderWidth: 2,
                 pointRadius: 2,
-                pointHoverRadius: 3,
+                pointHoverRadius: 4,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4,
                 type: 'line',
@@ -166,7 +166,7 @@
                 fill: false,
                 borderWidth: 2,
                 pointRadius: 2,
-                pointHoverRadius: 3,
+                pointHoverRadius: 4,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4,
                 type: 'line',
@@ -185,7 +185,7 @@
                 fill: false,
                 borderWidth: 2,
                 pointRadius: 2,
-                pointHoverRadius: 3,
+                pointHoverRadius: 4,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4,
                 type: 'line',

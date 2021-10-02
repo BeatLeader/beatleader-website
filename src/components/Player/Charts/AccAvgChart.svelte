@@ -44,11 +44,11 @@
     const averageColor = '#3273dc';
     const medianColor = '#8992e8';
     const stdDevColor = '#f94022';
-    const ssPlusColor = 'rgb(143,72,219, .4)';
-    const ssColor = 'rgb(190,42,66, .4)';
-    const sPlusColor = 'rgb(255,99,71, .4)';
-    const sColor = 'rgb(89,176,244, .4)';
-    const aColor = 'rgb(60,179,113, .4)';
+    const ssPlusColor = 'rgba(143,72,219, .4)';
+    const ssColor = 'rgba(190,42,66, .4)';
+    const sPlusColor = 'rgba(255,99,71, .4)';
+    const sColor = 'rgba(89,176,244, .4)';
+    const aColor = 'rgba(60,179,113, .4)';
 
     const datasets = [];
 
