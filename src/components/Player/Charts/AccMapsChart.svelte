@@ -104,7 +104,7 @@
 
     Object.keys(avgData).forEach(key => avgData[key] = avgData[key].sort((a,b) => a.x - b.x))
 
-    maxStars = Math.ceil(maxStars);
+    maxStars = roundToPrecision(maxStars, .5) + .5;
     minAcc = Math.floor(minAcc - 1);
     if (minAcc < 0) minAcc = 0;
 
