@@ -162,9 +162,10 @@
                 borderColor: mapBorderColor,
                 backgroundColor: mapColor,
                 fill: false,
-                pointRadius: 2,
-                pointHoverRadius: 3,
+                pointRadius: 3,
+                pointHoverRadius: 4,
                 data: chartData,
+                order: 4,
               },
 
               {
@@ -256,7 +257,7 @@
                         const song = ctx.dataset.data[ctx.dataIndex];
                         if (song) {
                           ret.push(formatDateRelative(song.timeSet));
-                          ret.push(`${song.name} (${capitalize(song.diff)})`);
+                          ret.push(`${song.name} (${capitalize(song?.diff?.replace('Plus', '+' ?? ''))})`);
                           ret.push(`${song.songAuthor} / ${song.levelAuthor}`);
                         }
                         break;
@@ -360,18 +361,6 @@
           plugins: [regionsPlugin],
         },
       );
-    } else {
-      chart.data = {
-        datasets: [{
-          label: '',
-          borderColor: mapColor,
-          fill: true,
-          pointRadius: 3,
-          pointHoverRadius: 3,
-          data: chartData,
-        }],
-      }
-      chart.update()
     }
   }
 
