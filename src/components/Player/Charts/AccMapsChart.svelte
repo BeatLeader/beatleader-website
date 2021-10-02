@@ -1,7 +1,7 @@
 <script>
   import Chart from 'chart.js/auto'
   import zoomPlugin from 'chartjs-plugin-zoom';
-  import {formatNumber, round, roundToPrecision} from '../../../utils/format'
+  import {formatNumber, roundToPrecision} from '../../../utils/format'
   import {formatDateRelative} from '../../../utils/date'
   import createContainerStore from '../../../stores/container'
   import {debounce} from '../../../utils/debounce'
@@ -380,7 +380,7 @@
 <section bind:this={chartContainerEl} class="chart" style="--height: {height}">
   <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
   {#if isLoading}
-    <Spinner width="6em" height="6em" />
+    <Spinner width="10em" height="10em" />
   {/if}
 </section>
 
@@ -393,8 +393,8 @@
 
     section :global(svg) {
         position: absolute;
-        top: calc((350px - 6em) / 2);
-        left: calc((100% - 6em) / 2);
+        top: calc((100% - 10em) / 2);
+        left: calc((100% - 10em) / 2);
     }
 
     canvas {
