@@ -96,7 +96,7 @@
   async function refreshPlayerBeatSaviorScores(playerId) {
     if (!playerId) return;
 
-    const scores = await beatSaviorService.getAllPlayerScores(playerId);
+    const scores = await beatSaviorService.getPlayerBeatSaviorData(playerId);
 
     const ssToday = toSSDate(new Date());
     const oldestDate = addToDate(-49 * DAY, ssToday);

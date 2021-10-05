@@ -96,7 +96,7 @@
     }
 
     h3 a {
-        display: flex;
+        display: inline-flex;
         align-items: center;
     }
 
@@ -130,6 +130,12 @@
 
         .stats .hmd-small {
             display: none;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        h3 {
+            text-align: center;
         }
     }
 </style>

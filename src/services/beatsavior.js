@@ -26,14 +26,27 @@ export default () => {
 
   const getPlayerBeatSaviorData = async playerId => resolvePromiseOrWaitForPending(`getPlayerBeatSaviorData/${playerId}`, () => beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId));
 
-  const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, () => scoresService.getPlayerScoresAsObject(
-    playerId,
-    score => {
-      const key = opt(score, 'leaderboard.song.hash');
-      return key ? key.toLowerCase() : null;
-    },
-    true,
-  ))
+  const getPlayerBeatSaviorDataWithScores = async playerId => {
+    const [beatSaviorData, playerScores] = await Promise.all([
+      getPlayerBeatSaviorData(playerId),
+      resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, () => scoresService.getPlayerScoresAsObject(
+        playerId,
+        score => score?.leaderboard?.song?.hash?.toLowerCase() ?? null,
+        true,
+      )),
+    ]);
+
+    return beatSaviorData.map(bsData => {
+      if (!bsData?.hash || !playerScores?.[bsData?.hash?.toLowerCase()]) return bsData;
+
+      const ssScore = playerScores[bsData.hash.toLowerCase()].find(ssScore => isScoreMatchingBsData(ssScore, bsData, true)) ?? null;
+
+      return {
+        ...bsData,
+        ssScore
+      }
+    });
+  }
 
   const isScoreMatchingBsData = (score, bsData, exact = true) => {
     if (!bsData.hash || !bsData.score || !bsData.timeSet || !opt(bsData, 'stats.won')) return false;
@@ -157,8 +170,6 @@ export default () => {
     return bsData ? bsData : null;
   }
 
-  const getAllPlayerScores = async playerId => beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId);
-
   const isDataForPlayerAvailable = async playerId => await beatSaviorRepository().getFromIndex('beat-savior-playerId', playerId) !== undefined;
 
   const destroyService = () => {
@@ -177,7 +188,8 @@ export default () => {
     refresh,
     refreshAll,
     get,
-    getAllPlayerScores,
+    getPlayerBeatSaviorData,
+    getPlayerBeatSaviorDataWithScores,
     isDataForPlayerAvailable,
     destroyService,
   }

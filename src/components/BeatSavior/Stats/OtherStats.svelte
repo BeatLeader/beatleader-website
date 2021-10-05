@@ -10,6 +10,7 @@
   export let name = null;
   export let compareTo = null;
   export let compareToName = null;
+  export let isAverage = false;
 
   function formatFailedAt(beatSavior) {
     const endTime = opt(beatSavior, 'trackers.winTracker.endTime');
@@ -35,11 +36,11 @@
   $: fc = stats && !stats.miss && !stats.wallHit && !stats.bombHit;
 
   $: totalMistakes = stats ? stats.miss + stats.wallHit + stats.bombHit : null;
-  $: leftBadCuts = opt(beatSavior, 'trackers.hitTracker.leftBadCuts', null)
-  $: leftMissedNotes = opt(beatSavior, 'trackers.hitTracker.leftMiss', null)
+  $: leftBadCuts = isAverage ? (stats?.leftBadCuts ?? null) : opt(beatSavior, 'trackers.hitTracker.leftBadCuts', null)
+  $: leftMissedNotes = isAverage ? (stats?.leftMiss ?? null) : opt(beatSavior, 'trackers.hitTracker.leftMiss', null)
   $: leftMiss = (leftBadCuts || 0) + (leftMissedNotes || 0)
-  $: rightBadCuts = opt(beatSavior, 'trackers.hitTracker.rightBadCuts', null)
-  $: rightMissedNotes = opt(beatSavior, 'trackers.hitTracker.rightMiss', null)
+  $: rightBadCuts = isAverage ? (stats?.rightBadCuts ?? null) : opt(beatSavior, 'trackers.hitTracker.rightBadCuts', null)
+  $: rightMissedNotes = isAverage ? (stats?.rightMiss ?? null) : opt(beatSavior, 'trackers.hitTracker.rightMiss', null)
   $: rightMiss = (rightBadCuts || 0) + (rightMissedNotes || 0)
 
   $: compareToStats = compareTo ? compareTo.stats : null;
@@ -64,65 +65,69 @@
       </Badge>
     {/if}
 
-    {#if fc && (!compareToStats || compareToFc)}
-      <Badge color="darkorange" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
-        <svelte:fragment slot="label">
-          FC
-        </svelte:fragment>
-      </Badge>
+    {#if !isAverage}
+      {#if fc && (!compareToStats || compareToFc)}
+        <Badge color="darkorange" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
+          <svelte:fragment slot="label">
+            FC
+          </svelte:fragment>
+        </Badge>
+      {/if}
+    {:else}
+      <Badge label="FC" color="white" bgColor="var(--dimmed)" fluid={true} value={stats?.fc ? stats?.fc * 100 : 0} suffix="%" />
     {/if}
 
-    {#if !fc || (compareToStats && !compareToFc)}
+    {#if !fc || isAverage || (compareToStats && !compareToFc)}
       <Badge label="Total mistakes" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
-          <Value value={totalMistakes} digits={0} prevValue={compareToTotalMistakes} prevAbsolute={true} prevWithSign={false} />
+          <Value value={totalMistakes} digits={isAverage ? 2 : 0} prevValue={compareToTotalMistakes} prevAbsolute={true} prevWithSign={false} />
           {#if stats.miss || (compareToStats && compareToStats.miss)}
-            <span class="left addon"><Value value={leftMiss} digits={0} title="Left hand total mistakes" prevValue={compareToLeftMiss} prevAbsolute={true} prevWithSign={false}/></span>
-            <span class="right addon"><Value value={rightMiss} digits={0} title="Right hand total mistakes" prevValue={compareToRightMiss} prevAbsolute={true} prevWithSign={false}/></span>
+            <span class="left addon"><Value value={leftMiss} digits={isAverage ? 2 : 0} title="Left hand total mistakes" prevValue={compareToLeftMiss} prevAbsolute={true} prevWithSign={false}/></span>
+            <span class="right addon"><Value value={rightMiss} digits={isAverage ? 2 : 0} title="Right hand total mistakes" prevValue={compareToRightMiss} prevAbsolute={true} prevWithSign={false}/></span>
           {/if}
         </svelte:fragment>
       </Badge>
       <Badge label="Missed notes" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
-          <Value value={stats.missedNotes} digits={0} prevValue={compareToStats ? compareToStats.missedNotes : null} prevAbsolute={true} prevWithSign={false} />
+          <Value value={stats.missedNotes} digits={isAverage ? 2 : 0} prevValue={compareToStats ? compareToStats.missedNotes : null} prevAbsolute={true} prevWithSign={false} />
           {#if stats.missedNotes || (compareToStats && compareToStats.missedNotes)}
-            <span class="left addon"><Value value={leftMissedNotes} digits={0} title="Left hand missed notes" prevValue={compareToLeftMissedNotes} prevAbsolute={true} prevWithSign={false}/></span>
-            <span class="right addon"><Value value={rightMissedNotes} digits={0} title="Right hand missed notes" prevValue={compareToRightMissedNotes} prevAbsolute={true} prevWithSign={false}/></span>
+            <span class="left addon"><Value value={leftMissedNotes} digits={isAverage ? 2 : 0} title="Left hand missed notes" prevValue={compareToLeftMissedNotes} prevAbsolute={true} prevWithSign={false}/></span>
+            <span class="right addon"><Value value={rightMissedNotes} digits={isAverage ? 2 : 0} title="Right hand missed notes" prevValue={compareToRightMissedNotes} prevAbsolute={true} prevWithSign={false}/></span>
           {/if}
         </svelte:fragment>
       </Badge>
       <Badge label="Bad cuts" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
-          <Value value={stats.badCuts} digits={0} prevValue={compareToStats ? compareToStats.badCuts : null} prevAbsolute={true} prevWithSign={false} />
+          <Value value={stats.badCuts} digits={isAverage ? 2 : 0} prevValue={compareToStats ? compareToStats.badCuts : null} prevAbsolute={true} prevWithSign={false} />
           {#if stats.badCuts || (compareToStats && compareToStats.badCuts)}
-            <span class="left addon"><Value value={leftBadCuts} digits={0} title="Left hand bad cuts" prevValue={compareToLeftBadCuts} prevAbsolute={true} prevWithSign={false}/></span>
-            <span class="right addon"><Value value={rightBadCuts} digits={0} title="Right hand bad cuts" prevValue={compareToRightBadCuts} prevAbsolute={true} prevWithSign={false}/></span>
+            <span class="left addon"><Value value={leftBadCuts} digits={isAverage ? 2 : 0} title="Left hand bad cuts" prevValue={compareToLeftBadCuts} prevAbsolute={true} prevWithSign={false}/></span>
+            <span class="right addon"><Value value={rightBadCuts} digits={isAverage ? 2 : 0} title="Right hand bad cuts" prevValue={compareToRightBadCuts} prevAbsolute={true} prevWithSign={false}/></span>
           {/if}
         </svelte:fragment>
       </Badge>
 
       <Badge label="Bomb hit" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
-          <Value value={stats.bombHit} digits={0} prevValue={compareToStats ? compareToStats.bombHit : null} prevAbsolute={true} prevWithSign={false} />
+          <Value value={stats.bombHit} digits={isAverage ? 3 : 0} prevValue={compareToStats ? compareToStats.bombHit : null} prevAbsolute={true} prevWithSign={false} />
         </svelte:fragment>
       </Badge>
 
       <Badge label="Wall hit" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
-          <Value value={stats.wallHit} digits={0} prevValue={compareToStats ? compareToStats.wallHit : null} prevAbsolute={true} prevWithSign={false} />
+          <Value value={stats.wallHit} digits={isAverage ? 3 : 0} prevValue={compareToStats ? compareToStats.wallHit : null} prevAbsolute={true} prevWithSign={false} />
         </svelte:fragment>
       </Badge>
     {/if}
 
     <Badge label="Max combo" color="white" bgColor="var(--dimmed)" fluid={true}>
       <svelte:fragment slot="value">
-        <Value value={stats.maxCombo} digits={0} prevValue={compareToStats ? compareToStats.maxCombo : null} prevAbsolute={true} prevWithSign={false} />
+        <Value value={stats.maxCombo} digits={isAverage ? 2 : 0} prevValue={compareToStats ? compareToStats.maxCombo : null} prevAbsolute={true} prevWithSign={false} />
       </svelte:fragment>
     </Badge>
 
     <Badge label="Pauses" color="white" bgColor="var(--dimmed)" fluid={true}>
       <svelte:fragment slot="value">
-        <Value value={stats.pauses} digits={0} prevValue={compareToStats ? compareToStats.pauses : null} prevAbsolute={true} prevWithSign={false} />
+        <Value value={stats.pauses} digits={isAverage ? 3 : 0} prevValue={compareToStats ? compareToStats.pauses : null} prevAbsolute={true} prevWithSign={false} />
       </svelte:fragment>
     </Badge>
   </div>
