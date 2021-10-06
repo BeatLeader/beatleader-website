@@ -81,7 +81,7 @@
           <img src={twitchProfile.profile_image_url}/>
           <div>
             <h1 class="title is-4">{twitchProfile.display_name}</h1>
-            <h2 class="subtitle is-6"><a href="https://twitch.tv/{encodeURIComponent(twitchProfile.login)}" target="_blank">https://twitch.tv/{twitchProfile.login}</a></h2>
+            <h2 class="subtitle is-6"><a href="https://twitch.tv/{encodeURIComponent(twitchProfile.login)}" target="_blank" rel="noreferrer">https://twitch.tv/{twitchProfile.login}</a></h2>
             <p>{twitchProfile.description}</p>
           </div>
         </div>

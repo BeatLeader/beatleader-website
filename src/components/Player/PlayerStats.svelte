@@ -54,7 +54,7 @@
   <h1 class="title is-4 has-text-centered-mobile" class:centered>
     {#if name}
       {#if playerInfo.externalProfileUrl}
-        <a href={playerInfo.externalProfileUrl} target="_blank" rel="noopener">{name}</a>
+        <a href={playerInfo.externalProfileUrl} target="_blank" rel="noreferrer">{name}</a>
       {:else}
         {name}
       {/if}

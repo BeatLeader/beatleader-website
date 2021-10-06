@@ -32,7 +32,7 @@
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
-    <a class="video" href="{twitchUrl}" target="_blank">
+    <a class="video" href="{twitchUrl}" target="_blank" rel="noreferrer">
         <Button iconFa="fab fa-twitch" type="twitch" title="Twitch VOD preview" noMargin={true}/>
     </a>
 {/if}
@@ -44,7 +44,7 @@
     {/if}
 
     {#if shownIcons.includes('bs')}
-        <a href="https://beatsaver.com/maps/{songKey}" target="_blank">
+        <a href="https://beatsaver.com/maps/{songKey}" target="_blank" rel="noreferrer">
             <Button icon={beatSaverSvg} title="Go to Beat Saver" noMargin={true}/>
         </a>
     {/if}
@@ -56,7 +56,7 @@
     {/if}
 
     {#if shownIcons.includes('preview')}
-        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank">
+        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer">
             <Button iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
         </a>
     {/if}

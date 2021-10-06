@@ -18,7 +18,7 @@
       {#each videos as video}
         <span><FormattedDate date={dateFromString(video.created_at)} /></span>
 
-        <a href={video.url} target="_blank" rel="noopener">{video.title}</a>
+        <a href={video.url} target="_blank" rel="noreferrer">{video.title}</a>
 
         <span>{video.duration}</span>
       {/each}
