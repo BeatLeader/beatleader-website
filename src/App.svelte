@@ -1,6 +1,6 @@
 <script>
   import {setContext} from 'svelte'
-  import {Router, Route} from "svelte-routing";
+  import {Router, Route, navigate} from "svelte-routing";
   import buildInfo from '../build-info';
   import createContainerStore from './stores/container';
   import HomePage from './pages/Home.svelte';
@@ -11,6 +11,8 @@
   import PlayerPage from './pages/Player.svelte';
   import TwitchPage from './pages/Twitch.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
+  import PrivacyPage from './pages/Privacy.svelte';
+  import CreditsPage from './pages/Credits.svelte';
   import Nav from './components/Nav.svelte';
 
   export let url = "";
@@ -43,6 +45,8 @@
                     }
         />
       </Route>
+      <Route path="/privacy" component="{PrivacyPage}" />
+      <Route path="/credits" component="{CreditsPage}" />
       <Route path="/friends" component="{FriendsPage}" />
       <Route path="/ranking/:type/*page" let:params>
         <RankingPage type={params.type} page={params.page} />
@@ -60,14 +64,10 @@
 
 <footer>
   <p>ScoreSaber Reloaded by <a href="https://github.com/motzel">motzel</a></p>
-  <p>Developer preview build {buildInfo.buildVersion} Build date: {buildInfo.buildDate}</p>
+  <p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
   <p>
-    Uses <a href="https://scoresaber.com">ScoreSaber API</a>,
-    <a href="https://beatsaver.com">Beat Saver API</a>,
-    <a href="https://www.beatsavior.io">Beat Savior API</a>,
-    <a href="https://accsaber.com">AccSaber API</a>,
-    <a href="https://fontawesome.com/">Font Awesome</a>,
-    <a href="https://heroicons.com/">heroicons</a>
+    <a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a> |
+    <a href="/credits" on:click|preventDefault={() => navigate('/credits')}>Credits</a>
   </p>
 </footer>
 
@@ -88,10 +88,9 @@
         grid-area: 1 / 1 / 1 / 1;
     }
 
-    @media (max-width: 450px) {
-        .section {
-            padding: .5rem;
-        }
+    .build {
+        font-size: .875em;
+        color: var(--faded);
     }
 
     footer {
