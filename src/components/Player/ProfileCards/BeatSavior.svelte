@@ -11,7 +11,7 @@
 
   const allFilters = [
     {key: 'passed', label: 'All passed'},
-    {key: 'best', label: 'The best only'},
+    {key: 'best', label: 'Only the best'},
   ];
 
   let filters = allFilters;
