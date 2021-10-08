@@ -104,7 +104,7 @@ export default () => {
     return await setPlayer(finalPlayer);
   }
 
-  const getPlayerHistory = async playerId => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId)
+  const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`playerHistory/${playerId}`, () => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId))
 
   const updatePlayerHistory = async player => {
     if (!player) return null;
