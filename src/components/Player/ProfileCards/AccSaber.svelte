@@ -1,5 +1,7 @@
 <script>
+  import {createEventDispatcher} from 'svelte'
   import {fade} from 'svelte/transition'
+  import {addToDate, DAY, formatDateRelative, toAccSaberMidnight} from '../../../utils/date'
   import createAccSaberService from '../../../services/accsaber'
   import Badge from '../../Common/Badge.svelte'
   import AccSaberChart from '../Charts/AccSaberChart.svelte'
@@ -7,26 +9,65 @@
   export let categories = null;
   export let playerInfo = null;
 
+  const dispatch = createEventDispatcher();
+
+  let gainDaysAgo = 1;
+
   const accSaberService = createAccSaberService();
 
   let playerHistory = null;
+  let playerHistoryGain = null;
+
+  function refreshHistoryGain(playerId, playerHistory, daysAgo = 1) {
+    playerHistoryGain = null;
+
+    if (!playerId || (!playerHistory?.length)) return;
+
+    const todayAccSaberDate = toAccSaberMidnight(new Date());
+
+    let playerHistoryItem = accSaberService.getPlayerGain(playerHistory, daysAgo, daysAgo + 7 - 1);
+    if (!playerHistoryItem) return;
+
+    const gainDaysAgo = Math.floor((todayAccSaberDate - playerHistoryItem.accSaberDate) / DAY);
+
+    playerHistoryGain = {...playerHistoryItem, gainDaysAgo, gainType: 'accsaber'};
+
+    dispatch('player-gain-changed', playerHistoryGain);
+  }
 
   async function refreshPlayerHistory(playerId) {
+    playerHistory = null;
+
     if (!playerId) return;
 
     playerHistory = await accSaberService.getPlayerHistory(playerId) ?? null;
   }
 
-  $: playerInfoByCategory = categories && playerInfo && categories.length && playerInfo.length
-    ? categories
-      .map(c => ({
-        ...c,
-        playerInfo: playerInfo.find(p => p.category === c.name),
-      }))
-      .filter(c => c.playerInfo)
-    : null;
+  function getPlayerInfoByCategory(categories, playerInfo, playerHistoryGain) {
+    return categories && playerInfo && categories.length && playerInfo.length
+      ? categories
+        .map(c => ({
+          ...c,
+          playerInfo: playerInfo.find(p => p.category === c.name),
+        }))
+        .map(c => ({
+          ...c,
+          prevPlayerInfo: c.playerInfo && playerHistoryGain?.categories?.[c.name]
+            ? {
+              ...c.playerInfo,
+              ...playerHistoryGain?.categories?.[c.name],
+              gainDaysAgo: c.playerInfo && playerHistoryGain ? playerHistoryGain.gainDaysAgo : null,
+            }
+            : null,
+        }))
+        .filter(c => c.playerInfo)
+      : null
+  }
+
+  $: playerInfoByCategory = getPlayerInfoByCategory(categories, playerInfo, playerHistoryGain);
   $: playerId = playerInfo?.[0]?.playerId ?? null;
   $: refreshPlayerHistory(playerId)
+  $: refreshHistoryGain(playerId, playerHistory, gainDaysAgo)
 </script>
 
 {#if playerInfoByCategory}
@@ -41,34 +82,40 @@
     <div class="stats">
       <div>
         <div>
+          {#if playerInfoByCategory?.[0]?.playerInfo?.hmd}
+            <Badge label="HMD" value={playerInfoByCategory[0].playerInfo.hmd} fluid={true} bgColor="var(--alternate)"
+                   type="text"
+            />
+          {/if}
+
           {#each playerInfoByCategory as category (category.name)}
             <Badge label={category.displayName ?? category.name} value={category.playerInfo.rank} prefix="#"
-                   digits={0} fluid={true} bgColor="var(--dimmed)"
+                   prevValue={category?.prevPlayerInfo?.rank}
+                   prevLabel={category?.prevPlayerInfo?.rank && Number.isFinite(category?.prevPlayerInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-category?.prevPlayerInfo?.gainDaysAgo * DAY)) : null}
+                   reversePrevSign={true}
+                   digits={0} fluid={true} inline={true} bgColor="var(--dimmed)"
             />
           {/each}
         </div>
 
         <div>
           {#each playerInfoByCategory as category (category.name)}
-            <Badge label={category.displayName ?? category.name} value={category.playerInfo.ap} suffix=" AP"
-                   fluid={true} bgColor="var(--ppColour)"
+            <Badge label={category.displayName ?? category.name} value={category.playerInfo.ap}
+                   prevValue={category?.prevPlayerInfo?.ap}
+                   prevLabel={category?.prevPlayerInfo?.ap && Number.isFinite(category?.prevPlayerInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-category?.prevPlayerInfo?.gainDaysAgo * DAY)) : null}
+                   suffix=" AP" fluid={true} inline={true} bgColor="var(--ppColour)"
             />
           {/each}
         </div>
-
-        {#if playerInfoByCategory?.[0]?.playerInfo?.hmd}
-          <div class="hmd-full">
-            <Badge label="HMD" value={playerInfoByCategory[0].playerInfo.hmd} fluid={true} bgColor="var(--alternate)"
-                   type="text"/>
-          </div>
-        {/if}
       </div>
 
       <div>
         <div>
           {#each playerInfoByCategory as category (category.name)}
             <Badge label={category.displayName ?? category.name} value={category.playerInfo.averageAcc * 100} suffix="%"
-                   fluid={true} bgColor="var(--selected)"
+                   prevValue={category?.prevPlayerInfo?.averageAcc ? category?.prevPlayerInfo?.averageAcc * 100 : null}
+                   prevLabel={category?.prevPlayerInfo?.averageAcc && Number.isFinite(category?.prevPlayerInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-category?.prevPlayerInfo?.gainDaysAgo * DAY)) : null}
+                   fluid={true} inline={true} bgColor="var(--selected)"
             />
           {/each}
         </div>
@@ -77,18 +124,14 @@
           {#each playerInfoByCategory as category (category.name)}
             <Badge label={category.displayName ?? category.name} value={category.playerInfo.rankedPlays}
                    suffix=" play(s)"
-                   digits={0} fluid={true} bgColor="var(--faded)"
+                   prevValue={category?.prevPlayerInfo?.rankedPlays}
+                   prevLabel={category?.prevPlayerInfo?.rankedPlays && Number.isFinite(category?.prevPlayerInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-category?.prevPlayerInfo?.gainDaysAgo * DAY)) : null}
+                   prevSuffix=" "
+                   digits={0} fluid={true} inline={true} bgColor="var(--faded)"
             />
           {/each}
         </div>
       </div>
-
-      {#if playerInfoByCategory?.[0]?.playerInfo?.hmd}
-        <div class="hmd-small">
-          <Badge label="HMD" value={playerInfoByCategory[0].playerInfo.hmd} fluid={true} bgColor="var(--alternate)"
-                 type="text"/>
-        </div>
-      {/if}
     </div>
 
     <AccSaberChart {playerId} {playerHistory} on:height-changed/>
@@ -121,12 +164,9 @@
         height: 2em;
     }
 
-    .stats .hmd-full {
-        display: none;
-    }
-
-    .stats .hmd-small {
-        display: block;
+    .stats :global(.badge .value .prev.inc),
+    .stats :global(.badge .value .prev.dec) {
+        color: inherit!important;
     }
 
     @media screen and (min-width: 1200px) {
@@ -134,14 +174,6 @@
             display: grid;
             grid-template-columns: auto auto;
             grid-column-gap: 1em;
-        }
-
-        .stats .hmd-full {
-            display: block;
-        }
-
-        .stats .hmd-small {
-            display: none;
         }
     }
 

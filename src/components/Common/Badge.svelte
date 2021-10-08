@@ -19,6 +19,8 @@
     export let styling = "";
     export let prevValue = null;
     export let prevLabel = null;
+    export let prevSuffix = null;
+    export let reversePrevSign = false;
     export let inline = false;
 </script>
 
@@ -28,7 +30,7 @@
         <span class="spacer"></span>
         <span class="value">
             <slot name="value">
-                {#if type === 'number'}<Value value={value} {zero} {digits} {prefix} {suffix} {prevValue} {prevLabel} {inline}/>{:else}{value}{/if}
+                {#if type === 'number'}<Value value={value} {zero} {digits} {prefix} {suffix} {prevValue} {prevLabel} suffixPrev={prevSuffix} {reversePrevSign} {inline}/>{:else}{value}{/if}
             </slot>
         </span>
     {/if}

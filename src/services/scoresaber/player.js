@@ -12,6 +12,7 @@ import {opt} from '../../utils/js'
 import {db} from '../../db/db'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {worker} from '../../utils/worker-wrappers'
+import {getServicePlayerGain} from '../utils'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 20;
@@ -106,21 +107,7 @@ export default () => {
 
   const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`playerHistory/${playerId}`, () => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId))
 
-  const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => {
-    if (!playerHistory?.length) return null;
-
-    let todaySsDate = toSSDate(new Date);
-
-    // fix the compared date if the SS day is different from the local one
-    const ssLocalDiff = truncateDate(todaySsDate).getTime() - truncateDate(new Date()).getTime();
-    todaySsDate = addToDate(-ssLocalDiff, todaySsDate);
-
-    const compareSsDate = todaySsDate  - DAY * daysAgo;
-    const maxSsDate = todaySsDate - DAY * maxDaysAgo;
-    return playerHistory
-      .sort((a, b) => b?.ssDate?.getTime() - a?.ssDate?.getTime())
-      .find(h => h?.ssDate <= compareSsDate && h?.ssDate >= maxSsDate);
-  }
+  const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => getServicePlayerGain(playerHistory, toSSDate, 'ssDate', daysAgo, maxDaysAgo);
 
   const updatePlayerHistory = async player => {
     if (!player) return null;
