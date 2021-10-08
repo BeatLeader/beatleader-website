@@ -14,6 +14,15 @@ export default async (data, playerId = null) => {
   const bsData = await beatSaviorService.get(playerId, data);
   if (!bsData) return;
 
+  if (bsData?.stats)
+    ['left', 'right'].forEach(hand => {
+      ['Preswing', 'Postswing'].forEach(stat => {
+        const key = `${hand}${stat}`;
+        if (!bsData?.stats?.[key])
+          bsData.stats[key] = bsData?.trackers?.accuracyTracker?.[key] ?? null;
+      })
+    })
+
   if (!data.score.acc) {
     const acc = opt(bsData, 'trackers.scoreTracker.rawRatio');
     if (acc) data.score.acc = acc * 100;
