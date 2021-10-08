@@ -488,6 +488,7 @@ export default () => {
         .map(bs => {
           const leaderboard = bs.leaderboard;
           if (!leaderboard.leaderboardId) leaderboard.leaderboardId = bs.beatSaviorId;
+          leaderboard.leaderboardId += Math.random(); // ScoresSvelte needs different keys for each scores row
 
           const rawScore = opt(bs, 'trackers.scoreTracker.rawScore', 0);
           const rawRatio = opt(bs, 'trackers.scoreTracker.rawRatio', 0);
