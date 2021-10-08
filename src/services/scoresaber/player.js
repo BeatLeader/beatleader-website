@@ -104,6 +104,8 @@ export default () => {
     return await setPlayer(finalPlayer);
   }
 
+  const getPlayerHistory = async playerId => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId)
+
   const updatePlayerHistory = async player => {
     if (!player) return null;
     const {playerId, profileLastUpdated, playerInfo: {banned, countries, inactive, pp, rank}, scoreStats} = player;
@@ -330,6 +332,7 @@ export default () => {
     add: addPlayer,
     remove: removePlayer,
     update: updatePlayer,
+    getPlayerHistory,
     getProfileFreshnessDate,
     isProfileFresh,
     fetchPlayer,

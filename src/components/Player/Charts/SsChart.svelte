@@ -1,7 +1,7 @@
 <script>
   import Chart from 'chart.js/auto'
   import {onMount} from 'svelte'
-  import playersHistoryRepository from '../../../db/repository/players-history'
+  import createPlayerService from '../../../services/scoresaber/player'
   import createScoresService from '../../../services/scoresaber/scores'
   import createBeatSaviorService from '../../../services/beatsavior'
   import {formatNumber} from '../../../utils/format'
@@ -17,6 +17,7 @@
   const CHART_DEBOUNCE = 300;
   const MAGIC_INACTIVITY_RANK = 999999;
 
+  const playerService = createPlayerService();
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
 
@@ -43,7 +44,7 @@
   async function refreshPlayerHistory(playerId) {
     if (!playerId) return;
 
-    playerHistory = await playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId) ?? null;
+    playerHistory = await playerService.getPlayerHistory(playerId) ?? null;
   }
 
   const mapScoresToHistory = scores => {
