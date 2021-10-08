@@ -69,6 +69,7 @@ function updateAccStats(playerStats) {
       switch(key) {
         case 'avgAcc':
           metricData = {
+            key,
             label: 'Average',
             title: 'Average ranked accuracy',
             bgColor: 'var(--selected)'
@@ -77,6 +78,7 @@ function updateAccStats(playerStats) {
 
         case 'medianAcc':
           metricData = {
+            key,
             label: 'Median',
             title: 'Median ranked accuracy',
             bgColor: 'var(--ppColour)'
@@ -85,6 +87,7 @@ function updateAccStats(playerStats) {
 
         case 'stdDeviation':
           metricData = {
+            key,
             label: 'Std deviation',
             title: 'Standard deviation ranked accuracy',
             bgColor: 'var(--decrease)'
@@ -93,6 +96,7 @@ function updateAccStats(playerStats) {
 
         case 'topAcc':
           metricData = {
+            key,
             label: 'Best',
             title: 'Best ranked accuracy',
             bgColor: 'rgba(60,179,113,.75)'

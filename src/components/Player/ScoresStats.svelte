@@ -29,4 +29,9 @@
         margin-right: .5em;
         margin-bottom: .5em;
     }
+
+    .badges :global(.badge .value .prev.inc),
+    .badges :global(.badge .value .prev.dec) {
+        color: inherit!important;
+    }
 </style>

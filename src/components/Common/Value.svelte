@@ -1,8 +1,7 @@
 <script>
     import {onMount} from 'svelte'
     import {configStore} from '../../stores/config'
-    import {formatNumber, substituteVars} from '../../utils/format'
-    import {fade} from 'svelte/transition'
+    import {round, formatNumber, substituteVars} from '../../utils/format'
 
     export let value = 0;
     export let prevValue = null;
@@ -48,8 +47,9 @@
 
     $: resolveValue(value);
     $: minValue = Math.pow(10, -digits-1)
+    $: minDiff = Math.pow(10, -digits)
     $: formatted = getFormattedValue(resolvedValue, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix, configStore && $configStore);
-    $: showPrevValue = Number.isFinite(prevValue) && prevValue !== resolvedValue && resolvedValue !== null || forcePrev;
+    $: showPrevValue = Number.isFinite(prevValue)&& resolvedValue !== null && Math.abs(round(prevValue-resolvedValue, digits)) >= minDiff  || forcePrev;
     $: prevFormatted = (configStore, $configStore, prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, prevWithSign) + suffix : "")
     $: prevLabelFormatted = (configStore, $configStore, prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits) + suffix : "")
     $: prevDiff = Number.isFinite(prevValue) ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;

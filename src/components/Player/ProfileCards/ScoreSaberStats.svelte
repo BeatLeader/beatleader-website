@@ -1,13 +1,14 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import createPlayerService from '../../../services/scoresaber/player'
+  import {addToDate, DAY, formatDateRelative, toSSDate} from '../../../utils/date'
+  import {debounce} from '../../../utils/debounce'
   import ScoresStats from '../ScoresStats.svelte'
   import SsBadges from '../SsBadges.svelte'
   import SsChart from '../Charts/SsChart.svelte'
   import AccHistoryChart from '../Charts/AccHistoryChart.svelte'
   import AccMapsChart from '../Charts/AccMapsChart.svelte'
   import Switcher from '../../Common/Switcher.svelte'
-  import {addToDate, DAY, toSSDate, truncateDate} from '../../../utils/date'
 
   export let playerId = null;
   export let scoresStats = null;
@@ -17,6 +18,8 @@
   export let skeleton = false;
   export let isCached = false;
   export let rankHistory = null;
+
+  const HISTORY_GAIN_DEBOUNCE = 500;
 
   const dispatch = createEventDispatcher();
 
@@ -105,29 +108,48 @@
 
     if (!playerHistoryItem) return;
 
-    playerHistoryGain = playerHistoryItem;
+    playerHistoryGain = {...playerHistoryItem, gainDaysAgo, gainType: 'scoresaber'};
 
-    dispatch('player-gain-changed', {...playerHistoryItem, gainDaysAgo, gainType: 'scoresaber'});
+    dispatch('player-gain-changed', playerHistoryGain);
   }
 
-  $: avgStat = accStats?.find(s => s.label === 'Average') ?? null
-  $: medianStat = accStats?.find(s => s.label === 'Median') ?? null
+  const debouncedRefreshHistoryGain = debounce(
+    (playerId, playerHistory, rankHistory, gainDaysAgo) =>
+      refreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo), HISTORY_GAIN_DEBOUNCE,
+  );
+
+  let accStatsWithGain = null;
+  function updateAccStatsWithGain(accStats, playerGain) {
+    accStatsWithGain = accStats?.map(s => ({
+        ...s,
+        prevValue: playerGain?.[s?.key] ?? null,
+        prevLabel: Number.isFinite(playerGain?.gainDaysAgo) ? formatDateRelative(addToDate(-playerGain.gainDaysAgo * DAY)) : null,
+        inline: true,
+      }))
+      ?? null;
+  }
+
+  const debouncedUpdateAccStatsWithGain = debounce((accStats, playerHistoryGain) => updateAccStatsWithGain(accStats, playerHistoryGain), HISTORY_GAIN_DEBOUNCE)
+
+  $: avgStat = accStats?.find(s => s.key === 'avgAcc') ?? null
+  $: medianStat = accStats?.find(s => s.key === 'medianAcc') ?? null
   $: avgAccTween = avgStat?.value ?? null
   $: medianAccTween = medianStat?.value ?? null
   $: averageAcc = $avgAccTween
   $: medianAcc = $medianAccTween
 
   $: refreshPlayerHistory(playerId);
-  $: refreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo)
+  $: debouncedRefreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo)
   $: updateAvailableSwitcherOptions(isCached)
   $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc, playerHistory)
+  $: debouncedUpdateAccStatsWithGain(accStats, playerHistoryGain)
 </script>
 
 {#if scoresStats || ssBadges || skeleton}
   <div class="stats" class:enhanced={isCached}>
     {#if scoresStats}<ScoresStats stats={scoresStats} {skeleton}/>{/if}
     <div>
-      {#if accStats}<ScoresStats stats={accStats}/>{/if}
+      {#if accStats || accStatsWithGain}<ScoresStats stats={accStatsWithGain ?? accStats} />{/if}
       {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
     </div>
     {#if ssBadges}

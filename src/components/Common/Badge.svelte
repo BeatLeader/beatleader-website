@@ -17,6 +17,9 @@
     export let clickable = false;
     export let notSelected = false;
     export let styling = "";
+    export let prevValue = null;
+    export let prevLabel = null;
+    export let inline = false;
 </script>
 
 <span class={"badge " + styling} class:clickable class:not-selected={notSelected} class:fluid={fluid} style="--color:{color}; --background-color:{bgColor}" title={title} transition:fade={{ duration: 500 }} on:click>
@@ -25,7 +28,7 @@
         <span class="spacer"></span>
         <span class="value">
             <slot name="value">
-                {#if type === 'number'}<Value value={value} {zero} {digits} {prefix} {suffix} />{:else}{value}{/if}
+                {#if type === 'number'}<Value value={value} {zero} {digits} {prefix} {suffix} {prevValue} {prevLabel} {inline}/>{:else}{value}{/if}
             </slot>
         </span>
     {/if}
