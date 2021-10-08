@@ -12,6 +12,7 @@
 
   export let playerId = null;
   export let rankHistory = null;
+  export let playerHistory = null;
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
@@ -28,7 +29,6 @@
   let chart = null;
 
   let lastHistoryHash = null;
-  let playerHistory = null;
   let playerScores = null;
   let activityHistory = null;
   let beatSaviorWonHistory = null;
@@ -40,12 +40,6 @@
     (activityHistory && activityHistory.length ? activityHistory.join(':') : '') +
     (beatSaviorHistory && beatSaviorHistory.length ? beatSaviorHistory.join(':') : '')
   ;
-
-  async function refreshPlayerHistory(playerId) {
-    if (!playerId) return;
-
-    playerHistory = await playerService.getPlayerHistory(playerId) ?? null;
-  }
 
   const mapScoresToHistory = scores => {
     if (!Object.keys(scores)?.length) return null;
@@ -436,7 +430,6 @@
   $: if (chartContainerEl) containerStore.observe(chartContainerEl)
   $: containerWidth = $containerStore?.nodeWidth;
 
-  $: refreshPlayerHistory(playerId);
   $: refreshPlayerScores(playerId);
   $: refreshPlayerBeatSaviorScores(playerId);
 

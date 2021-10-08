@@ -1,4 +1,5 @@
 <script>
+  import createPlayerService from '../../../services/scoresaber/player'
   import ScoresStats from '../ScoresStats.svelte'
   import SsBadges from '../SsBadges.svelte'
   import SsChart from '../Charts/SsChart.svelte'
@@ -14,6 +15,10 @@
   export let skeleton = false;
   export let isCached = false;
   export let rankHistory = null;
+
+  const playerService = createPlayerService();
+
+  let playerHistory = null;
 
   const allSwitcherOptions = [
     {id: 'rank', label: 'Rank & PP', iconFa: 'fas fa-chart-line'},
@@ -31,7 +36,7 @@
     switch (option?.id) {
       case 'rank':
         chartComponent = SsChart;
-        chartComponentProps = {playerId, rankHistory}
+        chartComponentProps = {playerId, rankHistory, playerHistory}
         break;
 
       case 'accmaps':
@@ -63,6 +68,12 @@
     selectedOption = event.detail;
   }
 
+  async function refreshPlayerHistory(playerId) {
+    if (!playerId) return;
+
+    playerHistory = await playerService.getPlayerHistory(playerId) ?? null;
+  }
+
   $: avgStat = accStats?.find(s => s.label === 'Average') ?? null
   $: medianStat = accStats?.find(s => s.label === 'Median') ?? null
   $: avgAccTween = avgStat?.value ?? null
@@ -70,8 +81,9 @@
   $: averageAcc = $avgAccTween
   $: medianAcc = $medianAccTween
 
+  $: refreshPlayerHistory(playerId);
   $: updateAvailableSwitcherOptions(isCached)
-  $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc)
+  $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc, playerHistory)
 </script>
 
 {#if scoresStats || ssBadges || skeleton}
