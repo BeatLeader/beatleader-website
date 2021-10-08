@@ -53,13 +53,17 @@
             const cutVar = `${key}AverageCut`;
             const missVar = `${key}Miss`;
             const badCutsVar = `${key}BadCuts`;
-            const timeDependenceVar = `${key}TimeDependence`
+            const timeDependenceVar = `${key}TimeDependence`;
+            const preSwing = `${key}Preswing`;
+            const postSwing = `${key}Postswing`;
 
             if (Number.isFinite(s?.trackers?.accuracyTracker?.[accVar])) {
               stats[totalVar]++;
 
               stats[accVar] += s?.trackers?.accuracyTracker?.[accVar];
               stats[timeDependenceVar] += Number.isFinite(s?.trackers?.accuracyTracker?.[timeDependenceVar]) ? s?.trackers?.accuracyTracker?.[timeDependenceVar] : 0;
+              stats[preSwing] += Number.isFinite(s?.trackers?.accuracyTracker?.[preSwing]) ? s?.trackers?.accuracyTracker?.[preSwing] : 0;
+              stats[postSwing] += Number.isFinite(s?.trackers?.accuracyTracker?.[postSwing]) ? s?.trackers?.accuracyTracker?.[postSwing] : 0;
 
               stats[missVar] += Number.isFinite(s?.trackers?.hitTracker?.[missVar]) ? s?.trackers?.hitTracker?.[missVar] : 0;
               stats[badCutsVar] += Number.isFinite(s?.trackers?.hitTracker?.[badCutsVar]) ? s?.trackers?.hitTracker?.[badCutsVar] : 0;
@@ -91,6 +95,8 @@
           stats.bombHit += bombHit;
           stats.wallHit += wallHit;
 
+          stats.acc += Number.isFinite(s?.trackers?.scoreTracker?.rawRatio) ? s?.trackers?.scoreTracker?.rawRatio * 100 : 0;
+
           stats.pauses += Number.isFinite(s?.trackers?.winTracker?.nbOfPause) ? s?.trackers?.winTracker?.nbOfPause : 0;
 
           stats.badCuts += Number.isFinite(s?.trackers?.hitTracker?.badCuts) ? s?.trackers?.hitTracker?.badCuts : 0;
@@ -105,6 +111,7 @@
           totalLeft: 0,
           totalRight: 0,
           totalGridAcc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          acc: 0,
           fc: 0,
           miss: 0,
           badCuts: 0,
@@ -121,6 +128,10 @@
           accRight: 0,
           leftTimeDependence: 0,
           rightTimeDependence: 0,
+          leftPreswing: 0,
+          leftPostswing: 0,
+          rightPreswing: 0,
+          rightPostswing: 0,
           leftAverageCut: [0, 0, 0],
           rightAverageCut: [0, 0, 0],
           gridAcc: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -132,7 +143,7 @@
     if (!stats.total) return null;
 
     if (stats.total) {
-      ['fc', 'miss', 'pauses', 'bombHit', 'wallHit', 'badCuts', 'missedNotes', 'maxCombo'].forEach(key => {
+      ['acc', 'fc', 'miss', 'pauses', 'bombHit', 'wallHit', 'badCuts', 'missedNotes', 'maxCombo'].forEach(key => {
         stats[key] = stats[key] / stats.total;
       });
 
@@ -146,7 +157,7 @@
 
         if (!stats[totalVar]) return;
 
-        [`acc${keyCapitalized}`, `${key}Miss`, `${key}BadCuts`, `${key}TimeDependence`].forEach(keyVar => {
+        [`acc${keyCapitalized}`, `${key}Miss`, `${key}BadCuts`, `${key}TimeDependence`, `${key}Preswing`, `${key}Postswing`].forEach(keyVar => {
           if (Number.isFinite(stats[keyVar])) {
             stats[keyVar] = stats[keyVar] / stats[totalVar];
           }

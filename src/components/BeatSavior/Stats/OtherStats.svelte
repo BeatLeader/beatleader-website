@@ -57,6 +57,10 @@
 
 {#if stats}
   <div class="stats" style="--left-saber-color: {ssrConfig.leftSaberColor}; --right-saber-color: {ssrConfig.rightSaberColor}">
+    {#if isAverage && stats.acc}
+      <Badge label="Acc" color="white" bgColor="var(--dimmed)" fluid={true} value={stats?.acc ?? 0} suffix="%" />
+    {/if}
+
     {#if !stats.won}
       <Badge color="red" bgColor="var(--dimmed)" fluid={true} onlyLabel={true}>
         <svelte:fragment slot="label">
