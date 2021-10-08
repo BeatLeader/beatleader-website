@@ -2,13 +2,14 @@
   import {navigate} from 'svelte-routing'
   import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
   import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
-  import {opt} from '../../utils/js'
+  import {convertArrayToObjectByKey, opt} from '../../utils/js'
 
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
   import Skeleton from '../Common/Skeleton.svelte'
   import Error from '../Common/Error.svelte'
   import Badge from '../Common/Badge.svelte'
+  import {addToDate, DAY, formatDateRelative} from '../../utils/date'
 
   export let name;
   export let playerInfo;
@@ -39,8 +40,18 @@
     navigate(`/ranking/global/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`)
   }
 
+  function getPlayerCountries(playerInfo, prevInfo) {
+    if (!playerInfo?.countries) return [];
+
+    const prevCountries = convertArrayToObjectByKey(prevInfo?.countries ?? [], 'country');
+    return playerInfo.countries
+      .map(c => ({...c, prevRank: prevCountries?.[c.country]?.rank ?? null}));
+  }
+
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
   $: playerRole = playerInfo?.role ?? null;
+  $: countries = getPlayerCountries(playerInfo, prevInfo)
+  $: gainDate = Number.isFinite(prevInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-prevInfo.gainDaysAgo * DAY)) : null
 </script>
 
 {#if skeleton}
@@ -61,8 +72,10 @@
     {/if}
 
     <span class="pp">
-      <Value value={opt(playerInfo, 'pp')} suffix="pp" prevValue={opt(prevInfo, 'pp')} prevLabel={opt(prevInfo, 'ppSince')}
-             inline={true} zero="0pp"/>
+      <Value value={opt(playerInfo, 'pp')} suffix="pp"
+             prevValue={opt(prevInfo, 'pp')} prevLabel={prevInfo?.pp && gainDate ? gainDate : null}
+             inline={true} zero="0pp"
+      />
     </span>
 
     <span class="status"><Status {playerInfo}/></span>
@@ -74,12 +87,13 @@
        class="clickable">
       <i class="fas fa-globe-americas"></i>
 
-      <Value value={opt(playerInfo, 'rank')} prevValue={opt(prevInfo, 'rank')} prevLabel={opt(prevInfo, 'rankSince')}
+      <Value value={opt(playerInfo, 'rank')}
+             prevValue={opt(prevInfo, 'rank')} prevLabel={prevInfo?.rank && gainDate ? gainDate : null}
              prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true}
       />
     </a>
 
-    {#each opt(playerInfo, 'countries', []) as country}
+    {#each countries as country}
       <a href={getCountryRankingUrl(country)} on:click|preventDefault={() => navigateToCountryRanking(country)}
          title="Go to country ranking" class="clickable">
         <img
@@ -87,8 +101,9 @@
              alt={opt(country, 'country')}
         />
 
-        <Value value={country.rank} prevValue={country.prevRank}
-               prevLabel={country.prevRankSince} prefix="#" digits={0} zero="#0" inline={true}
+        <Value value={country.rank}
+               prevValue={country.prevRank} prevLabel={country?.prevRank && gainDate ? gainDate : null}
+               prefix="#" digits={0} zero="#0" inline={true}
                reversePrevSign={true}
         />
 

@@ -30,6 +30,8 @@
 
   const beatSaviorService = createBeatSaviorService();
 
+  let playerGain = null;
+
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => {
     if (stats?.playerId && stats?.playerId === playerData?.playerId) playerStats = stats
@@ -75,11 +77,17 @@
       )
   }
 
+  function onPlayerGainChanged(e) {
+    if (e?.detail?.gainType !== 'scoresaber') return;
+
+    playerGain = e.detail;
+  }
+
   $: isCached = !!(playerData && playerData.scoresLastUpdated)
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: name = playerData && playerData.name ? playerData.name : null;
-  $: ({playerInfo, prevInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
+  $: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
   $: playerRole = playerInfo?.role ?? null;
   $: calcOnePpBoundary(playerId);
   $: refreshBeatSaviorState(playerId)
@@ -155,7 +163,7 @@
               : [],
           )
         : [],
-    )
+    );
 </script>
 
 <div class="box has-shadow" class:loading={isLoading}>
@@ -181,9 +189,9 @@
     </div>
 
     <div class="column">
-      <PlayerStats {name} {playerInfo} {prevInfo} {skeleton} {error}/>
+      <PlayerStats {name} {playerInfo} prevInfo={playerGain} {skeleton} {error}/>
 
-      <Carousel cards={swipeCards} />
+      <Carousel cards={swipeCards} on:player-gain-changed={e => onPlayerGainChanged(e)} />
     </div>
   </div>
 </div>

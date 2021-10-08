@@ -1,4 +1,5 @@
 <script>
+  import {createEventDispatcher} from 'svelte'
   import createPlayerService from '../../../services/scoresaber/player'
   import ScoresStats from '../ScoresStats.svelte'
   import SsBadges from '../SsBadges.svelte'
@@ -6,6 +7,7 @@
   import AccHistoryChart from '../Charts/AccHistoryChart.svelte'
   import AccMapsChart from '../Charts/AccMapsChart.svelte'
   import Switcher from '../../Common/Switcher.svelte'
+  import {addToDate, DAY, toSSDate} from '../../../utils/date'
 
   export let playerId = null;
   export let scoresStats = null;
@@ -16,9 +18,14 @@
   export let isCached = false;
   export let rankHistory = null;
 
+  const dispatch = createEventDispatcher();
+
   const playerService = createPlayerService();
 
   let playerHistory = null;
+  let playerHistoryGain = null;
+
+  let gainDaysAgo = 1;
 
   const allSwitcherOptions = [
     {id: 'rank', label: 'Rank & PP', iconFa: 'fas fa-chart-line'},
@@ -74,6 +81,29 @@
     playerHistory = await playerService.getPlayerHistory(playerId) ?? null;
   }
 
+  function refreshHistoryGain(playerId, playerHistory, rankHistory, daysAgo = 1) {
+    playerHistoryGain = null;
+
+    if (!playerId || (!playerHistory?.length && !rankHistory?.length)) return;
+
+    const todaySsDate = toSSDate(new Date());
+
+    let playerHistoryItem = playerService.getPlayerGain(playerHistory, daysAgo, daysAgo + 7 - 1);
+    if (rankHistory?.length) {
+      const reversedRankHistory = rankHistory.map(r => r).reverse();
+      if (!reversedRankHistory?.[daysAgo]) return;
+
+      if (!playerHistoryItem) playerHistoryItem = {playerId, rank: reversedRankHistory[daysAgo], ssDate: addToDate(-DAY, todaySsDate)};
+      else playerHistoryItem.rank = reversedRankHistory[daysAgo]
+    }
+
+    if (!playerHistoryItem) return;
+
+    playerHistoryGain = playerHistoryItem;
+
+    dispatch('player-gain-changed', {...playerHistoryItem, gainDaysAgo: Math.floor((todaySsDate - playerHistoryItem.ssDate) / DAY), gainType: 'scoresaber'});
+  }
+
   $: avgStat = accStats?.find(s => s.label === 'Average') ?? null
   $: medianStat = accStats?.find(s => s.label === 'Median') ?? null
   $: avgAccTween = avgStat?.value ?? null
@@ -82,6 +112,7 @@
   $: medianAcc = $medianAccTween
 
   $: refreshPlayerHistory(playerId);
+  $: refreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo)
   $: updateAvailableSwitcherOptions(isCached)
   $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc, playerHistory)
 </script>
