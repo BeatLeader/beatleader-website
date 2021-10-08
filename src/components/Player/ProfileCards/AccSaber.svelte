@@ -1,10 +1,21 @@
 <script>
-  import Badge from '../../Common/Badge.svelte'
   import {fade} from 'svelte/transition'
+  import createAccSaberService from '../../../services/accsaber'
+  import Badge from '../../Common/Badge.svelte'
   import AccSaberChart from '../Charts/AccSaberChart.svelte'
 
   export let categories = null;
   export let playerInfo = null;
+
+  const accSaberService = createAccSaberService();
+
+  let playerHistory = null;
+
+  async function refreshPlayerHistory(playerId) {
+    if (!playerId) return;
+
+    playerHistory = await accSaberService.getPlayerHistory(playerId) ?? null;
+  }
 
   $: playerInfoByCategory = categories && playerInfo && categories.length && playerInfo.length
     ? categories
@@ -15,6 +26,7 @@
       .filter(c => c.playerInfo)
     : null;
   $: playerId = playerInfo?.[0]?.playerId ?? null;
+  $: refreshPlayerHistory(playerId)
 </script>
 
 {#if playerInfoByCategory}
@@ -79,7 +91,7 @@
       {/if}
     </div>
 
-    <AccSaberChart {playerId} on:height-changed/>
+    <AccSaberChart {playerId} {playerHistory} on:height-changed/>
   </section>
 {/if}
 

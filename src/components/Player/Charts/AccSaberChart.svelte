@@ -14,6 +14,7 @@
   const dispatch = createEventDispatcher();
 
   export let playerId = null;
+  export let playerHistory = null;
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
@@ -36,18 +37,19 @@
   const calcHistoryHash = (playerId, playerRankHistory, category) =>
     (playerId ?? '') +
     (playerRankHistory?.map(h => h?.accSaberDate?.getTime())?.join(':') ?? '') +
+    (playerRankHistory?.map(h => Object.keys(h?.categories ?? {})?.length ?? 0)?.join(':') ?? '') +
     category
   ;
 
-  async function refreshPlayerRankHistory(playerId) {
+  async function refreshPlayerRankHistory(playerId, playerHistory) {
     if (!playerId) return;
 
     isLoading = true;
 
     const playerHistoryPromises = await Promise.all([
       accSaberService.fetchPlayerRankHistory(playerId).catch(e => null),
-      accSaberService.getPlayerHistory(playerId),
-    ])
+      playerHistory,
+    ]);
 
     const theOldestChartHistory = addToDate(-49 * DAY, toAccSaberMidnight(new Date()))
     const dbHistory = (playerHistoryPromises?.[1] ?? []).filter(h => h.accSaberDate >= theOldestChartHistory)
@@ -308,7 +310,7 @@
   $: if (chartContainerEl) containerStore.observe(chartContainerEl)
   $: containerWidth = $containerStore?.nodeWidth;
 
-  $: refreshPlayerRankHistory(playerId);
+  $: refreshPlayerRankHistory(playerId, playerHistory);
 
   $: selectedCategory = availableCategories?.find(c => c.label === capitalize(category)) ?? null;
 

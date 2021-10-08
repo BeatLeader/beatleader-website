@@ -7,7 +7,7 @@ import {PRIORITY} from '../../network/queues/http-queue'
 import playersRepository from '../../db/repository/players'
 import playersHistoryRepository from '../../db/repository/players-history'
 import log from '../../utils/logger'
-import {addToDate, formatDate, MINUTE, SECOND, toSSDate, truncateDate} from '../../utils/date'
+import {addToDate, DAY, daysAgo, formatDate, MINUTE, SECOND, toSSDate, truncateDate} from '../../utils/date'
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
 import makePendingPromisePool from '../../utils/pending-promises'
@@ -102,6 +102,19 @@ export default () => {
     }
 
     return await setPlayer(finalPlayer);
+  }
+
+  const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`playerHistory/${playerId}`, () => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId))
+
+  const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => {
+    if (!playerHistory?.length) return null;
+
+    const todaySsDate = toSSDate(new Date);
+    const compareSsDate = todaySsDate  - DAY * daysAgo;
+    const maxSsDate = todaySsDate - DAY * maxDaysAgo;
+    return playerHistory
+      .sort((a, b) => b?.ssDate?.getTime() - a?.ssDate?.getTime())
+      .find(h => h?.ssDate <= compareSsDate && h?.ssDate >= maxSsDate);
   }
 
   const updatePlayerHistory = async player => {
@@ -330,6 +343,8 @@ export default () => {
     add: addPlayer,
     remove: removePlayer,
     update: updatePlayer,
+    getPlayerHistory,
+    getPlayerGain,
     getProfileFreshnessDate,
     isProfileFresh,
     fetchPlayer,

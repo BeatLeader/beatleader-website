@@ -71,7 +71,10 @@
       {#each cards as card, cardIdx (card.name)}
         {#key card.name}
           <div>
-            <svelte:component this={card.component} {...card.props} on:height-changed={onCardHeightChanged}/>
+            <svelte:component this={card.component} {...card.props}
+                              on:height-changed={onCardHeightChanged}
+                              on:player-gain-changed
+            />
           </div>
         {/key}
       {/each}

@@ -51,11 +51,12 @@
     $: formatted = getFormattedValue(resolvedValue, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix, configStore && $configStore);
     $: showPrevValue = Number.isFinite(prevValue) && prevValue !== resolvedValue && resolvedValue !== null || forcePrev;
     $: prevFormatted = (configStore, $configStore, prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, prevWithSign) + suffix : "")
+    $: prevLabelFormatted = (configStore, $configStore, prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits) + suffix : "")
     $: prevDiff = Number.isFinite(prevValue) ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;
     $: prevDiffFormatted = Number.isFinite(prevDiff) ? (configStore, $configStore, resolvedValue, Number.isFinite(prevDiff) ? formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix) : "") : null
     $: prevClass = (prevDiff !== null ? (prevDiff > minValue ? "inc" : (prevDiff < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
     $: mainClass = (useColorsForValue && resolvedValue ? (resolvedValue > minValue ? "inc" : (resolvedValue < -minValue ? "dec" : "zero")): "");
-    $: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : "${value}", {value: prevFormatted})
+    $: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : "${value}", {value: prevLabelFormatted})
 </script>
 
 <span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue} <small class={`has-pointer-events ${prevClass}`} title={prevTitleFormatted}><slot name="prev" value={prevValue} formatted={prevFormatted} diff={prevDiff} diffFormatted={prevDiffFormatted}>{prevDiffFormatted}</slot></small>{/if}

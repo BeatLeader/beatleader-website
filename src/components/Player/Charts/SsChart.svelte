@@ -1,7 +1,7 @@
 <script>
   import Chart from 'chart.js/auto'
   import {onMount} from 'svelte'
-  import playersHistoryRepository from '../../../db/repository/players-history'
+  import createPlayerService from '../../../services/scoresaber/player'
   import createScoresService from '../../../services/scoresaber/scores'
   import createBeatSaviorService from '../../../services/beatsavior'
   import {formatNumber} from '../../../utils/format'
@@ -12,11 +12,13 @@
 
   export let playerId = null;
   export let rankHistory = null;
+  export let playerHistory = null;
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
   const MAGIC_INACTIVITY_RANK = 999999;
 
+  const playerService = createPlayerService();
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
 
@@ -27,7 +29,6 @@
   let chart = null;
 
   let lastHistoryHash = null;
-  let playerHistory = null;
   let playerScores = null;
   let activityHistory = null;
   let beatSaviorWonHistory = null;
@@ -39,12 +40,6 @@
     (activityHistory && activityHistory.length ? activityHistory.join(':') : '') +
     (beatSaviorHistory && beatSaviorHistory.length ? beatSaviorHistory.join(':') : '')
   ;
-
-  async function refreshPlayerHistory(playerId) {
-    if (!playerId) return;
-
-    playerHistory = await playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId) ?? null;
-  }
 
   const mapScoresToHistory = scores => {
     if (!Object.keys(scores)?.length) return null;
@@ -435,7 +430,6 @@
   $: if (chartContainerEl) containerStore.observe(chartContainerEl)
   $: containerWidth = $containerStore?.nodeWidth;
 
-  $: refreshPlayerHistory(playerId);
   $: refreshPlayerScores(playerId);
   $: refreshPlayerBeatSaviorScores(playerId);
 

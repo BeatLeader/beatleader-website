@@ -1,9 +1,9 @@
 <script>
   import Chart from 'chart.js/auto'
-  import playersHistoryRepository from '../../../db/repository/players-history'
   import {formatNumber} from '../../../utils/format'
   import {dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
   import createContainerStore from '../../../stores/container'
+  import createPlayerService from '../../../services/scoresaber/player'
   import {debounce} from '../../../utils/debounce'
 
   export let playerId = null;
@@ -11,6 +11,8 @@
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
+
+  const playerService = createPlayerService();
 
   let chartContainerEl = null;
   const containerStore = createContainerStore();
@@ -28,7 +30,7 @@
   async function refreshPlayerHistory(playerId) {
     if (!playerId) return;
 
-    playerHistory = await playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId) ?? null;
+    playerHistory = await playerService.getPlayerHistory(playerId) ?? null;
   }
 
   async function setupChart(hash, canvas) {
