@@ -49,6 +49,7 @@
 
   function clearPlayerStatsOnChange() {
     playerStats = null;
+    playerGain = null;
   }
 
   async function calcOnePpBoundary(playerId) {
