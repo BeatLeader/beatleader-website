@@ -109,7 +109,12 @@ export default () => {
   const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => {
     if (!playerHistory?.length) return null;
 
-    const todaySsDate = toSSDate(new Date);
+    let todaySsDate = toSSDate(new Date);
+
+    // fix the compared date if the SS day is different from the local one
+    const ssLocalDiff = truncateDate(todaySsDate).getTime() - truncateDate(new Date()).getTime();
+    todaySsDate = addToDate(-ssLocalDiff, todaySsDate);
+
     const compareSsDate = todaySsDate  - DAY * daysAgo;
     const maxSsDate = todaySsDate - DAY * maxDaysAgo;
     return playerHistory
