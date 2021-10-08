@@ -13,6 +13,7 @@ import {capitalize} from '../utils/js'
 import log from '../utils/logger'
 import {addToDate, toAccSaberMidnight, formatDate, HOUR, MINUTE, dateFromString} from '../utils/date'
 import {PRIORITY} from '../network/queues/http-queue'
+import makePendingPromisePool from '../utils/pending-promises'
 
 const REFRESH_INTERVAL = HOUR;
 const SCORES_NETWORK_TTL = MINUTE * 5;
@@ -24,6 +25,8 @@ export default () => {
   if (service) return service;
 
   const playerService = createPlayerService();
+
+  const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
   const getCategories = async () => {
     const categories = await accSaberCategoriesRepository().getAll();
@@ -38,7 +41,7 @@ export default () => {
 
   const getPlayer = async playerId => accSaberPlayersRepository().getAllFromIndex('accsaber-players-playerId', playerId);
   const getRanking = async (category = 'overall') => accSaberPlayersRepository().getAllFromIndex('accsaber-players-category', category);
-  const getPlayerHistory = async playerId => accSaberPlayersHistoryRepository().getAllFromIndex('accsaber-players-history-playerId', playerId)
+  const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`accSaberPlayerHistory/${playerId}`, () => accSaberPlayersHistoryRepository().getAllFromIndex('accsaber-players-history-playerId', playerId))
 
   const getLastUpdatedKey = type => `accSaber${capitalize(type)}LastUpdated`;
   const getLastUpdated = async (type = 'all') => keyValueRepository().get(getLastUpdatedKey(type));
