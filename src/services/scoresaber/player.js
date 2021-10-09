@@ -195,7 +195,7 @@ export default () => {
         playersRepository().addToCache([player]);
         eventBus.publish('player-profile-changed', player);
 
-        eventBus.publish('player-recent-play-updated', {playerId, recentPlay, recentPlayLastUpdated});
+        eventBus.publish('player-recent-play-updated', {playerId, player, recentPlay, recentPlayLastUpdated});
       }
     }
     catch(err) {

@@ -137,7 +137,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     )
       return false;
 
-    return httpStore.fetch({playerId, type, page}, force, provider, !playerId || playerId !== currentPlayerId);
+    return httpStore.fetch({playerId, type, page}, force, provider, !playerId || playerId !== currentPlayerId || force);
   }
 
   const refresh = async () => fetch(currentPage, currentType, currentPlayerId, true);

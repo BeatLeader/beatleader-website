@@ -96,8 +96,32 @@
       twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
     })
 
+    const isPlayerChangeRelevant = player =>
+      player?.playerId === currentPlayerId &&
+      playerStore &&
+      !(playerIsLoading && $playerIsLoading) &&
+      (
+        player?.profileLastUpdated.getTime() !== $playerStore?.profileLastUpdated?.getTime() ||
+        player?.totalPlayCount !== $playerStore?.totalPlayCount ||
+        (player?.scoresLastUpdated && !$playerStore?.scoresLastUpdated)
+      )
+
+    const playerProfileChangedUnsubscribe = eventBus.on('player-profile-changed', async (player) => {
+      if (!isPlayerChangeRelevant(player)) return;
+
+      await playerStore.refresh();
+    });
+
+    const playerScoresUpdatedUnsubscribe = eventBus.on('player-scores-updated', async ({player}) => {
+      if (!isPlayerChangeRelevant(player)) return;
+
+      await playerStore.refresh();
+    });
+
     return () => {
       twitchUnsubscribe();
+      playerProfileChangedUnsubscribe();
+      playerScoresUpdatedUnsubscribe();
     }
   })
 

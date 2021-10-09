@@ -52,8 +52,8 @@
     playerGain = null;
   }
 
-  async function calcOnePpBoundary(playerId) {
-    if (!playerId) {
+  async function calcOnePpBoundary(playerId, isCached) {
+    if (!playerId || !isCached) {
       onePpBoundery = null;
       return;
     }
@@ -90,7 +90,7 @@
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
   $: playerRole = playerInfo?.role ?? null;
-  $: calcOnePpBoundary(playerId);
+  $: calcOnePpBoundary(playerId, isCached);
   $: refreshBeatSaviorState(playerId)
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
   $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)

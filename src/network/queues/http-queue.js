@@ -3,6 +3,7 @@ import {SsrError, SsrTimeoutError} from '../../others/errors'
 import {SsrHttpRateLimitError, SsrHttpResponseError, SsrNetworkError, SsrNetworkTimeoutError} from '../errors'
 import {fetchHtml, fetchJson} from '../fetch';
 import makePendingPromisePool from '../../utils/pending-promises'
+import {AbortError} from '../../utils/promise'
 
 const DEFAULT_RETRIES = 2;
 
@@ -88,6 +89,8 @@ export default (options = {}) => {
           }
         } else if (!(err instanceof DOMException)) {
           throw err;
+        } else {
+          throw AbortError();
         }
       }
     }

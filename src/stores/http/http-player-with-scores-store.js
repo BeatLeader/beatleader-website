@@ -54,7 +54,7 @@ export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialS
       playerForLastRecentPlay = playerId;
     }
 
-    return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider, !playerId || playerId !== currentPlayerId);
+    return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider, !playerId || playerId !== currentPlayerId || force);
   }
 
   const refresh = async () => fetch(currentPlayerId, currentScoresType, currentScoresPage, true);

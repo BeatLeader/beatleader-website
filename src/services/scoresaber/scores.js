@@ -373,7 +373,7 @@ export default () => {
         }
       });
 
-      return {recentPlay, newScores, scores: {...currentScoresById, ...convertScoresToObject(updatedScores, score => opt(score, 'id'))}};
+      return {player, recentPlay, newScores, scores: {...currentScoresById, ...convertScoresToObject(updatedScores, score => opt(score, 'id'))}};
     } catch (err) {
       if (![opt(err, 'name'), opt(err, 'message')].includes('AbortError')) throw err;
 
@@ -618,20 +618,22 @@ export default () => {
 
       log.trace(`Fetching player "${playerId}" scores from ScoreSaber...`, 'ScoresService')
 
-      const scoresInfo = await resolvePromiseOrWaitForPending(`service/updatePlayerScores/${playerId}`, () => updatePlayerScores(player, priority));
+      const updatedPlayerScores = await resolvePromiseOrWaitForPending(`service/updatePlayerScores/${playerId}`, () => updatePlayerScores(player, priority));
 
-      if (!scoresInfo) {
+      if (!updatedPlayerScores) {
         log.warn(`Can not refresh player "${playerId}" scores`, 'ScoresService')
 
         return null;
       }
+
+      const {player: updatedPlayer, ...scoresInfo} = updatedPlayerScores;
 
       log.trace(`Player "${playerId}" scores updated`, 'ScoresService', scoresInfo.newScores);
 
       if (scoresInfo.newScores && scoresInfo.newScores.length) {
         // TODO: update country ranks
 
-        eventBus.publish('player-scores-updated', {player, ...scoresInfo});
+        eventBus.publish('player-scores-updated', {player: updatedPlayer, ...scoresInfo});
       }
 
       log.debug(`Player "${playerId}" refreshing complete.`, 'ScoresService');
