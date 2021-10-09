@@ -98,50 +98,57 @@
   }
 
   let playerScoresByDate = null;
-  async function refreshAllPlayerScores(playerId, type) {
-    playerScoresByDate = null;
 
+  const groupRecentScores = scores => Object.entries(
+    scores
+      .sort((a,b) => b?.timeSet - a?.timeSet)
+      .reduce((scores, score) => {
+        if (!score?.timeSet) return scores;
+
+        const key = truncateDate(score.timeSet)?.getTime();
+        if (!key) return scores;
+
+        if (!scores[key]) scores[key] = [];
+
+        scores[key].push(score);
+
+        return scores;
+      }, {}),
+  )
+    .reduce((cum, [timestamp, scores]) => {
+      if (!timestamp || !scores) return cum;
+
+      const x = parseInt(timestamp, 10);
+      const y = scores?.length ?? 0;
+
+      if (isNaN(x)) return cum;
+
+      const prevTotal = cum.length ? cum[cum.length - 1].total : 0;
+      const page = Math.floor(prevTotal / PLAYER_SCORES_PER_PAGE);
+      const total = prevTotal + y;
+
+      cum.push({
+        x,
+        y,
+        firstScore: scores?.[0],
+        date: new Date(x),
+        page,
+        total,
+      })
+
+      return cum;
+    }, [])
+
+  async function refreshAllPlayerSsRecentScores(playerId, type) {
     if (!playerId || type !== 'recent') return;
 
-    playerScoresByDate = Object.entries(
-      (await scoresService.getPlayerScores(playerId))
-        .sort((a,b) => b?.timeSet - a?.timeSet)
-        .reduce((scores, score) => {
-          if (!score?.timeSet) return scores;
+    playerScoresByDate = groupRecentScores(await scoresService.getPlayerScores(playerId))
+  }
 
-          const key = truncateDate(score.timeSet)?.getTime();
-          if (!key) return scores;
+  async function refreshAllPlayerBeatSaviorScores(playerId, type) {
+    if (!playerId || type !== 'beatsavior') return;
 
-          if (!scores[key]) scores[key] = [];
-
-          scores[key].push(score);
-
-          return scores;
-        }, {}),
-    )
-      .reduce((cum, [timestamp, scores]) => {
-        if (!timestamp || !scores) return cum;
-
-        const x = parseInt(timestamp, 10);
-        const y = scores?.length ?? 0;
-
-        if (isNaN(x)) return cum;
-
-        const prevTotal = cum.length ? cum[cum.length - 1].total : 0;
-        const page = Math.floor(prevTotal / PLAYER_SCORES_PER_PAGE);
-        const total = prevTotal + y;
-
-        cum.push({
-          x,
-          y,
-          firstScore: scores?.[0],
-          date: new Date(x),
-          page,
-          total,
-        })
-
-        return cum;
-      }, [])
+    playerScoresByDate = groupRecentScores(await beatSaviorService.getPlayerBeatSaviorData(playerId))
   }
 
   const dateChartBrowserTooltipLabel = ctx => (ctx?.raw?.page ?? null) !== null
@@ -149,7 +156,9 @@
     : null;
 
   $: updateAvailableScoresTypes(playerId, withAccSaber)
-  $: refreshAllPlayerScores(playerId, type)
+  $: playerId, type, playerScoresByDate = null;
+  $: refreshAllPlayerSsRecentScores(playerId, type)
+  $: refreshAllPlayerBeatSaviorScores(playerId, type)
 
   $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
   $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
