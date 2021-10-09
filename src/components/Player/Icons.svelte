@@ -89,7 +89,7 @@
     {/if}
 
     {#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-if-needed' && !isProfileLinkedToTwitch))}
-      <Button type="twitch" iconFa="fab fa-twitch" title="Link Twitch profile"
+      <Button type="twitch" iconFa="fab fa-twitch" title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
               on:click={() => showLinkingModal = true}
       />
     {/if}
