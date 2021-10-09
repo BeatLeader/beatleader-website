@@ -49,6 +49,8 @@
   function onConfigUpdated(config) {
     if (config?.locale) currentLocale = config.locale;
     if (config?.scoreComparison) currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
+    if (config?.preferences?.secondaryPp) currentSecondaryPpMetrics = config?.preferences?.secondaryPp ?? DEFAULT_SECONDARY_PP_METRICS;
+    if (config?.preferences?.avatarIcons) currentAvatarIcons = config?.preferences?.avatarIcons ?? DEFAULT_AVATAR_ICONS;
   }
 
   function onSave() {
