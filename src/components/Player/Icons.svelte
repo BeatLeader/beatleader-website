@@ -14,6 +14,7 @@
   const twitchService = createTwitchService();
 
   let twitchToken = null;
+  let playerTwitchProfile = null;
 
   let showLinkingModal = false;
 
@@ -45,33 +46,49 @@
   async function onTwitchLink(event) {
     if (!opt(event, 'detail.id')) return;
 
+    playerTwitchProfile = event.detail;
+
     await twitchService.updatePlayerProfile({...event.detail, playerId, profileLastUpdated: new Date()})
 
     showLinkingModal = false;
+  }
+
+  async function onPlayerChanged(playerId) {
+    if (!playerId) return;
+
+    playerTwitchProfile = await twitchService.getPlayerProfile(playerId)
   }
 
   onMount(async () => {
     twitchToken = await twitchService.getCurrentToken();
   })
 
+  $: onPlayerChanged(playerId);
+  $: isProfileLinkedToTwitch = !!playerTwitchProfile?.login ?? false;
+  $: mainIsSet = !!$configStore?.users?.main ?? false;
   $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
   $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
+  $: showAvatarIcons = $configStore?.preferences?.avatarIcons ?? 'only-if-needed';
 </script>
 
 {#if playerId}
   <nav class:main={isMain}>
     {#if !isMain}
+      {#if showAvatarIcons === 'show' || (showAvatarIcons === 'only-if-needed' && !mainIsSet)}
       <Button title="Set as your profile" iconFa="fas fa-home" type="primary"
               on:click={onSetAsMain}
       />
+      {/if}
 
+      {#if showAvatarIcons === 'show' || (showAvatarIcons === 'only-if-needed' && !isFriend)}
       <Button title={isFriend ? "Remove from Friends" : "Add to Friends"}
               iconFa={isFriend ? "fas fa-user-minus" : "fas fa-user-plus"} type={isFriend ? "danger" : "primary"}
               on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')}
       />
+      {/if}
     {/if}
 
-    {#if twitchToken}
+    {#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-if-needed' && !isProfileLinkedToTwitch))}
       <Button type="twitch" iconFa="fab fa-twitch" title="Link Twitch profile"
               on:click={() => showLinkingModal = true}
       />

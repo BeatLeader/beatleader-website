@@ -28,6 +28,7 @@ const DEFAULT_CONFIG = {
   },
   preferences: {
     secondaryPp: 'attribution',
+    avatarIcons: 'only-if-needed',
   },
   locale: DEFAULT_LOCALE,
 }
@@ -35,6 +36,7 @@ const DEFAULT_CONFIG = {
 const newSettingsAvailableDefinition = {
   'scoreComparison.method': 'Method of displaying the comparison of scores',
   'preferences.secondaryPp': 'Setting the second PP metric',
+  'preferences.avatarIcons': 'Showing icons on avatars',
   'locale': 'Locale selection',
 }
 
@@ -49,16 +51,24 @@ export default async () => {
 
   const get = key => key ? (currentConfig[key] ? currentConfig[key] : null) : currentConfig;
   const set = async (config, persist = true) => {
-    config = {...DEFAULT_CONFIG, ...config};
+    const newConfig = {...DEFAULT_CONFIG};
+    Object.keys(config).forEach(key => {
+      if (key === 'locale') {
+        newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
+        return;
+      }
 
-    if (persist) await keyValueRepository().set(config, STORE_CONFIG_KEY);
+      newConfig[key] = {...newConfig?.[key], ...config?.[key]}
+    });
+
+    if (persist) await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
 
     newSettingsAvailable = undefined;
 
-    currentConfig = config;
-    storeSet(config);
+    currentConfig = newConfig;
+    storeSet(newConfig);
 
-    return config;
+    return newConfig;
   }
 
   const getLocale = () => opt(currentConfig, 'locale', DEFAULT_LOCALE);

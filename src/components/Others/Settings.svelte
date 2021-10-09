@@ -16,7 +16,8 @@
   export let show = false;
 
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
-  const DEFAULT_SECONDARY_PP_METRICS = 'attribution'
+  const DEFAULT_SECONDARY_PP_METRICS = 'attribution';
+  const DEFAULT_AVATAR_ICONS = 'only-if-needed';
 
   let twitchToken = null;
 
@@ -25,22 +26,29 @@
   const {activeRoute} = getContext(ROUTER);
 
   const scoreComparisonMethods = [
-    {name: 'In place', value: 'in-place'},
+    {name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
     {name: 'In details', value: 'in-details'},
   ];
 
   const secondaryPpMetrics = [
     {name: 'Weighted PP', value: 'weighted'},
-    {name: 'Actual contribution to the total PP', value: 'attribution'},
+    {name: 'Actual contribution to the total PP', value: DEFAULT_SECONDARY_PP_METRICS},
+  ];
+
+  const avatarIcons = [
+    {name: 'Always show', value: 'show'},
+    {name: 'Show when needed', value: DEFAULT_AVATAR_ICONS},
+    {name: 'Always hide', value: 'hide'},
   ];
 
   let currentLocale = DEFAULT_LOCALE;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
   let currentSecondaryPpMetrics = DEFAULT_SECONDARY_PP_METRICS;
+  let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 
   function onConfigUpdated(config) {
-    if (config && config.locale) currentLocale = config.locale;
-    if (config && config.scoreComparison) currentScoreComparisonMethod = config.scoreComparison.method ? config.scoreComparison.method : DEFAULT_SCORE_COMPARISON_METHOD;
+    if (config?.locale) currentLocale = config.locale;
+    if (config?.scoreComparison) currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
   }
 
   function onSave() {
@@ -50,6 +58,7 @@
       draft.locale = currentLocale;
       draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.secondaryPp = currentSecondaryPpMetrics;
+      draft.preferences.avatarIcons = currentAvatarIcons;
     })
 
     show = false;
@@ -59,6 +68,8 @@
     if (configStore && $configStore) {
       currentLocale = $configStore.locale;
       currentScoreComparisonMethod = $configStore.scoreComparison.method;
+      currentSecondaryPpMetrics = $configStore.preferences.secondaryPp;
+      currentAvatarIcons = $configStore.preferences.avatarIcons;
     }
 
     show = false;
@@ -164,6 +175,16 @@
             <label title="Second PP metric displayed next to the score, either weighted PP or actual contribution of the score to the total PP (cached players only)">Secondary PP metrics</label>
             <Select bind:value={currentSecondaryPpMetrics}>
               {#each secondaryPpMetrics as option (option.value)}
+                <option value={option.value}>{option.name}</option>
+              {/each}
+            </Select>
+          </section>
+
+          <section class="option">
+            <label
+              title="Determines when to show icons on player avatars">Icons on avatars</label>
+            <Select bind:value={currentAvatarIcons}>
+              {#each avatarIcons as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
             </Select>
