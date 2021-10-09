@@ -2,7 +2,6 @@
   import Chart from 'chart.js/auto'
   import {formatNumber} from '../../../utils/format'
   import {dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
-  import createContainerStore from '../../../stores/container'
   import createPlayerService from '../../../services/scoresaber/player'
   import {debounce} from '../../../utils/debounce'
 
@@ -13,9 +12,6 @@
   const CHART_DEBOUNCE = 300;
 
   const playerService = createPlayerService();
-
-  let chartContainerEl = null;
-  const containerStore = createContainerStore();
 
   let canvas = null;
   let chart = null;
@@ -216,19 +212,6 @@
 
     const labels = daysAgo.map(d => formatDateRelativeInUnits(-d, 'day'))
 
-    if (chart) {
-      chart.destroy();
-      chart = null;
-      if (chartContainerEl) {
-        const canvas = chartContainerEl.querySelector('canvas');
-        if (canvas) {
-          canvas.style.height = null;
-          var ctx = canvas.getContext("2d");
-          ctx.canvas.height = height;
-        }
-      }
-    }
-
     if (!chart)
     {
       const customYAxisPosition = {
@@ -255,10 +238,10 @@
             canvas,
             {
               type: 'line',
-              responsive: true,
-              maintainAspectRatio: false,
               data: {labels, datasets},
               options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 layout: {
                   padding: {
                     right: 0
@@ -320,9 +303,6 @@
   let debouncedChartHash = null;
   const debounceChartHash = debounce(chartHash => debouncedChartHash = chartHash, CHART_DEBOUNCE);
 
-  $: if (chartContainerEl) containerStore.observe(chartContainerEl)
-  $: containerWidth = $containerStore?.nodeWidth;
-
   $: refreshPlayerHistory(playerId);
 
   $: additionalHistory = playerHistory && playerHistory.length
@@ -336,13 +316,13 @@
     }, {})
     : null;
 
-  $: chartHash = containerWidth ? calcHistoryHash(rankHistory, additionalHistory) + containerWidth : null;
+  $: chartHash = calcHistoryHash(rankHistory, additionalHistory);
   $: debounceChartHash(chartHash)
   $: if (debouncedChartHash) setupChart(debouncedChartHash, canvas)
 </script>
 
 {#if rankHistory && rankHistory.length}
-  <section bind:this={chartContainerEl} class="chart" style="--height: {height}">
+  <section class="chart" style="--height: {height}">
     <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
   </section>
 {/if}

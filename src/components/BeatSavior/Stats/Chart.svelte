@@ -64,10 +64,10 @@
       chart = new Chart(
             canvas,
             {
-              responsive: true,
-              maintainAspectRatio: false,
               data: {labels, datasets},
               options: {
+                responsive: true,
+                maintainAspectRatio: false,
                 interaction: {
                   mode: 'index',
                   intersect: false,

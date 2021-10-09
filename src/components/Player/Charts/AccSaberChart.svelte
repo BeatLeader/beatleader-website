@@ -5,7 +5,6 @@
   import createAccSaberService from '../../../services/accsaber'
   import {formatNumber} from '../../../utils/format'
   import {addToDate, DAY, formatDate, formatDateWithOptions, HOUR, toAccSaberMidnight} from '../../../utils/date'
-  import createContainerStore from '../../../stores/container'
   import {debounce} from '../../../utils/debounce'
   import {convertArrayToObjectByKey} from '../../../utils/js'
   import {capitalize} from '../../../utils/js'
@@ -21,9 +20,6 @@
   const DAYS_QTY = 30;
 
   const accSaberService = createAccSaberService();
-
-  let chartContainerEl = null;
-  const containerStore = createContainerStore();
 
   let canvas = null;
   let chart = null;
@@ -224,19 +220,6 @@
       },
     };
 
-    if (chart) {
-      chart.destroy();
-      chart = null;
-      if (chartContainerEl) {
-        const canvas = chartContainerEl.querySelector('canvas');
-        if (canvas) {
-          canvas.style.height = null;
-          var ctx = canvas.getContext("2d");
-          ctx.canvas.height = height;
-        }
-      }
-    }
-
     if (!chart) {
       chart = new Chart(
         canvas,
@@ -301,26 +284,27 @@
           },
         },
       );
+    } else {
+      chart.data = {datasets}
+      chart.options.scales = {x: xAxis, ...yAxes}
+      chart.update()
     }
   }
 
   let debouncedChartHash = null;
   const debounceChartHash = debounce(chartHash => debouncedChartHash = chartHash, CHART_DEBOUNCE);
 
-  $: if (chartContainerEl) containerStore.observe(chartContainerEl)
-  $: containerWidth = $containerStore?.nodeWidth;
-
   $: refreshPlayerRankHistory(playerId, playerHistory);
 
   $: selectedCategory = availableCategories?.find(c => c.label === capitalize(category)) ?? null;
 
-  $: chartHash = containerWidth ? calcHistoryHash(playerId, playerRankHistory, category) + containerWidth : null;
+  $: chartHash = calcHistoryHash(playerId, playerRankHistory, category);
   $: debounceChartHash(chartHash)
   $: if (debouncedChartHash) setupChart(debouncedChartHash, canvas)
 </script>
 
 {#if playerRankHistory?.length}
-  <section bind:this={chartContainerEl} class="chart" style="--height: {height}">
+  <section class="chart" style="--height: {height}">
     <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
   </section>
 

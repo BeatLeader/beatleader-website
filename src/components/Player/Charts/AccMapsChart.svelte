@@ -3,7 +3,6 @@
   import zoomPlugin from 'chartjs-plugin-zoom';
   import {formatNumber, roundToPrecision} from '../../../utils/format'
   import {formatDateRelative} from '../../../utils/date'
-  import createContainerStore from '../../../stores/container'
   import {debounce} from '../../../utils/debounce'
   import {worker} from '../../../utils/worker-wrappers'
   import regionsPlugin from './plugins/regions'
@@ -19,9 +18,6 @@
   Chart.register(zoomPlugin);
 
   const CHART_DEBOUNCE = 300;
-
-  let chartContainerEl = null;
-  const containerStore = createContainerStore();
 
   let canvas = null;
   let chart = null;
@@ -60,6 +56,8 @@
     const averageLinesColor = 'rgba(255,255,255,.35)'
 
     lastHistoryHash = chartHash;
+
+    const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
 
     let maxStars = 0;
     let minAcc = 100;
@@ -131,102 +129,89 @@
       color: averageLinesColor,
       label: 'Median',
       position: {horizontal: 'right'},
-    })
+    });
 
-    if (chart) {
-      chart.destroy();
-      chart = null;
-      if (chartContainerEl) {
-        const canvas = chartContainerEl.querySelector('canvas');
-        if (canvas) {
-          canvas.style.height = null;
-          var ctx = canvas.getContext("2d");
-          ctx.canvas.height = height;
-        }
-      }
-    }
+    const datasets = [
+      {
+        label: 'Maps',
+        borderColor: mapBorderColor,
+        backgroundColor: mapColor,
+        fill: false,
+        pointRadius: 3,
+        pointHoverRadius: 4,
+        data: chartData,
+        order: 4,
+      },
+
+      {
+        yAxisID: 'y',
+        label: 'Best',
+        borderColor: 'rgba(60,179,113, .75)',
+        data: avgData.best,
+        fill: false,
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+        type: 'line',
+        spanGaps: true,
+        segment: {
+          borderWidth: ctx => skipped(ctx, 1),
+          borderDash: ctx => skipped(ctx, [6, 6]),
+        },
+      },
+
+      {
+        yAxisID: 'y',
+        label: 'Average',
+        borderColor: '#3273dc',
+        data: avgData.avg,
+        fill: false,
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+        type: 'line',
+        spanGaps: true,
+        segment: {
+          borderWidth: ctx => skipped(ctx, 1),
+          borderDash: ctx => skipped(ctx, [6, 6]),
+        },
+      },
+
+      {
+        yAxisID: 'y',
+        label: 'Median',
+        borderColor: '#8992e8',
+        data: avgData.median,
+        fill: false,
+        borderWidth: 2,
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4,
+        type: 'line',
+        spanGaps: true,
+        segment: {
+          borderWidth: ctx => skipped(ctx, 1),
+          borderDash: ctx => skipped(ctx, [6, 6]),
+        },
+      },
+    ];
 
     if (!chart) {
-      const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
-
       chart = new Chart(
         canvas,
         {
           type: 'scatter',
-          responsive: true,
-          maintainAspectRatio: false,
           data: {
-            datasets: [
-              {
-                label: 'Maps',
-                borderColor: mapBorderColor,
-                backgroundColor: mapColor,
-                fill: false,
-                pointRadius: 3,
-                pointHoverRadius: 4,
-                data: chartData,
-                order: 4,
-              },
-
-              {
-                yAxisID: 'y',
-                label: 'Best',
-                borderColor: 'rgba(60,179,113, .75)',
-                data: avgData.best,
-                fill: false,
-                borderWidth: 2,
-                pointRadius: 2,
-                pointHoverRadius: 4,
-                cubicInterpolationMode: 'monotone',
-                tension: 0.4,
-                type: 'line',
-                spanGaps: true,
-                segment: {
-                  borderWidth: ctx => skipped(ctx, 1),
-                  borderDash: ctx => skipped(ctx, [6, 6]),
-                },
-              },
-
-              {
-                yAxisID: 'y',
-                label: 'Average',
-                borderColor: '#3273dc',
-                data: avgData.avg,
-                fill: false,
-                borderWidth: 2,
-                pointRadius: 2,
-                pointHoverRadius: 4,
-                cubicInterpolationMode: 'monotone',
-                tension: 0.4,
-                type: 'line',
-                spanGaps: true,
-                segment: {
-                  borderWidth: ctx => skipped(ctx, 1),
-                  borderDash: ctx => skipped(ctx, [6, 6]),
-                },
-              },
-
-              {
-                yAxisID: 'y',
-                label: 'Median',
-                borderColor: '#8992e8',
-                data: avgData.median,
-                fill: false,
-                borderWidth: 2,
-                pointRadius: 2,
-                pointHoverRadius: 4,
-                cubicInterpolationMode: 'monotone',
-                tension: 0.4,
-                type: 'line',
-                spanGaps: true,
-                segment: {
-                  borderWidth: ctx => skipped(ctx, 1),
-                  borderDash: ctx => skipped(ctx, [6, 6]),
-                },
-              },
-            ],
+            datasets,
           },
           options: {
+            responsive: true,
+            maintainAspectRatio: false,
             layout: {
               padding: {
                 right: 0,
@@ -361,23 +346,23 @@
           plugins: [regionsPlugin],
         },
       );
+    } else {
+      chart.data = {datasets}
+      chart.update()
     }
   }
 
   let debouncedChartHash = null;
   const debounceChartHash = debounce(chartHash => debouncedChartHash = chartHash, CHART_DEBOUNCE);
 
-  $: if (chartContainerEl) containerStore.observe(chartContainerEl)
-  $: containerWidth = $containerStore?.nodeWidth;
-
   $: refreshPlayerRankedScores(playerId);
 
-  $: chartHash = containerWidth ? calcPlayerScoresHash(playerScores) + containerWidth : null;
+  $: chartHash = calcPlayerScoresHash(playerScores);
   $: debounceChartHash(chartHash)
   $: if (debouncedChartHash) setupChart(debouncedChartHash, canvas)
 </script>
 
-<section bind:this={chartContainerEl} class="chart" style="--height: {height}">
+<section class="chart" style="--height: {height}">
   <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
   {#if isLoading}
     <Spinner width="10em" height="10em" />
