@@ -3,6 +3,7 @@
   import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
   import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import createScoresStore from '../../stores/http/http-scores-store.js';
+  import createScoresService from '../../services/scoresaber/scores';
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
   import createBeatSaviorService from '../../services/beatsavior'
@@ -10,6 +11,9 @@
   import SongScore from './SongScore.svelte'
   import Error from '../Common/Error.svelte'
   import Switcher from '../Common/Switcher.svelte'
+  import {truncateDate} from '../../utils/date'
+  import DateBrowseChart from '../Common/DateBrowseChart.svelte'
+  import {formatNumber} from '../../utils/format'
 
   const dispatch = createEventDispatcher();
 
@@ -22,6 +26,7 @@
   export let fixedBrowserTitle = null;
   export let withAccSaber = false;
 
+  const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
 
   let scoresStore = createScoresStore(
@@ -92,7 +97,59 @@
     scoresTypes = newScoresTypes;
   }
 
+  let playerScoresByDate = null;
+  async function refreshAllPlayerScores(playerId, type) {
+    playerScoresByDate = null;
+
+    if (!playerId || type !== 'recent') return;
+
+    playerScoresByDate = Object.entries(
+      (await scoresService.getPlayerScores(playerId))
+        .sort((a,b) => b?.timeSet - a?.timeSet)
+        .reduce((scores, score) => {
+          if (!score?.timeSet) return scores;
+
+          const key = truncateDate(score.timeSet)?.getTime();
+          if (!key) return scores;
+
+          if (!scores[key]) scores[key] = [];
+
+          scores[key].push(score);
+
+          return scores;
+        }, {}),
+    )
+      .reduce((cum, [timestamp, scores]) => {
+        if (!timestamp || !scores) return cum;
+
+        const x = parseInt(timestamp, 10);
+        const y = scores?.length ?? 0;
+
+        if (isNaN(x)) return cum;
+
+        const prevTotal = cum.length ? cum[cum.length - 1].total : 0;
+        const page = Math.floor(prevTotal / PLAYER_SCORES_PER_PAGE);
+        const total = prevTotal + y;
+
+        cum.push({
+          x,
+          y,
+          firstScore: scores?.[0],
+          date: new Date(x),
+          page,
+          total,
+        })
+
+        return cum;
+      }, [])
+  }
+
+  const dateChartBrowserTooltipLabel = ctx => (ctx?.raw?.page ?? null) !== null
+    ? [`${formatNumber(ctx?.raw?.y, 0)} score(s)`, '', `Click to go to page ${ctx.raw.page + 1}`]
+    : null;
+
   $: updateAvailableScoresTypes(playerId, withAccSaber)
+  $: refreshAllPlayerScores(playerId, type)
 
   $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
   $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
@@ -133,10 +190,23 @@
            on:page-changed={onPageChanged}
     />
   {/if}
+
+  {#if playerScoresByDate?.length}
+    <section class="scores-date-browse">
+      <DateBrowseChart data={playerScoresByDate} tooltipLabelFunc={dateChartBrowserTooltipLabel} on:page-changed={onPageChanged} />
+    </section>
+  {/if}
 </div>
 
 <style>
     .song-scores :global(> *:last-child) {
         border-bottom: none !important;
     }
+
+    .scores-date-browse {
+        margin-top: 1rem;
+        width: 100%;
+        height: 100px;
+    }
+
 </style>
