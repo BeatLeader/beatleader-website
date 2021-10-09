@@ -4,6 +4,7 @@
   import Button from '../Common/Button.svelte'
   import Dialog from '../Common/Dialog.svelte'
   import {delay} from '../../utils/promise'
+  import {SsrHttpUnauthenticatedError, SsrHttpUnauthorizedError} from '../../network/errors'
 
   export let playerId;
   export let show = false;
@@ -17,6 +18,7 @@
   let twitchUserName = "";
   let alreadySearched = false;
   let isSearching = false;
+  let error = null;
 
   async function onPlayerChanged(playerId) {
     if (!playerId) return;
@@ -40,11 +42,18 @@
       isSearching = true
       alreadySearched = false;
       twitchProfile = null;
+      error = null;
 
       await delay(100);
       twitchProfile = await twitchService.fetchProfile(twitchUserName);
 
       alreadySearched = true;
+    } catch(err) {
+      if (err instanceof SsrHttpUnauthenticatedError || err instanceof SsrHttpUnauthorizedError) {
+        error = 'Twitch authentication error. It is likely that your Twitch token is invalid. Go to Settings and reconnect service with your Twitch account.';
+      } else {
+        error = 'An error occurred while trying to connect to Twitch.';
+      }
     }
     finally {
       isSearching = false;
@@ -85,6 +94,8 @@
             <p>{twitchProfile.description}</p>
           </div>
         </div>
+      {:else if error}
+        <p class="error">{error}</p>
       {:else if alreadySearched}
         <p>Twitch user not found.</p>
       {/if}
@@ -142,5 +153,9 @@
     a {
         color: #9146ff !important;
         word-wrap: break-word;
+    }
+
+    .error {
+        color: var(--error);
     }
 </style>

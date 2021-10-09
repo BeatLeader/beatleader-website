@@ -169,14 +169,12 @@
             </Select>
           </section>
 
-          {#if showTwitchLinkBtn}
-            <section class="option twitch">
-              <label title="If there is a Twitch VOD available then an icon will appear next to the score which will take you directly to the appropriate VOD location.">Twitch</label>
-              <Button type="twitch" iconFa="fab fa-twitch"
-                      label={twitchBtnLabel} title={twitchBtnTitle} disabled={twitchBtnDisabled}
-                      on:click={() => window.location.href = twitchService.getAuthUrl(opt($activeRoute, 'uri', ''))}/>
-            </section>
-          {/if}
+          <section class="option twitch">
+            <label title="If there is a Twitch VOD available then an icon will appear next to the score which will take you directly to the appropriate VOD location.">Twitch</label>
+            <Button type="twitch" iconFa="fab fa-twitch"
+                    label={twitchBtnLabel} title={twitchBtnTitle}
+                    on:click={() => window.location.href = twitchService.getAuthUrl(opt($activeRoute, 'uri', ''))}/>
+          </section>
         </section>
       {:else}
         Loading...
