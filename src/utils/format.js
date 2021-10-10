@@ -23,7 +23,7 @@ export const round = (val, places = 2) => {
 
   const mult = Math.pow(10, places);
   return Math.round((val + Number.EPSILON) * mult) / mult;
-};
+}
 
 export function roundToPrecision(num, precision = 0.1) {
   return round(Math.floor(num / precision) * precision);

@@ -3,12 +3,16 @@
   import Chart from 'chart.js/auto'
   import 'chartjs-adapter-luxon';
   import {DAY, formatDate, formatDateWithOptions} from '../../utils/date'
+  import {formatNumber} from '../../utils/format'
 
   export let data = null;
   export let color = "#2366d1";
   export let tooltipTitleFunc = null;
   export let tooltipLabelFunc = null;
-  export let type = 'bar';
+  export let tickFormatFunc = null;
+  export let type = 'time';
+  export let displayType = 'bar';
+  export let linearRoundPrecision = 2;
   export let height = "80px";
 
   const dispatch = createEventDispatcher();
@@ -31,7 +35,7 @@
     };
 
     const xAxis = {
-      type: 'time',
+      type,
       display: true,
       offset: true,
       time: {
@@ -42,7 +46,6 @@
       },
       reverse: true,
       ticks: {
-        autoSkip: false,
         major: {
           enabled: true,
         },
@@ -58,11 +61,15 @@
         callback: (val, idx, ticks) => {
           if (!ticks?.[idx]) return '';
 
-          return formatDateWithOptions(new Date(ticks[idx]?.value), {
-            localeMatcher: 'best fit',
-            year: '2-digit',
-            month: 'short',
-          });
+          if (tickFormatFunc) return tickFormatFunc(val, idx, ticks);
+
+          return type === 'time'
+            ? formatDateWithOptions(new Date(ticks[idx]?.value), {
+              localeMatcher: 'best fit',
+              year: '2-digit',
+              month: 'short',
+            })
+            : formatNumber(ticks[idx]?.value, linearRoundPrecision);
         },
       },
     };
@@ -75,9 +82,10 @@
       borderColor: color,
       borderWidth: 2,
       pointRadius: 1,
+      maxBarThickness: 3,
       cubicInterpolationMode: 'monotone',
       tension: 0.4,
-      type: type ?? 'line',
+      type: displayType ?? 'bar',
       spanGaps: true,
       segment: {
         borderWidth: ctx => skipped(ctx, 1),

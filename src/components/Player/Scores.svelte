@@ -11,9 +11,9 @@
   import SongScore from './SongScore.svelte'
   import Error from '../Common/Error.svelte'
   import Switcher from '../Common/Switcher.svelte'
-  import {truncateDate} from '../../utils/date'
-  import DateBrowseChart from '../Common/DateBrowseChart.svelte'
-  import {formatNumber} from '../../utils/format'
+  import {formatDate, formatDateWithOptions, truncateDate} from '../../utils/date'
+  import ChartBrowser from '../Common/ChartBrowser.svelte'
+  import {formatNumber, roundToPrecision} from '../../utils/format'
 
   const dispatch = createEventDispatcher();
 
@@ -25,6 +25,8 @@
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
   export let withAccSaber = false;
+
+  const SS_TOP_CHART_BROWSER_PRECISON = 5;
 
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
@@ -98,30 +100,27 @@
   }
 
   let playerScoresByDate = null;
+  let playerScoresType = null;
 
-  const groupRecentScores = scores => Object.entries(
+  const groupScores = (scores, keyFunc = score => truncateDate(score?.timeSet)?.getTime()) => Object.values(
     scores
-      .sort((a,b) => b?.timeSet - a?.timeSet)
       .reduce((scores, score) => {
-        if (!score?.timeSet) return scores;
-
-        const key = truncateDate(score.timeSet)?.getTime();
-        if (!key) return scores;
+        const key = keyFunc(score);
+        if (key === null || key === undefined) return scores;
 
         if (!scores[key]) scores[key] = [];
 
-        scores[key].push(score);
+        scores[key].push({key, score});
 
         return scores;
       }, {}),
   )
-    .reduce((cum, [timestamp, scores]) => {
-      if (!timestamp || !scores) return cum;
+    .sort((a,b) => b?.[0].key - a?.[0].key)
+    .reduce((cum, values) => {
+      if (!values?.length) return cum;
 
-      const x = parseInt(timestamp, 10);
-      const y = scores?.length ?? 0;
-
-      if (isNaN(x)) return cum;
+      const x = values[0].key;
+      const y = values.length;
 
       const prevTotal = cum.length ? cum[cum.length - 1].total : 0;
       const page = Math.floor(prevTotal / PLAYER_SCORES_PER_PAGE);
@@ -130,34 +129,61 @@
       cum.push({
         x,
         y,
-        firstScore: scores?.[0],
-        date: new Date(x),
+        firstScore: values[0].score,
         page,
         total,
       })
 
       return cum;
     }, [])
+    .sort((a,b) => b.x - a.x)
 
   async function refreshAllPlayerSsRecentScores(playerId, type) {
     if (!playerId || type !== 'recent') return;
 
-    playerScoresByDate = groupRecentScores(await scoresService.getPlayerScores(playerId))
+    playerScoresType = 'time';
+    playerScoresByDate = groupScores((await scoresService.getPlayerScores(playerId)).sort((a,b) => b?.timeSet - a?.timeSet))
+  }
+
+  async function refreshAllPlayerSsTopScores(playerId, type) {
+    if (!playerId || type !== 'top') return;
+
+    playerScoresType = 'linear';
+    playerScoresByDate = groupScores(
+      (await scoresService.getPlayerScores(playerId))
+        .filter(s => Number.isFinite(s?.pp) && s.pp > 0)
+        .sort((a,b) => b?.pp - a?.pp),
+      score => roundToPrecision(score?.pp, SS_TOP_CHART_BROWSER_PRECISON)
+    )
   }
 
   async function refreshAllPlayerBeatSaviorScores(playerId, type) {
     if (!playerId || type !== 'beatsavior') return;
 
-    playerScoresByDate = groupRecentScores(await beatSaviorService.getPlayerBeatSaviorData(playerId))
+    playerScoresType = 'time';
+    playerScoresByDate = groupScores((await beatSaviorService.getPlayerBeatSaviorData(playerId)).sort((a,b) => b?.timeSet - a?.timeSet))
   }
 
-  const dateChartBrowserTooltipLabel = ctx => (ctx?.raw?.page ?? null) !== null
+  const chartBrowserTooltipTitle = ctx => playerScoresType === 'time'
+    ? formatDate(new Date(ctx?.raw?.x), 'long', null)
+    : `${formatNumber(ctx?.raw?.x, 0)} - ${formatNumber(ctx?.raw?.x + SS_TOP_CHART_BROWSER_PRECISON, 0)}pp`;
+
+  const chartBrowserTooltipLabel = ctx => (ctx?.raw?.page ?? null) !== null
     ? [`${formatNumber(ctx?.raw?.y, 0)} score(s)`, '', `Click to go to page ${ctx.raw.page + 1}`]
     : null;
 
+  const chartBrowserTickFormat = (val, idx, ticks) => playerScoresType === 'time'
+    ? formatDateWithOptions(new Date(ticks?.[idx]?.value), {
+      localeMatcher: 'best fit',
+      year: '2-digit',
+      month: 'short',
+    })
+    : `${formatNumber(ticks?.[idx]?.value, 0)}pp`
+
   $: updateAvailableScoresTypes(playerId, withAccSaber)
-  $: playerId, type, playerScoresByDate = null;
+  $: playerId, type, playerScoresByDate = null, playerScoresType = null;
   $: refreshAllPlayerSsRecentScores(playerId, type)
+  $: refreshAllPlayerSsTopScores(playerId, type)
   $: refreshAllPlayerBeatSaviorScores(playerId, type)
 
   $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
@@ -202,7 +228,12 @@
 
   {#if playerScoresByDate?.length}
     <section class="scores-date-browse">
-      <DateBrowseChart data={playerScoresByDate} tooltipLabelFunc={dateChartBrowserTooltipLabel} on:page-changed={onPageChanged} />
+      <ChartBrowser data={playerScoresByDate} type={playerScoresType}
+                    tooltipTitleFunc={chartBrowserTooltipTitle}
+                    tooltipLabelFunc={chartBrowserTooltipLabel}
+                    tickFormatFunc={chartBrowserTickFormat}
+                    on:page-changed={onPageChanged}
+      />
     </section>
   {/if}
 </div>
