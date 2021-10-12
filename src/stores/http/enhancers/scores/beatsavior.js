@@ -23,15 +23,11 @@ export default async (data, playerId = null) => {
       })
     })
 
-  if (!data.score.acc) {
-    const acc = opt(bsData, 'trackers.scoreTracker.rawRatio');
-    if (acc) data.score.acc = acc * 100;
-  }
+  const acc = opt(bsData, 'trackers.scoreTracker.rawRatio');
+  if (acc) data.score.acc = acc * 100;
 
-  if (!data.score.percentage) {
-    const percentage = opt(bsData, 'trackers.scoreTracker.modifiedRatio');
-    if (percentage) data.score.percentage = percentage * 100;
-  }
+  const percentage = opt(bsData, 'trackers.scoreTracker.modifiedRatio');
+  if (percentage) data.score.percentage = percentage * 100;
 
   data.beatSavior = bsData;
 }

@@ -12,6 +12,12 @@ const BM_SUSPENSION_KEY = 'bmSuspension';
 const BM_NOT_FOUND_KEY = 'bm404';
 const BM_NOT_FOUND_HOURS_BETWEEN_COUNTS = 1;
 
+const INVALID_NOTES_COUNT_FIXES = {
+    'e738b38b594861745bfb0473c66ca5cca15072ff': [
+        {type: 'Standard', diff: "ExpertPlus", notes: 942}
+    ]
+}
+
 export default () => {
     const cacheSongInfo = async (songInfo, originalHash) => {
         if (!songInfo) return null;
@@ -65,8 +71,26 @@ export default () => {
         return songs404 && songs404[hash] && songs404[hash].count >= 3;
     }
 
+    const fixInvalidNotesCount = (hash, songInfo) => {
+        if (!hash) return songInfo;
+
+        if (INVALID_NOTES_COUNT_FIXES[hash] && songInfo?.versions)
+            songInfo.versions.forEach(si => {
+                if (!si?.diffs) return;
+
+                si.diffs.forEach(d => {
+                    const newNotesCnt = INVALID_NOTES_COUNT_FIXES[hash].find(f => f.type === d?.characteristic && f.diff === d?.difficulty);
+                    if (!newNotesCnt) return;
+
+                    d.notes = newNotesCnt.notes;
+                })
+            })
+
+        return songInfo;
+    }
+
     const fetchSong = async (songInfo, fetchFunc, forceUpdate = false, cacheOnly = false, errSongId = '', hash = null) => {
-        if (!forceUpdate && songInfo) return songInfo;
+        if (!forceUpdate && songInfo) return fixInvalidNotesCount(hash, songInfo);
 
         if(cacheOnly) return null;
 
@@ -81,7 +105,7 @@ export default () => {
                 return null;
             }
 
-            return cacheSongInfo(songInfo, hash);
+            return fixInvalidNotesCount(hash, cacheSongInfo(songInfo, hash));
         } catch (err) {
             if (hash && err instanceof SsrHttpNotFoundError) {
                 await setHashNotFound(hash);
