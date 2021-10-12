@@ -1,5 +1,5 @@
 <script>
-  import {createEventDispatcher} from 'svelte'
+  import {createEventDispatcher, getContext} from 'svelte'
   import Chart from 'chart.js/auto'
   import 'chartjs-adapter-luxon';
   import createAccSaberService from '../../../services/accsaber'
@@ -9,6 +9,7 @@
   import {convertArrayToObjectByKey} from '../../../utils/js'
   import {capitalize} from '../../../utils/js'
   import Switcher from '../../Common/Switcher.svelte'
+  import {onLegendClick} from './utils/legend-click-handler'
 
   const dispatch = createEventDispatcher();
 
@@ -18,6 +19,8 @@
 
   const CHART_DEBOUNCE = 300;
   const DAYS_QTY = 30;
+
+  const pageContainer = getContext('pageContainer');
 
   const accSaberService = createAccSaberService();
 
@@ -108,7 +111,7 @@
         position: 'left',
         reverse: true,
         title: {
-          display: false,
+          display: $pageContainer.name !== 'phone',
           text: 'Rank',
         },
         ticks: {
@@ -126,7 +129,7 @@
 
     [
       {key: 'rank', label: 'Rank', borderColor: rankColor, axis: 'y', round: 0, gridColor},
-      {key: 'averageAcc', label: 'Acc', borderColor: accColor, axis: 'y2', round: 2, axisDisplay: true, valueMult: 100, tickSuffix: '%', max: 100},
+      {key: 'averageAcc', label: 'Acc', borderColor: accColor, axis: 'y2', round: 2, axisDisplay: true, valueMult: 100, tickSuffix: '%'},
       {key: 'ap', label: 'AP', borderColor: ppColor, axis: 'y3', round: 2, axisDisplay: false},
       {key: 'rankedPlays', label: 'Plays', backgroundColor: rankedPlayCountColor, borderColor: rankedPlayCountColor, axis: 'y4', round: 0, axisDisplay: false, type: 'bar', barThickness: 3, maxMult: 1.5}].forEach(obj => {
       const {key, axis, axisDisplay, label, valueMult, tickSuffix, type, max, maxMult, gridColor, ...options} = obj;
@@ -149,7 +152,7 @@
         display: axisDisplay ?? false,
         position: 'right',
         title: {
-          display: false,
+          display: $pageContainer.name !== 'phone',
           text: label,
         },
         ticks: {
@@ -241,7 +244,8 @@
             },
             plugins: {
               legend: {
-                display: Object.keys(yAxes).length > 1,
+                display: true,
+                onClick: onLegendClick,
               },
               tooltip: {
                 position: 'nearest',
@@ -264,16 +268,6 @@
                         return ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
                     }
                   },
-                },
-              },
-              customYAxisPosition: {
-                y: {
-                  display: true,
-                  text: 'Rank',
-                },
-                y1: {
-                  display: true,
-                  text: 'PP',
                 },
               },
             },

@@ -4,12 +4,16 @@
   import {dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
   import createPlayerService from '../../../services/scoresaber/player'
   import {debounce} from '../../../utils/debounce'
+  import {onLegendClick} from './utils/legend-click-handler'
+  import {getContext} from 'svelte'
 
   export let playerId = null;
   export let rankHistory = null;
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
+
+  const pageContainer = getContext('pageContainer');
 
   const playerService = createPlayerService();
 
@@ -70,7 +74,7 @@
         display: true,
         position: 'left',
         title: {
-          display: false,
+          display: $pageContainer.name !== 'phone',
           text: 'Acc',
         },
         ticks: {
@@ -78,7 +82,7 @@
         },
         grid: {
           color: gridColor,
-        }
+        },
       },
     };
 
@@ -87,10 +91,25 @@
         yAxes = {
           ...yAxes,
           y1: {
+            display: true,
+            position: 'right',
+            title: {
+              display: $pageContainer.name !== 'phone',
+              text: 'Maps count',
+            },
+            ticks: {
+              callback: val => val === Math.floor(val) ? val : null,
+            },
+            grid: {
+              drawOnChartArea: false,
+            },
+          },
+
+          y2: {
             display: false,
             position: 'right',
             title: {
-              display: false,
+              display: $pageContainer.name !== 'phone',
               text: 'Std dev',
             },
             ticks: {
@@ -98,21 +117,6 @@
             },
             grid: {
               color: gridColor,
-            },
-          },
-
-          y2: {
-            display: true,
-            position: 'right',
-            title: {
-              display: false,
-              text: 'Maps',
-            },
-            ticks: {
-              callback: val => val === Math.floor(val) ? val : null,
-            },
-            grid: {
-              drawOnChartArea: false,
             },
           },
         }
@@ -139,21 +143,22 @@
             borderColor: averageColor,
             round: 2,
             axis: 'y',
+            axisOrder: 0,
           },
         ]
           .concat(
             isScoreDataAvailable
               ? [
-                {key: 'medianAcc', name: 'Median', borderColor: medianColor, round: 2, axis: 'y'},
-                {key: 'stdDeviation', name: 'Std dev', borderColor: stdDevColor, round: 4, axis: 'y1'},
+                {key: 'medianAcc', name: 'Median', borderColor: medianColor, round: 2, axis: 'y', axisOrder: 1},
+                {key: 'stdDeviation', name: 'Std dev', borderColor: stdDevColor, round: 4, axis: 'y2', axisOrder: 10},
                 {
                   key: 'accBadges', keys: [
-                    {key: 'SS+', name: 'SS+', backgroundColor: ssPlusColor},
-                    {key: 'SS', name: 'SS', backgroundColor: ssColor},
-                    {key: 'S+', name: 'S+', backgroundColor: sPlusColor},
-                    {key: 'S', name: 'S', backgroundColor: sColor},
-                    {key: 'A', name: 'A', backgroundColor: aColor},
-                  ], round: 0, axis: 'y2',
+                    {key: 'SS+', name: 'SS+', backgroundColor: ssPlusColor, axisOrder: 2},
+                    {key: 'SS', name: 'SS', backgroundColor: ssColor, axisOrder: 3},
+                    {key: 'S+', name: 'S+', backgroundColor: sPlusColor, axisOrder: 4},
+                    {key: 'S', name: 'S', backgroundColor: sColor, axisOrder: 5},
+                    {key: 'A', name: 'A', backgroundColor: aColor, axisOrder: 5},
+                  ], round: 0, axis: 'y1',
                 },
               ]
               : [],
@@ -168,6 +173,7 @@
                 datasets.push({
                   ...options,
                   ...innerOptions,
+                  aaa: 'xxx',
                   yAxisID: axis,
                   label: name,
                   data: fieldData,
@@ -214,26 +220,6 @@
 
     if (!chart)
     {
-      const customYAxisPosition = {
-        id: 'customYAxisPosition',
-        afterDraw: (chart, args, opts) => {
-          const { ctx, chartArea: { top, right } } = chart;
-
-          Object.entries(opts).map(([axis, opt]) => {
-            if (chart?.scales?.[axis] && opts?.[axis]?.text && opt?.display) {
-              ctx.fillStyle = opts?.[axis]?.color ?? Chart.defaults.color
-              ctx.font = opts?.[axis]?.font ?? '12px "Helvetica Neue", Helvetica, Arial, sans-serif'
-
-              const {width} = ctx.measureText(opts[axis].text);
-              const offsetX = Math.floor((chart.scales[axis].width - width) / 2);
-
-              ctx.fillText(opts[axis].text, chart.scales[axis].left + offsetX, chart.scales[axis].top -
-                (opts?.[axis]?.offsetY ?? 15))
-            }
-          })
-        }
-      }
-
       chart = new Chart(
             canvas,
             {
@@ -254,6 +240,7 @@
                 plugins: {
                   legend: {
                     display: true,
+                    onClick: onLegendClick,
                   },
                   tooltip: {
                     position: 'nearest',
@@ -273,23 +260,12 @@
                       },
                     }
                   },
-                  customYAxisPosition: {
-                    y: {
-                      display: true,
-                      text: 'Acc',
-                    },
-                    y1: {
-                      display: isScoreDataAvailable,
-                      text: 'Maps',
-                    }
-                  }
                 },
                 scales: {
                   x: xAxis,
                   ...yAxes,
                 },
               },
-              plugins: [customYAxisPosition],
             },
           );
     }

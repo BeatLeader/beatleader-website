@@ -5,7 +5,7 @@
   import {formatDateRelative} from '../../../utils/date'
   import {debounce} from '../../../utils/debounce'
   import {worker} from '../../../utils/worker-wrappers'
-  import regionsPlugin from './plugins/regions'
+  import regionsPlugin from './utils/regions-plugin'
   import {capitalize} from '../../../utils/js'
   import Spinner from '../../Common/Spinner.svelte'
 
