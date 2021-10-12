@@ -78,7 +78,8 @@
           text: 'Acc',
         },
         ticks: {
-          callback: val => formatNumber(val, 2) + '%'
+          callback: val => formatNumber(val, 2) + '%',
+          precision: 2
         },
         grid: {
           color: gridColor,
@@ -99,6 +100,7 @@
             },
             ticks: {
               callback: val => val === Math.floor(val) ? val : null,
+              precision: 0,
             },
             grid: {
               drawOnChartArea: false,
@@ -114,6 +116,7 @@
             },
             ticks: {
               callback: val => val,
+              precision: 3,
             },
             grid: {
               color: gridColor,

@@ -169,7 +169,8 @@
           text: 'Rank',
         },
         ticks: {
-          callback: val => val === Math.floor(val) ? val : null
+          callback: val => val === Math.floor(val) ? val : null,
+          precision: 0,
         },
         grid: {
           color: gridColor,
@@ -195,13 +196,14 @@
         const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
 
         [
-          {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true},
+          {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true, precision: 0},
           {
             key: 'rankedPlayCount',
             name: 'Ranked play count',
             borderColor: rankedPlayCountColor,
             round: 0,
             axisDisplay: false,
+            precision: 0,
           },
           {
             key: 'totalPlayCount',
@@ -209,10 +211,11 @@
             borderColor: totalPlayCountColor,
             round: 0,
             axisDisplay: false,
+            precision: 0,
           },
         ]
           .forEach(obj => {
-            const {key, name, axisDisplay, usePrevAxis, ...options} = obj;
+            const {key, name, axisDisplay, usePrevAxis, precision, ...options} = obj;
             const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key] ?? null);
 
             if (!usePrevAxis) lastYIdx++;
@@ -225,7 +228,8 @@
                 text: name,
               },
               ticks: {
-                callback: val => val === Math.floor(val) ? val : null
+                callback: val => val === Math.floor(val) ? val : null,
+                precision
               },
               grid: {
                 drawOnChartArea: false,
@@ -268,7 +272,8 @@
           text: 'Scores count',
         },
         ticks: {
-          callback: val => val
+          callback: val => val,
+          precision: 0,
         },
         grid: {
           drawOnChartArea: false,

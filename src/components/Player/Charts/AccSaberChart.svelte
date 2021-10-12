@@ -116,6 +116,7 @@
         },
         ticks: {
           callback: val => val === Math.floor(val) ? val : null,
+          precision: 0,
         },
         grid: {
           color: gridColor,
@@ -128,11 +129,11 @@
     const datasets = [];
 
     [
-      {key: 'rank', label: 'Rank', borderColor: rankColor, axis: 'y', round: 0, gridColor},
-      {key: 'averageAcc', label: 'Acc', borderColor: accColor, axis: 'y2', round: 2, axisDisplay: true, valueMult: 100, tickSuffix: '%'},
-      {key: 'ap', label: 'AP', borderColor: ppColor, axis: 'y3', round: 2, axisDisplay: false},
-      {key: 'rankedPlays', label: 'Plays', backgroundColor: rankedPlayCountColor, borderColor: rankedPlayCountColor, axis: 'y4', round: 0, axisDisplay: false, type: 'bar', barThickness: 3, maxMult: 1.5}].forEach(obj => {
-      const {key, axis, axisDisplay, label, valueMult, tickSuffix, type, max, maxMult, gridColor, ...options} = obj;
+      {key: 'rank', label: 'Rank', borderColor: rankColor, axis: 'y', round: 0, gridColor, precision: 0},
+      {key: 'averageAcc', label: 'Acc', borderColor: accColor, axis: 'y2', round: 0, axisDisplay: true, valueMult: 100, tickSuffix: '%', precision: 2},
+      {key: 'ap', label: 'AP', borderColor: ppColor, axis: 'y3', round: 2, axisDisplay: false, precision: 0},
+      {key: 'rankedPlays', label: 'Plays', backgroundColor: rankedPlayCountColor, borderColor: rankedPlayCountColor, axis: 'y4', round: 0, axisDisplay: false, type: 'bar', barThickness: 3, maxMult: 1.5, precision: 0}].forEach(obj => {
+      const {key, axis, axisDisplay, label, valueMult, tickSuffix, precision, type, max, maxMult, gridColor, ...options} = obj;
 
       const data = dayTimestamps.map(t => {
         const val = playerRankHistoryByTimestamp?.[t]?.categories?.[category]?.[key] ?? null;
@@ -156,7 +157,8 @@
           text: label,
         },
         ticks: {
-          callback: val => formatNumber(val, obj.round ?? 2) + (tickSuffix ?? '')
+          callback: val => formatNumber(val, obj.precision ?? obj.round ?? 2) + (tickSuffix ?? ''),
+          precision: precision ?? 2
         },
         grid: {
           color: gridColor,
