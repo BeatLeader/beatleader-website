@@ -394,10 +394,10 @@ export default () => {
 
   const isScoreDateFresh = (player, refreshInterval = null, key = 'scoresLastUpdated') => getScoresFreshnessDate(player, refreshInterval, key) > new Date();
 
-  const getPlayerScoresPage = async (playerId, type = 'recent', page = 1) => {
+  const getPlayerScoresPage = async (playerId, type = 'scoresaber/recent', page = 1) => {
     if (page < 1) return null;
 
-    const key = type === 'top' ? 'pp' : 'timeSet';
+    const key = type === 'scoresaber/top' ? 'pp' : 'timeSet';
     const playerScores = (await getPlayerScores(playerId));
 
     if (!playerScores || !playerScores.length) return null;
@@ -411,11 +411,11 @@ export default () => {
     return playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE);
   }
 
-  const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) =>
-    (type === 'top' ? topScoresApiClient : recentScoresApiClient)
+  const fetchScoresPage = async (playerId, type = 'scoresaber/recent', page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) =>
+    (type === 'scoresaber/top' ? topScoresApiClient : recentScoresApiClient)
       .getProcessed({...options, playerId, page, priority});
 
-  const fetchScoresPageAndUpdateIfNeeded = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
+  const fetchScoresPageAndUpdateIfNeeded = async (playerId, type = 'scoresaber/recent', page = 1, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
     const fetchedScoresResponse = await fetchScoresPage(playerId, type, page, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
     if (topScoresApiClient.isResponseCached(fetchedScoresResponse)) return topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
@@ -545,11 +545,11 @@ export default () => {
     }
   }
 
-  const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+  const fetchScoresPageOrGetFromCache = async (player, type = 'scoresaber/recent', page = 1, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (!player || !player.playerId) return null;
 
-    if ('beatsavior' === type) return getPlayerBeatSaviorScoresPage(player.playerId, page)
-    else if ('accsaber' === type) return getPlayerAccSaberScoresPage(player.playerId, page)
+    if ('beatsavior/recent' === type) return getPlayerBeatSaviorScoresPage(player.playerId, page)
+    else if ('accsaber/recent' === type) return getPlayerAccSaberScoresPage(player.playerId, page)
 
     const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')
 

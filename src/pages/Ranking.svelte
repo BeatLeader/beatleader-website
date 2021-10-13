@@ -33,7 +33,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/recent/1`)
+    navigate(`/u/${playerId}/scoresaber/recent/1`)
   }
 
   function scrollToTop() {

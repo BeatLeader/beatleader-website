@@ -6,7 +6,7 @@ import createPlayerService from '../../services/scoresaber/player'
 import {addToDate, MINUTE} from '../../utils/date'
 import {writable} from 'svelte/store'
 
-export default (playerId = null, scoresType = 'recent', scoresPage = 1, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, scoresType = 'scoresaber/recent', scoresPage = 1, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentScoresType = scoresType;
   let currentScoresPage = scoresPage;

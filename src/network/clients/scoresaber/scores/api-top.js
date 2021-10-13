@@ -8,5 +8,5 @@ const client = createClient(get, process);
 
 export default {
   ...client,
-  type: 'top'
+  type: 'scoresaber/top'
 };

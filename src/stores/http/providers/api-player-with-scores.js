@@ -17,7 +17,7 @@ export default () => {
   let firstFetch = true;
 
   return {
-    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, scoresType = 'recent', scoresPage = 1, signal = null, force = false} = {}) => {
+    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, scoresType = 'scoresaber/recent', scoresPage = 1, signal = null, force = false} = {}) => {
       const refreshInterval = firstFetch ? 5 * SECOND : MINUTE;
       firstFetch = false;
 
@@ -28,10 +28,10 @@ export default () => {
       return {...player, scores, scoresType, scoresPage}
     },
 
-    getCached: async ({playerId, scoresType = 'recent', scoresPage = 1} = {}) => {
+    getCached: async ({playerId, scoresType = 'scoresaber/recent', scoresPage = 1} = {}) => {
       const [player, scores] = await Promise.all([
         playerService.get(playerId),
-        'beatsavior' === scoresType
+        'beatsavior/recent' === scoresType
           ? scoresService.getPlayerBeatSaviorScoresPage(playerId, scoresPage)
           : scoresService.getPlayerScoresPage(playerId, scoresType, scoresPage)
       ]);

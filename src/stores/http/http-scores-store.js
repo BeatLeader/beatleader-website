@@ -12,7 +12,7 @@ import {opt} from '../../utils/js'
 import createApiScoresProvider from './providers/api-scores'
 import produce, {applyPatches} from 'immer'
 
-export default (playerId = null, type = 'recent', page = 1, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, type = 'scoresaber/recent', page = 1, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentType = type;
   let currentPage = page ? page : 1;
@@ -82,7 +82,7 @@ export default (playerId = null, type = 'recent', page = 1, initialState = null,
     }
 
     for (const scoreRow of newState) {
-      if (currentType !== 'accsaber') {
+      if (currentType !== 'accsaber/recent') {
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))

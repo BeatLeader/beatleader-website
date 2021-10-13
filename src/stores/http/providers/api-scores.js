@@ -27,15 +27,15 @@ export default () => {
   });
 
   return {
-    async getProcessed({playerId, type = 'recent', page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) {
+    async getProcessed({playerId, type = 'scoresaber/recent', page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) {
       if (!player || player.playerId !== playerId)
         player = await playerService.fetchPlayerOrGetFromCache(playerId, MINUTE, priority, signal);
 
       return scoresService.fetchScoresPageOrGetFromCache(player, type, page, MINUTE, priority, signal, force);
     },
 
-    async getCached({playerId, type = 'recent', page = 1} = {}) {
-      return 'beatsavior' === type
+    async getCached({playerId, type = 'scoresaber/recent', page = 1} = {}) {
+      return 'beatsavior/recent' === type
         ? scoresService.getPlayerBeatSaviorScoresPage(playerId, page)
         : scoresService.getPlayerScoresPage(playerId, type, page);
     },

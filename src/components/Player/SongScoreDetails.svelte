@@ -14,8 +14,8 @@
   export let showAccSaberLeaderboard = false;
 
   const switcherOptions = [];
-  switcherOptions.push({id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'});
-  if (showAccSaberLeaderboard) switcherOptions.push({id: 'accsaber', label: 'Leaderboard', icon: '<div class="accsaber-icon"></div>'})
+  switcherOptions.push({id: 'beatsavior/recent', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>'});
+  if (showAccSaberLeaderboard) switcherOptions.push({id: 'accsaber/recent', label: 'Leaderboard', icon: '<div class="accsaber-icon"></div>'})
   if (!noSsLeaderboard) switcherOptions.push({id: 'leaderboard', label: 'Leaderboard', iconFa: 'fas fa-cubes'})
 
   let selectedOption = switcherOptions[0];
@@ -24,7 +24,7 @@
   function getAvailableOptions(songScore) {
     if (!songScore) return null;
 
-    const options = switcherOptions.filter(o => o.id !== 'beatsavior' || songScore.beatSavior);
+    const options = switcherOptions.filter(o => o.id !== 'beatsavior/recent' || songScore.beatSavior);
 
     if (!options.includes(selectedOption)) {
       selectedOption = options.length ? options[0] : null;
@@ -43,7 +43,7 @@
       return;
     }
 
-    inBuiltLeaderboardPage = Math.floor((rank - 1) / (type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE)) + 1;
+    inBuiltLeaderboardPage = Math.floor((rank - 1) / (type === 'accsaber/recent' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE)) + 1;
   }
 
   function onInBuiltLeaderboardPageChanged(event) {
@@ -71,13 +71,13 @@
     {/if}
 
     <div class="tab">
-      {#if selectedOption && selectedOption.id === 'beatsavior'}
+      {#if selectedOption && selectedOption.id === 'beatsavior/recent'}
         <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} noHistory={noBeatSaviorHistory}/>
       {/if}
 
-      {#if selectedOption && selectedOption.id === 'accsaber'}
+      {#if selectedOption && selectedOption.id === 'accsaber/recent'}
         <LeaderboardPage leaderboardId={leaderboard.leaderboardId}
-                         type="accsaber"
+                         type="accsaber/recent"
                          page={inBuiltLeaderboardPage}
                          scrollOffset={176}
                          dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}

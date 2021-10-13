@@ -66,7 +66,7 @@
     <PlayerStats {name} playerInfo={player ? player.playerInfo : null} skeleton={!name && isLoading} centered={true} />
 
     {#if player}
-      <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/recent`)}/>
+      <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/scoresaber/recent/1`)}/>
       <div class="another-search"><a on:click={() => {name = DEFAULT_NAME; playerId = null; player = null;}}>
         Another search
       </a></div>

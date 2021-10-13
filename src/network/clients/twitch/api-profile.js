@@ -13,6 +13,5 @@ const get = async ({accessToken, login, priority = queue.PRIORITY.FG_HIGH, ...qu
 const client = createClient(get, process);
 
 export default {
-  ...client,
-  type: 'top',
+  ...client
 }

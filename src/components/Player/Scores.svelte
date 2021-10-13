@@ -18,7 +18,7 @@
   const dispatch = createEventDispatcher();
 
   export let playerId = null;
-  export let initialType = 'recent';
+  export let initialType = 'scoresaber/recent';
   export let initialState = null;
   export let initialStateType = null;
   export let initialPage = 1;
@@ -33,7 +33,7 @@
 
   let scoresStore = createScoresStore(
     playerId,
-    ['recent', 'top', 'beatsavior', 'accsaber'].includes(initialType) ? initialType : 'recent',
+    ['scoresaber/recent', 'scoresaber/top', 'beatsavior/recent', 'accsaber/recent'].includes(initialType) ? initialType : 'scoresaber/recent',
     !isNaN(parseInt(initialPage, 10)) ? parseInt(initialPage, 10) : 1,
     initialState,
     initialStateType
@@ -44,10 +44,10 @@
   let pagerTotalScores = numOfScores;
 
   const allScoresTypes = [
-    {id: 'recent', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/recent/1`},
-    {id: 'top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/top/1`},
-    {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/1`},
-    {id: 'accsaber', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/1`},
+    {id: 'scoresaber/recent', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
+    {id: 'scoresaber/top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
+    {id: 'beatsavior/recent', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/recent/1`},
+    {id: 'accsaber/recent', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/recent/1`},
   ];
 
   let scoresTypes = allScoresTypes;
@@ -55,7 +55,7 @@
   function changeParams(newPlayerId, newType, newPage, newInitialState, newInitialStateType) {
     if (!newPlayerId) return null;
 
-    newType = scoresTypes.map(st => st.id).includes(newType) ? newType : 'recent'
+    newType = scoresTypes.map(st => st.id).includes(newType) ? newType : 'scoresaber/recent'
     newPage = parseInt(newPage, 10);
     if (!Number.isFinite(newPage)) newPage = 1;
 
@@ -89,11 +89,11 @@
 
     let newScoresTypes = allScoresTypes;
     if (!await beatSaviorService.isDataForPlayerAvailable(playerId)) {
-      newScoresTypes = newScoresTypes.filter(st => st.id !== 'beatsavior');
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'beatsavior/recent');
     }
 
     if (!withAccSaber) {
-      newScoresTypes = newScoresTypes.filter(st => st.id !== 'accsaber');
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'accsaber/recent');
     }
 
     scoresTypes = newScoresTypes;
@@ -139,14 +139,14 @@
     .sort((a,b) => b.x - a.x)
 
   async function refreshAllPlayerSsRecentScores(playerId, type) {
-    if (!playerId || type !== 'recent') return;
+    if (!playerId || type !== 'scoresaber/recent') return;
 
     playerScoresType = 'time';
     playerScoresByDate = groupScores((await scoresService.getPlayerScores(playerId)).sort((a,b) => b?.timeSet - a?.timeSet))
   }
 
   async function refreshAllPlayerSsTopScores(playerId, type) {
-    if (!playerId || type !== 'top') return;
+    if (!playerId || type !== 'scoresaber/top') return;
 
     playerScoresType = 'linear';
     playerScoresByDate = groupScores(
@@ -158,7 +158,7 @@
   }
 
   async function refreshAllPlayerBeatSaviorScores(playerId, type) {
-    if (!playerId || type !== 'beatsavior') return;
+    if (!playerId || type !== 'beatsavior/recent') return;
 
     playerScoresType = 'time';
     playerScoresByDate = groupScores((await beatSaviorService.getPlayerBeatSaviorData(playerId)).sort((a,b) => b?.timeSet - a?.timeSet))
@@ -219,7 +219,7 @@
   {/if}
 
   {#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
-    <Pager totalItems={pagerTotalScores} itemsPerPage={type === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
+    <Pager totalItems={pagerTotalScores} itemsPerPage={type === 'accsaber/recent' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
            currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
            mode={pagerTotalScores ? 'pages' : 'simple'}
            on:page-changed={onPageChanged}

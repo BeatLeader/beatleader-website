@@ -16,10 +16,10 @@
   import TwitchVideos from '../components/Player/TwitchVideos.svelte'
 
   export let initialPlayerId = null;
-  export let initialScoresType = 'recent';
+  export let initialScoresType = 'scoresaber/recent';
   export let initialScoresPage = 1;
 
-  const SCORES_TYPES = ['recent', 'top', 'beatsavior', 'accsaber']
+  const SCORES_TYPES = ['scoresaber/recent', 'scoresaber/top', 'beatsavior/recent', 'accsaber/recent']
 
   document.body.classList.remove('slim');
 
@@ -31,7 +31,7 @@
 
   let playerStore = createPlayerInfoWithScoresStore(
     initialPlayerId,
-    SCORES_TYPES.includes(initialScoresType) ? initialScoresType : 'recent',
+    SCORES_TYPES.includes(initialScoresType) ? initialScoresType : 'scoresaber/recent',
     !isNaN(parseInt(initialScoresPage, 10)) ? parseInt(initialScoresPage, 10) : 1
   );
 
@@ -41,7 +41,7 @@
   async function changeParams(newPlayerId, newType, newPage) {
     if (!newPlayerId) return;
 
-    newType = SCORES_TYPES.includes(newType) ? newType : 'recent'
+    newType = SCORES_TYPES.includes(newType) ? newType : 'scoresaber/recent'
     newPage = parseInt(newPage, 10);
     if (!Number.isFinite(newPage)) newPage = 1;
 
@@ -66,7 +66,7 @@
     let newType = opt(event, 'detail', currentType);
     if (!newType) return;
 
-    newType = SCORES_TYPES.includes(newType) ? newType : 'recent';
+    newType = SCORES_TYPES.includes(newType) ? newType : 'scoresaber/recent';
 
     navigate(`/u/${currentPlayerId}/${newType}/1`);
   }
