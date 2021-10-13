@@ -16,10 +16,7 @@
   import TwitchVideos from '../components/Player/TwitchVideos.svelte'
 
   export let initialPlayerId = null;
-  export let initialScoresType = 'scoresaber/recent';
-  export let initialScoresPage = 1;
-
-  const SCORES_TYPES = ['scoresaber/recent', 'scoresaber/top', 'beatsavior/recent', 'accsaber/recent']
+  export let initialParams = null;
 
   document.body.classList.remove('slim');
 
@@ -29,11 +26,56 @@
   let accSaberCategories = null;
   const accSaberService = createAccSaberService();
 
-  let playerStore = createPlayerInfoWithScoresStore(
-    initialPlayerId,
-    SCORES_TYPES.includes(initialScoresType) ? initialScoresType : 'scoresaber/recent',
-    !isNaN(parseInt(initialScoresPage, 10)) ? parseInt(initialScoresPage, 10) : 1
-  );
+  // TODO: temp only
+  let initialScoresType = null;
+  let initialScoresPage = 1;
+
+  function processInitialParams(params) {
+    const paramsArr = params ? params.split('/') : ['scoresaber', 'recent', '1'];
+
+    const service = paramsArr[0] ?? 'scoresaber';
+    let serviceFilters = {};
+
+    switch(service) {
+      case 'beatsavior':
+        const bsSort = paramsArr[1] ?? 'recent';
+        serviceFilters = {sort: bsSort}
+        break;
+
+      case 'accsaber':
+        const accType = paramsArr[1] ?? 'overall';
+        const accSort = paramsArr[2] ?? 'recent';
+        let accPage = parseInt(paramsArr[3] ?? null, 10);
+        if (isNaN(accPage)) accPage = 1;
+
+        // TODO: temp only for tests
+        serviceFilters = {type: accType, sort: accType, page: accSort}
+        // serviceFilters = {type: accType, sort: accSort, page: accPage}
+        break;
+
+      case 'scoresaber':
+      default:
+        const ssSort = paramsArr[1] ?? 'recent';
+        let ssPage = parseInt(paramsArr[2] ?? null, 10);
+        if (isNaN(ssPage)) ssPage = 1;
+
+        serviceFilters = {sort: ssSort, page: ssPage}
+        break;
+    }
+
+    // TODO: temp only
+    initialScoresType = `${service}/${serviceFilters?.sort ?? 'recent'}`;
+    initialScoresPage = serviceFilters?.page ?? 1;
+
+    console.log(service, serviceFilters, initialScoresType, initialScoresPage)
+
+    return {service, serviceFilters}
+  }
+
+  processInitialParams(initialParams);
+
+  // TODO: replace with service & serviceFilters
+  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, initialScoresType, initialScoresPage);
 
   const twitchService = createTwitchService();
   let twitchVideos = [];
@@ -41,7 +83,6 @@
   async function changeParams(newPlayerId, newType, newPage) {
     if (!newPlayerId) return;
 
-    newType = SCORES_TYPES.includes(newType) ? newType : 'scoresaber/recent'
     newPage = parseInt(newPage, 10);
     if (!Number.isFinite(newPage)) newPage = 1;
 
@@ -65,8 +106,6 @@
   function onTypeChanged(event) {
     let newType = opt(event, 'detail', currentType);
     if (!newType) return;
-
-    newType = SCORES_TYPES.includes(newType) ? newType : 'scoresaber/recent';
 
     navigate(`/u/${currentPlayerId}/${newType}/1`);
   }
@@ -125,6 +164,7 @@
     }
   })
 
+  $: processInitialParams(initialParams);
   $: changeParams(initialPlayerId, initialScoresType, initialScoresPage)
 
   $: paramsStore = playerStore ? playerStore.params : null;
