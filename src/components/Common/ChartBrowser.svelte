@@ -147,7 +147,7 @@
         },
       );
     } else {
-      chart.data = {datasets: [dataset]}
+      chart.data = {datasets}
       chart.options.scales = {x: xAxis, ...yAxes}
       chart.update()
     }
