@@ -159,7 +159,6 @@
 
   processInitialParams(initialParams);
 
-  // TODO: replace with service & serviceFilters
   let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
 
   const twitchService = createTwitchService();

@@ -129,7 +129,7 @@ export default (playerId = null, service = 'scoresaber', serviceParams = {type: 
     initialStateType
   );
 
-  const fetch = async (serviceParams = currentServiceParams, service = currentService, player = currentPlayerId, force = false) => {
+  const fetch = async (serviceParams = currentServiceParams, service = currentService, playerId = currentPlayerId, force = false) => {
     if (
       (!playerId || playerId === currentPlayerId) &&
       (!service || stringify(service) === stringify(currentService)) &&
