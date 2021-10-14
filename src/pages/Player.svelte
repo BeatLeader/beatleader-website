@@ -4,7 +4,7 @@
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import createTwitchService from '../services/twitch'
-  import {opt} from '../utils/js'
+  import {capitalize, opt} from '../utils/js'
   import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
   import {scrollToTargetAdjusted} from '../utils/browser'
@@ -26,88 +26,177 @@
   let accSaberCategories = null;
   const accSaberService = createAccSaberService();
 
-  // TODO: temp only
-  let initialScoresType = null;
-  let initialScoresPage = 1;
+  const createServiceParamsManager = () => {
+    let currentService = null;
+    let currentServiceParams = {};
 
-  function processInitialParams(params) {
-    const paramsArr = params ? params.split('/') : ['scoresaber', 'recent', '1'];
+    const getAvailableServices = () => ['scoresaber', 'beatsavior', 'accsaber'];
 
-    const service = paramsArr[0] ?? 'scoresaber';
-    let serviceFilters = {};
+    const get = () => ({service: currentService, params: currentServiceParams});
 
-    switch(service) {
-      case 'beatsavior':
-        const bsSort = paramsArr[1] ?? 'recent';
-        serviceFilters = {sort: bsSort}
-        break;
+    const getDefaultParams = service => {
+      switch(service) {
+        case 'beatsavior': return {sort: 'recent', page: 1, filters: {}};
 
-      case 'accsaber':
-        const accType = paramsArr[1] ?? 'overall';
-        const accSort = paramsArr[2] ?? 'recent';
-        let accPage = parseInt(paramsArr[3] ?? null, 10);
-        if (isNaN(accPage)) accPage = 1;
+        case 'accsaber': return {type: 'overall', sort: 'recent', page: 1, filters: {}}
 
-        // TODO: temp only for tests
-        serviceFilters = {type: accType, sort: accType, page: accSort}
-        // serviceFilters = {type: accType, sort: accSort, page: accPage}
-        break;
-
-      case 'scoresaber':
-      default:
-        const ssSort = paramsArr[1] ?? 'recent';
-        let ssPage = parseInt(paramsArr[2] ?? null, 10);
-        if (isNaN(ssPage)) ssPage = 1;
-
-        serviceFilters = {sort: ssSort, page: ssPage}
-        break;
+        case 'scoresaber':
+        default:
+          return {sort: 'recent', page: 1, filters: {}}
+      }
     }
 
-    // TODO: temp only
-    initialScoresType = `${service}/${serviceFilters?.sort ?? 'recent'}`;
-    initialScoresPage = serviceFilters?.page ?? 1;
+    const update = (serviceParams = {}, service = currentService) => {
+      const availableServices = getAvailableServices();
+      if (!availableServices.includes(service)) service = availableServices?.[0] ?? 'scoresaber';
 
-    console.log(service, serviceFilters, initialScoresType, initialScoresPage)
+      const defaultServiceParams = getDefaultParams(service);
 
-    return {service, serviceFilters}
+      if (defaultServiceParams?.page && !Number.isFinite(serviceParams?.page)) {
+        const val = parseInt(serviceParams?.page, 10);
+        serviceParams.page = !isNaN(val) ? val : 1;
+      }
+
+      currentService = service;
+      currentServiceParams = {...defaultServiceParams, ...currentServiceParams, ...serviceParams}
+
+      return get();
+    }
+
+    const set = (serviceParams = {}, service = currentService) => {
+      currentServiceParams = {};
+
+      return update(serviceParams, service)
+    }
+
+    const initFromUrl = (url = null) => {
+      const availableServices = getAvailableServices();
+      const defaultService = availableServices?.[0] ?? 'scoresaber';
+      const paramsArr = url ? url.split('/') : [defaultService];
+
+      const service = paramsArr[0] ?? 'scoresaber';
+      const serviceParamsUrl = paramsArr.slice(1).join('/')
+
+      const serviceDefaultParams = getDefaultParams(service);
+
+      switch(service) {
+        case 'beatsavior':
+          return set(
+            {
+              sort: paramsArr[1] ?? serviceDefaultParams?.sort,
+              page: paramsArr[2] ?? serviceDefaultParams?.page,
+            },
+            service,
+          );
+
+        case 'accsaber':
+          return set(
+            {
+              type: paramsArr[1] ?? serviceDefaultParams?.type,
+              sort: paramsArr[2] ?? serviceDefaultParams?.sort,
+              page: paramsArr[3] ?? serviceDefaultParams?.page,
+            },
+            service,
+          );
+
+        case 'scoresaber':
+        default:
+          return set(
+            {
+              sort: paramsArr[1] ?? serviceDefaultParams?.sort,
+              page: paramsArr[2] ?? serviceDefaultParams?.page,
+            },
+            service,
+          );
+      }
+    }
+
+    const getUrl = (service, params = {}) => {
+      if (!service) return '';
+
+      const serviceDefaultParams = getDefaultParams(service);
+
+      switch(service) {
+        case 'beatsavior': return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.page
+            ?? serviceDefaultParams?.page}`;
+
+        case 'accsaber': return `${service}/${params?.type ?? serviceDefaultParams?.type}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.page ?? serviceDefaultParams?.page}`;
+
+        case 'scoresaber': return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.page
+        ?? serviceDefaultParams?.page}`;
+      }
+    }
+
+    const getCurrentUrl = () => getUrl(currentService, currentServiceParams);
+    const getDefaultUrl = service => getUrl(currentService, {})
+
+    return {
+      getAvailableServices,
+      initFromUrl,
+      getCurrentUrl,
+      getDefaultUrl,
+      get,
+      getService: () => currentService,
+      getParams: () => currentServiceParams,
+      update,
+      set,
+    }
+  }
+
+  let service = null;
+  let serviceParams = {};
+
+  const serviceParamsManager = createServiceParamsManager();
+
+  function processInitialParams(params) {
+    const serviceInfo = serviceParamsManager.initFromUrl(params);
+
+    service = serviceInfo.service;
+    serviceParams = serviceInfo.params;
+
+    return {service, serviceParams}
   }
 
   processInitialParams(initialParams);
 
   // TODO: replace with service & serviceFilters
-  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, initialScoresType, initialScoresPage);
+  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
 
   const twitchService = createTwitchService();
   let twitchVideos = [];
 
-  async function changeParams(newPlayerId, newType, newPage) {
+  async function changeParams(newPlayerId, service, serviceParams) {
     if (!newPlayerId) return;
 
-    newPage = parseInt(newPage, 10);
-    if (!Number.isFinite(newPage)) newPage = 1;
-
     if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
-      playerStore.fetch(newPlayerId, newType, newPage)
+      playerStore.fetch(newPlayerId, service, serviceParams)
     } else {
-      playerStore.setType(newType)
-      playerStore.setPage(newPage);
+      playerStore.setService(service)
+      playerStore.setServiceParams(serviceParams);
     }
   }
 
   function onPageChanged(event) {
-    let newPage = opt(event, 'detail', currentPage);
+    let newPage = event?.detail ?? null;
     if (!newPage) return;
 
     if (!Number.isFinite(newPage)) newPage = 1;
 
-    navigate(`/u/${currentPlayerId}/${currentType}/${newPage}`);
+    serviceParamsManager.update({page: newPage});
+
+    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentUrl()}`);
   }
 
   function onTypeChanged(event) {
-    let newType = opt(event, 'detail', currentType);
+    // TODO:
+    console.log('onTypeChanged'); return;
+
+    const newType = event?.detail ?? null;
     if (!newType) return;
 
-    navigate(`/u/${currentPlayerId}/${newType}/1`);
+    serviceParamsManager.set({}, newType)
+
+    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentUrl()}`);
   }
 
   function scrollToTop() {
@@ -165,18 +254,18 @@
   })
 
   $: processInitialParams(initialParams);
-  $: changeParams(initialPlayerId, initialScoresType, initialScoresPage)
+  $: changeParams(initialPlayerId, service, serviceParams)
 
   $: paramsStore = playerStore ? playerStore.params : null;
 
   $: currentPlayerId = $paramsStore.currentPlayerId;
-  $: currentType = $paramsStore.currentScoresType;
-  $: currentPage = $paramsStore.currentScoresPage;
+  $: currentService = $paramsStore.currentService;
+  $: currentServiceParams = $paramsStore.currentServiceParams;
 
   $: playerIsLoading = playerStore ? playerStore.isLoading : null;
   $: playerError = playerStore ? playerStore.error : null;
   $: skeleton = !$playerStore && $playerIsLoading;
-  $: browserTitle = `${opt($playerStore, 'name', 'Player')} / ${currentType} / ${currentPage} - ${ssrConfig.name}`
+  $: browserTitle = `${$playerStore?.name ?? 'Player'} / ${serviceParamsManager.getCurrentUrl()?.split('/').map(s => capitalize(s)).join(' / ')} - ${ssrConfig.name}`
 
   $: updateTwitchProfile(currentPlayerId);
   $: updateAccSaberPlayerInfo(currentPlayerId);
@@ -193,6 +282,8 @@
 
     scoresPlayerId = currentPlayerId;
   }
+
+  $: console.error(service, serviceParams)
 </script>
 
 <svelte:head>
@@ -214,9 +305,9 @@
       <Scores playerId={scoresPlayerId}
               initialState={scoresState}
               initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
-              initialType={$paramsStore.currentScoresType}
-              initialPage={$paramsStore.currentScoresPage}
-              numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
+              initialService={$paramsStore.currentService}
+              initialServiceParams={$paramsStore.currentServiceParams}
+              numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
               on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
               fixedBrowserTitle={browserTitle}
               withAccSaber={accSaberCategories && accSaberCategories.length && accSaberPlayerInfo && accSaberPlayerInfo.length}

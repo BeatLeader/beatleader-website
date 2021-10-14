@@ -11,15 +11,16 @@ import {debounce} from '../../utils/debounce'
 import {opt} from '../../utils/js'
 import createApiScoresProvider from './providers/api-scores'
 import produce, {applyPatches} from 'immer'
+import stringify from 'json-stable-stringify'
 
-export default (playerId = null, type = 'scoresaber/recent', page = 1, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, service = 'scoresaber', serviceParams = {type: 'recent', page: 1}, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
-  let currentType = type;
-  let currentPage = page ? page : 1;
+  let currentService = service;
+  let currentServiceParams = serviceParams;
 
   let totalScores = null;
 
-  const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentPage}/${currentType}`;
+  const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentService}/${stringify(currentServiceParams)}`;
   const getPatchId = (playerId, scoreRow) => `${playerId}/${opt(scoreRow, 'leaderboard.leaderboardId')}`
 
   let enhancePatches = {};
@@ -35,10 +36,11 @@ export default (playerId = null, type = 'scoresaber/recent', page = 1, initialSt
 
     return state;
   }
+
   const onNewData = ({fetchParams, state, stateType, set}) => {
-    currentPage = opt(fetchParams, 'page', 1);
-    currentType = opt(fetchParams, 'type', null);
     currentPlayerId = opt(fetchParams, 'playerId', null);
+    currentService = fetchParams?.service ?? null;
+    currentServiceParams = fetchParams?.serviceParams ?? null;
 
     if (state && state.scores) {
       state = onBeforeStateChange(state);
@@ -82,7 +84,7 @@ export default (playerId = null, type = 'scoresaber/recent', page = 1, initialSt
     }
 
     for (const scoreRow of newState) {
-      if (currentType !== 'accsaber/recent') {
+      if (currentService !== 'accsaber') {
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
@@ -117,7 +119,7 @@ export default (playerId = null, type = 'scoresaber/recent', page = 1, initialSt
 
   const httpStore = createHttpStore(
     provider,
-    {playerId, type, page},
+    playerId ? {playerId, service, serviceParams} : null,
     initialState,
     {
       onInitialized: onNewData,
@@ -128,27 +130,27 @@ export default (playerId = null, type = 'scoresaber/recent', page = 1, initialSt
     initialStateType
   );
 
-  const fetch = async (page, type = currentType, playerId = currentPlayerId, force = false) => {
+  const fetch = async (serviceParams = currentServiceParams, service = currentService, player = currentPlayerId, force = false) => {
     if (
       (!playerId || playerId === currentPlayerId) &&
-      (!type || type === currentType) &&
-      (!page || page === currentPage) &&
+      (!service || stringify(service) === stringify(currentService)) &&
+      (!serviceParams || stringify(serviceParams) === stringify(currentServiceParams)) &&
       !force
     )
       return false;
 
-    return httpStore.fetch({playerId, type, page}, force, provider, !playerId || playerId !== currentPlayerId || force);
+    return httpStore.fetch({playerId, service, serviceParams}, force, provider, !playerId || playerId !== currentPlayerId || force);
   }
 
-  const refresh = async () => fetch(currentPage, currentType, currentPlayerId, true);
+  const refresh = async () => fetch(currentServiceParams, currentService, currentPlayerId, true);
 
   return {
     ...httpStore,
     fetch,
     refresh,
     getPlayerId: () => currentPlayerId,
-    getPage: () => currentPage,
-    getType: () => currentType,
+    getService: () => currentService,
+    getServiceParams: () => currentServiceParams,
     getTotalScores: () => totalScores,
   }
 }

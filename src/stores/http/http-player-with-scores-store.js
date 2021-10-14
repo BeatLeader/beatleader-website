@@ -1,15 +1,15 @@
+import stringify from 'json-stable-stringify';
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createHttpStore from './http-store';
 import createApiPlayerWithScoresProvider from './providers/api-player-with-scores'
-import {opt} from '../../utils/js'
 import createPlayerService from '../../services/scoresaber/player'
 import {addToDate, MINUTE} from '../../utils/date'
 import {writable} from 'svelte/store'
 
-export default (playerId = null, scoresType = 'scoresaber/recent', scoresPage = 1, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, service = 'scoresaber', serviceParams = {type: 'recent', page: 1}, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
-  let currentScoresType = scoresType;
-  let currentScoresPage = scoresPage;
+  let currentService = service;
+  let currentServiceParams = serviceParams;
 
   const {subscribe: subscribeParams, set: setParams} = writable(null);
 
@@ -19,18 +19,18 @@ export default (playerId = null, scoresType = 'scoresaber/recent', scoresPage = 
   let playerForLastRecentPlay = null;
 
   const onNewData = ({fetchParams}) => {
-    currentPlayerId = opt(fetchParams, 'playerId', null);
-    currentScoresType = opt(fetchParams, 'scoresType', null);
-    currentScoresPage = opt(fetchParams, 'scoresPage', null);
+    currentPlayerId = fetchParams?.playerId ?? null;
+    currentService = fetchParams?.service ?? null;
+    currentServiceParams = fetchParams?.serviceParams ?? null;
 
-    setParams({currentPlayerId, currentScoresType, currentScoresPage})
+    setParams({currentPlayerId, currentService, currentServiceParams})
   }
 
   const provider = createApiPlayerWithScoresProvider();
 
   const httpStore = createHttpStore(
     provider,
-    playerId ? {playerId, scoresType, scoresPage} : null,
+    playerId ? {playerId, service, serviceParams} : null,
     initialState,
     {
       onInitialized: onNewData,
@@ -39,11 +39,11 @@ export default (playerId = null, scoresType = 'scoresaber/recent', scoresPage = 
     initialStateType
   );
 
-  const fetch = async (playerId = currentPlayerId, scoresType = currentScoresType, scoresPage = currentScoresPage, force = false) => {
+  const fetch = async (playerId = currentPlayerId, service = currentService, serviceParams = currentServiceParams, force = false) => {
     if (
       (!playerId || playerId === currentPlayerId) &&
-      (!scoresType || scoresType === currentScoresType) &&
-      (!scoresPage || scoresPage === currentScoresPage) &&
+      (!service || stringify(service) === stringify(currentService)) &&
+      (!serviceParams || stringify(serviceParams) === stringify(currentServiceParams)) &&
       !force
     )
       return false;
@@ -54,10 +54,10 @@ export default (playerId = null, scoresType = 'scoresaber/recent', scoresPage = 
       playerForLastRecentPlay = playerId;
     }
 
-    return httpStore.fetch({playerId, scoresType, scoresPage}, force, provider, !playerId || playerId !== currentPlayerId || force);
+    return httpStore.fetch({playerId, service, serviceParams}, force, provider, !playerId || playerId !== currentPlayerId || force);
   }
 
-  const refresh = async () => fetch(currentPlayerId, currentScoresType, currentScoresPage, true);
+  const refresh = async () => fetch(currentPlayerId, currentService, currentServiceParams, true);
 
   const playerRecentPlayUpdatedUnsubscribe = eventBus.on('player-recent-play-updated', async ({playerId, recentPlay}) => {
     if (!playerId || !currentPlayerId || playerId !== currentPlayerId) return;
@@ -113,15 +113,15 @@ export default (playerId = null, scoresType = 'scoresaber/recent', scoresPage = 
     refresh,
     params: {subscribe: subscribeParams},
     getPlayerId: () => currentPlayerId,
-    getType: () => currentScoresType,
-    setType: type => {
-      currentScoresType = type;
-      setParams({currentPlayerId, currentScoresType, currentScoresPage})
+    getService: () => currentService,
+    setService: type => {
+      currentService = type;
+      setParams({currentPlayerId, currentService, currentServiceParams})
     },
-    getPage: () => currentScoresPage,
-    setPage: page => {
-      currentScoresPage = page
-      setParams({currentPlayerId, currentScoresType, currentScoresPage})
+    getServiceParams: () => currentServiceParams,
+    setServiceParams: page => {
+      currentServiceParams = page
+      setParams({currentPlayerId, currentService, currentServiceParams})
     },
   }
 }

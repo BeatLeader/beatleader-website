@@ -8,6 +8,7 @@ import {addToDate, DAY, formatDate, HOUR, MINUTE, SECOND} from '../utils/date'
 import log from '../utils/logger'
 import {opt} from '../utils/js'
 import makePendingPromisePool from '../utils/pending-promises'
+import {PLAYER_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 15;
 const CACHED_PLAYER_REFRESH_INTERVAL = HOUR * 3;
@@ -65,6 +66,61 @@ export default () => {
     }
 
     return false;
+  }
+
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', page: 1}) => {
+    const sort = serviceParams?.sort ?? 'recent';
+    let page = serviceParams?.page ?? 1;
+    if (page < 1) page = 1;
+
+    const playerScores = await beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId);
+
+    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
+
+    playerScores.sort((a,b) => b.timeSet - a.timeSet);
+
+    const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
+
+    if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
+
+    return {
+      total: playerScores.length,
+      scores: playerScores
+        .slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
+        .map(bs => {
+          const leaderboard = bs.leaderboard;
+          if (!leaderboard.leaderboardId) leaderboard.leaderboardId = bs.beatSaviorId;
+          leaderboard.leaderboardId += Math.random(); // ScoresSvelte needs different keys for each scores row
+
+          const rawScore = opt(bs, 'trackers.scoreTracker.rawScore', 0);
+          const rawRatio = opt(bs, 'trackers.scoreTracker.rawRatio', 0);
+          const maxScore = rawRatio & rawScore ? rawScore / rawRatio : 0;
+
+          return {
+            beatSavior: bs,
+            id: bs.beatSaviorId,
+            leaderboard,
+            leaderboardId: leaderboard.leaderboardId,
+            playerId: bs.playerId,
+            pp: 0,
+            score: {
+              acc: rawRatio * 100,
+              maxScore,
+              mods: opt(bs, 'trackers.scoreTracker.modifiers', null),
+              percentage: opt(bs, 'trackers.scoreTracker.rawRatio', 0) * 100,
+              pp: 0,
+              ppWeighted: 0,
+              rank: null,
+              score: opt(bs, 'trackers.scoreTracker.score', 0),
+              scoreId: bs.beatSaviorId,
+              timeSet: bs.timeSet,
+              unmodifiedScore: rawScore,
+              weight: 0,
+            },
+            timeSet: bs.timeSet,
+          }
+        })
+    };
   }
 
   const updateData = async (playerId, data) => {
@@ -188,6 +244,7 @@ export default () => {
     refresh,
     refreshAll,
     get,
+    getPlayerScoresPage,
     getPlayerBeatSaviorData,
     getPlayerBeatSaviorDataWithScores,
     isDataForPlayerAvailable,

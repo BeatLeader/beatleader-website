@@ -18,10 +18,10 @@
   const dispatch = createEventDispatcher();
 
   export let playerId = null;
-  export let initialType = 'scoresaber/recent';
   export let initialState = null;
   export let initialStateType = null;
-  export let initialPage = 1;
+  export let initialService = 'scoresaber';
+  export let initialServiceParams = {};
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
   export let withAccSaber = false;
@@ -33,8 +33,8 @@
 
   let scoresStore = createScoresStore(
     playerId,
-    ['scoresaber/recent', 'scoresaber/top', 'beatsavior/recent', 'accsaber/recent'].includes(initialType) ? initialType : 'scoresaber/recent',
-    !isNaN(parseInt(initialPage, 10)) ? parseInt(initialPage, 10) : 1,
+    initialService,
+    initialServiceParams,
     initialState,
     initialStateType
   );
@@ -44,35 +44,39 @@
   let pagerTotalScores = numOfScores;
 
   const allScoresTypes = [
-    {id: 'scoresaber/recent', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
+    {id: 'scoresaber', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
     {id: 'scoresaber/top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
-    {id: 'beatsavior/recent', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/recent/1`},
-    {id: 'accsaber/recent', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/recent/1`},
+    {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/recent/1`},
+    {id: 'accsaber', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/recent/1`},
   ];
 
   let scoresTypes = allScoresTypes;
 
-  function changeParams(newPlayerId, newType, newPage, newInitialState, newInitialStateType) {
+  function changeParams(newPlayerId, newService, newServiceParams) {
     if (!newPlayerId) return null;
 
-    newType = scoresTypes.map(st => st.id).includes(newType) ? newType : 'scoresaber/recent'
-    newPage = parseInt(newPage, 10);
-    if (!Number.isFinite(newPage)) newPage = 1;
+    console.log('Scores::changeParams', newPlayerId, newService, newServiceParams)
 
-    scoresStore.fetch(newPage, newType, newPlayerId);
+    newService = scoresTypes.map(st => st.id).includes(newService) ? newService : 'scoresaber'
 
-    return {playerId: newPlayerId, type: newType, page: newPage}
+    scoresStore.fetch(newServiceParams, newService, newPlayerId);
+
+    return {playerId: newPlayerId, service: newService, serviceParams: newServiceParams}
   }
 
   function onPageChanged(event) {
-    if (!opt(event, 'detail.initial', false)) scrollToTop();
-    const page = opt(event, 'detail.page', 0) + 1
+    if (!(event?.detail?.initial ?? false)) scrollToTop();
+
+    const page = (event?.detail?.page ?? 0) + 1
+
     dispatch('page-changed', page);
   }
 
   function onScoreTypeChanged(event) {
+    // TODO
     scrollToTop();
-    const type = opt(event, 'detail.id')
+    const type = event?.detail?.id ?? null;
+
     dispatch('type-changed', type);
   }
 
@@ -89,11 +93,11 @@
 
     let newScoresTypes = allScoresTypes;
     if (!await beatSaviorService.isDataForPlayerAvailable(playerId)) {
-      newScoresTypes = newScoresTypes.filter(st => st.id !== 'beatsavior/recent');
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'beatsavior');
     }
 
     if (!withAccSaber) {
-      newScoresTypes = newScoresTypes.filter(st => st.id !== 'accsaber/recent');
+      newScoresTypes = newScoresTypes.filter(st => st.id !== 'accsaber');
     }
 
     scoresTypes = newScoresTypes;
@@ -138,15 +142,15 @@
     }, [])
     .sort((a,b) => b.x - a.x)
 
-  async function refreshAllPlayerSsRecentScores(playerId, type) {
-    if (!playerId || type !== 'scoresaber/recent') return;
+  async function refreshAllPlayerSsRecentScores(playerId, service, serviceParams) {
+    if (!playerId || service !== 'scoresaber' || serviceParams?.sort !== 'recent') return;
 
     playerScoresType = 'time';
     playerScoresByDate = groupScores((await scoresService.getPlayerScores(playerId)).sort((a,b) => b?.timeSet - a?.timeSet))
   }
 
-  async function refreshAllPlayerSsTopScores(playerId, type) {
-    if (!playerId || type !== 'scoresaber/top') return;
+  async function refreshAllPlayerSsTopScores(playerId, service, serviceParams) {
+    if (!playerId || service !== 'scoresaber' || serviceParams?.sort !== 'top') return;
 
     playerScoresType = 'linear';
     playerScoresByDate = groupScores(
@@ -157,8 +161,8 @@
     )
   }
 
-  async function refreshAllPlayerBeatSaviorScores(playerId, type) {
-    if (!playerId || type !== 'beatsavior/recent') return;
+  async function refreshAllPlayerBeatSaviorScores(playerId, service) {
+    if (!playerId || service !== 'beatsavior') return;
 
     playerScoresType = 'time';
     playerScoresByDate = groupScores((await beatSaviorService.getPlayerBeatSaviorData(playerId)).sort((a,b) => b?.timeSet - a?.timeSet))
@@ -182,12 +186,15 @@
 
   $: updateAvailableScoresTypes(playerId, withAccSaber)
   $: playerId, type, playerScoresByDate = null, playerScoresType = null;
-  $: refreshAllPlayerSsRecentScores(playerId, type)
-  $: refreshAllPlayerSsTopScores(playerId, type)
-  $: refreshAllPlayerBeatSaviorScores(playerId, type)
+  $: refreshAllPlayerSsRecentScores(playerId, currentService, currentServiceParams)
+  $: refreshAllPlayerSsTopScores(playerId, currentService, currentServiceParams)
+  $: refreshAllPlayerBeatSaviorScores(playerId, currentService)
 
-  $: changeParams(playerId, initialType, initialPage, initialState, initialStateType)
-  $: page = $scoresStore && scoresStore && scoresStore.getPage ? scoresStore.getPage() : null;
+  $: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType)
+  $: currentService = $scoresStore && scoresStore ? scoresStore?.getService() : null;
+  $: currentServiceParams = $scoresStore && scoresStore ? scoresStore?.getServiceParams() : null;
+  $: page = currentServiceParams?.page ?? null;
+  // TODO: remove type & replace with currentService
   $: type = $scoresStore && scoresStore && scoresStore.getType ? scoresStore.getType() : null;
   $: totalScores = $scoresStore && scoresStore && scoresStore.getTotalScores ? scoresStore.getTotalScores() : null;
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
@@ -197,8 +204,10 @@
 
   $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === opt($pending, 'type')) : null
 
-  $: scoresStore && scoresStore.fetch(page, type)
+  $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
   $: updateTotalScores(totalScores !== null && totalScores !== undefined ? totalScores : numOfScores)
+
+  $: console.error(currentService, currentServiceParams)
 </script>
 
 <div class="box has-shadow" bind:this={scoresBoxEl}>

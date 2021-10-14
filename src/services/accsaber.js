@@ -22,6 +22,7 @@ import {
 import {PRIORITY} from '../network/queues/http-queue'
 import makePendingPromisePool from '../utils/pending-promises'
 import {getServicePlayerGain} from './utils'
+import {PLAYER_SCORES_PER_PAGE} from '../utils/accsaber/consts'
 
 const REFRESH_INTERVAL = HOUR;
 const SCORES_NETWORK_TTL = MINUTE * 5;
@@ -75,6 +76,32 @@ export default () => {
     if (!options.hasOwnProperty('cacheTtl')) options.cacheTtl = SCORES_NETWORK_TTL;
 
     return accSaberScoresApiClient.getProcessed({...options, playerId, page, priority});
+  }
+
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', page: 1}) => {
+    const sort = serviceParams?.sort ?? 'recent';
+    let page = serviceParams?.page ?? 1;
+    if (page < 1) page = 1;
+
+    let playerScores;
+    try {
+      playerScores = await fetchScoresPage(playerId, page);
+    }
+    catch (err) {
+      return {total: 0, scores: []};
+    }
+
+    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
+
+    const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
+    if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
+
+    return {
+      total: playerScores.length,
+      itemsPerPage: PLAYER_SCORES_PER_PAGE,
+      scores: playerScores
+        .slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
+    }
   }
 
   const fetchPlayerRankHistory = async (playerId, priority = PRIORITY.FG_LOW, {...options} = {}) => {
@@ -352,6 +379,7 @@ export default () => {
     getPlayerGain,
     fetchScoresPage,
     fetchPlayerRankHistory,
+    getPlayerScoresPage,
     refreshCategories,
     refreshRanking,
     refreshAll,

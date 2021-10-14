@@ -1,17 +1,17 @@
 import createPlayerService from '../../../services/scoresaber/player';
-import createScoresService from '../../../services/scoresaber/scores';
+import createScoresFetcher from './utils/scores-fetch'
 import queue from '../../../network/queues/queues'
 import {MINUTE} from '../../../utils/date'
 import eventBus from '../../../utils/broadcast-channel-pubsub'
 
 let playerService = null;
-let scoresService = null;
+let scoresFetcher = null;
 
 export default () => {
   let player;
 
   playerService = createPlayerService();
-  scoresService = createScoresService();
+  scoresFetcher = createScoresFetcher();
 
   const playerProfileChangedUnsubscribe = eventBus.on('player-profile-changed', newPlayer => {
     if (!newPlayer || !player || !newPlayer.playerId !== player.playerId) return;
@@ -27,17 +27,15 @@ export default () => {
   });
 
   return {
-    async getProcessed({playerId, type = 'scoresaber/recent', page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) {
+    async getProcessed({playerId, service = 'scoresaber', serviceParams = {sort: 'recent', page: 1}, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) {
       if (!player || player.playerId !== playerId)
         player = await playerService.fetchPlayerOrGetFromCache(playerId, MINUTE, priority, signal);
 
-      return scoresService.fetchScoresPageOrGetFromCache(player, type, page, MINUTE, priority, signal, force);
+      return scoresFetcher.fetchLiveScores(player, service, serviceParams, {refreshInterval: MINUTE, priority, signal, force});
     },
 
-    async getCached({playerId, type = 'scoresaber/recent', page = 1} = {}) {
-      return 'beatsavior/recent' === type
-        ? scoresService.getPlayerBeatSaviorScoresPage(playerId, page)
-        : scoresService.getPlayerScoresPage(playerId, type, page);
+    async getCached({playerId, service = 'scoresaber', serviceParams = {sort: 'recent', page: 1}} = {}) {
+      return scoresFetcher.fetchCachedScores(playerId, service, serviceParams);
     },
 
     setPlayer(newPlayer) {
@@ -47,6 +45,7 @@ export default () => {
     destroy() {
       playerProfileChangedUnsubscribe();
       playerRecentPlayUpdatedUnsubscribe();
+      // TODO: destroy scoresFetcher & playerService
     }
   }
 }

@@ -1,48 +1,45 @@
 import createPlayerService from '../../../services/scoresaber/player';
-import createScoresService from '../../../services/scoresaber/scores';
-import createBeatSaviorService from '../../../services/beatsavior'
+import createScoresFetcher from './utils/scores-fetch'
 import queue from '../../../network/queues/queues'
 import {MINUTE, SECOND} from '../../../utils/date'
 import {worker} from '../../../utils/worker-wrappers'
 
 let playerService = null;
-let scoresService = null;
-let beatSaviorService = null;
+let scoresFetcher = null;
 
 export default () => {
   playerService = createPlayerService();
-  scoresService = createScoresService();
-  beatSaviorService = createBeatSaviorService();
+  scoresFetcher = createScoresFetcher();
 
   let firstFetch = true;
 
   return {
-    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, scoresType = 'scoresaber/recent', scoresPage = 1, signal = null, force = false} = {}) => {
+    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, service = 'scoresaber', serviceParams = {sort: 'recent', page: 1}, signal = null, force = false} = {}) => {
       const refreshInterval = firstFetch ? 5 * SECOND : MINUTE;
       firstFetch = false;
 
       const player = await playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force);
 
-      const scores = await scoresService.fetchScoresPageOrGetFromCache(player, scoresType, scoresPage, refreshInterval, priority, signal, force);
+      const scores = await scoresFetcher.fetchLiveScores(player, service, serviceParams, {refreshInterval, priority, signal, force});
 
-      return {...player, scores, scoresType, scoresPage}
+      return {...player, scores, service, serviceParams}
     },
 
-    getCached: async ({playerId, scoresType = 'scoresaber/recent', scoresPage = 1} = {}) => {
+    getCached: async ({playerId, service = 'scoresaber', serviceParams = {sort: 'recent', page: 1}} = {}) => {
       const [player, scores] = await Promise.all([
         playerService.get(playerId),
-        'beatsavior/recent' === scoresType
-          ? scoresService.getPlayerBeatSaviorScoresPage(playerId, scoresPage)
-          : scoresService.getPlayerScoresPage(playerId, scoresType, scoresPage)
+        scoresFetcher.fetchCachedScores(playerId, service, serviceParams)
       ]);
 
       if (!player || !scores) return null;
 
       if (worker) worker.calcPlayerStats(playerId);
 
-      return {...player, scores, scoresType, scoresPage}
+      return {...player, scores, service, serviceParams}
     },
 
-    destroy() {},
+    destroy() {
+      // TODO: destroy scoresFetcher & playerService
+    },
   }
 }
