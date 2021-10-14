@@ -1,6 +1,5 @@
 import {writable} from 'svelte/store'
 import stringify from 'json-stable-stringify';
-import {opt} from '../../utils/js'
 import {SsrNetworkTimeoutError} from '../../network/errors'
 
 const hash = obj => stringify(obj);
@@ -80,7 +79,7 @@ export default (
 
       return true;
     } catch (err) {
-      if ([opt(err, 'name'), opt(err, 'message')].includes('AbortError')) return false;
+      if ([err?.name, err?.message].includes('AbortError')) return false;
 
       try {
         if (err instanceof SsrNetworkTimeoutError && abortController && !abortController.aborted) {

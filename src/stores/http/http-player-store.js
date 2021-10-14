@@ -1,12 +1,11 @@
 import createHttpStore from './http-store';
 import playerApiClient from '../../network/clients/scoresaber/player/api'
-import {opt} from '../../utils/js'
 
 export default (playerId = null, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
 
   const onNewData = ({fetchParams}) => {
-    currentPlayerId = opt(fetchParams, 'playerId', null);
+    currentPlayerId = fetchParams?.playerId ?? null;
   }
 
   const httpStore = createHttpStore(

@@ -8,7 +8,6 @@ import diffEnhancer from './enhancers/scores/diff'
 import twitchEnhancer from './enhancers/scores/twitch'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
 import {debounce} from '../../utils/debounce'
-import {opt} from '../../utils/js'
 import createApiScoresProvider from './providers/api-scores'
 import produce, {applyPatches} from 'immer'
 import stringify from 'json-stable-stringify'
@@ -21,14 +20,14 @@ export default (playerId = null, service = 'scoresaber', serviceParams = {type: 
   let totalScores = null;
 
   const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentService}/${stringify(currentServiceParams)}`;
-  const getPatchId = (playerId, scoreRow) => `${playerId}/${opt(scoreRow, 'leaderboard.leaderboardId')}`
+  const getPatchId = (playerId, scoreRow) => `${playerId}/${scoreRow?.leaderboard?.leaderboardId}`
 
   let enhancePatches = {};
   let currentEnhanceTaskId = null;
 
   const onBeforeStateChange = (state) => {
-    if (state && state.scores) {
-      totalScores = opt(state, 'total', null);
+    if (state?.scores) {
+      totalScores = state?.total ?? null;
       return state.scores;
     }
 
@@ -38,7 +37,7 @@ export default (playerId = null, service = 'scoresaber', serviceParams = {type: 
   }
 
   const onNewData = ({fetchParams, state, stateType, set}) => {
-    currentPlayerId = opt(fetchParams, 'playerId', null);
+    currentPlayerId = fetchParams?.playerId ?? null;
     currentService = fetchParams?.service ?? null;
     currentServiceParams = fetchParams?.serviceParams ?? null;
 

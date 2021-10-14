@@ -1,7 +1,6 @@
 import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps'
 import accEnhancer from './enhancers/scores/acc'
-import {opt} from '../../utils/js'
 import createLeaderboardPageProvider from './providers/page-leaderboard'
 import {writable} from 'svelte/store'
 import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/scoresaber/song'
@@ -17,15 +16,15 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
   const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
 
   const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
-  const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${opt(scoreRow, 'player.playerId')}`
+  const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${scoreRow?.player?.playerId}`
 
   let enhancePatches = {};
   let currentEnhanceTaskId = null;
 
   const onNewData = ({fetchParams, state, set}) => {
-    currentLeaderboardId = opt(fetchParams, 'leaderboardId', null);
-    currentType = opt(fetchParams, 'type', 'global');
-    currentPage = opt(fetchParams, 'page', 1);
+    currentLeaderboardId = fetchParams?.leaderboardId ?? null;
+    currentType = fetchParams?.type ?? 'global';
+    currentPage = fetchParams?.page ?? 1;
 
     if (!state) return;
 
@@ -66,11 +65,11 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
     if (newState.leaderboard)
       beatMapsEnhancer(newState)
         .then(_ => {
-          const versions = opt(newState.leaderboard.beatMaps, 'versions')
+          const versions = newState?.leaderboard?.beatMaps?.versions ?? null
           const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
 
-          const bpm = opt(newState, 'leaderboard.beatMaps.metadata.bpm', null);
-          const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(opt(newState.leaderboard.beatMaps, `versions.${versionsLastIdx}.diffs`), newState.leaderboard.diffInfo);
+          const bpm = newState?.leaderboard?.beatMaps?.metadata?.bpm ?? null;
+          const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(newState?.leaderboard?.beatMaps?.versions?.[versionsLastIdx]?.diffs, newState?.leaderboard?.diffInfo);
           if (!bmStats) return null;
 
           newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
@@ -89,7 +88,7 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
               leaderboard: newState.leaderboard
             }, getPatchId(currentLeaderboardId, scoreRow), draft => accEnhancer(draft))
               .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-              .then(scoreRow => stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, opt(scoreRow, 'player.playerId'), true))
+              .then(scoreRow => stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, scoreRow?.player?.playerId, true))
               )
               .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
           }

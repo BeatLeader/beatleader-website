@@ -1,5 +1,4 @@
 import createHttpStore from './http-store';
-import {opt} from '../../utils/js'
 import createApiRankingProvider from './providers/api-ranking'
 
 export default (type = 'global', page = 1, initialState = null, initialStateType = 'initial') => {
@@ -7,8 +6,8 @@ export default (type = 'global', page = 1, initialState = null, initialStateType
   let currentPage = page ? page : 1;
 
   const onNewData = ({fetchParams}) => {
-    currentType = opt(fetchParams, 'type', 'global');
-    currentPage = opt(fetchParams, 'page', 1);
+    currentType = fetchParams?.type ?? 'global';
+    currentPage = fetchParams?.page ?? 1;
   }
 
   const provider = createApiRankingProvider();
