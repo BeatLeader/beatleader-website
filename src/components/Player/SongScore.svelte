@@ -19,7 +19,7 @@
   export let songScore = null;
   export let fixedBrowserTitle = null;
   export let idx = 0;
-  export let type = null;
+  export let service = null;
   export let withAccSaber = false;
 
   let showDetails = false;
@@ -64,9 +64,9 @@
         <Icons {hash} {twitchUrl} {diffInfo} />
       </div>
 
-    <div class="main" class:beat-savior={type === 'beatsavior/recent'} class:accsaber={type === 'accsaber/recent'}>
+    <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
       <span class="rank">
-        {#if type !== 'beatsavior/recent'}
+        {#if service !== 'beatsavior'}
           <ScoreRank rank={score.rank}
                      countryRank={score.ssplCountryRank}
                      countryRankTotal={null}
@@ -75,17 +75,17 @@
         {/if}
 
         <div class="timeset tablet-and-up">
-          <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={type === 'beatsavior/recent'}/>
+          <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={service === 'beatsavior'}/>
         </div>
       </span>
 
       <span class="timeset mobile-only">
-        <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={type === 'beatsavior/recent'}/>
+        <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={service === 'beatsavior'}/>
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior/recent'].includes(type)}
-                  category={leaderboard?.categoryDisplayName ?? null} {type}
+        <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior'].includes(service)}
+                  category={leaderboard?.categoryDisplayName ?? null} {service}
         />
       </span>
 
@@ -110,11 +110,11 @@
               </span>
             </Badge>
           </span>
-        {:else if type === 'beatsavior/recent' && beatSavior && !opt(beatSavior, 'trackers.winTracker.won', false)}
+        {:else if service === 'beatsavior' && beatSavior && !opt(beatSavior, 'trackers.winTracker.won', false)}
           <span class="pp with-badge">
             <Badge onlyLabel={true} color="white" bgColor="var(--decrease)" label="FAIL" title={failedAt ? `Failed at ${failedAt}` : null} />
           </span>
-        {:else if withAccSaber && type === 'accsaber/recent' && score.ap}
+        {:else if withAccSaber && service === 'accsaber' && score.ap}
           <span class="pp with-badge">
             <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
               <span slot="label">
@@ -302,9 +302,9 @@
     {#if showDetails}
       <div transition:slide>
         <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle}
-                          noSsLeaderboard={['beatsavior/recent', 'accsaber/recent'].includes(type)}
-                          showAccSaberLeaderboard={'accsaber/recent' === type}
-                          noBeatSaviorHistory={type === 'beatsavior/recent'}/>
+                          noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
+                          showAccSaberLeaderboard={'accsaber' === service}
+                          noBeatSaviorHistory={service === 'beatsavior'}/>
       </div>
     {/if}
   </div>

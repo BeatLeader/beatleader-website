@@ -187,14 +187,11 @@
     navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentUrl()}`);
   }
 
-  function onTypeChanged(event) {
-    // TODO:
-    console.log('onTypeChanged'); return;
+  function onServiceChanged(event) {
+    const newService = event?.detail ?? null;
+    if (!newService) return;
 
-    const newType = event?.detail ?? null;
-    if (!newType) return;
-
-    serviceParamsManager.set({}, newType)
+    serviceParamsManager.set({}, newService)
 
     navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentUrl()}`);
   }
@@ -283,7 +280,7 @@
     scoresPlayerId = currentPlayerId;
   }
 
-  $: console.error(service, serviceParams)
+  $: console.error(service, serviceParams);
 </script>
 
 <svelte:head>
@@ -308,7 +305,7 @@
               initialService={$paramsStore.currentService}
               initialServiceParams={$paramsStore.currentServiceParams}
               numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
-              on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
+              on:service-changed={onServiceChanged} on:page-changed={onPageChanged}
               fixedBrowserTitle={browserTitle}
               withAccSaber={accSaberCategories && accSaberCategories.length && accSaberPlayerInfo && accSaberPlayerInfo.length}
       />

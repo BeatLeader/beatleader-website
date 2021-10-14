@@ -44,8 +44,7 @@
   let pagerTotalScores = numOfScores;
 
   const allScoresTypes = [
-    {id: 'scoresaber', label: 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
-    {id: 'scoresaber/top', label: 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
+    {id: 'scoresaber', label: 'Score Saber', icon: '<div class="scoresaber-icon"></div>', url: `/u/${playerId}/scoresaber/recent/1`},
     {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/recent/1`},
     {id: 'accsaber', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/recent/1`},
   ];
@@ -54,8 +53,6 @@
 
   function changeParams(newPlayerId, newService, newServiceParams) {
     if (!newPlayerId) return null;
-
-    console.log('Scores::changeParams', newPlayerId, newService, newServiceParams)
 
     newService = scoresTypes.map(st => st.id).includes(newService) ? newService : 'scoresaber'
 
@@ -72,12 +69,14 @@
     dispatch('page-changed', page);
   }
 
-  function onScoreTypeChanged(event) {
-    // TODO
-    scrollToTop();
-    const type = event?.detail?.id ?? null;
+  function onServiceChanged(event) {
+    if (!event?.detail?.id) return;
 
-    dispatch('type-changed', type);
+    scrollToTop();
+
+    const service = event?.detail?.id ?? null;
+
+    dispatch('service-changed', service);
   }
 
   function scrollToTop() {
@@ -185,7 +184,7 @@
     : `${formatNumber(ticks?.[idx]?.value, 0)}pp`
 
   $: updateAvailableScoresTypes(playerId, withAccSaber)
-  $: playerId, type, playerScoresByDate = null, playerScoresType = null;
+  $: playerId, currentService, currentServiceParams, playerScoresByDate = null, playerScoresType = null;
   $: refreshAllPlayerSsRecentScores(playerId, currentService, currentServiceParams)
   $: refreshAllPlayerSsTopScores(playerId, currentService, currentServiceParams)
   $: refreshAllPlayerBeatSaviorScores(playerId, currentService)
@@ -194,20 +193,16 @@
   $: currentService = $scoresStore && scoresStore ? scoresStore?.getService() : null;
   $: currentServiceParams = $scoresStore && scoresStore ? scoresStore?.getServiceParams() : null;
   $: page = currentServiceParams?.page ?? null;
-  // TODO: remove type & replace with currentService
-  $: type = $scoresStore && scoresStore && scoresStore.getType ? scoresStore.getType() : null;
   $: totalScores = $scoresStore && scoresStore && scoresStore.getTotalScores ? scoresStore.getTotalScores() : null;
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
-  $: scoreType = scoresTypes.find(st => st.id === type);
+  $: serviceObj = scoresTypes.find(st => st.id === currentService);
 
-  $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === opt($pending, 'type')) : null
+  $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === $pending?.service) : null
 
   $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
   $: updateTotalScores(totalScores !== null && totalScores !== undefined ? totalScores : numOfScores)
-
-  $: console.error(currentService, currentServiceParams)
 </script>
 
 <div class="box has-shadow" bind:this={scoresBoxEl}>
@@ -215,12 +210,12 @@
     <div><Error error={$error} /></div>
   {/if}
 
-  <Switcher values={scoresTypes} value={scoreType} on:change={onScoreTypeChanged} loadingValue={loadingScoreType} />
+  <Switcher values={scoresTypes} value={serviceObj} on:change={onServiceChanged} loadingValue={loadingScoreType} />
 
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} {type} {withAccSaber} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} {withAccSaber} />
     {/each}
   </div>
   {:else}
@@ -228,7 +223,7 @@
   {/if}
 
   {#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
-    <Pager totalItems={pagerTotalScores} itemsPerPage={type === 'accsaber/recent' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
+    <Pager totalItems={pagerTotalScores} itemsPerPage={currentService === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
            currentPage={page-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
            mode={pagerTotalScores ? 'pages' : 'simple'}
            on:page-changed={onPageChanged}
