@@ -27,7 +27,12 @@
 
   const serviceParamsManager = createServiceParamsManager(initialPlayerId);
 
-  function processInitialParams(params) {
+  processInitialParams(initialPlayerId, initialParams);
+
+  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
+
+  function processInitialParams(playerId, params) {
+    if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
     const serviceInfo = serviceParamsManager.initFromUrl(params);
 
     service = serviceInfo.service;
@@ -35,10 +40,6 @@
 
     return {service, serviceParams}
   }
-
-  processInitialParams(initialParams);
-
-  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
 
   const twitchService = createTwitchService();
   let twitchVideos = [];
@@ -69,9 +70,31 @@
     const newService = event?.detail ?? null;
     if (!newService) return;
 
-    serviceParamsManager.set({}, newService)
+    if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
+    serviceParamsManager.update({}, newService)
 
     navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+  }
+
+  function onServiceParamsChanged(event) {
+    const newServiceParams = event?.detail ?? null;
+    if (!newServiceParams) return;
+
+    const oldServiceUrlWithoutPage = serviceParamsManager.getCurrentServiceUrlWithoutPage();
+    const oldServiceUrl = serviceParamsManager.getCurrentServiceUrl();
+
+    serviceParamsManager.update(newServiceParams);
+
+    if (serviceParamsManager.getCurrentServiceUrlWithoutPage() !== oldServiceUrlWithoutPage) {
+      serviceParamsManager.clearServiceParams();
+      serviceParamsManager.update(newServiceParams);
+    }
+
+    if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
+      navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+    } else {
+      changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams())
+    }
   }
 
   function scrollToTop() {
@@ -121,7 +144,7 @@
     }
   })
 
-  $: processInitialParams(initialParams);
+  $: processInitialParams(initialPlayerId, initialParams);
   $: changeParams(initialPlayerId, service, serviceParams)
 
   $: paramsStore = playerStore ? playerStore.params : null;
@@ -171,7 +194,8 @@
               initialService={$paramsStore.currentService}
               initialServiceParams={$paramsStore.currentServiceParams}
               numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
-              on:service-changed={onServiceChanged} on:page-changed={onPageChanged}
+              on:service-changed={onServiceChanged} on:service-params-changed={onServiceParamsChanged}
+              on:page-changed={onPageChanged}
               fixedBrowserTitle={browserTitle}
       />
     {/if}

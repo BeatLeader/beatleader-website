@@ -44,6 +44,12 @@
     dispatch('page-changed', page);
   }
 
+  function onServiceParamsChanged(event) {
+    if (!event?.detail) return;
+
+    dispatch('service-params-changed', event.detail)
+  }
+
   function onServiceChanged(event) {
     if (!event?.detail) return;
 
@@ -74,7 +80,10 @@
     <div><Error error={$error} /></div>
   {/if}
 
-  <ScoreServiceSwitcher {playerId} service={currentService} loadingService={$pending?.service} on:change={onServiceChanged} />
+  <ScoreServiceSwitcher {playerId} service={currentService} serviceParams={currentServiceParams}
+                        loadingService={$pending?.service} loadingServiceParams={$pending?.serviceParams}
+                        on:service-change={onServiceChanged} on:service-params-change={onServiceParamsChanged}
+  />
 
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
