@@ -38,7 +38,7 @@ export default () => {
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
   const getCategories = async () => {
-    const categories = await accSaberCategoriesRepository().getAll();
+    const categories = await resolvePromiseOrWaitForPending(`accSaberCategories`, () => accSaberCategoriesRepository().getAll());
 
     const getIdx = category => {
       const idx = CATEGORIES_ORDER.findIndex(v => v === category?.name);
@@ -48,9 +48,11 @@ export default () => {
     return categories.sort((a,b) => getIdx(a) - getIdx(b));
   }
 
-  const getPlayer = async playerId => accSaberPlayersRepository().getAllFromIndex('accsaber-players-playerId', playerId);
+  const getPlayer = async playerId => resolvePromiseOrWaitForPending(`accSaberPlayer/${playerId}`, () => accSaberPlayersRepository().getAllFromIndex('accsaber-players-playerId', playerId));
   const getRanking = async (category = 'overall') => accSaberPlayersRepository().getAllFromIndex('accsaber-players-category', category);
   const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`accSaberPlayerHistory/${playerId}`, () => accSaberPlayersHistoryRepository().getAllFromIndex('accsaber-players-history-playerId', playerId))
+
+  const isDataForPlayerAvailable = async playerId => (await Promise.all([getPlayer(playerId), getCategories()])).every(d => d?.length)
 
   const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => getServicePlayerGain(playerHistory, toAccSaberMidnight, 'accSaberDate', daysAgo, maxDaysAgo);
 
@@ -372,6 +374,7 @@ export default () => {
   }
 
   service = {
+    isDataForPlayerAvailable,
     getPlayer,
     getCategories,
     getRanking,

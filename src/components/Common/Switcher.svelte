@@ -6,7 +6,7 @@
   const dispatch = createEventDispatcher();
 
   export let values;
-  export let value = values && values.length ? values : null;
+  export let value = values && values.length ? values[0] : null;
   export let loadingValue = null;
 
   async function onChange(newValue) {

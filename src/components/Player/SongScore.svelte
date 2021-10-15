@@ -20,7 +20,6 @@
   export let fixedBrowserTitle = null;
   export let idx = 0;
   export let service = null;
-  export let withAccSaber = false;
 
   let showDetails = false;
 
@@ -114,7 +113,7 @@
           <span class="pp with-badge">
             <Badge onlyLabel={true} color="white" bgColor="var(--decrease)" label="FAIL" title={failedAt ? `Failed at ${failedAt}` : null} />
           </span>
-        {:else if withAccSaber && service === 'accsaber' && score.ap}
+        {:else if service === 'accsaber' && score.ap}
           <span class="pp with-badge">
             <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
               <span slot="label">

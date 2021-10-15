@@ -10,10 +10,10 @@
   import Pager from '../Common/Pager.svelte'
   import SongScore from './SongScore.svelte'
   import Error from '../Common/Error.svelte'
-  import Switcher from '../Common/Switcher.svelte'
   import {formatDate, formatDateWithOptions, truncateDate} from '../../utils/date'
   import ChartBrowser from '../Common/ChartBrowser.svelte'
   import {formatNumber, roundToPrecision} from '../../utils/format'
+  import ScoreServiceSwitcher from './ScoreServiceSwitcher.svelte'
 
   const dispatch = createEventDispatcher();
 
@@ -24,7 +24,6 @@
   export let initialServiceParams = {};
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
-  export let withAccSaber = false;
 
   const SS_TOP_CHART_BROWSER_PRECISON = 5;
 
@@ -43,18 +42,8 @@
 
   let pagerTotalScores = numOfScores;
 
-  const allScoresTypes = [
-    {id: 'scoresaber', label: 'Score Saber', icon: '<div class="scoresaber-icon"></div>', url: `/u/${playerId}/scoresaber/recent/1`},
-    {id: 'beatsavior', label: 'Beat Savior', icon: '<div class="beatsavior-icon"></div>', url: `/u/${playerId}/beatsavior/recent/1`},
-    {id: 'accsaber', label: 'AccSaber', icon: '<div class="accsaber-icon"></div>', url: `/u/${playerId}/accsaber/recent/1`},
-  ];
-
-  let scoresTypes = allScoresTypes;
-
   function changeParams(newPlayerId, newService, newServiceParams) {
     if (!newPlayerId) return null;
-
-    newService = scoresTypes.map(st => st.id).includes(newService) ? newService : 'scoresaber'
 
     scoresStore.fetch(newServiceParams, newService, newPlayerId);
 
@@ -70,13 +59,11 @@
   }
 
   function onServiceChanged(event) {
-    if (!event?.detail?.id) return;
+    if (!event?.detail) return;
 
     scrollToTop();
 
-    const service = event?.detail?.id ?? null;
-
-    dispatch('service-changed', service);
+    dispatch('service-changed', event.detail);
   }
 
   function scrollToTop() {
@@ -85,21 +72,6 @@
 
   function updateTotalScores(numOfScores) {
     pagerTotalScores = numOfScores
-  }
-
-  async function updateAvailableScoresTypes(playerId, withAccSaber) {
-    if (!playerId) return;
-
-    let newScoresTypes = allScoresTypes;
-    if (!await beatSaviorService.isDataForPlayerAvailable(playerId)) {
-      newScoresTypes = newScoresTypes.filter(st => st.id !== 'beatsavior');
-    }
-
-    if (!withAccSaber) {
-      newScoresTypes = newScoresTypes.filter(st => st.id !== 'accsaber');
-    }
-
-    scoresTypes = newScoresTypes;
   }
 
   let playerScoresByDate = null;
@@ -183,7 +155,6 @@
     })
     : `${formatNumber(ticks?.[idx]?.value, 0)}pp`
 
-  $: updateAvailableScoresTypes(playerId, withAccSaber)
   $: playerId, currentService, currentServiceParams, playerScoresByDate = null, playerScoresType = null;
   $: refreshAllPlayerSsRecentScores(playerId, currentService, currentServiceParams)
   $: refreshAllPlayerSsTopScores(playerId, currentService, currentServiceParams)
@@ -197,9 +168,6 @@
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
-  $: serviceObj = scoresTypes.find(st => st.id === currentService);
-
-  $: loadingScoreType = $pending ? scoresTypes.find(st => st.id === $pending?.service) : null
 
   $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
   $: updateTotalScores(totalScores !== null && totalScores !== undefined ? totalScores : numOfScores)
@@ -210,12 +178,12 @@
     <div><Error error={$error} /></div>
   {/if}
 
-  <Switcher values={scoresTypes} value={serviceObj} on:change={onServiceChanged} loadingValue={loadingScoreType} />
+  <ScoreServiceSwitcher {playerId} service={currentService} loadingService={$pending?.service} on:change={onServiceChanged} />
 
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} {withAccSaber} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} />
     {/each}
   </div>
   {:else}

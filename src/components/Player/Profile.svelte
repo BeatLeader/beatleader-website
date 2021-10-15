@@ -5,6 +5,7 @@
   import {worker} from '../../utils/worker-wrappers'
   import {opt} from '../../utils/js'
   import createBeatSaviorService from '../../services/beatsavior'
+  import createAccSaberService from '../../services/accsaber'
   import Avatar from './Avatar.svelte'
   import PlayerStats from './PlayerStats.svelte'
   import Icons from './Icons.svelte'
@@ -23,13 +24,14 @@
   export let error = null;
   export let skeleton = false;
   export let twitchVideos = null;
-  export let accSaberPlayerInfo = null;
-  export let accSaberCategories = null;
 
   const pageContainer = getContext('pageContainer');
 
   const beatSaviorService = createBeatSaviorService();
+  const accSaberService = createAccSaberService();
 
+  let accSaberPlayerInfo = null;
+  let accSaberCategories = null;
   let playerGain = null;
 
   let playerStats = null;
@@ -84,6 +86,13 @@
     playerGain = e.detail;
   }
 
+  async function updateAccSaberPlayerInfo(playerId) {
+    if (!playerId) return;
+
+    accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
+    accSaberCategories = await accSaberService.getCategories();
+  }
+
   $: isCached = !!(playerData && playerData.scoresLastUpdated)
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -94,6 +103,7 @@
   $: refreshBeatSaviorState(playerId)
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
   $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)
+  $: updateAccSaberPlayerInfo(playerId);
 
   $: swipeCards = []
     .concat(
