@@ -32,7 +32,6 @@ export default () => {
       case 'beatsavior':
         return beatSaviorService.getPlayerScoresPage(player?.playerId, serviceParams);
       case 'accsaber':
-        // TODO: use other params like in SS scores service
         return accSaberService.getPlayerScoresPage(player?.playerId, serviceParams);
       case 'scoresaber':
       default:

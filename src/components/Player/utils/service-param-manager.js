@@ -12,7 +12,7 @@ export default () => {
         return {sort: 'recent', order: 'desc', page: 1, filters: {}};
 
       case 'accsaber':
-        return {type: 'overall', order: 'desc', sort: 'recent', page: 1, filters: {}}
+        return {type: 'overall', order: 'desc', sort: 'ap', page: 1, filters: {}}
 
       case 'scoresaber':
       default:

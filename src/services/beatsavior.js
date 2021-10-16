@@ -26,12 +26,12 @@ export default () => {
   const playerService = createPlayerService();
   const scoresService = createScoresService();
 
-  const getPlayerBeatSaviorData = async playerId => resolvePromiseOrWaitForPending(`getPlayerBeatSaviorData/${playerId}`, () => beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId));
+  const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, () => beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId));
 
-  const getPlayerBeatSaviorDataWithScores = async playerId => {
+  const getPlayerScoresWithScoreSaber = async playerId => {
     const [beatSaviorData, playerScores] = await Promise.all([
-      getPlayerBeatSaviorData(playerId),
-      resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, () => scoresService.getPlayerScoresAsObject(
+      getPlayerScores(playerId),
+      resolvePromiseOrWaitForPending(`getSsPlayerScores/${playerId}`, () => scoresService.getPlayerScoresAsObject(
         playerId,
         score => score?.leaderboard?.song?.hash?.toLowerCase() ?? null,
         true,
@@ -130,7 +130,7 @@ export default () => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
-    const playerScores = await beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId);
+    const playerScores = await getPlayerScores(playerId);
 
     if (!playerScores || !playerScores.length) return {total: 0, scores: []};
 
@@ -277,7 +277,7 @@ export default () => {
   const get = async (playerId, score) => {
     if (score && score.beatSavior) return score.beatSavior;
 
-    const playerBsData = await getPlayerBeatSaviorData(playerId);
+    const playerBsData = await getPlayerScores(playerId);
     if (!playerBsData || !playerBsData.length) return null;
 
     const bsData = playerBsData.find(bsData => isScoreMatchingBsData(score, bsData, true));
@@ -304,8 +304,8 @@ export default () => {
     refreshAll,
     get,
     getPlayerScoresPage,
-    getPlayerBeatSaviorData,
-    getPlayerBeatSaviorDataWithScores,
+    getPlayerScores,
+    getPlayerScoresWithScoreSaber,
     isDataForPlayerAvailable,
     getScoresHistogramDefinition,
     destroyService,

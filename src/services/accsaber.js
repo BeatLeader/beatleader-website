@@ -9,7 +9,7 @@ import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import accSaberPlayersHistoryRepository from '../db/repository/accsaber-players-history';
 import keyValueRepository from '../db/repository/key-value'
 import createPlayerService from '../services/scoresaber/player';
-import {capitalize} from '../utils/js'
+import {capitalize, convertArrayToObjectByKey} from '../utils/js'
 import log from '../utils/logger'
 import {
   addToDate,
@@ -17,15 +17,17 @@ import {
   formatDate,
   HOUR,
   MINUTE,
-  dateFromString
+  dateFromString, truncateDate,
 } from '../utils/date'
 import {PRIORITY} from '../network/queues/http-queue'
 import makePendingPromisePool from '../utils/pending-promises'
 import {getServicePlayerGain} from './utils'
 import {PLAYER_SCORES_PER_PAGE} from '../utils/accsaber/consts'
+import {roundToPrecision} from '../utils/format'
 
 const REFRESH_INTERVAL = HOUR;
 const SCORES_NETWORK_TTL = MINUTE * 5;
+const HISTOGRAM_AP_PRECISION = 5;
 
 const CATEGORIES_ORDER = ['overall', 'true', 'standard', 'tech'];
 
@@ -77,11 +79,87 @@ export default () => {
     if (!options) options = {};
     if (!options.hasOwnProperty('cacheTtl')) options.cacheTtl = SCORES_NETWORK_TTL;
 
-    return accSaberScoresApiClient.getProcessed({...options, playerId, page, priority});
+    const categoriesByDisplayName = convertArrayToObjectByKey(await getCategories(), 'displayName');
+
+    return (await resolvePromiseOrWaitForPending(`fetchPlayerScores/${playerId}/${page}`, () => accSaberScoresApiClient.getProcessed({...options, playerId, page, priority})))
+      .map(s => ({
+        ...s,
+        leaderboard: {
+          ...s?.leaderboard,
+          category: categoriesByDisplayName[s?.leaderboard?.categoryDisplayName]?.name ?? null,
+        }
+      }))
+  }
+
+  const getScoresHistogramDefinition = (serviceParams = {type: 'overall', sort: 'ap', order: 'desc'}) => {
+    const scoreType = serviceParams?.type ?? 'overall';
+    const sort = serviceParams?.sort ?? 'ap';
+    const order = serviceParams?.order ?? 'desc';
+
+    let round = 2;
+    let precision = 1;
+    let type = 'linear';
+    let valFunc = s => s;
+    let filterFunc = s => scoreType === 'overall' || s?.leaderboard?.category === scoreType;
+    let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
+      ? roundToPrecision(valFunc(s), precision)
+      : truncateDate(valFunc(s), precision);
+    let prefix = '';
+    let prefixLong = '';
+    let suffix = '';
+    let suffixLong = '';
+
+    switch(sort) {
+      case 'ap':
+        valFunc = s => s?.ap;
+        type = 'linear';
+        precision = HISTOGRAM_AP_PRECISION;
+        round = 0;
+        suffix = ' AP';
+        suffixLong = ' AP';
+        break;
+
+      case 'recent':
+        valFunc = s => s?.timeSet;
+        type = 'time';
+        precision = 'day'
+        break;
+
+      case 'acc':
+        valFunc = s => s?.acc;
+        type = 'linear';
+        precision = 0.05;
+        round = 2;
+        suffix = '%';
+        suffixLong = '%';
+        break;
+    }
+
+    return {
+      getValue: valFunc,
+      getRoundedValue: s => roundedValFunc(s, type, precision),
+      filter: filterFunc,
+      sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
+      type,
+      precision,
+      round,
+      prefix,
+      prefixLong,
+      suffix,
+      suffixLong,
+    }
+  }
+
+  const getPlayerScores = async playerId => {
+    try {
+      return fetchScoresPage(playerId, 1);
+    }
+    catch (err) {
+      return [];
+    }
   }
 
   const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
-    const sort = serviceParams?.sort ?? 'recent';
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
@@ -93,7 +171,11 @@ export default () => {
       return {total: 0, scores: []};
     }
 
-    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
+    if (!playerScores?.length) return {total: 0, scores: []};
+
+    const {sort: sortFunc, filter: filterFunc} = getScoresHistogramDefinition(serviceParams);
+
+    playerScores = playerScores.filter(filterFunc).sort(sortFunc)
 
     const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
     if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
@@ -381,7 +463,9 @@ export default () => {
     getPlayerHistory,
     getPlayerGain,
     fetchScoresPage,
+    getScoresHistogramDefinition,
     fetchPlayerRankHistory,
+    getPlayerScores,
     getPlayerScoresPage,
     refreshCategories,
     refreshRanking,

@@ -5,6 +5,7 @@
   import {formatNumber} from '../../utils/format'
   import createScoresService from '../../services/scoresaber/scores'
   import createBeatSaviorService from '../../services/beatsavior'
+  import createAccSaberService from '../../services/accsaber'
   import ChartBrowser from '../Common/ChartBrowser.svelte'
   import Pager from '../Common/Pager.svelte'
 
@@ -17,6 +18,7 @@
 
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
+  const accSaberService = createAccSaberService();
 
   let playerScoresByField = null;
   let playerScoresHistogram = null;
@@ -57,26 +59,32 @@
     }, [])
     .sort((a, b) => b.x - a.x)
 
-  async function refreshAllPlayerSsScores(playerId, service, serviceParams) {
-    if (!playerId || service !== 'scoresaber') return;
+  async function refreshAllPlayerServiceScores(playerId, service, serviceParams) {
+    if (!playerId) return;
 
-    playerScoresHistogram = scoresService.getScoresHistogramDefinition(serviceParams);
+    let serviceObj = null;
+    switch (service) {
+      case 'scoresaber':
+        serviceObj = scoresService;
+        break;
+
+      case 'beatsavior':
+        serviceObj = beatSaviorService;
+        break;
+
+      case 'accsaber':
+        serviceObj = accSaberService;
+        break;
+    }
+
+    if (!serviceObj) return;
+
+    playerScoresHistogram = serviceObj.getScoresHistogramDefinition(serviceParams);
 
     playerScoresByField = groupScores(
-      (await scoresService.getPlayerScores(playerId))
+      (await serviceObj.getPlayerScores(playerId))
         .filter(playerScoresHistogram.filter)
         .sort(playerScoresHistogram.sort),
-      playerScoresHistogram.getRoundedValue
-    );
-  }
-
-  async function refreshAllPlayerBeatSaviorScores(playerId, service, serviceParams) {
-    if (!playerId || service !== 'beatsavior') return;
-
-    playerScoresHistogram = beatSaviorService.getScoresHistogramDefinition(serviceParams);
-
-    playerScoresByField = groupScores(
-      (await beatSaviorService.getPlayerBeatSaviorData(playerId)).sort(playerScoresHistogram.sort),
       playerScoresHistogram.getRoundedValue
     );
   }
@@ -99,8 +107,7 @@
     : `${playerScoresHistogram.prefix}${formatNumber(ticks?.[idx]?.value, playerScoresHistogram.round)}${playerScoresHistogram.suffix}`
 
   $: playerId, service, serviceParams, playerScoresByField = null, playerScoresHistogram = null;
-  $: refreshAllPlayerSsScores(playerId, service, serviceParams)
-  $: refreshAllPlayerBeatSaviorScores(playerId, service, serviceParams)
+  $: refreshAllPlayerServiceScores(playerId, service, serviceParams)
 </script>
 
 <Pager {totalItems} itemsPerPage={service === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}

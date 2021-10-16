@@ -16,6 +16,7 @@
   const accSaberService = createAccSaberService();
 
   let availableServiceNames = ['scoresaber'];
+  let accSaberCategories = null;
 
   const allServices = [
     {
@@ -60,10 +61,19 @@
       label: 'AccSaber',
       icon: '<div class="accsaber-icon"></div>',
       url: `/u/${playerId}/accsaber/recent/1`,
+      switcherComponent: Switcher,
+      switcherValueKey: 'type',
+      onSwitcherChange: event => {
+        if (!event?.detail?.id) return null;
+
+        dispatch('service-params-change', {type: event?.detail?.id})
+      },
     },
   ];
 
   async function updateAvailableServiceNames(playerId) {
+    accSaberCategories = null;
+
     const additionalServices = (await Promise.all([
         beatSaviorService.isDataForPlayerAvailable(playerId).then(r => r ? 'beatsavior' : null),
         accSaberService.isDataForPlayerAvailable(playerId).then(r => r ? 'accsaber' : null),
@@ -71,20 +81,31 @@
     ).filter(s => s);
 
     if (additionalServices?.length) availableServiceNames = ['scoresaber'].concat(additionalServices);
+
+    if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
   }
 
-  function updateAvailableServices(avaiableServiceNames, service, loadingService, serviceParams, loadingServiceParams) {
+  function updateAvailableServices(avaiableServiceNames, service, loadingService, serviceParams, loadingServiceParams, accSaberCategories) {
     return allServices
       .filter(s => availableServiceNames.includes(s?.id))
       .map(s => {
-        if (s?.id !== service || !s?.switcherComponent || !s?.switcherComponentProps) return s;
+        if (s?.id !== service || !s?.switcherComponent) return s;
 
-        s.switcherComponentProps.value = s?.switcherComponentProps?.values?.length
-          ? s.switcherComponentProps.values.find(v => v?.id === serviceParams?.sort)
+        if (service === 'accsaber' && accSaberCategories?.length)
+          s.switcherComponentProps = {
+            values: accSaberCategories.map(c => ({id: c.name, 'label': c.displayName ?? c.name, url: `/u/${playerId}/${service}/${c.name}/recent/1`})),
+          }
+
+        if (!s?.switcherComponentProps) return s;
+
+        const key = s?.switcherValueKey ?? 'sort';
+
+        s.switcherComponentProps.value = s.switcherComponentProps?.values?.length
+          ? s.switcherComponentProps.values.find(v => v?.id === serviceParams?.[key])
           : null;
 
-        s.switcherComponentProps.loadingValue = s?.switcherComponentProps?.values?.length
-          ? s.switcherComponentProps.values.find(v => v?.id === loadingServiceParams?.sort)
+        s.switcherComponentProps.loadingValue = s.switcherComponentProps?.values?.length
+          ? s.switcherComponentProps.values.find(v => v?.id === loadingServiceParams?.[key])
           : null;
 
         return s;
@@ -98,7 +119,7 @@
   }
 
   $: updateAvailableServiceNames(playerId)
-  $: availableServices = updateAvailableServices(availableServiceNames, service, loadingService, serviceParams, loadingServiceParams)
+  $: availableServices = updateAvailableServices(availableServiceNames, service, loadingService, serviceParams, loadingServiceParams, accSaberCategories)
 
   $: serviceObj = availableServices.find(s => s.id === service);
   $: loadingServiceObj = availableServices.find(s => s.id === loadingService)
@@ -108,7 +129,7 @@
   <Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged}
             loadingValue={loadingServiceObj}/>
 
-  {#if serviceObj?.switcherComponent}
+  {#if serviceObj?.switcherComponent && serviceObj?.switcherComponentProps}
     <svelte:component this={serviceObj.switcherComponent} {...serviceObj.switcherComponentProps}
                       on:change={serviceObj.onSwitcherChange ?? null}
     />
