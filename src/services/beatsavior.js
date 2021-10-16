@@ -123,6 +123,7 @@ export default () => {
       prefixLong,
       suffix,
       suffixLong,
+      order
     }
   }
 

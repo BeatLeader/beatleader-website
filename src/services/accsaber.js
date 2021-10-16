@@ -133,6 +133,15 @@ export default () => {
         suffix = '%';
         suffixLong = '%';
         break;
+
+      case 'rank':
+        valFunc = s => s?.score?.rank;
+        type = 'linear';
+        precision = 5;
+        round = 0;
+        prefix = '';
+        prefixLong = '#';
+        break;
     }
 
     return {
@@ -147,6 +156,7 @@ export default () => {
       prefixLong,
       suffix,
       suffixLong,
+      order
     }
   }
 

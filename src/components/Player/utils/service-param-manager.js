@@ -60,6 +60,7 @@ export default () => {
         return update(
           {
             sort: paramsArr[1] ?? serviceDefaultParams?.sort,
+            order: 'desc',
             page: paramsArr[2] ?? serviceDefaultParams?.page,
           },
           service,
@@ -70,6 +71,7 @@ export default () => {
           {
             type: paramsArr[1] ?? serviceDefaultParams?.type,
             sort: paramsArr[2] ?? serviceDefaultParams?.sort,
+            order: (paramsArr[2] ?? serviceDefaultParams?.sort) === 'rank' ? 'asc' : 'desc',
             page: paramsArr[3] ?? serviceDefaultParams?.page,
           },
           service,
@@ -80,6 +82,7 @@ export default () => {
         return update(
           {
             sort: paramsArr[1] ?? serviceDefaultParams?.sort,
+            order: 'desc',
             page: paramsArr[2] ?? serviceDefaultParams?.page,
           },
           service,

@@ -23,41 +23,42 @@
   let playerScoresByField = null;
   let playerScoresHistogram = null;
 
-  const groupScores = (scores, keyFunc = score => truncateDate(score?.timeSet)?.getTime()) => Object.values(
-    scores
-      .reduce((scores, score) => {
-        const key = keyFunc(score);
-        if (key === null || key === undefined) return scores;
+  const groupScores = (scores, keyFunc = score => truncateDate(score?.timeSet)?.getTime(), order = 'desc') =>
+    Object.values(
+      scores
+        .reduce((scores, score) => {
+          const key = keyFunc(score);
+          if (key === null || key === undefined) return scores;
 
-        if (!scores[key]) scores[key] = [];
+          if (!scores[key]) scores[key] = [];
 
-        scores[key].push({key, score});
+          scores[key].push({key, score});
 
-        return scores;
-      }, {}),
-  )
-    .sort((a, b) => b?.[0].key - a?.[0].key)
-    .reduce((cum, values) => {
-      if (!values?.length) return cum;
+          return scores;
+        }, {}),
+    )
+      .sort((a, b) => order === 'asc' ? a?.[0]?.key - b?.[0]?.key : b?.[0].key - a?.[0].key)
+      .reduce((cum, values) => {
+        if (!values?.length) return cum;
 
-      const x = values[0].key;
-      const y = values.length;
+        const x = values[0].key;
+        const y = values.length;
 
-      const prevTotal = cum.length ? cum[cum.length - 1].total : 0;
-      const page = Math.floor(prevTotal / (service === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE));
-      const total = prevTotal + y;
+        const prevTotal = cum.length ? cum[cum.length - 1].total : 0;
+        const page = Math.floor(prevTotal / (service === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE));
+        const total = prevTotal + y;
 
-      cum.push({
-        x,
-        y,
-        firstScore: values[0].score,
-        page,
-        total,
-      })
+        cum.push({
+          x,
+          y,
+          firstScore: values[0].score,
+          page,
+          total,
+        })
 
-      return cum;
-    }, [])
-    .sort((a, b) => b.x - a.x)
+        return cum;
+      }, [])
+      .sort((a, b) => order === 'asc' ? a.x - b. x : b.x - a.x);
 
   async function refreshAllPlayerServiceScores(playerId, service, serviceParams) {
     if (!playerId) return;
@@ -85,7 +86,8 @@
       (await serviceObj.getPlayerScores(playerId))
         .filter(playerScoresHistogram.filter)
         .sort(playerScoresHistogram.sort),
-      playerScoresHistogram.getRoundedValue
+      playerScoresHistogram.getRoundedValue,
+      playerScoresHistogram.order
     );
   }
 
@@ -118,7 +120,7 @@
 
 {#if playerScoresByField?.length}
   <section class="scores-date-browse">
-    <ChartBrowser data={playerScoresByField} type={playerScoresHistogram?.type}
+    <ChartBrowser data={playerScoresByField} type={playerScoresHistogram?.type} order={playerScoresHistogram?.order ?? 'desc'}
                   tooltipTitleFunc={chartBrowserTooltipTitle}
                   tooltipLabelFunc={chartBrowserTooltipLabel}
                   tickFormatFunc={chartBrowserTickFormat}
