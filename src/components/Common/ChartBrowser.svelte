@@ -11,6 +11,7 @@
   export let tooltipLabelFunc = null;
   export let tickFormatFunc = null;
   export let type = 'time';
+  export let order = 'desc';
   export let displayType = 'bar';
   export let linearRoundPrecision = 2;
   export let height = "80px";
@@ -44,7 +45,7 @@
       grid: {
         display: false,
       },
-      reverse: true,
+      reverse: order !== 'asc',
       ticks: {
         major: {
           enabled: true,

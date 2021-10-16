@@ -2,27 +2,27 @@ import {db} from '../../db/db'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import {configStore} from '../../stores/config'
 import createPlayerService from './player';
-import createAccSaberService from '../accsaber'
 import createRankedsStore from '../../stores/scoresaber/rankeds'
 import {PRIORITY} from '../../network/queues/http-queue'
 import recentScoresApiClient from '../../network/clients/scoresaber/scores/api-recent'
 import topScoresApiClient from '../../network/clients/scoresaber/scores/api-top'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
-import beatSaviorRepository from '../../db/repository/beat-savior';
 import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
 import log from '../../utils/logger'
-import {addToDate, formatDate, HOUR, MINUTE, SECOND} from '../../utils/date'
+import {addToDate, formatDate, HOUR, MINUTE, SECOND, truncateDate} from '../../utils/date'
 import {opt} from '../../utils/js'
 import scores from '../../db/repository/scores'
 import {SsrHttpNotFoundError} from '../../network/errors'
 import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
-import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
 import makePendingPromisePool from '../../utils/pending-promises'
+import {roundToPrecision} from '../../utils/format'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
 const RANK_AND_PP_REFRESH_INTERVAL = HOUR;
+
+const HISTOGRAM_PP_PRECISON = 5;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -33,7 +33,6 @@ export default () => {
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
   let playerService = createPlayerService();
-  const accSaberService = createAccSaberService();
 
   let allRankeds = {};
   let mainPlayerId = null;
@@ -394,10 +393,12 @@ export default () => {
 
   const isScoreDateFresh = (player, refreshInterval = null, key = 'scoresLastUpdated') => getScoresFreshnessDate(player, refreshInterval, key) > new Date();
 
-  const getPlayerScoresPage = async (playerId, type = 'recent', page = 1) => {
-    if (page < 1) return null;
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
+    const sort = serviceParams?.sort ?? 'recent';
+    let page = serviceParams?.page ?? 1;
+    if (page < 1) page = 1;
 
-    const key = type === 'top' ? 'pp' : 'timeSet';
+    const key = sort === 'top' ? 'pp' : 'timeSet';
     const playerScores = (await getPlayerScores(playerId));
 
     if (!playerScores || !playerScores.length) return null;
@@ -411,12 +412,63 @@ export default () => {
     return playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE);
   }
 
-  const fetchScoresPage = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) =>
-    (type === 'top' ? topScoresApiClient : recentScoresApiClient)
-      .getProcessed({...options, playerId, page, priority});
+  const getScoresHistogramDefinition = (serviceParams = {sort: 'recent', order: 'desc'}) => {
+    const sort = serviceParams?.sort ?? 'recent';
+    const order = serviceParams?.order ?? 'desc';
 
-  const fetchScoresPageAndUpdateIfNeeded = async (playerId, type = 'recent', page = 1, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
-    const fetchedScoresResponse = await fetchScoresPage(playerId, type, page, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
+    let round = 2;
+    let precision = HISTOGRAM_PP_PRECISON;
+    let type = 'linear';
+    let valFunc = s => s;
+    let filterFunc = s => s;
+    let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
+      ? roundToPrecision(valFunc(s), precision)
+      : truncateDate(valFunc(s), precision);
+    let prefix = '';
+    let prefixLong = '';
+    let suffix = '';
+    let suffixLong = '';
+
+    switch(sort) {
+      case 'recent':
+        valFunc = s => s?.timeSet;
+        type = 'time';
+        precision = 'day'
+        break;
+
+      case 'top':
+        valFunc = s => s?.pp ?? 0;
+        filterFunc = s => Number.isFinite(s?.pp) && s.pp > 0
+        type = 'linear';
+        precision = HISTOGRAM_PP_PRECISON;
+        round = 0;
+        suffix = 'pp';
+        suffixLong = 'pp';
+        break;
+    }
+
+    return {
+      getValue: valFunc,
+      getRoundedValue: s => roundedValFunc(s, type, precision),
+      filter: filterFunc,
+      sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
+      type,
+      precision,
+      round,
+      prefix,
+      prefixLong,
+      suffix,
+      suffixLong,
+      order
+    }
+  }
+
+  const fetchScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
+    ((serviceParams?.sort ?? 'recent') === 'top' ? topScoresApiClient : recentScoresApiClient)
+      .getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority});
+
+  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
+    const fetchedScoresResponse = await fetchScoresPage(playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
     if (topScoresApiClient.isResponseCached(fetchedScoresResponse)) return topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
     const fetchedScores = topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
@@ -468,92 +520,12 @@ export default () => {
     return fetchedScores;
   }
 
-  const getPlayerBeatSaviorScoresPage = async (playerId, page = 1) => {
-    if (page < 1) page = 1;
-
-    const playerScores = await beatSaviorRepository().getAllFromIndex('beat-savior-playerId', playerId);
-
-    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
-
-    playerScores.sort((a,b) => b.timeSet - a.timeSet);
-
-    const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
-
-    if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
-
-    return {
-      total: playerScores.length,
-      scores: playerScores
-        .slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
-        .map(bs => {
-          const leaderboard = bs.leaderboard;
-          if (!leaderboard.leaderboardId) leaderboard.leaderboardId = bs.beatSaviorId;
-          leaderboard.leaderboardId += Math.random(); // ScoresSvelte needs different keys for each scores row
-
-          const rawScore = opt(bs, 'trackers.scoreTracker.rawScore', 0);
-          const rawRatio = opt(bs, 'trackers.scoreTracker.rawRatio', 0);
-          const maxScore = rawRatio & rawScore ? rawScore / rawRatio : 0;
-
-          return {
-            beatSavior: bs,
-            id: bs.beatSaviorId,
-            leaderboard,
-            leaderboardId: leaderboard.leaderboardId,
-            playerId: bs.playerId,
-            pp: 0,
-            score: {
-              acc: rawRatio * 100,
-              maxScore,
-              mods: opt(bs, 'trackers.scoreTracker.modifiers', null),
-              percentage: opt(bs, 'trackers.scoreTracker.rawRatio', 0) * 100,
-              pp: 0,
-              ppWeighted: 0,
-              rank: null,
-              score: opt(bs, 'trackers.scoreTracker.score', 0),
-              scoreId: bs.beatSaviorId,
-              timeSet: bs.timeSet,
-              unmodifiedScore: rawScore,
-              weight: 0,
-            },
-            timeSet: bs.timeSet,
-          }
-        })
-    };
-  }
-
-  const getPlayerAccSaberScoresPage = async (playerId, page = 1) => {
-    if (page < 1) page = 1;
-
-    let playerScores;
-    try {
-      playerScores = await accSaberService.fetchScoresPage(playerId, page);
-    }
-    catch (err) {
-      return {total: 0, scores: []};
-    }
-
-    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
-
-    const startIdx = (page - 1) * ACCSABER_PLAYER_SCORES_PER_PAGE;
-    if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
-
-    return {
-      total: playerScores.length,
-      itemsPerPage: ACCSABER_PLAYER_SCORES_PER_PAGE,
-      scores: playerScores
-        .slice(startIdx, startIdx + ACCSABER_PLAYER_SCORES_PER_PAGE)
-    }
-  }
-
-  const fetchScoresPageOrGetFromCache = async (player, type = 'recent', page = 1, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'recent', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (!player || !player.playerId) return null;
-
-    if ('beatsavior' === type) return getPlayerBeatSaviorScoresPage(player.playerId, page)
-    else if ('accsaber' === type) return getPlayerAccSaberScoresPage(player.playerId, page)
 
     const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')
 
-    const scoresPage = await getPlayerScoresPage(player.playerId, type, page);
+    const scoresPage = await getPlayerScoresPage(player.playerId, serviceParams);
 
     // force fetch from time to time even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
     const shouldPageBeRefetched = scoresPage && scoresPage.reduce((shouldRefresh, score) => {
@@ -571,7 +543,7 @@ export default () => {
       !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
       !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
     )
-      return fetchScoresPageAndUpdateIfNeeded(player.playerId, type, page, priority, signal, canUseBrowserCache && !shouldPageBeRefetched, refreshInterval);
+      return fetchScoresPageAndUpdateIfNeeded(player.playerId, serviceParams, priority, signal, canUseBrowserCache && !shouldPageBeRefetched, refreshInterval);
 
     return scoresPage;
   }
@@ -688,7 +660,6 @@ export default () => {
     getPlayerScores,
     getPlayerScoresAsObject,
     getPlayerScoresPage,
-    getPlayerBeatSaviorScoresPage,
     getPlayerSongScore,
     getPlayerRankedScores,
     update: updateScore,
@@ -696,6 +667,7 @@ export default () => {
     areScoresFresh: isScoreDateFresh,
     fetchScoresPage,
     fetchScoresPageOrGetFromCache,
+    getScoresHistogramDefinition,
     refresh,
     refreshAll,
     updateRankAndPpFromTheQueue,

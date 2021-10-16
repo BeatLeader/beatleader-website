@@ -5,7 +5,6 @@
   import {fade, fly} from 'svelte/transition'
   import createRankingStore from '../stores/http/http-ranking-store'
   import {opt} from '../utils/js'
-  import eventBus from '../utils/broadcast-channel-pubsub'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
   import Value from '../components/Common/Value.svelte'
@@ -33,7 +32,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/recent/1`)
+    navigate(`/u/${playerId}/scoresaber/recent/1`)
   }
 
   function scrollToTop() {

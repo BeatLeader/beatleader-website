@@ -4,11 +4,11 @@
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import createTwitchService from '../services/twitch'
-  import {opt} from '../utils/js'
+  import {capitalize, opt} from '../utils/js'
   import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
   import {scrollToTargetAdjusted} from '../utils/browser'
-  import createAccSaberService from '../services/accsaber'
+  import createServiceParamsManager from '../components/Player/utils/service-param-manager'
   import eventBus from '../utils/broadcast-channel-pubsub'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
@@ -16,59 +16,85 @@
   import TwitchVideos from '../components/Player/TwitchVideos.svelte'
 
   export let initialPlayerId = null;
-  export let initialScoresType = 'recent';
-  export let initialScoresPage = 1;
-
-  const SCORES_TYPES = ['recent', 'top', 'beatsavior', 'accsaber']
+  export let initialParams = null;
 
   document.body.classList.remove('slim');
 
   let playerEl = null;
 
-  let accSaberPlayerInfo = null;
-  let accSaberCategories = null;
-  const accSaberService = createAccSaberService();
+  let service = null;
+  let serviceParams = {};
 
-  let playerStore = createPlayerInfoWithScoresStore(
-    initialPlayerId,
-    SCORES_TYPES.includes(initialScoresType) ? initialScoresType : 'recent',
-    !isNaN(parseInt(initialScoresPage, 10)) ? parseInt(initialScoresPage, 10) : 1
-  );
+  const serviceParamsManager = createServiceParamsManager(initialPlayerId);
+
+  processInitialParams(initialPlayerId, initialParams);
+
+  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
+
+  function processInitialParams(playerId, params) {
+    if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
+    const serviceInfo = serviceParamsManager.initFromUrl(params);
+
+    service = serviceInfo.service;
+    serviceParams = serviceInfo.params;
+
+    return {service, serviceParams}
+  }
 
   const twitchService = createTwitchService();
   let twitchVideos = [];
 
-  async function changeParams(newPlayerId, newType, newPage) {
+  async function changeParams(newPlayerId, service, serviceParams) {
     if (!newPlayerId) return;
 
-    newType = SCORES_TYPES.includes(newType) ? newType : 'recent'
-    newPage = parseInt(newPage, 10);
-    if (!Number.isFinite(newPage)) newPage = 1;
-
     if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
-      playerStore.fetch(newPlayerId, newType, newPage)
+      playerStore.fetch(newPlayerId, service, serviceParams)
     } else {
-      playerStore.setType(newType)
-      playerStore.setPage(newPage);
+      playerStore.setService(service)
+      playerStore.setServiceParams(serviceParams);
     }
   }
 
   function onPageChanged(event) {
-    let newPage = opt(event, 'detail', currentPage);
+    let newPage = event?.detail ?? null;
     if (!newPage) return;
 
     if (!Number.isFinite(newPage)) newPage = 1;
 
-    navigate(`/u/${currentPlayerId}/${currentType}/${newPage}`);
+    serviceParamsManager.update({page: newPage});
+
+    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
   }
 
-  function onTypeChanged(event) {
-    let newType = opt(event, 'detail', currentType);
-    if (!newType) return;
+  function onServiceChanged(event) {
+    const newService = event?.detail ?? null;
+    if (!newService) return;
 
-    newType = SCORES_TYPES.includes(newType) ? newType : 'recent';
+    if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
+    serviceParamsManager.update({}, newService)
 
-    navigate(`/u/${currentPlayerId}/${newType}/1`);
+    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+  }
+
+  function onServiceParamsChanged(event) {
+    const newServiceParams = event?.detail ?? null;
+    if (!newServiceParams) return;
+
+    const oldServiceUrlWithoutPage = serviceParamsManager.getCurrentServiceUrlWithoutPage();
+    const oldServiceUrl = serviceParamsManager.getCurrentServiceUrl();
+
+    serviceParamsManager.update(newServiceParams);
+
+    if (serviceParamsManager.getCurrentServiceUrlWithoutPage() !== oldServiceUrlWithoutPage) {
+      serviceParamsManager.clearServiceParams();
+      serviceParamsManager.update(newServiceParams);
+    }
+
+    if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
+      navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+    } else {
+      changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams())
+    }
   }
 
   function scrollToTop() {
@@ -80,13 +106,6 @@
 
     const twitchProfile = await twitchService.refresh(playerId);
     twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
-  }
-
-  async function updateAccSaberPlayerInfo(playerId) {
-    if (!playerId) return;
-
-    accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
-    accSaberCategories = await accSaberService.getCategories();
   }
 
   onMount(async () => {
@@ -125,21 +144,21 @@
     }
   })
 
-  $: changeParams(initialPlayerId, initialScoresType, initialScoresPage)
+  $: processInitialParams(initialPlayerId, initialParams);
+  $: changeParams(initialPlayerId, service, serviceParams)
 
   $: paramsStore = playerStore ? playerStore.params : null;
 
   $: currentPlayerId = $paramsStore.currentPlayerId;
-  $: currentType = $paramsStore.currentScoresType;
-  $: currentPage = $paramsStore.currentScoresPage;
+  $: currentService = $paramsStore.currentService;
+  $: currentServiceParams = $paramsStore.currentServiceParams;
 
   $: playerIsLoading = playerStore ? playerStore.isLoading : null;
   $: playerError = playerStore ? playerStore.error : null;
   $: skeleton = !$playerStore && $playerIsLoading;
-  $: browserTitle = `${opt($playerStore, 'name', 'Player')} / ${currentType} / ${currentPage} - ${ssrConfig.name}`
+  $: browserTitle = `${$playerStore?.name ?? 'Player'} / ${serviceParamsManager.getCurrentServiceUrl()?.split('/').map(s => capitalize(s)).join(' / ')} - ${ssrConfig.name}`
 
   $: updateTwitchProfile(currentPlayerId);
-  $: updateAccSaberPlayerInfo(currentPlayerId);
 
   let scoresPlayerId = null;
   let scoresState = null;
@@ -166,20 +185,18 @@
       <p class="error">Player not found.</p>
     </div>
   {:else}
-    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos}
-             {accSaberCategories} {accSaberPlayerInfo}
-    />
+    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos} />
 
     {#if scoresPlayerId}
       <Scores playerId={scoresPlayerId}
               initialState={scoresState}
               initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
-              initialType={$paramsStore.currentScoresType}
-              initialPage={$paramsStore.currentScoresPage}
-              numOfScores={opt($playerStore, 'scoreStats.totalPlayCount', null)}
-              on:type-changed={onTypeChanged} on:page-changed={onPageChanged}
+              initialService={$paramsStore.currentService}
+              initialServiceParams={$paramsStore.currentServiceParams}
+              numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
+              on:service-changed={onServiceChanged} on:service-params-changed={onServiceParamsChanged}
+              on:page-changed={onPageChanged}
               fixedBrowserTitle={browserTitle}
-              withAccSaber={accSaberCategories && accSaberCategories.length && accSaberPlayerInfo && accSaberPlayerInfo.length}
       />
     {/if}
   {/if}

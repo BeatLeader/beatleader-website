@@ -6,7 +6,4 @@ const get = async ({playerId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...qu
 
 const client = createClient(get, process);
 
-export default {
-  ...client,
-  type: 'top'
-};
+export default client;

@@ -31,19 +31,8 @@
 
   <main bind:this={mainEl}>
     <div class="ssr-page-container">
-      <Route path="/u/:initialPlayerId/*initialScoresType" let:params>
-        <PlayerPage initialPlayerId={params.initialPlayerId}
-                    initialScoresType={
-                      params.initialScoresType && params.initialScoresType.indexOf('/') > 0
-                        ? params.initialScoresType.substr(0, params.initialScoresType.indexOf('/'))
-                        : params.initialScoresType
-                    }
-                    initialScoresPage={
-                      params.initialScoresType && params.initialScoresType.indexOf('/') > 0
-                        ? params.initialScoresType.substr(params.initialScoresType.indexOf('/') + 1)
-                        : 1
-                    }
-        />
+      <Route path="/u/:initialPlayerId/*initialParams" let:params>
+        <PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams}/>
       </Route>
       <Route path="/privacy" component="{PrivacyPage}" />
       <Route path="/credits" component="{CreditsPage}" />

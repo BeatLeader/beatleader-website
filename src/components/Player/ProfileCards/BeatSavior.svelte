@@ -32,7 +32,7 @@
   async function refreshBeatSaviorScores(playerId) {
     if (!playerId) return;
 
-    beatSaviorData = (await beatSaviorService.getPlayerBeatSaviorDataWithScores(playerId))
+    beatSaviorData = (await beatSaviorService.getPlayerScoresWithScoreSaber(playerId))
       ?.filter(bsData => bsData?.trackers?.winTracker?.won ?? false);
 
     playerScoresAreAvailable = beatSaviorData?.some(s => !!s.ssScore)

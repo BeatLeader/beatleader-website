@@ -32,7 +32,4 @@ const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions
 
 const client = createClient(get, process);
 
-export default {
-  ...client,
-  type: 'top',
-}
+export default client;
