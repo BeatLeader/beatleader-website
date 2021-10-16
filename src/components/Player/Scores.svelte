@@ -96,7 +96,7 @@
   {/if}
 
   {#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
-    <ScoresPager {playerId} service={currentService} serviceSort={currentServiceParams?.sort}
+    <ScoresPager {playerId} service={currentService} serviceParams={currentServiceParams}
                  totalItems={pagerTotalScores} currentPage={page-1}
                  loadingPage={$pending?.serviceParams?.page ? $pending.serviceParams.page - 1 : null}
                  on:page-changed={onPageChanged}

@@ -6,7 +6,7 @@
 
   export let playerId = null;
   export let service = 'scoresaber';
-  export let serviceParams = {sort: 'recent'}
+  export let serviceParams = {sort: 'recent', order: 'desc'}
   export let loadingService = null;
   export let loadingServiceParams = null;
 
@@ -41,6 +41,19 @@
       label: 'Beat Savior',
       icon: '<div class="beatsavior-icon"></div>',
       url: `/u/${playerId}/beatsavior/recent/1`,
+      switcherComponent: Switcher,
+      switcherComponentProps: {
+        values: [
+          {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatsavior/recent/1`},
+          {id: 'acc', 'label': 'Acc', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatsavior/acc/1`},
+          {id: 'mistakes', 'label': 'Mistakes', iconFa: 'fa fa-times', url: `/u/${playerId}/beatsavior/mistake/1`},
+        ],
+      },
+      onSwitcherChange: event => {
+        if (!event?.detail?.id) return null;
+
+        dispatch('service-params-change', {sort: event?.detail?.id})
+      },
     },
     {
       id: 'accsaber',

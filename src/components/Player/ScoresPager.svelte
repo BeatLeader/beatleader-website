@@ -2,7 +2,7 @@
   import {formatDate, formatDateWithOptions, truncateDate} from '../../utils/date'
   import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
   import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
-  import {formatNumber, roundToPrecision} from '../../utils/format'
+  import {formatNumber} from '../../utils/format'
   import createScoresService from '../../services/scoresaber/scores'
   import createBeatSaviorService from '../../services/beatsavior'
   import ChartBrowser from '../Common/ChartBrowser.svelte'
@@ -10,18 +10,16 @@
 
   export let playerId = null;
   export let service = null;
-  export let serviceSort = null;
+  export let serviceParams = null;
   export let totalItems = null;
   export let currentPage = 0;
   export let loadingPage = null;
-
-  const SS_TOP_CHART_BROWSER_PRECISON = 5;
 
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
 
   let playerScoresByField = null;
-  let playerScoresType = null;
+  let playerScoresHistogram = null;
 
   const groupScores = (scores, keyFunc = score => truncateDate(score?.timeSet)?.getTime()) => Object.values(
     scores
@@ -59,52 +57,50 @@
     }, [])
     .sort((a, b) => b.x - a.x)
 
-  async function refreshAllPlayerSsRecentScores(playerId, service, serviceSort) {
-    if (!playerId || service !== 'scoresaber' || serviceSort !== 'recent') return;
+  async function refreshAllPlayerSsScores(playerId, service, serviceParams) {
+    if (!playerId || service !== 'scoresaber') return;
 
-    playerScoresType = 'time';
-    playerScoresByField = groupScores((await scoresService.getPlayerScores(playerId)).sort((a, b) => b?.timeSet - a?.timeSet))
-  }
+    playerScoresHistogram = scoresService.getScoresHistogramDefinition(serviceParams);
 
-  async function refreshAllPlayerSsTopScores(playerId, service, serviceSort) {
-    if (!playerId || service !== 'scoresaber' || serviceSort !== 'top') return;
-
-    playerScoresType = 'linear';
     playerScoresByField = groupScores(
       (await scoresService.getPlayerScores(playerId))
-        .filter(s => Number.isFinite(s?.pp) && s.pp > 0)
-        .sort((a, b) => b?.pp - a?.pp),
-      score => roundToPrecision(score?.pp, SS_TOP_CHART_BROWSER_PRECISON),
-    )
+        .filter(playerScoresHistogram.filter)
+        .sort(playerScoresHistogram.sort),
+      playerScoresHistogram.getRoundedValue
+    );
   }
 
-  async function refreshAllPlayerBeatSaviorScores(playerId, service) {
+  async function refreshAllPlayerBeatSaviorScores(playerId, service, serviceParams) {
     if (!playerId || service !== 'beatsavior') return;
 
-    playerScoresType = 'time';
-    playerScoresByField = groupScores((await beatSaviorService.getPlayerBeatSaviorData(playerId)).sort((a, b) => b?.timeSet - a?.timeSet))
+    playerScoresHistogram = beatSaviorService.getScoresHistogramDefinition(serviceParams);
+
+    playerScoresByField = groupScores(
+      (await beatSaviorService.getPlayerBeatSaviorData(playerId)).sort(playerScoresHistogram.sort),
+      playerScoresHistogram.getRoundedValue
+    );
   }
 
-  const chartBrowserTooltipTitle = ctx => playerScoresType === 'time'
-    ? formatDate(new Date(ctx?.raw?.x), 'long', null)
-    : `${formatNumber(ctx?.raw?.x, 0)} - ${formatNumber(ctx?.raw?.x + SS_TOP_CHART_BROWSER_PRECISON, 0)}pp`;
+  const chartBrowserTooltipTitle = ctx => playerScoresHistogram?.type === 'time'
+    ? formatDate(new Date(ctx?.raw?.x), 'long', ['hour', 'minute'].includes(playerScoresHistogram?.precision) ? 'short' : null)
+    : `${playerScoresHistogram.prefixLong ?? playerScoresHistogram.prefix}${formatNumber(ctx?.raw?.x, playerScoresHistogram.round)}${playerScoresHistogram.precision !== 1 ? ` - ${formatNumber(ctx?.raw?.x + playerScoresHistogram.precision, playerScoresHistogram.round)}` : ''}${playerScoresHistogram.suffixLong ?? playerScoresHistogram.suffix}`;
 
   const chartBrowserTooltipLabel = ctx => (ctx?.raw?.page ?? null) !== null
     ? [`${formatNumber(ctx?.raw?.y, 0)} score(s)`, '', `Click to go to page ${ctx.raw.page + 1}`]
     : null;
 
-  const chartBrowserTickFormat = (val, idx, ticks) => playerScoresType === 'time'
+  const chartBrowserTickFormat = (val, idx, ticks) => playerScoresHistogram?.type === 'time'
     ? formatDateWithOptions(new Date(ticks?.[idx]?.value), {
       localeMatcher: 'best fit',
-      year: '2-digit',
-      month: 'short',
+      year: ['year'].includes(playerScoresHistogram?.precision) ? 'numeric' : '2-digit',
+      month: ['month', 'day', 'hour', 'minute'].includes(playerScoresHistogram?.precision) ? 'short' : undefined,
+      day: ['hour', 'minute'].includes(playerScoresHistogram?.precision) ? 'numeric' : undefined,
     })
-    : `${formatNumber(ticks?.[idx]?.value, 0)}pp`
+    : `${playerScoresHistogram.prefix}${formatNumber(ticks?.[idx]?.value, playerScoresHistogram.round)}${playerScoresHistogram.suffix}`
 
-  $: playerId, service, serviceSort, playerScoresByField = null, playerScoresType = null;
-  $: refreshAllPlayerSsRecentScores(playerId, service, serviceSort)
-  $: refreshAllPlayerSsTopScores(playerId, service, serviceSort)
-  $: refreshAllPlayerBeatSaviorScores(playerId, service)
+  $: playerId, service, serviceParams, playerScoresByField = null, playerScoresHistogram = null;
+  $: refreshAllPlayerSsScores(playerId, service, serviceParams)
+  $: refreshAllPlayerBeatSaviorScores(playerId, service, serviceParams)
 </script>
 
 <Pager {totalItems} itemsPerPage={service === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
@@ -115,7 +111,7 @@
 
 {#if playerScoresByField?.length}
   <section class="scores-date-browse">
-    <ChartBrowser data={playerScoresByField} type={playerScoresType}
+    <ChartBrowser data={playerScoresByField} type={playerScoresHistogram?.type}
                   tooltipTitleFunc={chartBrowserTooltipTitle}
                   tooltipLabelFunc={chartBrowserTooltipLabel}
                   tickFormatFunc={chartBrowserTickFormat}

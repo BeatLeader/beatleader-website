@@ -80,7 +80,7 @@ export default () => {
     return accSaberScoresApiClient.getProcessed({...options, playerId, page, priority});
   }
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', page: 1}) => {
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
     const sort = serviceParams?.sort ?? 'recent';
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;

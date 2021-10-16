@@ -4,11 +4,12 @@ import createScoresService from './scoresaber/scores'
 import beatSaviorApiClient from '../network/clients/beatsavior/api';
 import beatSaviorRepository from '../db/repository/beat-savior'
 import beatSaviorPlayersRepository from '../db/repository/beat-savior-players'
-import {addToDate, DAY, formatDate, HOUR, MINUTE, SECOND} from '../utils/date'
+import {addToDate, DAY, formatDate, formatDateWithOptions, HOUR, MINUTE, SECOND, truncateDate} from '../utils/date'
 import log from '../utils/logger'
 import {opt} from '../utils/js'
 import makePendingPromisePool from '../utils/pending-promises'
 import {PLAYER_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
+import {formatNumber, roundToPrecision} from '../utils/format'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 15;
 const CACHED_PLAYER_REFRESH_INTERVAL = HOUR * 3;
@@ -68,8 +69,64 @@ export default () => {
     return false;
   }
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', page: 1}) => {
+  const getScoresHistogramDefinition = (serviceParams = {sort: 'recent', order: 'desc'}) => {
     const sort = serviceParams?.sort ?? 'recent';
+    const order = serviceParams?.order ?? 'desc';
+
+    let round = 2;
+    let precision = 1;
+    let type = 'linear';
+    let valFunc = s => s;
+    let filterFunc = s => s;
+    let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
+      ? roundToPrecision(valFunc(s), precision)
+      : truncateDate(valFunc(s), precision);
+    let prefix = '';
+    let prefixLong = '';
+    let suffix = '';
+    let suffixLong = '';
+
+    switch(sort) {
+      case 'recent':
+        valFunc = s => s?.timeSet;
+        type = 'time';
+        precision = 'day'
+        break;
+
+      case 'acc':
+        valFunc = s => (s?.trackers?.scoreTracker?.rawRatio ?? 0) * 100;
+        type = 'linear';
+        precision = 0.25;
+        round = 2;
+        suffix = '%';
+        suffixLong = '%';
+        break;
+
+      case 'mistakes':
+        valFunc = s => (s?.stats?.miss ?? 0) + (s?.stats?.wallHit ?? 0) + (s?.stats?.bombHit ?? 0);
+        type = 'linear';
+        precision = 1;
+        round = 0;
+        suffixLong = ' mistake(s)';
+        break;
+    }
+
+    return {
+      getValue: valFunc,
+      getRoundedValue: s => roundedValFunc(s, type, precision),
+      filter: filterFunc,
+      sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
+      type,
+      precision,
+      round,
+      prefix,
+      prefixLong,
+      suffix,
+      suffixLong,
+    }
+  }
+
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
@@ -77,7 +134,9 @@ export default () => {
 
     if (!playerScores || !playerScores.length) return {total: 0, scores: []};
 
-    playerScores.sort((a,b) => b.timeSet - a.timeSet);
+    const {sort: sortFunc} = getScoresHistogramDefinition(serviceParams);
+
+    playerScores.sort(sortFunc);
 
     const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
 
@@ -248,6 +307,7 @@ export default () => {
     getPlayerBeatSaviorData,
     getPlayerBeatSaviorDataWithScores,
     isDataForPlayerAvailable,
+    getScoresHistogramDefinition,
     destroyService,
   }
 

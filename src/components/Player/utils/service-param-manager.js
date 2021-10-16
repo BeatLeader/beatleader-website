@@ -9,14 +9,14 @@ export default () => {
   const getDefaultParams = service => {
     switch (service) {
       case 'beatsavior':
-        return {sort: 'recent', page: 1, filters: {}};
+        return {sort: 'recent', order: 'desc', page: 1, filters: {}};
 
       case 'accsaber':
-        return {type: 'overall', sort: 'recent', page: 1, filters: {}}
+        return {type: 'overall', order: 'desc', sort: 'recent', page: 1, filters: {}}
 
       case 'scoresaber':
       default:
-        return {sort: 'recent', page: 1, filters: {}}
+        return {sort: 'recent', order: 'desc', page: 1, filters: {}}
     }
   }
 
