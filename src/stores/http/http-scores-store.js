@@ -31,7 +31,7 @@ export default (playerId = null, service = 'scoresaber', serviceParams = {type: 
       return state.scores;
     }
 
-    totalScores = null;
+    totalScores = state !== null ? null : 0;
 
     return state;
   }

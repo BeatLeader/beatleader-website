@@ -63,10 +63,10 @@
   }
 
   $: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType)
-  $: currentService = $scoresStore && scoresStore ? scoresStore?.getService() : null;
-  $: currentServiceParams = $scoresStore && scoresStore ? scoresStore?.getServiceParams() : null;
+  $: currentService = ((scoresStore) => scoresStore ? scoresStore?.getService() : null)(scoresStore, $scoresStore);
+  $: currentServiceParams = ((scoresStore) => scoresStore ? scoresStore?.getServiceParams() : null)(scoresStore, $scoresStore);
   $: page = currentServiceParams?.page ?? null;
-  $: totalScores = $scoresStore && scoresStore && scoresStore.getTotalScores ? scoresStore.getTotalScores() : null;
+  $: totalScores = ((scoresStore) => scoresStore && scoresStore.getTotalScores ? scoresStore.getTotalScores() : null)(scoresStore, $scoresStore);
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;

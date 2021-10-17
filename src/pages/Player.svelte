@@ -33,6 +33,7 @@
 
   function processInitialParams(playerId, params) {
     if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
+
     const serviceInfo = serviceParamsManager.initFromUrl(params);
 
     service = serviceInfo.service;
@@ -71,6 +72,7 @@
     if (!newService) return;
 
     if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
+
     serviceParamsManager.update({}, newService)
 
     navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
@@ -80,15 +82,9 @@
     const newServiceParams = event?.detail ?? null;
     if (!newServiceParams) return;
 
-    const oldServiceUrlWithoutPage = serviceParamsManager.getCurrentServiceUrlWithoutPage();
     const oldServiceUrl = serviceParamsManager.getCurrentServiceUrl();
 
     serviceParamsManager.update(newServiceParams);
-
-    if (serviceParamsManager.getCurrentServiceUrlWithoutPage() !== oldServiceUrlWithoutPage) {
-      serviceParamsManager.clearServiceParams();
-      serviceParamsManager.update(newServiceParams);
-    }
 
     if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
       navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);

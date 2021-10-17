@@ -1,8 +1,12 @@
 <script>
   import {createEventDispatcher} from 'svelte'
+  import createScoresService from '../../services/scoresaber/scores'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import Switcher from '../Common/Switcher.svelte'
+  import ScoreServiceFilters from './ScoreServiceFilters.svelte'
+  import TextFilter from './ScoreFilters/TextFilter.svelte'
+  import SelectFilter from './ScoreFilters/SelectFilter.svelte'
 
   export let playerId = null;
   export let service = 'scoresaber';
@@ -12,6 +16,7 @@
 
   const dispatch = createEventDispatcher();
 
+  const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
   const accSaberService = createAccSaberService();
 
@@ -75,6 +80,7 @@
     accSaberCategories = null;
 
     const additionalServices = (await Promise.all([
+        scoresService.isDataForPlayerAvailable(playerId).then(r => r ? 'scoresaber-cached' : null),
         beatSaviorService.isDataForPlayerAvailable(playerId).then(r => r ? 'beatsavior' : null),
         accSaberService.isDataForPlayerAvailable(playerId).then(r => r ? 'accsaber' : null),
       ])
@@ -91,10 +97,90 @@
       .map(s => {
         if (s?.id !== service || !s?.switcherComponent) return s;
 
-        if (service === 'accsaber' && accSaberCategories?.length)
-          s.switcherComponentProps = {
-            values: accSaberCategories.map(c => ({id: c.name, 'label': c.displayName ?? c.name, url: `/u/${playerId}/${service}/${c.name}/recent/1`})),
-          }
+        switch (service) {
+          case 'scoresaber':
+            if (availableServiceNames.includes('scoresaber-cached')) {
+              console.error('TODO: SCORESABER add sort by acc/rank/stars to switcherComponentProps')
+
+              s.filters = [
+                {
+                  component: TextFilter,
+                  props: {
+                    id: 'search',
+                    iconFa: 'fa fa-search',
+                    title: 'Search by song/artist/mapper name',
+                    placeholder: 'Enter song name...'
+                  }
+                },
+                {
+                  component: SelectFilter,
+                  props: {
+                    id: 'songType',
+                    iconFa: 'fa fa-cubes',
+                    title: 'Filter by map type',
+                    values: [
+                      {id: null, name: 'All'},
+                      {id: 'ranked', name: 'Ranked only'},
+                      {id: 'unranked', name: 'Unranked only'},
+                    ]
+                  }
+                },
+                {
+                  component: SelectFilter,
+                  props: {
+                    id: 'diff',
+                    iconFa: 'fa fa-chart-line',
+                    title: 'Filter by map difficulty',
+                    values: [
+                      {id: null, name: 'All'},
+                      {id: 'easy', name: 'Easy'},
+                      {id: 'normal', name: 'Normal'},
+                      {id: 'hard', name: 'Hard'},
+                      {id: 'expert', name: 'Expert'},
+                      {id: 'expertplus', name: 'Expert+'},
+                    ]
+                  }
+                }
+              ];
+            }
+            break;
+
+          case 'beatsavior':
+            s.filters = [
+              {
+                component: TextFilter,
+                props: {
+                  id: 'search',
+                  iconFa: 'fa fa-search',
+                  title: 'Search by song/artist/mapper name',
+                }
+              }
+            ];
+            break;
+
+          case 'accsaber':
+            s.filters = [
+              {
+                component: TextFilter,
+                props: {
+                  id: 'search',
+                  iconFa: 'fa fa-search',
+                  title: 'Search by song/artist/mapper name',
+                }
+              }
+            ];
+
+            if (accSaberCategories?.length)
+              s.switcherComponentProps = {
+                values: accSaberCategories.map(c => ({
+                  id: c.name,
+                  'label': c.displayName ?? c.name,
+                  url: `/u/${playerId}/${service}/${c.name}/recent/1`,
+                })),
+              }
+            break;
+        }
+
 
         if (!s?.switcherComponentProps) return s;
 
@@ -118,6 +204,20 @@
     dispatch('service-change', event.detail.id)
   }
 
+  function onFiltersChanged(event) {
+    const newFilters = event?.detail ?? {}
+
+    const {sort, order, ...filters} = newFilters;
+
+    const changesToPush = {
+      ...(sort? {sort} : null),
+      ...(order? {order} : null),
+      ...(filters ? {filters} : {filters: {}})
+    }
+
+    dispatch('service-params-change', changesToPush)
+  }
+
   $: updateAvailableServiceNames(playerId)
   $: availableServices = updateAvailableServices(availableServiceNames, service, loadingService, serviceParams, loadingServiceParams, accSaberCategories)
 
@@ -136,7 +236,9 @@
   {/if}
 
   {#if serviceObj?.filters}
-    <span>TODO: service filters</span>
+    {#key `${playerId}${service}`}
+      <ScoreServiceFilters filters={serviceObj.filters} on:change={onFiltersChanged}/>
+    {/key}
   {/if}
 </nav>
 
