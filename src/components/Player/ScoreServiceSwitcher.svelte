@@ -162,7 +162,7 @@
         switch (service) {
           case 'scoresaber':
             if (availableServiceNames.includes('scoresaber-cached')) {
-              console.error('TODO: SCORESABER add sort by acc/rank/stars to switcherComponentProps')
+              console.error('TODO: SCORESABER add sort by acc/rank/stars to switcherComponentProps');
 
               serviceDef.filters = [...commonFilters]
                 .concat([
@@ -274,11 +274,16 @@
     nav {
         display: flex;
         justify-content: space-evenly;
-        align-items: center;
+        align-items: flex-start;
         flex-wrap: wrap;
     }
 
     nav :global(> *) {
         margin-bottom: 1rem;
+        margin-right: .75rem;
+    }
+
+    nav :global(> *:last-child) {
+        margin-right: 0;
     }
 </style>
