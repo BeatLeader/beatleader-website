@@ -92,6 +92,34 @@
   }
 
   function updateAvailableServices(avaiableServiceNames, service, loadingService, serviceParams, loadingServiceParams, accSaberCategories) {
+    const commonFilters = [
+      {
+        component: TextFilter,
+        props: {
+          id: 'search',
+          iconFa: 'fa fa-search',
+          title: 'Search by song/artist/mapper name',
+          placeholder: 'Enter song name...'
+        }
+      },
+      {
+        component: SelectFilter,
+        props: {
+          id: 'diff',
+          iconFa: 'fa fa-chart-line',
+          title: 'Filter by map difficulty',
+          values: [
+            {id: null, name: 'All'},
+            {id: 'easy', name: 'Easy'},
+            {id: 'normal', name: 'Normal'},
+            {id: 'hard', name: 'Hard'},
+            {id: 'expert', name: 'Expert'},
+            {id: 'expertplus', name: 'Expert+'},
+          ]
+        }
+      }
+    ];
+
     return allServices
       .filter(s => availableServiceNames.includes(s?.id))
       .map(s => {
@@ -102,16 +130,7 @@
             if (availableServiceNames.includes('scoresaber-cached')) {
               console.error('TODO: SCORESABER add sort by acc/rank/stars to switcherComponentProps')
 
-              s.filters = [
-                {
-                  component: TextFilter,
-                  props: {
-                    id: 'search',
-                    iconFa: 'fa fa-search',
-                    title: 'Search by song/artist/mapper name',
-                    placeholder: 'Enter song name...'
-                  }
-                },
+              s.filters = [...commonFilters].concat([
                 {
                   component: SelectFilter,
                   props: {
@@ -124,52 +143,16 @@
                       {id: 'unranked', name: 'Unranked only'},
                     ]
                   }
-                },
-                {
-                  component: SelectFilter,
-                  props: {
-                    id: 'diff',
-                    iconFa: 'fa fa-chart-line',
-                    title: 'Filter by map difficulty',
-                    values: [
-                      {id: null, name: 'All'},
-                      {id: 'easy', name: 'Easy'},
-                      {id: 'normal', name: 'Normal'},
-                      {id: 'hard', name: 'Hard'},
-                      {id: 'expert', name: 'Expert'},
-                      {id: 'expertplus', name: 'Expert+'},
-                    ]
-                  }
                 }
-              ];
+              ]);
             }
             break;
 
           case 'beatsavior':
-            s.filters = [
-              {
-                component: TextFilter,
-                props: {
-                  id: 'search',
-                  iconFa: 'fa fa-search',
-                  title: 'Search by song/artist/mapper name',
-                }
-              }
-            ];
+            s.filters = [...commonFilters];
             break;
 
           case 'accsaber':
-            s.filters = [
-              {
-                component: TextFilter,
-                props: {
-                  id: 'search',
-                  iconFa: 'fa fa-search',
-                  title: 'Search by song/artist/mapper name',
-                }
-              }
-            ];
-
             if (accSaberCategories?.length)
               s.switcherComponentProps = {
                 values: accSaberCategories.map(c => ({

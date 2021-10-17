@@ -17,6 +17,7 @@ import {SsrHttpNotFoundError} from '../../network/errors'
 import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {roundToPrecision} from '../../utils/format'
+import {serviceFilterFunc} from '../utils'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
@@ -429,34 +430,7 @@ export default () => {
     let precision = HISTOGRAM_PP_PRECISON;
     let type = 'linear';
     let valFunc = s => s;
-    let filterFunc = s => {
-      // accept score if there is no non-empty filter
-      if (!Object.entries(serviceParams?.filters ?? {})?.filter(([key, val]) => val)?.length) return true;
-
-      let filterVal = true;
-
-      if (serviceParams?.filters?.search?.length) {
-        const song = s?.leaderboard?.song ?? null;
-        if (song) {
-          const name = `${song?.name?.toLowerCase() ?? ''} ${song?.subName?.toLowerCase() ?? ''} ${song?.authorName?.toLowerCase() ?? ''} ${song?.levelAuthorName?.toLowerCase() ?? ''}`
-
-          filterVal &= name.indexOf(serviceParams.filters.search.toLowerCase()) >= 0;
-        } else {
-          filterVal &= false;
-        }
-      }
-
-      if (serviceParams?.filters.diff?.length) {
-        filterVal &= s?.leaderboard?.diffInfo?.diff?.toLowerCase() === serviceParams.filters.diff?.toLowerCase()
-      }
-
-      if (serviceParams?.filters?.songType?.length) {
-        filterVal &= (serviceParams.filters.songType === 'ranked' && s?.pp > 0) ||
-          (serviceParams.filters.songType === 'unranked' && (s?.pp ?? 0) === 0)
-      }
-
-      return filterVal;
-    }
+    let filterFunc = serviceFilterFunc(serviceParams);
     let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);

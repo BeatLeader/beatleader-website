@@ -4,12 +4,13 @@ import createScoresService from './scoresaber/scores'
 import beatSaviorApiClient from '../network/clients/beatsavior/api';
 import beatSaviorRepository from '../db/repository/beat-savior'
 import beatSaviorPlayersRepository from '../db/repository/beat-savior-players'
-import {addToDate, DAY, formatDate, formatDateWithOptions, HOUR, MINUTE, SECOND, truncateDate} from '../utils/date'
+import {addToDate, DAY, formatDate, HOUR, MINUTE, SECOND, truncateDate} from '../utils/date'
 import log from '../utils/logger'
 import {opt} from '../utils/js'
 import makePendingPromisePool from '../utils/pending-promises'
 import {PLAYER_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
-import {formatNumber, roundToPrecision} from '../utils/format'
+import {roundToPrecision} from '../utils/format'
+import {serviceFilterFunc} from './utils'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 15;
 const CACHED_PLAYER_REFRESH_INTERVAL = HOUR * 3;
@@ -77,7 +78,7 @@ export default () => {
     let precision = 1;
     let type = 'linear';
     let valFunc = s => s;
-    let filterFunc = s => s;
+    let filterFunc = serviceFilterFunc(serviceParams);
     let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
@@ -131,13 +132,13 @@ export default () => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
-    const playerScores = await getPlayerScores(playerId);
+    let playerScores = await getPlayerScores(playerId);
 
     if (!playerScores || !playerScores.length) return {total: 0, scores: []};
 
-    const {sort: sortFunc} = getScoresHistogramDefinition(serviceParams);
+    const {sort: sortFunc, filter: filterFunc}  = getScoresHistogramDefinition(serviceParams);
 
-    playerScores.sort(sortFunc);
+    playerScores = playerScores.filter(filterFunc).sort(sortFunc)
 
     const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
 
