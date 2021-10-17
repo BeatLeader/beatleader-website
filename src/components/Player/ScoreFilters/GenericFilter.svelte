@@ -81,7 +81,7 @@
 
     .filter.open .filter-btn {
         width: auto;
-        background-color: var(--selected);
+        background-color: var(--error);
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;
     }

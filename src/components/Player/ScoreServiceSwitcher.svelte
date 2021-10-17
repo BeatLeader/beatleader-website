@@ -29,50 +29,81 @@
       label: 'Score Saber',
       icon: '<div class="scoresaber-icon"></div>',
       url: `/u/${playerId}/scoresaber/recent/1`,
-      switcherComponent: Switcher,
-      switcherComponentProps: {
-        values: [
-          {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
-          {id: 'top', 'label': 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
-        ],
-      },
-      onSwitcherChange: event => {
-        if (!event?.detail?.id) return null;
+      switcherComponents: [
+        {
+          component: Switcher,
+          props: {
+            values: [
+              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
+              {id: 'top', 'label': 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
+            ],
+          },
+          key: 'sort',
+          onChange: event => {
+            if (!event?.detail?.id) return null;
 
-        dispatch('service-params-change', {sort: event?.detail?.id})
-      },
+            dispatch('service-params-change', {sort: event?.detail?.id})
+          }
+        }
+      ],
     },
     {
       id: 'beatsavior',
       label: 'Beat Savior',
       icon: '<div class="beatsavior-icon"></div>',
       url: `/u/${playerId}/beatsavior/recent/1`,
-      switcherComponent: Switcher,
-      switcherComponentProps: {
-        values: [
-          {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatsavior/recent/1`},
-          {id: 'acc', 'label': 'Acc', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatsavior/acc/1`},
-          {id: 'mistakes', 'label': 'Mistakes', iconFa: 'fa fa-times', url: `/u/${playerId}/beatsavior/mistake/1`},
-        ],
-      },
-      onSwitcherChange: event => {
-        if (!event?.detail?.id) return null;
+      switcherComponents: [
+        {
+          component: Switcher,
+          props: {
+            values: [
+              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatsavior/recent/1`},
+              {id: 'acc', 'label': 'Acc', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatsavior/acc/1`},
+              {id: 'mistakes', 'label': 'Mistakes', iconFa: 'fa fa-times', url: `/u/${playerId}/beatsavior/mistake/1`},
+            ],
+          },
+          key: 'sort',
+          onChange: event => {
+            if (!event?.detail?.id) return null;
 
-        dispatch('service-params-change', {sort: event?.detail?.id})
-      },
+            dispatch('service-params-change', {sort: event?.detail?.id})
+          }
+        },
+      ],
     },
     {
       id: 'accsaber',
       label: 'AccSaber',
       icon: '<div class="accsaber-icon"></div>',
       url: `/u/${playerId}/accsaber/recent/1`,
-      switcherComponent: Switcher,
-      switcherValueKey: 'type',
-      onSwitcherChange: event => {
-        if (!event?.detail?.id) return null;
+      switcherComponents: [
+        {
+          component: Switcher,
+          key: 'type',
+          onChange: event => {
+            if (!event?.detail?.id) return null;
 
-        dispatch('service-params-change', {type: event?.detail?.id})
-      },
+            dispatch('service-params-change', {type: event?.detail?.id})
+          },
+        },
+        {
+          component: Switcher,
+          key: 'sort',
+          props: {
+            values: [
+              {id: 'ap', 'label': 'AP', iconFa: 'fa fa-cubes'},
+              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock'},
+              {id: 'acc', 'label': 'Acc', iconFa: 'fa fa-crosshairs'},
+              {id: 'rank', 'label': 'Rank', iconFa: 'fa fa-list-ol'},
+            ],
+          },
+          onChange: event => {
+            if (!event?.detail?.id) return null;
+
+            dispatch('service-params-change', {sort: event?.detail?.id})
+          },
+        },
+      ],
     },
   ];
 
@@ -123,64 +154,74 @@
     return allServices
       .filter(s => availableServiceNames.includes(s?.id))
       .map(s => {
-        if (s?.id !== service || !s?.switcherComponent) return s;
+        if (s?.id !== service || !s?.switcherComponents?.length) return s;
+
+        const serviceDef = {...s};
+        serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({...c}));
 
         switch (service) {
           case 'scoresaber':
             if (availableServiceNames.includes('scoresaber-cached')) {
               console.error('TODO: SCORESABER add sort by acc/rank/stars to switcherComponentProps')
 
-              s.filters = [...commonFilters].concat([
-                {
-                  component: SelectFilter,
-                  props: {
-                    id: 'songType',
-                    iconFa: 'fa fa-cubes',
-                    title: 'Filter by map type',
-                    values: [
-                      {id: null, name: 'All'},
-                      {id: 'ranked', name: 'Ranked only'},
-                      {id: 'unranked', name: 'Unranked only'},
-                    ]
-                  }
-                }
-              ]);
+              serviceDef.filters = [...commonFilters]
+                .concat([
+                  {
+                    component: SelectFilter,
+                    props: {
+                      id: 'songType',
+                      iconFa: 'fa fa-cubes',
+                      title: 'Filter by map type',
+                      values: [
+                        {id: null, name: 'All'},
+                        {id: 'ranked', name: 'Ranked only'},
+                        {id: 'unranked', name: 'Unranked only'},
+                      ],
+                    },
+                  },
+                ]);
             }
             break;
 
           case 'beatsavior':
-            s.filters = [...commonFilters];
+            serviceDef.filters = [...commonFilters];
             break;
 
           case 'accsaber':
-            s.filters = [...commonFilters];
+            serviceDef.filters = [...commonFilters];
 
-            if (accSaberCategories?.length)
-              s.switcherComponentProps = {
-                values: accSaberCategories.map(c => ({
-                  id: c.name,
-                  'label': c.displayName ?? c.name,
-                  url: `/u/${playerId}/${service}/${c.name}/recent/1`,
-                })),
-              }
+            if (accSaberCategories?.length) {
+              const typeComponent = serviceDef.switcherComponents.find(c => c?.key === 'type');
+              if (typeComponent)
+                typeComponent.props = {
+                  values: accSaberCategories.map(c => ({
+                    id: c.name,
+                    'label': c.displayName ?? c.name,
+                    url: `/u/${playerId}/${service}/${c.name}/recent/1`,
+                  })),
+                }
+            }
             break;
         }
 
+        serviceDef.switcherComponents = serviceDef.switcherComponents
+          .filter(c => c?.props)
+          .map(c => {
+            const key = c?.key ?? 'sort';
 
-        if (!s?.switcherComponentProps) return s;
+            [
+              {propKey: 'value', compareObj: serviceParams},
+              {propKey: 'loadingValue', compareObj: loadingServiceParams},
+            ].forEach(o => c.props[o.propKey] = c.props?.values?.find(v => v?.id === o.compareObj?.[key]) ?? null)
 
-        const key = s?.switcherValueKey ?? 'sort';
+            return c;
+          })
 
-        s.switcherComponentProps.value = s.switcherComponentProps?.values?.length
-          ? s.switcherComponentProps.values.find(v => v?.id === serviceParams?.[key])
-          : null;
+        if (!serviceDef?.switcherComponents?.length) return null;
 
-        s.switcherComponentProps.loadingValue = s.switcherComponentProps?.values?.length
-          ? s.switcherComponentProps.values.find(v => v?.id === loadingServiceParams?.[key])
-          : null;
-
-        return s;
+        return serviceDef;
       })
+    .filter(s => s)
   }
 
   function onServiceChanged(event) {
@@ -214,10 +255,12 @@
   <Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged}
             loadingValue={loadingServiceObj}/>
 
-  {#if serviceObj?.switcherComponent && serviceObj?.switcherComponentProps}
-    <svelte:component this={serviceObj.switcherComponent} {...serviceObj.switcherComponentProps}
-                      on:change={serviceObj.onSwitcherChange ?? null}
-    />
+  {#if serviceObj?.switcherComponents?.length}
+    {#each serviceObj.switcherComponents as component (`${serviceObj?.id ?? ''}${component.key ?? 'sort'}`)}
+      <svelte:component this={component.component} {...component.props}
+                        on:change={component.onChange ?? null}
+      />
+    {/each}
   {/if}
 
   {#if serviceObj?.filters}
