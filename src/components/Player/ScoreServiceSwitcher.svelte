@@ -153,6 +153,8 @@
             break;
 
           case 'accsaber':
+            s.filters = [...commonFilters];
+
             if (accSaberCategories?.length)
               s.switcherComponentProps = {
                 values: accSaberCategories.map(c => ({

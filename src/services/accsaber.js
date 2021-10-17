@@ -21,7 +21,7 @@ import {
 } from '../utils/date'
 import {PRIORITY} from '../network/queues/http-queue'
 import makePendingPromisePool from '../utils/pending-promises'
-import {getServicePlayerGain} from './utils'
+import {getServicePlayerGain, serviceFilterFunc} from './utils'
 import {PLAYER_SCORES_PER_PAGE} from '../utils/accsaber/consts'
 import {roundToPrecision} from '../utils/format'
 
@@ -96,11 +96,13 @@ export default () => {
     const sort = serviceParams?.sort ?? 'ap';
     const order = serviceParams?.order ?? 'desc';
 
+    const commonFilterFunc = serviceFilterFunc(serviceParams);
+
     let round = 2;
     let precision = 1;
     let type = 'linear';
     let valFunc = s => s;
-    let filterFunc = s => scoreType === 'overall' || s?.leaderboard?.category === scoreType;
+    let filterFunc = s => commonFilterFunc(s) && (scoreType === 'overall' || s?.leaderboard?.category === scoreType);
     let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
