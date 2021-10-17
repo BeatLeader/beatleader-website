@@ -17,12 +17,16 @@ import {SsrHttpNotFoundError} from '../../network/errors'
 import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {roundToPrecision} from '../../utils/format'
+import {serviceFilterFunc} from '../utils'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
 const RANK_AND_PP_REFRESH_INTERVAL = HOUR;
 
-const HISTOGRAM_PP_PRECISON = 5;
+const HISTOGRAM_PP_PRECISION = 5;
+const HISTOGRAM_RANK_PRECISION = 10;
+const HISTOGRAM_ACC_PRECISION = 0.25;
+const HISTOGRAM_STARS_PRECISION = 0.1;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -80,9 +84,18 @@ export default () => {
     })
   })
 
+  const isDataForPlayerAvailable = async playerId => (await Promise.all([
+    scoresRepository().getFromIndex('scores-playerId', playerId),
+    playersRepository().get(playerId),
+  ]))
+    .every(p => p !== undefined);
+
   const getAllScores = async () => scoresRepository().getAll();
   const getLeaderboardScores = async leaderboardId => scoresRepository().getAllFromIndex('scores-leaderboardId', leaderboardId);
-  const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId);
+  const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, async () => {
+    return (await scoresRepository().getAllFromIndex('scores-playerId', playerId))
+      .map(s => ({...s, leaderboard: {...s?.leaderboard, stars: allRankeds[s?.leaderboardId]?.stars ?? null}}))
+  })
   const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
   const getPlayerSongScore = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
   const getPlayerRankedScores = async playerId => {
@@ -394,22 +407,27 @@ export default () => {
   const isScoreDateFresh = (player, refreshInterval = null, key = 'scoresLastUpdated') => getScoresFreshnessDate(player, refreshInterval, key) > new Date();
 
   const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
-    const sort = serviceParams?.sort ?? 'recent';
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
-    const key = sort === 'top' ? 'pp' : 'timeSet';
-    const playerScores = (await getPlayerScores(playerId));
+    let playerScores = (await getPlayerScores(playerId));
 
     if (!playerScores || !playerScores.length) return null;
 
-    playerScores.sort((a,b) => b[key] - a[key]);
+    const {sort: sortFunc, filter: filterFunc} = getScoresHistogramDefinition(serviceParams);
+
+    playerScores = playerScores
+      .filter(filterFunc)
+      .sort(sortFunc);
 
     const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
 
     if (playerScores.length < startIdx + 1) return null;
 
-    return playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE);
+    return {
+      total: playerScores.length,
+      scores: playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
+    };
   }
 
   const getScoresHistogramDefinition = (serviceParams = {sort: 'recent', order: 'desc'}) => {
@@ -417,10 +435,11 @@ export default () => {
     const order = serviceParams?.order ?? 'desc';
 
     let round = 2;
-    let precision = HISTOGRAM_PP_PRECISON;
+    let precision = HISTOGRAM_PP_PRECISION;
     let type = 'linear';
     let valFunc = s => s;
-    let filterFunc = s => s;
+    let filterFunc = serviceFilterFunc(serviceParams);
+    let histogramFilterFunc = s => s;
     let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
@@ -438,12 +457,39 @@ export default () => {
 
       case 'top':
         valFunc = s => s?.pp ?? 0;
-        filterFunc = s => Number.isFinite(s?.pp) && s.pp > 0
         type = 'linear';
-        precision = HISTOGRAM_PP_PRECISON;
+        precision = HISTOGRAM_PP_PRECISION;
         round = 0;
         suffix = 'pp';
         suffixLong = 'pp';
+        break;
+
+      case 'rank':
+        valFunc = s => s?.score?.rank ?? 1000000;
+        type = 'linear';
+        precision = HISTOGRAM_RANK_PRECISION;
+        round = 0;
+        prefixLong = '#';
+        break;
+
+      case 'acc':
+        valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc ?? null);
+        histogramFilterFunc = h => h?.x > 0;
+        type = 'linear';
+        precision = HISTOGRAM_ACC_PRECISION;
+        round = 2;
+        suffix = '%';
+        suffixLong = '%';
+        break;
+
+      case 'stars':
+        valFunc = s => s?.leaderboard?.stars ?? null;
+        histogramFilterFunc = h => h?.x > 0;
+        type = 'linear';
+        precision = HISTOGRAM_STARS_PRECISION;
+        round = 2;
+        suffix = '★';
+        suffixLong = '★';
         break;
     }
 
@@ -451,6 +497,7 @@ export default () => {
       getValue: valFunc,
       getRoundedValue: s => roundedValFunc(s, type, precision),
       filter: filterFunc,
+      histogramFilter: histogramFilterFunc,
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
       precision,
@@ -527,8 +574,15 @@ export default () => {
 
     const scoresPage = await getPlayerScoresPage(player.playerId, serviceParams);
 
+    if
+      (Object.entries(serviceParams?.filters ?? {})?.filter(([key, val]) => val)?.length ||
+      !['recent', 'top'].includes(serviceParams.sort ?? 'recent')
+    ) return scoresPage;
+
+    const scores = Array.isArray(scoresPage) ? scoresPage : (scoresPage?.scores ?? []);
+
     // force fetch from time to time even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
-    const shouldPageBeRefetched = scoresPage && scoresPage.reduce((shouldRefresh, score) => {
+    const shouldPageBeRefetched = scores && scores.reduce((shouldRefresh, score) => {
       if (!score.pp && allRankeds[score.leaderboard]) return true;
 
       if (!score.lastUpdated || score.lastUpdated < addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return true;
@@ -655,6 +709,7 @@ export default () => {
   }
 
   service = {
+    isDataForPlayerAvailable,
     getAll: getAllScores,
     getLeaderboardScores,
     getPlayerScores,

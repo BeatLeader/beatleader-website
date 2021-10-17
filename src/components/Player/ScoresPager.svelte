@@ -87,8 +87,9 @@
         .filter(playerScoresHistogram.filter)
         .sort(playerScoresHistogram.sort),
       playerScoresHistogram.getRoundedValue,
-      playerScoresHistogram.order
-    );
+      playerScoresHistogram.order,
+    )
+      .filter(playerScoresHistogram.histogramFilter);
   }
 
   const chartBrowserTooltipTitle = ctx => playerScoresHistogram?.type === 'time'
