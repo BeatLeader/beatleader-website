@@ -169,7 +169,7 @@
                     id: 'rank',
                     label: 'Rank',
                     iconFa: 'fa fa-list-ol',
-                    title: 'May be inaccurate - rank is from last refresh of score',
+                    title: 'May be inaccurate - rank is from last score refresh',
                   });
 
                 if (!sortComponent.props.values.find(v => v.id === 'acc'))
@@ -178,9 +178,14 @@
                     label: 'Acc',
                     iconFa: 'fa fa-crosshairs',
                     title: 'Accurate for ranked maps only',
-                  })
+                  });
 
-                // TODO: add sort by stars
+                if (!sortComponent.props.values.find(v => v.id === 'stars'))
+                  sortComponent.props.values.push({
+                    id: 'stars',
+                    label: 'Stars',
+                    iconFa: 'fa fa-star',
+                  });
               }
 
               serviceDef.filters = [...commonFilters]

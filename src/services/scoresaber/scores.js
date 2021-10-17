@@ -26,6 +26,7 @@ const RANK_AND_PP_REFRESH_INTERVAL = HOUR;
 const HISTOGRAM_PP_PRECISION = 5;
 const HISTOGRAM_RANK_PRECISION = 10;
 const HISTOGRAM_ACC_PRECISION = 0.25;
+const HISTOGRAM_STARS_PRECISION = 0.1;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -91,7 +92,10 @@ export default () => {
 
   const getAllScores = async () => scoresRepository().getAll();
   const getLeaderboardScores = async leaderboardId => scoresRepository().getAllFromIndex('scores-leaderboardId', leaderboardId);
-  const getPlayerScores = async playerId => scoresRepository().getAllFromIndex('scores-playerId', playerId);
+  const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, async () => {
+    return (await scoresRepository().getAllFromIndex('scores-playerId', playerId))
+      .map(s => ({...s, leaderboard: {...s?.leaderboard, stars: allRankeds[s?.leaderboardId]?.stars ?? null}}))
+  })
   const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
   const getPlayerSongScore = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
   const getPlayerRankedScores = async playerId => {
@@ -412,7 +416,9 @@ export default () => {
 
     const {sort: sortFunc, filter: filterFunc} = getScoresHistogramDefinition(serviceParams);
 
-    playerScores = playerScores.filter(filterFunc).sort(sortFunc);
+    playerScores = playerScores
+      .filter(filterFunc)
+      .sort(sortFunc);
 
     const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
 
@@ -474,6 +480,16 @@ export default () => {
         round = 2;
         suffix = '%';
         suffixLong = '%';
+        break;
+
+      case 'stars':
+        valFunc = s => s?.leaderboard?.stars ?? null;
+        histogramFilterFunc = h => h?.x > 0;
+        type = 'linear';
+        precision = HISTOGRAM_STARS_PRECISION;
+        round = 2;
+        suffix = '★';
+        suffixLong = '★';
         break;
     }
 
