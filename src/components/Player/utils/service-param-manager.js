@@ -82,7 +82,7 @@ export default () => {
         return update(
           {
             sort: paramsArr[1] ?? serviceDefaultParams?.sort,
-            order: 'desc',
+            order: (paramsArr[1] ?? serviceDefaultParams?.sort) === 'rank' ? 'asc' : 'desc',
             page: paramsArr[2] ?? serviceDefaultParams?.page,
           },
           service,

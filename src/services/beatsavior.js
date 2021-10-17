@@ -16,6 +16,9 @@ const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 15;
 const CACHED_PLAYER_REFRESH_INTERVAL = HOUR * 3;
 const OTHER_PLAYER_REFRESH_INTERVAL = DAY;
 
+const HISTOGRAM_ACC_THRESHOLD = 60;
+const HISTOGRAM_MISTAKES_THRESHOLD = 200;
+
 let service = null;
 let serviceCreationCount = 0;
 export default () => {
@@ -79,6 +82,7 @@ export default () => {
     let type = 'linear';
     let valFunc = s => s;
     let filterFunc = serviceFilterFunc(serviceParams);
+    let histogramFilterFunc = s => s;
     let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
@@ -96,6 +100,7 @@ export default () => {
 
       case 'acc':
         valFunc = s => (s?.trackers?.scoreTracker?.rawRatio ?? 0) * 100;
+        histogramFilterFunc = h => h?.x >= HISTOGRAM_ACC_THRESHOLD;
         type = 'linear';
         precision = 0.25;
         round = 2;
@@ -105,6 +110,7 @@ export default () => {
 
       case 'mistakes':
         valFunc = s => (s?.stats?.miss ?? 0) + (s?.stats?.wallHit ?? 0) + (s?.stats?.bombHit ?? 0);
+        histogramFilterFunc = h => h?.x <= HISTOGRAM_MISTAKES_THRESHOLD;
         type = 'linear';
         precision = 1;
         round = 0;
@@ -116,6 +122,7 @@ export default () => {
       getValue: valFunc,
       getRoundedValue: s => roundedValFunc(s, type, precision),
       filter: filterFunc,
+      histogramFilter: histogramFilterFunc,
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
       precision,

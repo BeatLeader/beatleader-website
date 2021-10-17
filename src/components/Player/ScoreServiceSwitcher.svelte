@@ -35,7 +35,7 @@
           props: {
             values: [
               {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
-              {id: 'top', 'label': 'Top', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
+              {id: 'top', 'label': 'PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
             ],
           },
           key: 'sort',
@@ -162,7 +162,26 @@
         switch (service) {
           case 'scoresaber':
             if (availableServiceNames.includes('scoresaber-cached')) {
-              console.error('TODO: SCORESABER add sort by acc/rank/stars to switcherComponentProps');
+              const sortComponent = serviceDef.switcherComponents.find(c => c.key === 'sort');
+              if (sortComponent?.props?.values) {
+                if (!sortComponent.props.values.find(v => v.id === 'rank'))
+                  sortComponent.props.values.push({
+                    id: 'rank',
+                    label: 'Rank',
+                    iconFa: 'fa fa-list-ol',
+                    title: 'May be inaccurate - rank is from last refresh of score',
+                  });
+
+                if (!sortComponent.props.values.find(v => v.id === 'acc'))
+                  sortComponent.props.values.push({
+                    id: 'acc',
+                    label: 'Acc',
+                    iconFa: 'fa fa-crosshairs',
+                    title: 'Accurate for ranked maps only',
+                  })
+
+                // TODO: add sort by stars
+              }
 
               serviceDef.filters = [...commonFilters]
                 .concat([

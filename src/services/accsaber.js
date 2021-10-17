@@ -103,6 +103,7 @@ export default () => {
     let type = 'linear';
     let valFunc = s => s;
     let filterFunc = s => commonFilterFunc(s) && (scoreType === 'overall' || s?.leaderboard?.category === scoreType);
+    let histogramFilterFunc = s => s;
     let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
@@ -150,6 +151,7 @@ export default () => {
       getValue: valFunc,
       getRoundedValue: s => roundedValFunc(s, type, precision),
       filter: filterFunc,
+      histogramFilter: histogramFilterFunc,
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
       precision,

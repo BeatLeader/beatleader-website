@@ -23,7 +23,9 @@ const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
 const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
 const RANK_AND_PP_REFRESH_INTERVAL = HOUR;
 
-const HISTOGRAM_PP_PRECISON = 5;
+const HISTOGRAM_PP_PRECISION = 5;
+const HISTOGRAM_RANK_PRECISION = 10;
+const HISTOGRAM_ACC_PRECISION = 0.25;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -427,10 +429,11 @@ export default () => {
     const order = serviceParams?.order ?? 'desc';
 
     let round = 2;
-    let precision = HISTOGRAM_PP_PRECISON;
+    let precision = HISTOGRAM_PP_PRECISION;
     let type = 'linear';
     let valFunc = s => s;
     let filterFunc = serviceFilterFunc(serviceParams);
+    let histogramFilterFunc = s => s;
     let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
@@ -449,10 +452,28 @@ export default () => {
       case 'top':
         valFunc = s => s?.pp ?? 0;
         type = 'linear';
-        precision = HISTOGRAM_PP_PRECISON;
+        precision = HISTOGRAM_PP_PRECISION;
         round = 0;
         suffix = 'pp';
         suffixLong = 'pp';
+        break;
+
+      case 'rank':
+        valFunc = s => s?.score?.rank ?? 1000000;
+        type = 'linear';
+        precision = HISTOGRAM_RANK_PRECISION;
+        round = 0;
+        prefixLong = '#';
+        break;
+
+      case 'acc':
+        valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc ?? null);
+        histogramFilterFunc = h => h?.x > 0;
+        type = 'linear';
+        precision = HISTOGRAM_ACC_PRECISION;
+        round = 2;
+        suffix = '%';
+        suffixLong = '%';
         break;
     }
 
@@ -460,6 +481,7 @@ export default () => {
       getValue: valFunc,
       getRoundedValue: s => roundedValFunc(s, type, precision),
       filter: filterFunc,
+      histogramFilter: histogramFilterFunc,
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
       precision,
@@ -536,7 +558,10 @@ export default () => {
 
     const scoresPage = await getPlayerScoresPage(player.playerId, serviceParams);
 
-    if (Object.entries(serviceParams?.filters ?? {})?.filter(([key, val]) => val)?.length) return scoresPage;
+    if
+      (Object.entries(serviceParams?.filters ?? {})?.filter(([key, val]) => val)?.length ||
+      !['recent', 'top'].includes(serviceParams.sort ?? 'recent')
+    ) return scoresPage;
 
     const scores = Array.isArray(scoresPage) ? scoresPage : (scoresPage?.scores ?? []);
 
