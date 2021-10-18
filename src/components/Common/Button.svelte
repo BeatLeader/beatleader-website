@@ -116,7 +116,6 @@
         background-color: var(--bg-color, #3273dc)!important;
         outline: none !important;
         box-shadow: none !important;
-        transition: opacity .25s;
     }
 
     .button:hover {
