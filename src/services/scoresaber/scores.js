@@ -24,7 +24,7 @@ const PLAYER_REFRESH_INTERVAL = MINUTE * 30;
 const RANK_AND_PP_REFRESH_INTERVAL = HOUR;
 
 const HISTOGRAM_PP_PRECISION = 5;
-const HISTOGRAM_RANK_PRECISION = 10;
+const HISTOGRAM_RANK_PRECISION = 5;
 const HISTOGRAM_ACC_PRECISION = 0.25;
 const HISTOGRAM_STARS_PRECISION = 0.1;
 
@@ -457,6 +457,7 @@ export default () => {
 
       case 'top':
         valFunc = s => s?.pp ?? 0;
+        histogramFilterFunc = h => h?.x > 0;
         type = 'linear';
         precision = HISTOGRAM_PP_PRECISION;
         round = 0;
