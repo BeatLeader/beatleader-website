@@ -50,6 +50,6 @@ export default {
   BEATMAPS: initQueue(createBeatMapsApiQueue({concurrency: 1, timeout: 10000, intervalCap: 10, interval: 1000})),
   BEATSAVIOR: initQueue(createBeatSaviorApiQueue({concurrency: 1, timeout: 10000, intervalCap: 60, interval: 60000})),
   TWITCH: initQueue(createTwitchApiQueue({concurrency: 8, timeout: 8000, intervalCap: 800, interval: 60000})),
-  ACCSABER: initQueue(createAccSaberApiQueue({concurrency: 2, timeout: 10000, intervalCap: 10, interval: 10000})),
+  ACCSABER: initQueue(createAccSaberApiQueue({concurrency: 2, timeout: 10000})),
   PRIORITY,
 }
