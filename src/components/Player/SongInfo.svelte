@@ -1,11 +1,10 @@
 <script>
   import {navigate} from 'svelte-routing'
-  import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
-  import {opt} from '../../utils/js'
-  import Difficulty from '../Song/Difficulty.svelte'
+  import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import Icons from '../Song/Icons.svelte'
   import Badge from '../Common/Badge.svelte'
+  import SongCover from './SongCover.svelte'
 
   export let leaderboard = null;
   export let rank = null;
@@ -15,74 +14,40 @@
   export let category = null;
   export let service = 'scoresaber';
 
-  let ssCoverDoesNotExists = false;
-  let beatSaverCoverDoesNotExists = false;
-
-  $: song = opt(leaderboard, 'song', null);
-  $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / LEADERBOARD_SCORES_PER_PAGE) + 1 : 1;
-  $: diffInfo = opt(leaderboard, 'diffInfo')
-  $: beatSaverCoverUrl = opt(leaderboard, 'beatMaps.versions.0.coverURL')
+  $: song = leaderboard?.song ?? null;
+  $: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE
+  $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / scoresPerPage) + 1 : 1;
+  $: diffInfo = leaderboard?.diffInfo ?? null;
+  $: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboard?.leaderboardId ?? ''}/${page ?? ''}`;
 </script>
 
 {#if song}
   <section>
-  <div class="cover-difficulty">
-    {#if notClickable}
-      {#if ssCoverDoesNotExists}
-        {#if beatSaverCoverDoesNotExists || !beatSaverCoverUrl}
-          <img src="/assets/song-default.png" alt=""/>
-        {:else}
-          <img src={beatSaverCoverUrl} alt="" on:error={() => beatSaverCoverDoesNotExists = true}/>
-        {/if}
-      {:else}
-        <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => ssCoverDoesNotExists = true}/>
-      {/if}
-    {:else}
-      <a href={`/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
-         on:click|preventDefault={navigate(`/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
-        {#if ssCoverDoesNotExists}
-          {#if beatSaverCoverDoesNotExists || !beatSaverCoverUrl}
-            <img src="/assets/song-default.png" alt=""/>
-          {:else}
-            <img src={beatSaverCoverUrl} alt="" on:error={() => beatSaverCoverDoesNotExists = true}/>
-          {/if}
-        {:else}
-          <img src={`${SS_HOST}/imports/images/songs/${encodeURIComponent(song.hash)}.png`} alt="" on:error={() => ssCoverDoesNotExists = true}/>
-        {/if}
-      </a>
-    {/if}
+    <SongCover {leaderboard} {notClickable} url={leaderboardUrl} />
 
-    <div class="difficulty">
-      <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}
-                  stars={leaderboard.complexity ?? leaderboard.stars} starsSuffix={leaderboard.complexity ? '' : '★'}
-      />
-    </div>
-  </div>
-
-  <div class="songinfo">
-    {#if notClickable}
-      <span class="name">{song.name} {song.subName}</span>
-      <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
-    {:else}
-      <a href={`/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`}
-         on:click|preventDefault={navigate(`/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${opt(leaderboard, 'leaderboardId', '')}/${page}`)}>
+    <div class="songinfo">
+      {#if notClickable}
         <span class="name">{song.name} {song.subName}</span>
         <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+      {:else}
+        <a href={leaderboardUrl} on:click|preventDefault={() => navigate(leaderboardUrl)}>
+          <span class="name">{song.name} {song.subName}</span>
+          <div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
 
-        {#if category}
-          <span class="category">
-            <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" label={category} fluid={true} />
-          </span>
-        {/if}
-      </a>
-    {/if}
-  </div>
-
-  {#if hash && hash.length}
-    <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-      <Icons {hash} {twitchUrl} {diffInfo} />
+          {#if category}
+            <span class="category">
+              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" label={category} fluid={true} />
+            </span>
+          {/if}
+        </a>
+      {/if}
     </div>
-  {/if}
+
+    {#if hash && hash.length}
+      <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
+        <Icons {hash} {twitchUrl} {diffInfo} />
+      </div>
+    {/if}
   </section>
 {/if}
 
@@ -93,29 +58,8 @@
         align-items: center;
     }
 
-    section > * {
+    section :global(> *) {
         margin-right: .75em;
-    }
-
-    .cover-difficulty {
-        position: relative;
-        min-width: 4em;
-        width: 4em;
-    }
-
-    .difficulty {
-        display: flex;
-        align-items: center;
-        position: absolute;
-        bottom: 1em;
-        right: 0em;
-        font-size: .75em;
-    }
-
-    img {
-        width: 3.5em;
-        height: 3.5em;
-        border-radius: 15%;
     }
 
     .songinfo {
