@@ -18,7 +18,7 @@
 </script>
 
 {#if values?.length}
-  <select class:open={open} bind:value on:input={onChanged}>
+  <select class:open={open} bind:value on:change={onChanged}>
     {#each values as option}
       <option value={option.id}>{option.name}</option>
     {/each}

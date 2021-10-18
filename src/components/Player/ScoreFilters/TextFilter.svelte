@@ -12,7 +12,7 @@
     const value = e?.target?.value ?? null;
     if (!value?.length) return;
 
-    if (e.code === 'Enter') {
+    if (e.key === 'Enter') {
       e.preventDefault()
 
       dispatch('change', value)
