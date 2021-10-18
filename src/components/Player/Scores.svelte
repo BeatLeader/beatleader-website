@@ -7,6 +7,7 @@
   import Error from '../Common/Error.svelte'
   import ScoreServiceSwitcher from './ScoreServiceSwitcher.svelte'
   import ScoresPager from './ScoresPager.svelte'
+  import stringify from 'json-stable-stringify'
 
   const dispatch = createEventDispatcher();
 
@@ -62,9 +63,32 @@
     if (scoresBoxEl) scrollToTargetAdjusted(scoresBoxEl, 44)
   }
 
+  let currentService = null;
+  let lastService = '';
+  function updateService(scoresStore) {
+    if (!scoresStore) return;
+
+    const newService = scoresStore.getService();
+    if (lastService !== newService) currentService = newService;
+
+    lastService = newService;
+  }
+
+  let currentServiceParams = null;
+  let lastServiceParams = '';
+  function updateServiceParams(scoresStore) {
+    if (!scoresStore) return;
+
+    const newServiceParams = stringify(scoresStore.getServiceParams());
+    if (lastServiceParams !== newServiceParams) currentServiceParams = scoresStore.getServiceParams();
+
+    lastServiceParams = newServiceParams;
+  }
+
+
   $: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType)
-  $: currentService = ((scoresStore) => scoresStore ? scoresStore?.getService() : null)(scoresStore, $scoresStore);
-  $: currentServiceParams = ((scoresStore) => scoresStore ? scoresStore?.getServiceParams() : null)(scoresStore, $scoresStore);
+  $: $scoresStore, updateService(scoresStore);
+  $: $scoresStore, updateServiceParams(scoresStore);
   $: page = currentServiceParams?.page ?? null;
   $: totalScores = ((scoresStore) => scoresStore && scoresStore.getTotalScores ? scoresStore.getTotalScores() : null)(scoresStore, $scoresStore);
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
