@@ -78,12 +78,16 @@ export default () => {
     const order = serviceParams?.order ?? 'desc';
 
     let round = 2;
-    let precision = 1;
+    let bucketSize = 1;
+    let minBucketSize = null;
+    let maxBucketSize = null;
+    let bucketSizeStep = null;
+    let bucketSizeValues = null;
     let type = 'linear';
     let valFunc = s => s;
     let filterFunc = serviceFilterFunc(serviceParams);
     let histogramFilterFunc = s => s;
-    let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
+    let roundedValFunc = (s, type = type, precision = bucketSize) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
     let prefix = '';
@@ -95,14 +99,17 @@ export default () => {
       case 'recent':
         valFunc = s => s?.timeSet;
         type = 'time';
-        precision = 'day'
+        bucketSize = 'day'
         break;
 
       case 'acc':
         valFunc = s => (s?.trackers?.scoreTracker?.rawRatio ?? 0) * 100;
         histogramFilterFunc = h => h?.x >= HISTOGRAM_ACC_THRESHOLD;
         type = 'linear';
-        precision = 0.25;
+        bucketSize = 0.25;
+        minBucketSize = 0.05;
+        maxBucketSize = 10;
+        bucketSizeStep = 0.05;
         round = 2;
         suffix = '%';
         suffixLong = '%';
@@ -112,7 +119,10 @@ export default () => {
         valFunc = s => (s?.stats?.miss ?? 0) + (s?.stats?.wallHit ?? 0) + (s?.stats?.bombHit ?? 0);
         histogramFilterFunc = h => h?.x <= HISTOGRAM_MISTAKES_THRESHOLD;
         type = 'linear';
-        precision = 1;
+        bucketSize = 1;
+        minBucketSize = 1;
+        maxBucketSize = 50;
+        bucketSizeStep = 1;
         round = 0;
         suffixLong = ' mistake(s)';
         break;
@@ -120,12 +130,16 @@ export default () => {
 
     return {
       getValue: valFunc,
-      getRoundedValue: s => roundedValFunc(s, type, precision),
+      getRoundedValue: (bucketSize = bucketSize) => s => roundedValFunc(s, type, bucketSize),
       filter: filterFunc,
       histogramFilter: histogramFilterFunc,
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
-      precision,
+      bucketSize,
+      minBucketSize,
+      maxBucketSize,
+      bucketSizeStep,
+      bucketSizeValues,
       round,
       prefix,
       prefixLong,

@@ -435,12 +435,16 @@ export default () => {
     const order = serviceParams?.order ?? 'desc';
 
     let round = 2;
-    let precision = HISTOGRAM_PP_PRECISION;
+    let bucketSize = HISTOGRAM_PP_PRECISION;
+    let minBucketSize = null;
+    let maxBucketSize = null;
+    let bucketSizeStep = null;
+    let bucketSizeValues = null;
     let type = 'linear';
     let valFunc = s => s;
     let filterFunc = serviceFilterFunc(serviceParams);
     let histogramFilterFunc = s => s;
-    let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
+    let roundedValFunc = (s, type = type, precision = bucketSize) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
     let prefix = '';
@@ -452,14 +456,17 @@ export default () => {
       case 'recent':
         valFunc = s => s?.timeSet;
         type = 'time';
-        precision = 'day'
+        bucketSize = 'day'
         break;
 
       case 'top':
         valFunc = s => s?.pp ?? 0;
         histogramFilterFunc = h => h?.x > 0;
         type = 'linear';
-        precision = HISTOGRAM_PP_PRECISION;
+        bucketSize = HISTOGRAM_PP_PRECISION;
+        minBucketSize = 1;
+        maxBucketSize = 100;
+        bucketSizeStep = 1;
         round = 0;
         suffix = 'pp';
         suffixLong = 'pp';
@@ -468,7 +475,10 @@ export default () => {
       case 'rank':
         valFunc = s => s?.score?.rank ?? 1000000;
         type = 'linear';
-        precision = HISTOGRAM_RANK_PRECISION;
+        bucketSize = HISTOGRAM_RANK_PRECISION;
+        minBucketSize = 1;
+        maxBucketSize = 100;
+        bucketSizeStep = 1;
         round = 0;
         prefixLong = '#';
         break;
@@ -477,7 +487,10 @@ export default () => {
         valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc ?? null);
         histogramFilterFunc = h => h?.x > 0;
         type = 'linear';
-        precision = HISTOGRAM_ACC_PRECISION;
+        bucketSize = HISTOGRAM_ACC_PRECISION;
+        minBucketSize = 0.05;
+        maxBucketSize = 10;
+        bucketSizeStep = 0.05;
         round = 2;
         suffix = '%';
         suffixLong = '%';
@@ -487,7 +500,10 @@ export default () => {
         valFunc = s => s?.leaderboard?.stars ?? null;
         histogramFilterFunc = h => h?.x > 0;
         type = 'linear';
-        precision = HISTOGRAM_STARS_PRECISION;
+        bucketSize = HISTOGRAM_STARS_PRECISION;
+        minBucketSize = 0.1;
+        maxBucketSize = 10;
+        bucketSizeStep = 0.1;
         round = 2;
         suffix = '★';
         suffixLong = '★';
@@ -496,12 +512,16 @@ export default () => {
 
     return {
       getValue: valFunc,
-      getRoundedValue: s => roundedValFunc(s, type, precision),
+      getRoundedValue: (bucketSize = bucketSize) => s => roundedValFunc(s, type, bucketSize),
       filter: filterFunc,
       histogramFilter: histogramFilterFunc,
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
-      precision,
+      bucketSize,
+      minBucketSize,
+      maxBucketSize,
+      bucketSizeStep,
+      bucketSizeValues,
       round,
       prefix,
       prefixLong,

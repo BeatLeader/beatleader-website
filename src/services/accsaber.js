@@ -99,12 +99,16 @@ export default () => {
     const commonFilterFunc = serviceFilterFunc(serviceParams);
 
     let round = 2;
-    let precision = 1;
+    let bucketSize = 1;
+    let minBucketSize = null;
+    let maxBucketSize = null;
+    let bucketSizeStep = null;
+    let bucketSizeValues = null;
     let type = 'linear';
     let valFunc = s => s;
     let filterFunc = s => commonFilterFunc(s) && (scoreType === 'overall' || s?.leaderboard?.category === scoreType);
     let histogramFilterFunc = s => s;
-    let roundedValFunc = (s, type = type, precision = precision) => type === 'linear'
+    let roundedValFunc = (s, type = type, precision = bucketSize) => type === 'linear'
       ? roundToPrecision(valFunc(s), precision)
       : truncateDate(valFunc(s), precision);
     let prefix = '';
@@ -116,7 +120,10 @@ export default () => {
       case 'ap':
         valFunc = s => s?.ap;
         type = 'linear';
-        precision = HISTOGRAM_AP_PRECISION;
+        bucketSize = HISTOGRAM_AP_PRECISION;
+        minBucketSize = 1;
+        maxBucketSize = 100;
+        bucketSizeStep = 1;
         round = 0;
         suffix = ' AP';
         suffixLong = ' AP';
@@ -125,13 +132,16 @@ export default () => {
       case 'recent':
         valFunc = s => s?.timeSet;
         type = 'time';
-        precision = 'day'
+        bucketSize = 'day'
         break;
 
       case 'acc':
         valFunc = s => s?.acc;
         type = 'linear';
-        precision = 0.05;
+        bucketSize = 0.05;
+        minBucketSize = 0.05;
+        maxBucketSize = 1;
+        bucketSizeStep = 0.05;
         round = 2;
         suffix = '%';
         suffixLong = '%';
@@ -140,7 +150,10 @@ export default () => {
       case 'rank':
         valFunc = s => s?.score?.rank;
         type = 'linear';
-        precision = 5;
+        bucketSize = 5;
+        minBucketSize = 1;
+        maxBucketSize = 100;
+        bucketSizeStep = 1;
         round = 0;
         prefix = '';
         prefixLong = '#';
@@ -149,12 +162,16 @@ export default () => {
 
     return {
       getValue: valFunc,
-      getRoundedValue: s => roundedValFunc(s, type, precision),
+      getRoundedValue: (bucketSize = bucketSize) => s => roundedValFunc(s, type, bucketSize),
       filter: filterFunc,
       histogramFilter: histogramFilterFunc,
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
-      precision,
+      bucketSize,
+      minBucketSize,
+      maxBucketSize,
+      bucketSizeStep,
+      bucketSizeValues,
       round,
       prefix,
       prefixLong,
