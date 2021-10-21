@@ -45,7 +45,6 @@
         <li><a href="https://github.com/pubkey/broadcast-channel" target="_blank" rel="noreferrer">broadcast-channel</a>
         </li>
         <li><a href="https://github.com/primus/eventemitter3" target="_blank" rel="noreferrer">eventemitter3</a></li>
-        <li><a href="https://github.com/iamkun/dayjs" target="_blank" rel="noreferrer">dayjs</a></li>
         <li><a href="https://github.com/moment/luxon" target="_blank" rel="noreferrer">luxon</a></li>
         <li><a href="https://github.com/substack/json-stable-stringify" target="_blank" rel="noreferrer">json-stable-stringify</a>
         </li>
