@@ -266,7 +266,10 @@
                       title(ctx) {
                         if (!ctx?.[0]?.raw) return '';
 
-                        return formatDate(new Date(ctx[0].raw?.x), 'medium', 'short');
+                        const nextDayDate = DateTime.fromMillis(ctx[0].raw?.x).plus({days: 1}).toJSDate();
+                        const nextDayDateFormatted = nextDayDate > new Date() ? 'now' : formatDate(nextDayDate, 'short', 'short');
+
+                        return `${formatDate(new Date(ctx[0].raw?.x), 'short', 'short')} - ${nextDayDateFormatted}`;
                       },
                       label(ctx) {
                         switch (ctx.dataset.label) {
