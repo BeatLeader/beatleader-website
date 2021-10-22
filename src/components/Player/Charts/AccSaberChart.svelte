@@ -222,7 +222,7 @@
           return formatDateWithOptions(new Date(ticks[idx]?.value), {
             localeMatcher: 'best fit',
             day: '2-digit',
-            month: '2-digit',
+            month: 'short',
           });
         },
       },
@@ -261,7 +261,7 @@
                   title(ctx) {
                     if (!ctx?.[0]?.raw) return '';
 
-                    return formatDate(new Date(ctx[0].raw?.x), 'short', null);
+                    return formatDate(new Date(ctx[0].raw?.x), 'short', 'short');
                   },
 
                   label(ctx) {
