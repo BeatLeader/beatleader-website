@@ -261,7 +261,7 @@
                   title(ctx) {
                     if (!ctx?.[0]?.raw) return '';
 
-                    return formatDate(new Date(ctx[0].raw?.x), 'short', 'short');
+                    return formatDate(new Date(ctx[0].raw?.x), 'medium', 'short');
                   },
 
                   label(ctx) {
