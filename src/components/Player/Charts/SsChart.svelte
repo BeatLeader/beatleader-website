@@ -5,7 +5,7 @@
   import createScoresService from '../../../services/scoresaber/scores'
   import createBeatSaviorService from '../../../services/beatsavior'
   import {formatNumber} from '../../../utils/format'
-  import {addToDate, dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
+  import {addToDate, dateFromString, DAY, formatDateRelativeInUnits, toSsMidnight} from '../../../utils/date'
   import eventBus from '../../../utils/broadcast-channel-pubsub'
   import {debounce} from '../../../utils/debounce'
   import {onLegendClick} from './utils/legend-click-handler'
@@ -43,7 +43,7 @@
   const mapScoresToHistory = scores => {
     if (!Object.keys(scores)?.length) return null;
 
-    const ssToday = toSSDate(new Date());
+    const ssToday = toSsMidnight(new Date());
 
     return Array(50).fill(0)
       .map((_, idx) => {
@@ -59,7 +59,7 @@
 
     playerScores = await scoresService.getPlayerScores(playerId)
 
-    const ssToday = toSSDate(new Date());
+    const ssToday = toSsMidnight(new Date());
     const oldestDate = addToDate(-49 * DAY, ssToday);
     const lastScores = playerScores
       .filter(score => score.timeSet && score.timeSet > oldestDate)
@@ -72,7 +72,7 @@
           );
 
         allSongScores.forEach(t => {
-          const ssDate = toSSDate(new Date(t));
+          const ssDate = toSsMidnight(new Date(t));
           const ssTimestamp = ssDate.getTime();
 
           if (!cum.hasOwnProperty(ssTimestamp)) cum[ssTimestamp] = 0;
@@ -92,13 +92,13 @@
 
     const scores = await beatSaviorService.getPlayerScores(playerId);
 
-    const ssToday = toSSDate(new Date());
+    const ssToday = toSsMidnight(new Date());
     const oldestDate = addToDate(-49 * DAY, ssToday);
     const lastScores = scores.filter(score => score.timeSet && score.timeSet > oldestDate)
 
     const countScores = (scores, incFunc) => scores
       .reduce((cum, score) => {
-        const ssDate = toSSDate(score.timeSet);
+        const ssDate = toSsMidnight(score.timeSet);
         const ssTimestamp = ssDate.getTime();
 
         if (!cum.hasOwnProperty(ssTimestamp)) cum[ssTimestamp] = 0;
@@ -182,7 +182,7 @@
 
     if (additionalHistory && Object.keys(additionalHistory).length) {
       const additionalHistoryData = Object.entries(additionalHistory).reduce((cum, [ssTimestamp, historyItem]) => {
-        let diffInDays = Math.floor((toSSDate(new Date()).getTime() - parseInt(ssTimestamp, 10)) / DAY);
+        let diffInDays = Math.floor((toSsMidnight(new Date()).getTime() - parseInt(ssTimestamp, 10)) / DAY);
         if (diffInDays < 0) diffInDays = 0;
 
         cum[diffInDays] = historyItem;

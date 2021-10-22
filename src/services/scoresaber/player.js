@@ -7,7 +7,14 @@ import {PRIORITY} from '../../network/queues/http-queue'
 import playersRepository from '../../db/repository/players'
 import playersHistoryRepository from '../../db/repository/players-history'
 import log from '../../utils/logger'
-import {addToDate, DAY, daysAgo, formatDate, MINUTE, SECOND, toSSDate, truncateDate} from '../../utils/date'
+import {
+  addToDate,
+  formatDate,
+  MINUTE,
+  SECOND,
+  toSsMidnight,
+  truncateDate,
+} from '../../utils/date'
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
 import makePendingPromisePool from '../../utils/pending-promises'
@@ -107,7 +114,7 @@ export default () => {
 
   const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`playerHistory/${playerId}`, () => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId))
 
-  const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => getServicePlayerGain(playerHistory, toSSDate, 'ssDate', daysAgo, maxDaysAgo);
+  const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => getServicePlayerGain(playerHistory, toSsMidnight, 'ssDate', daysAgo, maxDaysAgo);
 
   const updatePlayerHistory = async player => {
     if (!player) return null;
@@ -118,7 +125,7 @@ export default () => {
     const updateDate = profileLastUpdated ? profileLastUpdated : new Date();
 
     const localDate = truncateDate(updateDate);
-    const ssDate = toSSDate(updateDate);
+    const ssDate = toSsMidnight(updateDate);
 
     const playerIdLocalTimestamp = `${playerId}_${localDate.getTime()}`;
     const playerIdSsTimestamp = `${playerId}_${ssDate.getTime()}`;

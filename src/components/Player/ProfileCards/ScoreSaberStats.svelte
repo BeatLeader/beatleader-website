@@ -1,7 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import createPlayerService from '../../../services/scoresaber/player'
-  import {addToDate, DAY, formatDateRelative, toSSDate} from '../../../utils/date'
+  import {addToDate, DAY, formatDateRelative, toSsMidnight} from '../../../utils/date'
   import {debounce} from '../../../utils/debounce'
   import ScoresStats from '../ScoresStats.svelte'
   import SsBadges from '../SsBadges.svelte'
@@ -89,7 +89,7 @@
 
     if (!playerId || (!playerHistory?.length && !rankHistory?.length)) return;
 
-    const todaySsDate = toSSDate(new Date());
+    const todaySsDate = toSsMidnight(new Date());
     let gainDaysAgo = null;
     let playerHistoryItem = playerService.getPlayerGain(playerHistory, daysAgo, daysAgo + 7 - 1);
     if (playerHistoryItem) {

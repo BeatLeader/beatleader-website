@@ -1,7 +1,7 @@
 <script>
   import Chart from 'chart.js/auto'
   import {formatNumber} from '../../../utils/format'
-  import {dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
+  import {dateFromString, DAY, formatDateRelativeInUnits, toSsMidnight} from '../../../utils/date'
   import createPlayerService from '../../../services/scoresaber/player'
   import {debounce} from '../../../utils/debounce'
   import {onLegendClick} from './utils/legend-click-handler'
@@ -125,7 +125,7 @@
         }
 
       const additionalHistoryData = Object.entries(additionalHistory).reduce((cum, [ssTimestamp, historyItem]) => {
-        let diffInDays = Math.floor((toSSDate(new Date()).getTime() - parseInt(ssTimestamp, 10)) / DAY);
+        let diffInDays = Math.floor((toSsMidnight(new Date()).getTime() - parseInt(ssTimestamp, 10)) / DAY);
         if (diffInDays < 0) diffInDays = 0;
 
         cum[diffInDays] = historyItem;

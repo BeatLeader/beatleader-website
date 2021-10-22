@@ -74,17 +74,6 @@ export const toSsMidnight = date => toTimezoneMidnight(date, SCORESABER_TZ);
 export const toAccSaberMidnight = date => toTimezoneMidnight(date, ACCSABER_TZ);
 export const fromAccSaberDateString = dateStr => DateTime.fromSQL(dateStr, {zone: ACCSABER_TZ}).toJSDate();
 
-export function toSSDate(date) {
-    return new Date(Date.parse(date.toLocaleString('pl-PL', { timeZone: 'Australia/Brisbane',hour12: false,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-    }).replace(/(\d+)\.(\d+)\.(\d+)\s*(?:,|o)\s(\d+):(\d+):(\d+)/, "$3-$2-$1")));
-}
-
 export function formatDateWithOptions(val, options = {localeMatcher: 'best fit'}, locale = getCurrentLocale()) {
     if (!isValidDate(val)) return null;
 
