@@ -25,7 +25,7 @@
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
-  const DAYS_QTY = 30;
+  const CHART_DAYS = 30;
 
   const pageContainer = getContext('pageContainer');
 
@@ -104,7 +104,7 @@
     const rankedPlayCountColor = "#3e3e3e";
 
     const dtAccSaberToday = DateTime.fromJSDate(toAccSaberMidnight(new Date()));
-    const dayTimestamps = Array(DAYS_QTY).fill(0).map((_, idx) => toAccSaberMidnight(dtAccSaberToday.minus({days: DAYS_QTY - 1 - idx}).toJSDate()).getTime());
+    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toAccSaberMidnight(dtAccSaberToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
 
     const playerRankHistoryByTimestamp = convertArrayToObjectByKey(playerRankHistory.filter(h => h.accSaberDate).map(h => ({
       ...h,
