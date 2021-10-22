@@ -2,9 +2,16 @@
   import {createEventDispatcher, getContext} from 'svelte'
   import Chart from 'chart.js/auto'
   import 'chartjs-adapter-luxon';
+  import {DateTime} from 'luxon';
   import createAccSaberService from '../../../services/accsaber'
   import {formatNumber} from '../../../utils/format'
-  import {addToDate, DAY, formatDate, formatDateWithOptions, HOUR, toAccSaberMidnight} from '../../../utils/date'
+  import {
+    addToDate,
+    DAY,
+    formatDate,
+    formatDateWithOptions,
+    toAccSaberMidnight,
+  } from '../../../utils/date'
   import {debounce} from '../../../utils/debounce'
   import {convertArrayToObjectByKey} from '../../../utils/js'
   import {capitalize} from '../../../utils/js'
@@ -18,7 +25,7 @@
   export let height = "350px";
 
   const CHART_DEBOUNCE = 300;
-  const DAYS_QTY = 30;
+  const CHART_DAYS = 30;
 
   const pageContainer = getContext('pageContainer');
 
@@ -96,9 +103,8 @@
     const accColor = "#3273dc";
     const rankedPlayCountColor = "#3e3e3e";
 
-    // add 12h just to be sure that it won't messed up by DST
-    const accSaberToday = new Date(toAccSaberMidnight(new Date()).getTime() + 12 * HOUR);
-    const dayTimestamps = Array(DAYS_QTY).fill(0).map((_, idx) => toAccSaberMidnight(addToDate(-(DAYS_QTY - 1 - idx) * DAY, accSaberToday)).getTime());
+    const dtAccSaberToday = DateTime.fromJSDate(toAccSaberMidnight(new Date()));
+    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toAccSaberMidnight(dtAccSaberToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
 
     const playerRankHistoryByTimestamp = convertArrayToObjectByKey(playerRankHistory.filter(h => h.accSaberDate).map(h => ({
       ...h,
@@ -216,7 +222,7 @@
           return formatDateWithOptions(new Date(ticks[idx]?.value), {
             localeMatcher: 'best fit',
             day: '2-digit',
-            month: '2-digit',
+            month: 'short',
           });
         },
       },
@@ -255,7 +261,7 @@
                   title(ctx) {
                     if (!ctx?.[0]?.raw) return '';
 
-                    return formatDate(new Date(ctx[0].raw?.x), 'short', null);
+                    return formatDate(new Date(ctx[0].raw?.x), 'short', 'short');
                   },
 
                   label(ctx) {

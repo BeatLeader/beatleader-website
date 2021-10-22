@@ -1,6 +1,4 @@
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
+import {DateTime} from 'luxon';
 import {isString} from "./js";
 import {getCurrentLocale} from '../stores/config'
 import {padNumber} from './format'
@@ -12,10 +10,8 @@ export const DAY = 24 * HOUR;
 
 const getCurrentLang = () => 'en';
 
+const SCORESABER_TZ = 'Australia/Brisbane';
 const ACCSABER_TZ = 'Europe/Berlin';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 export const isValidDate = d =>d instanceof Date && !isNaN(d);
 
@@ -71,24 +67,12 @@ export function truncateDate(date, precision = 'day') {
     return newDate;
 }
 
-export function toSSDate(date) {
-    return new Date(Date.parse(date.toLocaleString('pl-PL', { timeZone: 'Australia/Brisbane',hour12: false,
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-    }).replace(/(\d+)\.(\d+)\.(\d+)\s*(?:,|o)\s(\d+):(\d+):(\d+)/, "$3-$2-$1")));
-}
+export const correctOldSsDate = ssDate => DateTime.fromJSDate(ssDate).setZone('UTC').startOf('day').setZone(SCORESABER_TZ, {keepLocalTime: true}).toJSDate();
 
-export function dateFromAccSaberDateString(dateStr) {
-    return dayjs.tz(dateStr, ACCSABER_TZ).toDate();
-}
-
-export function toAccSaberMidnight(date = new Date()) {
-    return dayjs(date).tz(ACCSABER_TZ).hour(0).minute(0).second(0).millisecond(0).toDate();
-}
+export const toTimezoneMidnight = (date, timezone) => DateTime.fromJSDate(date).setZone(timezone).startOf('day').toJSDate();
+export const toSsMidnight = date => toTimezoneMidnight(date, SCORESABER_TZ);
+export const toAccSaberMidnight = date => toTimezoneMidnight(date, ACCSABER_TZ);
+export const fromAccSaberDateString = dateStr => DateTime.fromSQL(dateStr, {zone: ACCSABER_TZ}).toJSDate();
 
 export function formatDateWithOptions(val, options = {localeMatcher: 'best fit'}, locale = getCurrentLocale()) {
     if (!isValidDate(val)) return null;

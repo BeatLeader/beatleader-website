@@ -1,11 +1,18 @@
 <script>
   import Chart from 'chart.js/auto'
+  import 'chartjs-adapter-luxon';
+  import {DateTime} from 'luxon';
   import {getContext, onMount} from 'svelte'
   import createPlayerService from '../../../services/scoresaber/player'
   import createScoresService from '../../../services/scoresaber/scores'
   import createBeatSaviorService from '../../../services/beatsavior'
   import {formatNumber} from '../../../utils/format'
-  import {addToDate, dateFromString, DAY, formatDateRelativeInUnits, toSSDate} from '../../../utils/date'
+  import {
+    dateFromString,
+    formatDate,
+    formatDateWithOptions,
+    toSsMidnight,
+  } from '../../../utils/date'
   import eventBus from '../../../utils/broadcast-channel-pubsub'
   import {debounce} from '../../../utils/debounce'
   import {onLegendClick} from './utils/legend-click-handler'
@@ -15,6 +22,7 @@
   export let playerHistory = null;
   export let height = "350px";
 
+  const CHART_DAYS = 50;
   const CHART_DEBOUNCE = 300;
   const MAGIC_INACTIVITY_RANK = 999999;
 
@@ -43,13 +51,13 @@
   const mapScoresToHistory = scores => {
     if (!Object.keys(scores)?.length) return null;
 
-    const ssToday = toSSDate(new Date());
+    const dtSsToday = DateTime.fromJSDate(toSsMidnight(new Date()));
 
-    return Array(50).fill(0)
+    return Array(CHART_DAYS).fill(0)
       .map((_, idx) => {
-        const agoTimeset = (addToDate(-(49 - idx) * DAY, ssToday)).getTime();
+        const agoTimeset = dtSsToday.minus({days: CHART_DAYS - 1 - idx}).toMillis();
 
-        return scores[agoTimeset] ? scores[agoTimeset] : 0;
+        return {x: agoTimeset, y: scores[agoTimeset] ? scores[agoTimeset] : 0};
       })
       ;
   }
@@ -59,8 +67,9 @@
 
     playerScores = await scoresService.getPlayerScores(playerId)
 
-    const ssToday = toSSDate(new Date());
-    const oldestDate = addToDate(-49 * DAY, ssToday);
+    const dtSsToday = DateTime.fromJSDate(toSsMidnight(new Date()));
+    const oldestDate = dtSsToday.minus({days: CHART_DAYS - 1}).toJSDate();
+
     const lastScores = playerScores
       .filter(score => score.timeSet && score.timeSet > oldestDate)
       .reduce((cum, score) => {
@@ -72,7 +81,7 @@
           );
 
         allSongScores.forEach(t => {
-          const ssDate = toSSDate(new Date(t));
+          const ssDate = toSsMidnight(new Date(t));
           const ssTimestamp = ssDate.getTime();
 
           if (!cum.hasOwnProperty(ssTimestamp)) cum[ssTimestamp] = 0;
@@ -92,13 +101,14 @@
 
     const scores = await beatSaviorService.getPlayerScores(playerId);
 
-    const ssToday = toSSDate(new Date());
-    const oldestDate = addToDate(-49 * DAY, ssToday);
+    const dtSsToday = DateTime.fromJSDate(toSsMidnight(new Date()));
+    const oldestDate = dtSsToday.minus({days: CHART_DAYS - 1}).toJSDate();
+
     const lastScores = scores.filter(score => score.timeSet && score.timeSet > oldestDate)
 
     const countScores = (scores, incFunc) => scores
       .reduce((cum, score) => {
-        const ssDate = toSSDate(score.timeSet);
+        const ssDate = toSsMidnight(score.timeSet);
         const ssTimestamp = ssDate.getTime();
 
         if (!cum.hasOwnProperty(ssTimestamp)) cum[ssTimestamp] = 0;
@@ -117,9 +127,7 @@
 
     lastHistoryHash = chartHash;
 
-    const daysAgo = Array(50).fill(0).map((v, i) => i).reverse();
-
-    if (rankHistory.length < 50) rankHistory = Array(50 - rankHistory.length).fill(null).concat(rankHistory);
+    if (rankHistory.length < CHART_DAYS) rankHistory = Array(CHART_DAYS - rankHistory.length).fill(null).concat(rankHistory);
 
     const gridColor = '#2a2a2a'
     const rankColor = "#3e95cd";
@@ -128,7 +136,11 @@
     const totalPlayCountColor = "#666";
     const activityColor = "#333"
 
-    const data = rankHistory.map(h => h === MAGIC_INACTIVITY_RANK ? null : h);
+    const dtAccSaberToday = DateTime.fromJSDate(toSsMidnight(new Date()));
+    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toSsMidnight(dtAccSaberToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
+
+    const data = rankHistory
+      .map((h, idx) => ({x: dayTimestamps[idx], y :h === MAGIC_INACTIVITY_RANK ? null : h}));
 
     const datasets = [
       {
@@ -147,16 +159,40 @@
     ];
 
     const xAxis = {
+      type: 'time',
+      display: true,
+      offset: true,
+      time: {
+        unit: 'day',
+      },
       scaleLabel: {
         display: false,
       },
       ticks: {
-        autoSkip: true,
-        autoSkipPadding: 4,
+        autoSkip: false,
+        major: {
+          enabled: true,
+        },
+        font: function (context) {
+          if (context.tick && context.tick.major) {
+            return {
+              weight: 'bold',
+            };
+          }
+        },
+        callback: (val, idx, ticks) => {
+          if (!ticks?.[idx]) return '';
+
+          return formatDateWithOptions(new Date(ticks[idx]?.value), {
+            localeMatcher: 'best fit',
+            day: '2-digit',
+            month: 'short',
+          });
+        },
       },
       grid: {
-        color: gridColor
-      }
+        color: gridColor,
+      },
     };
 
     const yAxes = {
@@ -181,80 +217,67 @@
     let lastYIdx = 0;
 
     if (additionalHistory && Object.keys(additionalHistory).length) {
-      const additionalHistoryData = Object.entries(additionalHistory).reduce((cum, [ssTimestamp, historyItem]) => {
-        let diffInDays = Math.floor((toSSDate(new Date()).getTime() - parseInt(ssTimestamp, 10)) / DAY);
-        if (diffInDays < 0) diffInDays = 0;
+      const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
 
-        cum[diffInDays] = historyItem;
+      [
+        {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true, precision: 0},
+        {
+          key: 'rankedPlayCount',
+          name: 'Ranked play count',
+          borderColor: rankedPlayCountColor,
+          round: 0,
+          axisDisplay: false,
+          precision: 0,
+        },
+        {
+          key: 'totalPlayCount',
+          name: 'Total play count',
+          borderColor: totalPlayCountColor,
+          round: 0,
+          axisDisplay: false,
+          precision: 0,
+        },
+      ]
+        .forEach(obj => {
+          const {key, name, axisDisplay, usePrevAxis, precision, ...options} = obj;
+          const fieldData = dayTimestamps.map(x => ({x, y: additionalHistory?.[x]?.[key] ?? null}));
 
-        return cum;
-      }, {})
+          if (!usePrevAxis) lastYIdx++;
+          const axisKey = `y${lastYIdx}`
+          yAxes[axisKey] = {
+            display: axisDisplay,
+            position: 'right',
+            title: {
+              display: $pageContainer.name !== 'phone',
+              text: name,
+            },
+            ticks: {
+              callback: val => val === Math.floor(val) ? val : null,
+              precision
+            },
+            grid: {
+              drawOnChartArea: false,
+            },
+          };
 
-      if (!additionalHistoryData[0] && additionalHistoryData[1]) additionalHistoryData[0] = additionalHistoryData[1];
-
-      if (Object.keys(additionalHistoryData).length) {
-        const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
-
-        [
-          {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true, precision: 0},
-          {
-            key: 'rankedPlayCount',
-            name: 'Ranked play count',
-            borderColor: rankedPlayCountColor,
-            round: 0,
-            axisDisplay: false,
-            precision: 0,
-          },
-          {
-            key: 'totalPlayCount',
-            name: 'Total play count',
-            borderColor: totalPlayCountColor,
-            round: 0,
-            axisDisplay: false,
-            precision: 0,
-          },
-        ]
-          .forEach(obj => {
-            const {key, name, axisDisplay, usePrevAxis, precision, ...options} = obj;
-            const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key] ?? null);
-
-            if (!usePrevAxis) lastYIdx++;
-            const axisKey = `y${lastYIdx}`
-            yAxes[axisKey] = {
-              display: axisDisplay,
-              position: 'right',
-              title: {
-                display: $pageContainer.name !== 'phone',
-                text: name,
-              },
-              ticks: {
-                callback: val => val === Math.floor(val) ? val : null,
-                precision
-              },
-              grid: {
-                drawOnChartArea: false,
-              },
-            };
-
-            datasets.push({
-              ...options,
-              yAxisID: axisKey,
-              label: name,
-              data: fieldData,
-              fill: false,
-              borderWidth: 2,
-              pointRadius: 1,
-              cubicInterpolationMode: 'monotone',
-              tension: 0.4,
-              type: 'line',
-              spanGaps: true,
-              segment: {
-                borderWidth: ctx => skipped(ctx, 1),
-                borderDash: ctx => skipped(ctx, [6, 6]),
-              },
-            });
+          datasets.push({
+            ...options,
+            yAxisID: axisKey,
+            label: name,
+            data: fieldData,
+            fill: false,
+            borderWidth: 2,
+            pointRadius: 1,
+            cubicInterpolationMode: 'monotone',
+            tension: 0.4,
+            type: 'line',
+            spanGaps: true,
+            segment: {
+              borderWidth: ctx => skipped(ctx, 1),
+              borderDash: ctx => skipped(ctx, [6, 6]),
+            },
           });
-      }
+        });
     }
 
     // prepare common axis for activity & beat savior histories
@@ -319,15 +342,13 @@
       });
     }
 
-    const labels = daysAgo.map(d => formatDateRelativeInUnits(-d, 'day'))
-
     if (!chart)
     {
       chart = new Chart(
             canvas,
             {
               type: 'line',
-              data: {labels, datasets},
+              data: {datasets},
               options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -348,6 +369,11 @@
                   tooltip: {
                     position: 'nearest',
                     callbacks: {
+                      title(ctx) {
+                        if (!ctx?.[0]?.raw) return '';
+
+                        return formatDate(new Date(ctx[0].raw?.x), 'short', 'short');
+                      },
                       label(ctx) {
                         switch(ctx.dataset.label) {
                           case 'Rank': return ` ${ctx.dataset.label}: #${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
@@ -367,9 +393,9 @@
           );
     }
     else {
-      chart.data = {labels, datasets}
-      chart.options.scales = {x: xAxis, ...yAxes}
-      chart.update()
+      chart.data = {datasets};
+      chart.options.scales = {x: xAxis, ...yAxes};
+      chart.update();
     }
   }
 

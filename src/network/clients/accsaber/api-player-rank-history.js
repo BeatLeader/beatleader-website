@@ -1,6 +1,6 @@
 import queue from '../../queues/queues'
 import createClient from '../generic'
-import {dateFromAccSaberDateString} from '../../../utils/date'
+import {fromAccSaberDateString} from '../../../utils/date'
 import {isDateObject} from '../../../utils/js'
 
 const process = response => {
@@ -11,7 +11,7 @@ const process = response => {
   return {
     playerId,
     history: Object.entries(response.response)
-      .map(([date, rank]) => ({date: dateFromAccSaberDateString(date), rank}))
+      .map(([date, rank]) => ({date: fromAccSaberDateString(date), rank}))
       .filter(obj => isDateObject(obj?.date))
       .sort((a,b) => a.date.getTime() - b.date.getTime())
     ,
