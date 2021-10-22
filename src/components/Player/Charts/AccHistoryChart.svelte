@@ -1,16 +1,22 @@
 <script>
   import Chart from 'chart.js/auto'
   import {formatNumber} from '../../../utils/format'
-  import {dateFromString, DAY, formatDateRelativeInUnits, toSsMidnight} from '../../../utils/date'
+  import {
+    formatDate,
+    formatDateWithOptions,
+    toSsMidnight,
+  } from '../../../utils/date'
   import createPlayerService from '../../../services/scoresaber/player'
   import {debounce} from '../../../utils/debounce'
   import {onLegendClick} from './utils/legend-click-handler'
   import {getContext} from 'svelte'
+  import {DateTime} from 'luxon'
 
   export let playerId = null;
   export let rankHistory = null;
   export let height = "350px";
 
+  const CHART_DAYS = 50;
   const CHART_DEBOUNCE = 300;
 
   const pageContainer = getContext('pageContainer');
@@ -38,9 +44,7 @@
 
     lastHistoryHash = chartHash;
 
-    const daysAgo = Array(50).fill(0).map((v, i) => i).reverse();
-
-    if (rankHistory.length < 50) rankHistory = Array(50 - rankHistory.length).fill(null).concat(rankHistory);
+    if (rankHistory.length < CHART_DAYS) rankHistory = Array(CHART_DAYS - rankHistory.length).fill(null).concat(rankHistory);
 
     const gridColor = '#2a2a2a'
     const averageColor = '#3273dc';
@@ -54,17 +58,44 @@
 
     const datasets = [];
 
+    const dtAccSaberToday = DateTime.fromJSDate(toSsMidnight(new Date()));
+    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toSsMidnight(dtAccSaberToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
+
     const xAxis = {
+      type: 'time',
+      display: true,
+      offset: true,
+      time: {
+        unit: 'day',
+      },
       scaleLabel: {
         display: false,
       },
       ticks: {
-        autoSkip: true,
-        autoSkipPadding: 4,
+        autoSkip: false,
+        major: {
+          enabled: true,
+        },
+        font: function (context) {
+          if (context.tick && context.tick.major) {
+            return {
+              weight: 'bold',
+            };
+          }
+        },
+        callback: (val, idx, ticks) => {
+          if (!ticks?.[idx]) return '';
+
+          return formatDateWithOptions(new Date(ticks[idx]?.value), {
+            localeMatcher: 'best fit',
+            day: '2-digit',
+            month: 'short',
+          });
+        },
       },
       grid: {
-        color: gridColor
-      }
+        color: gridColor,
+      },
     };
 
     const isScoreDataAvailable = playerHistory && playerHistory.find(h => !!h.avgAcc);
@@ -124,102 +155,86 @@
           },
         }
 
-      const additionalHistoryData = Object.entries(additionalHistory).reduce((cum, [ssTimestamp, historyItem]) => {
-        let diffInDays = Math.floor((toSsMidnight(new Date()).getTime() - parseInt(ssTimestamp, 10)) / DAY);
-        if (diffInDays < 0) diffInDays = 0;
+      const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
 
-        cum[diffInDays] = historyItem;
-
-        return cum;
-      }, {})
-
-      if (!additionalHistoryData[0] && additionalHistoryData[1]) additionalHistoryData[0] = additionalHistoryData[1];
-
-      if (Object.keys(additionalHistoryData).length) {
-        const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
-
-        [
-          {
-            key: 'avgAcc',
-            secKey: 'averageRankedAccuracy',
-            name: 'Average',
-            borderColor: averageColor,
-            round: 2,
-            axis: 'y',
-            axisOrder: 0,
-          },
-        ]
-          .concat(
-            isScoreDataAvailable
-              ? [
-                {key: 'medianAcc', name: 'Median', borderColor: medianColor, round: 2, axis: 'y', axisOrder: 1},
-                {key: 'stdDeviation', name: 'Std dev', borderColor: stdDevColor, round: 4, axis: 'y2', axisOrder: 10},
-                {
-                  key: 'accBadges', keys: [
-                    {key: 'SS+', name: 'SS+', backgroundColor: ssPlusColor, axisOrder: 2},
-                    {key: 'SS', name: 'SS', backgroundColor: ssColor, axisOrder: 3},
-                    {key: 'S+', name: 'S+', backgroundColor: sPlusColor, axisOrder: 4},
-                    {key: 'S', name: 'S', backgroundColor: sColor, axisOrder: 5},
-                    {key: 'A', name: 'A', backgroundColor: aColor, axisOrder: 5},
-                  ], round: 0, axis: 'y1',
-                },
-              ]
-              : [],
-          )
-          .forEach(obj => {
-            const {key, secKey, keys, name, axis, ...options} = obj;
-            if (keys && Array.isArray(keys)) {
-              keys.forEach(obj => {
-                const {key: innerKey, name, ...innerOptions} = obj;
-                const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key]?.[innerKey] ?? 0);
-
-                datasets.push({
-                  ...options,
-                  ...innerOptions,
-                  aaa: 'xxx',
-                  yAxisID: axis,
-                  label: name,
-                  data: fieldData,
-                  fill: true,
-                  borderWidth: 2,
-                  pointRadius: 1,
-                  cubicInterpolationMode: 'monotone',
-                  tension: 0.4,
-                  type: 'bar',
-                  stack: key,
-                  spanGaps: true,
-                  segment: {
-                    borderWidth: ctx => skipped(ctx, 1),
-                    borderDash: ctx => skipped(ctx, [6, 6]),
-                  },
-                });
-              })
-            } else {
-              const fieldData = daysAgo.map(d => additionalHistoryData?.[d]?.[key] ?? (additionalHistoryData?.[d]?.[secKey] ?? null));
+      [
+        {
+          key: 'avgAcc',
+          secKey: 'averageRankedAccuracy',
+          name: 'Average',
+          borderColor: averageColor,
+          round: 2,
+          axis: 'y',
+          axisOrder: 0,
+        },
+      ]
+        .concat(
+          isScoreDataAvailable
+            ? [
+              {key: 'medianAcc', name: 'Median', borderColor: medianColor, round: 2, axis: 'y', axisOrder: 1},
+              {key: 'stdDeviation', name: 'Std dev', borderColor: stdDevColor, round: 4, axis: 'y2', axisOrder: 10},
+              {
+                key: 'accBadges', keys: [
+                  {key: 'SS+', name: 'SS+', backgroundColor: ssPlusColor, axisOrder: 2},
+                  {key: 'SS', name: 'SS', backgroundColor: ssColor, axisOrder: 3},
+                  {key: 'S+', name: 'S+', backgroundColor: sPlusColor, axisOrder: 4},
+                  {key: 'S', name: 'S', backgroundColor: sColor, axisOrder: 5},
+                  {key: 'A', name: 'A', backgroundColor: aColor, axisOrder: 5},
+                ], round: 0, axis: 'y1',
+              },
+            ]
+            : [],
+        )
+        .forEach(obj => {
+          const {key, secKey, keys, name, axis, ...options} = obj;
+          if (keys && Array.isArray(keys)) {
+            keys.forEach(obj => {
+              const {key: innerKey, name, ...innerOptions} = obj;
+              const fieldData = dayTimestamps.map(x => ({x, y: additionalHistory?.[x]?.[key]?.[innerKey] ?? 0}));
 
               datasets.push({
                 ...options,
+                ...innerOptions,
                 yAxisID: axis,
                 label: name,
                 data: fieldData,
-                fill: false,
+                fill: true,
                 borderWidth: 2,
                 pointRadius: 1,
                 cubicInterpolationMode: 'monotone',
                 tension: 0.4,
-                type: 'line',
+                type: 'bar',
+                stack: key,
                 spanGaps: true,
                 segment: {
                   borderWidth: ctx => skipped(ctx, 1),
                   borderDash: ctx => skipped(ctx, [6, 6]),
                 },
               });
-            }
-          });
-      }
-    }
+            })
+          } else {
+            const fieldData = dayTimestamps.map(x => ({x, y: additionalHistory?.[x]?.[key] ?? null}));
 
-    const labels = daysAgo.map(d => formatDateRelativeInUnits(-d, 'day'))
+            datasets.push({
+              ...options,
+              yAxisID: axis,
+              label: name,
+              data: fieldData,
+              fill: false,
+              borderWidth: 2,
+              pointRadius: 1,
+              cubicInterpolationMode: 'monotone',
+              tension: 0.4,
+              type: 'line',
+              spanGaps: true,
+              segment: {
+                borderWidth: ctx => skipped(ctx, 1),
+                borderDash: ctx => skipped(ctx, [6, 6]),
+              },
+            });
+          }
+        });
+    }
 
     if (!chart)
     {
@@ -227,7 +242,7 @@
             canvas,
             {
               type: 'line',
-              data: {labels, datasets},
+              data: {datasets},
               options: {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -248,6 +263,11 @@
                   tooltip: {
                     position: 'nearest',
                     callbacks: {
+                      title(ctx) {
+                        if (!ctx?.[0]?.raw) return '';
+
+                        return formatDate(new Date(ctx[0].raw?.x), 'short', 'short');
+                      },
                       label(ctx) {
                         switch (ctx.dataset.label) {
                           case 'SS+':
@@ -273,9 +293,9 @@
           );
     }
     else {
-      chart.data = {labels, datasets}
-      chart.options.scales = {x: xAxis, ...yAxes}
-      chart.update()
+      chart.data = {datasets};
+      chart.options.scales = {x: xAxis, ...yAxes};
+      chart.update();
     }
   }
 
@@ -286,7 +306,7 @@
 
   $: additionalHistory = playerHistory && playerHistory.length
     ? playerHistory.reduce((cum, h) => {
-      const time = dateFromString(h.ssDate)?.getTime()
+      const time = toSsMidnight(h.ssDate)?.getTime()
       if (!time) return cum;
 
       const history = {[time]: {averageRankedAccuracy: h. averageRankedAccuracy, avgAcc: h.avgAcc, medianAcc: h.medianAcc, stdDeviation:h.stdDeviation, accBadges: h.accBadges}};
