@@ -13,7 +13,7 @@
 
 [[redirects]]
     from = "/cors/score-saber/*"
-    to = "https://old.scoresaber.com/:splat"
+    to = "https://scoresaber.com/:splat"
     status = 200
     force = true
     headers = {X-From = "Netlify"}

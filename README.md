@@ -1,10 +1,10 @@
 # ScoreSaber Reloaded
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/38bf7c3a-dbfb-428b-9ff7-3fc86ef68f23/deploy-status)](https://app.netlify.com/sites/modest-morse-77235d/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3930b442-ffc4-4039-ac79-446a61ca582b/deploy-status)](https://app.netlify.com/sites/nostalgic-kare-ad710f/deploys)
 
 ## Users
 
-Just go to [ssr.motzel.dev](https://ssr.motzel.dev)
+Just go to [beatleader.xyz](https://beatleader.xyz)
 
 
 ## Devs

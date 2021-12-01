@@ -1,17 +1,19 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../../utils/format'
-import {extractDiffAndType} from '../../../utils/scoresaber/format'
+import {extractDiffAndType, getDiffColor} from '../../../utils/scoresaber/format'
 import cfDecryptEmail from '../../../utils/cf-email-decrypt'
 import {capitalize, getFirstRegexpMatch, opt} from '../../../utils/js'
 import {dateFromString} from '../../../utils/date'
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../../utils/scoresaber/consts'
+import {formatDateRelative} from '../../../utils/date'
 
 export const SS_HOST = 'https://scoresaber.com';
 const SS_CORS_HOST = '/cors/score-saber';
 const RANKEDS_URL = SS_CORS_HOST + '/api.php?function=get-leaderboards&cat=1&limit=5000&ranked=1&page=${page}';
 const PLAYER_PROFILE_URL = SS_CORS_HOST + '/u/${playerId}?page=1&sort=2'
-const COUNTRY_RANKING_URL = SS_CORS_HOST + '/global/${page}?country=${country}'
-const LEADERBOARD_URL = SS_CORS_HOST + '/leaderboard/${leaderboardId}?page=${page}'
+const COUNTRY_RANKING_URL = SS_CORS_HOST + '/api/players?page=${page}&countries=${country}'
+const LEADERBOARD_URL = SS_CORS_HOST + '/api/leaderboard/by-id/${leaderboardId}/info'
+const LEADERBOARD_SCORES_URL = SS_CORS_HOST + '/api/leaderboard/by-id/${leaderboardId}/scores?page=${page}'
 
 export const parseSsInt = text => {
   const value = getFirstRegexpMatch(/(-?[0-9,]+)\s*$/, text)
@@ -282,28 +284,25 @@ export default (options = {}) => {
     })
 
   const processCountryRanking = (country, doc) => {
-    cfDecryptEmail(doc);
 
-    const data = [...doc.querySelectorAll('.ranking.global .player a')]
+    const data = doc
       .map(a => {
-        const tr = a.closest("tr");
-        const id = getFirstRegexpMatch(/\/(\d+)$/, a.href)
+        const id = a.id;
 
-        const avatar = getImgUrl(opt(tr.querySelector('td.picture img'), 'src', null));
+        const avatar = a.profilePicture;
 
-        let country = getFirstRegexpMatch(/^.*?\/flags\/([^.]+)\..*$/, opt(tr.querySelector('td.player img'), 'src', null));
+        let country = a.country;
         country = country ? country.toUpperCase() : null;
 
-        let difference = parseSsInt(opt(tr.querySelector('td.diff'), 'innerText', null));
-        difference = !isNaN(difference) ? difference : null
-
-        let playerName = opt(a.querySelector('.songTop.pp'), 'innerText');
+        let histories = a.histories.split(',');
+        let difference = (histories.length > 7 ? parseSsInt(histories[histories.length - 7]) - parseSsInt(histories[histories.length - 1]) : null);
+        let playerName = a.name;
         playerName = playerName || playerName === '' ? playerName.trim() : null;
 
-        let pp = parseSsFloat(opt(tr.querySelector('td.pp .scoreTop.ppValue'), 'innerText'));
+        let pp = a.pp;
         pp = !isNaN(pp) ? pp : null;
 
-        let rank = parseSsInt(getFirstRegexpMatch(/^\s*#(\d+)\s*$/, opt(tr.querySelector('td.rank'), 'innerText', null)));
+        let rank = a.rank;
         rank = !isNaN(rank) ? rank : null
 
         return {
@@ -321,7 +320,7 @@ export default (options = {}) => {
     return {players: data};
   }
 
-  const countryRanking = async (country, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchHtml(substituteVars(COUNTRY_RANKING_URL, {country, page}), options, priority)
+  const countryRanking = async (country, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(COUNTRY_RANKING_URL, {country, page}), options, priority)
     .then(r => {
       r.body = processCountryRanking(country, r.body)
 
@@ -329,34 +328,25 @@ export default (options = {}) => {
     })
 
   const parseSsLeaderboardScores = doc => {
-    cfDecryptEmail(doc);
-
-    return [...doc.querySelectorAll('table.ranking tbody tr')].map(tr => {
+    return doc.map(a => {
       let ret = {player: {playerInfo: {countries: []}}, score: {lastUpdated: new Date()}};
 
-      const parseValue = selector => {
-        const val = parseSsFloat(opt(tr.querySelector(selector), 'innerText'));
+      ret.player.playerInfo.avatar = a.leaderboardPlayerInfo.profilePicture;
 
-        return !isNaN(val) ? val : null;
-      }
+      ret.score.rank = a.rank;
 
-      ret.player.playerInfo.avatar = getImgUrl(opt(tr.querySelector('.picture img'), 'src', null));
-
-      ret.score.rank = parseSsInt(opt(tr.querySelector('td.rank'), 'innerText'));
-      if (isNaN(ret.score.rank)) ret.score.rank = null;
-
-      const player = tr.querySelector('.player a');
+      const player = a.leaderboardPlayerInfo;
       if (player) {
-        let country = getFirstRegexpMatch(/^.*?\/flags\/([^.]+)\..*$/, opt(player.querySelector('img'), 'src', ''));
+        let country = player.country;
         country = country ? country.toUpperCase() : null;
         if (country) {
           ret.player.playerInfo.country = country
           ret.player.playerInfo.countries.push({country, rank: null});
         }
 
-        ret.player.name = opt(player.querySelector('span.songTop.pp'), 'innerText')
+        ret.player.name = player.name;
         ret.player.name = ret.player.name ? ret.player.name.trim().replace('&#039;', "'") : null;
-        ret.player.playerId = getFirstRegexpMatch(/\/u\/(\d+)((\?|&|#).*)?$/, opt(player, 'href', ''));
+        ret.player.playerId = player.id;
         ret.player.playerId = ret.player.playerId ? ret.player.playerId.trim() : null;
       } else {
         ret.player.playerId = null;
@@ -364,98 +354,68 @@ export default (options = {}) => {
         ret.player.playerInfo.country = null;
       }
 
-      ret.score.score = parseValue('td.score');
+      ret.score.score = a.modifiedScore;
 
-      ret.score.timeSetString = opt(tr.querySelector('td.timeset'), 'innerText', null);
+      ret.score.timeSetString = formatDateRelative(new Date(a.timeSet));
       if (ret.score.timeSetString) ret.score.timeSetString = ret.score.timeSetString.trim();
 
-      ret.score.mods = opt(tr.querySelector('td.mods'), 'innerText');
+      ret.score.mods = a.modofiers;
       ret.score.mods = ret.score.mods ? ret.score.mods.replace('-','').trim() : null
       ret.score.mods = ret.score.mods && ret.score.mods.length ? ret.score.mods.split(',').filter(m => m && m.trim().length) : null;
 
-      ret.score.pp = parseValue('td.pp .scoreTop.ppValue');
+      ret.score.pp = a.pp;
 
-      ret.score.percentage = parseValue('td.percentage');
+      ret.score.percentage = 0.9;
 
       return ret;
     });
   }
 
   const processLeaderboard = (leaderboardId, page, doc) => {
-    cfDecryptEmail(doc);
 
-    const diffs = [...doc.querySelectorAll('.tabs ul li a')].map(a => {
-      let leaderboardId = parseInt(getFirstRegexpMatch(/leaderboard\/(\d+)$/, a.href), 10);
-      if (isNaN(leaderboardId)) leaderboardId = null;
+    let led = doc[0].body;
 
-      const span = a.querySelector('span');
-      const color = span ? span.style.color : null;
-
-      return {name: a.innerText, leaderboardId, color};
+    let processDiffName = raw => raw.split('_')[1]
+    
+    const diffs = led.difficulties.map(a => {
+      let leaderboardId = a.leaderboardId;
+      let color = getDiffColor({diff: processDiffName(a.difficultyRaw).toLowerCase()});
+      return {name: processDiffName(a.difficultyRaw).replace('Plus', '+'), leaderboardId, color};
     });
 
-    const currentDiffHuman = opt(doc.querySelector('.tabs li.is-active a span'), 'innerText', null);
+    const currentDiff = led.difficulty;
 
     let diff = null;
     let diffInfo = null;
-    if (currentDiffHuman) {
-      const lowerCaseDiff = currentDiffHuman.toLowerCase().replace('+', 'Plus');
-      diff = `_${capitalize(lowerCaseDiff)}_SoloStandard`;
-      diffInfo = {type: 'Standard', diff: lowerCaseDiff}
+    if (currentDiff) {
+      diff = processDiffName(currentDiff.difficultyRaw);
+      diffInfo = {type: 'Standard', diff: diff}
     }
 
-    const songName = opt(doc.querySelector('.column.is-one-third-desktop .box:first-of-type .title a'), 'innerText', null);
+    const songName = led.songName;
 
-    const imageUrl = getImgUrl(opt(doc.querySelector('.column.is-one-third-desktop .box:first-of-type .columns .column.is-one-quarter img'), 'src', null));
+    const imageUrl = led.coverImage;
 
     const songInfo = [
-      {id: 'hash', label: 'ID', value: null},
-      {id: 'scores', label: 'Scores', value: null},
-      {id: 'status', label: 'Status', value: null},
-      {id: 'totalScores', label: 'Total Scores', value: null},
-      {id: 'notes', label: 'Note Count', value: null},
-      {id: 'bpm', label: 'BPM', value: null},
-      {id: 'stars', label: 'Star Difficulty', value: null},
-      {id: 'levelAuthorName', label: 'Mapped by', value: null},
-    ]
-      .map(sid => {
-        let songInfoBox = doc.querySelector('.column.is-one-third-desktop .box:first-of-type')
-        return {
-          ...sid,
-          value: songInfoBox ? songInfoBox.innerHTML.match(new RegExp(sid.label + ':\\s*<b>(.*?)</b>', 'i')) : null,
-        }
-      })
-      .concat([{id: 'name', value: [null, songName]}])
+      {id: 'hash', value: led.songHash},
+      {id: 'scores', value: led.plays},
+      {id: 'status', value: led.ranked ? "Ranked" : "Not Ranked"},
+      {id: 'totalScores', value: led.plays},
+      {id: 'notes', value: 0},
+      {id: 'bpm', value: 0},
+      {id: 'stars', value: led.stars},
+      {id: 'levelAuthorName', value: led.levelAuthorName},
+      {id: 'authorName', value: led.songAuthorName},
+      {id: 'name', value: songName}]
       .reduce((cum, sid) => {
-        let value = Array.isArray(sid.value) ? sid.value[1] : null;
+        let value = sid.value;
 
-        if (value !== null && ['scores', 'totalScores', 'bpm', 'notes'].includes(sid.id)) {
-          value = parseSsFloat(value);
-
+        if (value !== null && ['scores', 'totalScores', 'bpm', 'notes', 'stars', 'status'].includes(sid.id)) {
+          
           if (value !== null) {
             cum.stats[sid.id] = value;
           }
 
-          return cum;
-        }
-        if (value !== null && sid.id === 'stars') value = parseSsFloat(value);
-        if (value && sid.id === 'name') {
-          const songAuthorMatch = value.match(/^(.*?)\s-\s(.*)$/);
-          if (songAuthorMatch) {
-            value = songAuthorMatch[2];
-            cum.authorName = songAuthorMatch[1];
-          } else {
-            cum.authorName = '';
-          }
-          cum.subName = '';
-        }
-        if (value && sid.id === 'levelAuthorName') {
-          const el = doc.createElement('div');
-          el.innerHTML = value;
-          value = el.innerText;
-        }
-        if (value && sid.id === 'status') {
-          cum.stats[sid.id] = value;
           return cum;
         }
         if (value !== null) cum[sid.id] = value;
@@ -466,16 +426,13 @@ export default (options = {}) => {
     const {stats, ...song} = songInfo;
     const leaderboard = {leaderboardId, song, diffInfo, stats};
 
-    let pageQty = parseInt(opt(doc.querySelector('.pagination .pagination-list li:last-of-type'), 'innerText', null), 10)
-    if (isNaN(pageQty)) pageQty = null;
+    const totalItems = led.plays;
+    const pageQty = 10;
 
-    let scoresQty = opt(stats, 'scores', 0);
-    if (isNaN(scoresQty)) scoresQty = null;
+    const scores = parseSsLeaderboardScores(doc[1].body);
 
-    const totalItems = pageQty && scoresQty ? (Math.ceil(scoresQty / LEADERBOARD_SCORES_PER_PAGE) > pageQty ? pageQty * LEADERBOARD_SCORES_PER_PAGE : scoresQty) : null;
-
-    let diffChartText = getFirstRegexpMatch(/'difficulty',\s*([0-9.,\s]+)\s*\]/, doc.body.innerHTML)
-    let diffChart = (diffChartText ? diffChartText : '').split(',').map(i => parseFloat(i)).filter(i => i && !isNaN(i));
+    // let diffChartText = getFirstRegexpMatch(/'difficulty',\s*([0-9.,\s]+)\s*\]/, doc.body.innerHTML)
+    let diffChart = null;//(diffChartText ? diffChartText : '').split(',').map(i => parseFloat(i)).filter(i => i && !isNaN(i));
 
     return {
       diffs,
@@ -484,16 +441,20 @@ export default (options = {}) => {
       page,
       pageQty,
       totalItems,
-      scores: parseSsLeaderboardScores(doc),
+      scores
     }
   }
 
-  const leaderboard = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchHtml(substituteVars(LEADERBOARD_URL, {leaderboardId, page}), options, priority)
+  const leaderboard = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, options = {}) => Promise.all([
+    fetchJson(substituteVars(LEADERBOARD_URL, {leaderboardId, page}), options, priority), 
+    fetchJson(substituteVars(LEADERBOARD_SCORES_URL, {leaderboardId, page}), options, priority)])
     .then(r => {
-      r.body = processLeaderboard(leaderboardId, page, r.body);
+      r[0].body = processLeaderboard(leaderboardId, page, r);
 
-      return r;
+      return r[0];
     })
+
+  
 
   return {
     rankeds,
