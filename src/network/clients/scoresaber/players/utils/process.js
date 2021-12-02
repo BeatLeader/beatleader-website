@@ -6,7 +6,7 @@ export default response => {
   if (!Array.isArray(response)) return null;
 
   return response.map(player => {
-    let {profilePicture: avatar, country, histories: history, id: playerId, name, pp, rank} = player;
+    let {profilePicture: avatar, country, countryRank, histories: history, id: playerId, name, pp, rank} = player;
     let difference = (history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null);
 
     if (avatar) {
@@ -19,7 +19,7 @@ export default response => {
       name,
       playerInfo: {
         avatar,
-        countries: [{country, rank: null}],
+        countries: [{country, rank: countryRank}],
         pp,
         rank,
         rankHistory: history && history.length

@@ -319,7 +319,7 @@ export default (options = {}) => {
           name: playerName,
           playerInfo: {
             avatar: a.profilePicture,
-            countries: [{country, rank: null}],
+            countries: [{country, rank: a.countryRank}],
             pp,
             rank,
             rankHistory: histories,

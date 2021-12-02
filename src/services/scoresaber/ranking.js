@@ -43,7 +43,7 @@ export default () => {
       const ranking = (await Promise.all(pages.map(async page => (country ? fetchCountry(country, page) : fetchGlobal(page)))))
         .reduce((cum, arr) => cum.concat(arr), [])
         .filter(player => {
-          const rank =  opt(player, 'playerInfo.rank')
+          const rank = country ? opt(player, 'playerInfo.countries.0.rank') : opt(player, 'playerInfo.rank')
           return rank >= firstPlayerRank && rank <= lastPlayerRank;
         })
         .sort((a,b) => opt(a, 'playerInfo.rank') - opt(b, 'playerInfo.rank'))

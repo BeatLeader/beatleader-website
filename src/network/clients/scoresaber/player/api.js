@@ -3,7 +3,7 @@ import createClient from '../../generic'
 import {opt} from '../../../../utils/js'
 
 const process = response => {
-  const {id: playerId, name, country, countryRank, profilePicture: avatar, permissions, pp, rank, banned, inactive, histories: history, scoreStats} = response;
+  const {id: playerId, name, country, countryRank, badges, profilePicture: avatar, permissions, pp, rank, banned, inactive, histories: history, scoreStats} = response;
 
   return {playerId, name, playerInfo: {
     avatar,
@@ -12,6 +12,7 @@ const process = response => {
     banned,
     inactive,
     rank,
+    badges,
     rankHistory: history && history.length
       ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
       : [],

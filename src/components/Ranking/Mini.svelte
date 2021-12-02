@@ -35,7 +35,7 @@
       const ranking = await rankingService.getMiniRanking(rank, country, numOfPlayers);
       if (!ranking) return;
 
-      comparePp = opt(ranking.find(p => opt(p, 'playerInfo.rank') === rank), 'playerInfo.pp')
+      comparePp = opt(ranking.find(p =>(country ? opt(p, 'playerInfo.countries.0.rank') : opt(p, 'playerInfo.rank')) === rank), 'playerInfo.pp')
       miniRanking = ranking
 
       dispatch('height-changed');
@@ -64,7 +64,7 @@
       <div class="players">
         {#each miniRanking as player}
           <div class="rank">
-            <Value value={opt(player, 'playerInfo.rank')} zero="" digits={0} prefix="#"/>
+            <Value value={country ? opt(player, 'playerInfo.countries.0.rank') : opt(player, 'playerInfo.rank')} zero="" digits={0} prefix="#"/>
           </div>
 
           <PlayerNameWithFlag {player} on:click={() => navigate(`/u/${player.playerId}/scoresaber/recent/1`)}/>

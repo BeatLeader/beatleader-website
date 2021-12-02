@@ -140,7 +140,7 @@ function updateAccBadges(playerStats) {
 function updateSsBadges(playerData) {
   if (!opt(playerData, 'playerInfo.badges.length')) return null;
 
-  return playerData.playerInfo.badges.map(b => ({src: `${SS_HOST}/imports/images/badges/${b.image}`, title: b.description}));
+  return playerData.playerInfo.badges.map(b => ({src: `${b.image}`, title: b.description}));
 }
 
 const playerInfoTweened = {};
