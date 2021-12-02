@@ -2,12 +2,12 @@ import {opt} from '../../../../../utils/js'
 import queue from '../../../../queues/queues'
 
 export default response => {
-  if (!opt(response, 'players')) return null;
 
-  if (!Array.isArray(response.players)) return null;
+  if (!Array.isArray(response)) return null;
 
-  return response.players.map(player => {
-    let {avatar, country, difference, history, playerId, playerName: name, pp, rank} = player;
+  return response.map(player => {
+    let {profilePicture: avatar, country, histories: history, id: playerId, name, pp, rank} = player;
+    let difference = (history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null);
 
     if (avatar) {
       if (!avatar.startsWith('http'))

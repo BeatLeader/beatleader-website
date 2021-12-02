@@ -16,13 +16,13 @@ export default () => {
 
   const fetchCountry = async (country, page = 1, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`pageClient/ranking/${country}/${page}`, () => playersCountryRankingPageClient.getProcessed({country, page, signal, priority}));
 
-  const fetchGlobalPages = async (priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/rankingGlobalPages`, () => playersGlobalRankingPagesApiClient.getProcessed({signal, priority}));
+  const fetchGlobalCount = async (priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/rankingGlobalPages`, () => playersGlobalRankingPagesApiClient.getProcessed({signal, priority}));
 
-  const fetchGlobalCount = async (priority = PRIORITY.FG_LOW, signal = null) => {
-    const pages = await fetchGlobalPages(priority, signal);
-    if (!pages || !Number.isFinite(pages)) return 0;
+  const fetchGlobalPages = async (priority = PRIORITY.FG_LOW, signal = null) => {
+    const count = await fetchGlobalCount(priority, signal);
+    if (!count || !Number.isFinite(pages)) return 0;
 
-    return pages * PLAYERS_PER_PAGE;
+    return count / PLAYERS_PER_PAGE;
   }
 
   async function fetchMiniRanking(rank, country = null, numOfPlayers = 5) {

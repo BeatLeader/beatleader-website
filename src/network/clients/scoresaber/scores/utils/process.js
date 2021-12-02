@@ -3,38 +3,38 @@ import {extractDiffAndType} from '../../../../../utils/scoresaber/format'
 import {opt} from '../../../../../utils/js'
 
 export default response => {
-  if (!opt(response, 'scores') || !Array.isArray(response.scores) || !opt(response, 'scores.0.scoreId')) return [];
+  if (!Array.isArray(response)) return [];
 
-  return response.scores.map(s => {
+  return response.map(s => {
+    const {score: scoreInfo, leaderboard: leaderboardInfo} = s;
     const {
       songHash: hash,
       songName: name,
       songSubName: subName,
       songAuthorName: authorName,
       levelAuthorName,
-      difficultyRaw,
       difficulty,
-      leaderboardId,
-      ...originalScore
-    } = s;
+      maxScore,
+      id: leaderboardId
+    } = leaderboardInfo;
 
     const song = {hash, name, subName, authorName, levelAuthorName};
-    const diffInfo = extractDiffAndType(difficultyRaw);
-    const leaderboard = {leaderboardId, song, diffInfo, difficulty};
+    const diffInfo = extractDiffAndType(difficulty.difficultyRaw);
+    const leaderboard = {leaderboardId, song, diffInfo, difficulty: difficulty.difficulty};
 
-    let {unmodififiedScore: unmodifiedScore, mods, ...score} = originalScore;
+    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, ...score} = scoreInfo;
 
     if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
     else if (!mods) mods = null;
 
-    const acc = unmodifiedScore && opt(score, 'maxScore') ? unmodifiedScore / score.maxScore * 100 : null;
-    const percentage = opt(score, 'score') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : null;
+    const acc = unmodifiedScore / maxScore * 100;
+    const percentage = modifiedScore / maxScore * 100;
 
-    const ppWeighted = opt(score, 'pp') && opt(score, 'weight') ? score.pp * score.weight : null;
+    const ppWeighted = pp * weight;
 
     return {
       leaderboard,
-      score: {...score, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted},
+      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted},
       fetchedAt: new Date(),
       lastUpdated: new Date(),
     };

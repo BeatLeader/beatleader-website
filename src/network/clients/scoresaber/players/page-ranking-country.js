@@ -4,7 +4,7 @@ import {opt} from '../../../../utils/js'
 import createClient from '../../generic'
 
 const process = response => {
-  const apiProcessedResponse = api.process(response);
+  const apiProcessedResponse = response.players;
 
   if (!opt(response, 'players')) return null;
 

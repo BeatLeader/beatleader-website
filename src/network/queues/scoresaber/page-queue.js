@@ -287,14 +287,12 @@ export default (options = {}) => {
 
     const data = doc
       .map(a => {
-        const id = a.id;
-
-        const avatar = a.profilePicture;
 
         let country = a.country;
         country = country ? country.toUpperCase() : null;
 
-        let histories = a.histories.split(',');
+        let history = a.histories;
+        let histories = history && history.length ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r)) : [];
         let difference = (histories.length > 7 ? parseSsInt(histories[histories.length - 7]) - parseSsInt(histories[histories.length - 1]) : null);
         let playerName = a.name;
         playerName = playerName || playerName === '' ? playerName.trim() : null;
@@ -305,15 +303,30 @@ export default (options = {}) => {
         let rank = a.rank;
         rank = !isNaN(rank) ? rank : null
 
+        // return {
+        //   avatar,
+        //   country,
+        //   difference,
+        //   history: [],
+        //   playerId: id,
+        //   playerName,
+        //   pp,
+        //   rank,
+        // }
+
         return {
-          avatar,
-          country,
-          difference,
-          history: [],
-          playerId: id,
-          playerName,
-          pp,
-          rank,
+          playerId: a.id,
+          name: playerName,
+          playerInfo: {
+            avatar: a.profilePicture,
+            countries: [{country, rank: null}],
+            pp,
+            rank,
+            rankHistory: histories,
+          },
+          others: {
+            difference,
+          },
         }
       })
 
