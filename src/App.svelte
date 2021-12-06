@@ -14,6 +14,7 @@
   import PrivacyPage from './pages/Privacy.svelte';
   import CreditsPage from './pages/Credits.svelte';
   import Nav from './components/Nav.svelte';
+  import Modal from 'svelte-simple-modal';
 
   export let url = "";
 
@@ -28,6 +29,7 @@
 
 <Router {url}>
   <Nav />
+  <Modal closeButton={false} styleWindow={{width: "90vw", height: "65vh"}} styleContent={{padding: 0}}>
 
   <main bind:this={mainEl}>
     <div class="ssr-page-container">
@@ -49,6 +51,7 @@
       <Route path="/*" component="{NotFoundPage}" />
     </div>
   </main>
+</Modal>
 </Router>
 
 <footer>
@@ -56,7 +59,8 @@
   <p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
   <p>
     <a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a> |
-    <a href="/credits" on:click|preventDefault={() => navigate('/credits')}>Credits</a>
+    <a href="/credits" on:click|preventDefault={() => navigate('/credits')}>Credits</a> |
+    <a href="https://github.com/radulov/scoresaber-reloaded">Source</a>
   </p>
 </footer>
 

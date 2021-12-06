@@ -6,6 +6,6 @@
   onMount(async () => {
     const mainPlayerId = await createConfigService().getMainPlayerId();
 
-    navigate(mainPlayerId ? `/u/${mainPlayerId}` : '/search')
+    navigate(mainPlayerId ? `/u/${mainPlayerId}` : '/ranking/global')
   })
 </script>

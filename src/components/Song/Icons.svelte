@@ -1,13 +1,19 @@
 <script>
+    import { getContext } from 'svelte';
     import createBeatSaverService from '../../services/beatmaps'
     import {copyToClipboard} from '../../utils/clipboard';
     import beatSaverSvg from "../../resources/beatsaver.svg";
     import Button from "../Common/Button.svelte";
+    import Preview from "../Common/Preview.svelte";
     import {capitalize} from '../../utils/js'
 
     export let hash;
     export let diffInfo = null;
     export let twitchUrl = null;
+    const { open } = getContext('simple-modal');
+    const showPreview = (previewLink) => {
+        open(Preview, { previewLink: previewLink });
+    };
 
     let songKey;
     let shownIcons = ["bsr", "bs", "preview", "oneclick", "twitch"];
@@ -56,8 +62,13 @@
     {/if}
 
     {#if shownIcons.includes('preview')}
-        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer">
+    <a href={`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+        <Button on:click={showPreview(`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
+    </a>
+        <!-- <Button on:click={showPreview(`http://localhost:9999/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/> -->
+        <!-- <Button icon={beatSaverSvg}  title="Go to Beat Saver" noMargin={true}/>
+        <a href={} target="_blank" rel="noreferrer">
             <Button iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
-        </a>
+        </a> -->
     {/if}
 {/if}

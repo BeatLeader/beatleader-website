@@ -10,6 +10,7 @@
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
   import Change from '../components/Common/Change.svelte'
+  import Flag from '../components/Common/Flag.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
@@ -96,14 +97,21 @@
       <section class="ranking-grid">
         {#each $rankingStore.data as player, idx (player.playerId)}
           <div class="player-card" on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
-            <div class="player-and-rank">
+            <div class="player-avatar">
               <Avatar {player}/>
+            </div>
+            <div class="player-name-and-rank">
+              <PlayerNameWithFlag {player} on:flag-click={e => onCountryClick(player)}/>
+                <div class="player-countryglobal-rank">
+                <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`}>
+                  #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
+                  <Flag country={opt(player, 'playerInfo.countries.0.country')} on:flag-click={e => onCountryClick(player)} />
+                </div>
               <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`}>
                 #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
               </div>
             </div>
-
-            <PlayerNameWithFlag {player} on:flag-click={e => onCountryClick(player)}/>
+            </div>
 
             <div class="player-pp-and-change">
               <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
@@ -129,7 +137,6 @@
 <style>
     .ranking-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(18em, 1fr));
         grid-gap: .75em;
     }
 
@@ -149,44 +156,57 @@
         background-color: var(--faded);
     }
 
-    .player-card .player-and-rank {
+    .player-card .player-avatar {
         grid-column: 1 / 2;
         grid-row: 1 / span 2;
         position: relative;
         overflow: hidden;
     }
 
-    .player-card .player-and-rank :global(figure) {
+    .player-card .player-avatar :global(figure) {
         width: 4em;
         height: 4em;
     }
 
-    .player-card .player-and-rank :global(.rank) {
-        position: absolute;
-        bottom: .5em;
-        right: .75em;
+    .player-card .player-name-and-rank :global(.rank) {
         padding: 0 .25em;
         font-size: 1em;
         font-weight: 500;
         background-color: var(--dimmed);
         border-radius: 3px;
+        margin-left: .25em;
     }
 
-    .player-card .player-and-rank :global(.rank.small) {
+    .player-card .player-name-and-rank {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 1.1em;
+        font-weight: 500;
+    }
+
+    .player-card .player-countryglobal-rank {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+    }
+
+    .player-card .player-name-and-rank :global(.rank.small) {
         font-size: .875em;
     }
 
-    .player-card .player-and-rank :global(.rank.gold) {
+    .player-card .player-name-and-rank :global(.rank.gold) {
         font-size: 1.1em;
         background-color: darkgoldenrod;
     }
 
-    .player-card .player-and-rank :global(.rank.silver) {
+    .player-card .player-name-and-rank :global(.rank.silver) {
         font-size: 1.1em;
         background-color: #888;
     }
 
-    .player-card .player-and-rank :global(.rank.brown) {
+    .player-card .player-name-and-rank :global(.rank.brown) {
         font-size: 1.1em;
         background-color: saddlebrown;
     }

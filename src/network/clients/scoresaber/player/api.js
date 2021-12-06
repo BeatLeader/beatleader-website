@@ -4,9 +4,13 @@ import {opt} from '../../../../utils/js'
 
 const process = response => {
   const {id: playerId, name, country, countryRank, badges, profilePicture: avatar, permissions, pp, rank, banned, inactive, histories: history, scoreStats} = response;
+  let externalProfileUrl = playerId > 70000000000000000 ? 'https://steamcommunity.com/profiles/' + playerId : null;
+  let externalProfileCorsUrl = playerId > 70000000000000000 ? '/cors/steamcommunity/profiles/' + playerId : null;
 
   return {playerId, name, playerInfo: {
     avatar,
+    externalProfileUrl,
+    externalProfileCorsUrl,
     countries: [{country, rank: countryRank}],
     pp,
     banned,

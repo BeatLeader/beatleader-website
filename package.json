@@ -38,6 +38,7 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "sirv-cli": "^1.0.0"
+    "sirv-cli": "^1.0.0",
+    "svelte-simple-modal": "^1.1.1"
   }
 }

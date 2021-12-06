@@ -1,5 +1,6 @@
 <script>
   import {navigate} from 'svelte-routing'
+  import {getContext} from 'svelte';
   import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
   import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
   import {convertArrayToObjectByKey, opt} from '../../utils/js'
@@ -9,6 +10,7 @@
   import Skeleton from '../Common/Skeleton.svelte'
   import Error from '../Common/Error.svelte'
   import Badge from '../Common/Badge.svelte'
+  import Preview from "../Common/Preview.svelte";
   import {addToDate, DAY, formatDateRelative} from '../../utils/date'
 
   export let name;
@@ -48,6 +50,11 @@
       .map(c => ({...c, prevRank: prevCountries?.[c.country]?.rank ?? null}));
   }
 
+  const { open } = getContext('simple-modal');
+  const showProfile = (profileLink) => {
+      open(Preview, { previewLink: profileLink });
+  };
+
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
   $: playerRole = playerInfo?.role ?? null;
   $: countries = getPlayerCountries(playerInfo, prevInfo)
@@ -65,7 +72,7 @@
   <h1 class="title is-4 has-text-centered-mobile" class:centered>
     {#if name}
       {#if playerInfo.externalProfileUrl}
-        <a href={playerInfo.externalProfileUrl} target="_blank" rel="noreferrer">{name}</a>
+        <a href={playerInfo.externalProfileUrl} on:click={(e) => {e.preventDefault(); showProfile(playerInfo.externalProfileCorsUrl)}} target="_blank" rel="noreferrer">{name}</a>
       {:else}
         {name}
       {/if}
