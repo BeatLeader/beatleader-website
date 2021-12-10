@@ -3,9 +3,9 @@ import {extractDiffAndType} from '../../../../../utils/scoresaber/format'
 import {opt} from '../../../../../utils/js'
 
 export default response => {
-  if (!Array.isArray(response)) return [];
+  if (!Array.isArray(response.playerScores)) return [];
 
-  return response.map(s => {
+  return response.playerScores.map(s => {
     const {score: scoreInfo, leaderboard: leaderboardInfo} = s;
     const {
       songHash: hash,

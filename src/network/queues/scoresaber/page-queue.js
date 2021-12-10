@@ -286,7 +286,7 @@ export default (options = {}) => {
 
   const processCountryRanking = (country, doc) => {
 
-    const data = doc
+    const data = doc.players
       .map(a => {
 
         let country = a.country;
@@ -342,7 +342,7 @@ export default (options = {}) => {
     })
 
   const parseSsLeaderboardScores = doc => {
-    return doc.map(a => {
+    return doc.scores.map(a => {
       let ret = {player: {playerInfo: {countries: []}}, score: {lastUpdated: new Date()}};
 
       ret.player.playerInfo.avatar = a.leaderboardPlayerInfo.profilePicture;
