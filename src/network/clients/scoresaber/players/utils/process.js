@@ -14,9 +14,6 @@ export default response => {
         avatar = `${queue.SCORESABER_API.SS_API_HOST}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
     }
 
-    let externalProfileUrl = playerId > 70000000000000000 ? 'https://steamcommunity.com/profiles/' + playerId : null;
-    let externalProfileCorsUrl = playerId > 70000000000000000 ? '/cors/steamcommunity/profiles/' + playerId : null;
-
     return {
       playerId,
       name,
@@ -25,8 +22,6 @@ export default response => {
         countries: [{country, rank: countryRank}],
         pp,
         rank,
-        externalProfileUrl,
-        externalProfileCorsUrl,
         rankHistory: history && history.length
           ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
           : [],

@@ -12,6 +12,7 @@
   import Change from '../components/Common/Change.svelte'
   import Flag from '../components/Common/Flag.svelte'
   import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
+  import SteamStats from '../components/Common/SteamStats.svelte'
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
   import {PLAYERS_PER_PAGE} from '../utils/scoresaber/consts'
@@ -102,11 +103,16 @@
             </div>
             <div class="player-name-and-rank">
               <PlayerNameWithFlag {player} on:flag-click={e => onCountryClick(player)}/>
+                
                 <div class="player-countryglobal-rank">
+                {#if player.playerId > 70000000000000000}
+                  <SteamStats playerId={player.playerId}/>
+                {/if}
                 <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`}>
                   #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
                   <Flag country={opt(player, 'playerInfo.countries.0.country')} on:flag-click={e => onCountryClick(player)} />
                 </div>
+                
               <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`}>
                 #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
               </div>

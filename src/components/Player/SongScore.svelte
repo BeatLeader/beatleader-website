@@ -84,7 +84,7 @@
 
       <span class="song">
         <SongInfo {leaderboard} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior'].includes(service)}
-                  category={leaderboard?.categoryDisplayName ?? null} {service}
+                  category={leaderboard?.categoryDisplayName ?? null} {service} {playerId} hasReplay={score.hasReplay}
         />
       </span>
 

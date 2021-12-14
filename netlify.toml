@@ -26,6 +26,13 @@
     headers = {X-From = "Netlify"}
 
 [[redirects]]
+    from = "/cors/steamapi/*"
+    to = "https://api.steampowered.com/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}
+
+[[redirects]]
     from = '/build/*'
     to = '/build/:splat'
     status = 200

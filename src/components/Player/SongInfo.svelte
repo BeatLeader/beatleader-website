@@ -13,12 +13,15 @@
   export let notClickable = false;
   export let category = null;
   export let service = 'scoresaber';
+  export let playerId = null;
+  export let hasReplay = false;
 
   $: song = leaderboard?.song ?? null;
   $: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE
   $: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / scoresPerPage) + 1 : 1;
   $: diffInfo = leaderboard?.diffInfo ?? null;
-  $: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboard?.leaderboardId ?? ''}/${page ?? ''}`;
+  $: leaderboardId = leaderboard?.leaderboardId ?? '';
+  $: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboardId}/${page ?? ''}`;
 </script>
 
 {#if song}
@@ -45,7 +48,7 @@
 
     {#if hash && hash.length}
       <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-        <Icons {hash} {twitchUrl} {diffInfo} />
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} {hasReplay} />
       </div>
     {/if}
   </section>

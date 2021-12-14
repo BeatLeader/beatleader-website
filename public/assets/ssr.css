@@ -81,6 +81,14 @@ select {
     background-image: url("./accsaber-logo.png");
 }
 
+.replay-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./bs-pepe.gif");
+}
+
 .grid-transition-helper {
     display: grid;
     grid-template-columns: 1fr;

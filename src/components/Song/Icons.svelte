@@ -10,6 +10,8 @@
     export let hash;
     export let diffInfo = null;
     export let twitchUrl = null;
+    export let playerId = null;
+    export let hasReplay = false;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
         open(Preview, { previewLink: previewLink });
@@ -62,13 +64,15 @@
     {/if}
 
     {#if shownIcons.includes('preview')}
-    <a href={`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-        <Button on:click={showPreview(`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
-    </a>
-        <!-- <Button on:click={showPreview(`http://localhost:9999/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/> -->
-        <!-- <Button icon={beatSaverSvg}  title="Go to Beat Saver" noMargin={true}/>
-        <a href={} target="_blank" rel="noreferrer">
-            <Button iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
-        </a> -->
+        {#if playerId && hasReplay}
+        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&playerID=${playerId}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+            <Button on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&playerID=${playerId}` : ''}`)} icon="<div class='replay-icon'></div>" title="Replay" noMargin={true}/>
+        </a>
+        {/if}
+        {#if !playerId || !hasReplay}
+        <a href={`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+            <Button on:click={showPreview(`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
+        </a>
+        {/if}
     {/if}
 {/if}

@@ -22,7 +22,7 @@ export default response => {
     const diffInfo = extractDiffAndType(difficulty.difficultyRaw);
     const leaderboard = {leaderboardId, song, diffInfo, difficulty: difficulty.difficulty};
 
-    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, ...score} = scoreInfo;
+    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, ...score} = scoreInfo;
 
     if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
     else if (!mods) mods = null;
@@ -31,10 +31,11 @@ export default response => {
     const percentage = modifiedScore / maxScore * 100;
 
     const ppWeighted = pp * weight;
+    const hasReplay = pp != 0 && rank <= 500;
 
     return {
       leaderboard,
-      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted},
+      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted, hasReplay, rank},
       fetchedAt: new Date(),
       lastUpdated: new Date(),
     };

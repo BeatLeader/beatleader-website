@@ -7,7 +7,7 @@ import createBeatSaviorApiQueue from './beatsavior/api-queue'
 import createTwitchApiQueue from './twitch/api-queue'
 import createAccSaberApiQueue from './accsaber/api-queue'
 
-export const getResponseBody = response => response ? response.body : null;
+export const getResponseBody = response => response ? (response instanceof Array ? response.map(a => a.body) : response.body) : null;
 export const isResponseCached = response => !!(response && response.cached)
 export const updateResponseBody = (response, body) => response ? {...response, body} : null;
 
