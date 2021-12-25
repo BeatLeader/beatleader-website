@@ -55,7 +55,7 @@
 </Router>
 
 <footer>
-  <p>ScoreSaber Reloaded by <a href="https://github.com/motzel">motzel</a></p>
+  <p>BeatLeader by <a href="https://github.com/motzel">motzel</a></p>
   <p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
   <p>
     <a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a> |

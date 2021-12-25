@@ -1,7 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {opt} from '../../utils/js'
-  import {formatDate} from '../../utils/date'
+  import {formatDateRelative} from '../../utils/date'
   import {formatNumber, padNumber} from '../../utils/format'
   import FormattedDate from '../Common/FormattedDate.svelte'
   import Accuracy from '../Common/Accuracy.svelte'
@@ -42,7 +42,7 @@
 
       if (!acc || !percentage || !timeSet) return null;
 
-      const name = `${withPlayerName && run.playerName ? run.playerName + ' / ' : ''}${formatDate(timeSet)} / ${formatNumber(acc*100)}%${!won ? ` / FAILED AT ${failedAt}` : `${run.beatSaviorId === bestId ? ' / BEST' : ''}`}`
+      const name = `${withPlayerName && run.playerName ? run.playerName + ' / ' : ''}${formatDateRelative(timeSet)} / ${formatNumber(acc*100)}%${!won ? ` / FAILED AT ${failedAt}` : `${run.beatSaviorId === bestId ? ' / BEST' : ''}`}`
 
       return {...run, name, acc: acc * 100, percentage: percentage * 100, won, mods, failedAt}
     })
@@ -90,7 +90,7 @@
                 <div class="player-name">{run.playerName}</div>
               {/if}
 
-              <FormattedDate date={run.timeSet} absolute={true}/>
+              <FormattedDate date={run.timeSet}/>
             </small>
             <small class:fail={!run.won} class:best={run.beatSaviorId === bestId} slot="label-after">
               {#if !run.won}

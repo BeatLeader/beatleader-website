@@ -70,8 +70,8 @@
         </a>
         {/if}
         {#if !playerId || !hasReplay}
-        <a href={`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button on:click={showPreview(`https://www.preview.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
+        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+            <Button on:click={showPreview(`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
         </a>
         {/if}
     {/if}

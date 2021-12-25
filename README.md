@@ -46,4 +46,4 @@ Check your hosting provider's documentation.
 
 Note that the project uses Netlify redirects to bypass CORS issues in the Beat Savior API and to fetch some of the ScoreSaber subpages (not all data is available in the SS API yet).
 
-Check the contents of [netlify.toml](https://github.com/motzel/scoresaber-reloaded/blob/master/netlify.toml) and see how you can resolve this with your provider.
+Check the contents of [netlify.toml](netlify.toml) and see how you can resolve this with your provider.

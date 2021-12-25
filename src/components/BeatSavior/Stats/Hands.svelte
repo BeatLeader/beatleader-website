@@ -110,10 +110,14 @@
         text-align: right;
     }
 
+    .right {
+      margin-left: 0.5em;
+    }
+
     .badge-stat :global(.badge) {
         margin: 0;
         padding-bottom: .25em;
-        width: 95%;
+        width: 100%;
         justify-content: flex-start;
     }
 

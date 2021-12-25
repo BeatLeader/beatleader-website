@@ -66,6 +66,11 @@
 </script>
 
 <nav class="ssr-page-container">
+  <a href="/dashboard" on:click|preventDefault={() => navigate('/dashboard')}>
+    <img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
+    <img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
+  </a>
+
   {#if player}
   <a href={`/u/${player.playerId}/scoresaber/recent/1`} on:click|preventDefault={() =>
   navigateToPlayer(player.playerId)} transition:fade>
@@ -147,7 +152,7 @@
         align-items: center;
         height: 100%;
         font-size: 1rem;
-        padding: .5rem 1rem;
+        padding: .5rem .5rem;
         cursor: pointer;
     }
 
@@ -166,6 +171,20 @@
     .friends :global(.dropdown-menu) {
         width: 15rem !important;
         max-width: 60vw;
+    }
+
+    .logo {
+      height: 2.5rem;
+      margin-top: 0.1em;
+    }
+
+    .logo.up-to-tablet {
+      height: 3em;
+      width: 3em;
+      margin-top: -0.1em;
+      margin-left: -1em;
+      margin-right: -1em;
+      max-width: none;
     }
 
     nav svg, nav .avatar {

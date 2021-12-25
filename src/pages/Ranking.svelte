@@ -16,6 +16,7 @@
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
   import {PLAYERS_PER_PAGE} from '../utils/scoresaber/consts'
+  import createConfigService from '../services/config'
 
   export let type = 'global';
   export let page = 1;
@@ -26,6 +27,7 @@
   if (!page || isNaN(page) || page <= 0) page = 1;
 
   const {activeRoute} = getContext(ROUTER);
+  const mainPlayerId = createConfigService().getMainPlayerId();
 
   let currentType = type;
   let currentPage = page;
@@ -94,10 +96,12 @@
       {#if $isLoading}<Spinner />{/if}
     </h1>
 
+    {#await mainPlayerId}
+    {:then playerId} 
     {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
       <section class="ranking-grid">
         {#each $rankingStore.data as player, idx (player.playerId)}
-          <div class="player-card" on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
+          <div class={`player-card ${playerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
             <div class="player-avatar">
               <Avatar {player}/>
             </div>
@@ -137,6 +141,7 @@
     {:else if (!$isLoading)}
       <p>No players found.</p>
     {/if}
+    {/await}
   </div>
 </article>
 
@@ -156,6 +161,9 @@
         border-radius: 4px;
         background-color: var(--background);
         cursor: pointer;
+    }
+    .current {
+      border-color: yellow;
     }
 
     .player-card:hover {

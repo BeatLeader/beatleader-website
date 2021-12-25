@@ -157,10 +157,14 @@
         />
       </nav>
     {/if}
-
-    <Hands stats={selectedRun.stats} compareTo={compareTo ? compareTo.stats : null} {name} {compareToName}/>
-    <OtherStats beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName}/>
-    <Grid {accGrid} compareTo={accCompareGrid} {name} {compareToName} />
+    
+    <div class="hands-and-grid">
+      <OtherStats beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName}/>
+      <div class="hands-and-grid">
+        <Hands stats={selectedRun.stats} compareTo={compareTo ? compareTo.stats : null} {name} {compareToName}/>
+        <Grid {accGrid} compareTo={accCompareGrid} {name} {compareToName} />
+      </div>
+    </div>
     <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
   </section>
 {/if}
@@ -177,7 +181,7 @@
     }
 
     .beat-savior.with-history {
-        grid-template-columns: auto 1fr 1fr;
+        grid-template-columns: auto 1.5fr 1fr;
     }
 
     .beat-savior.with-history nav {
@@ -190,6 +194,15 @@
 
         display: flex;
         flex-direction: column;
+    }
+
+    .hands-and-grid {
+        align-items: center;
+        justify-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        display: flex;
+        grid-gap: 0.5em;
     }
 
     header {

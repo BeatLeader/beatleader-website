@@ -60,7 +60,7 @@
        class:with-details={showDetails}
   >
       <div class="icons up-to-tablet">
-        <Icons {hash} {twitchUrl} {diffInfo} />
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay = {score.hasReplay}/>
       </div>
 
     <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
@@ -195,13 +195,33 @@
                       inline={false} digits={0}
                     />
                   {:else if (!beatSavior.stats.wallHit && !beatSavior.stats.bombHit)}
-                    FC
+                  <span style="color: yellow">FC</span>
                   {/if}
                 </span>
             </Badge>
           </span>
           {/if}
-        {/if}
+        {:else if score.badCuts !== undefined}
+          <span></span>
+          <span></span>
+          <span></span>
+          <span class="beatSavior with-badge">
+            <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                <span slot="label" title={`Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}>
+                  {#if !score.fullCombo}
+                    <i class="fas fa-times"></i>
+                    <Value
+                      title={`Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}
+                      value="{score.missedNotes + score.badCuts}"
+                      inline={false} digits={0}
+                    />
+                  {:else}
+                  <span style="color: yellow">FC</span>
+                  {/if}
+                </span>
+            </Badge>
+          </span>
+          {/if}
 
         {#if (showDetails || (configStore && opt($configStore, 'scoreComparison.method') === 'in-place') ) && comparePlayers && Array.isArray(comparePlayers)}
           {#each comparePlayers as comparePlayer (comparePlayer.playerId)}
