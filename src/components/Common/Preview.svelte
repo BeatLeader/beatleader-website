@@ -2,7 +2,7 @@
     export let previewLink;
 </script>
 
-<iframe class="previewFrame" title="" src={previewLink}/>
+<iframe class="previewFrame" title="" src={previewLink} allowfullscreen/>
 
 <style>
 .previewFrame {
