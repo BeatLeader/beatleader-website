@@ -13,6 +13,7 @@
   import NotFoundPage from './pages/NotFound.svelte';
   import PrivacyPage from './pages/Privacy.svelte';
   import CreditsPage from './pages/Credits.svelte';
+  import DashboardPage from './pages/Dashboard.svelte';
   import Nav from './components/Nav.svelte';
   import Modal from 'svelte-simple-modal';
 
@@ -33,6 +34,7 @@
 
   <main bind:this={mainEl}>
     <div class="ssr-page-container">
+      <Route path="/" component="{HomePage}" />
       <Route path="/u/:initialPlayerId/*initialParams" let:params>
         <PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams}/>
       </Route>
@@ -45,9 +47,11 @@
       <Route path="/leaderboard/:type/:leaderboardId/*page" let:params>
         <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} />
       </Route>
-      <Route path="/search" component="{SearchPage}" />
+      <Route path="/search">
+        <SearchPage changeTitle={true}/>
+      </Route>
       <Route path="/twitch" component="{TwitchPage}" />
-      <Route path="/" component="{HomePage}" />
+      <Route path="/dashboard" component="{DashboardPage}" />
       <Route path="/*" component="{NotFoundPage}" />
     </div>
   </main>

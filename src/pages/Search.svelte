@@ -9,8 +9,12 @@
   import PlayerStats from '../components/Player/PlayerStats.svelte'
   import Button from '../components/Common/Button.svelte'
   import Search from '../components/Player/Search.svelte'
+  import Icons from '../components/Player/Icons.svelte'
 
   const DEFAULT_NAME = 'Stranger';
+
+  export let title = 'Find a player profile';
+  export let changeTitle = false;
 
   document.body.classList.add('slim');
 
@@ -54,12 +58,18 @@
 </script>
 
 <svelte:head>
+  {#if changeTitle}
   <title>Player search - {ssrConfig.name}</title>
+  {/if}
 </svelte:head>
 
 <article transition:fade>
   <div class="box has-shadow">
+    
     <div class="avatar">
+      {#if playerId && !isLoading}
+        <Icons {playerId} />
+      {/if}
       <Avatar playerInfo={player ? player.playerInfo : null} {isLoading} centered={true}/>
     </div>
 
@@ -72,7 +82,7 @@
       </a></div>
     {:else if !!name}
       <h2 class="title is-4 has-text-centered">{name}</h2>
-      <h3 class="title is-6 has-text-centered">Find a player profile</h3>
+      <h3 class="title is-6 has-text-centered">{title}</h3>
       <Search on:selected={event => playerId = event.detail}/>
     {/if}
 

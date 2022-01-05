@@ -210,6 +210,9 @@
 {/if}
 
 <style>
+    ul {
+        list-style-type: none;
+    }
     button {
         color: var(--textColor);
         background-color: transparent;

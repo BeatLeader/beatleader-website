@@ -4,7 +4,7 @@ export default () => createRepository(
     'scores',
     'id',
     {
-      'scores-timeset': 'timeset',
+      'scores-timeSet': 'timeSet',
       'scores-leaderboardId': 'leaderboardId',
       'scores-playerId': 'playerId',
       'scores-pp': 'pp',
