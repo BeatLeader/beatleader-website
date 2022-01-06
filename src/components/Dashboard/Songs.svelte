@@ -47,7 +47,7 @@
         {label: 'timeset', key: 'timeset', className: 'timeset'},
         {label: 'acc', key: 'acc', className: 'acc'},
         {label: 'pp', key: 'pp', className: 'pp'}
-    ].filter(h => !noRank || h.key !== 'rank');
+    ];
 
     let scores = [];
 
@@ -177,7 +177,14 @@
         {#if key === 'picture'}
             <Avatar player={row.player}/>
         {:else if key === 'rank'}
+            {#if noRank}
+            <div class={`rank ${row.score.rank === 1 ? 'gold' : row.score.rank === 2 ? 'silver' : row.score.rank === 3 ? 'brown' : (row.score.rank >= 10000 ? 'small' : '')}`}>
+                <Rank rank={row.score.rank}/>
+            </div>
+            {:else}
             <Rank rank={row.rank}/>
+            {/if}
+            
         {:else if key === 'player'}
             <PlayerNameWithFlag player={row.player} on:click={(e) => { e.preventDefault(); navigate(`/u/${row.player.playerId}/scoresaber/recent/1`)}}/>
         {:else if key === 'song'}
@@ -283,5 +290,34 @@
 
     .tab > :global(*) {
         grid-area: 1 / 1 / 1 / 1;
+    }
+
+    .rank {
+        padding: 0 .25em;
+        font-size: 1em;
+        font-weight: 500;
+        background-color: var(--dimmed);
+        border-radius: 3px;
+        margin-left: .25em;
+        display: inline-block;
+    }
+
+    .rank.small {
+        font-size: .875em;
+    }
+
+    .rank.gold {
+        font-size: 1.1em;
+        background-color: darkgoldenrod;
+    }
+
+    .rank.silver {
+        font-size: 1.1em;
+        background-color: #888;
+    }
+
+    .rank.brown {
+        font-size: 1.1em;
+        background-color: saddlebrown;
     }
 </style>
