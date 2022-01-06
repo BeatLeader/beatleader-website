@@ -132,7 +132,7 @@
     if (!newType) return;
 
     if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/${1}`);
-    if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1);
+    else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1);
 
     dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage})
   }
