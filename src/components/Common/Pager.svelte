@@ -24,6 +24,7 @@
 
   let navEl = null;
   let currentDisplayMax = displayMax;
+  let initialPages = currentPage;
 
   function dispatchEvent(page = 0, initial = false) {
     let to = (page + 1) * itemsPerPage - 1;
@@ -51,6 +52,7 @@
     displayStart = current > middle && needToDisplayFacetedPages;
     displayEnd = current + middle + 1 < total && needToDisplayFacetedPages;
 
+    currentPage = current;
     if (currentPage > pagesTotal - 1) currentPage = pagesTotal - 1;
     if (currentPage < 0) currentPage = 0;
 
@@ -98,7 +100,8 @@
   $: isTotalItemsAvailable = Number.isFinite(totalItems);
   $: pagesTotal = isTotalItemsAvailable ? Math.ceil(totalItems / itemsPerPage) : null;
   $: allPages = isTotalItemsAvailable ? Array(pagesTotal).fill(null).map((val, idx) => idx + 1) : []
-  $: displayedPages = isTotalItemsAvailable ? calcPages(pagesTotal, currentPage, currentDisplayMax) : [];
+  $: initialPages = currentPage;
+  $: displayedPages = isTotalItemsAvailable ? calcPages(pagesTotal, initialPages, currentDisplayMax) : [];
   $: startItem = currentPage * itemsPerPage + 1;
   $: endItem = getEnd(currentPage, itemsPerPage, totalItems);
   $: currentMode = !isTotalItemsAvailable || currentDisplayMax < MINIMUM_PAGES ? 'simple' : mode;

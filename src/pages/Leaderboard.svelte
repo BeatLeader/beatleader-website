@@ -29,8 +29,10 @@
   export let dontNavigate = false;
   export let withoutDiffSwitcher = false;
   export let withoutHeader = false;
+  export let dontChangeType = false;
   export let scrollOffset = 45;
   export let fixedBrowserTitle = null;
+  export let higlightedPlayerId = null;
 
   if (!dontNavigate) document.body.classList.add('slim');
 
@@ -130,7 +132,7 @@
     if (!newType) return;
 
     if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/${1}`);
-    else changeParams(currentLeaderboardId, newType, 1);
+    if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1);
 
     dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage})
   }
@@ -283,7 +285,7 @@
           <div class="scores-grid grid-transition-helper">
           {#each scores as score, idx}
             {#key opt(score, 'player.playerId')}
-            <div class={`player-score row-${idx}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+            <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
               <div class="rank with-badge">
                 <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
@@ -500,6 +502,14 @@
 
     .player-score .rank {
         font-size: .875em;
+    }
+
+    .player-score.highlight {
+        border: 1px solid yellow;
+        border-radius: 4px;
+        padding: 10px;
+        margin: 0px -12px 0px -12px;
+        max-width: 130%;
     }
 
     .player-score .player {

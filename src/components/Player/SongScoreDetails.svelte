@@ -83,6 +83,7 @@
                          dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
                          on:page-changed={onInBuiltLeaderboardPageChanged}
                          {fixedBrowserTitle}
+                         higlightedPlayerId={playerId}
 
         />
       {/if}
@@ -95,6 +96,7 @@
                          dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
                          on:page-changed={onInBuiltLeaderboardPageChanged}
                          {fixedBrowserTitle}
+                         higlightedPlayerId={playerId}
 
         />
       {/if}

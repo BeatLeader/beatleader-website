@@ -18,16 +18,24 @@
 
   let showLinkingModal = false;
 
-  function onSetAsMain() {
+  function onSetAsMain(remove) {
     if (!configStore || !playerId) return;
-
+    
     const newConfig = {...$configStore}
-    if (!newConfig.users) newConfig.users = {};
-    newConfig.users.main = playerId;
+    if (remove) {
+      newConfig.users.main = null;
+
+      eventBus.publish('player-remove-cmd', {playerId});
+    } else {
+      
+      if (!newConfig.users) newConfig.users = {};
+      newConfig.users.main = playerId;
+
+      eventBus.publish('player-add-cmd', {playerId});
+    }
 
     $configStore = newConfig;
-
-    eventBus.publish('player-add-cmd', {playerId});
+    
   }
 
   function onFriendsChange(op) {
@@ -68,27 +76,25 @@
   $: mainIsSet = !!$configStore?.users?.main ?? false;
   $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
   $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
-  $: showAvatarIcons = $configStore?.preferences?.avatarIcons ?? 'only-if-needed';
+  $: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
 </script>
 
 {#if playerId}
   <nav class:main={isMain}>
-    {#if !isMain}
-      {#if showAvatarIcons === 'show' || (showAvatarIcons === 'only-if-needed' && !mainIsSet)}
-      <Button title="Set as your profile" iconFa="fas fa-home" type="primary"
-              on:click={onSetAsMain}
+    {#if showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !mainIsSet)}
+      <Button title={isMain ? "Remove your profile" : "Set as your profile"} iconFa="fas fa-home" type={isMain ? "danger" : "primary"}
+              on:click={() => onSetAsMain(isMain)}
       />
-      {/if}
+    {/if}
 
-      {#if showAvatarIcons === 'show' || (showAvatarIcons === 'only-if-needed' && !isFriend)}
+    {#if !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFriend))}
       <Button title={isFriend ? "Remove from Friends" : "Add to Friends"}
               iconFa={isFriend ? "fas fa-user-minus" : "fas fa-user-plus"} type={isFriend ? "danger" : "primary"}
               on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')}
       />
-      {/if}
     {/if}
 
-    {#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-if-needed' && !isProfileLinkedToTwitch))}
+    {#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isProfileLinkedToTwitch))}
       <Button type="twitch" iconFa="fab fa-twitch" title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
               on:click={() => showLinkingModal = true}
       />

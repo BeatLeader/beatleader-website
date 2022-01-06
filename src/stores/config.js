@@ -28,7 +28,7 @@ const DEFAULT_CONFIG = {
   },
   preferences: {
     secondaryPp: 'attribution',
-    avatarIcons: 'only-if-needed',
+    iconsOnAvatars: 'show',
   },
   locale: DEFAULT_LOCALE,
 }
@@ -36,7 +36,7 @@ const DEFAULT_CONFIG = {
 const newSettingsAvailableDefinition = {
   'scoreComparison.method': 'Method of displaying the comparison of scores',
   'preferences.secondaryPp': 'Setting the second PP metric',
-  'preferences.avatarIcons': 'Showing icons on avatars',
+  'preferences.iconsOnAvatars': 'Showing icons on avatars',
   'locale': 'Locale selection',
 }
 

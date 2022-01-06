@@ -20,7 +20,6 @@
     import Value from "../Common/Value.svelte";
     import Difficulty from "../Song/Difficulty.svelte";
     import Leaderboard from './Leaderboard.svelte'
-    // import LeaderboardCached from "../Leaderboard/LeaderboardCached.svelte";
     import {convertArrayToObjectByKey} from '../../utils/js'
 
     export let players;
@@ -184,7 +183,7 @@
         {:else if key === 'song'}
             <div class="song-cont">
                 <Difficulty diff={row.leaderboard.diffInfo} useShortName={true} reverseColors={true}/>
-                <Song song={row.leaderboard.song}>
+                <Song {row}>
                     <figure>
                         <div class="songinfo">
                             <span class="name">{row.leaderboard.song.name}</span>

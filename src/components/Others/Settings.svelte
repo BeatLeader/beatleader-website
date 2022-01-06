@@ -17,7 +17,7 @@
 
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
   const DEFAULT_SECONDARY_PP_METRICS = 'attribution';
-  const DEFAULT_AVATAR_ICONS = 'only-if-needed';
+  const DEFAULT_AVATAR_ICONS = 'show';
 
   let twitchToken = null;
 
@@ -36,8 +36,8 @@
   ];
 
   const avatarIcons = [
-    {name: 'Always show', value: 'show'},
-    {name: 'Show when needed', value: DEFAULT_AVATAR_ICONS},
+    {name: 'Always show', value: DEFAULT_AVATAR_ICONS},
+    {name: 'Show when needed', value: 'only-when-needed' },
     {name: 'Always hide', value: 'hide'},
   ];
 
@@ -50,7 +50,7 @@
     if (config?.locale) currentLocale = config.locale;
     if (config?.scoreComparison) currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
     if (config?.preferences?.secondaryPp) currentSecondaryPpMetrics = config?.preferences?.secondaryPp ?? DEFAULT_SECONDARY_PP_METRICS;
-    if (config?.preferences?.avatarIcons) currentAvatarIcons = config?.preferences?.avatarIcons ?? DEFAULT_AVATAR_ICONS;
+    if (config?.preferences?.iconsOnAvatars) currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
   }
 
   function onSave() {
@@ -60,7 +60,7 @@
       draft.locale = currentLocale;
       draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.secondaryPp = currentSecondaryPpMetrics;
-      draft.preferences.avatarIcons = currentAvatarIcons;
+      draft.preferences.iconsOnAvatars = currentAvatarIcons;
     })
 
     show = false;
@@ -71,7 +71,7 @@
       currentLocale = $configStore.locale;
       currentScoreComparisonMethod = $configStore.scoreComparison.method;
       currentSecondaryPpMetrics = $configStore.preferences.secondaryPp;
-      currentAvatarIcons = $configStore.preferences.avatarIcons;
+      currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
     }
 
     show = false;
