@@ -131,6 +131,8 @@
 
     if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/${1}`);
     else changeParams(currentLeaderboardId, newType, 1);
+
+    dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage})
   }
 
   let ssCoverDoesNotExists = false;
@@ -323,7 +325,7 @@
                 </div>
 
                 <div class="percentage with-badge">
-                  <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true} />
+                  <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true} showMods={false} />
                 </div>
 
                 <div class="score with-badge">

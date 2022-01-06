@@ -19,7 +19,7 @@
     import Song from "./Song.svelte";
     import Value from "../Common/Value.svelte";
     import Difficulty from "../Song/Difficulty.svelte";
-    import LeaderboardPage from '../../pages/Leaderboard.svelte'
+    import Leaderboard from './Leaderboard.svelte'
     // import LeaderboardCached from "../Leaderboard/LeaderboardCached.svelte";
     import {convertArrayToObjectByKey} from '../../utils/js'
 
@@ -37,7 +37,6 @@
     const PLAYERS_SCORES_UPDATED_DEBOUNCE_DELAY = 2000;
 
     let currentPage = 0;
-    let inBuiltLeaderboardPage = null;
 
     let rows = [];
 
@@ -77,7 +76,7 @@
             if (s.score.acc == Infinity) {
                 const maxScore = await getSongMaxScore(s.leaderboard.song.hash, s.leaderboard.diffInfo, s.leaderboard.leaderboardId);
                 s.score.acc = getAccFromScore(s.score, maxScore);
-             }
+            }
         }
 
         scores = tempScores;
@@ -163,13 +162,6 @@
 
     const getRowIdentifier = row => !!row[sortBy] ? row[sortBy] : null;
 
-    function onInBuiltLeaderboardPageChanged(event) {
-        const newPage = opt(event, 'detail.page');
-        if (!Number.isFinite(newPage)) return;
-
-        inBuiltLeaderboardPage = newPage;
-    }
-
     $: {
         refreshRows(scores, filterFunc, leaderboardType);
     }
@@ -214,13 +206,7 @@
 
     <section slot="details" class="details" let:row>
         <div class="tab">
-            <LeaderboardPage leaderboardId={row.leaderboard.leaderboardId}
-                         type="friends"
-                         page={inBuiltLeaderboardPage}
-                         scrollOffset={176}
-                         dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
-                         on:page-changed={onInBuiltLeaderboardPageChanged}
-                         {fixedBrowserTitle} />
+            <Leaderboard {row} {fixedBrowserTitle} />
         </div>
         
     </section>
@@ -287,10 +273,6 @@
 
     :global(.sspl thead th), :global(.sspl tbody td.acc), :global(.sspl tbody td.pp) {
         text-align: center;
-    }
-
-    :global(.sspl .pp) {
-        width: 6rem;
     }
 
     .tab {

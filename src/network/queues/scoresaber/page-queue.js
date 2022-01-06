@@ -372,10 +372,8 @@ export default (options = {}) => {
 
       ret.score.timeSetString = formatDateRelative(new Date(a.timeSet));
       if (ret.score.timeSetString) ret.score.timeSetString = ret.score.timeSetString.trim();
-
-      ret.score.mods = a.modofiers;
-      ret.score.mods = ret.score.mods ? ret.score.mods.replace('-','').trim() : null
-      ret.score.mods = ret.score.mods && ret.score.mods.length ? ret.score.mods.split(',').filter(m => m && m.trim().length) : null;
+      
+      ret.score.mods = a.modifiers && a.modifiers.length ? a.modifiers.split(',').filter(m => m && m.trim().length) : null;
 
       ret.score.pp = a.pp;
 

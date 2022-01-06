@@ -11,6 +11,7 @@
   export let showPercentageInstead = false;
   export let noSecondMetric = false;
   export let secondMetricInsteadOfDiff = false;
+  export let showMods = true;
 
   const badgesDef = [
     {name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -53,8 +54,8 @@
         </small>
       {/if}
     </span>
-
-    <small class="mods" slot="additional" title={mods ? 'Mods: ' + mods.join(', ') : null}>{#if mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
+    
+    <small class="mods" slot="additional" title={showMods && mods ? 'Mods: ' + mods.join(', ') : null}>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
 
 {#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length  && score.acc !== score.percentage}
