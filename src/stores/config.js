@@ -31,6 +31,7 @@ const DEFAULT_CONFIG = {
     iconsOnAvatars: 'show',
   },
   locale: DEFAULT_LOCALE,
+  selectedPlaylist: null
 }
 
 const newSettingsAvailableDefinition = {
@@ -71,7 +72,20 @@ export default async () => {
     return newConfig;
   }
 
+  const setForKey = async (key, value, persist = true) => {
+    currentConfig[key] = value;
+
+    if (persist) await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
+
+    currentConfig = currentConfig;
+    storeSet(currentConfig);
+
+    return currentConfig;
+  }
+
   const getLocale = () => opt(currentConfig, 'locale', DEFAULT_LOCALE);
+
+  const getSelectedPlaylistIndex = () => currentConfig['selectedPlaylist'];
 
   const determineNewSettingsAvailable = dbConfig => Object.entries(newSettingsAvailableDefinition)
     .map(([key, description]) => opt(dbConfig, key) === undefined ? description : null)
@@ -88,6 +102,7 @@ export default async () => {
     get,
     getMainPlayerId: () => opt(currentConfig, 'users.main'),
     getLocale,
+    setForKey,
     getNewSettingsAvailable: () => newSettingsAvailable,
   }
 

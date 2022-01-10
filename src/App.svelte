@@ -14,6 +14,7 @@
   import PrivacyPage from './pages/Privacy.svelte';
   import CreditsPage from './pages/Credits.svelte';
   import DashboardPage from './pages/Dashboard.svelte';
+  import PlaylistsPage from './pages/Playlists.svelte';
   import Nav from './components/Nav.svelte';
   import Modal from 'svelte-simple-modal';
 
@@ -45,8 +46,9 @@
         <RankingPage type={params.type} page={params.page} />
       </Route>
       <Route path="/leaderboard/:type/:leaderboardId/*page" let:params>
-        <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} />
+        <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} dontChangeType={false} />
       </Route>
+      <Route path="/playlists" component="{PlaylistsPage}" />
       <Route path="/search">
         <SearchPage changeTitle={true}/>
       </Route>

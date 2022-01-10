@@ -33,6 +33,8 @@
   export let scrollOffset = 45;
   export let fixedBrowserTitle = null;
   export let higlightedPlayerId = null;
+  export let iconsInInfo = false;
+  export let hasReplay = false;
 
   if (!dontNavigate) document.body.classList.add('slim');
 
@@ -190,7 +192,7 @@
             {#if song.stars}<Value value={song.stars} digits={2} zero="" suffix="★"/>{/if}
             {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
 
-            <span class="icons"><Icons {hash} {diffInfo} /></span>
+            <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} /></span>
           </h2>
           {/if}
 
@@ -264,6 +266,10 @@
                     <Value value={leaderboard.stats?.paritySummary?.resets} digits={0} zero="0"/>
                   </strong></div>
                 {/if}
+              {/if}
+              
+              {#if iconsInInfo}
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} /></span>
               {/if}
             </div>
           {/if}

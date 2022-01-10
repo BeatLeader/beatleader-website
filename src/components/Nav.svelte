@@ -3,6 +3,7 @@
   import {onMount} from 'svelte'
   import {navigate} from 'svelte-routing'
   import createFriendsStore from '../stores/scoresaber/friends'
+  import createPlaylistStore from '../stores/playlists'
   import {configStore} from '../stores/config'
   import createPlayerService from '../services/scoresaber/player'
   import Dropdown from './Common/Dropdown.svelte'
@@ -11,6 +12,7 @@
   import {opt} from '../utils/js'
   import {fade} from 'svelte/transition'
   import Settings from './Others/Settings.svelte'
+  import Button from "./Common/Button.svelte";
 
   const playerService = createPlayerService();
 
@@ -29,6 +31,14 @@
     friendsMenuShown = false;
 
     navigateToPlayer(event.detail.playerId);
+  }
+
+  function onPlaylistClick(event) {
+    if (!event.detail) return;
+
+    playlistMenuShown = false;
+
+    playlists.select(event.detail);
   }
 
   async function updateMainPlayer(playerId) {
@@ -54,11 +64,14 @@
   })
 
   const friends = createFriendsStore();
+  const playlists = createPlaylistStore();
 
   let friendsMenuShown = false;
+  let playlistMenuShown = false;
 
   let showSettings = false;
 
+  $: selectedPlaylist = opt($configStore, 'selectedPlaylist');
   $: mainPlayerId = opt($configStore, 'users.main');
   $: updateMainPlayer(mainPlayerId)
   $: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
@@ -86,7 +99,7 @@
   </a>
   {/if}
 
-  <div class="friends" on:mouseover={() => friendsMenuShown = true} on:mouseleave={() => friendsMenuShown = false}>
+  <div class="friends" on:mouseover={() => friendsMenuShown = true} on:focus={() => friendsMenuShown = true} on:mouseleave={() => friendsMenuShown = false}>
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
 
     Friends
@@ -107,6 +120,38 @@
   </a>
 
   <div class="right">
+    <div class="playlists" on:mouseover={() => playlistMenuShown = true} on:focus={() => playlistMenuShown = true} on:mouseleave={() => playlistMenuShown = false}>
+      {#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
+      <figure>
+        <div class="playlistInfo">
+            <img class="playlistImage" src="{$playlists[selectedPlaylist].image}" alt="PlaylistImage"/>
+            <span class="playlistTitle">{$playlists[selectedPlaylist].playlistTitle}</span>
+        </div>
+      </figure>
+      {:else}
+      <i class="fas fa-list-ul"></i>
+      Playlists
+      {/if}
+  
+      <Dropdown items={[{firstRow: true}].concat($playlists.length ? $playlists : [])} shown={playlistMenuShown} on:select={onPlaylistClick}>
+        <svelte:fragment slot="row" let:item>
+          {#if item.firstRow}
+          <div class="playlistButtonsContainer">
+            <Button iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()}/>
+            <Button iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')}/>
+          </div>
+          {:else}
+          <figure>
+            <div class="playlistInfo">
+                <img class="playlistImage" src="{item.image}" alt="PlaylistImage"/>
+                <span class="playlistTitle">{item.playlistTitle} - {item.songs.length} songs</span>
+            </div>
+          </figure>
+          {/if}
+        </svelte:fragment>
+      </Dropdown>
+    </div>
+
     <a href="/search" on:click|preventDefault={() => navigate('/search')}>
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -173,6 +218,32 @@
         max-width: 60vw;
     }
 
+    .playlists {
+        position: relative;
+    }
+
+    .playlists :global(.dropdown-menu) {
+        width: 15rem !important;
+        max-width: 60vw;
+    }
+
+    .playlistImage {
+      height: 1.5em;
+      width: 1.5em;
+    }
+
+    .playlistTitle {
+      bottom: 0.3em;
+      position: relative;
+    }
+
+    .playlistButtonsContainer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.1em;
+      font-weight: 500;
+    }
+
     .logo {
       height: 2.5rem;
       margin-top: 0.1em;
@@ -217,6 +288,10 @@
         background-color: red;
         border-radius: 50%;
         animation: pulse 1.5s infinite;
+    }
+
+    .fa-list-ul {
+      margin-right: 10px;
     }
 
     @media screen and (max-width: 450px) {

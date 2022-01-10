@@ -10,7 +10,7 @@ export const diffColors = {
 }
 
 export function getDiffColor(diffInfo) {
-  return diffColors[diffInfo.diff] ? diffColors[diffInfo.diff] : null;
+  return diffColors[diffInfo.diff.toLowerCase()] ? diffColors[diffInfo.diff.toLowerCase()] : null;
 }
 
 export function extractDiffAndType(ssDiff) {

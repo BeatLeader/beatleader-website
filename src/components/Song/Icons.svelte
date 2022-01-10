@@ -1,11 +1,13 @@
 <script>
     import { getContext } from 'svelte';
     import createBeatSaverService from '../../services/beatmaps'
+    import createPlaylistStore from '../../stores/playlists'
+    import {configStore} from '../../stores/config'
     import {copyToClipboard} from '../../utils/clipboard';
     import beatSaverSvg from "../../resources/beatsaver.svg";
     import Button from "../Common/Button.svelte";
     import Preview from "../Common/Preview.svelte";
-    import {capitalize} from '../../utils/js'
+    import {capitalize, opt} from '../../utils/js'
 
     export let hash;
     export let diffInfo = null;
@@ -18,9 +20,15 @@
     };
 
     let songKey;
-    let shownIcons = ["bsr", "bs", "preview", "oneclick", "twitch"];
+    let songInfo;
+    let shownIcons = ["playlist", "bsr", "bs", "preview", "oneclick", "twitch"];
 
     let beatSaverService = createBeatSaverService();
+    const playlists = createPlaylistStore();
+
+    function decapitalizeFirstLetter(string) {
+        return string.charAt(0).toLowerCase() + string.slice(1);
+    }
 
     async function updateSongKey(hash) {
         if (!hash) {
@@ -28,15 +36,22 @@
             return;
         }
 
-        const songInfo = await beatSaverService.byHash(hash);
-        if (songInfo && songInfo.key) {
-            songKey = songInfo.key;
+        const songInfoValue = await beatSaverService.byHash(hash);
+        if (songInfoValue && songInfoValue.key) {
+            songKey = songInfoValue.key;
+            songInfo = {
+                hash,
+                songName: songInfoValue.name,
+                difficulties: [{name: decapitalizeFirstLetter(diffInfo.diff), type: diffInfo.type}],
+                levelAuthorName: songInfoValue.uploader.name
+            }
         }
     }
 
     $: updateSongKey(hash)
     $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
     $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
+    $: selectedPlaylist = opt($configStore, 'selectedPlaylist');
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -46,6 +61,21 @@
 {/if}
 
 {#if songKey && songKey.length}
+    {#if shownIcons.includes('playlist')}
+        {#if selectedPlaylist != null && $playlists[selectedPlaylist]}
+            {#if $playlists[selectedPlaylist].songs.filter(el => el.hash == hash).length}
+            <Button iconFa="fas fa-list-ul" title="Remove from the {$playlists[selectedPlaylist].playlistTitle}" noMargin={true} type="danger"
+            on:click={playlists.remove(hash)}/>
+            {:else}
+            <Button iconFa="fas fa-list-ul" title="Add to the {$playlists[selectedPlaylist].playlistTitle}" noMargin={true}
+            on:click={playlists.add(songInfo)}/>
+            {/if}
+        {:else}
+        <Button iconFa="fas fa-list-ul" title="Create new playlist with this song" noMargin={true}
+        on:click={playlists.create(songInfo)}/>
+        {/if}
+        
+    {/if}
     {#if shownIcons.includes('bsr')}
         <Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true}
                 on:click={copyToClipboard('!bsr ' + songKey)}/>

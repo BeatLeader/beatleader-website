@@ -7,15 +7,18 @@
   export let reverseColors = false;
   export let stars = null;
   export let starsSuffix = "*"
+  export let enabled = true;
+  export let pointer = false;
 
+  $: diffColor = enabled ? diffInfo.color : "gray";
   $: diffInfo = diff ? getHumanDiffInfo(diff) : null;
   $: title = useShortName && diffInfo.type !== 'Standard' ? diffInfo.name: diffInfo.fullName;
 </script>
 
 {#if diffInfo}
   <span class="{'diff ' + (reverseColors ? 'reversed' : '')}"
-        style="color: {reverseColors ? 'white' : diffInfo.color}; background-color: {reverseColors ? diffInfo.color : 'transparent'}"
-        {title}>
+        style="color: {reverseColors ? 'white' : diffColor}; background-color: {reverseColors ? diffColor : 'transparent'}; {pointer ? "cursor: pointer !important": ""}"
+        {title} on:click>
     {#if stars}
       <Value value={stars} suffix={starsSuffix} zero="" {title}/>
     {:else}
