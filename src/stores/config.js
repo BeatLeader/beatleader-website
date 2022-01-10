@@ -50,7 +50,7 @@ export default async () => {
 
   const {subscribe, set: storeSet} = writable(currentConfig);
 
-  const get = key => key ? (currentConfig[key] ? currentConfig[key] : null) : currentConfig;
+  const get = key => key ? currentConfig[key] : currentConfig;
   const set = async (config, persist = true) => {
     const newConfig = {...DEFAULT_CONFIG};
     Object.keys(config).forEach(key => {

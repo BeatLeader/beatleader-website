@@ -14,6 +14,7 @@
     let beatSaverService = createBeatSaverService();
 
     let songInfo;
+    let showDiffIcons;
 
     function decapitalizeFirstLetter(string) {
         return string.charAt(0).toLowerCase() + string.slice(1);
@@ -23,11 +24,12 @@
         const songInfoValue = await beatSaverService.byHash(hash);
         if (songInfoValue && songInfoValue.key) {
             songInfo = songInfoValue;
+            showDiffIcons = songInfo.versions[0].diffs.some(el => el.characteristic != 'Standard');
         }
     }
 
     function toggleDifficulty(diff) {
-        const index = difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficulty) == el.name);
+        const index = difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficulty) == el.name && diff.characteristic == el.type);
         if (index == -1) {
             difficulties.push({
                 name: decapitalizeFirstLetter(diff.difficulty), 
@@ -56,7 +58,7 @@
         <div class="author">{songInfo.uploader.name} </div>
         <div style="display: inline;">
             {#each songInfo.versions[0].diffs as diff, songId}
-            <Difficulty diff={{type: diff.characteristic, diff: diff.difficulty, stars: diff.stars}} pointer={true} useShortName={true} reverseColors={true} enabled={difficulties.some(el => el.name == decapitalizeFirstLetter(diff.difficulty))} on:click={() => toggleDifficulty(diff)} />
+            <Difficulty diff={{type: diff.characteristic, diff: diff.difficulty, stars: diff.stars}} pointer={true} useShortName={true} reverseColors={true} {showDiffIcons} enabled={difficulties.some(el => el.name == decapitalizeFirstLetter(diff.difficulty) && el.type == diff.characteristic)} on:click={() => toggleDifficulty(diff)} />
             {/each}
         </div>
     </div>

@@ -6,6 +6,7 @@
     import Playlist from '../components/Playlists/Playlist.svelte'
     import Pager from '../components/Common/Pager.svelte'
     import Button from '../components/Common/Button.svelte'
+    import ssrConfig from '../ssr-config'
 
     const playlists = createPlaylistStore();
     let page = 0;
@@ -38,6 +39,10 @@
     $: totalItems = $playlists.length;
     $: updatePage($playlists.length);
 </script>
+
+<svelte:head>
+  <title>{`Playlists / ${ssrConfig.name}`}</title>
+</svelte:head>
 
 <div class="box has-shadow">
     <div class="playlistButtonsContainer">

@@ -18,7 +18,7 @@ export function extractDiffAndType(ssDiff) {
   if (!match) return null;
 
   return {
-    diff: match[1].toLowerCase().replace('plus', 'Plus'),
+    diff: match[1],
     type: opt(match, '2', 'Standard'),
   };
 }

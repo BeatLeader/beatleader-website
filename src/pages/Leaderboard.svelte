@@ -139,6 +139,15 @@
     dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage})
   }
 
+  function processDiffs(diffArray) {
+    return diffArray.map(d => (
+      {...d,
+        label: d.name, 
+        url: `/leaderboard/${currentType}/${d.leaderboardId}`,
+        icon: `<div class="${d.type.toLowerCase().replace("360degree", "degree360").replace("90degree", "degree90")}-icon" title="${d.type}">`,
+      }))
+  }
+
   let ssCoverDoesNotExists = false;
 
   $: isLoading = leaderboardStore.isLoading;
@@ -150,7 +159,7 @@
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
-  $: diffs = opt($leaderboardStore, 'diffs', []).map(d => ({...d, label: d.name, url: `/leaderboard/${currentType}/${d.leaderboardId}`}))
+  $: diffs = processDiffs(opt($leaderboardStore, 'diffs', []))
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
   $: hash = opt($leaderboardStore, 'leaderboard.song.hash')
@@ -189,7 +198,7 @@
             {/if}
 
             {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
-            {#if song.stars}<Value value={song.stars} digits={2} zero="" suffix="★"/>{/if}
+            {#if leaderboard.stats.stars}<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>{/if}
             {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
 
             <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} /></span>

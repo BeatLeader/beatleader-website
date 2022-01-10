@@ -386,13 +386,12 @@ export default (options = {}) => {
   const processLeaderboard = (leaderboardId, page, doc) => {
 
     let led = doc[0].body;
-
-    let processDiffName = raw => raw.split('_')[1]
     
     const diffs = led.difficulties.map(a => {
       let leaderboardId = a.leaderboardId;
-      let color = getDiffColor({diff: processDiffName(a.difficultyRaw).toLowerCase()});
-      return {name: processDiffName(a.difficultyRaw).replace('Plus', '+'), leaderboardId, color};
+      let diffAndType = extractDiffAndType(a.difficultyRaw);
+      let color = getDiffColor(diffAndType);
+      return {name: diffAndType.diff.replace('Plus', '+'), type: diffAndType.type, leaderboardId, color};
     });
 
     const currentDiff = led.difficulty;
@@ -400,8 +399,8 @@ export default (options = {}) => {
     let diff = null;
     let diffInfo = null;
     if (currentDiff) {
-      diff = processDiffName(currentDiff.difficultyRaw);
-      diffInfo = {type: 'Standard', diff: diff}
+      diffInfo = extractDiffAndType(currentDiff.difficultyRaw);
+      diff = diffInfo.diff;
     }
 
     const songName = led.songName;

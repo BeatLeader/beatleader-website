@@ -81,6 +81,62 @@ select {
     background-image: url("./accsaber-logo.png");
 }
 
+.lawless-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./lawless.svg");
+}
+
+.standard-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./standard.svg");
+}
+
+.onesaber-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./onesaber.svg");
+}
+
+.noarrows-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./noarrows.svg");
+}
+
+.lightshow-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./lightshow.svg");
+}
+
+.degree360-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./360degree.svg");
+}
+
+.degree90-icon {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./90degree.svg");
+}
+
 .replay-icon {
     width: 100%;
     height: 100%;

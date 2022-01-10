@@ -9,6 +9,7 @@
   export let starsSuffix = "*"
   export let enabled = true;
   export let pointer = false;
+  export let showDiffIcons = false;
 
   $: diffColor = enabled ? diffInfo.color : "gray";
   $: diffInfo = diff ? getHumanDiffInfo(diff) : null;
@@ -19,6 +20,13 @@
   <span class="{'diff ' + (reverseColors ? 'reversed' : '')}"
         style="color: {reverseColors ? 'white' : diffColor}; background-color: {reverseColors ? diffColor : 'transparent'}; {pointer ? "cursor: pointer !important": ""}"
         {title} on:click>
+    {#if showDiffIcons}
+    <span class="icon">
+      <div class="{diffInfo.type.toLowerCase().replace("360degree", "degree360").replace("90degree", "degree90")}-icon" title="{diffInfo.type}"></div>
+    </span>
+      
+    {/if}
+
     {#if stars}
       <Value value={stars} suffix={starsSuffix} zero="" {title}/>
     {:else}
@@ -38,5 +46,10 @@
         min-width: 1.5em;
         max-height: 1.5em;
         border-radius: 2px;
+    }
+
+    .icon {
+      height: 1rem !important;
+      width: 1rem !important;
     }
 </style>
