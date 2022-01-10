@@ -14,6 +14,7 @@
     export let twitchUrl = null;
     export let playerId = null;
     export let hasReplay = false;
+    export let icons = false;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
         open(Preview, { previewLink: previewLink });
@@ -21,7 +22,7 @@
 
     let songKey;
     let songInfo;
-    let shownIcons = ["playlist", "bsr", "bs", "preview", "oneclick", "twitch"];
+    let shownIcons = icons ? icons : ["playlist", "bsr", "bs", "preview", "oneclick", "twitch"];
 
     let beatSaverService = createBeatSaverService();
     const playlists = createPlaylistStore();
@@ -42,7 +43,7 @@
             songInfo = {
                 hash,
                 songName: songInfoValue.name,
-                difficulties: [{name: decapitalizeFirstLetter(diffInfo.diff), type: diffInfo.type}],
+                difficulties: [{name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type}],
                 levelAuthorName: songInfoValue.uploader.name
             }
         }

@@ -85,7 +85,7 @@ export default () => {
 
   const add = async (song, playlistIndex) => {
     let playlists = await get();
-    let index = playlistIndex ? playlistIndex : await configStore.get('selectedPlaylist');
+    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
     playlists[index].songs.push(song);
 
@@ -94,7 +94,7 @@ export default () => {
 
   const remove = async (hash, playlistIndex) => {
       let playlists = await get();
-      let index = playlistIndex ? playlistIndex : await configStore.get('selectedPlaylist');
+      let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
       playlists[index].songs = playlists[index].songs.filter(el => el.hash != hash)
 

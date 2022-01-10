@@ -1,5 +1,5 @@
 <script>
-  import {getHumanDiffInfo} from '../../utils/scoresaber/format'
+  import {getHumanDiffInfo, getIconNameForDiff} from '../../utils/scoresaber/format'
   import Value from '../Common/Value.svelte'
 
   export let diff;
@@ -22,7 +22,7 @@
         {title} on:click>
     {#if showDiffIcons}
     <span class="icon">
-      <div class="{diffInfo.type.toLowerCase().replace("360degree", "degree360").replace("90degree", "degree90")}-icon" title="{diffInfo.type}"></div>
+      <div class="{getIconNameForDiff(diffInfo)}" title="{diffInfo.type}"></div>
     </span>
       
     {/if}

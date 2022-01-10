@@ -9,6 +9,16 @@ export const diffColors = {
   expertplus: '#8f48db',
 }
 
+const diffTypes = [
+  "standard",
+  "90degree",
+  "360degree",
+  "noarrows",
+  "onesaber",
+  "lightshow",
+  "lawless"
+]
+
 export function getDiffColor(diffInfo) {
   return diffColors[diffInfo.diff.toLowerCase()] ? diffColors[diffInfo.diff.toLowerCase()] : null;
 }
@@ -22,6 +32,23 @@ export function extractDiffAndType(ssDiff) {
     type: opt(match, '2', 'Standard'),
   };
 }
+
+export function getIconNameForDiff(diffInfo) {
+  for (var i = 0; i < diffTypes.length; i++) {
+    const diffType = diffTypes[i];
+    if (diffInfo.type.includes(diffType)) {
+      if (diffType == "360degree") {
+        return "degree360-icon"
+      } else if (diffType == "90degree") {
+        return "degree90-icon"
+      } else {
+        return diffType + "-icon"
+      }
+    }
+  }
+  return "standard-icon"
+}
+
 export function getHumanDiffInfo(diffInfo) {
   if (!diffInfo || !diffInfo.diff) return null;
 

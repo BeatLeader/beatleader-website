@@ -21,6 +21,7 @@
   import Switcher from '../components/Common/Switcher.svelte'
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
+  import {getIconNameForDiff} from '../utils/scoresaber/format'
 
   export let leaderboardId;
   export let type = 'global';
@@ -144,7 +145,7 @@
       {...d,
         label: d.name, 
         url: `/leaderboard/${currentType}/${d.leaderboardId}`,
-        icon: `<div class="${d.type.toLowerCase().replace("360degree", "degree360").replace("90degree", "degree90")}-icon" title="${d.type}">`,
+        icon: `<div class="${getIconNameForDiff(d)}" title="${d.type}">`,
       }))
   }
 
@@ -300,7 +301,7 @@
           <div class="scores-grid grid-transition-helper">
           {#each scores as score, idx}
             {#key opt(score, 'player.playerId')}
-            <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+            <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${score.score.pp && score.score.rank < 500 ? "with-replay" : ""}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
               <div class="rank with-badge">
                 <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
@@ -318,7 +319,16 @@
                 />
               </div>
 
-              <div class="timeset">{opt(score, 'score.timeSetString', '-')}</div>
+              <div class="timeset">
+                {opt(score, 'score.timeSetString', '-')}
+                
+              </div>
+
+              {#if score.score.pp && score.score.rank < 500}
+              <div class="replay">
+                <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId} />
+              </div>
+              {/if}
 
               <div class="score-metrics">
                 <div class="pp with-badge">
@@ -477,6 +487,18 @@
         grid-row-gap: .5em;
         max-width: 100%;
         position: relative;
+    }
+
+    .player-score.with-replay:hover {
+        grid-template-columns: minmax(2em, max-content) auto minmax(6.9em, min-content) 2em 5.5em 4.5em 6em !important;
+    }
+
+    .replay {
+      display: none;
+    }
+
+    .player-score:hover .replay {
+      display: block;
     }
 
     .scores-grid .player-score {
