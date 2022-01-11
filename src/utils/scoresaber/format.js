@@ -49,6 +49,22 @@ export function getIconNameForDiff(diffInfo) {
   return "standard-icon"
 }
 
+const HMDs = {
+  0: {name: 'Unknown', icon: ''},
+  1: {name: 'Oculus Rift CV1', icon: 'oculus', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)'},
+  2: {name: 'Vive', icon: 'vive', color: 'invert(54%) sepia(78%) saturate(2598%) hue-rotate(157deg) brightness(97%) contrast(101%)'},
+  4: {name: 'Vive Pro', icon: 'vive', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)'},
+  8: {name: 'Windows Mixed Reality', icon: 'wmr', color: 'invert(34%) sepia(67%) saturate(7482%) hue-rotate(193deg) brightness(103%) contrast(101%)'},
+  16: {name: 'Rift S', icon: 'oculus', color: 'invert(96%) sepia(9%) saturate(5456%) hue-rotate(170deg) brightness(100%) contrast(107%)'},
+  32: {name: 'Oculus Quest', icon: 'oculus', color: 'invert(73%) sepia(55%) saturate(5479%) hue-rotate(271deg) brightness(106%) contrast(107%)'},
+  64: {name: 'Valve Index', icon: 'index', color: 'invert(81%) sepia(27%) saturate(6288%) hue-rotate(344deg) brightness(103%) contrast(103%)'},
+  128: {name: 'Vive Cosmos', icon: 'vive', color: 'invert(11%) sepia(100%) saturate(7426%) hue-rotate(297deg) brightness(85%) contrast(109%)'}
+};
+
+export function getHeadsetForHMD(hmd) {
+  return HMDs[hmd];
+}
+
 export function getHumanDiffInfo(diffInfo) {
   if (!diffInfo || !diffInfo.diff) return null;
 

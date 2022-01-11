@@ -145,6 +145,16 @@ select {
     background-image: url("./bs-pepe.gif");
 }
 
+.replay-icon-alt {
+    margin-left: -0.5em;
+    margin-bottom: 0.5em;
+    width: 130%;
+    height: 130%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./replays.svg");
+}
+
 .grid-transition-helper {
     display: grid;
     grid-template-columns: 1fr;

@@ -36,7 +36,7 @@
                          type={inBuiltLeaderboardType}
                          page={inBuiltLeaderboardPage}
                          scrollOffset={176}
-                         dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true} dontChangeType={true} iconsInInfo={true}
+                         dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true} dontChangeType={true} iconsInInfo={true} noReplayInLeaderboard={true}
                          hasReplay={row.pp != 0 && row.score.rank <= 500}
                          on:page-changed={onInBuiltLeaderboardPageChanged} 
                          on:type-changed={onInBuiltLeaderboardTypeChanged}

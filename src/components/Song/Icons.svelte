@@ -7,7 +7,8 @@
     import beatSaverSvg from "../../resources/beatsaver.svg";
     import Button from "../Common/Button.svelte";
     import Preview from "../Common/Preview.svelte";
-    import {capitalize, opt} from '../../utils/js'
+    import {capitalize, opt} from '../../utils/js';
+    import {getHeadsetForHMD} from '../../utils/scoresaber/format'
 
     export let hash;
     export let diffInfo = null;
@@ -15,6 +16,7 @@
     export let playerId = null;
     export let hasReplay = false;
     export let icons = false;
+    export let hmd = null;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
         open(Preview, { previewLink: previewLink });
@@ -22,7 +24,7 @@
 
     let songKey;
     let songInfo;
-    let shownIcons = icons ? icons : ["playlist", "bsr", "bs", "preview", "oneclick", "twitch"];
+    let shownIcons = icons ? icons : ["playlist", "bsr", "bs", "preview", "oneclick", "twitch", "headset"];
 
     let beatSaverService = createBeatSaverService();
     const playlists = createPlaylistStore();
@@ -53,6 +55,7 @@
     $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
     $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
     $: selectedPlaylist = opt($configStore, 'selectedPlaylist');
+    $: headset = hmd != null ? getHeadsetForHMD(hmd) : null;
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -94,10 +97,15 @@
         </a>
     {/if}
 
+
+    {#if shownIcons.includes('headset') && headset}
+        <img src={'/assets/' + headset.icon + ".svg"} alt={headset.name} title={headset.name} style="width: 2em; height: 2.2em; filter: {headset.color}"/>
+    {/if}
+
     {#if shownIcons.includes('preview')}
         {#if playerId && hasReplay}
         <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&playerID=${playerId}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&playerID=${playerId}` : ''}`)} icon="<div class='replay-icon'></div>" title="Replay" noMargin={true}/>
+            <Button cls="{shownIcons.length == 1 ? "replay-button-alt" : "replay-button"}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&playerID=${playerId}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
         </a>
         {/if}
         {#if !playerId || !hasReplay}
@@ -107,3 +115,9 @@
         {/if}
     {/if}
 {/if}
+
+<style>
+    :global(.replay-button-alt) {
+        --bg-color: transparent !important;
+    }
+</style>

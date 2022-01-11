@@ -83,7 +83,7 @@ export default () => {
       .sort((a, b) => opt(b, 'score.score', 0) - opt(a, 'score.score', 0))
       .map((score, idx) => ({
         player: score.player,
-        score: {...score.score, rank: idx + 1, timeSetString: formatDateRelative(score.score.timeSet)},
+        score: {...score.score, rank: idx + 1, globalRank: score.score.rank, timeSetString: formatDateRelative(score.score.timeSet)},
       }))
     ;
 

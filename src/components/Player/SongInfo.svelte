@@ -7,6 +7,7 @@
   import SongCover from './SongCover.svelte'
 
   export let leaderboard = null;
+  export let score = null;
   export let rank = null;
   export let hash = null;
   export let twitchUrl = null
@@ -14,7 +15,6 @@
   export let category = null;
   export let service = 'scoresaber';
   export let playerId = null;
-  export let hasReplay = false;
 
   $: song = leaderboard?.song ?? null;
   $: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE
@@ -48,7 +48,7 @@
 
     {#if hash && hash.length}
       <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-        <Icons {hash} {twitchUrl} {diffInfo} {playerId} {hasReplay} />
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.hasReplay} hmd={score.hmd} />
       </div>
     {/if}
   </section>
