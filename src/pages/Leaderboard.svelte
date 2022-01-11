@@ -199,7 +199,7 @@
             {/if}
 
             {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
-            {#if leaderboard.stats.stars}<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>{/if}
+            {#if leaderboard.stats && leaderboard.stats.stars}<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>{/if}
             {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
 
             <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} /></span>

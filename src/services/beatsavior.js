@@ -6,7 +6,7 @@ import beatSaviorRepository from '../db/repository/beat-savior'
 import beatSaviorPlayersRepository from '../db/repository/beat-savior-players'
 import {addToDate, DAY, formatDate, HOUR, MINUTE, SECOND, truncateDate} from '../utils/date'
 import log from '../utils/logger'
-import {opt} from '../utils/js'
+import {opt, capitalize} from '../utils/js'
 import makePendingPromisePool from '../utils/pending-promises'
 import {PLAYER_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
 import {roundToPrecision} from '../utils/format'
@@ -66,7 +66,7 @@ export default () => {
 
     hash = hash.toLowerCase();
 
-    if (bsData.hash === hash && bsData.diff === diff) {
+    if (bsData.hash === hash && capitalize(bsData.diff) === diff) {
       return !exact || (bsData.score === scoreValue && Math.abs(timeSet.getTime() - bsData.timeSet.getTime()) < MINUTE);
     }
 
