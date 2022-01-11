@@ -50,7 +50,7 @@ export function getIconNameForDiff(diffInfo) {
 }
 
 const HMDs = {
-  0: {name: 'Unknown', icon: ''},
+  0: {name: 'Unknown headset', icon: 'unknown', color: 'invert(70%) sepia(65%) saturate(4492%) hue-rotate(354deg) brightness(96%) contrast(91%)'},
   1: {name: 'Oculus Rift CV1', icon: 'oculus', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)'},
   2: {name: 'Vive', icon: 'vive', color: 'invert(54%) sepia(78%) saturate(2598%) hue-rotate(157deg) brightness(97%) contrast(101%)'},
   4: {name: 'Vive Pro', icon: 'vive', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)'},
