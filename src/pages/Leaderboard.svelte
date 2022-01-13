@@ -302,7 +302,7 @@
           <div class="scores-grid grid-transition-helper">
           {#each scores as score, idx}
             {#key opt(score, 'player.playerId')}
-            <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${!noReplayInLeaderboard && score.score.pp && ((currentType == 'friends' && score.score.globalRank < 500) || (currentType != 'friends' && score.score.rank < 500)) ? "with-replay" : ""}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+            <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${!noReplayInLeaderboard && score.score.pp && score.score.hasReplay ? "with-replay" : ""}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
               <div class="rank with-badge">
                 <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
@@ -325,7 +325,7 @@
                 
               </div>
 
-              {#if !noReplayInLeaderboard && score.score.pp && ((currentType == 'friends' && score.score.globalRank < 500) || (currentType != 'friends' && score.score.rank < 500))}
+              {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
               <div class="replay">
                 <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId} />
               </div>

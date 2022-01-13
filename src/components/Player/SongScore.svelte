@@ -60,7 +60,7 @@
        class:with-details={showDetails}
   >
       <div class="icons up-to-tablet">
-        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.pp != 0 && score.rank < 500} hmd={score.hmd}/>
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.pp != 0 && score.hasReplay} hmd={score.hmd}/>
       </div>
 
     <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>

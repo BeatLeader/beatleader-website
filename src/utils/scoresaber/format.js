@@ -36,7 +36,7 @@ export function extractDiffAndType(ssDiff) {
 export function getIconNameForDiff(diffInfo) {
   for (var i = 0; i < diffTypes.length; i++) {
     const diffType = diffTypes[i];
-    if (diffInfo.type.includes(diffType)) {
+    if (diffInfo.type.toLowerCase().includes(diffType)) {
       if (diffType == "360degree") {
         return "degree360-icon"
       } else if (diffType == "90degree") {
