@@ -7,7 +7,6 @@ import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/scoresaber/so
 import {debounce} from '../../utils/debounce'
 import produce, {applyPatches} from 'immer'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
-import hasReplayEnhancer from './enhancers/scores/replay'
 
 export default (leaderboardId, type = 'global', page = 1, initialState = null, initialStateType = 'initial') => {
   let currentLeaderboardId = leaderboardId ? leaderboardId : null;
@@ -86,7 +85,6 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
           for (const scoreRow of newState.scores) {
                   stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => accEnhancer(draft)).then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 .then(scoreRow => stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, scoreRow?.player?.playerId, true)))
-.then(scoreRow => stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => hasReplayEnhancer(draft, scoreRow?.player?.playerId)))
               .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
           }
         })

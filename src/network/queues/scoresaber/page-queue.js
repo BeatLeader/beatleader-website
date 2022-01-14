@@ -377,6 +377,8 @@ export default (options = {}) => {
 
       ret.score.pp = a.pp;
 
+      ret.score.hasReplay = a.hasReplay;
+
       ret.score.percentage = 0.9;
 
       return ret;
