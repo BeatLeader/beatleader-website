@@ -17,6 +17,7 @@
     export let hasReplay = false;
     export let icons = false;
     export let hmd = null;
+    export let jumpDistance = 0;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
         open(Preview, { previewLink: previewLink });
@@ -104,8 +105,8 @@
 
     {#if shownIcons.includes('preview')}
         {#if playerId && hasReplay}
-        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&playerID=${playerId}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button cls="{shownIcons.length == 1 ? "replay-button-alt" : "replay-button"}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${charName ? `&playerID=${playerId}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
+        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+            <Button cls="{shownIcons.length == 1 ? "replay-button-alt" : "replay-button"}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
         </a>
         {/if}
         {#if !playerId || !hasReplay}

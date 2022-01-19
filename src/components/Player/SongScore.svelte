@@ -60,7 +60,7 @@
        class:with-details={showDetails}
   >
       <div class="icons up-to-tablet">
-        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.pp != 0 && score.hasReplay} hmd={score.hmd}/>
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.pp != 0 && score.hasReplay} hmd={score.hmd} jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
       </div>
 
     <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
@@ -84,7 +84,7 @@
 
       <span class="song">
         <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior'].includes(service)}
-                  category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}
+                  category={leaderboard?.categoryDisplayName ?? null} {service} {playerId} jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}
         />
       </span>
 

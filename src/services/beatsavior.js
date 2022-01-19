@@ -183,6 +183,7 @@ export default () => {
             id: bs.beatSaviorId,
             leaderboard,
             leaderboardId: leaderboard.leaderboardId,
+            songJumpDistance: bs.songJumpDistance,
             playerId: bs.playerId,
             pp: 0,
             score: {

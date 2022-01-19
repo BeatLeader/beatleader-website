@@ -35,6 +35,7 @@
   $: stats = beatSavior ? beatSavior.stats : null;
   $: fc = stats && !stats.miss && !stats.wallHit && !stats.bombHit;
 
+  $: jumpDistance = beatSavior ? beatSavior.songJumpDistance : null;
   $: totalMistakes = stats ? stats.miss + stats.wallHit + stats.bombHit : null;
   $: leftBadCuts = isAverage ? (stats?.leftBadCuts ?? null) : opt(beatSavior, 'trackers.hitTracker.leftBadCuts', null)
   $: leftMissedNotes = isAverage ? (stats?.leftMiss ?? null) : opt(beatSavior, 'trackers.hitTracker.leftMiss', null)
@@ -134,6 +135,14 @@
         <Value value={stats.pauses} digits={isAverage ? 3 : 0} prevValue={compareToStats ? compareToStats.pauses : null} prevAbsolute={true} prevWithSign={false} />
       </svelte:fragment>
     </Badge>
+
+    {#if jumpDistance > 0}
+      <Badge label="JD" color="white" bgColor="var(--dimmed)" fluid={true}>
+        <svelte:fragment slot="value">
+          <Value value={jumpDistance} digits={2} prevValue={null} prevAbsolute={true} prevWithSign={false} />
+        </svelte:fragment>
+      </Badge>
+    {/if}
   </div>
 {/if}
 

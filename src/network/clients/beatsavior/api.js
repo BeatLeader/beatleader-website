@@ -26,6 +26,7 @@ const process = response => {
         songArtist: authorName,
         songDifficultyRank: difficulty,
         songDifficulty: diff,
+        songJumpDistance: songJumpDistance,
         timeSet,
         trackers,
         trackers: {
@@ -72,6 +73,7 @@ const process = response => {
         leaderboardId,
         scoreId: null,
         hash,
+        songJumpDistance,
         diff: diff === 'expertplus' ? 'expertPlus' : diff,
         score,
         type,
