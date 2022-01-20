@@ -144,7 +144,7 @@
   function processDiffs(diffArray) {
     return diffArray.map(d => (
       {...d,
-        label: d.name, 
+        label: d.name,
         url: `/leaderboard/${currentType}/${d.leaderboardId}`,
         icon: `<div class="${getIconNameForDiff(d)}" title="${d.type}">`,
       }))
@@ -278,7 +278,7 @@
                   </strong></div>
                 {/if}
               {/if}
-              
+
               {#if iconsInInfo}
                 <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} /></span>
               {/if}
@@ -322,7 +322,7 @@
 
               <div class="timeset">
                 {opt(score, 'score.timeSetString', '-')}
-                
+
               </div>
 
               {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
@@ -409,7 +409,7 @@
         margin-top: -1em;
         margin-bottom: -1em;
         width: calc(100% + 2em);
-        padding: 1em;
+        padding: .4em;
     }
 
     .leaderboard:before {
@@ -485,7 +485,7 @@
     .scores-grid {
         display: grid;
         grid-template-columns: 1fr;
-        grid-row-gap: .5em;
+        grid-row-gap: .2em;
         max-width: 100%;
         position: relative;
     }
@@ -511,11 +511,11 @@
     .scores-grid .player-score {
         display: grid;
         grid-template-columns: minmax(2em, max-content) auto minmax(6.9em, min-content) 5.5em 4.5em 6em;
-        grid-gap: .5em;
+        grid-gap: .4em;
         align-items: center;
         overflow: hidden;
         border-bottom: 1px solid var(--faded);
-        padding-bottom: .5em;
+        padding-bottom: .2em;
     }
 
     .player-score .score-metrics {
@@ -549,10 +549,10 @@
     }
 
     .player-score.highlight {
-        border: 1px solid yellow;
+        background: linear-gradient(45deg, #defb6996, transparent, transparent);
         border-radius: 4px;
-        padding: 10px;
-        margin: 0px -12px 0px -12px;
+        padding: 4px;
+        margin: -4px -4px 0px -4px;
         max-width: 130%;
     }
 
