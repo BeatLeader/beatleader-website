@@ -15,13 +15,13 @@
 
   let inBuiltLeaderboardPage = null;
 
-  function updateInBuiltLeaderboardPage(rank, type) {
+  function updateInBuiltLeaderboardPage(rank, scoresPerPage) {
     if (!rank) {
       inBuiltLeaderboardPage = null;
       return;
     }
 
-    inBuiltLeaderboardPage = Math.floor((rank - 1) / (type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE)) + 1;
+    inBuiltLeaderboardPage = Math.floor((rank - 1) / scoresPerPage) + 1;
   }
 
   function onInBuiltLeaderboardPageChanged(event) {
@@ -36,7 +36,7 @@
   $: prevScore = opt(songScore, 'prevScore', null);
   $: beatSavior = opt(songScore, 'beatSavior', null)
 
-  $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, 'leaderboard')
+  $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, (showAccSaberLeaderboard ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE))
 </script>
 
 <section class="details">
@@ -66,18 +66,20 @@
         />
       </div>
     {:else}
-      <div className="tab">
-        <LeaderboardPage leaderboardId={leaderboard.leaderboardId}
-                         type="global"
-                         page={inBuiltLeaderboardPage}
-                         autoScrollToTop={false}
-                         showStats={false}
-                         dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
-                         on:page-changed={onInBuiltLeaderboardPageChanged}
-                         {fixedBrowserTitle}
-                         higlightedPlayerId={playerId}
-        />
-      </div>
+      {#if !noSsLeaderboard}
+        <div className="tab">
+          <LeaderboardPage leaderboardId={leaderboard.leaderboardId}
+                           type="global"
+                           page={inBuiltLeaderboardPage}
+                           autoScrollToTop={false}
+                           showStats={false}
+                           dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
+                           on:page-changed={onInBuiltLeaderboardPageChanged}
+                           {fixedBrowserTitle}
+                           higlightedPlayerId={playerId}
+          />
+        </div>
+      {/if}
     {/if}
   {/if}
 </section>
