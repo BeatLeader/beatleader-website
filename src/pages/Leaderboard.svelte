@@ -38,6 +38,9 @@
   export let hasReplay = false;
   export let noReplayInLeaderboard = false;
 
+  export let autoScrollToTop = true;
+  export let showStats = true;
+
   if (!dontNavigate) document.body.classList.add('slim');
 
   const dispatch = createEventDispatcher();
@@ -94,7 +97,7 @@
   }
 
   function scrollToTop() {
-    if (boxEl) scrollToTargetAdjusted(boxEl, scrollOffset)
+    if (autoScrollToTop && boxEl) scrollToTargetAdjusted(boxEl, scrollOffset)
   }
 
   const leaderboardStore = createLeaderboardStore(leaderboardId, type, page);
@@ -143,7 +146,8 @@
 
   function processDiffs(diffArray) {
     return diffArray.map(d => (
-      {...d,
+      {
+        ...d,
         label: d.name,
         url: `/leaderboard/${currentType}/${d.leaderboardId}`,
         icon: `<div class="${getIconNameForDiff(d)}" title="${d.type}">`,
@@ -175,165 +179,176 @@
 
 <article transition:fade>
   <div class="box has-shadow" bind:this={boxEl}>
-    {#if !$leaderboardStore && $isLoading}<Spinner/>{/if}
+    {#if !$leaderboardStore && $isLoading}
+      <Spinner/>
+    {/if}
 
-    <div class="leaderboard" style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `--background-image: url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl})` : ''}>
+    <div class="leaderboard"
+         style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `--background-image: url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl})` : ''}>
       {#if $leaderboardStore}
 
         {#if leaderboard && song && withHeader}
-        <header transition:fade>
           {#if !withoutHeader}
-          <h1 class="title is-4">
-            <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
-            <span class="author">{song.authorName}</span>
-            <small class="level-author">{song.levelAuthorName}</small>
-          </h1>
+            <header transition:fade>
+              <h1 className="title is-4">
+                <span className="name">{song.name} {song.subName ? song.subName : ''}</span>
+                <span className="author">{song.authorName}</span>
+                <small className="level-author">{song.levelAuthorName}</small>
+              </h1>
 
-          <h2 class="title is-6" class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
-            {#if leaderboard.categoryDisplayName}
-              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+              <h2 className="title is-6"
+                  class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
+                {#if leaderboard.categoryDisplayName}
+                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
                   <span slot="label">
                     {leaderboard.categoryDisplayName}
-                    {#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★"/>{/if}
+                    {#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero=""
+                                                       suffix="★"/>{/if}
                   </span>
-              </Badge>
-            {/if}
+                  </Badge>
+                {/if}
 
-            {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
-            {#if leaderboard.stats && leaderboard.stats.stars}<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>{/if}
-            {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true}/></span>{/if}
+                {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
+                {#if leaderboard.stats && leaderboard.stats.stars}
+                  <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
+                {/if}
+                {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
+                                                                         reverseColors={true}/></span>{/if}
 
-            <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} /></span>
-          </h2>
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}/></span>
+              </h2>
+            </header>
           {/if}
-
-          {#if leaderboard.stats}
-            <div class="stats">
-              {#if leaderboard?.stats?.seconds}
-                <div transition:fade>
+          {#if showStats && leaderboard.stats}
+            <div class="stats-with-icons">
+              <div class="stats">
+                {#if leaderboard?.stats?.seconds}
+                  <div transition:fade>
                   <span class="time" transition:fade={{duration: 500}}>
                       <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats?.seconds}/>
                   </span>
-                </div>
-              {/if}
+                  </div>
+                {/if}
 
-              {#if leaderboard?.stats?.notes}
-                <div transition:fade><i class="fas fa-music"></i> Notes: <strong>
-                  <Value value={leaderboard.stats?.notes} digits={0}/>
-                </strong></div>
-              {/if}
-
-              {#if leaderboard?.stats?.bpm}
-                <div transition:fade><i class="fas fa-drum"></i> BPM: <strong>
-                  <Value value={leaderboard.stats?.bpm} digits={0}/>
-                </strong></div>
-              {/if}
-
-              {#if leaderboard?.stats?.njs}
-                <div transition:fade><i class="fas fa-tachometer-alt"></i> NJS: <strong>
-                  <Value value={leaderboard.stats?.njs} digits={0}/>
-                </strong></div>
-              {/if}
-
-              {#if Number.isFinite(leaderboard?.stats?.njsOffset)}
-                <div transition:fade><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
-                  <Value value={leaderboard?.stats?.njsOffset} digits={2}/>
-                </strong></div>
-              {/if}
-
-              {#if leaderboard?.stats?.nps}
-                <div transition:fade><i class="fas fa-fire"></i> NPS: <strong>
-                  <Value value={leaderboard.stats?.nps} digits={2}/>
-                </strong></div>
-              {/if}
-
-              {#if leaderboard?.stats?.bombs}
-                <div transition:fade><i class="fas fa-bomb"></i> Bombs: <strong>
-                  <Value value={leaderboard.stats?.bombs} digits={0} zero="0"/>
-                </strong></div>
-              {/if}
-
-              {#if leaderboard?.stats?.obstacles}
-                <div transition:fade><i class="fas fa-skull"></i> Obstacles: <strong>
-                  <Value value={leaderboard.stats?.obstacles} digits={0} zero="0"/>
-                </strong></div>
-              {/if}
-
-              {#if leaderboard?.stats?.paritySummary}
-                {#if leaderboard?.stats?.paritySummary?.errors}
-                  <div transition:fade><i class="fas fa-exclamation-circle"></i> Errors: <strong>
-                    <Value value={leaderboard.stats?.paritySummary?.errors} digits={0} zero="0"/>
+                {#if leaderboard?.stats?.notes}
+                  <div transition:fade><i class="fas fa-music"></i> Notes: <strong>
+                    <Value value={leaderboard.stats?.notes} digits={0}/>
                   </strong></div>
                 {/if}
 
-                {#if leaderboard?.stats?.paritySummary?.warns}
-                  <div transition:fade><i class="fas fa-exclamation-triangle"></i> Warnings: <strong>
-                    <Value value={leaderboard.stats?.paritySummary?.warns} digits={0} zero="0"/>
+                {#if leaderboard?.stats?.bpm}
+                  <div transition:fade><i class="fas fa-drum"></i> BPM: <strong>
+                    <Value value={leaderboard.stats?.bpm} digits={0}/>
                   </strong></div>
                 {/if}
 
-                {#if leaderboard?.stats?.paritySummary?.resets}
-                  <div transition:fade><i class="fas fa-redo"></i> Resets: <strong>
-                    <Value value={leaderboard.stats?.paritySummary?.resets} digits={0} zero="0"/>
+                {#if leaderboard?.stats?.njs}
+                  <div transition:fade><i class="fas fa-tachometer-alt"></i> NJS: <strong>
+                    <Value value={leaderboard.stats?.njs} digits={0}/>
                   </strong></div>
                 {/if}
-              {/if}
+
+                {#if Number.isFinite(leaderboard?.stats?.njsOffset)}
+                  <div transition:fade><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
+                    <Value value={leaderboard?.stats?.njsOffset} digits={2}/>
+                  </strong></div>
+                {/if}
+
+                {#if leaderboard?.stats?.nps}
+                  <div transition:fade><i class="fas fa-fire"></i> NPS: <strong>
+                    <Value value={leaderboard.stats?.nps} digits={2}/>
+                  </strong></div>
+                {/if}
+
+                {#if leaderboard?.stats?.bombs}
+                  <div transition:fade><i class="fas fa-bomb"></i> Bombs: <strong>
+                    <Value value={leaderboard.stats?.bombs} digits={0} zero="0"/>
+                  </strong></div>
+                {/if}
+
+                {#if leaderboard?.stats?.obstacles}
+                  <div transition:fade><i class="fas fa-skull"></i> Obstacles: <strong>
+                    <Value value={leaderboard.stats?.obstacles} digits={0} zero="0"/>
+                  </strong></div>
+                {/if}
+
+                {#if leaderboard?.stats?.paritySummary}
+                  {#if leaderboard?.stats?.paritySummary?.errors}
+                    <div transition:fade><i class="fas fa-exclamation-circle"></i> Errors: <strong>
+                      <Value value={leaderboard.stats?.paritySummary?.errors} digits={0} zero="0"/>
+                    </strong></div>
+                  {/if}
+
+                  {#if leaderboard?.stats?.paritySummary?.warns}
+                    <div transition:fade><i class="fas fa-exclamation-triangle"></i> Warnings: <strong>
+                      <Value value={leaderboard.stats?.paritySummary?.warns} digits={0} zero="0"/>
+                    </strong></div>
+                  {/if}
+
+                  {#if leaderboard?.stats?.paritySummary?.resets}
+                    <div transition:fade><i class="fas fa-redo"></i> Resets: <strong>
+                      <Value value={leaderboard.stats?.paritySummary?.resets} digits={0} zero="0"/>
+                    </strong></div>
+                  {/if}
+                {/if}
+              </div>
 
               {#if iconsInInfo}
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} /></span>
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}/></span>
               {/if}
             </div>
           {/if}
-        </header>
         {/if}
 
         {#if type !== 'accsaber'}
-        <nav class="diff-switch">
+          <nav class="diff-switch">
             {#if !withoutDiffSwitcher && diffs && diffs.length}
-                <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
+              <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff}/>
             {/if}
 
             <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
-                      loadingValue={currentlyLoadedDiff} />
-        </nav>
+                      loadingValue={currentlyLoadedDiff}/>
+          </nav>
         {/if}
 
         {#if scores && scores.length}
           <div class="scores-grid grid-transition-helper">
-          {#each scores as score, idx}
-            {#key opt(score, 'player.playerId')}
-            <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${!noReplayInLeaderboard && score.score.pp && score.score.hasReplay ? "with-replay" : ""}`} in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
-              <div class="rank with-badge">
-                <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+            {#each scores as score, idx}
+              {#key opt(score, 'player.playerId')}
+                <div
+                    class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${!noReplayInLeaderboard && score.score.pp && score.score.hasReplay ? "with-replay" : ""}`}
+                    in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+                  <div class="rank with-badge">
+                    <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
                 >= 10000 ? 'small' : 'var(--dimmed)')))}>
                     <span slot="label">
                       #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
                     </span>
-                </Badge>
-              </div>
+                    </Badge>
+                  </div>
 
-              <div class="player">
-                <Avatar player={score.player}/>
-                <PlayerNameWithFlag player={score.player} type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
-                                    on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
-                />
-              </div>
+                  <div class="player">
+                    <Avatar player={score.player}/>
+                    <PlayerNameWithFlag player={score.player}
+                                        type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
+                                        on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                    />
+                  </div>
 
-              <div class="timeset">
-                {opt(score, 'score.timeSetString', '-')}
+                  <div class="timeset">
+                    {opt(score, 'score.timeSetString', '-')}
+                  </div>
 
-              </div>
+                  {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
+                    <div class="replay">
+                      <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId}/>
+                    </div>
+                  {/if}
 
-              {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
-              <div class="replay">
-                <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId} />
-              </div>
-              {/if}
-
-              <div class="score-metrics">
-                <div class="pp with-badge">
-                  <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+                  <div class="score-metrics">
+                    <div class="pp with-badge">
+                      <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                     <span slot="label">
                       {#if type === 'accsaber'}
                         <Pp playerId={opt(score, 'player.playerId')}
@@ -343,32 +358,34 @@
                             color="white"
                         />
                       {:else}
-                        <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId} pp={opt(score, 'score.pp')}
+                        <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId}
+                            pp={opt(score, 'score.pp')}
                             whatIf={opt(score, 'score.whatIfPp')}
                             inline={false} color="white"
                         />
                       {/if}
                     </span>
-                  </Badge>
-                </div>
+                      </Badge>
+                    </div>
 
-                <div class="percentage with-badge">
-                  <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true} showMods={false} />
-                </div>
+                    <div class="percentage with-badge">
+                      <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true}
+                                showMods={false}/>
+                    </div>
 
-                <div class="score with-badge">
-                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                    <div class="score with-badge">
+                      <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                       <span slot="label">
                         <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
 
                         <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
                       </span>
-                  </Badge>
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
               {/key}
-          {/each}
+            {/each}
           </div>
 
           <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
@@ -386,7 +403,8 @@
     </div>
 
     {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
-      <img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} on:error={() => ssCoverDoesNotExists = true} />
+      <img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl}
+           on:error={() => ssCoverDoesNotExists = true}/>
     {/if}
   </div>
 </article>
@@ -436,7 +454,7 @@
     }
 
     header h1 {
-        font-size: 1.5em!important;
+        font-size: 1.5em !important;
         margin-bottom: .5em;
     }
 
@@ -445,7 +463,7 @@
     }
 
     header h2.title {
-        font-size: 1em!important;
+        font-size: 1em !important;
         margin-top: 0;
         color: var(--increase, #42b129) !important;
         margin-bottom: .5em;
@@ -459,14 +477,18 @@
         font-size: .65em;
     }
 
-    header .stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, 11em);
-        grid-column-gap: 1em;
-        grid-row-gap: .5em;
-        justify-items: center;
-        align-items: center;
-        color: var(--textColor, #fff) !important;
+    .stats-with-icons {
+        display: flex;
+        align-content: center;
+        justify-content: space-evenly;
+    }
+
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        column-gap: 1em;
+        padding: .4em;
     }
 
     header small {
@@ -495,17 +517,17 @@
     }
 
     .replay {
-      display: none;
+        display: none;
     }
 
     .player-score .replay {
-      display: block;
-      height: 1.8em;
-      width: 1.8em;
+        display: block;
+        height: 1.8em;
+        width: 1.8em;
     }
 
     .replay-button {
-      background-color: transparent;
+        background-color: transparent;
     }
 
     .scores-grid .player-score {
@@ -600,7 +622,7 @@
 
     @media screen and (max-width: 767px) {
         header .stats {
-          justify-items: left;
+            justify-items: left;
         }
 
         .diff-switch {
