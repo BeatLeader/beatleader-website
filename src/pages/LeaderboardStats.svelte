@@ -7,23 +7,32 @@
   import Duration from '../components/Song/Duration.svelte'
 
   export let leaderboardId;
+  export let type = 'global';
+  export let page = 1;
+
+  if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+  if (!page || isNaN(page) || page <= 0) page = 1;
 
   if (leaderboardId && !Number.isFinite(leaderboardId)) leaderboardId = parseInt(leaderboardId, 10);
 
   let leaderboard = null;
 
-  const leaderboardStore = createLeaderboardStore(leaderboardId, 0, 1);
+  const leaderboardStore = createLeaderboardStore(leaderboardId, type, page);
 
-  function changeParams(newLeaderboardId) {
+  function changeParams(newLeaderboardId, newType, newPage) {
     if (newLeaderboardId && !Number.isFinite(newLeaderboardId)) newLeaderboardId = parseInt(newLeaderboardId, 10);
-    leaderboardStore.fetch(newLeaderboardId, 0, 1);
+
+    newPage = parseInt(newPage, 10);
+    if (isNaN(newPage)) newPage = 1;
+
+    leaderboardStore.fetch(newLeaderboardId, newType, newPage);
   }
 
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
 
-  $: changeParams(leaderboardId)
+  $: changeParams(leaderboardId, type, page)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
 </script>
 

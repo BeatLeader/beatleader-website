@@ -42,7 +42,10 @@
 <section class="details">
   {#if songScore}
     <div className="tab">
-      <LeaderboardStats leaderboardId={leaderboard.leaderboardId}/>
+      <LeaderboardStats  leaderboardId={leaderboard.leaderboardId}
+                         type="global"
+                         page={inBuiltLeaderboardPage}
+      />
     </div>
 
     <div className="tab">
