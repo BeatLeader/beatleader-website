@@ -16,8 +16,15 @@
   $: prevFormatted = prevDateObj ? (absolute ? formatDate(prevDateObj) : formatDateRelative(prevDateObj)) : "";
 </script>
 
-<span
-  title={dateTitle}>{formatted}</span>{#if prevDateObj }<small title={prevDateTitle}>{prevPrefix}{prevFormatted}</small>{/if}
+<span title={dateTitle}>
+    {formatted}
+</span>
+
+{#if prevDateObj }
+    <small title={prevDateTitle}>
+        {prevPrefix}{prevFormatted}
+    </small>
+{/if}
 
 <style>
     small {
