@@ -231,7 +231,7 @@
     }
 
     .pagination {
-        margin-top: 1em;
+        margin-top: .1em;
     }
 
     .pagination.no-items-per-page {
@@ -260,6 +260,7 @@
 
     .pagination-link {
         border-color: var(--alternate);
+        height: 1.5em;
     }
 
     .pagination-link.is-current, .pagination:not(.simple) button:hover {
