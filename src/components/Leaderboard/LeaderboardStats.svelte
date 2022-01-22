@@ -5,16 +5,17 @@
 
   export let leaderboard;
 
-  $: diff = leaderboard?.beatMaps?.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase())
+  $: metadata = leaderboard?.beatMaps?.metadata;
+  $: diff = leaderboard?.beatMaps?.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase());
 </script>
 
 <article transition:fade>
   {#if diff}
     <div class="stats">
-      {#if diff.duration}
+      {#if metadata?.duration}
         <div transition:fade>
                 <span class="time" transition:fade={{duration: 500}}>
-                    <i class="fas fa-clock"></i> Length: <Duration value={diff.duration}/>
+                    <i class="fas fa-clock"></i> Length: <Duration value={metadata.duration}/>
                 </span>
         </div>
       {/if}
@@ -25,9 +26,9 @@
         </strong></div>
       {/if}
 
-      {#if diff.bpm}
+      {#if metadata?.bpm}
         <div transition:fade><i class="fas fa-drum"></i> BPM: <strong>
-          <Value value={diff.bpm} digits={0}/>
+          <Value value={metadata.bpm} digits={0}/>
         </strong></div>
       {/if}
 
