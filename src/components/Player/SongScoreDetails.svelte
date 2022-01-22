@@ -4,7 +4,7 @@
   import {opt} from '../../utils/js'
   import BeatSaviorDetails from '../BeatSavior/Details.svelte'
   import LeaderboardPage from '../../pages/Leaderboard.svelte'
-  import LeaderboardStats from '../../pages/LeaderboardStats.svelte'
+  import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte'
 
   export let playerId;
   export let songScore;
@@ -41,14 +41,11 @@
 
 <section class="details">
   {#if songScore}
-    <div className="tab">
-      <LeaderboardStats  leaderboardId={leaderboard.leaderboardId}
-                         type="global"
-                         page={inBuiltLeaderboardPage}
-      />
+    <div class="tab">
+      <LeaderboardStats {leaderboard}/>
     </div>
 
-    <div className="tab">
+    <div class="tab">
       <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} noHistory={noBeatSaviorHistory}/>
     </div>
 
@@ -67,7 +64,7 @@
       </div>
     {:else}
       {#if !noSsLeaderboard}
-        <div className="tab">
+        <div class="tab">
           <LeaderboardPage leaderboardId={leaderboard.leaderboardId}
                            type="global"
                            page={inBuiltLeaderboardPage}

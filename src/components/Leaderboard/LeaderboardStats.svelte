@@ -1,0 +1,95 @@
+<script>
+  import {fade, fly} from 'svelte/transition'
+  import Value from '../Common/Value.svelte'
+  import Duration from '../Song/Duration.svelte'
+
+  export let leaderboard;
+
+  $: diff = leaderboard?.beatMaps?.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase())
+</script>
+
+<article transition:fade>
+  {#if diff}
+    <div class="stats">
+      {#if diff.duration}
+        <div transition:fade>
+                <span class="time" transition:fade={{duration: 500}}>
+                    <i class="fas fa-clock"></i> Length: <Duration value={diff.duration}/>
+                </span>
+        </div>
+      {/if}
+
+      {#if diff.notes}
+        <div transition:fade><i class="fas fa-music"></i> Notes: <strong>
+          <Value value={diff.notes} digits={0}/>
+        </strong></div>
+      {/if}
+
+      {#if diff.bpm}
+        <div transition:fade><i class="fas fa-drum"></i> BPM: <strong>
+          <Value value={diff.bpm} digits={0}/>
+        </strong></div>
+      {/if}
+
+      {#if diff.njs}
+        <div transition:fade><i class="fas fa-tachometer-alt"></i> NJS: <strong>
+          <Value value={diff.njs} digits={0}/>
+        </strong></div>
+      {/if}
+
+      {#if Number.isFinite(diff.njsOffset)}
+        <div transition:fade><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
+          <Value value={diff.njsOffset} digits={2}/>
+        </strong></div>
+      {/if}
+
+      {#if diff.nps}
+        <div transition:fade><i class="fas fa-fire"></i> NPS: <strong>
+          <Value value={diff.nps} digits={2}/>
+        </strong></div>
+      {/if}
+
+      {#if diff.bombs}
+        <div transition:fade><i class="fas fa-bomb"></i> Bombs: <strong>
+          <Value value={diff.bombs} digits={0} zero="0"/>
+        </strong></div>
+      {/if}
+
+      {#if diff.obstacles}
+        <div transition:fade><i class="fas fa-skull"></i> Obstacles: <strong>
+          <Value value={diff.obstacles} digits={0} zero="0"/>
+        </strong></div>
+      {/if}
+
+      {#if diff.paritySummary}
+        {#if diff.paritySummary.errors}
+          <div transition:fade><i class="fas fa-exclamation-circle"></i> Errors: <strong>
+            <Value value={diff.paritySummary.errors} digits={0} zero="0"/>
+          </strong></div>
+        {/if}
+
+        {#if diff.paritySummary.warns}
+          <div transition:fade><i class="fas fa-exclamation-triangle"></i> Warnings: <strong>
+            <Value value={diff.paritySummary.warns} digits={0} zero="0"/>
+          </strong></div>
+        {/if}
+
+        {#if diff.paritySummary.resets}
+          <div transition:fade><i class="fas fa-redo"></i> Resets: <strong>
+            <Value value={diff.paritySummary.resets} digits={0} zero="0"/>
+          </strong></div>
+        {/if}
+      {/if}
+    </div>
+  {/if}
+</article>
+
+<style>
+    .stats {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        column-gap: 1em;
+        padding: .4em;
+    }
+</style>

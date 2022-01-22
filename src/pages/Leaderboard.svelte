@@ -17,11 +17,11 @@
   import Badge from '../components/Common/Badge.svelte'
   import Accuracy from '../components/Common/Accuracy.svelte'
   import Difficulty from '../components/Song/Difficulty.svelte'
-  import Duration from '../components/Song/Duration.svelte'
   import Switcher from '../components/Common/Switcher.svelte'
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
   import {getIconNameForDiff} from '../utils/scoresaber/format'
+  import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
 
   export let leaderboardId;
   export let type = 'global';
@@ -190,13 +190,13 @@
         {#if leaderboard && song && withHeader}
           {#if !withoutHeader}
             <header transition:fade>
-              <h1 className="title is-4">
-                <span className="name">{song.name} {song.subName ? song.subName : ''}</span>
-                <span className="author">{song.authorName}</span>
-                <small className="level-author">{song.levelAuthorName}</small>
+              <h1 class="title is-4">
+                <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
+                <span class="author">{song.authorName}</span>
+                <small class="level-author">{song.levelAuthorName}</small>
               </h1>
 
-              <h2 className="title is-6"
+              <h2 class="title is-6"
                   class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
                 {#if leaderboard.categoryDisplayName}
                   <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
@@ -221,77 +221,7 @@
           {/if}
           {#if showStats && leaderboard.stats}
             <div class="stats-with-icons">
-              <div class="stats">
-                {#if leaderboard?.stats?.seconds}
-                  <div transition:fade>
-                  <span class="time" transition:fade={{duration: 500}}>
-                      <i class="fas fa-clock"></i> Length: <Duration value={leaderboard.stats?.seconds}/>
-                  </span>
-                  </div>
-                {/if}
-
-                {#if leaderboard?.stats?.notes}
-                  <div transition:fade><i class="fas fa-music"></i> Notes: <strong>
-                    <Value value={leaderboard.stats?.notes} digits={0}/>
-                  </strong></div>
-                {/if}
-
-                {#if leaderboard?.stats?.bpm}
-                  <div transition:fade><i class="fas fa-drum"></i> BPM: <strong>
-                    <Value value={leaderboard.stats?.bpm} digits={0}/>
-                  </strong></div>
-                {/if}
-
-                {#if leaderboard?.stats?.njs}
-                  <div transition:fade><i class="fas fa-tachometer-alt"></i> NJS: <strong>
-                    <Value value={leaderboard.stats?.njs} digits={0}/>
-                  </strong></div>
-                {/if}
-
-                {#if Number.isFinite(leaderboard?.stats?.njsOffset)}
-                  <div transition:fade><i class="fas fa-ruler-horizontal"></i> Offset: <strong>
-                    <Value value={leaderboard?.stats?.njsOffset} digits={2}/>
-                  </strong></div>
-                {/if}
-
-                {#if leaderboard?.stats?.nps}
-                  <div transition:fade><i class="fas fa-fire"></i> NPS: <strong>
-                    <Value value={leaderboard.stats?.nps} digits={2}/>
-                  </strong></div>
-                {/if}
-
-                {#if leaderboard?.stats?.bombs}
-                  <div transition:fade><i class="fas fa-bomb"></i> Bombs: <strong>
-                    <Value value={leaderboard.stats?.bombs} digits={0} zero="0"/>
-                  </strong></div>
-                {/if}
-
-                {#if leaderboard?.stats?.obstacles}
-                  <div transition:fade><i class="fas fa-skull"></i> Obstacles: <strong>
-                    <Value value={leaderboard.stats?.obstacles} digits={0} zero="0"/>
-                  </strong></div>
-                {/if}
-
-                {#if leaderboard?.stats?.paritySummary}
-                  {#if leaderboard?.stats?.paritySummary?.errors}
-                    <div transition:fade><i class="fas fa-exclamation-circle"></i> Errors: <strong>
-                      <Value value={leaderboard.stats?.paritySummary?.errors} digits={0} zero="0"/>
-                    </strong></div>
-                  {/if}
-
-                  {#if leaderboard?.stats?.paritySummary?.warns}
-                    <div transition:fade><i class="fas fa-exclamation-triangle"></i> Warnings: <strong>
-                      <Value value={leaderboard.stats?.paritySummary?.warns} digits={0} zero="0"/>
-                    </strong></div>
-                  {/if}
-
-                  {#if leaderboard?.stats?.paritySummary?.resets}
-                    <div transition:fade><i class="fas fa-redo"></i> Resets: <strong>
-                      <Value value={leaderboard.stats?.paritySummary?.resets} digits={0} zero="0"/>
-                    </strong></div>
-                  {/if}
-                {/if}
-              </div>
+              <LeaderboardStats {leaderboard} />
 
               {#if iconsInInfo}
                 <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}/></span>
@@ -403,8 +333,10 @@
     </div>
 
     {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
-      <img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl}
-           on:error={() => ssCoverDoesNotExists = true}/>
+      <img class="dummy" 
+          src={$leaderboardStore.leaderboard.song.imageUrl}
+          alt="dummy"
+          on:error={() => ssCoverDoesNotExists = true}/>
     {/if}
   </div>
 </article>
@@ -419,7 +351,6 @@
     .diff-switch :global(> *:not(:last-child)) {
         margin-right: 1em;
     }
-
 
     .leaderboard {
         position: relative;
@@ -446,7 +377,6 @@
 
     header {
         color: var(--alternate);
-        margin-bottom: 1.5em;
     }
 
     header .title {
@@ -481,6 +411,7 @@
         display: flex;
         align-content: center;
         justify-content: space-evenly;
+        padding: 1em;
     }
 
     .stats {
@@ -615,13 +546,13 @@
     }
 
     @media screen and (max-width: 1023px) {
-        header .stats {
+        .stats {
             grid-template-columns: repeat(auto-fit, 9em);
         }
     }
 
     @media screen and (max-width: 767px) {
-        header .stats {
+        .stats {
             justify-items: left;
         }
 
@@ -681,7 +612,7 @@
     }
 
     @media screen and (max-width: 409px) {
-        header .stats {
+        .stats {
             justify-items: left;
             grid-template-columns: repeat(auto-fit, 8em);
         }
