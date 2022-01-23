@@ -175,7 +175,7 @@
 </svelte:head>
 
 <section>
-<article bind:this={playerEl} transition:fade>
+<article class="page-content" bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <div class="box has-shadow">
       <p class="error">Player not found.</p>
@@ -220,7 +220,7 @@
 <style>
   section {
       display: flex;
-      justify-content: flex-start;
+      justify-content: center;
       align-items: flex-start;
       overflow-x: hidden;
   }
@@ -228,6 +228,10 @@
   article {
       width: calc(100% - 25em);
       overflow-x: hidden;
+  }
+
+  article.page-content {
+      max-width: 65em;
   }
 
   aside {

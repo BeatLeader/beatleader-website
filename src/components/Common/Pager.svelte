@@ -202,6 +202,9 @@
         {/if}
       {/if}
     </ul>
+    {#if currentMode === 'pages'}
+      <div class="spacer"></div>
+    {/if}
     {#if itemsPerPageValues && itemsPerPageValues.length}
       <div class="items-per-page"><select bind:value={itemsPerPage} on:change={onItemsPerPageChanged}>
         {#each itemsPerPageValues as ipp}
@@ -216,6 +219,11 @@
     ul {
         list-style-type: none;
     }
+
+    li {
+        margin-top: 0em;
+    }
+
     button {
         color: var(--textColor);
         background-color: transparent;
@@ -261,6 +269,8 @@
     .pagination-link {
         border-color: var(--alternate);
         height: 1.5em;
+        display: grid;
+        align-content: center;
     }
 
     .pagination-link.is-current, .pagination:not(.simple) button:hover {
@@ -294,6 +304,11 @@
     .position {
         min-width: 8.5em;
         order: 0
+    }
+
+    .spacer {
+        min-width: 8.5em;
+        order: 2
     }
 
     .pagination-list {
