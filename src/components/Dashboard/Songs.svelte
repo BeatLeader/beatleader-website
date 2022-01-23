@@ -72,7 +72,7 @@
          });
 
         for (const s of tempScores) {
-            if (s.score.acc == Infinity) {
+            if (s.score.acc == Infinity || s.score.acc == null) {
                 const maxScore = await getSongMaxScore(s.leaderboard.song.hash, s.leaderboard.diffInfo, s.leaderboard.leaderboardId);
                 s.score.acc = getAccFromScore(s.score, maxScore);
             }
