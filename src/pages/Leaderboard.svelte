@@ -167,7 +167,7 @@
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
     ratio = Math.pow(1 - ratio, 3);
-    const brightnessInt = (oldScoreBrightness + freshScoreBrightness * ratio)|0;
+    const brightnessInt = (oldScoreBrightness + (freshScoreBrightness - oldScoreBrightness) * ratio)|0;
     const brightnessHex = brightnessInt.toString(16);
     return "#" + brightnessHex + brightnessHex + brightnessHex;
   }
