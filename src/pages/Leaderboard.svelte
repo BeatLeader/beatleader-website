@@ -154,6 +154,24 @@
       }))
   }
 
+  const freshScoreAgeMillis = 0;
+  const oldScoreAgeMillis = 1000 * 60 * 60 * 24 * 30 * 8; //~8 months
+  const freshScoreBrightness = 255;
+  const oldScoreBrightness = 128;
+  let now = new Date().getTime();
+
+  function getTimeStringColor(timeSet) {
+    if (!timeSet) return "#ffffff";
+    const scoreAgeMillis = now - new Date(timeSet).getTime();
+    let ratio = (scoreAgeMillis - freshScoreAgeMillis) / (oldScoreAgeMillis - freshScoreAgeMillis);
+    if (ratio < 0) ratio = 0;
+    if (ratio > 1) ratio = 1;
+    ratio = Math.pow(1 - ratio, 3);
+    const brightnessInt = (oldScoreBrightness + (freshScoreBrightness - oldScoreBrightness) * ratio)|0;
+    const brightnessHex = brightnessInt.toString(16);
+    return "#" + brightnessHex + brightnessHex + brightnessHex;
+  }
+
   let ssCoverDoesNotExists = false;
 
   $: isLoading = leaderboardStore.isLoading;
@@ -267,7 +285,9 @@
                   </div>
 
                   <div class="timeset">
-                    {opt(score, 'score.timeSetString', '-')}
+                    <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
+                      {opt(score, 'score.timeSetString', '-')}
+                    </span>
                   </div>
 
                   {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
