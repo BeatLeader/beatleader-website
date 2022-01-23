@@ -5,6 +5,7 @@
 
   export let player;
   export let type = 'scoresaber/recent'
+  export let hideFlag = false;
 
   const dispatch = createEventDispatcher();
 
@@ -14,7 +15,9 @@
 </script>
 
 <a href={`/u/${playerId}/${type}/1`} class="player-name clickable has-pointer-events" title={name} on:click|preventDefault>
-  <Flag {country} on:flag-click />
+  {#if !hideFlag}
+    <Flag {country} on:flag-click />
+  {/if}
   <span>{name}</span>
 </a>
 

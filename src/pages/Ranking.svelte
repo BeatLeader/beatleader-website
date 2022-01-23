@@ -17,6 +17,7 @@
   import Spinner from '../components/Common/Spinner.svelte'
   import {PLAYERS_PER_PAGE} from '../utils/scoresaber/consts'
   import createConfigService from '../services/config'
+import { HSVtoRGB } from '../utils/color';
 
   export let type = 'global';
   export let page = 1;
@@ -63,7 +64,7 @@
 
   function onPlayerClick(event, player) {
     const target = event.target;
-    if (target && target.classList.contains('country')) return;
+    if (target && (target.classList.contains('rank') || target.classList.contains('country') || target.classList.contains('sharp') || target.classList.contains('value'))) return;
 
     if (!player) return;
 
@@ -73,7 +74,13 @@
   function onCountryClick(player) {
     if (!player) return;
 
-    navigateToPlayer(player.playerId);
+    navigate(`/ranking/${player.playerInfo.countries[0].country}/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}`)
+  }
+
+  function onGlobalClick(player) {
+    if (!player) return;
+
+    navigate(`/ranking/global/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}`)
   }
 
   $: isLoading = rankingStore.isLoading;
@@ -102,32 +109,33 @@
       <section class="ranking-grid">
         {#each $rankingStore.data as player, idx (player.playerId)}
           <div class={`player-card ${playerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
+            <div class="player-rank">
+              <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
+                #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
+              </div>
+              <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click={e => onCountryClick(player)}>
+                #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
+                <Flag country={opt(player, 'playerInfo.countries.0.country')} />
+              </div>
+            </div>
             <div class="player-avatar">
               <Avatar {player}/>
             </div>
             <div class="player-name-and-rank">
-              <PlayerNameWithFlag {player} on:flag-click={e => onCountryClick(player)}/>
-                
-                <div class="player-countryglobal-rank">
-                {#if player.playerId > 70000000000000000}
+              <div>
+                <PlayerNameWithFlag {player} hideFlag={true}/>
+                <span class="change">
+                  <Change value={opt(player, 'others.difference')} digits={0}/>
+                </span>
+              </div>
+                <div class="steam-and-pp">
+                  {#if player.playerId > 70000000000000000}
                   <SteamStats playerId={player.playerId}/>
                 {/if}
-                <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`}>
-                  #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
-                  <Flag country={opt(player, 'playerInfo.countries.0.country')} on:flag-click={e => onCountryClick(player)} />
+                <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
+                  <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
                 </div>
-                
-              <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`}>
-                #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
-              </div>
-            </div>
-            </div>
-
-            <div class="player-pp-and-change">
-              <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
-              <span class="change">
-                <Change value={opt(player, 'others.difference')} digits={0}/>
-              </span>
+              </div>  
             </div>
           </div>
         {/each}
@@ -153,14 +161,15 @@
 
     .player-card {
         display: inline-grid;
-        grid-template-columns: 5.25em 1fr;
-        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 7.5em 4em 1fr;
+        grid-template-rows: 1fr;
         max-width: 100%;
-        padding: .5em;
-        border: 1px solid var(--dimmed);
-        border-radius: 4px;
+        padding: .2em;
+        border: 2px solid var(--dimmed);
+        border-radius: 8px;
         background-color: var(--background);
         cursor: pointer;
+        font-size: 1.12em;
     }
     .current {
       border-color: yellow;
@@ -171,24 +180,26 @@
     }
 
     .player-card .player-avatar {
-        grid-column: 1 / 2;
-        grid-row: 1 / span 2;
+        /* grid-column: 1 / 2;
+        grid-row: 1 / span 2; */
         position: relative;
         overflow: hidden;
     }
 
     .player-card .player-avatar :global(figure) {
-        width: 4em;
-        height: 4em;
+        width: 2em;
+        height: 2em;
+        margin-left: 1em;
     }
 
-    .player-card .player-name-and-rank :global(.rank) {
+    .player-card :global(.rank) {
         padding: 0 .25em;
-        font-size: 1em;
+        font-size: 0.8em;
         font-weight: 500;
         background-color: var(--dimmed);
         border-radius: 3px;
         margin-left: .25em;
+        cursor: pointer;
     }
 
     .player-card .player-name-and-rank {
@@ -199,6 +210,15 @@
         font-weight: 500;
     }
 
+    .player-card .steam-and-pp {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8em;
+        font-weight: 500;
+        margin-right: .25em;
+    }
+
     .player-card .player-countryglobal-rank {
         display: flex;
         justify-content: space-between;
@@ -206,32 +226,32 @@
         
     }
 
-    .player-card .player-name-and-rank :global(.rank.small) {
+    .player-card :global(.rank.small) {
         font-size: .875em;
     }
 
-    .player-card .player-name-and-rank :global(.rank.gold) {
+    .player-card :global(.rank.gold) {
         font-size: 1.1em;
         background-color: darkgoldenrod;
     }
 
-    .player-card .player-name-and-rank :global(.rank.silver) {
+    .player-card :global(.rank.silver) {
         font-size: 1.1em;
         background-color: #888;
     }
 
-    .player-card .player-name-and-rank :global(.rank.brown) {
+    .player-card :global(.rank.brown) {
         font-size: 1.1em;
         background-color: saddlebrown;
     }
 
-    .player-card .player-pp-and-change {
+    .player-card .player-rank {
         display: flex;
         justify-content: space-between;
         align-items: center;
         font-size: 1.1em;
         font-weight: 500;
-        color: var(--ppColour);
+        /* color: var(--ppColour); */
     }
 
     .player-card .change {

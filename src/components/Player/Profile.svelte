@@ -130,7 +130,7 @@
               ? [{
                 name: `ranking-${playerId}`,
                 component: MiniRanking,
-                props: {playerInfo: opt(playerData, 'playerInfo')},
+                props: {player: playerData},
               }]
               : [],
           )

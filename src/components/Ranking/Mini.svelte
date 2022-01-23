@@ -111,6 +111,10 @@
         text-align: right;
     }
 
+    .rank :global(.value) {
+      font-weight: bold;
+    }
+
     .players :global(.player-name) {
         overflow-x: hidden;
         white-space: nowrap;

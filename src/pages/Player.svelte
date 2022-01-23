@@ -4,6 +4,7 @@
   import {fade} from 'svelte/transition'
   import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
   import createTwitchService from '../services/twitch'
+  import createAccSaberService from '../services/accsaber'
   import {capitalize, opt} from '../utils/js'
   import ssrConfig from '../ssr-config'
   import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
@@ -13,6 +14,7 @@
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
   import MiniRanking from '../components/Ranking/Mini.svelte'
+  import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte'
   import TwitchVideos from '../components/Player/TwitchVideos.svelte'
 
   export let initialPlayerId = null;
@@ -44,6 +46,8 @@
 
   const twitchService = createTwitchService();
   let twitchVideos = [];
+
+  const accSaberService = createAccSaberService();
 
   async function changeParams(newPlayerId, service, serviceParams) {
     if (!newPlayerId) return;
@@ -168,6 +172,7 @@
 
     scoresPlayerId = currentPlayerId;
   }
+  $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId)
 </script>
 
 <svelte:head>
@@ -214,6 +219,13 @@
       <TwitchVideos videos={twitchVideos} />
     </div>
   {/if}
+  
+  {#if accSaberAvailable} 
+  <div class="box has-shadow">
+    <AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
+  </div>
+  {/if}
+  
 </aside>
 </section>
 

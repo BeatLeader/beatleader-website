@@ -27,8 +27,8 @@ export default response => {
     if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
     else if (!mods) mods = null;
 
-    const acc = unmodifiedScore / maxScore * 100;
-    const percentage = modifiedScore / maxScore * 100;
+    const acc = unmodifiedScore && maxScore ? unmodifiedScore / maxScore * 100 : undefined;
+    const percentage = acc;
 
     const ppWeighted = pp * weight;
     const hasReplay = pp != 0 && rank <= 500;

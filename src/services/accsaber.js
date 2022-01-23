@@ -481,6 +481,35 @@ export default () => {
       return null;
     }
   }
+
+  async function getMiniRanking(rank, category = 'overall', numOfPlayers = 5) {
+    try {
+      if (!Number.isFinite(numOfPlayers)) numOfPlayers = 5;
+
+      const getPage = rank => Math.floor((rank - 1) / PLAYER_SCORES_PER_PAGE) + 1;
+
+      const playerPage = getPage(rank);
+      let firstPlayerRank = rank - (numOfPlayers - (numOfPlayers > 2 ? 2 : 1));
+      if (firstPlayerRank <= 0) firstPlayerRank = 1;
+      const firstPlayerRankPage = getPage(firstPlayerRank);
+      const lastPlayerRank = firstPlayerRank + numOfPlayers - 1;
+      const lastPlayerRankPage = getPage(lastPlayerRank);
+
+      const pages = [...new Set([playerPage, firstPlayerRankPage, lastPlayerRankPage])].filter(p => p);
+
+      const ranking = (await getRanking(category))
+        .reduce((cum, arr) => cum.concat(arr), [])
+        .filter(player => {
+          const rank = player?.rank
+          return rank >= firstPlayerRank && rank <= lastPlayerRank;
+        })
+        .sort((a,b) => a.rank - b.rank)
+
+      return ranking;
+    } catch(err) {
+      return null;
+    }
+  }
   
   const destroyService = () => {
     service = null;
@@ -491,6 +520,7 @@ export default () => {
     getPlayer,
     getCategories,
     getRanking,
+    getMiniRanking,
     getPlayerHistory,
     getPlayerGain,
     fetchScoresPage,

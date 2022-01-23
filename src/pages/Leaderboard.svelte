@@ -33,6 +33,7 @@
   export let dontChangeType = false;
   export let scrollOffset = 45;
   export let fixedBrowserTitle = null;
+  export let higlightedScore = null;
   export let higlightedPlayerId = null;
   export let iconsInInfo = false;
   export let hasReplay = false;
@@ -180,6 +181,7 @@
 
   $: changeParams(leaderboardId, type, page)
   $: scrollToTop($pending);
+  $: higlightedPlayerId = higlightedPlayerId ?? higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
@@ -233,7 +235,7 @@
                 {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
                                                                          reverseColors={true}/></span>{/if}
 
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}/></span>
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
               </h2>
             </header>
           {/if}
@@ -242,7 +244,7 @@
               <LeaderboardStats {leaderboard} />
 
               {#if iconsInInfo}
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}/></span>
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
               {/if}
             </div>
           {/if}
@@ -292,7 +294,7 @@
 
                   {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
                     <div class="replay">
-                      <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId}/>
+                      <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId} jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
                     </div>
                   {/if}
 

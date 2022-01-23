@@ -1,21 +1,32 @@
 <script>
   import {opt} from '../../../utils/js'
+  import createAccSaberService from '../../../services/accsaber'
   import MiniRanking from '../../Ranking/Mini.svelte'
+  import AccSaberMiniRanking from '../../Ranking/AccSaberMini.svelte'
 
-  export let playerInfo = null;
+  export let player = null;
 
+  const accSaberService = createAccSaberService();
+
+  $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player.playerId)
 </script>
 
 <div class="mini-ranking">
   <div>
-    <MiniRanking rank={opt(playerInfo, 'rank')} numOfPlayers={5} on:height-changed />
+    <MiniRanking rank={opt(player, 'playerInfo.rank')} numOfPlayers={5} on:height-changed />
   </div>
 
-  {#each opt(playerInfo, 'countries', []) as countryInfo (countryInfo.country)}
+  {#each opt(player, 'playerInfo.countries', []) as countryInfo (countryInfo.country)}
     <div>
       <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} on:height-changed />
     </div>
   {/each}
+
+  {#if accSaberAvailable} 
+    <div>
+      <AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} />
+    </div>
+  {/if}
 </div>
 
 <style>

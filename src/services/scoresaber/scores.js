@@ -486,7 +486,7 @@ export default () => {
         break;
 
       case 'acc':
-        valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc ?? null);
+        valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc && s?.score?.acc != Infinity ? s.score.acc : null)
         filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
         bucketSize = HISTOGRAM_ACC_PRECISION;

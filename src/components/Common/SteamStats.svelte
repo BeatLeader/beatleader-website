@@ -17,7 +17,7 @@
     <p>...</p>
   {:then stats}
   {#if stats}
-    <p>Playtime 2w: <span style="color: #8992e8">{stats.lastTwoWeeks}</span>h ∞: <span style="color: #8992e8">{stats.allTime}</span>h   </p>
+    <p title="{stats.lastTwoWeeks} hours played last 2 weeks. And {stats.allTime} hours played all time."><span style="color: #8992e8">{stats.lastTwoWeeks}</span>|<span style="color: #8992e8">{stats.allTime}</span>h </p>
   {/if}
     {:catch error}
     <p style="color: red">{error.message}</p>

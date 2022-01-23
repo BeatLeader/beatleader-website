@@ -55,7 +55,7 @@
     $: prevDiff = Number.isFinite(prevValue) ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;
     $: prevDiffFormatted = Number.isFinite(prevDiff) ? (configStore, $configStore, resolvedValue, Number.isFinite(prevDiff) ? formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix) : "") : null
     $: prevClass = (prevDiff !== null ? (prevDiff > minValue ? "inc" : (prevDiff < -minValue ? "dec" : "zero")): "") + (!inline ? " block" : " inline") + ' prev';
-    $: mainClass = (useColorsForValue && resolvedValue ? (resolvedValue > minValue ? "inc" : (resolvedValue < -minValue ? "dec" : "zero")): "");
+    $: mainClass = (useColorsForValue && resolvedValue ? (resolvedValue > minValue ? "inc" : (resolvedValue < -minValue ? "dec" : "zero")): "value");
     $: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : "${value}", {value: prevLabelFormatted})
 </script>
 
