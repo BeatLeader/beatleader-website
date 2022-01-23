@@ -204,7 +204,7 @@
     {/if}
 
     <div class="leaderboard"
-         style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `--background-image: url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl})` : ''}>
+         style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
       {#if $leaderboardStore}
 
         {#if leaderboard && song && withHeader}
@@ -355,7 +355,7 @@
     </div>
 
     {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
-      <img class="dummy" 
+      <img class="dummy"
           src={$leaderboardStore.leaderboard.song.imageUrl}
           alt="dummy"
           on:error={() => ssCoverDoesNotExists = true}/>
@@ -381,6 +381,7 @@
         margin-bottom: -1em;
         width: calc(100% + 2em);
         padding: .4em;
+        border-radius: .4em;
     }
 
     .leaderboard:before {
