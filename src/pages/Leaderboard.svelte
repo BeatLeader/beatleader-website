@@ -235,7 +235,7 @@
                 {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
                                                                          reverseColors={true}/></span>{/if}
 
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
               </h2>
             </header>
           {/if}
@@ -244,7 +244,7 @@
               <LeaderboardStats {leaderboard} />
 
               {#if iconsInInfo}
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
               {/if}
             </div>
           {/if}
