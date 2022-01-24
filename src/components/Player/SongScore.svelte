@@ -69,14 +69,10 @@
       </span>
 
       <div class="score-options-section">
-        {#if beatSavior && beatSavior.stats}
           <span class="beat-savior-reveal clickable" class:opened={showDetails}
                 on:click={() => showDetails = !showDetails} title="Show details">
             <i class="fas fa-chevron-down"></i>
           </span>
-        {:else}
-          <span></span>
-        {/if}
       </div>
 
       <PlayerPerformance
