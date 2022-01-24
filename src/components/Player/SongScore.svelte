@@ -75,10 +75,7 @@
           </span>
       </div>
 
-      <PlayerPerformance
-          service="{service}"
-          songScore="{songScore}"
-          showDetails="{showDetails}"/>
+      <PlayerPerformance {service} {songScore} {showDetails}/>
     </div>
 
     {#if showDetails}
@@ -106,6 +103,7 @@
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
+        justify-content: center;
         grid-column-gap: .4em;
     }
 
