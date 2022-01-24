@@ -1,19 +1,12 @@
 <script>
-  import {formatNumber, padNumber} from '../../utils/format'
   import {fade, fly, slide} from 'svelte/transition'
   import {opt} from '../../utils/js'
-  import {formatDate} from '../../utils/date'
-  import ssrConfig from '../../ssr-config'
-  import {configStore} from '../../stores/config'
-  import Badge from '../Common/Badge.svelte'
-  import Accuracy from '../Common/Accuracy.svelte'
   import SongInfo from './SongInfo.svelte'
   import ScoreRank from './ScoreRank.svelte'
   import FormattedDate from '../Common/FormattedDate.svelte'
-  import Pp from '../Score/Pp.svelte'
-  import Value from '../Common/Value.svelte'
   import SongScoreDetails from './SongScoreDetails.svelte'
   import Icons from '../Song/Icons.svelte'
+  import PlayerPerformance from "./PlayerPerformance.svelte";
 
   export let playerId = null;
   export let songScore = null;
@@ -23,45 +16,26 @@
 
   let showDetails = false;
 
-  function formatFailedAt(beatSavior) {
-    const endTime = opt(beatSavior, 'trackers.winTracker.endTime');
-    const won = opt(beatSavior, 'trackers.winTracker.won', false);
-    if (!endTime || won) return null;
-
-    let failedAt = null;
-    if (endTime) {
-      let minutes = padNumber(Math.floor(endTime / 60));
-      let seconds = padNumber(Math.round(endTime - minutes * 60));
-      if (seconds >= 60) {
-        minutes = padNumber(minutes + 1)
-        seconds = padNumber(0);
-      }
-
-      failedAt = `${minutes}:${seconds}`
-    }
-
-    return failedAt
-  }
-
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
   $: prevScore = opt(songScore, 'prevScore', null);
   $: beatSavior = opt(songScore, 'beatSavior', null)
-  $: comparePlayers = opt(songScore, 'comparePlayers', null)
   $: hash = opt(leaderboard, 'song.hash')
   $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
   $: diffInfo = opt(leaderboard, 'diffInfo')
-  $: failedAt = formatFailedAt(beatSavior)
 </script>
 
 {#if songScore}
   <div class={`song-score row-${idx}`}
        in:fly={{x: 300, delay: idx * 30, duration:500}} out:fade={{duration:100}}
-       class:with-details={showDetails}
-  >
-      <div class="icons up-to-tablet">
-        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.pp != 0 && score.hasReplay} hmd={score.hmd} jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
-      </div>
+       class:with-details={showDetails}>
+
+    <div class="icons up-to-tablet">
+      <Icons {hash} {twitchUrl} {diffInfo} {playerId}
+             hasReplay={score.pp != 0 && score.hasReplay}
+             hmd={score.hmd}
+             jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
+    </div>
 
     <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
       <span class="rank">
@@ -69,253 +43,39 @@
           <ScoreRank rank={score.rank}
                      countryRank={score.ssplCountryRank}
                      countryRankTotal={null}
-                     country={score.country}
-          />
+                     country={score.country}/>
         {/if}
 
         <div class="timeset tablet-and-up">
-          <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={service === 'beatsavior'}/>
+          <FormattedDate date={score.timeSet}
+                         prevPrefix="vs "
+                         prevDate={prevScore ? prevScore.timeSet : null}
+                         absolute={service === 'beatsavior'}/>
         </div>
       </span>
 
       <span class="timeset mobile-only">
-        <FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} absolute={service === 'beatsavior'}/>
+        <FormattedDate date={score.timeSet}
+                       prevPrefix="vs "
+                       prevDate={prevScore ? prevScore.timeSet : null}
+                       absolute={service === 'beatsavior'}/>
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl} notClickable={['beatsavior'].includes(service)}
-                  category={leaderboard?.categoryDisplayName ?? null} {service} {playerId} jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}
-        />
+        <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl}
+                  notClickable={['beatsavior'].includes(service)}
+                  category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}
+                  jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
       </span>
 
-      <section class="stats">
-        {#if !beatSavior || !beatSavior.stats}
-          <span class="beat-savior-reveal clickable" class:opened={showDetails} on:click={() => showDetails = !showDetails} title="Show leaderboard">
+      <div class="score-options-section">
+          <span class="beat-savior-reveal clickable" class:opened={showDetails}
+                on:click={() => showDetails = !showDetails} title="Show details">
             <i class="fas fa-chevron-down"></i>
           </span>
-        {:else}
-          <span></span>
-        {/if}
+      </div>
 
-        {#if score.pp}
-          <span class="pp with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-              <span slot="label">
-                <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-                    pp="{score.pp}" weighted={score.ppWeighted} attribution={score.ppAttribution} whatIf={score.whatIfPp}
-                    zero={(configStore, $configStore, formatNumber(0))} withZeroSuffix={true} inline={false}
-                    color="white"
-                />
-              </span>
-            </Badge>
-          </span>
-        {:else if service === 'beatsavior' && beatSavior && !opt(beatSavior, 'trackers.winTracker.won', false)}
-          <span class="pp with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="var(--decrease)" label="FAIL" title={failedAt ? `Failed at ${failedAt}` : null} />
-          </span>
-        {:else if service === 'accsaber' && score.ap}
-          <span class="pp with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-              <span slot="label">
-                <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-                    pp="{score.ap}" weighted={score.weightedAp}
-                    zero={formatNumber(0)} withZeroSuffix={true} inline={false}
-                    suffix="AP"
-                    color="white"
-                />
-              </span>
-            </Badge>
-          </span>
-        {:else}
-          <span class="pp with-badge"></span>
-        {/if}
-
-        {#if score.acc}
-            <span class="acc with-badge">
-              <Accuracy {score} {prevScore} noSecondMetric={true} />
-            </span>
-        {:else}
-          <span class="acc with-badge"></span>
-        {/if}
-
-        {#if score.score}
-        <span class="score with-badge">
-          <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-              <span slot="label">
-                <Value value="{score.score}" prevValue={opt(prevScore, 'score')}
-                       inline={false} digits={0} prefix={score.scoreApproximate ? '~' : ''}
-                       prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
-                />
-              </span>
-          </Badge>
-        </span>
-        {/if}
-
-        {#if beatSavior && beatSavior.stats}
-          <span class="beat-savior-reveal clickable" class:opened={showDetails} on:click={() => showDetails = !showDetails} title="Show details">
-            <i class="fas fa-chevron-down"></i>
-          </span>
-
-          {#if beatSavior.stats.accLeft}
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
-                <span slot="label">
-                  <Value
-                    title={`Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
-                    value="{beatSavior.stats.accLeft}"
-                    inline={false} digits={2}
-                  />
-                </span>
-            </Badge>
-          </span>
-          {/if}
-
-          {#if beatSavior.stats.accRight}
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
-                <span slot="label">
-                  <Value
-                    title={`Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
-                    value="{beatSavior.stats.accRight}" inline={false} digits={2}
-                  />
-                </span>
-            </Badge>
-          </span>
-          {/if}
-
-          {#if beatSavior.stats.miss !== undefined}
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-                <span slot="label" title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}>
-                  {#if beatSavior.stats.miss || beatSavior.stats.bombHit || beatSavior.stats.wallHit}
-                    <i class="fas fa-times"></i>
-                    <Value
-                      title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}
-                      value="{beatSavior.stats.miss + beatSavior.stats.wallHit + beatSavior.stats.bombHit}"
-                      inline={false} digits={0}
-                    />
-                  {:else if (!beatSavior.stats.wallHit && !beatSavior.stats.bombHit)}
-                  <span style="color: yellow">FC</span>
-                  {/if}
-                </span>
-            </Badge>
-          </span>
-          {/if}
-        {:else if score.badCuts !== undefined}
-          <span></span>
-          <span></span>
-          <span></span>
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-                <span slot="label" title={`Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}>
-                  {#if !score.fullCombo}
-                    <i class="fas fa-times"></i>
-                    <Value
-                      title={`Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}
-                      value="{score.missedNotes + score.badCuts}"
-                      inline={false} digits={0}
-                    />
-                  {:else}
-                  <span style="color: yellow">FC</span>
-                  {/if}
-                </span>
-            </Badge>
-          </span>
-          {/if}
-
-        {#if (showDetails || (configStore && opt($configStore, 'scoreComparison.method') === 'in-place') ) && comparePlayers && Array.isArray(comparePlayers)}
-          {#each comparePlayers as comparePlayer (comparePlayer.playerId)}
-            <span></span>
-            <span class="compare-player-name"><span>vs {comparePlayer.playerName} (<FormattedDate date={opt(comparePlayer, 'score.timeSet')}/>)</span></span>
-
-            <span></span>
-            {#if comparePlayer.score && comparePlayer.score.pp}
-              <span class="pp with-badge compare">
-              <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-                <span slot="label">
-                  <Pp playerId={comparePlayer.playerId} leaderboardId={leaderboard.leaderboardId}
-                      pp="{comparePlayer.score.pp}" withZeroSuffix={true} inline={false}
-                      color="white"
-                  />
-                </span>
-              </Badge>
-            </span>
-            {:else}
-              <span class="pp with-badge"></span>
-            {/if}
-
-            {#if comparePlayer.score.acc}
-              <span class="acc with-badge compare">
-                <Accuracy score={comparePlayer.score} noSecondMetric={true} />
-              </span>
-            {:else}
-              <span class="acc with-badge"></span>
-            {/if}
-
-            {#if comparePlayer.score.score}
-              <span class="score with-badge compare">
-                <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-                    <span slot="label">
-                      <Value value={comparePlayer.score.score}
-                             inline={false} digits={0}
-                             title={comparePlayer.score.mods && comparePlayer.score.mods.length ? `Mods: ${comparePlayer.score.mods.join(', ')}` : ''}
-                      />
-                    </span>
-                </Badge>
-              </span>
-            {/if}
-
-            {#if comparePlayer.beatSavior && comparePlayer.beatSavior.stats}
-              <span></span>
-
-              {#if comparePlayer.beatSavior.stats.accLeft}
-                  <span class="beatSavior with-badge compare">
-                    <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
-                        <span slot="label">
-                          <Value
-                            title={`Left accuracy: ${comparePlayer.beatSavior.stats.leftAverageCut ? comparePlayer.beatSavior.stats.leftAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
-                            value="{comparePlayer.beatSavior.stats.accLeft}"
-                            inline={false} digits={2}
-                          />
-                        </span>
-                    </Badge>
-                  </span>
-              {/if}
-
-              {#if comparePlayer.beatSavior.stats.accRight}
-                  <span class="beatSavior with-badge compare">
-                    <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
-                        <span slot="label">
-                          <Value
-                            title={`Right accuracy: ${comparePlayer.beatSavior.stats.rightAverageCut ? comparePlayer.beatSavior.stats.rightAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
-                            value="{comparePlayer.beatSavior.stats.accRight}" inline={false} digits={2}
-                          />
-                        </span>
-                    </Badge>
-                  </span>
-              {/if}
-
-              {#if comparePlayer.beatSavior.stats.miss !== undefined}
-                  <span class="beatSavior with-badge compare">
-                    <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-                        <span slot="label" title={`Missed notes: ${comparePlayer.beatSavior.stats.missedNotes}, Bad cuts: ${comparePlayer.beatSavior.stats.badCuts}, Bomb hit: ${comparePlayer.beatSavior.stats.bombHit}, Wall hit: ${comparePlayer.beatSavior.stats.wallHit}`}>
-                          {#if comparePlayer.beatSavior.stats.miss || comparePlayer.beatSavior.stats.bombHit || comparePlayer.beatSavior.stats.wallHit}
-                            <i class="fas fa-times"></i>
-                            <Value
-                              title={`Missed notes: ${comparePlayer.beatSavior.stats.missedNotes}, Bad cuts: ${comparePlayer.beatSavior.stats.badCuts}, Bomb hit: ${comparePlayer.beatSavior.stats.bombHit}, Wall hit: ${comparePlayer.beatSavior.stats.wallHit}`}
-                              value="{comparePlayer.beatSavior.stats.miss}" inline={false} digits={0}
-                            />
-                          {:else if (!comparePlayer.beatSavior.stats.wallHit && !comparePlayer.beatSavior.stats.bombHit)}
-                            FC
-                          {/if}
-                        </span>
-                    </Badge>
-                  </span>
-              {/if}
-            {/if}
-          {/each}
-        {/if}
-      </section>
+      <PlayerPerformance {service} {songScore} {showDetails}/>
     </div>
 
     {#if showDetails}
@@ -336,22 +96,19 @@
     }
 
     .song-score .icons.up-to-tablet + .main {
-      padding-top: 0;
+        padding-top: 0;
     }
 
     .song-score .main {
         display: flex;
         flex-wrap: nowrap;
-        justify-content: space-evenly;
         align-items: center;
+        justify-content: center;
+        grid-column-gap: .4em;
     }
 
     .song-score.with-details .main {
         border-bottom: none;
-    }
-
-    .song-score .main > * {
-        margin-right: 1em;
     }
 
     .song-score .main > *:last-child {
@@ -372,23 +129,6 @@
 
     .song-score .main :global(.inc), .song-score :global(.dec) {
         color: inherit;
-    }
-
-    section.stats, .beat-savior-data {
-        display: grid;
-        grid-template-columns: 1rem repeat(3, minmax(0, 1fr));
-        grid-template-rows: min-content;
-        grid-column-gap: .75em;
-        grid-row-gap: .25em;
-        min-width: 20rem;
-    }
-
-    .beat-savior-data {
-        grid-template-columns: 1rem repeat(3, minmax(0, 1fr));
-    }
-
-    .beatSavior {
-        font-size: .85em;
     }
 
     .rank {
@@ -420,26 +160,6 @@
         font-size: .8em;
     }
 
-    .pp {
-        min-width: 5em;
-    }
-
-    .pp.with-badge {
-        position: relative;
-    }
-
-    .acc {
-        min-width :4em;
-    }
-
-    .score {
-        min-width: 5.25em;
-    }
-
-    .with-badge {
-        text-align: center;
-    }
-
     .with-badge :global(.badge) {
         height: 100%;
     }
@@ -451,48 +171,21 @@
         font-size: .75em;
     }
 
-    .beatSavior.with-badge i {
-        font-size: .875em;
-    }
-
-    .beatSavior.with-badge :global(.label) {
-        font-size: .75em;
-    }
-
-    .beat-savior-data {
-        grid-column: 1/-1;
+    .score-options-section {
+        display: grid;
+        justify-items: center;
+        margin: .3em;
     }
 
     .beat-savior-reveal {
         align-self: end;
         cursor: pointer;
         transition: transform 500ms;
-        transform-origin: .5em .5em;
+        transform-origin: .42em .8em;
     }
+
     .beat-savior-reveal.opened {
         transform: rotateZ(180deg);
-    }
-
-    .compare-player-name {
-        grid-column: 2 / span 3;
-        color: var(--faded);
-        text-align: center;
-        font-size: .875em;
-        line-height: 1;
-        border-bottom: 1px solid var(--faded);
-        margin-bottom: .75em;
-    }
-
-    .compare-player-name > span {
-        display: inline-block;
-        position: relative;
-        top: .5em;
-        background-color: var(--foreground);
-        padding: 0 .5em;
-    }
-
-    .stats .compare {
-        opacity: .7;
     }
 
     .icons {
@@ -504,7 +197,7 @@
     }
 
     .icons:empty {
-        margin-bottom: 0!important;
+        margin-bottom: 0 !important;
     }
 
     @media screen and (max-width: 767px) {
