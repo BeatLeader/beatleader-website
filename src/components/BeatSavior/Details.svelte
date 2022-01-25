@@ -200,7 +200,7 @@
         box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
         border-radius: .4em;
         min-width: 28em;
-        background: #06003814;
+        background: linear-gradient(0deg, #06003814, #5a46ff14);
     }
 
     .beat-savior.with-history {
