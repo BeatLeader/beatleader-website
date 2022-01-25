@@ -33,7 +33,6 @@
     <div class="icons up-to-tablet">
       <Icons {hash} {twitchUrl} {diffInfo} {playerId}
              hasReplay={score.pp != 0 && score.hasReplay}
-             hmd={score.hmd}
              jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
     </div>
 
@@ -43,7 +42,9 @@
           <ScoreRank rank={score.rank}
                      countryRank={score.ssplCountryRank}
                      countryRankTotal={null}
-                     country={score.country}/>
+                     country={score.country}
+                     hmd={score.hmd}
+          />
         {/if}
 
         <div class="timeset tablet-and-up">

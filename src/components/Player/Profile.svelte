@@ -215,7 +215,7 @@
         min-width: 188px;
         width: 188px;
         min-height: 190px;
-        padding-right: 0;
+        padding: .75rem;
     }
 
     .player-role {

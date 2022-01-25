@@ -157,27 +157,50 @@
         />
       </nav>
     {/if}
-    
-    <div class="hands-and-grid">
+
+    <div class="details-and-hands details-with-shadow">
       <OtherStats beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName}/>
       <div class="hands-and-grid">
         <Hands stats={selectedRun.stats} compareTo={compareTo ? compareTo.stats : null} {name} {compareToName}/>
         <Grid {accGrid} compareTo={accCompareGrid} {name} {compareToName} />
       </div>
     </div>
-    <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
+
+    <div class="details-with-shadow">
+      <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
+    </div>
   </section>
 {/if}
 
 <style>
     .beat-savior {
-        max-width: 100%;
-        overflow-x: hidden;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        grid-gap: .4em;
+        justify-content: center;
+    }
+
+    .details-and-hands {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-gap: 1.5em;
-        align-items: center;
+        justify-content: center;
+        grid-gap: 0.5em;
+        grid-template-columns: min-content;
+    }
+
+    .hands-and-grid {
+        display: flex;
         justify-items: center;
+        grid-gap: 1.5em;
+    }
+
+    .details-with-shadow {
+        margin: .4em .4em .6em;
+        padding: .4em;
+        box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
+        border-radius: .4em;
+        min-width: 29.6em;
+        background: linear-gradient(0deg, #06003814, #5a46ff14);
     }
 
     .beat-savior.with-history {
@@ -194,15 +217,6 @@
 
         display: flex;
         flex-direction: column;
-    }
-
-    .hands-and-grid {
-        align-items: center;
-        justify-items: center;
-        flex-wrap: wrap;
-        justify-content: center;
-        display: flex;
-        grid-gap: 0.5em;
     }
 
     header {

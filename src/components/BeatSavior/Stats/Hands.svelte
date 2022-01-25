@@ -12,7 +12,7 @@
 
 {#if stats}
   <div class="acc">
-    <div class="left">
+    <div class="hand-values">
       <HandAcc value={stats.accLeft} cut={stats.leftAverageCut} color={stats.saberAColor} hand="left" {name}
                compareToValue={compareTo ? compareTo.accLeft : null} compareToCut={compareTo ? compareTo.leftAverageCut : null} {compareToName}
       />
@@ -52,7 +52,7 @@
       {/if}
     </div>
 
-    <div class="right">
+    <div class="hand-values">
       <HandAcc value={stats.accRight} cut={stats.rightAverageCut} color={stats.saberBColor} hand="right" {name}
                compareToValue={compareTo ? compareTo.accRight : null} compareToCut={compareTo ? compareTo.rightAverageCut : null} {compareToName}
       />
@@ -96,14 +96,19 @@
 
 <style>
     .acc {
-        display: inline-flex;
-        justify-content: space-between;
-        align-items: center;
+        display: flex;
+        flex-direction: row;
+        grid-column-gap: .4em;
+    }
+
+    .hand-values {
+        display: flex;
+        flex-direction: column;
+        grid-row-gap: .2em;
     }
 
     .badge-stat {
         font-size: .8em;
-        margin-top: .25em;
     }
 
     .right .badge-stat {

@@ -47,6 +47,7 @@
         background-color: var(--dimmed);
         width: 3.5em;
         height: 3.5em;
+        border-radius: .4em;
     }
 
     div > small {

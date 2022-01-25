@@ -3,6 +3,7 @@
   import {cubicOut} from 'svelte/easing';
   import Value from '../Common/Value.svelte'
   import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
+  import {getHeadsetForHMD} from "../../utils/scoresaber/format";
 
   export let rank;
   export let country;
@@ -10,6 +11,8 @@
   export let countryRankTotal;
   export let showCountryTotal = false;
   export let inline = true;
+
+  export let hmd = null;
 
   const currentRank = tweened(rank, {
     duration: 500,
@@ -28,31 +31,44 @@
   $: {
     currentCountryRank.set(countryRank);
   }
+
+  $: headset = hmd != null ? getHeadsetForHMD(hmd) : null;
 </script>
 
 <span class="val">
-<i class="fas fa-globe-americas"></i>
-<span class="value"><Value value={$currentRank} prefix="#" zero="-" digits={0}/></span>
+	<i class="fas fa-globe-americas"></i>
+	<strong class="value">
+		<Value value={$currentRank} prefix="#" zero="-" digits={0}/>
+	</strong>
+
+  {#if headset}
+        <img src={'/assets/' + headset.icon + ".svg"}
+             alt={headset.name}
+             title={headset.name}
+             style="width: 1.2em; filter: {headset.color}"
+        />
+	{/if}
 </span>
 
 {#if country}
 <span class="val" style="display:{inline ? 'inline' : 'block'};">
 	<img src={`${SS_HOST}/imports/images/flags/${country}.png`} alt=""/>
-	<span class="value"
-        title={!showCountryTotal && country && $currentCountryRank && countryRankTotal ? `#${$currentCountryRank} / ${countryRankTotal}` : ''}>
+	<strong class="value"
+          title={!showCountryTotal && country && $currentCountryRank && countryRankTotal ? `#${$currentCountryRank} / ${countryRankTotal}` : ''}>
 		<Value value={$currentCountryRank} prefix="#" zero="-" digits={0}/>
     {#if showCountryTotal}<Value value={countryRankTotal} prefix="/" zero="-" digits={0}/>{/if}
-	</span>
+	</strong>
 </span>
 {/if}
 
 <style>
-	.val {
-		display: inline-flex;
-		align-items: center;
-	}
+    .val {
+        display: flex;
+        align-items: center;
+				justify-content: center;
+    }
 
-	.val > *:not(:last-child) {
-		margin-right: .25em;
-	}
+    .val > *:not(:last-child) {
+        margin-right: .25em;
+    }
 </style>

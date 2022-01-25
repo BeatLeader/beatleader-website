@@ -32,8 +32,9 @@
       {#if metadata?.duration}
         <div transition:fade>
                 <span class="time" transition:fade={{duration: 500}}>
-                    <i class="fas fa-clock"></i> Length: <Duration value={metadata.duration}/>
-                </span>
+                    <i class="fas fa-clock"></i> Length: <strong>
+                  <Duration value={metadata.duration}/>
+                </strong></span>
         </div>
       {/if}
 
@@ -108,6 +109,5 @@
         flex-wrap: wrap;
         justify-content: space-evenly;
         column-gap: 1em;
-        padding: .4em;
     }
 </style>

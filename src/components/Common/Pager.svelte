@@ -267,9 +267,11 @@
     }
 
     .pagination-link {
-        border-color: var(--alternate);
+        border-color: transparent;
+        background: var(--faded);
         height: 1.5em;
         display: grid;
+        justify-items: center;
         align-content: center;
     }
 
@@ -290,7 +292,7 @@
     .pagination-link .spinner {
         display: none;
         position: absolute;
-        top: .5em;
+        top: .1em;
     }
 
     .is-loading .pagination-link .spinner {
