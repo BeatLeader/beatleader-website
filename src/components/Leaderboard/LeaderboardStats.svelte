@@ -109,6 +109,5 @@
         flex-wrap: wrap;
         justify-content: space-evenly;
         column-gap: 1em;
-        padding: .4em;
     }
 </style>

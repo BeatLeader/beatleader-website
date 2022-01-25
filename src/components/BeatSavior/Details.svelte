@@ -191,15 +191,15 @@
     .hands-and-grid {
         display: flex;
         justify-items: center;
-        grid-gap: 0.5em;
+        grid-gap: 1.5em;
     }
 
     .details-with-shadow {
-        margin: .4em;
+        margin: .4em .4em .6em;
         padding: .4em;
         box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
         border-radius: .4em;
-        min-width: 28em;
+        min-width: 29.6em;
         background: linear-gradient(0deg, #06003814, #5a46ff14);
     }
 

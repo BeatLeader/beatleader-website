@@ -86,7 +86,8 @@
     .details {
         display: flex;
         flex-direction: column;
-        grid-row-gap: .4em;
+        grid-row-gap: .2em;
+        padding-top: .4em;
     }
 
     nav {
