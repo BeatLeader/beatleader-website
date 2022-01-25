@@ -297,7 +297,7 @@
 
                 {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
                   <div class="replay">
-                    <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId}
+                    <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true} playerId={score.player.playerId}
                            jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
                   </div>
                 {/if}
