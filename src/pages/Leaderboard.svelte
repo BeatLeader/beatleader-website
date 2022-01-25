@@ -168,7 +168,7 @@
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
     ratio = Math.pow(1 - ratio, 3);
-    const brightnessInt = (oldScoreBrightness + (freshScoreBrightness - oldScoreBrightness) * ratio)|0;
+    const brightnessInt = (oldScoreBrightness + (freshScoreBrightness - oldScoreBrightness) * ratio) | 0;
     const brightnessHex = brightnessInt.toString(16);
     return "#" + brightnessHex + brightnessHex + brightnessHex;
   }
@@ -197,110 +197,114 @@
   <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}}`}</title>
 </svelte:head>
 
-<article transition:fade>
-  <div class="box has-shadow" bind:this={boxEl}>
+<article transition:fade bind:this={boxEl}>
+  <div class="leaderboard"
+       style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
+
     {#if !$leaderboardStore && $isLoading}
-      <Spinner/>
+      <div class="align-spinner">
+        <Spinner/>
+      </div>
     {/if}
 
-    <div class="leaderboard"
-         style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
-      {#if $leaderboardStore}
+    {#if $leaderboardStore}
+      {#if leaderboard && song && withHeader}
+        {#if !withoutHeader}
+          <header transition:fade>
+            <h1 class="title is-4">
+              <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
+              <span class="author">{song.authorName}</span>
+              <small class="level-author">{song.levelAuthorName}</small>
+            </h1>
 
-        {#if leaderboard && song && withHeader}
-          {#if !withoutHeader}
-            <header transition:fade>
-              <h1 class="title is-4">
-                <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
-                <span class="author">{song.authorName}</span>
-                <small class="level-author">{song.levelAuthorName}</small>
-              </h1>
-
-              <h2 class="title is-6"
-                  class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
-                {#if leaderboard.categoryDisplayName}
-                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+            <h2 class="title is-6"
+                class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
+              {#if leaderboard.categoryDisplayName}
+                <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
                   <span slot="label">
                     {leaderboard.categoryDisplayName}
                     {#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero=""
                                                        suffix="★"/>{/if}
                   </span>
-                  </Badge>
-                {/if}
-
-                {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
-                {#if leaderboard.stats && leaderboard.stats.stars}
-                  <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
-                {/if}
-                {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
-                                                                         reverseColors={true}/></span>{/if}
-
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
-              </h2>
-            </header>
-          {/if}
-          {#if showStats && leaderboard.stats}
-            <div class="stats-with-icons">
-              <LeaderboardStats {leaderboard} />
-
-              {#if iconsInInfo}
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId} jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+                </Badge>
               {/if}
-            </div>
-          {/if}
-        {/if}
 
-        {#if type !== 'accsaber'}
-          <nav class="diff-switch">
-            {#if !withoutDiffSwitcher && diffs && diffs.length}
-              <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff}/>
+              {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
+              {#if leaderboard.stats && leaderboard.stats.stars}
+                <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
+              {/if}
+              {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
+                                                                       reverseColors={true}/></span>{/if}
+
+              <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
+                                         jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+            </h2>
+          </header>
+        {/if}
+        {#if showStats && leaderboard.stats}
+          <div class="stats-with-icons">
+            <LeaderboardStats {leaderboard}/>
+
+            {#if iconsInInfo}
+              <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
+                                         jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
             {/if}
-
-            <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
-                      loadingValue={currentlyLoadedDiff}/>
-          </nav>
+          </div>
         {/if}
+      {/if}
 
-        {#if scores && scores.length}
-          <div class="scores-grid grid-transition-helper">
-            {#each scores as score, idx}
-              {#key opt(score, 'player.playerId')}
-                <div
-                    class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${!noReplayInLeaderboard && score.score.pp && score.score.hasReplay ? "with-replay" : ""}`}
-                    in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
-                  <div class="rank with-badge">
-                    <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+      {#if type !== 'accsaber'}
+        <nav class="diff-switch">
+          {#if !withoutDiffSwitcher && diffs && diffs.length}
+            <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff}/>
+          {/if}
+
+          <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
+                    loadingValue={currentlyLoadedDiff}/>
+        </nav>
+      {/if}
+
+      {#if scores && scores.length}
+        <div class="scores-grid grid-transition-helper">
+          {#each scores as score, idx}
+            {#key opt(score, 'player.playerId')}
+              <div
+                  class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${!noReplayInLeaderboard && score.score.pp && score.score.hasReplay ? "with-replay" : ""}`}
+                  in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+                <div class="rank with-badge">
+                  <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
                 >= 10000 ? 'small' : 'var(--dimmed)')))}>
                     <span slot="label">
                       #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
                     </span>
-                    </Badge>
-                  </div>
+                  </Badge>
+                </div>
 
-                  <div class="player">
-                    <Avatar player={score.player}/>
-                    <PlayerNameWithFlag player={score.player}
-                                        type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
-                                        on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
-                    />
-                  </div>
+                <div class="player">
+                  <Avatar player={score.player}/>
+                  <PlayerNameWithFlag player={score.player}
+                                      type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
+                                      on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                  />
+                </div>
 
-                  <div class="timeset">
+                <div class="timeset">
                     <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
                       {opt(score, 'score.timeSetString', '-')}
                     </span>
+                </div>
+
+                {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
+                  <div class="replay">
+                    <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId}
+                           jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
                   </div>
+                {/if}
 
-                  {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
-                    <div class="replay">
-                      <Icons {hash} {diffInfo} icons={["preview"]} hasReplay={true} playerId={score.player.playerId} jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
-                    </div>
-                  {/if}
-
-                  <div class="score-metrics">
-                    <div class="pp with-badge">
-                      <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+                <div class="score-metrics">
+                  <div class="pp with-badge">
+                    <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                     <span slot="label">
                       {#if type === 'accsaber'}
                         <Pp playerId={opt(score, 'player.playerId')}
@@ -317,50 +321,49 @@
                         />
                       {/if}
                     </span>
-                      </Badge>
-                    </div>
+                    </Badge>
+                  </div>
 
-                    <div class="percentage with-badge">
-                      <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true}
-                                showMods={false}/>
-                    </div>
+                  <div class="percentage with-badge">
+                    <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true}
+                              showMods={false}/>
+                  </div>
 
-                    <div class="score with-badge">
-                      <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                  <div class="score with-badge">
+                    <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                       <span slot="label">
                         <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
 
                         <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
                       </span>
-                      </Badge>
-                    </div>
+                    </Badge>
                   </div>
                 </div>
-              {/key}
-            {/each}
-          </div>
+              </div>
+            {/key}
+          {/each}
+        </div>
 
-          <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
-                 currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
-                 hide={!['global', 'accsaber'].includes(currentType)}
-                 on:page-changed={onPageChanged}
-          />
-        {:else}
-          <p transition:fade>No scores found.</p>
-        {/if}
-      {:else if (!$isLoading)}
-        <p>Leaderboard not found.</p>
+        <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
+               currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+               mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+               hide={!['global', 'accsaber'].includes(currentType)}
+               on:page-changed={onPageChanged}
+        />
+      {:else}
+        <p transition:fade>No scores found.</p>
       {/if}
-    </div>
-
-    {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
-      <img class="dummy"
-          src={$leaderboardStore.leaderboard.song.imageUrl}
-          alt="dummy"
-          on:error={() => ssCoverDoesNotExists = true}/>
+    {:else if (!$isLoading)}
+      <p>Leaderboard not found.</p>
     {/if}
   </div>
+
+  {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
+    <img class="dummy"
+         src={$leaderboardStore.leaderboard.song.imageUrl}
+         alt="dummy"
+         on:error={() => ssCoverDoesNotExists = true}/>
+  {/if}
 </article>
 
 <style>
@@ -374,14 +377,16 @@
         margin-right: 1em;
     }
 
+    .align-spinner {
+        display: grid;
+        justify-items: center;
+    }
+
     .leaderboard {
-        position: relative;
-        margin-left: -1em;
-        margin-top: -1em;
-        margin-bottom: -1em;
-        width: calc(100% + 2em);
         padding: .4em;
+        margin: 6px 10px 16px;
         border-radius: .4em;
+        box-shadow: 0 2px 10px rgb(0 0 0 / 33%);
     }
 
     .leaderboard:before {

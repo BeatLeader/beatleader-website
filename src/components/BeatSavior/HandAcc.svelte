@@ -35,7 +35,7 @@
 </script>
 
 {#if cutsRounded}
-<section class={hand}>
+<section class="donut-and-cuts">
   {#if cutsRounded && hand === 'left'}
     <div class="cuts">
       {#each cutsRounded as c, idx}
@@ -49,7 +49,7 @@
     </div>
   {/if}
 
-  <div class="donut">
+  <div>
     <Donut value={value} {percentage} color={rgba} {compareToValue} {compareToPercentage} {name} {compareToName} />
   </div>
 
@@ -70,8 +70,11 @@
 
 
 <style>
-    section {
-        display: inline-flex;
+    .donut-and-cuts {
+        display: flex;
+        flex-direction: row;
+        grid-column-gap: .4em;
+        justify-content: space-evenly;
     }
 
     .cuts {
@@ -80,11 +83,6 @@
         justify-content: space-between;
         font-size: .875em;
         text-align: center;
-    }
-
-    .donut {
-        width: 4em;
-        margin: 0 .5em;
     }
 
     small {

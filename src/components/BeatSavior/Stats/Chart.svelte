@@ -7,7 +7,7 @@
   export let name = null;
   export let compareTo = null;
   export let compareToName = null;
-  export let height = "250px";
+  export let height = "12em";
 
   let canvas = null;
   let chart = null;
@@ -123,16 +123,14 @@
 </script>
 
 {#if data}
-  <section class="chart" style="--height: {height}">
+  <section class="accuracy-chart" style="--height: {height}">
     <canvas class="chartjs" bind:this={canvas}></canvas>
   </section>
 {/if}
 
 <style>
-    section {
-        position: relative;
-        margin: 0 auto !important;
-        width: 100%;
+    .accuracy-chart {
+        height: 100%;
     }
 
     canvas {

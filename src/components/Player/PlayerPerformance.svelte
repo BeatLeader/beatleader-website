@@ -334,7 +334,7 @@
         padding: 0 .5em;
     }
 
-    .stats .compare {
+    .player-performance-badges .compare {
         opacity: .7;
     }
 </style>

@@ -248,7 +248,6 @@
 
   aside {
       width: 25em;
-      margin-left: 1em;
   }
 
   aside .box {
