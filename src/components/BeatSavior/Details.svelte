@@ -201,7 +201,7 @@
         padding: .4em;
         box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
         border-radius: .4em;
-        background: linear-gradient(0deg, #06003814, #5a46ff14);
+        background: var(--graph-gradient);
         width: 100%;
     }
 
