@@ -29,6 +29,7 @@ const DEFAULT_CONFIG = {
   preferences: {
     secondaryPp: 'attribution',
     iconsOnAvatars: 'show',
+    beatSaviorComparison: 'show'
   },
   locale: DEFAULT_LOCALE,
   selectedPlaylist: null

@@ -18,6 +18,7 @@
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
   const DEFAULT_SECONDARY_PP_METRICS = 'attribution';
   const DEFAULT_AVATAR_ICONS = 'show';
+  const DEFAULT_BEATSAVIOR_COMPARISON = 'show';
 
   let twitchToken = null;
 
@@ -28,6 +29,11 @@
   const scoreComparisonMethods = [
     {name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
     {name: 'In details', value: 'in-details'},
+  ];
+
+  const beatSaviorComparisonOptions = [
+    {name: 'Show', value: DEFAULT_BEATSAVIOR_COMPARISON},
+    {name: 'Hide', value: 'hide'},
   ];
 
   const secondaryPpMetrics = [
@@ -43,6 +49,7 @@
 
   let currentLocale = DEFAULT_LOCALE;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
+  let currentBeatSaviorComparison = DEFAULT_BEATSAVIOR_COMPARISON;
   let currentSecondaryPpMetrics = DEFAULT_SECONDARY_PP_METRICS;
   let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 
@@ -51,6 +58,7 @@
     if (config?.scoreComparison) currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
     if (config?.preferences?.secondaryPp) currentSecondaryPpMetrics = config?.preferences?.secondaryPp ?? DEFAULT_SECONDARY_PP_METRICS;
     if (config?.preferences?.iconsOnAvatars) currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
+    if (config?.preferences?.beatSaviorComparison) currentBeatSaviorComparison = config?.preferences?.beatSaviorComparison ?? DEFAULT_BEATSAVIOR_COMPARISON;
   }
 
   function onSave() {
@@ -61,6 +69,7 @@
       draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.secondaryPp = currentSecondaryPpMetrics;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
+      draft.preferences.beatSaviorComparison = currentBeatSaviorComparison;
     })
 
     show = false;
@@ -72,6 +81,7 @@
       currentScoreComparisonMethod = $configStore.scoreComparison.method;
       currentSecondaryPpMetrics = $configStore.preferences.secondaryPp;
       currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
+      currentBeatSaviorComparison = $configStore.preferences.beatSaviorComparison;
     }
 
     show = false;
@@ -168,6 +178,15 @@
             <label title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details">Score comparison</label>
             <Select bind:value={currentScoreComparisonMethod}>
               {#each scoreComparisonMethods as option (option.value)}
+                <option value={option.value}>{option.name}</option>
+              {/each}
+            </Select>
+          </section>
+
+          <section class="option">
+            <label title="Show BeatSavior scores comparison">BeatSavior score comparison</label>
+            <Select bind:value={currentBeatSaviorComparison}>
+              {#each beatSaviorComparisonOptions as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
             </Select>
