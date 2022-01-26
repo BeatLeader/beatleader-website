@@ -127,7 +127,7 @@
         overflow-x: hidden;
         overflow-y: auto;
         margin-top: .25em;
-        padding-right: .3em;
+        padding: .3em;
     }
 
     .select-wrapper {

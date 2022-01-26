@@ -218,8 +218,8 @@
         grid-column: 1 / 1;
         grid-row: 1 / span 2;
         align-self: start;
-        min-width: 6.0em;
-        max-width: 6.0em;
+        min-width: 8.0em;
+        max-width: 8.0em;
         max-height: 13em;
         overflow: hidden;
 
@@ -229,7 +229,7 @@
 
     header {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         font-size: .75rem;
     }
 
