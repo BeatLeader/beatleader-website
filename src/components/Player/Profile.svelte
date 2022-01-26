@@ -232,4 +232,16 @@
         width: 150px;
         padding-top: 1rem;
     }
+
+    @media screen and (max-width: 767px) {
+        .player-general-info {
+            flex-direction: column;
+            align-items: center;
+            grid-gap: .4em;
+        }
+
+        .rank-and-stats-cell {
+            align-items: center;
+        }
+    }
 </style>

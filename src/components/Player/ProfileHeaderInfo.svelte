@@ -154,8 +154,7 @@
 
 <style>
     .profile-header-info {
-        display: flex;
-        flex-direction: column;
+        display: contents;
     }
 
     .player-nickname {
