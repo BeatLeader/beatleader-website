@@ -9,7 +9,7 @@
   let diff;
   let beatSaverService;
 
-  async function findDiff() {
+  async function findDiff(leaderboard) {
     if (leaderboard?.beatMaps) {
       diff = leaderboard?.beatMaps?.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase());
     } else if (leaderboard?.song) {
@@ -23,7 +23,7 @@
   }
 
   $: metadata = leaderboard?.beatMaps?.metadata;
-  $: findDiff();
+  $: findDiff(leaderboard);
 </script>
 
 <article transition:fade>
