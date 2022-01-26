@@ -73,7 +73,7 @@
   }
 
   function onSwitcherChanged(event) {
-    if(!event?.detail?.id) return;
+    if (!event?.detail?.id) return;
 
     selectedOption = event.detail;
   }
@@ -100,7 +100,11 @@
       const reversedRankHistory = rankHistory.map(r => r).reverse();
       if (!reversedRankHistory?.[daysAgo]) return;
 
-      if (!playerHistoryItem) playerHistoryItem = {playerId, rank: reversedRankHistory[daysAgo], ssDate: addToDate(-DAY, todaySsDate)};
+      if (!playerHistoryItem) playerHistoryItem = {
+        playerId,
+        rank: reversedRankHistory[daysAgo],
+        ssDate: addToDate(-DAY, todaySsDate)
+      };
       else {
         playerHistoryItem.rank = reversedRankHistory[gainDaysAgo];
       }
@@ -118,19 +122,6 @@
       refreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo), HISTORY_GAIN_DEBOUNCE,
   );
 
-  let accStatsWithGain = null;
-  function updateAccStatsWithGain(accStats, playerGain) {
-    accStatsWithGain = accStats?.map(s => ({
-        ...s,
-        prevValue: playerGain?.[s?.key] ?? null,
-        prevLabel: Number.isFinite(playerGain?.gainDaysAgo) ? formatDateRelative(addToDate(-playerGain.gainDaysAgo * DAY)) : null,
-        inline: true,
-      }))
-      ?? null;
-  }
-
-  const debouncedUpdateAccStatsWithGain = debounce((accStats, playerHistoryGain) => updateAccStatsWithGain(accStats, playerHistoryGain), HISTORY_GAIN_DEBOUNCE)
-
   $: avgStat = accStats?.find(s => s.key === 'avgAcc') ?? null
   $: medianStat = accStats?.find(s => s.key === 'medianAcc') ?? null
   $: avgAccTween = avgStat?.value ?? null
@@ -142,58 +133,37 @@
   $: debouncedRefreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo)
   $: updateAvailableSwitcherOptions(isCached)
   $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc, playerHistory)
-  $: debouncedUpdateAccStatsWithGain(accStats, playerHistoryGain)
 </script>
 
-{#if scoresStats || ssBadges || skeleton}
-  <div class="stats" class:enhanced={isCached}>
-    {#if scoresStats}<ScoresStats stats={scoresStats} {skeleton}/>{/if}
-    <div>
-      {#if accStats || accStatsWithGain}<ScoresStats stats={accStatsWithGain ?? accStats} />{/if}
-      {#if accBadges}<ScoresStats stats={accBadges}/>{/if}
+<div class="scoresaber-swipe-card">
+  {#if ssBadges}
+    <SsBadges badges={ssBadges}/>
+  {/if}
+  {#if selectedOption}
+    <div class="chart">
+      <svelte:component this={chartComponent} {...chartComponentProps}/>
     </div>
-    {#if ssBadges}
-      <div class="up-to-tablet">
-        <SsBadges badges={ssBadges}/>
-      </div>
-    {/if}
-  </div>
-{/if}
-{#if selectedOption}
-  <div class="chart">
-    <svelte:component this={chartComponent} {...chartComponentProps} />
-  </div>
 
-  <div class="chart-switcher">
-    <Switcher values={switcherOptions} value={selectedOption} on:change={onSwitcherChanged}/>
-  </div>
-{/if}
+    <div class="chart-switcher">
+      <Switcher values={switcherOptions} value={selectedOption} on:change={onSwitcherChanged}/>
+    </div>
+  {/if}
+</div>
 
 <style>
+    .scoresaber-swipe-card {
+        display: flex;
+        flex-direction: column;
+        grid-gap: .6em;
+    }
+
     .chart {
-        min-height: calc(350px + 1rem);
+        margin: .4em .4em .6em;
+        padding: .4em;
+        box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
+        border-radius: .4em;
+        min-width: 29.6em;
+        background: linear-gradient(0deg, #06003814, #5a46ff14);
         overflow: hidden;
-    }
-
-    .chart-switcher {
-        margin-top: 1rem;
-    }
-
-    @media screen and (min-width: 1200px) {
-        .stats.enhanced {
-            display: grid;
-            grid-template-columns: auto auto;
-            grid-gap: 1em;
-        }
-    }
-
-    @media (max-width: 599px) {
-        .stats {
-            text-align: center;
-        }
-
-        .stats :global(.badges) {
-            display: contents;
-        }
     }
 </style>

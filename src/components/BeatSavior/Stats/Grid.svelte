@@ -38,6 +38,7 @@
         grid-gap: .5em;
         font-size: .75em;
         min-height: 12em;
+        align-self: end;
     }
 
     .grid > span {

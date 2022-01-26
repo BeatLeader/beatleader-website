@@ -181,7 +181,7 @@
 
 <div class="beat-savior" transition:fade>
   <h3 class="title is-6">
-    <a href={`https://www.beatsavior.io/#/profile/${playerId}`} target="_blank" rel="noreferrer">
+    <a href={`https://www.beatsavior.io/BeatSaviorSwipeCard.svelte#/profile/${playerId}`} target="_blank" rel="noreferrer">
       <span class="beatsavior-icon"></span>
       <span>Beat Savior average</span>
     </a>
@@ -234,11 +234,11 @@
     .stats {
         max-width: 100%;
         overflow-x: hidden;
-        display: grid;
+        display: flex;
+        flex-wrap: wrap;
         grid-template-columns: 1fr 1fr;
         grid-gap: 1.5em;
-        align-items: center;
-        justify-items: center;
+        justify-content: center;
     }
 
     .stats :global(>*:first-child) {

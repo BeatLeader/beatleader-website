@@ -63,5 +63,5 @@
 
 <style>
     small.block {display: block;}
-    small.inline {margin-left: .5em;}
+    small.inline {margin-left: .2em;}
 </style>

@@ -105,6 +105,7 @@
         display: flex;
         flex-direction: column;
         grid-row-gap: .2em;
+        align-self: end;
     }
 
     .badge-stat {

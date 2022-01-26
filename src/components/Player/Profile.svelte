@@ -3,21 +3,20 @@
   import processPlayerData from './utils/profile';
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
-  import {opt} from '../../utils/js'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import Avatar from './Avatar.svelte'
-  import PlayerStats from './PlayerStats.svelte'
-  import Icons from './Icons.svelte'
-  import ScoreSaberStats from './ProfileCards/ScoreSaberStats.svelte'
-  import MiniRanking from './ProfileCards/MiniRanking.svelte'
-  import TwitchVideos from './ProfileCards/TwitchVideos.svelte'
-  import PpCalc from './ProfileCards/PpCalc.svelte'
-  import AccSaber from './ProfileCards/AccSaber.svelte'
-  import BeatSavior from './ProfileCards/BeatSavior.svelte'
+  import AvatarOverlayIcons from './AvatarOverlayIcons.svelte'
+  import ProfileHeaderInfo from './ProfileHeaderInfo.svelte'
+  import ScoreSaberSwipeCard from './ProfileCards/ScoreSaberSwipeCard.svelte'
+  import MiniRankingSwipeCard from './ProfileCards/MiniRankingSwipeCard.svelte'
+  import TwitchVideosSwipeCard from './ProfileCards/TwitchVideosSwipeCard.svelte'
+  import PpCalcSwipeCard from './ProfileCards/PpCalcSwipeCard.svelte'
+  import AccSaberSwipeCard from './ProfileCards/AccSaberSwipeCard.svelte'
+  import BeatSaviorSwipeCard from './ProfileCards/BeatSaviorSwipeCard.svelte'
   import Carousel from '../Common/Carousel.svelte'
-  import SsBadges from './SsBadges.svelte'
   import Badge from '../Common/Badge.svelte'
+  import ScoreSaberSummary from "./ScoreSaberSummary.svelte";
 
   export let playerData;
   export let isLoading = false;
@@ -39,7 +38,7 @@
     if (stats?.playerId && stats?.playerId === playerData?.playerId) playerStats = stats
   })
 
-  let onePpBoundery = null;
+  let onePpBoundary = null;
 
   let isBeatSaviorAvailable = false;
 
@@ -56,11 +55,11 @@
 
   async function calcOnePpBoundary(playerId, isCached) {
     if (!playerId || !isCached) {
-      onePpBoundery = null;
+      onePpBoundary = null;
       return;
     }
 
-    onePpBoundery = await worker.calcPpBoundary(playerId);
+    onePpBoundary = await worker.calcPpBoundary(playerId);
   }
 
   function generateScoresStats(stats, onePp) {
@@ -70,7 +69,7 @@
           ? [{
             label: '+ 1pp',
             title: 'Determines how many raw PPs in the new play you need to achieve to increase your total PP by 1pp',
-            value: onePpBoundery,
+            value: onePpBoundary,
             digits: 2,
             suffix: ' raw pp new play',
             fluid: true,
@@ -101,7 +100,7 @@
   $: playerRole = playerInfo?.role ?? null;
   $: calcOnePpBoundary(playerId, isCached);
   $: refreshBeatSaviorState(playerId)
-  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundery)
+  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary)
   $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)
   $: updateAccSaberPlayerInfo(playerId);
 
@@ -111,7 +110,7 @@
         ? [
           {
             name: `stats-${playerId}`,
-            component: ScoreSaberStats,
+            component: ScoreSaberSwipeCard,
             props: {
               playerId,
               scoresStats: scoresStatsFinal,
@@ -129,17 +128,17 @@
             $pageContainer.name !== 'xxl'
               ? [{
                 name: `ranking-${playerId}`,
-                component: MiniRanking,
+                component: MiniRankingSwipeCard,
                 props: {player: playerData},
               }]
               : [],
           )
           .concat(
-            onePpBoundery
+            onePpBoundary
               ?
               [{
                 name: `ppcalc-${playerId}`,
-                component: PpCalc,
+                component: PpCalcSwipeCard,
                 props: {playerId, worker},
               }]
               : [],
@@ -149,7 +148,7 @@
               ?
               [{
                 name: `accsaber-${playerId}`,
-                component: AccSaber,
+                component: AccSaberSwipeCard,
                 props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
               }]
               : [],
@@ -159,7 +158,7 @@
               ?
               [{
                 name: `beat-savior-${playerId}`,
-                component: BeatSavior,
+                component: BeatSaviorSwipeCard,
                 props: {playerId},
               }]
               : [],
@@ -168,7 +167,7 @@
             $pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
               ? [{
                 name: `twitch-${playerId}`,
-                component: TwitchVideos,
+                component: TwitchVideosSwipeCard,
                 props: {videos: twitchVideos},
               }]
               : [],
@@ -178,66 +177,59 @@
 </script>
 
 <div class="box has-shadow" class:loading={isLoading}>
-  <div class="columns">
-    <div class="column is-narrow avatar">
-      <Avatar {playerInfo} {isLoading}/>
+  <div class="player-general-info">
+    <div class="avatar-cell">
+      <Avatar {isLoading} {playerInfo}/>
 
       {#if playerId && !isLoading}
-        <Icons {playerId} />
+        <AvatarOverlayIcons {playerId}/>
       {/if}
 
       {#if playerRole}
         <div class="player-role above-tablet">
-          <Badge label={playerRole} onlyLabel={true} fluid={true} bgColor="var(--dimmed)" />
-        </div>
-      {/if}
-
-      {#if ssBadges}
-        <div class="ss-badges">
-          <SsBadges badges={ssBadges}/>
+          <Badge label={playerRole} onlyLabel={true} fluid={true} bgColor="var(--dimmed)"/>
         </div>
       {/if}
     </div>
 
-    <div class="column">
-      <PlayerStats {name} {playerInfo} prevInfo={playerGain} {skeleton} {error}/>
+    <div class="rank-and-stats-cell">
+      <ProfileHeaderInfo {error} {name} {playerInfo} prevInfo={playerGain}/>
+      <ScoreSaberSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
+    </div>
+  </div>
+</div>
 
-      <Carousel cards={swipeCards} on:player-gain-changed={e => onPlayerGainChanged(e)} />
+<div class="box has-shadow" class:loading={isLoading}>
+  <div class="columns">
+    <div class="column">
+      <Carousel cards={swipeCards} on:player-gain-changed={e => onPlayerGainChanged(e)}/>
     </div>
   </div>
 </div>
 
 <style>
-    .column.avatar {
+    .player-general-info {
+        display: flex;
+        flex-wrap: nowrap;
+        grid-gap: 1.5em;
+    }
+
+    .avatar-cell {
         position: relative;
-        text-align: center;
-        margin-right: 1rem;
-        min-width: 188px;
-        width: 188px;
-        min-height: 190px;
-        padding: .75rem;
+        width: 150px;
+        height: 150px;
+    }
+
+    .rank-and-stats-cell {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        grid-gap: .4em;
+        overflow: hidden;
     }
 
     .player-role {
         width: 150px;
         padding-top: 1rem;
-    }
-
-    .ss-badges {
-        padding-top: 1rem;
-    }
-
-    @media screen and (max-width: 768px) {
-        .column.avatar {
-            margin-right: 0;
-            min-width: calc(188px + 1.5rem);
-            padding-bottom: 0;
-            min-height: 150px;
-            width: auto;
-        }
-
-        .ss-badges {
-            display: none;
-        }
     }
 </style>

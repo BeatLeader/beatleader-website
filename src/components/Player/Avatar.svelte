@@ -12,6 +12,7 @@
   {#if playerInfo && playerInfo.avatar}
     <img src={playerInfo.avatar} class="avatar" alt="" />
   {/if}
+
   <span class="spinner">
     <Spinner width="100%" height="100%"/>
   </span>
@@ -23,14 +24,12 @@
     }
 
     img {
+        position: absolute;
         border-radius: 50%;
         width: 150px;
         height: 150px;
         transition: transform 300ms;
         z-index: 2;
-        position: absolute;
-        top: .75rem;
-        left: .75rem;
     }
 
     .loading img, .loading .no-image {
@@ -42,8 +41,6 @@
         position: absolute;
         width: 150px;
         height: 150px;
-        top: .75rem;
-        left: .75rem;
         color: var(--faded);
         z-index: 10
     }

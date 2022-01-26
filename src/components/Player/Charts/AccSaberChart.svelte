@@ -319,17 +319,17 @@
 {/if}
 
 <style>
-    section {
-        position: relative;
-        margin: 1rem auto 0 auto;
-        height: var(--height, 300px);
+    .chart {
+        margin: .4em .4em .6em;
+        padding: .4em;
+        box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
+        border-radius: .4em;
+        min-width: 29.6em;
+        background: linear-gradient(0deg, #06003814, #5a46ff14);
+        overflow: hidden;
     }
 
     canvas {
         width: 100% !important;
-    }
-
-    .chart-switcher {
-        margin-top: 1rem;
     }
 </style>
