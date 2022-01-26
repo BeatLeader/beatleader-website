@@ -59,7 +59,9 @@
     allSongRunsWithOtherPlayers = Object.entries(
       (await beatSaviorRepository().getAllFromIndex('beat-savior-hash',
         hash))
-        .filter(bs => bs && bs.diff === diff && ((allCachedPlayers && allCachedPlayers[bs.playerId]) || bs.playerId === playerId))
+        .filter(bs => {
+          return bs && bs.diff.toLowerCase() === diff.toLowerCase() && ((allCachedPlayers && allCachedPlayers[bs.playerId]) || bs.playerId === playerId)
+        })
         .map(bs => ({...bs, playerName: opt(allCachedPlayers, `${bs.playerId}.name`, null)}))
         .reduce((cum, bs) => {
           if (!cum[bs.playerId]) cum[bs.playerId] = [];
@@ -166,7 +168,7 @@
       </div>
     </div>
 
-    <div class="details-with-shadow">
+    <div class="details-with-shadow chart">
       <Chart beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName} />
     </div>
   </section>
@@ -176,7 +178,7 @@
     .beat-savior {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         grid-gap: .4em;
         justify-content: center;
     }
@@ -207,6 +209,10 @@
         grid-template-columns: auto 1.5fr 1fr;
     }
 
+    .beat-savior.with-history .details-with-shadow {
+      min-width: 14em;
+    }
+
     .beat-savior.with-history nav {
         grid-column: 1 / 1;
         grid-row: 1 / span 2;
@@ -229,6 +235,7 @@
         .beat-savior {
             grid-template-columns: 1fr;
             grid-gap: 1.5em;
+            flex-wrap: wrap;
         }
 
         .beat-savior.with-history {

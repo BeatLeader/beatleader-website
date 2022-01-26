@@ -12,7 +12,7 @@
   import TwitchPage from './pages/Twitch.svelte';
   import NotFoundPage from './pages/NotFound.svelte';
   import PrivacyPage from './pages/Privacy.svelte';
-  import CreditsPage from './pages/Credits.svelte';
+  import AboutPage from './pages/About.svelte';
   import DashboardPage from './pages/Dashboard.svelte';
   import PlaylistsPage from './pages/Playlists.svelte';
   import Nav from './components/Nav.svelte';
@@ -40,7 +40,7 @@
         <PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams}/>
       </Route>
       <Route path="/privacy" component="{PrivacyPage}" />
-      <Route path="/credits" component="{CreditsPage}" />
+      <Route path="/about" component="{AboutPage}" />
       <Route path="/friends" component="{FriendsPage}" />
       <Route path="/ranking/:type/*page" let:params>
         <RankingPage type={params.type} page={params.page} />
@@ -61,11 +61,10 @@
 </Router>
 
 <footer>
-  <p>BeatLeader by <a href="https://github.com/motzel">motzel</a></p>
   <p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
   <p>
     <a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a> |
-    <a href="/credits" on:click|preventDefault={() => navigate('/credits')}>Credits</a> |
+    <a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a> |
     <a href="https://github.com/radulov/scoresaber-reloaded">Source</a>
   </p>
 </footer>

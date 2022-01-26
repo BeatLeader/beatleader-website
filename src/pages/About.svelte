@@ -16,11 +16,27 @@
 </script>
 
 <svelte:head>
-  <title>Credits - {ssrConfig.name}</title>
+  <title>About - {ssrConfig.name}</title>
 </svelte:head>
 
 <article bind:this={articleEl} transition:fade>
   <div class="box has-shadow">
+    <h1 class="title is-3">Team</h1>
+    <section class="content">
+      <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/9a/9a2159cfa8e0035593953b231f64fc4c06ba1349_full.jpg" alt="NSGolova"/><a href="https://github.com/radulov">NSGolova</a><p class="memberTitle"> - bug factory</p></div>
+      <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/38/38c54625673d34ec684e650e7203cfa193c02f35_full.jpg" alt="Karghoff"/><a href="https://github.com/karghoff-e">Karghoff</a><p class="memberTitle"> - supporter and bug detective</p></div>
+      <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/05/05d491662979a9fcde141c228a7f50702ddfa761_full.jpg" alt="Reezonate"/><a href="https://github.com/reezonate">Reezonate</a><p class="memberTitle"> - 3D and UI guru</p></div>
+
+    </section>
+
+    <h1 class="title is-3">ScoreSaber Reloaded Creator</h1>
+    <section class="content">
+      <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/3a/3a733da6e52376759914f2cd792d40e3204227e6_full.jpg" alt="motzel"/><a href="https://github.com/motzel">motzel</a><p class="memberTitle"> - original project creator and greatest contributor.</p></div>
+
+    </section>
+
+    
+
     <h1 class="title is-3">Credits</h1>
 
     <section class="content">
@@ -66,5 +82,22 @@
 <style>
     p.back {
         margin-top: 1rem;
+    }
+
+    img {
+      width: 3em;
+      height: 3em;
+      border-radius: 1.5em;
+      padding: 0.3em;
+    }
+
+    .member {
+      display: flex;
+      align-items: center;
+      padding: 0.5em;
+    }
+
+    .memberTitle {
+      margin-left: 5px;
     }
 </style>
