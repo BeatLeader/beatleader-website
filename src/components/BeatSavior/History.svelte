@@ -80,7 +80,8 @@
   <div class="scroll-wrapper">
     <section bind:this={itemsEl}>
       {#each processedRuns as run (run.beatSaviorId)}
-        <div data-id={run.beatSaviorId} class="item"
+        <div data-id={run.beatSaviorId}
+             class="item"
              class:selected={run.beatSaviorId === selectedId} class:compare={run.beatSaviorId === compareToId}
              on:click={() => dispatch('selected', run)}
         >
@@ -95,7 +96,7 @@
             <small class:fail={!run.won} class:best={run.beatSaviorId === bestId} slot="label-after">
               {#if !run.won}
                 {#if run.failedAt}
-                  FAILED AT {run.failedAt}
+                  Failed at {run.failedAt}
                 {:else}
                   FAIL
                 {/if}
@@ -126,6 +127,7 @@
         overflow-x: hidden;
         overflow-y: auto;
         margin-top: .25em;
+        padding: .3em;
     }
 
     .select-wrapper {
@@ -133,16 +135,19 @@
         font-size: 1em;
     }
 
-    section :global(.badge) {
+    .item :global(.badge) {
         width: 100%;
+        margin: 0em;
     }
 
     .scroll-wrapper::-webkit-scrollbar {
-        width: .25rem;
+        width: .4rem;
     }
+
     body::-webkit-scrollbar-track {
         background: var(--foreground, #fff);
     }
+
     .scroll-wrapper::-webkit-scrollbar-thumb {
         background-color: var(--selected, #3273dc) ;
         border-radius: 6px;
@@ -153,6 +158,7 @@
         display: block;
         white-space: nowrap;
         font-weight: normal;
+        font-size: .7em;
     }
 
     .item {
@@ -187,8 +193,8 @@
     }
 
     .fail, .best {
-        font-size: .75em;
-        font-weight: 500;
+        font-size: .65em;
+        font-weight: 700;
         color: var(--decrease);
     }
 

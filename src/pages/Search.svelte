@@ -6,10 +6,10 @@
   import ssrConfig from '../ssr-config'
   import Avatar from '../components/Player/Avatar.svelte'
   import Error from '../components/Common/Error.svelte'
-  import PlayerStats from '../components/Player/PlayerStats.svelte'
+  import PlayerStats from '../components/Player/ProfileHeaderInfo.svelte'
   import Button from '../components/Common/Button.svelte'
   import Search from '../components/Player/Search.svelte'
-  import Icons from '../components/Player/Icons.svelte'
+  import Icons from '../components/Player/AvatarOverlayIcons.svelte'
 
   const DEFAULT_NAME = 'Stranger';
 

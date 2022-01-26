@@ -20,14 +20,14 @@
 
   function onSetAsMain(remove) {
     if (!configStore || !playerId) return;
-    
+
     const newConfig = {...$configStore}
     if (remove) {
       newConfig.users.main = null;
 
       eventBus.publish('player-remove-cmd', {playerId});
     } else {
-      
+
       if (!newConfig.users) newConfig.users = {};
       newConfig.users.main = playerId;
 
@@ -35,7 +35,7 @@
     }
 
     $configStore = newConfig;
-    
+
   }
 
   function onFriendsChange(op) {
@@ -82,7 +82,8 @@
 {#if playerId}
   <nav class:main={isMain}>
     {#if showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !mainIsSet)}
-      <Button title={isMain ? "Remove your profile" : "Set as your profile"} iconFa="fas fa-home" type={isMain ? "danger" : "primary"}
+      <Button title={isMain ? "Remove your profile" : "Set as your profile"} iconFa="fas fa-home"
+              type={isMain ? "danger" : "primary"}
               on:click={() => onSetAsMain(isMain)}
       />
     {/if}
@@ -95,7 +96,8 @@
     {/if}
 
     {#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isProfileLinkedToTwitch))}
-      <Button type="twitch" iconFa="fab fa-twitch" title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
+      <Button type="twitch" iconFa="fab fa-twitch"
+              title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
               on:click={() => showLinkingModal = true}
       />
     {/if}
@@ -125,26 +127,26 @@
     }
 
     nav :global(button):nth-child(1) {
-        transform: translate3d(-40px, 60px, 0);
+        transform: translate3d(-35px, 60px, 0);
     }
 
     nav :global(button):nth-child(1):hover {
-        transform: translate3d(-40px, 60px, 0) scale(1.2);
+        transform: translate3d(-35px, 60px, 0) scale(1.2);
     }
 
     nav :global(button):nth-child(2) {
-        transform: translate3d(-50px, 24px, 0);
+        transform: translate3d(-50px, 21px, 0);
     }
 
     nav :global(button):nth-child(2):hover {
-        transform: translate3d(-50px, 24px, 0) scale(1.2);
+        transform: translate3d(-50px, 21px, 0) scale(1.2);
     }
 
     nav :global(button):nth-child(3) {
-        transform: translate3d(-47px, 0px, 0);
+        transform: translate3d(-47px, -7px, 0);
     }
 
     nav :global(button):nth-child(3):hover {
-        transform: translate3d(-47px, 0px, 0) scale(1.2);
+        transform: translate3d(-47px, -7px, 0) scale(1.2);
     }
 </style>

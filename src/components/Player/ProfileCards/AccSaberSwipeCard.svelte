@@ -71,7 +71,7 @@
 </script>
 
 {#if playerInfoByCategory}
-  <section class="accsaber" transition:fade>
+  <div class="accsaber-swipe-card" transition:fade>
     <h3 class="title is-6">
       <a href={`https://accsaber.com/player-profile/${playerInfoByCategory?.[0]?.playerInfo?.playerId}`}
          target="_blank" rel="noreferrer">
@@ -135,18 +135,18 @@
     </div>
 
     <AccSaberChart {playerId} {playerHistory} on:height-changed/>
-  </section>
+  </div>
 {/if}
 
 <style>
-    section {
-        width: 100%;
-        padding: .5em 0;
+    .accsaber-swipe-card {
+        display: flex;
+        flex-direction: column;
+        grid-gap: .6em;
     }
 
     h3 {
         padding: .25em 0;
-        margin-bottom: .75em !important;
         font-size: 1.25em;
     }
 

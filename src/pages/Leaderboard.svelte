@@ -191,138 +191,143 @@
   $: hash = opt($leaderboardStore, 'leaderboard.song.hash')
   $: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo')
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
+  $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 </script>
 
 <svelte:head>
   <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}}`}</title>
 </svelte:head>
 
-<article transition:fade bind:this={boxEl}>
-  <div class="leaderboard"
-       style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
+<section class="align-content">
+  <article bind:this={boxEl} class="page-content" transition:fade>
+    <div class="leaderboard {type === 'accsaber' ? 'no-cover-image' : ''}"
+         style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
 
-    {#if !$leaderboardStore && $isLoading}
-      <div class="align-spinner">
-        <Spinner/>
-      </div>
-    {/if}
+      {#if !$leaderboardStore && $isLoading}
+        <div class="align-spinner">
+          <Spinner/>
+        </div>
+      {/if}
 
-    {#if $leaderboardStore}
-      {#if leaderboard && song && withHeader}
-        {#if !withoutHeader}
-          <header transition:fade>
-            <h1 class="title is-4">
-              <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
-              <span class="author">{song.authorName}</span>
-              <small class="level-author">{song.levelAuthorName}</small>
-            </h1>
+      {#if $leaderboardStore}
+        {#if leaderboard && song && withHeader}
+          {#if !withoutHeader}
+            <header transition:fade>
+              <h1 class="title is-4">
+                <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
+                <span class="author">{song.authorName}</span>
+                <small class="level-author">{song.levelAuthorName}</small>
+              </h1>
 
-            <h2 class="title is-6"
-                class:unranked={leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status !== 'Ranked'}>
-              {#if leaderboard.categoryDisplayName}
-                <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+              <h2 class="title is-6"
+                  class:unranked={!isRanked}>
+                {#if leaderboard.categoryDisplayName}
+                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
                   <span slot="label">
                     {leaderboard.categoryDisplayName}
                     {#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero=""
                                                        suffix="★"/>{/if}
                   </span>
-                </Badge>
-              {/if}
+                  </Badge>
+                {/if}
 
-              {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
-              {#if leaderboard.stats && leaderboard.stats.stars}
-                <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
-              {/if}
-              {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
-                                                                       reverseColors={true}/></span>{/if}
+                {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
+                {#if leaderboard.stats && leaderboard.stats.stars}
+                  <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
+                {/if}
+                {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
+                                                                         reverseColors={true}/></span>{/if}
 
-              <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
-                                         jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
-            </h2>
-          </header>
-        {/if}
-        {#if showStats && leaderboard.stats}
-          <div class="stats-with-icons">
-            <LeaderboardStats {leaderboard}/>
-
-            {#if iconsInInfo}
-              <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
-                                         jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
-            {/if}
-          </div>
-        {/if}
-      {/if}
-
-      {#if type !== 'accsaber'}
-        <nav class="diff-switch">
-          {#if !withoutDiffSwitcher && diffs && diffs.length}
-            <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff}/>
+                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
+                                           jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+              </h2>
+            </header>
           {/if}
+          {#if showStats && leaderboard.stats}
+            <div class="stats-with-icons">
+              <LeaderboardStats {leaderboard}/>
 
-          <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
-                    loadingValue={currentlyLoadedDiff}/>
-        </nav>
-      {/if}
+              {#if iconsInInfo}
+              <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
+                                         jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+              {/if}
+            </div>
+          {/if}
+        {/if}
 
-      {#if scores && scores.length}
-        <div class="scores-grid grid-transition-helper">
-          {#each scores as score, idx}
-            {#key opt(score, 'player.playerId')}
-              <div
-                  class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""} ${!noReplayInLeaderboard && score.score.pp && score.score.hasReplay ? "with-replay" : ""}`}
-                  in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
-                <div class="rank with-badge">
-                  <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+        {#if type !== 'accsaber'}
+          <nav class="diff-switch">
+            {#if !withoutDiffSwitcher && diffs && diffs.length}
+              <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff}/>
+            {/if}
+
+            <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
+                      loadingValue={currentlyLoadedDiff}/>
+          </nav>
+        {/if}
+
+        {#if scores && scores.length}
+          <div class="scores-grid grid-transition-helper">
+            {#each scores as score, idx}
+              {#key opt(score, 'player.playerId')}
+                <div
+                    class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""}`}
+                    in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+                  <div class="rank with-badge">
+                    <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
                 >= 10000 ? 'small' : 'var(--dimmed)')))}>
                     <span slot="label">
                       #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
                     </span>
-                  </Badge>
-                </div>
+                    </Badge>
+                  </div>
 
-                <div class="player">
-                  <Avatar player={score.player}/>
-                  <PlayerNameWithFlag player={score.player}
-                                      type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
-                                      on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
-                  />
-                </div>
+                  <div class="player">
+                    <Avatar player={score.player}/>
+                    <PlayerNameWithFlag player={score.player}
+                                        type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
+                                        on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                    />
+                  </div>
 
-                <div class="timeset">
+                  <div class="timeset">
                     <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
                       {opt(score, 'score.timeSetString', '-')}
                     </span>
-                </div>
-
-                {#if !noReplayInLeaderboard && score.score.pp && score.score.hasReplay}
-                  <div class="replay">
-                    <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true} playerId={score.player.playerId}
-                           jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
                   </div>
-                {/if}
 
-                <div class="score-metrics">
-                  <div class="pp with-badge">
-                    <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-                    <span slot="label">
-                      {#if type === 'accsaber'}
-                        <Pp playerId={opt(score, 'player.playerId')}
-                            pp="{opt(score, 'score.ap')}" weighted={opt(score, 'score.weightedAp')}
-                            zero={formatNumber(0)} withZeroSuffix={true} inline={false}
-                            suffix="AP"
-                            color="white"
-                        />
-                      {:else}
-                        <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId}
-                            pp={opt(score, 'score.pp')}
-                            whatIf={opt(score, 'score.whatIfPp')}
-                            inline={false} color="white"
-                        />
+                  {#if !noReplayInLeaderboard && isRanked}
+                    <div class="replay">
+                      {#if score.score.pp && score.score.hasReplay}
+                        <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true} playerId={score.player.playerId}
+                               jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
                       {/if}
-                    </span>
-                    </Badge>
-                  </div>
+                    </div>
+                  {/if}
+
+                  {#if type === 'accsaber' || isRanked}
+                    <div class="pp with-badge">
+                      <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+                          <span slot="label">
+                            {#if type === 'accsaber'}
+                              <Pp playerId={opt(score, 'player.playerId')}
+                                  pp="{opt(score, 'score.ap')}" weighted={opt(score, 'score.weightedAp')}
+                                  zero={formatNumber(0)} withZeroSuffix={true} inline={false}
+                                  suffix="AP"
+                                  color="white"
+                              />
+                            {:else}
+                              <Pp playerId={opt(score, 'player.playerId')} leaderboardId={leaderboardId}
+                                  pp={opt(score, 'score.pp')}
+                                  whatIf={opt(score, 'score.whatIfPp')}
+                                  inline={false} color="white"
+                              />
+                            {/if}
+                          </span>
+                      </Badge>
+                    </div>
+                  {/if}
 
                   <div class="percentage with-badge">
                     <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true}
@@ -339,34 +344,44 @@
                     </Badge>
                   </div>
                 </div>
-              </div>
-            {/key}
-          {/each}
-        </div>
+              {/key}
+            {/each}
+          </div>
 
-        <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
-               currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-               mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
-               hide={!['global', 'accsaber'].includes(currentType)}
-               on:page-changed={onPageChanged}
-        />
-      {:else}
-        <p transition:fade>No scores found.</p>
+          <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
+                 currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+                 mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+                 hide={!['global', 'accsaber'].includes(currentType)}
+                 on:page-changed={onPageChanged}
+          />
+        {:else}
+          <p transition:fade>No scores found.</p>
+        {/if}
+      {:else if (!$isLoading)}
+        <p>Leaderboard not found.</p>
       {/if}
-    {:else if (!$isLoading)}
-      <p>Leaderboard not found.</p>
-    {/if}
-  </div>
+    </div>
 
-  {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
-    <img class="dummy"
-         src={$leaderboardStore.leaderboard.song.imageUrl}
-         alt="dummy"
-         on:error={() => ssCoverDoesNotExists = true}/>
-  {/if}
-</article>
+    {#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
+      <img class="dummy"
+           src={$leaderboardStore.leaderboard.song.imageUrl}
+           alt="dummy"
+           on:error={() => ssCoverDoesNotExists = true}/>
+    {/if}
+  </article>
+</section>
 
 <style>
+    .align-content {
+        display: flex;
+        justify-content: center;
+    }
+
+    .page-content {
+        max-width: 65em;
+        width: 100%;
+    }
+
     .diff-switch {
         display: flex;
         justify-content: center;
@@ -383,10 +398,14 @@
     }
 
     .leaderboard {
-        padding: .4em;
+        padding: .4em .6em;
         margin: 6px 10px 16px;
         border-radius: .4em;
         box-shadow: 0 2px 10px rgb(0 0 0 / 33%);
+    }
+
+    .leaderboard.no-cover-image {
+        background: var(--graph-gradient);
     }
 
     .leaderboard:before {
@@ -442,14 +461,6 @@
         padding: 1em;
     }
 
-    .stats {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
-        column-gap: 1em;
-        padding: .4em;
-    }
-
     header small {
         font-size: 0.75em;
         color: var(--ppColour);
@@ -471,27 +482,12 @@
         position: relative;
     }
 
-    .player-score.with-replay {
-        grid-template-columns: minmax(2em, max-content) auto minmax(6.9em, min-content) 2em 5.5em 4.5em 6em !important;
-    }
-
-    .replay {
-        display: none;
-    }
-
-    .player-score .replay {
-        display: block;
-        height: 1.8em;
-        width: 1.8em;
-    }
-
     .replay-button {
         background-color: transparent;
     }
 
-    .scores-grid .player-score {
-        display: grid;
-        grid-template-columns: minmax(2em, max-content) auto minmax(6.9em, min-content) 5.5em 4.5em 6em;
+    .player-score {
+        display: flex;
         grid-gap: .4em;
         align-items: center;
         overflow: hidden;
@@ -499,8 +495,47 @@
         padding-bottom: .2em;
     }
 
-    .player-score .score-metrics {
-        display: contents;
+    .player-score.highlight {
+        background: linear-gradient(45deg, #defb6996, transparent, transparent);
+        border-radius: 4px;
+        padding: 4px;
+        margin: -4px -4px 0px -4px;
+        max-width: 130%;
+    }
+
+    .player-score .rank {
+        font-size: .875em;
+        min-width: 2em;
+    }
+
+    .player-score .player {
+        display: flex;
+        align-items: center;
+        grid-gap: .4em;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .player-score .timeset {
+        text-align: center;
+        min-width: 6.9em;
+    }
+
+    .player-score .replay {
+        height: 1.8em;
+        min-width: 1.8em;
+    }
+
+    .player-score .pp {
+        min-width: 5.5em;
+    }
+
+    .player-score .percentage {
+        min-width: 4.5em;
+    }
+
+    .player-score .score {
+        min-width: 6.0em;
     }
 
     .player-score :global(.badge) {
@@ -525,25 +560,6 @@
         color: inherit;
     }
 
-    .player-score .rank {
-        font-size: .875em;
-    }
-
-    .player-score.highlight {
-        background: linear-gradient(45deg, #defb6996, transparent, transparent);
-        border-radius: 4px;
-        padding: 4px;
-        margin: -4px -4px 0px -4px;
-        max-width: 130%;
-    }
-
-    .player-score .player {
-        display: flex;
-        align-items: center;
-        max-width: 100%;
-        overflow-x: hidden;
-    }
-
     .player-score .player :global(.player-name) {
         cursor: pointer;
     }
@@ -552,16 +568,11 @@
         width: 1.5em;
         height: 1.5em;
         min-width: 1.5em;
-        margin-right: .5em;
     }
 
     .player-score .player :global(.player-name) {
         overflow-x: hidden;
         text-overflow: ellipsis;
-    }
-
-    .player-score .timeset {
-        text-align: center;
     }
 
     .with-badge {
@@ -573,17 +584,7 @@
         position: relative;
     }
 
-    @media screen and (max-width: 1023px) {
-        .stats {
-            grid-template-columns: repeat(auto-fit, 9em);
-        }
-    }
-
     @media screen and (max-width: 767px) {
-        .stats {
-            justify-items: left;
-        }
-
         .diff-switch {
             flex-direction: column;
         }
@@ -593,45 +594,10 @@
             margin-bottom: .5em;
         }
 
-        .scores-grid .player-score {
-            grid-template-columns: minmax(2em, max-content) auto auto auto auto auto;
-            width: 100%;
-        }
-
-        .player-score .player {
-            grid-column: 2 / span 4;
-            grid-row: 1 / 2;
-        }
-
         .player-score .timeset {
-            grid-row: 1 / 2;
-            grid-column: 6 / 7;
             text-align: right;
             font-size: .875em;
             line-height: 1;
-        }
-
-        .player-score .score-metrics {
-            grid-column: 1 / span 6;
-            grid-row: 2 / 3;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-gap: .5em;
-            align-items: center;
-            justify-items: center;
-        }
-
-        .player-score .score-metrics > * {
-            min-width: 5em;
-            max-width: 6.5em;
-        }
-
-        .player-score .score-metrics *:first-child {
-            justify-self: left;
-        }
-
-        .player-score .score-metrics *:last-child {
-            justify-self: right;
         }
     }
 
@@ -640,18 +606,7 @@
     }
 
     @media screen and (max-width: 409px) {
-        .stats {
-            justify-items: left;
-            grid-template-columns: repeat(auto-fit, 8em);
-        }
-
-        .player-score .player {
-            grid-column: 2 / span 5;
-        }
-
         .player-score .timeset {
-            grid-column: 1 / span 6;
-            grid-row: 3 / 4;
             text-align: center;
         }
     }

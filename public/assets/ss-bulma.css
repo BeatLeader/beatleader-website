@@ -2655,8 +2655,6 @@ a.box:active {
   margin-left: 2em;
 }
 .content figure {
-  margin-left: 2em;
-  margin-right: 2em;
   text-align: center;
 }
 .content figure:not(:first-child) {

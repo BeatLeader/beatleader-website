@@ -179,7 +179,7 @@
   <title>{browserTitle}</title>
 </svelte:head>
 
-<section>
+<section class="align-content">
 <article class="page-content" bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <div class="box has-shadow">
@@ -219,31 +219,30 @@
       <TwitchVideos videos={twitchVideos} />
     </div>
   {/if}
-  
-  {#if accSaberAvailable} 
+
+  {#if accSaberAvailable}
   <div class="box has-shadow">
     <AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
   </div>
   {/if}
-  
+
 </aside>
 </section>
 
 <style>
-  section {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      overflow-x: hidden;
-  }
+    .align-content {
+        display: flex;
+        justify-content: center;
+    }
+
+    .page-content {
+        max-width: 65em;
+        width: 100%;
+    }
 
   article {
       width: calc(100% - 25em);
       overflow-x: hidden;
-  }
-
-  article.page-content {
-      max-width: 65em;
   }
 
   aside {

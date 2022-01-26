@@ -141,7 +141,7 @@
 {#if selectedRun}
   <section class="beat-savior" class:with-history={!noHistory && allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1} transition:fade>
     {#if !noHistory && allSongRunsWithOtherPlayers && allSongRunsWithOtherPlayers.length > 1}
-      <nav>
+      <div class="details-with-shadow history-selector">
         <header>
           <Switcher values={switcherOptions} value={selectedSwitcherOption} on:change={onSwitcherChanged}/>
 
@@ -157,10 +157,10 @@
                  compareToId={opt(compareTo, 'beatSaviorId')} bestId={opt(beatSavior, 'beatSaviorId')}
                  on:selected={onRunSelected}
         />
-      </nav>
+      </div>
     {/if}
 
-    <div class="details-and-hands details-with-shadow">
+    <div class="details-with-shadow details-and-hands">
       <OtherStats beatSavior={selectedRun} compareTo={compareTo} {name} {compareToName}/>
       <div class="hands-and-grid">
         <Hands stats={selectedRun.stats} compareTo={compareTo ? compareTo.stats : null} {name} {compareToName}/>
@@ -179,8 +179,8 @@
         display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
-        grid-gap: .4em;
         justify-content: center;
+        margin: 0.0em 0.3em;
     }
 
     .details-and-hands {
@@ -193,7 +193,7 @@
     .hands-and-grid {
         display: flex;
         justify-items: center;
-        grid-gap: 1.5em;
+        grid-gap: .6em;
     }
 
     .details-with-shadow {
@@ -201,24 +201,26 @@
         padding: .4em;
         box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
         border-radius: .4em;
-        min-width: 29.6em;
-        background: linear-gradient(0deg, #06003814, #5a46ff14);
+        background: var(--graph-gradient);
+        width: 100%;
+    }
+
+    .details-with-shadow.chart {
+        min-width: 12.0em;
+        max-width: 29.5em;
     }
 
     .beat-savior.with-history {
         grid-template-columns: auto 1.5fr 1fr;
     }
 
-    .beat-savior.with-history .details-with-shadow {
-      min-width: 14em;
-    }
-
-    .beat-savior.with-history nav {
+    .history-selector {
         grid-column: 1 / 1;
         grid-row: 1 / span 2;
         align-self: start;
-        max-width: 10.5em;
-        max-height: 17em;
+        min-width: 8.0em;
+        max-width: 8.0em;
+        max-height: 13em;
         overflow: hidden;
 
         display: flex;
@@ -227,14 +229,13 @@
 
     header {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         font-size: .75rem;
     }
 
     @media screen and (max-width: 767px) {
         .beat-savior {
             grid-template-columns: 1fr;
-            grid-gap: 1.5em;
             flex-wrap: wrap;
         }
 
@@ -242,7 +243,11 @@
             grid-template-columns: 1fr;
         }
 
-        .beat-savior.with-history nav {
+        .details-with-shadow.chart {
+            max-width: 100%;
+        }
+
+        .history-selector {
             grid-row: 1/2;
             max-width: 100%;
             flex-direction: row;

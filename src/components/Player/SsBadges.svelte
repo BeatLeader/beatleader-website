@@ -16,6 +16,7 @@
     .ss-badges {
         display: flex;
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     .ss-badges img {

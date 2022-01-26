@@ -15,6 +15,10 @@
     --color-behind: rgb(128, 0, 0);
     --color-highlight: darkgreen;
     --error: red;
+
+    --graph-gradient-start: #06003814;
+    --graph-gradient-end: #5a46ff14;
+    --graph-gradient: linear-gradient(0deg, var(--graph-gradient-start), var(--graph-gradient-end));
 }
 
 html {

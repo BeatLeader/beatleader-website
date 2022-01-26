@@ -65,8 +65,15 @@
 {#if cards && cards.length}
   <section bind:this={mainEl} class="carousel"
            style="--cards-cnt: {cards.length}; --width: {$containerStore.nodeWidth}px; --height: {carouselHeight}px; --item:{currentItem}"
-           data-swipe-threshold="50"
-  >
+           data-swipe-threshold="50">
+    {#if cards.length > 1}
+      <div class="bullets">
+        {#each cards as card, cardIdx}
+          <span class:active={cardIdx === currentItem} on:click={() => currentItem = cardIdx}></span>
+        {/each}
+      </div>
+    {/if}
+
     <div class="cards-wrapper">
       {#each cards as card, cardIdx (card.name)}
         {#key card.name}
@@ -79,21 +86,14 @@
         {/key}
       {/each}
     </div>
-
-    {#if cards.length > 1}
-      <div class="bullets">
-        {#each cards as card, cardIdx}
-          <span class:active={cardIdx === currentItem} on:click={() => currentItem = cardIdx}></span>
-        {/each}
-      </div>
-    {/if}
   </section>
 {/if}
 
 <style>
     .carousel {
-        width: 100%;
-        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        grid-gap: .6em;
         overflow: hidden;
     }
 
@@ -116,7 +116,6 @@
     }
 
     .bullets {
-        margin-top: 1em;
         text-align: center;
     }
 
