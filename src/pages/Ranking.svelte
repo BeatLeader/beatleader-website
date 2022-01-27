@@ -122,20 +122,18 @@ import { HSVtoRGB } from '../utils/color';
               <Avatar {player}/>
             </div>
             <div class="player-name-and-rank">
-              <div>
-                <PlayerNameWithFlag {player} hideFlag={true}/>
-                <span class="change">
-                  <Change value={opt(player, 'others.difference')} digits={0}/>
-                </span>
+              <PlayerNameWithFlag {player} hideFlag={true}/>
+              <span class="change">
+                <Change value={opt(player, 'others.difference')} digits={0}/>
+              </span>
+            </div>
+            <div class="steam-and-pp">
+              {#if player.playerId > 70000000000000000}
+                <SteamStats playerId={player.playerId}/>
+              {/if}
+              <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
+                <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
               </div>
-                <div class="steam-and-pp">
-                  {#if player.playerId > 70000000000000000}
-                  <SteamStats playerId={player.playerId}/>
-                {/if}
-                <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
-                  <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
-                </div>
-              </div>  
             </div>
           </div>
         {/each}
@@ -161,7 +159,7 @@ import { HSVtoRGB } from '../utils/color';
 
     .player-card {
         display: inline-grid;
-        grid-template-columns: 7.5em 4em 1fr;
+        grid-template-columns: 7.5em 4em auto 1fr;
         grid-template-rows: 1fr;
         max-width: 100%;
         padding: .2em;
@@ -170,6 +168,7 @@ import { HSVtoRGB } from '../utils/color';
         background-color: var(--background);
         cursor: pointer;
         font-size: 1.12em;
+        align-items: center;
     }
     .current {
       border-color: yellow;
@@ -204,7 +203,7 @@ import { HSVtoRGB } from '../utils/color';
 
     .player-card .player-name-and-rank {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
         font-size: 1.1em;
         font-weight: 500;
@@ -212,7 +211,7 @@ import { HSVtoRGB } from '../utils/color';
 
     .player-card .steam-and-pp {
         display: flex;
-        justify-content: space-between;
+        justify-content: end;
         align-items: center;
         font-size: 0.8em;
         font-weight: 500;
@@ -247,7 +246,7 @@ import { HSVtoRGB } from '../utils/color';
 
     .player-card .player-rank {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-around;
         align-items: center;
         font-size: 1.1em;
         font-weight: 500;
@@ -261,6 +260,41 @@ import { HSVtoRGB } from '../utils/color';
     @media screen and (max-width: 500px) {
         .ranking-grid {
             grid-template-columns: 1fr;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .player-card {
+          grid-template-columns: 35% 65%;
+          grid-template-rows: 1fr 1fr;
+        }
+
+        .player-card .player-avatar {
+          grid-column: 1 / 2;
+          grid-row: 1;
+          margin-left: -0.8em;
+        }
+
+        .player-card .player-name-and-rank {
+          grid-column: 1 / 3;
+          margin-left: 2.5em;
+          grid-row: 1;
+        }
+
+        .player-card .player-name-and-rank :global(a) {
+          white-space: unset;
+          overflow-wrap: break-word;
+        }
+
+        .player-card .player-rank {
+          grid-column: 1;
+          grid-row: 2;
+          justify-content: flex-start;
+        }
+
+        .player-card .steam-and-pp {
+          grid-column: 2;
+          grid-row: 2;
         }
     }
 </style>

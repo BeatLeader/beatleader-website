@@ -45,6 +45,7 @@
   $: rightMiss = (rightBadCuts || 0) + (rightMissedNotes || 0)
 
   $: compareToStats = compareTo ? compareTo.stats : null;
+  $: compareToJumpDistance = opt(compareTo, 'songJumpDistance', null)
   $: compareToFc = compareToStats && !compareToStats.miss && !compareToStats.wallHit && !compareToStats.bombHit;
   $: compareToTotalMistakes = compareToStats ? compareToStats.miss + compareToStats.wallHit + compareToStats.bombHit : null;
   $: compareToLeftBadCuts = opt(compareTo, 'trackers.hitTracker.leftBadCuts', null)
@@ -139,7 +140,7 @@
     {#if jumpDistance > 0}
       <Badge label="JD" color="white" bgColor="var(--dimmed)" fluid={true}>
         <svelte:fragment slot="value">
-          <Value value={jumpDistance} digits={2} prevValue={null} prevAbsolute={true} prevWithSign={false} />
+          <Value value={jumpDistance} digits={2} prevValue={compareToJumpDistance} prevAbsolute={true} prevWithSign={false} />
         </svelte:fragment>
       </Badge>
     {/if}
