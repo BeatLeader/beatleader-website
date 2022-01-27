@@ -270,45 +270,44 @@
           <div class="scores-grid grid-transition-helper">
             {#each scores as score, idx}
               {#key opt(score, 'player.playerId')}
-                <div
-                    class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""}`}
-                    in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
-                  <div class="rank with-badge">
-                    <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+                <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""}`}
+                     in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+                  <div class="mobile-first-line">
+                    <div class="rank with-badge">
+                      <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
                 >= 10000 ? 'small' : 'var(--dimmed)')))}>
                     <span slot="label">
                       #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
                     </span>
-                    </Badge>
-                  </div>
-
-                  <div class="player">
-                    <Avatar player={score.player}/>
-                    <PlayerNameWithFlag player={score.player}
-                                        type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
-                                        on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
-                    />
-                  </div>
-
-                  <div class="timeset">
-                    <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
-                      {opt(score, 'score.timeSetString', '-')}
-                    </span>
-                  </div>
-
-                  {#if !noReplayInLeaderboard && isRanked}
-                    <div class="replay">
-                      {#if score.score.pp && score.score.hasReplay}
-                        <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true} playerId={score.player.playerId}
-                               jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
-                      {/if}
+                      </Badge>
                     </div>
-                  {/if}
-
-                  {#if type === 'accsaber' || isRanked}
-                    <div class="pp with-badge">
-                      <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+                    <div class="player">
+                      <Avatar player={score.player}/>
+                      <PlayerNameWithFlag player={score.player}
+                                          type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
+                                          on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                      />
+                    </div>
+                    <div class="timeset">
+                        <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
+                          {opt(score, 'score.timeSetString', '-')}
+                        </span>
+                    </div>
+                  </div>
+                  <div class="mobile-second-line">
+                    {#if !noReplayInLeaderboard && isRanked}
+                      <div class="replay">
+                        {#if score.score.pp && score.score.hasReplay}
+                          <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true}
+                                 playerId={score.player.playerId}
+                                 jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
+                        {/if}
+                      </div>
+                    {/if}
+                    {#if type === 'accsaber' || isRanked}
+                      <div class="pp with-badge">
+                        <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                           <span slot="label">
                             {#if type === 'accsaber'}
                               <Pp playerId={opt(score, 'player.playerId')}
@@ -325,23 +324,22 @@
                               />
                             {/if}
                           </span>
-                      </Badge>
+                        </Badge>
+                      </div>
+                    {/if}
+                    <div class="percentage with-badge">
+                      <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true}
+                                showMods={false}/>
                     </div>
-                  {/if}
-
-                  <div class="percentage with-badge">
-                    <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true}
-                              showMods={false}/>
-                  </div>
-
-                  <div class="score with-badge">
-                    <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                    <div class="score with-badge">
+                      <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                       <span slot="label">
                         <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
 
                         <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
                       </span>
-                    </Badge>
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               {/key}
@@ -488,11 +486,23 @@
 
     .player-score {
         display: flex;
+        flex-direction: row;
         grid-gap: .4em;
-        align-items: center;
         overflow: hidden;
         border-bottom: 1px solid var(--faded);
         padding-bottom: .2em;
+    }
+
+    .mobile-first-line {
+        display: flex;
+        grid-gap: .4em;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    .mobile-second-line {
+        display: flex;
+        grid-gap: .4em;
     }
 
     .player-score.highlight {
@@ -511,32 +521,36 @@
 
     .player-score .player {
         display: flex;
-        align-items: center;
         grid-gap: .4em;
-        width: 100%;
         overflow-x: hidden;
+        flex-grow: 1;
     }
 
     .player-score .timeset {
         text-align: center;
         min-width: 6.9em;
+        flex: none;
     }
 
     .player-score .replay {
         height: 1.8em;
         min-width: 1.8em;
+        flex: none;
     }
 
     .player-score .pp {
         min-width: 5.5em;
+        flex: none;
     }
 
     .player-score .percentage {
         min-width: 4.5em;
+        flex: none;
     }
 
     .player-score .score {
         min-width: 6.0em;
+        flex: none;
     }
 
     .player-score :global(.badge) {
@@ -595,20 +609,28 @@
             margin-bottom: .5em;
         }
 
-        .player-score .timeset {
-            text-align: right;
-            font-size: .875em;
-            line-height: 1;
+        .player-score {
+            flex-direction: column;
+        }
+
+        .player-score .replay {
+            order: 1;
+        }
+
+        .player-score .pp {
+            flex-grow: 1;
+        }
+
+        .player-score .percentage {
+            flex-grow: 1;
+        }
+
+        .player-score .score {
+            flex-grow: 1;
         }
     }
 
     img.dummy {
         display: none;
-    }
-
-    @media screen and (max-width: 409px) {
-        .player-score .timeset {
-            text-align: center;
-        }
     }
 </style>
