@@ -506,6 +506,7 @@
     .player-score .rank {
         font-size: .875em;
         min-width: 2em;
+        flex: none;
     }
 
     .player-score .player {
