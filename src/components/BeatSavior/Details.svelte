@@ -125,7 +125,7 @@
 
     const acc = opt(run, 'trackers.scoreTracker.rawRatio')
 
-    return `${withOtherPlayers && run.playerName ? run.playerName + ' / ' : ''}${formatNumber(acc * 100)}%${run.beatSaviorId === best.beatSaviorId ? ' (BEST)' : ''} run`
+    return `${withOtherPlayers && run.playerName ? run.playerName + ' / ' : ''}${formatNumber(acc * 100)}%${run.beatSaviorId === best?.beatSaviorId ? ' (BEST)' : ''} run`
   }
 
   $: best = beatSavior;
@@ -260,6 +260,13 @@
 
         .beat-savior > :global(.stats) {
             grid-row: 1/2;
+        }
+    }
+
+    @media screen and (max-width: 520px) {
+      .hands-and-grid {
+          flex-wrap: wrap;
+          justify-content: space-around;
         }
     }
 

@@ -220,11 +220,15 @@
     </div>
   {/if}
 
-  {#if accSaberAvailable}
-  <div class="box has-shadow">
-    <AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
-  </div>
-  {/if}
+  {#await accSaberAvailable}
+      Loading...
+  {:then accSaberAvailable} 
+    {#if accSaberAvailable} 
+      <div class="box has-shadow">
+        <AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
+      </div>
+    {/if}
+  {/await}
 
 </aside>
 </section>

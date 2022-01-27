@@ -77,28 +77,28 @@
         <h3 class="description">This site aggregates all Beat Saber stats in one place.</h3>
         <div class="sources">
             <h3 class="title is-6">
-                <a href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-                <img src="/assets/scoresaber-logo.svg" class="icon" alt="ScoreSaber" title="ScoreSaber"/>
+                <a class="imageLink" href={`https://scoresaber.com/`} target="_blank" rel="noreferrer">
+                    <img src="/assets/scoresaber-logo.svg" class="icon" alt="ScoreSaber" title="ScoreSaber"/>
                 </a>
             </h3>
             <h3 class="title is-6">
-                <a href={`https://www.beatsavior.io/`} target="_blank" rel="noreferrer">
-                <span class="icon beatsavior-icon" title="BeatSavior"></span>
+                <a class="imageLink" href={`https://www.beatsavior.io/`} target="_blank" rel="noreferrer">
+                    <span class="icon beatsavior-icon" title="BeatSavior"></span>
                 </a>
             </h3>
             <h3 class="title is-6">
-                <a href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-                <img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver"/>
+                <a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
+                    <img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver"/>
                 </a>
             </h3>
             <h3 class="title is-6">
-                <a href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-                <img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaberLogo"/>
+                <a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
+                    <img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaberLogo"/>
                 </a>
             </h3>
             <h3 class="title is-6">
-                <a href={`https://replay.beatleader.xyz/`} target="_blank" rel="noreferrer">
-                <img src="https://replay.beatleader.xyz/assets/img/favicon-96x96.png" title="Replays" class="icon" alt="Replays"/>
+                <a class="imageLink replays" href={`https://replay.beatleader.xyz/`} target="_blank" rel="noreferrer">
+                    <img src="/assets/replays.svg" title="Replays" class="icon" alt="Replays"/>
                 </a>
             </h3>
         </div>
@@ -154,9 +154,10 @@
 
 <style>
     .sources {
-        display: -webkit-inline-box;
+        display: flex;
         margin-left: 1.5em;
         margin-bottom: 3em;
+        flex-wrap: wrap;
     }
 
     .description {
@@ -241,5 +242,22 @@
     .country-remove {
         text-align: right;
         font-size: .75em;
+    }
+
+    .imageLink {
+        width: 4em;
+        height: 4em;
+    }
+
+    .imageLink.replays {
+        width: 5em;
+        height: 5em;
+        margin-top: -0.5em;
+        margin-left: -0.5em;
+    }
+
+    .replays .icon {
+        width: 5em;
+        height: 5em;
     }
 </style>

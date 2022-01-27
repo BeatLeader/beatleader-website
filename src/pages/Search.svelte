@@ -73,7 +73,10 @@
       <Avatar playerInfo={player ? player.playerInfo : null} {isLoading} centered={true}/>
     </div>
 
-    <PlayerStats {name} playerInfo={player ? player.playerInfo : null} skeleton={!name && isLoading} centered={true} />
+    <div class="playerInfo">
+      <PlayerStats {name} playerInfo={player ? player.playerInfo : null} skeleton={!name && isLoading} centered={true} />
+    </div>
+    
 
     {#if player}
       <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/scoresaber/recent/1`)}/>
@@ -127,5 +130,13 @@
         cursor: pointer;
         min-width: 2rem;
         margin-right: .5rem;
+    }
+
+    .playerInfo :global(.player-ranking) {
+      justify-content: center;
+    }
+
+    .playerInfo :global(.player-nickname) {
+      justify-content: center;
     }
 </style>

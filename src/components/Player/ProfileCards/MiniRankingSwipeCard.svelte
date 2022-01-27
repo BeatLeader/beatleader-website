@@ -22,11 +22,16 @@
     </div>
   {/each}
 
-  {#if accSaberAvailable} 
-    <div>
-      <AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} />
-    </div>
-  {/if}
+  {#await accSaberAvailable}
+      Loading...
+    {:then accSaberAvailable} 
+
+    {#if accSaberAvailable} 
+      <div>
+        <AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} />
+      </div>
+    {/if}
+  {/await}
 </div>
 
 <style>

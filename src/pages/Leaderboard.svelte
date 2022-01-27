@@ -491,6 +491,7 @@
         overflow: hidden;
         border-bottom: 1px solid var(--faded);
         padding-bottom: .2em;
+        min-width: 19em;
     }
 
     .mobile-first-line {
