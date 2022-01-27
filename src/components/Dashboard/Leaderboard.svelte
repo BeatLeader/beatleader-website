@@ -73,7 +73,7 @@
 <div>
     <div class="tab">
         <div style="display: flex">
-            <span class="icons"><Icons hash={leaderboard.song.hash} diffInfo={row.diffInfo} hasReplay={row.score.hasReplay} playerId={row.player.playerId} jumpDistance={row && row.beatSavior ? row.beatSavior.songJumpDistance : 0}/></span>
+            <span class="icons"><Icons hash={leaderboard.song.hash} diffInfo={leaderboard.diffInfo} hasReplay={row.score.hasReplay} playerId={row.player.playerId} jumpDistance={row && row.beatSavior ? row.beatSavior.songJumpDistance : 0}/></span>
         </div>
         
         <LeaderboardStats {leaderboard}/>

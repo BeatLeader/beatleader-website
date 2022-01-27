@@ -177,7 +177,7 @@
                     id: 'acc',
                     label: 'Acc',
                     iconFa: 'fa fa-crosshairs',
-                    title: 'Accurate for ranked maps only',
+                    title: 'Sort by accuracy',
                   });
 
                 if (!sortComponent.props.values.find(v => v.id === 'stars'))

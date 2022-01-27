@@ -126,7 +126,11 @@
               <div class="player-name-and-rank">
                 <PlayerNameWithFlag {player} hideFlag={true}/>
                 <span class="change">
-                  <Change value={opt(player, 'others.difference')} digits={0}/>
+                  {#if opt(player, 'others.difference') > 900000}
+                    <span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">ressurected</span>
+                  {:else}
+                    <Change value={opt(player, 'others.difference')} digits={0}/>
+                  {/if}
                 </span>
               </div>
               <div class="steam-and-pp">

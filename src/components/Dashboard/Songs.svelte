@@ -3,7 +3,6 @@
     import eventBus from '../../utils/broadcast-channel-pubsub';
     import {debounce} from '../../utils/debounce';
     import {
-        getAllActivePlayers,
         getAllScoresSince,
         getAllScoresWithPpOver,
     } from "../../utils/players";
@@ -41,7 +40,7 @@
 
     const header = [
         {label: '', key: 'picture', className: 'picture'},
-        {label: '#', key: 'rank', className: 'rank'},
+        {label: '#', key: 'rank', className: 'player-rank'},
         {label: 'player', key: 'player', className: 'player'},
         {label: 'song', key: 'song', className: 'song'},
         {label: 'timeset', key: 'timeset', className: 'timeset'},
@@ -319,5 +318,85 @@
     .rank.brown {
         font-size: 1.1em;
         background-color: saddlebrown;
+    }
+
+    @media screen and (max-width: 767px) {
+        :global(.sspl .row) {
+            display: grid;
+            grid-template-columns: 6% 15% 10% auto 20% 15% 20%;
+            grid-template-rows: auto auto auto;
+        }
+
+        :global(.sspl td) {
+            border-width: 0 !important;
+        }
+
+        :global(.sspl tr) {
+            border: 1px solid #dbdbdb;
+            border-width: 0 0 1px 0 !important;
+        }
+
+        :global(.sspl .table-header) {
+            display: none ;
+        }
+
+        :global(.sspl .row .col--details-btn) {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        :global(.sspl .row .picture) {
+            grid-column: 3;
+            grid-row: 1;
+            padding: 1em 0.1em !important;
+        }
+
+        :global(.sspl .row .player-rank) {
+            grid-column: 1 / 2;
+            grid-row: 1;
+            padding: 1em 0.1em !important;
+        }
+
+        :global(.sspl .row .player) {
+            grid-column: 4 / 8;
+            grid-row: 1;
+            padding: 1em 0.1em !important;
+        }
+
+        :global(.sspl .row .timeset) {
+            grid-column: 3 / 5;
+            grid-row: 2;
+            padding: 1em 0.1em !important;
+        }
+
+        :global(.sspl .row .change) {
+            grid-column: 7;
+            grid-row: 1;
+            padding: 1em 0.1em !important;
+        }
+
+        :global(.sspl .row .acc) {
+            grid-column: 5;
+            grid-row: 2;
+            padding: 1em 0.1em !important;
+        }
+
+        :global(.sspl .row .pp) {
+            grid-column: 7;
+            grid-row: 2;
+            padding: 1em 0.1em !important;
+        }
+
+        :global(.sspl .row .ranking-pp) {
+            grid-column: 2 / 4;
+            grid-row: 2;
+            padding: 0 0.1em 1em !important;
+        }
+
+        :global(.sspl .row .song) {
+            grid-column: 1 / 8;
+            grid-row: 3;
+            padding: 0.1em !important;
+        }
     }
 </style>

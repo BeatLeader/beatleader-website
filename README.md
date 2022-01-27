@@ -1,4 +1,4 @@
-# ScoreSaber Reloaded
+# BeatLeader
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/3930b442-ffc4-4039-ac79-446a61ca582b/deploy-status)](https://app.netlify.com/sites/nostalgic-kare-ad710f/deploys)
 
@@ -6,6 +6,12 @@
 
 Just go to [beatleader.xyz](https://beatleader.xyz)
 
+## Community
+
+- [BeatLeader Discord](https://discord.gg/2RG5YVqtG6)
+
+*The BeatSaber is an unofficial community project and not officially
+affiliated with Beat Saber or ScoreSaber.*
 
 ## Devs
 
@@ -15,23 +21,28 @@ Just go to [beatleader.xyz](https://beatleader.xyz)
 yarn install
 ```
 
-### Configure Netlify account 
+### Starting local build
 
-Create a new Netlify project and link it to the forked repo. 
-
-#### Install netlify dev CLI
-
+Install netlify-cli(one time setup):
 ```bash
 npm install netlify-cli -g
 ```
 
-Then start Netlify dev environment
-
+Start Netlify dev environment(every time):
 ```bash
 netlify dev
 ```
 
-Navigate to [localhost:8888](http://localhost:8888). You should see app running.
+Navigate to [localhost:8888](http://localhost:8888). You should see the app running.
+Website will reload automatically after you save your changes.
+
+### Contributing
+
+- Create a fork ("Fork" button on top) or ask me in [Discord](https://discord.gg/2RG5YVqtG6) to add you to this repository as a developer if you plan to contribute often.
+- Create work branch ("nsgolova/rankingImprovements" for example). You can push to the master in your fork, but not in the main repository.
+- Commit and push your changes.
+- Open a pull request. Netlify will deploy a stage website for your fork and you can test it out.
+- Your pull request would be merged and changes will deploy to the website!
 
 ### Building and running in production mode
 

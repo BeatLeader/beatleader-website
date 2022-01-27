@@ -149,7 +149,7 @@
             <thead>
             <slot name="head">
                 {#if tableHeader && tableHeader.length && tableHeader[0].label !== null}
-                    <tr>
+                    <tr class="table-header">
                         {#if withDetails}<th class="col--details-btn"></th>{/if}
                         {#each tableHeader as col (col)}
                             <th class={col.className ? col.className : ''}>
@@ -165,7 +165,7 @@
             <slot name="body">
                 {#if dataPage && dataPage.length}
                     {#each dataPage as row, rowIdx (row)}
-                        <tr>
+                        <tr class="row">
                             {#if withDetails}
                                 <td class="col--details-btn">
                                     <Button type="text" iconFa={detailsOpened.includes(rowIdx + page * itemsPerPage) ? "fas fa-chevron-down" : "fas fa-chevron-right"}

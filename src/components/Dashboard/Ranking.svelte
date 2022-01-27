@@ -25,10 +25,10 @@
 
     const header = [
         {label: '', key: 'picture', className: 'picture'},
-        {label: '#', key: 'rank', className: 'rank'},
+        {label: '#', key: 'rank', className: 'player-rank'},
         {label: 'player', key: 'player', className: 'player'},
-        {label: 'pp', key: 'pp', className: 'pp'},
-        {label: 'change', key: 'weeklyDiff', className: 'diff'}
+        {label: 'pp', key: 'pp', className: 'ranking-pp'},
+        {label: 'change', key: 'weeklyDiff', className: 'change'}
     ]
     let rows = [];
 
@@ -70,6 +70,8 @@
     // }
 
     // $: addPlayersHistory(players, refreshTag, overridePlayersPp, filterFunc);
+
+    $: change = (row) => {let history = row.playerInfo.rankHistory; return (history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null)}
 </script>
 
 {#if players}
@@ -86,7 +88,11 @@
         {:else if key === 'pp'}
             <Pp pp="{row.playerInfo.pp}" zero={formatNumber(0)} inline={true} />
         {:else if key === 'weeklyDiff'}
-            <Change value={(() => {let history = row.playerInfo.rankHistory; return (history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null)})()} digits={0} />
+            {#if change(row) > 900000}
+                <span class="inc" title="This player appeared after a long break.">ressurected</span>
+            {:else}
+                <Change value={change(row)} digits={0} />
+            {/if}
         {/if}
     </span>
 </Table>
@@ -96,6 +102,10 @@
     :global(.sspl .picture) {
         padding: .5rem 0;
         width: 1.5rem;
+    }
+
+    :global(.sspl tbody td.ranking-pp), :global(.sspl tbody td.change) {
+        text-align: center;
     }
 </style>
 
