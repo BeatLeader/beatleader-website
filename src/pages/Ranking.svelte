@@ -17,7 +17,7 @@
   import Spinner from '../components/Common/Spinner.svelte'
   import {PLAYERS_PER_PAGE} from '../utils/scoresaber/consts'
   import createConfigService from '../services/config'
-import { HSVtoRGB } from '../utils/color';
+  import { HSVtoRGB } from '../utils/color';
 
   export let type = 'global';
   export let page = 1;
@@ -95,63 +95,76 @@ import { HSVtoRGB } from '../utils/color';
   <title>{type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} ranking / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
-<article transition:fade>
-  <div class="box has-shadow" bind:this={boxEl}>
-    <h1 class="title is-5">
-      {type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} leaderboard
+<section class="align-content">
+  <article class="page-content" transition:fade>
+    <div class="box has-shadow" bind:this={boxEl}>
+      <h1 class="title is-5">
+        {type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} leaderboard
 
-      {#if $isLoading}<Spinner />{/if}
-    </h1>
+        {#if $isLoading}<Spinner />{/if}
+      </h1>
 
-    {#await mainPlayerId}
-    {:then playerId} 
-    {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
-      <section class="ranking-grid">
-        {#each $rankingStore.data as player, idx (player.playerId)}
-          <div class={`player-card ${playerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
-            <div class="player-rank">
-              <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
-                #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
+      {#await mainPlayerId}
+        Loading...
+      {:then playerId} 
+      {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
+        <section class="ranking-grid">
+          {#each $rankingStore.data as player, idx (player.playerId)}
+            <div class={`player-card ${playerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
+              <div class="player-rank">
+                <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
+                  #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
+                </div>
+                <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click={e => onCountryClick(player)}>
+                  #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
+                  <Flag country={opt(player, 'playerInfo.countries.0.country')} />
+                </div>
               </div>
-              <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click={e => onCountryClick(player)}>
-                #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
-                <Flag country={opt(player, 'playerInfo.countries.0.country')} />
+              <div class="player-avatar">
+                <Avatar {player}/>
+              </div>
+              <div class="player-name-and-rank">
+                <PlayerNameWithFlag {player} hideFlag={true}/>
+                <span class="change">
+                  <Change value={opt(player, 'others.difference')} digits={0}/>
+                </span>
+              </div>
+              <div class="steam-and-pp">
+                {#if player.playerId > 70000000000000000}
+                  <SteamStats playerId={player.playerId}/>
+                {/if}
+                <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
+                  <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
+                </div>
               </div>
             </div>
-            <div class="player-avatar">
-              <Avatar {player}/>
-            </div>
-            <div class="player-name-and-rank">
-              <PlayerNameWithFlag {player} hideFlag={true}/>
-              <span class="change">
-                <Change value={opt(player, 'others.difference')} digits={0}/>
-              </span>
-            </div>
-            <div class="steam-and-pp">
-              {#if player.playerId > 70000000000000000}
-                <SteamStats playerId={player.playerId}/>
-              {/if}
-              <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
-                <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
-              </div>
-            </div>
-          </div>
-        {/each}
-      </section>
+          {/each}
+        </section>
 
-      <Pager totalItems={numOfPlayers} itemsPerPage={PLAYERS_PER_PAGE} itemsPerPageValues={null}
-             currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-             mode={numOfPlayers ? 'pages' : 'simple'}
-             on:page-changed={onPageChanged}
-      />
-    {:else if (!$isLoading)}
-      <p>No players found.</p>
-    {/if}
-    {/await}
-  </div>
-</article>
+        <Pager totalItems={numOfPlayers} itemsPerPage={PLAYERS_PER_PAGE} itemsPerPageValues={null}
+              currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+              mode={numOfPlayers ? 'pages' : 'simple'}
+              on:page-changed={onPageChanged}
+        />
+      {:else if (!$isLoading)}
+        <p>No players found.</p>
+      {/if}
+      {/await}
+    </div>
+  </article>
+</section>
 
 <style>
+    .align-content {
+        display: flex;
+        justify-content: center;
+    }
+
+    .page-content {
+        max-width: 65em;
+        width: 100%;
+    }
+
     .ranking-grid {
         display: grid;
         grid-gap: .75em;
@@ -179,8 +192,6 @@ import { HSVtoRGB } from '../utils/color';
     }
 
     .player-card .player-avatar {
-        /* grid-column: 1 / 2;
-        grid-row: 1 / span 2; */
         position: relative;
         overflow: hidden;
     }
@@ -222,7 +233,6 @@ import { HSVtoRGB } from '../utils/color';
         display: flex;
         justify-content: space-between;
         align-items: center;
-        
     }
 
     .player-card :global(.rank.small) {
@@ -230,27 +240,23 @@ import { HSVtoRGB } from '../utils/color';
     }
 
     .player-card :global(.rank.gold) {
-        font-size: 1.1em;
         background-color: darkgoldenrod;
     }
 
     .player-card :global(.rank.silver) {
-        font-size: 1.1em;
         background-color: #888;
     }
 
     .player-card :global(.rank.brown) {
-        font-size: 1.1em;
         background-color: saddlebrown;
     }
 
     .player-card .player-rank {
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         font-size: 1.1em;
         font-weight: 500;
-        /* color: var(--ppColour); */
     }
 
     .player-card .change {
@@ -265,7 +271,7 @@ import { HSVtoRGB } from '../utils/color';
 
     @media screen and (max-width: 768px) {
         .player-card {
-          grid-template-columns: 35% 65%;
+          grid-template-columns: 50% 50%;
           grid-template-rows: 1fr 1fr;
         }
 
@@ -290,11 +296,16 @@ import { HSVtoRGB } from '../utils/color';
           grid-column: 1;
           grid-row: 2;
           justify-content: flex-start;
+          font-size: 0.8em;
         }
 
         .player-card .steam-and-pp {
           grid-column: 2;
           grid-row: 2;
+        }
+
+        .player-card :global(.rank) {
+          font-size: 1em;
         }
     }
 </style>

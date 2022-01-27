@@ -291,7 +291,11 @@
     }
 
     .fa-list-ul {
-      margin-right: 10px;
+        width: 1.25rem;
+        height: 1.1rem;
+        margin-top: 0.15rem;
+        margin-left: 0.25em;
+        padding-right: 1.5em;
     }
 
     @media screen and (max-width: 450px) {
