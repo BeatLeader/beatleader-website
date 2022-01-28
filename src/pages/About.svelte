@@ -23,7 +23,7 @@
   <div class="box has-shadow">
     <h1 class="title is-3">Team</h1>
     <section class="content">
-      <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/9a/9a2159cfa8e0035593953b231f64fc4c06ba1349_full.jpg" alt="NSGolova"/><a href="https://github.com/radulov">NSGolova</a><p class="memberTitle"> - bug factory</p></div>
+      <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/9a/9a2159cfa8e0035593953b231f64fc4c06ba1349_full.jpg" alt="NSGolova"/><a href="https://github.com/NSGolova">NSGolova</a><p class="memberTitle"> - bug factory</p></div>
       <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/38/38c54625673d34ec684e650e7203cfa193c02f35_full.jpg" alt="Karghoff"/><a href="https://github.com/karghoff-e">Karghoff</a><p class="memberTitle"> - supporter and bug detective</p></div>
       <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/05/05d491662979a9fcde141c228a7f50702ddfa761_full.jpg" alt="Reezonate"/><a href="https://github.com/reezonate">Reezonate</a><p class="memberTitle"> - 3D and UI guru</p></div>
 

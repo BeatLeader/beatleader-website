@@ -1,4 +1,4 @@
-# BeatLeader
+# BeatLeader Website
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/3930b442-ffc4-4039-ac79-446a61ca582b/deploy-status)](https://app.netlify.com/sites/nostalgic-kare-ad710f/deploys)
 
@@ -10,7 +10,7 @@ Just go to [beatleader.xyz](https://beatleader.xyz)
 
 - [BeatLeader Discord](https://discord.gg/2RG5YVqtG6)
 
-*The BeatSaber is an unofficial community project and not officially
+*The BeatLeader is an unofficial community project and not officially
 affiliated with Beat Saber or ScoreSaber.*
 
 ## Devs

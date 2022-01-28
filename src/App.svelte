@@ -65,7 +65,7 @@
   <p>
     <a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a> |
     <a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a> |
-    <a href="https://github.com/radulov/scoresaber-reloaded">Source</a>
+    <a href="https://github.com/NSGolova/beatleader-website">Source</a>
   </p>
 </footer>
 
