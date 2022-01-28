@@ -65,7 +65,8 @@
   <p>
     <a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a> |
     <a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a> |
-    <a href="https://github.com/NSGolova/beatleader-website">Source</a>
+    <a href="https://github.com/NSGolova/beatleader-website">Source</a> |
+    <a href="https://discord.gg/2RG5YVqtG6">Discord</a>
   </p>
 </footer>
 
