@@ -16,6 +16,7 @@
   import MiniRanking from '../components/Ranking/Mini.svelte'
   import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte'
   import TwitchVideos from '../components/Player/TwitchVideos.svelte'
+  import PageContentBox from "../components/Common/PageContentBox.svelte";
 
   export let initialPlayerId = null;
   export let initialParams = null;
@@ -182,9 +183,9 @@
 <section class="align-content">
 <article class="page-content" bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
-    <div class="box has-shadow">
+    <PageContentBox>
       <p class="error">Player not found.</p>
-    </div>
+    </PageContentBox>
   {:else}
     <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos} />
 
@@ -204,29 +205,29 @@
 </article>
 
 <aside>
-  <div class="box has-shadow">
+  <PageContentBox>
     <MiniRanking rank={opt($playerStore, 'playerInfo.rank')} numOfPlayers={5} />
-  </div>
+  </PageContentBox>
 
   {#each opt($playerStore, 'playerInfo.countries', []) as countryInfo (countryInfo.country)}
-    <div class="box has-shadow">
+    <PageContentBox>
       <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} />
-    </div>
+    </PageContentBox>
   {/each}
 
   {#if twitchVideos && twitchVideos.length}
-    <div class="box has-shadow">
+    <PageContentBox>
       <TwitchVideos videos={twitchVideos} />
-    </div>
+    </PageContentBox>
   {/if}
 
   {#await accSaberAvailable}
       Loading...
   {:then accSaberAvailable} 
-    {#if accSaberAvailable} 
-      <div class="box has-shadow">
+    {#if accSaberAvailable}
+      <PageContentBox>
         <AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
-      </div>
+      </PageContentBox>
     {/if}
   {/await}
 

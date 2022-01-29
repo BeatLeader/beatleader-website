@@ -9053,18 +9053,6 @@ body {
   color: var(--textColor) !important;
 }
 
-.box.has-shadow {
-  background-color: var(--foreground) !important;
-  color: var(--textColor) !important;
-
-  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
-  margin: 2px 10px 18px;
-}
-
-.box.has-shadow:hover {
-  box-shadow: 0 10px 15px rgba(23, 23, 23, 0.63), 0 8px 15px rgba(0, 0, 0, 0.4);
-}
-
 a {
   color: var(--alternate) !important;
 }

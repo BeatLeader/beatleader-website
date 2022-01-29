@@ -7,6 +7,7 @@
   import {SsrHttpUnauthenticatedError} from '../network/errors'
   import Error from '../components/Common/Error.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
+  import PageContentBox from "../components/Common/PageContentBox.svelte";
 
   document.body.classList.add('slim');
 
@@ -47,7 +48,7 @@
 </svelte:head>
 
 <article transition:fade>
-  <div class="box has-shadow">
+  <PageContentBox>
     <h1 class="title is-3">Twitch integration</h1>
 
     {#if !error}
@@ -59,7 +60,7 @@
     {/if}
 
     <p><a href="" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
-  </div>
+  </PageContentBox>
 </article>
 
 <style>

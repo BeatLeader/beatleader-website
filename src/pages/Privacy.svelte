@@ -3,6 +3,7 @@
   import {fade} from 'svelte/transition'
   import ssrConfig from '../ssr-config'
   import {scrollToTargetAdjusted} from '../utils/browser'
+  import PageContentBox from "../components/Common/PageContentBox.svelte";
 
   document.body.classList.add('slim');
 
@@ -20,7 +21,7 @@
 </svelte:head>
 
 <article bind:this={articleEl} transition:fade>
-  <div class="box has-shadow">
+  <PageContentBox>
     <h1 class="title is-3">Privacy policy</h1>
 
     <p><strong>This website does not collect any data.</strong></p>
@@ -39,7 +40,7 @@
       <a href="/credits" on:click|preventDefault={() => navigate('/credits')}>Credits</a> page.</p>
 
     <p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
-  </div>
+  </PageContentBox>
 </article>
 
 <style>

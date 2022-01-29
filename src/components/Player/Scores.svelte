@@ -8,6 +8,7 @@
   import ScoreServiceSwitcher from './ScoreServiceSwitcher.svelte'
   import ScoresPager from './ScoresPager.svelte'
   import stringify from 'json-stable-stringify'
+  import PageContentBox from "../Common/PageContentBox.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -99,7 +100,7 @@
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
 </script>
 
-<div class="box has-shadow" bind:this={scoresBoxEl}>
+<PageContentBox bind:this={scoresBoxEl}>
   {#if $error}
     <div><Error error={$error} /></div>
   {/if}
@@ -126,7 +127,7 @@
                  on:page-changed={onPageChanged}
     />
   {/if}
-</div>
+</PageContentBox>
 
 <style>
     .song-scores :global(> *:last-child) {

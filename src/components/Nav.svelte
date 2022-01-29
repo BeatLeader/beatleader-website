@@ -189,6 +189,7 @@
         background-color: var(--foreground);
         border-bottom: 1px solid var(--dimmed);
         z-index: 50;
+        box-shadow: 0 8px 10px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
     }
 
     nav > *:not(.right), nav > .right > * {
