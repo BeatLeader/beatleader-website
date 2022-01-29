@@ -3,6 +3,7 @@
   import {fade} from 'svelte/transition'
   import ssrConfig from '../ssr-config'
   import {scrollToTargetAdjusted} from '../utils/browser'
+  import ContentBox from "../components/Common/ContentBox.svelte";
 
   document.body.classList.add('slim');
 
@@ -20,7 +21,7 @@
 </svelte:head>
 
 <article bind:this={articleEl} transition:fade>
-  <div class="box has-shadow">
+  <ContentBox>
     <h1 class="title is-3">Team</h1>
     <section class="content">
       <div class="member"><img src="https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/9a/9a2159cfa8e0035593953b231f64fc4c06ba1349_full.jpg" alt="NSGolova"/><a href="https://github.com/NSGolova">NSGolova</a><p class="memberTitle"> - bug factory</p></div>
@@ -76,7 +77,7 @@
     </section>
 
     <p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
-  </div>
+  </ContentBox>
 </article>
 
 <style>

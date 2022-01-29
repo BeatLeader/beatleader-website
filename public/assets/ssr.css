@@ -27,7 +27,7 @@ html {
 
 body {
     color: var(--textColor);
-    background-color: var(--background)!important;
+    background-color: var(--background) !important;
     margin: 0 auto;
     padding: 0 1rem;
     min-height: 100vh;
@@ -58,7 +58,9 @@ select {
     color: var(--decrease);
 }
 
-*[title]:not([title=""]):not(.clickable) {cursor: help;}
+*[title]:not([title=""]):not(.clickable) {
+    cursor: help;
+}
 
 .scoresaber-icon {
     width: 100%;
@@ -239,7 +241,7 @@ select {
     }
 
     .tablet-and-up {
-        display: none!important;
+        display: none !important;
     }
 }
 
@@ -249,7 +251,7 @@ select {
     }
 }
 
-@media screen and (min-width:768px) and (max-width: 1023px) {
+@media screen and (min-width: 768px) and (max-width: 1023px) {
     .tablet-only {
         display: block;
     }
@@ -261,7 +263,7 @@ select {
     }
 
     .desktop-and-up {
-        display: none!important;
+        display: none !important;
     }
 }
 
@@ -271,7 +273,7 @@ select {
     }
 }
 
-@media screen and (max-width: 520px) {
+@media screen and (max-width: 767px) {
     body {
         padding: 0;
     }

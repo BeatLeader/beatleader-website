@@ -17,6 +17,7 @@
   import Carousel from '../Common/Carousel.svelte'
   import Badge from '../Common/Badge.svelte'
   import ScoreSaberSummary from "./ScoreSaberSummary.svelte";
+  import ContentBox from "../Common/ContentBox.svelte";
 
   export let playerData;
   export let isLoading = false;
@@ -176,7 +177,7 @@
     );
 </script>
 
-<div class="box has-shadow" class:loading={isLoading}>
+<ContentBox>
   <div class="player-general-info">
     <div class="avatar-cell">
       <Avatar {isLoading} {playerInfo}/>
@@ -197,15 +198,15 @@
       <ScoreSaberSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
     </div>
   </div>
-</div>
+</ContentBox>
 
-<div class="box has-shadow" class:loading={isLoading}>
+<ContentBox>
   <div class="columns">
     <div class="column">
       <Carousel cards={swipeCards} on:player-gain-changed={e => onPlayerGainChanged(e)}/>
     </div>
   </div>
-</div>
+</ContentBox>
 
 <style>
     .player-general-info {
