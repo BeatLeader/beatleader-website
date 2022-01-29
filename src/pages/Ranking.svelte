@@ -97,8 +97,8 @@
 </svelte:head>
 
 <section class="align-content">
-  <article class="page-content" bind:this={boxEl} transition:fade>
-    <ContentBox>
+  <article class="page-content" transition:fade>
+    <ContentBox bind:box={boxEl}>
       <h1 class="title is-5">
         {type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} leaderboard
 

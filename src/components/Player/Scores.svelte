@@ -100,7 +100,7 @@
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
 </script>
 
-<ContentBox bind:this={scoresBoxEl}>
+<ContentBox bind:box={scoresBoxEl}>
   {#if $error}
     <div><Error error={$error} /></div>
   {/if}

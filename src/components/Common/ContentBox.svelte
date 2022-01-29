@@ -1,4 +1,8 @@
-<div class="content-box">
+<script>
+export let box = null;
+</script>
+
+<div class="content-box" bind:this={box}>
   <slot></slot>
 </div>
 
