@@ -19,6 +19,7 @@
   import createConfigService from '../services/config'
   import { HSVtoRGB } from '../utils/color';
   import ContentBox from "../components/Common/ContentBox.svelte";
+  import AddFriendButton from "../components/Player/AddFriendButton.svelte";
 
   export let type = 'global';
   export let page = 1;
@@ -107,41 +108,44 @@
 
       {#await mainPlayerId}
         Loading...
-      {:then playerId} 
+      {:then playerId}
       {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
         <section class="ranking-grid">
           {#each $rankingStore.data as player, idx (player.playerId)}
-            <div class={`player-card ${playerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)} in:fly={{delay: idx * 10, x: 100}}>
-              <div class="player-rank">
-                <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
-                  #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
+            <div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
+              <div class={`player-card ${playerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)}>
+                <div class="player-rank">
+                  <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
+                    #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
+                  </div>
+                  <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click={e => onCountryClick(player)}>
+                    #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
+                    <Flag country={opt(player, 'playerInfo.countries.0.country')} />
+                  </div>
                 </div>
-                <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click={e => onCountryClick(player)}>
-                  #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
-                  <Flag country={opt(player, 'playerInfo.countries.0.country')} />
+                <div class="player-avatar">
+                  <Avatar {player}/>
                 </div>
-              </div>
-              <div class="player-avatar">
-                <Avatar {player}/>
-              </div>
-              <div class="player-name-and-rank">
-                <PlayerNameWithFlag {player} hideFlag={true}/>
-                <span class="change">
+                <div class="player-name-and-rank">
+                  <PlayerNameWithFlag {player} hideFlag={true}/>
+                  <span class="change">
                   {#if opt(player, 'others.difference') > 900000}
                     <span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">ressurected</span>
                   {:else}
                     <Change value={opt(player, 'others.difference')} digits={0}/>
                   {/if}
                 </span>
-              </div>
-              <div class="steam-and-pp">
-                {#if player.playerId > 70000000000000000}
-                  <SteamStats playerId={player.playerId}/>
-                {/if}
-                <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
-                  <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
+                </div>
+                <div class="steam-and-pp">
+                  {#if player.playerId > 70000000000000000}
+                    <SteamStats playerId={player.playerId}/>
+                  {/if}
+                  <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
+                    <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
+                  </div>
                 </div>
               </div>
+              <AddFriendButton playerId={player.playerId}/>
             </div>
           {/each}
         </section>
@@ -175,11 +179,18 @@
         grid-gap: .75em;
     }
 
+    .ranking-grid-row {
+        display: grid;
+        grid-template-columns: auto 2.4em;
+        grid-gap: .4em;
+        align-items: center;
+        justify-items: center;
+    }
+
     .player-card {
         display: inline-grid;
         grid-template-columns: 7.5em 4em auto 1fr;
         grid-template-rows: 1fr;
-        max-width: 100%;
         padding: .2em;
         border: 2px solid var(--dimmed);
         border-radius: 8px;
@@ -187,7 +198,9 @@
         cursor: pointer;
         font-size: 1.12em;
         align-items: center;
+        width: 100%;
     }
+
     .current {
       border-color: yellow;
     }
