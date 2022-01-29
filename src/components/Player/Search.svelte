@@ -26,7 +26,7 @@
   }
 
   async function searchFunc(value) {
-    if (!value || !value.length || value.trim().length < 3) throw 'Please enter at least 4 characters'
+    if (!value || !value.length || value.trim().length < 3) throw 'Please enter at least 3 characters'
 
     try {
       const data = await search(value);
