@@ -10,7 +10,7 @@
   import Button from '../components/Common/Button.svelte'
   import Search from '../components/Player/Search.svelte'
   import Icons from '../components/Player/AvatarOverlayIcons.svelte'
-  import PageContentBox from "../components/Common/PageContentBox.svelte";
+  import ContentBox from "../components/Common/ContentBox.svelte";
 
   const DEFAULT_NAME = 'Stranger';
 
@@ -65,7 +65,7 @@
 </svelte:head>
 
 <article transition:fade>
-  <PageContentBox>
+  <ContentBox>
     
     <div class="avatar">
       {#if playerId && !isLoading}
@@ -95,7 +95,7 @@
         <Error {error}/>
       </div>
     {/if}
-  </PageContentBox>
+  </ContentBox>
 </article>
 
 <style>

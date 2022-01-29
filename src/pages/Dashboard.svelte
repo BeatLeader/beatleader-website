@@ -9,7 +9,7 @@
     import SearchPage from './Search.svelte'
     import ssrConfig from '../ssr-config'
     import players from "../db/repository/players";
-    import PageContentBox from "../components/Common/PageContentBox.svelte";
+    import ContentBox from "../components/Common/ContentBox.svelte";
 
     export let overridePlayersPp = {};
 
@@ -114,7 +114,7 @@
     <div class="sspl-page-container">
         <div class="columns is-multiline">
             <div class="leaderboard content column is-full-tablet is-half-widescreen is-two-fifths-fullhd">
-                <PageContentBox>
+                <ContentBox>
                     <div class="ranking">
                         <header>
                             <h2 class="title is-5">Ranking</h2>
@@ -122,11 +122,11 @@
 
                         <Ranking players={playersFilter} {overridePlayersPp} itemsPerPage={20} filterFunc={rankingFilter} {refreshTag}/>
                     </div>
-                </PageContentBox>
+                </ContentBox>
             </div>
 
             <div class="scores content column is-full-tablet is-half-widescreen is-three-fifths-fullhd">
-                <PageContentBox>
+                <ContentBox>
                     <header>
                         <h2>
                             <div class="title is-5">Recent scores</div>
@@ -138,9 +138,9 @@
                     <Songs players={playersFilter} sortBy="timeSet" filterFunc={songScoresFilter} {refreshTag}
                         min={new Date(Date.now()-values.selectedSongPeriod.value*1000*60*60*24)}
                         itemsPerPage={5} pagesDisplayMax={7} noRank={true}/>
-                </PageContentBox>
+                </ContentBox>
 
-                <PageContentBox>
+                <ContentBox>
                     <header>
                         <h2 class="title is-5">Best scores</h2>
                         <nav>
@@ -149,7 +149,7 @@
                     </header>
 
                     <Songs players={playersFilter} sortBy="pp" filterFunc={songScoresFilter} min={minPp} itemsPerPage={5} pagesDisplayMax={7} {refreshTag} />
-                </PageContentBox>
+                </ContentBox>
             </div>
         </div>
     </div>

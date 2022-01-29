@@ -7,7 +7,7 @@
     import Pager from '../components/Common/Pager.svelte'
     import Button from '../components/Common/Button.svelte'
     import ssrConfig from '../ssr-config'
-    import PageContentBox from "../components/Common/PageContentBox.svelte";
+    import ContentBox from "../components/Common/ContentBox.svelte";
 
     const playlists = createPlaylistStore();
     let page = 0;
@@ -45,7 +45,7 @@
   <title>{`Playlists / ${ssrConfig.name}`}</title>
 </svelte:head>
 
-<PageContentBox>
+<ContentBox>
   <div class="playlistButtonsContainer">
     <Button iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()}/>
     <Button iconFa="fas fa-upload" label="Upload" on:click={() => fileinput.click()}/>
@@ -64,4 +64,4 @@
   {#if $playlists && $playlists.length > itemsPerPage}
     <Pager bind:currentPage={page} bind:itemsPerPage={itemsPerPage} {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged}/>
   {/if}
-</PageContentBox>
+</ContentBox>

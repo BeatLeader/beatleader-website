@@ -18,7 +18,7 @@
   import {PLAYERS_PER_PAGE} from '../utils/scoresaber/consts'
   import createConfigService from '../services/config'
   import { HSVtoRGB } from '../utils/color';
-  import PageContentBox from "../components/Common/PageContentBox.svelte";
+  import ContentBox from "../components/Common/ContentBox.svelte";
 
   export let type = 'global';
   export let page = 1;
@@ -98,7 +98,7 @@
 
 <section class="align-content">
   <article class="page-content" bind:this={boxEl} transition:fade>
-    <PageContentBox>
+    <ContentBox>
       <h1 class="title is-5">
         {type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} leaderboard
 
@@ -155,7 +155,7 @@
         <p>No players found.</p>
       {/if}
       {/await}
-    </PageContentBox>
+    </ContentBox>
   </article>
 </section>
 

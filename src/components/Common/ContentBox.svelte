@@ -1,9 +1,9 @@
-<div class="page-content-box">
+<div class="content-box">
   <slot></slot>
 </div>
 
 <style>
-  .page-content-box {
+  .content-box {
       background-color: var(--foreground);
 
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
@@ -12,12 +12,12 @@
       padding: 1.0rem;
   }
 
-  .page-content-box:hover {
+  .content-box:hover {
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
   }
 
   @media screen and (max-width: 767px) {
-      .page-content-box {
+      .content-box {
           margin: 4px 0 18px;
           border-radius: 0;
           padding: 1.0rem .8rem;
