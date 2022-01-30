@@ -130,7 +130,7 @@
                   <PlayerNameWithFlag {player} hideFlag={true}/>
                   <span class="change">
                   {#if opt(player, 'others.difference') > 900000}
-                    <span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">ressurected</span>
+                    <span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">resurrected</span>
                   {:else}
                     <Change value={opt(player, 'others.difference')} digits={0}/>
                   {/if}

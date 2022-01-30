@@ -15,6 +15,7 @@
 
   export let show = false;
 
+  const DEFAULT_BILLBOARD_STATE = 'show';
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
   const DEFAULT_SECONDARY_PP_METRICS = 'attribution';
   const DEFAULT_AVATAR_ICONS = 'show';
@@ -25,6 +26,12 @@
   let twitchService = createTwitchService();
 
   const {activeRoute} = getContext(ROUTER);
+
+  const billboardStateOptions = [
+    {name: 'Show', value: DEFAULT_BILLBOARD_STATE},
+    {name: 'Show, but in last tab', value: 'lastTab'},
+    {name: 'Hide', value: 'hide'},
+  ];
 
   const scoreComparisonMethods = [
     {name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
@@ -47,6 +54,7 @@
     {name: 'Always hide', value: 'hide'},
   ];
 
+  let currentBillboardState = DEFAULT_BILLBOARD_STATE;
   let currentLocale = DEFAULT_LOCALE;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
   let currentBeatSaviorComparison = DEFAULT_BEATSAVIOR_COMPARISON;
@@ -55,6 +63,7 @@
 
   function onConfigUpdated(config) {
     if (config?.locale) currentLocale = config.locale;
+    if (config?.preferences?.billboardState) currentBillboardState = config?.preferences?.billboardState ?? DEFAULT_BILLBOARD_STATE;
     if (config?.scoreComparison) currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
     if (config?.preferences?.secondaryPp) currentSecondaryPpMetrics = config?.preferences?.secondaryPp ?? DEFAULT_SECONDARY_PP_METRICS;
     if (config?.preferences?.iconsOnAvatars) currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
@@ -66,6 +75,7 @@
 
     $configStore = produce($configStore, draft => {
       draft.locale = currentLocale;
+      draft.preferences.billboardState = currentBillboardState;
       draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.secondaryPp = currentSecondaryPpMetrics;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
@@ -78,6 +88,7 @@
   function onCancel() {
     if (configStore && $configStore) {
       currentLocale = $configStore.locale;
+      currentBillboardState = $configStore.preferences.billboardState;
       currentScoreComparisonMethod = $configStore.scoreComparison.method;
       currentSecondaryPpMetrics = $configStore.preferences.secondaryPp;
       currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
@@ -166,10 +177,10 @@
       {#if configStore && $configStore}
         <section class="options">
           <section class="option">
-            <label title="All numbers and dates will be formatted according to the rules of the selected country">Localization</label>
-            <Select bind:value={currentLocale}>
-              {#each getSupportedLocales() as locale (locale.id)}
-                <option value={locale.id}>{locale.name}</option>
+            <label title="Show billboard on dashboard">Billboard</label>
+            <Select bind:value={currentBillboardState}>
+              {#each billboardStateOptions as option (option.value)}
+                <option value={option.value}>{option.name}</option>
               {/each}
             </Select>
           </section>

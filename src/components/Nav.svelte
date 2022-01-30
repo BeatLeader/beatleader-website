@@ -57,9 +57,14 @@
 
     const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => settingsNotificationBadge = message);
 
+    const settingsOpenUnsubscribe = eventBus.on('show-settings', () => {
+      showSettings = !showSettings;
+    })
+
     return () => {
       playerChangedUnsubscribe();
       settingsBadgeUnsubscribe();
+      settingsOpenUnsubscribe();
     }
   })
 

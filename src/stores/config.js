@@ -27,6 +27,7 @@ const DEFAULT_CONFIG = {
     method: 'in-place',
   },
   preferences: {
+    billboardState: 'show',
     secondaryPp: 'attribution',
     iconsOnAvatars: 'show',
     beatSaviorComparison: 'show'

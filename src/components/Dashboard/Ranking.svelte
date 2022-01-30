@@ -89,7 +89,7 @@
             <Pp pp="{row.playerInfo.pp}" zero={formatNumber(0)} inline={true} />
         {:else if key === 'weeklyDiff'}
             {#if change(row) > 900000}
-                <span class="inc" title="This player appeared after a long break.">ressurected</span>
+                <span class="inc" title="This player appeared after a long break.">resurrected</span>
             {:else}
                 <Change value={change(row)} digits={0} />
             {/if}

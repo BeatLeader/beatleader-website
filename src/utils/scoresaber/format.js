@@ -86,7 +86,7 @@ export function getHumanDiffInfo(diffInfo) {
       return {name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'Ex', difficulty: 7, color: getDiffColor(diffInfo)};
     case 'ExpertPlus':
     case 'expertPlus':
-      return {name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'E+', difficulty: 9, color: getDiffColor(diffInfo)};
+      return {name, type: diffInfo.type, fullName: "Expert+" + typeSuffix, shortName: 'E+', difficulty: 9, color: getDiffColor(diffInfo)};
 
     default: return null;
   }

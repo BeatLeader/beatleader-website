@@ -1,6 +1,8 @@
 <script>
     import Ranking from "../components/Dashboard/Ranking.svelte";
     import Songs from "../components/Dashboard/Songs.svelte";
+    import Billboard from "../components/Dashboard/Billboard.svelte";
+    import Switcher from '../components/Common/Switcher.svelte'
     import Button from "../components/Common/Button.svelte";
     import Range from "../components/Common/Range.svelte";
     import Select from "../components/Common/Select.svelte";
@@ -10,6 +12,7 @@
     import ssrConfig from '../ssr-config'
     import players from "../db/repository/players";
     import ContentBox from "../components/Common/ContentBox.svelte";
+    import {configStore} from '../stores/config'
 
     export let overridePlayersPp = {};
 
@@ -55,12 +58,50 @@
         return playersFilter && playersFilter.includes(player.id);
     }
 
+    const billboardTab = {
+      id: 'billboard',
+      label: 'Billboard',
+      icon: '<i class="fas fa-clipboard-list"></i>',
+      url: `/dashboard`
+    };
+    const topScoresTab = {
+      id: 'topscores',
+      label: 'Top Scores',
+      icon: '<i class="fab fa-grav"></i>',
+      url: `/dashboard`
+    };
+    let allTabs = [];
+
+    let tab;
+    let selectedTabId;
+
+    function updateTabs(billboardState) {
+        if (billboardState == 'show') {
+            allTabs = [billboardTab, topScoresTab];
+            tab = billboardTab;
+            selectedTabId = billboardTab.id;
+        } else {
+            allTabs = [topScoresTab, billboardTab];
+            tab = topScoresTab;
+            selectedTabId = topScoresTab.id;
+        }
+    }
+
+    function onServiceChanged(event) {
+        if (!event?.detail?.id) return;
+
+        tab = event.detail;
+        selectedTabId = event.detail.id;
+    }
+
     $: {
         filterPlayers();
         playersStore.subscribe(value => {
 		    playersFilter = value;
 	    });
     }
+    $: billboardState = $configStore?.preferences?.billboardState;
+    $: updateTabs(billboardState);
 </script>
 
 <svelte:head>
@@ -141,14 +182,25 @@
                 </ContentBox>
 
                 <ContentBox>
-                    <header>
-                        <h2 class="title is-5">Best scores</h2>
-                        <nav>
-                            <Range bind:value={minPp} min={0.1} max={700} step={1} suffix="pp" inline={true}/>
-                        </nav>
-                    </header>
+                    {#if billboardState != 'hide'}
+                        <Switcher values={allTabs} value={tab} on:change={onServiceChanged}/>
+                    {/if}
 
-                    <Songs players={playersFilter} sortBy="pp" filterFunc={songScoresFilter} min={minPp} itemsPerPage={5} pagesDisplayMax={7} {refreshTag} />
+                    {#if selectedTabId == "topscores"}
+                        <div>
+                            <header>
+                                <h2 class="title is-5">Best scores</h2>
+                                <nav>
+                                    <Range bind:value={minPp} min={0.1} max={700} step={1} suffix="pp" inline={true}/>
+                                </nav>
+                            </header>
+        
+                            <Songs players={playersFilter} sortBy="pp" filterFunc={songScoresFilter} min={minPp} itemsPerPage={5} pagesDisplayMax={7} {refreshTag} />
+                        </div>
+                    {:else if selectedTabId == "billboard"}
+                        <Billboard />
+                    {/if}
+                    
                 </ContentBox>
             </div>
         </div>
