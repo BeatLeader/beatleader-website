@@ -19,6 +19,13 @@
     headers = {X-From = "Netlify", origin = "Netlify"}
 
 [[redirects]]
+    from = "/cors/score-saber-cdn/*"
+    to = "https://proxier324.herokuapp.com/https://cdn.scoresaber.com/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify", origin = "Netlify"}
+
+[[redirects]]
     from = "/cors/steamcommunity/*"
     to = "https://steamcommunity.com/:splat"
     status = 200

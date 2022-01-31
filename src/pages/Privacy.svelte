@@ -37,7 +37,7 @@
 
     <p>The only identifying information sent externally from your computer is player IDs. They are passed to all the APIs this app uses to
       retrieve your and your friends' scores. All APIs that this app uses are listed on the
-      <a href="/credits" on:click|preventDefault={() => navigate('/credits')}>Credits</a> page.</p>
+      <a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a> page.</p>
 
     <p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
   </ContentBox>

@@ -18,7 +18,7 @@
             type: "Standard"
         },
         {
-            title: "Proper left-handed mod (Replays/JS)",
+            title: "Proper left-handed mode (Replays/JS)",
             description: "Left handed players are currently mirrored instead of notes. You need to mirror notes and make sure scoring is correct. You will be changing an existing logic.",
             image: "/assets/lefthanded.png",
             diff: "Hard",

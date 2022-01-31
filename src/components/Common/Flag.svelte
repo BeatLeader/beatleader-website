@@ -8,7 +8,7 @@
 </script>
 
 {#if country && country.length}
-  <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
+  <img src={`/cors/score-saber/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
        class="country"
        on:click|preventDefault={() => dispatch('flag-click', {country: country.toLowerCase()})}>
 {/if}

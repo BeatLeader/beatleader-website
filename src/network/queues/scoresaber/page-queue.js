@@ -7,8 +7,8 @@ import {dateFromString} from '../../../utils/date'
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../../utils/scoresaber/consts'
 import {formatDateRelative} from '../../../utils/date'
 
-export const SS_HOST = 'https://scoresaber.com';
-export const SS_CDN_HOST = 'https://cdn.scoresaber.com';
+export const SS_HOST = '/cors/score-saber';
+export const SS_CDN_HOST = '/cors/score-saber-cdn';
 const SS_CORS_HOST = '/cors/score-saber';
 const RANKEDS_URL = SS_CORS_HOST + '/api.php?function=get-leaderboards&cat=1&limit=5000&ranked=1&page=${page}';
 const PLAYER_PROFILE_URL = SS_CORS_HOST + '/u/${playerId}?page=1&sort=2'
