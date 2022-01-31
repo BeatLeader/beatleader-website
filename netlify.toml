@@ -13,10 +13,10 @@
 
 [[redirects]]
     from = "/cors/score-saber/*"
-    to = "https://agitated-ptolemy-7d772c.netlify.app/cors/score-saber/:splat"
+    to = "https://proxier324.herokuapp.com/https://scoresaber.com/:splat"
     status = 200
     force = true
-    headers = {X-From = "Netlify"}
+    headers = {X-From = "Netlify", origin = "Netlify"}
 
 [[redirects]]
     from = "/cors/steamcommunity/*"
