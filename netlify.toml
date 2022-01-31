@@ -51,6 +51,6 @@
 
 [[redirects]]
     from = "/*"
-    to = "https://scoresaber.com/"
+    to = "/index.html"
     status = 200
     force = true
