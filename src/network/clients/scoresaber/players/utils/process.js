@@ -12,6 +12,9 @@ export default response => {
     if (avatar) {
       if (!avatar.startsWith('http'))
         avatar = `${queue.SCORESABER_API.SS_API_HOST}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
+      else {
+        avatar = avatar.replace('https://cdn.scoresaber.com/', '/cors/score-saber-cdn/')
+      }
     }
 
     return {

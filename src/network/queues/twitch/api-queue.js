@@ -2,7 +2,7 @@ import {default as createQueue, PRIORITY} from '../http-queue';
 import ssrConfig from '../../../ssr-config'
 import {substituteVars} from "../../../utils/format";
 
-const CLIENT_ID = 'u0swxz56n4iumc634at1osoqdk31qt';
+const CLIENT_ID = '0zw90y7zu0p7no51ags9ocl0jwi2yj';
 
 const TWITCH_AUTH_URL = 'https://id.twitch.tv/oauth2'
 const AUTHORIZATION_URL = `${TWITCH_AUTH_URL}/authorize?client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(ssrConfig.domain + '/twitch')}&response_type=token` + '&scope=${scopes}&state=${state}';
