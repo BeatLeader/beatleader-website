@@ -593,7 +593,7 @@
 
     .with-badge {
         height: 100%;
-        text-align: center;
+        text-align: center
     }
 
     .pp.with-badge {

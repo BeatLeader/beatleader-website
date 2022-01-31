@@ -97,7 +97,13 @@ export default () => {
         let bsSuspension = await getCurrentSuspension();
 
         try {
-            if (isSuspended(bsSuspension) || (hash && await isHashUnavailable(hash))) return null;
+            if (isSuspended(bsSuspension)) {
+                log.warn(`Song "${errSongId}" is suspended.`);
+            } 
+
+            if ((hash && await isHashUnavailable(hash))) {
+                log.warn(`Song "${errSongId}" hash unavailable.`);
+            }
 
             const songInfo = await fetchFunc();
             if (!songInfo) {

@@ -2,7 +2,7 @@ import createScoresService from './scores'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {getTotalPpFromSortedPps} from '../../utils/scoresaber/pp'
 
-const SS_CORS_HOST = '/cors/score-saber';
+const SS_CORS_HOST = 'https://scoresaber.com';
 
 let service = null;
 export default () => {

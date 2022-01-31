@@ -1,7 +1,7 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from "../../../utils/format";
 
-const BEATMAPS_API_URL = 'https://api.beatsaver.com/';
+const BEATMAPS_API_URL = 'https://api.beatsaver.com';
 const SONG_BY_HASH_URL = BEATMAPS_API_URL + '/maps/hash/${hash}';
 const SONG_BY_KEY_URL = BEATMAPS_API_URL + '/maps/id/${key}'
 

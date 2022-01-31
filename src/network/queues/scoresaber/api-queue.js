@@ -2,9 +2,9 @@ import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../../utils/format'
 import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../../utils/scoresaber/consts'
 
-const SS_CORS_HOST = '/cors/score-saber';
+const SS_CORS_HOST = 'https://scoresaber.com';
 export const SS_API_URL = `${SS_CORS_HOST}/api`;
-export const STEAM_API_URL = '/cors/steamapi'
+export const STEAM_API_URL = 'https://api.steampowered.com'
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const SS_API_PLAYER_INFO_URL = SS_API_URL + '/player/${playerId}/full';

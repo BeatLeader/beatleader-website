@@ -6,7 +6,11 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear --single",
-    "validate": "svelte-check"
+    "validate": "svelte-check",
+    "electron": "wait-on http://localhost:9999 && electron .",
+    "electron-dev": "concurrently \"yarn run dev\" \"yarn run electron\"",
+    "preelectron-pack": "yarn run build",
+    "electron-pack": "electron-builder"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
@@ -18,6 +22,9 @@
     "chartjs-adapter-luxon": "^1.1.0",
     "chartjs-plugin-zoom": "^1.1.1",
     "comlink": "^4.3.1",
+    "concurrently": "^7.0.0",
+    "electron": "16.0.8",
+    "electron-builder": "22.14.5",
     "eventemitter3": "^4.0.7",
     "idb": "^6.1.2",
     "immer": "^9.0.5",
@@ -35,10 +42,24 @@
     "svelte-preprocess": "^4.0.0",
     "svelte-routing": "^1.6.0",
     "tslib": "^2.0.0",
-    "typescript": "^4.0.0"
+    "typescript": "^4.0.0",
+    "wait-on": "^6.0.0"
   },
   "dependencies": {
+    "electron-serve": "^1.1.0",
     "sirv-cli": "^1.0.0",
     "svelte-simple-modal": "^1.1.1"
+  },
+  "main": "main.js",
+  "build": {
+    "icon": "public/assets/favicon.png",
+    "productName": "BeatLeader",
+    "files": [
+      "public/**/*",
+      "main.js"
+    ],
+    "win": {},
+    "linux": {},
+    "mac": {}
   }
 }

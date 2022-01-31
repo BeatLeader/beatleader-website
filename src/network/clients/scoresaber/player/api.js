@@ -11,7 +11,7 @@ const process = response => {
     avatar = response[1].response.players[0].avatarfull;
   }
   let externalProfileUrl = stemProfile ? response[1].response.players[0].profileurl : null;
-  let externalProfileCorsUrl = externalProfileUrl ? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/') : null
+  let externalProfileCorsUrl = externalProfileUrl
   
   return {playerId, name, playerInfo: {
     avatar,
