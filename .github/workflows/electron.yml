@@ -32,3 +32,9 @@ jobs:
       run: yarn electron-pack
       env:
         github_token: ${{ secrets.GH_TOKEN }}
+    - name: Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Installer
+        path: dist/*.exe
+        retention-days: 5
