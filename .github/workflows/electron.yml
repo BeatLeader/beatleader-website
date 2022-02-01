@@ -28,4 +28,7 @@ jobs:
     - name: Install yarn
       run: npm install -g yarn
     - run: yarn install
-    - run: yarn electron-pack
+    - name: Build the app
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: yarn electron-pack
