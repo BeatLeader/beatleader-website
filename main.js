@@ -74,6 +74,9 @@ function createWindow() {
         (details, callback) => {
           const { requestHeaders } = details;
           UpsertKeyValue(requestHeaders, 'Access-Control-Allow-Origin', ['*']);
+          UpsertKeyValue(requestHeaders, 'user-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36');
+          UpsertKeyValue(requestHeaders, 'origin', []);
+          UpsertKeyValue(requestHeaders, 'referer', 'https://scoresaber.com/rankings');
           callback({ requestHeaders });
         },
       );

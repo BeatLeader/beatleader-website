@@ -65,7 +65,6 @@
       {#if name}
         {#if playerInfo.externalProfileUrl}
           <a href={playerInfo.externalProfileUrl}
-             on:click={(e) => {e.preventDefault(); showProfile(playerInfo.externalProfileCorsUrl)}}
              target="_blank"
              rel="noreferrer">
             {name}

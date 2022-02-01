@@ -104,7 +104,7 @@
 
     {#if shownIcons.includes('replay') && playerId && hasReplay}
         <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
+            <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{"replay-icon-alt"}'></div>" title="Replay" noMargin={true}/>
         </a>
     {/if}
 {/if}
@@ -112,5 +112,12 @@
 <style>
     :global(.replay-button-alt) {
         --bg-color: transparent !important;
+    }
+
+    :global(.replay-button .icon .replay-icon-alt) {
+        width: 120%;
+        height: 120%;
+        margin-left: -0.125em;
+        margin-bottom: 0;
     }
 </style>

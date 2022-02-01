@@ -3,5 +3,6 @@
 node_modules
 public/build
 build-info.js
+dist
 # Local Netlify folder
 .netlify
