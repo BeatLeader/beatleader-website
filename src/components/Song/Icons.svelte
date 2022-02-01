@@ -97,14 +97,14 @@
     {/if}
 
     {#if shownIcons.includes('preview')}
-        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button on:click={showPreview(`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
+        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer">
+            <Button iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
         </a>
     {/if}
 
     {#if shownIcons.includes('replay') && playerId && hasReplay}
-        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{"replay-icon-alt"}'></div>" title="Replay" noMargin={true}/>
+        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer">
+            <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" icon="<div class='{"replay-icon-alt"}'></div>" title="Replay" noMargin={true}/>
         </a>
     {/if}
 {/if}
