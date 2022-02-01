@@ -10,7 +10,7 @@
     "electron": "wait-on http://localhost:9999 && electron .",
     "electron-dev": "concurrently \"yarn run dev\" \"yarn run electron\"",
     "preelectron-pack": "yarn run build",
-    "electron-pack": "electron-builder"
+    "electron-pack": "electron-builder --publish=never"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
