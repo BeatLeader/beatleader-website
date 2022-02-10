@@ -69,7 +69,7 @@
 
     serviceParamsManager.update({page: newPage});
 
-    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {replace: true});
   }
 
   function onServiceChanged(event) {
@@ -80,7 +80,7 @@
 
     serviceParamsManager.update({}, newService)
 
-    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {replace: true});
   }
 
   function onServiceParamsChanged(event) {
@@ -92,7 +92,7 @@
     serviceParamsManager.update(newServiceParams);
 
     if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
-      navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+      navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {replace: true});
     } else {
       changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams())
     }

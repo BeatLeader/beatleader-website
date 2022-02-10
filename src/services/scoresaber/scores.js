@@ -325,8 +325,8 @@ export default () => {
         ? mostRecentPlayFromScores
         : player.scoresLastUpdated;
 
-      if (numOfPages && !startUpdatingDate) newScores = await fetchAllScores(player.playerId, numOfPages, priority, abortController.signal);
-      else newScores = await fetchScoresUntil(player.playerId, 1, priority, abortController.signal, createFetchUntilLastUpdated(startUpdatingDate))
+      if (numOfPages && !startUpdatingDate) newScores = await fetchAllScores(player.playerId, numOfPages, priority, null);
+      else newScores = await fetchScoresUntil(player.playerId, 1, priority, null, createFetchUntilLastUpdated(startUpdatingDate))
 
       if (!newScores || !newScores.length) {
         // no new scores - just update player profile

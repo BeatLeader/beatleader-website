@@ -90,8 +90,7 @@
   </a>
 
   {#if player}
-  <a href={`/u/${player.playerId}/scoresaber/recent/1`} on:click|preventDefault={() =>
-  navigateToPlayer(player.playerId)} transition:fade>
+  <a href={`/u/${player.playerId}/scoresaber/recent/1`} transition:fade>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />
     {:else}

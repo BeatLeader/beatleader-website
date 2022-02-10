@@ -8,6 +8,12 @@ const loadURL = serve({ directory: 'public' });
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+    app.quit();
+    return;
+}
+
 function isDev() {
     return !app.isPackaged;
 }
@@ -76,6 +82,10 @@ function createWindow() {
 
     ipcMain.on('goForward', async (event, arg) => {
         mainWindow.webContents.goForward()
+    });
+
+    mainWindow.webContents.on('did-navigate-in-page', (event) => {
+        mainWindow.webContents.send('changed-navigation-options', mainWindow.webContents.canGoBack(), mainWindow.webContents.canGoForward())
     });
 
     mainWindow.webContents.session.webRequest.onBeforeSendHeaders(

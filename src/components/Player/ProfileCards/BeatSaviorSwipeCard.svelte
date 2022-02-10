@@ -181,7 +181,7 @@
 
 <div class="beat-savior" transition:fade>
   <h3 class="title is-6">
-    <a href={`https://www.beatsavior.io/BeatSaviorSwipeCard.svelte#/profile/${playerId}`} target="_blank" rel="noreferrer">
+    <a href={`https://www.beatsavior.io/#/profile/${playerId}`} target="_blank" rel="noreferrer">
       <span class="beatsavior-icon"></span>
       <span>Beat Savior average</span>
     </a>

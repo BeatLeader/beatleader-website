@@ -27,7 +27,17 @@
 
   setContext('pageContainer', containerStore);
 
+  let canGoBack = false;
+  let canGoForward = false;
+  function startObserving() {
+    window.electron.subscribeOnpageChange((newCanGoBack, newCanGoForward) => {
+      canGoBack = newCanGoBack;
+      canGoForward = newCanGoForward;
+    });
+  }
+
   $: if (mainEl) containerStore.observe(mainEl)
+  $: startObserving();
 </script>
 
 <Router {url}>
@@ -62,8 +72,8 @@
 </Router>
 
 <div class="navigationButtons">
-  <Button iconFa="fas fa-arrow-left" type="primary" on:click={() => window.electron.goBack()} />
-  <Button iconFa="fas fa-arrow-right" type="primary" on:click={() => window.electron.goForward()} />
+  <Button iconFa="fas fa-arrow-left" disabled={!canGoBack} type="primary" on:click={() => window.electron.goBack()} />
+  <Button iconFa="fas fa-arrow-right" disabled={!canGoForward} type="primary" on:click={() => window.electron.goForward()} />
 </div>
 
 <footer>

@@ -3,20 +3,14 @@ import createClient from '../../generic'
 import {opt} from '../../../../utils/js'
 
 const process = response => {
-  const {id: playerId, name, country, countryRank, badges, profilePicture, permissions, pp, rank, banned, inactive, histories: history, scoreStats} = response[0];
+  const {id: playerId, name, country, countryRank, badges, profilePicture, permissions, pp, rank, banned, inactive, histories: history, scoreStats} = response;
   
   var avatar = profilePicture;
-  let stemProfile = response[1].response.players.length != 0;
-  if (stemProfile) {
-    avatar = response[1].response.players[0].avatarfull;
-  }
-  let externalProfileUrl = stemProfile ? response[1].response.players[0].profileurl : null;
-  let externalProfileCorsUrl = externalProfileUrl
+  let externalProfileUrl = playerId > 70000000000000000 ? "https://steamcommunity.com/profiles/" + playerId : null;
   
   return {playerId, name, playerInfo: {
     avatar,
     externalProfileUrl,
-    externalProfileCorsUrl,
     countries: [{country, rank: countryRank}],
     pp,
     banned,
@@ -29,9 +23,7 @@ const process = response => {
   }, scoreStats: scoreStats ? scoreStats : null};
 };
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => Promise.all([
-  queue.SCORESABER_API.player(playerId, priority, queueOptions),
-  queue.SCORESABER_API.steamProfile(playerId, priority, queueOptions)]);
+const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.SCORESABER_API.player(playerId, priority, queueOptions);
 
 const client = createClient(get, process);
 
