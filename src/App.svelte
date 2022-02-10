@@ -16,6 +16,7 @@
   import DashboardPage from './pages/Dashboard.svelte';
   import PlaylistsPage from './pages/Playlists.svelte';
   import Nav from './components/Nav.svelte';
+  import Button from './components/Common/Button.svelte'
   import Modal from 'svelte-simple-modal';
 
   export let url = "";
@@ -60,6 +61,11 @@
 </Modal>
 </Router>
 
+<div class="navigationButtons">
+  <Button iconFa="fas fa-arrow-left" type="primary" on:click={() => window.electron.goBack()} />
+  <Button iconFa="fas fa-arrow-right" type="primary" on:click={() => window.electron.goForward()} />
+</div>
+
 <footer>
   <p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
   <p>
@@ -96,5 +102,11 @@
         margin: 1rem 0;
         font-size: .75em;
         text-align: center;
+    }
+
+    .navigationButtons {
+      position: fixed;
+      left: 0.5em;
+      bottom: 0.5em;
     }
 </style>

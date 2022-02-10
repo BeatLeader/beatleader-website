@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 const serve = require('electron-serve');
 const loadURL = serve({ directory: 'public' });
@@ -68,6 +68,14 @@ function createWindow() {
     // This helps in showing the window gracefully.
     mainWindow.once('ready-to-show', () => {
         mainWindow.show()
+    });
+
+    ipcMain.on('goBack', async (event, arg) => {
+        mainWindow.webContents.goBack()
+    });
+
+    ipcMain.on('goForward', async (event, arg) => {
+        mainWindow.webContents.goForward()
     });
 
     mainWindow.webContents.session.webRequest.onBeforeSendHeaders(
