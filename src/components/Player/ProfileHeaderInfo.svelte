@@ -107,6 +107,7 @@
 
           <img
               src={`${BL_CDN}/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
+              class="countryIcon"
               alt={opt(country, 'country')}
           />
 
@@ -184,5 +185,9 @@
 
     .player-role {
         text-align: center;
+    }
+
+    .countryIcon {
+      width: 1.2em;
     }
 </style>

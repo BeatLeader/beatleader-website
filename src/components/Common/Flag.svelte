@@ -8,10 +8,13 @@
 </script>
 
 {#if country && country.length}
-  <img src={`https://scoresaber.com/imports/images/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
+  <img src={`https://cdn.beatleader.xyz/flags/${country ? country.toLowerCase() : '' }.png`} loading="lazy"
        class="country"
        on:click|preventDefault={() => dispatch('flag-click', {country: country.toLowerCase()})}>
 {/if}
 
 <style>
+  .country {
+    width: 1.2em;
+  }
 </style>

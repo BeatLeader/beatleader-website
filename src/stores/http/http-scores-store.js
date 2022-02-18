@@ -7,7 +7,6 @@ import compareEnhancer from './enhancers/scores/compare'
 import diffEnhancer from './enhancers/scores/diff'
 import twitchEnhancer from './enhancers/scores/twitch'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
-import hasReplayEnhancer from './enhancers/scores/replay'
 import {debounce} from '../../utils/debounce'
 import createApiScoresProvider from './providers/api-scores'
 import produce, {applyPatches} from 'immer'
@@ -99,9 +98,6 @@ export default (playerId = null, service = 'scoresaber', serviceParams = {type: 
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-        
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => hasReplayEnhancer(draft, currentPlayerId))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
         if (stateType && stateType === 'live')

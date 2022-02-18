@@ -36,7 +36,6 @@
   export let higlightedScore = null;
   export let higlightedPlayerId = null;
   export let iconsInInfo = false;
-  export let hasReplay = false;
   export let noReplayInLeaderboard = false;
 
   export let autoScrollToTop = true;
@@ -236,8 +235,7 @@
                 {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
                                                                          reverseColors={true}/></span>{/if}
 
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
-                                           jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+                <span class="icons"><Icons {hash} {diffInfo} replayLink={higlightedScore && higlightedScore.replay}/></span>
               </h2>
             </header>
           {/if}
@@ -246,8 +244,7 @@
               <LeaderboardStats {leaderboard}/>
 
               {#if iconsInInfo}
-              <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
-                                         jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+              <span class="icons"><Icons {hash} {diffInfo} replayLink={higlightedScore && higlightedScore.replay}/></span>
               {/if}
             </div>
           {/if}
@@ -296,10 +293,8 @@
                   <div class="mobile-second-line">
                     {#if !noReplayInLeaderboard && isRanked}
                       <div class="replay">
-                        {#if score.score.pp && score.score.hasReplay}
-                          <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true}
-                                 playerId={score.player.playerId}
-                                 jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
+                        {#if score.score.replay}
+                          <Icons {hash} {diffInfo} icons={["replay"]} replayLink={score.score.replay}/>
                         {/if}
                       </div>
                     {/if}

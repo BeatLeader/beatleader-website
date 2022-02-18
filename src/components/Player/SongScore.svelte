@@ -31,9 +31,7 @@
        class:with-details={showDetails}>
 
     <div class="icons up-to-tablet">
-      <Icons {hash} {twitchUrl} {diffInfo} {playerId}
-             hasReplay={score.pp != 0 && score.hasReplay}
-             jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
+      <Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay}/>
     </div>
 
     <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>

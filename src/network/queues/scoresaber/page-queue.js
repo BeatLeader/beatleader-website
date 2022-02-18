@@ -4,7 +4,7 @@ import {extractDiffAndType, getDiffColor} from '../../../utils/scoresaber/format
 import {formatDateRelative} from '../../../utils/date'
 
 export const BL_HOST = 'https://beatleader.azurewebsites.net/';
-export const BL_CDN = 'https://www.cdn.beatleader.xyz';
+export const BL_CDN = 'https://cdn.beatleader.xyz';
 const RANKEDS_URL = BL_HOST + '/maps?ranked=true&page=${page}';
 const COUNTRY_RANKING_URL = BL_HOST + '/players?page=${page}&countries=${country}'
 const LEADERBOARD_URL = BL_HOST + '/leaderboard/id/${leaderboardId}'
