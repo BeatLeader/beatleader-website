@@ -2,7 +2,7 @@
   import {tweened} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
   import Value from '../Common/Value.svelte'
-  import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
+  import {BL_CDN} from '../../network/queues/scoresaber/page-queue'
   import {getHeadsetForHMD} from "../../utils/scoresaber/format";
 
   export let rank;
@@ -52,7 +52,7 @@
 
 {#if country}
 <span class="val" style="display:{inline ? 'inline' : 'block'};">
-	<img src={`${SS_HOST}/imports/images/flags/${country}.png`} alt=""/>
+	<img src={`${BL_CDN}/flags/${country}.png`} alt=""/>
 	<strong class="value"
           title={!showCountryTotal && country && $currentCountryRank && countryRankTotal ? `#${$currentCountryRank} / ${countryRankTotal}` : ''}>
 		<Value value={$currentCountryRank} prefix="#" zero="-" digits={0}/>

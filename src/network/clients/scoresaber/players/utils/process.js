@@ -3,11 +3,11 @@ import queue from '../../../../queues/queues'
 
 export default response => {
 
-  if (!Array.isArray(response.players)) return null;
+  if (!Array.isArray(response)) return null;
 
-  return response.players.map(player => {
-    let {profilePicture: avatar, country, countryRank, histories: history, id: playerId, name, pp, rank} = player;
-    let difference = (history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null);
+  return response.map(player => {
+    let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank} = player;
+    let difference = (history && history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null);
 
     if (avatar) {
       if (!avatar.startsWith('http'))

@@ -15,6 +15,10 @@ const ACCSABER_TZ = 'Europe/Berlin';
 
 export const isValidDate = d =>d instanceof Date && !isNaN(d);
 
+export const dateFromUnix = str => {
+    return new Date(parseInt(str) * 1000)
+}
+
 export const dateFromString = str => {
     // convert SS page date format to ISO
     const matches = str && isString(str) ? str.match(/^(\d{4}-\d{1,2}-\d{1,2})\s+(\d{1,2}:\d{1,2}(:\d{1,2})?)\sUTC$/) : null;

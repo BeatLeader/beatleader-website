@@ -1,5 +1,5 @@
 <script>
-    import {SS_CDN_HOST} from '../../network/queues/scoresaber/page-queue'
+    import {BL_CDN} from '../../network/queues/scoresaber/page-queue'
     import createBeatSaverService from '../../services/beatmaps'
     import Button from "../Common/Button.svelte";
     import Difficulty from '../Song/Difficulty.svelte'
@@ -46,7 +46,7 @@
     $: hash = song.hash;
     $: difficulties = song.difficulties;
     $: updateSongKey(hash);
-    $: ssCoverUrl = hash ? `${SS_CDN_HOST}/covers/${encodeURIComponent(hash).toUpperCase()}.png` : null;
+    $: ssCoverUrl = hash ? `${BL_CDN}/covers/${encodeURIComponent(hash).toUpperCase()}.png` : null;
     $: coverUrl = ssCoverUrl;
 </script>
 

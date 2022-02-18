@@ -184,7 +184,7 @@ const getPlayerRankedsToUpdate = async (scores, previousLastUpdated) => {
         if (songLastPlay && songLastPlay > previousLastUpdated) return cum;
 
         // mark song to update
-        cum.push(parseInt(leaderboardId, 10));
+        cum.push(leaderboardId);
 
         return cum;
     }, [])

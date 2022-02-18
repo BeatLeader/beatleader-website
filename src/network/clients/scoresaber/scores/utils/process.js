@@ -1,41 +1,29 @@
-import {dateFromString} from '../../../../../utils/date'
+import {dateFromUnix} from '../../../../../utils/date'
 import {extractDiffAndType} from '../../../../../utils/scoresaber/format'
 import {opt} from '../../../../../utils/js'
 
 export default response => {
-  if (!Array.isArray(response.playerScores)) return [];
+  if (!Array.isArray(response)) return [];
 
-  return response.playerScores.map(s => {
-    const {score: scoreInfo, leaderboard: leaderboardInfo} = s;
-    const {
-      songHash: hash,
-      songName: name,
-      songSubName: subName,
-      songAuthorName: authorName,
-      levelAuthorName,
-      difficulty,
-      maxScore,
-      id: leaderboardId
-    } = leaderboardInfo;
-
+  return response.map(s => {
+    const {hash, name, subName, author: authorName, mapper: levelAuthorName} = s.leaderboard.song;
     const song = {hash, name, subName, authorName, levelAuthorName};
-    const diffInfo = extractDiffAndType(difficulty.difficultyRaw);
-    const leaderboard = {leaderboardId, song, diffInfo, difficulty: difficulty.difficulty};
 
-    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, ...score} = scoreInfo;
+    const {id: leaderboardId} = s.leaderboard;
+    
+    const diffInfo = {diff: s.leaderboard.difficulty.difficultyName, type: s.leaderboard.difficulty.modeName};
+    const leaderboard = {leaderboardId, song, diffInfo, difficulty: s.leaderboard.difficulty.value};
+
+    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: percentage, ...score} = s;
 
     if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
     else if (!mods) mods = null;
 
-    const acc = unmodifiedScore && maxScore ? unmodifiedScore / maxScore * 100 : undefined;
-    const percentage = acc;
-
     const ppWeighted = pp * weight;
-    const hasReplay = pp != 0 && rank <= 500;
 
     return {
       leaderboard,
-      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromString(score.timeSet), acc, percentage, ppWeighted, hasReplay, rank},
+      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromUnix(score.timeset), acc: percentage, percentage, ppWeighted, rank},
       fetchedAt: new Date(),
       lastUpdated: new Date(),
     };

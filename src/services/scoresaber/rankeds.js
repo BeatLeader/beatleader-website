@@ -67,7 +67,7 @@ export default () => {
         Object.keys(fetchedRankedSongs),
         Object.keys(oldRankedSongs),
       ).map(leaderboardId => ({
-        leaderboardId: parseInt(leaderboardId, 10),
+        leaderboardId,
         oldStars: null,
         stars: fetchedRankedSongs[leaderboardId].stars,
         timestamp: Date.now(),

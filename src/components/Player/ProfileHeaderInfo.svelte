@@ -1,7 +1,7 @@
 <script>
   import {navigate} from 'svelte-routing'
   import {getContext} from 'svelte';
-  import {SS_HOST} from '../../network/queues/scoresaber/page-queue'
+  import {BL_CDN} from '../../network/queues/scoresaber/page-queue'
   import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
   import {convertArrayToObjectByKey, opt} from '../../utils/js'
 
@@ -106,7 +106,7 @@
            class="clickable">
 
           <img
-              src={`${SS_HOST}/imports/images/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
+              src={`${BL_CDN}/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
               alt={opt(country, 'country')}
           />
 

@@ -49,8 +49,6 @@
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
 
-  if (leaderboardId && !Number.isFinite(leaderboardId)) leaderboardId = parseInt(leaderboardId, 10);
-
   let currentLeaderboardId = leaderboardId;
   let currentType = type;
   let currentPage = page;
