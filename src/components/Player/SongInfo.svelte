@@ -1,6 +1,6 @@
 <script>
   import {navigate} from 'svelte-routing'
-  import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import Icons from '../Song/Icons.svelte'
   import Badge from '../Common/Badge.svelte'
@@ -13,7 +13,7 @@
   export let twitchUrl = null
   export let notClickable = false;
   export let category = null;
-  export let service = 'scoresaber';
+  export let service = 'beatleader';
   export let playerId = null;
   export let jumpDistance = 0;
 

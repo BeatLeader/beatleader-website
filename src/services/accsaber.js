@@ -8,7 +8,7 @@ import accSaberCategoriesRepository from '../db/repository/accsaber-categories'
 import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import accSaberPlayersHistoryRepository from '../db/repository/accsaber-players-history';
 import keyValueRepository from '../db/repository/key-value'
-import createPlayerService from '../services/scoresaber/player';
+import createPlayerService from './beatleader/player';
 import {capitalize, convertArrayToObjectByKey} from '../utils/js'
 import log from '../utils/logger'
 import {

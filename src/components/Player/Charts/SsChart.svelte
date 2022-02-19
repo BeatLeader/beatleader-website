@@ -3,8 +3,8 @@
   import 'chartjs-adapter-luxon';
   import {DateTime} from 'luxon';
   import {getContext, onMount} from 'svelte'
-  import createPlayerService from '../../../services/scoresaber/player'
-  import createScoresService from '../../../services/scoresaber/scores'
+  import createPlayerService from '../../../services/beatleader/player'
+  import createScoresService from '../../../services/beatleader/scores'
   import createBeatSaviorService from '../../../services/beatsavior'
   import {formatNumber} from '../../../utils/format'
   import {

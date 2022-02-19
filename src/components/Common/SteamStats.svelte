@@ -1,5 +1,5 @@
 <script>
-    import playerSteamStatsClient from '../../network/clients/scoresaber/players/api-steam-stats'
+    import playerSteamStatsClient from '../../network/clients/beatleader/players/api-steam-stats'
     import Flag from './Flag.svelte'
   
     export let playerId;

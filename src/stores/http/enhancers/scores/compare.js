@@ -1,5 +1,5 @@
 import {configStore} from '../../../config'
-import createScoresService from '../../../../services/scoresaber/scores'
+import createScoresService from '../../../../services/beatleader/scores'
 import accEnhancer from './acc'
 import beatSaviorEnhancer from './beatsavior'
 import beatMapsEnhancer from '../common/beatmaps'

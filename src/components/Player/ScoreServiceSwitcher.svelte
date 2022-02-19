@@ -1,6 +1,6 @@
 <script>
   import {createEventDispatcher} from 'svelte'
-  import createScoresService from '../../services/scoresaber/scores'
+  import createScoresService from '../../services/beatleader/scores'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import Switcher from '../Common/Switcher.svelte'
@@ -9,7 +9,7 @@
   import SelectFilter from './ScoreFilters/SelectFilter.svelte'
 
   export let playerId = null;
-  export let service = 'scoresaber';
+  export let service = 'beatleader';
   export let serviceParams = {sort: 'recent', order: 'desc'}
   export let loadingService = null;
   export let loadingServiceParams = null;
@@ -20,22 +20,22 @@
   const beatSaviorService = createBeatSaviorService();
   const accSaberService = createAccSaberService();
 
-  let availableServiceNames = ['scoresaber'];
+  let availableServiceNames = ['beatleader'];
   let accSaberCategories = null;
 
   const allServices = [
     {
-      id: 'scoresaber',
-      label: 'Score Saber',
-      icon: '<div class="scoresaber-icon"></div>',
-      url: `/u/${playerId}/scoresaber/recent/1`,
+      id: 'beatleader',
+      label: 'BeatLeader',
+      icon: '<div class="beatleader-icon"></div>',
+      url: `/u/${playerId}/beatleader/recent/1`,
       switcherComponents: [
         {
           component: Switcher,
           props: {
             values: [
-              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/scoresaber/recent/1`},
-              {id: 'top', 'label': 'PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scoresaber/top/1`},
+              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/recent/1`},
+              {id: 'top', 'label': 'PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/top/1`},
             ],
           },
           key: 'sort',
@@ -111,13 +111,13 @@
     accSaberCategories = null;
 
     const additionalServices = (await Promise.all([
-        scoresService.isDataForPlayerAvailable(playerId).then(r => r ? 'scoresaber-cached' : null),
+        scoresService.isDataForPlayerAvailable(playerId).then(r => r ? 'beatleader-cached' : null),
         beatSaviorService.isDataForPlayerAvailable(playerId).then(r => r ? 'beatsavior' : null),
         accSaberService.isDataForPlayerAvailable(playerId).then(r => r ? 'accsaber' : null),
       ])
     ).filter(s => s);
 
-    if (additionalServices?.length) availableServiceNames = ['scoresaber'].concat(additionalServices);
+    if (additionalServices?.length) availableServiceNames = ['beatleader'].concat(additionalServices);
 
     if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
   }
@@ -160,8 +160,8 @@
         serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({...c}));
 
         switch (service) {
-          case 'scoresaber':
-            if (availableServiceNames.includes('scoresaber-cached')) {
+          case 'beatleader':
+            if (availableServiceNames.includes('beatleader-cached')) {
               const sortComponent = serviceDef.switcherComponents.find(c => c.key === 'sort');
               if (sortComponent?.props?.values) {
                 if (!sortComponent.props.values.find(v => v.id === 'rank'))

@@ -1,6 +1,6 @@
 <script>
   import {configStore} from '../../stores/config'
-  import {diffColors} from '../../utils/scoresaber/format'
+  import {diffColors} from '../../utils/beatleader/format'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
   import Badge from './Badge.svelte'

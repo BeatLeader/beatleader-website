@@ -1,5 +1,5 @@
 <script>
-  import {getHumanDiffInfo, getIconNameForDiff} from '../../utils/scoresaber/format'
+  import {getHumanDiffInfo, getIconNameForDiff} from '../../utils/beatleader/format'
   import Value from '../Common/Value.svelte'
 
   export let diff;

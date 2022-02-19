@@ -2,8 +2,8 @@
   import {onMount} from 'svelte'
   import {debounce} from '../../../utils/debounce'
   import {formatNumber} from '../../../utils/format'
-  import createRankedService from '../../../services/scoresaber/rankeds'
-  import createPpService from '../../../services/scoresaber/pp'
+  import createRankedService from '../../../services/beatleader/rankeds'
+  import createPpService from '../../../services/beatleader/pp'
   import Badge from '../../Common/Badge.svelte'
   import Value from '../../Common/Value.svelte'
 

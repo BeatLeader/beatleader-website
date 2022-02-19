@@ -1,4 +1,4 @@
-import {getFixedLeaderboardMaxScore, getMaxScore} from '../../../../utils/scoresaber/song'
+import {getFixedLeaderboardMaxScore, getMaxScore} from '../../../../utils/beatleader/song'
 
 export default (score, bmStats, leaderboardId) => {
   let maxScore;

@@ -8,7 +8,7 @@ import {dateFromString} from "../utils/date";
 import {arrayUnique, convertArrayToObjectByKey} from "../utils/js";
 import {configStore} from '../stores/config'
 
-const NEW_SCORESABER_URL = 'https://new.scoresaber.com';
+const NEW_SCORESABER_URL = '';
 const PLAYER_PROFILE_URL = NEW_SCORESABER_URL + '/u/${playerId}';
 const PLAYS_PER_PAGE = 8; // top/recent plays
 

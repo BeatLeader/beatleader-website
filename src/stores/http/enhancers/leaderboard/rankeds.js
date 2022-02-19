@@ -1,4 +1,4 @@
-import createRankedsStore from '../../../../stores/scoresaber/rankeds'
+import createRankedsStore from '../../../beatleader/rankeds'
 import {opt} from '../../../../utils/js'
 
 let rankeds;

@@ -1,7 +1,7 @@
 <script>
   import {configStore} from "../../stores/config";
   import {opt} from "../../utils/js";
-  import createPlayersStore from "../../stores/scoresaber/players";
+  import createPlayersStore from "../../stores/beatleader/players";
   import eventBus from "../../utils/broadcast-channel-pubsub";
 
   export let playerId = null;

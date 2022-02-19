@@ -1,7 +1,7 @@
 import {writable} from 'svelte/store'
 import {PRIORITY} from './http-queue'
-import createScoreSaberApiQueue from './scoresaber/api-queue'
-import createScoreSaberPageQueue from './scoresaber/page-queue'
+import createBeatLeaderApiQueue from './beatleader/api-queue'
+import createBeatLeaderPageQueue from './beatleader/page-queue'
 import createBeatMapsApiQueue from './beatmaps/api-queue'
 import createBeatSaviorApiQueue from './beatsavior/api-queue'
 import createTwitchApiQueue from './twitch/api-queue'
@@ -45,8 +45,8 @@ const initQueue = queue => {
 }
 
 export default {
-  SCORESABER_API: initQueue(createScoreSaberApiQueue({concurrency: 3, timeout: 95000})),
-  SCORESABER_PAGE: initQueue(createScoreSaberPageQueue({concurrency: 3, timeout: 30000})),
+  BEATLEADER_API: initQueue(createBeatLeaderApiQueue({concurrency: 3, timeout: 95000})),
+  BEATLEADER_PAGE: initQueue(createBeatLeaderPageQueue({concurrency: 3, timeout: 30000})),
   BEATMAPS: initQueue(createBeatMapsApiQueue({concurrency: 1, timeout: 10000, intervalCap: 10, interval: 1000})),
   BEATSAVIOR: initQueue(createBeatSaviorApiQueue({concurrency: 1, timeout: 10000, intervalCap: 60, interval: 60000})),
   TWITCH: initQueue(createTwitchApiQueue({concurrency: 8, timeout: 8000, intervalCap: 800, interval: 60000})),

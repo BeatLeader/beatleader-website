@@ -28,9 +28,6 @@
 
     <p>I believe we all deserve the Internet that I know from the late 90's - not that ugly, but that private.</p>
 
-    <p>The site also does not use any cookies. Please note, however, that cookies may be used by the external services it uses
-      (mainly <a href="https://scoresaber.com" target="_blank" rel="noreferrer">scoresaber.com</a>).</p>
-
     <p>To be honest, it's not even a website - it's an application that runs in your browser, and it's only delivered
       to your computer through this website. All downloaded data stays only in your computer's browser (so remember
       to make regular backups ;-)</p>

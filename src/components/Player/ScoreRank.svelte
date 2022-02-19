@@ -2,8 +2,8 @@
   import {tweened} from 'svelte/motion';
   import {cubicOut} from 'svelte/easing';
   import Value from '../Common/Value.svelte'
-  import {BL_CDN} from '../../network/queues/scoresaber/page-queue'
-  import {getHeadsetForHMD} from "../../utils/scoresaber/format";
+  import {BL_CDN} from '../../network/queues/beatleader/page-queue'
+  import {getHeadsetForHMD} from "../../utils/beatleader/format";
 
   export let rank;
   export let country;

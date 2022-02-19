@@ -1,9 +1,9 @@
 <script>
   import {formatDate, formatDateWithOptions, truncateDate} from '../../utils/date'
-  import {PLAYER_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import {PLAYER_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
   import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import {formatNumber} from '../../utils/format'
-  import createScoresService from '../../services/scoresaber/scores'
+  import createScoresService from '../../services/beatleader/scores'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import ChartBrowser from '../Common/ChartBrowser.svelte'
@@ -73,7 +73,7 @@
 
     let serviceObj = null;
     switch (service) {
-      case 'scoresaber':
+      case 'beatleader':
         serviceObj = scoresService;
         break;
 

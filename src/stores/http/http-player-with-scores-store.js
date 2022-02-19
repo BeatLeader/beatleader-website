@@ -2,11 +2,11 @@ import stringify from 'json-stable-stringify';
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createHttpStore from './http-store';
 import createApiPlayerWithScoresProvider from './providers/api-player-with-scores'
-import createPlayerService from '../../services/scoresaber/player'
+import createPlayerService from '../../services/beatleader/player'
 import {addToDate, MINUTE} from '../../utils/date'
 import {writable} from 'svelte/store'
 
-export default (playerId = null, service = 'scoresaber', serviceParams = {type: 'recent', page: 1}, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, service = 'beatleader', serviceParams = {type: 'recent', page: 1}, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentService = service;
   let currentServiceParams = serviceParams;

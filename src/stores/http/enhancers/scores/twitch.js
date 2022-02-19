@@ -1,5 +1,5 @@
 import createTwitchService from '../../../../services/twitch'
-import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../../../utils/scoresaber/song'
+import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../../../utils/beatleader/song'
 import {opt} from '../../../../utils/js'
 
 let twitchService;

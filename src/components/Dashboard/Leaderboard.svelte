@@ -4,7 +4,7 @@
     import BeatSaviorDetails from '../BeatSavior/Details.svelte'
     import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte'
     import Icons from '../Song/Icons.svelte'
-    import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+    import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
     import {PRIORITY} from '../../network/queues/http-queue'
 
     export let row;

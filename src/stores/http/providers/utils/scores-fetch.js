@@ -1,4 +1,4 @@
-import createScoresService from '../../../../services/scoresaber/scores'
+import createScoresService from '../../../../services/beatleader/scores'
 import createAccSaberService from '../../../../services/accsaber'
 import createBeatSaviorService from '../../../../services/beatsavior'
 
@@ -21,7 +21,7 @@ export default () => {
         return beatSaviorService.getPlayerScoresPage(playerId, serviceParams);
       case 'accsaber':
         return accSaberService.getPlayerScoresPage(playerId, serviceParams);
-      case 'scoresaber':
+      case 'beatleader':
       default:
         return ssScoresService.getPlayerScoresPage(playerId, serviceParams);
     }
@@ -33,7 +33,7 @@ export default () => {
         return beatSaviorService.getPlayerScoresPage(player?.playerId, serviceParams);
       case 'accsaber':
         return accSaberService.getPlayerScoresPage(player?.playerId, serviceParams);
-      case 'scoresaber':
+      case 'beatleader':
       default:
         return ssScoresService.fetchScoresPageOrGetFromCache(player, serviceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
     }

@@ -6,7 +6,7 @@
         getAllScoresSince,
         getAllScoresWithPpOver,
     } from "../../utils/players";
-    import {getAccFromScore, getSongDiffInfo, getSongMaxScore} from "../../utils/scoresaber/song";
+    import {getAccFromScore, getSongDiffInfo, getSongMaxScore} from "../../utils/beatleader/song";
     import {navigate} from "svelte-routing";
 
     import Table from '../Common/Table.svelte';
@@ -185,7 +185,7 @@
             {/if}
             
         {:else if key === 'player'}
-            <PlayerNameWithFlag player={row.player} on:click={(e) => { e.preventDefault(); navigate(`/u/${row.player.playerId}/scoresaber/recent/1`)}}/>
+            <PlayerNameWithFlag player={row.player} on:click={(e) => { e.preventDefault(); navigate(`/u/${row.player.playerId}/beatleader/recent/1`)}}/>
         {:else if key === 'song'}
             <div class="song-cont">
                 <Difficulty diff={row.leaderboard.diffInfo} useShortName={true} reverseColors={true}/>

@@ -1,4 +1,4 @@
-import createRankingService from '../../../services/scoresaber/ranking';
+import createRankingService from '../../../services/beatleader/ranking';
 import queue from '../../../network/queues/queues'
 import {addToDate, HOUR} from '../../../utils/date'
 

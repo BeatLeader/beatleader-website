@@ -43,7 +43,6 @@
     <section class="content">
       <h2 class="title is-6">This project was only possible thanks to the following great APIs:</h2>
       <ul>
-        <li><a href="https://scoresaber.com" target="_blank" rel="noreferrer">ScoreSaber API</a></li>
         <li><a href="https://beatsaver.com" target="_blank" rel="noreferrer">Beat Saver API</a></li>
         <li><a href="https://www.beatsavior.io" target="_blank" rel="noreferrer">Beat Savior API</a></li>
         <li><a href="https://accsaber.com" target="_blank" rel="noreferrer">AccSaber API</a></li>

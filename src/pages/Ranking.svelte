@@ -15,7 +15,7 @@
   import SteamStats from '../components/Common/SteamStats.svelte'
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
-  import {PLAYERS_PER_PAGE} from '../utils/scoresaber/consts'
+  import {PLAYERS_PER_PAGE} from '../utils/beatleader/consts'
   import createConfigService from '../services/config'
   import { HSVtoRGB } from '../utils/color';
   import ContentBox from "../components/Common/ContentBox.svelte";
@@ -39,7 +39,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/scoresaber/recent/1`)
+    navigate(`/u/${playerId}/beatleader/recent/1`)
   }
 
   function scrollToTop() {

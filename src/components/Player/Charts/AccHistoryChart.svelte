@@ -6,7 +6,7 @@
     formatDateWithOptions,
     toSsMidnight,
   } from '../../../utils/date'
-  import createPlayerService from '../../../services/scoresaber/player'
+  import createPlayerService from '../../../services/beatleader/player'
   import {debounce} from '../../../utils/debounce'
   import {onLegendClick} from './utils/legend-click-handler'
   import {getContext} from 'svelte'

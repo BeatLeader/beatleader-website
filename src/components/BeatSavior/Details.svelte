@@ -1,7 +1,7 @@
 <script>
   import {fade} from 'svelte/transition'
   import {convertArrayToObjectByKey, opt} from '../../utils/js'
-  import createPlayerService from '../../services/scoresaber/player'
+  import createPlayerService from '../../services/beatleader/player'
   import beatSaviorRepository from '../../db/repository/beat-savior'
   import Hands from './Stats/Hands.svelte'
   import OtherStats from './Stats/OtherStats.svelte'

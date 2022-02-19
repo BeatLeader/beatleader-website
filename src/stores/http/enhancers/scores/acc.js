@@ -1,6 +1,6 @@
 import {opt} from '../../../../utils/js'
 import calculateAcc from '../common/acc-calc'
-import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../../../utils/scoresaber/song'
+import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../../../utils/beatleader/song'
 
 export default async (data) => {
   if (!data || !data.score) return;

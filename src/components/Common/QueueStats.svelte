@@ -8,7 +8,7 @@
 
   const TWEEN_DEFAULT_OPTIONS = {duration: 200, easing: cubicOut};
 
-  const ssApiQueueStats = queue.SCORESABER_API;
+  const ssApiQueueStats = queue.BEATLEADER_API;
 
   let progressTween = tweened(0, TWEEN_DEFAULT_OPTIONS);
 

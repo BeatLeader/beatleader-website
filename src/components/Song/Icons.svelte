@@ -8,7 +8,7 @@
     import Button from "../Common/Button.svelte";
     import Preview from "../Common/Preview.svelte";
     import {capitalize, opt} from '../../utils/js';
-    import {getHeadsetForHMD} from '../../utils/scoresaber/format'
+    import {getHeadsetForHMD} from '../../utils/beatleader/format'
 
     export let hash;
     export let diffInfo = null;

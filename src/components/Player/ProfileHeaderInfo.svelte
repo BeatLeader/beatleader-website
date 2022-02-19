@@ -1,8 +1,8 @@
 <script>
   import {navigate} from 'svelte-routing'
   import {getContext} from 'svelte';
-  import {BL_CDN} from '../../network/queues/scoresaber/page-queue'
-  import {PLAYERS_PER_PAGE} from '../../utils/scoresaber/consts'
+  import {BL_CDN} from '../../network/queues/beatleader/page-queue'
+  import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts'
   import {convertArrayToObjectByKey, opt} from '../../utils/js'
 
   import Value from '../Common/Value.svelte'

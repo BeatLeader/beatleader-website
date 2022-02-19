@@ -1,5 +1,5 @@
 <script>
-  import {BL_CDN} from '../../network/queues/scoresaber/page-queue'
+  import {BL_CDN} from '../../network/queues/beatleader/page-queue'
   import {navigate} from 'svelte-routing'
   import Difficulty from '../Song/Difficulty.svelte'
 

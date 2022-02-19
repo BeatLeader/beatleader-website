@@ -1,5 +1,5 @@
 <script>
-  import createPlayersStore from '../../stores/scoresaber/players'
+  import createPlayersStore from '../../stores/beatleader/players'
   import createTwitchService from '../../services/twitch'
   import {configStore} from '../../stores/config'
   import eventBus from '../../utils/broadcast-channel-pubsub'

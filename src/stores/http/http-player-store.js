@@ -1,5 +1,5 @@
 import createHttpStore from './http-store';
-import playerApiClient from '../../network/clients/scoresaber/player/api'
+import playerApiClient from '../../network/clients/beatleader/player/api'
 
 export default (playerId = null, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;

@@ -1,5 +1,5 @@
 import eventBus from '../utils/broadcast-channel-pubsub'
-import createPlayerService from '../services/scoresaber/player'
+import createPlayerService from '../services/beatleader/player'
 import log from '../utils/logger'
 
 let initialized = false;

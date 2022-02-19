@@ -2,7 +2,7 @@
   import {navigate} from "svelte-routing";
   import {onDestroy} from 'svelte'
   import {fade} from 'svelte/transition'
-  import createPlayerService from '../services/scoresaber/player'
+  import createPlayerService from '../services/beatleader/player'
   import ssrConfig from '../ssr-config'
   import Avatar from '../components/Player/Avatar.svelte'
   import Error from '../components/Common/Error.svelte'
@@ -80,7 +80,7 @@
     
 
     {#if player}
-      <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/scoresaber/recent/1`)}/>
+      <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/beatleader/recent/1`)}/>
       <div class="another-search"><a on:click={() => {name = DEFAULT_NAME; playerId = null; player = null;}}>
         Another search
       </a></div>

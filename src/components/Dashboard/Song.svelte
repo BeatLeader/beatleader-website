@@ -1,5 +1,5 @@
 <script>
-    import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+    import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
 
     export let row;
 </script>

@@ -1,4 +1,4 @@
-import createPpService from '../../../../services/scoresaber/pp'
+import createPpService from '../../../../services/beatleader/pp'
 import {configStore} from '../../../config'
 import {opt} from '../../../../utils/js'
 

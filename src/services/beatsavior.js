@@ -1,6 +1,6 @@
 import {PRIORITY} from '../network/queues/http-queue';
-import createPlayerService from './scoresaber/player'
-import createScoresService from './scoresaber/scores'
+import createPlayerService from './beatleader/player'
+import createScoresService from './beatleader/scores'
 import beatSaviorApiClient from '../network/clients/beatsavior/api';
 import beatSaviorRepository from '../db/repository/beat-savior'
 import beatSaviorPlayersRepository from '../db/repository/beat-savior-players'
@@ -8,7 +8,7 @@ import {addToDate, DAY, formatDate, HOUR, MINUTE, SECOND, truncateDate} from '..
 import log from '../utils/logger'
 import {opt, capitalize} from '../utils/js'
 import makePendingPromisePool from '../utils/pending-promises'
-import {PLAYER_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
+import {PLAYER_SCORES_PER_PAGE} from '../utils/beatleader/consts'
 import {roundToPrecision} from '../utils/format'
 import {serviceFilterFunc} from './utils'
 

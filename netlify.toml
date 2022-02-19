@@ -12,13 +12,6 @@
     headers = {X-From = "Netlify"}
 
 [[redirects]]
-    from = "/cors/score-saber/*"
-    to = "https://scoresaber.com/:splat"
-    status = 200
-    force = true
-    headers = {X-From = "Netlify"}
-
-[[redirects]]
     from = "/cors/steamcommunity/*"
     to = "https://steamcommunity.com/:splat"
     status = 200

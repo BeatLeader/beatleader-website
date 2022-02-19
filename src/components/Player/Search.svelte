@@ -1,6 +1,6 @@
 <script>
   import {createEventDispatcher, onMount} from 'svelte';
-  import createPlayerService from '../../services/scoresaber/player'
+  import createPlayerService from '../../services/beatleader/player'
   import {SsrHttpNotFoundError} from '../../network/errors'
   import Autocomplete from '../Common/Autocomplete.svelte'
   import MenuLine from './MenuLine.svelte'

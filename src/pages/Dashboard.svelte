@@ -7,7 +7,7 @@
     import Range from "../components/Common/Range.svelte";
     import Select from "../components/Common/Select.svelte";
     // import Refresh from "../components/Player/Refresh.svelte";
-    import createPlayersStore from '../stores/scoresaber/players'
+    import createPlayersStore from '../stores/beatleader/players'
     import SearchPage from './Search.svelte'
     import ssrConfig from '../ssr-config'
     import players from "../db/repository/players";
@@ -116,13 +116,8 @@
 <div class="sspl-page-container">
     <div class="is-multiline">
         <h1 class="title is-4">Hello, future BeatLeader!</h1>
-        <h3 class="description">This site aggregates all Beat Saber stats in one place.</h3>
+        <h3 class="description">BeatLeader is a new and open Beat Saber leaderboard!</h3>
         <div class="sources">
-            <h3 class="title is-6">
-                <a class="imageLink" href={`https://scoresaber.com/`} target="_blank" rel="noreferrer">
-                    <img src="/assets/scoresaber-logo.svg" class="icon" alt="ScoreSaber" title="ScoreSaber"/>
-                </a>
-            </h3>
             <h3 class="title is-6">
                 <a class="imageLink" href={`https://www.beatsavior.io/`} target="_blank" rel="noreferrer">
                     <span class="icon beatsavior-icon" title="BeatSavior"></span>

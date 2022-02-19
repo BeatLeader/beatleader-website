@@ -8,7 +8,7 @@
   import Avatar from './Avatar.svelte'
   import AvatarOverlayIcons from './AvatarOverlayIcons.svelte'
   import ProfileHeaderInfo from './ProfileHeaderInfo.svelte'
-  import ScoreSaberSwipeCard from './ProfileCards/ScoreSaberSwipeCard.svelte'
+  import BeatLeaderSwipeCard from './ProfileCards/BeatLeaderSwipeCard.svelte'
   import MiniRankingSwipeCard from './ProfileCards/MiniRankingSwipeCard.svelte'
   import TwitchVideosSwipeCard from './ProfileCards/TwitchVideosSwipeCard.svelte'
   import PpCalcSwipeCard from './ProfileCards/PpCalcSwipeCard.svelte'
@@ -16,7 +16,7 @@
   import BeatSaviorSwipeCard from './ProfileCards/BeatSaviorSwipeCard.svelte'
   import Carousel from '../Common/Carousel.svelte'
   import Badge from '../Common/Badge.svelte'
-  import ScoreSaberSummary from "./ScoreSaberSummary.svelte";
+  import BeatLeaderSummary from "./BeatLeaderSummary.svelte";
   import ContentBox from "../Common/ContentBox.svelte";
 
   export let playerData;
@@ -81,7 +81,7 @@
   }
 
   function onPlayerGainChanged(e) {
-    if (e?.detail?.gainType !== 'scoresaber') return;
+    if (e?.detail?.gainType !== 'beatleader') return;
 
     playerGain = e.detail;
   }
@@ -111,7 +111,7 @@
         ? [
           {
             name: `stats-${playerId}`,
-            component: ScoreSaberSwipeCard,
+            component: BeatLeaderSwipeCard,
             props: {
               playerId,
               scoresStats: scoresStatsFinal,
@@ -195,7 +195,7 @@
 
     <div class="rank-and-stats-cell">
       <ProfileHeaderInfo {error} {name} {playerInfo} prevInfo={playerGain}/>
-      <ScoreSaberSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
+      <BeatLeaderSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
     </div>
   </div>
 </ContentBox>

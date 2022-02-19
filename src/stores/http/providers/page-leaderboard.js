@@ -1,4 +1,4 @@
-import createLeaderboardService from '../../../services/scoresaber/leaderboard';
+import createLeaderboardService from '../../../services/beatleader/leaderboard';
 import queue from '../../../network/queues/queues'
 
 let leaderboardService = null;

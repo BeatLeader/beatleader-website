@@ -2,10 +2,10 @@
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {onMount} from 'svelte'
   import {navigate} from 'svelte-routing'
-  import createFriendsStore from '../stores/scoresaber/friends'
+  import createFriendsStore from '../stores/beatleader/friends'
   import createPlaylistStore from '../stores/playlists'
   import {configStore} from '../stores/config'
-  import createPlayerService from '../services/scoresaber/player'
+  import createPlayerService from '../services/beatleader/player'
   import Dropdown from './Common/Dropdown.svelte'
   import MenuLine from './Player/MenuLine.svelte'
   import QueueStats from './Common/QueueStats.svelte'
@@ -22,7 +22,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/scoresaber/recent/1`)
+    navigate(`/u/${playerId}/beatleader/recent/1`)
   }
 
   function onFriendClick(event) {
@@ -90,7 +90,7 @@
   </a>
 
   {#if player}
-  <a href={`/u/${player.playerId}/scoresaber/recent/1`} on:click|preventDefault={() =>
+  <a href={`/u/${player.playerId}/beatleader/recent/1`} on:click|preventDefault={() =>
   navigateToPlayer(player.playerId)} transition:fade>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />

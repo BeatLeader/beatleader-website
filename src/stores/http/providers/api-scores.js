@@ -1,4 +1,4 @@
-import createPlayerService from '../../../services/scoresaber/player';
+import createPlayerService from '../../../services/beatleader/player';
 import createScoresFetcher from './utils/scores-fetch'
 import queue from '../../../network/queues/queues'
 import {MINUTE} from '../../../utils/date'
@@ -27,14 +27,14 @@ export default () => {
   });
 
   return {
-    async getProcessed({playerId, service = 'scoresaber', serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) {
+    async getProcessed({playerId, service = 'beatleader', serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) {
       if (!player || player.playerId !== playerId)
         player = await playerService.fetchPlayerOrGetFromCache(playerId, MINUTE, priority, signal);
 
       return scoresFetcher.fetchLiveScores(player, service, serviceParams, {refreshInterval: MINUTE, priority, signal, force});
     },
 
-    async getCached({playerId, service = 'scoresaber', serviceParams = {sort: 'recent', order: 'desc', page: 1}} = {}) {
+    async getCached({playerId, service = 'beatleader', serviceParams = {sort: 'recent', order: 'desc', page: 1}} = {}) {
       return scoresFetcher.fetchCachedScores(playerId, service, serviceParams);
     },
 

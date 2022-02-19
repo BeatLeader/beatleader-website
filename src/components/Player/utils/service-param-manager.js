@@ -2,7 +2,7 @@ export default () => {
   let currentService = null;
   let currentServiceParams = {};
 
-  const getAllServices = () => ['scoresaber', 'beatsavior', 'accsaber'];
+  const getAllServices = () => ['beatleader', 'beatsavior', 'accsaber'];
 
   const get = () => ({service: currentService, params: currentServiceParams});
 
@@ -14,7 +14,7 @@ export default () => {
       case 'accsaber':
         return {type: 'overall', order: 'desc', sort: 'ap', page: 1, filters: {}}
 
-      case 'scoresaber':
+      case 'beatleader':
       default:
         return {sort: 'recent', order: 'desc', page: 1, filters: {}}
     }
@@ -22,7 +22,7 @@ export default () => {
 
   const update = (serviceParams = {}, service = currentService) => {
     const availableServices = getAllServices();
-    if (!availableServices.includes(service)) service = availableServices?.[0] ?? 'scoresaber';
+    if (!availableServices.includes(service)) service = availableServices?.[0] ?? 'beatleader';
 
     const defaultServiceParams = getDefaultParams(service);
 
@@ -48,10 +48,10 @@ export default () => {
 
   const initFromUrl = (url = null) => {
     const availableServices = getAllServices();
-    const defaultService = availableServices?.[0] ?? 'scoresaber';
+    const defaultService = availableServices?.[0] ?? 'beatleader';
     const paramsArr = url ? url.split('/') : [defaultService];
 
-    const service = paramsArr[0] ?? 'scoresaber';
+    const service = paramsArr[0] ?? 'beatleader';
 
     const serviceDefaultParams = getDefaultParams(service);
 
@@ -77,7 +77,7 @@ export default () => {
           service,
         );
 
-      case 'scoresaber':
+      case 'beatleader':
       default:
         return update(
           {
@@ -102,7 +102,7 @@ export default () => {
       case 'accsaber':
         return `${service}/${params?.type ?? serviceDefaultParams?.type}/${params?.sort ?? serviceDefaultParams?.sort}${noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`}`;
 
-      case 'scoresaber':
+      case 'beatleader':
         return `${service}/${params?.sort ?? serviceDefaultParams?.sort}${noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`}`;
     }
   }

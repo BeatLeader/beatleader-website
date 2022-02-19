@@ -6,7 +6,7 @@
   import {opt} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
-  import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
+  import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../utils/accsaber/consts'
   import Value from '../components/Common/Value.svelte'
   import Avatar from '../components/Common/Avatar.svelte'
@@ -20,7 +20,7 @@
   import Switcher from '../components/Common/Switcher.svelte'
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
-  import {getIconNameForDiff} from '../utils/scoresaber/format'
+  import {getIconNameForDiff} from '../utils/beatleader/format'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
 
   export let leaderboardId;
@@ -91,7 +91,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/scoresaber/recent/1`)
+    navigate(`/u/${playerId}/beatleader/recent/1`)
   }
 
   function scrollToTop() {
@@ -280,7 +280,7 @@
                     <div class="player">
                       <Avatar player={score.player}/>
                       <PlayerNameWithFlag player={score.player}
-                                          type={type === 'accsaber' ? 'accsaber/recent' : 'scoresaber/recent'}
+                                          type={type === 'accsaber' ? 'accsaber/recent' : 'beatleader/recent'}
                                           on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
                       />
                     </div>

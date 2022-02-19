@@ -1,7 +1,7 @@
-import createScoresService from '../../../../services/scoresaber/scores';
+import createScoresService from '../../../../services/beatleader/scores';
 import calculateAcc from '../common/acc-calc'
 import {opt} from '../../../../utils/js'
-import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../../../utils/scoresaber/song'
+import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../../../utils/beatleader/song'
 
 let scoresService;
 

@@ -1,5 +1,5 @@
 <script>
-  import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/scoresaber/consts'
+  import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import {configStore} from '../../stores/config'
   import {opt} from '../../utils/js'

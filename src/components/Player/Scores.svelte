@@ -15,7 +15,7 @@
   export let playerId = null;
   export let initialState = null;
   export let initialStateType = null;
-  export let initialService = 'scoresaber';
+  export let initialService = 'beatleader';
   export let initialServiceParams = {};
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
