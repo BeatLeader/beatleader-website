@@ -48,7 +48,7 @@ export default (options = {}) => {
 
   const processCountryRanking = (country, doc) => {
 
-    const data = doc.players
+    const data = doc
       .map(a => {
 
         let country = a.country;
@@ -65,23 +65,11 @@ export default (options = {}) => {
 
         let rank = a.rank;
         rank = !isNaN(rank) ? rank : null
-
-        // return {
-        //   avatar,
-        //   country,
-        //   difference,
-        //   history: [],
-        //   playerId: id,
-        //   playerName,
-        //   pp,
-        //   rank,
-        // }
-
         return {
           playerId: a.id,
           name: playerName,
           playerInfo: {
-            avatar: a.profilePicture,
+            avatar: a.avatar,
             countries: [{country, rank: a.countryRank}],
             pp,
             rank,
