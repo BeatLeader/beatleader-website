@@ -6,8 +6,8 @@ export default response => {
   if (!Array.isArray(response)) return [];
 
   return response.map(s => {
-    const {hash, name, subName, author: authorName, mapper: levelAuthorName} = s.leaderboard.song;
-    const song = {hash, name, subName, authorName, levelAuthorName};
+    const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration} = s.leaderboard.song;
+    const song = {hash, name, subName, authorName, levelAuthorName, duration};
 
     const {id: leaderboardId} = s.leaderboard;
     

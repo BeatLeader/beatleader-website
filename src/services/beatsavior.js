@@ -61,13 +61,14 @@ export default () => {
     const scoreValue = opt(score, 'score.score');
     const timeSet = opt(score, 'score.timeSet')
     let hash = opt(score, 'leaderboard.song.hash');
+    let duration = opt(score, 'leaderboard.song.duration');
 
-    if (!diff || !score || !timeSet || !hash) return false;
+    if (!diff || !score || !timeSet || !hash || !duration) return false;
 
     hash = hash.toLowerCase();
 
     if (bsData.hash === hash && capitalize(bsData.diff) === diff) {
-      return !exact || (bsData.score === scoreValue && Math.abs(timeSet.getTime() - bsData.timeSet.getTime()) < MINUTE);
+      return !exact || (bsData.score === scoreValue && Math.abs(timeSet.getTime() - bsData.timeSet.getTime()) < (duration * 1000 + MINUTE));
     }
 
     return false;

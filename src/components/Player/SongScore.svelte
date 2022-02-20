@@ -63,8 +63,7 @@
       <span class="song">
         <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl}
                   notClickable={['beatsavior'].includes(service)}
-                  category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}
-                  jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
+                  category={leaderboard?.categoryDisplayName ?? null} {service}/>
       </span>
 
       <div class="score-options-section">

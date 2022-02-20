@@ -14,8 +14,6 @@
   export let notClickable = false;
   export let category = null;
   export let service = 'beatleader';
-  export let playerId = null;
-  export let jumpDistance = 0;
 
   $: song = leaderboard?.song ?? null;
   $: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE

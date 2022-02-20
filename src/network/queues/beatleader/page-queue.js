@@ -156,6 +156,7 @@ export default (options = {}) => {
       {id: 'stars', value: currentDiff.stars},
       {id: 'levelAuthorName', value: led.song.mapper},
       {id: 'authorName', value: led.song.author},
+      {id: 'duration', value: led.song.duration},
       {id: 'name', value: led.song.name}]
       .reduce((cum, sid) => {
         let value = sid.value;
