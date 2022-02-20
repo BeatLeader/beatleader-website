@@ -17,26 +17,30 @@ export default (options = {}) => {
   const processRankeds = (data) => {
     if (!data || !Array.isArray(data)) return null;
 
-    return data.map(s => {
+    var result = data.map(s => {
+      const {
+        id,
+        hash,
+        name,
+        subName,
+        author: authorName,
+        mapper: levelAuthorName,
+        image: imageUrl,
+      } = s;
       return s.difficulties.map(difficulty => {
         const {
-          id,
-          hash,
-          name,
-          subName,
-          songAuthorName: author,
-          levelAuthorName: mapper,
           stars,
-          image: imageUrl,
-          diff
-        } = s;
+          difficultyName: diff,
+          modeName: type 
+        } = difficulty;
   
-        const diffInfo = extractDiffAndType(diff);
+        const diffInfo = {diff, type};
   
-        return {leaderboardId, hash, name, subName, authorName, levelAuthorName, imageUrl, stars, diff, diffInfo};
+        return {leaderboardId: id + "" + difficulty.value + "" + difficulty.mode, hash, name, subName, authorName, levelAuthorName, imageUrl, stars, diff, diffInfo};
       });
-      
     }).flat();
+
+    return result;
   }
 
   const rankeds = async (page = 1, priority = PRIORITY.BG_NORMAL, options = {}) => fetchJson(substituteVars(RANKEDS_URL, {page}), options, priority)

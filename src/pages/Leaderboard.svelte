@@ -101,7 +101,6 @@
   const leaderboardStore = createLeaderboardStore(leaderboardId, type, page);
 
   function changeParams(newLeaderboardId, newType, newPage) {
-    if (newLeaderboardId && !Number.isFinite(newLeaderboardId)) newLeaderboardId = parseInt(newLeaderboardId, 10);
     currentLeaderboardId = newLeaderboardId;
 
     currentType = newType;
@@ -192,7 +191,7 @@
 </script>
 
 <svelte:head>
-  <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}}`}</title>
+  <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}`}</title>
 </svelte:head>
 
 <section class="align-content">

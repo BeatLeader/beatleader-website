@@ -14,7 +14,9 @@ export default response => {
     const diffInfo = {diff: s.leaderboard.difficulty.difficultyName, type: s.leaderboard.difficulty.modeName};
     const leaderboard = {leaderboardId, song, diffInfo, difficulty: s.leaderboard.difficulty.value};
 
-    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: percentage, ...score} = s;
+    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: acc, ...score} = s;
+
+    acc *= 100;
 
     if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
     else if (!mods) mods = null;
@@ -23,7 +25,7 @@ export default response => {
 
     return {
       leaderboard,
-      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromUnix(score.timeset), acc: percentage, percentage, ppWeighted, rank},
+      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromUnix(score.timeset), acc, percentage: acc, ppWeighted, rank},
       fetchedAt: new Date(),
       lastUpdated: new Date(),
     };
