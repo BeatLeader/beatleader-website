@@ -3,7 +3,7 @@
   import {navigate} from "svelte-routing";
   import {fade, fly} from 'svelte/transition'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
-  import {opt} from '../utils/js'
+  import {opt, capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/scoresaber/consts'
@@ -18,6 +18,7 @@
   import Accuracy from '../components/Common/Accuracy.svelte'
   import Difficulty from '../components/Song/Difficulty.svelte'
   import Switcher from '../components/Common/Switcher.svelte'
+  import Button from '../components/Common/Button.svelte'
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
   import {getIconNameForDiff} from '../utils/scoresaber/format'
@@ -175,6 +176,14 @@
 
   let ssCoverDoesNotExists = false;
 
+  let batleRoyaleDraft = false;
+  let draftList = [];
+
+  function startBattleRoyale() {
+   let link = `https://www.royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
+   window.open(link, "_blank");
+  }
+
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
@@ -240,6 +249,12 @@
 
                 <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
                                            jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+                {#if leaderboard.stats.status == "Ranked"}
+                  <Button cls="replay-button-alt battleroyalebtn" icon={`<div class='battleroyale${batleRoyaleDraft ? "stop" : ""}-icon'></div>`} title="Draft battle royal" noMargin={true} on:click={() => batleRoyaleDraft = !batleRoyaleDraft}/>
+                  {#if batleRoyaleDraft && draftList && draftList.length > 0} 
+                    <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let's the battle start!" noMargin={true} on:click={() => startBattleRoyale()}/>
+                  {/if}
+                {/if}
               </h2>
             </header>
           {/if}
@@ -299,9 +314,17 @@
                     {#if !noReplayInLeaderboard && isRanked}
                       <div class="replay">
                         {#if score.score.pp && score.score.hasReplay}
+                          {#if batleRoyaleDraft}
+                          {#if !draftList.includes(score.player.playerId) && draftList.length < 10}
+                            <Button cls="replay-button-alt" icon="<div class='battleroyalejoin-icon'></div>" title="Join battle royal" noMargin={true} on:click={() => {draftList.push(score.player.playerId); draftList = draftList}}/>
+                          {:else if draftList.includes(score.player.playerId)}
+                            <Button cls="replay-button-alt" icon="<div class='battleroyaleescape-icon'></div>" title="Remove from battle royal" noMargin={true} on:click={() => draftList = draftList.filter(el => el != score.player.playerId)}/>
+                          {/if}
+                          {:else}
                           <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true}
                                  playerId={score.player.playerId}
                                  jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
+                          {/if}
                         {/if}
                       </div>
                     {/if}
@@ -598,6 +621,11 @@
 
     .pp.with-badge {
         position: relative;
+    }
+
+    :global(.battleroyalebtn) {
+      margin-left: 1em;
+      margin-bottom: 0.5em;
     }
 
     @media screen and (max-width: 767px) {
