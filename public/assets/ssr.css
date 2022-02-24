@@ -271,6 +271,58 @@ body::-webkit-scrollbar-track {
     font-size: 1em;
 }
 
+.battleroyale-icon {
+    margin-left: -0.5em;
+    margin-bottom: 0.8em;
+    width: 130%;
+    height: 130%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: grayscale(100%);
+    background-image: url("./battleRoyale.png");
+}
+
+.battleroyalestop-icon {
+    margin-left: -0.5em;
+    margin-bottom: 0.8em;
+    width: 130%;
+    height: 130%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./battleRoyale.png");
+}
+
+.battleroyalejoin-icon {
+    margin-left: -0.5em;
+    margin-bottom: 0.5em;
+    width: 130%;
+    height: 130%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    filter: grayscale(100%);
+    background-image: url("./battleRoyaleJoin.png");
+}
+
+.battleroyaleescape-icon {
+    margin-left: -0.5em;
+    margin-bottom: 0.5em;
+    width: 130%;
+    height: 130%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./battleRoyaleJoin.png");
+}
+
+.battleroyalestart-icon {
+    margin-left: -0.5em;
+    margin-bottom: 0.8em;
+    width: 130%;
+    height: 130%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./battleRoyaleStart.png");
+}
+
 .grid-transition-helper {
     display: grid;
     grid-template-columns: 1fr;
