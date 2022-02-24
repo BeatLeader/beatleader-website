@@ -92,6 +92,30 @@ export default () => {
     await set(playlists, true);
   };
 
+  const decapitalizeFirstLetter = (string) => {
+    return string.charAt(0).toLowerCase() + string.slice(1);
+  }
+
+  const addDiff = async (hash, diffInfo, playlistIndex) => {
+    let playlists = await get();
+    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+
+    let song = playlists[index].songs.find(el => el.hash == hash);
+    song.difficulties.push({name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type});
+
+    await set(playlists, true);
+  };
+
+  const removeDiff = async (hash, diffInfo, playlistIndex) => {
+    let playlists = await get();
+    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+
+    let song = playlists[index].songs.find(el => el.hash == hash);
+    song.difficulties = song.difficulties.filter(el => el.name != decapitalizeFirstLetter(diffInfo.diff));
+
+    await set(playlists, true);
+  };
+
   const remove = async (hash, playlistIndex) => {
       let playlists = await get();
       let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
@@ -125,7 +149,9 @@ export default () => {
     add,
     remove,
     deleteList,
-    download
+    download,
+    removeDiff,
+    addDiff
   }
 
   return playlistStore;

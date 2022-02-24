@@ -8,7 +8,6 @@
     import Button from "../Common/Button.svelte";
     import Preview from "../Common/Preview.svelte";
     import {capitalize, opt} from '../../utils/js';
-    import {getHeadsetForHMD} from '../../utils/scoresaber/format'
 
     export let hash;
     export let diffInfo = null;
@@ -54,7 +53,11 @@
     $: updateSongKey(hash)
     $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
     $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
-    $: selectedPlaylist = opt($configStore, 'selectedPlaylist');
+    $: selectedPlaylistIndex = opt($configStore, 'selectedPlaylist');
+    $: selectedPlaylist = $playlists[selectedPlaylistIndex];
+    $: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
+    $: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
+    $: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -65,12 +68,22 @@
 
 {#if songKey && songKey.length}
     {#if shownIcons.includes('playlist')}
-        {#if selectedPlaylist != null && $playlists[selectedPlaylist]}
-            {#if $playlists[selectedPlaylist].songs.filter(el => el.hash == hash).length}
-            <Button iconFa="fas fa-list-ul" title="Remove from the {$playlists[selectedPlaylist].playlistTitle}" noMargin={true} type="danger"
-            on:click={playlists.remove(hash)}/>
+        {#if selectedPlaylist != null}
+            {#if playlistSong}
+                {#if difficulties.length == 1 && difficulties[0] == diffName}
+                <Button iconFa="fas fa-list-ul" title="Remove from the {selectedPlaylist.playlistTitle}" noMargin={true} type="danger"
+                on:click={playlists.remove(hash)}/>
+                {:else}
+                {#if difficulties.length == 1 || !difficulties.includes(diffName)}
+                <Button iconFa="fas fa-list-ul" title="Add this diff to the {selectedPlaylist.playlistTitle}" noMargin={true}
+                on:click={playlists.addDiff(hash, diffInfo)}/>
+                {:else}
+                <Button iconFa="fas fa-list-ul" title="Remove this diff from the {selectedPlaylist.playlistTitle}" noMargin={true} type="lessdanger"
+                on:click={playlists.removeDiff(hash, diffInfo)}/>
+                {/if}
+                {/if}
             {:else}
-            <Button iconFa="fas fa-list-ul" title="Add to the {$playlists[selectedPlaylist].playlistTitle}" noMargin={true}
+            <Button iconFa="fas fa-list-ul" title="Add to the {selectedPlaylist.playlistTitle}" noMargin={true}
             on:click={playlists.add(songInfo)}/>
             {/if}
         {:else}
