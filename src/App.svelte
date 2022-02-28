@@ -15,6 +15,7 @@
   import AboutPage from './pages/About.svelte';
   import DashboardPage from './pages/Dashboard.svelte';
   import PlaylistsPage from './pages/Playlists.svelte';
+  import SigninPage from './pages/SignIn.svelte';
   import Nav from './components/Nav.svelte';
   import Modal from 'svelte-simple-modal';
 
@@ -54,6 +55,9 @@
       </Route>
       <Route path="/twitch" component="{TwitchPage}" />
       <Route path="/dashboard" component="{DashboardPage}" />
+      <Route path="/signin/:type" let:params>
+        <SigninPage type={params.type} />
+      </Route>
       <Route path="/*" component="{NotFoundPage}" />
     </div>
   </main>
