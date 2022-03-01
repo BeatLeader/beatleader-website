@@ -3,16 +3,42 @@
 
     export let type;
 
-    function signin() {
+    let copied = false;
+
+    function copyToken() {
         if (type == "oculus") {
-            var token = document.location.hash.replace("#", "");
-            const data = new FormData();
-            data.append("provider", "oculus");
-            window.open("https://beatleader.azurewebsites.net/signinoculus?token=" + token, "_blank");
+            let input = document.createElement('input');
+            const target = document.activeElement;
+            target.appendChild(input);
+
+            input.value = document.location.hash.replace("#", "");
+            input.select();
+            document.execCommand("copy");
+            target.removeChild(input);
+            copied = true;
         }
     }
 </script>
 
-<Button iconFa="fas fa-plus-square" label="Signin" on:click={() => signin()}/>
+<div class="oculusButton">
+    Copy your token and go back to BeatLeader settings in Beat Saber.
+
+    <Button iconFa="fas fa-plus-square" label="Copy my token" on:click={() => copyToken()}/>
+
+    {#if copied}
+    <p>Copied!</p>
+    {/if}
+</div>
+
+<style>
+    .oculusButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        grid-gap: 2em;
+    }
+</style>
+
 
 
