@@ -4,14 +4,14 @@ import createBeatSaviorService from '../../../../services/beatsavior'
 
 let scoreFetcher = null;
 
-let ssScoresService = null;
+let blScoresService = null;
 let accSaberService = null;
 let beatSaviorService = null;
 
 export default () => {
   if (scoreFetcher) return scoreFetcher;
 
-  ssScoresService = createScoresService();
+  blScoresService = createScoresService();
   accSaberService = createAccSaberService();
   beatSaviorService = createBeatSaviorService();
 
@@ -23,7 +23,7 @@ export default () => {
         return accSaberService.getPlayerScoresPage(playerId, serviceParams);
       case 'beatleader':
       default:
-        return ssScoresService.getPlayerScoresPage(playerId, serviceParams);
+        return blScoresService.getPlayerScoresPage(playerId, serviceParams);
     }
   }
 
@@ -35,7 +35,7 @@ export default () => {
         return accSaberService.getPlayerScoresPage(player?.playerId, serviceParams);
       case 'beatleader':
       default:
-        return ssScoresService.fetchScoresPageOrGetFromCache(player, serviceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
+        return blScoresService.fetchScoresPageOrGetFromCache(player, serviceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
     }
   }
 

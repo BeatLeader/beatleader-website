@@ -4,8 +4,7 @@ import {configStore} from '../../stores/config'
 import createPlayerService from './player';
 import createRankedsStore from '../../stores/beatleader/rankeds'
 import {PRIORITY} from '../../network/queues/http-queue'
-import recentScoresApiClient from '../../network/clients/beatleader/scores/api-recent'
-import topScoresApiClient from '../../network/clients/beatleader/scores/api-top'
+import scoresApiClient from '../../network/clients/beatleader/scores/api'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
 import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
@@ -142,7 +141,7 @@ export default () => {
       try {
         log.trace(`Fetching scores page #${page}`, 'ScoresService');
 
-        const pageData = await recentScoresApiClient.getProcessed({playerId, page, signal, priority});
+        const pageData = await scoresApiClient.getProcessed({playerId, page, signal, priority});
         log.trace(`Scores page #${page} fetched`, 'ScoresService', pageData);
 
         if (!pageData) {
@@ -184,7 +183,7 @@ export default () => {
 
     const pages = Array(numOfPages).fill(0).map((_, idx) => idx + 1);
 
-    let data = await Promise.all(pages.map(page => recentScoresApiClient.getProcessed({playerId, page, signal, priority})));
+    let data = await Promise.all(pages.map(page => scoresApiClient.getProcessed({playerId, page, signal, priority})));
 
     if (!data || !data.length) return [];
 
@@ -461,7 +460,7 @@ export default () => {
         bucketSize = 'day'
         break;
 
-      case 'top':
+      case 'topPP':
         valFunc = s => s?.pp ?? 0;
         filterFunc = s => (s?.pp ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
@@ -485,7 +484,7 @@ export default () => {
         prefixLong = '#';
         break;
 
-      case 'acc':
+      case 'topAcc':
         valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc && s?.score?.acc != Infinity ? s.score.acc : null)
         filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
@@ -534,14 +533,13 @@ export default () => {
   }
 
   const fetchScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
-    ((serviceParams?.sort ?? 'recent') === 'top' ? topScoresApiClient : recentScoresApiClient)
-      .getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority});
+     scoresApiClient.getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority, params: serviceParams});
 
-  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
+  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1, filters: {}}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
     const fetchedScoresResponse = await fetchScoresPage(playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
-    if (topScoresApiClient.isResponseCached(fetchedScoresResponse)) return topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
+    if (scoresApiClient.isResponseCached(fetchedScoresResponse)) return scoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
-    const fetchedScores = topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
+    const fetchedScores = scoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
     const playerScores = await getPlayerScores(playerId);
     if (fetchedScores && playerScores && playerScores.length) {
@@ -597,11 +595,6 @@ export default () => {
 
     const scoresPage = await getPlayerScoresPage(player.playerId, serviceParams);
 
-    if
-      (Object.entries(serviceParams?.filters ?? {})?.filter(([key, val]) => val)?.length ||
-      !['recent', 'top'].includes(serviceParams.sort ?? 'recent')
-    ) return scoresPage;
-
     const scores = Array.isArray(scoresPage) ? scoresPage : (scoresPage?.scores ?? []);
 
     // force fetch from time to time even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
@@ -619,8 +612,9 @@ export default () => {
       shouldPageBeRefetched ||
       !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
       !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
-    )
+    ) {
       return fetchScoresPageAndUpdateIfNeeded(player.playerId, serviceParams, priority, signal, canUseBrowserCache && !shouldPageBeRefetched, refreshInterval);
+    }
 
     return scoresPage;
   }

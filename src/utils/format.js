@@ -1,6 +1,10 @@
 import {getCurrentLocale} from '../stores/config'
 
-export const substituteVars = (url, vars) => Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), vars[key]), url);
+export const substituteVars = (url, vars, clearUnused = false) => {
+  const replaced = Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), vars[key] ?? ''), url);
+
+  return clearUnused ? replaced.replace(new RegExp('\\${.*?}', 'gi'), '') : replaced;
+}
 
 export function formatNumber(num, digits = 2, addSign = false, notANumber = null) {
   if (!Number.isFinite(num)) {

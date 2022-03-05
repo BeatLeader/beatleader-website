@@ -34,8 +34,11 @@
           component: Switcher,
           props: {
             values: [
-              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/recent/1`},
-              {id: 'top', 'label': 'PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/top/1`},
+              {id: 'recent', 'label': 'Recent', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/recent/1`},
+              {id: 'topPP', 'label': 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/topPP/1`},
+              {id: 'topAcc', 'label': 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/topAcc/1`},
+              {id: 'rank', 'label': 'Rank', title: 'Sort by rank',iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
+              {id: 'stars', 'label': 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/beatleader/stars/1`},
             ],
           },
           key: 'sort',
@@ -161,33 +164,7 @@
 
         switch (service) {
           case 'beatleader':
-            if (availableServiceNames.includes('beatleader-cached')) {
-              const sortComponent = serviceDef.switcherComponents.find(c => c.key === 'sort');
-              if (sortComponent?.props?.values) {
-                if (!sortComponent.props.values.find(v => v.id === 'rank'))
-                  sortComponent.props.values.push({
-                    id: 'rank',
-                    label: 'Rank',
-                    iconFa: 'fa fa-list-ol',
-                    title: 'May be inaccurate - rank is from last score refresh',
-                  });
-
-                if (!sortComponent.props.values.find(v => v.id === 'acc'))
-                  sortComponent.props.values.push({
-                    id: 'acc',
-                    label: 'Acc',
-                    iconFa: 'fa fa-crosshairs',
-                    title: 'Sort by accuracy',
-                  });
-
-                if (!sortComponent.props.values.find(v => v.id === 'stars'))
-                  sortComponent.props.values.push({
-                    id: 'stars',
-                    label: 'Stars',
-                    iconFa: 'fa fa-star',
-                  });
-              }
-
+            if (availableServiceNames.includes('beatleader')) {
               serviceDef.filters = [...commonFilters]
                 .concat([
                   {

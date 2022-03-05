@@ -1,4 +1,3 @@
-import {opt} from '../../../../../utils/js'
 import queue from '../../../../queues/queues'
 
 export default response => {
@@ -9,9 +8,8 @@ export default response => {
     let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank} = player;
     let difference = (history && history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null);
 
-    if (avatar) {
-      if (!avatar.startsWith('http'))
-        avatar = `${queue.BEATLEADER_API.SS_API_HOST}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
+    if (avatar && !avatar.startsWith('http')) {
+        avatar = `${queue.BEATLEADER_API.BL_API_URL}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
     }
 
     return {
