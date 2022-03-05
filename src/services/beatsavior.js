@@ -74,8 +74,8 @@ export default () => {
     return false;
   }
 
-  const getScoresHistogramDefinition = (serviceParams = {sort: 'recent', order: 'desc'}) => {
-    const sort = serviceParams?.sort ?? 'recent';
+  const getScoresHistogramDefinition = (serviceParams = {sort: 'date', order: 'desc'}) => {
+    const sort = serviceParams?.sort ?? 'date';
     const order = serviceParams?.order ?? 'desc';
 
     let round = 2;
@@ -97,7 +97,7 @@ export default () => {
     let suffixLong = '';
 
     switch(sort) {
-      case 'recent':
+      case 'date':
         valFunc = s => s?.timeSet;
         type = 'time';
         bucketSize = 'day'
@@ -150,7 +150,7 @@ export default () => {
     }
   }
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}) => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 

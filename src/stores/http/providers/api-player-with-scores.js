@@ -14,7 +14,7 @@ export default () => {
   let firstFetch = true;
 
   return {
-    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, service = 'beatleader', serviceParams = {sort: 'recent', order: 'desc', page: 1}, signal = null, force = false} = {}) => {
+    getProcessed: async ({playerId, priority = queue.PRIORITY.FG_HIGH, service = 'beatleader', serviceParams = {sort: 'date', order: 'desc', page: 1}, signal = null, force = false} = {}) => {
       const refreshInterval = firstFetch ? 5 * SECOND : MINUTE;
       firstFetch = false;
 
@@ -25,7 +25,7 @@ export default () => {
       return {...player, scores, service, serviceParams}
     },
 
-    getCached: async ({playerId, service = 'beatleader', serviceParams = {sort: 'recent', order: 'desc', page: 1}} = {}) => {
+    getCached: async ({playerId, service = 'beatleader', serviceParams = {sort: 'date', order: 'desc', page: 1}} = {}) => {
       const [player, scores] = await Promise.all([
         playerService.get(playerId),
         scoresFetcher.fetchCachedScores(playerId, service, serviceParams)

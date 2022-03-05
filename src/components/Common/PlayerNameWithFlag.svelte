@@ -4,7 +4,7 @@
   import Flag from './Flag.svelte'
 
   export let player;
-  export let type = 'beatleader/recent'
+  export let type = 'beatleader/date'
   export let hideFlag = false;
 
   const dispatch = createEventDispatcher();

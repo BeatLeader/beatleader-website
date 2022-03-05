@@ -4,8 +4,7 @@ import {configStore} from '../../stores/config'
 import createPlayerService from './player';
 import createRankedsStore from '../../stores/beatleader/rankeds'
 import {PRIORITY} from '../../network/queues/http-queue'
-import recentScoresApiClient from '../../network/clients/beatleader/scores/api-recent'
-import topScoresApiClient from '../../network/clients/beatleader/scores/api-top'
+import scoresApiClient from '../../network/clients/beatleader/scores/api'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
 import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
@@ -142,7 +141,7 @@ export default () => {
       try {
         log.trace(`Fetching scores page #${page}`, 'ScoresService');
 
-        const pageData = await recentScoresApiClient.getProcessed({playerId, page, signal, priority});
+        const pageData = await scoresApiClient.getProcessed({playerId, page, signal, priority});
         log.trace(`Scores page #${page} fetched`, 'ScoresService', pageData);
 
         if (!pageData) {
@@ -184,7 +183,7 @@ export default () => {
 
     const pages = Array(numOfPages).fill(0).map((_, idx) => idx + 1);
 
-    let data = await Promise.all(pages.map(page => recentScoresApiClient.getProcessed({playerId, page, signal, priority})));
+    let data = await Promise.all(pages.map(page => scoresApiClient.getProcessed({playerId, page, signal, priority})));
 
     if (!data || !data.length) return [];
 
@@ -406,7 +405,7 @@ export default () => {
 
   const isScoreDateFresh = (player, refreshInterval = null, key = 'scoresLastUpdated') => getScoresFreshnessDate(player, refreshInterval, key) > new Date();
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}) => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
@@ -430,8 +429,8 @@ export default () => {
     };
   }
 
-  const getScoresHistogramDefinition = (serviceParams = {sort: 'recent', order: 'desc'}) => {
-    const sort = serviceParams?.sort ?? 'recent';
+  const getScoresHistogramDefinition = (serviceParams = {sort: 'date', order: 'desc'}) => {
+    const sort = serviceParams?.sort ?? 'date';
     const order = serviceParams?.order ?? 'desc';
 
     const commonFilterFunc = serviceFilterFunc(serviceParams);
@@ -455,13 +454,13 @@ export default () => {
     let suffixLong = '';
 
     switch(sort) {
-      case 'recent':
+      case 'date':
         valFunc = s => s?.timeSet;
         type = 'time';
         bucketSize = 'day'
         break;
 
-      case 'top':
+      case 'pp':
         valFunc = s => s?.pp ?? 0;
         filterFunc = s => (s?.pp ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
@@ -533,15 +532,14 @@ export default () => {
     }
   }
 
-  const fetchScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
-    ((serviceParams?.sort ?? 'recent') === 'top' ? topScoresApiClient : recentScoresApiClient)
-      .getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority});
+  const fetchScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
+     scoresApiClient.getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority, params: serviceParams});
 
-  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
+  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {}}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
     const fetchedScoresResponse = await fetchScoresPage(playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
-    if (topScoresApiClient.isResponseCached(fetchedScoresResponse)) return topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
+    if (scoresApiClient.isResponseCached(fetchedScoresResponse)) return scoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
-    const fetchedScores = topScoresApiClient.getDataFromResponse(fetchedScoresResponse);
+    const fetchedScores = scoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
     const playerScores = await getPlayerScores(playerId);
     if (fetchedScores && playerScores && playerScores.length) {
@@ -590,17 +588,12 @@ export default () => {
     return fetchedScores;
   }
 
-  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'recent', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (!player || !player.playerId) return null;
 
     const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')
 
     const scoresPage = await getPlayerScoresPage(player.playerId, serviceParams);
-
-    if
-      (Object.entries(serviceParams?.filters ?? {})?.filter(([key, val]) => val)?.length ||
-      !['recent', 'top'].includes(serviceParams.sort ?? 'recent')
-    ) return scoresPage;
 
     const scores = Array.isArray(scoresPage) ? scoresPage : (scoresPage?.scores ?? []);
 
@@ -619,8 +612,9 @@ export default () => {
       shouldPageBeRefetched ||
       !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
       !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
-    )
+    ) {
       return fetchScoresPageAndUpdateIfNeeded(player.playerId, serviceParams, priority, signal, canUseBrowserCache && !shouldPageBeRefetched, refreshInterval);
+    }
 
     return scoresPage;
   }

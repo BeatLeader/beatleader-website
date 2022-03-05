@@ -10,7 +10,7 @@
 
   export let playerId = null;
   export let service = 'beatleader';
-  export let serviceParams = {sort: 'recent', order: 'desc'}
+  export let serviceParams = {sort: 'date', order: 'desc'}
   export let loadingService = null;
   export let loadingServiceParams = null;
 
@@ -28,21 +28,24 @@
       id: 'beatleader',
       label: 'BeatLeader',
       icon: '<div class="beatleader-icon"></div>',
-      url: `/u/${playerId}/beatleader/recent/1`,
+      url: `/u/${playerId}/beatleader/date/1`,
       switcherComponents: [
         {
           component: Switcher,
           props: {
             values: [
-              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/recent/1`},
-              {id: 'top', 'label': 'PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/top/1`},
+              {id: 'date', 'label': 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/date/1`},
+              {id: 'pp', 'label': 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/pp/1`},
+              {id: 'acc', 'label': 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/acc/1`},
+              {id: 'rank', 'label': 'Rank', title: 'Sort by rank',iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
+              {id: 'stars', 'label': 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/beatleader/stars/1`},
             ],
           },
           key: 'sort',
           onChange: event => {
             if (!event?.detail?.id) return null;
 
-            dispatch('service-params-change', {sort: event?.detail?.id})
+            dispatch('service-params-change', {sort: event.detail.id, ...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null)})
           }
         }
       ],
@@ -51,13 +54,13 @@
       id: 'beatsavior',
       label: 'Beat Savior',
       icon: '<div class="beatsavior-icon"></div>',
-      url: `/u/${playerId}/beatsavior/recent/1`,
+      url: `/u/${playerId}/beatsavior/date/1`,
       switcherComponents: [
         {
           component: Switcher,
           props: {
             values: [
-              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatsavior/recent/1`},
+              {id: 'date', 'label': 'Date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatsavior/date/1`},
               {id: 'acc', 'label': 'Acc', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatsavior/acc/1`},
               {id: 'mistakes', 'label': 'Mistakes', iconFa: 'fa fa-times', url: `/u/${playerId}/beatsavior/mistake/1`},
             ],
@@ -75,7 +78,7 @@
       id: 'accsaber',
       label: 'AccSaber',
       icon: '<div class="accsaber-icon"></div>',
-      url: `/u/${playerId}/accsaber/recent/1`,
+      url: `/u/${playerId}/accsaber/date/1`,
       switcherComponents: [
         {
           component: Switcher,
@@ -92,7 +95,7 @@
           props: {
             values: [
               {id: 'ap', 'label': 'AP', iconFa: 'fa fa-cubes'},
-              {id: 'recent', 'label': 'Recent', iconFa: 'fa fa-clock'},
+              {id: 'date', 'label': 'Date', iconFa: 'fa fa-clock'},
               {id: 'acc', 'label': 'Acc', iconFa: 'fa fa-crosshairs'},
               {id: 'rank', 'label': 'Rank', iconFa: 'fa fa-list-ol'},
             ],
@@ -157,37 +160,16 @@
         if (s?.id !== service || !s?.switcherComponents?.length) return s;
 
         const serviceDef = {...s};
-        serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({...c}));
+        serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({...c, props: {...c?.props, ...(c?.props?.values ? {values: c.props.values.map(v => ({...v}))} : null)}}));
+
+        const currentSortButton = serviceDef.switcherComponents.find(c => c.key === 'sort')?.props?.values?.find(b => b?.id === serviceParams?.sort);
+        if (currentSortButton?.iconFa) {
+          currentSortButton.iconFa = `fa fa-long-arrow-alt-${serviceParams?.order === 'asc' ? 'up' : 'down'}`;
+        }
 
         switch (service) {
           case 'beatleader':
-            if (availableServiceNames.includes('beatleader-cached')) {
-              const sortComponent = serviceDef.switcherComponents.find(c => c.key === 'sort');
-              if (sortComponent?.props?.values) {
-                if (!sortComponent.props.values.find(v => v.id === 'rank'))
-                  sortComponent.props.values.push({
-                    id: 'rank',
-                    label: 'Rank',
-                    iconFa: 'fa fa-list-ol',
-                    title: 'May be inaccurate - rank is from last score refresh',
-                  });
-
-                if (!sortComponent.props.values.find(v => v.id === 'acc'))
-                  sortComponent.props.values.push({
-                    id: 'acc',
-                    label: 'Acc',
-                    iconFa: 'fa fa-crosshairs',
-                    title: 'Sort by accuracy',
-                  });
-
-                if (!sortComponent.props.values.find(v => v.id === 'stars'))
-                  sortComponent.props.values.push({
-                    id: 'stars',
-                    label: 'Stars',
-                    iconFa: 'fa fa-star',
-                  });
-              }
-
+            if (availableServiceNames.includes('beatleader')) {
               serviceDef.filters = [...commonFilters]
                 .concat([
                   {
@@ -221,7 +203,7 @@
                   values: accSaberCategories.map(c => ({
                     id: c.name,
                     'label': c.displayName ?? c.name,
-                    url: `/u/${playerId}/${service}/${c.name}/recent/1`,
+                    url: `/u/${playerId}/${service}/${c.name}/date/1`,
                   })),
                 }
             }
@@ -245,7 +227,7 @@
 
         return serviceDef;
       })
-    .filter(s => s)
+      .filter(s => s)
   }
 
   function onServiceChanged(event) {

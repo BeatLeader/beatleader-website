@@ -6,7 +6,7 @@ import createPlayerService from '../../services/beatleader/player'
 import {addToDate, MINUTE} from '../../utils/date'
 import {writable} from 'svelte/store'
 
-export default (playerId = null, service = 'beatleader', serviceParams = {type: 'recent', page: 1}, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, service = 'beatleader', serviceParams = {type: 'date', page: 1}, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentService = service;
   let currentServiceParams = serviceParams;

@@ -22,7 +22,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/beatleader/recent/1`)
+    navigate(`/u/${playerId}/beatleader/date/1`)
   }
 
   function onFriendClick(event) {
@@ -90,8 +90,7 @@
   </a>
 
   {#if player}
-  <a href={`/u/${player.playerId}/beatleader/recent/1`} on:click|preventDefault={() =>
-  navigateToPlayer(player.playerId)} transition:fade>
+  <a href={`/u/${player.playerId}/beatleader/date/1`} on:click|preventDefault={() => navigateToPlayer(player.playerId)} transition:fade>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />
     {:else}

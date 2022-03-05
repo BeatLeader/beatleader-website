@@ -69,8 +69,8 @@
       </ul>
 
       <p>Special thanks to
-        <a href="/u/76561198023909718/scoresaber/recent/1"
-           on:click|preventDefault={() => navigate('/u/76561198023909718/scoresaber/recent/1')}
+        <a href="/u/76561198023909718/beatleader/date/1"
+           on:click|preventDefault={() => navigate('/u/76561198023909718/beatleader/date/1')}
         >DanielDuel</a>
         for making the default song icon.</p>
     </section>

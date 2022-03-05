@@ -4,18 +4,18 @@ import createBeatSaviorService from '../../../../services/beatsavior'
 
 let scoreFetcher = null;
 
-let ssScoresService = null;
+let blScoresService = null;
 let accSaberService = null;
 let beatSaviorService = null;
 
 export default () => {
   if (scoreFetcher) return scoreFetcher;
 
-  ssScoresService = createScoresService();
+  blScoresService = createScoresService();
   accSaberService = createAccSaberService();
   beatSaviorService = createBeatSaviorService();
 
-  const fetchCachedScores = async (playerId, service, serviceParams = {sort: 'recent', order: 'desc', page: 1}, otherParams = {}) => {
+  const fetchCachedScores = async (playerId, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
     switch (service) {
       case 'beatsavior':
         return beatSaviorService.getPlayerScoresPage(playerId, serviceParams);
@@ -23,11 +23,11 @@ export default () => {
         return accSaberService.getPlayerScoresPage(playerId, serviceParams);
       case 'beatleader':
       default:
-        return ssScoresService.getPlayerScoresPage(playerId, serviceParams);
+        return blScoresService.getPlayerScoresPage(playerId, serviceParams);
     }
   }
 
-  const fetchLiveScores = async (player, service, serviceParams = {sort: 'recent', order: 'desc', page: 1}, otherParams = {}) => {
+  const fetchLiveScores = async (player, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
     switch (service) {
       case 'beatsavior':
         return beatSaviorService.getPlayerScoresPage(player?.playerId, serviceParams);
@@ -35,7 +35,7 @@ export default () => {
         return accSaberService.getPlayerScoresPage(player?.playerId, serviceParams);
       case 'beatleader':
       default:
-        return ssScoresService.fetchScoresPageOrGetFromCache(player, serviceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
+        return blScoresService.fetchScoresPageOrGetFromCache(player, serviceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
     }
   }
 
