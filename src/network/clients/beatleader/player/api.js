@@ -12,7 +12,13 @@ const process = response => {
   }
   let externalProfileUrl = stemProfile ? response[1].response.players[0].profileurl : null;
   let externalProfileCorsUrl = externalProfileUrl ? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/') : null
-  
+
+  if (scoreStats) {
+    ['averageAccuracy', 'averageRankedAccuracy'].forEach(k => {
+      if (scoreStats[k] && Number.isFinite(scoreStats[k])) scoreStats[k] *= 100;
+    })
+  }
+
   return {playerId, name, playerInfo: {
     avatar,
     externalProfileUrl,
