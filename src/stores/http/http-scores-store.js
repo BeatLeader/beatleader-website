@@ -12,7 +12,7 @@ import createApiScoresProvider from './providers/api-scores'
 import produce, {applyPatches} from 'immer'
 import stringify from 'json-stable-stringify'
 
-export default (playerId = null, service = 'beatleader', serviceParams = {type: 'recent', page: 1}, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, service = 'beatleader', serviceParams = {type: 'date', page: 1}, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentService = service;
   let currentServiceParams = serviceParams;

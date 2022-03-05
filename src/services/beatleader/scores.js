@@ -405,7 +405,7 @@ export default () => {
 
   const isScoreDateFresh = (player, refreshInterval = null, key = 'scoresLastUpdated') => getScoresFreshnessDate(player, refreshInterval, key) > new Date();
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}) => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
@@ -429,8 +429,8 @@ export default () => {
     };
   }
 
-  const getScoresHistogramDefinition = (serviceParams = {sort: 'recent', order: 'desc'}) => {
-    const sort = serviceParams?.sort ?? 'recent';
+  const getScoresHistogramDefinition = (serviceParams = {sort: 'date', order: 'desc'}) => {
+    const sort = serviceParams?.sort ?? 'date';
     const order = serviceParams?.order ?? 'desc';
 
     const commonFilterFunc = serviceFilterFunc(serviceParams);
@@ -454,13 +454,13 @@ export default () => {
     let suffixLong = '';
 
     switch(sort) {
-      case 'recent':
+      case 'date':
         valFunc = s => s?.timeSet;
         type = 'time';
         bucketSize = 'day'
         break;
 
-      case 'topPP':
+      case 'pp':
         valFunc = s => s?.pp ?? 0;
         filterFunc = s => (s?.pp ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
@@ -484,7 +484,7 @@ export default () => {
         prefixLong = '#';
         break;
 
-      case 'topAcc':
+      case 'acc':
         valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc && s?.score?.acc != Infinity ? s.score.acc : null)
         filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
@@ -532,10 +532,10 @@ export default () => {
     }
   }
 
-  const fetchScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
+  const fetchScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
      scoresApiClient.getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority, params: serviceParams});
 
-  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1, filters: {}}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
+  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {}}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
     const fetchedScoresResponse = await fetchScoresPage(playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
     if (scoresApiClient.isResponseCached(fetchedScoresResponse)) return scoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
@@ -588,7 +588,7 @@ export default () => {
     return fetchedScores;
   }
 
-  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'recent', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (!player || !player.playerId) return null;
 
     const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')

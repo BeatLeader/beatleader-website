@@ -91,7 +91,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/beatleader/recent/1`)
+    navigate(`/u/${playerId}/beatleader/date/1`)
   }
 
   function scrollToTop() {
@@ -279,7 +279,7 @@
                     <div class="player">
                       <Avatar player={score.player}/>
                       <PlayerNameWithFlag player={score.player}
-                                          type={type === 'accsaber' ? 'accsaber/recent' : 'beatleader/recent'}
+                                          type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
                                           on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
                       />
                     </div>

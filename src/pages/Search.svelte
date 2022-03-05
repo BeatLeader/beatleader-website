@@ -80,7 +80,7 @@
     
 
     {#if player}
-      <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/beatleader/recent/1`)}/>
+      <Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}/beatleader/date/1`)}/>
       <div class="another-search"><a on:click={() => {name = DEFAULT_NAME; playerId = null; player = null;}}>
         Another search
       </a></div>

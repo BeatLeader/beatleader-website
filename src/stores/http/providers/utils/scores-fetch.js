@@ -15,7 +15,7 @@ export default () => {
   accSaberService = createAccSaberService();
   beatSaviorService = createBeatSaviorService();
 
-  const fetchCachedScores = async (playerId, service, serviceParams = {sort: 'recent', order: 'desc', page: 1}, otherParams = {}) => {
+  const fetchCachedScores = async (playerId, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
     switch (service) {
       case 'beatsavior':
         return beatSaviorService.getPlayerScoresPage(playerId, serviceParams);
@@ -27,7 +27,7 @@ export default () => {
     }
   }
 
-  const fetchLiveScores = async (player, service, serviceParams = {sort: 'recent', order: 'desc', page: 1}, otherParams = {}) => {
+  const fetchLiveScores = async (player, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
     switch (service) {
       case 'beatsavior':
         return beatSaviorService.getPlayerScoresPage(player?.playerId, serviceParams);

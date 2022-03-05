@@ -39,7 +39,7 @@
   function navigateToPlayer(playerId) {
     if (!playerId) return;
 
-    navigate(`/u/${playerId}/beatleader/recent/1`)
+    navigate(`/u/${playerId}/beatleader/date/1`)
   }
 
   function scrollToTop() {

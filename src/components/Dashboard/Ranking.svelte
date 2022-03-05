@@ -84,7 +84,7 @@
         {:else if key === 'rank'}
             <Rank rank={rowIdx+1} url={'/global/' + encodeURIComponent( Math.ceil(row.rank / PLAYERS_PER_PAGE))} />
         {:else if key === 'player'}
-            <PlayerNameWithFlag player={row} on:click={(e) => { e.preventDefault(); navigate(`/u/${row.playerId}/beatleader/recent/1`)}}/>
+            <PlayerNameWithFlag player={row} on:click={(e) => { e.preventDefault(); navigate(`/u/${row.playerId}/beatleader/date/1`)}}/>
         {:else if key === 'pp'}
             <Pp pp="{row.playerInfo.pp}" zero={formatNumber(0)} inline={true} />
         {:else if key === 'weeklyDiff'}
