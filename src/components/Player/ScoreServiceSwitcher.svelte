@@ -45,7 +45,7 @@
           onChange: event => {
             if (!event?.detail?.id) return null;
 
-            dispatch('service-params-change', {sort: event?.detail?.id})
+            dispatch('service-params-change', {sort: event.detail.id, ...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null)})
           }
         }
       ],
@@ -160,7 +160,12 @@
         if (s?.id !== service || !s?.switcherComponents?.length) return s;
 
         const serviceDef = {...s};
-        serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({...c}));
+        serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({...c, props: {...c?.props, ...(c?.props?.values ? {values: c.props.values.map(v => ({...v}))} : null)}}));
+
+        const currentSortButton = serviceDef.switcherComponents.find(c => c.key === 'sort')?.props?.values?.find(b => b?.id === serviceParams?.sort);
+        if (currentSortButton?.iconFa) {
+          currentSortButton.iconFa = `fa fa-long-arrow-alt-${serviceParams?.order === 'asc' ? 'up' : 'down'}`;
+        }
 
         switch (service) {
           case 'beatleader':
@@ -222,7 +227,7 @@
 
         return serviceDef;
       })
-    .filter(s => s)
+      .filter(s => s)
   }
 
   function onServiceChanged(event) {
