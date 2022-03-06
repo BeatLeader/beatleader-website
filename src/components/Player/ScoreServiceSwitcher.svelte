@@ -7,6 +7,7 @@
   import ScoreServiceFilters from './ScoreServiceFilters.svelte'
   import TextFilter from './ScoreFilters/TextFilter.svelte'
   import SelectFilter from './ScoreFilters/SelectFilter.svelte'
+  import RangeFilter from './ScoreFilters/RangeFilter.svelte'
 
   export let playerId = null;
   export let service = 'beatleader';
@@ -184,6 +185,17 @@
                         {id: 'unranked', name: 'Unranked only'},
                       ],
                     },
+                  },
+                  {
+                    component: RangeFilter,
+                    props: {
+                      id: 'stars',
+                      iconFa: 'fa fa-star',
+                      title: 'Filter by map stars',
+                      minValue: 0,
+                      maxValue: 15,
+                      step: 0.1
+                    }
                   },
                 ]);
             }
