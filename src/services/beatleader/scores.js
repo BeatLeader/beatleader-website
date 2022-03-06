@@ -144,26 +144,28 @@ export default () => {
         const pageData = await scoresApiClient.getProcessed({playerId, page, signal, priority});
         log.trace(`Scores page #${page} fetched`, 'ScoresService', pageData);
 
-        if (!pageData) {
+        const scoresData = pageData?.data ?? [];
+
+        if (!scoresData) {
           log.trace(`Scores page #${page} is empty`, 'ScoresService');
 
           break;
         }
 
-        if (!Array.isArray(pageData)) break;
+        if (!Array.isArray(scoresData)) break;
 
         if (
-          pageData.length < PLAYER_SCORES_PER_PAGE ||
-          (untilFunc && untilFunc(pageData))
+          scoresData.length < PLAYER_SCORES_PER_PAGE ||
+          (untilFunc && untilFunc(scoresData))
         ) {
           // push only relevant scores and return
-          data.push(pageData.filter(score => !untilFunc || !untilFunc([score])));
+          data.push(scoresData.filter(score => !untilFunc || !untilFunc([score])));
 
           break;
         }
 
         // push full page and continue
-        data.push(pageData);
+        data.push(scoresData);
       } catch (err) {
         if (!(err instanceof SsrHttpNotFoundError)) throw err;
 
@@ -186,6 +188,8 @@ export default () => {
     let data = await Promise.all(pages.map(page => scoresApiClient.getProcessed({playerId, page, signal, priority})));
 
     if (!data || !data.length) return [];
+
+    data = data.map(d => d?.data ?? []);
 
     if (data[data.length - 1].length === PLAYER_SCORES_PER_PAGE) {
       data = [
