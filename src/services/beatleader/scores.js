@@ -424,8 +424,11 @@ export default () => {
     if (playerScores.length < startIdx + 1) return null;
 
     return {
-      total: playerScores.length,
-      scores: playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
+      metadata: {
+        total: playerScores.length,
+        itemsPerPage: 8,
+      },
+      data: playerScores.slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
     };
   }
 
@@ -542,11 +545,11 @@ export default () => {
     const fetchedScores = scoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
     const playerScores = await getPlayerScores(playerId);
-    if (fetchedScores && playerScores && playerScores.length) {
+    if (fetchedScores?.data && playerScores && playerScores.length) {
       const playerScoresObj = convertScoresToObject(playerScores)
 
       // update rank and pp in DB
-      const scoresToUpdate = fetchedScores
+      const scoresToUpdate = fetchedScores.data
         .map(score => {
           try {
             score = addScoreIndexFields(playerId, score);
@@ -595,7 +598,7 @@ export default () => {
 
     const scoresPage = await getPlayerScoresPage(player.playerId, serviceParams);
 
-    const scores = Array.isArray(scoresPage) ? scoresPage : (scoresPage?.scores ?? []);
+    const scores = Array.isArray(scoresPage) ? scoresPage : (scoresPage?.data ?? []);
 
     // force fetch from time to time even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
     const shouldPageBeRefetched = scores && scores.reduce((shouldRefresh, score) => {
