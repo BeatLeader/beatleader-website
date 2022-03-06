@@ -63,6 +63,14 @@
             border: "transparent",
             activeBorder: "transparent",
         },
+        lessdanger: {
+            color: "#dbdbdb",
+            activeColor: "#fff",
+            bgColor: "yellow",
+            activeBgColor: "#bfbf00",
+            border: "transparent",
+            activeBorder: "transparent",
+        },
     }
 
     $: selectedType = types[type] ? types[type] : types.default;
