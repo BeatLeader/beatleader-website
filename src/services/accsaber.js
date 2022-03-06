@@ -129,7 +129,7 @@ export default () => {
         suffixLong = ' AP';
         break;
 
-      case 'recent':
+      case 'date':
         valFunc = s => s?.timeSet;
         type = 'time';
         bucketSize = 'day'
