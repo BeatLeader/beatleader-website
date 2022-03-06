@@ -26,9 +26,9 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
   let currentEnhanceTaskId = null;
 
   const onBeforeStateChange = (state) => {
-    if (state?.scores) {
-      totalScores = state?.total ?? null;
-      return state.scores;
+    if (state?.data && state?.metadata) {
+      totalScores = state?.metadata?.total ?? null;
+      return state.data;
     }
 
     totalScores = state !== null ? null : 0;
@@ -41,7 +41,7 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
     currentService = fetchParams?.service ?? null;
     currentServiceParams = fetchParams?.serviceParams ?? null;
 
-    if (state && state.scores) {
+    if (state?.data && state?.metadata) {
       state = onBeforeStateChange(state);
       set(state);
     }

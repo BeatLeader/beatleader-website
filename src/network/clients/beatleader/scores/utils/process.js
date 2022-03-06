@@ -1,33 +1,45 @@
 import {dateFromUnix} from '../../../../../utils/date'
-import {extractDiffAndType} from '../../../../../utils/beatleader/format'
-import {opt} from '../../../../../utils/js'
 
 export default response => {
-  if (!Array.isArray(response)) return [];
+  if (!Array.isArray(response?.data)) return {metadata: response?.metadata ?? {}, data: []};
 
-  return response.map(s => {
-    const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration} = s.leaderboard.song;
-    const song = {hash, name, subName, authorName, levelAuthorName, duration};
+  return {
+    metadata: response?.metadata ?? {},
+    data: response.data.map(s => {
+      const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration} = s.leaderboard.song;
+      const song = {hash, name, subName, authorName, levelAuthorName, duration};
 
-    const {id: leaderboardId} = s.leaderboard;
-    
-    const diffInfo = {diff: s.leaderboard.difficulty.difficultyName, type: s.leaderboard.difficulty.modeName};
-    const leaderboard = {leaderboardId, song, diffInfo, difficulty: s.leaderboard.difficulty.value};
+      const {id: leaderboardId} = s.leaderboard;
 
-    let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: acc, ...score} = s;
+      const diffInfo = {diff: s.leaderboard.difficulty.difficultyName, type: s.leaderboard.difficulty.modeName};
+      const leaderboard = {leaderboardId, song, diffInfo, difficulty: s.leaderboard.difficulty.value};
 
-    acc *= 100;
+      let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: acc, ...score} = s;
 
-    if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
-    else if (!mods) mods = null;
+      acc *= 100;
 
-    const ppWeighted = pp * weight;
+      if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
+      else if (!mods) mods = null;
 
-    return {
-      leaderboard,
-      score: {...score, pp, score: modifiedScore, unmodifiedScore, mods, timeSet: dateFromUnix(score.timeset), acc, percentage: acc, ppWeighted, rank},
-      fetchedAt: new Date(),
-      lastUpdated: new Date(),
-    };
-  });
+      const ppWeighted = pp * weight;
+
+      return {
+        leaderboard,
+        score: {
+          ...score,
+          pp,
+          score: modifiedScore,
+          unmodifiedScore,
+          mods,
+          timeSet: dateFromUnix(score.timeset),
+          acc,
+          percentage: acc,
+          ppWeighted,
+          rank
+        },
+        fetchedAt: new Date(),
+        lastUpdated: new Date(),
+      };
+    })
+  };
 }
