@@ -39,5 +39,13 @@ export const serviceFilterFunc = serviceParams => s => {
       (serviceParams.filters.songType === 'unranked' && (s?.pp ?? 0) === 0)
   }
 
+  if (serviceParams?.filters?.stars?.from) {
+    filterVal &= s?.leaderboard?.stars && s.leaderboard.stars > serviceParams.filters.stars.from;
+  }
+
+  if (serviceParams?.filters?.stars?.to) {
+    filterVal &= s?.leaderboard?.stars && s.leaderboard.stars < serviceParams.filters.stars.to;
+  }
+
   return filterVal;
 }

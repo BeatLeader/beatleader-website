@@ -49,7 +49,7 @@
     }
 
     .filter.open {
-        width: 10em;
+        width: 11em;
     }
 
     .filter > .filter-component {
