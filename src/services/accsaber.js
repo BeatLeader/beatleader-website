@@ -190,7 +190,7 @@ export default () => {
     }
   }
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'recent', order: 'desc', page: 1}) => {
+  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}) => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
