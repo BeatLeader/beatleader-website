@@ -1,6 +1,7 @@
 import createScoresService from '../../../../services/beatleader/scores'
 import createAccSaberService from '../../../../services/accsaber'
 import createBeatSaviorService from '../../../../services/beatsavior'
+import {capitalize} from '../../../../utils/js'
 
 let scoreFetcher = null;
 
@@ -15,27 +16,48 @@ export default () => {
   accSaberService = createAccSaberService();
   beatSaviorService = createBeatSaviorService();
 
+  const processServiceParamsFilters = serviceParams => {
+    if (!serviceParams) return serviceParams;
+
+    const {filters: {stars = {}, ...restFilters} = {}, ...restParams} = serviceParams;
+
+    return {
+      ...restParams,
+      filters: {
+        ...restFilters,
+        ...Object.entries(stars ?? {}).reduce((starFilter, [key, value]) => ({
+          ...starFilter,
+          [`stars${capitalize(key)}`]: value,
+        }), {}),
+      }
+    }
+  }
+
   const fetchCachedScores = async (playerId, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
+    const processedServiceParams = processServiceParamsFilters(serviceParams);
+
     switch (service) {
       case 'beatsavior':
-        return beatSaviorService.getPlayerScoresPage(playerId, serviceParams);
+        return beatSaviorService.getPlayerScoresPage(playerId, processedServiceParams);
       case 'accsaber':
-        return accSaberService.getPlayerScoresPage(playerId, serviceParams);
+        return accSaberService.getPlayerScoresPage(playerId, processedServiceParams);
       case 'beatleader':
       default:
-        return blScoresService.getPlayerScoresPage(playerId, serviceParams);
+        return blScoresService.getPlayerScoresPage(playerId, processedServiceParams);
     }
   }
 
   const fetchLiveScores = async (player, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
+    const processedServiceParams = processServiceParamsFilters(serviceParams);
+
     switch (service) {
       case 'beatsavior':
-        return beatSaviorService.getPlayerScoresPage(player?.playerId, serviceParams);
+        return beatSaviorService.getPlayerScoresPage(player?.playerId, processedServiceParams);
       case 'accsaber':
-        return accSaberService.getPlayerScoresPage(player?.playerId, serviceParams);
+        return accSaberService.getPlayerScoresPage(player?.playerId, processedServiceParams);
       case 'beatleader':
       default:
-        return blScoresService.fetchScoresPageOrGetFromCache(player, serviceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
+        return blScoresService.fetchScoresPageOrGetFromCache(player, processedServiceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
     }
   }
 

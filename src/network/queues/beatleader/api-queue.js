@@ -7,7 +7,7 @@ export const STEAM_API_URL = '/cors/steamapi'
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const BL_API_PLAYER_INFO_URL = BL_API_URL + '/player/${playerId}';
-export const BL_API_SCORES_URL = BL_API_URL + '/player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}';
+export const BL_API_SCORES_URL = BL_API_URL + '/player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + '/players?search=${query}'
 export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + '/players?page=${page}'
 export const BL_API_RANKING_GLOBAL_PAGES_URL = BL_API_URL + '/players/count'
