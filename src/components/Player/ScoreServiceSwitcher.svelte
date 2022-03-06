@@ -69,7 +69,7 @@
           onChange: event => {
             if (!event?.detail?.id) return null;
 
-            dispatch('service-params-change', {sort: event?.detail?.id})
+            dispatch('service-params-change', {sort: event.detail.id, ...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null)})
           }
         },
       ],
