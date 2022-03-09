@@ -10,24 +10,11 @@
     let login;
     let password;
 
-    function loginSteam() {
-        var data = new FormData();
-        data.append('Provider', 'Steam');
-        data.append('ReturnUrl', 'http://localhost:8888/signin/addHome');
-        fetch('https://api.beatleader.xyz', {
-            method: 'POST',
-            body: data,
-            credentials: 'include'
-        }).then(response => {
-            // HTTP 301 response
-            // HOW CAN I FOLLOW THE HTTP REDIRECT RESPONSE?
-            if (response.redirected) {
-                window.location.href = response.url;
-            }
-        });
+    function performAction() {
     }
 
     $: loggedInPlayer = opt($account, 'id');
+    $: performAction();
 </script>
 
 <div class="container">
@@ -41,7 +28,7 @@
     <Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)}/>
     <form action="https://api.beatleader.xyz/signin" method="post">
         <input type="hidden" name="Provider" value="Steam" />
-        <input type="hidden" name="ReturnUrl" value="http://localhost:8888/signin/addHome" />
+        <input type="hidden" name="ReturnUrl" value="https://beatleader.xyz/signin/addHome" />
 
         <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
     </form>

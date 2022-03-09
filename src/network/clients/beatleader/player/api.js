@@ -5,9 +5,10 @@ import {opt} from '../../../../utils/js'
 const process = response => {
   const {id: playerId, name, country, countryRank, badges, avatar, permissions, pp, rank, banned, inactive, histories: history, scoreStats} = response[0];
   
+  let profilePicture = avatar;
   let stemProfile = response[1].response.players.length != 0;
   if (stemProfile) {
-    avatar = response[1].response.players[0].avatarfull;
+    profilePicture = response[1].response.players[0].avatarfull;
   }
   let externalProfileUrl = stemProfile ? response[1].response.players[0].profileurl : null;
   let externalProfileCorsUrl = externalProfileUrl ? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/') : null
@@ -19,7 +20,7 @@ const process = response => {
   }
 
   return {playerId, name, playerInfo: {
-    avatar,
+    avatar: profilePicture,
     externalProfileUrl,
     externalProfileCorsUrl,
     countries: [{country, rank: countryRank}],
