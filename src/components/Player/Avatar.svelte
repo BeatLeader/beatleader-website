@@ -7,10 +7,10 @@
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered>
-  <span class="no-image">?</span>
-
   {#if playerInfo && playerInfo.avatar}
     <img src={playerInfo.avatar} class="avatar" alt="" />
+  {:else}
+    <span class="no-image">?</span>
   {/if}
 
   <span class="spinner">

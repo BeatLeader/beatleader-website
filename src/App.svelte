@@ -55,8 +55,8 @@
       </Route>
       <Route path="/twitch" component="{TwitchPage}" />
       <Route path="/dashboard" component="{DashboardPage}" />
-      <Route path="/signin/:type" let:params>
-        <SigninPage type={params.type} />
+      <Route path="/signin/*action" let:params>
+        <SigninPage action={params.action} />
       </Route>
       <Route path="/*" component="{NotFoundPage}" />
     </div>

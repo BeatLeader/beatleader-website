@@ -1,5 +1,5 @@
 <script>
-  import {BL_CDN} from '../../network/queues/beatleader/page-queue'
+  import {BS_CDN} from '../../network/queues/beatleader/page-queue'
   import {navigate} from 'svelte-routing'
   import Difficulty from '../Song/Difficulty.svelte'
 
@@ -31,7 +31,7 @@
   }
 
   $: hash = leaderboard?.song?.hash ?? null;
-  $: ssCoverUrl = hash ? `${BL_CDN}/covers/${encodeURIComponent(hash).toUpperCase()}.png` : null;
+  $: ssCoverUrl = hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null;
   $: beatSaverCoverUrl = leaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
 
   $: preloadImages([{url: ssCoverUrl, priority: 10}, {url: beatSaverCoverUrl, priority: 5}]);

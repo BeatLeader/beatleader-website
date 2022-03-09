@@ -2,7 +2,7 @@ import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../../utils/format'
 import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../../utils/beatleader/consts'
 
-export const BL_API_URL = `https://beatleader.azurewebsites.net/`;
+export const BL_API_URL = `https://api.beatleader.xyz/`;
 export const STEAM_API_URL = '/cors/steamapi'
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
