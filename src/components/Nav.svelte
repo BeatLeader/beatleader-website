@@ -21,10 +21,20 @@
   let settingsNotificationBadge = null;
   let loggedInPlayer = null;
 
-  function navigateToPlayer(event, playerId) {
-    if (!playerId || event.path.length > 8) return;
+  function navigateToPlayer(playerId) {
+    if (!playerId) return;
 
-    navigate(`/u/${playerId}/beatleader/date/1`)
+    navigate(`/u/${playerId}/beatleader/date/1`);
+  }
+
+  function onAccountClicked(event, playerId) {
+    if (event.srcElement.innerText == "Migrate" || event.srcElement.innerText == "Log In") {
+      navigate(`/signin`)
+    } else if (event.srcElement.innerText == "Log Out") {
+      account.logOut();
+    } else if (playerId) {
+      navigateToPlayer(playerId)
+    }    
   }
 
   function onFriendClick(event) {
@@ -41,14 +51,6 @@
     playlistMenuShown = false;
 
     playlists.select(event.detail);
-  }
-
-  function onAccountClick(event) {
-    if (event.detail == "Migrate" || event.detail == "Log In") {
-      navigate(`/signin`)
-    } else {
-      account.logOut();
-    }
   }
 
   async function updateMainPlayer(playerId) {
@@ -103,7 +105,7 @@
   </a>
 
   {#if player}
-  <a href={`/u/${player.playerId}/beatleader/date/1`} on:click={(e) => { e.preventDefault(); navigateToPlayer(e, player.playerId) }} transition:fade on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
+  <a href={`/u/${player.playerId}/beatleader/date/1`} on:click={(e) => { e.preventDefault(); onAccountClicked(e, player.playerId) }} transition:fade on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />
     {:else}
@@ -112,7 +114,7 @@
       </svg>
     {/if}
 
-    <Dropdown items={loggedInPlayer ? ["Migrate", "Log Out"] : ["Log In"]} shown={accountMenuShown} on:select={onAccountClick} noItems="">
+    <Dropdown items={loggedInPlayer ? ["Migrate", "Log Out"] : ["Log In"]} shown={accountMenuShown} noItems="">
       <svelte:fragment slot="row" let:item>
         <div>
           <span class="accountMenuItem">{item}</span>

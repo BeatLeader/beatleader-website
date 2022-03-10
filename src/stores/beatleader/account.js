@@ -36,6 +36,7 @@ export default (refreshOnCreate = true) => {
 
             if (changeMain) {
                 if (config.users && config.users.main) {
+                    let currentID = config.users.main;
                     config.users.main = null;
                     configStore.set(config);
             
@@ -74,7 +75,7 @@ export default (refreshOnCreate = true) => {
         credentials: 'include',
         method: 'POST',
         body: data
-    }).then(
+    }).then(response => response.text()).then(
         data => {
             if (data.length > 0) {
                 account.error = data;
@@ -95,7 +96,7 @@ export default (refreshOnCreate = true) => {
         credentials: 'include',
         method: 'POST',
         body: data
-    }).then(
+    }).then(response => response.text()).then(
         data => {
             if (data.length > 0) {
                 account.error = data;

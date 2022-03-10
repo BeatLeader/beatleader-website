@@ -52,6 +52,7 @@
         justify-content: center;
         align-items: center;
         width: 150px;
+        height: 150px;
         border-radius: 50%;
         color: var(--foreground);
         background-color: var(--dimmed);

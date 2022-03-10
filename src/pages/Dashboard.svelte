@@ -139,6 +139,14 @@
                 </a>
             </h3>
         </div>
+        <div class="downloadButtons">
+            <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+                <Button iconFa="fas fa-download" label="Download PC mod"/>
+            </a>
+            <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
+                <Button iconFa="fas fa-download" label="Download Quest mod"/>
+            </a>
+        </div>
         <SearchPage title="Find your profile or friends"/>
         <div class="global-ranking-call">
             <h3>Or check <a href="/ranking/global">the global ranking</a> to find the best players.</h3>
@@ -159,6 +167,14 @@
                         <Ranking players={playersFilter} {overridePlayersPp} itemsPerPage={20} filterFunc={rankingFilter} {refreshTag}/>
                     </div>
                 </ContentBox>
+                <div class="downloadButtons">
+                    <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+                        <Button iconFa="fas fa-download" label="Download PC mod"/>
+                    </a>
+                    <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
+                        <Button iconFa="fas fa-download" label="Download Quest mod"/>
+                    </a>
+                </div>
             </div>
 
             <div class="scores content column is-full-tablet is-half-widescreen is-three-fifths-fullhd">
@@ -206,7 +222,6 @@
     .sources {
         display: flex;
         margin-left: 1.5em;
-        margin-bottom: 3em;
         flex-wrap: wrap;
     }
 
@@ -309,5 +324,11 @@
     .replays .icon {
         width: 5em;
         height: 5em;
+    }
+
+    .downloadButtons {
+        margin-top: 1.5em;
+        margin-left: 0.6em;
+        margin-bottom: 2em;
     }
 </style>

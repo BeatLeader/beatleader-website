@@ -17,6 +17,7 @@
     }
 
     $: loggedInPlayer = opt($account, 'id');
+    $: error = opt($account, 'error');
     $: performAction();
 </script>
 
@@ -52,6 +53,10 @@
         <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
     </form>
 {/if}
+
+{#if error}
+<p class="error">{error}</p>
+{/if}
 </div>
 
 <style>
@@ -61,6 +66,9 @@
         justify-content: center;
         flex-direction: column;
         grid-gap: 2em;
+    }
+    .error {
+        color: red;
     }
 </style>
 
