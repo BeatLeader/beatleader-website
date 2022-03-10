@@ -109,6 +109,7 @@
         position: relative;
         padding: .75rem 0;
         text-align: center;
+        height: 180px;
     }
 
     h1 {

@@ -11,6 +11,9 @@
     let password;
 
     function performAction() {
+        if (action == "addHome") {
+            account.refresh(true);
+        }
     }
 
     $: loggedInPlayer = opt($account, 'id');
@@ -20,7 +23,7 @@
 <div class="container">
 {#if !loggedInPlayer}
 
-    Login with the Steam or password you created in mod.
+    Login with the Steam or password you created in mod.<br>
     Signup is possible only from the mods!
     <input bind:value={login} placeholder="Login">
     <input type="password" bind:value={password} placeholder="Password">
@@ -38,10 +41,16 @@
     <input type="password" bind:value={password} placeholder="Password">
     <Button iconFa="fas fa-plus-square" label="Login" on:click={() => copyToken()}/>
 {:else}
-    Migrate this account to your Steam account.
-    Note you can change your avatar and name in your profile.
+    You can migrate this account to your Steam account.<br>
+    Or just use this account.<br>
+    You can change your avatar and name in your profile.
 
-    <Button iconFa="fas fa-plus-square" label="Login with Steam" on:click={() => copyToken()}/>
+    <form action="https://api.beatleader.xyz/signinmigrate" method="post">
+        <input type="hidden" name="Provider" value="Steam" />
+        <input type="hidden" name="ReturnUrl" value="https://beatleader.xyz/signin/addHome" />
+
+        <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
+    </form>
 {/if}
 </div>
 

@@ -17,24 +17,29 @@ export default (refreshOnCreate = true) => {
 
   const get = () => account;
   const refresh = async (changeMain = false) => {
-    let currentID = await configStore.get('users.main');
-    fetch(BL_API_URL + "user/id").then(
+    let config = await configStore.get();
+    fetch(BL_API_URL + "user/id", {credentials: 'include'}).then(response => response.text()).then(
     data => {
         if (data.length > 0) {
             account.id = data;
             if (changeMain) {
-                configStore.set('users.main', data);
+                if (!config.users) {
+                    config.users = {};
+                }
+                config.users.main = data;
+                configStore.set(config);
           
-                eventBus.publish('player-add-cmd', {data});
+                eventBus.publish('player-add-cmd', {playerId: data});
             }
         } else {
             account = {};
 
             if (changeMain) {
-                if (currentID) {
-                    configStore.set('users.main', null);
+                if (config.users && config.users.main) {
+                    config.users.main = null;
+                    configStore.set(config);
             
-                    eventBus.publish('player-remove-cmd', {currentID});
+                    eventBus.publish('player-remove-cmd', {playerId: currentID});
                 }
             }
             
@@ -60,7 +65,16 @@ export default (refreshOnCreate = true) => {
   }
 
   const logIn = (login, password) => {
-    fetch(BL_API_URL + "signinoculus?action=login&login=" + login + "&password=" + password).then(
+    let data = new FormData();
+    data.append('action', 'login');
+    data.append('login', login);
+    data.append('password', password);
+
+    fetch(BL_API_URL + "signinoculus", {
+        credentials: 'include',
+        method: 'POST',
+        body: data
+    }).then(
         data => {
             if (data.length > 0) {
                 account.error = data;
@@ -72,7 +86,7 @@ export default (refreshOnCreate = true) => {
   }
 
   const logOut = () => {
-    fetch(BL_API_URL + "signout").then(
+    fetch(BL_API_URL + "signout", {credentials: 'include',}).then(
         data => {
             refresh(true);
         });

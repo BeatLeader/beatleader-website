@@ -21,8 +21,8 @@
   let settingsNotificationBadge = null;
   let loggedInPlayer = null;
 
-  function navigateToPlayer(playerId) {
-    if (!playerId) return;
+  function navigateToPlayer(event, playerId) {
+    if (!playerId || event.path.length > 8) return;
 
     navigate(`/u/${playerId}/beatleader/date/1`)
   }
@@ -44,11 +44,11 @@
   }
 
   function onAccountClick(event) {
-    if (!event.detail) return;
-
-    friendsMenuShown = false;
-
-    navigateToPlayer(event.detail.playerId);
+    if (event.detail == "Migrate" || event.detail == "Log In") {
+      navigate(`/signin`)
+    } else {
+      account.logOut();
+    }
   }
 
   async function updateMainPlayer(playerId) {
@@ -90,7 +90,7 @@
 
   $: selectedPlaylist = opt($configStore, 'selectedPlaylist');
   $: mainPlayerId = opt($configStore, 'users.main');
-  $: loggedInPlayer = opt($account, 'id');
+  $: loggedInPlayer = $account.id;
   $: updateMainPlayer(mainPlayerId)
   $: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
   $: notificationBadgeTitle = (settingsNotificationBadge ? [settingsNotificationBadge + '\n'] : []).concat(newSettingsAvailable ? ['New settings are available:'].concat(newSettingsAvailable) : []).join('\n');
@@ -103,7 +103,7 @@
   </a>
 
   {#if player}
-  <a href={`/u/${player.playerId}/beatleader/date/1`} on:click|preventDefault={() => navigateToPlayer(player.playerId)} transition:fade on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
+  <a href={`/u/${player.playerId}/beatleader/date/1`} on:click={(e) => { e.preventDefault(); navigateToPlayer(e, player.playerId) }} transition:fade on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />
     {:else}
@@ -114,7 +114,9 @@
 
     <Dropdown items={loggedInPlayer ? ["Migrate", "Log Out"] : ["Log In"]} shown={accountMenuShown} on:select={onAccountClick} noItems="">
       <svelte:fragment slot="row" let:item>
-        <span class="playlistTitle">{item}</span>
+        <div>
+          <span class="accountMenuItem">{item}</span>
+        </div>
       </svelte:fragment>
     </Dropdown>
 
@@ -329,6 +331,13 @@
         margin-top: 0.15rem;
         margin-left: 0.25em;
         padding-right: 1.5em;
+    }
+
+    .accountMenuItem {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 4em;
     }
 
     @media screen and (max-width: 450px) {
