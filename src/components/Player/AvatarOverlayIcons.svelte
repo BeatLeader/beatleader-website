@@ -2,6 +2,7 @@
   import createPlayersStore from '../../stores/beatleader/players'
   import createTwitchService from '../../services/twitch'
   import {configStore} from '../../stores/config'
+  import createAccountStore from '../../stores/beatleader/account'
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {opt} from '../../utils/js'
   import Button from '../Common/Button.svelte'
@@ -12,6 +13,7 @@
 
   let playersStore = createPlayersStore();
   const twitchService = createTwitchService();
+  const account = createAccountStore();
 
   let twitchToken = null;
   let playerTwitchProfile = null;
@@ -71,10 +73,21 @@
     twitchToken = await twitchService.getCurrentToken();
   })
 
+  let fileinput;
+  const changeAvatar = (e) => {
+      let image = e.target.files[0];
+      let reader = new FileReader();
+      reader.readAsArrayBuffer(image);
+      reader.onload = e => {
+        account.changeAvatar(e.target.result);
+      };
+  }
+
   $: onPlayerChanged(playerId);
   $: isProfileLinkedToTwitch = !!playerTwitchProfile?.login ?? false;
   $: mainIsSet = !!$configStore?.users?.main ?? false;
   $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
+  $: loggedInPlayer = $account.id;
   $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
   $: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
 </script>
@@ -100,6 +113,15 @@
               title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
               on:click={() => showLinkingModal = true}
       />
+    {/if}
+
+    {#if isMain && loggedInPlayer == playerId}
+    <div class="imageInput" on:click={() => fileinput.click()}>
+      <input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={(e)=>changeAvatar(e)} bind:this={fileinput} >
+      <span class="imageChange">
+          <h3 class="changeLabel">Change</h3>
+      </span>
+    </div>
     {/if}
   </nav>
 {/if}
@@ -148,5 +170,37 @@
 
     nav :global(button):nth-child(3):hover {
         transform: translate3d(-47px, -7px, 0) scale(1.2);
+    }
+
+    .imageInput {
+        cursor: pointer;
+        display: flex;
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        margin-left: -5px;
+        margin-top: -40px;
+    }
+
+    .imageChange {
+        transition: opacity .2s ease-in-out;
+        background-color: rgba(32,33,36,0.6);
+        bottom: 0;
+        height: 33%;
+        left: 0;
+        opacity: 0;
+        position: absolute;
+        right: 0;
+        display: flex;
+        justify-content: center;
+    }
+
+    .imageInput:hover .imageChange {
+        opacity: 1;
+    }
+
+    .changeLabel {
+        top: 30%;
+        position: absolute;
     }
 </style>

@@ -85,8 +85,33 @@ export default (refreshOnCreate = true) => {
         });
   }
 
+  const migrate = (login, password) => {
+    let data = new FormData();
+    data.append('action', 'login');
+    data.append('login', login);
+    data.append('password', password);
+
+    fetch(BL_API_URL + "user/migrate", {
+        credentials: 'include',
+        method: 'POST',
+        body: data
+    }).then(
+        data => {
+            if (data.length > 0) {
+                account.error = data;
+                set(account);
+            } else {
+                refresh(true);
+            }
+        });
+  }
+
+  const changeAvatar = (file) => {
+    fetch(BL_API_URL + "user/avatar", { method: 'PATCH', body: file, credentials: 'include'});
+  }
+
   const logOut = () => {
-    fetch(BL_API_URL + "signout", {credentials: 'include',}).then(
+    fetch(BL_API_URL + "signout", {credentials: 'include'}).then(
         data => {
             refresh(true);
         });
@@ -97,7 +122,9 @@ export default (refreshOnCreate = true) => {
     get,
     refresh,
     logIn,
-    logOut
+    logOut,
+    migrate,
+    changeAvatar
   }
 
   return store;

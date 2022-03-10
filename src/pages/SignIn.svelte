@@ -39,7 +39,7 @@
     Migrate your account created in mod to this Steam account.
     <input bind:value={login} placeholder="Login">
     <input type="password" bind:value={password} placeholder="Password">
-    <Button iconFa="fas fa-plus-square" label="Login" on:click={() => copyToken()}/>
+    <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
 {:else}
     You can migrate this account to your Steam account.<br>
     Or just use this account.<br>
@@ -49,11 +49,10 @@
         <input type="hidden" name="Provider" value="Steam" />
         <input type="hidden" name="ReturnUrl" value="https://beatleader.xyz/signin/addHome" />
 
-        <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
+        <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
     </form>
 {/if}
 </div>
-
 
 <style>
     .container {

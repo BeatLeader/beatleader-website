@@ -27,7 +27,6 @@
         position: absolute;
         border-radius: 50%;
         width: 150px;
-        height: 150px;
         transition: transform 300ms;
         z-index: 2;
     }
@@ -40,7 +39,6 @@
         display: none;
         position: absolute;
         width: 150px;
-        height: 150px;
         color: var(--faded);
         z-index: 10
     }
@@ -54,7 +52,6 @@
         justify-content: center;
         align-items: center;
         width: 150px;
-        height: 150px;
         border-radius: 50%;
         color: var(--foreground);
         background-color: var(--dimmed);
