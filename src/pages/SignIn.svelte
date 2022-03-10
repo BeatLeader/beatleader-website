@@ -24,8 +24,8 @@
 <div class="container">
 {#if !loggedInPlayer}
 
-    Login with the Steam or password you created in mod.<br>
-    Signup is possible only from the mods!
+    Login with the Steam or account you created in mod.<br>
+    <b>Signup is possible only from the mods!</b>
     <input bind:value={login} placeholder="Login">
     <input type="password" bind:value={password} placeholder="Password">
 
@@ -37,14 +37,22 @@
         <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
     </form>
 {:else if loggedInPlayer > 70000000000000000}
-    Migrate your account created in mod to this Steam account.
+    If you using the Steam game or already migrated - you are all set!<br>
+    Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
+    <br>
+    <br>
+    <br>
+    If you using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
+    Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
+    This is not required and no way back!
     <input bind:value={login} placeholder="Login">
     <input type="password" bind:value={password} placeholder="Password">
     <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
 {:else}
-    You can migrate this account to your Steam account.<br>
+    You can migrate this account to your Steam account.<br><br>
+    Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
     Or just use this account.<br>
-    You can change your avatar and name in your profile.
+    You can change your avatar and name in <a class="inlineLink" href={"/u/" + loggedInPlayer}>your profile.</a>
 
     <form action="https://api.beatleader.xyz/signinmigrate" method="post">
         <input type="hidden" name="Provider" value="Steam" />
@@ -69,6 +77,10 @@
     }
     .error {
         color: red;
+    }
+
+    .inlineLink {
+        display: contents;
     }
 </style>
 
