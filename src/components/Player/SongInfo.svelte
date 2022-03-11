@@ -14,6 +14,8 @@
   export let notClickable = false;
   export let category = null;
   export let service = 'beatleader';
+  export let playerId = null;
+  export let jumpDistance = 0;
 
   $: song = leaderboard?.song ?? null;
   $: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE
@@ -47,7 +49,7 @@
 
     {#if hash && hash.length}
       <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-        <Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay} />
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.hasReplay} {jumpDistance} />
       </div>
     {/if}
   </section>

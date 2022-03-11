@@ -12,8 +12,10 @@
     export let hash;
     export let diffInfo = null;
     export let twitchUrl = null;
-    export let replayLink = null;
+    export let playerId = null;
+    export let hasReplay = false;
     export let icons = false;
+    export let jumpDistance = 0;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
         open(Preview, { previewLink: previewLink });
@@ -51,6 +53,7 @@
     $: updateSongKey(hash)
     $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
     $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
+    $: modeName = diffInfo && diffInfo.type ? capitalize(diffInfo.type) : null
     $: selectedPlaylistIndex = opt($configStore, 'selectedPlaylist');
     $: selectedPlaylist = $playlists[selectedPlaylistIndex];
     $: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
@@ -113,9 +116,9 @@
         </a>
     {/if}
 
-    {#if shownIcons.includes('replay') && replayLink}
-        <a href={`https://www.replay.beatleader.xyz?link=${replayLink}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz?link=${replayLink}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
+    {#if shownIcons.includes('replay') && playerId && hasReplay}
+        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+            <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
         </a>
     {/if}
 {/if}
