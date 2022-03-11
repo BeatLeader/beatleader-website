@@ -32,7 +32,7 @@
 
     <div class="icons up-to-tablet">
       <Icons {hash} {twitchUrl} {diffInfo} {playerId}
-             hasReplay={score.hasReplay}
+             hasReplay={true}
              jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
     </div>
 

@@ -49,7 +49,7 @@
 
     {#if hash && hash.length}
       <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={score.hasReplay} {jumpDistance} />
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={true} {jumpDistance} />
       </div>
     {/if}
   </section>

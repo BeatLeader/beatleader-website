@@ -293,13 +293,11 @@
                     </div>
                   </div>
                   <div class="mobile-second-line">
-                    {#if !noReplayInLeaderboard && isRanked}
+                    {#if !noReplayInLeaderboard}
                       <div class="replay">
-                        {#if score.score.pp && score.score.hasReplay}
-                          <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={score.hasReplay}
+                          <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true}
                                  playerId={score.player.playerId}
                                  jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
-                        {/if}
                       </div>
                     {/if}
                     {#if type === 'accsaber' || isRanked}
