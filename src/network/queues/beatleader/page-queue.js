@@ -4,7 +4,7 @@ import {extractDiffAndType, getDiffColor} from '../../../utils/beatleader/format
 import {formatDateRelative} from '../../../utils/date'
 
 export const BL_HOST = 'https://api.beatleader.xyz/';
-export const BL_CDN = 'https://cdn.beatleader.xyz';
+export const BL_CDN = 'https://beatleader3.azureedge.net';
 export const BS_CDN = 'https://eu.cdn.beatsaver.com';
 const RANKEDS_URL = BL_HOST + '/maps?ranked=true&page=${page}';
 const COUNTRY_RANKING_URL = BL_HOST + '/players?page=${page}&countries=${country}'
@@ -74,7 +74,7 @@ export default (options = {}) => {
           playerId: a.id,
           name: playerName,
           playerInfo: {
-            avatar: a.avatar,
+            avatar: a.avatar.replace("cdn.beatleader.xyz", "beatleader3.azureedge.net"),
             countries: [{country, rank: a.countryRank}],
             pp,
             rank,
