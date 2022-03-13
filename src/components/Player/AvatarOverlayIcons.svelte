@@ -94,7 +94,7 @@
 
 {#if playerId}
   <nav class:main={isMain}>
-    {#if playerId != loggedInPlayer && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !mainIsSet))}
+    {#if (!loggedInPlayer || !mainIsSet) && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !mainIsSet))}
       <Button title={isMain ? "Remove your profile" : "Set as your profile"} iconFa="fas fa-home"
               type={isMain ? "danger" : "primary"}
               on:click={() => onSetAsMain(isMain)}

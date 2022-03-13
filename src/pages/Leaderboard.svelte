@@ -143,6 +143,13 @@
   }
 
   function processDiffs(diffArray) {
+    diffArray = diffArray.sort(function(a, b) {
+      let diffNumA = parseInt(a.leaderboardId[a.leaderboardId.length - 2]);
+      let diffNumB = parseInt(b.leaderboardId[b.leaderboardId.length - 2]);
+        if (diffNumA < diffNumB) return -1;
+        if (diffNumA > diffNumB) return 1;
+        return 0;
+    });
     return diffArray.map(d => (
       {
         ...d,
