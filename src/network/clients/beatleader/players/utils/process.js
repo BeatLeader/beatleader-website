@@ -12,8 +12,6 @@ export default response => {
         avatar = `${queue.BEATLEADER_API.BL_API_URL}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
     }
 
-    avatar = avatar.replace("cdn.beatleader.xyz", "beatleader3.azureedge.net");
-
     return {
       playerId,
       name,

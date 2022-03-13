@@ -5,6 +5,7 @@
   import {worker} from '../../utils/worker-wrappers'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
+  import createAccountStore from '../../stores/beatleader/account'
   import Avatar from './Avatar.svelte'
   import AvatarOverlayIcons from './AvatarOverlayIcons.svelte'
   import ProfileHeaderInfo from './ProfileHeaderInfo.svelte'
@@ -29,6 +30,7 @@
 
   const beatSaviorService = createBeatSaviorService();
   const accSaberService = createAccSaberService();
+  const account = createAccountStore();
 
   let accSaberPlayerInfo = null;
   let accSaberCategories = null;
@@ -194,8 +196,11 @@
     </div>
 
     <div class="rank-and-stats-cell">
-      <ProfileHeaderInfo {error} {name} {playerInfo} prevInfo={playerGain}/>
+      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} prevInfo={playerGain}/>
       <BeatLeaderSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
+      {#if $account.error}
+        {$account.error}
+      {/if}
     </div>
   </div>
 </ContentBox>

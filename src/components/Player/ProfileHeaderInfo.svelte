@@ -2,6 +2,8 @@
   import {navigate} from 'svelte-routing'
   import {getContext} from 'svelte';
   import {BL_CDN} from '../../network/queues/beatleader/page-queue'
+  import createAccountStore from '../../stores/beatleader/account'
+  import {configStore} from '../../stores/config'
   import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts'
   import {convertArrayToObjectByKey, opt} from '../../utils/js'
 
@@ -10,13 +12,17 @@
   import Skeleton from '../Common/Skeleton.svelte'
   import Error from '../Common/Error.svelte'
   import Badge from '../Common/Badge.svelte'
+  import Button from '../Common/Button.svelte'
   import Preview from "../Common/Preview.svelte";
   import {addToDate, DAY, formatDateRelative} from '../../utils/date'
 
   export let name;
   export let playerInfo;
+  export let playerId;
   export let prevInfo;
   export let error = null;
+
+  const account = createAccountStore();
 
   function getCountryRankingUrl(countryObj) {
     const rank = opt(countryObj, 'rankValue', opt(countryObj, 'rank', null));
@@ -53,9 +59,20 @@
     open(Preview, {previewLink: profileLink});
   };
 
+  let nameInput;
+  let redactingName = false;
+  function onRedactButtonClick() {
+      if (redactingName && nameInput.value) {
+          account.changeName(nameInput.value);
+      }
+      redactingName = !redactingName;
+  }
+
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
   $: playerRole = playerInfo?.role ?? null;
   $: countries = getPlayerCountries(playerInfo, prevInfo)
+  $: loggedInPlayer = $account.id;
+  $: isMain = configStore && opt($configStore, 'users.main') === playerId;
   $: gainDate = Number.isFinite(prevInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-prevInfo.gainDaysAgo * DAY)) : null
 </script>
 
@@ -63,15 +80,23 @@
   {#if playerInfo}
     <div class="player-nickname">
       {#if name}
-        {#if playerInfo.externalProfileUrl}
-          <a href={playerInfo.externalProfileUrl}
-             on:click={(e) => {e.preventDefault(); showProfile(playerInfo.externalProfileCorsUrl)}}
-             target="_blank"
-             rel="noreferrer">
-            {name}
-          </a>
+        {#if redactingName}
+        <input type="text"value="{name}" placeholder="Your name" class="input-reset" bind:this={nameInput}>
         {:else}
-          {name}
+          {#if playerInfo.externalProfileUrl}
+            <a href={playerInfo.externalProfileUrl}
+              on:click={(e) => {e.preventDefault(); showProfile(playerInfo.externalProfileCorsUrl)}}
+              target="_blank"
+              rel="noreferrer">
+              {name}
+            </a>
+          {:else}
+            {name}
+          {/if}
+        {/if}
+        {#if isMain && loggedInPlayer == playerId}
+          <Button type="text" cls="editNameButton" iconFa={redactingName ? "fas fa-check" : "fas fa-edit"}
+                        on:click={() => onRedactButtonClick()} />
         {/if}
       {/if}
 
@@ -189,5 +214,16 @@
 
     .countryIcon {
       width: 1.2em;
+    }
+
+    .input-reset {
+      width: 70%;
+      font-size: 1em;
+      height: 1.8em;
+    }
+
+    :global(.editNameButton) {
+        padding-bottom: 1.2em !important;
+        margin-bottom: -1em !important;
     }
 </style>

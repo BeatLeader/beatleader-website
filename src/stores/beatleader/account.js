@@ -79,10 +79,11 @@ export default (refreshOnCreate = true) => {
         data => {
             if (data.length > 0) {
                 account.error = data;
-                set(account);
             } else {
+                account.error = null;
                 refresh(true);
             }
+            set(account);
         });
   }
 
@@ -100,20 +101,64 @@ export default (refreshOnCreate = true) => {
         data => {
             if (data.length > 0) {
                 account.error = data;
-                set(account);
             } else {
+                account.error = null;
                 refresh(true);
             }
+            set(account);
         });
   }
 
   const changeAvatar = (file) => {
-    fetch(BL_API_URL + "user/avatar", { method: 'PATCH', body: file, credentials: 'include'});
+    fetch(BL_API_URL + "user/avatar", { 
+        method: 'PATCH', 
+        body: file, 
+        credentials: 'include'
+    }).then(response => response.text()).then(
+        data => {
+            if (data.length > 0) {
+                account.error = data;
+                setTimeout(function(){
+                    account.error = null;
+                    set(account);
+                }, 3500);
+            } else {
+                account.error = null;
+                setTimeout(function(){
+                    location.reload();
+                }, 1000);
+            }
+            set(account);
+        });
+  }
+
+  const changeName = (name) => {
+    fetch(BL_API_URL + "user/name?newName=" + name, { 
+        method: 'PATCH', 
+        credentials: 'include'
+    }).then(response => response.text()).then(
+        data => {
+            if (data.length > 0) {
+                account.error = data;
+                setTimeout(function(){
+                    account.error = null;
+                    set(account);
+                }, 3500);
+            } else {
+                account.error = null;
+                setTimeout(function(){
+                    location.reload();
+                }, 1000);
+            }
+            set(account);
+        });
   }
 
   const logOut = () => {
-    fetch(BL_API_URL + "signout", {credentials: 'include'}).then(
-        data => {
+    fetch(BL_API_URL + "signout", {
+        credentials: 'include'
+    }).then(
+        _ => {
             refresh(true);
         });
   } 
@@ -125,7 +170,8 @@ export default (refreshOnCreate = true) => {
     logIn,
     logOut,
     migrate,
-    changeAvatar
+    changeAvatar,
+    changeName
   }
 
   return store;
