@@ -23,7 +23,7 @@ export default (refreshOnCreate = true) => {
 
   const get = () => account;
   const refresh = async (changeMain = false) => {
-    let config = await configStore.get();
+    let config = configStore.get();
     fetch(BL_API_URL + "user/id", {credentials: 'include'})
       .then(checkResponse)
       .then(data => {
@@ -53,7 +53,8 @@ export default (refreshOnCreate = true) => {
             
         }
         set(account);
-    });
+      })
+      .catch(err => err); // swallow the error
   }
 
   if (refreshOnCreate) refresh();

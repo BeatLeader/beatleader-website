@@ -15,14 +15,16 @@
   const playerService = createPlayerService();
 
   async function search(query) {
-    const matches = query.match(/^(?:\s*https:\/\/(?:new\.)?scoresaber.com\/u\/(\d+))|\s*(\d+)\s*/);
+    const matches = query.match(/^(?:\s*https:\/\/www.beatleader.xyz\/u\/(\d+))|\s*(\d+)\s*/);
     if (matches && (matches[1] || matches[2])) {
       dispatch('selected', matches[1] ? matches[1] : matches[2])
 
       return [];
     }
 
-    return playerService.findPlayer(query, queues.PRIORITY.FG_HIGH, {cacheTtl: 5 * MINUTE});
+    const response = await playerService.findPlayer(query, queues.PRIORITY.FG_HIGH, {cacheTtl: 5 * MINUTE});
+
+    return response?.data ?? null;
   }
 
   async function searchFunc(value) {
