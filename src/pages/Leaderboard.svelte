@@ -3,6 +3,7 @@
   import {navigate} from "svelte-routing";
   import {fade, fly} from 'svelte/transition'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
+  import createModifiersStore from '../stores/beatleader/modifiers'
   import {opt} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
@@ -20,7 +21,7 @@
   import Switcher from '../components/Common/Switcher.svelte'
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
-  import {getIconNameForDiff} from '../utils/beatleader/format'
+  import {getIconNameForDiff, describeModifiersAndMultipliers} from '../utils/beatleader/format'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
 
   export let leaderboardId;
@@ -176,6 +177,8 @@
     const brightnessHex = brightnessInt.toString(16);
     return "#" + brightnessHex + brightnessHex + brightnessHex;
   }
+
+  const modifiersStore = createModifiersStore();
 
   let ssCoverDoesNotExists = false;
 
@@ -338,7 +341,7 @@
                       <span slot="label">
                         <Value value="{opt(score, 'score.score')}" inline={false} digits={0}/>
 
-                        <small title="Mods">{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+                        <small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), $modifiersStore)}>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
                       </span>
                       </Badge>
                     </div>

@@ -33,6 +33,7 @@
   export let service = null
   export let songScore = null
   export let showDetails = false
+  export let modifiersStore = null
 
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
@@ -81,7 +82,7 @@
 
     {#if score.acc}
             <span class="acc with-badge">
-              <Accuracy {score} {prevScore} noSecondMetric={true}/>
+              <Accuracy {score} {prevScore} {modifiersStore} noSecondMetric={true}/>
             </span>
     {:else}
       <span class="acc with-badge"></span>

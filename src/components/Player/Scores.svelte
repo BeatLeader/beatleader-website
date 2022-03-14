@@ -1,6 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import createScoresStore from '../../stores/http/http-scores-store.js';
+  import createModifiersStore from '../../stores/beatleader/modifiers'
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
   import SongScore from './SongScore.svelte'
@@ -86,6 +87,7 @@
     lastServiceParams = newServiceParams;
   }
 
+  let modifiersStore = createModifiersStore();
 
   $: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType)
   $: $scoresStore, updateService(scoresStore);
@@ -95,6 +97,7 @@
   $: isLoading = scoresStore ? scoresStore.isLoading : false;
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
+  $: modifiers = $modifiersStore;
 
   $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
@@ -113,7 +116,7 @@
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
     {/each}
   </div>
   {:else}

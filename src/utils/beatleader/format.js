@@ -65,6 +65,39 @@ export function getHeadsetForHMD(hmd) {
   return HMDs[hmd];
 }
 
+export function userDescriptionForModifier(modifier) {
+  switch (modifier) {
+    case "DA": return "Dissapearing arrows";
+    case "FS": return "Faster song";
+    case "SS": return "Slower song";
+    case "SF": return "Super fast song";
+    case "GN": return "Ghost notes";
+    case "NA": return "No arrows";
+    case "NB": return "No bombs";
+    case "NF": return "No fail";
+    case "NO": return "No obstacles";
+  }
+  return "Undefined modifier";
+}
+
+export function describeModifiersAndMultipliers(modifiers, multipliers) {
+  if (modifiers && multipliers) {
+    let result = "Mods:";
+    let total = 0;
+    modifiers.forEach(key => {
+      const value = multipliers[key];
+      total += value;
+      result += "\n" + userDescriptionForModifier(key) + (value > 0 ? " +" : " ") + Math.round(value * 100) + "%";
+    });
+    if (modifiers.length > 1) {
+      result += "\nTotal:" + (total > 0 ? " +" : " ") + Math.round(total * 100) + "%";
+    }
+    return result;
+  } else {
+    return "";
+  }
+}
+
 export function getHumanDiffInfo(diffInfo) {
   if (!diffInfo || !diffInfo.diff) return null;
 

@@ -1,6 +1,6 @@
 <script>
   import {configStore} from '../../stores/config'
-  import {diffColors} from '../../utils/beatleader/format'
+  import {diffColors, describeModifiersAndMultipliers} from '../../utils/beatleader/format'
   import {opt} from '../../utils/js'
   import {formatDate} from '../../utils/date'
   import Badge from './Badge.svelte'
@@ -12,6 +12,7 @@
   export let noSecondMetric = false;
   export let secondMetricInsteadOfDiff = false;
   export let showMods = true;
+  export let modifiersStore = null;
 
   const badgesDef = [
     {name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -54,8 +55,7 @@
         </small>
       {/if}
     </span>
-    
-    <small class="mods" slot="additional" title={showMods && mods ? 'Mods: ' + mods.join(', ') : null}>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
+    <small class="mods" slot="additional" title={showMods && mods ? describeModifiersAndMultipliers(mods, modifiersStore) : null}>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
 
 {#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length  && score.acc !== score.percentage}

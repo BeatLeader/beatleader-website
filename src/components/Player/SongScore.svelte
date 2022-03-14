@@ -13,6 +13,7 @@
   export let fixedBrowserTitle = null;
   export let idx = 0;
   export let service = null;
+  export let modifiersStore = null;
 
   let showDetails = false;
 
@@ -76,7 +77,7 @@
           </span>
       </div>
 
-      <PlayerPerformance {service} {songScore} {showDetails}/>
+      <PlayerPerformance {service} {songScore} {showDetails} {modifiersStore}/>
     </div>
 
     {#if showDetails}
