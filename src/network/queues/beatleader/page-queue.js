@@ -1,13 +1,12 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../../utils/format'
-import {extractDiffAndType, getDiffColor} from '../../../utils/beatleader/format'
+import {getDiffColor} from '../../../utils/beatleader/format'
 import {formatDateRelative} from '../../../utils/date'
 
 export const BL_HOST = 'https://api.beatleader.xyz/';
 export const BL_CDN = 'https://cdn.beatleader.xyz';
 export const BS_CDN = 'https://eu.cdn.beatsaver.com';
 const RANKEDS_URL = BL_HOST + '/maps?ranked=true&page=${page}';
-const COUNTRY_RANKING_URL = BL_HOST + '/players?page=${page}&countries=${country}'
 const LEADERBOARD_URL = BL_HOST + '/leaderboard/id/${leaderboardId}?page=${page}'
 
 export default (options = {}) => {
@@ -51,51 +50,6 @@ export default (options = {}) => {
       return r;
     })
 
-  const processCountryRanking = (country, doc) => {
-
-    const data = doc
-      .map(a => {
-
-        let country = a.country;
-        country = country ? country.toUpperCase() : null;
-
-        let history = a.histories;
-        let histories = history && history.length ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r)) : [];
-        let difference = (histories.length > 7 ? parseInt(histories[histories.length - 7]) - parseInt(histories[histories.length - 1]) : null);
-        let playerName = a.name;
-        playerName = playerName || playerName === '' ? playerName.trim() : null;
-
-        let pp = a.pp;
-        pp = !isNaN(pp) ? pp : null;
-
-        let rank = a.rank;
-        rank = !isNaN(rank) ? rank : null
-        return {
-          playerId: a.id,
-          name: playerName,
-          playerInfo: {
-            avatar: a.avatar,
-            countries: [{country, rank: a.countryRank}],
-            pp,
-            rank,
-            rankHistory: histories,
-          },
-          others: {
-            difference,
-          },
-        }
-      })
-
-    return {players: data};
-  }
-
-  const countryRanking = async (country, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(COUNTRY_RANKING_URL, {country, page}), options, priority)
-    .then(r => {
-      r.body = processCountryRanking(country, r.body)
-
-      return r;
-    })
-
   const processLeaderboardScores = doc => {
     return doc.map(s => {
       let ret = {player: {playerInfo: {countries: []}}, score: {lastUpdated: new Date()}};
@@ -118,7 +72,7 @@ export default (options = {}) => {
       ret.score.timeSetString = formatDateRelative(new Date(s.timeset));
       ret.score.timeSet = s.timeset;
       if (ret.score.timeSetString) ret.score.timeSetString = ret.score.timeSetString.trim();
-      
+
       ret.score.mods = s.modifiers && s.modifiers.length ? s.modifiers.split(',').filter(m => m && m.trim().length) : null;
 
       ret.score.pp = s.pp;
@@ -208,7 +162,6 @@ export default (options = {}) => {
 
   return {
     rankeds,
-    countryRanking,
     leaderboard,
     ...queueToReturn,
   }
