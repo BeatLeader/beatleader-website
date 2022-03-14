@@ -63,15 +63,26 @@
   let nameInput;
   let redactingName = false;
   async function onRedactButtonClick() {
-      if (!redactingName) nameInput = name;
+      if (!redactingName) {
+        nameInput = name;
 
-      if (redactingName && nameInput !== name) {
-          await account.changeName(nameInput);
-
-          dispatch('player-data-updated', {name: nameInput})
+        redactingName = !redactingName;
       }
 
-      redactingName = !redactingName;
+      if (redactingName && nameInput !== name) {
+        try {
+          dispatch('player-data-edit-error', null);
+
+          await account.changeName(nameInput);
+
+          dispatch('player-data-updated', {name: nameInput});
+
+          redactingName = !redactingName;
+        }
+        catch(err) {
+          dispatch('player-data-edit-error', err);
+        }
+      }
   }
 
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;

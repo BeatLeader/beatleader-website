@@ -19,6 +19,7 @@
   import Badge from '../Common/Badge.svelte'
   import BeatLeaderSummary from "./BeatLeaderSummary.svelte";
   import ContentBox from "../Common/ContentBox.svelte";
+  import Error from '../Common/Error.svelte'
 
   export let playerData;
   export let isLoading = false;
@@ -94,6 +95,11 @@
 
     accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
     accSaberCategories = await accSaberService.getCategories();
+  }
+
+  let editError = null;
+  function onPlayerDataEditError(err) {
+    editError = err?.detail ?? null;
   }
 
   $: isCached = !!(playerData && playerData.scoresLastUpdated)
@@ -186,7 +192,7 @@
       <Avatar {isLoading} {playerInfo} hash={avatarHash} />
 
       {#if playerId && !isLoading}
-        <AvatarOverlayIcons {playerId} on:player-data-updated />
+        <AvatarOverlayIcons {playerId} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
       {/if}
 
       {#if playerRole}
@@ -197,7 +203,11 @@
     </div>
 
     <div class="rank-and-stats-cell">
-      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} prevInfo={playerGain} on:player-data-updated />
+      {#if editError}
+        <Error error={editError} />
+      {/if}
+
+      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} prevInfo={playerGain} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
       <BeatLeaderSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
       {#if $account.error}
         {$account.error}

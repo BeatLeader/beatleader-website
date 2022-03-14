@@ -81,9 +81,16 @@
       let reader = new FileReader();
       reader.readAsArrayBuffer(image);
       reader.onload = async e => {
-        await account.changeAvatar(e.target.result);
+        try {
+          dispatch('player-data-edit-error', null);
 
-        dispatch('player-data-updated', {avatar: e.target.result})
+          await account.changeAvatar(e.target.result);
+
+          dispatch('player-data-updated', {avatar: e.target.result})
+        }
+        catch(err) {
+          dispatch('player-data-edit-error', err);
+        }
       };
   }
 
