@@ -8,7 +8,7 @@ export const BL_CDN = 'https://cdn.beatleader.xyz';
 export const BS_CDN = 'https://eu.cdn.beatsaver.com';
 const RANKEDS_URL = BL_HOST + '/maps?ranked=true&page=${page}';
 const COUNTRY_RANKING_URL = BL_HOST + '/players?page=${page}&countries=${country}'
-const LEADERBOARD_URL = BL_HOST + '/leaderboard/id/${leaderboardId}'
+const LEADERBOARD_URL = BL_HOST + '/leaderboard/id/${leaderboardId}?page=${page}'
 
 export default (options = {}) => {
   const queue = createQueue(options);
