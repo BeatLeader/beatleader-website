@@ -4,11 +4,14 @@
   export let playerInfo;
   export let isLoading = false;
   export let centered = false;
+  export let hash = '';
+
+  $: avatar = playerInfo?.avatar + `?${hash}`;
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered>
-  {#if playerInfo && playerInfo.avatar}
-    <img src={playerInfo.avatar} class="avatar" alt="" />
+  {#if avatar}
+    <img src={avatar} class="avatar" alt="" />
   {:else}
     <span class="no-image">?</span>
   {/if}

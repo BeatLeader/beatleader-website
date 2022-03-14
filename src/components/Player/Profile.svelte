@@ -25,6 +25,7 @@
   export let error = null;
   export let skeleton = false;
   export let twitchVideos = null;
+  export let avatarHash = null;
 
   const pageContainer = getContext('pageContainer');
 
@@ -182,10 +183,10 @@
 <ContentBox>
   <div class="player-general-info">
     <div class="avatar-cell">
-      <Avatar {isLoading} {playerInfo}/>
+      <Avatar {isLoading} {playerInfo} hash={avatarHash} />
 
       {#if playerId && !isLoading}
-        <AvatarOverlayIcons {playerId}/>
+        <AvatarOverlayIcons {playerId} on:player-data-updated />
       {/if}
 
       {#if playerRole}
@@ -196,7 +197,7 @@
     </div>
 
     <div class="rank-and-stats-cell">
-      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} prevInfo={playerGain}/>
+      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} prevInfo={playerGain} on:player-data-updated />
       <BeatLeaderSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
       {#if $account.error}
         {$account.error}
