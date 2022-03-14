@@ -245,6 +245,10 @@
         outline: none;
     }
 
+    .input-reset::placeholder {
+        color: var(--faded)!important;
+    }
+
     :global(.editNameButton) {
         padding-bottom: 1.2em !important;
         margin-bottom: -1em !important;
