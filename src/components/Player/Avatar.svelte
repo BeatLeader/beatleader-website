@@ -6,7 +6,7 @@
   export let centered = false;
   export let hash = '';
 
-  $: avatar = playerInfo?.avatar + `?${hash}`;
+  $: avatar = playerInfo?.avatar ? playerInfo.avatar + `?${hash}` : null;
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered>
@@ -32,6 +32,7 @@
         width: 150px;
         transition: transform 300ms;
         z-index: 2;
+        aspect-ratio: 1/1;
     }
 
     .loading img, .loading .no-image {
