@@ -6,10 +6,12 @@
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {opt} from '../../utils/js'
   import Button from '../Common/Button.svelte'
-  import {onMount} from 'svelte'
+  import {createEventDispatcher, onMount} from 'svelte'
   import TwitchLinkModal from './TwitchLinkModal.svelte'
 
   export let playerId;
+
+  const dispatch = createEventDispatcher();
 
   let playersStore = createPlayersStore();
   const twitchService = createTwitchService();
@@ -78,8 +80,10 @@
       let image = e.target.files[0];
       let reader = new FileReader();
       reader.readAsArrayBuffer(image);
-      reader.onload = e => {
-        account.changeAvatar(e.target.result);
+      reader.onload = async e => {
+        await account.changeAvatar(e.target.result);
+
+        dispatch('player-data-updated', {avatar: e.target.result})
       };
   }
 
@@ -115,7 +119,7 @@
       />
     {/if}
 
-    {#if isMain && loggedInPlayer == playerId}
+    {#if isMain && loggedInPlayer === playerId}
     <div class="imageInput" on:click={() => fileinput.click()}>
       <input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={(e)=>changeAvatar(e)} bind:this={fileinput} >
       <span class="imageChange">

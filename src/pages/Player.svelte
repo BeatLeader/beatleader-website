@@ -109,6 +109,16 @@
     twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
   }
 
+  let avatarHash = '';
+  async function onPlayerDataUpdated() {
+    if(playerStore) {
+      await playerStore.refresh();
+
+      // force refresh avatar url
+      avatarHash = (Math.random() * 100000).toString();
+    }
+  }
+
   onMount(async () => {
     const twitchUnsubscribe = eventBus.on('player-twitch-videos-updated', ({playerId: twitchPlayerId, twitchProfile}) => {
       if (twitchPlayerId !== currentPlayerId) return;
@@ -187,7 +197,8 @@
       <p class="error">Player not found.</p>
     </ContentBox>
   {:else}
-    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos} />
+    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos}
+             on:player-data-updated={onPlayerDataUpdated} {avatarHash} />
 
     {#if scoresPlayerId}
       <Scores playerId={scoresPlayerId}

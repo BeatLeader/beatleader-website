@@ -109,50 +109,44 @@ export default (refreshOnCreate = true) => {
         });
   }
 
-  const changeAvatar = (file) => {
+  const changeAvatar = (file) =>
     fetch(BL_API_URL + "user/avatar", { 
         method: 'PATCH', 
         body: file, 
         credentials: 'include'
     }).then(response => response.text()).then(
         data => {
+            account.error = null;
+
             if (data.length > 0) {
                 account.error = data;
                 setTimeout(function(){
                     account.error = null;
                     set(account);
                 }, 3500);
-            } else {
-                account.error = null;
-                setTimeout(function(){
-                    location.reload();
-                }, 1000);
             }
+
             set(account);
         });
-  }
 
-  const changeName = (name) => {
+  const changeName = (name) =>
     fetch(BL_API_URL + "user/name?newName=" + name, { 
         method: 'PATCH', 
         credentials: 'include'
     }).then(response => response.text()).then(
         data => {
+            account.error = null;
+
             if (data.length > 0) {
                 account.error = data;
                 setTimeout(function(){
                     account.error = null;
                     set(account);
                 }, 3500);
-            } else {
-                account.error = null;
-                setTimeout(function(){
-                    location.reload();
-                }, 1000);
             }
+
             set(account);
         });
-  }
 
   const logOut = () => {
     fetch(BL_API_URL + "signout", {

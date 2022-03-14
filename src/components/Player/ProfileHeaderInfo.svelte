@@ -1,6 +1,6 @@
 <script>
   import {navigate} from 'svelte-routing'
-  import {getContext} from 'svelte';
+  import {createEventDispatcher, getContext} from 'svelte';
   import {BL_CDN} from '../../network/queues/beatleader/page-queue'
   import createAccountStore from '../../stores/beatleader/account'
   import {configStore} from '../../stores/config'
@@ -9,7 +9,6 @@
 
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
-  import Skeleton from '../Common/Skeleton.svelte'
   import Error from '../Common/Error.svelte'
   import Badge from '../Common/Badge.svelte'
   import Button from '../Common/Button.svelte'
@@ -21,6 +20,8 @@
   export let playerId;
   export let prevInfo;
   export let error = null;
+
+  const dispatch = createEventDispatcher();
 
   const account = createAccountStore();
 
@@ -61,10 +62,15 @@
 
   let nameInput;
   let redactingName = false;
-  function onRedactButtonClick() {
-      if (redactingName && nameInput.value) {
-          account.changeName(nameInput.value);
+  async function onRedactButtonClick() {
+      if (!redactingName) nameInput = name;
+
+      if (redactingName && nameInput !== name) {
+          await account.changeName(nameInput);
+
+          dispatch('player-data-updated', {name: nameInput})
       }
+
       redactingName = !redactingName;
   }
 
@@ -81,7 +87,7 @@
     <div class="player-nickname">
       {#if name}
         {#if redactingName}
-        <input type="text"value="{name}" placeholder="Your name" class="input-reset" bind:this={nameInput}>
+          <input type="text" bind:value={nameInput} placeholder="Your name" class="input-reset">
         {:else}
           {#if playerInfo.externalProfileUrl}
             <a href={playerInfo.externalProfileUrl}
@@ -94,7 +100,7 @@
             {name}
           {/if}
         {/if}
-        {#if isMain && loggedInPlayer == playerId}
+        {#if isMain && loggedInPlayer === playerId}
           <Button type="text" cls="editNameButton" iconFa={redactingName ? "fas fa-check" : "fas fa-edit"}
                         on:click={() => onRedactButtonClick()} />
         {/if}
@@ -190,6 +196,7 @@
         font-size: 2em;
         font-weight: bold;
         margin: -.2em 0em;
+        align-items: baseline;
     }
 
     .status {
@@ -217,13 +224,19 @@
     }
 
     .input-reset {
-      width: 70%;
-      font-size: 1em;
-      height: 1.8em;
+        width: 70%;
+        font-size: inherit;
+        padding: 0;
+        color: var(--textColor);
+        background-color: transparent;
+        border: none;
+        border-bottom: solid 1px var(--dimmed);
+        outline: none;
     }
 
     :global(.editNameButton) {
         padding-bottom: 1.2em !important;
         margin-bottom: -1em !important;
+        font-size: .75em!important;
     }
 </style>
