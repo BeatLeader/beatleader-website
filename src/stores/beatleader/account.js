@@ -15,11 +15,18 @@ export default (refreshOnCreate = true) => {
 
   const {subscribe: subscribeState, set} = writable(account);
 
+  const checkResponse = async response => {
+    if (response.status !== 200) throw new Error(await response.text());
+
+    return response.text();
+  }
+
   const get = () => account;
   const refresh = async (changeMain = false) => {
     let config = await configStore.get();
-    fetch(BL_API_URL + "user/id", {credentials: 'include'}).then(response => response.text()).then(
-    data => {
+    fetch(BL_API_URL + "user/id", {credentials: 'include'})
+      .then(checkResponse)
+      .then(data => {
         if (data.length > 0) {
             account.id = data;
             if (changeMain) {
@@ -75,7 +82,9 @@ export default (refreshOnCreate = true) => {
         credentials: 'include',
         method: 'POST',
         body: data
-    }).then(response => response.text()).then(
+    })
+      .then(checkResponse)
+      .then(
         data => {
             if (data.length > 0) {
                 account.error = data;
@@ -97,7 +106,9 @@ export default (refreshOnCreate = true) => {
         credentials: 'include',
         method: 'POST',
         body: data
-    }).then(response => response.text()).then(
+    })
+      .then(checkResponse)
+      .then(
         data => {
             if (data.length > 0) {
                 account.error = data;
@@ -109,50 +120,48 @@ export default (refreshOnCreate = true) => {
         });
   }
 
-  const changeAvatar = (file) => {
+  const changeAvatar = (file) =>
     fetch(BL_API_URL + "user/avatar", { 
         method: 'PATCH', 
         body: file, 
         credentials: 'include'
-    }).then(response => response.text()).then(
+    })
+      .then(checkResponse)
+      .then(
         data => {
+            account.error = null;
+
             if (data.length > 0) {
                 account.error = data;
                 setTimeout(function(){
                     account.error = null;
                     set(account);
                 }, 3500);
-            } else {
-                account.error = null;
-                setTimeout(function(){
-                    location.reload();
-                }, 1000);
             }
+
             set(account);
         });
-  }
 
-  const changeName = (name) => {
+  const changeName = (name) =>
     fetch(BL_API_URL + "user/name?newName=" + name, { 
         method: 'PATCH', 
         credentials: 'include'
-    }).then(response => response.text()).then(
+    })
+      .then(checkResponse)
+      .then(
         data => {
+            account.error = null;
+
             if (data.length > 0) {
                 account.error = data;
                 setTimeout(function(){
                     account.error = null;
                     set(account);
                 }, 3500);
-            } else {
-                account.error = null;
-                setTimeout(function(){
-                    location.reload();
-                }, 1000);
             }
+
             set(account);
         });
-  }
 
   const logOut = () => {
     fetch(BL_API_URL + "signout", {

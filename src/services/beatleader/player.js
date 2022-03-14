@@ -233,7 +233,7 @@ export default () => {
   const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     const player = await getPlayer(playerId);
 
-    if (!player || !isProfileFresh(player, refreshInterval)) {
+    if (!player || !isProfileFresh(player, refreshInterval) || force) {
       const fetchedPlayerResponse = await fetchPlayer(playerId, priority, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval, fullResponse: true});
       if (isResponseCached(fetchedPlayerResponse)) return getDataFromResponse(fetchedPlayerResponse);
 

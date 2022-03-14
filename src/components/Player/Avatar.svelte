@@ -4,11 +4,14 @@
   export let playerInfo;
   export let isLoading = false;
   export let centered = false;
+  export let hash = '';
+
+  $: avatar = playerInfo?.avatar ? playerInfo.avatar + `?${hash}` : null;
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered>
-  {#if playerInfo && playerInfo.avatar}
-    <img src={playerInfo.avatar} class="avatar" alt="" />
+  {#if avatar}
+    <img src={avatar} class="avatar" alt="" />
   {:else}
     <span class="no-image">?</span>
   {/if}
@@ -29,6 +32,7 @@
         width: 150px;
         transition: transform 300ms;
         z-index: 2;
+        aspect-ratio: 1/1;
     }
 
     .loading img, .loading .no-image {
