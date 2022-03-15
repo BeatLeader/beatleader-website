@@ -1,17 +1,19 @@
 import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps'
 import accEnhancer from './enhancers/scores/acc'
-import createLeaderboardPageProvider from './providers/page-leaderboard'
+import createLeaderboardPageProvider from './providers/api-leaderboard'
 import {writable} from 'svelte/store'
 import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/beatleader/song'
 import {debounce} from '../../utils/debounce'
 import produce, {applyPatches} from 'immer'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
+import stringify from 'json-stable-stringify'
 
-export default (leaderboardId, type = 'global', page = 1, initialState = null, initialStateType = 'initial') => {
+export default (leaderboardId, type = 'global', page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
   let currentLeaderboardId = leaderboardId ? leaderboardId : null;
   let currentType = type ? type : 'global';
   let currentPage = page ? page : 1;
+  let currentFilters = filters ?? {};
 
   const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
 
@@ -25,6 +27,7 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
     currentLeaderboardId = fetchParams?.leaderboardId ?? null;
     currentType = fetchParams?.type ?? 'global';
     currentPage = fetchParams?.page ?? 1;
+    currentFilters = fetchParams?.filters ?? {};
 
     if (!state) return;
 
@@ -104,12 +107,12 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
     initialStateType
   );
 
-  const fetch = async (leaderboardId = currentLeaderboardId, type = currentType, page = currentPage, force = false) => {
+  const fetch = async (leaderboardId = currentLeaderboardId, type = currentType, page = currentPage, filters = currentFilters, force = false) => {
     if (!leaderboardId) return false;
 
-    if (leaderboardId === currentLeaderboardId && (!type || type === currentType) && (!page || page === currentPage) && !force) return false;
+    if (leaderboardId === currentLeaderboardId && (!type || type === currentType) && (!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
 
-    return httpStore.fetch({leaderboardId, type, page}, force, provider);
+    return httpStore.fetch({leaderboardId, type, page, filters}, force, provider);
   }
 
   const refresh = async () => fetch(currentLeaderboardId, currentType, currentPage, true);
@@ -121,7 +124,7 @@ export default (leaderboardId, type = 'global', page = 1, initialState = null, i
     getLeaderboardId: () => currentLeaderboardId,
     getType: () => currentType,
     getPage: () => currentPage,
+    getFilters: () => currentFilters,
     enhanced: {subscribe: subscribeEnhanced},
   }
 }
-

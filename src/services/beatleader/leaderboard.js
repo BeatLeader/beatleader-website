@@ -1,4 +1,5 @@
-import leaderboardPageClient from '../../network/clients/beatleader/leaderboard/page-leaderboard'
+import leaderboardApiClient from '../../network/clients/beatleader/leaderboard/api-leaderboard'
+import leaderboardsApiClient from '../../network/clients/beatleader/leaderboard/api-leaderboards'
 import accSaberLeaderboardApiClient from '../../network/clients/accsaber/api-leaderboard'
 import makePendingPromisePool from '../../utils/pending-promises'
 import createPlayersService from './player'
@@ -28,17 +29,12 @@ export default () => {
 
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
-  const fetchPage = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(
-    `pageClient/leaderboard/${leaderboardId}/${page}`,
-    () => leaderboardPageClient.getProcessed({
-      leaderboardId,
-      page,
-      signal,
-      priority,
-      cacheTtl: MINUTE,
-    }));
+  const fetchAllLeaderboardsPage = async (page = 1, filters={}, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(
+    `apiClient/leaderboards/${page}`, () => leaderboardsApiClient.getProcessed({page, filters, signal, priority, cacheTtl: force ? null : MINUTE}));
 
-  const fetchAccSaberPage = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+  const fetchLeaderboardPage = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(`apiClient/leaderboard/${leaderboardId}/${page}`, () => leaderboardApiClient.getProcessed({leaderboardId, page, filters, signal, priority, cacheTtl: force ? null : MINUTE,}));
+
+  const fetchAccSaberPage = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
     if (page < 1) page = 1;
 
     const data = await resolvePromiseOrWaitForPending(
@@ -64,7 +60,7 @@ export default () => {
   }
 
   const getFriendsLeaderboard = async (leaderboardId, priority = PRIORITY.FG_LOW, signal = null) => {
-    const leaderboard = await resolvePromiseOrWaitForPending(`pageClient/leaderboard/${leaderboardId}/1`, () => leaderboardPageClient.getProcessed({leaderboardId, page: 1, signal, priority, cacheTtl: MINUTE}));
+    const leaderboard = await resolvePromiseOrWaitForPending(`pageClient/leaderboard/${leaderboardId}/1`, () => leaderboardApiClient.getProcessed({leaderboardId, page: 1, signal, priority, cacheTtl: MINUTE}));
 
     const friends = convertArrayToObjectByKey(await friendsPromise, 'playerId');
 
@@ -95,7 +91,8 @@ export default () => {
   }
 
   service = {
-    fetchPage,
+    fetchAllLeaderboardsPage,
+    fetchLeaderboardPage,
     fetchAccSaberPage,
     getFriendsLeaderboard,
     LEADERBOARD_SCORES_PER_PAGE,

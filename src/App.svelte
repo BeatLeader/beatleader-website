@@ -7,6 +7,7 @@
   import SearchPage from './pages/Search.svelte';
   import RankingPage from './pages/Ranking.svelte';
   import LeaderboardPage from './pages/Leaderboard.svelte';
+  import LeaderboardsPage from './pages/Leaderboards.svelte';
   import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
   import TwitchPage from './pages/Twitch.svelte';
@@ -48,6 +49,9 @@
       </Route>
       <Route path="/leaderboard/:type/:leaderboardId/*page" let:params>
         <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} dontChangeType={false} />
+      </Route>
+      <Route path="/leaderboards/*page" let:params let:location>
+        <LeaderboardsPage page={params.page} {location} />
       </Route>
       <Route path="/playlists" component="{PlaylistsPage}" />
       <Route path="/search">
