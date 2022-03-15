@@ -28,11 +28,12 @@
       return val < 0 ? 0 : val;
     }
 
+    // temporarily disable the use of filters
     const params = [
-      {key: 'search', default: '', process: processString},
-      {key: 'ranked', default: 'true', process: processBool},
-      {key: 'stars_from', default: 0, process: processFloat},
-      {key: 'stars_to', default: 15, process: processFloat},
+      // {key: 'search', default: '', process: processString},
+      // {key: 'ranked', default: 'true', process: processBool},
+      // {key: 'stars_from', default: 0, process: processFloat},
+      // {key: 'stars_to', default: 15, process: processFloat},
     ];
 
     const searchParams = new URLSearchParams(location?.search ?? '');
@@ -189,6 +190,7 @@
 
     aside {
         width: 25em;
+        display: none; /* temporarily disable the display of filters */
     }
 
     .songs :global(> *:last-child) {
