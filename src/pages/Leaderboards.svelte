@@ -159,8 +159,6 @@
       </h1>
 
       {#if leaderboardsPage?.length}
-        <div class="filters"></div>
-
         <div class="songs grid-transition-helper">
           {#each leaderboardsPage as map, idx (map.id)}
             <div class={`song-line row-${idx}`}  in:fly={{delay: idx * 10, x: 100}}>
@@ -353,7 +351,7 @@
         margin-bottom: .25em!important;
     }
 
-    @media screen and (max-width: 1023px) {
+    @media screen and (max-width: 1275px) {
         .align-content {
             flex-direction: column-reverse;
             align-items: center;
@@ -361,6 +359,7 @@
 
         aside {
             width: 100%;
+            max-width: 65em;
         }
     }
 
