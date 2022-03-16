@@ -9,9 +9,16 @@
   import ContentBox from "../components/Common/ContentBox.svelte";
   import Icons from '../components/Song/Icons.svelte'
   import SongCover from '../components/Player/SongCover.svelte'
+  import RangeSlider from "svelte-range-slider-pips";
+  import {debounce} from '../utils/debounce'
+  import Switcher from '../components/Common/Switcher.svelte'
 
   export let page = 1;
   export let location;
+
+  const MIN_STARS = 0;
+  const MAX_STARS = 15;
+  const FILTERS_DEBOUNCE_MS = 500;
 
   document.body.classList.remove('slim');
 
@@ -28,12 +35,11 @@
       return val < 0 ? 0 : val;
     }
 
-    // temporarily disable the use of filters
     const params = [
-      // {key: 'search', default: '', process: processString},
-      // {key: 'ranked', default: 'true', process: processBool},
-      // {key: 'stars_from', default: 0, process: processFloat},
-      // {key: 'stars_to', default: 15, process: processFloat},
+      {key: 'search', default: '', process: processString},
+      {key: 'ranked', default: 'true', process: processBool},
+      {key: 'stars_from', default: MIN_STARS, process: processFloat},
+      {key: 'stars_to', default: MAX_STARS, process: processFloat},
     ];
 
     const searchParams = new URLSearchParams(location?.search ?? '');
@@ -64,6 +70,11 @@
   let currentFilters = buildFiltersFromLocation(location);
   let boxEl = null;
 
+  const rankedFilterOptions = [
+    {key: 'false', label: 'All songs', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
+    {key: 'true', label: 'Ranked songs only', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+  ];
+
   function scrollToTop() {
     if (boxEl) scrollToTargetAdjusted(boxEl, 44)
   }
@@ -77,7 +88,7 @@
     if (isNaN(newPage)) newPage = 1;
 
     currentPage = newPage;
-    leaderboardsStore.fetch(currentPage, currentFilters);
+    leaderboardsStore.fetch(currentPage, {...currentFilters});
   }
 
   function onPageChanged(event) {
@@ -85,6 +96,36 @@
 
     navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
   }
+
+  function navigateToCurrentPageAndFilters() {
+    navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+  }
+
+  function onSearchChanged(e) {
+    if (!e?.target?.value?.length) return;
+
+    currentFilters.search = e.target.value;
+    navigateToCurrentPageAndFilters();
+  }
+  const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
+
+  function onRankedChanged(event) {
+    if (!event?.detail?.key) return;
+
+    currentFilters.ranked = event.detail.key === 'true';
+
+    navigateToCurrentPageAndFilters();
+  }
+
+  function onStarsChanged(event) {
+    if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
+
+    currentFilters.stars_from = event.detail.values[0];
+    currentFilters.stars_to = event.detail.values[1];
+
+    navigateToCurrentPageAndFilters();
+  }
+  const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
 
   $: isLoading = leaderboardsStore.isLoading;
   $: pending = leaderboardsStore.pending;
@@ -164,10 +205,31 @@
 
   <aside>
     <ContentBox>
-      <h2 class="title is-6">Filters</h2>
+      <h2 class="title is-5">Filters</h2>
 
-      <p>TODO</p>
+      <section class="filter">
+        <label>Song/Author/Mapper name</label>
+        <input type="text" placeholder="Search..." value={currentFilters.search} on:input={debouncedOnSearchChanged} />
+      </section>
 
+      <section class="filter">
+        <label>Show maps</label>
+
+        <Switcher values={rankedFilterOptions} value={rankedFilterOptions.find(o => o.key === currentFilters.ranked.toString())}
+                  on:change={onRankedChanged}
+        />
+      </section>
+
+      <section class="filter" class:disabled={currentFilters.ranked === false}
+               title={currentFilters.ranked === false ? 'Filter only available for ranked maps' : null}
+      >
+        <label>Stars <span>{currentFilters.stars_from}<sup>★</sup></span> to <span>{currentFilters.stars_to}<sup>★</sup></span></label>
+        <RangeSlider range min={MIN_STARS} max={MAX_STARS} step={0.1} values={[currentFilters.stars_from, currentFilters.stars_to]}
+                     float hoverable pips pipstep={20} all="label"
+                     on:change={debouncedOnStarsChanged}
+                     disabled={currentFilters.ranked === false}
+        />
+      </section>
     </ContentBox>
   </aside>
 </section>
@@ -175,7 +237,7 @@
 <style>
     .align-content {
         display: flex;
-        justify-content: center;
+        justify-content: flex-end!important;
     }
 
     .page-content {
@@ -190,7 +252,47 @@
 
     aside {
         width: 25em;
-        display: none; /* temporarily disable the display of filters */
+    }
+
+    aside .filter {
+        margin-bottom: 1.5rem;
+        transition: opacity 300ms;
+    }
+
+    aside .filter.disabled {
+        opacity: .25;
+    }
+
+    aside label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 1rem;
+    }
+
+    aside .filter.disabled label {
+        cursor: help;
+    }
+
+    aside label span {
+        color: var(--beatleader-primary);
+    }
+
+    aside input {
+        width: 100%;
+        font-size: 1em;
+        color: var(--beatleader-primary);
+        background-color: var(--foreground);
+        border: none;
+        border-bottom: 1px solid var(--faded);
+        outline: none;
+    }
+
+    aside :global(.switch-types) {
+        justify-content: flex-start;
+    }
+
+    input::placeholder {
+        color: var(--faded) !important;
     }
 
     .songs :global(> *:last-child) {

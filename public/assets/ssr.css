@@ -16,9 +16,26 @@
     --color-highlight: darkgreen;
     --error: red;
 
+    --beatleader-primary: #eb008c;
+    --beatleader-secondary: #562a56;
+
     --graph-gradient-start: #06003814;
     --graph-gradient-end: #5a46ff14;
     --graph-gradient: linear-gradient(0deg, var(--graph-gradient-start), var(--graph-gradient-end));
+
+    --range-slider: #d7dada;
+    --range-handle-inactive: var(--beatleader-primary);
+    --range-handle: var(--beatleader-primary);
+    --range-handle-focus: var(--beatleader-primary);
+    --range-range-inactive: var(--beatleader-primary);
+    --range-pip: var(--beatleader-secondary);
+    --range-pip-in-range-text: var(--beatleader-primary);
+    --range-pip-active-text: var(--beatleader-primary);
+    --range-pip-active: var(--beatleader-primary);
+    --range-pip-hover: var(--beatleader-primary);
+    --range-pip-text: var(--beatleader-secondary);
+    --range-pip-hover-text: var(--beatleader-primary);
+    --range-float-text:      white;
 }
 
 html {
