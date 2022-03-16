@@ -26,8 +26,7 @@
   if (!page || isNaN(page) || page <= 0) page = 1;
 
   const buildFiltersFromLocation = location => {
-    const processString = val => val;
-    const processBool = val => val === 'true';
+    const processString = val => val?.toString() ?? '';
     const processFloat = val => {
       val = parseFloat(val);
       if (isNaN(val)) return null;
@@ -37,7 +36,7 @@
 
     const params = [
       {key: 'search', default: '', process: processString},
-      {key: 'ranked', default: 'true', process: processBool},
+      {key: 'type', default: '', process: processString},
       {key: 'stars_from', default: MIN_STARS, process: processFloat},
       {key: 'stars_to', default: MAX_STARS, process: processFloat},
     ];
@@ -70,9 +69,10 @@
   let currentFilters = buildFiltersFromLocation(location);
   let boxEl = null;
 
-  const rankedFilterOptions = [
-    {key: 'false', label: 'All songs', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
-    {key: 'true', label: 'Ranked songs only', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+  const typeFilterOptions = [
+    {key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
+    {key: 'ranked', label: 'Ranked only', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+    // {key: 'unranked', label: 'Unranked only', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
   ];
 
   function scrollToTop() {
@@ -109,10 +109,10 @@
   }
   const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
 
-  function onRankedChanged(event) {
-    if (!event?.detail?.key) return;
+  function onTypeChanged(event) {
+    if (!event?.detail) return;
 
-    currentFilters.ranked = event.detail.key === 'true';
+    currentFilters.type = event.detail.key ?? '';
 
     navigateToCurrentPageAndFilters();
   }
@@ -213,19 +213,19 @@
       <section class="filter">
         <label>Show maps</label>
 
-        <Switcher values={rankedFilterOptions} value={rankedFilterOptions.find(o => o.key === currentFilters.ranked.toString())}
-                  on:change={onRankedChanged}
+        <Switcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentFilters.type)}
+                  on:change={onTypeChanged}
         />
       </section>
 
-      <section class="filter" class:disabled={currentFilters.ranked === false}
-               title={currentFilters.ranked === false ? 'Filter only available for ranked maps' : null}
+      <section class="filter" class:disabled={currentFilters.type !== 'ranked'}
+               title={currentFilters.type !== 'ranked' ? 'Filter only available for ranked maps' : null}
       >
         <label>Stars <span>{currentFilters.stars_from}<sup>★</sup></span> to <span>{currentFilters.stars_to}<sup>★</sup></span></label>
         <RangeSlider range min={MIN_STARS} max={MAX_STARS} step={0.1} values={[currentFilters.stars_from, currentFilters.stars_to]}
                      float hoverable pips pipstep={20} all="label"
                      on:change={debouncedOnStarsChanged}
-                     disabled={currentFilters.ranked === false}
+                     disabled={currentFilters.type !== 'ranked'}
         />
       </section>
     </ContentBox>
