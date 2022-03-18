@@ -2,6 +2,7 @@ import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps'
 import accEnhancer from './enhancers/scores/acc'
 import beatSaviorEnhancer from './enhancers/scores/beatsavior'
+import scoreStatisticEnhancer from './enhancers/scores/scoreStatistic'
 import rankedsEnhancer from './enhancers/leaderboard/rankeds'
 import compareEnhancer from './enhancers/scores/compare'
 import diffEnhancer from './enhancers/scores/diff'
@@ -98,6 +99,8 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => scoreStatisticEnhancer(draft))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
 
         if (stateType && stateType === 'live')
