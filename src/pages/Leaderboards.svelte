@@ -102,9 +102,7 @@
   }
 
   function onSearchChanged(e) {
-    if (!e?.target?.value?.length) return;
-
-    currentFilters.search = e.target.value;
+    currentFilters.search = e.target.value ?? '';
     navigateToCurrentPageAndFilters();
   }
   const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
