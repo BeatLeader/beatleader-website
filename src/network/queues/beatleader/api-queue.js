@@ -59,6 +59,8 @@ export default (options = {}) => {
       ret.player.playerInfo.country = country
       ret.player.playerInfo.countries.push({country, rank: player.countryRank});
       ret.player.playerInfo.avatar = player.avatar;
+      ret.player.playerInfo.allTime = player.allTime;
+      ret.player.playerInfo.lastTwoWeekTime = player.lastTwoWeekTime;
 
       ret.player.name = player.name;
       ret.player.name = ret.player.name ? ret.player.name.trim().replace('&#039;', "'") : null;
@@ -157,8 +159,6 @@ export default (options = {}) => {
 
         return r;
       })
-
-  // const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true), options, priority);
 
   return {
     player,
