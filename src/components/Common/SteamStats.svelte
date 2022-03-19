@@ -1,27 +1,13 @@
 <script>
-    import playerSteamStatsClient from '../../network/clients/beatleader/players/api-steam-stats'
-    import Flag from './Flag.svelte'
-  
-    export let playerId;
+    export let player;
 
-    let promise = Promise.resolve([]);
-  
-    function fetchSteamStats() {
-        promise = playerSteamStatsClient.getProcessed({playerId, fullResponse: false, priority: 3, options: {}})
-    }
-    fetchSteamStats();
-    
+    $: lastTwoWeeksTime = player && player.playerInfo && player.playerInfo.lastTwoWeeksTime ? player.playerInfo.lastTwoWeeksTime.toFixed(2) : null;
+    $: allTime = player && player.playerInfo && player.playerInfo.allTime ? player.playerInfo.allTime.toFixed(2) : null;
   </script>
   
-  {#await promise}
-    <p>...</p>
-  {:then stats}
-  {#if stats}
-    <p title="{stats.lastTwoWeeks} hours played last 2 weeks. And {stats.allTime} hours played all time."><span style="color: #8992e8">{stats.lastTwoWeeks}</span>|<span style="color: #8992e8">{stats.allTime}</span>h </p>
+  {#if lastTwoWeeksTime}
+    <p title="{lastTwoWeeksTime} hours played last 2 weeks. And {allTime} hours played all time."><span style="color: #8992e8">{lastTwoWeeksTime}</span>|<span style="color: #8992e8">{allTime}</span>h </p>
   {/if}
-    {:catch error}
-    <p style="color: red">{error.message}</p>
-    {/await}
   
   <style>
       p {

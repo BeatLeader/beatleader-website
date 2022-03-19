@@ -138,7 +138,7 @@
                 </div>
                 <div class="steam-and-pp">
                   {#if player.playerId > 70000000000000000}
-                    <SteamStats playerId={player.playerId}/>
+                    <SteamStats {player}/>
                   {/if}
                   <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
                     <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
