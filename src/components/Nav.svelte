@@ -87,6 +87,7 @@
   let friendsMenuShown = false;
   let playlistMenuShown = false;
   let accountMenuShown = false;
+  let mobileMenuShown = false;
 
   let showSettings = false;
 
@@ -105,7 +106,7 @@
   </a>
 
   {#if player}
-  <a href={`/u/${player.playerId}/beatleader/date/1`} on:click={(e) => { e.preventDefault(); onAccountClicked(e, player.playerId) }} transition:fade on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
+  <a href={`/u/${player.playerId}/beatleader/date/1`} class="me" on:click={(e) => { e.preventDefault(); onAccountClicked(e, player.playerId) }} transition:fade on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />
     {:else}
@@ -114,6 +115,8 @@
       </svg>
     {/if}
 
+    Me
+
     <Dropdown items={loggedInPlayer ? ["Migrate", "Log Out"] : ["Log In"]} shown={accountMenuShown} noItems="">
       <svelte:fragment slot="row" let:item>
         <div>
@@ -121,8 +124,6 @@
         </div>
       </svelte:fragment>
     </Dropdown>
-
-    Me
   </a>
   {:else}
   <a href={`/signin`} transition:fade>
@@ -161,6 +162,77 @@
     Maps
   </a>
 
+  <div class="right mobile-menu"  on:mouseover={() => mobileMenuShown = true} on:focus={() => mobileMenuShown = true} on:mouseleave={() => mobileMenuShown = false}>
+    <div class="hamburger">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </div>
+
+    <div class="dropdown-menu left" class:shown={mobileMenuShown}>
+      <div class="dropdown-content">
+        <div class="dropdown-item">
+          <a href="/playlists" on:click|preventDefault={() => navigate('/search')}>
+            <i class="fas fa-list-ul"></i>
+
+            Playlists
+          </a>
+
+          <div>
+            {#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
+              <figure class="selected-playlist">
+                <div class="playlistInfo">
+                  <img class="playlistImage" src="{$playlists[selectedPlaylist].image}" alt="PlaylistImage"/>
+                  <span class="playlistTitle">{$playlists[selectedPlaylist].playlistTitle}</span>
+                </div>
+              </figure>
+            {/if}
+
+            <Dropdown items={[{firstRow: true}].concat($playlists.length ? $playlists : [])} shown={true} on:select={onPlaylistClick}>
+              <svelte:fragment slot="row" let:item>
+                {#if item.firstRow}
+                  <div class="playlistButtonsContainer">
+                    <Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()}/>
+                    <Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')}/>
+                  </div>
+                {:else}
+                  <figure>
+                    <div class="playlistInfo">
+                      <img class="playlistImage" src="{item.image}" alt="PlaylistImage"/>
+                      <span class="playlistTitle">{item.playlistTitle} - {item.songs.length} songs</span>
+                    </div>
+                  </figure>
+                {/if}
+              </svelte:fragment>
+            </Dropdown>
+          </div>
+        </div>
+
+        <div class="dropdown-item">
+          <a href="/search" on:click|preventDefault={() => navigate('/search')}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+
+            Search
+          </a>
+        </div>
+
+        <div class="dropdown-item">
+          <a class="settings" title={notificationBadgeTitle} on:click={() => showSettings = true}>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+
+            Settings
+
+            {#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge"></div>{/if}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="right">
     <div class="playlists" on:mouseover={() => playlistMenuShown = true} on:focus={() => playlistMenuShown = true} on:mouseleave={() => playlistMenuShown = false}>
       {#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
@@ -179,8 +251,8 @@
         <svelte:fragment slot="row" let:item>
           {#if item.firstRow}
           <div class="playlistButtonsContainer">
-            <Button iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()}/>
-            <Button iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')}/>
+            <Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()}/>
+            <Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')}/>
           </div>
           {:else}
           <figure>
@@ -234,7 +306,7 @@
         box-shadow: 0 8px 10px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
     }
 
-    nav > *:not(.right), nav > .right > * {
+    nav > *:not(.right), nav > .right > *:not(.dropdown-menu) {
         display: inline-flex;
         justify-content: flex-start;
         align-items: center;
@@ -242,9 +314,10 @@
         font-size: 1rem;
         padding: .5rem .5rem;
         cursor: pointer;
+        position: relative;
     }
 
-    nav > *:not(.right):hover, nav > .right > *:hover {
+    nav > *:not(.right):hover, nav > .right > *:not(.dropdown-menu):hover {
         background-color: var(--selected);
     }
 
@@ -256,7 +329,7 @@
         position: relative;
     }
 
-    .friends :global(.dropdown-menu) {
+    .friends :global(.dropdown-menu), .me :global(.dropdown-menu) {
         width: 15rem !important;
         max-width: 60vw;
     }
@@ -268,6 +341,10 @@
     .playlists :global(.dropdown-menu) {
         width: 15rem !important;
         max-width: 60vw;
+    }
+
+    .playlists :global(.dropdown-item:first-child):hover {
+        background: transparent!important;
     }
 
     .playlistImage {
@@ -283,7 +360,7 @@
     .playlistButtonsContainer {
       display: flex;
       justify-content: space-between;
-      font-size: 1.1em;
+      font-size: .875rem;
       font-weight: 500;
     }
 
@@ -348,6 +425,10 @@
         width: 4em;
     }
 
+    .right.mobile-menu {
+        display: none;
+    }
+
     @media screen and (max-width: 450px) {
         nav {
             height: 3.5rem;
@@ -365,6 +446,51 @@
 
         nav svg, nav .avatar {
             margin-right: 0;
+        }
+
+        nav .right {
+            display: none;
+        }
+
+        .right.mobile-menu {
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-menu .hamburger {
+            justify-content: center!important;
+            height: 3.5rem!important;
+        }
+
+        .mobile-menu .hamburger svg {
+            margin-right: 0;
+        }
+
+        .mobile-menu .dropdown-menu {
+            max-width: 16rem;
+        }
+
+        .mobile-menu .dropdown-item > a {
+            display: flex;
+            align-items: center;
+        }
+
+        .mobile-menu svg {
+            margin-right: .25rem;
+        }
+
+        .mobile-menu .dropdown-menu :global(.dropdown-menu) {
+            position: relative;
+            border: none;
+        }
+
+        .mobile-menu .dropdown-menu :global(.dropdown-item:hover) {
+            background: transparent!important;
+        }
+
+        .mobile-menu .selected-playlist .playlistInfo {
+            margin-top: .5rem;
+            margin-left: 1rem;
         }
     }
 
