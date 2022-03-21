@@ -1,7 +1,7 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../../utils/format'
 import {getDiffColor} from '../../../utils/beatleader/format'
-import {formatDateRelative} from '../../../utils/date'
+import {formatDateRelative, dateFromUnix} from '../../../utils/date'
 
 export const BL_HOST = 'https://api.beatleader.xyz/';
 export const BL_CDN = 'https://cdn.beatleader.xyz';
@@ -71,7 +71,7 @@ export default (options = {}) => {
 
       ret.score.score = s.modifiedScore;
 
-      ret.score.timeSetString = formatDateRelative(new Date(s.timeset));
+      ret.score.timeSetString = formatDateRelative(dateFromUnix(s.timeset));
       ret.score.timeSet = s.timeset;
       if (ret.score.timeSetString) ret.score.timeSetString = ret.score.timeSetString.trim();
 
