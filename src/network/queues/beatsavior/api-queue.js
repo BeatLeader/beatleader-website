@@ -1,7 +1,7 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from "../../../utils/format";
 
-const BEATSAVIOR_API_URL = 'https://www.beatsavior.io/api/livescores/player';
+const BEATSAVIOR_API_URL = 'https://beat-savior.herokuapp.com/api/livescores/player';
 const PLAYER_URL = BEATSAVIOR_API_URL + '/${playerId}';
 
 export default (options = {}) => {

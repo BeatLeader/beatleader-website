@@ -6,7 +6,7 @@
 
 [[redirects]]
     from = "/cors/beat-savior/*"
-    to = "https://www.beatsavior.io/api/livescores/player/:splat"
+    to = "https://beat-savior.herokuapp.com/api/livescores/player/:splat"
     status = 200
     force = true
     headers = {X-From = "Netlify"}
