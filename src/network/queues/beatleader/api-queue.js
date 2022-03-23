@@ -4,7 +4,8 @@ import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../../utils/beatleade
 import {dateFromUnix, formatDateRelative} from '../../../utils/date'
 import {getDiffColor} from '../../../utils/beatleader/format'
 
-export const BL_API_URL = `https://api.beatleader.xyz/`;
+export const CURRENT_URL = location.protocol + "//" + location.host;
+export const BL_API_URL = CURRENT_URL == "https://api.beatleader.xyz" ? `https://api.beatleader.xyz/` : `http://blstage.azurewebsites.net/`;
 export const STEAM_API_URL = '/cors/steamapi'
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 

@@ -1,10 +1,10 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
+import {BL_API_URL} from './api-queue'
 import {substituteVars} from '../../../utils/format'
 
-export const BL_HOST = 'https://api.beatleader.xyz/';
 export const BL_CDN = 'https://cdn.beatleader.xyz';
 export const BS_CDN = 'https://eu.cdn.beatsaver.com';
-const RANKEDS_URL = BL_HOST + '/maps?ranked=true&page=${page}';
+const RANKEDS_URL = BL_API_URL + 'maps?ranked=true&page=${page}';
 
 export default (options = {}) => {
   const queue = createQueue(options);

@@ -1,11 +1,10 @@
 import {opt} from '../../../../utils/js'
-import {PRIORITY} from '../../../../network/queues/http-queue'
-export const BL_HOST = 'https://api.beatleader.xyz/';
+import {BL_API_URL} from '../../../../network/queues/beatleader/api-queue'
 
 export default async (data) => {
     if (!data || data.beatSavior) return;
 
-    let response = await fetch(BL_HOST + "score/statistic/" + data.score.id);
+    let response = await fetch(BL_API_URL + "score/statistic/" + data.score.id);
     let statistic = await response.json();
     let beatSavior = {};
 

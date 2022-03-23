@@ -2,6 +2,7 @@
     import Button from "../components/Common/Button.svelte";
     import createAccountStore from '../stores/beatleader/account'
     import {opt} from '../utils/js'
+    import {CURRENT_URL, BL_API_URL} from '../network/queues/beatleader/api-queue'
 
     export let action;
 
@@ -30,9 +31,9 @@
     <input type="password" bind:value={password} placeholder="Password">
 
     <Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)}/>
-    <form action="https://api.beatleader.xyz/signin" method="post">
+    <form action={BL_API_URL + "signin"} method="post">
         <input type="hidden" name="Provider" value="Steam" />
-        <input type="hidden" name="ReturnUrl" value="https://beatleader.xyz/signin/addHome" />
+        <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
 
         <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
     </form>
@@ -54,9 +55,9 @@
     Or just use this account.<br>
     You can change your avatar and name in <a class="inlineLink" href={"/u/" + loggedInPlayer}>your profile.</a>
 
-    <form action="https://api.beatleader.xyz/signinmigrate" method="post">
+    <form action={BL_API_URL + "signinmigrate"} method="post">
         <input type="hidden" name="Provider" value="Steam" />
-        <input type="hidden" name="ReturnUrl" value="https://beatleader.xyz/signin/addHome" />
+        <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
 
         <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
     </form>
