@@ -1,6 +1,6 @@
 import queue from '../../../queues/queues'
-import {opt} from '../../../../utils/js'
 import createClient from '../../generic'
+import {opt} from '../../../../utils/js'
 
 const process = response => {
   if (!opt(response, 'scores') || !Array.isArray(response.scores)) return null;
@@ -28,7 +28,7 @@ const process = response => {
   }
 }
 
-const get = async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_PAGE.leaderboard(leaderboardId, page, priority, queueOptions);
+const get = async ({leaderboardId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_API.leaderboard(leaderboardId, page, filters, priority, queueOptions);
 
 const client = createClient(get, process);
 

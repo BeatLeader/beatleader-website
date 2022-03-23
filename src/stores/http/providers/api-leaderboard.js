@@ -6,9 +6,9 @@ let leaderboardService = null;
 export default () => {
   if (!leaderboardService) leaderboardService = createLeaderboardService();
 
-  const getProcessed = async ({leaderboardId, type = 'global', page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) => {
+  const getProcessed = async ({leaderboardId, type = 'global', page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) => {
     switch(type) {
-      case 'global': return await leaderboardService.fetchPage(leaderboardId, page, priority, signal, force);
+      case 'global': return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, filters, priority, signal, force);
       case 'accsaber': return await leaderboardService.fetchAccSaberPage(leaderboardId, page, priority, signal, force);
       default: return await leaderboardService.getFriendsLeaderboard(leaderboardId, priority, signal, force);
     }
