@@ -58,7 +58,8 @@ const HMDs = {
   16: {name: 'Rift S', icon: 'oculus', color: 'invert(96%) sepia(9%) saturate(5456%) hue-rotate(170deg) brightness(100%) contrast(107%)'},
   32: {name: 'Oculus Quest', icon: 'oculus', color: 'invert(73%) sepia(55%) saturate(5479%) hue-rotate(271deg) brightness(106%) contrast(107%)'},
   64: {name: 'Valve Index', icon: 'index', color: 'invert(81%) sepia(27%) saturate(6288%) hue-rotate(344deg) brightness(103%) contrast(103%)'},
-  128: {name: 'Vive Cosmos', icon: 'vive', color: 'invert(11%) sepia(100%) saturate(7426%) hue-rotate(297deg) brightness(85%) contrast(109%)'}
+  128: {name: 'Vive Cosmos', icon: 'vive', color: 'invert(11%) sepia(100%) saturate(7426%) hue-rotate(297deg) brightness(85%) contrast(109%)'},
+  256: {name: 'Oculus Quest 2', icon: 'oculus', color: 'invert(69%) sepia(52%) saturate(501%) hue-rotate(107deg) brightness(98%) contrast(86%)'}
 };
 
 export function getHeadsetForHMD(hmd) {

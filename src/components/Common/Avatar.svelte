@@ -15,5 +15,6 @@
 <style>
   img {
       border-radius: 50%;
+      aspect-ratio: 1/1;
   }
 </style>

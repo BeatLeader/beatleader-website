@@ -22,6 +22,7 @@
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
   import {getIconNameForDiff, describeModifiersAndMultipliers} from '../utils/beatleader/format'
+  import {dateFromUnix} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
 
   export let leaderboardId;
@@ -145,8 +146,8 @@
 
   function processDiffs(diffArray) {
     diffArray = diffArray.sort(function(a, b) {
-      let diffNumA = parseInt(a.leaderboardId[a.leaderboardId.length - 2]);
-      let diffNumB = parseInt(b.leaderboardId[b.leaderboardId.length - 2]);
+      let diffNumA = parseInt(a.leaderboardId[a.leaderboardId.length - 2]) + parseInt(a.leaderboardId[a.leaderboardId.length - 1]);
+      let diffNumB = parseInt(b.leaderboardId[b.leaderboardId.length - 2]) + parseInt(b.leaderboardId[b.leaderboardId.length - 1]);
         if (diffNumA < diffNumB) return -1;
         if (diffNumA > diffNumB) return 1;
         return 0;
@@ -168,7 +169,7 @@
 
   function getTimeStringColor(timeSet) {
     if (!timeSet) return "#ffffff";
-    const scoreAgeMillis = now - new Date(timeSet).getTime();
+    const scoreAgeMillis = now - dateFromUnix(timeSet).getTime();
     let ratio = (scoreAgeMillis - freshScoreAgeMillis) / (oldScoreAgeMillis - freshScoreAgeMillis);
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
@@ -509,6 +510,7 @@
     .mobile-second-line {
         display: flex;
         grid-gap: .4em;
+        align-items: center;
     }
 
     .player-score.highlight {
