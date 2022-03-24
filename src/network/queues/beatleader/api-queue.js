@@ -14,7 +14,7 @@ export const BL_API_SCORES_URL = BL_API_URL + '/player/${playerId}/scores?page=$
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + '/players?search=${query}'
 export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + '/players?page=${page}'
 export const BL_API_RANKING_COUNTRY_URL = BL_API_URL + '/players?page=${page}&countries=${country}'
-export const BL_API_LEADERBOARD_URL = BL_API_URL + '/leaderboard/id/${leaderboardId}?page=${page}&countries=${country}'
+export const BL_API_LEADERBOARD_URL = BL_API_URL + '/leaderboard/id/${leaderboardId}?page=${page}&countries=${countries}'
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + '/leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
@@ -154,7 +154,7 @@ export default (options = {}) => {
   }
 
   const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-    fetchJson(substituteVars(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true), options, priority)
+    fetchJson(substituteVars(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true, true), options, priority)
       .then(r => {
         r.body = processLeaderboard(leaderboardId, page, r);
 

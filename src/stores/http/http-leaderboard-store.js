@@ -97,7 +97,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 
   const httpStore = createHttpStore(
     provider,
-    {leaderboardId, type, page},
+    {leaderboardId, type, page, filters},
     initialState,
     {
       onInitialized: onNewData,

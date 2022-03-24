@@ -6,6 +6,9 @@
   import createModifiersStore from '../stores/beatleader/modifiers'
   import {opt} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
+  import {configStore} from '../stores/config'
+  import stringify from 'json-stable-stringify';
+  import createPlayerService from '../services/beatleader/player'
   import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../utils/accsaber/consts'
@@ -24,10 +27,12 @@
   import {getIconNameForDiff, describeModifiersAndMultipliers} from '../utils/beatleader/format'
   import {dateFromUnix} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
+  import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
 
   export let leaderboardId;
   export let type = 'global';
   export let page = 1;
+  export let location;
   export let withHeader = true;
   export let dontNavigate = false;
   export let withoutDiffSwitcher = false;
@@ -48,48 +53,73 @@
 
   const dispatch = createEventDispatcher();
 
+  const playerService = createPlayerService();
+
+  const params = [
+    {key: 'countries', default: '', process: processStringFilter},
+  ];
+
+  const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
+
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
 
   let currentLeaderboardId = leaderboardId;
   let currentType = type;
   let currentPage = page;
+  let currentFilters = buildFiltersFromLocation(location);
   let boxEl = null;
   let leaderboard = null;
 
   let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 
-  let typeOptions =
-    (
-      type === 'accsaber'
-        ? [
-          {
-            id: 'accsaber',
-            label: 'AccSaber',
-            icon: '<div class="accsaber-icon">',
-            url: `/leaderboard/accsaber/${currentLeaderboardId}/1`,
-          }
-        ]
-        : []
-    )
+  let availableTypeOptions =
+    [
+      {
+        type: 'global',
+        label: 'Global',
+        iconFa: 'fas fa-globe-americas',
+        url: `/leaderboard/global/${currentLeaderboardId}/1`,
+        filters: {countries: ''},
+      },
+      {
+        type: 'friends',
+        label: 'Friends',
+        iconFa: 'fas fa-user-friends',
+        url: `/leaderboard/friends/${currentLeaderboardId}/1`,
+        filters: {countries: ''},
+      },
+    ]
       .concat(
-        [
-          {
-            id: 'global',
-            label: 'Global',
-            iconFa: 'fas fa-globe-americas',
-            url: `/leaderboard/global/${currentLeaderboardId}/1`,
-          },
-          {
-            id: 'friends',
-            label: 'Friends',
-            iconFa: 'fas fa-user-friends',
-            url: `/leaderboard/friends/${currentLeaderboardId}/1`,
-          },
-        ],
+        type === 'accsaber'
+          ? [
+            {
+              type: 'accsaber',
+              label: 'AccSaber',
+              icon: '<div class="accsaber-icon">',
+              url: `/leaderboard/accsaber/${currentLeaderboardId}/1`,
+              filters: {countries: ''},
+            }
+          ]
+          : []
       );
 
-  let currentTypeOption = typeOptions[0];
+  let typeOptions = availableTypeOptions.map(to => to);
+
+  const stringifyFilters = (query, keys) => stringify(
+    (keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})
+  ).toLowerCase();
+  const findCurrentTypeOption = (type, filters) => {
+    const exactMatch = typeOptions.find(to =>
+      to?.type === type &&
+      stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
+    );
+    if (exactMatch) return exactMatch;
+
+    return typeOptions.find(to => to?.type === type) ?? null;
+  };
+
+  let currentTypeOption = findCurrentTypeOption(currentType, currentFilters) ?? typeOptions[0];
 
   function navigateToPlayer(playerId) {
     if (!playerId) return;
@@ -101,19 +131,24 @@
     if (autoScrollToTop && boxEl) scrollToTargetAdjusted(boxEl, scrollOffset)
   }
 
-  const leaderboardStore = createLeaderboardStore(leaderboardId, type, page);
+  const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
 
-  function changeParams(newLeaderboardId, newType, newPage) {
+  function changeParams(newLeaderboardId, newType, newPage, newLocation) {
+    if (newLocation === undefined) newLocation = {search: `?${buildSearchFromFilters(currentFilters)}`}
+
+    currentFilters = buildFiltersFromLocation(newLocation);
+
     currentLeaderboardId = newLeaderboardId;
 
     currentType = newType;
     newPage = parseInt(newPage, 10);
     if (isNaN(newPage)) newPage = 1;
 
-    currentTypeOption = typeOptions[currentType === 'global' ? 0 : 1];
+    const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
+    if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 
     currentPage = newPage;
-    leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage);
+    leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage, {...currentFilters});
   }
 
   function onPageChanged(event) {
@@ -121,27 +156,28 @@
 
     const newPage = event.detail.page + 1
 
-    if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}`);
+    if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`);
 
-    dispatch('page-changed', {leaderboardId: currentLeaderboardId, type: currentType, page: newPage})
+    dispatch('page-changed', {leaderboardId: currentLeaderboardId, type: currentType, page: newPage, filters: currentFilters})
   }
 
   function onDiffChange(event) {
     const newLeaderboardId = opt(event, 'detail.leaderboardId');
     if (!newLeaderboardId) return;
 
-    if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/${1}`);
-    else changeParams(newLeaderboardId, currentType, 1);
+    if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+    else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
   }
 
   function onTypeChanged(event) {
-    const newType = opt(event, 'detail.id');
+    const newType = event?.detail?.type ?? null;
     if (!newType) return;
 
-    if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/${1}`);
-    else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1);
+    const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)}
+    if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`);
+    else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
 
-    dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage})
+    dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters})
   }
 
   function processDiffs(diffArray) {
@@ -179,6 +215,33 @@
     return "#" + brightnessHex + brightnessHex + brightnessHex;
   }
 
+  let mainPlayer = null;
+  async function updateMainPlayer(playerId) {
+    if (!playerId) {
+      mainPlayer = null;
+      return;
+    }
+
+    mainPlayer = await playerService.get(playerId);
+  }
+
+  function updateTypeOptions(country) {
+    if (!country?.length) return;
+
+    typeOptions = availableTypeOptions.map(to => to).concat([
+      {
+        type: 'global',
+        label: 'Country',
+        icon: `<img src="https://scoresaber.com/imports/images/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
+        url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
+        filters: {countries: country}
+      },
+    ]);
+
+    const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
+    if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
+  }
+
   const modifiersStore = createModifiersStore();
 
   let ssCoverDoesNotExists = false;
@@ -187,7 +250,7 @@
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
 
-  $: changeParams(leaderboardId, type, page)
+  $: changeParams(leaderboardId, type, page, location)
   $: scrollToTop($pending);
   $: higlightedPlayerId = higlightedPlayerId ?? higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
@@ -200,6 +263,11 @@
   $: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo')
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
+
+  $: mainPlayerId = opt($configStore, 'users.main');
+  $: updateMainPlayer = updateMainPlayer(mainPlayerId);
+  $: mainPlayerCountry = mainPlayer?.playerInfo?.countries?.[0]?.country ?? null
+  $: updateTypeOptions(mainPlayerCountry);
 </script>
 
 <svelte:head>

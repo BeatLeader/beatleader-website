@@ -47,8 +47,8 @@
       <Route path="/ranking/:type/*page" let:params>
         <RankingPage type={params.type} page={params.page} />
       </Route>
-      <Route path="/leaderboard/:type/:leaderboardId/*page" let:params>
-        <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} dontChangeType={false} />
+      <Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
+        <LeaderboardPage leaderboardId={params.leaderboardId} type={params.type} page={params.page} {location} dontChangeType={false} />
       </Route>
       <Route path="/leaderboards/*page" let:params let:location>
         <LeaderboardsPage page={params.page} {location} />
