@@ -48,6 +48,12 @@
         <img src={coverUrl} alt=""/>
       </a>
     {/if}
+    
+    {#if leaderboard.diffInfo.type != "Standard"}
+      <div class="mode">
+        <Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
+      </div>
+    {/if}
 
     <div class="difficulty">
       <Difficulty diff={leaderboard.diffInfo} useShortName={true} reverseColors={true}
@@ -70,7 +76,16 @@
         display: flex;
         align-items: center;
         position: absolute;
-        bottom: 1em;
+        bottom: 0.8em;
+        right: 0;
+        font-size: .75em;
+    }
+
+    .mode {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        top: 0.8em;
         right: 0;
         font-size: .75em;
     }
