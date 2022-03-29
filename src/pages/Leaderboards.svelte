@@ -12,6 +12,7 @@
   import RangeSlider from "svelte-range-slider-pips";
   import {debounce} from '../utils/debounce'
   import Switcher from '../components/Common/Switcher.svelte'
+  import {createBuildFiltersFromLocation, buildSearchFromFilters, processFloatFilter, processStringFilter,} from '../utils/filters'
 
   export let page = 1;
   export let location;
@@ -20,50 +21,30 @@
   const MAX_STARS = 15;
   const FILTERS_DEBOUNCE_MS = 500;
 
+  const params = [
+    {key: 'search', default: '', process: processStringFilter},
+    {key: 'type', default: '', process: processStringFilter},
+    {key: 'stars_from', default: MIN_STARS, process: processFloatFilter},
+    {key: 'stars_to', default: MAX_STARS, process: processFloatFilter},
+  ];
+
+  const buildFiltersFromLocation = createBuildFiltersFromLocation(
+    params,
+    filters => {
+      if (filters.stars_from > filters.stars_to) {
+        const tmp = filters.stars_from
+        filters.stars_from = filters.stars_to;
+        filters.stars_to = tmp;
+      }
+
+      return filters;
+    }
+  );
+
   document.body.classList.remove('slim');
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
-
-  const buildFiltersFromLocation = location => {
-    const processString = val => val?.toString() ?? '';
-    const processFloat = val => {
-      val = parseFloat(val);
-      if (isNaN(val)) return null;
-
-      return val < 0 ? 0 : val;
-    }
-
-    const params = [
-      {key: 'search', default: '', process: processString},
-      {key: 'type', default: '', process: processString},
-      {key: 'stars_from', default: MIN_STARS, process: processFloat},
-      {key: 'stars_to', default: MAX_STARS, process: processFloat},
-    ];
-
-    const searchParams = new URLSearchParams(location?.search ?? '');
-
-    const filters = params.reduce((cum, param) => ({
-      ...cum,
-      [param.key]: param.process(searchParams.get(param.key)) ?? param.default
-    }), {});
-
-    if (filters.stars_from > filters.stars_to) {
-      const tmp = filters.stars_from
-      filters.stars_from = filters.stars_to;
-      filters.stars_to = tmp;
-    }
-
-    return filters;
-  }
-  const buildSearchFromFilters = filters => {
-    if (!filters) return '';
-
-    const searchParams = new URLSearchParams();
-    Object.entries(filters).forEach(([key, value]) => searchParams.append(key, value));
-
-    return searchParams.toString();
-  }
 
   let currentPage = page;
   let currentFilters = buildFiltersFromLocation(location);
