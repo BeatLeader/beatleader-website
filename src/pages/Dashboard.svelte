@@ -140,9 +140,9 @@
             </h3>
         </div>
         <div class="downloadButtons">
-            <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+            <!-- <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
                 <Button iconFa="fas fa-download" label="Download PC mod"/>
-            </a>
+            </a> -->
             <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
                 <Button iconFa="fas fa-download" label="Download Quest mod"/>
             </a>
@@ -168,9 +168,9 @@
                     </div>
                 </ContentBox>
                 <div class="downloadButtons">
-                    <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+                    <!-- <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
                         <Button iconFa="fas fa-download" label="Download PC mod"/>
-                    </a>
+                    </a> -->
                     <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
                         <Button iconFa="fas fa-download" label="Download Quest mod"/>
                     </a>

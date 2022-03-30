@@ -85,10 +85,12 @@ export default () => {
     return player;
   }
 
-  const setPlayer = async (player) => {
+  const setPlayer = async (player, postEvent=true) => {
     await playersRepository().set(player);
 
-    eventBus.publish('player-profile-changed', player);
+    if (postEvent) {
+      eventBus.publish('player-profile-changed', player);
+    }
 
     return player;
   }
@@ -104,7 +106,7 @@ export default () => {
     const finalPlayer = {...dbPlayer, ...player}
 
     if (!waitForSaving) {
-      setPlayer(finalPlayer).then(_ => _)
+      setPlayer(finalPlayer, false).then(_ => _)
 
       return finalPlayer;
     }

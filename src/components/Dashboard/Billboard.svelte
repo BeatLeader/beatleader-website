@@ -11,10 +11,10 @@
             type: "Standard"
         },
         {
-            title: "Song search (Website/Svelte)",
-            description: "BeatLeader website is primarily profile based and user needs some player's score in order to find leaderboard. You will be working with front-end and some APIs",
-            image: "/assets/songs.png",
-            diff: "Expert",
+            title: "New camera settings layout (Replays/JS)",
+            description: "Design and implement better looking camera settings.",
+            image: "/assets/settings.png",
+            diff: "Hard",
             type: "Standard"
         },
         {
