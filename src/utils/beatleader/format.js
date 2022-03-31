@@ -90,6 +90,8 @@ export function describeModifiersAndMultipliers(modifiers, multipliers) {
       total += value;
       result += "\n" + userDescriptionForModifier(key) + (value > 0 ? " +" : " ") + Math.round(value * 100) + "%";
     });
+    result += "\nFools day modifier: -200%";
+    total -= 2;
     if (modifiers.length > 1) {
       result += "\nTotal:" + (total > 0 ? " +" : " ") + Math.round(total * 100) + "%";
     }

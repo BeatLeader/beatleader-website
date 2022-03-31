@@ -25,6 +25,7 @@
 
   badgesDef.forEach(badge => {
     badge.desc = `${showPercentageInstead ? 'Percentage' : 'Accuracy'} ${badge.name} (${!badge.min ? `< ${badge.max}%` : (!badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`)})`;
+    badge.desc += "\n -200% fools day bonus" 
   });
 
   function getBadge(acc) {

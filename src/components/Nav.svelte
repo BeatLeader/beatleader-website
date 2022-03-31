@@ -101,7 +101,8 @@
 
 <nav class="ssr-page-container">
   <a href="/dashboard" on:click|preventDefault={() => navigate('/dashboard')}>
-    <img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
+    <img src="/assets/logo.png" class="logo desktop-and-up" alt="" onmouseover="this.src='/assets/logopepe.png'"
+    onmouseout="this.src='/assets/logo.png'" />
     <img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
   </a>
 
@@ -371,7 +372,7 @@
 
     .logo.up-to-tablet {
       height: 3em;
-      width: 3em;
+      width: 2.5em;
       margin-top: -0.1em;
       margin-left: -1em;
       margin-right: -1em;

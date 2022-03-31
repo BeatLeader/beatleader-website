@@ -167,7 +167,7 @@
   $: playerIsLoading = playerStore ? playerStore.isLoading : null;
   $: playerError = playerStore ? playerStore.error : null;
   $: skeleton = !$playerStore && $playerIsLoading;
-  $: browserTitle = `${$playerStore?.name ?? 'Player'} / ${serviceParamsManager.getCurrentServiceUrl()?.split('/').map(s => capitalize(s)).join(' / ')} - ${ssrConfig.name}`
+  $: browserTitle = `${$playerStore?.name ?? 'Player'} / ${ssrConfig.name} / ${serviceParamsManager.getCurrentServiceUrl()?.split('/').map(s => capitalize(s)).join(' / ')}`
 
   $: updateTwitchProfile(currentPlayerId);
 

@@ -205,13 +205,24 @@
       border-color: yellow;
     }
 
-    .player-card:hover {
-        background-color: var(--faded);
-    }
-
     .player-card .player-avatar {
         position: relative;
         overflow: hidden;
+    }
+
+    .player-card:hover {
+      color: red;
+      -webkit-background-clip: text;
+      background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
+      -webkit-animation: rainbow .60s infinite linear;
+    }
+
+    @-webkit-keyframes rainbow {
+      from {
+        -webkit-filter: hue-rotate(0deg);
+      } to {
+        -webkit-filter: hue-rotate(360deg);
+      }
     }
 
     .player-card .player-avatar :global(figure) {
