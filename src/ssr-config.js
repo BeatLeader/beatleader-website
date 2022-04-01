@@ -1,5 +1,5 @@
 export default {
-  name: 'CrackSaber',
+  name: 'BeatLeader',
   domain: 'https://beatleader.xyz',
 
   leftSaberColor: 'rgba(168,32,32,1)',

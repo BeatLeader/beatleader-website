@@ -86,8 +86,8 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
     for (const scoreRow of newState) {
       if (currentService !== 'accsaber') {
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
-          // .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
-          // .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => accEnhancer(draft)))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => diffEnhancer(draft, currentPlayerId)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId)))
