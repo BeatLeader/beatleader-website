@@ -12,6 +12,7 @@
   export let hash = null;
   export let twitchUrl = null
   export let notClickable = false;
+  export let hideIcons = false;
   export let category = null;
   export let service = 'beatleader';
   export let playerId = null;
@@ -47,7 +48,7 @@
       {/if}
     </div>
 
-    {#if hash && hash.length}
+    {#if hash && hash.length && !hideIcons}
       <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
         <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={true} {jumpDistance} />
       </div>

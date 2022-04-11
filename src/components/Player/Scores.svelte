@@ -2,9 +2,12 @@
   import {createEventDispatcher} from 'svelte'
   import createScoresStore from '../../stores/http/http-scores-store.js';
   import createModifiersStore from '../../stores/beatleader/modifiers'
+  import {configStore} from '../../stores/config'
+  import createFailedScoresStore from '../../stores/beatleader/failed-scores'
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
   import SongScore from './SongScore.svelte'
+  import FailedScore from './FailedScore.svelte'
   import Error from '../Common/Error.svelte'
   import ScoreServiceSwitcher from './ScoreServiceSwitcher.svelte'
   import ScoresPager from './ScoresPager.svelte'
@@ -88,6 +91,7 @@
   }
 
   let modifiersStore = createModifiersStore();
+  const failedScores = createFailedScoresStore();
 
   $: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType)
   $: $scoresStore, updateService(scoresStore);
@@ -98,6 +102,9 @@
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
   $: modifiers = $modifiersStore;
+  $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
+  $: isMain ? failedScores.refresh() : null;
+  $: failedScoresArray = $failedScores;
 
   $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
@@ -112,6 +119,14 @@
                         loadingService={$pending?.service} loadingServiceParams={$pending?.serviceParams}
                         on:service-change={onServiceChanged} on:service-params-change={onServiceParamsChanged}
   />
+
+  {#if isMain && failedScoresArray && failedScoresArray.length}
+  <div class="song-scores grid-transition-helper">
+    {#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
+      <FailedScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
+    {/each}
+  </div>
+  {/if}
 
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
