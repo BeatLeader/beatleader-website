@@ -16,7 +16,6 @@ export default (refreshOnCreate = true) => {
   const {subscribe: subscribeState, set} = writable(account);
 
   const checkResponse = async response => {
-    if (response.status !== 200) throw new Error(await response.text());
 
     return response.text();
   }

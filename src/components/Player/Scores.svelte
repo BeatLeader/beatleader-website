@@ -104,7 +104,7 @@
   $: modifiers = $modifiersStore;
   $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
   $: isMain ? failedScores.refresh() : null;
-  $: failedScoresArray = $failedScores;
+  $: failedScoresArray = opt($failedScores, 'scores');
 
   $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
@@ -123,7 +123,7 @@
   {#if isMain && failedScoresArray && failedScoresArray.length}
   <div class="song-scores grid-transition-helper">
     {#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
-      <FailedScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
+      <FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
     {/each}
   </div>
   {/if}

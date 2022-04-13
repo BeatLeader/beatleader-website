@@ -8,7 +8,6 @@
     import Icons from '../Song/Icons.svelte'
     import PlayerPerformance from "./PlayerPerformance.svelte";
     import Button from '../Common/Button.svelte'
-    import createFailedScoresStore from '../../stores/beatleader/failed-scores'
   
     export let playerId = null;
     export let songScore = null;
@@ -16,9 +15,9 @@
     export let idx = 0;
     export let service = null;
     export let modifiersStore = null;
+    export let store = null;
   
     let showDetails = false;
-    const failedScores = createFailedScoresStore();
   
     $: leaderboard = opt(songScore, 'leaderboard', null);
     $: score = opt(songScore, 'score', null);
@@ -74,10 +73,10 @@
         Fail reason: {score.error}
         <div>
             <Button title="Delete failed score upload" label="Delete" noMargin={true} type="danger"
-                        on:click={failedScores.deleteScore(score.id)}/>
+                        on:click={store.deleteScore(score.id)}/>
             {#if score.replay.length}     
             <Button title="Retry posting score" label="Retry" noMargin={true} type="primary"
-                        on:click={failedScores.retryScore(score.id)}/>
+                        on:click={store.retryScore(score.id)}/>
             {/if}
         </div>
       </div>

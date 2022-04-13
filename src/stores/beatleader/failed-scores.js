@@ -8,7 +8,7 @@ export default (refreshOnCreate = true) => {
   storeSubCount++;
   if (store) return store;
 
-  let totalScores = [];
+  let totalScores = {};
 
   const get = () => totalScores;
   const {subscribe: subscribeState, set} = writable(totalScores);
@@ -18,13 +18,15 @@ export default (refreshOnCreate = true) => {
     .then(response => response.json())
     .then(data => process({data}))
     .then(data =>{
-        totalScores = data.data;
+        totalScores.scores = data.data;
         set(totalScores);
     })
   }
 
   const deleteScore = async (id) => {
-    set([]);
+    totalScores.scores = totalScores.scores.filter(s => s.score.id != id);
+    set(totalScores);
+
     fetch(BL_API_URL + "user/failedscore/remove?id=" + id, {credentials: 'include', method: 'POST'})
     .then(() => {
         fetchScores();
@@ -32,7 +34,9 @@ export default (refreshOnCreate = true) => {
   }
   
   const retryScore = async (id) => {
-    set([]);
+    totalScores.scores = totalScores.scores.filter(s => s.score.id != id);
+    set(totalScores);
+
     fetch(BL_API_URL + "user/failedscore/retry?id=" + id, {credentials: 'include', method: 'POST'})
     .then(() => {
         fetchScores();
