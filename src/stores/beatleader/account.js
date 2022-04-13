@@ -163,6 +163,27 @@ export default (refreshOnCreate = true) => {
             set(account);
         });
 
+  const changeCountry = (country) =>
+  fetch(BL_API_URL + "user/country?newCountry=" + country, { 
+      method: 'PATCH', 
+      credentials: 'include'
+  })
+    .then(checkResponse)
+    .then(
+      data => {
+          account.error = null;
+
+          if (data.length > 0) {
+              account.error = data;
+              setTimeout(function(){
+                  account.error = null;
+                  set(account);
+              }, 3500);
+          }
+
+          set(account);
+      });
+
   const logOut = () => {
     fetch(BL_API_URL + "signout", {
         credentials: 'include'
@@ -180,7 +201,8 @@ export default (refreshOnCreate = true) => {
     logOut,
     migrate,
     changeAvatar,
-    changeName
+    changeName,
+    changeCountry
   }
 
   return store;

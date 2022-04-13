@@ -13,6 +13,7 @@
   import Badge from '../Common/Badge.svelte'
   import Button from '../Common/Button.svelte'
   import Preview from "../Common/Preview.svelte";
+  import CountryPicker from "../Common/CountryPicker.svelte"
   import {addToDate, DAY, formatDateRelative} from '../../utils/date'
 
   export let name;
@@ -65,8 +66,6 @@
   async function onRedactButtonClick() {
       if (!redactingName) {
         nameInput = name;
-
-        redactingName = !redactingName;
       }
 
       if (redactingName && nameInput !== name) {
@@ -76,13 +75,24 @@
           await account.changeName(nameInput);
 
           dispatch('player-data-updated', {name: nameInput});
-
-          redactingName = !redactingName;
         }
         catch(err) {
           dispatch('player-data-edit-error', err);
         }
       }
+
+      if (redactingName && selectedCountry && selectedCountry != countries[0]) {
+        await account.changeCountry(selectedCountry);
+
+        dispatch('player-data-updated', {country: selectedCountry});
+      }
+
+      redactingName = !redactingName;
+  }
+
+  let selectedCountry = null;
+  function handleCountrySelect(event) {
+    selectedCountry = event.detail.value.toUpperCase();
   }
 
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
@@ -141,33 +151,39 @@
         />
       </a>
 
-      {#each countries as country}
-        <a style="flex: none" href={getCountryRankingUrl(country)}
-           on:click|preventDefault={() => navigateToCountryRanking(country)}
-           title="Go to country ranking"
-           class="clickable">
+      {#if isMain && loggedInPlayer === playerId && redactingName}
+        <div class='pickerContainer'>
+          <CountryPicker selected={countries[0].country.toLowerCase()} on:select={handleCountrySelect}/>
+        </div>
+      {:else}
+        {#each countries as country}
+          <a style="flex: none" href={getCountryRankingUrl(country)}
+            on:click|preventDefault={() => navigateToCountryRanking(country)}
+            title="Go to country ranking"
+            class="clickable">
 
-          <img
-              src={`${BL_CDN}/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
-              class="countryIcon"
-              alt={opt(country, 'country')}
-          />
+            <img
+                src={`${BL_CDN}/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
+                class="countryIcon"
+                alt={opt(country, 'country')}
+            />
 
-          <Value value={country.rank}
-                 prevValue={country.prevRank}
-                 prevLabel={country?.prevRank && gainDate ? gainDate : null}
-                 prefix="#"
-                 digits={0}
-                 zero="#0"
-                 inline={true}
-                 reversePrevSign={true}
-          />
+            <Value value={country.rank}
+                  prevValue={country.prevRank}
+                  prevLabel={country?.prevRank && gainDate ? gainDate : null}
+                  prefix="#"
+                  digits={0}
+                  zero="#0"
+                  inline={true}
+                  reversePrevSign={true}
+            />
 
-          {#if country.subRank && country.subRank !== country.rankValue}
-            <small>(#{ country.subRank })</small>
-          {/if}
-        </a>
-      {/each}
+            {#if country.subRank && country.subRank !== country.rankValue}
+              <small>(#{ country.subRank })</small>
+            {/if}
+          </a>
+        {/each}
+      {/if}
 
       <span class="pp">
         <Value value={opt(playerInfo, 'pp')} suffix="pp"
@@ -176,6 +192,10 @@
         />
       </span>
     </div>
+
+    {#if selectedCountry && redactingName}
+    Make sure you selected right country. You can change it only every 30 days.
+    {/if}
 
     {#if playerRole}
       <div class="player-role up-to-tablet">

@@ -242,7 +242,6 @@
         flex-direction: column;
         justify-content: center;
         grid-gap: .4em;
-        overflow: hidden;
     }
 
     .player-role {
