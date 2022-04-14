@@ -71,7 +71,7 @@
 
     // $: addPlayersHistory(players, refreshTag, overridePlayersPp, filterFunc);
 
-    $: change = (row) => {let history = row.playerInfo.rankHistory; return (history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null)}
+    $: change = (row) => {let history = row.playerInfo.rankHistory; return (history.length > 1 ? parseInt(history[history.length > 7 ? history.length - 7 : 0]) - parseInt(history[history.length - 1]) : null)}
 </script>
 
 {#if players}

@@ -7,7 +7,11 @@ export default response => {
     metadata: response.metadata,
     data: response.data.map(player => {
       let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime} = player;
-      let difference = (history && history.length > 7 ? parseInt(history[history.length - 7]) - parseInt(history[history.length - 1]) : null);
+      const rankHistory =
+       history && history.length
+            ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
+            : []
+      let difference = (rankHistory.length > 1 ? parseInt(rankHistory[rankHistory.length > 7 ? rankHistory.length - 7 : 0]) - parseInt(rankHistory[rankHistory.length - 1]) : null);
 
       if (avatar && !avatar.startsWith('http')) {
         avatar = `${queue.BEATLEADER_API.BL_API_URL}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
@@ -23,9 +27,7 @@ export default response => {
           lastTwoWeeksTime,
           allTime,
           rank,
-          rankHistory: history && history.length
-            ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
-            : [],
+          rankHistory,
         },
         others: {
           difference,
