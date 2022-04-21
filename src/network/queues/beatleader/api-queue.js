@@ -9,13 +9,15 @@ export const BL_API_URL = CURRENT_URL == "https://www.beatleader.xyz" ? `https:/
 export const STEAM_API_URL = '/cors/steamapi'
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
-export const BL_API_PLAYER_INFO_URL = BL_API_URL + '/player/${playerId}';
-export const BL_API_SCORES_URL = BL_API_URL + '/player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
-export const BL_API_FIND_PLAYER_URL = BL_API_URL + '/players?search=${query}'
-export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + '/players?page=${page}'
-export const BL_API_RANKING_COUNTRY_URL = BL_API_URL + '/players?page=${page}&countries=${country}'
-export const BL_API_LEADERBOARD_URL = BL_API_URL + '/leaderboard/id/${leaderboardId}?page=${page}&countries=${countries}'
-export const BL_API_LEADERBOARDS_URL = BL_API_URL + '/leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
+export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}';
+export const BL_API_SCORES_URL = BL_API_URL + 'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
+export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
+export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}'
+export const BL_API_RANKING_COUNTRY_URL = BL_API_URL + 'players?page=${page}&countries=${country}&sortBy=${sortBy}'
+export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/id/${leaderboardId}?page=${page}&countries=${countries}'
+export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
+export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}'
+export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}'
@@ -36,9 +38,11 @@ export default (options = {}) => {
 
   const findPlayer = async (query, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_FIND_PLAYER_URL, {query: encodeURIComponent(query)}), options, priority);
 
-  const rankingGlobal = async (page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_RANKING_GLOBAL_URL, {page}), options, priority);
+  const rankingGlobal = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => {
+    return fetchJson(substituteVars(BL_API_RANKING_GLOBAL_URL, {page, ...filters}), options, priority);
+  } 
 
-  const rankingCountry = async (country, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_RANKING_COUNTRY_URL, {country, page}), options, priority);
+  const rankingCountry = async (country, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_RANKING_COUNTRY_URL, {country, page, ...filters}), options, priority);
 
   const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
     if (filters && filters?.type !== 'ranked') {
@@ -48,6 +52,9 @@ export default (options = {}) => {
 
     return fetchJson(substituteVars(BL_API_LEADERBOARDS_URL, {page, ...filters}, true, true), options, priority);
   }
+
+  const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}), options, priority);
+  const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
 
   const processLeaderboardScores = response => {
     return response.map(s => {
@@ -171,6 +178,8 @@ export default (options = {}) => {
     scores,
     leaderboards,
     leaderboard,
+    clans,
+    clan,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,

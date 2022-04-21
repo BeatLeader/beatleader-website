@@ -84,7 +84,11 @@
         try {
           dispatch('player-data-edit-error', null);
 
-          await account.changeAvatar(e.target.result);
+          if (loggedInPlayer === playerId) {
+            await account.changeAvatar(e.target.result);
+          } else {
+            await account.changeAvatar(e.target.result, playerId);
+          }
 
           dispatch('player-data-updated', {avatar: e.target.result})
         }
@@ -100,6 +104,7 @@
   $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
   $: loggedInPlayer = $account.id;
   $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
+  $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin");
   $: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
 </script>
 
@@ -126,7 +131,7 @@
       />
     {/if}
 
-    {#if isMain && loggedInPlayer === playerId}
+    {#if (isMain && loggedInPlayer === playerId) || isAdmin}
     <div class="imageInput" on:click={() => fileinput.click()}>
       <input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={(e)=>changeAvatar(e)} bind:this={fileinput} >
       <span class="imageChange">

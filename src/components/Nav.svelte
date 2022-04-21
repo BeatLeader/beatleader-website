@@ -90,6 +90,22 @@
   let mobileMenuShown = false;
 
   let showSettings = false;
+  let signupOptions = [];
+
+  function calculateSignUpOptions(loggedInUser) {
+    if (loggedInUser) {
+      signupOptions = [];
+      if (!loggedInUser.migrated) {
+        signupOptions.push("Migrate");
+      }
+      if (loggedInUser.player.id < 70000000000000000 || loggedInUser.migrated) {
+        signupOptions.push("Change password");
+      }
+      signupOptions.push("Log Out");
+    } else {
+      signupOptions = ["Log In"];
+    }
+  }
 
   $: selectedPlaylist = opt($configStore, 'selectedPlaylist');
   $: mainPlayerId = opt($configStore, 'users.main');
@@ -101,8 +117,8 @@
 
 <nav class="ssr-page-container">
   <a href="/dashboard" on:click|preventDefault={() => navigate('/dashboard')}>
-    <img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
-    <img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
+    <img src="/assets/logo.gif" class="logo desktop-and-up" alt="" />
+    <img src="/assets/logo-small.gif" class="logo up-to-tablet" alt="" />
   </a>
 
   {#if player}

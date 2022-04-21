@@ -72,7 +72,11 @@
         try {
           dispatch('player-data-edit-error', null);
 
-          await account.changeName(nameInput);
+          if (loggedInPlayer === playerId) {
+            await account.changeName(nameInput);
+          } else {
+            await account.changeName(nameInput, playerId);
+          }
 
           dispatch('player-data-updated', {name: nameInput});
         }
@@ -82,7 +86,11 @@
       }
 
       if (redactingName && selectedCountry && selectedCountry != countries[0]) {
-        await account.changeCountry(selectedCountry);
+        if (loggedInPlayer === playerId) {
+          await account.changeCountry(selectedCountry);
+        } else {
+          await account.changeCountry(selectedCountry, playerId);
+        }
 
         dispatch('player-data-updated', {country: selectedCountry});
       }
@@ -101,6 +109,8 @@
   $: loggedInPlayer = $account.id;
   $: isMain = configStore && opt($configStore, 'users.main') === playerId;
   $: gainDate = Number.isFinite(prevInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-prevInfo.gainDaysAgo * DAY)) : null
+  $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
+  $: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin
 </script>
 
 <div class="profile-header-info">
@@ -121,7 +131,7 @@
             {name}
           {/if}
         {/if}
-        {#if isMain && loggedInPlayer === playerId}
+        {#if canRedact}
           <Button type="text" cls="editNameButton" iconFa={redactingName ? "fas fa-check" : "fas fa-edit"}
                         on:click={() => onRedactButtonClick()} />
         {/if}
@@ -151,7 +161,7 @@
         />
       </a>
 
-      {#if isMain && loggedInPlayer === playerId && redactingName}
+      {#if canRedact && redactingName}
         <div class='pickerContainer'>
           <CountryPicker selected={countries[0].country.toLowerCase()} on:select={handleCountrySelect}/>
         </div>
@@ -191,6 +201,16 @@
                inline={true} zero="0pp"
         />
       </span>
+
+      {#if isAdmin && loggedInPlayer != playerId}
+        {#if opt(playerInfo, 'banned')}
+          <Button cls="banButton" title="Unban player" label="Unban player" type="danger"
+                          on:click={async () => await account.unbanPlayer(playerId)}/>
+        {:else}
+          <Button cls="banButton" title="Ban player" label="Ban player" type="danger"
+                          on:click={async () => await account.banPlayer(playerId)}/>
+        {/if}
+      {/if}
     </div>
 
     {#if selectedCountry && redactingName}
@@ -273,5 +293,10 @@
         padding-bottom: 1.2em !important;
         margin-bottom: -1em !important;
         font-size: .75em!important;
+    }
+
+    :global(.banButton) {
+      padding: 0 !important;
+      font-size: 0.8em !important;
     }
 </style>

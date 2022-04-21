@@ -1,5 +1,5 @@
 <script>
-  import {getContext} from 'svelte'
+  import {afterUpdate, getContext} from 'svelte'
   import {navigate} from "svelte-routing";
   import {ROUTER} from 'svelte-routing/src/contexts'
   import {fade, fly} from 'svelte/transition'
@@ -20,9 +20,23 @@
   import { HSVtoRGB } from '../utils/color';
   import ContentBox from "../components/Common/ContentBox.svelte";
   import AddFriendButton from "../components/Player/AddFriendButton.svelte";
+  import stringify from 'json-stable-stringify'
+  import {createBuildFiltersFromLocation, buildSearchFromFilters, processFloatFilter, processStringFilter,} from '../utils/filters'
 
   export let type = 'global';
   export let page = 1;
+
+  const params = [
+    {key: 'search', default: '', process: processStringFilter},
+    {key: 'sortBy', default: '', process: processStringFilter},
+  ];
+
+  const buildFiltersFromLocation = createBuildFiltersFromLocation(
+    params,
+    filters => {
+      return filters;
+    }
+  );
 
   document.body.classList.add('slim');
 
@@ -34,6 +48,8 @@
 
   let currentType = type;
   let currentPage = page;
+  let currentFilters = buildFiltersFromLocation(location);
+  let lastFilters = buildFiltersFromLocation(location);
   let boxEl = null;
 
   function navigateToPlayer(playerId) {
@@ -46,22 +62,32 @@
     if (boxEl) scrollToTargetAdjusted(boxEl, 44)
   }
 
-  const rankingStore = createRankingStore(type, page);
+  if (!currentFilters.sortBy.length) {
+      currentFilters.sortBy = 'pp';
+      lastFilters.sortBy = 'pp';
+    }
 
-  function changeTypeAndPage(newType, newPage) {
+  const rankingStore = createRankingStore(type, page, currentFilters);
+
+  function changeParams(newType, newPage, newLocation) {
     currentType = newType;
-
+    currentFilters = buildFiltersFromLocation(newLocation);
+    lastFilters = buildFiltersFromLocation(newLocation);
+    if (!currentFilters.sortBy.length) {
+      currentFilters.sortBy = 'pp';
+      lastFilters.sortBy = 'pp';
+    }
     newPage = parseInt(newPage, 10);
     if (isNaN(newPage)) newPage = 1;
 
     currentPage = newPage;
-    rankingStore.fetch(currentType, currentPage);
+    rankingStore.fetch(currentType, currentPage, {...currentFilters}, true);
   }
 
   function onPageChanged(event) {
     if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-    navigate(`/ranking/${currentType}/${event.detail.page + 1}`);
+    navigate(`/ranking/${currentType}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
   }
 
   function onPlayerClick(event, player) {
@@ -76,20 +102,41 @@
   function onCountryClick(player) {
     if (!player) return;
 
-    navigate(`/ranking/${player.playerInfo.countries[0].country}/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}`)
+    navigate(`/ranking/${player.playerInfo.countries[0].country}/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
   }
 
   function onGlobalClick(player) {
     if (!player) return;
 
-    navigate(`/ranking/global/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}`)
+    navigate(`/ranking/global/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
   }
+
+  function navigateToCurrentPageAndFilters() {
+    navigate(`/ranking/${currentType}/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+  }
+
+  function toggleSortBy() {
+    if (currentFilters.sortBy == "dailyImprovements") {
+      currentFilters.sortBy = "pp";
+    } else {
+      currentFilters.sortBy = "dailyImprovements";
+    }
+    navigateToCurrentPageAndFilters();
+  }
+
+  let showDetails = false;
+
+  afterUpdate(() => {
+    if (stringify(lastFilters) !== stringify(currentFilters)) {
+      changeParams(type, page, location);
+    }
+  });
 
   $: isLoading = rankingStore.isLoading;
   $: pending = rankingStore.pending;
   $: numOfPlayers = $rankingStore ? $rankingStore.total : null;
 
-  $: changeTypeAndPage(type, page)
+  $: changeParams(type, page, location)
   $: scrollToTop($pending);
 </script>
 
@@ -100,6 +147,34 @@
 <section class="align-content">
   <article class="page-content" transition:fade>
     <ContentBox bind:box={boxEl}>
+      <div class="banner">
+        <img src="/assets/EarthDay.png" alt="Earth day banner">
+        
+      </div>
+      <div class="show-details">
+        <span class="details-reveal clickable" class:opened={showDetails}
+              on:click={() => showDetails = !showDetails} title="Show details">
+          <i class="fas fa-chevron-down"></i>
+        </span>
+      </div>
+
+      {#if showDetails}
+      <div class="details">
+        <span >
+          <b>We in BeatLeader believe that PP growth should be sustainable.</b><br>
+          And to cut machine time and space on cloud and database we endorse you to recycle the scores. 
+          Improve your old(one day or older) scores and climb this leaderboard. Top 1 on 12pm UTC 4/23/22 will get the "Earth's bff" badge!
+        <br><br> Jokes aside, today is Earth Day and it's important. 
+        We kinda don't have another place to live for now and it also means the place to play Beat Saber.
+        It's just a reminder for us that we are very fragile and our current problems can be meaningless in face of climate changes
+        (how much pp will you need if the wildfire will burn your house)
+        
+        <br>
+        <br>Check the <a href="https://github.com/zeph-yr/OurFuture">amazing article from @zeph-yr</a> to learn more and help make <b>our home better.</b></span>
+        <br>And support <a href="https://www.portmone.com.ua/r3/support-ukrainian-army">the Ukrainian army.</a> Burning cities do not help the planet!
+      </div>
+      {/if}
+      
       <h1 class="title is-5">
         {type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} leaderboard
 
@@ -110,6 +185,12 @@
         Loading...
       {:then playerId}
       {#if $rankingStore && $rankingStore.data && $rankingStore.data.length}
+        <div class={currentFilters.sortBy == "dailyImprovements" ? "fas fa-lightbulb icon dailyImprovements" : "far fa-lightbulb icon off pp"}
+        on:click={() => toggleSortBy()}
+        title={"Sort by amount of recycled scores"}>
+        <span class="sortBy">Sort by {currentFilters.sortBy == "dailyImprovements" ? "savings" : "pp"}</span>
+        
+        </div>
         <section class="ranking-grid">
           {#each $rankingStore.data as player, idx (player.playerId)}
             <div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
@@ -140,9 +221,15 @@
                   {#if player.playerId > 70000000000000000}
                     <SteamStats {player}/>
                   {/if}
+                  {#if currentFilters.sortBy == "dailyImprovements"}<div style="color: {HSVtoRGB(player.others.improvement / 20, 1.0, 1.0)}">
+                    <Value value={opt(player, 'others.improvement')} zero="Carbon positive" suffix={opt(player, 'others.improvement') == 1 ? " score" : " scores"} digits=0/>
+                  </div>
+                  {:else}
                   <div style="color: {HSVtoRGB(Math.max(0, player.playerInfo.pp - 1000) / 18000, 1.0, 1.0)}">
                     <Value value={opt(player, 'playerInfo.pp')} zero="" suffix="pp"/>
                   </div>
+                  {/if}
+                  
                 </div>
               </div>
               <AddFriendButton playerId={player.playerId}/>
@@ -279,6 +366,66 @@
 
     .player-card .change {
         font-size: .875em;
+    }
+
+    .banner {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1em;
+    }
+
+    .show-details {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1em;
+    }
+
+    .details {
+      margin: 1em;
+    }
+
+    .details-reveal {
+      cursor: pointer;
+    }
+
+    .details-reveal.opened {
+        transform: rotateZ(180deg);
+    }
+
+    .icon {
+        display: flex;
+        width: 9.5em;
+        height: 2.5em;
+        color: white;
+        border-radius: .4em;
+        margin-bottom: 1em;
+    }
+
+    .icon.off {
+      color: #ffffffe1;
+    }
+
+    .icon.pp {
+        background: var(--faded);
+    }
+
+    .icon.pp:hover {
+        background: var(--faded) linear-gradient(0deg, transparent, #ffffff66);
+    }
+
+    .icon.dailyImprovements {
+        background: green;
+        cursor: pointer;
+    }
+
+    .icon.dailyImprovements:hover {
+        background: green linear-gradient(0deg, transparent, #ffffff66);
+    }
+
+    .sortBy {
+      margin-left: 0.5em;
+      font-weight: normal;
+      font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
     }
 
     @media screen and (max-width: 500px) {

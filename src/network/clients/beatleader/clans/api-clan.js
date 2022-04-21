@@ -1,12 +1,14 @@
-import queue from '../../../../queues/queues'
+import queue from '../../../queues/queues'
+import createClient from '../../generic'
 
-export default response => {
-  if (!response?.metadata || !Array.isArray(response?.data)) return null;
+const process = response => {
+  //if (!response?.metadata || !Array.isArray(response?.data)) return null;
 
   return {
     metadata: response.metadata,
+    container: response.container,
     data: response.data.map(player => {
-      let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime, scoreStats} = player;
+      let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime} = player;
       const rankHistory =
        history && history.length
             ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
@@ -31,9 +33,16 @@ export default response => {
         },
         others: {
           difference,
-          improvement: scoreStats.dailyImprovements
         },
       }
     })
   };
+
+  return response;
 };
+
+const get = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_API.clan(clanId, page, filters, priority, queueOptions);
+
+const client = createClient(get, process);
+
+export default client;

@@ -2,12 +2,14 @@
     import { getContext } from 'svelte';
     import createBeatSaverService from '../../services/beatmaps'
     import createPlaylistStore from '../../stores/playlists'
+    import createAccountStore from '../../stores/beatleader/account'
     import {configStore} from '../../stores/config'
     import {copyToClipboard} from '../../utils/clipboard';
     import beatSaverSvg from "../../resources/beatsaver.svg";
     import Button from "../Common/Button.svelte";
     import Preview from "../Common/Preview.svelte";
     import {capitalize, opt} from '../../utils/js';
+    import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
 
     export let hash;
     export let diffInfo = null;
@@ -16,6 +18,7 @@
     export let hasReplay = false;
     export let icons = false;
     export let jumpDistance = 0;
+    export let scoreId = null;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
         open(Preview, { previewLink: previewLink });
@@ -23,9 +26,10 @@
 
     let songKey;
     let songInfo;
-    let shownIcons = icons ? icons : ["playlist", "bsr", "bs", "preview", "replay", "oneclick", "twitch"];
+    let shownIcons = icons ? icons : ["playlist", "bsr", "bs", "preview", "replay", "oneclick", "twitch", "delete"];
 
     let beatSaverService = createBeatSaverService();
+    const account = createAccountStore();
     const playlists = createPlaylistStore();
 
     function decapitalizeFirstLetter(string) {
@@ -59,6 +63,7 @@
     $: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
     $: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
     $: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
+    $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -121,6 +126,14 @@
             <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
         </a>
     {/if}
+
+    {#if shownIcons.includes('delete') && isAdmin && scoreId}
+        <Button iconFa="fas fa-trash-alt" title="Delete score" noMargin={true} type="danger"
+        on:click={fetch(BL_API_URL + `score/${scoreId}`, {
+        method: 'DELETE', 
+        credentials: 'include'
+      })}/>
+    {/if} 
 {/if}
 
 <style>

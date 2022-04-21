@@ -8,6 +8,8 @@
   import RankingPage from './pages/Ranking.svelte';
   import LeaderboardPage from './pages/Leaderboard.svelte';
   import LeaderboardsPage from './pages/Leaderboards.svelte';
+  import ClanPage from './pages/Clan.svelte';
+  import ClansPage from './pages/Clans.svelte';
   import FriendsPage from './pages/Friends.svelte';
   import PlayerPage from './pages/Player.svelte';
   import TwitchPage from './pages/Twitch.svelte';
@@ -53,6 +55,12 @@
       <Route path="/leaderboards/*page" let:params let:location>
         <LeaderboardsPage page={params.page} {location} />
       </Route>
+      <Route path="/clan/:clanId/*page" let:params>
+        <ClanPage clanId={params.clanId} page={params.page} />
+      </Route>
+      <Route path="/clans/*page" let:params let:location>
+        <ClansPage page={params.page} {location} />
+      </Route>
       <Route path="/playlists" component="{PlaylistsPage}" />
       <Route path="/search">
         <SearchPage changeTitle={true}/>
@@ -73,7 +81,7 @@
   <p>
     <a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a> |
     <a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a> |
-    <a href="https://github.com/NSGolova/beatleader-website">Source</a> |
+    <a href="https://github.com/BeatLeader/beatleader-website">Source</a> |
     <a href="https://discord.gg/2RG5YVqtG6">Discord</a>
   </p>
 </footer>

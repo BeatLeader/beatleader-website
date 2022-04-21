@@ -6,10 +6,12 @@ let rankingService = null;
 export default () => {
   if (!rankingService) rankingService = createRankingService();
 
-  const getProcessed = async ({type = 'global', page = 1, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) => {
+  const getProcessed = async ({type = 'global', page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) => {
+    page = parseInt(page, 10);
+    if (isNaN(page)) page = 1;
     const data = type === 'global'
-      ? await rankingService.getGlobal(page, priority, signal, force)
-      : await rankingService.getCountry(type, page, priority, signal, force);
+      ? await rankingService.getGlobal(page, filters, priority, signal, force)
+      : await rankingService.getCountry(type, page, filters, priority, signal, force);
 
     return {total: data?.metadata?.total ?? null, data: data?.data ?? [] }
   }
