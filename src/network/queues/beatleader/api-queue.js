@@ -112,6 +112,7 @@ export default (options = {}) => {
 
     const songInfo = [
       {id: 'hash', value: led.song.hash},
+      {id: 'id', value: led.song.id},
       {id: 'scores', value: led.plays},
       {id: 'status', value: currentDiff.ranked ? "Ranked" : "Not Ranked"},
       {id: 'totalScores', value: led.plays},

@@ -178,8 +178,13 @@ export default (refreshOnCreate = true) => {
             if (data.length > 0) {
                 account.error = data;
             } else {
+                account.message = "Password changed successfully ✔";
                 account.error = null;
                 refresh(true);
+                setTimeout(function(){
+                  account.message = null;
+                  set(account);
+                }, 3500);
             }
             set(account);
         });
@@ -201,15 +206,20 @@ export default (refreshOnCreate = true) => {
             if (data.length > 0) {
                 account.error = data;
             } else {
+                account.message = "Password changed successfully ✔";
                 account.error = null;
                 refresh(true);
+                setTimeout(function(){
+                  account.message = null;
+                  set(account);
+                }, 3500);
             }
             set(account);
         });
   }
 
-  const changeAvatar = (file) =>
-    fetch(BL_API_URL + "user/avatar", { 
+  const changeAvatar = (file, playerId) =>
+    fetch(BL_API_URL + "user/avatar" + (playerId ? "&id=" + playerId : ""), { 
         method: 'PATCH', 
         body: file, 
         credentials: 'include'
@@ -230,8 +240,8 @@ export default (refreshOnCreate = true) => {
             set(account);
         });
 
-  const changeName = (name) =>
-    fetch(BL_API_URL + "user/name?newName=" + name, { 
+  const changeName = (name, playerId) =>
+    fetch(BL_API_URL + "user/name?newName=" + name + (playerId ? "&id="+playerId : ""), { 
         method: 'PATCH', 
         credentials: 'include'
     })
@@ -251,8 +261,8 @@ export default (refreshOnCreate = true) => {
             set(account);
         });
 
-  const changeCountry = (country) =>
-  fetch(BL_API_URL + "user/country?newCountry=" + country, { 
+  const changeCountry = (country, playerId) =>
+  fetch(BL_API_URL + "user/country?newCountry=" + country + (playerId ? "&id="+playerId : ""), { 
       method: 'PATCH', 
       credentials: 'include'
   })

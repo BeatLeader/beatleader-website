@@ -180,14 +180,25 @@
     dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters})
   }
 
-  function processDiffs(diffArray) {
-    diffArray = diffArray.sort(function(a, b) {
-      let diffNumA = parseInt(a.leaderboardId[a.leaderboardId.length - 2]) + parseInt(a.leaderboardId[a.leaderboardId.length - 1]);
-      let diffNumB = parseInt(b.leaderboardId[b.leaderboardId.length - 2]) + parseInt(b.leaderboardId[b.leaderboardId.length - 1]);
-        if (diffNumA < diffNumB) return -1;
-        if (diffNumA > diffNumB) return 1;
-        return 0;
-    });
+  function processDiffs(diffArray, song) {
+    if (song) {
+      const idLength = song.id.length;
+      diffArray = diffArray.sort(function(a, b) {
+        let diffNumA = parseInt(a.leaderboardId[idLength]);
+        let diffNumB = parseInt(b.leaderboardId[idLength]);
+          if (diffNumA < diffNumB) return -1;
+          if (diffNumA > diffNumB) return 1;
+          return 0;
+      });
+      diffArray = diffArray.sort(function(a, b) {
+        let diffNumA = parseInt(a.leaderboardId.substring(idLength + 1));
+        let diffNumB = parseInt(b.leaderboardId.substring(idLength + 1));
+          if (diffNumA < diffNumB) return -1;
+          if (diffNumA > diffNumB) return 1;
+          return 0;
+      });
+    }
+    
     return diffArray.map(d => (
       {
         ...d,
@@ -256,7 +267,7 @@
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
-  $: diffs = processDiffs(opt($leaderboardStore, 'diffs', []))
+  $: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song)
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
   $: hash = opt($leaderboardStore, 'leaderboard.song.hash')

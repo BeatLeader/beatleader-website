@@ -331,7 +331,7 @@
 
     .player-card .steam-and-pp {
         display: flex;
-        justify-content: end;
+        justify-self: end;
         align-items: center;
         font-size: 0.8em;
         font-weight: 500;

@@ -3,6 +3,7 @@
     import createAccountStore from '../stores/beatleader/account'
     import {opt} from '../utils/js'
     import {CURRENT_URL, BL_API_URL} from '../network/queues/beatleader/api-queue'
+    import { navigate } from "svelte-routing";
 
     export let action;
 
@@ -20,6 +21,7 @@
 
     $: loggedInPlayer = opt($account, 'id');
     $: error = opt($account, 'error');
+    $: message = opt($account, 'message');
     $: performAction();
 </script>
 
@@ -29,8 +31,14 @@
 
     Login with the Steam or account you created in mod.<br>
     <b>Signup is possible only from the mods!</b>
-    <input bind:value={login} placeholder="Login">
-    <input type="password" bind:value={password} placeholder="Password">
+    <div class="input-container">
+        Login
+        <input bind:value={login} placeholder="Login">
+    </div>
+    <div class="input-container">
+        Password
+        <input type="password" bind:value={password} placeholder="Password">
+    </div>
 
     <Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)}/>
     <form action={BL_API_URL + "signin"} method="post">
@@ -49,12 +57,17 @@
         If you using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
         Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
         This is not required and no way back!
-        <input bind:value={login} placeholder="Login">
-        <input type="password" bind:value={password} placeholder="Password">
+        <div class="input-container">
+            Login
+            <input bind:value={login} placeholder="Login">
+        </div>
+        <div class="input-container">
+            Password
+            <input type="password" bind:value={password} placeholder="Password">
+        </div>        
         <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
     {:else}
-        Account was succesfully migrated!<br>
-        Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
+        {navigate("/u/" + loggedInPlayer)}
     {/if}
 {:else}
     You can migrate this account to your Steam account.<br><br>
@@ -71,22 +84,39 @@
 {/if}
 {:else if action == "changePassword"}
     {#if !$account.migrated}
-    <input bind:value={login} placeholder="Login">
-    <input type="password" bind:value={password} placeholder="Password">
-    <input type="password" bind:value={newPassword} placeholder="New password">
-    
-
-    <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePassword(login, password, newPassword)}/>
+        <div class="input-container">
+            Login
+            <input bind:value={login} placeholder="Login">
+        </div>
+        <div class="input-container">
+            Current password
+            <input type="password" bind:value={password} placeholder="Password">
+        </div>
+        <div class="input-container">
+            New password
+            <input type="password" bind:value={newPassword} placeholder="New password">
+        </div>
+        
+        <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePassword(login, password, newPassword)}/>
     {:else}
-    <input bind:value={login} placeholder="Login">
-    <input type="password" bind:value={newPassword} placeholder="Password">
-    
-    <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)}/>
+        <div class="input-container">
+            Login
+            <input bind:value={login} placeholder="Login">
+        </div>
+        <div class="input-container">
+            New password
+            <input type="password" bind:value={newPassword} placeholder="Password">
+        </div>
+        
+        <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)}/>
     {/if}
 {/if}
 
 {#if error}
 <p class="error">{error}</p>
+{/if}
+{#if message}
+<p class="messagep">{message}</p>
 {/if}
 </div>
 
@@ -100,6 +130,13 @@
     }
     .error {
         color: red;
+    }
+    .messagep {
+        color: green;
+    }
+
+    .input-container {
+        display: grid;
     }
 
     .inlineLink {
