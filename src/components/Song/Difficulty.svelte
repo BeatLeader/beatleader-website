@@ -1,5 +1,5 @@
 <script>
-  import {getHumanDiffInfo, getIconNameForDiff} from '../../utils/beatleader/format'
+  import {getHumanDiffInfo, getIconNameForDiff, getDescriptionForDiff} from '../../utils/beatleader/format'
   import Value from '../Common/Value.svelte'
 
   export let diff;
@@ -23,7 +23,7 @@
         {title} on:click>
     {#if showDiffIcons}
       <span class="icon">
-        <div class="{getIconNameForDiff(diffInfo)}" title="{diffInfo.type}"></div>
+        <div class="{getIconNameForDiff(diffInfo)}" title="{getDescriptionForDiff(diffInfo)}"></div>
       </span>
     {/if}
 

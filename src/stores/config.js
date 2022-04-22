@@ -28,7 +28,7 @@ const DEFAULT_CONFIG = {
   },
   preferences: {
     billboardState: 'show',
-    secondaryPp: 'attribution',
+    secondaryPp: 'weighted',
     iconsOnAvatars: 'show',
     beatSaviorComparison: 'show'
   },

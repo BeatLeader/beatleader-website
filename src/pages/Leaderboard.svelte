@@ -24,7 +24,7 @@
   import Switcher from '../components/Common/Switcher.svelte'
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
-  import {getIconNameForDiff, describeModifiersAndMultipliers} from '../utils/beatleader/format'
+  import {getIconNameForDiff, describeModifiersAndMultipliers, getDescriptionForDiff} from '../utils/beatleader/format'
   import {dateFromUnix} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
   import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
@@ -193,7 +193,7 @@
         ...d,
         label: d.name,
         url: `/leaderboard/${currentType}/${d.leaderboardId}`,
-        icon: `<div class="${getIconNameForDiff(d)}" title="${d.type}">`,
+        icon: `<div class="${getIconNameForDiff(d)}" title="${getDescriptionForDiff(d)}">`,
       }))
   }
 

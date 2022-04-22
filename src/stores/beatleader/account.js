@@ -31,6 +31,7 @@ export default (refreshOnCreate = true) => {
       account.player = data.player;
       account.clanRequests = data.clanRequests;
       account.friends = data.friends;
+      account.migrated = data.migrated;
       set(account);
 
       if (!playerService) {
@@ -45,8 +46,8 @@ export default (refreshOnCreate = true) => {
       } else {
         let toDelete = friends;
         data.friends.forEach(friend => {
-          if (toDelete.contains(friend)) {
-            toDelete.remove(friend);
+          if (toDelete.includes(friend)) {
+            toDelete = toDelete.filter(f => f != friend);
           } else {
             eventBus.publish('player-add-cmd', {playerId: friend});
           }
@@ -75,7 +76,7 @@ export default (refreshOnCreate = true) => {
                 config.users.main = data;
                 configStore.set(config);
           
-                eventBus.publish('player-add-cmd', {playerId: data});
+                eventBus.publish('player-add-cmd', {playerId: data, fromAccount: true});
             }
         } else {
             account = {};
@@ -86,7 +87,7 @@ export default (refreshOnCreate = true) => {
                     config.users.main = null;
                     configStore.set(config);
             
-                    eventBus.publish('player-remove-cmd', {playerId: currentID});
+                    eventBus.publish('player-remove-cmd', {playerId: currentID, fromAccount: true});
                 }
             }
             
@@ -145,6 +146,53 @@ export default (refreshOnCreate = true) => {
     fetch(BL_API_URL + "user/migrate", {
         credentials: 'include',
         method: 'POST',
+        body: data
+    })
+      .then(checkResponse)
+      .then(
+        data => {
+            if (data.length > 0) {
+                account.error = data;
+            } else {
+                account.error = null;
+                refresh(true);
+            }
+            set(account);
+        });
+  }
+
+  const changePassword = (login, password, newPassword) => {
+    let data = new FormData();
+    data.append('login', login);
+    data.append('password', password);
+    data.append('newPassword', newPassword);
+
+    fetch(BL_API_URL + "user/changePassword", {
+        credentials: 'include',
+        method: 'PATCH',
+        body: data
+    })
+      .then(checkResponse)
+      .then(
+        data => {
+            if (data.length > 0) {
+                account.error = data;
+            } else {
+                account.error = null;
+                refresh(true);
+            }
+            set(account);
+        });
+  }
+
+  const changePasswordMigrated = (login, newPassword) => {
+    let data = new FormData();
+    data.append('login', login);
+    data.append('newPassword', newPassword);
+
+    fetch(BL_API_URL + "user/resetPassword", {
+        credentials: 'include',
+        method: 'PATCH',
         body: data
     })
       .then(checkResponse)
@@ -307,6 +355,18 @@ export default (refreshOnCreate = true) => {
           set(account);
       });
 
+  eventBus.on('player-add-cmd', async ({playerId, fromAccount}) => {
+    if (!fromAccount) {
+      fetch(BL_API_URL + "user/friend?playerId=" + playerId, {credentials: 'include', method: 'POST'})
+    }
+  });
+
+  eventBus.on('player-remove-cmd', async ({playerId, fromAccount}) => {
+    if (!fromAccount) {
+      fetch(BL_API_URL + "user/friend?playerId=" + playerId, {credentials: 'include', method: 'DELETE'})
+    }
+  });
+
   store = {
     subscribe,
     get,
@@ -319,7 +379,9 @@ export default (refreshOnCreate = true) => {
     changeCountry,
     foundClan,
     banPlayer,
-    unbanPlayer
+    unbanPlayer,
+    changePassword,
+    changePasswordMigrated
   }
 
   return store;

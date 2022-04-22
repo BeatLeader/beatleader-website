@@ -160,6 +160,45 @@ select {
     background-image: url("./90degree.svg");
 }
 
+.horizontalstandard-icon {
+    margin-left: 1px;
+    margin-top: 2px;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./horizontalstandard.png");
+}
+
+.inversestandard-icon {
+    margin-left: 1px;
+    margin-top: 2px;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./inversestandard.png");
+}
+
+.invertedstandard-icon {
+    margin-left: 1px;
+    margin-top: 2px;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./invertedstandard.png");
+}
+.verticalstandard-icon {
+    margin-left: 1px;
+    margin-top: 1px;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url("./verticalstandard.png");
+}
+
 .replay-icon {
     width: 100%;
     height: 100%;

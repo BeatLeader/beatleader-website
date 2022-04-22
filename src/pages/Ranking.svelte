@@ -151,9 +151,13 @@
         <img src="/assets/EarthDay.png" alt="Earth day banner">
         
       </div>
-      <div class="show-details">
-        <span class="details-reveal clickable" class:opened={showDetails}
-              on:click={() => showDetails = !showDetails} title="Show details">
+      <div class="show-details clickable" on:click={() => showDetails = !showDetails}>
+        <span class="reveal-title">
+          {showDetails ? "Hide details" : "Show details"}
+        </span>
+        
+        <span class="details-reveal" class:opened={showDetails} title="Show details">
+              
           <i class="fas fa-chevron-down"></i>
         </span>
       </div>
@@ -384,8 +388,13 @@
       margin: 1em;
     }
 
-    .details-reveal {
+    .clickable {
       cursor: pointer;
+    }
+
+    .reveal-title {
+      margin-right: 0.5em;
+      margin-bottom: -0.2em;
     }
 
     .details-reveal.opened {

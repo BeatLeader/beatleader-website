@@ -17,7 +17,7 @@
 
   const DEFAULT_BILLBOARD_STATE = 'show';
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
-  const DEFAULT_SECONDARY_PP_METRICS = 'attribution';
+  const DEFAULT_SECONDARY_PP_METRICS = 'weighted';
   const DEFAULT_AVATAR_ICONS = 'show';
   const DEFAULT_BEATSAVIOR_COMPARISON = 'show';
 
@@ -203,14 +203,14 @@
             </Select>
           </section>
 
-          <section class="option">
+          <!-- <section class="option">
             <label title="Second PP metric displayed next to the score, either weighted PP or actual contribution of the score to the total PP (cached players only)">Secondary PP metrics</label>
             <Select bind:value={currentSecondaryPpMetrics}>
               {#each secondaryPpMetrics as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
             </Select>
-          </section>
+          </section> -->
 
           <section class="option">
             <label

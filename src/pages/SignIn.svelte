@@ -10,6 +10,7 @@
 
     let login;
     let password;
+    let newPassword;
 
     function performAction() {
         if (action == "addHome") {
@@ -23,6 +24,7 @@
 </script>
 
 <div class="container">
+{#if !action}
 {#if !loggedInPlayer}
 
     Login with the Steam or account you created in mod.<br>
@@ -38,17 +40,22 @@
         <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
     </form>
 {:else if loggedInPlayer > 70000000000000000}
-    If you using the Steam game or already migrated - you are all set!<br>
-    Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
-    <br>
-    <br>
-    <br>
-    If you using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
-    Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
-    This is not required and no way back!
-    <input bind:value={login} placeholder="Login">
-    <input type="password" bind:value={password} placeholder="Password">
-    <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
+    {#if !$account.migrated}
+        If you using the <b>Steam game</b> - you are all set!<br>
+        Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
+        <br>
+        <br>
+        <br>
+        If you using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
+        Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
+        This is not required and no way back!
+        <input bind:value={login} placeholder="Login">
+        <input type="password" bind:value={password} placeholder="Password">
+        <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
+    {:else}
+        Account was succesfully migrated!<br>
+        Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
+    {/if}
 {:else}
     You can migrate this account to your Steam account.<br><br>
     Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
@@ -61,6 +68,21 @@
 
         <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
     </form>
+{/if}
+{:else if action == "changePassword"}
+    {#if !$account.migrated}
+    <input bind:value={login} placeholder="Login">
+    <input type="password" bind:value={password} placeholder="Password">
+    <input type="password" bind:value={newPassword} placeholder="New password">
+    
+
+    <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePassword(login, password, newPassword)}/>
+    {:else}
+    <input bind:value={login} placeholder="Login">
+    <input type="password" bind:value={newPassword} placeholder="Password">
+    
+    <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)}/>
+    {/if}
 {/if}
 
 {#if error}

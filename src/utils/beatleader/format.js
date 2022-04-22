@@ -10,6 +10,10 @@ export const diffColors = {
 }
 
 const diffTypes = [
+  "horizontalstandard",
+  "inversestandard",
+  "invertedstandard",
+  "verticalstandard",
   "standard",
   "90degree",
   "360degree",
@@ -18,6 +22,20 @@ const diffTypes = [
   "lightshow",
   "lawless"
 ]
+
+const diffDescriptions = {
+  "horizontalstandard": "Horisontal Standard (Chirality mod)",
+  "inversestandard": "Inverse Standard (Chirality mod)",
+  "invertedstandard": "Inverted Standard (Chirality mod)",
+  "verticalstandard": "Vertical Standard (Chirality mod)",
+  "standard": "Standard",
+  "90degree": "90 Degree",
+  "360degree": "360 Degree",
+  "noarrows": "No Arrows",
+  "onesaber": "One Saber",
+  "lightshow": "Light Show",
+  "lawless": "Lawless"
+}
 
 export function getDiffColor(diffInfo) {
   return diffColors[diffInfo.diff.toLowerCase()] ? diffColors[diffInfo.diff.toLowerCase()] : null;
@@ -47,6 +65,10 @@ export function getIconNameForDiff(diffInfo) {
     }
   }
   return "standard-icon"
+}
+
+export function getDescriptionForDiff(diffInfo) {
+  return diffDescriptions[diffInfo.type.toLowerCase()] ?? "Standard";
 }
 
 const HMDs = {
