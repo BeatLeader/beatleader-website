@@ -225,7 +225,7 @@
                   {#if player.playerId > 70000000000000000}
                     <SteamStats {player}/>
                   {/if}
-                  {#if currentFilters.sortBy == "dailyImprovements"}<div style="color: {HSVtoRGB(player.others.improvement / 20, 1.0, 1.0)}">
+                  {#if currentFilters.sortBy == "dailyImprovements"}<div style="color: {HSVtoRGB(player.others.improvement / 70, 1.0, 1.0)}">
                     <Value value={opt(player, 'others.improvement')} zero="Carbon positive" suffix={opt(player, 'others.improvement') == 1 ? " score" : " scores"} digits=0/>
                   </div>
                   {:else}
