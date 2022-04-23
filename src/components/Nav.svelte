@@ -118,8 +118,8 @@
 
 <nav class="ssr-page-container">
   <a href="/dashboard" on:click|preventDefault={() => navigate('/dashboard')}>
-    <img src="/assets/logo.gif" class="logo desktop-and-up" alt="" />
-    <img src="/assets/logo-small.gif" class="logo up-to-tablet" alt="" />
+    <img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
+    <img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
   </a>
 
   {#if player}

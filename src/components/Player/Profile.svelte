@@ -3,7 +3,6 @@
   import processPlayerData from './utils/profile';
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
-  import {configStore} from '../../stores/config'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import createAccountStore from '../../stores/beatleader/account'
@@ -114,8 +113,6 @@
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary)
   $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)
   $: updateAccSaberPlayerInfo(playerId);
-  $: dailyImprovements = playerData?.scoreStats?.dailyImprovements;
-  $: isMain = configStore && playerId && $configStore?.users?.main === playerId;
 
   $: swipeCards = []
     .concat(
@@ -190,21 +187,6 @@
 </script>
 
 <ContentBox>
-  {#if isMain}
-      <div class="banner-container">
-      <div class="banner">
-        <div class="banner-text">
-          {#if dailyImprovements < 2}
-            Join the Score Recycling initiative! <a href="/ranking/global/1?sortBy=dailyImprovements">More info...</a>
-          {:else if dailyImprovements < 10}
-            {dailyImprovements} scores improved. Of to a good start.
-          {:else}
-            {dailyImprovements} scores! Earth is proud of you. Did you want a badge?
-          {/if}
-        </div>
-      </div>
-    </div>
-    {/if}
   <div class="player-general-info">
     <div class="avatar-cell">
       <Avatar {isLoading} {playerInfo} hash={avatarHash} />
@@ -243,22 +225,6 @@
 </ContentBox>
 
 <style>
-    .banner-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 1em;
-    }
-    .banner {
-      background-color: darkgreen;
-      border-radius: 1em;
-      display: flex;
-      justify-content: center;
-    }
-
-    .banner-text {
-      margin: 0.5em;
-    }
-
     .player-general-info {
         display: flex;
         flex-wrap: nowrap;

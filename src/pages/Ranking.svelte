@@ -147,38 +147,6 @@
 <section class="align-content">
   <article class="page-content" transition:fade>
     <ContentBox bind:box={boxEl}>
-      <div class="banner">
-        <img src="/assets/EarthDay.png" alt="Earth day banner">
-        
-      </div>
-      <div class="show-details clickable" on:click={() => showDetails = !showDetails}>
-        <span class="reveal-title">
-          {showDetails ? "Hide details" : "Show details"}
-        </span>
-        
-        <span class="details-reveal" class:opened={showDetails} title="Show details">
-              
-          <i class="fas fa-chevron-down"></i>
-        </span>
-      </div>
-
-      {#if showDetails}
-      <div class="details">
-        <span >
-          <b>We in BeatLeader believe that PP growth should be sustainable.</b><br>
-          And to cut machine time and space on cloud and database we endorse you to recycle the scores. 
-          Improve your old(one day or older) scores and climb this leaderboard. Top 1 on 12pm UTC 4/23/22 will get the "Earth's bff" badge!
-        <br><br> Jokes aside, today is Earth Day and it's important. 
-        We kinda don't have another place to live for now and it also means the place to play Beat Saber.
-        It's just a reminder for us that we are very fragile and our current problems can be meaningless in face of climate changes
-        (how much pp will you need if the wildfire will burn your house)
-        
-        <br>
-        <br>Check the <a href="https://github.com/zeph-yr/OurFuture">amazing article from @zeph-yr</a> to learn more and help make <b>our home better.</b></span>
-        <br>And support <a href="https://www.portmone.com.ua/r3/support-ukrainian-army">the Ukrainian army.</a> Burning cities do not help the planet!
-      </div>
-      {/if}
-      
       <h1 class="title is-5">
         {type && type.toUpperCase && type !== 'global' ? type.toUpperCase() : 'Global'} leaderboard
 
@@ -225,7 +193,7 @@
                   {#if player.playerId > 70000000000000000}
                     <SteamStats {player}/>
                   {/if}
-                  {#if currentFilters.sortBy == "dailyImprovements"}<div style="color: {HSVtoRGB(player.others.improvement / 70, 1.0, 1.0)}">
+                  {#if currentFilters.sortBy == "dailyImprovements"}<div style="color: {HSVtoRGB(player.others.improvement / 85, 1.0, 1.0)}">
                     <Value value={opt(player, 'others.improvement')} zero="Carbon positive" suffix={opt(player, 'others.improvement') == 1 ? " score" : " scores"} digits=0/>
                   </div>
                   {:else}
