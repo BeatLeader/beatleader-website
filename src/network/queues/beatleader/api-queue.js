@@ -84,6 +84,7 @@ export default (options = {}) => {
       ret.score.mods = s.modifiers && s.modifiers.length ? s.modifiers.split(',').filter(m => m && m.trim().length) : null;
 
       ret.score.pp = s.pp;
+      ret.score.acc = s.accuracy * 100;
       ret.score.hasReplay = s.replay != null;
 
       return ret;

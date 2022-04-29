@@ -11,14 +11,12 @@ const process = response => {
     if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
     else if (!mods) mods = null;
 
-    const acc = unmodifiedScore && opt(score, 'maxScore') ? unmodifiedScore / score.maxScore * 100 : opt(score, 'acc', null);
-    const percentage = opt(score, 'score') && opt(score, 'maxScore') ? score.score / score.maxScore * 100 : opt(score, 'percentage', null);
 
     const ppWeighted = opt(score, 'pp') && opt(score, 'weight') ? score.pp * score.weight : null;
 
     return {
       ...s,
-      score: {...score, unmodifiedScore: unmodifiedScore || null, mods, acc, percentage, ppWeighted},
+      score: {...score, unmodifiedScore: unmodifiedScore || null, mods, ppWeighted},
     };
   });
 

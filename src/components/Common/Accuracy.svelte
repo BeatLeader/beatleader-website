@@ -33,39 +33,22 @@
     return badgesDef.reduce((cum, badge) => ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) ? badge : cum, badgesDef[badgesDef.length - 1]);
   }
 
-  $: badge = getBadge(showPercentageInstead ? opt(score, 'percentage') : opt(score, 'acc'));
+  $: badge = getBadge(opt(score, 'acc'));
   $: mods = opt(score, 'mods')
 </script>
 
 <Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
     <span slot="label">
       <slot name="label-before"></slot>
-      <Value value={showPercentageInstead ? score.percentage : score.acc}
-             prevValue={showPercentageInstead ? opt(prevScore, 'percentage') : opt(prevScore, 'acc')}
+      <Value value={score.acc}
+             prevValue={opt(prevScore, 'acc')}
              title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
              prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
       />
       <slot name="label-after"></slot>
-      {#if !noSecondMetric && secondMetricInsteadOfDiff && ((showPercentageInstead && score.acc) || (!showPercentageInstead && score.percentage)) && score.acc !== score.percentage}
-        <small>
-          <Value value={showPercentageInstead ? score.acc : score.percentage}
-                 withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
-                 title={showPercentageInstead ? 'Accuracy' : 'Percentage'}
-          />
-        </small>
-      {/if}
     </span>
     <small class="mods" slot="additional" title={showMods && mods ? describeModifiersAndMultipliers(mods, modifiersStore) : null}>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
-
-{#if !noSecondMetric && !secondMetricInsteadOfDiff && score.mods && score.mods.length  && score.acc !== score.percentage}
-<small>
-    <Value value={!showPercentageInstead ? score.percentage : score.acc}
-           withZeroSuffix={true} inline={false} suffix="%" suffixPrev="%"
-           title={showPercentageInstead ? 'Accuracy' : 'Percentage'}
-    />
-</small>
-{/if}
 
 <style>
     small {

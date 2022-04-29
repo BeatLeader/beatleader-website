@@ -1,6 +1,5 @@
 import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps'
-import accEnhancer from './enhancers/scores/acc'
 import createLeaderboardPageProvider from './providers/api-leaderboard'
 import {writable} from 'svelte/store'
 import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/beatleader/song'
@@ -65,32 +64,31 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
       return newState.scores[stateRowIdx];
     }
 
-    if (newState.leaderboard)
-      beatMapsEnhancer(newState)
-        .then(_ => {
-          const versions = newState?.leaderboard?.beatMaps?.versions ?? null
-          const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
+    // if (newState.leaderboard)
+    //   beatMapsEnhancer(newState)
+    //     .then(_ => {
+    //       const versions = newState?.leaderboard?.beatMaps?.versions ?? null
+    //       const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
 
-          const bpm = newState?.leaderboard?.beatMaps?.metadata?.bpm ?? null;
-          const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(newState?.leaderboard?.beatMaps?.versions?.[versionsLastIdx]?.diffs, newState?.leaderboard?.diffInfo);
-          if (!bmStats) return null;
+    //       const bpm = newState?.leaderboard?.beatMaps?.metadata?.bpm ?? null;
+    //       const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(newState?.leaderboard?.beatMaps?.versions?.[versionsLastIdx]?.diffs, newState?.leaderboard?.diffInfo);
+    //       if (!bmStats) return null;
 
-          newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
+    //       newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
 
-          setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
-          debouncedSetState(enhanceTaskId, newState);
+    //       setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
+    //       debouncedSetState(enhanceTaskId, newState);
 
-          return newState.leaderboard.beatMaps;
-        })
-        .then(_ => {
-          if (!newState.scores || !newState.scores.length) return;
+    //       return newState.leaderboard.beatMaps;
+    //     })
+    //     .then(_ => {
+    //       if (!newState.scores || !newState.scores.length) return;
 
-          for (const scoreRow of newState.scores) {
-                  stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => accEnhancer(draft)).then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-.then(scoreRow => stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, scoreRow?.player?.playerId, true)))
-              .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-          }
-        })
+    //       for (const scoreRow of newState.scores) {
+    //           stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, scoreRow?.player?.playerId, true))
+    //           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+    //       }
+    //     })
   }
 
   const provider = createLeaderboardPageProvider();

@@ -26,37 +26,10 @@
 </script>
 
 <div class="container">
-{#if !action}
-{#if !loggedInPlayer}
-
-    Login with the Steam or account you created in mod.<br>
-    <b>Signup is possible only from the mods!</b>
-    <div class="input-container">
-        Login
-        <input bind:value={login} placeholder="Login">
-    </div>
-    <div class="input-container">
-        Password
-        <input type="password" bind:value={password} placeholder="Password">
-    </div>
-
-    <Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)}/>
-    <form action={BL_API_URL + "signin"} method="post">
-        <input type="hidden" name="Provider" value="Steam" />
-        <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
-
-        <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
-    </form>
-{:else if loggedInPlayer > 70000000000000000}
-    {#if !$account.migrated}
-        If you using the <b>Steam game</b> - you are all set!<br>
-        Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
-        <br>
-        <br>
-        <br>
-        If you using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
-        Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
-        This is not required and no way back!
+{#if !action || action == "addHome"}
+    {#if !loggedInPlayer}
+        Login with the Steam or account you created in mod.<br>
+        <b>Signup is possible only from the mods!</b>
         <div class="input-container">
             Login
             <input bind:value={login} placeholder="Login">
@@ -64,24 +37,50 @@
         <div class="input-container">
             Password
             <input type="password" bind:value={password} placeholder="Password">
-        </div>        
-        <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
+        </div>
+
+        <Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)}/>
+        <form action={BL_API_URL + "signin"} method="post">
+            <input type="hidden" name="Provider" value="Steam" />
+            <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
+
+            <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
+        </form>
+    {:else if loggedInPlayer > 70000000000000000}
+        {#if !$account.migrated}
+            If you using the <b>Steam game</b> - you are all set!<br>
+            Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
+            <br>
+            <br>
+            <br>
+            If you using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
+            Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
+            This is not required and no way back!
+            <div class="input-container">
+                Login
+                <input bind:value={login} placeholder="Login">
+            </div>
+            <div class="input-container">
+                Password
+                <input type="password" bind:value={password} placeholder="Password">
+            </div>        
+            <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
+        {:else}
+            {navigate("/u/" + loggedInPlayer)}
+        {/if}
     {:else}
-        {navigate("/u/" + loggedInPlayer)}
+        You can migrate this account to your Steam account.<br><br>
+        Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
+        Or just use this account.<br>
+        You can change your avatar and name in <a class="inlineLink" href={"/u/" + loggedInPlayer}>your profile.</a>
+
+        <form action={BL_API_URL + "signinmigrate"} method="post">
+            <input type="hidden" name="Provider" value="Steam" />
+            <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
+
+            <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
+        </form>
     {/if}
-{:else}
-    You can migrate this account to your Steam account.<br><br>
-    Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
-    Or just use this account.<br>
-    You can change your avatar and name in <a class="inlineLink" href={"/u/" + loggedInPlayer}>your profile.</a>
-
-    <form action={BL_API_URL + "signinmigrate"} method="post">
-        <input type="hidden" name="Provider" value="Steam" />
-        <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
-
-        <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
-    </form>
-{/if}
 {:else if action == "changePassword"}
     {#if !$account.migrated}
         <div class="input-container">

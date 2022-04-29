@@ -8,10 +8,10 @@
   export let prevPrefix = "";
   export let absolute = false;
 
-  $: dateObj = isValidDate(date) ? date : dateFromString(date)
+  $: dateObj = isValidDate(date) ? date : dateFromUnix(date)
   $: dateTitle = (configStore, $configStore, dateObj && !absolute ? formatDate(dateObj) : null)
   $: formatted = dateObj ? (absolute ? formatDate(dateObj) : formatDateRelative(dateObj)) : noDate
-  $: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromString(date)) : null
+  $: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromUnix(date)) : null
   $: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? formatDate(prevDateObj) : null)
   $: prevFormatted = prevDateObj ? (absolute ? formatDate(prevDateObj) : formatDateRelative(prevDateObj)) : "";
 </script>

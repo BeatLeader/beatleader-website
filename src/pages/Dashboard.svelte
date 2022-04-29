@@ -117,9 +117,10 @@
     <div class="is-multiline">
         <h1 class="title is-4">Hello, future BeatLeader!</h1>
         <h3 class="description">BeatLeader is a new and open Beat Saber leaderboard!</h3>
+        <h3 class="description">It also aggregates data from other cool projects:</h3>
         <div class="sources">
             <h3 class="title is-6">
-                <a class="imageLink" href={`https://www.beatsavior.io/`} target="_blank" rel="noreferrer">
+                <a class="imageLink" href={`https://beat-savior.herokuapp.com/`} target="_blank" rel="noreferrer">
                     <span class="icon beatsavior-icon" title="BeatSavior"></span>
                 </a>
             </h3>
@@ -140,9 +141,9 @@
             </h3>
         </div>
         <div class="downloadButtons">
-            <!-- <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+            <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
                 <Button iconFa="fas fa-download" label="Download PC mod"/>
-            </a> -->
+            </a>
             <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
                 <Button iconFa="fas fa-download" label="Download Quest mod"/>
             </a>
@@ -168,9 +169,9 @@
                     </div>
                 </ContentBox>
                 <div class="downloadButtons">
-                    <!-- <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+                    <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
                         <Button iconFa="fas fa-download" label="Download PC mod"/>
-                    </a> -->
+                    </a>
                     <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
                         <Button iconFa="fas fa-download" label="Download Quest mod"/>
                     </a>

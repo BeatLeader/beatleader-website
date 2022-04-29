@@ -25,7 +25,7 @@
   import Icons from '../components/Song/Icons.svelte'
   import {formatNumber} from '../utils/format'
   import {getIconNameForDiff, describeModifiersAndMultipliers, getDescriptionForDiff} from '../utils/beatleader/format'
-  import {dateFromUnix} from '../utils/date'
+  import {isValidDate, dateFromUnix} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
   import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
 
@@ -216,7 +216,7 @@
 
   function getTimeStringColor(timeSet) {
     if (!timeSet) return "#ffffff";
-    const scoreAgeMillis = now - dateFromUnix(timeSet).getTime();
+    const scoreAgeMillis = now - (isValidDate(timeSet) ? timeSet : dateFromUnix(timeSet)).getTime();
     let ratio = (scoreAgeMillis - freshScoreAgeMillis) / (oldScoreAgeMillis - freshScoreAgeMillis);
     if (ratio < 0) ratio = 0;
     if (ratio > 1) ratio = 1;
@@ -609,7 +609,6 @@
     .player-score .player {
         display: flex;
         grid-gap: .4em;
-        overflow-x: hidden;
         flex-grow: 1;
     }
 
