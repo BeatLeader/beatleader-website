@@ -12,7 +12,7 @@
   export let hash = null;
   export let twitchUrl = null
   export let notClickable = false;
-  export let hideIcons = false;
+  export let replayLink = false;
   export let category = null;
   export let service = 'beatleader';
   export let playerId = null;
@@ -47,9 +47,9 @@
       {/if}
     </div>
 
-    {#if hash && hash.length && !hideIcons}
+    {#if hash && hash.length}
       <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-        <Icons {hash} {twitchUrl} {diffInfo} {playerId} hasReplay={true} scoreId={score.id} />
+        <Icons {hash} {twitchUrl} {diffInfo} {playerId} scoreId={score.id} {replayLink} />
       </div>
     {/if}
   </section>

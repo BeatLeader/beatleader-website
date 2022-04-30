@@ -148,7 +148,7 @@
                 <Button iconFa="fas fa-download" label="Download Quest mod"/>
             </a>
         </div>
-        <SearchPage title="Find your profile or friends"/>
+        <SearchPage focusField={false} title="Find your profile or friends"/>
         <div class="global-ranking-call">
             <h3>Or check <a href="/ranking/global">the global ranking</a> to find the best players.</h3>
         </div>

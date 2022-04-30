@@ -46,8 +46,9 @@
     if (!(event?.detail?.initial ?? false)) scrollToTop();
 
     const page = (event?.detail?.page ?? 0) + 1
-
-    dispatch('page-changed', page);
+    if (!(event?.detail?.initial ?? false)) {
+      dispatch('page-changed', page);
+    }
   }
 
   function onServiceParamsChanged(event) {

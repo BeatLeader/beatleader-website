@@ -16,6 +16,7 @@
 
   export let title = 'Find a player profile';
   export let changeTitle = false;
+  export let focusField = true;
 
   document.body.classList.add('slim');
 
@@ -87,7 +88,7 @@
     {:else if !!name}
       <h2 class="title is-4 has-text-centered">{name}</h2>
       <h3 class="title is-6 has-text-centered">{title}</h3>
-      <Search on:selected={event => playerId = event.detail}/>
+      <Search focusField={focusField} on:selected={event => playerId = event.detail}/>
     {/if}
 
     {#if error}

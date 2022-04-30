@@ -43,7 +43,6 @@
   export let higlightedScore = null;
   export let higlightedPlayerId = null;
   export let iconsInInfo = false;
-  export let hasReplay = false;
   export let noReplayInLeaderboard = false;
 
   export let autoScrollToTop = true;
@@ -325,8 +324,7 @@
                 {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
                                                                          reverseColors={true}/></span>{/if}
 
-                <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
-                                           jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+                <span class="icons"><Icons {hash} {diffInfo} playerId={higlightedPlayerId}/></span>
               </h2>
             </header>
           {/if}
@@ -335,8 +333,7 @@
               <LeaderboardStats {leaderboard}/>
 
               {#if iconsInInfo}
-              <span class="icons"><Icons {hash} {diffInfo} {hasReplay} playerId={higlightedPlayerId}
-                                         jumpDistance={higlightedScore && higlightedScore.beatSavior ? higlightedScore.beatSavior.songJumpDistance : 0}/></span>
+              <span class="icons"><Icons {hash} {diffInfo} playerId={higlightedPlayerId}/></span>
               {/if}
             </div>
           {/if}
@@ -385,9 +382,7 @@
                   <div class="mobile-second-line">
                     {#if !noReplayInLeaderboard}
                       <div class="replay">
-                          <Icons {hash} {diffInfo} icons={["replay"]} hasReplay={true}
-                                 playerId={score.player.playerId}
-                                 jumpDistance={score.beatSavior ? score.beatSavior.songJumpDistance : 0}/>
+                          <Icons {hash} {diffInfo} icons={["replay"]} playerId={score.player.playerId}/>
                       </div>
                     {/if}
                     {#if type === 'accsaber' || isRanked}

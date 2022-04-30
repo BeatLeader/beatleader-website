@@ -32,6 +32,10 @@
     <div class={`song-score row-${idx}`}
          in:fly={{x: 300, delay: idx * 30, duration:500}} out:fade={{duration:100}}
          class:with-details={showDetails}>
+
+         <div class="icons up-to-tablet">
+            <Icons {hash} {twitchUrl} {diffInfo} {playerId} scoreId={score.id} replayLink={score.replay}/>
+          </div>
   
       <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
         <span class="rank">
@@ -54,7 +58,7 @@
         <span class="song">
           <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl}
                     notClickable={['beatsavior'].includes(service)}
-                    hideIcons={true}
+                    replayLink={score.replay}
                     category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}
                     jumpDistance={beatSavior ? beatSavior.songJumpDistance : 0}/>
         </span>

@@ -13,6 +13,7 @@
   export let placeholder = "";
   export let noItemsFound = "No items found";
   export let withButton = true;
+  export let toFocus = true; 
 
   let items = [];
   let isLoading = false;
@@ -53,7 +54,7 @@
   if (value && searchOnInput && searchFunc) search(value);
 
   onMount(() => {
-    if (inputEl) inputEl.focus();
+    if (toFocus && inputEl) inputEl.focus();
   })
 </script>
 

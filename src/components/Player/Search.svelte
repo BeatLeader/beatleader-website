@@ -7,6 +7,8 @@
   import queues from '../../network/queues/queues'
   import {MINUTE} from '../../utils/date'
 
+  export let focusField = true;
+
   const dispatch = createEventDispatcher();
 
   let value = "";
@@ -59,6 +61,7 @@
   <Autocomplete bind:value {searchFunc}
                 noItemsFound="No players found."
                 placeholder="Enter a name or ScoreSaber profile..."
+                toFocus={focusField}
                 on:selected={e => onItemSelected(e.detail)}
   >
     <svelte:fragment slot="row" let:item>

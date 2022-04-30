@@ -15,10 +15,10 @@
     export let diffInfo = null;
     export let twitchUrl = null;
     export let playerId = null;
-    export let hasReplay = false;
     export let icons = false;
     export let jumpDistance = 0;
     export let scoreId = null;
+    export let replayLink = null;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
         open(Preview, { previewLink: previewLink });
@@ -121,10 +121,17 @@
         </a>
     {/if}
 
-    {#if shownIcons.includes('replay') && playerId && hasReplay}
-        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
+    {#if shownIcons.includes('replay') && playerId}
+        {#if replayLink}
+        <a href={`https://www.replay.beatleader.xyz/?link=${replayLink}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+        <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?link=${replayLink}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
         </a>
+        {:else}
+        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
+        <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
+        </a>
+        {/if}
+        
     {/if}
 
     {#if shownIcons.includes('delete') && isAdmin && scoreId}

@@ -28,7 +28,6 @@ export default response => {
         score: {
           ...score,
           pp,
-          hasReplay: score.replay != null,
           score: modifiedScore,
           unmodifiedScore,
           mods,
