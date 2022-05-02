@@ -334,11 +334,9 @@
                                                                          reverseColors={true}/></span>{/if}
 
                 <span class="icons"><Icons {hash} {diffInfo} playerId={higlightedPlayerId}/></span>
-                {#if leaderboard.stats.status == "Ranked"}
-                  <Button cls="replay-button-alt battleroyalebtn" icon={`<div class='battleroyale${batleRoyaleDraft ? "stop" : ""}-icon'></div>`} title="Draft battle royal" noMargin={true} on:click={() => batleRoyaleDraft = !batleRoyaleDraft}/>
-                  {#if batleRoyaleDraft && draftList && draftList.length > 0} 
-                    <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let's the battle start!" noMargin={true} on:click={() => startBattleRoyale()}/>
-                  {/if}
+                <Button cls="replay-button-alt battleroyalebtn" icon={`<div class='battleroyale${batleRoyaleDraft ? "stop" : ""}-icon'></div>`} title="Draft battle royal" noMargin={true} on:click={() => batleRoyaleDraft = !batleRoyaleDraft}/>
+                {#if batleRoyaleDraft && draftList && draftList.length > 0} 
+                  <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let the battle begin!" noMargin={true} on:click={() => startBattleRoyale()}/>
                 {/if}
               </h2>
             </header>
