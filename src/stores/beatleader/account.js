@@ -219,7 +219,7 @@ export default (refreshOnCreate = true) => {
   }
 
   const changeAvatar = (file, playerId) =>
-    fetch(BL_API_URL + "user/avatar" + (playerId ? "&id=" + playerId : ""), { 
+    fetch(BL_API_URL + "user/avatar" + (playerId ? "?id=" + playerId : ""), { 
         method: 'PATCH', 
         body: file, 
         credentials: 'include'

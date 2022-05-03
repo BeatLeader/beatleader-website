@@ -1,9 +1,7 @@
 <script>
 	export let item = undefined;
     let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
-
-    $: item.label = regionNames.of(item.value.toUpperCase());
-    $: countryName = item.label;
+    $: countryName = item.value == "not set" ? item.value : regionNames.of(item.value.toUpperCase());
 </script>
 
 <style>
