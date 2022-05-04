@@ -105,6 +105,7 @@
   $: isCached = !!(playerData && playerData.scoresLastUpdated)
   $: clearPlayerStatsOnChange(playerId)
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
+  $: statsHistory = playerData?.statsHistory ?? null;
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
   $: playerRole = playerInfo?.role ?? null;
@@ -207,7 +208,7 @@
         <Error error={editError} />
       {/if}
 
-      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} prevInfo={playerGain} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
+      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} {statsHistory} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
       <BeatLeaderSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
       {#if $account.error}
         {$account.error}
