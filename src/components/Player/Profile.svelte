@@ -199,7 +199,7 @@
 <ContentBox>
   <div class="columns">
     <div class="column">
-      <Carousel cards={swipeCards} }/>
+      <Carousel cards={swipeCards} />
     </div>
   </div>
 </ContentBox>
