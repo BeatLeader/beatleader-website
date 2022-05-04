@@ -3,7 +3,6 @@
   import createPlayerService from '../../../services/beatleader/player'
   import {addToDate, DAY, toBlMidnight} from '../../../utils/date'
   import {debounce} from '../../../utils/debounce'
-  import BlBadges from '../BlBadges.svelte'
   import SsChart from '../Charts/SsChart.svelte'
   import AccHistoryChart from '../Charts/AccHistoryChart.svelte'
   import AccMapsChart from '../Charts/AccMapsChart.svelte'
@@ -13,7 +12,6 @@
   export let scoresStats = null;
   export let accStats = null;
   export let accBadges = null;
-  export let ssBadges = null;
   export let skeleton = false;
   export let isCached = false;
   export let statsHistory = null;
@@ -136,9 +134,6 @@
 </script>
 
 <div class="beatleader-swipe-card">
-  {#if ssBadges}
-    <BlBadges badges={ssBadges}/>
-  {/if}
   {#if selectedOption}
     <div class="chart">
       <svelte:component this={chartComponent} {...chartComponentProps}/>

@@ -137,12 +137,6 @@ function updateAccBadges(playerStats) {
     })
 }
 
-function updateSsBadges(playerData) {
-  if (!opt(playerData, 'playerInfo.badges.length')) return null;
-
-  return playerData.playerInfo.badges.map(b => ({src: `${b.image}`, title: b.description}));
-}
-
 const playerInfoTweened = {};
 export default (playerData, playerStats) => {
   if (!playerData && !playerStats) return {};
@@ -179,6 +173,5 @@ export default (playerData, playerStats) => {
     scoresStats: updateScoresStats(playerData, playerStats),
     accStats: updateAccStats(playerStats),
     accBadges: updateAccBadges(playerStats),
-    ssBadges: updateSsBadges(playerData),
   }
 }

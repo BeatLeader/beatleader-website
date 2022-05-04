@@ -107,7 +107,7 @@
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: statsHistory = playerData?.statsHistory ?? null;
   $: name = playerData && playerData.name ? playerData.name : null;
-  $: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
+  $: ({playerInfo, scoresStats, accStats, accBadges} = processPlayerData(playerData, playerStats))
   $: playerRole = playerInfo?.role ?? null;
   $: calcOnePpBoundary(playerId, isCached);
   $: refreshBeatSaviorState(playerId)
@@ -127,7 +127,6 @@
               scoresStats: scoresStatsFinal,
               accStats,
               accBadges,
-              ssBadges,
               isCached,
               skeleton,
               statsHistory,
