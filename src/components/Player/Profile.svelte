@@ -1,7 +1,6 @@
 <script>
   import {getContext} from 'svelte'
   import processPlayerData from './utils/profile';
-  import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
@@ -37,11 +36,6 @@
   let accSaberPlayerInfo = null;
   let accSaberCategories = null;
 
-  let playerStats = null;
-  eventBus.on('player-stats-calculated', stats => {
-    if (stats?.playerId && stats?.playerId === playerData?.playerId) playerStats = stats
-  })
-
   let onePpBoundary = null;
 
   let isBeatSaviorAvailable = false;
@@ -50,10 +44,6 @@
     if (!playerId) return;
 
     isBeatSaviorAvailable = await beatSaviorService.isDataForPlayerAvailable(playerId)
-  }
-
-  function clearPlayerStatsOnChange() {
-    playerStats = null;
   }
 
   async function calcOnePpBoundary(playerId, isCached) {
@@ -94,17 +84,16 @@
     editError = err?.detail ?? null;
   }
 
-  $: isCached = !!(playerData && playerData.scoresLastUpdated)
-  $: clearPlayerStatsOnChange(playerId)
+  $: isCached = !!(playerData && playerData.scoresLastUpdated);
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: statsHistory = playerData?.statsHistory ?? null;
   $: name = playerData && playerData.name ? playerData.name : null;
-  $: ({playerInfo, scoresStats, accBadges} = processPlayerData(playerData, playerStats))
+  $: ({playerInfo, scoresStats, accBadges} = processPlayerData(playerData))
   $: playerRole = playerInfo?.role ?? null;
   $: calcOnePpBoundary(playerId, isCached);
-  $: refreshBeatSaviorState(playerId)
-  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary)
-  $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)
+  $: refreshBeatSaviorState(playerId);
+  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary);
+  $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank);
   $: updateAccSaberPlayerInfo(playerId);
 
   $: swipeCards = []

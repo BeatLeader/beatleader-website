@@ -1,4 +1,5 @@
 import tweened from '../../../svelte-utils/tweened';
+import {diffColors} from '../../../utils/beatleader/format'
 
 const TWEEN_DURATION = 300;
 
@@ -50,29 +51,34 @@ function updateScoresStats(playerData) {
     .filter(s => s);
 }
 
-function updateAccBadges(playerStats) {
-  if (!playerStats || !playerStats.badges) return null;
+function updateAccBadges(playerData) {
+  if (!playerData?.scoreStats) return null;
 
-  return playerStats.badges
-    .map(badge => {
-      const value = badge.value;
+  return [
+    {label: 'SS+', min: 95, max: null, value: 0, bgColor: diffColors.expertPlus, key: 'sspPlays'},
+    {label: 'SS', min: 90, max: 95, value: 0, bgColor: diffColors.expert, key: 'ssPlays'},
+    {label: 'S+', min: 85, max: 90, value: 0, bgColor: diffColors.hard, key: 'spPlays'},
+    {label: 'S', min: 80, max: 85, value: 0, bgColor: diffColors.normal, key: 'sPlays'},
+    {label: 'A', min: null, max: 80, value: 0, bgColor: diffColors.easy, key: 'aPlays'},
+  ].map(badge => {
+    const value = playerData?.scoreStats?.[badge.key] ?? 0;
 
-      if (!scoresStatsTweened.hasOwnProperty(badge.label)) scoresStatsTweened[badge.label] = tweened(value, TWEEN_DURATION);
-      else scoresStatsTweened[badge.label].set(value);
+    if (!scoresStatsTweened.hasOwnProperty(badge.label)) scoresStatsTweened[badge.label] = tweened(value, TWEEN_DURATION);
+    else scoresStatsTweened[badge.label].set(value);
 
-      return {
-        ...badge,
-        value: scoresStatsTweened[badge.label],
-        title: !badge.min ? `< ${badge.max}%` : (!badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`),
-        fluid: true,
-        digits: 0,
-      }
-    })
+    return {
+      ...badge,
+      value: scoresStatsTweened[badge.label],
+      title: !badge.min ? `< ${badge.max}%` : (!badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`),
+      fluid: true,
+      digits: 0,
+    }
+  });
 }
 
 const playerInfoTweened = {};
-export default (playerData, playerStats) => {
-  if (!playerData && !playerStats) return {};
+export default (playerData) => {
+  if (!playerData) return {};
 
   const playerInfo = {...(playerData?.playerInfo ?? null)};
 
@@ -104,6 +110,6 @@ export default (playerData, playerStats) => {
     playerInfo,
     prevInfo: playerData?.prevInfo ?? null,
     scoresStats: updateScoresStats(playerData),
-    accBadges: updateAccBadges(playerStats),
+    accBadges: updateAccBadges(playerData),
   }
 }
