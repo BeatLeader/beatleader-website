@@ -18,6 +18,7 @@
   import {onLegendClick} from './utils/legend-click-handler'
 
   export let playerId = null;
+  export let statsHistory = null;
   export let rankHistory = null;
   export let playerHistory = null;
   export let height = "350px";

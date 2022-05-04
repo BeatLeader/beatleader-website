@@ -36,7 +36,6 @@
 
   let accSaberPlayerInfo = null;
   let accSaberCategories = null;
-  let playerGain = null;
 
   let playerStats = null;
   eventBus.on('player-stats-calculated', stats => {
@@ -55,7 +54,6 @@
 
   function clearPlayerStatsOnChange() {
     playerStats = null;
-    playerGain = null;
   }
 
   async function calcOnePpBoundary(playerId, isCached) {
@@ -84,12 +82,6 @@
       )
   }
 
-  function onPlayerGainChanged(e) {
-    if (e?.detail?.gainType !== 'beatleader') return;
-
-    playerGain = e.detail;
-  }
-
   async function updateAccSaberPlayerInfo(playerId) {
     if (!playerId) return;
 
@@ -107,7 +99,7 @@
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: statsHistory = playerData?.statsHistory ?? null;
   $: name = playerData && playerData.name ? playerData.name : null;
-  $: ({playerInfo, scoresStats, accStats, accBadges} = processPlayerData(playerData, playerStats))
+  $: ({playerInfo, scoresStats, accBadges} = processPlayerData(playerData, playerStats))
   $: playerRole = playerInfo?.role ?? null;
   $: calcOnePpBoundary(playerId, isCached);
   $: refreshBeatSaviorState(playerId)
@@ -125,7 +117,6 @@
             props: {
               playerId,
               scoresStats: scoresStatsFinal,
-              accStats,
               accBadges,
               isCached,
               skeleton,
@@ -208,7 +199,7 @@
       {/if}
 
       <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} {statsHistory} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
-      <BeatLeaderSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
+      <BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} />
       {#if $account.error}
         {$account.error}
       {/if}
@@ -219,7 +210,7 @@
 <ContentBox>
   <div class="columns">
     <div class="column">
-      <Carousel cards={swipeCards} on:player-gain-changed={e => onPlayerGainChanged(e)}/>
+      <Carousel cards={swipeCards} }/>
     </div>
   </div>
 </ContentBox>

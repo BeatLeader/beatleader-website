@@ -1,31 +1,21 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import createPlayerService from '../../../services/beatleader/player'
-  import {addToDate, DAY, toBlMidnight} from '../../../utils/date'
-  import {debounce} from '../../../utils/debounce'
-  import SsChart from '../Charts/SsChart.svelte'
+  import BlChart from '../Charts/BlChart.svelte'
   import AccHistoryChart from '../Charts/AccHistoryChart.svelte'
   import AccMapsChart from '../Charts/AccMapsChart.svelte'
   import Switcher from '../../Common/Switcher.svelte'
 
   export let playerId = null;
   export let scoresStats = null;
-  export let accStats = null;
   export let accBadges = null;
   export let skeleton = false;
   export let isCached = false;
   export let statsHistory = null;
 
-  const HISTORY_GAIN_DEBOUNCE = 500;
-
   const dispatch = createEventDispatcher();
 
   const playerService = createPlayerService();
-
-  let playerHistory = null;
-  let playerHistoryGain = null;
-
-  let gainDaysAgo = 1;
 
   const allSwitcherOptions = [
     {id: 'rank', label: 'Rank & PP', iconFa: 'fas fa-chart-line'},
@@ -42,8 +32,8 @@
   function updateChartComponent(option) {
     switch (option?.id) {
       case 'rank':
-        chartComponent = SsChart;
-        chartComponentProps = {playerId, rankHistory, playerHistory}
+        chartComponent = BlChart;
+        chartComponentProps = {playerId, statsHistory, rankHistory}
         break;
 
       case 'accmaps':
@@ -53,7 +43,7 @@
 
       case 'acchistory':
         chartComponent = AccHistoryChart;
-        chartComponentProps = {playerId, rankHistory}
+        chartComponentProps = {playerId, statsHistory, rankHistory}
         break;
 
       default:
@@ -75,62 +65,16 @@
     selectedOption = event.detail;
   }
 
-  async function refreshPlayerHistory(playerId) {
-    if (!playerId) return;
-
-    playerHistory = await playerService.getPlayerHistory(playerId) ?? null;
-  }
-
-  function refreshHistoryGain(playerId, playerHistory, rankHistory, daysAgo = 1) {
-    playerHistoryGain = null;
-
-    if (!playerId || (!playerHistory?.length && !rankHistory?.length)) return;
-
-    const todayBlDate = toBlMidnight(new Date());
-    let gainDaysAgo = null;
-    let playerHistoryItem = playerService.getPlayerGain(playerHistory, daysAgo, daysAgo + 7 - 1);
-    if (playerHistoryItem) {
-      gainDaysAgo = Math.floor((todayBlDate - playerHistoryItem.ssDate) / DAY);
-    }
-
-    if (rankHistory?.length) {
-      const reversedRankHistory = rankHistory.map(r => r).reverse();
-      if (!reversedRankHistory?.[daysAgo]) return;
-
-      if (!playerHistoryItem) playerHistoryItem = {
-        playerId,
-        rank: reversedRankHistory[daysAgo],
-        ssDate: addToDate(-DAY, todayBlDate)
-      };
-      else {
-        playerHistoryItem.rank = reversedRankHistory[gainDaysAgo];
-      }
-    }
-
-    if (!playerHistoryItem) return;
-
-    playerHistoryGain = {...playerHistoryItem, gainDaysAgo, gainType: 'beatleader'};
-
-    dispatch('player-gain-changed', playerHistoryGain);
-  }
-
-  const debouncedRefreshHistoryGain = debounce(
-    (playerId, playerHistory, rankHistory, gainDaysAgo) =>
-      refreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo), HISTORY_GAIN_DEBOUNCE,
-  );
-
-  $: avgStat = accStats?.find(s => s.key === 'avgAcc') ?? null
-  $: medianStat = accStats?.find(s => s.key === 'medianAcc') ?? null
+  $: avgStat = scoresStats?.find(s => s.key === 'averageAccuracy') ?? null
+  $: medianStat = scoresStats?.find(s => s.key === 'medianAccuracy') ?? null
   $: avgAccTween = avgStat?.value ?? null
   $: medianAccTween = medianStat?.value ?? null
   $: averageAcc = $avgAccTween
   $: medianAcc = $medianAccTween
   $: rankHistory = statsHistory?.rank ?? null
 
-  $: refreshPlayerHistory(playerId);
-  $: debouncedRefreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo)
   $: updateAvailableSwitcherOptions(isCached)
-  $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc, playerHistory)
+  $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc)
 </script>
 
 <div class="beatleader-swipe-card">

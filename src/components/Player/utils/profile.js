@@ -1,13 +1,13 @@
 import tweened from '../../../svelte-utils/tweened';
-import {opt} from '../../../utils/js'
 
 const TWEEN_DURATION = 300;
 
 const scoresStatsTweened = {};
-function updateScoresStats(playerData, playerStats) {
+function updateScoresStats(playerData) {
   if (!playerData) return null;
 
-  const scoreStats = opt(playerData, 'scoreStats');
+  const scoreStats = playerData?.scoreStats;
+  const statsHistory = playerData?.statsHistory;
 
   const statsDef = scoreStats
     ? [
@@ -16,7 +16,12 @@ function updateScoresStats(playerData, playerStats) {
       {key: "totalScore", label: 'Total score', bgColor: 'var(--selected)'},
       {key: "rankedPlayCount", label: 'Ranked play count', bgColor: 'var(--ppColour)'},
       {key: "totalRankedScore", label: 'Total ranked score', bgColor: 'var(--ppColour)'},
-      {key: "averageRankedAccuracy", label: 'Average', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'}
+      {key: "topPp", label: 'Top PP', bgColor: 'var(--ppColour)'},
+      {key: "replaysWatched", label: 'Replays watched', bgColor: 'var(--ppColour)'},
+      {key: "averageAccuracy", label: 'Average', title: 'Average accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
+      {key: "averageRankedAccuracy", label: 'Average ranked', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
+      {key: "medianAccuracy", label: 'Median', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
+      {key: "medianRankedAccuracy", label: 'Median ranked', title: 'Median ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
     ]
     : [];
 
@@ -30,91 +35,19 @@ function updateScoresStats(playerData, playerStats) {
 
       return {
         label: s.label,
-        title: opt(s, 'title', ''),
+        title: s?.title ?? '',
         value: scoresStatsTweened[s.key],
-        digits: opt(s, 'digits', 0),
-        suffix: opt(s, 'suffix', ''),
+        prevValue: s.suffix === '%' && statsHistory?.[s.key]?.length > 1 ? statsHistory[s.key][statsHistory[s.key].length - 2] : null,
+        prevLabel: "Yesterday",
+        digits: s?.digits ?? 0,
+        suffix: s?.suffix ?? '',
         fluid: true,
-        bgColor: opt(s, 'bgColor', 'var(--dimmed)'),
+        bgColor: s?.bgColor ?? 'var(--dimmed)',
+        key: s.key,
+        inline: true,
       }
     })
-    .concat(
-      (playerStats && playerStats.topPp && Number.isFinite(playerStats.topPp) ? [{
-        label: 'Best PP',
-        title: null,
-        value: playerStats.topPp,
-        digits: 2,
-        suffix: 'pp',
-        fluid: true,
-        bgColor: 'var(--ppColour)',
-      }] : [])
-    )
-    .filter(s => s && (!playerStats || s.label !== 'Average'));
-}
-
-function updateAccStats(playerStats) {
-  if (!playerStats) return null;
-
-  return (playerStats ? ['topAcc', 'avgAcc', 'medianAcc', 'stdDeviation'] : [])
-    .reduce((cum, key) => {
-      const value = playerStats[key] ? playerStats[key] : null;
-      if (!value && !Number.isFinite(value)) return cum;
-
-      const tweenKey = key === 'avgAcc' ? 'averageRankedAccuracy' : key
-      if (!scoresStatsTweened.hasOwnProperty(tweenKey)) scoresStatsTweened[tweenKey] = tweened(value, TWEEN_DURATION);
-      else scoresStatsTweened[tweenKey].set(value);
-
-      let metricData = null;
-
-      switch(key) {
-        case 'avgAcc':
-          metricData = {
-            key,
-            label: 'Average',
-            title: 'Average ranked accuracy',
-            bgColor: 'var(--selected)'
-          };
-          break;
-
-        case 'medianAcc':
-          metricData = {
-            key,
-            label: 'Median',
-            title: 'Median ranked accuracy',
-            bgColor: 'var(--ppColour)'
-          };
-          break;
-
-        case 'stdDeviation':
-          metricData = {
-            key,
-            label: 'Std deviation',
-            title: 'Standard deviation ranked accuracy',
-            bgColor: 'var(--decrease)'
-          };
-          break;
-
-        case 'topAcc':
-          metricData = {
-            key,
-            label: 'Best',
-            title: 'Best ranked accuracy',
-            bgColor: 'rgba(60,179,113,.75)'
-          };
-          break;
-      }
-
-      if (metricData)
-        cum.push({
-          ...metricData,
-          value: scoresStatsTweened[tweenKey],
-          digits: 2,
-          suffix: '%',
-          fluid: true,
-        });
-
-      return cum;
-    }, [])
+    .filter(s => s);
 }
 
 function updateAccBadges(playerStats) {
@@ -141,7 +74,7 @@ const playerInfoTweened = {};
 export default (playerData, playerStats) => {
   if (!playerData && !playerStats) return {};
 
-  const playerInfo = {...opt(playerData, 'playerInfo', null)};
+  const playerInfo = {...(playerData?.playerInfo ?? null)};
 
   ['pp', 'rank'].forEach(key => {
     const value = playerInfo && playerInfo[key] ? playerInfo[key] : 0;
@@ -154,7 +87,7 @@ export default (playerData, playerStats) => {
     }
   });
 
-  const firstCountryRank = opt(playerInfo, 'countries.0.rank')
+  const firstCountryRank = playerInfo?.countries?.[0]?.rank;
   if (Number.isFinite(firstCountryRank)) {
     playerInfo.countries = playerInfo.countries.map(c => ({...c}))
     const key = 'countryRank'
@@ -169,9 +102,8 @@ export default (playerData, playerStats) => {
 
   return {
     playerInfo,
-    prevInfo: opt(playerData, 'prevInfo', null),
-    scoresStats: updateScoresStats(playerData, playerStats),
-    accStats: updateAccStats(playerStats),
+    prevInfo: playerData?.prevInfo ?? null,
+    scoresStats: updateScoresStats(playerData),
     accBadges: updateAccBadges(playerStats),
   }
 }
