@@ -1,15 +1,18 @@
-import {opt} from '../../../../utils/js'
-import {BL_API_URL} from '../../../../network/queues/beatleader/api-queue'
+import createScoresService from '../../../../services/beatleader/scores'
+
+let scoresService = null;
 
 export default async (data) => {
     if (!data || data.beatSavior) return;
 
     try {
-        let response = await fetch(BL_API_URL + "score/statistic/" + data.score.id);
-        let statistic = await response.json();
-        let beatSavior = {};
+        if (!scoresService) scoresService = createScoresService();
 
-        var stats = statistic.accuracyTracker;
+        const statistic = await scoresService.fetchScoreStats(data.score.id);
+
+        const beatSavior = {};
+
+        const stats = statistic.accuracyTracker;
 
         stats.missedNotes = data.score.missedNotes;
         stats.badCuts = data.score.badCuts;

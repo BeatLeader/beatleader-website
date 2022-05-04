@@ -82,17 +82,13 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
 
     for (const scoreRow of newState) {
       if (currentService !== 'accsaber') {
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => scoreStatisticEnhancer(draft))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId)))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId)))
+          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft)))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
       } else {
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))

@@ -5,6 +5,7 @@ import createPlayerService from './player';
 import createRankedsStore from '../../stores/beatleader/rankeds'
 import {PRIORITY} from '../../network/queues/http-queue'
 import scoresApiClient from '../../network/clients/beatleader/scores/api'
+import scoreStatsApiClient from '../../network/clients/beatleader/scores/api-stats'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
 import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
@@ -542,6 +543,9 @@ export default () => {
   const fetchScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
      scoresApiClient.getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority, params: serviceParams});
 
+  const fetchScoreStats = async (scoreId, priority = PRIORITY.FG_LOW, {...options} = {cacheTtl: HOUR, maxAge: HOUR}) =>
+    scoreStatsApiClient.getProcessed({...options, scoreId, priority});
+
   const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {}}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
     const fetchedScoresResponse = await fetchScoresPage(playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
     if (scoresApiClient.isResponseCached(fetchedScoresResponse)) return scoresApiClient.getDataFromResponse(fetchedScoresResponse);
@@ -746,6 +750,7 @@ export default () => {
     areScoresFresh: isScoreDateFresh,
     fetchScoresPage,
     fetchScoresPageOrGetFromCache,
+    fetchScoreStats,
     getScoresHistogramDefinition,
     refresh,
     refreshAll,
