@@ -154,9 +154,11 @@ export default () => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
+    const NO_SCORES = {metadata: {total: 0}, data: []};
+
     let playerScores = await getPlayerScores(playerId);
 
-    if (!playerScores || !playerScores.length) return {total: 0, scores: []};
+    if (!playerScores || !playerScores.length) return NO_SCORES;
 
     const {sort: sortFunc, filter: filterFunc}  = getScoresHistogramDefinition(serviceParams);
 
@@ -164,11 +166,15 @@ export default () => {
 
     const startIdx = (page - 1) * PLAYER_SCORES_PER_PAGE;
 
-    if (playerScores.length < startIdx + 1) return {total: 0, scores: []};
+    if (playerScores.length < startIdx + 1) return NO_SCORES;
 
     return {
-      total: playerScores.length,
-      scores: playerScores
+      metadata: {
+        total: playerScores.length,
+        itemsPerPage: PLAYER_SCORES_PER_PAGE,
+        page
+      },
+      data: playerScores
         .slice(startIdx, startIdx + PLAYER_SCORES_PER_PAGE)
         .map(bs => {
           const leaderboard = bs.leaderboard;
