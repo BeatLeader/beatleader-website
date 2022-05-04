@@ -2,16 +2,13 @@
   import Chart from 'chart.js/auto'
   import 'chartjs-adapter-luxon';
   import {DateTime} from 'luxon';
-  import {getContext, onMount} from 'svelte'
-  import createPlayerService from '../../../services/beatleader/player'
-  import createScoresService from '../../../services/beatleader/scores'
+  import {getContext} from 'svelte'
   import {formatNumber} from '../../../utils/format'
   import {
     formatDate,
     formatDateWithOptions,
     toBlMidnight,
   } from '../../../utils/date'
-  import eventBus from '../../../utils/broadcast-channel-pubsub'
   import {debounce} from '../../../utils/debounce'
   import {onLegendClick} from './utils/legend-click-handler'
   import stringify from 'json-stable-stringify'
@@ -20,77 +17,21 @@
   export let statsHistory = null;
   export let height = "350px";
 
-  const CHART_DAYS = 50;
   const CHART_DEBOUNCE = 300;
   const MAGIC_INACTIVITY_RANK = 999999;
 
   const pageContainer = getContext('pageContainer');
 
-  const playerService = createPlayerService();
-  const scoresService = createScoresService();
-
   let canvas = null;
   let chart = null;
 
   let lastHistoryHash = null;
-  let playerScores = null;
   let activityHistory = null;
 
   const calcHistoryHash = statsHistory => stringify(statsHistory);
 
-  const mapScoresToHistory = scores => {
-    if (!Object.keys(scores)?.length) return null;
-
-    const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
-
-    return Array(CHART_DAYS).fill(0)
-      .map((_, idx) => {
-        const agoTimeset = dtBlToday.minus({days: CHART_DAYS - 1 - idx}).toMillis();
-
-        return {x: agoTimeset, y: scores[agoTimeset] ? scores[agoTimeset] : 0};
-      })
-      ;
-  }
-
-  async function refreshPlayerScores(playerId) {
-    if (!playerId) return;
-
-    playerScores = await scoresService.getPlayerScores(playerId)
-
-    const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
-    const oldestDate = dtBlToday.minus({days: CHART_DAYS - 1}).toJSDate();
-
-    const lastScores = playerScores
-      .filter(score => score.timeSet && score.timeSet > oldestDate)
-      .reduce((cum, score) => {
-        const allSongScores = [score.timeSet.getTime()]
-          .concat(
-            score.history && score.history.length
-              ? score.history.filter(h => h.timeSet && h.timeSet > oldestDate).map(h => h.timeSet.getTime())
-              : []
-          );
-
-        allSongScores.forEach(t => {
-          const blDate = toBlMidnight(new Date(t));
-          const blTimestamp = blDate.getTime();
-
-          if (!cum.hasOwnProperty(blTimestamp)) cum[blTimestamp] = 0;
-
-          cum[blTimestamp]++;
-        });
-
-        return cum;
-      }, {})
-    ;
-
-    activityHistory = mapScoresToHistory(lastScores);
-  }
-
   async function setupChart(hash, canvas) {
     if (!hash || !canvas || !statsHistory?.rank?.length || chartHash === lastHistoryHash) return;
-
-    // TODO: remove it
-    const additionalHistory = null;
 
     let rankHistory = statsHistory.rank;
     const CHART_DAYS = rankHistory.length;
@@ -321,22 +262,8 @@
     }
   }
 
-  onMount(async () => {
-    const playerScoresUpdatedUnsubscriber = eventBus.on('player-scores-updated', async({playerId: updatedPlayerId}) => {
-      if (updatedPlayerId !== playerId) return;
-
-      await refreshPlayerScores(updatedPlayerId)
-    });
-
-    return () => {
-      playerScoresUpdatedUnsubscriber();
-    }
-  })
-
   let debouncedChartHash = null;
   const debounceChartHash = debounce(chartHash => debouncedChartHash = chartHash, CHART_DEBOUNCE);
-
-  $: refreshPlayerScores(playerId);
 
   $: chartHash = calcHistoryHash(statsHistory);
   $: debounceChartHash(chartHash)
