@@ -5,10 +5,8 @@
   import {getContext, onMount} from 'svelte'
   import createPlayerService from '../../../services/beatleader/player'
   import createScoresService from '../../../services/beatleader/scores'
-  import createBeatSaviorService from '../../../services/beatsavior'
   import {formatNumber} from '../../../utils/format'
   import {
-    dateFromString,
     formatDate,
     formatDateWithOptions,
     toBlMidnight,
@@ -16,11 +14,10 @@
   import eventBus from '../../../utils/broadcast-channel-pubsub'
   import {debounce} from '../../../utils/debounce'
   import {onLegendClick} from './utils/legend-click-handler'
+  import stringify from 'json-stable-stringify'
 
   export let playerId = null;
   export let statsHistory = null;
-  export let rankHistory = null;
-  export let playerHistory = null;
   export let height = "350px";
 
   const CHART_DAYS = 50;
@@ -31,7 +28,6 @@
 
   const playerService = createPlayerService();
   const scoresService = createScoresService();
-  const beatSaviorService = createBeatSaviorService();
 
   let canvas = null;
   let chart = null;
@@ -39,15 +35,8 @@
   let lastHistoryHash = null;
   let playerScores = null;
   let activityHistory = null;
-  let beatSaviorWonHistory = null;
-  let beatSaviorFailedHistory = null;
 
-  const calcHistoryHash = (rankHistory, additionalHistory, activityHistory, beatSaviorHistory) =>
-    (rankHistory && rankHistory.length ? rankHistory.join(':') : '') +
-    (additionalHistory ? Object.values(additionalHistory).map(h => Object.values(h).join(',')).join(':') : '') +
-    (activityHistory && activityHistory.length ? activityHistory.join(':') : '') +
-    (beatSaviorHistory && beatSaviorHistory.length ? beatSaviorHistory.join(':') : '')
-  ;
+  const calcHistoryHash = statsHistory => stringify(statsHistory);
 
   const mapScoresToHistory = scores => {
     if (!Object.keys(scores)?.length) return null;
@@ -97,51 +86,28 @@
     activityHistory = mapScoresToHistory(lastScores);
   }
 
-  async function refreshPlayerBeatSaviorScores(playerId) {
-    if (!playerId) return;
-
-    const scores = await beatSaviorService.getPlayerScores(playerId);
-
-    const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
-    const oldestDate = dtBlToday.minus({days: CHART_DAYS - 1}).toJSDate();
-
-    const lastScores = scores.filter(score => score.timeSet && score.timeSet > oldestDate)
-
-    const countScores = (scores, incFunc) => scores
-      .reduce((cum, score) => {
-        const blDate = toBlMidnight(score.timeSet);
-        const blTimestamp = blDate.getTime();
-
-        if (!cum.hasOwnProperty(blTimestamp)) cum[blTimestamp] = 0;
-
-        if (incFunc(score)) cum[blTimestamp]++;
-
-        return cum;
-      }, {})
-
-    beatSaviorWonHistory = mapScoresToHistory(countScores(lastScores, score => !!(score.trackers.winTracker.won ?? false)));
-    beatSaviorFailedHistory = mapScoresToHistory(countScores(lastScores, score => !(score.trackers.winTracker.won ?? false)));
-  }
-
   async function setupChart(hash, canvas) {
-    if (!hash || !canvas || !rankHistory || !Object.keys(rankHistory).length || chartHash === lastHistoryHash) return;
+    if (!hash || !canvas || !statsHistory?.rank?.length || chartHash === lastHistoryHash) return;
+
+    // TODO: remove it
+    const additionalHistory = null;
+
+    let rankHistory = statsHistory.rank;
+    const CHART_DAYS = rankHistory.length;
 
     lastHistoryHash = chartHash;
 
-    if (rankHistory.length < CHART_DAYS) rankHistory = Array(CHART_DAYS - rankHistory.length).fill(null).concat(rankHistory);
-
     const gridColor = '#2a2a2a'
     const rankColor = "#3e95cd";
+    const countryRankColor = "#8992e8";
     const ppColor = "#007100";
     const rankedPlayCountColor = "#3e3e3e";
     const totalPlayCountColor = "#666";
-    const activityColor = "#333"
 
     const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
-    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toBlMidnight(dtBlToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
+    const dayTimestamps = rankHistory.map((_, idx) => toBlMidnight(dtBlToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
 
-    const data = rankHistory
-      .map((h, idx) => ({x: dayTimestamps[idx], y :h === MAGIC_INACTIVITY_RANK ? null : h}));
+    const data = rankHistory.map((h, idx) => ({x: dayTimestamps[idx], y :h === MAGIC_INACTIVITY_RANK ? null : h}));
 
     const datasets = [
       {
@@ -150,7 +116,7 @@
         data,
         fill: false,
         borderColor: rankColor,
-        borderWidth: 2,
+        borderWidth: 3,
         pointRadius: 0,
         cubicInterpolationMode: 'monotone',
         tension: 0.4,
@@ -217,131 +183,82 @@
 
     let lastYIdx = 0;
 
-    if (additionalHistory && Object.keys(additionalHistory).length) {
-      const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
+    const skipped = (ctx, value) => ctx.p0.skip || ctx.p1.skip ? value : undefined;
 
-      [
-        {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true, precision: 0},
-        {
-          key: 'rankedPlayCount',
-          name: 'Ranked play count',
-          borderColor: rankedPlayCountColor,
-          round: 0,
-          axisDisplay: false,
-          precision: 0,
-        },
-        {
-          key: 'totalPlayCount',
-          name: 'Total play count',
-          borderColor: totalPlayCountColor,
-          round: 0,
-          axisDisplay: false,
-          precision: 0,
-        },
-      ]
-        .forEach(obj => {
-          const {key, name, axisDisplay, usePrevAxis, precision, ...options} = obj;
-          const fieldData = dayTimestamps.map(x => ({x, y: additionalHistory?.[x]?.[key] ?? null}));
+    [
+      {key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true, precision: 0},
+      {
+        key: 'countryRank',
+        name: 'Country rank',
+        borderColor: countryRankColor,
+        round: 0,
+        axisDisplay: false,
+        precision: 0,
+        reverse: true,
+      },
+      {
+        key: 'rankedPlayCount',
+        name: 'Ranked play count',
+        borderColor: rankedPlayCountColor,
+        round: 0,
+        axisDisplay: false,
+        precision: 0,
+        hidden: true,
+      },
+      {
+        key: 'totalPlayCount',
+        name: 'Total play count',
+        borderColor: totalPlayCountColor,
+        round: 0,
+        axisDisplay: false,
+        precision: 0,
+        hidden: true,
+      },
+    ]
+      .forEach(obj => {
+        const {key, name, axisDisplay, usePrevAxis, precision, reverse, ...options} = obj;
 
-          if (!usePrevAxis) lastYIdx++;
-          const axisKey = `y${lastYIdx}`
-          yAxes[axisKey] = {
-            display: axisDisplay,
-            position: 'right',
-            title: {
-              display: $pageContainer.name !== 'phone',
-              text: name,
-            },
-            ticks: {
-              callback: val => val === Math.floor(val) ? val : null,
-              precision
-            },
-            grid: {
-              drawOnChartArea: false,
-            },
-          };
+        if (!statsHistory?.[key]) return;
 
-          datasets.push({
-            ...options,
-            yAxisID: axisKey,
-            label: name,
-            data: fieldData,
-            fill: false,
-            borderWidth: 2,
-            pointRadius: 1,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.4,
-            type: 'line',
-            spanGaps: true,
-            segment: {
-              borderWidth: ctx => skipped(ctx, 1),
-              borderDash: ctx => skipped(ctx, [6, 6]),
-            },
-          });
+        const fieldData = dayTimestamps.map((x, idx) => ({x, y: statsHistory?.[key]?.[idx] ?? null}));
+
+        if (!usePrevAxis) lastYIdx++;
+        const axisKey = `y${lastYIdx}`
+        yAxes[axisKey] = {
+          display: axisDisplay,
+          position: 'right',
+          title: {
+            display: $pageContainer.name !== 'phone',
+            text: name,
+          },
+          ticks: {
+            callback: val => val === Math.floor(val) ? val : null,
+            precision
+          },
+          grid: {
+            drawOnChartArea: false,
+          },
+          reverse: reverse === true,
+        };
+
+        datasets.push({
+          ...options,
+          yAxisID: axisKey,
+          label: name,
+          data: fieldData,
+          fill: false,
+          borderWidth: 2,
+          pointRadius: 1,
+          cubicInterpolationMode: 'monotone',
+          tension: 0.4,
+          type: 'line',
+          spanGaps: true,
+          segment: {
+            borderWidth: ctx => skipped(ctx, 1),
+            borderDash: ctx => skipped(ctx, [6, 6]),
+          },
         });
-    }
-
-    // prepare common axis for activity & beat savior histories
-    let scoresAxisKey = null;
-    if (activityHistory?.length || (beatSaviorWonHistory?.length && beatSaviorFailedHistory?.length)) {
-      lastYIdx++;
-
-      scoresAxisKey = `y${lastYIdx}`
-
-      yAxes[scoresAxisKey] = {
-        display: false,
-        position: 'right',
-        title: {
-          display: true,
-          text: 'Scores count',
-        },
-        ticks: {
-          callback: val => val,
-          precision: 0,
-        },
-        grid: {
-          drawOnChartArea: false,
-        },
-      };
-    }
-
-    if (activityHistory?.length) {
-      datasets.push({
-        yAxisID: scoresAxisKey,
-        label: 'SS scores',
-        data: activityHistory,
-        fill: false,
-        backgroundColor: activityColor,
-        round: 0,
-        type: 'bar',
       });
-    }
-
-    if (beatSaviorWonHistory?.length && beatSaviorFailedHistory?.length) {
-      datasets.push({
-        yAxisID: scoresAxisKey,
-        label: 'Beat Savior pass',
-        data: beatSaviorWonHistory,
-        fill: false,
-        backgroundColor: '#9c27b0',
-        round: 0,
-        type: 'bar',
-        stack: 'beatsavior',
-        order: 0
-      });
-
-      datasets.push({
-        yAxisID: scoresAxisKey,
-        label: 'Beat Savior fail',
-        data: beatSaviorFailedHistory,
-        fill: false,
-        backgroundColor: '#7f4e88',
-        round: 0,
-        type: 'bar',
-        stack: 'beatsavior',
-        order: 1
-      });
-    }
 
     if (!chart)
     {
@@ -381,6 +298,7 @@
                       label(ctx) {
                         switch(ctx.dataset.label) {
                           case 'Rank': return ` ${ctx.dataset.label}: #${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
+                          case 'Country rank': return ` ${ctx.dataset.label}: #${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
                           case 'PP': return ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}pp`;
                           default: return ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
                         }
@@ -419,24 +337,13 @@
   const debounceChartHash = debounce(chartHash => debouncedChartHash = chartHash, CHART_DEBOUNCE);
 
   $: refreshPlayerScores(playerId);
-  $: refreshPlayerBeatSaviorScores(playerId);
 
-  $: additionalHistory = playerHistory?.length
-    ? playerHistory.reduce((cum, h) => {
-      const time = dateFromString(h.ssDate)?.getTime()
-      if (!time) return cum;
-
-      const history = {[time]: {pp: h.pp, rankedPlayCount: h.rankedPlayCount, totalPlayCount: h.totalPlayCount}};
-      return {...cum, ...history};
-    }, {})
-    : null;
-
-  $: chartHash = calcHistoryHash(rankHistory, additionalHistory, activityHistory, (beatSaviorWonHistory ?? []).concat(beatSaviorFailedHistory ?? []));
+  $: chartHash = calcHistoryHash(statsHistory);
   $: debounceChartHash(chartHash)
   $: if (debouncedChartHash) setupChart(debouncedChartHash, canvas)
 </script>
 
-{#if rankHistory && rankHistory.length}
+{#if statsHistory?.rank?.length}
   <section class="chart" style="--height: {height}">
     <canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
   </section>

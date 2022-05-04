@@ -48,7 +48,7 @@ const process = response => {
     Object.entries(fields).forEach(([key, process]) => {
       if (statsHistory[key] === undefined) statsHistory[key] = '';
 
-      statsHistory[key] = statsHistory[key]?.length ? statsHistory[key].split(',').map(v => process(v)) : [];
+      statsHistory[key] = statsHistory[key].length && statsHistory[key].split ? statsHistory[key].split(',').map(v => process(v)) : [];
 
       if (scoreStats[key] !== undefined) statsHistory[key].push(scoreStats[key]);
 

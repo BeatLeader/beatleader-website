@@ -33,7 +33,7 @@
     switch (option?.id) {
       case 'rank':
         chartComponent = BlChart;
-        chartComponentProps = {playerId, statsHistory, rankHistory}
+        chartComponentProps = {playerId, statsHistory}
         break;
 
       case 'accmaps':
@@ -43,7 +43,7 @@
 
       case 'acchistory':
         chartComponent = AccHistoryChart;
-        chartComponentProps = {playerId, statsHistory, rankHistory}
+        chartComponentProps = {playerId, statsHistory}
         break;
 
       default:
@@ -71,10 +71,9 @@
   $: medianAccTween = medianStat?.value ?? null
   $: averageAcc = $avgAccTween
   $: medianAcc = $medianAccTween
-  $: rankHistory = statsHistory?.rank ?? null
 
   $: updateAvailableSwitcherOptions(isCached)
-  $: updateChartComponent(selectedOption, rankHistory, averageAcc, medianAcc)
+  $: updateChartComponent(selectedOption, averageAcc, medianAcc)
 </script>
 
 <div class="beatleader-swipe-card">
