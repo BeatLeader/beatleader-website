@@ -130,7 +130,7 @@
               ssBadges,
               isCached,
               skeleton,
-              rankHistory: rankChartData,
+              statsHistory,
             },
             delay: 500,
           },

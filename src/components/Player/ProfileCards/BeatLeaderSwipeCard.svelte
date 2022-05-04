@@ -1,10 +1,9 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import createPlayerService from '../../../services/beatleader/player'
-  import {addToDate, DAY, formatDateRelative, toSsMidnight} from '../../../utils/date'
+  import {addToDate, DAY, toBlMidnight} from '../../../utils/date'
   import {debounce} from '../../../utils/debounce'
-  import ScoresStats from '../ScoresStats.svelte'
-  import SsBadges from '../SsBadges.svelte'
+  import BlBadges from '../BlBadges.svelte'
   import SsChart from '../Charts/SsChart.svelte'
   import AccHistoryChart from '../Charts/AccHistoryChart.svelte'
   import AccMapsChart from '../Charts/AccMapsChart.svelte'
@@ -17,7 +16,7 @@
   export let ssBadges = null;
   export let skeleton = false;
   export let isCached = false;
-  export let rankHistory = null;
+  export let statsHistory = null;
 
   const HISTORY_GAIN_DEBOUNCE = 500;
 
@@ -89,11 +88,11 @@
 
     if (!playerId || (!playerHistory?.length && !rankHistory?.length)) return;
 
-    const todaySsDate = toSsMidnight(new Date());
+    const todayBlDate = toBlMidnight(new Date());
     let gainDaysAgo = null;
     let playerHistoryItem = playerService.getPlayerGain(playerHistory, daysAgo, daysAgo + 7 - 1);
     if (playerHistoryItem) {
-      gainDaysAgo = Math.floor((todaySsDate - playerHistoryItem.ssDate) / DAY);
+      gainDaysAgo = Math.floor((todayBlDate - playerHistoryItem.ssDate) / DAY);
     }
 
     if (rankHistory?.length) {
@@ -103,7 +102,7 @@
       if (!playerHistoryItem) playerHistoryItem = {
         playerId,
         rank: reversedRankHistory[daysAgo],
-        ssDate: addToDate(-DAY, todaySsDate)
+        ssDate: addToDate(-DAY, todayBlDate)
       };
       else {
         playerHistoryItem.rank = reversedRankHistory[gainDaysAgo];
@@ -128,6 +127,7 @@
   $: medianAccTween = medianStat?.value ?? null
   $: averageAcc = $avgAccTween
   $: medianAcc = $medianAccTween
+  $: rankHistory = statsHistory?.rank ?? null
 
   $: refreshPlayerHistory(playerId);
   $: debouncedRefreshHistoryGain(playerId, playerHistory, rankHistory, gainDaysAgo)
@@ -137,7 +137,7 @@
 
 <div class="beatleader-swipe-card">
   {#if ssBadges}
-    <SsBadges badges={ssBadges}/>
+    <BlBadges badges={ssBadges}/>
   {/if}
   {#if selectedOption}
     <div class="chart">

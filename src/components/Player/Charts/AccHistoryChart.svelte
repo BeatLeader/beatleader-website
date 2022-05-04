@@ -4,7 +4,7 @@
   import {
     formatDate,
     formatDateWithOptions,
-    toSsMidnight,
+    toBlMidnight,
   } from '../../../utils/date'
   import createPlayerService from '../../../services/beatleader/player'
   import {debounce} from '../../../utils/debounce'
@@ -58,8 +58,8 @@
 
     const datasets = [];
 
-    const dtAccSaberToday = DateTime.fromJSDate(toSsMidnight(new Date()));
-    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toSsMidnight(dtAccSaberToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
+    const dtAccSaberToday = DateTime.fromJSDate(toBlMidnight(new Date()));
+    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toBlMidnight(dtAccSaberToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
 
     const xAxis = {
       type: 'time',
@@ -309,7 +309,7 @@
 
   $: additionalHistory = playerHistory && playerHistory.length
     ? playerHistory.reduce((cum, h) => {
-      const time = toSsMidnight(h.ssDate)?.getTime()
+      const time = toBlMidnight(h.ssDate)?.getTime()
       if (!time) return cum;
 
       const history = {[time]: {averageRankedAccuracy: h. averageRankedAccuracy, avgAcc: h.avgAcc, medianAcc: h.medianAcc, stdDeviation:h.stdDeviation, accBadges: h.accBadges}};

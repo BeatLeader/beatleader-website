@@ -5,7 +5,7 @@
 </script>
 
 {#if badges}
-  <div class="ss-badges" transition:fade={{ duration: 500 }}>
+  <div class="bl-badges" transition:fade={{ duration: 500 }}>
     {#each badges as badge (badge.src)}
       <img src={badge.src} alt={badge.title} title={badge.title}/>
     {/each}
@@ -13,19 +13,19 @@
 {/if}
 
 <style>
-    .ss-badges {
+    .bl-badges {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
     }
 
-    .ss-badges img {
+    .bl-badges img {
         margin-right: .5rem;
         margin-bottom: .25rem;
     }
 
     @media(max-width: 768px) {
-        .ss-badges {
+        .bl-badges {
             margin-top: .5rem;
             justify-content: center;
         }

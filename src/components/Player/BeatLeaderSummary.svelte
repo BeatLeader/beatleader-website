@@ -1,7 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import createPlayerService from '../../services/beatleader/player'
-  import {addToDate, DAY, formatDateRelative, toSsMidnight} from '../../utils/date'
+  import {addToDate, DAY, formatDateRelative, toBlMidnight} from '../../utils/date'
   import {debounce} from '../../utils/debounce'
   import ScoresStats from './ScoresStats.svelte'
 
@@ -35,7 +35,7 @@
 
     if (!playerId || (!playerHistory?.length && !rankHistory?.length)) return;
 
-    const todaySsDate = toSsMidnight(new Date());
+    const todaySsDate = toBlMidnight(new Date());
     let gainDaysAgo = null;
     let playerHistoryItem = playerService.getPlayerGain(playerHistory, daysAgo, daysAgo + 7 - 1);
     if (playerHistoryItem) {

@@ -11,7 +11,7 @@
     dateFromString,
     formatDate,
     formatDateWithOptions,
-    toSsMidnight,
+    toBlMidnight,
   } from '../../../utils/date'
   import eventBus from '../../../utils/broadcast-channel-pubsub'
   import {debounce} from '../../../utils/debounce'
@@ -51,11 +51,11 @@
   const mapScoresToHistory = scores => {
     if (!Object.keys(scores)?.length) return null;
 
-    const dtSsToday = DateTime.fromJSDate(toSsMidnight(new Date()));
+    const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
 
     return Array(CHART_DAYS).fill(0)
       .map((_, idx) => {
-        const agoTimeset = dtSsToday.minus({days: CHART_DAYS - 1 - idx}).toMillis();
+        const agoTimeset = dtBlToday.minus({days: CHART_DAYS - 1 - idx}).toMillis();
 
         return {x: agoTimeset, y: scores[agoTimeset] ? scores[agoTimeset] : 0};
       })
@@ -67,8 +67,8 @@
 
     playerScores = await scoresService.getPlayerScores(playerId)
 
-    const dtSsToday = DateTime.fromJSDate(toSsMidnight(new Date()));
-    const oldestDate = dtSsToday.minus({days: CHART_DAYS - 1}).toJSDate();
+    const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
+    const oldestDate = dtBlToday.minus({days: CHART_DAYS - 1}).toJSDate();
 
     const lastScores = playerScores
       .filter(score => score.timeSet && score.timeSet > oldestDate)
@@ -81,12 +81,12 @@
           );
 
         allSongScores.forEach(t => {
-          const ssDate = toSsMidnight(new Date(t));
-          const ssTimestamp = ssDate.getTime();
+          const blDate = toBlMidnight(new Date(t));
+          const blTimestamp = blDate.getTime();
 
-          if (!cum.hasOwnProperty(ssTimestamp)) cum[ssTimestamp] = 0;
+          if (!cum.hasOwnProperty(blTimestamp)) cum[blTimestamp] = 0;
 
-          cum[ssTimestamp]++;
+          cum[blTimestamp]++;
         });
 
         return cum;
@@ -101,19 +101,19 @@
 
     const scores = await beatSaviorService.getPlayerScores(playerId);
 
-    const dtSsToday = DateTime.fromJSDate(toSsMidnight(new Date()));
-    const oldestDate = dtSsToday.minus({days: CHART_DAYS - 1}).toJSDate();
+    const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
+    const oldestDate = dtBlToday.minus({days: CHART_DAYS - 1}).toJSDate();
 
     const lastScores = scores.filter(score => score.timeSet && score.timeSet > oldestDate)
 
     const countScores = (scores, incFunc) => scores
       .reduce((cum, score) => {
-        const ssDate = toSsMidnight(score.timeSet);
-        const ssTimestamp = ssDate.getTime();
+        const blDate = toBlMidnight(score.timeSet);
+        const blTimestamp = blDate.getTime();
 
-        if (!cum.hasOwnProperty(ssTimestamp)) cum[ssTimestamp] = 0;
+        if (!cum.hasOwnProperty(blTimestamp)) cum[blTimestamp] = 0;
 
-        if (incFunc(score)) cum[ssTimestamp]++;
+        if (incFunc(score)) cum[blTimestamp]++;
 
         return cum;
       }, {})
@@ -136,8 +136,8 @@
     const totalPlayCountColor = "#666";
     const activityColor = "#333"
 
-    const dtAccSaberToday = DateTime.fromJSDate(toSsMidnight(new Date()));
-    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toSsMidnight(dtAccSaberToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
+    const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
+    const dayTimestamps = Array(CHART_DAYS).fill(0).map((_, idx) => toBlMidnight(dtBlToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
 
     const data = rankHistory
       .map((h, idx) => ({x: dayTimestamps[idx], y :h === MAGIC_INACTIVITY_RANK ? null : h}));
