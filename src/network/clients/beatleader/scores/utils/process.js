@@ -34,6 +34,7 @@ export default response => {
           timeSet: dateFromUnix(score.timeset),
           acc,
           percentage: acc,
+          unmodifiedAcc: modifiedScore && unmodifiedScore && acc ? unmodifiedScore / modifiedScore * acc : acc,
           ppWeighted,
           rank
         },

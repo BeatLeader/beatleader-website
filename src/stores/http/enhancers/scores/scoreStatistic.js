@@ -30,6 +30,8 @@ export default async (data) => {
         stats.won = statistic.winTracker.won;
         stats.pauses = statistic.winTracker.nbOfPause;
 
+        statistic.scoreTracker = {rawRatio: data.score?.unmodifiedAcc ? data.score.unmodifiedAcc / 100 : null};
+
         beatSavior.songJumpDistance = statistic.winTracker.jumpDistance;
         beatSavior.stats = stats;
         beatSavior.trackers = statistic;
