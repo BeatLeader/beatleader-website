@@ -12,7 +12,7 @@ export default response => {
       const {id: leaderboardId} = s.leaderboard;
 
       const diffInfo = {diff: s.leaderboard.difficulty.difficultyName, type: s.leaderboard.difficulty.modeName};
-      const leaderboard = {leaderboardId, song, diffInfo, difficulty: s.leaderboard.difficulty.value};
+      const leaderboard = {leaderboardId, song, diffInfo, difficulty: s.leaderboard.difficulty.value, stars: s?.leaderboard?.difficulty?.stars ?? null};
 
       let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: acc, ...score} = s;
 
