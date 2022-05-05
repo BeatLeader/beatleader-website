@@ -11,6 +11,7 @@ export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}';
 export const BL_API_SCORES_URL = BL_API_URL + 'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
+export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
 export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}'
 export const BL_API_RANKING_COUNTRY_URL = BL_API_URL + 'players?page=${page}&countries=${country}&sortBy=${sortBy}'
@@ -35,6 +36,8 @@ export default (options = {}) => {
   const gameInfo = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(STEAM_API_GAME_INFO_URL, {steamKey: STEAM_KEY , playerId}), options, priority)
 
   const scores = async (playerId, page = 1, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) => fetchScores(substituteVars(BL_API_SCORES_URL, {...params, ...(params?.filters ?? {})}), playerId, page, priority, options);
+
+  const scoreStats = async (scoreId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_SCORE_STATS_URL, {scoreId: encodeURIComponent(scoreId)}), options, priority);
 
   const findPlayer = async (query, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_FIND_PLAYER_URL, {query: encodeURIComponent(query)}), options, priority);
 
@@ -177,6 +180,7 @@ export default (options = {}) => {
     rankingGlobal,
     rankingCountry,
     scores,
+    scoreStats,
     leaderboards,
     leaderboard,
     clans,

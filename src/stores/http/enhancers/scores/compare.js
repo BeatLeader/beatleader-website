@@ -1,6 +1,5 @@
 import {configStore} from '../../../config'
 import createScoresService from '../../../../services/beatleader/scores'
-import beatSaviorEnhancer from './beatsavior'
 import beatMapsEnhancer from '../common/beatmaps'
 import {opt} from '../../../../utils/js'
 import produce from 'immer'
@@ -36,11 +35,8 @@ export default async (data, playerId = null) => {
   if (!comparePlayerScores || !comparePlayerScores[leaderboardId]) return;
 
   const mainPlayerScore = await produce(
-    await produce(
-      comparePlayerScores[leaderboardId],
-      draft => beatMapsEnhancer(draft),
-    ),
-    draft => beatSaviorEnhancer(draft, mainPlayerId),
+    comparePlayerScores[leaderboardId],
+    draft => beatMapsEnhancer(draft),
   );
 
   data.comparePlayers = [{...mainPlayerScore, playerId: mainPlayerId, playerName: 'Me'}];

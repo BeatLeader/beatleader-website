@@ -1,8 +1,6 @@
 import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps'
-import beatSaviorEnhancer from './enhancers/scores/beatsavior'
 import scoreStatisticEnhancer from './enhancers/scores/scoreStatistic'
-import rankedsEnhancer from './enhancers/leaderboard/rankeds'
 import compareEnhancer from './enhancers/scores/compare'
 import twitchEnhancer from './enhancers/scores/twitch'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
@@ -83,28 +81,17 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
 
     for (const scoreRow of newState) {
       if (currentService !== 'accsaber') {
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId))
+        console.log(scoreRow);
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => scoreStatisticEnhancer(draft))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => compareEnhancer(draft, currentPlayerId)))
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => rankedsEnhancer(draft))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => scoreStatisticEnhancer(draft))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-
-        if (stateType && stateType === 'live')
-          stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaviorEnhancer(draft, currentPlayerId))
-            .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
       } else {
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatSaviorEnhancer(draft, currentPlayerId)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
       }
     }
