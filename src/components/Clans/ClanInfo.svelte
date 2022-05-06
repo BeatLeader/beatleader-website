@@ -61,13 +61,13 @@
   }
 
   async function onSave() {
-    if (!name.length) {
-      error = "Clan name is required";
+    if (!name.length || name.length > 25) {
+      error = "Clan name is required and should be no more than 25 characters long";
       return;
     }
 
-    if (!tag.length) {
-      error = "Clan tag is required";
+    if (tag.length < 2 || tag.length > 4) {
+      error = "Clan tag is required and should be 2 to 4 characters long";
       return;
     }
 
