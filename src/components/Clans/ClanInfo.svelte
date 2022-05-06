@@ -1,20 +1,29 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {fade} from 'svelte/transition'
+  import createAccountStore from '../../stores/beatleader/account'
   import Button from "../../components/Common/Button.svelte";
   import Error from '../Common/Error.svelte'
   import Spinner from '../Common/Spinner.svelte'
+  import {SsrHttpResponseError} from '../../network/errors'
+  import createClanService from '../../services/beatleader/clan'
 
   export let clan;
-  export let isSaving = false;
-  export let editMode = false;
-  export let error = null;
+  export let noButtons = false;
 
   document.body.classList.remove('slim');
 
   const dispatch = createEventDispatcher();
+  const account = createAccountStore();
+  const clanService = createClanService();
+
+  let editMode= !clan?.id;
 
   let boxEl = null;
+
+  let confirmedOperation = null;
+  let pendingText = null;
+  let error = null;
 
   const changeImage = (e) => {
     let image = e.target.files[0];
@@ -28,6 +37,111 @@
     dataUrlReader.readAsDataURL(image);
   }
 
+  async function executeOperation(operation) {
+    if (!operation) throw 'Internal error';
+
+    try {
+      error = null;
+
+      return await operation();
+    } catch (err) {
+      console.error(err);
+
+      if (err instanceof SsrHttpResponseError) {
+        const htmlError = await err.getResponse().text();
+        error = htmlError?.length ? htmlError : err;
+      } else {
+        error = err;
+      }
+    }
+    finally {
+      pendingText = null;
+    }
+  }
+
+  async function onSave(e) {
+    if (!name.length) {
+      error = "Clan name is required";
+      return;
+    }
+
+    if (!tag.length) {
+      error = "Clan tag is required";
+      return;
+    }
+
+    if (!color.length) {
+      error = "Clan color is required";
+      return;
+    }
+
+    if (!iconData) {
+      error = "Icon is required";
+      return;
+    }
+
+    error = null;
+    pendingText = 'Saving a clan...';
+
+    await executeOperation(async () => {
+      const createdClan = await clanService.create({...clan, name, tag, color, icon: iconData});
+
+      editMode = false;
+
+      dispatch('added', {...createdClan});
+    });
+  }
+  
+  async function onAccept() {
+    if (!clan?.id) return;
+
+    error = null;
+    pendingText = 'Accepting an invitation...';
+
+    await executeOperation(async () => clanService.accept(clan));
+  }
+
+  async function onReject() {
+    if (!clan?.id) return;
+
+    error = null;
+    pendingText = 'Rejecting an invitation...';
+
+    await executeOperation(async () => clanService.reject(clan, false));
+  }
+
+  async function onBan() {
+    if (!clan?.id) return;
+
+    error = null;
+    pendingText = 'Banning a clan...';
+
+    await executeOperation(async () => clanService.reject(clan, true));
+  }
+
+  async function onRemove() {
+    if (!clan?.id) return;
+
+    error = null;
+    pendingText = 'Removing a clan...';
+
+    await executeOperation(async () => clanService.remove(clan));
+  }
+
+  async function onConfirm() {
+    if (!confirmedOperation) return;
+
+    error = null;
+    await confirmedOperation();
+
+    confirmedOperation = null;
+  }
+
+  function onCancelPendingOperation() {
+    confirmedOperation = null;
+    error = null;
+  }
+
   $: name = clan?.name ?? '';
   $: tag = clan?.tag ?? '';
   $: color = clan?.color ?? '#ff0000';
@@ -35,6 +149,9 @@
   $: iconData = clan?.icon ?? null;
   $: iconInput = null;
   $: playersCount = clan?.playersCount ?? 0;
+
+  $: hasInvitation = clan?.id && $account?.clanRequest?.length && !!$account.clanRequest.find(r => r.id === clan.id);
+  $: isFounder = clan?.id && clan?.leaderID === $account?.player?.id;
 </script>
 
 <section class="clan-info" transition:fade>
@@ -52,7 +169,7 @@
     <section class="form">
       <section class="title is-5">
         {#if editMode}
-          <input type="text" placeholder="Clan name" bind:value={name} disabled={isSaving}/>
+          <input type="text" placeholder="Clan name" bind:value={name} disabled={!!pendingText}/>
         {:else}
           <span class="clanName">{name}</span>
         {/if}
@@ -60,8 +177,8 @@
 
       <section class="title is-6" style="--clan-color: {color}">
         {#if editMode}
-          <input type="text" placeholder="Clan tag" bind:value={tag} disabled={isSaving}/>
-          <input type="color" bind:value={color} disabled={isSaving}/>
+          <input type="text" placeholder="Clan tag" bind:value={tag} disabled={!!pendingText}/>
+          <input type="color" bind:value={color} disabled={!!pendingText}/>
         {:else}
           <span class="clanTag">[{tag}]</span>
         {/if}
@@ -69,24 +186,50 @@
 
       {#if !editMode}
         <section class="title is-5">
-          {playersCount} players
+          {playersCount} player(s)
         </section>
       {/if}
 
       {#if editMode}
         <section>
-          {#if !isSaving}
-            <Button label="Save a clan" type="primary" on:click={() => dispatch('save', {...clan, name, tag, color, iconData, icon: iconUrl})}/>
+          {#if !pendingText}
+            <Button label="Save a clan" type="primary" on:click={onSave}/>
             <Button label="Cancel" on:click={() => dispatch('cancel')}/>
           {:else}
             <Spinner/>
-            Saving...
+            {pendingText}
           {/if}
         </section>
+      {/if}
 
-        {#if error}
-          <Error {error}/>
-        {/if}
+      {#if hasInvitation && !noButtons}
+        <section>
+          {#if !pendingText}
+            {#if confirmedOperation}
+              <h3 class="confirm title is-6">Are you sure?</h3>
+              <Button label="Yeah!" iconFa="fas fa-check" type="danger" on:click={onConfirm}/>
+              <Button label="Hell no!" iconFa="fas fa-ban" type="default" on:click={onCancelPendingOperation}/>
+            {:else}
+              <Button label="Accept invitation" iconFa="fas fa-check" type="primary" on:click={onAccept}/>
+              <Button label="Reject invitation" iconFa="fas fa-trash-alt" type="lessdanger"
+                      on:click={() => {confirmedOperation = onReject}}/>
+              <Button label="Ban clan" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
+            {/if}
+          {:else}
+            <Spinner/>
+            {pendingText}
+          {/if}
+        </section>
+      {/if}
+
+      {#if isFounder && !noButtons}
+        <section>
+          <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger" on:click={confirmedOperation = onRemove}/>
+        </section>
+      {/if}
+
+      {#if error}
+        <Error {error}/>
       {/if}
     </section>
   </div>
@@ -160,5 +303,10 @@
 
     .imageInput:hover .imageChange {
         opacity: 1;
+    }
+
+    .confirm.title {
+        color: red;
+        margin-bottom: .25rem;
     }
 </style>

@@ -4,11 +4,13 @@ import makePendingPromisePool from '../../utils/pending-promises'
 import {PRIORITY} from '../../network/queues/http-queue'
 import {CLANS_PER_PAGE} from '../../utils/beatleader/consts'
 import {MINUTE, SECOND} from '../../utils/date'
-import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
+import createAccountStore from '../../stores/beatleader/account'
 
 let service = null;
 export default () => {
   if (service) return service;
+
+  const account = createAccountStore();
 
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
@@ -21,15 +23,38 @@ export default () => {
 
     const createdClan = await clanApiClient.create({...clan, signal, priority});
 
-    // TODO: add clan to the account @see account.js:315
-    console.warn('TODO: add clan to the account', createdClan);
+    account.setPlayerClan(createdClan);
 
     return createdClan;
   }
 
-  const acceptRequest = async (id) => fetch(`${BL_API_URL}clan/accept?id=${id}`, {credentials: 'include', method: 'POST'});
+  const accept = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!clan?.id) throw new Error('Clan is required');
 
-  const rejectRequest = async (id, ban = false) => fetch(`${BL_API_URL}clan/reject?id=${id}&ban=${ban ? "true" : "false"}`, {credentials: 'include', method: 'POST'});
+    await clanApiClient.accept({clanId: clan.id, signal, priority});
+
+    account.addClan(clan);
+
+    return clan;
+  }
+
+  const reject = async (clan, ban = false, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!clan?.id) throw new Error('Clan is required');
+
+    ban = !!ban;
+
+    await clanApiClient.reject({clanId: clan.id, ban, signal, priority});
+
+    account.removeClanRequest(clan);
+
+    return clan;
+  }
+
+  const remove = async (priority = PRIORITY.FG_HIGH, signal = null) => {
+    await clanApiClient.remove({signal, priority});
+
+    account.setPlayerClan(null);
+  }
 
   const destroyService = () => {
     service = null;
@@ -39,8 +64,9 @@ export default () => {
     fetchClansPage,
     fetchClanPage,
     create,
-    acceptRequest,
-    rejectRequest,
+    accept,
+    reject,
+    remove,
     CLANS_PER_PAGE,
     destroyService,
   }

@@ -1,8 +1,6 @@
 import {writable} from 'svelte/store'
-import {PRIORITY} from '../../network/queues/http-queue'
-import {configStore} from './../config'
+import {configStore} from '../config'
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
-import createRankedsService from '../../services/beatleader/rankeds'
 import createPlayerService from '../../services/beatleader/player'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 
@@ -27,11 +25,7 @@ export default (refreshOnCreate = true) => {
     fetch(BL_API_URL + "user", {credentials: 'include'})
     .then(response => response.json())
     .then(async data => {
-      account.id = data.player.id;
-      account.player = data.player;
-      account.clanRequests = data.clanRequests;
-      account.friends = data.friends;
-      account.migrated = data.migrated;
+      account = data;
       set(account);
 
       if (!playerService) {
@@ -291,34 +285,6 @@ export default (refreshOnCreate = true) => {
         });
   }
 
-  const foundClan = (clan) => {
-    fetch(BL_API_URL + `clan/create?name=${clan.name}&tag=${clan.tag}&color=${clan.color}`, { 
-      body: clan.icon,
-      method: 'POST', 
-      credentials: 'include'
-    })
-    .then(response => {
-      if (response.code != 200) {
-        return response.text()
-      }
-    })
-    .then(data => {
-      account.error = null;
-
-      if (data.length > 0) {
-          account.error = data;
-          setTimeout(function(){
-              account.error = null;
-              set(account);
-          }, 3500);
-      } else {
-        account.clan = data;
-      }
-
-      set(account);
-    });
-  }
-
   const destroyClan = () => {
     
   }
@@ -365,6 +331,30 @@ export default (refreshOnCreate = true) => {
           set(account);
       });
 
+  const removeClanRequest = (clan, setAccount = true) => {
+    if (Array.isArray(account?.clanRequest) && clan?.id) {
+      account.clanRequest = account.clanRequest.filter(r => r?.id !== clan.id);
+    }
+
+    if (setAccount) set(account);
+  }
+
+  const addClan = clan => {
+    if (Array.isArray(account?.player?.clans)) {
+      account.player.clans.push(clan);
+    }
+
+    removeClanRequest(clan, false);
+
+    set(account);
+  }
+
+  const setPlayerClan = clan => {
+    account.clan = clan;
+
+    set(account);
+  }
+
   eventBus.on('player-add-cmd', async ({playerId, fromAccount}) => {
     if (!fromAccount) {
       fetch(BL_API_URL + "user/friend?playerId=" + playerId, {credentials: 'include', method: 'POST'})
@@ -387,11 +377,13 @@ export default (refreshOnCreate = true) => {
     changeAvatar,
     changeName,
     changeCountry,
-    foundClan,
     banPlayer,
     unbanPlayer,
     changePassword,
-    changePasswordMigrated
+    changePasswordMigrated,
+    setPlayerClan,
+    addClan,
+    removeClanRequest,
   }
 
   return store;

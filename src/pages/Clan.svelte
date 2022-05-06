@@ -19,6 +19,7 @@
     import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
     import SteamStats from '../components/Common/SteamStats.svelte'
     import { HSVtoRGB } from '../utils/color';
+    import ClanInfo from '../components/Clans/ClanInfo.svelte'
     
     export let clanId;
     export let page = 1;
@@ -134,10 +135,6 @@
         redactingTag = !redactingTag;
     }
 
-    function onCreateButtonClick() {
-        account.foundClan(clan);
-    }
-
     const account = createAccountStore();
   
     $: isLoading = clanStore.isLoading;
@@ -160,46 +157,7 @@
   <section class="align-content">
     <article class="page-content">
       <ContentBox bind:box={boxEl}>
-        <div class="clanData">
-            <div class="imageInput" on:click={() => fileinput.click()}>
-                <img class="playlistImage" src="{clan.icon}" alt="PlaylistImage"/>
-                <input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={(e)=>changeImage(e)} bind:this={fileinput} >
-                <span class="imageChange">
-                    <h3 class="changeLabel">Change</h3>
-                </span>
-            </div>
-
-            <div class="clanTitleAndTag">
-                <h1 class="title is-5">
-                    <div style="display: grid; width: 90%;">
-                        <div style="display: flex;">
-                            <span class="clanName" style="display: {redactingTitle ? "none" : "block"};">{clan.name}</span>
-                            <input type="text" style="display: {redactingTitle ? "block" : "none"};" value="{clan.name}" placeholder="Clan name" class="input-reset" bind:this={titleInput}>
-                            <Button type="text" cls="editTitleButton" iconFa={redactingTitle ? "fas fa-check" : "fas fa-edit"}
-                                on:click={() => onRedactTitleButtonClick()} />
-                        </div>
-                    </div>
-        
-                
-                </h1>
-
-                <div style="display: grid; width: 90%;">
-                    <div style="display: flex;">
-                        <span class="clanTag" style="display: {redactingTag ? "none" : "block"};">{clan.tag}</span>
-                        <input type="text" style="display: {redactingTag ? "block" : "none"};" value="{clan.tag}" placeholder="Clan tag" class="input-reset" bind:this={tagInput}>
-                        <Button type="text" cls="editTitleButton" iconFa={redactingTag ? "fas fa-check" : "fas fa-edit"}
-                            on:click={() => onRedactTagButtonClick()} />
-                        <input type="color" id="tagColor" value="#ff0000" on:change={changeColor}>
-                    </div>
-                </div>
-            </div>
-
-            
-                        
-        </div>
-
-        <Button title="Delete failed score upload" label="Create a clan" type="primary"
-                            on:click={() => onCreateButtonClick()}/>
+        <ClanInfo {clan} />
 
         {#if $isLoading}<Spinner />{/if}
   
@@ -259,7 +217,8 @@
   <style>
     .align-content {
         display: flex;
-        justify-content: flex-end!important;
+        align-items: flex-start!important;
+        justify-content: center!important;
     }
 
     .clanData {
@@ -658,11 +617,6 @@
     }
 
     @media screen and (max-width: 1275px) {
-        .align-content {
-            flex-direction: column-reverse;
-            align-items: center;
-        }
-
         aside {
             width: 100%;
             max-width: 65em;

@@ -10,10 +10,8 @@
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
   import ContentBox from "../components/Common/ContentBox.svelte";
-  import ClanRequest from '../components/Clans/ClanRequest.svelte'
   import Button from "../components/Common/Button.svelte";
   import ClanInfo from '../components/Clans/ClanInfo.svelte'
-  import {SsrHttpResponseError} from '../network/errors'
 
   export let page = 1;
   export let location;
@@ -97,57 +95,26 @@
     navigate(`/clan/${clan.id}`)
   }
 
-  async function onSave(e) {
-    if (!e?.detail?.name?.length) {
-      createError = "Clan name is required";
-      return;
-    }
-
-    if (!e?.detail?.tag?.length) {
-      createError = "Clan tag is required";
-      return;
-    }
-
-    if (!e?.detail?.color?.length) {
-      createError = "Clan color is required";
-      return;
-    }
-
-    if (!e?.detail?.iconData) {
-      createError = "Icon is required";
-      return;
-    }
-
-    try {
-      await clanService.create({...e.detail, icon: e.detail.iconData});
-
-      createMode = false;
-      createError = null;
-
-      await clansStore.refresh();
-    } catch (err) {
-      if (err instanceof SsrHttpResponseError) {
-        const htmlError = await err.getResponse().text();
-        createError = htmlError?.length ? htmlError : err;
-      } else {
-        createError = err;
-      }
-    }
+  async function onAdded(e) {
+    createMode = false;
+    await clansStore.refresh();
   }
 
   const account = createAccountStore();
 
   $: isLoading = clansStore.isLoading;
   $: pending = clansStore.pending;
-  $: numOfMaps = $clansStore ? $clansStore?.metadata?.total : null;
+  $: numOfClans = $clansStore ? $clansStore?.metadata?.total : null;
   $: itemsPerPage = $clansStore ? $clansStore?.metadata?.itemsPerPage : 10;
 
   $: changePageAndFilters(page, location)
   $: scrollToTop($pending);
 
-  $: clanRequests = ($account?.clanRequests ?? []);
+  $: clanRequests = ($account?.clanRequest ?? []);
 
   $: clansPage = ($clansStore?.data ?? [])
+
+  $: console.log($account)
 </script>
 
 <svelte:head>
@@ -156,9 +123,35 @@
 
 <section class="align-content">
   <article class="page-content" transition:fade>
+    {#if !createMode && $account?.clan?.id}
+      <ContentBox>
+        <h1 class="title is-5">My clan</h1>
+
+        <a href={`/clan/${$account.clan.id}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.id}`)}>
+          <ClanInfo clan={$account.clan} noButtons={true}/>
+        </a>
+      </ContentBox>
+    {/if}
+
+    {#if clanRequests?.length}
+      <ContentBox background="var(--dimmed)">
+        <section class="clan-requests">
+          <h2 class="title is-5">Clan requests</h2>
+
+          {#each clanRequests as clan, idx (clan.id)}
+            <section class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
+              <div class="main" on:click={() => onClanClick(clan)}>
+                <ClanInfo editMode={false} {clan}/>
+              </div>
+            </section>
+          {/each}
+        </section>
+      </ContentBox>
+    {/if}
+
     <ContentBox bind:box={boxEl}>
       <h1 class="title is-5">
-        Clans
+        All clans
 
         {#if $isLoading}
           <Spinner/>
@@ -167,39 +160,27 @@
 
       {#if createMode}
         <ContentBox>
-          <ClanInfo editMode={true} error={createError} isSaving={createIsSaving} on:save={onSave}
-                    on:cancel={() => {createMode =false}}/>
+          <ClanInfo on:added={onAdded} on:cancel={() => {createMode =false}}/>
         </ContentBox>
-      {:else}
-        <Button iconFa="fas fa-users" label="Create a new clan" type="primary" on:click={() => {createError = null; createMode = true}}/>
+      {:else if ($account?.player && !$account?.clan)}
+        <Button iconFa="fas fa-users" label="Create a new clan" type="primary"
+                on:click={() => {createMode = true}}/>
       {/if}
 
-      <a href="clan/my">
-        <Button iconFa="far fa-hand-pointer" title="My clan" noMargin={true}/>
-      </a>
-
-      {#each clanRequests as clan, idx (clan.id)}
-        <div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
-          <div class="main">
-            <ClanRequest {clan}/>
-          </div>
-        </div>
-      {/each}
-
       {#if clansPage?.length}
-        <div class="songs grid-transition-helper">
+        <div class="clans grid-transition-helper">
           {#each clansPage as clan, idx (clan.id)}
             <div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
               <div class="main" on:click={() => onClanClick(clan)}>
-                <ClanInfo {clan}/>
+                <ClanInfo {clan} noButtons={true}/>
               </div>
             </div>
           {/each}
         </div>
 
-        <Pager totalItems={numOfMaps} {itemsPerPage} itemsPerPageValues={null}
+        <Pager totalItems={numOfClans} {itemsPerPage} itemsPerPageValues={null}
                currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-               mode={numOfMaps ? 'pages' : 'simple'}
+               mode={numOfClans ? 'pages' : 'simple'}
                on:page-changed={onPageChanged}
         />
       {:else if (!$isLoading)}
@@ -281,7 +262,7 @@
         color: var(--faded) !important;
     }
 
-    .songs :global(> *:last-child) {
+    .clans :global(> *:last-child) {
         border-bottom: none !important;
     }
 
@@ -290,7 +271,11 @@
         padding: .5em 0;
     }
 
-    .clan-line:hover {
+    .clan-line:last-child {
+        border-bottom: none;
+    }
+
+    .clans .clan-line:hover {
         background-color: var(--dimmed);
         cursor: pointer;
     }
@@ -311,22 +296,6 @@
         margin-right: 0;
     }
 
-    .icons {
-        width: 7em;
-        font-size: .75em;
-        text-align: right;
-        margin-right: 0;
-        margin-bottom: .5em;
-    }
-
-    .icons:empty {
-        margin-bottom: 0 !important;
-    }
-
-    .icons :global(> *) {
-        margin-bottom: .25em !important;
-    }
-
     @media screen and (max-width: 1275px) {
         .align-content {
             flex-direction: column-reverse;
@@ -336,13 +305,6 @@
         aside {
             width: 100%;
             max-width: 65em;
-        }
-    }
-
-    @media screen and (max-width: 767px) {
-        .icons {
-            margin-bottom: .5em;
-            width: 100%;
         }
     }
 </style>

@@ -66,7 +66,7 @@
         lessdanger: {
             color: "#dbdbdb",
             activeColor: "#fff",
-            bgColor: "yellow",
+            bgColor: "orange",
             activeBgColor: "#bfbf00",
             border: "transparent",
             activeBorder: "transparent",
@@ -81,7 +81,7 @@
 
 {#if url && url.length}
     <a href={url}
-      style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click|preventDefault={() => dispatch('click', selectedOption)} {disabled} {title} class={'button clickable ' + (type?type:'default') + ' ' + cls}
+      style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click|preventDefault|stopPropagation={() => dispatch('click', selectedOption)} {disabled} {title} class={'button clickable ' + (type?type:'default') + ' ' + cls}
             class:not-selected={notSelected} class:disabled={disabled}>
         {#if icon && !loading}<span class="icon">{@html icon}</span>{/if}
         {#if iconFa && !loading}<i class={iconFa}></i>{/if}
@@ -90,7 +90,7 @@
         <slot></slot>
     </a>
 {:else}
-<button style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click={() => dispatch('click', selectedOption)} {disabled} {title} class={'button clickable ' + (type?type:'default') + ' ' + cls}
+<button style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor ? bgColor : selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType .activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}" on:click|stopPropagation={() => dispatch('click', selectedOption)} {disabled} {title} class={'button clickable ' + (type?type:'default') + ' ' + cls}
  class:not-selected={notSelected}>
     {#if icon}<span class="icon">{@html icon}</span>{/if}
     {#if iconFa && !loading}<i class={iconFa}></i>{/if}

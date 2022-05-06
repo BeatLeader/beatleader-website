@@ -47,12 +47,33 @@ const create = async ({name, tag, color, icon, priority = queue.PRIORITY.FG_HIGH
   return fullResponse ? response : getResponseBody(response);
 }
 
+const accept = async ({clanId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanAccept(clanId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const reject = async ({clanId, ban = false, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanReject(clanId, ban, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const remove = async ({priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanRemove(priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
 const createClanClient = () => {
   const client = createClient(get, process);
 
   return {
     ...client,
-    create
+    create,
+    accept,
+    reject,
+    remove,
   }
 }
 
