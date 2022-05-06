@@ -26,6 +26,8 @@
   let createError = null;
   let createIsSaving = false;
 
+  let shouldBeForceRefreshed = new URLSearchParams(location?.search ?? '')?.get('refresh') ?? false;
+
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
 
@@ -62,14 +64,16 @@
 
   const clansStore = createClansStore(page, currentFilters);
 
-  function changePageAndFilters(newPage, newLocation) {
+  function changePageAndFilters(newPage, newLocation, force) {
+    shouldBeForceRefreshed = false;
+
     currentFilters = buildFiltersFromLocation(newLocation);
 
     newPage = parseInt(newPage, 10);
     if (isNaN(newPage)) newPage = 1;
 
     currentPage = newPage;
-    clansStore.fetch(currentPage, {...currentFilters});
+    clansStore.fetch(currentPage, {...currentFilters}, force);
   }
 
   function onPageChanged(event) {
@@ -95,7 +99,7 @@
     navigate(`/clan/${clan.id}`)
   }
 
-  async function onAdded(e) {
+  async function onClanAddedOrRemoved() {
     createMode = false;
     await clansStore.refresh();
   }
@@ -107,7 +111,7 @@
   $: numOfClans = $clansStore ? $clansStore?.metadata?.total : null;
   $: itemsPerPage = $clansStore ? $clansStore?.metadata?.itemsPerPage : 10;
 
-  $: changePageAndFilters(page, location)
+  $: changePageAndFilters(page, location, shouldBeForceRefreshed)
   $: scrollToTop($pending);
 
   $: clanRequests = ($account?.clanRequest ?? []);
@@ -160,7 +164,9 @@
 
       {#if createMode}
         <ContentBox>
-          <ClanInfo on:added={onAdded} on:cancel={() => {createMode =false}}/>
+          <ClanInfo enableCreateMode={true}
+                    on:added={onClanAddedOrRemoved} on:removed={onClanAddedOrRemoved} on:cancel={() => {createMode =false}}
+          />
         </ContentBox>
       {:else if ($account?.player && !$account?.clan)}
         <Button iconFa="fas fa-users" label="Create a new clan" type="primary"

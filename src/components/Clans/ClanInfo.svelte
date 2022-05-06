@@ -7,8 +7,10 @@
   import Spinner from '../Common/Spinner.svelte'
   import {SsrHttpResponseError} from '../../network/errors'
   import createClanService from '../../services/beatleader/clan'
+  import {navigate} from 'svelte-routing'
 
   export let clan;
+  export let enableCreateMode = false;
   export let noButtons = false;
 
   document.body.classList.remove('slim');
@@ -17,7 +19,7 @@
   const account = createAccountStore();
   const clanService = createClanService();
 
-  let editMode= !clan?.id;
+  let editMode = enableCreateMode;
 
   let boxEl = null;
 
@@ -53,8 +55,7 @@
       } else {
         error = err;
       }
-    }
-    finally {
+    } finally {
       pendingText = null;
     }
   }
@@ -91,7 +92,7 @@
       dispatch('added', {...createdClan});
     });
   }
-  
+
   async function onAccept() {
     if (!clan?.id) return;
 
@@ -126,6 +127,10 @@
     pendingText = 'Removing a clan...';
 
     await executeOperation(async () => clanService.remove(clan));
+
+    dispatch('removed', {...clan});
+
+    navigate('/clans?refresh=true');
   }
 
   async function onConfirm() {
@@ -224,7 +229,19 @@
 
       {#if isFounder && !noButtons}
         <section>
-          <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger" on:click={confirmedOperation = onRemove}/>
+          {#if !pendingText}
+            {#if confirmedOperation}
+              <h3 class="confirm title is-6">Are you sure?</h3>
+              <Button label="Yeah!" iconFa="fas fa-check" type="danger" on:click={onConfirm}/>
+              <Button label="Hell no!" iconFa="fas fa-ban" type="default" on:click={onCancelPendingOperation}/>
+            {:else}
+              <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger"
+                      on:click={() => confirmedOperation = onRemove}/>
+            {/if}
+          {:else}
+            <Spinner/>
+            {pendingText}
+          {/if}
         </section>
       {/if}
 

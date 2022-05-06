@@ -3,7 +3,8 @@ import createApiClansProvider from './providers/api-clans'
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
 import stringify from 'json-stable-stringify'
 
-export default (page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
+export default (page = 1, filters = {}, initialState = null, initialStateType = 'initial', force = true) => {
+  console.log('create store')
   let currentPage = page ?? 1;
   let currentFilters = filters ?? {};
 
