@@ -7,6 +7,7 @@
   import Spinner from '../Common/Spinner.svelte'
   import {SsrHttpResponseError} from '../../network/errors'
   import createClanService from '../../services/beatleader/clan'
+  import Confirmation from '../Common/Confirmation.svelte'
 
   export let clan;
   export let enableCreateMode = false;
@@ -59,7 +60,7 @@
     }
   }
 
-  async function onSave(e) {
+  async function onSave() {
     if (!name.length) {
       error = "Clan name is required";
       return;
@@ -99,6 +100,8 @@
     pendingText = 'Accepting an invitation...';
 
     await executeOperation(async () => clanService.accept(clan));
+
+    dispatch('accepted', {...clan});
   }
 
   async function onReject() {
@@ -108,6 +111,8 @@
     pendingText = 'Rejecting an invitation...';
 
     await executeOperation(async () => clanService.reject(clan, false));
+
+    dispatch('rejected', {...clan});
   }
 
   async function onBan() {
@@ -117,6 +122,8 @@
     pendingText = 'Banning a clan...';
 
     await executeOperation(async () => clanService.reject(clan, true));
+
+    dispatch('banned', {...clan});
   }
 
   async function onRemove() {
@@ -218,57 +225,27 @@
 
       {#if hasInvitation && !noButtons}
         <section>
-          {#if !pendingText}
-            {#if confirmedOperation}
-              <h3 class="confirm title is-6">Are you sure?</h3>
-              <Button label="Yeah!" iconFa="fas fa-check" type="danger" on:click={onConfirm}/>
-              <Button label="Hell no!" iconFa="fas fa-ban" type="default" on:click={onCancelPendingOperation}/>
-            {:else}
-              <Button label="Accept invitation" iconFa="fas fa-check" type="primary" on:click={onAccept}/>
-              <Button label="Reject invitation" iconFa="fas fa-trash-alt" type="lessdanger"
-                      on:click={() => {confirmedOperation = onReject}}/>
-              <Button label="Ban clan" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
-            {/if}
-          {:else}
-            <Spinner/>
-            {pendingText}
-          {/if}
+          <Confirmation {pendingText} {confirmedOperation}>
+            <Button label="Accept invitation" iconFa="fas fa-check" type="primary" on:click={onAccept}/>
+            <Button label="Reject invitation" iconFa="fas fa-trash-alt" type="lessdanger" on:click={() => {confirmedOperation = onReject}}/>
+            <Button label="Ban clan" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
+          </Confirmation>
         </section>
       {/if}
 
       {#if isFounder && !noButtons}
         <section>
-          {#if !pendingText}
-            {#if confirmedOperation}
-              <h3 class="confirm title is-6">Are you sure?</h3>
-              <Button label="Yeah!" iconFa="fas fa-check" type="danger" on:click={onConfirm}/>
-              <Button label="Hell no!" iconFa="fas fa-ban" type="default" on:click={onCancelPendingOperation}/>
-            {:else}
-              <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger"
-                      on:click={() => confirmedOperation = onRemove}/>
-            {/if}
-          {:else}
-            <Spinner/>
-            {pendingText}
-          {/if}
+          <Confirmation {pendingText} {confirmedOperation}>
+            <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger" on:click={() => confirmedOperation = onRemove}/>
+          </Confirmation>
         </section>
       {/if}
 
       {#if canLeave && !noButtons}
         <section>
-          {#if !pendingText}
-            {#if confirmedOperation}
-              <h3 class="confirm title is-6">Are you sure?</h3>
-              <Button label="Yeah!" iconFa="fas fa-check" type="danger" on:click={onConfirm}/>
-              <Button label="Hell no!" iconFa="fas fa-ban" type="default" on:click={onCancelPendingOperation}/>
-            {:else}
-              <Button label="Leave a clan" iconFa="fab fa-accessible-icon" type="lessdanger"
-                      on:click={() => confirmedOperation = onLeave}/>
-            {/if}
-          {:else}
-            <Spinner/>
-            {pendingText}
-          {/if}
+          <Confirmation {pendingText} {confirmedOperation}>
+            <Button label="Leave a clan" iconFa="fab fa-accessible-icon" type="lessdanger" on:click={() => confirmedOperation = onLeave}/>
+          </Confirmation>
         </section>
       {/if}
 
@@ -347,10 +324,5 @@
 
     .imageInput:hover .imageChange {
         opacity: 1;
-    }
-
-    .confirm.title {
-        color: red;
-        margin-bottom: .25rem;
     }
 </style>

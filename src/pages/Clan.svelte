@@ -19,6 +19,7 @@
     import SteamStats from '../components/Common/SteamStats.svelte'
     import { HSVtoRGB } from '../utils/color';
     import ClanInfo from '../components/Clans/ClanInfo.svelte'
+    import {PLAYERS_PER_PAGE} from '../utils/beatleader/consts'
 
     export let clanId;
     export let page = 1;
@@ -88,6 +89,18 @@
       navigate(`/clan/${clanId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
     }
 
+    function onCountryClick(player) {
+      if (!player) return;
+
+      navigate(`/ranking/${player.playerInfo.countries[0].country}/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
+    }
+
+    function onGlobalClick(player) {
+      if (!player) return;
+
+      navigate(`/ranking/global/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
+    }
+
     function onSearchChanged(e) {
       currentFilters.search = e.target.value ?? '';
       navigateToCurrentPageAndFilters();
@@ -117,21 +130,22 @@
       <ContentBox bind:box={boxEl}>
         <ClanInfo {clan}
                   on:removed={() => navigate('/clans?refresh=true')}
+                  on:accepted={() => clanStore.refresh()}
                   on:left={() => clanStore.refresh()}
         />
 
         {#if $isLoading}<Spinner />{/if}
 
         {#if playersPage?.length}
-          <div class="songs grid-transition-helper">
+          <div class="players grid-transition-helper">
             {#each playersPage as player, idx (player.playerId)}
             <div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
-              <div class={`player-card ${mainPlayerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)}>
+              <div class={`player-card ${mainPlayerId === player.playerId ? "current" : ""}`} on:click|stopPropagation={() => navigate(`/u/${player.playerId}`)}>
                 <div class="player-rank">
-                  <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
+                  <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click|stopPropagation={() => onGlobalClick(player)}>
                     #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
                   </div>
-                  <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click={e => onCountryClick(player)}>
+                  <div class={`rank ${opt(player, 'playerInfo.countries.0.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.countries.0.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.countries.0.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.countries.0.rank') >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click|stopPropagation={() => onCountryClick(player)}>
                     #<Value value={opt(player, 'playerInfo.countries.0.rank')} digits={0} zero="?"/>
                     <Flag country={opt(player, 'playerInfo.countries.0.country')} />
                   </div>
@@ -158,7 +172,6 @@
                   </div>
                 </div>
               </div>
-              <!-- <AddFriendButton playerId={player.playerId}/> -->
             </div>
           {/each}
           </div>
@@ -182,25 +195,6 @@
         justify-content: center!important;
     }
 
-    .clanData {
-        display: flex;
-    }
-
-    .clanTitleAndTag {
-        width: 100%;
-    }
-
-    .input-reset {
-        width: 70%;
-        font-size: inherit;
-        padding: 0;
-        color: var(--textColor);
-        background-color: transparent;
-        border: none;
-        border-bottom: solid 1px var(--dimmed);
-        outline: none;
-    }
-
     .page-content {
         max-width: 65em;
         width: 100%;
@@ -209,11 +203,6 @@
     article {
         width: calc(100% - 25em);
         overflow-x: hidden;
-    }
-
-    .ranking-grid {
-        display: grid;
-        grid-gap: .75em;
     }
 
     .ranking-grid-row {
@@ -318,12 +307,6 @@
         font-size: .875em;
     }
 
-    @media screen and (max-width: 500px) {
-        .ranking-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
     @media screen and (max-width: 768px) {
         .player-card {
           grid-template-columns: 50% 50%;
@@ -364,230 +347,14 @@
         }
     }
 
-    aside {
-        width: 25em;
-    }
-
-    aside .filter {
-        margin-bottom: 1.5rem;
-        transition: opacity 300ms;
-    }
-
-    aside .filter.disabled {
-        opacity: .25;
-    }
-
-    aside label {
-        display: block;
-        font-weight: 500;
-        margin-bottom: 1rem;
-    }
-
-    aside .filter.disabled label {
-        cursor: help;
-    }
-
-    aside label span {
-        color: var(--beatleader-primary);
-    }
-
-    aside input {
-        width: 100%;
-        font-size: 1em;
-        color: var(--beatleader-primary);
-        background-color: var(--foreground);
-        border: none;
-        border-bottom: 1px solid var(--faded);
-        outline: none;
-    }
-
-    aside :global(.switch-types) {
-        justify-content: flex-start;
-    }
-
-    input::placeholder {
-        color: var(--faded) !important;
-    }
-
-    .songs :global(> *:last-child) {
+    .players :global(> *:last-child) {
         border-bottom: none !important;
-    }
-
-    .song-line {
-        border-bottom: 1px solid var(--dimmed);
-        padding: .5em 0;
-    }
-
-    .song-line .icons.up-to-tablet + .main {
-        padding-top: 0;
-    }
-
-    .song-line .main {
-        display: flex;
-        flex-wrap: nowrap;
-        align-items: center;
-        justify-content: center;
-        grid-column-gap: .75em;
-    }
-
-    .song-line .main > *:last-child {
-        margin-right: 0;
-    }
-
-    .songinfo {
-        flex-grow: 1;
-        text-align: left;
-        font-size: .95rem;
-        font-weight: 500;
-    }
-
-    .songinfo {
-        color: var(--alternate);
-    }
-
-    .songinfo small {
-        margin-left: .25em;
-        font-size: 0.75em;
-        color: var(--ppColour);
-    }
-
-    .icons {
-        width: 7em;
-        font-size: .75em;
-        text-align: right;
-        margin-right: 0;
-        margin-bottom: .5em;
-    }
-
-    .icons:empty {
-        margin-bottom: 0 !important;
-    }
-
-    .song-score {
-        border-bottom: 1px solid var(--dimmed);
-        padding: .5em 0;
-    }
-
-    .playlistInfo {
-        display: flex;
-    }
-
-    .clanName {
-        display: block;
-        max-width: 80%;
-        overflow: hidden;
-        max-height: 80%;
-        margin-left: 1em;
-    }
-
-    .clanTag {
-        display: block;
-        max-width: 80%;
-        overflow: hidden;
-        max-height: 80%;
-        margin-left: 1em;
-    }
-
-    .titleAndButtons {
-        display: flex;
-        justify-content: space-between;
-        font-size: 1.1em;
-        font-weight: 500;
-        width: 90%;
-        margin: 1em;
-    }
-
-    :global(.editTitleButton) {
-        padding-bottom: 1.4em !important;
-        padding-left: 0.6em !important;
-    }
-
-    .song-score .icons.up-to-tablet + .main {
-      padding-top: 0;
-    }
-
-    .song-score .main {
-        display: flex;
-        flex-wrap: nowrap;
-        justify-content: space-evenly;
-        align-items: center;
-    }
-
-    .song-score.with-details .main {
-        border-bottom: none;
-    }
-
-    .song-score .main > * {
-        margin-right: 1em;
-    }
-
-    .song-score .main > *:last-child {
-        margin-right: 0;
-    }
-
-    .song-score .main :global(.badge) {
-        margin: 0 !important;
-        padding: .125em .25em !important;
-        width: 100%;
-    }
-
-    .song-score .main :global(.badge small) {
-        font-size: .7em;
-        font-weight: normal;
-        margin-top: -2px;
-    }
-
-    .song-score .main :global(.inc), .song-score :global(.dec) {
-        color: inherit;
-    }
-
-    .imageInput {
-        cursor: pointer;
-        display: flex;
-        position: relative;
-    }
-
-    .playlistImage {
-        width: 10em;
-    }
-
-    .imageChange {
-        transition: opacity .2s ease-in-out;
-        background-color: rgba(32,33,36,0.6);
-        bottom: 0;
-        height: 33%;
-        left: 0;
-        opacity: 0;
-        position: absolute;
-        right: 0;
-        display: flex;
-        justify-content: center;
-    }
-
-    .imageInput:hover .imageChange {
-        opacity: 1;
-    }
-
-    .changeLabel {
-        top: 30%;
-        position: absolute;
-    }
-
-    .icons :global(> *) {
-        margin-bottom: .25em!important;
     }
 
     @media screen and (max-width: 1275px) {
         aside {
             width: 100%;
             max-width: 65em;
-        }
-    }
-
-    @media screen and (max-width: 767px) {
-        .icons {
-            margin-bottom: .5em;
-            width: 100%;
         }
     }
   </style>

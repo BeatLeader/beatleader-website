@@ -81,7 +81,6 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
 
     for (const scoreRow of newState) {
       if (currentService !== 'accsaber') {
-        console.log(scoreRow);
         stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => scoreStatisticEnhancer(draft))
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
