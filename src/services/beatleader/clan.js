@@ -16,7 +16,7 @@ export default () => {
 
   const fetchClansPage = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(`apiClient/clans/${page}`, () => clansApiClient.getProcessed({page, filters, signal, priority, cacheTtl: force ? null : MINUTE, maxAge: force ? SECOND : MINUTE}));
 
-  const fetchClanPage = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(`apiClient/clan/${clanId}/${page}`, () => clanApiClient.getProcessed({clanId, page, filters, signal, priority, cacheTtl: force ? null : MINUTE,}));
+  const fetchClanPage = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(`apiClient/clan/${clanId}/${page}`, () => clanApiClient.getProcessed({clanId, page, filters, signal, priority, cacheTtl: force ? null : MINUTE, maxAge: force ? SECOND : MINUTE}));
 
   const create = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
     if (!clan?.name || !clan.tag || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');

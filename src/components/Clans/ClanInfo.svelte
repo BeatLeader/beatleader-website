@@ -7,7 +7,6 @@
   import Spinner from '../Common/Spinner.svelte'
   import {SsrHttpResponseError} from '../../network/errors'
   import createClanService from '../../services/beatleader/clan'
-  import {navigate} from 'svelte-routing'
 
   export let clan;
   export let enableCreateMode = false;

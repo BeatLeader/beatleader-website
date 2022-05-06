@@ -10,7 +10,6 @@
     import Spinner from '../components/Common/Spinner.svelte'
     import ContentBox from "../components/Common/ContentBox.svelte";
     import {opt} from '../utils/js'
-    import Button from "../components/Common/Button.svelte";
     import {debounce} from '../utils/debounce'
     import Value from '../components/Common/Value.svelte'
     import Avatar from '../components/Common/Avatar.svelte'
@@ -28,6 +27,7 @@
     const FILTERS_DEBOUNCE_MS = 500;
 
     document.body.classList.remove('slim');
+
     const mainPlayerId = createConfigService().getMainPlayerId();
 
     if (page && !Number.isFinite(page)) page = parseInt(page, 10);
@@ -35,25 +35,17 @@
 
     const buildFiltersFromLocation = location => {
       const processString = val => val?.toString() ?? '';
-      const processFloat = val => {
-        val = parseFloat(val);
-        if (isNaN(val)) return null;
-
-        return val < 0 ? 0 : val;
-      }
 
       const params = [
-        {key: 'search', default: '', process: processString},,
+        {key: 'search', default: '', process: processString},
       ];
 
       const searchParams = new URLSearchParams(location?.search ?? '');
 
-      const filters = params.reduce((cum, param) => ({
+      return params.reduce((cum, param) => ({
         ...cum,
         [param.key]: param.process(searchParams.get(param.key)) ?? param.default
       }), {});
-
-      return filters;
     }
     const buildSearchFromFilters = filters => {
       if (!filters) return '';
@@ -74,14 +66,16 @@
 
     const clanStore = createClanStore(clanId, page, currentFilters);
 
-    function changePageAndFilters(newPage, newLocation) {
+    function changePageAndFilters(clanId, newPage, newLocation) {
+      if (!clanId) return;
+
       currentFilters = buildFiltersFromLocation(newLocation);
 
       newPage = parseInt(newPage, 10);
       if (isNaN(newPage)) newPage = 1;
 
       currentPage = newPage;
-      clanStore.fetch(currentPage, {...currentFilters});
+      clanStore.fetch(clanId, currentPage, {...currentFilters});
     }
 
     function onPageChanged(event) {
@@ -100,58 +94,22 @@
     }
     const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
 
-    let fileinput;
-    const changeImage = (e) => {
-        let image = e.target.files[0];
-        let reader = new FileReader();
-        reader.readAsArrayBuffer(image);
-        reader.onload = e => {
-            clan.icon = e.target.result;
-            //store.set($store);
-        };
-    }
-
-    const changeColor = (e) => {
-        clan.color = e.value;
-    }
-
-    let titleInput;
-    let redactingTitle = false;
-    function onRedactTitleButtonClick() {
-        if (redactingTitle && titleInput.value) {
-            clan.name = titleInput.value;
-            //store.set($store);
-        }
-        redactingTitle = !redactingTitle;
-    }
-
-    let tagInput;
-    let redactingTag = false;
-    function onRedactTagButtonClick() {
-        if (redactingTag && tagInput.value) {
-            clan.tag = tagInput.value;
-            //store.set($store);
-        }
-        redactingTag = !redactingTag;
-    }
-
     const account = createAccountStore();
 
     $: isLoading = clanStore.isLoading;
     $: pending = clanStore.pending;
-    $: numOfMaps = $clanStore ? $clanStore?.metadata?.total : null;
+    $: numOfItems = $clanStore ? $clanStore?.metadata?.total : null;
     $: itemsPerPage = $clanStore ? $clanStore?.metadata?.itemsPerPage : 10;
 
-    $: changePageAndFilters(page, location)
+    $: changePageAndFilters(clanId, page, location)
     $: scrollToTop($pending);
 
-    $: currentClan = $clanStore?.container
-    $: clan = $clanStore?.container ?? (clanId == "my" && {name: "New clan", tag: "NTG", icon: "https://cdn.beatleader.xyz/assets/102.png"});
+    $: clan = $clanStore?.container ?? null;
     $: playersPage = ($clanStore?.data ?? [])
   </script>
 
   <svelte:head>
-    <title>{clan.name} / {currentPage} - {ssrConfig.name}</title>
+    <title>{clan?.name ?? ''} / {currentPage} - {ssrConfig.name}</title>
   </svelte:head>
 
   <section class="align-content">
@@ -205,9 +163,9 @@
           {/each}
           </div>
 
-          <Pager totalItems={numOfMaps} {itemsPerPage} itemsPerPageValues={null}
+          <Pager totalItems={numOfItems} {itemsPerPage} itemsPerPageValues={null}
                  currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-                 mode={numOfMaps ? 'pages' : 'simple'}
+                 mode={numOfItems ? 'pages' : 'simple'}
                  on:page-changed={onPageChanged}
           />
         {:else if (!$isLoading)}

@@ -117,8 +117,6 @@
   $: clanRequests = ($account?.clanRequest ?? []);
 
   $: clansPage = ($clansStore?.data ?? [])
-
-  $: console.log($account)
 </script>
 
 <svelte:head>
