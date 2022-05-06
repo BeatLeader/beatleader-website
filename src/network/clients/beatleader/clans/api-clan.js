@@ -59,6 +59,12 @@ const reject = async ({clanId, ban = false, priority = queue.PRIORITY.FG_HIGH, f
   return fullResponse ? response : getResponseBody(response);
 }
 
+const leave = async ({clanId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanLeave(clanId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
 const remove = async ({priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
   const response = await queue.BEATLEADER_API.clanRemove(priority, queueOptions);
 
@@ -74,6 +80,7 @@ const createClanClient = () => {
     accept,
     reject,
     remove,
+    leave,
   }
 }
 

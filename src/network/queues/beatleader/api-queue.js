@@ -23,6 +23,7 @@ export const BL_API_CLAN_CREATE_URL = BL_API_URL + 'clan/create?name=${name}&tag
 export const BL_API_CLAN_ACCEPT_URL = BL_API_URL + 'clan/accept?id=${id}'
 export const BL_API_CLAN_REJECT_URL = BL_API_URL + 'clan/reject?id=${id}&ban=${ban}'
 export const BL_API_CLAN_REMOVE_URL = BL_API_URL + 'clan'
+export const BL_API_CLAN_LEAVE_URL = BL_API_URL + 'clan/leave?id=${id}'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}'
@@ -71,6 +72,8 @@ export default (options = {}) => {
   const clanReject = async (clanId, ban = false, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_REJECT_URL, {id: clanId, ban: ban ? 'true' : 'false'}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
   const clanRemove = async (priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(BL_API_CLAN_REMOVE_URL, {...options, retries: 0, method: 'DELETE', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanLeave = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_LEAVE_URL, {id: clanId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
   const processLeaderboardScores = response => {
     return response.map(s => {
@@ -202,6 +205,7 @@ export default (options = {}) => {
     clanAccept,
     clanReject,
     clanRemove,
+    clanLeave,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,

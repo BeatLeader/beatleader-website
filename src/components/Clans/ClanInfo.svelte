@@ -129,8 +129,17 @@
     await executeOperation(async () => clanService.remove(clan));
 
     dispatch('removed', {...clan});
+  }
 
-    navigate('/clans?refresh=true');
+  async function onLeave() {
+    if (!clan?.id) return;
+
+    error = null;
+    pendingText = 'Leaving a clan...';
+
+    await executeOperation(async () => clanService.leave(clan));
+
+    dispatch('left', {...clan});
   }
 
   async function onConfirm() {
@@ -157,6 +166,7 @@
 
   $: hasInvitation = clan?.id && $account?.clanRequest?.length && !!$account.clanRequest.find(r => r.id === clan.id);
   $: isFounder = clan?.id && clan?.leaderID === $account?.player?.id;
+  $: canLeave = clan?.id && clan?.leaderID !== $account?.player?.id && !!$account.player?.clans?.find(c => c.id === clan.id)
 </script>
 
 <section class="clan-info" transition:fade>
@@ -237,6 +247,24 @@
             {:else}
               <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger"
                       on:click={() => confirmedOperation = onRemove}/>
+            {/if}
+          {:else}
+            <Spinner/>
+            {pendingText}
+          {/if}
+        </section>
+      {/if}
+
+      {#if canLeave && !noButtons}
+        <section>
+          {#if !pendingText}
+            {#if confirmedOperation}
+              <h3 class="confirm title is-6">Are you sure?</h3>
+              <Button label="Yeah!" iconFa="fas fa-check" type="danger" on:click={onConfirm}/>
+              <Button label="Hell no!" iconFa="fas fa-ban" type="default" on:click={onCancelPendingOperation}/>
+            {:else}
+              <Button label="Leave a clan" iconFa="fab fa-accessible-icon" type="lessdanger"
+                      on:click={() => confirmedOperation = onLeave}/>
             {/if}
           {:else}
             <Spinner/>

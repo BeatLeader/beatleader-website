@@ -349,6 +349,14 @@ export default (refreshOnCreate = true) => {
     set(account);
   }
 
+  const removeClan = clan => {
+    if (Array.isArray(account?.player?.clans)) {
+      account.player.clans = account.player.clans.filter(c => c?.id !== clan.id);
+    }
+
+    set(account);
+  }
+
   const setPlayerClan = clan => {
     account.clan = clan;
 
@@ -383,6 +391,7 @@ export default (refreshOnCreate = true) => {
     changePasswordMigrated,
     setPlayerClan,
     addClan,
+    removeClan,
     removeClanRequest,
   }
 

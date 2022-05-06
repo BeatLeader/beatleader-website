@@ -56,6 +56,16 @@ export default () => {
     account.setPlayerClan(null);
   }
 
+  const leave = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!clan?.id) throw new Error('Clan is required');
+
+    await clanApiClient.leave({clanId: clan.id, signal, priority});
+
+    account.removeClan(clan);
+
+    return clan;
+  }
+
   const destroyService = () => {
     service = null;
   }
@@ -67,6 +77,7 @@ export default () => {
     accept,
     reject,
     remove,
+    leave,
     CLANS_PER_PAGE,
     destroyService,
   }

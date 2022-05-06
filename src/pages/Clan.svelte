@@ -20,80 +20,80 @@
     import SteamStats from '../components/Common/SteamStats.svelte'
     import { HSVtoRGB } from '../utils/color';
     import ClanInfo from '../components/Clans/ClanInfo.svelte'
-    
+
     export let clanId;
     export let page = 1;
     export let location;
 
     const FILTERS_DEBOUNCE_MS = 500;
-  
+
     document.body.classList.remove('slim');
     const mainPlayerId = createConfigService().getMainPlayerId();
-  
+
     if (page && !Number.isFinite(page)) page = parseInt(page, 10);
     if (!page || isNaN(page) || page <= 0) page = 1;
-  
+
     const buildFiltersFromLocation = location => {
       const processString = val => val?.toString() ?? '';
       const processFloat = val => {
         val = parseFloat(val);
         if (isNaN(val)) return null;
-  
+
         return val < 0 ? 0 : val;
       }
-  
+
       const params = [
         {key: 'search', default: '', process: processString},,
       ];
-  
+
       const searchParams = new URLSearchParams(location?.search ?? '');
-  
+
       const filters = params.reduce((cum, param) => ({
         ...cum,
         [param.key]: param.process(searchParams.get(param.key)) ?? param.default
       }), {});
-  
+
       return filters;
     }
     const buildSearchFromFilters = filters => {
       if (!filters) return '';
-  
+
       const searchParams = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => searchParams.append(key, value));
-  
+
       return searchParams.toString();
     }
-  
+
     let currentPage = page;
     let currentFilters = buildFiltersFromLocation(location);
     let boxEl = null;
-  
+
     function scrollToTop() {
       if (boxEl) scrollToTargetAdjusted(boxEl, 44)
     }
-  
+
     const clanStore = createClanStore(clanId, page, currentFilters);
-  
+
     function changePageAndFilters(newPage, newLocation) {
       currentFilters = buildFiltersFromLocation(newLocation);
-  
+
       newPage = parseInt(newPage, 10);
       if (isNaN(newPage)) newPage = 1;
-  
+
       currentPage = newPage;
       clanStore.fetch(currentPage, {...currentFilters});
     }
-  
+
     function onPageChanged(event) {
       if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
-  
+
       navigate(`/clan/${clanId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
     }
-  
+
     function navigateToCurrentPageAndFilters() {
       navigate(`/clan/${clanId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
     }
-  
+
     function onSearchChanged(e) {
       currentFilters.search = e.target.value ?? '';
       navigateToCurrentPageAndFilters();
@@ -136,31 +136,34 @@
     }
 
     const account = createAccountStore();
-  
+
     $: isLoading = clanStore.isLoading;
     $: pending = clanStore.pending;
     $: numOfMaps = $clanStore ? $clanStore?.metadata?.total : null;
     $: itemsPerPage = $clanStore ? $clanStore?.metadata?.itemsPerPage : 10;
-  
+
     $: changePageAndFilters(page, location)
     $: scrollToTop($pending);
-    
+
     $: currentClan = $clanStore?.container
     $: clan = $clanStore?.container ?? (clanId == "my" && {name: "New clan", tag: "NTG", icon: "https://cdn.beatleader.xyz/assets/102.png"});
     $: playersPage = ($clanStore?.data ?? [])
   </script>
-  
+
   <svelte:head>
     <title>{clan.name} / {currentPage} - {ssrConfig.name}</title>
   </svelte:head>
-  
+
   <section class="align-content">
     <article class="page-content">
       <ContentBox bind:box={boxEl}>
-        <ClanInfo {clan} />
+        <ClanInfo {clan}
+                  on:removed={() => navigate('/clans?refresh=true')}
+                  on:left={() => clanStore.refresh()}
+        />
 
         {#if $isLoading}<Spinner />{/if}
-  
+
         {#if playersPage?.length}
           <div class="songs grid-transition-helper">
             {#each playersPage as player, idx (player.playerId)}
@@ -201,7 +204,7 @@
             </div>
           {/each}
           </div>
-  
+
           <Pager totalItems={numOfMaps} {itemsPerPage} itemsPerPageValues={null}
                  currentPage={currentPage-1} loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
                  mode={numOfMaps ? 'pages' : 'simple'}
@@ -213,7 +216,7 @@
       </ContentBox>
     </article>
   </section>
-  
+
   <style>
     .align-content {
         display: flex;
@@ -402,7 +405,7 @@
           font-size: 1em;
         }
     }
-  
+
     aside {
         width: 25em;
     }
@@ -439,7 +442,7 @@
         border-bottom: 1px solid var(--faded);
         outline: none;
     }
-  
+
     aside :global(.switch-types) {
         justify-content: flex-start;
     }
@@ -472,7 +475,7 @@
     .song-line .main > *:last-child {
         margin-right: 0;
     }
-  
+
     .songinfo {
         flex-grow: 1;
         text-align: left;
@@ -611,7 +614,7 @@
         top: 30%;
         position: absolute;
     }
-  
+
     .icons :global(> *) {
         margin-bottom: .25em!important;
     }
