@@ -25,25 +25,17 @@
   
     const buildFiltersFromLocation = location => {
       const processString = val => val?.toString() ?? '';
-      const processFloat = val => {
-        val = parseFloat(val);
-        if (isNaN(val)) return null;
-  
-        return val < 0 ? 0 : val;
-      }
-  
+
       const params = [
         {key: 'search', default: '', process: processString},,
       ];
   
       const searchParams = new URLSearchParams(location?.search ?? '');
   
-      const filters = params.reduce((cum, param) => ({
+      return params.reduce((cum, param) => ({
         ...cum,
         [param.key]: param.process(searchParams.get(param.key)) ?? param.default
       }), {});
-  
-      return filters;
     }
     const buildSearchFromFilters = filters => {
       if (!filters) return '';
@@ -90,10 +82,8 @@
     }
     const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
 
-    function onClanClick(event, clan) {
-      const target = event.target;
-
-      if (!clan) return;
+    function onClanClick(clan) {
+      if (!clan?.id) return;
 
       navigate(`/clan/${clan.id}`)
     }
@@ -131,7 +121,7 @@
         </a>
 
         {#each clanRequests as clan, idx (clan.id)}
-              <div class={`song-line row-${idx}`}  in:fly={{delay: idx * 10, x: 100}}>
+              <div class={`clan-line row-${idx}`}  in:fly={{delay: idx * 10, x: 100}}>
                 <div class="main">
                   <ClanRequest {clan} />
                 </div>
@@ -141,8 +131,8 @@
         {#if clansPage?.length}
           <div class="songs grid-transition-helper">
             {#each clansPage as clan, idx (clan.id)}
-              <div class={`song-line row-${idx}`}  in:fly={{delay: idx * 10, x: 100}}>
-                <div class="main" on:click={e => onClanClick(e, clan)}>
+              <div class={`clan-line row-${idx}`}  in:fly={{delay: idx * 10, x: 100}}>
+                <div class="main" on:click={() => onClanClick(clan)}>
                   <Clan {clan} />
                 </div>
               </div>
@@ -237,20 +227,20 @@
           border-bottom: none !important;
       }
   
-      .song-line {
+      .clan-line {
           border-bottom: 1px solid var(--dimmed);
           padding: .5em 0;
       }
 
-      .song-line:hover {
+      .clan-line:hover {
         background-color: var(--faded);
       }
   
-      .song-line .icons.up-to-tablet + .main {
+      .clan-line .icons.up-to-tablet + .main {
           padding-top: 0;
       }
   
-      .song-line .main {
+      .clan-line .main {
           display: flex;
           flex-wrap: nowrap;
           align-items: center;
@@ -258,25 +248,8 @@
           grid-column-gap: .75em;
       }
   
-      .song-line .main > *:last-child {
+      .clan-line .main > *:last-child {
           margin-right: 0;
-      }
-  
-      .songinfo {
-          flex-grow: 1;
-          text-align: left;
-          font-size: .95rem;
-          font-weight: 500;
-      }
-  
-      .songinfo {
-          color: var(--alternate);
-      }
-  
-      .songinfo small {
-          margin-left: .25em;
-          font-size: 0.75em;
-          color: var(--ppColour);
       }
   
       .icons {
