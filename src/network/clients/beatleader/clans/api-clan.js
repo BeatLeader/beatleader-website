@@ -1,8 +1,8 @@
-import queue from '../../../queues/queues'
+import queue, {getResponseBody} from '../../../queues/queues'
 import createClient from '../../generic'
 
 const process = response => {
-  //if (!response?.metadata || !Array.isArray(response?.data)) return null;
+  if (!response?.metadata || !Array.isArray(response?.data)) return null;
 
   return {
     metadata: response.metadata,
@@ -37,12 +37,25 @@ const process = response => {
       }
     })
   };
-
-  return response;
 };
 
 const get = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_API.clan(clanId, page, filters, priority, queueOptions);
 
-const client = createClient(get, process);
+const create = async ({name, tag, color, icon, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanCreate(name, tag, color, icon, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const createClanClient = () => {
+  const client = createClient(get, process);
+
+  return {
+    ...client,
+    create
+  }
+}
+
+const client = createClanClient();
 
 export default client;

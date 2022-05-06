@@ -32,14 +32,6 @@ export default (page = 1, filters = {}, initialState = null, initialStateType = 
     return httpStore.fetch({page, filters}, force, provider);
   }
 
-  const acceptClanRequest = (id) => {
-    fetch(BL_API_URL + "clan/accept?id=" + id, {credentials: 'include', method: 'POST'});
-  }
-
-  const rejectClanRequest = (id, ban = false) => {
-    fetch(BL_API_URL + "clan/accept?id=" + id + "&ban=" + (ban ? "true" : "false"), {credentials: 'include', method: 'POST'});
-  }
-
   const refresh = async () => fetch(currentPage, currentFilters, true);
 
   return {

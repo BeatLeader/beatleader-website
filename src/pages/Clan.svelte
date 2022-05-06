@@ -1,6 +1,6 @@
 <script>
     import {navigate} from "svelte-routing";
-    import {fade, fly} from 'svelte/transition'
+    import {fly} from 'svelte/transition'
     import createClanStore from '../stores/http/http-clan-store'
     import createAccountStore from '../stores/beatleader/account'
     import createConfigService from '../services/config'
@@ -158,7 +158,7 @@
   </svelte:head>
   
   <section class="align-content">
-    <article class="page-content" transition:fade>
+    <article class="page-content">
       <ContentBox bind:box={boxEl}>
         <div class="clanData">
             <div class="imageInput" on:click={() => fileinput.click()}>
@@ -198,7 +198,7 @@
                         
         </div>
 
-        <Button title="Delete failed score upload" label="Found a clan" type="primary"
+        <Button title="Delete failed score upload" label="Create a clan" type="primary"
                             on:click={() => onCreateButtonClick()}/>
 
         {#if $isLoading}<Spinner />{/if}

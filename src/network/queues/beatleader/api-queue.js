@@ -19,6 +19,7 @@ export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/id/${leaderboard
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}'
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
+export const BL_API_CLAN_CREATE_URL = BL_API_URL + 'clan/create?name=${name}&tag=${tag}&color=${color}'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}'
@@ -57,7 +58,10 @@ export default (options = {}) => {
   }
 
   const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}), options, priority);
+
   const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
+
+  const clanCreate = async (name, tag, color, icon, priority = PRIORITY.FG_HIGH, options = {}) => fetchJson(substituteVars(BL_API_CLAN_CREATE_URL, {name, tag, color}, true, true, encodeURIComponent), {body: icon, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
   const processLeaderboardScores = response => {
     return response.map(s => {
@@ -185,6 +189,7 @@ export default (options = {}) => {
     leaderboard,
     clans,
     clan,
+    clanCreate,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,
