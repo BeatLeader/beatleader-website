@@ -88,6 +88,12 @@ export default () => {
     return clan;
   }
 
+  const kick = async (player, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!player?.playerId?.length) throw new Error('PlayerId is required');
+
+    await clanApiClient.kick({playerId: player.playerId, signal, priority});
+  }
+
   const destroyService = () => {
     service = null;
   }
@@ -102,6 +108,7 @@ export default () => {
     remove,
     leave,
     unban,
+    kick,
     CLANS_PER_PAGE,
     destroyService,
   }

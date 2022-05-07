@@ -11,15 +11,20 @@
     import ContentBox from "../components/Common/ContentBox.svelte";
     import {opt} from '../utils/js'
     import {debounce} from '../utils/debounce'
+    import createClanService from '../services/beatleader/clan'
+    import { HSVtoRGB } from '../utils/color';
+    import {PLAYERS_PER_PAGE} from '../utils/beatleader/consts'
+    import {SsrHttpResponseError} from '../network/errors'
     import Value from '../components/Common/Value.svelte'
     import Avatar from '../components/Common/Avatar.svelte'
     import Change from '../components/Common/Change.svelte'
     import Flag from '../components/Common/Flag.svelte'
     import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte'
     import SteamStats from '../components/Common/SteamStats.svelte'
-    import { HSVtoRGB } from '../utils/color';
     import ClanInfo from '../components/Clans/ClanInfo.svelte'
-    import {PLAYERS_PER_PAGE} from '../utils/beatleader/consts'
+    import Button from '../components/Common/Button.svelte'
+    import Dialog from '../components/Common/Dialog.svelte'
+    import Error from '../components/Common/Error.svelte'
 
     export let clanId;
     export let page = 1;
@@ -30,6 +35,7 @@
     document.body.classList.remove('slim');
 
     const mainPlayerId = createConfigService().getMainPlayerId();
+    const clanService = createClanService();
 
     if (page && !Number.isFinite(page)) page = parseInt(page, 10);
     if (!page || isNaN(page) || page <= 0) page = 1;
@@ -109,6 +115,31 @@
 
     const account = createAccountStore();
 
+    const canBeKicked = (clan, player) => clan?.leaderID && clan.leaderID !== player?.playerId;
+
+    let kickedPlayer = null;
+    let kickingError = null;
+    async function onKick(player) {
+      if (!player?.playerId) return;
+
+      try {
+        kickingError = null;
+
+        await clanService.kick(player);
+
+        kickedPlayer = null;
+
+        await clanStore.refresh();
+      } catch (err) {
+        if (err instanceof SsrHttpResponseError) {
+          const htmlError = await err.getResponse().text();
+          kickingError = htmlError?.length ? htmlError : err;
+        } else {
+          kickingError = err;
+        }
+      }
+    }
+
     $: isLoading = clanStore.isLoading;
     $: pending = clanStore.pending;
     $: numOfItems = $clanStore ? $clanStore?.metadata?.total : null;
@@ -118,7 +149,9 @@
     $: scrollToTop($pending);
 
     $: clan = $clanStore?.container ?? null;
-    $: playersPage = ($clanStore?.data ?? [])
+    $: playersPage = ($clanStore?.data ?? []);
+
+    $: isFounder = clan?.id && clan?.leaderID === $account?.player?.id;
   </script>
 
   <svelte:head>
@@ -135,6 +168,21 @@
         />
 
         {#if $isLoading}<Spinner />{/if}
+
+        {#if kickedPlayer}
+          <Dialog type="confirm" title="Are you sure?"
+                  on:confirm={() => onKick(kickedPlayer)}
+                  on:cancel={() => kickedPlayer = null}
+          >
+            <div slot="content">
+              <div>You will kick <strong>{kickedPlayer?.name ?? '<Unknown player>'}</strong> out of the clan...</div>
+
+              {#if kickingError}
+                <Error error={kickingError} />
+              {/if}
+            </div>
+          </Dialog>
+        {/if}
 
         {#if playersPage?.length}
           <div class="players grid-transition-helper">
@@ -172,6 +220,12 @@
                   </div>
                 </div>
               </div>
+
+              {#if isFounder && canBeKicked(clan, player)}
+                <Button iconFa="fas fa-trash-alt" title="Kick a player out of the clan" type="danger" noMargin={true}
+                        on:click={() => kickedPlayer = player}
+                />
+              {/if}
             </div>
           {/each}
           </div>

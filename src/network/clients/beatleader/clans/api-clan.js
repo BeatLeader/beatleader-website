@@ -83,6 +83,12 @@ const unban = async ({clanId, priority = queue.PRIORITY.FG_HIGH, fullResponse = 
   return fullResponse ? response : getResponseBody(response);
 }
 
+const kick = async ({playerId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanKick(playerId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
 const createClanClient = () => {
   const client = createClient(get, process);
 
@@ -94,7 +100,8 @@ const createClanClient = () => {
     reject,
     remove,
     leave,
-    unban
+    unban,
+    kick,
   }
 }
 

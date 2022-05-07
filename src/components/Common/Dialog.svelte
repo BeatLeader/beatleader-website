@@ -34,7 +34,7 @@
           <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
         {:else if type === 'confirm'}
           <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
-          <Button label="Ok" type="primary" on:click={() => dispatch('cancel')}/>
+          <Button label="Cancel" type="default" on:click={() => dispatch('cancel')}/>
         {/if}
       </slot></span>
     </slot>
