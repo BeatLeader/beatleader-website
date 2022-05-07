@@ -203,6 +203,7 @@
   $: isBanned = clan?.id && $account?.bannedClans?.length && !! $account.bannedClans.find(b => b.id === clan.id);
 </script>
 
+{#if enableCreateMode || clan?.id}
 <section class="clan-info" transition:fade>
   <div class="clanData">
     <div class="imageInput" on:click={() => {if (editMode) iconInput.click()}}>
@@ -299,6 +300,7 @@
     </section>
   </div>
 </section>
+{/if}
 
 <style>
     .clan-info {

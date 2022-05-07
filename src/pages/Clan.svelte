@@ -170,7 +170,7 @@
         {#if $isLoading}<Spinner />{/if}
 
         {#if kickedPlayer}
-          <Dialog type="confirm" title="Are you sure?"
+          <Dialog type="confirm" title="Are you sure?" okButton="Yeah!" cancelButton="Hell no!"
                   on:confirm={() => onKick(kickedPlayer)}
                   on:cancel={() => kickedPlayer = null}
           >
