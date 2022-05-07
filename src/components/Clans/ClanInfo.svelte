@@ -391,5 +391,10 @@
             align-items: center;
             gap: 0;
         }
+
+        .clan-stats {
+            display: flex;
+            flex-direction: column;
+        }
     }
 </style>
