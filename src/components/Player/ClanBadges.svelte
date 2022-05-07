@@ -20,7 +20,7 @@
 <style>
     .clan-badges {
         margin-left: .5em;
-        font-size: .75em;
+        font-size: .7rem;
         white-space: nowrap;
     }
 

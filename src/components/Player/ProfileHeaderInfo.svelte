@@ -15,6 +15,7 @@
   import Preview from "../Common/Preview.svelte";
   import CountryPicker from "../Common/CountryPicker.svelte"
   import {addToDate, DAY, formatDateRelative} from '../../utils/date'
+  import ClanBadges from './ClanBadges.svelte'
 
   export let name;
   export let playerInfo;
@@ -131,6 +132,9 @@
             {name}
           {/if}
         {/if}
+
+        <span class="clan-badges"><ClanBadges player={playerInfo} /></span>
+
         {#if canRedact}
           <Button type="text" cls="editNameButton" iconFa={redactingName ? "fas fa-check" : "fas fa-edit"}
                         on:click={() => onRedactButtonClick()} />
@@ -248,6 +252,12 @@
         font-weight: bold;
         margin: -.2em 0em;
         align-items: baseline;
+    }
+
+    .clan-badges {
+        margin-left: .5rem;
+        position: relative;
+        top: -.125em;
     }
 
     .status {
