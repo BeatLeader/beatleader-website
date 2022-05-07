@@ -255,6 +255,10 @@
             <Badge label="Total PP" value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)"/>
           </section>
         {/if}
+
+        <section class="info">
+          <small>If you want to join the clan, contact the leader on Discord.</small>
+        </section>
       {/if}
 
       {#if editMode}
@@ -383,6 +387,10 @@
 
     .imageInput:hover .imageChange {
         opacity: 1;
+    }
+
+    .clan-stats :global(>*) {
+        margin-bottom: 0!important;
     }
 
     @media screen and (max-width: 500px) {
