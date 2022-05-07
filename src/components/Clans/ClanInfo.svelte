@@ -8,6 +8,7 @@
   import {SsrHttpResponseError} from '../../network/errors'
   import createClanService from '../../services/beatleader/clan'
   import Confirmation from '../Common/Confirmation.svelte'
+  import Badge from '../Common/Badge.svelte'
 
   export let clan;
   export let enableCreateMode = false;
@@ -201,6 +202,10 @@
   $: isFounder = clan?.id && clan?.leaderID === $account?.player?.id;
   $: canLeave = clan?.id && clan?.leaderID !== $account?.player?.id && !!$account.player?.clans?.find(c => c.id === clan.id)
   $: isBanned = clan?.id && $account?.bannedClans?.length && !! $account.bannedClans.find(b => b.id === clan.id);
+
+  $: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
+  $: clanAverageRank = clan?.averageRank ?? null;
+  $: clanPp = clan?.pp ?? null;
 </script>
 
 {#if enableCreateMode || clan?.id}
@@ -242,6 +247,14 @@
         <section class="title is-5">
           {playersCount} player(s)
         </section>
+
+        {#if clan}
+          <section class="clan-stats">
+            <Badge label="Average Rank" value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)"/>
+            <Badge label="Average Acc" value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)"/>
+            <Badge label="Total PP" value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)"/>
+          </section>
+        {/if}
       {/if}
 
       {#if editMode}
