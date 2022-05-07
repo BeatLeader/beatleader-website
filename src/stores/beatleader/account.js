@@ -357,6 +357,22 @@ export default (refreshOnCreate = true) => {
     set(account);
   }
 
+  const banClan = clan => {
+    if (Array.isArray(account?.bannedClans)) {
+      account.bannedClans.push(clan);
+    }
+
+    set(account);
+  }
+
+  const unbanClan = clan => {
+    if (Array.isArray(account?.bannedClans)) {
+      account.bannedClans = account.bannedClans.filter(c => c?.id !== clan.id);
+    }
+
+    set(account);
+  }
+
   const setPlayerClan = clan => {
     account.clan = clan;
 
@@ -393,6 +409,8 @@ export default (refreshOnCreate = true) => {
     addClan,
     removeClan,
     removeClanRequest,
+    banClan,
+    unbanClan,
   }
 
   return store;

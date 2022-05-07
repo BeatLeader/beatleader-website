@@ -148,6 +148,17 @@
     dispatch('left', {...clan});
   }
 
+  async function onUnban() {
+    if (!clan?.id) return;
+
+    error = null;
+    pendingText = 'Unbanning a clan...';
+
+    await executeOperation(async () => clanService.unban(clan));
+
+    dispatch('unbanned', {...clan});
+  }
+
   async function onConfirm() {
     if (!confirmedOperation) return;
 
@@ -173,6 +184,7 @@
   $: hasInvitation = clan?.id && $account?.clanRequest?.length && !!$account.clanRequest.find(r => r.id === clan.id);
   $: isFounder = clan?.id && clan?.leaderID === $account?.player?.id;
   $: canLeave = clan?.id && clan?.leaderID !== $account?.player?.id && !!$account.player?.clans?.find(c => c.id === clan.id)
+  $: isBanned = clan?.id && $account?.bannedClans?.length && !! $account.bannedClans.find(b => b.id === clan.id);
 </script>
 
 <section class="clan-info" transition:fade>
@@ -245,6 +257,14 @@
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
             <Button label="Leave a clan" iconFa="fab fa-accessible-icon" type="lessdanger" on:click={() => confirmedOperation = onLeave}/>
+          </Confirmation>
+        </section>
+      {/if}
+
+      {#if isBanned && !noButtons}
+        <section>
+          <Confirmation {pendingText} {confirmedOperation}>
+            <Button label="Unban a clan" iconFa="fas fa-user-friends" type="lessdanger" on:click={() => confirmedOperation = onUnban}/>
           </Confirmation>
         </section>
       {/if}

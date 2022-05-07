@@ -47,6 +47,8 @@ export default () => {
 
     account.removeClanRequest(clan);
 
+    if (ban) account.banClan(clan);
+
     return clan;
   }
 
@@ -66,6 +68,16 @@ export default () => {
     return clan;
   }
 
+  const unban = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!clan?.id) throw new Error('Clan is required');
+
+    await clanApiClient.unban({clanId: clan.id, signal, priority});
+
+    account.unbanClan(clan);
+
+    return clan;
+  }
+
   const destroyService = () => {
     service = null;
   }
@@ -78,6 +90,7 @@ export default () => {
     reject,
     remove,
     leave,
+    unban,
     CLANS_PER_PAGE,
     destroyService,
   }
