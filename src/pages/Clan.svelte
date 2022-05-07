@@ -151,7 +151,8 @@
     $: clan = $clanStore?.container ?? null;
     $: playersPage = ($clanStore?.data ?? []);
 
-    $: isFounder = clan?.id && clan?.leaderID === $account?.player?.id;
+    $: clanLeaderId = clan?.leaderID ?? null;
+    $: isFounder = clan?.id && clanLeaderId === $account?.player?.id;
   </script>
 
   <svelte:head>
@@ -185,10 +186,10 @@
         {/if}
 
         {#if playersPage?.length}
-          <div class="players grid-transition-helper" class:is-founder={isFounder}>
+          <div class="players grid-transition-helper" class:with-icons={isFounder}>
             {#each playersPage as player, idx (player.playerId)}
             <div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
-              <div class={`player-card ${mainPlayerId === player.playerId ? "current" : ""}`} on:click|stopPropagation={() => navigate(`/u/${player.playerId}`)}>
+              <div class={`player-card ${mainPlayerId === player.playerId ? "current" : ""}`} on:click|stopPropagation={() => navigate(`/u/${player.playerId}`)} class:founder={clanLeaderId === player.playerId}>
                 <div class="player-rank">
                   <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click|stopPropagation={() => onGlobalClick(player)}>
                     #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
@@ -202,7 +203,7 @@
                   <Avatar {player}/>
                 </div>
                 <div class="player-name-and-rank">
-                  <PlayerNameWithFlag {player} hideFlag={true}/>
+                  <PlayerNameWithFlag {player} hideFlag={true} withCrown={clanLeaderId === player.playerId}/>
                   <span class="change">
                   {#if opt(player, 'others.difference') > 900000}
                     <span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">resurrected</span>
@@ -267,7 +268,12 @@
         justify-items: center;
     }
 
-    .players:not(.is-founder) .ranking-grid-row {
+    .players {
+        margin-top: 1rem;
+        grid-gap: .5em;
+    }
+
+    .players:not(.with-icons) .ranking-grid-row {
         grid-template-columns: 1fr;
     }
 
@@ -283,6 +289,11 @@
         font-size: 1.12em;
         align-items: center;
         width: 100%;
+        margin-bottom: .25rem;
+    }
+
+    .player-card.founder {
+        border-color: purple;
     }
 
     .current {

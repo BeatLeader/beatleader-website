@@ -6,6 +6,7 @@
   export let player;
   export let type = 'beatleader/date'
   export let hideFlag = false;
+  export let withCrown = false;
 
   const dispatch = createEventDispatcher();
 
@@ -18,7 +19,7 @@
   {#if !hideFlag}
     <Flag {country} on:flag-click />
   {/if}
-  <span>{name}</span>
+  <span class="name">{#if withCrown}<span class="crown">👑</span>{/if}{name}</span>
 </a>
 
 <style>
@@ -33,5 +34,10 @@
 
     .player-name :global(> img) {
         margin-right: .125rem;
+    }
+
+    .crown {
+        position: relative;
+        top: -.125em;
     }
 </style>
