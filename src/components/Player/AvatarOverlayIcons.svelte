@@ -5,17 +5,22 @@
   import createAccountStore from '../../stores/beatleader/account'
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {opt} from '../../utils/js'
-  import Button from '../Common/Button.svelte'
+  import {SsrHttpResponseError} from '../../network/errors'
   import {createEventDispatcher, onMount} from 'svelte'
+  import createClanService from '../../services/beatleader/clan'
+  import Button from '../Common/Button.svelte'
   import TwitchLinkModal from './TwitchLinkModal.svelte'
+  import Dialog from '../Common/Dialog.svelte'
+  import Error from '../Common/Error.svelte'
 
   export let playerId;
 
   const dispatch = createEventDispatcher();
 
   let playersStore = createPlayersStore();
-  const twitchService = createTwitchService();
   const account = createAccountStore();
+  const twitchService = createTwitchService();
+  const clanService = createClanService();
 
   let twitchToken = null;
   let playerTwitchProfile = null;
@@ -98,6 +103,46 @@
       };
   }
 
+  let invitationConfirmationType = null;
+  let invitingError = null;
+  async function onInvite(playerId) {
+    if (!playerId?.length) return;
+
+    try {
+      invitingError = null;
+
+      await clanService.invite(playerId);
+
+      invitationConfirmationType = null;
+    } catch (err) {
+      if (err instanceof SsrHttpResponseError) {
+        const htmlError = await err.getResponse().text();
+        invitingError = htmlError?.length ? htmlError : err;
+      } else {
+        invitingError = err;
+      }
+    }
+  }
+
+  async function onCancelInvite(playerId) {
+    if (!playerId?.length) return;
+
+    try {
+      invitingError = null;
+
+      await clanService.cancelInvite(playerId);
+
+      invitationConfirmationType = null;
+    } catch (err) {
+      if (err instanceof SsrHttpResponseError) {
+        const htmlError = await err.getResponse().text();
+        invitingError = htmlError?.length ? htmlError : err;
+      } else {
+        invitingError = err;
+      }
+    }
+  }
+
   $: onPlayerChanged(playerId);
   $: isProfileLinkedToTwitch = !!playerTwitchProfile?.login ?? false;
   $: mainIsSet = !!$configStore?.users?.main ?? false;
@@ -106,9 +151,32 @@
   $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
   $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin");
   $: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
+
+  $: isUserFounderOfTheClan = !!$account?.clan;
+  $: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
+  $: hasPlayerPendingInvitation = isUserFounderOfTheClan && !isPlayerClanMember && !!$account?.clan?.pendingInvites?.find(pId => pId === playerId)
 </script>
 
 {#if playerId}
+  {#if invitationConfirmationType}
+    <Dialog type="confirm" title="Are you sure?" okButton="Yeah!" cancelButton="Hell no!"
+            on:confirm={() => invitationConfirmationType === 'invite' ? onInvite(playerId) : onCancelInvite(playerId)}
+            on:cancel={() => invitationConfirmationType = false}
+    >
+      <div slot="content">
+        {#if invitationConfirmationType === 'invite'}
+          <div>An invitation will be sent to the player to join the clan.</div>
+        {:else}
+          <div>The player's invitation to the clan will be cancelled.</div>
+        {/if}
+
+        {#if invitingError}
+          <Error error={invitingError} />
+        {/if}
+      </div>
+    </Dialog>
+  {/if}
+
   <nav class:main={isMain}>
     {#if (!loggedInPlayer || !mainIsSet) && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !mainIsSet))}
       <Button title={isMain ? "Remove your profile" : "Set as your profile"} iconFa="fas fa-home"
@@ -128,6 +196,18 @@
       <Button type="twitch" iconFa="fab fa-twitch"
               title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
               on:click={() => showLinkingModal = true}
+      />
+    {/if}
+
+    {#if !isPlayerClanMember && !hasPlayerPendingInvitation}
+      <Button type="primary" iconFa="fas fa-users"
+              title="Invite player to the clan"
+              on:click={() => invitationConfirmationType = 'invite'}
+      />
+    {:else if hasPlayerPendingInvitation}
+      <Button type="danger" iconFa="fas fa-users-slash"
+              title="Cancel invitation to the clan"
+              on:click={() => invitationConfirmationType = 'cancel'}
       />
     {/if}
 
@@ -186,6 +266,14 @@
 
     nav :global(button):nth-child(3):hover {
         transform: translate3d(-47px, -7px, 0) scale(1.2);
+    }
+
+    nav :global(button):nth-child(4) {
+        transform: translate3d(50px, -45px, 0);
+    }
+
+    nav :global(button):nth-child(4):hover {
+        transform: translate3d(50px, -45px, 0) scale(1.2);
     }
 
     .imageInput {

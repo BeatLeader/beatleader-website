@@ -89,6 +89,18 @@ const kick = async ({playerId, priority = queue.PRIORITY.FG_HIGH, fullResponse =
   return fullResponse ? response : getResponseBody(response);
 }
 
+const invite = async ({playerId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanInvite(playerId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const cancelInvite = async ({playerId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanCancelInvite(playerId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
 const createClanClient = () => {
   const client = createClient(get, process);
 
@@ -102,6 +114,8 @@ const createClanClient = () => {
     leave,
     unban,
     kick,
+    invite,
+    cancelInvite,
   }
 }
 

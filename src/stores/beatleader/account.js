@@ -373,6 +373,22 @@ export default (refreshOnCreate = true) => {
     set(account);
   }
 
+  const addClanInvitation = playerId => {
+    if (Array.isArray(account?.clan?.pendingInvites)) {
+      account.clan.pendingInvites.push(playerId);
+    }
+
+    set(account);
+  }
+
+  const removeClanInvitation = playerId => {
+    if (Array.isArray(account?.clan?.pendingInvites)) {
+      account.clan.pendingInvites = account.clan.pendingInvites.filter(pId => pId !== playerId);
+    }
+
+    set(account);
+  }
+
   const setPlayerClan = clan => {
     account.clan = clan;
 
@@ -411,6 +427,8 @@ export default (refreshOnCreate = true) => {
     removeClanRequest,
     banClan,
     unbanClan,
+    addClanInvitation,
+    removeClanInvitation,
   }
 
   return store;

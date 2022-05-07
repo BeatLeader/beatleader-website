@@ -9,6 +9,8 @@
   export let message
   export let closeable = true;
   export let type = 'alert';
+  export let okButton = "Ok";
+  export let cancelButton = "Cancel";
 </script>
 
 <Modal showCloseButton={false} {closeable} on:close={() => dispatch(type === 'alert' ? 'confirm' : 'cancel')}
@@ -31,10 +33,10 @@
 
       <span class="right"><slot name="footer-right">
         {#if type === 'alert'}
-          <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
+          <Button label={okButton} type="primary" on:click={() => dispatch('confirm')}/>
         {:else if type === 'confirm'}
-          <Button label="Ok" type="primary" on:click={() => dispatch('confirm')}/>
-          <Button label="Cancel" type="default" on:click={() => dispatch('cancel')}/>
+          <Button label={okButton} type="primary" on:click={() => dispatch('confirm')}/>
+          <Button label={cancelButton} type="default" on:click={() => dispatch('cancel')}/>
         {/if}
       </slot></span>
     </slot>

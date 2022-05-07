@@ -94,6 +94,22 @@ export default () => {
     await clanApiClient.kick({playerId: player.playerId, signal, priority});
   }
 
+  const invite = async (playerId, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!playerId?.length) throw new Error('PlayerId is required');
+
+    await clanApiClient.invite({playerId, signal, priority});
+
+    account.addClanInvitation(playerId);
+  }
+
+  const cancelInvite = async (playerId, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!playerId?.length) throw new Error('PlayerId is required');
+
+    await clanApiClient.cancelInvite({playerId, signal, priority});
+
+    account.removeClanInvitation(playerId);
+  }
+
   const destroyService = () => {
     service = null;
   }
@@ -109,6 +125,8 @@ export default () => {
     leave,
     unban,
     kick,
+    invite,
+    cancelInvite,
     CLANS_PER_PAGE,
     destroyService,
   }
