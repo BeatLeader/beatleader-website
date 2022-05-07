@@ -28,6 +28,16 @@ export default () => {
     return createdClan;
   }
 
+  const update = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+    if (!clan?.name || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');
+
+    await clanApiClient.update({...clan, signal, priority});
+
+    account.setPlayerClan(clan);
+
+    return clan;
+  }
+
   const accept = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
     if (!clan?.id) throw new Error('Clan is required');
 
@@ -86,6 +96,7 @@ export default () => {
     fetchClansPage,
     fetchClanPage,
     create,
+    update,
     accept,
     reject,
     remove,

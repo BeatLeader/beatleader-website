@@ -27,6 +27,12 @@
   let pendingText = null;
   let error = null;
 
+  let name = '';
+  let tag = '';
+  let color = '';
+  let iconUrl = null;
+  let iconData = null;
+
   const changeImage = (e) => {
     let image = e.target.files[0];
 
@@ -85,11 +91,17 @@
     pendingText = 'Saving a clan...';
 
     await executeOperation(async () => {
-      const createdClan = await clanService.create({...clan, name, tag, color, icon: iconData});
+      let updatedClan = null;
+
+      const clanData = {...clan, name, tag, color, icon: iconData ?? iconUrl}
+      if (clan?.id)
+        updatedClan = await clanService.update(clanData);
+      else
+        updatedClan = await clanService.create(clanData);
 
       editMode = false;
 
-      dispatch('added', {...createdClan});
+      dispatch('added', {...updatedClan});
     });
   }
 
@@ -173,11 +185,15 @@
     error = null;
   }
 
-  $: name = clan?.name ?? '';
-  $: tag = clan?.tag ?? '';
-  $: color = clan?.color ?? '#ff0000';
-  $: iconUrl = clan?.icon ?? 'https://cdn.beatleader.xyz/assets/NTG.png';
-  $: iconData = clan?.icon ?? null;
+  function updateFields(clan) {
+    name = clan?.name ?? '';
+    tag = clan?.tag ?? '';
+    color = clan?.color ?? '#ff0000';
+    iconUrl = clan?.icon ?? 'https://cdn.beatleader.xyz/assets/NTG.png';
+    iconData = clan?.icon ?? null;
+  }
+
+  $: updateFields(clan)
   $: iconInput = null;
   $: playersCount = clan?.playersCount ?? 0;
 
@@ -210,7 +226,11 @@
 
       <section class="title is-6" style="--clan-color: {color}">
         {#if editMode}
-          <input type="text" placeholder="Clan tag" bind:value={tag} disabled={!!pendingText}/>
+          <input type="text" placeholder="Clan tag; 2-4 characters, cannot be changed later" bind:value={tag}
+                 disabled={!!pendingText || clan?.id}
+                 minlength="2" maxlength="4"
+                 style={!!pendingText || clan?.id ? 'cursor: not-allowed; color: var(--faded)' : 'cursor: text'}
+          />
           <input type="color" bind:value={color} disabled={!!pendingText}/>
         {:else}
           <span class="clanTag">[{tag}]</span>
@@ -227,7 +247,7 @@
         <section>
           {#if !pendingText}
             <Button label="Save a clan" type="primary" on:click={onSave}/>
-            <Button label="Cancel" on:click={() => dispatch('cancel')}/>
+            <Button label="Cancel" on:click={() => {editMode=false; confirmedOperation = null; dispatch('cancel')}}/>
           {:else}
             <Spinner/>
             {pendingText}
@@ -239,16 +259,19 @@
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
             <Button label="Accept invitation" iconFa="fas fa-check" type="primary" on:click={onAccept}/>
-            <Button label="Reject invitation" iconFa="fas fa-trash-alt" type="lessdanger" on:click={() => {confirmedOperation = onReject}}/>
+            <Button label="Reject invitation" iconFa="fas fa-trash-alt" type="lessdanger"
+                    on:click={() => {confirmedOperation = onReject}}/>
             <Button label="Ban clan" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
           </Confirmation>
         </section>
       {/if}
 
-      {#if isFounder && !noButtons}
+      {#if isFounder && !noButtons && !editMode}
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
-            <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger" on:click={() => confirmedOperation = onRemove}/>
+            <Button label="Edit clan" iconFa="fas fa-edit" type="primary" on:click={() => editMode = true}/>
+            <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger"
+                    on:click={() => confirmedOperation = onRemove}/>
           </Confirmation>
         </section>
       {/if}
@@ -256,7 +279,8 @@
       {#if canLeave && !noButtons}
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
-            <Button label="Leave a clan" iconFa="fab fa-accessible-icon" type="lessdanger" on:click={() => confirmedOperation = onLeave}/>
+            <Button label="Leave a clan" iconFa="fab fa-accessible-icon" type="lessdanger"
+                    on:click={() => confirmedOperation = onLeave}/>
           </Confirmation>
         </section>
       {/if}
