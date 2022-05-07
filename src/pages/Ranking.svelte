@@ -22,6 +22,8 @@
   import AddFriendButton from "../components/Player/AddFriendButton.svelte";
   import stringify from 'json-stable-stringify'
   import {createBuildFiltersFromLocation, buildSearchFromFilters, processFloatFilter, processStringFilter,} from '../utils/filters'
+  import Badge from '../components/Common/Badge.svelte'
+  import ClanBadges from '../components/Player/ClanBadges.svelte'
 
   export let type = 'global';
   export let page = 1;
@@ -182,12 +184,13 @@
                 <div class="player-name-and-rank">
                   <PlayerNameWithFlag {player} hideFlag={true}/>
                   <span class="change">
-                  {#if opt(player, 'others.difference') > 900000}
-                    <span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">resurrected</span>
-                  {:else}
-                    <Change value={opt(player, 'others.difference')} digits={0}/>
-                  {/if}
-                </span>
+                    {#if opt(player, 'others.difference') > 900000}
+                      <span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">resurrected</span>
+                    {:else}
+                      <Change value={opt(player, 'others.difference')} digits={0}/>
+                    {/if}
+                  </span>
+                  <ClanBadges {player} />
                 </div>
                 <div class="steam-and-pp">
                   {#if player.playerId > 70000000000000000}

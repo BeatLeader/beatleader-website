@@ -109,6 +109,8 @@ export default (options = {}) => {
       ret.player.playerId = player.id;
       ret.player.playerId = ret.player.playerId ? ret.player.playerId.trim() : null;
 
+      ret.player.clans = player?.clans ?? null;
+
       ret.score.score = s.modifiedScore;
 
       ret.score.timeSetString = formatDateRelative(dateFromUnix(s.timeset));

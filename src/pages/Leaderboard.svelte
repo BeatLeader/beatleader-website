@@ -29,6 +29,7 @@
   import {isValidDate, dateFromUnix} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
   import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
+  import ClanBadges from '../components/Player/ClanBadges.svelte'
 
   export let leaderboardId;
   export let type = 'global';
@@ -385,6 +386,8 @@
                                           type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
                                           on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
                       />
+
+                      <ClanBadges player={score.player} />
                     </div>
                     <div class="timeset">
                         <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
@@ -660,6 +663,10 @@
         padding: .125em .25em !important;
         width: 100%;
         height: 100%;
+    }
+
+    .player-score :global(.clan-badges .badge) {
+        margin-right: .25em!important;
     }
 
     .player-score :global(.badge span) {
