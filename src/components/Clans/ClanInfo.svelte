@@ -371,4 +371,12 @@
     .imageInput:hover .imageChange {
         opacity: 1;
     }
+
+    @media screen and (max-width: 500px) {
+        .clanData {
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+        }
+    }
 </style>

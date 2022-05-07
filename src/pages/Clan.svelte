@@ -185,7 +185,7 @@
         {/if}
 
         {#if playersPage?.length}
-          <div class="players grid-transition-helper">
+          <div class="players grid-transition-helper" class:is-founder={isFounder}>
             {#each playersPage as player, idx (player.playerId)}
             <div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
               <div class={`player-card ${mainPlayerId === player.playerId ? "current" : ""}`} on:click|stopPropagation={() => navigate(`/u/${player.playerId}`)}>
@@ -265,6 +265,10 @@
         grid-gap: .4em;
         align-items: center;
         justify-items: center;
+    }
+
+    .players:not(.is-founder) .ranking-grid-row {
+        grid-template-columns: 1fr;
     }
 
     .player-card {
