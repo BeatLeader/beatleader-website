@@ -25,7 +25,7 @@ export default (refreshOnCreate = true) => {
     fetch(BL_API_URL + "user", {credentials: 'include'})
     .then(response => response.json())
     .then(async data => {
-      account = data;
+      account = {...data, id: data?.player?.id ?? null};
       set(account);
 
       if (!playerService) {
@@ -33,7 +33,7 @@ export default (refreshOnCreate = true) => {
       }
 
       const friends = await playerService.getFriends();
-      if (data.friends.length == 0) {
+      if (!data?.friends?.length) {
         friends.forEach(toAdd => {
           fetch(BL_API_URL + "user/friend?playerId=" + toAdd, {credentials: 'include', method: 'POST'});
         });
