@@ -214,6 +214,7 @@
     .avatar-cell {
         position: relative;
         width: 150px;
+        min-width: 150px;
         height: 150px;
     }
 
