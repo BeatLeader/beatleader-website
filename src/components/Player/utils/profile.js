@@ -17,12 +17,13 @@ function updateScoresStats(playerData) {
       {key: "totalScore", label: 'Total score', bgColor: 'var(--selected)'},
       {key: "rankedPlayCount", label: 'Ranked play count', bgColor: 'var(--ppColour)'},
       {key: "totalRankedScore", label: 'Total ranked score', bgColor: 'var(--ppColour)'},
-      {key: "topPp", label: 'Top PP', bgColor: 'var(--ppColour)'},
+      {key: "topPp", label: 'Top PP', bgColor: 'var(--ppColour)', digits: 2, suffix: "pp"},
       {key: "replaysWatched", label: 'Replays watched', bgColor: 'var(--ppColour)'},
-      {key: "averageAccuracy", label: 'Average', title: 'Average accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
-      {key: "averageRankedAccuracy", label: 'Average ranked', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
-      {key: "medianAccuracy", label: 'Median', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
-      {key: "medianRankedAccuracy", label: 'Median ranked', title: 'Median ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
+      {key: "topAccuracy", label: 'Best acc', title: 'Best accuracy', digits: 2, suffix: '%', bgColor: 'rgba(60,179,113,.75)'},
+      {key: "averageAccuracy", label: 'Average acc', title: 'Average accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
+      {key: "averageRankedAccuracy", label: 'Average ranked acc', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
+      {key: "medianAccuracy", label: 'Median acc', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
+      {key: "medianRankedAccuracy", label: 'Median ranked acc', title: 'Median ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
     ]
     : [];
 

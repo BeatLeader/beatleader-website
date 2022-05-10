@@ -9,7 +9,7 @@ const process = response => {
   let externalProfileCorsUrl = externalProfileUrl ? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/') : null
 
   if (scoreStats) {
-    ['averageAccuracy', 'averageRankedAccuracy', 'medianAccuracy', 'medianRankedAccuracy'].forEach(k => {
+    ['averageAccuracy', 'averageRankedAccuracy', 'medianAccuracy', 'medianRankedAccuracy', 'topAccuracy'].forEach(k => {
       if (scoreStats[k] && Number.isFinite(scoreStats[k])) scoreStats[k] *= 100;
     })
   }
