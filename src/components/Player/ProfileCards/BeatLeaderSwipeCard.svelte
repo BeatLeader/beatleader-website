@@ -104,4 +104,10 @@
         background: var(--graph-gradient);
         overflow: hidden;
     }
+
+    @media screen and (max-width: 500px) {
+        .chart {
+            min-width: auto;
+        }
+    }
 </style>
