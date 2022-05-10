@@ -233,6 +233,7 @@
           backgroundColor: rankedActivityColor,
           round: 0,
           type: 'bar',
+          maxBarThickness: 25,
           stack: 'daily-scores',
           order: 0,
         });
@@ -247,6 +248,7 @@
           backgroundColor: activityColor,
           round: 0,
           type: 'bar',
+          maxBarThickness: 25,
           stack: 'daily-scores',
           order: 1,
         });
