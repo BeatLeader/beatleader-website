@@ -21,8 +21,8 @@ function updateScoresStats(playerData) {
       {key: "replaysWatched", label: 'Replays watched', bgColor: 'var(--ppColour)'},
       {key: "topAccuracy", label: 'Best acc', title: 'Best accuracy', digits: 2, suffix: '%', bgColor: 'rgba(60,179,113,.75)'},
       {key: "averageAccuracy", label: 'Average acc', title: 'Average accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
-      {key: "averageRankedAccuracy", label: 'Average ranked acc', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
-      {key: "medianAccuracy", label: 'Median acc', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
+      {key: "medianAccuracy", label: 'Median acc', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
+      {key: "averageRankedAccuracy", label: 'Average ranked acc', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
       {key: "medianRankedAccuracy", label: 'Median ranked acc', title: 'Median ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
     ]
     : [];
