@@ -155,6 +155,7 @@
           yAxisID: 'y',
           label: name,
           data: fieldData,
+          round: 2,
           fill: false,
           borderWidth: 2,
           pointRadius: 1,
