@@ -69,10 +69,10 @@ const process = response => {
     if (!statsHistory[key]) return;
 
     statsHistory[`${key}Daily`] = statsHistory[key].reduce((cum, item) => {
-      const prev = cum.length ? statsHistory[key][cum.length - 1] : null;
+      const prev = cum.length ? statsHistory[key][cum.length - 1] : 0;
 
-      let value = item ? item - (prev ?? 0) : null
-      if (value && value < 0) value = null;
+      let value = item ? item - (prev ?? 0) : 0
+      if (value && value < 0) value = 0;
 
       cum.push(value);
 
@@ -85,7 +85,7 @@ const process = response => {
       if (value === null) return null;
 
       let unranked = value - (statsHistory.rankedPlayCountDaily[idx] ?? 0);
-      if(unranked < 0) unranked = null;
+      if(unranked < 0) unranked = 0;
 
       return unranked;
     });
