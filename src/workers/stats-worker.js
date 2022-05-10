@@ -55,7 +55,7 @@ const getRankedScores = async (playerId, withStars = false) => {
     ? (await Promise.all(scores
         .filter(score => score?.score?.pp)
         .map(async score => {
-          score = produce(score, draft => beatmapsEnhancer(draft, true))
+          score = await produce(score, draft => beatmapsEnhancer(draft, true))
 
           return {
             ...score,

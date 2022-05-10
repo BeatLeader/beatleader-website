@@ -5,7 +5,6 @@
   import createAccountStore from '../../stores/beatleader/account'
   import {configStore} from '../../stores/config'
   import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts'
-  import {convertArrayToObjectByKey, opt} from '../../utils/js'
 
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
@@ -14,12 +13,11 @@
   import Button from '../Common/Button.svelte'
   import Preview from "../Common/Preview.svelte";
   import CountryPicker from "../Common/CountryPicker.svelte"
-  import {addToDate, DAY, formatDateRelative} from '../../utils/date'
 
   export let name;
   export let playerInfo;
   export let playerId;
-  export let prevInfo;
+  export let statsHistory;
   export let error = null;
 
   const dispatch = createEventDispatcher();
@@ -27,10 +25,10 @@
   const account = createAccountStore();
 
   function getCountryRankingUrl(countryObj) {
-    const rank = opt(countryObj, 'rankValue', opt(countryObj, 'rank', null));
+    const rank = countryObj?.rankValue ?? countryObj?.rank ?? null;
     if (!rank) return null;
 
-    const country = opt(countryObj, 'country', null);
+    const country = countryObj?.country ?? null;
     if (!country) return null;
 
     return `/ranking/${country.toLowerCase()}/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`;
@@ -48,12 +46,11 @@
     navigate(`/ranking/global/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`)
   }
 
-  function getPlayerCountries(playerInfo, prevInfo) {
+  function getPlayerCountries(playerInfo, statsHistory) {
     if (!playerInfo?.countries) return [];
 
-    const prevCountries = convertArrayToObjectByKey(prevInfo?.countries ?? [], 'country');
     return playerInfo.countries
-      .map(c => ({...c, prevRank: prevCountries?.[c.country]?.rank ?? null}));
+      .map(c => ({...c, prevRank: statsHistory?.countryRank?.length > 1 ? statsHistory.countryRank[statsHistory.countryRank.length - 2] : null}));
   }
 
   const {open} = getContext('simple-modal');
@@ -105,10 +102,9 @@
 
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
   $: playerRole = playerInfo?.role ?? null;
-  $: countries = getPlayerCountries(playerInfo, prevInfo)
+  $: countries = getPlayerCountries(playerInfo, statsHistory)
   $: loggedInPlayer = $account.id;
-  $: isMain = configStore && opt($configStore, 'users.main') === playerId;
-  $: gainDate = Number.isFinite(prevInfo?.gainDaysAgo) ? formatDateRelative(addToDate(-prevInfo.gainDaysAgo * DAY)) : null
+  $: isMain = configStore && $configStore?.users?.main === playerId;
   $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
   $: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin
 </script>
@@ -150,9 +146,9 @@
 
         <i class="fas fa-globe-americas"></i>
 
-        <Value value={opt(playerInfo, 'rank')}
-               prevValue={opt(prevInfo, 'rank')}
-               prevLabel={prevInfo?.rank && gainDate ? gainDate : null}
+        <Value value={playerInfo?.rank}
+               prevValue={statsHistory?.rank?.length > 1 ? statsHistory.rank[statsHistory.rank.length - 2] : null}
+               prevLabel="Yesterday"
                prefix="#"
                digits={0}
                zero="#0"
@@ -175,12 +171,12 @@
             <img
                 src={`${BL_CDN}/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
                 class="countryIcon"
-                alt={opt(country, 'country')}
+                alt={country?.country}
             />
 
             <Value value={country.rank}
                   prevValue={country.prevRank}
-                  prevLabel={country?.prevRank && gainDate ? gainDate : null}
+                  prevLabel="Yesterday"
                   prefix="#"
                   digits={0}
                   zero="#0"
@@ -196,14 +192,15 @@
       {/if}
 
       <span class="pp">
-        <Value value={opt(playerInfo, 'pp')} suffix="pp"
-               prevValue={opt(prevInfo, 'pp')} prevLabel={prevInfo?.pp && gainDate ? gainDate : null}
+        <Value value={playerInfo?.pp} suffix="pp"
+               prevValue={statsHistory?.pp?.length > 1 ? statsHistory.pp[statsHistory.pp.length - 2] : null}
+               prevLabel="Yesterday"
                inline={true} zero="0pp"
         />
       </span>
 
       {#if isAdmin && loggedInPlayer != playerId}
-        {#if opt(playerInfo, 'banned')}
+        {#if playerInfo?.banned}
           <Button cls="banButton" title="Unban player" label="Unban player" type="danger"
                           on:click={async () => await account.unbanPlayer(playerId)}/>
         {:else}
