@@ -44,11 +44,13 @@
     const ppColor = "#007100";
     const rankedPlayCountColor = "#3e3e3e";
     const totalPlayCountColor = "#666";
+    const activityColor = "#333";
+    const rankedActivityColor = "#eb008c";
 
     const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
     const dayTimestamps = rankHistory.map((_, idx) => toBlMidnight(dtBlToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
 
-    const data = rankHistory.map((h, idx) => ({x: dayTimestamps[idx], y :h === MAGIC_INACTIVITY_RANK ? null : h}));
+    const data = rankHistory.map((h, idx) => ({x: dayTimestamps[idx], y: h === MAGIC_INACTIVITY_RANK ? null : h}));
 
     const datasets = [
       {
@@ -200,6 +202,55 @@
           },
         });
       });
+
+    if (statsHistory?.rankedPlayCountDaily?.length || statsHistory?.unrankedPlayCountDaily?.length) {
+      lastYIdx++;
+      const scoresAxisKey = `y${lastYIdx}`
+
+      yAxes[scoresAxisKey] = {
+        display: false,
+        position: 'right',
+        title: {
+          display: $pageContainer.name !== 'phone',
+          text: 'Daily scores',
+        },
+        ticks: {
+          callback: val => val,
+          precision: 0,
+        },
+        grid: {
+          drawOnChartArea: false,
+        },
+      };
+
+      if (statsHistory?.rankedPlayCountDaily?.length)
+        datasets.push({
+          yAxisID: scoresAxisKey,
+          label: 'Ranked scores',
+          data: dayTimestamps.map((x, idx) => ({x, y: statsHistory.rankedPlayCountDaily?.[idx] ?? null})),
+          fill: false,
+          borderColor: rankedActivityColor,
+          backgroundColor: rankedActivityColor,
+          round: 0,
+          type: 'bar',
+          stack: 'daily-scores',
+          order: 0,
+        });
+
+      if (statsHistory?.unrankedPlayCountDaily?.length)
+        datasets.push({
+          yAxisID: scoresAxisKey,
+          label: 'Unranked scores',
+          data: dayTimestamps.map((x, idx) => ({x, y: statsHistory.unrankedPlayCountDaily?.[idx] ?? null})),
+          fill: false,
+          borderColor: activityColor,
+          backgroundColor: activityColor,
+          round: 0,
+          type: 'bar',
+          stack: 'daily-scores',
+          order: 1,
+        });
+    }
 
     if (!chart)
     {
