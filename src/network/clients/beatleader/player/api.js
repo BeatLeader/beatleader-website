@@ -66,7 +66,7 @@ const process = response => {
   }
 
   ['totalPlayCount', 'rankedPlayCount'].forEach(key => {
-    if (!statsHistory[key]) return;
+    if (!statsHistory || !statsHistory[key]) return;
 
     statsHistory[`${key}Daily`] = statsHistory[key].reduce((cum, item) => {
       const prev = cum.length ? statsHistory[key][cum.length - 1] : 0;
@@ -80,7 +80,7 @@ const process = response => {
     }, [])
   });
 
-  if (statsHistory.totalPlayCountDaily && statsHistory.rankedPlayCountDaily) {
+  if (statsHistory && statsHistory.totalPlayCountDaily && statsHistory.rankedPlayCountDaily) {
     statsHistory.unrankedPlayCountDaily = statsHistory.totalPlayCountDaily.map((value, idx) => {
       if (value === null) return null;
 

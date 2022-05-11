@@ -307,7 +307,7 @@ export default () => {
       return null;
     }
 
-    const numOfScores = opt(player, 'scoreStats.totalPlayCount', null);
+    const numOfScores = player?.scoreStats?.totalPlayCount;
     const numOfPages = numOfScores ? Math.ceil(numOfScores / PLAYER_SCORES_PER_PAGE) : null;
 
     const newLastUpdated = new Date();
