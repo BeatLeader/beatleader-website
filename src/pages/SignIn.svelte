@@ -22,6 +22,7 @@
     $: loggedInPlayer = opt($account, 'id');
     $: error = opt($account, 'error');
     $: message = opt($account, 'message');
+    $: patreoned = opt($account, 'patreoned');
     $: performAction();
 </script>
 
@@ -108,6 +109,28 @@
         </div>
         
         <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)}/>
+    {/if}
+{:else if action == "linkPatreon"}
+
+<div>
+Link your account to receive patreon features for your tier.<br><br>
+
+If you not yet a patreon, you can become one right now at <a class="inlineLink" href="https://www.patreon.com/beatleader">patreon.com/beatleader</a>
+</div>
+
+<form action={BL_API_URL + "signin"} method="post">
+    <input type="hidden" name="Provider" value="Patreon" />
+    <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/patreon"} />
+
+    <Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit"/>
+</form>
+{:else if action == "patreon"}
+    {#if patreoned}
+    Yay!<br>
+    Thank you for supporting BeatLeader!
+    {:else}
+    Something went wrong while linking your account.<br>
+    If you used this account before, try unlink it first.
     {/if}
 {/if}
 

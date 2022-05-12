@@ -32,6 +32,7 @@ export default (refreshOnCreate = true) => {
       account.clanRequests = data.clanRequests;
       account.friends = data.friends;
       account.migrated = data.migrated;
+      account.patreoned = data.patreoned;
       set(account);
 
       if (!playerService) {

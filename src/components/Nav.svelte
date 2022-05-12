@@ -31,6 +31,8 @@
       navigate(`/signin`)
     } else if (event.srcElement.innerText == "Change password") {
       navigate(`/signin/changePassword`)
+    } else if (event.srcElement.innerText == "Link patreon") {
+      navigate(`/signin/linkPatreon`)
     } else if (event.srcElement.innerText == "Log Out") {
       account.logOut();
     } else if (playerId) {
@@ -101,6 +103,9 @@
       }
       if (loggedInUser.player.id < 70000000000000000 || loggedInUser.migrated) {
         signupOptions.push("Change password");
+      }
+      if (!loggedInUser.patreoned) {
+        signupOptions.push("Link patreon");
       }
       signupOptions.push("Log Out");
     } else {
