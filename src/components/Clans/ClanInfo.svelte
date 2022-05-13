@@ -13,6 +13,7 @@
   export let clan;
   export let enableCreateMode = false;
   export let noButtons = false;
+  export let noBio = false;
 
   document.body.classList.remove('slim');
 
@@ -31,6 +32,8 @@
   let name = '';
   let tag = '';
   let color = '';
+  let description = '';
+  let bio = '';
   let iconUrl = null;
   let iconData = null;
 
@@ -73,8 +76,8 @@
       return;
     }
 
-    if (tag.length < 2 || tag.length > 4) {
-      error = "Clan tag is required and should be 2 to 4 characters long";
+    if (tag.length < 2 || tag.length > 5) {
+      error = "Clan tag is required and should be 2 to 5 characters long";
       return;
     }
 
@@ -94,7 +97,7 @@
     await executeOperation(async () => {
       let updatedClan = null;
 
-      const clanData = {...clan, name, tag, color, icon: iconData ?? iconUrl}
+      const clanData = {...clan, name, tag, description, bio, color, icon: iconData ?? iconUrl}
       if (clan?.id)
         updatedClan = await clanService.update(clanData);
       else
@@ -192,6 +195,8 @@
     color = clan?.color ?? '#ff0000';
     iconUrl = clan?.icon ?? 'https://cdn.beatleader.xyz/assets/NTG.png';
     iconData = clan?.icon ?? null;
+    description = clan?.description ?? '';
+    bio = clan?.bio ?? '';
   }
 
   $: updateFields(clan)
@@ -245,7 +250,7 @@
 
       {#if !editMode}
         <section class="title is-5">
-          {playersCount} player(s)
+          {playersCount} {playersCount == 1 ? "player" : "players"}
         </section>
 
         {#if clan}
@@ -257,8 +262,24 @@
         {/if}
 
         <section class="info">
-          <small>If you want to join the clan, contact the leader on Discord.</small>
+          <small>{description}</small>
         </section>
+
+        {#if !noBio}
+        <section class="bio">
+          <small>{bio}</small>
+        </section>
+        {/if}
+      {:else}
+      <section class="info">
+        <input type="text" placeholder="Clan short description (optional)" bind:value={description} disabled={!!pendingText}/>
+        
+      </section>
+      {#if !noBio}
+      <section class="bio">
+        <input type="text" placeholder="Clan bio (optional)" bind:value={bio} disabled={!!pendingText}/>
+      </section>
+      {/if}
       {/if}
 
       {#if editMode}

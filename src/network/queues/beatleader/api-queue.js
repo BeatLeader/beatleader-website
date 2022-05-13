@@ -19,8 +19,8 @@ export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/id/${leaderboard
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}'
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
-export const BL_API_CLAN_CREATE_URL = BL_API_URL + 'clan/create?name=${name}&tag=${tag}&color=${color}'
-export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&color=${color}'
+export const BL_API_CLAN_CREATE_URL = BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}'
+export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}'
 export const BL_API_CLAN_ACCEPT_URL = BL_API_URL + 'clan/accept?id=${id}'
 export const BL_API_CLAN_REJECT_URL = BL_API_URL + 'clan/reject?id=${id}&ban=${ban}'
 export const BL_API_CLAN_REMOVE_URL = BL_API_URL + 'clan'
@@ -70,9 +70,9 @@ export default (options = {}) => {
 
   const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
 
-  const clanCreate = async (name, tag, color, icon, priority = PRIORITY.FG_HIGH, options = {}) => fetchJson(substituteVars(BL_API_CLAN_CREATE_URL, {name, tag, color}, true, true, encodeURIComponent), {body: icon, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+  const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) => fetchJson(substituteVars(BL_API_CLAN_CREATE_URL, {name, tag, description, bio, color}, true, true, encodeURIComponent), {body: icon, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
-  const clanUpdate = async (name, tag, color, icon, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_UPDATE_URL, {name, tag, color}, true, true, encodeURIComponent), {body: icon instanceof ArrayBuffer ? icon : null, ...options, retries: 0, method: 'PUT', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+  const clanUpdate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_UPDATE_URL, {name, tag, description, bio, color}, true, true, encodeURIComponent), {body: icon instanceof ArrayBuffer ? icon : null, ...options, retries: 0, method: 'PUT', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
   const clanAccept = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 

@@ -1,5 +1,6 @@
 <script>
   import {navigate} from "svelte-routing";
+  import {createEventDispatcher} from 'svelte'
   import {fade, fly} from 'svelte/transition'
   import createClansStore from '../stores/http/http-clans-store'
   import createAccountStore from '../stores/beatleader/account'
@@ -10,16 +11,18 @@
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
   import ContentBox from "../components/Common/ContentBox.svelte";
+  import Switcher from '../components/Common/Switcher.svelte'
   import Button from "../components/Common/Button.svelte";
   import ClanInfo from '../components/Clans/ClanInfo.svelte'
 
   export let page = 1;
   export let location;
+  export let serviceParams = {sort: 'pp', order: 'desc'}
 
   const FILTERS_DEBOUNCE_MS = 500;
 
   document.body.classList.remove('slim');
-
+  const dispatch = createEventDispatcher();
   const clanService = createClanService();
 
   let createMode = false;
@@ -106,6 +109,26 @@
 
   const account = createAccountStore();
 
+  let switcherComponents = [
+        {
+          component: Switcher,
+          props: {
+            values: [
+              {id: 'pp', 'label': 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/clans/pp/1`},
+              {id: 'date', 'label': 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/clans/date/1`},
+              {id: 'acc', 'label': 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/clans/acc/1`},
+              {id: 'rank', 'label': 'Rank', title: 'Sort by rank',iconFa: 'fa fa-list-ol', url: `/clans/rank/1`},
+            ],
+          },
+          key: 'sort',
+          onChange: event => {
+            if (!event?.detail?.id) return null;
+
+            dispatch('service-params-change', {sort: event.detail.id, ...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null)})
+          }
+        }
+      ];
+
   $: isLoading = clansStore.isLoading;
   $: pending = clansStore.pending;
   $: numOfClans = $clansStore ? $clansStore?.metadata?.total : null;
@@ -130,7 +153,7 @@
         <h1 class="title is-5">My clan</h1>
 
         <a href={`/clan/${$account.clan.id}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.id}`)}>
-          <ClanInfo clan={$account.clan} noButtons={true}/>
+          <ClanInfo clan={$account.clan} noButtons={true} noBio={true}/>
         </a>
       </ContentBox>
     {/if}
@@ -176,7 +199,7 @@
           {#each clansPage as clan, idx (clan.id)}
             <div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
               <div class="main" on:click={() => onClanClick(clan)}>
-                <ClanInfo {clan} noButtons={true}/>
+                <ClanInfo {clan} noButtons={true} noBio={true}/>
               </div>
             </div>
           {/each}
@@ -201,6 +224,12 @@
         <label>Tag/Clan name</label>
         <input type="text" placeholder="Search..." value={currentFilters.search} on:input={debouncedOnSearchChanged}/>
       </section>
+
+      {#each switcherComponents as component (`${component.key ?? 'sort'}`)}
+      <svelte:component this={component.component} {...component.props}
+                        on:change={component.onChange ?? null}
+      />
+    {/each}
     </ContentBox>
   </aside>
 </section>

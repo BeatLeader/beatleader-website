@@ -11,7 +11,7 @@
 <span class="clan-badges">
   {#each clans as clan (clan.id)}
     <a href={`/clan/${clan?.id}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.id}`)}>
-      <Badge label={clan?.tag ?? '???'} onlyLabel={true} fluid={true} color="white" bgColor={clan?.color ?? 'var(--dimmed)'} title="Click to go to clan profile"/>
+      <Badge label={clan?.tag ?? '???'} onlyLabel={true} fluid={true} color="white" bgColor={clan?.color ?? 'var(--dimmed)'} title="Go to clan profile"/>
     </a>
   {/each}
 </span>
@@ -20,13 +20,21 @@
 <style>
     .clan-badges {
         margin-left: .5em;
-        font-size: .7rem;
+        font-size: 1rem;
+        padding: 0 !important;
+        font-weight: bold !important;
         white-space: nowrap;
     }
+
+    :global(.clan-badges span.label){
+      font-weight: bold !important;
+     }
 
     .clan-badges :global(a > *) {
         margin-bottom: 0 !important;
         margin-right: .25em!important;
+        padding: 0 !important;
+        font-weight: bold !important;
         width: min-content!important;
     }
     .clan-badges :global(a > *:last-child) {

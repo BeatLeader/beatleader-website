@@ -41,14 +41,14 @@ const process = response => {
 
 const get = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_API.clan(clanId, page, filters, priority, queueOptions);
 
-const create = async ({name, tag, color, icon, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
-  const response = await queue.BEATLEADER_API.clanCreate(name, tag, color, icon, priority, queueOptions);
+const create = async ({name, tag, description, bio, color, icon, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanCreate(name, tag, description, bio, color, icon, priority, queueOptions);
 
   return fullResponse ? response : getResponseBody(response);
 }
 
-const update = async ({name, tag, color, icon, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
-  const response = await queue.BEATLEADER_API.clanUpdate(name, tag, color, icon, priority, queueOptions);
+const update = async ({name, tag, description, bio, color, icon, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanUpdate(name, tag, description, bio, color, icon, priority, queueOptions);
 
   return fullResponse ? response : getResponseBody(response);
 }
