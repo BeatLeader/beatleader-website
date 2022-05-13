@@ -79,26 +79,6 @@
           <Value value={diff.obstacles} digits={0} zero="0"/>
         </strong></div>
       {/if}
-
-      {#if diff.paritySummary}
-        {#if diff.paritySummary.errors}
-          <div transition:fade><i class="fas fa-exclamation-circle"></i> Errors: <strong>
-            <Value value={diff.paritySummary.errors} digits={0} zero="0"/>
-          </strong></div>
-        {/if}
-
-        {#if diff.paritySummary.warns}
-          <div transition:fade><i class="fas fa-exclamation-triangle"></i> Warnings: <strong>
-            <Value value={diff.paritySummary.warns} digits={0} zero="0"/>
-          </strong></div>
-        {/if}
-
-        {#if diff.paritySummary.resets}
-          <div transition:fade><i class="fas fa-redo"></i> Resets: <strong>
-            <Value value={diff.paritySummary.resets} digits={0} zero="0"/>
-          </strong></div>
-        {/if}
-      {/if}
     </div>
   {/if}
 </article>

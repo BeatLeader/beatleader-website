@@ -17,7 +17,6 @@
 
   export let page = 1;
   export let location;
-  export let serviceParams = {sort: 'pp', order: 'desc'}
 
   const FILTERS_DEBOUNCE_MS = 500;
 
@@ -38,8 +37,10 @@
     const processString = val => val?.toString() ?? '';
 
     const params = [
-      {key: 'search', default: '', process: processString}, ,
-    ];
+      {key: 'search', default: '', process: processString},  
+      {key: 'sort', default: 'pp', process: processString},
+      {key: 'order', default: 'desc', process: processString}, 
+     ];
 
     const searchParams = new URLSearchParams(location?.search ?? '');
 
@@ -71,6 +72,16 @@
     shouldBeForceRefreshed = false;
 
     currentFilters = buildFiltersFromLocation(newLocation);
+
+    sortValues = sortValues1.map(v => {
+      let result = {...v};
+      if (result.id == currentFilters.sort) {
+        result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
+        sortValue = result;
+      }
+
+      return result;
+    })
 
     newPage = parseInt(newPage, 10);
     if (isNaN(newPage)) newPage = 1;
@@ -109,25 +120,26 @@
 
   const account = createAccountStore();
 
-  let switcherComponents = [
-        {
-          component: Switcher,
-          props: {
-            values: [
-              {id: 'pp', 'label': 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/clans/pp/1`},
-              {id: 'date', 'label': 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/clans/date/1`},
-              {id: 'acc', 'label': 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/clans/acc/1`},
-              {id: 'rank', 'label': 'Rank', title: 'Sort by rank',iconFa: 'fa fa-list-ol', url: `/clans/rank/1`},
-            ],
-          },
-          key: 'sort',
-          onChange: event => {
-            if (!event?.detail?.id) return null;
+  let sortValues1 = [
+    {id: 'pp', 'label': 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes'},
+    {id: 'acc', 'label': 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
+    {id: 'rank', 'label': 'Rank', title: 'Sort by rank',iconFa: 'fa fa-list-ol'},
+    {id: 'count', 'label': 'Players', title: 'Sort by player count', iconFa: 'fa fa-user'},
+  ];
+  let sortValues = sortValues1;
+  let sortValue = sortValues[0];
 
-            dispatch('service-params-change', {sort: event.detail.id, ...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null)})
-          }
-        }
-      ];
+  function onSortChange(event) {
+    if (!event?.detail?.id) return null;
+
+    if (currentFilters.sort == event.detail.id) {
+      currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+    } else {
+      currentFilters.sort = event.detail.id;
+    }
+
+    navigateToCurrentPageAndFilters();
+  }
 
   $: isLoading = clansStore.isLoading;
   $: pending = clansStore.pending;
@@ -135,7 +147,7 @@
   $: itemsPerPage = $clansStore ? $clansStore?.metadata?.itemsPerPage : 10;
 
   $: changePageAndFilters(page, location, shouldBeForceRefreshed)
-  $: scrollToTop($pending);
+  //$: scrollToTop($pending);
 
   $: clanRequests = ($account?.clanRequest ?? []);
 
@@ -225,11 +237,8 @@
         <input type="text" placeholder="Search..." value={currentFilters.search} on:input={debouncedOnSearchChanged}/>
       </section>
 
-      {#each switcherComponents as component (`${component.key ?? 'sort'}`)}
-      <svelte:component this={component.component} {...component.props}
-                        on:change={component.onChange ?? null}
+      <Switcher values={sortValues} value={sortValue} on:change={onSortChange}
       />
-    {/each}
     </ContentBox>
   </aside>
 </section>
