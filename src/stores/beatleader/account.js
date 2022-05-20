@@ -283,6 +283,27 @@ export default (refreshOnCreate = true) => {
           set(account);
       });
 
+  const changePatreonMessage = (message, playerId) =>
+  fetch(BL_API_URL + "user/patreon?message=" + encodeURIComponent(message) + (playerId ? "&id="+playerId : ""), { 
+      method: 'PATCH', 
+      credentials: 'include'
+  })
+    .then(checkResponse)
+    .then(
+      data => {
+          account.error = null;
+
+          if (data.length > 0) {
+              account.error = data;
+              setTimeout(function(){
+                  account.error = null;
+                  set(account);
+              }, 3500);
+          }
+
+          set(account);
+      });
+
   const logOut = () => {
     fetch(BL_API_URL + "signout", {
         credentials: 'include'
@@ -388,6 +409,7 @@ export default (refreshOnCreate = true) => {
     changeAvatar,
     changeName,
     changeCountry,
+    changePatreonMessage,
     foundClan,
     banPlayer,
     unbanPlayer,
