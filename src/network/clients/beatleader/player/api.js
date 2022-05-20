@@ -91,7 +91,7 @@ const process = response => {
     });
   }
 
-  let supporter = role?.includes('tipper') || role?.includes('supporter') || role?.includes('sponsor');
+  let sponsor = role?.includes('sponsor');
 
   return {
     playerId,
@@ -109,7 +109,7 @@ const process = response => {
       allTime,
       lastTwoWeekTime,
       role,
-      supporter,
+      sponsor,
       patreonFeatures,
       rankHistory: history && history.length
         ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))

@@ -156,11 +156,13 @@
       </span>
     </div>
 
-    {#if playerInfo.supporter}
+    {#if playerInfo.sponsor}
       {#if redactingName}
-        <input type="text" bind:value={messageInput} placeholder="Any message" class="input-reset">
-      {:else if playerInfo.patreonFeatures?.message}
-        <span class="patreon-message">{playerInfo.patreonFeatures.message}</span>
+      <div class="sponsor-message">
+        <span>This message will be shown in-game for your scores.<br>
+          You can use <a class="inlineLink" href="http://digitalnativestudios.com/textmeshpro/docs/rich-text">Unity tags</a> here.</span>
+        <input type="text" bind:value={messageInput} placeholder="Promotion message" class="sponsor-input">
+      </div>
       {/if}
     {/if}
 
@@ -283,8 +285,20 @@
         color: var(--ppColour) !important;
     }
 
-    .player-role {
-        text-align: center;
+    .sponsor-message {
+        padding-top: 1em;
+        padding-bottom: 1em;
+        display: grid;
+    }
+
+    .sponsor-input {
+        font-size: inherit;
+        padding: 0;
+        color: var(--textColor);
+        background-color: transparent;
+        border: none;
+        border-bottom: solid 1px var(--dimmed);
+        outline: none;
     }
 
     .countryIcon {
@@ -304,6 +318,10 @@
 
     .input-reset::placeholder {
         color: var(--faded)!important;
+    }
+
+    .inlineLink {
+        display: contents;
     }
 
     :global(.editNameButton) {
