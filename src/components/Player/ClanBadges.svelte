@@ -30,7 +30,7 @@
 {#if clans}
 <span class="clan-badges">
   {#each clans as clan (clan.id)}
-    <a href={`/clan/${clan?.id}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.id}`)}>
+    <a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
       <Badge label={clan?.tag ?? '???'} onlyLabel={true} fluid={true} color={invertColor(clan?.color ?? '#000000')} bgColor={clan?.color ?? 'var(--dimmed)'} title="Go to clan profile"/>
     </a>
   {/each}

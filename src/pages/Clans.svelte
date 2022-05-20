@@ -34,7 +34,7 @@
   if (!page || isNaN(page) || page <= 0) page = 1;
 
   const buildFiltersFromLocation = location => {
-    const processString = val => val?.toString() ?? '';
+    const processString = val => val?.toString();
 
     const params = [
       {key: 'search', default: '', process: processString},  
@@ -61,10 +61,6 @@
   let currentPage = page;
   let currentFilters = buildFiltersFromLocation(location);
   let boxEl = null;
-
-  function scrollToTop() {
-    if (boxEl) scrollToTargetAdjusted(boxEl, 44)
-  }
 
   const clansStore = createClansStore(page, currentFilters);
 
@@ -110,7 +106,7 @@
   function onClanClick(clan) {
     if (!clan?.id) return;
 
-    navigate(`/clan/${clan.id}`)
+    navigate(`/clan/${clan.tag}`)
   }
 
   async function onClanAddedOrRemoved() {
@@ -147,7 +143,6 @@
   $: itemsPerPage = $clansStore ? $clansStore?.metadata?.itemsPerPage : 10;
 
   $: changePageAndFilters(page, location, shouldBeForceRefreshed)
-  //$: scrollToTop($pending);
 
   $: clanRequests = ($account?.clanRequest ?? []);
 
@@ -164,7 +159,7 @@
       <ContentBox>
         <h1 class="title is-5">My clan</h1>
 
-        <a href={`/clan/${$account.clan.id}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.id}`)}>
+        <a href={`/clan/${$account.clan.tag}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}`)}>
           <ClanInfo clan={$account.clan} noButtons={true} noBio={true}/>
         </a>
       </ContentBox>
