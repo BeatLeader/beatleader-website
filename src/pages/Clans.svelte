@@ -14,6 +14,7 @@
   import Switcher from '../components/Common/Switcher.svelte'
   import Button from "../components/Common/Button.svelte";
   import ClanInfo from '../components/Clans/ClanInfo.svelte'
+  import ClanInfoSmall from '../components/Clans/ClanInfoSmall.svelte'
 
   export let page = 1;
   export let location;
@@ -160,7 +161,7 @@
         <h1 class="title is-5">My clan</h1>
 
         <a href={`/clan/${$account.clan.tag}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}`)}>
-          <ClanInfo clan={$account.clan} noButtons={true} noBio={true}/>
+          <ClanInfoSmall clan={$account.clan}/>
         </a>
       </ContentBox>
     {/if}
@@ -206,7 +207,7 @@
           {#each clansPage as clan, idx (clan.id)}
             <div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
               <div class="main" on:click={() => onClanClick(clan)}>
-                <ClanInfo {clan} noButtons={true} noBio={true}/>
+                <ClanInfoSmall {clan}/>
               </div>
             </div>
           {/each}

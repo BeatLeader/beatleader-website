@@ -353,6 +353,7 @@
     .clanData .form {
         flex-grow: 1;
         padding: 1rem;
+        max-width: 80%;
     }
 
     .clanData .form > section:not(:last-child) {
@@ -412,6 +413,16 @@
 
     .clan-stats :global(>*) {
         margin-bottom: 0!important;
+    }
+
+    .info {
+      overflow: hidden;
+      word-break: break-all;
+    }
+
+    .bio {
+      overflow: hidden;
+      word-break: break-all;
     }
 
     @media screen and (max-width: 500px) {
