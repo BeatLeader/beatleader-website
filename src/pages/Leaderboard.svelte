@@ -666,7 +666,13 @@
     }
 
     .player-score :global(.clan-badges .badge) {
-        margin-right: .25em!important;
+        margin-right: .15em!important;
+        padding: 0 !important;
+        font-size: 0.8em !important;
+    }
+
+    .player-score :global(.clan-badges) {
+      height: 1.2em !important;
     }
 
     .player-score :global(.badge span) {

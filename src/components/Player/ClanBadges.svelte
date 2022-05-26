@@ -19,7 +19,7 @@
         g = parseInt(hex.slice(2, 4), 16),
         b = parseInt(hex.slice(4, 6), 16);
     // https://stackoverflow.com/a/3943023/112731
-    return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+    return (r * 0.299 + g * 0.687 + b * 0.114) > 186
         ? '#000000'
         : '#FFFFFF';
 }
@@ -43,7 +43,6 @@
         font-size: 1rem;
         padding: 0 !important;
         font-weight: bold !important;
-        white-space: nowrap;
     }
 
     :global(.clan-badges span.label){
@@ -61,7 +60,7 @@
         margin-right: 0!important;
     }
 
-    @media screen and (max-width: 500px) {
+    @media screen and (max-width: 300px) {
         .clan-badges {
             display: none;
         }
