@@ -1,7 +1,6 @@
 <script>
   import {getContext} from 'svelte'
   import processPlayerData from './utils/profile';
-  import eventBus from '../../utils/broadcast-channel-pubsub'
   import {worker} from '../../utils/worker-wrappers'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
@@ -36,12 +35,6 @@
 
   let accSaberPlayerInfo = null;
   let accSaberCategories = null;
-  let playerGain = null;
-
-  let playerStats = null;
-  eventBus.on('player-stats-calculated', stats => {
-    if (stats?.playerId && stats?.playerId === playerData?.playerId) playerStats = stats
-  })
 
   let onePpBoundary = null;
 
@@ -51,11 +44,6 @@
     if (!playerId) return;
 
     isBeatSaviorAvailable = await beatSaviorService.isDataForPlayerAvailable(playerId)
-  }
-
-  function clearPlayerStatsOnChange() {
-    playerStats = null;
-    playerGain = null;
   }
 
   async function calcOnePpBoundary(playerId, isCached) {
@@ -84,12 +72,6 @@
       )
   }
 
-  function onPlayerGainChanged(e) {
-    if (e?.detail?.gainType !== 'beatleader') return;
-
-    playerGain = e.detail;
-  }
-
   async function updateAccSaberPlayerInfo(playerId) {
     if (!playerId) return;
 
@@ -102,16 +84,16 @@
     editError = err?.detail ?? null;
   }
 
-  $: isCached = !!(playerData && playerData.scoresLastUpdated)
-  $: clearPlayerStatsOnChange(playerId)
+  $: isCached = !!(playerData && playerData.scoresLastUpdated);
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
+  $: statsHistory = playerData?.statsHistory ?? null;
   $: name = playerData && playerData.name ? playerData.name : null;
-  $: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData, playerStats))
+  $: ({playerInfo, scoresStats, accBadges} = processPlayerData(playerData))
   $: playerRole = playerInfo?.role ?? null;
   $: calcOnePpBoundary(playerId, isCached);
-  $: refreshBeatSaviorState(playerId)
-  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary)
-  $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank)
+  $: refreshBeatSaviorState(playerId);
+  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary);
+  $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank);
   $: updateAccSaberPlayerInfo(playerId);
 
   $: swipeCards = []
@@ -124,12 +106,10 @@
             props: {
               playerId,
               scoresStats: scoresStatsFinal,
-              accStats,
               accBadges,
-              ssBadges,
               isCached,
               skeleton,
-              rankHistory: rankChartData,
+              statsHistory,
             },
             delay: 500,
           },
@@ -207,8 +187,8 @@
         <Error error={editError} />
       {/if}
 
-      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} prevInfo={playerGain} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
-      <BeatLeaderSummary {playerId} {scoresStats} {accStats} {accBadges} {skeleton} {isCached} rankHistory={rankChartData} />
+      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} {statsHistory} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
+      <BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} />
       {#if $account.error}
         {$account.error}
       {/if}
@@ -219,7 +199,7 @@
 <ContentBox>
   <div class="columns">
     <div class="column">
-      <Carousel cards={swipeCards} on:player-gain-changed={e => onPlayerGainChanged(e)}/>
+      <Carousel cards={swipeCards} />
     </div>
   </div>
 </ContentBox>
@@ -234,6 +214,7 @@
     .avatar-cell {
         position: relative;
         width: 150px;
+        min-width: 150px;
         height: 150px;
     }
 

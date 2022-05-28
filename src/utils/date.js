@@ -10,7 +10,7 @@ export const DAY = 24 * HOUR;
 
 const getCurrentLang = () => 'en';
 
-const SCORESABER_TZ = 'Australia/Brisbane';
+const BEATLEADER_TZ = 'Europe/Berlin';
 const ACCSABER_TZ = 'Europe/Berlin';
 
 export const isValidDate = d =>d instanceof Date && !isNaN(d);
@@ -71,10 +71,10 @@ export function truncateDate(date, precision = 'day') {
     return newDate;
 }
 
-export const correctOldSsDate = ssDate => DateTime.fromJSDate(ssDate).setZone('UTC').startOf('day').setZone(SCORESABER_TZ, {keepLocalTime: true}).toJSDate();
+export const correctOldSsDate = ssDate => DateTime.fromJSDate(ssDate).setZone('UTC').startOf('day').setZone(BEATLEADER_TZ, {keepLocalTime: true}).toJSDate();
 
 export const toTimezoneMidnight = (date, timezone) => DateTime.fromJSDate(date).setZone(timezone).startOf('day').toJSDate();
-export const toSsMidnight = date => toTimezoneMidnight(date, SCORESABER_TZ);
+export const toBlMidnight = date => toTimezoneMidnight(date, BEATLEADER_TZ);
 export const toAccSaberMidnight = date => toTimezoneMidnight(date, ACCSABER_TZ);
 export const fromAccSaberDateString = dateStr => DateTime.fromSQL(dateStr, {zone: ACCSABER_TZ}).toJSDate();
 

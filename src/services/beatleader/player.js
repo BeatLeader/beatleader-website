@@ -12,7 +12,7 @@ import {
   formatDate,
   MINUTE,
   SECOND,
-  toSsMidnight,
+  toBlMidnight,
   truncateDate,
 } from '../../utils/date'
 import {opt} from '../../utils/js'
@@ -116,7 +116,7 @@ export default () => {
 
   const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`playerHistory/${playerId}`, () => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId))
 
-  const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => getServicePlayerGain(playerHistory, toSsMidnight, 'ssDate', daysAgo, maxDaysAgo);
+  const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => getServicePlayerGain(playerHistory, toBlMidnight, 'ssDate', daysAgo, maxDaysAgo);
 
   const updatePlayerHistory = async player => {
     if (!player) return null;
@@ -127,10 +127,10 @@ export default () => {
     const updateDate = profileLastUpdated ? profileLastUpdated : new Date();
 
     const localDate = truncateDate(updateDate);
-    const ssDate = toSsMidnight(updateDate);
+    const blDate = toBlMidnight(updateDate);
 
     const playerIdLocalTimestamp = `${playerId}_${localDate.getTime()}`;
-    const playerIdSsTimestamp = `${playerId}_${ssDate.getTime()}`;
+    const playerIdSsTimestamp = `${playerId}_${blDate.getTime()}`;
 
     return playersHistoryRepository().getFromIndex('players-history-playerIdSsTimestamp', playerIdSsTimestamp)
       .then(async ph => {
@@ -164,7 +164,7 @@ export default () => {
           ...previous,
           ...accStats,
           playerId, banned, countries, inactive, pp, rank, ...scoreStats,
-          localDate, ssDate,
+          localDate, ssDate: blDate,
           playerIdLocalTimestamp,
           playerIdSsTimestamp,
         })

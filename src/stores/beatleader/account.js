@@ -235,7 +235,7 @@ export default (refreshOnCreate = true) => {
         });
 
   const changeName = (name, playerId) =>
-    fetch(BL_API_URL + "user/name?newName=" + name + (playerId ? "&id="+playerId : ""), { 
+    fetch(BL_API_URL + "user/name?newName=" + encodeURIComponent(name) + (playerId ? "&id="+playerId : ""), { 
         method: 'PATCH', 
         credentials: 'include'
     })
