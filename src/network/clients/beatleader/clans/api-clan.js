@@ -1,8 +1,8 @@
-import queue from '../../../queues/queues'
+import queue, {getResponseBody} from '../../../queues/queues'
 import createClient from '../../generic'
 
 const process = response => {
-  //if (!response?.metadata || !Array.isArray(response?.data)) return null;
+  if (!response?.metadata || !Array.isArray(response?.data)) return null;
 
   return {
     metadata: response.metadata,
@@ -37,12 +37,88 @@ const process = response => {
       }
     })
   };
-
-  return response;
 };
 
 const get = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_API.clan(clanId, page, filters, priority, queueOptions);
 
-const client = createClient(get, process);
+const create = async ({name, tag, description, bio, color, icon, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanCreate(name, tag, description, bio, color, icon, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const update = async ({name, tag, description, bio, color, icon, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanUpdate(name, tag, description, bio, color, icon, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const accept = async ({clanId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanAccept(clanId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const reject = async ({clanId, ban = false, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanReject(clanId, ban, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const leave = async ({clanId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanLeave(clanId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const remove = async ({priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanRemove(priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const unban = async ({clanId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanUnban(clanId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const kick = async ({playerId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanKick(playerId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const invite = async ({playerId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanInvite(playerId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const cancelInvite = async ({playerId, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+  const response = await queue.BEATLEADER_API.clanCancelInvite(playerId, priority, queueOptions);
+
+  return fullResponse ? response : getResponseBody(response);
+}
+
+const createClanClient = () => {
+  const client = createClient(get, process);
+
+  return {
+    ...client,
+    create,
+    update,
+    accept,
+    reject,
+    remove,
+    leave,
+    unban,
+    kick,
+    invite,
+    cancelInvite,
+  }
+}
+
+const client = createClanClient();
 
 export default client;

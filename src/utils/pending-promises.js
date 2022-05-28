@@ -8,6 +8,11 @@ export default () => {
           delete pendingPromises[promiseKey];
 
           return res;
+        })
+        .catch(err => {
+          delete pendingPromises[promiseKey];
+
+          throw err;
         });
     }
 

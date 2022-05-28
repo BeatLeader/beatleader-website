@@ -17,8 +17,18 @@ export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + 'players?page=${page}&sort
 export const BL_API_RANKING_COUNTRY_URL = BL_API_URL + 'players?page=${page}&countries=${country}&sortBy=${sortBy}'
 export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/id/${leaderboardId}?page=${page}&countries=${countries}'
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
-export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}'
+export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}'
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
+export const BL_API_CLAN_CREATE_URL = BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}'
+export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}'
+export const BL_API_CLAN_ACCEPT_URL = BL_API_URL + 'clan/accept?id=${id}'
+export const BL_API_CLAN_REJECT_URL = BL_API_URL + 'clan/reject?id=${id}&ban=${ban}'
+export const BL_API_CLAN_REMOVE_URL = BL_API_URL + 'clan'
+export const BL_API_CLAN_LEAVE_URL = BL_API_URL + 'clan/leave?id=${id}'
+export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}'
+export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${player}'
+export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}'
+export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}'
@@ -57,7 +67,28 @@ export default (options = {}) => {
   }
 
   const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}), options, priority);
+
   const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
+
+  const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) => fetchJson(substituteVars(BL_API_CLAN_CREATE_URL, {name, tag, description, bio, color}, true, true, encodeURIComponent), {body: icon, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanUpdate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_UPDATE_URL, {name, tag, description, bio, color}, true, true, encodeURIComponent), {body: icon instanceof ArrayBuffer ? icon : null, ...options, retries: 0, method: 'PUT', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanAccept = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanReject = async (clanId, ban = false, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_REJECT_URL, {id: clanId, ban: ban ? 'true' : 'false'}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanRemove = async (priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(BL_API_CLAN_REMOVE_URL, {...options, retries: 0, method: 'DELETE', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanLeave = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_LEAVE_URL, {id: clanId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanUnban = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_UNBAN_URL, {id: clanId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanKick = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_KICK_URL, {player: playerId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_INVITE_URL, {player: playerId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const clanCancelInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_CANCEL_INVITE_URL, {player: playerId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
   const processLeaderboardScores = response => {
     return response.map(s => {
@@ -77,6 +108,8 @@ export default (options = {}) => {
       ret.player.name = ret.player.name ? ret.player.name.trim().replace('&#039;', "'") : null;
       ret.player.playerId = player.id;
       ret.player.playerId = ret.player.playerId ? ret.player.playerId.trim() : null;
+
+      ret.player.clans = player?.clans ?? null;
 
       ret.score.score = s.modifiedScore;
 
@@ -185,6 +218,16 @@ export default (options = {}) => {
     leaderboard,
     clans,
     clan,
+    clanCreate,
+    clanUpdate,
+    clanAccept,
+    clanReject,
+    clanRemove,
+    clanLeave,
+    clanUnban,
+    clanKick,
+    clanInvite,
+    clanCancelInvite,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,

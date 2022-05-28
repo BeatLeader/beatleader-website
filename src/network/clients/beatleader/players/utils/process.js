@@ -6,7 +6,7 @@ export default response => {
   return {
     metadata: response.metadata,
     data: response.data.map(player => {
-      let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime, scoreStats} = player;
+      let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime, clans, scoreStats} = player;
       const rankHistory =
        history && history.length
             ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
@@ -33,6 +33,7 @@ export default response => {
           difference,
           improvement: scoreStats.dailyImprovements
         },
+        clans,
       }
     })
   };

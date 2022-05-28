@@ -1,7 +1,7 @@
 import {getCurrentLocale} from '../stores/config'
 
-export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery = false) => {
-  let replaced = Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), vars[key] ?? ''), url);
+export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery = false, process = v => v) => {
+  let replaced = Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), process(vars[key] ?? '')), url);
 
   if (clearUnused) replaced = replaced.replace(new RegExp('\\${.*?}', 'gi'), '');
   if (clearEmptyQuery) {

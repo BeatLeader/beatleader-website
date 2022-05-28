@@ -28,14 +28,12 @@ export default (clanId, page = 1, filters = {}, initialState = null, initialStat
   );
 
   const fetch = async (clanId = currentClanId, page = currentPage, filters = currentFilters, force = false) => {
-    if (!clanId) return false;
-
-    if (clanId === currentClanId && (!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
+    if (clanId && clanId === currentClanId && (!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
 
     return httpStore.fetch({clanId, page, filters}, force, provider);
   }
 
-  const refresh = async () => fetch(currentClanId, currentPage, true);
+  const refresh = async () => fetch(currentClanId, currentPage, currentFilters, true);
 
   return {
     ...httpStore,

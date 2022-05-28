@@ -45,7 +45,9 @@ export default (options = {}) => {
   }
 
   const retriedFetch = async (fetchFunc, url, options, priority = PRIORITY.FG_LOW) => {
-    for (let i = 0; i <= retries; i++) {
+    const retriesCount = options?.retries ?? retries;
+
+    for (let i = 0; i <= retriesCount; i++) {
       try {
         return await add(async () => {
             if (lastRateLimitError) {

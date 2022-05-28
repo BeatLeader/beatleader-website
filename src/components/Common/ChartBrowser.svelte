@@ -135,7 +135,7 @@
                   label(ctx) {
                     return tooltipLabelFunc
                       ? tooltipLabelFunc(ctx)
-                      : (ctx?.raw?.page ?? null) !== null ? `Click to go to page ${ctx.raw.page + 1}` : null;
+                      : (ctx?.raw?.page ?? null) !== null ? `Go to page ${ctx.raw.page + 1}` : null;
                   },
                 },
               },

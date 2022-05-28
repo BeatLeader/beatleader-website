@@ -1,9 +1,8 @@
 import createHttpStore from './http-store';
 import createApiClansProvider from './providers/api-clans'
-import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
 import stringify from 'json-stable-stringify'
 
-export default (page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
+export default (page = 1, filters = {}, initialState = null, initialStateType = 'initial', force = true) => {
   let currentPage = page ?? 1;
   let currentFilters = filters ?? {};
 
@@ -30,14 +29,6 @@ export default (page = 1, filters = {}, initialState = null, initialStateType = 
     if ((!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
 
     return httpStore.fetch({page, filters}, force, provider);
-  }
-
-  const acceptClanRequest = (id) => {
-    fetch(BL_API_URL + "clan/accept?id=" + id, {credentials: 'include', method: 'POST'});
-  }
-
-  const rejectClanRequest = (id, ban = false) => {
-    fetch(BL_API_URL + "clan/accept?id=" + id + "&ban=" + (ban ? "true" : "false"), {credentials: 'include', method: 'POST'});
   }
 
   const refresh = async () => fetch(currentPage, currentFilters, true);

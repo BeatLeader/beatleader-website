@@ -3,8 +3,8 @@ import createClient from '../../generic'
 import {opt} from '../../../../utils/js'
 
 const process = response => {
-  const {id: playerId, name, country, countryRank, badges, avatar, permissions, pp, rank, banned, inactive, histories: history, scoreStats, statsHistory, externalProfileUrl, allTime, lastTwoWeekTime} = response;
-
+  const {id: playerId, name, country, countryRank, badges, avatar, permissions, pp, rank, banned, inactive, histories: history, scoreStats, statsHistory, externalProfileUrl, allTime, lastTwoWeekTime, clans} = response;
+  
   let profilePicture = avatar;
   let externalProfileCorsUrl = externalProfileUrl ? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/') : null
 
@@ -109,6 +109,7 @@ const process = response => {
       rankHistory: history && history.length
         ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
         : [],
+      clans,
     },
     scoreStats: scoreStats ? scoreStats : null,
     statsHistory: statsHistory ? statsHistory : null,

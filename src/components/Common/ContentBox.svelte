@@ -1,14 +1,15 @@
 <script>
 export let box = null;
+export let background = 'var(--foreground)';
 </script>
 
-<div class="content-box" bind:this={box}>
+<div class="content-box" bind:this={box} style="--box-background: {background}">
   <slot></slot>
 </div>
 
 <style>
   .content-box {
-      background-color: var(--foreground);
+      background-color: var(--box-background, var(--foreground));
 
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
       margin: 4px 10px 18px;

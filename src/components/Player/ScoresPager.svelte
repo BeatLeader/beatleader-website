@@ -128,7 +128,7 @@
     : `${playerScoresHistogram.prefixLong ?? playerScoresHistogram.prefix}${formatNumber(ctx?.raw?.x, playerScoresHistogram.round)}${` - ${formatNumber(ctx?.raw?.x + playerScoresHistogramBucketSize, playerScoresHistogram.round)}`}${playerScoresHistogram.suffixLong ?? playerScoresHistogram.suffix}`;
 
   const chartBrowserTooltipLabel = ctx => (ctx?.raw?.page ?? null) !== null
-    ? [`${formatNumber(ctx?.raw?.y, 0)} score(s)`, '', `Click to go to page ${ctx.raw.page + 1}`]
+    ? [`${formatNumber(ctx?.raw?.y, 0)} score(s)`, '', `Go to page ${ctx.raw.page + 1}`]
     : null;
 
   const chartBrowserTickFormat = (val, idx, ticks) => playerScoresHistogram?.type === 'time'
