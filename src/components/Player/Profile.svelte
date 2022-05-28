@@ -2,6 +2,7 @@
   import {getContext} from 'svelte'
   import processPlayerData from './utils/profile';
   import {worker} from '../../utils/worker-wrappers'
+  import {BL_CDN} from '../../network/queues/beatleader/page-queue'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import createAccountStore from '../../stores/beatleader/account'
@@ -84,12 +85,31 @@
     editError = err?.detail ?? null;
   }
 
+  let roleIcon = null;
+  let roleDescription = null;
+  function updateRoleIcon(role) {
+    if (role) {
+      if (role.includes("tipper")) {
+        roleIcon = BL_CDN + "/assets/patreon1.png";
+        roleDescription = "Tier 1 Patreon supporter."
+      } else if (role.includes("supporter")) {
+        roleIcon = BL_CDN + "/assets/patreon2.png";
+        roleDescription = "Tier 2 Patreon supporter."
+      } else if (role.includes("sponsor")) {
+        roleIcon = BL_CDN + "/assets/patreon3.png";
+        roleDescription = "Highest tier Patreon supporter. Crypto godge"
+    }
+    } else {
+      roleIcon = null;
+    }
+  }
+
   $: isCached = !!(playerData && playerData.scoresLastUpdated);
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: statsHistory = playerData?.statsHistory ?? null;
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, scoresStats, accBadges} = processPlayerData(playerData))
-  $: playerRole = playerInfo?.role ?? null;
+  $: updateRoleIcon(playerInfo?.role ?? null);
   $: calcOnePpBoundary(playerId, isCached);
   $: refreshBeatSaviorState(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary);
@@ -175,9 +195,9 @@
         <AvatarOverlayIcons {playerId} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
       {/if}
 
-      {#if playerRole}
-        <div class="player-role above-tablet">
-          <Badge label={playerRole} onlyLabel={true} fluid={true} bgColor="var(--dimmed)"/>
+      {#if roleIcon}
+        <div class="player-role">
+          <img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon"/>
         </div>
       {/if}
     </div>
@@ -226,8 +246,15 @@
     }
 
     .player-role {
-        width: 150px;
-        padding-top: 1rem;
+        width: 100px;
+        padding-top: 7rem;
+        padding-left: 5rem;
+    }
+
+    .role-icon {
+      z-index: 5;
+      position: absolute;
+      width: 60%;
     }
 
     @media screen and (max-width: 767px) {

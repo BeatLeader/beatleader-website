@@ -3,7 +3,7 @@ import createClient from '../../generic'
 import {opt} from '../../../../utils/js'
 
 const process = response => {
-  const {id: playerId, name, country, countryRank, badges, avatar, permissions, pp, rank, banned, inactive, histories: history, scoreStats, statsHistory, externalProfileUrl, allTime, lastTwoWeekTime, clans} = response;
+  const {id: playerId, name, country, countryRank, badges, avatar, role, pp, rank, banned, inactive, histories: history, scoreStats, statsHistory, externalProfileUrl, allTime, lastTwoWeekTime, clans, patreonFeatures} = response;
   
   let profilePicture = avatar;
   let externalProfileCorsUrl = externalProfileUrl ? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/') : null
@@ -91,6 +91,8 @@ const process = response => {
     });
   }
 
+  let sponsor = role?.includes('sponsor');
+
   return {
     playerId,
     name,
@@ -106,6 +108,9 @@ const process = response => {
       badges,
       allTime,
       lastTwoWeekTime,
+      role,
+      sponsor,
+      patreonFeatures,
       rankHistory: history && history.length
         ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
         : [],

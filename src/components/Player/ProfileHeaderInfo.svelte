@@ -60,10 +60,12 @@
   };
 
   let nameInput;
+  let messageInput;
   let redactingName = false;
   async function onRedactButtonClick() {
       if (!redactingName) {
         nameInput = name;
+        messageInput = playerInfo.patreonFeatures?.message;
       }
 
       if (redactingName && nameInput !== name) {
@@ -93,6 +95,23 @@
         dispatch('player-data-updated', {country: selectedCountry});
       }
 
+      if (redactingName && messageInput !== playerInfo.patreonFeatures?.message) {
+        try {
+          dispatch('player-data-edit-error', null);
+
+          if (loggedInPlayer === playerId) {
+            await account.changePatreonMessage(messageInput);
+          } else {
+            await account.changePatreonMessage(messageInput, playerId);
+          }
+
+          dispatch('player-data-updated', {message: messageInput});
+        }
+        catch(err) {
+          dispatch('player-data-edit-error', err);
+        }
+      }
+
       redactingName = !redactingName;
   }
 
@@ -102,7 +121,6 @@
   }
 
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
-  $: playerRole = playerInfo?.role ?? null;
   $: countries = getPlayerCountries(playerInfo, statsHistory)
   $: loggedInPlayer = $account.id;
   $: isMain = configStore && $configStore?.users?.main === playerId;
@@ -141,6 +159,16 @@
         <Status {playerInfo}/>
       </span>
     </div>
+
+    {#if playerInfo.sponsor}
+      {#if redactingName}
+      <div class="sponsor-message">
+        <span>This message will be shown in-game for your scores.<br>
+          You can use <a class="inlineLink" href="http://digitalnativestudios.com/textmeshpro/docs/rich-text">Unity tags</a> here.</span>
+        <input type="text" bind:value={messageInput} placeholder="Promotion message" class="sponsor-input">
+      </div>
+      {/if}
+    {/if}
 
     <div class="player-ranking">
       <a style="flex: none" href={`/ranking/global/${Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1}`}
@@ -218,12 +246,6 @@
     Make sure you selected right country. You can change it only every 30 days.
     {/if}
 
-    {#if playerRole}
-      <div class="player-role up-to-tablet">
-        <Badge label={playerRole} onlyLabel={true} fluid={true} bgColor="var(--dimmed)"/>
-      </div>
-    {/if}
-
     {#if error}
       <div>
         <Error {error}/>
@@ -273,8 +295,20 @@
         color: var(--ppColour) !important;
     }
 
-    .player-role {
-        text-align: center;
+    .sponsor-message {
+        padding-top: 1em;
+        padding-bottom: 1em;
+        display: grid;
+    }
+
+    .sponsor-input {
+        font-size: inherit;
+        padding: 0;
+        color: var(--textColor);
+        background-color: transparent;
+        border: none;
+        border-bottom: solid 1px var(--dimmed);
+        outline: none;
     }
 
     .countryIcon {
@@ -294,6 +328,10 @@
 
     .input-reset::placeholder {
         color: var(--faded)!important;
+    }
+
+    .inlineLink {
+        display: contents;
     }
 
     :global(.editNameButton) {
