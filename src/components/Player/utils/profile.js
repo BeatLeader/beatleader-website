@@ -77,6 +77,12 @@ function updateAccBadges(playerData) {
   });
 }
 
+function updateSsBadges(playerData) {
+  if (!playerData?.playerInfo.badges.length) return null;
+
+  return playerData.playerInfo.badges.map(b => ({src: `${b.image}`, title: b.description}));
+}
+
 const playerInfoTweened = {};
 export default (playerData) => {
   if (!playerData) return {};
@@ -112,5 +118,6 @@ export default (playerData) => {
     prevInfo: playerData?.prevInfo ?? null,
     scoresStats: updateScoresStats(playerData),
     accBadges: updateAccBadges(playerData),
+    ssBadges: updateSsBadges(playerData)
   }
 }

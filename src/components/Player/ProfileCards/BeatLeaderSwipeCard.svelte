@@ -2,6 +2,7 @@
   import {createEventDispatcher} from 'svelte'
   import createPlayerService from '../../../services/beatleader/player'
   import BlChart from '../Charts/BlChart.svelte'
+  import BlBadges from '../BlBadges.svelte'
   import AccHistoryChart from '../Charts/AccHistoryChart.svelte'
   import AccMapsChart from '../Charts/AccMapsChart.svelte'
   import Switcher from '../../Common/Switcher.svelte'
@@ -9,6 +10,7 @@
   export let playerId = null;
   export let scoresStats = null;
   export let accBadges = null;
+  export let ssBadges = null;
   export let skeleton = false;
   export let isCached = false;
   export let statsHistory = null;
@@ -77,6 +79,9 @@
 </script>
 
 <div class="beatleader-swipe-card">
+  {#if ssBadges}
+    <BlBadges badges={ssBadges}/>
+  {/if}
   {#if selectedOption}
     <div class="chart">
       <svelte:component this={chartComponent} {...chartComponentProps}/>
