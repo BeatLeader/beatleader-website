@@ -250,7 +250,13 @@
 
       {#if !editMode}
         <section class="title is-5">
-          {playersCount} {playersCount == 1 ? "player" : "players"}
+          <section class="title is-7">
+            {#if clan.tag == "DUH"}
+              {playersCount} {playersCount == 1 ? "prayer" : "prayers"}
+            {:else}
+              {playersCount} {playersCount == 1 ? "player" : "players"}
+            {/if}
+          </section>
         </section>
 
         {#if clan}
@@ -300,7 +306,7 @@
             <Button label="Accept invitation" iconFa="fas fa-check" type="primary" on:click={onAccept}/>
             <Button label="Reject invitation" iconFa="fas fa-trash-alt" type="lessdanger"
                     on:click={() => {confirmedOperation = onReject}}/>
-            <Button label="Ban clan" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
+            <Button label="Ban clan invitations" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
           </Confirmation>
         </section>
       {/if}
@@ -327,7 +333,7 @@
       {#if isBanned && !noButtons}
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
-            <Button label="Unban a clan" iconFa="fas fa-user-friends" type="lessdanger" on:click={() => confirmedOperation = onUnban}/>
+            <Button label="Unban clan invitations" iconFa="fas fa-user-friends" type="lessdanger" on:click={() => confirmedOperation = onUnban}/>
           </Confirmation>
         </section>
       {/if}

@@ -199,16 +199,18 @@
       />
     {/if}
 
-    {#if !isPlayerClanMember && !hasPlayerPendingInvitation}
-      <Button type="primary" iconFa="fas fa-users"
-              title="Invite player to the clan"
-              on:click={() => invitationConfirmationType = 'invite'}
-      />
-    {:else if hasPlayerPendingInvitation}
-      <Button type="danger" iconFa="fas fa-users-slash"
-              title="Cancel invitation to the clan"
-              on:click={() => invitationConfirmationType = 'cancel'}
-      />
+    {#if isUserFounderOfTheClan}
+      {#if !isPlayerClanMember && !hasPlayerPendingInvitation}
+        <Button type="primary" iconFa="fas fa-users"
+                title="Invite player to the clan"
+                on:click={() => invitationConfirmationType = 'invite'}
+        />
+      {:else if hasPlayerPendingInvitation}
+        <Button type="danger" iconFa="fas fa-users-slash"
+                title="Cancel invitation to the clan"
+                on:click={() => invitationConfirmationType = 'cancel'}
+        />
+      {/if}
     {/if}
 
     {#if (isMain && loggedInPlayer === playerId) || isAdmin}

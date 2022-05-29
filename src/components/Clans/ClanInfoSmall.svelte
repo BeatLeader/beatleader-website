@@ -44,7 +44,11 @@
             <span class="clanName">{name}</span>
         </section>
         <section class="title is-7">
-          {playersCount} {playersCount == 1 ? "player" : "players"}
+          {#if clan.tag == "DUH"}
+            {playersCount} {playersCount == 1 ? "prayer" : "prayers"}
+          {:else}
+            {playersCount} {playersCount == 1 ? "player" : "players"}
+          {/if}
         </section>
 
         {#if clan}
