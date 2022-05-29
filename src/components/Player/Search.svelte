@@ -12,17 +12,10 @@
   const dispatch = createEventDispatcher();
 
   let value = "";
-  let items = [];
 
   const playerService = createPlayerService();
 
   async function search(query) {
-    const matches = query.match(/^(?:\s*https:\/\/www.beatleader.xyz\/u\/(\d+))|\s*(\d+)\s*/);
-    if (matches && (matches[1] || matches[2])) {
-      dispatch('selected', matches[1] ? matches[1] : matches[2])
-
-      return [];
-    }
 
     const response = await playerService.findPlayer(query, queues.PRIORITY.FG_HIGH, {cacheTtl: 5 * MINUTE});
 
@@ -60,7 +53,7 @@
 <section>
   <Autocomplete bind:value {searchFunc}
                 noItemsFound="No players found."
-                placeholder="Enter a name or ScoreSaber profile..."
+                placeholder="Enter a name..."
                 toFocus={focusField}
                 on:selected={e => onItemSelected(e.detail)}
   >
