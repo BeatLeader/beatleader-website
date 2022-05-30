@@ -64,6 +64,9 @@
     $: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
     $: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
     $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
+    $: replayUrl = replayLink?.length
+        ? `https://www.replay.beatleader.xyz/?link=${replayLink}`
+        : `https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -121,17 +124,13 @@
         </a>
     {/if}
 
-    {#if shownIcons.includes('replay') && playerId}
-        {#if replayLink}
-        <a href={`https://www.replay.beatleader.xyz/?link=${replayLink}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-        <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?link=${replayLink}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
-        </a>
-        {:else}
-        <a href={`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-        <Button cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}" on:click={showPreview(`https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`)} icon="<div class='{shownIcons.length == 1 ? "replay-icon-alt" : "replay-icon"}'></div>" title="Replay" noMargin={true}/>
-        </a>
-        {/if}
-        
+    {#if shownIcons.includes('replay') && playerId && replayUrl?.length}
+        <Button url={replayUrl} on:click={() => showPreview(replayUrl)}
+                cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}"
+                icon="<div class='{shownIcons.length == 1 ? `replay-icon-alt` : `replay-icon`}'></div>"
+                title="Replay"
+                noMargin={true}
+        />
     {/if}
 
     {#if shownIcons.includes('delete') && isAdmin && scoreId}
