@@ -78,7 +78,7 @@ function updateAccBadges(playerData) {
 }
 
 function updateSsBadges(playerData) {
-  if (!playerData?.playerInfo.badges.length) return null;
+  if (!playerData?.playerInfo.badges?.length) return null;
 
   return playerData.playerInfo.badges.map(b => ({src: `${b.image}`, title: b.description}));
 }

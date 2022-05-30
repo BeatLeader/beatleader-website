@@ -251,7 +251,7 @@
       {#if !editMode}
         <section class="title is-5">
           <section class="title is-7">
-            {#if clan.tag == "DUH"}
+            {#if clan?.tag == "DUH"}
               {playersCount} {playersCount == 1 ? "prayer" : "prayers"}
             {:else}
               {playersCount} {playersCount == 1 ? "player" : "players"}

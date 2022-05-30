@@ -6,7 +6,7 @@
   export let centered = false;
   export let hash = '';
 
-  $: avatar = playerInfo?.avatar ? playerInfo.avatar + `?${hash}` : null;
+  $: avatar = playerInfo?.avatar ? playerInfo.avatar + (playerInfo.avatar.includes("oculus") ? '' : `?${hash}`) : null;
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered>
