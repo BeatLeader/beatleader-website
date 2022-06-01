@@ -115,6 +115,17 @@
       redactingName = !redactingName;
   }
 
+  function showRainbow(player) {
+    var result = false;
+    player.clans?.forEach(element => {
+      if (element.tag == "GAY") {
+        result = true;
+      }
+    });
+
+    return result;
+  }
+
   let selectedCountry = null;
   function handleCountrySelect(event) {
     selectedCountry = event.detail.value.toUpperCase();
@@ -130,7 +141,7 @@
 
 <div class="profile-header-info">
   {#if playerInfo}
-    <div class="player-nickname">
+    <div class="player-nickname {showRainbow(playerInfo) ? "rainbow" : ""}">
       {#if name}
         {#if redactingName}
           <input type="text" bind:value={nameInput} placeholder="Your name" class="input-reset">
@@ -271,6 +282,13 @@
         font-weight: bold;
         margin: -.2em 0em;
         align-items: baseline;
+    }
+
+    .player-nickname.rainbow {
+      color: red;
+      -webkit-background-clip: text;
+      background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
+      -webkit-animation: rainbow .60s infinite linear;
     }
 
     .clan-badges {

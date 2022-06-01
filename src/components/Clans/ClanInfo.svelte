@@ -231,7 +231,7 @@
         {#if editMode}
           <input type="text" placeholder="Clan name" bind:value={name} disabled={!!pendingText}/>
         {:else}
-          <span class="clanName">{name}</span>
+          <span class="clanName {tag == "GAY" ? "rainbow" : ""}">{name}</span>
         {/if}
       </section>
 
@@ -398,6 +398,13 @@
 
     .clanTag {
         color: var(--clan-color, 'red');
+    }
+
+    .clanName.rainbow {
+      color: red;
+      -webkit-background-clip: text;
+      background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
+      -webkit-animation: rainbow .60s infinite linear;
     }
 
     .imageChange {

@@ -323,6 +323,7 @@
         border-radius: 3px;
         margin-left: .25em;
         cursor: pointer;
+        flex: none;
     }
 
     .player-card .player-name-and-rank {

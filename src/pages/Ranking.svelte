@@ -126,6 +126,17 @@
     navigateToCurrentPageAndFilters();
   }
 
+  function showRainbow(player) {
+    var result = false;
+    player.clans?.forEach(element => {
+      if (element.tag == "GAY") {
+        result = true;
+      }
+    });
+
+    return result;
+  }
+
   let showDetails = false;
 
   afterUpdate(() => {
@@ -168,7 +179,7 @@
         <section class="ranking-grid">
           {#each $rankingStore.data as player, idx (player.playerId)}
             <div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
-              <div class={`player-card ${playerId == player.playerId ? "current" : ""}`} on:click={e => onPlayerClick(e, player)}>
+              <div class={`player-card ${playerId == player.playerId ? "current" : ""} ${showRainbow(player) ? "rainbow" : ""}`} on:click={e => onPlayerClick(e, player)}>
                 <div class="player-rank">
                   <div class={`rank ${opt(player, 'playerInfo.rank') === 1 ? 'gold' : (opt(player, 'playerInfo.rank') === 2 ? 'silver' : (opt(player, 'playerInfo.rank') === 3 ? 'brown' : (opt(player, 'playerInfo.rank') >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
                     #<Value value={opt(player, 'playerInfo.rank')} digits={0} zero="?"/>
@@ -271,6 +282,13 @@
         background-color: var(--faded);
     }
 
+    .player-card.rainbow:hover {
+      color: red;
+      -webkit-background-clip: text;
+      background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
+      -webkit-animation: rainbow .60s infinite linear;
+    }
+
     .player-card .player-avatar {
         position: relative;
         overflow: hidden;
@@ -290,6 +308,7 @@
         border-radius: 3px;
         margin-left: .25em;
         cursor: pointer;
+        flex: none;
     }
 
     .player-card .player-name-and-rank {

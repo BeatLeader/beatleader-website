@@ -31,7 +31,7 @@
 </script>
 
 {#if clan?.id}
-<section class="clan-info" transition:fade>
+<section class="clan-info {tag == "GAY" ? "rainbow" : ""}" transition:fade>
   <div class="clanData">
     <div class="imageInput">
       <img class="clanImage" src="{iconUrl}" alt="ClanIcon"/>
@@ -77,6 +77,13 @@
     .clan-info {
         width: 100%;
         border-radius: 15%;
+    }
+
+    .clan-info.rainbow:hover {
+      color: red;
+      -webkit-background-clip: text;
+      background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
+      -webkit-animation: rainbow .60s infinite linear;
     }
 
     .clanData {

@@ -397,6 +397,22 @@ body::-webkit-scrollbar-track {
     display: none;
 }
 
+@-webkit-keyframes rainbow {
+    from {
+        -webkit-filter: hue-rotate(0deg);
+    } to {
+        -webkit-filter: hue-rotate(360deg);
+    }
+}
+
+@keyframes rainbow {
+    from {
+        -webkit-filter: hue-rotate(0deg);
+    } to {
+        -webkit-filter: hue-rotate(360deg);
+    }
+}
+
 @media screen and (max-width: 767px) {
     .mobile-only {
         display: block;
