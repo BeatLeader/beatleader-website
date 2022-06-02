@@ -9,6 +9,7 @@
   let currentItem = 0;
   let carouselHeight = 0;
 
+  const bodyStore = createContainerStore();
   const containerStore = createContainerStore();
 
   async function updateHeight(carousel, item, delay = 0) {
@@ -48,8 +49,13 @@
     }
   })
 
-  $: if (mainEl) {
-    containerStore.observe(mainEl)
+  let nodeWidth = 500;
+
+  function startObserving(el) {
+    if (!el) return;
+
+    bodyStore.observe(document.body)
+    containerStore.observe(el.parentElement)
     if (!swipeHandlersBinded) {
       mainEl.addEventListener('swiped-left', swipeLeft);
       mainEl.addEventListener('swiped-right', swipeRight);
@@ -57,6 +63,13 @@
       swipeHandlersBinded = true;
     }
   }
+
+  function setNodeWIdth(bodyWidth, mainWidth) {
+    nodeWidth = bodyWidth < mainWidth ? bodyWidth - 25 : mainWidth;
+  }
+
+  $: startObserving(mainEl);
+  $: setNodeWIdth($bodyStore.nodeWidth, $containerStore.nodeWidth);
   $: cards, currentItem = 0;
   $: cardsHash = cards ? cards.map(c => c.name).join(':') : null;
   $: updateHeight(mainEl, currentItem, cards && cards[currentItem] && cardsHash ? cards[currentItem].delay || 0 : 0)
@@ -64,7 +77,7 @@
 
 {#if cards && cards.length}
   <section bind:this={mainEl} class="carousel"
-           style="--cards-cnt: {cards.length}; --width: {$containerStore.nodeWidth}px; --height: {carouselHeight}px; --item:{currentItem}"
+           style="--cards-cnt: {cards.length}; width: {nodeWidth}px; --width: {nodeWidth}px; --height: {carouselHeight}px; --item:{currentItem}"
            data-swipe-threshold="50">
     {#if cards.length > 1}
       <div class="bullets">

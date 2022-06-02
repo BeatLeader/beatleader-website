@@ -30,6 +30,8 @@
     .player-name {
         white-space: nowrap;
         overflow-x: hidden;
+        overflow: hidden;
+        word-break: break-all;
     }
 
     .player-name :global(> img) {
