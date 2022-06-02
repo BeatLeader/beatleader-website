@@ -48,7 +48,7 @@
             <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
         </form>
     {:else if loggedInPlayer > 70000000000000000}
-        {#if !$account.migrated}
+        <!-- {#if !$account.migrated}
             If you using the <b>Steam game</b> - you are all set!<br>
             Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
             <br>
@@ -66,11 +66,12 @@
                 <input type="password" bind:value={password} placeholder="Password">
             </div>        
             <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
-        {:else}
+        {:else} -->
             {navigate("/u/" + loggedInPlayer)}
-        {/if}
+        <!-- {/if} -->
     {:else}
-        You can migrate this account to your Steam account.<br><br>
+        {navigate("/u/" + loggedInPlayer)}
+        <!-- You can migrate this account to your Steam account.<br><br>
         Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
         Or just use this account.<br>
         You can change your avatar and name in <a class="inlineLink" href={"/u/" + loggedInPlayer}>your profile.</a>
@@ -80,7 +81,7 @@
             <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
 
             <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
-        </form>
+        </form> -->
     {/if}
 {:else if action == "changePassword"}
     {#if !$account.migrated}

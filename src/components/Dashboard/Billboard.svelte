@@ -18,9 +18,9 @@
             type: "Standard"
         },
         {
-            title: "Proper left-handed mod (Replays/JS)",
-            description: "Left handed players are currently mirrored instead of notes. You need to mirror notes and make sure scoring is correct. You will be changing an existing logic.",
-            image: "/assets/lefthanded.png",
+            title: "Playlist synchronization (Server/C#)",
+            description: "Playlists can be created locally and downloaded to install. Your task will be to make an API for syncronizations of replay between devices.",
+            image: "/assets/playlistServer.png",
             diff: "Hard",
             type: "Standard"
         },

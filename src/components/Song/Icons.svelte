@@ -21,7 +21,11 @@
     export let replayLink = null;
     const { open } = getContext('simple-modal');
     const showPreview = (previewLink) => {
-        open(Preview, { previewLink: previewLink });
+        if (document.body.clientWidth < 800) {
+            window.open(previewLink, '_blank');
+        } else {
+            open(Preview, { previewLink: previewLink });
+        }
     };
 
     let songKey;
@@ -67,6 +71,7 @@
     $: replayUrl = replayLink?.length
         ? `https://www.replay.beatleader.xyz/?link=${replayLink}`
         : `https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`
+    $: previewUrl = `https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`;
 </script>
 
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -119,13 +124,16 @@
     {/if}
 
     {#if shownIcons.includes('preview')}
-        <a href={`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`} target="_blank" rel="noreferrer" on:click={(e) => {e.preventDefault();}}>
-            <Button on:click={showPreview(`https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true}/>
-        </a>
+        <Button url={previewUrl} 
+                on:click={showPreview(previewUrl)} 
+                iconFa="fa fa-play-circle" 
+                title="Map preview" 
+                noMargin={true}/>
     {/if}
 
     {#if shownIcons.includes('replay') && playerId && replayUrl?.length}
-        <Button url={replayUrl} on:click={() => showPreview(replayUrl)}
+        <Button url={replayUrl} 
+                on:click={showPreview(replayUrl)}
                 cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}"
                 icon="<div class='{shownIcons.length == 1 ? `replay-icon-alt` : `replay-icon`}'></div>"
                 title="Replay"
