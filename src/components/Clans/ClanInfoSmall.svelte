@@ -1,6 +1,7 @@
 <script>
   import {fade} from 'svelte/transition'
   import Badge from '../Common/Badge.svelte'
+  import {playersTitle, rankLabel, accLabel, ppLabel} from '../../utils/clans'
 
   export let clan;
 
@@ -44,18 +45,14 @@
             <span class="clanName">{name}</span>
         </section>
         <section class="title is-7">
-          {#if clan?.tag == "DUH"}
-            {playersCount} {playersCount == 1 ? "prayer" : "prayers"}
-          {:else}
-            {playersCount} {playersCount == 1 ? "player" : "players"}
-          {/if}
+          {playersCount} {playersCount == 1 ? playersTitle(tag) : playersTitle(tag) + "s"}
         </section>
 
         {#if clan}
           <section class="clan-stats">
-            <Badge label="Average Rank" value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)"/>
-            <Badge label="Average Acc" value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)"/>
-            <Badge label="Total PP" value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)"/>
+            <Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)"/>
+            <Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)"/>
+            <Badge label={ppLabel(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)"/>
           </section>
         {/if}
       </section>
@@ -80,10 +77,11 @@
     }
 
     .clan-info.rainbow:hover {
-      color: red;
+      color: #00ffbc;
       -webkit-background-clip: text;
       background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
-      -webkit-animation: rainbow .60s infinite linear;
+      -webkit-animation: rainbow .90s infinite linear;
+      animation: rainbow .90s infinite linear;
     }
 
     .clanData {
@@ -158,5 +156,14 @@
         .desktop {
           display: none;
         }
+    }
+    @media (hover: none) {
+      .clan-info.rainbow {
+            color: #00ffbc;
+            -webkit-background-clip: text;
+            background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
+            -webkit-animation: rainbow .90s infinite linear;
+            animation: rainbow .90s infinite linear;
+          }
     }
 </style>

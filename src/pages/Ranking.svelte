@@ -283,10 +283,11 @@
     }
 
     .player-card.rainbow:hover {
-      color: red;
+      color: #00ffbc;
       -webkit-background-clip: text;
       background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
-      -webkit-animation: rainbow .60s infinite linear;
+      -webkit-animation: rainbow .90s infinite linear;
+      animation: rainbow .90s infinite linear;
     }
 
     .player-card .player-avatar {
@@ -470,6 +471,16 @@
 
         .player-card :global(.rank) {
           font-size: 1em;
+        }
+    }
+
+    @media (hover: none) {
+      .player-card.rainbow {
+          color: #00ffbc;
+          -webkit-background-clip: text;
+          background-image: -webkit-linear-gradient(180deg,#f35626,#feab3a);
+          -webkit-animation: rainbow .90s infinite linear;
+          animation: rainbow .90s infinite linear;
         }
     }
 </style>
