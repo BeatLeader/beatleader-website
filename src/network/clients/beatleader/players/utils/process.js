@@ -31,7 +31,7 @@ export default response => {
         },
         others: {
           difference,
-          improvement: scoreStats.dailyImprovements
+          improvement: scoreStats?.dailyImprovements
         },
         clans,
       }
