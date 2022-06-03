@@ -15,6 +15,7 @@
 
   export let show = false;
 
+  const DEFAULT_THEME = 'default';
   const DEFAULT_BILLBOARD_STATE = 'show';
   const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
   const DEFAULT_SECONDARY_PP_METRICS = 'weighted';
@@ -54,7 +55,13 @@
     {name: 'Always hide', value: 'hide'},
   ];
 
+  const themes = [
+    {name: 'Classic',value:"default"},
+    {name: 'MirrorMB',value:"mirror"},
+  ];
+
   let currentBillboardState = DEFAULT_BILLBOARD_STATE;
+  let currentTheme = DEFAULT_THEME;
   let currentLocale = DEFAULT_LOCALE;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
   let currentBeatSaviorComparison = DEFAULT_BEATSAVIOR_COMPARISON;
@@ -67,6 +74,7 @@
     if (config?.scoreComparison) currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
     if (config?.preferences?.secondaryPp) currentSecondaryPpMetrics = config?.preferences?.secondaryPp ?? DEFAULT_SECONDARY_PP_METRICS;
     if (config?.preferences?.iconsOnAvatars) currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
+    if (config?.preferences?.theme) currentTheme = config?.preferences?.theme?? DEFAULT_THEME;
     if (config?.preferences?.beatSaviorComparison) currentBeatSaviorComparison = config?.preferences?.beatSaviorComparison ?? DEFAULT_BEATSAVIOR_COMPARISON;
   }
 
@@ -80,6 +88,7 @@
       draft.preferences.secondaryPp = currentSecondaryPpMetrics;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
       draft.preferences.beatSaviorComparison = currentBeatSaviorComparison;
+      draft.preferences.theme=currentTheme
     })
 
     show = false;
@@ -166,6 +175,7 @@
       twitchTokenRefreshedUnsubscriber();
     }
   })
+  
 
   $: onConfigUpdated(configStore && $configStore ? $configStore : null);
   $: refreshTwitchButton(twitchToken)
@@ -203,6 +213,7 @@
             </Select>
           </section>
 
+          
           <!-- <section class="option">
             <label title="Second PP metric displayed next to the score, either weighted PP or actual contribution of the score to the total PP (cached players only)">Secondary PP metrics</label>
             <Select bind:value={currentSecondaryPpMetrics}>
@@ -217,6 +228,15 @@
               title="Determines when to show icons on player avatars">Icons on avatars</label>
             <Select bind:value={currentAvatarIcons}>
               {#each avatarIcons as option (option.value)}
+                <option value={option.value}>{option.name}</option>
+              {/each}
+            </Select>
+          </section>
+
+          <section class="option">
+            <label title="Choose the theme you want">Theme</label>
+            <Select bind:value={currentTheme}>
+              {#each themes as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
             </Select>
@@ -262,7 +282,7 @@
         width: 100%;
     }
 
-    label {
+    label { 
         display: block;
         font-size: 0.75em;
         letter-spacing: 0.1em;

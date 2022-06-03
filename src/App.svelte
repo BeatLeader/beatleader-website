@@ -21,7 +21,7 @@
   import SigninPage from './pages/SignIn.svelte';
   import Nav from './components/Nav.svelte';
   import Modal from 'svelte-simple-modal';
-
+  import { configStore } from './stores/config';
   export let url = "";
 
   let mainEl = null;
@@ -75,7 +75,7 @@
   </main>
 </Modal>
 </Router>
-
+<link rel="stylesheet" href="/themes/{$configStore.preferences.theme}.css">
 <footer>
   <p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
   <p>
