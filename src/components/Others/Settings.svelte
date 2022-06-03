@@ -56,8 +56,8 @@
   ];
 
   const themes = [
-    {name: 'Default',value:"default"},
-    {name: 'Mirror',value:"mirror"},
+    {name: 'Classic',value:"default"},
+    {name: 'MirrorMB',value:"mirror"},
   ];
 
   let currentBillboardState = DEFAULT_BILLBOARD_STATE;
@@ -282,7 +282,7 @@
         width: 100%;
     }
 
-    label {
+    label { 
         display: block;
         font-size: 0.75em;
         letter-spacing: 0.1em;

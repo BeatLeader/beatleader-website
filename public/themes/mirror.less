@@ -1,3 +1,147 @@
-button{
-    border-radius: 0px !important;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&display=swap');
+*{
+    font-family:'Noto Sans SC', sans-serif;
 }
+body{
+    padding: 0;
+} 
+
+
+:root{
+    --ppColour:rgb(135, 143, 227) !important;
+}
+
+// Navigator
+.ssr-page-container.svelte-y3wm0x{
+    padding: .5rem;
+    height: 4rem !important;
+    box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
+    border-bottom:none !important;
+    background: rgba(48, 48, 48, 0.438) !important;
+    backdrop-filter: blur(10px);
+    max-width:none !important;
+    a,div{
+        transition: all 0.1s;
+        border-radius: 4px;
+        margin: 5px;
+    }
+}
+
+
+// Main page
+.sspl-page-container{
+    display: flex;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+
+    // Title
+    .title.is-4.svelte-ic5bju{
+        font-size: 50px;
+        position: relative;
+        &::after{
+            position: absolute;
+            bottom: -1rem;
+            left: 0px;
+            width: 100%;
+            background: linear-gradient(90deg,rgb(50, 115, 219),rgb(200, 28, 159));
+            height: 0.4rem;
+            content: "";
+        }
+    }
+
+    // Icons
+    .sources{
+        justify-content: center;
+        *{
+            cursor: pointer !important;
+        }
+        .title.is-6{
+            filter: grayscale(1);
+            box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.048);
+            background: rgb(37, 37, 37);
+            padding: 1rem;
+            border-radius: .3rem;
+            margin: .5rem;
+            transition: filter 0.1s;
+            .icon{
+                margin: 0 !important;
+            }
+            &:hover{
+                filter: none;
+            }
+        }
+    }
+    
+}
+
+// Leaderboard page
+.page-content.svelte-qzv2t0{
+    .title{
+        font-size: 2rem;
+        text-align: center;
+    }
+    .ranking-grid{
+        
+        grid-gap: 0.45rem !important;
+        .ranking-grid-row{
+            border-bottom: 1px rgba(0, 0, 0, 0.164) solid;
+            .player-card{
+                padding: 0.4rem .8rem;
+                margin: 0 !important;
+                background: rgba(50, 50, 50, 0);
+                border-radius: 0;
+                font-size: .8rem;
+                border: none !important;
+                
+                .rank{
+                    background: none;
+                    font-weight: 600;
+                }
+                .player-avatar{
+                    .image{
+                        overflow: hidden;
+                        border-radius: 3rem;
+                        background: rgb(70, 70, 70);
+                    }
+                }
+                .steam-and-pp{
+                   *{
+                    font-size: .86rem;
+                    color:rgb(0, 132, 255) !important;
+                   }
+                }
+            }
+            .fa-user-plus{
+                background: transparent !important;
+                transition: all 0.1s;
+                color:rgb(161, 161, 161);
+                &:hover{
+                    color:rgb(255, 255, 255);
+                }
+            }
+        }
+        
+    }
+    
+}
+
+
+// Content Box
+.content-box{
+    background: rgb(37, 37, 37) !important;
+    box-shadow: none !important;
+}
+
+// User profile page
+.page-content.svelte-qnwlci{
+    .badge{
+        font-size: 0.8rem !important;
+        padding: 0.4rem 0.3rem;
+    }
+    .chart{
+        box-shadow: 0px 3px 9px rgba(0, 0, 0, 0.11) !important;
+    }
+}
+

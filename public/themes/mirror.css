@@ -1,3 +1,156 @@
-button {
-  border-radius: 0px !important;
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kJo84MPvpLmixcA63oeALZTYKL.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZhaCt9w.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kXo84MPvpLmixcA63oeALhLw.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZ3aGt9w.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZlaet9w.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZraWt9w.otf) format('opentype');
+}
+* {
+  font-family: 'Noto Sans SC', sans-serif;
+}
+body {
+  padding: 0;
+}
+:root {
+  --ppColour: #878fe3 !important;
+}
+.ssr-page-container.svelte-y3wm0x {
+  padding: 0.5rem;
+  height: 4rem !important;
+  box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
+  border-bottom: none !important;
+  background: rgba(48, 48, 48, 0.438) !important;
+  backdrop-filter: blur(10px);
+  max-width: none !important;
+}
+.ssr-page-container.svelte-y3wm0x a,
+.ssr-page-container.svelte-y3wm0x div {
+  transition: all 0.1s;
+  border-radius: 4px;
+  margin: 5px;
+}
+.sspl-page-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+}
+.sspl-page-container .title.is-4.svelte-ic5bju {
+  font-size: 50px;
+  position: relative;
+}
+.sspl-page-container .title.is-4.svelte-ic5bju::after {
+  position: absolute;
+  bottom: -1rem;
+  left: 0px;
+  width: 100%;
+  background: linear-gradient(90deg, #3273db, #c81c9f);
+  height: 0.4rem;
+  content: "";
+}
+.sspl-page-container .sources {
+  justify-content: center;
+}
+.sspl-page-container .sources * {
+  cursor: pointer !important;
+}
+.sspl-page-container .sources .title.is-6 {
+  filter: grayscale(1);
+  box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.048);
+  background: #252525;
+  padding: 1rem;
+  border-radius: 0.3rem;
+  margin: 0.5rem;
+  transition: filter 0.1s;
+}
+.sspl-page-container .sources .title.is-6 .icon {
+  margin: 0 !important;
+}
+.sspl-page-container .sources .title.is-6:hover {
+  filter: none;
+}
+.page-content.svelte-qzv2t0 .title {
+  font-size: 2rem;
+  text-align: center;
+}
+.page-content.svelte-qzv2t0 .ranking-grid {
+  grid-gap: 0.45rem !important;
+}
+.page-content.svelte-qzv2t0 .ranking-grid .ranking-grid-row {
+  border-bottom: 1px rgba(0, 0, 0, 0.164) solid;
+}
+.page-content.svelte-qzv2t0 .ranking-grid .ranking-grid-row .player-card {
+  padding: 0.4rem 0.8rem;
+  margin: 0 !important;
+  background: rgba(50, 50, 50, 0);
+  border-radius: 0;
+  font-size: 0.8rem;
+  border: none !important;
+}
+.page-content.svelte-qzv2t0 .ranking-grid .ranking-grid-row .player-card .rank {
+  background: none;
+  font-weight: 600;
+}
+.page-content.svelte-qzv2t0 .ranking-grid .ranking-grid-row .player-card .player-avatar .image {
+  overflow: hidden;
+  border-radius: 3rem;
+  background: #464646;
+}
+.page-content.svelte-qzv2t0 .ranking-grid .ranking-grid-row .player-card .steam-and-pp * {
+  font-size: 0.86rem;
+  color: #0084ff !important;
+}
+.page-content.svelte-qzv2t0 .ranking-grid .ranking-grid-row .fa-user-plus {
+  background: transparent !important;
+  transition: all 0.1s;
+  color: #a1a1a1;
+}
+.page-content.svelte-qzv2t0 .ranking-grid .ranking-grid-row .fa-user-plus:hover {
+  color: #ffffff;
+}
+.content-box {
+  background: #252525 !important;
+  box-shadow: none !important;
+}
+.page-content.svelte-qnwlci .badge {
+  font-size: 0.8rem !important;
+  padding: 0.4rem 0.3rem;
+}
+.page-content.svelte-qnwlci .chart {
+  box-shadow: 0px 3px 9px rgba(0, 0, 0, 0.11) !important;
 }
