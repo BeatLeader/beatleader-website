@@ -30,7 +30,8 @@ const DEFAULT_CONFIG = {
     billboardState: 'show',
     secondaryPp: 'weighted',
     iconsOnAvatars: 'show',
-    beatSaviorComparison: 'show'
+    beatSaviorComparison: 'show',
+    theme:'default'
   },
   locale: DEFAULT_LOCALE,
   selectedPlaylist: null
