@@ -193,6 +193,19 @@ body {
 
 // User profile page
 .page-content.svelte-qnwlci {
+    .compare-player-name {
+        *{
+            background: transparent !important;
+            color: white !important;
+            border: none !important;
+        }
+    }
+
+    .grid.svelte-moindq>span{
+        padding: 1.7rem !important;
+        background: rgba(255, 255, 255, 0.171) !important;
+    }
+
     .badge {
         font-size: 0.8rem !important;
         color: white !important;
@@ -220,6 +233,14 @@ body {
             .badge{
                 border: none;
                 background: none !important;
+            }
+        }
+        @media screen and (max-width: 767px){
+            &{
+                height: unset !important;
+                .clan-badges{
+                    display: none;
+                }
             }
         }
     }
