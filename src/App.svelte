@@ -34,7 +34,7 @@
 
 
   let dom=document.createElement("style")
-  dom.innerHTML=`html,body{background:url(${$configStore.preferences.bgimage}) !important;background-size:cover !important;}`
+  dom.innerHTML=`html,body{background:url(${$configStore.preferences.bgimage}) !important;background-size:cover !important;background-attachment: fixed !important;}`
   document.head.appendChild(dom)
 
 </script>

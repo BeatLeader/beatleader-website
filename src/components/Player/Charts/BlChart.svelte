@@ -1,5 +1,7 @@
 <script>
+
   import Chart from 'chart.js/auto'
+  Chart.defaults.color = "#fff";
   import 'chartjs-adapter-luxon';
   import {DateTime} from 'luxon';
   import {getContext} from 'svelte'
@@ -43,7 +45,7 @@
     const countryRankColor = "#8992e8";
     const ppColor = "#007100";
     const rankedPlayCountColor = "#3e3e3e";
-    const totalPlayCountColor = "#666";
+    const totalPlayCountColor = "#fff";
     const activityColor = "#333";
     const rankedActivityColor = "#eb008c";
 
