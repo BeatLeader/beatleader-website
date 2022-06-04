@@ -26,6 +26,13 @@
     headers = {X-From = "Netlify"}
 
 [[redirects]]
+    from = "/cors/blapi/*"
+    to = "https://api.beatleader.xyz/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}
+
+[[redirects]]
     from = '/build/*'
     to = '/build/:splat'
     status = 200
