@@ -146,10 +146,10 @@ body {
   padding: 0.2rem !important;
   cursor: pointer;
   filter: saturate(0.5) brightness(1.4);
-  font-size: 12px;
+  transform: scale(0.8);
   font-weight: 400 !important;
   color: white !important;
-  margin: 0 0.2rem;
+  margin: 0 0;
 }
 .ranking-grid .ranking-grid-row .player-card .steam-and-pp *,
 .players .ranking-grid-row .player-card .steam-and-pp * {
