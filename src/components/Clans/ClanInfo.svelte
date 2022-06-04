@@ -245,7 +245,7 @@
           />
           <input type="color" bind:value={color} disabled={!!pendingText}/>
         {:else}
-          <span class="clanTag">[{tag}]</span>
+          <span class="clanTag">{tag}</span>
         {/if}
       </section>
 

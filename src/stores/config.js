@@ -31,7 +31,8 @@ const DEFAULT_CONFIG = {
     secondaryPp: 'weighted',
     iconsOnAvatars: 'show',
     beatSaviorComparison: 'show',
-    theme:'default'
+    theme:'default',
+    bgimage:"/assets/background.png"
   },
   locale: DEFAULT_LOCALE,
   selectedPlaylist: null

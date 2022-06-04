@@ -29,14 +29,19 @@
 <div class="container">
 {#if !action || action == "addHome"}
     {#if !loggedInPlayer}
-        Login with the Steam or account you created in mod.<br>
+    <div class="title">Login</div>
+    <div class="tips">Login with the Steam or account you created in mod.</div>
         <b>Signup is possible only from the mods!</b>
         <div class="input-container">
-            Login
-            <input bind:value={login} placeholder="Login">
+            <div class="cat">
+                Account
+            </div>
+            <input bind:value={login} placeholder="Account">
         </div>
         <div class="input-container">
-            Password
+            <div class="cat">
+                Password
+            </div>
             <input type="password" bind:value={password} placeholder="Password">
         </div>
 
@@ -45,7 +50,7 @@
             <input type="hidden" name="Provider" value="Steam" />
             <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
 
-            <Button iconFa="fas fa-plus-square" label="Login with Steam" type="submit"/>
+            <Button label="Login with Steam" type="submit"/>
         </form>
     {:else if loggedInPlayer > 70000000000000000}
         <!-- {#if !$account.migrated}

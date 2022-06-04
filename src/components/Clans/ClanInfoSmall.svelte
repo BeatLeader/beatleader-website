@@ -41,7 +41,7 @@
     <section class="form">
       <section>
         <section class="title is-5">
-            <span style="--clan-color: {color}" class="clanTag">[{tag}]</span>
+            <span style="--clan-color: {color}" class="clanTag">{tag}</span>
             <span class="clanName">{name}</span>
         </section>
         <section class="title is-7">

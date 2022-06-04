@@ -8,6 +8,11 @@ body {
     padding: 0;
 }
 
+body{
+    background: transparent !important;
+    backdrop-filter: blur(10px);
+}
+
 
 :root {
     --ppColour: rgb(226, 183, 255) !important;
@@ -19,8 +24,7 @@ body {
     height: 4rem !important;
     box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
     border-bottom: none !important;
-    background: rgba(92, 92, 92, 0.281) !important;
-    backdrop-filter: blur(10px);
+    background: rgb(36, 36, 36) !important;
     max-width: none !important;
 
     a,
@@ -94,18 +98,11 @@ body {
     .ranking-grid-row {
         padding: .2rem 0;
         border-bottom: 1px rgba(189, 189, 189, 0.164) solid;
-        transition: all .2s;
-        
-
-        &:hover{
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.158);
-        }
 
         .player-card {
             padding: 0.4rem .8rem;
             margin: 0 !important;
-            background: rgba(50, 50, 50, 0) !important;
+            background: rgba(50, 50, 50, 0);
             border-radius: 0;
             font-size: .8rem;
             border: none !important;
@@ -173,8 +170,7 @@ body {
 
 // Content Box
 .content-box {
-    background: rgba(131, 131, 131, 0.082) !important;
-    backdrop-filter: blur(10px);
+    background: transparent !important;
     box-shadow: none !important;
 }
 
@@ -238,51 +234,5 @@ body {
 .ranking.global.sspl{
     *{
         background: transparent;
-    }
-}
-
-button.pagination-link{
-    font-size: smaller !important;
-    padding:13px 15px !important;
-    background: rgba(199, 199, 199, 0.363) !important;
-    &.is-current{
-        background: rgba(0, 112, 240, 0.521) !important;
-    }
-}
-
-input{
-    background: transparent !important;
-    color: white !important;
-    border: none;
-    opacity: 0.95;
-    border-bottom: 1px solid white !important;
-}
-
-.container.svelte-19ic7k8{
-    backdrop-filter: blur(10px);
-    background: rgba(199, 199, 199, 0.151) !important;
-    border-radius: .5rem;
-    .title{
-        position: relative;
-        &::after {
-            position: absolute;
-            bottom: -1rem;
-            left: 0px;
-            width: 100%;
-            background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
-            height: 0.4rem;
-            content: "";
-        }
-    }
-    .input-container{
-        justify-items: center;
-        .cat{
-            font-size: 1.4rem;
-        }
-        input{
-            font-size: 1.2rem;
-            text-align: center;
-            color: rgba(243, 243, 243, 0.63) !important;
-        }
     }
 }
