@@ -19,7 +19,7 @@
 
   export let show = false;
 
-  const DEFAULT_THEME = "default";
+  const DEFAULT_THEME = "mirror";
   const DEFAULT_BILLBOARD_STATE = "show";
   const DEFAULT_SCORE_COMPARISON_METHOD = "in-place";
   const DEFAULT_SECONDARY_PP_METRICS = "weighted";
