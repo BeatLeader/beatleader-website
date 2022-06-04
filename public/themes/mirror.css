@@ -199,6 +199,15 @@ body {
   -webkit-backdrop-filter: blur(10px);
   box-shadow: none !important;
 }
+.page-content.svelte-qnwlci .compare-player-name * {
+  background: transparent !important;
+  color: white !important;
+  border: none !important;
+}
+.page-content.svelte-qnwlci .grid.svelte-moindq > span {
+  padding: 1.7rem !important;
+  background: rgba(255, 255, 255, 0.171) !important;
+}
 .page-content.svelte-qnwlci .badge {
   font-size: 0.8rem !important;
   color: white !important;
@@ -224,6 +233,14 @@ body {
 .page-content.svelte-qnwlci .player-score.highlight .badge {
   border: none;
   background: none !important;
+}
+@media screen and (max-width: 767px) {
+  .page-content.svelte-qnwlci .player-score {
+    height: unset !important;
+  }
+  .page-content.svelte-qnwlci .player-score .clan-badges {
+    display: none;
+  }
 }
 .page-content.svelte-qnwlci .scores-grid * {
   color: white !important;
