@@ -42,18 +42,18 @@
         margin-left: .5em;
         font-size: 1rem;
         padding: 0 !important;
-        font-weight: bold !important;
+        font-weight: bold;
     }
 
     :global(.clan-badges span.label){
-      font-weight: bold !important;
+      font-weight: bold;
      }
 
     .clan-badges :global(a > *) {
         margin-bottom: 0 !important;
         margin-right: .25em!important;
         padding: 0 !important;
-        font-weight: bold !important;
+        font-weight: bold;
         width: min-content!important;
     }
     .clan-badges :global(a > *:last-child) {

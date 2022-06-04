@@ -31,6 +31,12 @@
   setContext('pageContainer', containerStore);
 
   $: if (mainEl) containerStore.observe(mainEl)
+
+
+  let dom=document.createElement("style")
+  dom.innerHTML=`html,body{background:url(${$configStore.preferences.bgimage}) !important;background-size:cover !important;}`
+  document.head.appendChild(dom)
+
 </script>
 
 <Router {url}>
@@ -75,7 +81,9 @@
   </main>
 </Modal>
 </Router>
+
 <link rel="stylesheet" href="/themes/{$configStore.preferences.theme}.css">
+
 <footer>
   <p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
   <p>

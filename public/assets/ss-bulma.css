@@ -9046,7 +9046,7 @@ html {
 }
 
 body {
-  background-color: var(--background) !important;
+  background-color: var(--background);
 }
 
 .title {
