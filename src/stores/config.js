@@ -32,7 +32,7 @@ const DEFAULT_CONFIG = {
     iconsOnAvatars: 'show',
     beatSaviorComparison: 'show',
     theme:'default',
-    bgimage:""
+    bgimage:"/assets/background.jpg"
   },
   locale: DEFAULT_LOCALE,
   selectedPlaylist: null
