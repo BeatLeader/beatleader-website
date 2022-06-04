@@ -153,6 +153,10 @@ body {
   font-size: 0.86rem;
   color: #afcbff !important;
 }
+.ranking-grid .ranking-grid-row .player-card.current,
+.players .ranking-grid-row .player-card.current {
+  background: rgba(240, 240, 240, 0.164);
+}
 .ranking-grid .ranking-grid-row .fa-user-plus,
 .players .ranking-grid-row .fa-user-plus {
   background: transparent !important;

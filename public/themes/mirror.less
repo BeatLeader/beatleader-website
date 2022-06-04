@@ -144,6 +144,19 @@ body {
                     color: rgb(175, 203, 255) !important;
                 }
             }
+
+            &.current{
+                position: relative;
+                &::after {
+                    position: absolute;
+                    bottom: -0.4rem;
+                    left: 0px;
+                    width: calc(100% + 45px);
+                    background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
+                    height: 0.4rem;
+                    content: "";
+                }
+            }
         }
 
         .fa-user-plus {
