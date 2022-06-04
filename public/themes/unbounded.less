@@ -8,6 +8,11 @@ body {
     padding: 0;
 }
 
+body{
+    background: transparent !important;
+    backdrop-filter: blur(10px);
+}
+
 
 :root {
     --ppColour: rgb(226, 183, 255) !important;
@@ -19,8 +24,7 @@ body {
     height: 4rem !important;
     box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
     border-bottom: none !important;
-    background: rgba(168, 168, 168, 0.281) !important;
-    backdrop-filter: blur(10px);
+    background: rgb(36, 36, 36) !important;
     max-width: none !important;
 
     a,
@@ -166,8 +170,7 @@ body {
 
 // Content Box
 .content-box {
-    background: rgba(131, 131, 131, 0.082) !important;
-    backdrop-filter: blur(10px);
+    background: transparent !important;
     box-shadow: none !important;
 }
 
@@ -231,14 +234,5 @@ body {
 .ranking.global.sspl{
     *{
         background: transparent;
-    }
-}
-
-button.pagination-link{
-    font-size: smaller !important;
-    padding:13px 15px !important;
-    background: rgba(199, 199, 199, 0.363) !important;
-    &.is-current{
-        background: rgba(0, 112, 240, 0.521) !important;
     }
 }

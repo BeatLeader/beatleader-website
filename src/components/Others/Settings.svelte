@@ -63,8 +63,9 @@
   ];
 
   const themes = [
-    { name: "Classic", value: "default" },
-    { name: "MirrorMB", value: "mirror" },
+    { name: "Classic - Motzel", value: "default" },
+    { name: "Mirror - MicroBlock", value: "mirror" },
+    { name: "Unbounded - MicroBlock", value: "unbounded" },
   ];
 
   let currentBillboardState = DEFAULT_BILLBOARD_STATE;
@@ -112,6 +113,7 @@
       draft.preferences.beatSaviorComparison = currentBeatSaviorComparison;
       draft.preferences.theme = currentTheme;
       draft.preferences.bgimage = currentBGImage;
+      document.location.reload()
     });
 
     show = false;
