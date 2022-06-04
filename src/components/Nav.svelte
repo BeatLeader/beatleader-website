@@ -98,9 +98,9 @@
   function calculateSignUpOptions(loggedInUser) {
     if (loggedInUser.player) {
       signupOptions = [];
-      // if (!loggedInUser.migrated) {
-      //   signupOptions.push("Migrate");
-      // }
+      if (!loggedInUser.migrated) {
+        signupOptions.push("Migrate");
+      }
       if (loggedInUser.player.id < 70000000000000000 || loggedInUser.migrated) {
         signupOptions.push("Change password");
       }

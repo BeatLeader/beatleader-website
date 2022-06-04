@@ -31,7 +31,7 @@ const DEFAULT_CONFIG = {
     secondaryPp: 'weighted',
     iconsOnAvatars: 'show',
     beatSaviorComparison: 'show',
-    theme:'default',
+    theme:'mirror',
     bgimage:"/assets/background.png"
   },
   locale: DEFAULT_LOCALE,

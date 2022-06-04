@@ -13,7 +13,7 @@ const process = response => {
        history && history.length
             ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
             : []
-      let difference = (rankHistory.length > 1 ? parseInt(rankHistory[rankHistory.length > 7 ? rankHistory.length - 7 : 0]) - parseInt(rankHistory[rankHistory.length - 1]) : null);
+      const difference = rankHistory.length > 1 ? rankHistory[rankHistory.length > 7 ? rankHistory.length - 7 : 0] - rank : null;
 
       if (avatar && !avatar.startsWith('http')) {
         avatar = `${queue.BEATLEADER_API.BL_API_URL}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
