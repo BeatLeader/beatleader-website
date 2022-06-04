@@ -56,6 +56,7 @@ body {
   border-bottom: none !important;
   background: rgba(92, 92, 92, 0.281) !important;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   max-width: none !important;
 }
 .ssr-page-container.svelte-y3wm0x a,
@@ -181,6 +182,7 @@ body {
 .content-box {
   background: rgba(131, 131, 131, 0.082) !important;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: none !important;
 }
 .page-content.svelte-qnwlci .badge {
@@ -220,7 +222,6 @@ body {
 }
 .clanTag {
   filter: saturate(0.5) brightness(1.1);
-  font-size: 0.5rem;
   font-weight: 500 !important;
   border-bottom: 2px rgba(255, 255, 255, 0.315) solid;
   padding: 0 0.3rem;
@@ -245,6 +246,7 @@ input {
 }
 .container.svelte-19ic7k8 {
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);s
   background: rgba(199, 199, 199, 0.151) !important;
   border-radius: 0.5rem;
 }

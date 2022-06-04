@@ -216,7 +216,6 @@ body {
 }
 .clanTag {
   filter: saturate(0.5) brightness(1.1);
-  font-size: 0.5rem;
   font-weight: 500 !important;
   border-bottom: 2px rgba(255, 255, 255, 0.315) solid;
   padding: 0 0.3rem;
