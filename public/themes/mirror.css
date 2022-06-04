@@ -111,12 +111,18 @@ body {
 .players .ranking-grid-row {
   padding: 0.2rem 0;
   border-bottom: 1px rgba(189, 189, 189, 0.164) solid;
+  transition: all 0.2s;
+}
+.ranking-grid .ranking-grid-row:hover,
+.players .ranking-grid-row:hover {
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.158);
 }
 .ranking-grid .ranking-grid-row .player-card,
 .players .ranking-grid-row .player-card {
   padding: 0.4rem 0.8rem;
   margin: 0 !important;
-  background: rgba(50, 50, 50, 0);
+  background: rgba(50, 50, 50, 0) !important;
   border-radius: 0;
   font-size: 0.8rem;
   border: none !important;
