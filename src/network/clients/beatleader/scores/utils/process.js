@@ -6,8 +6,8 @@ export default response => {
   return {
     metadata: response?.metadata ?? {},
     data: response.data.map(s => {
-      const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration} = s.leaderboard.song;
-      const song = {hash, name, subName, authorName, levelAuthorName, duration};
+      const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration, coverImage} = s.leaderboard.song;
+      const song = {hash, name, subName, authorName, levelAuthorName, duration, coverImage};
 
       const {id: leaderboardId} = s.leaderboard;
 

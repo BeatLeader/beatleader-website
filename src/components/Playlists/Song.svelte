@@ -46,7 +46,7 @@
     $: hash = song.hash;
     $: difficulties = song.difficulties;
     $: updateSongKey(hash);
-    $: ssCoverUrl = hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null;
+    $: ssCoverUrl = song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null);
     $: coverUrl = ssCoverUrl;
 </script>
 
