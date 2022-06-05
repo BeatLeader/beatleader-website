@@ -40,7 +40,7 @@
 </script>
 
 <Router {url}>
-  <Nav />
+  <Nav/>
   <Modal
     closeButton={false}
     styleWindow={{ width: "90vw", height: "65vh" }}

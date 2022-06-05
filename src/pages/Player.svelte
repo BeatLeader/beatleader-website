@@ -191,7 +191,7 @@
 </svelte:head>
 
 <section class="align-content">
-<article class="page-content" bind:this={playerEl} transition:fade>
+<article class="page-content player-page" bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <ContentBox>
       <p class="error">Player not found.</p>

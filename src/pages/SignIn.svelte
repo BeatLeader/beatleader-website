@@ -26,7 +26,7 @@
     $: performAction();
 </script>
 
-<div class="container">
+<div class="container signin-page">
 {#if !action || action == "addHome"}
     {#if !loggedInPlayer}
     <div class="title">Login</div>
