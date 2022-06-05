@@ -7,6 +7,7 @@
   import {opt, capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import {configStore} from '../stores/config'
+  import createVotingStore from '../stores/beatleader/rankVoting'
   import stringify from 'json-stable-stringify';
   import createPlayerService from '../services/beatleader/player'
   import ssrConfig from '../ssr-config'
@@ -24,6 +25,8 @@
   import Switcher from '../components/Common/Switcher.svelte'
   import Button from '../components/Common/Button.svelte'
   import Icons from '../components/Song/Icons.svelte'
+  import RankingVoting from '../components/Leaderboard/RankingVoting.svelte'
+  
   import {formatNumber} from '../utils/format'
   import {getIconNameForDiff, describeModifiersAndMultipliers, getDescriptionForDiff} from '../utils/beatleader/format'
   import {isValidDate, dateFromUnix} from '../utils/date'
@@ -55,6 +58,7 @@
   const dispatch = createEventDispatcher();
 
   const playerService = createPlayerService();
+  const votingStore = createVotingStore();
 
   const params = [
     {key: 'countries', default: '', process: processStringFilter},
@@ -266,6 +270,7 @@
    window.open(link, "_blank");
   }
 
+  let mapVoting = false;
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
@@ -285,6 +290,8 @@
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
   $: mainPlayerId = opt($configStore, 'users.main');
+  $: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type)
+  $: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
   $: updateMainPlayer = updateMainPlayer(mainPlayerId);
   $: mainPlayerCountry = mainPlayer?.playerInfo?.countries?.[0]?.country ?? null
   $: updateTypeOptions(mainPlayerCountry);
@@ -294,6 +301,9 @@
   <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}`}</title>
 </svelte:head>
 
+{#if mapVoting}
+  <RankingVoting {votingStore} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => mapVoting = false} />
+{/if}
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
     <div class="leaderboard {type === 'accsaber' ? 'no-cover-image' : ''}"
@@ -354,7 +364,15 @@
         {/if}
 
         {#if type !== 'accsaber'}
+        
           <nav class="diff-switch">
+            {#if votingStatus == 2}
+          <Button cls="voteButton" iconFa="fas fa-comment-dots" title="Vote this map for ranking!" noMargin={true} on:click={() => mapVoting = !mapVoting}/>
+          {:else if votingStatus == 1}
+          <Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title="Pass this diff to vote on the map" noMargin={true}/>
+          {:else if votingStatus == 3}
+          <Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true}/>
+          {/if}
             {#if !withoutDiffSwitcher && diffs && diffs.length}
               <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff}/>
             {/if}
@@ -717,6 +735,11 @@
     :global(.battleroyalebtn) {
       margin-left: 1em;
       margin-bottom: 0.5em;
+    }
+
+    :global(.voteButton) {
+      position: absolute !important;
+      left: 1em;
     }
 
     @media screen and (max-width: 767px) {

@@ -57,7 +57,7 @@
 
     main {
         color: var(--textColor);
-        overflow-y: auto;
+        overflow-y: initial;
         flex: 1;
     }
 
