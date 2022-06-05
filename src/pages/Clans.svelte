@@ -119,8 +119,8 @@
 
   let sortValues1 = [
     {id: 'pp', 'label': 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes'},
-    {id: 'acc', 'label': 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
-    {id: 'rank', 'label': 'Rank', title: 'Sort by rank',iconFa: 'fa fa-list-ol'},
+    {id: 'acc', 'label': 'Acc', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-crosshairs'},
+    {id: 'rank', 'label': 'Rank', title: 'Sort by rank clans with 3 players or more',iconFa: 'fa fa-list-ol'},
     {id: 'count', 'label': 'Players', title: 'Sort by player count', iconFa: 'fa fa-user'},
   ];
   let sortValues = sortValues1;

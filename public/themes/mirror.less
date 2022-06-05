@@ -21,6 +21,7 @@ nav.ssr-page-container {
     border-bottom: none !important;
     background: rgba(92, 92, 92, 0.281) !important;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     max-width: none !important;
 
     a,
@@ -188,11 +189,29 @@ nav.ssr-page-container {
 .content-box {
     background: rgba(131, 131, 131, 0.082) !important;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: none !important;
 }
 
 // User profile page
+<<<<<<< HEAD
 .page-content.player-page {
+=======
+.page-content.svelte-qnwlci {
+    .compare-player-name {
+        *{
+            background: transparent !important;
+            color: white !important;
+            border: none !important;
+        }
+    }
+
+    .grid.svelte-moindq>span{
+        padding: 1.7rem !important;
+        background: rgba(255, 255, 255, 0.171) !important;
+    }
+
+>>>>>>> c27d3a242a03849ecea14d4dd92df4b44374b86f
     .badge {
         font-size: 0.8rem !important;
         color: white !important;
@@ -220,6 +239,14 @@ nav.ssr-page-container {
             .badge{
                 border: none;
                 background: none !important;
+            }
+        }
+        @media screen and (max-width: 767px){
+            &{
+                height: unset !important;
+                .clan-badges{
+                    display: none;
+                }
             }
         }
     }
@@ -274,6 +301,7 @@ input{
 // Login Page
 .container.signin-page{
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     background: rgba(199, 199, 199, 0.151) !important;
     border-radius: .5rem;
     .title{
