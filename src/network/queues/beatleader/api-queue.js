@@ -15,7 +15,7 @@ export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
 export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}'
 export const BL_API_RANKING_COUNTRY_URL = BL_API_URL + 'players?page=${page}&countries=${country}&sortBy=${sortBy}'
-export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/id/${leaderboardId}?page=${page}&countries=${countries}'
+export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}'
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}'
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
@@ -112,6 +112,7 @@ export default (options = {}) => {
       ret.player.clans = player?.clans ?? null;
 
       ret.score.score = s.modifiedScore;
+      ret.score.rankVoting = s.rankVoting;
 
       ret.score.timeSetString = formatDateRelative(dateFromUnix(s.timeset));
       ret.score.timeSet = s.timeset;
