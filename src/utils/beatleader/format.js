@@ -116,10 +116,10 @@ export function mapTypeFromMask(type) {
   Object.keys(typesMap).forEach(key => {
     const mask = typesMap[key];
     if ((type & mask) === mask) {
-      result += key + ",";
+      result += key + ", ";
     }
   })
-  return result.length ? result.substring(0, result.length - 1) : null;
+  return result.length ? result.substring(0, result.length - 2) : null;
 }
 
 export function votingsForTypeStats(stats) {
@@ -127,10 +127,10 @@ export function votingsForTypeStats(stats) {
   let result = "";
   stats.forEach((element, i) => {
     if (element > 0) {
-      result += votingTypes[i] + "  " + element + ",";
+      result += votingTypes[i] + "  " + element + ", ";
     }
   });
-  return result.length ? result.substring(0, result.length - 1) : null;
+  return result.length ? result.substring(0, result.length - 2) : null;
 }
 
 export function describeModifiersAndMultipliers(modifiers, multipliers) {

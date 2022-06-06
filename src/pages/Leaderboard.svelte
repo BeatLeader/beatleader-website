@@ -560,7 +560,7 @@
 												<div class="score with-badge">
 													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 														<span slot="label">
-															<small title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
+															<small class="nowrap-label" title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
 														</span>
 													</Badge>
 												</div>
@@ -589,7 +589,7 @@
 								<div class="score with-badge">
 									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 										<span slot="label">
-											<small title="Map type">{votingsForTypeStats(votingStats.type)}</small>
+											<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
 										</span>
 									</Badge>
 								</div>
@@ -880,6 +880,10 @@
 		align-items: center;
 	}
 
+  .nowrap-label {
+    white-space: nowrap;
+  }
+
 	:global(.battleroyalebtn) {
 		margin-left: 1em;
 		margin-bottom: 0.5em;
@@ -902,6 +906,10 @@
 		}
 
 		.player-score {
+			flex-direction: column;
+		}
+
+    .mobile-container {
 			flex-direction: column;
 		}
 

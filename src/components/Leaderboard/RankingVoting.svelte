@@ -51,6 +51,7 @@
 		title="Vote map for ranked"
 		okButton="Submit"
 		cancelButton="Cancel"
+        okButtonDisabled={suitableForRank == undefined}
 		on:confirm={() => vote()}
 		on:cancel={() => dispatch('finished')}>
 		<div slot="content">
