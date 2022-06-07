@@ -1,4 +1,8 @@
 trailingComma: "es5"
-tabWidth: 2
-semi: false
+useTabs: true
+semi: true
 singleQuote: true
+bracketSpacing: false
+bracketSameLine: true
+arrowParens: "avoid"
+printWidth: 140
