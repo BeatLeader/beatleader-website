@@ -6,12 +6,13 @@ const process = response => {
 
 	return response
 		.map(m => {
-			const timeset = parseInt(m.timeset, 10);
+			const timeset = parseInt(m?.timeset, 10);
 			if (isNaN(timeset)) return null;
 
 			return {
 				...m,
-				timeset: new Date(timeset),
+				acc: Number.isFinite(m?.acc) ? m.acc * 100 : 0,
+				timeset: new Date(timeset * 1000),
 			}
 		})
 		.filter(m => m);

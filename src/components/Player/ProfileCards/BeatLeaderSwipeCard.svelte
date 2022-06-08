@@ -67,8 +67,8 @@
     selectedOption = event.detail;
   }
 
-  $: avgStat = scoresStats?.find(s => s.key === 'averageAccuracy') ?? null
-  $: medianStat = scoresStats?.find(s => s.key === 'medianAccuracy') ?? null
+  $: avgStat = scoresStats?.find(s => s.key === 'averageRankedAccuracy') ?? null
+  $: medianStat = scoresStats?.find(s => s.key === 'medianRankedAccuracy') ?? null
   $: avgAccTween = avgStat?.value ?? null
   $: medianAccTween = medianStat?.value ?? null
   $: averageAcc = $avgAccTween
