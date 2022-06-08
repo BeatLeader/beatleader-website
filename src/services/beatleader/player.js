@@ -3,6 +3,7 @@ import {configStore} from '../../stores/config'
 import playerApiClient from '../../network/clients/beatleader/player/api'
 import playerFindApiClient from '../../network/clients/beatleader/players/api-player-find'
 import playerPageClient from '../../network/clients/beatleader/player/page'
+import playerAccGraphApiClient from '../../network/clients/beatleader/accgraph/api'
 import {PRIORITY} from '../../network/queues/http-queue'
 import playersRepository from '../../db/repository/players'
 import playersHistoryRepository from '../../db/repository/players-history'
@@ -325,6 +326,31 @@ export default () => {
     return allRefreshed;
   }
 
+  const fetchAccGraph = async (playerId, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
+    try {
+      log.trace(`Starting fetching player "${playerId}" acc graph...`, 'PlayerService')
+
+      if (!playerId) {
+        log.warn(`Can not fetch player acc graph if an empty playerId is given`, 'PlayerService');
+
+        return null;
+      }
+
+      const accGraph = resolvePromiseOrWaitForPending(`apiClient/accgraph/${playerId}`, () => playerAccGraphApiClient.getProcessed({playerId, priority}));
+
+      log.debug(`Player acc graph fetched.`, 'PlayerService', accGraph);
+
+      return accGraph;
+    }
+    catch(e) {
+      if (throwErrors) throw e;
+
+      log.debug(`Fetching player acc graph error${e.toString ? `: ${e.toString()}` : ''}`, 'PlayerService', e)
+
+      return null;
+    }
+  }
+
   const destroyService = () => {
     serviceCreationCount--;
 
@@ -353,6 +379,7 @@ export default () => {
     fetchPlayerAndUpdateRecentPlay,
     updatePlayerRecentPlay,
     findPlayer,
+    fetchAccGraph,
     refresh,
     refreshAll,
     destroyService,

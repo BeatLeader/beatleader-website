@@ -231,6 +231,7 @@ export default (options = {}) => {
     clanKick,
     clanInvite,
     clanCancelInvite,
+    accGraph,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,
