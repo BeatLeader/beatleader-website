@@ -29,6 +29,7 @@ export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}'
 export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${player}'
 export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}'
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}'
+export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}'
@@ -89,6 +90,8 @@ export default (options = {}) => {
   const clanInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_INVITE_URL, {player: playerId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
   const clanCancelInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_CLAN_CANCEL_INVITE_URL, {player: playerId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const accGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId}), options, priority);
 
   const processLeaderboardScores = response => {
     return response.map(s => {
@@ -228,6 +231,7 @@ export default (options = {}) => {
     clanKick,
     clanInvite,
     clanCancelInvite,
+    accGraph,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,

@@ -4,9 +4,9 @@
   import {formatNumber, roundToPrecision} from '../../../utils/format'
   import {formatDateRelative} from '../../../utils/date'
   import {debounce} from '../../../utils/debounce'
-  import {worker} from '../../../utils/worker-wrappers'
   import regionsPlugin from './utils/regions-plugin'
   import {capitalize} from '../../../utils/js'
+	import createPlayerService from '../../../services/beatleader/player'
   import Spinner from '../../Common/Spinner.svelte'
 
   export let playerId = null;
@@ -16,6 +16,8 @@
   export let height = "350px";
 
   Chart.register(zoomPlugin);
+
+	const playerService = createPlayerService();
 
   const CHART_DEBOUNCE = 300;
 
@@ -28,20 +30,6 @@
   let isLoading = false;
 
   const calcPlayerScoresHash = playerScores => (playerScores?.length ?? 0) + averageAcc + medianAcc;
-
-  const getPlayerRankedScores = async playerId => {
-    if (!playerId) return null;
-
-    isLoading = true;
-
-    const rankedScores = await worker.getPlayerRankedScoresWithStars(playerId);
-
-    isLoading = false;
-
-    return rankedScores;
-  }
-
-  const refreshPlayerRankedScores = async playerId => playerScores = await getPlayerRankedScores(playerId)
 
   async function setupChart(hash, canvas) {
     if (!hash || !canvas || !playerScores?.length || chartHash === lastHistoryHash) return;
@@ -61,10 +49,10 @@
 
     let maxStars = 0;
     let minAcc = 100;
-    const chartData = await Promise.all(playerScores
-      .filter(s => !!s?.score?.pp || !!s?.stars)
-      .map(async s => {
-        const acc = type === 'percentage' ? (s?.score?.percentage ? s?.score?.percentage : s?.score?.acc) : s?.score?.acc ?? 0;
+    const chartData = playerScores
+			.filter(s => !!s?.acc && !!s?.stars)
+      .map(s => {
+        const acc = s.acc;
 
         if (s.stars > maxStars) maxStars = s.stars;
         if (acc < minAcc) minAcc = acc;
@@ -72,15 +60,15 @@
         return {
           x: s.stars,
           y: acc,
-          leaderboardId: s.leaderboardId,
-          name: s?.leaderboard?.song?.name,
-          songAuthor: s?.leaderboard?.song?.authorName,
-          levelAuthor: s?.leaderboard?.song?.levelAuthorName,
-          diff: s?.leaderboard?.diffInfo?.diff,
-          timeSet: s.timeSet,
-          mods: s?.score?.mods,
+          leaderboardId: s?.leaderboardId ?? null,
+          name: s?.songName ?? '',
+          songAuthor: '',
+          levelAuthor: s?.mapper ?? '',
+          diff: `${s?.diff ?? ''}${s?.mode?.length && s.mode !== 'Standard' ? ' ' + s.mode : ''}`,
+          timeSet: s.timeset,
+          mods: s?.modifiers?.length ? s.modifiers.split(',') : null,
         }
-      }));
+      });
 
     const avgData = Object.entries(
       chartData.reduce((cum, point) => {
@@ -243,7 +231,7 @@
                         if (song) {
                           ret.push(formatDateRelative(song.timeSet));
                           ret.push(`${song.name} (${capitalize(song?.diff?.replace('Plus', '+' ?? ''))})`);
-                          ret.push(`${song.songAuthor} / ${song.levelAuthor}`);
+                          ret.push(`${song.levelAuthor}`);
                         }
                         break;
                     }
@@ -355,7 +343,19 @@
   let debouncedChartHash = null;
   const debounceChartHash = debounce(chartHash => debouncedChartHash = chartHash, CHART_DEBOUNCE);
 
-  $: refreshPlayerRankedScores(playerId);
+	async function fetchPlayerScores(playerId) {
+		if (!playerId?.length) return;
+
+		try {
+			isLoading = true;
+			playerScores = await playerService.fetchAccGraph(playerId);
+		}
+		finally {
+			isLoading = false;
+		}
+	}
+
+	$: fetchPlayerScores(playerId)
 
   $: chartHash = calcPlayerScoresHash(playerScores);
   $: debounceChartHash(chartHash)

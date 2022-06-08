@@ -126,10 +126,7 @@
             props: {
               playerId,
               scoresStats: scoresStatsFinal,
-              accBadges,
               ssBadges,
-              isCached,
-              skeleton,
               statsHistory,
             },
             delay: 500,
