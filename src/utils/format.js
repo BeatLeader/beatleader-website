@@ -4,7 +4,10 @@ export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery =
   let replaced = Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), process(vars[key] ?? '')), url);
 
   if (clearUnused) replaced = replaced.replace(new RegExp('\\${.*?}', 'gi'), '');
-  if (clearEmptyQuery) {
+
+  if (clearEmptyQuery && replaced.length) {
+			if (replaced[0] === '/') replaced = window.location.protocol + "//" + window.location.host + replaced
+
       const urlObj = new URL(replaced);
       [...urlObj.searchParams.entries()]
         .forEach(([k, v]) => {
