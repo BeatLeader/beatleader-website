@@ -290,7 +290,7 @@
 
           <section class="option">
             <label title="Input url of the background image you want">Background Image</label>
-            <input type="url" bind:value={currentBGImage} disabled={currentTheme=="default"} />
+            <input type="url" bind:value={currentBGImage} disabled={currentTheme=="default"||currentTheme=="mirror-low"} />
           </section>
 
           <section class="option twitch">
