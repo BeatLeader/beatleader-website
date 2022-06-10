@@ -54,7 +54,7 @@ body {
   height: 4rem !important;
   box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
   border-bottom: none !important;
-  background: #202020 !important;
+  background: rgba(92, 92, 92, 0.281) !important;
   max-width: none !important;
 }
 .ssr-page-container.svelte-y3wm0x a,
@@ -192,8 +192,8 @@ body {
   color: #ffffff;
 }
 .content-box {
-  background: none !important;
-  box-shadow: none !important;
+  background: #2c2c2c !important;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.192) !important;
 }
 .page-content.svelte-qnwlci .compare-player-name * {
   background: transparent !important;
