@@ -60,7 +60,7 @@
  
 <div class="top-text">
     Interested? Check out <a href="https://discord.gg/2RG5YVqtG6">Discord</a> for more info. Not? You can hide this in <a href="/dashboard" on:click={(e) => {eventBus.publish('show-settings', {}); e.preventDefault()}}>settings</a>. 
-    <br>(Note: everyone is working for free now. But we are open to monetisation ideas.)
+    <br>We have <a href="https://patreon.com/beatleader">Patreon</a> now! We may even pay you :shockPika: 
 </div>
 
 <style>

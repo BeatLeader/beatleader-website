@@ -67,8 +67,6 @@ const getRankedScores = async (playerId, withStars = false) => {
     : scores.filter(score => score?.score?.pp);
 }
 
-const getPlayerRankedScoresWithStars = async playerId => getRankedScores(playerId, true)
-
 const calcPlayerStats = async playerId => {
   await init();
 
@@ -180,7 +178,6 @@ const worker = {
   init,
   calcPlayerStats,
   calcPpBoundary,
-  getPlayerRankedScoresWithStars
 }
 
 expose(worker);
