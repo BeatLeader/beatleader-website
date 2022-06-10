@@ -158,7 +158,7 @@ export default (refreshOnCreate = true) => {
   const changePassword = (login, password, newPassword) => {
     let data = new FormData();
     data.append('login', login);
-    data.append('password', password);
+    data.append('oldPassword', password);
     data.append('newPassword', newPassword);
 
     fetch(BL_API_URL + "user/changePassword", {

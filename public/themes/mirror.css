@@ -54,10 +54,18 @@ body {
   height: 4rem !important;
   box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
   border-bottom: none !important;
-  background: rgba(92, 92, 92, 0.281) !important;
-  backdrop-filter: blur(10px);
+  background-color: rgba(8, 26, 37, 0.55) !important;
   max-width: none !important;
 }
+
+@supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+  .ssr-page-container.svelte-y3wm0x {
+    background: rgba(92, 92, 92, 0.281) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+}
+
 .ssr-page-container.svelte-y3wm0x a,
 .ssr-page-container.svelte-y3wm0x div {
   transition: all 0.1s;
@@ -193,9 +201,15 @@ body {
   color: #ffffff;
 }
 .content-box {
-  background: rgba(131, 131, 131, 0.082) !important;
-  backdrop-filter: blur(10px);
+  background: rgba(8, 26, 37, 0.55) !important;
   box-shadow: none !important;
+}
+@supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+  .content-box {
+    background: rgba(131, 131, 131, 0.082) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
 }
 .page-content.svelte-qnwlci .compare-player-name * {
   background: transparent !important;
@@ -251,7 +265,6 @@ body {
 }
 .clanTag {
   filter: saturate(0.5) brightness(1.1);
-  font-size: 0.5rem;
   font-weight: 500 !important;
   border-bottom: 2px rgba(255, 255, 255, 0.315) solid;
   padding: 0 0.3rem;
@@ -275,9 +288,15 @@ input {
   border-bottom: 1px solid white !important;
 }
 .container.svelte-19ic7k8 {
-  backdrop-filter: blur(10px);
-  background: rgba(199, 199, 199, 0.151) !important;
+  background: rgba(8, 26, 37, 0.55) !important;
   border-radius: 0.5rem;
+}
+@supports ((-webkit-backdrop-filter: blur(2em)) or (backdrop-filter: blur(2em))) {
+  .container.svelte-19ic7k8 {
+    background: rgba(199, 199, 199, 0.151) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
 }
 .container.svelte-19ic7k8 .title {
   position: relative;

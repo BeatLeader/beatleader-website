@@ -1,6 +1,4 @@
 <script>
-  import {createEventDispatcher} from 'svelte'
-  import createPlayerService from '../../../services/beatleader/player'
   import BlChart from '../Charts/BlChart.svelte'
   import BlBadges from '../BlBadges.svelte'
   import AccHistoryChart from '../Charts/AccHistoryChart.svelte'
@@ -9,15 +7,8 @@
 
   export let playerId = null;
   export let scoresStats = null;
-  export let accBadges = null;
   export let ssBadges = null;
-  export let skeleton = false;
-  export let isCached = false;
   export let statsHistory = null;
-
-  const dispatch = createEventDispatcher();
-
-  const playerService = createPlayerService();
 
   const allSwitcherOptions = [
     {id: 'rank', label: 'Rank & PP', iconFa: 'fas fa-chart-line'},
@@ -54,27 +45,19 @@
     }
   }
 
-  function updateAvailableSwitcherOptions(isCached) {
-    const currentSelection = selectedOption?.id ?? 'rank';
-
-    switcherOptions = allSwitcherOptions.filter(o => o?.id !== 'accmaps' || isCached);
-    selectedOption = switcherOptions.find(o => o.id === currentSelection) ?? switcherOptions[0];
-  }
-
   function onSwitcherChanged(event) {
     if (!event?.detail?.id) return;
 
     selectedOption = event.detail;
   }
 
-  $: avgStat = scoresStats?.find(s => s.key === 'averageAccuracy') ?? null
-  $: medianStat = scoresStats?.find(s => s.key === 'medianAccuracy') ?? null
+  $: avgStat = scoresStats?.find(s => s.key === 'averageRankedAccuracy') ?? null
+  $: medianStat = scoresStats?.find(s => s.key === 'medianRankedAccuracy') ?? null
   $: avgAccTween = avgStat?.value ?? null
   $: medianAccTween = medianStat?.value ?? null
   $: averageAcc = $avgAccTween
   $: medianAcc = $medianAccTween
 
-  $: updateAvailableSwitcherOptions(isCached)
   $: updateChartComponent(selectedOption, averageAcc, medianAcc)
 </script>
 
