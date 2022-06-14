@@ -13,9 +13,11 @@
 	export let hash;
 	export let diff;
 	export let mode;
+    export let starChange;
+    export let currentStars;
 
 	let suitableForRank;
-	let stars;
+	let stars = currentStars;
 
 	let selectedTypes = [];
 	const allMapTypes = votingTypes;
@@ -23,7 +25,11 @@
 	let selectedType = '+';
 
 	function vote() {
-		votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
+        if (starChange) {
+            votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
+        } else {
+            votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
+        }
 
 		dispatch('finished');
 	}
@@ -48,7 +54,7 @@
 <div class="ranking-voting">
 	<Dialog
 		type="confirm"
-		title="Vote map for ranked"
+		title={starChange ? "Update map ranking" : "Vote map for ranked"}
 		okButton="Submit"
 		cancelButton="Cancel"
         okButtonDisabled={suitableForRank == undefined}
@@ -66,7 +72,7 @@
 				on:click={() => (suitableForRank = true)} />
 			{#if suitableForRank}
 				<div>
-					<label>Stars (optional):</label>
+					<label>{starChange ? "New stars:" : "Stars (optional):"}</label>
 					<RangeSlider
 						min={0}
 						max={15}

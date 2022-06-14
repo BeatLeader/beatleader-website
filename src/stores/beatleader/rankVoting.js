@@ -41,6 +41,24 @@ export default () => {
             })
     }
 
+    const updateMap = async (hash, diff, mode, rankability, stars, types) => {
+        if (!hash || !diff || !mode) return;
+        let type = 0;
+        types.forEach(typeName => {
+            type += typesMap[typeName];
+        });
+
+        votingStatuses.loading = true;
+        set(votingStatuses);
+
+        fetch(BL_API_URL + `rank/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` + (stars ? "&stars=" + stars : "") + (type ? "&type=" + type : ""),
+            { credentials: 'include', method: 'POST' }).then(() => {
+                votingStatuses.loading = false;
+                set(votingStatuses);
+                document.location.reload()
+            })
+    }
+
     const fetchResults = async (id) => {
         if (!id) return;
         fetch(BL_API_URL + `leaderboard/ranking/${id}`, { credentials: 'include' })
@@ -70,7 +88,8 @@ export default () => {
         get,
         fetchStatus,
         vote,
-        fetchResults
+        fetchResults,
+        updateMap
     }
 }
 

@@ -317,6 +317,8 @@
 	$: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
 	$: if (showVotings) votingStore.fetchResults(leaderboardId);
 	$: votingStats = $votingStore[leaderboardId];
+	$: votingLoading = $votingStore.loading;
+
 	$: updateMainPlayer = updateMainPlayer(mainPlayerId);
 	$: mainPlayerCountry = mainPlayer?.playerInfo?.countries?.[0]?.country ?? null;
 	$: updateTypeOptions(mainPlayerCountry);
@@ -330,7 +332,7 @@
 </svelte:head>
 
 {#if mapVoting}
-	<RankingVoting {votingStore} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => (mapVoting = false)} />
+	<RankingVoting {votingStore} starChange={showVotings} currentStars={leaderboard?.stats?.stars} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => (mapVoting = false)} />
 {/if}
 <section class="align-content">
 	<article bind:this={boxEl} class="page-content" transition:fade>
@@ -404,11 +406,12 @@
 
 				{#if type !== 'accsaber'}
 					<div class={votingStatus ? 'switch-and-button' : ''}>
-						{#if votingStatus == 2}
+						{#if !votingLoading}
+						{#if showVotings || votingStatus == 2}
 							<Button
 								cls="voteButton"
-								iconFa="fas fa-comment-dots"
-								title="Vote this map for ranking!"
+								iconFa={showVotings ? "fas fa-star" : "fas fa-comment-dots"}
+								title={showVotings ? "Update map config" : "Vote this map for ranking!"}
 								noMargin={true}
 								on:click={() => (mapVoting = !mapVoting)} />
 						{:else if votingStatus == 1}
@@ -416,6 +419,10 @@
 						{:else if votingStatus == 3}
 							<Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true} />
 						{/if}
+						{:else}
+						<Spinner/>
+						{/if}
+						
 						<nav class="diff-switch">
 							{#if !withoutDiffSwitcher && diffs && diffs.length}
 								<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
