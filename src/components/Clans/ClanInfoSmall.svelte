@@ -1,7 +1,7 @@
 <script>
   import {fade} from 'svelte/transition'
   import Badge from '../Common/Badge.svelte'
-  import {playersTitle, rankLabel, accLabel, ppLabel} from '../../utils/clans'
+  import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue} from '../../utils/clans'
 
   export let clan;
 
@@ -21,6 +21,14 @@
     iconUrl = clan?.icon ?? 'https://cdn.beatleader.xyz/assets/NTG.png';
     iconData = clan?.icon ?? null;
     description = clan?.description ?? '';
+  }
+
+  function hoverStats() {
+    if (tag) {
+      clanAverageRank = rankValue(tag, clanAverageRank);
+      clanAverageAccuracy = accValue(tag, clanAverageAccuracy);
+      clanPp = ppValue(tag, clanPp);
+    }
   }
 
   $: updateFields(clan)
@@ -49,7 +57,7 @@
         </section>
 
         {#if clan}
-          <section class="clan-stats">
+          <section class="clan-stats" on:pointerover={() => hoverStats()}>
             <Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)"/>
             <Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)"/>
             <Badge label={ppLabel(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)"/>

@@ -179,7 +179,7 @@ export default async () => {
 
   if (!neededFixes.length) return;
 
-  document.body.innerHTML = '<p>Database conversion. Please wait...</p>';
+  document.body.innerHTML = '<p>BeatLeader is an open Beat Saber leaderboard!</p>';
 
   for (let key of neededFixes) {
     await allFixes[key].apply(key);
