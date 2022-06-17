@@ -12,6 +12,7 @@
     let login;
     let password;
     let newPassword;
+    let newLogin = opt($account, 'login');
 
     function performAction() {
         if (action == "addHome") {
@@ -137,6 +138,17 @@ If you not yet a patreon, you can become one right now at <a class="inlineLink" 
     Something went wrong while linking your account.<br>
     If you used this account before, try unlink it first.
     {/if}
+{:else if action == "mylogin"}
+    Your current login is: <b>{$account.login}</b><br>
+    It's a value you should use in Quest mod setting.<br>
+    Your profile name is a different thing!<br>
+
+    <div class="input-container">
+        You may change it once a week.<br>Make sure you don't use special characters not available in-game keyboard.
+        <input bind:value={newLogin} placeholder="New login">
+    </div>
+
+    <Button iconFa="fas fa-plus-square" label="Change login" on:click={() => account.changeLogin(newLogin)}/>
 {/if}
 
 {#if error}

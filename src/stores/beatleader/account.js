@@ -212,6 +212,33 @@ export default (refreshOnCreate = true) => {
         });
   }
 
+  const changeLogin = (newLogin) => {
+    let data = new FormData();
+    data.append('newLogin', newLogin);
+
+    fetch(BL_API_URL + "user/changeLogin", {
+        credentials: 'include',
+        method: 'PATCH',
+        body: data
+    })
+      .then(checkResponse)
+      .then(
+        data => {
+            if (data.length > 0) {
+                account.error = data;
+            } else {
+                account.message = "Login changed successfully ✔";
+                account.error = null;
+                refresh(true);
+                setTimeout(function(){
+                  account.message = null;
+                  set(account);
+                }, 3500);
+            }
+            set(account);
+        });
+  }
+
   const changeAvatar = (file, playerId) =>
     fetch(BL_API_URL + "user/avatar" + (playerId ? "?id=" + playerId : ""), { 
         method: 'PATCH', 
@@ -451,6 +478,7 @@ export default (refreshOnCreate = true) => {
     unbanClan,
     addClanInvitation,
     removeClanInvitation,
+    changeLogin,
   }
 
   return store;
