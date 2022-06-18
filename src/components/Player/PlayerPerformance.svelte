@@ -34,6 +34,7 @@
   export let songScore = null
   export let showDetails = false
   export let modifiersStore = null
+  export let unmodifiedScore = false
 
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
@@ -92,7 +93,7 @@
         <span class="score with-badge">
           <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
               <span slot="label">
-                <Value value="{score.score}" prevValue={opt(prevScore, 'score')}
+                <Value value="{unmodifiedScore ? score.unmodifiedScore : score.score}" prevValue={opt(prevScore, 'score')}
                        inline={false} digits={0} prefix={score.scoreApproximate ? '~' : ''}
                        prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
                 />

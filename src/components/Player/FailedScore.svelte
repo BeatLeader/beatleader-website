@@ -70,7 +70,7 @@
             </span>
         </div>
   
-        <PlayerPerformance {service} {songScore} {showDetails} {modifiersStore}/>
+        <PlayerPerformance {service} {songScore} {showDetails} {modifiersStore} unmodifiedScore={true}/>
       </div>
 
       <div class="lowerContainer">

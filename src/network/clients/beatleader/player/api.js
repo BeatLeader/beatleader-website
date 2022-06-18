@@ -10,7 +10,7 @@ const process = response => {
 
   if (scoreStats) {
     ['averageAccuracy', 'averageRankedAccuracy', 'medianAccuracy', 'medianRankedAccuracy', 'topAccuracy'].forEach(k => {
-      if (scoreStats[k] && Number.isFinite(scoreStats[k])) scoreStats[k] *= 100;
+      if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
     })
   }
 
@@ -25,7 +25,7 @@ const process = response => {
     }
     const processFloat100 = f => {
       let out = parseFloat(f);
-      return null !== out ? out * 100 : null;
+      return null !== out ? (out < 2 ? out * 100 : out) : null;
     }
 
     let maxEntries = 0;
