@@ -99,6 +99,8 @@ export function userDescriptionForModifier(modifier) {
     case "NB": return "No bombs";
     case "NF": return "No fail";
     case "NO": return "No obstacles";
+    case "PM": return "Pro mode";
+    case "SC": return "Small cubes";
   }
   return "Undefined modifier";
 }

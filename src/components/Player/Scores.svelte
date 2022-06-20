@@ -131,7 +131,7 @@
 
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
-    {#each $scoresStore as songScore, idx (opt(songScore, 'leaderboard.leaderboardId'))}
+    {#each $scoresStore as songScore, idx (opt(songScore, 'score.id'))}
       <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
     {/each}
   </div>
