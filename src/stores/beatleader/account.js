@@ -32,10 +32,16 @@ export default (refreshOnCreate = true) => {
         playerService = createPlayerService();
       }
 
-      const friends = await playerService.getFriends();
+      let friends = await playerService.getFriends();
       if (!data?.friends?.length) {
         friends.forEach(toAdd => {
-          fetch(BL_API_URL + "user/friend?playerId=" + toAdd, {credentials: 'include', method: 'POST'});
+          fetch(BL_API_URL + "user/friend?playerId=" + toAdd, {credentials: 'include', method: 'POST'})
+          .then(checkResponse)
+          .then(data => {
+            if (data.includes("himself") || data.includes("Not Found")) {
+              eventBus.publish('player-remove-cmd', {playerId: toAdd});
+            }
+          });
         });
       } else {
         let toDelete = friends;
