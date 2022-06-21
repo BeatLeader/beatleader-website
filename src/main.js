@@ -7,8 +7,6 @@ import createConfigStore from './stores/config'
 import createPlayerService from './services/beatleader/player'
 import createBeatSaviorService from './services/beatsavior'
 import createRankedsStore from './stores/beatleader/rankeds'
-import initDownloadManager from './network/download-manager'
-import initCommandProcessor from './network/command-processor'
 import {enablePatches, setAutoFreeze} from 'immer'
 import {initCompareEnhancer} from './stores/http/enhancers/scores/compare'
 import ErrorComponent from './components/Common/Error.svelte'
@@ -44,8 +42,6 @@ let app = null;
     await createRankedsStore();
 
     await initCompareEnhancer();
-
-    initCommandProcessor(await initDownloadManager());
 
     log.info('Site initialized', 'Main')
 
