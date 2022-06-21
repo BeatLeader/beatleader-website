@@ -3,7 +3,6 @@
   import {
     configStore,
     DEFAULT_LOCALE,
-    getSupportedLocales,
   } from "../../stores/config";
   import createTwitchService from "../../services/twitch";
   import { ROUTER } from "svelte-routing/src/contexts";
@@ -11,10 +10,8 @@
   import { opt } from "../../utils/js";
   import eventBus from "../../utils/broadcast-channel-pubsub";
   import { DAY } from "../../utils/date";
-  import { exportJsonData, importDataHandler } from "../../utils/export-import";
   import Dialog from "../Common/Dialog.svelte";
   import Button from "../Common/Button.svelte";
-  import File from "../Common/File.svelte";
   import Select from "./Select.svelte";
 
   export let show = false;
@@ -164,46 +161,6 @@
     twitchBtnDisabled = !tokenExpireSoon;
   }
 
-  let isExporting = false;
-  let isImporting = false;
-  let importBtn = null;
-
-  async function onExport() {
-    try {
-      isExporting = true;
-
-      await exportJsonData();
-    } finally {
-      isExporting = false;
-    }
-  }
-
-  async function onImport(e) {
-    try {
-      isImporting = true;
-      if (importBtn) importBtn.$set({ disabled: true });
-
-      importDataHandler(
-        e,
-        (msg) => {
-          isImporting = false;
-
-          alert(msg);
-
-          importBtn.$set({ disabled: false });
-        },
-        async (json) => {
-          isImporting = false;
-          if (importBtn) importBtn.$set({ disabled: false });
-
-          eventBus.publish("data-imported", {});
-        }
-      );
-    } catch {
-      isImporting = false;
-    }
-  }
-
   onMount(async () => {
     const twitchTokenRefreshedUnsubscriber = eventBus.on(
       "twitch-token-refreshed",
@@ -312,25 +269,6 @@
       {:else}
         Loading...
       {/if}
-    </svelte:fragment>
-
-    <svelte:fragment slot="footer-left">
-      <File
-        iconFa="fas fa-file-export"
-        title="Import SSR data from file"
-        loading={isImporting}
-        disabled={isImporting}
-        accept="application/json"
-        bind:this={importBtn}
-        on:change={onImport}
-      />
-      <Button
-        iconFa="fas fa-file-import"
-        title="Export SSR data to file"
-        on:click={onExport}
-        loading={isExporting}
-        disabled={isExporting}
-      />
     </svelte:fragment>
 
     <svelte:fragment slot="footer-right">
