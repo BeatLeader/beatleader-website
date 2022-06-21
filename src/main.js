@@ -8,7 +8,6 @@ import createPlayerService from './services/beatleader/player'
 import createBeatSaviorService from './services/beatsavior'
 import createRankedsStore from './stores/beatleader/rankeds'
 import {enablePatches, setAutoFreeze} from 'immer'
-import {initCompareEnhancer} from './stores/http/enhancers/scores/compare'
 import ErrorComponent from './components/Common/Error.svelte'
 import initializeWorkers from './utils/worker-wrappers'
 
@@ -40,8 +39,6 @@ let app = null;
     createPlayerService();
     createBeatSaviorService();
     await createRankedsStore();
-
-    await initCompareEnhancer();
 
     log.info('Site initialized', 'Main')
 
