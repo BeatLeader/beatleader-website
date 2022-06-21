@@ -19,7 +19,6 @@
   const DEFAULT_THEME = "mirror";
   const DEFAULT_BILLBOARD_STATE = "show";
   const DEFAULT_SCORE_COMPARISON_METHOD = "in-place";
-  const DEFAULT_SECONDARY_PP_METRICS = "weighted";
   const DEFAULT_AVATAR_ICONS = "show";
   const DEFAULT_BEATSAVIOR_COMPARISON = "show";
 
@@ -45,14 +44,6 @@
     { name: "Hide", value: "hide" },
   ];
 
-  const secondaryPpMetrics = [
-    { name: "Weighted PP", value: "weighted" },
-    {
-      name: "Actual contribution to the total PP",
-      value: DEFAULT_SECONDARY_PP_METRICS,
-    },
-  ];
-
   const avatarIcons = [
     { name: "Always show", value: DEFAULT_AVATAR_ICONS },
     { name: "Show when needed", value: "only-when-needed" },
@@ -71,7 +62,6 @@
   let currentLocale = DEFAULT_LOCALE;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
   let currentBeatSaviorComparison = DEFAULT_BEATSAVIOR_COMPARISON;
-  let currentSecondaryPpMetrics = DEFAULT_SECONDARY_PP_METRICS;
   let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 
   function onConfigUpdated(config) {
@@ -82,9 +72,6 @@
     if (config?.scoreComparison)
       currentScoreComparisonMethod =
         config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
-    if (config?.preferences?.secondaryPp)
-      currentSecondaryPpMetrics =
-        config?.preferences?.secondaryPp ?? DEFAULT_SECONDARY_PP_METRICS;
     if (config?.preferences?.iconsOnAvatars)
       currentAvatarIcons =
         config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
@@ -105,7 +92,6 @@
       draft.locale = currentLocale;
       draft.preferences.billboardState = currentBillboardState;
       draft.scoreComparison.method = currentScoreComparisonMethod;
-      draft.preferences.secondaryPp = currentSecondaryPpMetrics;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
       draft.preferences.beatSaviorComparison = currentBeatSaviorComparison;
       draft.preferences.theme = currentTheme;
@@ -121,7 +107,6 @@
       currentLocale = $configStore.locale;
       currentBillboardState = $configStore.preferences.billboardState;
       currentScoreComparisonMethod = $configStore.scoreComparison.method;
-      currentSecondaryPpMetrics = $configStore.preferences.secondaryPp;
       currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
       currentBeatSaviorComparison =
         $configStore.preferences.beatSaviorComparison;
@@ -214,15 +199,6 @@
               {/each}
             </Select>
           </section>
-
-          <!-- <section class="option">
-            <label title="Second PP metric displayed next to the score, either weighted PP or actual contribution of the score to the total PP (cached players only)">Secondary PP metrics</label>
-            <Select bind:value={currentSecondaryPpMetrics}>
-              {#each secondaryPpMetrics as option (option.value)}
-                <option value={option.value}>{option.name}</option>
-              {/each}
-            </Select>
-          </section> -->
 
           <section class="option">
             <label title="Determines when to show icons on player avatars"

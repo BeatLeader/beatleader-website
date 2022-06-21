@@ -28,7 +28,6 @@ const DEFAULT_CONFIG = {
   },
   preferences: {
     billboardState: 'show',
-    secondaryPp: 'weighted',
     iconsOnAvatars: 'show',
     beatSaviorComparison: 'show',
     theme:'mirror',
@@ -40,7 +39,6 @@ const DEFAULT_CONFIG = {
 
 const newSettingsAvailableDefinition = {
   'scoreComparison.method': 'Method of displaying the comparison of scores',
-  'preferences.secondaryPp': 'Setting the second PP metric',
   'preferences.iconsOnAvatars': 'Showing icons on avatars',
   'locale': 'Locale selection',
 }
