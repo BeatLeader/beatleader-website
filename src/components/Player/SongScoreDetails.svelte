@@ -1,9 +1,6 @@
 <script>
   import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
-  import {configStore} from '../../stores/config'
-  import {opt} from '../../utils/js'
-  import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic'
   import BeatSaviorDetails from '../BeatSavior/Details.svelte'
   import LeaderboardPage from '../../pages/Leaderboard.svelte'
   import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte'
@@ -11,7 +8,6 @@
   export let playerId;
   export let songScore;
   export let fixedBrowserTitle = null;
-  export let noBeatSaviorHistory = false;
   export let noSsLeaderboard = false;
   export let showAccSaberLeaderboard = false;
 
@@ -27,17 +23,16 @@
   }
 
   function onInBuiltLeaderboardPageChanged(event) {
-    const newPage = opt(event, 'detail.page');
+    const newPage = event?.detail?.page;
     if (!Number.isFinite(newPage)) return;
 
     inBuiltLeaderboardPage = newPage;
   }
 
-  $: leaderboard = opt(songScore, 'leaderboard', null);
-  $: score = opt(songScore, 'score', null);
-  $: prevScore = opt(songScore, 'prevScore', null);
-  $: beatSaviorPromise = scoreStatisticEnhancer(songScore);
-  $: noHistory = noBeatSaviorHistory || $configStore?.preferences?.beatSaviorComparison != 'show';
+  $: leaderboard = songScore?.leaderboard ?? null;
+  $: score = songScore?.score ??null;
+  $: prevScore = songScore?.prevScore ?? null;
+  $: beatSavior = songScore?.beatSavior ?? null;
 
   $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, (showAccSaberLeaderboard ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE))
 </script>
@@ -48,16 +43,9 @@
       <LeaderboardStats {leaderboard}/>
     </div>
 
-    {#await beatSaviorPromise}
     <div class="tab">
-      <p></p>
+      <BeatSaviorDetails {playerId} {beatSavior} {leaderboard}/>
     </div>
-	    
-    {:then beatSavior}
-      <div class="tab">
-        <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} {noHistory}/>
-      </div>
-    {/await}
 
     {#if showAccSaberLeaderboard}
       <div class="tab">

@@ -26,7 +26,6 @@ const DEFAULT_CONFIG = {
   preferences: {
     billboardState: 'show',
     iconsOnAvatars: 'show',
-    beatSaviorComparison: 'show',
     theme:'mirror',
     bgimage:"/assets/background.png"
   },

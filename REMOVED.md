@@ -1,2 +1,3 @@
 - Secondary PP metrics type (has been commented on before)
 - Comparing scores to a main player
+- Comparing Beat Savior scores

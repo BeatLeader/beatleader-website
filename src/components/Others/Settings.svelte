@@ -19,7 +19,6 @@
   const DEFAULT_THEME = "mirror";
   const DEFAULT_BILLBOARD_STATE = "show";
   const DEFAULT_AVATAR_ICONS = "show";
-  const DEFAULT_BEATSAVIOR_COMPARISON = "show";
 
   let twitchToken = null;
 
@@ -30,11 +29,6 @@
   const billboardStateOptions = [
     { name: "Show", value: DEFAULT_BILLBOARD_STATE },
     { name: "Show, but in last tab", value: "lastTab" },
-    { name: "Hide", value: "hide" },
-  ];
-
-  const beatSaviorComparisonOptions = [
-    { name: "Show", value: DEFAULT_BEATSAVIOR_COMPARISON },
     { name: "Hide", value: "hide" },
   ];
 
@@ -54,7 +48,6 @@
   let currentTheme = DEFAULT_THEME;
   let currentBGImage = "";
   let currentLocale = DEFAULT_LOCALE;
-  let currentBeatSaviorComparison = DEFAULT_BEATSAVIOR_COMPARISON;
   let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 
   function onConfigUpdated(config) {
@@ -69,10 +62,6 @@
       currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
     if (config?.preferences?.bgimage)
       currentBGImage = config?.preferences?.bgimage ?? "";
-    if (config?.preferences?.beatSaviorComparison)
-      currentBeatSaviorComparison =
-        config?.preferences?.beatSaviorComparison ??
-        DEFAULT_BEATSAVIOR_COMPARISON;
   }
 
   function onSave() {
@@ -82,7 +71,6 @@
       draft.locale = currentLocale;
       draft.preferences.billboardState = currentBillboardState;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
-      draft.preferences.beatSaviorComparison = currentBeatSaviorComparison;
       draft.preferences.theme = currentTheme;
       draft.preferences.bgimage = currentBGImage;
       document.location.reload()
@@ -96,8 +84,6 @@
       currentLocale = $configStore.locale;
       currentBillboardState = $configStore.preferences.billboardState;
       currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
-      currentBeatSaviorComparison =
-        $configStore.preferences.beatSaviorComparison;
     }
 
     show = false;
@@ -160,17 +146,6 @@
             <label title="Show billboard on dashboard">Billboard</label>
             <Select bind:value={currentBillboardState}>
               {#each billboardStateOptions as option (option.value)}
-                <option value={option.value}>{option.name}</option>
-              {/each}
-            </Select>
-          </section>
-
-          <section class="option">
-            <label title="Show BeatSavior scores comparison"
-              >BeatSavior score comparison</label
-            >
-            <Select bind:value={currentBeatSaviorComparison}>
-              {#each beatSaviorComparisonOptions as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
             </Select>

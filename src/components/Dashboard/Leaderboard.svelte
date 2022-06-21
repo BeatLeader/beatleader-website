@@ -81,7 +81,7 @@
 
     {#if beatSavior}
         <div class="tab">
-            <BeatSaviorDetails playerId={row.player.playerId} {beatSavior} {leaderboard} noHistory={false}/>
+            <BeatSaviorDetails playerId={row.player.playerId} {beatSavior} {leaderboard} />
         </div>
     {/if}
 

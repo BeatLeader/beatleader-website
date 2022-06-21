@@ -83,7 +83,7 @@
         <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle}
                           noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
                           showAccSaberLeaderboard={'accsaber' === service}
-                          noBeatSaviorHistory={service === 'beatsavior'}/>
+                          />
       </div>
     {/if}
   </div>
