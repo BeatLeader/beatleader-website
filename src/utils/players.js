@@ -1,7 +1,6 @@
 import playersRepository from "../db/repository/players";
 import playersHistoryRepository from "../db/repository/players-history";
 import scoresRepository from "../db/repository/scores";
-import groupsRepository from "../db/repository/groups";
 import {substituteVars} from "../utils/format";
 import {arrayUnique, convertArrayToObjectByKey} from "../utils/js";
 import {configStore} from '../stores/config'
@@ -49,54 +48,7 @@ export const removeAllPlayerData = async playerId => {
     );
 };
 
-export const getPlayerGroups = async (groupName) => {
-    const groups = await groupsRepository().getAllFromIndex('groups-name', groupName);
-
-    return groups && groups.length
-      ? Object.values(
-        groups.reduce((cum, playerGroup) => {
-            if (!cum[playerGroup.name]) cum[playerGroup.name] = {name: playerGroup.name, players: []};
-
-            cum[playerGroup.name].players.push(playerGroup.playerId);
-
-            return cum;
-        }, {}),
-      )
-      : null;
-};
-
-export const addPlayerToGroup = async (playerId, groupName = 'Default') => {
-    const isPlayerAlreadyAdded = (await groupsRepository().getAllFromIndex('groups-name', groupName, true))
-      .some(g => g.playerId === playerId);
-    if (isPlayerAlreadyAdded) return;
-
-    return groupsRepository().set({name: groupName, playerId});
-}
-
-export const removePlayerFromGroup = async (playerId, removeData = true, groupName = 'Default') => {
-    const playerGroups = await groupsRepository().getAllFromIndex('groups-playerId', playerId, true);
-
-    const playerGroupsToRemove = playerGroups.filter(pg => !groupName || pg.name === groupName);
-
-    await Promise.all(playerGroupsToRemove.map(async pg => groupsRepository().deleteObject(pg)));
-
-    if (!removeData || playerGroups.length > playerGroupsToRemove.length) return;
-
-    await removeAllPlayerData(playerId);
-}
-
-export const getFriendsIds = async (withMain = false) => {
-    const groups = await getPlayerGroups(undefined) ?? [];
-
-    return arrayUnique(
-      groups
-        .reduce((cum, group) => cum.concat(group.players), [])
-        .concat(withMain ? [await configStore.getMainPlayerId()] : [])
-        .filter(playerId => playerId)
-    );
-}
-
-export const getFriends = async (country, withMain = false) => filterPlayersByIdsList(await getFriendsIds(withMain), await getPlayers());
+export const getFriendsIds = async (withMain = false) => ([]);
 
 export const getManuallyAddedPlayersIds = async (country, withMain = false) => {
     const friendsIds = await getFriendsIds(withMain);
@@ -105,8 +57,6 @@ export const getManuallyAddedPlayersIds = async (country, withMain = false) => {
 
     return friendsIds.filter(playerId => !isCountryPlayer(players?.[playerId] ?? null, country));
 }
-
-export const getManuallyAddedPlayers = async (country, withMain = false) => filterPlayersByIdsList(await getManuallyAddedPlayersIds(country, withMain), await getPlayers());
 
 export const getAllActivePlayersIds = async (country) => arrayUnique((await getActiveCountryPlayersIds(country, true)).concat(await getManuallyAddedPlayersIds(country, false)));
 

@@ -58,10 +58,6 @@ async function openDatabase() {
 
             db.createObjectStore('cache');
 
-            const groups = db.createObjectStore('groups', {keyPath: '_idbId', autoIncrement: true});
-            groups.createIndex('groups-name', 'name', {unique: false});
-            groups.createIndex('groups-playerId', 'playerId', {unique: false});
-
             const beatSaviorFiles = db.createObjectStore('beat-savior-files', {
               keyPath: 'fileId',
               autoIncrement: false,

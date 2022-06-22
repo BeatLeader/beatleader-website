@@ -1,5 +1,4 @@
 import cacheRepository from './repository/cache';
-import groupsRepository from './repository/groups';
 import keyValueRepository from './repository/key-value';
 import playersRepository from './repository/players';
 import playersHistoryRepository from './repository/players-history';
@@ -12,5 +11,5 @@ export default () => {
   log.debug('Initialize DB repositories');
 
   // initialize all repositories in order to create cache to sync
-  [cacheRepository, groupsRepository, keyValueRepository, playersRepository, playersHistoryRepository, scoresRepository, twitchRepository].map(repository => repository());
+  [cacheRepository, keyValueRepository, playersRepository, playersHistoryRepository, scoresRepository, twitchRepository].map(repository => repository());
 }
