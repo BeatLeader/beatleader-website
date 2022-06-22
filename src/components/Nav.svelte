@@ -11,7 +11,6 @@
   import MenuLine from './Player/MenuLine.svelte'
   import QueueStats from './Common/QueueStats.svelte'
   import {opt} from '../utils/js'
-  import {fade} from 'svelte/transition'
   import Settings from './Others/Settings.svelte'
   import Button from "./Common/Button.svelte";
 
@@ -453,7 +452,7 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        width: 4em;
+        width: 100%;
     }
 
     .right.mobile-menu {
