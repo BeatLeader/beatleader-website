@@ -3,8 +3,7 @@ import createClient from '../../generic'
 import processPlayer from '../player/process'
 
 const process = response => {
-	// TODO: just a mock!
-	const friends = response?.friends?.map(f => ({playerId: f, name: f, playerInfo:{countries:[{country: 'PL'}]}})) ?? [];
+	const friends = response?.friends?.map(f => processPlayer(f)) ?? [];
 
 	return {
 		...response,
