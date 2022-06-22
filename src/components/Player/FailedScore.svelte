@@ -34,7 +34,7 @@
          class:with-details={showDetails}>
 
          <div class="icons up-to-tablet">
-            <Icons {hash} {twitchUrl} {diffInfo} {playerId} scoreId={score.id} replayLink={score.replay}/>
+            <Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay}/>
           </div>
   
       <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>

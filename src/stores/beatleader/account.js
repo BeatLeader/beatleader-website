@@ -45,7 +45,8 @@ export default (refreshOnCreate = true) => {
         });
       } else {
         let toDelete = friends;
-        data.friends.forEach(friend => {
+        let mappedFriends = data.friends.map(f => f.id ?? f);
+        mappedFriends.forEach(friend => {
           if (toDelete.includes(friend)) {
             toDelete = toDelete.filter(f => f != friend);
           } else {

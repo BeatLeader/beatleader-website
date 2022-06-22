@@ -405,7 +405,7 @@
                           <Button cls="replay-button-alt" icon="<div class='battleroyaleescape-icon'></div>" title="Remove from battle royal" noMargin={true} on:click={() => draftList = draftList.filter(el => el != score.player.playerId)}/>
                         {/if}
                         {:else}
-                        <Icons {hash} {diffInfo} icons={["replay"]} playerId={score.player.playerId}/>
+                        <Icons {hash} {diffInfo} icons={["replay"]} scoreId={score.id}/>
                         {/if}
                       </div>
                     {/if}
