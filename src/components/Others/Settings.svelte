@@ -18,6 +18,7 @@
 
   const DEFAULT_THEME = "mirror";
   const DEFAULT_BILLBOARD_STATE = "show";
+  const DEFAULT_SCORE_COMPARISON_METHOD = "in-place";
   const DEFAULT_AVATAR_ICONS = "show";
 
   let twitchToken = null;
@@ -30,6 +31,11 @@
     { name: "Show", value: DEFAULT_BILLBOARD_STATE },
     { name: "Show, but in last tab", value: "lastTab" },
     { name: "Hide", value: "hide" },
+  ];
+
+  const scoreComparisonMethods = [
+    { name: "In place", value: DEFAULT_SCORE_COMPARISON_METHOD },
+    { name: "In details", value: "in-details" },
   ];
 
   const avatarIcons = [
@@ -48,6 +54,7 @@
   let currentTheme = DEFAULT_THEME;
   let currentBGImage = "";
   let currentLocale = DEFAULT_LOCALE;
+  let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
   let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 
   function onConfigUpdated(config) {
@@ -55,6 +62,9 @@
     if (config?.preferences?.billboardState)
       currentBillboardState =
         config?.preferences?.billboardState ?? DEFAULT_BILLBOARD_STATE;
+    if (config?.scoreComparison)
+      currentScoreComparisonMethod =
+        config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
     if (config?.preferences?.iconsOnAvatars)
       currentAvatarIcons =
         config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
@@ -70,6 +80,7 @@
     $configStore = produce($configStore, (draft) => {
       draft.locale = currentLocale;
       draft.preferences.billboardState = currentBillboardState;
+      draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
       draft.preferences.theme = currentTheme;
       draft.preferences.bgimage = currentBGImage;
@@ -83,6 +94,7 @@
     if (configStore && $configStore) {
       currentLocale = $configStore.locale;
       currentBillboardState = $configStore.preferences.billboardState;
+      currentScoreComparisonMethod = $configStore.scoreComparison.method;
       currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
     }
 
@@ -146,6 +158,18 @@
             <label title="Show billboard on dashboard">Billboard</label>
             <Select bind:value={currentBillboardState}>
               {#each billboardStateOptions as option (option.value)}
+                <option value={option.value}>{option.name}</option>
+              {/each}
+            </Select>
+          </section>
+
+          <section class="option">
+            <label
+              title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
+              >Score comparison</label
+            >
+            <Select bind:value={currentScoreComparisonMethod}>
+              {#each scoreComparisonMethods as option (option.value)}
                 <option value={option.value}>{option.name}</option>
               {/each}
             </Select>

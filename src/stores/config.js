@@ -23,6 +23,9 @@ const DEFAULT_CONFIG = {
     main: null,
     country: null,
   },
+  scoreComparison: {
+    method: 'in-place',
+  },
   preferences: {
     billboardState: 'show',
     iconsOnAvatars: 'show',
@@ -34,6 +37,7 @@ const DEFAULT_CONFIG = {
 }
 
 const newSettingsAvailableDefinition = {
+  'scoreComparison.method': 'Method of displaying the comparison of scores',
   'preferences.iconsOnAvatars': 'Showing icons on avatars',
   'locale': 'Locale selection',
 }
