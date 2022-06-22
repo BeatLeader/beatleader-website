@@ -150,8 +150,36 @@
           </span>
       {/if}
     {:else if score.badCuts !== undefined}
-      <span></span>
-      <span></span>
+      {#if score.accLeft}
+          <span class="beatSavior with-badge">
+            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
+                <span slot="label">
+                  <Value
+                      title="Left acc"
+                      value="{score.accLeft}"
+                      inline={false} digits={2}
+                  />
+                </span>
+            </Badge>
+          </span>
+      {:else}
+          <span></span>
+      {/if}
+
+      {#if score.accRight}
+          <span class="beatSavior with-badge">
+            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
+                <span slot="label">
+                  <Value
+                      title="Right acc"
+                      value="{score.accRight}" inline={false} digits={2}
+                  />
+                </span>
+            </Badge>
+          </span>
+      {:else}
+          <span></span>
+      {/if}
       <span class="beatSavior with-badge">
             <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                 <span slot="label" title={`Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}>

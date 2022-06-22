@@ -3,6 +3,7 @@
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import {configStore} from '../../stores/config'
   import {opt} from '../../utils/js'
+  import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic'
   import BeatSaviorDetails from '../BeatSavior/Details.svelte'
   import LeaderboardPage from '../../pages/Leaderboard.svelte'
   import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte'
@@ -35,7 +36,7 @@
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
   $: prevScore = opt(songScore, 'prevScore', null);
-  $: beatSavior = opt(songScore, 'beatSavior', null)
+  $: beatSaviorPromise = scoreStatisticEnhancer(songScore);
   $: noHistory = noBeatSaviorHistory || $configStore?.preferences?.beatSaviorComparison != 'show';
 
   $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, (showAccSaberLeaderboard ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE))
@@ -47,9 +48,16 @@
       <LeaderboardStats {leaderboard}/>
     </div>
 
+    {#await beatSaviorPromise}
     <div class="tab">
-      <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} {noHistory}/>
+      <p></p>
     </div>
+	    
+    {:then beatSavior}
+      <div class="tab">
+        <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} {noHistory}/>
+      </div>
+    {/await}
 
     {#if showAccSaberLeaderboard}
       <div class="tab">
