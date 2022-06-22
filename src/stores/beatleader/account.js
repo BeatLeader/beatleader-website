@@ -404,9 +404,9 @@ export default (refreshOnCreate = true) => {
     set(account);
   }
 
-  const addFriend = async playerId => queue.BEATLEADER_API.addFriend(playerId).then(refresh);
+  const addFriend = async playerId => queue.BEATLEADER_API.addFriend(playerId).finally(refresh);
 
-  const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).then(refresh);
+  const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).finally(refresh);
 
   store = {
     subscribe,
