@@ -1,10 +1,8 @@
 <script>
-  import createPlayersStore from '../../stores/beatleader/players'
   import createTwitchService from '../../services/twitch'
   import {configStore} from '../../stores/config'
   import createAccountStore from '../../stores/beatleader/account'
   import friends from '../../stores/beatleader/friends'
-  import eventBus from '../../utils/broadcast-channel-pubsub'
   import {opt} from '../../utils/js'
   import {SsrHttpResponseError} from '../../network/errors'
   import {createEventDispatcher, onMount} from 'svelte'
@@ -13,13 +11,11 @@
   import TwitchLinkModal from './TwitchLinkModal.svelte'
   import Dialog from '../Common/Dialog.svelte'
   import Error from '../Common/Error.svelte'
-  import Spinner from '../Common/Spinner.svelte'
 
   export let playerId;
 
   const dispatch = createEventDispatcher();
 
-  let playersStore = createPlayersStore();
   const account = createAccountStore();
   const twitchService = createTwitchService();
   const clanService = createClanService();
