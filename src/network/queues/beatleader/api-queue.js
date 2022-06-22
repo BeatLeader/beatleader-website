@@ -9,6 +9,7 @@ export const BL_API_URL = CURRENT_URL == "https://www.beatleader.xyz" ? `https:/
 export const STEAM_API_URL = '/cors/steamapi'
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
+export const BL_API_USER_URL = `${BL_API_URL}user`;
 export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}';
 export const BL_API_SCORES_URL = BL_API_URL + 'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
@@ -30,6 +31,8 @@ export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${playe
 export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}'
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}'
 export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph'
+export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}'
+export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}'
@@ -40,6 +43,8 @@ export default (options = {}) => {
   const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
   const fetchScores = async (baseUrl, playerId, page = 1, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(baseUrl, {playerId, page}, true), options, priority);
+
+  const user = async (priority = PRIORITY.FG_HIGH, options = {}) => fetchJson(BL_API_USER_URL, {...options, retries: 0, credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
 
   const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_PLAYER_INFO_URL, {playerId}), options, priority)
 
@@ -208,7 +213,12 @@ export default (options = {}) => {
         return r;
       })
 
+  const addFriend = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_FRIEND_ADD_URL, {playerId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
+  const removeFriend = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) => fetchHtml(substituteVars(BL_API_FRIEND_REMOVE_URL, {playerId}, true, true, encodeURIComponent), {...options, retries: 0, method: 'DELETE', credentials: 'include', maxAge: 1, cacheTtl: null}, priority)
+
   return {
+    user,
     player,
     steamProfile,
     gameInfo,
@@ -232,6 +242,8 @@ export default (options = {}) => {
     clanInvite,
     clanCancelInvite,
     accGraph,
+    addFriend,
+    removeFriend,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,

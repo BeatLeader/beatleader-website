@@ -183,15 +183,11 @@ async function openDatabase() {
         console.warn('DB blocking... will be closed')
         db.close();
 
-        eventBus.publish('dl-manager-pause-cmd');
-
         // TODO: should be reopened with new version: event.newVersion
         // TODO: or rather notify user / auto reload page
       },
       terminated() {
         console.warn('DB terminated');
-
-        eventBus.publish('dl-manager-pause-cmd');
       },
     });
 

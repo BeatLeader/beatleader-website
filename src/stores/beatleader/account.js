@@ -1,101 +1,35 @@
 import {writable} from 'svelte/store'
-import {configStore} from '../config'
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
-import createPlayerService from '../../services/beatleader/player'
-import eventBus from '../../utils/broadcast-channel-pubsub'
+import userApiClient from '../../network/clients/beatleader/account/api'
+import queue from '../../network/queues/queues'
 
 let store = null;
 let storeSubCount = 0;
-let playerService;
 
 export default (refreshOnCreate = true) => {
   storeSubCount++;
   if (store) return store;
 
+  const checkResponse = async response => response.text();
+
   let account = {};
 
   const {subscribe: subscribeState, set} = writable(account);
 
-  const checkResponse = async response => {
-
-    return response.text();
-  }
-
-  const refreshAccount = () => {
-    fetch(BL_API_URL + "user", {credentials: 'include'})
-    .then(response => response.json())
-    .then(async data => {
-      account = {...data, id: data?.player?.id ?? null};
-      set(account);
-
-      if (!playerService) {
-        playerService = createPlayerService();
-      }
-
-      let friends = await playerService.getFriends();
-      if (!data?.friends?.length) {
-        friends.forEach(toAdd => {
-          fetch(BL_API_URL + "user/friend?playerId=" + toAdd, {credentials: 'include', method: 'POST'})
-          .then(checkResponse)
-          .then(data => {
-            if (data.includes("himself") || data.includes("Not Found")) {
-              eventBus.publish('player-remove-cmd', {playerId: toAdd});
-            }
-          });
-        });
-      } else {
-        let toDelete = friends;
-        let mappedFriends = data.friends.map(f => f.id ?? f);
-        mappedFriends.forEach(friend => {
-          if (toDelete.includes(friend)) {
-            toDelete = toDelete.filter(f => f != friend);
-          } else {
-            eventBus.publish('player-add-cmd', {playerId: friend});
-          }
-        });
-
-        toDelete.forEach(friend => {
-          eventBus.publish('player-remove-cmd', {playerId: friend});
-        });
-      }
-    });
-  };
-
   const get = () => account;
-  const refresh = async (changeMain = false) => {
-    let config = configStore.get();
-    fetch(BL_API_URL + "user/id", {credentials: 'include'})
-      .then(checkResponse)
-      .then(data => {
-        if (data.length > 0) {
-            account.id = data;
-            refreshAccount();
-            if (changeMain) {
-                if (!config.users) {
-                    config.users = {};
-                }
-                config.users.main = data;
-                configStore.set(config);
-          
-                eventBus.publish('player-add-cmd', {playerId: data, fromAccount: true});
-            }
-        } else {
-            account = {};
 
-            if (changeMain) {
-                if (config.users && config.users.main) {
-                    let currentID = config.users.main;
-                    config.users.main = null;
-                    configStore.set(config);
-            
-                    eventBus.publish('player-remove-cmd', {playerId: currentID, fromAccount: true});
-                }
-            }
-            
-        }
-        set(account);
-      })
-      .catch(err => err); // swallow the error
+  const refresh = async () => {
+    try {
+      const user = await userApiClient.getProcessed();
+      if (!user) throw 'Data error'
+
+      account = {...user, id: user.player?.playerId ?? null};
+    }
+    catch(err) {
+      account = {}
+    }
+
+    set(account);
   }
 
   if (refreshOnCreate) refresh();
@@ -470,17 +404,9 @@ export default (refreshOnCreate = true) => {
     set(account);
   }
 
-  eventBus.on('player-add-cmd', async ({playerId, fromAccount}) => {
-    if (!fromAccount) {
-      fetch(BL_API_URL + "user/friend?playerId=" + playerId, {credentials: 'include', method: 'POST'})
-    }
-  });
+  const addFriend = async playerId => queue.BEATLEADER_API.addFriend(playerId).then(refresh);
 
-  eventBus.on('player-remove-cmd', async ({playerId, fromAccount}) => {
-    if (!fromAccount) {
-      fetch(BL_API_URL + "user/friend?playerId=" + playerId, {credentials: 'include', method: 'DELETE'})
-    }
-  });
+  const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).then(refresh);
 
   store = {
     subscribe,
@@ -506,6 +432,8 @@ export default (refreshOnCreate = true) => {
     addClanInvitation,
     removeClanInvitation,
     changeLogin,
+    addFriend,
+    removeFriend,
   }
 
   return store;

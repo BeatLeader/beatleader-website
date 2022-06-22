@@ -3,6 +3,7 @@
   import createTwitchService from '../../services/twitch'
   import {configStore} from '../../stores/config'
   import createAccountStore from '../../stores/beatleader/account'
+  import friends from '../../stores/beatleader/friends'
   import eventBus from '../../utils/broadcast-channel-pubsub'
   import {opt} from '../../utils/js'
   import {SsrHttpResponseError} from '../../network/errors'
@@ -12,6 +13,7 @@
   import TwitchLinkModal from './TwitchLinkModal.svelte'
   import Dialog from '../Common/Dialog.svelte'
   import Error from '../Common/Error.svelte'
+  import Spinner from '../Common/Spinner.svelte'
 
   export let playerId;
 
@@ -27,36 +29,25 @@
 
   let showLinkingModal = false;
 
-  function onSetAsMain(remove) {
-    if (!configStore || !playerId) return;
-
-    const newConfig = {...$configStore}
-    if (remove) {
-      newConfig.users.main = null;
-
-      eventBus.publish('player-remove-cmd', {playerId});
-    } else {
-
-      if (!newConfig.users) newConfig.users = {};
-      newConfig.users.main = playerId;
-
-      eventBus.publish('player-add-cmd', {playerId});
-    }
-
-    $configStore = newConfig;
-
-  }
-
-  function onFriendsChange(op) {
+  let operationInProgress = false;
+  async function onFriendsChange(op) {
     if (!playerId || !op) return;
 
-    switch (op) {
-      case 'add':
-        eventBus.publish('player-add-cmd', {playerId});
-        break;
-      case 'remove':
-        eventBus.publish('player-remove-cmd', {playerId});
-        break;
+    try {
+      operationInProgress = true;
+
+      switch (op) {
+        case 'add':
+          await account.addFriend(playerId);
+          break;
+        case 'remove':
+          await account.removeFriend(playerId);
+          break;
+      }
+    }
+    catch(err) {}
+    finally {
+      operationInProgress = false;
     }
   }
 
@@ -145,10 +136,9 @@
 
   $: onPlayerChanged(playerId);
   $: isProfileLinkedToTwitch = !!playerTwitchProfile?.login ?? false;
-  $: mainIsSet = !!$configStore?.users?.main ?? false;
-  $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
-  $: loggedInPlayer = $account.id;
-  $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
+  $: isMain = playerId && $account?.id === playerId;
+  $: loggedInPlayer = $account?.id;
+  $: isFriend = playerId && !!$friends?.find(f => f?.playerId === playerId);
   $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin");
   $: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
 
@@ -178,18 +168,12 @@
   {/if}
 
   <nav class:main={isMain}>
-    {#if (!loggedInPlayer || !mainIsSet) && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !mainIsSet))}
-      <Button title={isMain ? "Remove your profile" : "Set as your profile"} iconFa="fas fa-home"
-              type={isMain ? "danger" : "primary"}
-              on:click={() => onSetAsMain(isMain)}
-      />
-    {/if}
-
-    {#if !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFriend))}
-      <Button title={isFriend ? "Remove from Friends" : "Add to Friends"}
-              iconFa={isFriend ? "fas fa-user-minus" : "fas fa-user-plus"} type={isFriend ? "danger" : "primary"}
-              on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')}
-      />
+    {#if loggedInPlayer && !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFriend))}
+        <Button title={isFriend ? "Remove from Friends" : "Add to Friends"}
+                iconFa={isFriend ? "fas fa-user-minus" : "fas fa-user-plus"} type={isFriend ? "danger" : "primary"}
+                loading={operationInProgress} disabled={operationInProgress}
+                on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')}
+        />
     {/if}
 
     {#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isProfileLinkedToTwitch))}
@@ -213,7 +197,7 @@
       {/if}
     {/if}
 
-    {#if (isMain && loggedInPlayer === playerId) || isAdmin}
+    {#if isMain || isAdmin}
     <div class="imageInput" on:click={() => fileinput.click()}>
       <input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={(e)=>changeAvatar(e)} bind:this={fileinput} >
       <span class="imageChange">
