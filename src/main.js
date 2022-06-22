@@ -6,7 +6,6 @@ import setupDataFixes from './db/fix-data'
 import createConfigStore from './stores/config'
 import createPlayerService from './services/beatleader/player'
 import createBeatSaviorService from './services/beatsavior'
-import createRankedsStore from './stores/beatleader/rankeds'
 import {enablePatches, setAutoFreeze} from 'immer'
 import ErrorComponent from './components/Common/Error.svelte'
 import initializeWorkers from './utils/worker-wrappers'
@@ -38,7 +37,6 @@ let app = null;
     await createConfigStore();
     createPlayerService();
     createBeatSaviorService();
-    await createRankedsStore();
 
     log.info('Site initialized', 'Main')
 

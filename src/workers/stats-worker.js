@@ -6,7 +6,6 @@ import eventBus from '../utils/broadcast-channel-pubsub'
 import {convertArrayToObjectByKey} from '../utils/js'
 import {diffColors} from '../utils/beatleader/format'
 import {getAccFromScore} from '../utils/beatleader/song'
-import {getTotalPpFromSortedPps, WEIGHT_COEFFICIENT} from '../utils/beatleader/pp'
 import makePendingPromisePool from '../utils/pending-promises'
 import produce, {setAutoFreeze} from 'immer'
 import beatmapsEnhancer from '../stores/http/enhancers/common/beatmaps'
@@ -131,53 +130,9 @@ const calcPlayerStats = async playerId => {
   return stats;
 }
 
-const calcPpBoundary = async (playerId, expectedPp = 1) => {
-  const rankedScores = await getRankedScores(playerId);
-  if (!rankedScores) return null;
-
-  const calcRawPpAtIdx = (bottomScores, idx, expected) => {
-    const oldBottomPp = getTotalPpFromSortedPps(bottomScores, idx);
-    const newBottomPp = getTotalPpFromSortedPps(bottomScores, idx + 1);
-
-    // 0.965^idx * rawPpToFind = expected + oldBottomPp - newBottomPp;
-    // rawPpToFind = (expected + oldBottomPp - newBottomPp) / 0.965^idx;
-    return (expected + oldBottomPp - newBottomPp) / Math.pow(WEIGHT_COEFFICIENT, idx);
-  }
-
-  const rankedScorePps = rankedScores.map(s => s.pp).sort((a, b) => b - a);
-
-  let idx = rankedScorePps.length - 1;
-
-  while (idx >= 0) {
-    const bottomSlice = rankedScorePps.slice(idx);
-    const bottomPp = getTotalPpFromSortedPps(bottomSlice, idx);
-
-    bottomSlice.unshift(rankedScorePps[idx]);
-    const modifiedBottomPp = getTotalPpFromSortedPps(bottomSlice, idx);
-    const diff = modifiedBottomPp - bottomPp;
-
-    if (diff > expectedPp) {
-      const ppBoundary = calcRawPpAtIdx(rankedScorePps.slice(idx + 1), idx + 1, expectedPp);
-
-      eventBus.publish('player-pp-boundary-calculated', {playerId, expectedPp, ppBoundary});
-
-      return ppBoundary;
-    }
-
-    idx--;
-  }
-
-  const ppBoundary = calcRawPpAtIdx(rankedScorePps, 0, expectedPp);
-
-  eventBus.publish('player-pp-boundary-calculated', {playerId, expectedPp, ppBoundary});
-
-  return ppBoundary;
-}
-
 const worker = {
   init,
   calcPlayerStats,
-  calcPpBoundary,
 }
 
 expose(worker);

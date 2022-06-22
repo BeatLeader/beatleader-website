@@ -2,7 +2,6 @@ import {db} from '../../db/db'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import {configStore} from '../../stores/config'
 import createPlayerService from './player';
-import createRankedsStore from '../../stores/beatleader/rankeds'
 import {PRIORITY} from '../../network/queues/http-queue'
 import scoresApiClient from '../../network/clients/beatleader/scores/api'
 import scoreStatsApiClient from '../../network/clients/beatleader/scores/api-stats'
@@ -38,7 +37,6 @@ export default () => {
 
   let playerService = createPlayerService();
 
-  let allRankeds = {};
   let mainPlayerId = null;
   let updateInProgress = [];
 
@@ -75,15 +73,6 @@ export default () => {
     }
   })
 
-  let rankedStoreUnsubscribe = null;
-  createRankedsStore().then(rankedStore => {
-    rankedStoreUnsubscribe = rankedStore.subscribe(rankeds => {
-      allRankeds = rankeds
-
-      log.debug(`Ranked songs updated`, 'ScoresService', allRankeds)
-    })
-  })
-
   const isDataForPlayerAvailable = async playerId => (await Promise.all([
     scoresRepository().getFromIndex('scores-playerId', playerId),
     playersRepository().get(playerId),
@@ -92,18 +81,10 @@ export default () => {
 
   const getAllScores = async () => scoresRepository().getAll();
   const getLeaderboardScores = async leaderboardId => scoresRepository().getAllFromIndex('scores-leaderboardId', leaderboardId);
-  const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, async () => {
-    return (await scoresRepository().getAllFromIndex('scores-playerId', playerId))
-      .map(s => ({...s, leaderboard: {...s?.leaderboard, stars: allRankeds[s?.leaderboardId]?.stars ?? null}}))
-  })
+  const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, async () => scoresRepository().getAllFromIndex('scores-playerId', playerId));
   const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
   const getPlayerSongScore = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
-  const getPlayerRankedScores = async playerId => {
-    const [scores, rankeds] = await Promise.all([getPlayerScores(playerId), allRankeds]);
-    if (!scores) return [];
-
-    return scores.filter(s => s.leaderboardId && rankeds[s.leaderboardId]);
-  }
+  const getPlayerRankedScores = async playerId => [];
   const updateScore = async score => scoresRepository().set(score);
 
   const reduceScoresArr = scores => scores.reduce((allScores, scorePage) => [...allScores, ...scorePage], []);
@@ -599,35 +580,10 @@ export default () => {
     return fetchedScores;
   }
 
-  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
     if (!player || !player.playerId) return null;
 
-    const canUseBrowserCache = !force && isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated')
-
-    const scoresPage = await getPlayerScoresPage(player.playerId, serviceParams);
-
-    const scores = Array.isArray(scoresPage) ? scoresPage : (scoresPage?.data ?? []);
-
-    // force fetch from time to time even when in cache (in order to update rank/pp) OR if cached score is ranked and pp === 0
-    const shouldPageBeRefetched = scores && scores.reduce((shouldRefresh, score) => {
-      if (!score.pp && allRankeds[score.leaderboard]) return true;
-
-      if (!score.lastUpdated || score.lastUpdated < addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return true;
-
-      return shouldRefresh
-    }, false)
-
-    if (
-      force ||
-      !scoresPage ||
-      shouldPageBeRefetched ||
-      !isScoreDateFresh(player, refreshInterval, 'recentPlayLastUpdated') ||
-      !player.recentPlay || !player.scoresLastUpdated || player.recentPlay > player.scoresLastUpdated
-    ) {
-      return fetchScoresPageAndUpdateIfNeeded(player.playerId, serviceParams, priority, signal, canUseBrowserCache && !shouldPageBeRefetched, refreshInterval);
-    }
-
-    return scoresPage;
+    return fetchScoresPageAndUpdateIfNeeded(player.playerId, serviceParams, priority, signal, false, refreshInterval);
   }
 
   const refresh = async (playerId, forceUpdate = false, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
@@ -728,7 +684,6 @@ export default () => {
     serviceCreationCount--;
     if (serviceCreationCount === 0) {
       if(configStoreUnsubscribe) configStoreUnsubscribe();
-      if (rankedStoreUnsubscribe) rankedStoreUnsubscribe();
 
       playerService.destroyService();
 

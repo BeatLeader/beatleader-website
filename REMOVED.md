@@ -1,2 +1,4 @@
 - Secondary PP metrics type (has been commented on before)
 - Comparing Beat Savior scores
+- One PP calculator
+- 
