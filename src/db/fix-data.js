@@ -18,49 +18,6 @@ const addAppliedFix = async fixName => {
 }
 
 const allFixes = {
-  'beatsaver-20210804': {
-    apply: async fixName => {
-      log.info('Converting BeatSaver songs to a new format...', 'DBFix')
-
-      return db.runInTransaction(['songs', 'songs-beatmaps', 'key-value'], async tx => {
-        const songsBeatMapsStore = tx.objectStore('songs-beatmaps');
-
-        let cursor = await tx.objectStore('songs').openCursor();
-
-        let songCount = 0;
-
-        const beatmapsService = createBeatMapsService();
-
-        while (cursor) {
-          const beatSaverSong = cursor.value;
-
-          if (beatSaverSong?.metadata?.characteristics) {
-            const beatMapsSong = beatmapsService.convertOldBeatSaverToBeatMaps(beatSaverSong);
-            if (beatMapsSong) {
-              songsBeatMapsStore.put(beatMapsSong)
-
-              songCount++;
-            } else {
-              log.info(`Unable to convert, deleting a song`, 'DBFix', beatSaverSong);
-            }
-          } else {
-            log.info(`No metadata characteristics, skipping a song`, 'DBFix', beatSaverSong);
-          }
-
-          cursor = await cursor.continue();
-        }
-
-        const keyValueStore = tx.objectStore('key-value')
-        let allAppliedFixes = await keyValueStore.get(FIXES_KEY);
-        allAppliedFixes = allAppliedFixes && Array.isArray(allAppliedFixes) ? allAppliedFixes : [];
-        allAppliedFixes.push(fixName);
-        await keyValueStore.put(allAppliedFixes, FIXES_KEY);
-
-        log.info(`${songCount} BeatSaver song(s) converted`, 'DBFix')
-      });
-    }
-  },
-
   'twitch-20210808': {
     apply: async fixName => {
       const predefinedProfiles = {

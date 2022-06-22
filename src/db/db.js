@@ -48,12 +48,6 @@ async function openDatabase() {
             scoresStore.createIndex('scores-timeset', 'timeset', {unique: false});
             scoresStore.createIndex('scores-pp', 'pp', {unique: false});
 
-            const songsStore = db.createObjectStore('songs', {
-              keyPath: 'hash',
-              autoIncrement: false,
-            });
-            songsStore.createIndex('songs-key', 'key', {unique: true});
-
             db.createObjectStore('twitch', {
               keyPath: 'playerId',
               autoIncrement: false,
