@@ -2,15 +2,12 @@ import playersRepository from "../db/repository/players";
 import playersHistoryRepository from "../db/repository/players-history";
 import scoresRepository from "../db/repository/scores";
 import groupsRepository from "../db/repository/groups";
-import {getRankedsChangesSince, getRankedSongs} from "./rankeds";
 import {substituteVars} from "../utils/format";
-import {dateFromString} from "../utils/date";
 import {arrayUnique, convertArrayToObjectByKey} from "../utils/js";
 import {configStore} from '../stores/config'
 
 const NEW_SCORESABER_URL = '';
 const PLAYER_PROFILE_URL = NEW_SCORESABER_URL + '/u/${playerId}';
-const PLAYS_PER_PAGE = 8; // top/recent plays
 
 export const isCountryPlayer = (u, country) => u && u.id && !!u.ssplCountryRank && !!u.ssplCountryRank[country] && ((country && u.country.toLowerCase() === country.toLowerCase()));
 
@@ -26,11 +23,6 @@ export const filterPlayersByIdsList = (playerIds, players) => players.filter(pla
 export const getAllPlayersRanking = async country => {
     const players = await getAllActivePlayers(country);
     return players ? Object.values(players).filter(player => player.name).sort((a,b) => b.pp - a.pp) : null;
-}
-
-export const getCountryRanking = async (country) => {
-    const players = await getActiveCountryPlayers(country);
-    return players ? players.sort((a,b) => b.pp - a.pp).slice(0, 50) : null;
 }
 
 export const isDataAvailable = async () => (await getPlayers()).length > 0;
@@ -145,87 +137,6 @@ export const getAllScoresSince = async (sinceDate) => {
 };
 export const getAllScoresWithPpOver = async (minPp) => scoresRepository().getAllFromIndex('scores-pp', minPp ? IDBKeyRange.lowerBound(minPp) : undefined);
 
-export const getRankedScoresByPlayerId = async (playerId) => {
-    const scores = await getScoresByPlayerId(playerId);
-    const rankedMaps = await getRankedSongs();
-    return scores
-        ? Object.values(scores)
-            .filter(s => s.pp > 0)
-            .filter(s => rankedMaps?.[s.leaderboardId])
-        : [];
-}
-
 export const getPlayerSongScore = async (player, leaderboardId) => getSongScoreByPlayerId(player?.id + '_' + leaderboardId);
 export const getSongScoreByPlayerId = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
 export const updateSongScore = async score => scoresRepository().set(score);
-
-export const getPlayerSongScoreHistory = async (playerScore) => {
-    if (!playerScore || !playerScore.history) return null;
-
-    return playerScore.history
-        .filter(h => h.score && h.score !== playerScore.score)
-        .sort((a, b) => b.score - a.score)
-        .map(h => ({...h, timeset: new Date(h.timestamp)}));
-}
-
-const getPlayerRankedsToUpdate = async (scores, previousLastUpdated) => {
-    if (!previousLastUpdated) return [];
-
-    const songsChangedAfterPreviousUpdate = await getRankedsChangesSince(previousLastUpdated.getTime());
-
-    // check all song changed after previous update
-    return Object.keys(songsChangedAfterPreviousUpdate).reduce((cum, leaderboardId) => {
-        // skip if the player didn't play the song
-        if (!scores[leaderboardId]) return cum;
-
-        const songLastPlay = scores[leaderboardId]?.timeset;
-
-        // skip if song was played AFTER previous update (because all new scores were downloaded with current update, changed or not)
-        if (songLastPlay && songLastPlay > previousLastUpdated) return cum;
-
-        // mark song to update
-        cum.push(leaderboardId);
-
-        return cum;
-    }, [])
-}
-
-export const getPlayerScorePagesToUpdate = (allScores, leaderboardIdsToUpdate, includeAllLeaderboardIdsOnPage = false) => {
-    const sortedScores = Object.values(allScores)
-      .map((s) => ({
-          leaderboardId: s.leaderboardId,
-          timeset      : dateFromString(s.timeset)
-      }))
-      .sort((a, b) => b.timeset - a.timeset);
-
-    return sortedScores
-      .reduce((cum, s, idx) => {
-          if (leaderboardIdsToUpdate.includes(s.leaderboardId)) {
-              const page = Math.floor(idx / PLAYS_PER_PAGE) + 1;
-
-              if (includeAllLeaderboardIdsOnPage) {
-                  if (!cum[page]) cum[page] = {searched: [], all: []};
-
-                  cum[page].searched = cum[page].searched.concat([s.leaderboardId]);
-
-                  cum[page].all = arrayUnique(
-                    cum[page].all.concat(
-                      sortedScores
-                        .slice((page - 1) * PLAYS_PER_PAGE, page * PLAYS_PER_PAGE)
-                        .map(s => s.leaderboardId)
-                    )
-                  );
-              } else {
-                  cum[page] = (cum[page] ?? []).concat([s.leaderboardId]);
-              }
-          }
-          return cum;
-      }, {});
-}
-
-export const getPlayerRankedsScorePagesToUpdate = async (scores, previousLastUpdated, additionalLeaderboardsToUpdate = []) => {
-    const songsToUpdate = await getPlayerRankedsToUpdate(scores, previousLastUpdated);
-    if (!songsToUpdate.length && !additionalLeaderboardsToUpdate.length) return {};
-
-    return getPlayerScorePagesToUpdate(scores, songsToUpdate.concat(additionalLeaderboardsToUpdate));
-}

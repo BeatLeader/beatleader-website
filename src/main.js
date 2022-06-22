@@ -8,7 +8,6 @@ import createPlayerService from './services/beatleader/player'
 import createBeatSaviorService from './services/beatsavior'
 import {enablePatches, setAutoFreeze} from 'immer'
 import ErrorComponent from './components/Common/Error.svelte'
-import initializeWorkers from './utils/worker-wrappers'
 
 let app = null;
 
@@ -30,8 +29,6 @@ let app = null;
     // setup immer.js
     enablePatches();
     setAutoFreeze(false);
-
-    await initializeWorkers();
 
     // pre-warm cache && create singleton services
     await createConfigStore();

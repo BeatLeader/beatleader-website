@@ -2,7 +2,6 @@ import createPlayerService from '../../../services/beatleader/player';
 import createScoresFetcher from './utils/scores-fetch'
 import queue from '../../../network/queues/queues'
 import {MINUTE, SECOND} from '../../../utils/date'
-import {worker} from '../../../utils/worker-wrappers'
 
 let playerService = null;
 let scoresFetcher = null;
@@ -32,8 +31,6 @@ export default () => {
       ]);
 
       if (!player || !scores) return null;
-
-      if (worker) worker.calcPlayerStats(playerId);
 
       return {...player, scores, service, serviceParams}
     },

@@ -18,26 +18,6 @@ const addAppliedFix = async fixName => {
 }
 
 const allFixes = {
-  'rankeds-20210725': {
-    apply: async fixName => {
-      log.info('Apply rankeds refresh fix (20210725)')
-
-      return db.runInTransaction(['rankeds-changes', 'rankeds', 'key-value'], async tx => {
-        await tx.objectStore('rankeds-changes').clear();
-        await tx.objectStore('rankeds').clear();
-
-        const keyValueStore = tx.objectStore('key-value')
-
-        keyValueStore.delete('rankedsLastUpdated');
-
-        let allAppliedFixes = await keyValueStore.get(FIXES_KEY);
-        allAppliedFixes = allAppliedFixes && Array.isArray(allAppliedFixes) ? allAppliedFixes : [];
-        allAppliedFixes.push(fixName);
-        await keyValueStore.put(allAppliedFixes, FIXES_KEY);
-      });
-    },
-  },
-
   'beatsaver-20210804': {
     apply: async fixName => {
       log.info('Converting BeatSaver songs to a new format...', 'DBFix')

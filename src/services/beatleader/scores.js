@@ -84,7 +84,6 @@ export default () => {
   const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, async () => scoresRepository().getAllFromIndex('scores-playerId', playerId));
   const getPlayerScoresAsObject = async (playerId, idFunc = score => opt(score, 'leaderboard.leaderboardId'), asArray = false) => convertScoresToObject(await getPlayerScores(playerId), idFunc, asArray)
   const getPlayerSongScore = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
-  const getPlayerRankedScores = async playerId => [];
   const updateScore = async score => scoresRepository().set(score);
 
   const reduceScoresArr = scores => scores.reduce((allScores, scorePage) => [...allScores, ...scorePage], []);
@@ -699,7 +698,6 @@ export default () => {
     getPlayerScoresAsObject,
     getPlayerScoresPage,
     getPlayerSongScore,
-    getPlayerRankedScores,
     update: updateScore,
     getScoresFreshnessDate,
     areScoresFresh: isScoreDateFresh,

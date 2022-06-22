@@ -19,7 +19,6 @@ import {
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'
 import makePendingPromisePool from '../../utils/pending-promises'
-import {worker} from '../../utils/worker-wrappers'
 import {getServicePlayerGain} from '../utils'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
@@ -147,19 +146,6 @@ export default () => {
       })
       .then(async previous => {
         let accStats = {};
-
-        if (worker) {
-          const stats = await worker.calcPlayerStats(playerId);
-
-          const ppBoundary = await worker.calcPpBoundary(playerId) ?? null;
-
-          const {badges, totalScore, playCount, ...playerStats} = stats ?? {};
-
-          accStats = {...playerStats}
-
-          if (ppBoundary) accStats.ppBoundary = ppBoundary;
-          if (badges?.length) accStats.accBadges = badges.reduce((cum, b) => ({...cum, [b.label]: b.value}), {});
-        }
 
         return playersHistoryRepository().set({
           ...previous,

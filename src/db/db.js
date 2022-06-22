@@ -48,11 +48,6 @@ async function openDatabase() {
             scoresStore.createIndex('scores-timeset', 'timeset', {unique: false});
             scoresStore.createIndex('scores-pp', 'pp', {unique: false});
 
-            db.createObjectStore('rankeds', {
-              keyPath: 'leaderboardId',
-              autoIncrement: false,
-            });
-
             const songsStore = db.createObjectStore('songs', {
               keyPath: 'hash',
               autoIncrement: false,
@@ -63,13 +58,6 @@ async function openDatabase() {
               keyPath: 'playerId',
               autoIncrement: false,
             });
-
-            const rankedsChangesStore = db.createObjectStore('rankeds-changes', {
-              keyPath: '_idbId',
-              autoIncrement: true,
-            });
-            rankedsChangesStore.createIndex('rankeds-changes-timestamp', 'timestamp', {unique: false});
-            rankedsChangesStore.createIndex('rankeds-changes-leaderboardId', 'leaderboardId', {unique: false});
 
             // no autoIncrement, no keyPath - key must be provided
             db.createObjectStore('key-value');
