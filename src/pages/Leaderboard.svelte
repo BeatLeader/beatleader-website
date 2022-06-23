@@ -84,13 +84,6 @@
         url: `/leaderboard/global/${currentLeaderboardId}/1`,
         filters: {countries: ''},
       },
-      {
-        type: 'friends',
-        label: 'Friends',
-        iconFa: 'fas fa-user-friends',
-        url: `/leaderboard/friends/${currentLeaderboardId}/1`,
-        filters: {countries: ''},
-      },
     ]
       .concat(
         type === 'accsaber'
@@ -228,18 +221,35 @@
     return "#" + brightnessHex + brightnessHex + brightnessHex;
   }
 
-  function updateTypeOptions(country) {
-    if (!country?.length) return;
+  function updateTypeOptions(country, playerHasFriends) {
+    if (!country?.length && !playerHasFriends) return;
 
-    typeOptions = availableTypeOptions.map(to => to).concat([
-      {
-        type: 'global',
-        label: 'Country',
-        icon: `<img src="https://cdn.beatleader.xyz/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
-        url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
-        filters: {countries: country}
-      },
-    ]);
+    typeOptions = availableTypeOptions.map(to => to)
+      .concat(playerHasFriends
+        ? [
+          {
+            type: 'friends',
+            label: 'Friends',
+            iconFa: 'fas fa-user-friends',
+            url: `/leaderboard/friends/${currentLeaderboardId}/1`,
+            filters: {countries: ''},
+          }
+        ]
+        : [],
+      )
+      .concat(country?.length
+        ? [
+          {
+            type: 'global',
+            label: 'Country',
+            icon: `<img src="https://cdn.beatleader.xyz/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
+            url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
+            filters: {countries: country},
+          },
+        ]
+        : [],
+      )
+    ;
 
     const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
     if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
@@ -276,7 +286,8 @@
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
-  $: updateTypeOptions(mainPlayerCountry);
+  $: playerHasFriends = !!$account?.friends?.length
+  $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
 </script>
 
 <svelte:head>
