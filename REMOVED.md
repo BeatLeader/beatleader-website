@@ -1,3 +1,5 @@
 - Secondary PP metrics type (has been commented on before)
 - Comparing Beat Savior scores
 - One PP calculator
+- Friends leaderboard (will be restored when new endpoints are added to the API)
+- If you play like this...

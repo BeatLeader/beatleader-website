@@ -1,14 +1,6 @@
 <script>
-    import {onMount} from 'svelte';
-    import eventBus from '../../utils/broadcast-channel-pubsub';
-    import {debounce} from '../../utils/debounce';
-    import {
-        getAllScoresSince,
-        getAllScoresWithPpOver,
-    } from "../../utils/players";
-    import {getAccFromScore, getSongDiffInfo, getSongMaxScore} from "../../utils/beatleader/song";
+    import {getAccFromScore, getSongDiffInfo} from "../../utils/beatleader/song";
     import {navigate} from "svelte-routing";
-
     import Table from '../Common/Table.svelte';
     import Avatar from "../Common/Avatar.svelte";
     import Rank from "../Common/Rank.svelte";
@@ -19,7 +11,6 @@
     import Value from "../Common/Value.svelte";
     import Difficulty from "../Song/Difficulty.svelte";
     import Leaderboard from './Leaderboard.svelte'
-    import {convertArrayToObjectByKey} from '../../utils/js'
 
     export let players;
     export let sortBy = 'timeSet'
@@ -50,36 +41,6 @@
 
     let scores = [];
 
-    async function refreshScores() {
-        const playersScores = sortBy === 'timeSet'
-         ? await getAllScoresSince(min ? min : undefined)
-         : (
-          sortBy === 'pp'
-           ? await getAllScoresWithPpOver(min ? min : undefined)
-           : await getAllScoresSince()
-         );
-
-        const allPlayersArr = players;
-        const allPlayers = allPlayersArr ? convertArrayToObjectByKey(allPlayersArr, 'playerId') : {};
-        const allPlayersIds = Object.keys(allPlayers);
-
-        const tempScores = playersScores
-         .filter(s => allPlayersIds.includes(s.playerId))
-         .map(s => {
-             const player = allPlayers[s.playerId];
-             return {...s, player}
-         });
-
-        for (const s of tempScores) {
-            if (s.score.acc == Infinity || s.score.acc == null) {
-                const maxScore = await getSongMaxScore(s.leaderboard.song.hash, s.leaderboard.diffInfo, s.leaderboard.leaderboardId);
-                s.score.acc = getAccFromScore(s.score, maxScore);
-            }
-        }
-
-        scores = tempScores;
-    }
-
     function refreshRows() {
         if (!scores || !scores.length) return [];
 
@@ -88,16 +49,6 @@
          .sort((a, b) => b[sortBy] - a[sortBy])
          .map((s, idx) => ({...s, rank: idx + 1}));
     }
-
-    onMount(async () => {
-        const dataRefreshedUnsubscriber = eventBus.on('data-refreshed', async () => await refreshScores());
-        const playerScoresUpdatedUnsubscriber = eventBus.on('player-scores-updated', debounce(async () => await refreshScores(), PLAYERS_SCORES_UPDATED_DEBOUNCE_DELAY))
-
-        return () => {
-            dataRefreshedUnsubscriber();
-            playerScoresUpdatedUnsubscriber();
-        }
-    });
 
     async function onDataPage(data, page) {
         const promisesToResolve = [];
@@ -162,10 +113,6 @@
 
     $: {
         refreshRows(scores, filterFunc, leaderboardType);
-    }
-
-    $: {
-        refreshScores(sortBy, min, players, refreshTag);
     }
 </script>
 

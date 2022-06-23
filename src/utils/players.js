@@ -1,5 +1,4 @@
 import playersRepository from "../db/repository/players";
-import scoresRepository from "../db/repository/scores";
 import {substituteVars} from "../utils/format";
 import {arrayUnique, convertArrayToObjectByKey} from "../utils/js";
 import {configStore} from '../stores/config'
@@ -32,16 +31,6 @@ export const getPlayerInfo = async (playerId) => await playersRepository().get(p
 export const getPlayerLastUpdated = async playerId => (await getPlayerInfo(playerId))?.lastUpdated ?? null;
 export const getPlayerProfileLastUpdated = async playerId => (await getPlayerInfo(playerId))?.profileLastUpdated ?? null;
 
-export const removeAllPlayerData = async playerId => {
-    const playerScores = await scoresRepository().getAllFromIndex('scores-playerId', playerId);
-
-    await Promise.all(
-      []
-        .concat(playerScores.map(s => scoresRepository().deleteObject(s)))
-        .concat([playersRepository().delete(playerId)])
-    );
-};
-
 export const getFriendsIds = async (withMain = false) => ([]);
 
 export const getManuallyAddedPlayersIds = async (country, withMain = false) => {
@@ -62,25 +51,3 @@ export const getPlayerProfileUrl = (playerId, recentPlaysPage = false, transform
   `${PLAYER_PROFILE_URL}?page=${page}&${recentPlaysPage ? 'sort=2' : 'sort=1'}${transform ? '&transform=true' : ''}`,
   {playerId}
 )
-
-export const getPlayerAvatarUrl = async playerId => {
-    if (!playerId) return null;
-
-    const playerInfo = await getPlayerInfo(playerId);
-    return playerInfo && playerInfo.avatar ? (playerInfo.avatar.startsWith('http') ? playerInfo.avatar : NEW_SCORESABER_URL + playerInfo.avatar) : null;
-}
-
-export const getPlayerScores = player => player?.scores ? player.scores : null;
-
-export const getAllScores = async () => scoresRepository().getAll();
-export const getScoresByPlayerId = async (playerId) => scoresRepository().getAllFromIndex('scores-playerId', playerId);
-export const isPlayerDataAvailable = async (playerId) => !!(await scoresRepository().getFromIndex('scores-playerId', playerId));
-export const isAnyPlayerDataAvailable = async () => !!(await scoresRepository().getFromIndex('scores-playerId', ''));
-export const getAllScoresSince = async (sinceDate) => { 
-    return scoresRepository().getAllFromIndex('scores-timeSet', sinceDate ? IDBKeyRange.lowerBound(sinceDate) : undefined)
-};
-export const getAllScoresWithPpOver = async (minPp) => scoresRepository().getAllFromIndex('scores-pp', minPp ? IDBKeyRange.lowerBound(minPp) : undefined);
-
-export const getPlayerSongScore = async (player, leaderboardId) => getSongScoreByPlayerId(player?.id + '_' + leaderboardId);
-export const getSongScoreByPlayerId = async (playerId, leaderboardId) => scoresRepository().get(playerId + '_' + leaderboardId);
-export const updateSongScore = async score => scoresRepository().set(score);

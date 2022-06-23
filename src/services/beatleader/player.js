@@ -13,7 +13,6 @@ import {
   MINUTE,
   SECOND,
   toBlMidnight,
-  truncateDate,
 } from '../../utils/date'
 import {opt} from '../../utils/js'
 import {db} from '../../db/db'

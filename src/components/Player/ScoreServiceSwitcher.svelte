@@ -1,6 +1,5 @@
 <script>
   import {createEventDispatcher} from 'svelte'
-  import createScoresService from '../../services/beatleader/scores'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import Switcher from '../Common/Switcher.svelte'
@@ -17,7 +16,6 @@
 
   const dispatch = createEventDispatcher();
 
-  const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
   const accSaberService = createAccSaberService();
 
@@ -115,7 +113,6 @@
     accSaberCategories = null;
 
     const additionalServices = (await Promise.all([
-        scoresService.isDataForPlayerAvailable(playerId).then(r => r ? 'beatleader-cached' : null),
         beatSaviorService.isDataForPlayerAvailable(playerId).then(r => r ? 'beatsavior' : null),
         accSaberService.isDataForPlayerAvailable(playerId).then(r => r ? 'accsaber' : null),
       ])

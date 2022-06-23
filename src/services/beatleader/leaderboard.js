@@ -60,30 +60,7 @@ export default () => {
   }
 
   const getFriendsLeaderboard = async (leaderboardId, priority = PRIORITY.FG_LOW, signal = null) => {
-    const leaderboard = await resolvePromiseOrWaitForPending(`pageClient/leaderboard/${leaderboardId}/1`, () => leaderboardApiClient.getProcessed({leaderboardId, page: 1, signal, priority, cacheTtl: MINUTE}));
-
-    const friends = convertArrayToObjectByKey(await friendsPromise, 'playerId');
-
-    const scores = (await scoresService.getLeaderboardScores(leaderboardId))
-      .map(score => {
-        if (!score || !score.playerId || !friends[score.playerId]) return null;
-
-        const player = friends[score.playerId];
-
-        return {
-          player: {playerId: player.playerId, name: player.name, playerInfo: {...player.playerInfo}},
-          score: {...score.score},
-        }
-      })
-      .filter(s => s)
-      .sort((a, b) => opt(b, 'score.score', 0) - opt(a, 'score.score', 0))
-      .map((score, idx) => ({
-        player: score.player,
-        score: {...score.score, rank: idx + 1, globalRank: score.score.rank, timeSetString: formatDateRelative(score.score.timeSet)},
-      }))
-    ;
-
-    return {...leaderboard, scores, pageQty: 1, totalItems: scores.length};
+    return []; // TODO: restore it
   }
 
   const destroyService = () => {

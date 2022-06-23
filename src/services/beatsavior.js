@@ -35,11 +35,7 @@ export default () => {
   const getPlayerScoresWithScoreSaber = async playerId => {
     const [beatSaviorData, playerScores] = await Promise.all([
       getPlayerScores(playerId),
-      resolvePromiseOrWaitForPending(`getSsPlayerScores/${playerId}`, () => scoresService.getPlayerScoresAsObject(
-        playerId,
-        score => score?.leaderboard?.song?.hash?.toLowerCase() ?? null,
-        true,
-      )),
+      null,
     ]);
 
     return beatSaviorData.map(bsData => {

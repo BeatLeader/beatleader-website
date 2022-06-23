@@ -33,20 +33,6 @@ export default () => {
     }
   }
 
-  const fetchCachedScores = async (playerId, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
-    const processedServiceParams = processServiceParamsFilters(serviceParams);
-
-    switch (service) {
-      case 'beatsavior':
-        return beatSaviorService.getPlayerScoresPage(playerId, processedServiceParams);
-      case 'accsaber':
-        return accSaberService.getPlayerScoresPage(playerId, processedServiceParams);
-      case 'beatleader':
-      default:
-        return blScoresService.getPlayerScoresPage(playerId, processedServiceParams);
-    }
-  }
-
   const fetchLiveScores = async (player, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
     const processedServiceParams = processServiceParamsFilters(serviceParams);
 
@@ -61,7 +47,7 @@ export default () => {
     }
   }
 
-  scoreFetcher = {fetchCachedScores, fetchLiveScores}
+  scoreFetcher = {fetchCachedScores: fetchLiveScores, fetchLiveScores}
 
   return scoreFetcher;
 }
