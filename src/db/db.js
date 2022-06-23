@@ -120,13 +120,6 @@ async function openDatabase() {
 
           // NO break here
 
-          case newVersion >= 7 && oldVersion <=6:
-            const scoresUpdateQueue = db.createObjectStore('scores-update-queue', {
-              keyPath: 'id',
-              autoIncrement: false,
-            });
-            scoresUpdateQueue.createIndex('scores-update-queue-fetchedAt', 'fetchedAt', {unique: false});
-
           case newVersion >= 8 && oldVersion <= 7:
             const beatSaviorStorev8 = transaction.objectStore('beat-savior');
             beatSaviorStorev8.createIndex('beat-savior-hash', 'hash', {unique: false});

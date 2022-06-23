@@ -7,7 +7,6 @@ import scoresApiClient from '../../network/clients/beatleader/scores/api'
 import scoreStatsApiClient from '../../network/clients/beatleader/scores/api-stats'
 import playersRepository from '../../db/repository/players'
 import scoresRepository from '../../db/repository/scores'
-import scoresUpdateQueueRepository from '../../db/repository/scores-update-queue'
 import log from '../../utils/logger'
 import {addToDate, formatDate, HOUR, MINUTE, SECOND, truncateDate} from '../../utils/date'
 import {opt} from '../../utils/js'
@@ -198,86 +197,6 @@ export default () => {
       timeSet,
       pp
     }
-  }
-
-  const updateRankAndPpFromTheQueue = async () => {
-    log.debug('Processing rank and pp update queue', 'ScoresService');
-
-    try {
-      log.debug('Rank and pp update queue, waiting for the scores to finish refreshing.', 'ScoresService');
-      await refreshingFinished();
-      log.debug('Rank and pp update queue, scores refreshed, start queue processing.', 'ScoresService');
-
-      await db.runInTransaction(['scores-update-queue', 'scores'], async tx => {
-        // get all scores updates at least one minute old (some time to download new scores)
-        let cursor = await tx.objectStore('scores-update-queue').index('scores-update-queue-fetchedAt').openCursor(IDBKeyRange.upperBound(addToDate(-1 * MINUTE)));
-        const scoresStore = tx.objectStore('scores');
-
-        while (cursor) {
-          try {
-            const scoreUpdate = {...cursor.value};
-
-            await cursor.delete();
-
-            if (!scoreUpdate.id) {
-              cursor = await cursor.continue();
-              continue;
-            }
-
-            const dbScore = await scoresStore.get(scoreUpdate.id)
-            if (!dbScore) {
-              cursor = await cursor.continue();
-              continue;
-            }
-
-            const scoreLastUpdated = dbScore.lastUpdated;
-
-            if (
-              (!scoreLastUpdated || scoreLastUpdated < scoreUpdate.fetchedAt) &&
-              (
-                opt(dbScore, 'score.scoreId') === opt(scoreUpdate, 'score.scoreId') ||
-                (opt(dbScore, 'score.unmodifiedScore') <= opt(scoreUpdate, 'score.unmodifiedScore'))
-              ) &&
-              opt(scoreUpdate, 'score.scoreId') && !!opt(scoreUpdate, 'score.timeSet')
-            ) {
-              dbScore.score = scoreUpdate.score;
-
-              dbScore.pp = scoreUpdate.score.pp;
-              dbScore.timeSet = scoreUpdate.score.timeSet;
-              dbScore.lastUpdated = new Date();
-
-              await scoresStore.put(dbScore);
-              scoresRepository().addToCache([dbScore])
-            }
-
-            cursor = await cursor.continue();
-          } catch (err) {
-            // swallow error
-            if (cursor) cursor = await cursor.continue();
-          }
-        }
-      })
-
-      log.debug('Rank and pp update queue processed.', 'ScoresService');
-    }
-    catch(err) {
-      log.debug('Rank and pp update queue has NOT been processed.', 'ScoresService');
-    }
-  }
-
-  const addRankAndPpToUpdateQueue = async scoresToUpdate => {
-    if (!scoresToUpdate || !scoresToUpdate.length) return;
-
-    log.debug('Queueing rank and pp update for bunch of scores', 'ScoresService', scoresToUpdate);
-
-    try {
-      await Promise.all(scoresToUpdate.map(async s => scoresUpdateQueueRepository().set(s)))
-    }
-    catch(err) {
-      // swallow error
-    }
-
-    log.debug('Scores rank & pp queued for update.', 'ScoresService', scoresToUpdate)
   }
 
   const updatePlayerScores = async (player, priority = PRIORITY.BG_NORMAL) => {
@@ -533,48 +452,6 @@ export default () => {
     const fetchedScores = scoresApiClient.getDataFromResponse(fetchedScoresResponse);
 
     const playerScores = await getPlayerScores(playerId);
-    if (fetchedScores?.data && playerScores && playerScores.length) {
-      const playerScoresObj = convertScoresToObject(playerScores)
-
-      // update rank and pp in DB
-      const scoresToUpdate = fetchedScores.data
-        .map(score => {
-          try {
-            score = addScoreIndexFields(playerId, score);
-
-            const leaderboardId = opt(score, 'leaderboard.leaderboardId')
-            if (!leaderboardId || !score.id) return null;
-
-            const scoreObj = opt(score, 'score')
-            if (!scoreObj || !Object.keys(scoreObj).length) return null;
-
-            const cachedScore = playerScoresObj[leaderboardId];
-            if (!cachedScore) return null;
-
-            const id = score.id;
-            const lastUpdated = cachedScore.lastUpdated;
-
-            if (lastUpdated && lastUpdated > addToDate(-RANK_AND_PP_REFRESH_INTERVAL)) return null;
-
-            if (
-              (!lastUpdated || lastUpdated < score.fetchedAt) &&
-              (
-                opt(cachedScore, 'score.scoreId') === opt(score, 'score.scoreId') ||
-                (opt(cachedScore, 'score.unmodifiedScore') <= opt(score, 'score.unmodifiedScore'))
-              )
-            ) {
-              scoresRepository().addToCache([{...cachedScore, score: {...scoreObj}}]);
-            }
-
-            return {id, leaderboardId, fetchedAt: score.fetchedAt, score: {...scoreObj}}
-          } catch {
-            return null;
-          }
-        })
-        .filter(score => score)
-
-      if (scoresToUpdate.length) addRankAndPpToUpdateQueue(scoresToUpdate).then(_ => {});
-    }
 
     return fetchedScores;
   }
@@ -707,7 +584,6 @@ export default () => {
     getScoresHistogramDefinition,
     refresh,
     refreshAll,
-    updateRankAndPpFromTheQueue,
     destroyService,
     convertScoresToObject
   }
