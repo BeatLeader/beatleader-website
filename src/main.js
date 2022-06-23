@@ -5,6 +5,7 @@ import initializeRepositories from './db/repositories-init';
 import initDownloadManager from './network/download-manager'
 import setupDataFixes from './db/fix-data'
 import createConfigStore from './stores/config'
+import createAccountStore from './stores/beatleader/account'
 import createPlayerService from './services/beatleader/player'
 import createBeatSaviorService from './services/beatsavior'
 import {enablePatches, setAutoFreeze} from 'immer'
@@ -33,6 +34,7 @@ let app = null;
 
     // pre-warm cache && create singleton services
     await createConfigStore();
+    createAccountStore();
     createPlayerService();
     createBeatSaviorService();
 

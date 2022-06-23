@@ -2,7 +2,7 @@
   import {createEventDispatcher} from 'svelte'
   import createScoresStore from '../../stores/http/http-scores-store.js';
   import createModifiersStore from '../../stores/beatleader/modifiers'
-  import {configStore} from '../../stores/config'
+  import createAccountStore from '../../stores/beatleader/account'
   import createFailedScoresStore from '../../stores/beatleader/failed-scores'
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
@@ -31,6 +31,8 @@
     initialState,
     initialStateType
   );
+
+  const account = createAccountStore();
 
   let scoresBoxEl = null;
 
@@ -103,7 +105,7 @@
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
   $: modifiers = $modifiersStore;
-  $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
+  $: isMain = playerId && $account?.id === playerId;
   $: isMain ? failedScores.refresh() : null;
   $: failedScoresArray = opt($failedScores, 'scores');
 

@@ -3,13 +3,13 @@
   import {navigate} from "svelte-routing";
   import {ROUTER} from 'svelte-routing/src/contexts'
   import {fade, fly} from 'svelte/transition'
+  import createAccountStore from '../stores/beatleader/account'
   import createRankingStore from '../stores/http/http-ranking-store'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
   import Pager from '../components/Common/Pager.svelte'
   import Spinner from '../components/Common/Spinner.svelte'
   import {PLAYERS_PER_PAGE} from '../utils/beatleader/consts'
-  import createConfigService from '../services/config'
   import ContentBox from "../components/Common/ContentBox.svelte";
   import PlayerCard from "../components/Ranking/PlayerCard.svelte";
   import AddFriendButton from "../components/Player/AddFriendButton.svelte";
@@ -31,13 +31,14 @@
     }
   );
 
+  const account = createAccountStore();
+
   document.body.classList.add('slim');
 
   if (page && !Number.isFinite(page)) page = parseInt(page, 10);
   if (!page || isNaN(page) || page <= 0) page = 1;
 
   const {activeRoute} = getContext(ROUTER);
-  const mainPlayerId = createConfigService().getMainPlayerId();
 
   let currentType = type;
   let currentPage = page;
@@ -101,6 +102,7 @@
   $: isLoading = rankingStore.isLoading;
   $: pending = rankingStore.pending;
   $: numOfPlayers = $rankingStore ? $rankingStore.total : null;
+  $: mainPlayerId = $account?.id;
 
   $: changeParams(type, page, location)
   $: scrollToTop($pending);

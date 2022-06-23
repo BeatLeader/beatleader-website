@@ -3,7 +3,6 @@
     import {fly} from 'svelte/transition'
     import createClanStore from '../stores/http/http-clan-store'
     import createAccountStore from '../stores/beatleader/account'
-    import createConfigService from '../services/config'
     import {scrollToTargetAdjusted} from '../utils/browser'
     import ssrConfig from '../ssr-config'
     import Pager from '../components/Common/Pager.svelte'
@@ -26,7 +25,8 @@
 
     document.body.classList.remove('slim');
 
-    const mainPlayerId = createConfigService().getMainPlayerId();
+    const account = createAccountStore();
+
     const clanService = createClanService();
 
     if (page && !Number.isFinite(page)) page = parseInt(page, 10);
@@ -93,8 +93,6 @@
     }
     const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
 
-    const account = createAccountStore();
-
     const canBeKicked = (clan, player) => clan?.leaderID && clan.leaderID !== player?.playerId;
 
     let kickedPlayer = null;
@@ -133,6 +131,8 @@
 
     $: clanLeaderId = clan?.leaderID ?? null;
     $: isFounder = clan?.id && clanLeaderId === $account?.player?.id;
+
+    $: mainPlayerId = $account?.id;
   </script>
 
   <svelte:head>

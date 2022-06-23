@@ -19,10 +19,6 @@ export const getCurrentLocale = () => configStore ? configStore.getLocale() : DE
 export const getSupportedLocales = () => Object.values(locales);
 
 const DEFAULT_CONFIG = {
-  users: {
-    main: null,
-    country: null,
-  },
   scoreComparison: {
     method: 'in-place',
   },
@@ -86,8 +82,6 @@ export default async () => {
 
   const getLocale = () => opt(currentConfig, 'locale', DEFAULT_LOCALE);
 
-  const getSelectedPlaylistIndex = () => currentConfig['selectedPlaylist'];
-
   const determineNewSettingsAvailable = dbConfig => Object.entries(newSettingsAvailableDefinition)
     .map(([key, description]) => opt(dbConfig, key) === undefined ? description : null)
     .filter(d => d)
@@ -101,7 +95,6 @@ export default async () => {
     subscribe,
     set,
     get,
-    getMainPlayerId: () => opt(currentConfig, 'users.main'),
     getLocale,
     setForKey,
     getNewSettingsAvailable: () => newSettingsAvailable,

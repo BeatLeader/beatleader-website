@@ -9,12 +9,11 @@
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
   import Error from '../Common/Error.svelte'
-  import Badge from '../Common/Badge.svelte'
   import Button from '../Common/Button.svelte'
   import Preview from "../Common/Preview.svelte";
   import CountryPicker from "../Common/CountryPicker.svelte"
   import ClanBadges from './ClanBadges.svelte'
-import BanForm from './BanForm.svelte';
+  import BanForm from './BanForm.svelte';
 
   export let name;
   export let playerInfo;
@@ -136,9 +135,9 @@ import BanForm from './BanForm.svelte';
 
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
   $: countries = getPlayerCountries(playerInfo, statsHistory)
-  $: loggedInPlayer = $account.id;
-  $: isMain = configStore && $configStore?.users?.main === playerId;
-  $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
+  $: loggedInPlayer = $account?.id;
+  $: isMain = playerId && $account?.id === playerId;
+  $: isAdmin = $account?.player?.role?.includes("admin")
   $: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin
 </script>
 

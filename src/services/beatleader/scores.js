@@ -1,9 +1,7 @@
-import {configStore} from '../../stores/config'
 import createPlayerService from './player';
 import {PRIORITY} from '../../network/queues/http-queue'
 import scoresApiClient from '../../network/clients/beatleader/scores/api'
 import scoreStatsApiClient from '../../network/clients/beatleader/scores/api-stats'
-import log from '../../utils/logger'
 import {HOUR, MINUTE, truncateDate} from '../../utils/date'
 import {opt} from '../../utils/js'
 import makePendingPromisePool from '../../utils/pending-promises'
@@ -24,17 +22,6 @@ export default () => {
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
   let playerService = createPlayerService();
-
-  let mainPlayerId = null;
-
-  const configStoreUnsubscribe = configStore.subscribe(config => {
-    const newMainPlayerId = opt(config, 'users.main')
-    if (mainPlayerId !== newMainPlayerId) {
-      mainPlayerId = newMainPlayerId;
-
-      log.debug(`Main player changed to ${mainPlayerId}`, 'ScoresService')
-    }
-  })
 
   const getPlayerScores = async playerId => resolvePromiseOrWaitForPending(`getPlayerScores/${playerId}`, async () => Promise.resolve([]));
 
@@ -178,7 +165,6 @@ export default () => {
   const destroyService = () => {
     serviceCreationCount--;
     if (serviceCreationCount === 0) {
-      if(configStoreUnsubscribe) configStoreUnsubscribe();
 
       playerService.destroyService();
 
