@@ -58,11 +58,6 @@ async function openDatabase() {
 
             db.createObjectStore('cache');
 
-            const beatSaviorFiles = db.createObjectStore('beat-savior-files', {
-              keyPath: 'fileId',
-              autoIncrement: false,
-            });
-
             const beatSavior = db.createObjectStore('beat-savior', {
               keyPath: 'beatSaviorId',
               autoIncrement: false,
@@ -94,15 +89,6 @@ async function openDatabase() {
             scoresStore4.createIndex('scores-timeSet', 'timeSet', {unique: false});
 
             // NO break here
-
-          case newVersion >= 4 && oldVersion <=3:
-            db.deleteObjectStore('beat-savior-files');
-
-            const beatSaviorStore = transaction.objectStore('beat-savior');
-            beatSaviorStore.deleteIndex('beat-savior-fileId');
-            beatSaviorStore.deleteIndex('beat-savior-songId');
-
-          // NO break here
 
           case newVersion >= 5 && oldVersion <=4:
             const songsBeatMapsStore = db.createObjectStore('songs-beatmaps', {
