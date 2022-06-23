@@ -1,10 +1,6 @@
 import keyValueRepository from './repository/key-value';
-import createBeatMapsService from '../services/beatmaps'
 import log from '../utils/logger';
-import {db} from './db'
-import {isDateObject} from '../utils/js'
 import twitchRepository from './repository/twitch'
-import {correctOldSsDate} from '../utils/date'
 
 const FIXES_KEY = 'data-fix';
 
@@ -68,44 +64,6 @@ const allFixes = {
 
       log.info('Twitch profiles added.', 'DBFix')
     }
-  },
-
-  'player-history-20211022': {
-    apply: async fixName => {
-      log.info('Apply player ss history fix (20211022)')
-
-      return db.runInTransaction(['players-history', 'key-value'], async tx => {
-        const playersHistoryStore = tx.objectStore('players-history');
-
-        let cursor = await playersHistoryStore.openCursor();
-
-        while (cursor) {
-          const history = cursor.value;
-
-          if (!history?.playerId || !isDateObject(history?.ssDate)) {
-            await cursor.delete();
-            cursor = await cursor.continue();
-
-            continue;
-          }
-
-          const playerId = history.playerId;
-          const ssDate = correctOldSsDate(history.ssDate);
-          const playerIdSsTimestamp = `${playerId}_${ssDate.getTime()}`;
-
-          await cursor.delete();
-          playersHistoryStore.put({...history, ssDate, playerIdSsTimestamp});
-
-          cursor = await cursor.continue();
-        }
-
-        const keyValueStore = tx.objectStore('key-value')
-        let allAppliedFixes = await keyValueStore.get(FIXES_KEY);
-        allAppliedFixes = allAppliedFixes && Array.isArray(allAppliedFixes) ? allAppliedFixes : [];
-        allAppliedFixes.push(fixName);
-        await keyValueStore.put(allAppliedFixes, FIXES_KEY);
-      });
-    },
   },
 };
 

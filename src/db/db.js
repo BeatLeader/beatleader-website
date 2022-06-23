@@ -27,27 +27,6 @@ async function openDatabase() {
 
         switch (true) {
           case newVersion >= 1 && oldVersion <= 0:
-            db.createObjectStore('players', {
-              keyPath: 'id',
-              autoIncrement: false,
-            });
-
-            const playersHistory = db.createObjectStore('players-history', {
-              keyPath: '_idbId',
-              autoIncrement: true,
-            });
-            playersHistory.createIndex('players-history-playerId', 'playerId', {unique: false});
-            playersHistory.createIndex('players-history-timestamp', 'timestamp', {unique: false});
-
-            const scoresStore = db.createObjectStore('scores', {
-              keyPath: 'id',
-              autoIncrement: false,
-            });
-            scoresStore.createIndex('scores-leaderboardId', 'leaderboardId', {unique: false});
-            scoresStore.createIndex('scores-playerId', 'playerId', {unique: false});
-            scoresStore.createIndex('scores-timeset', 'timeset', {unique: false});
-            scoresStore.createIndex('scores-pp', 'pp', {unique: false});
-
             db.createObjectStore('twitch', {
               keyPath: 'playerId',
               autoIncrement: false,
@@ -76,20 +55,6 @@ async function openDatabase() {
 
             // NO break here!
 
-          case newVersion >= 3 && oldVersion <=2:
-            db.deleteObjectStore('players');
-
-            db.createObjectStore('players', {
-              keyPath: 'playerId',
-              autoIncrement: false,
-            });
-
-            const scoresStore4 = transaction.objectStore('scores');
-            scoresStore4.deleteIndex('scores-timeset');
-            scoresStore4.createIndex('scores-timeSet', 'timeSet', {unique: false});
-
-            // NO break here
-
           case newVersion >= 5 && oldVersion <=4:
             const songsBeatMapsStore = db.createObjectStore('songs-beatmaps', {
               keyPath: 'hash',
@@ -109,13 +74,6 @@ async function openDatabase() {
           case newVersion >= 8 && oldVersion <= 7:
             const beatSaviorStorev8 = transaction.objectStore('beat-savior');
             beatSaviorStorev8.createIndex('beat-savior-hash', 'hash', {unique: false});
-
-          // NO break here
-
-          case newVersion >= 9 && oldVersion <= 8:
-            const playersHistoryStorev9 = transaction.objectStore('players-history');
-            playersHistoryStorev9.deleteIndex('players-history-timestamp');
-            playersHistoryStorev9.createIndex('players-history-playerIdSsTimestamp', 'playerIdSsTimestamp', {unique: true});
 
           // NO break here
 
