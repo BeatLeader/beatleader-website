@@ -6,7 +6,6 @@ import playerPageClient from '../../network/clients/beatleader/player/page'
 import playerAccGraphApiClient from '../../network/clients/beatleader/accgraph/api'
 import {PRIORITY} from '../../network/queues/http-queue'
 import playersRepository from '../../db/repository/players'
-import playersHistoryRepository from '../../db/repository/players-history'
 import log from '../../utils/logger'
 import {
   addToDate,
@@ -114,50 +113,7 @@ export default () => {
     return await setPlayer(finalPlayer);
   }
 
-  const getPlayerHistory = async playerId => resolvePromiseOrWaitForPending(`playerHistory/${playerId}`, () => playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId))
-
   const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) => getServicePlayerGain(playerHistory, toBlMidnight, 'ssDate', daysAgo, maxDaysAgo);
-
-  const updatePlayerHistory = async player => {
-    if (!player) return null;
-    const {playerId, profileLastUpdated, playerInfo: {banned, countries, inactive, pp, rank}, scoreStats} = player;
-
-    if (!playerId) return null;
-
-    const updateDate = profileLastUpdated ? profileLastUpdated : new Date();
-
-    const localDate = truncateDate(updateDate);
-    const blDate = toBlMidnight(updateDate);
-
-    const playerIdLocalTimestamp = `${playerId}_${localDate.getTime()}`;
-    const playerIdSsTimestamp = `${playerId}_${blDate.getTime()}`;
-
-    return playersHistoryRepository().getFromIndex('players-history-playerIdSsTimestamp', playerIdSsTimestamp)
-      .then(async ph => {
-        if (ph && ph._idbId) {
-          await playersHistoryRepository().delete(ph._idbId);
-
-          const {_idbId, ...previous} = ph;
-
-          return previous;
-        }
-
-        return null;
-      })
-      .then(async previous => {
-        let accStats = {};
-
-        return playersHistoryRepository().set({
-          ...previous,
-          ...accStats,
-          playerId, banned, countries, inactive, pp, rank, ...scoreStats,
-          localDate, ssDate: blDate,
-          playerIdLocalTimestamp,
-          playerIdSsTimestamp,
-        })
-      })
-      .catch(err => {}) // swallow error
-  }
 
   const isPlayerMain = playerId => playerId === mainPlayerId;
 
@@ -230,8 +186,6 @@ export default () => {
         .then(player => {
           fetchPlayerAndUpdateRecentPlay(player.playerId);
 
-          updatePlayerHistory(player);
-
           return player;
         })
     }
@@ -281,8 +235,6 @@ export default () => {
       log.trace(`Player fetched`, 'PlayerService', fetchedPlayer);
 
       player = await updatePlayer({...fetchedPlayer, profileLastUpdated: new Date()}, true, addIfNotExists);
-
-      updatePlayerHistory(player).then(_ => _);
 
       log.debug(`Player refreshed.`, 'PlayerService', player);
 
@@ -356,7 +308,6 @@ export default () => {
     add: addPlayer,
     remove: removePlayer,
     update: updatePlayer,
-    getPlayerHistory,
     getPlayerGain,
     getProfileFreshnessDate,
     isProfileFresh,

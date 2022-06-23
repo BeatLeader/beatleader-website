@@ -1,5 +1,4 @@
 import playersRepository from "../db/repository/players";
-import playersHistoryRepository from "../db/repository/players-history";
 import scoresRepository from "../db/repository/scores";
 import {substituteVars} from "../utils/format";
 import {arrayUnique, convertArrayToObjectByKey} from "../utils/js";
@@ -29,20 +28,15 @@ export const isDataAvailable = async () => (await getPlayers()).length > 0;
 export const updatePlayer = async playerInfo => playersRepository().set(playerInfo);
 export const getPlayers = async () => playersRepository().getAll();
 export const getPlayerInfo = async (playerId) => await playersRepository().get(playerId) ?? null;
-export const getPlayerHistory = async playerId => await playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId) ?? null;
-export const getAllPlayersHistory = async (sinceDate, toDate) => await playersHistoryRepository().getAllFromIndex('players-history-timestamp', IDBKeyRange.bound(sinceDate, toDate)) ?? [];
-export const getPlayerInfoFromPlayers = (players, playerId) => players?.[playerId] ? players[playerId] : null;
 
 export const getPlayerLastUpdated = async playerId => (await getPlayerInfo(playerId))?.lastUpdated ?? null;
 export const getPlayerProfileLastUpdated = async playerId => (await getPlayerInfo(playerId))?.profileLastUpdated ?? null;
 
 export const removeAllPlayerData = async playerId => {
-    const playerHistory = await playersHistoryRepository().getAllFromIndex('players-history-playerId', playerId);
     const playerScores = await scoresRepository().getAllFromIndex('scores-playerId', playerId);
 
     await Promise.all(
       []
-        .concat(playerHistory.map(ph => playersHistoryRepository().deleteObject(ph)))
         .concat(playerScores.map(s => scoresRepository().deleteObject(s)))
         .concat([playersRepository().delete(playerId)])
     );

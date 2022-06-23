@@ -32,26 +32,6 @@
     ]
     let rows = [];
 
-    // async function addPlayersHistory() {
-    //     const DIFF_DAYS = 7;
-    //     const timestampDiffAgo = toSSTimestamp(daysAgo(DIFF_DAYS));
-    //     const dbFetchTimestamp = toSSTimestamp(daysAgo(DIFF_DAYS + DB_FETCH_DIFF));
-    //     const playersHistory = (await getAllPlayersHistory(new Date(dbFetchTimestamp), new Date(timestampDiffAgo)))
-    //      .reduce((cum, item) => {
-    //          if (!cum[item.playerId]) cum[item.playerId] = {};
-
-    //          cum[item.playerId][item.timestamp.getTime()] = item;
-
-    //          return cum;
-    //      }, {});
-
-    //     ranking = ranking.map(p => {
-    //         const historicalTimestamp = playersHistory[p.id] ? getFirstNotNewerThan(timestampDiffAgo, Object.keys(playersHistory[p.id])) : null;
-
-    //         return {...p, prevPp: historicalTimestamp && p.pp !== playersHistory[p.id][historicalTimestamp].pp ? playersHistory[p.id][historicalTimestamp].pp : null}
-    //     });
-    // }
-
     // $: if (players && refreshTag) {
     //     ranking = players
     //             .map(player => {
@@ -68,8 +48,6 @@
     //             .map((player, idx) => ({...player, name: player.name}))
     //     ;
     // }
-
-    // $: addPlayersHistory(players, refreshTag, overridePlayersPp, filterFunc);
 
     $: change = (row) => {let history = row.playerInfo.rankHistory; return (history.length > 1 ? parseInt(history[history.length > 7 ? history.length - 7 : 0]) - parseInt(history[history.length - 1]) : null)}
 </script>
