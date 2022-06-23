@@ -1,17 +1,14 @@
 <script>
-    import {onMount} from 'svelte';
     import {navigate} from "svelte-routing";
     import Rank from '../Common/Rank.svelte';
     import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
     import Pp from '../Score/Pp.svelte';
-    import Value from '../Common/Value.svelte';
     import Table from '../Common/Table.svelte';
     import Avatar from "../Common/Avatar.svelte";
     import Change from '../Common/Change.svelte'
 
     import {PLAYERS_PER_PAGE} from "../../utils/beatleader/consts";
     import {formatNumber} from "../../utils/format";
-    import { getPlayerInfo } from '../../utils/players';
 
     export let players;
     export let overridePlayersPp = {};

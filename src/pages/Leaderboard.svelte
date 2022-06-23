@@ -1,6 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {navigate} from "svelte-routing";
+  import createAccountStore from '../stores/beatleader/account'
   import {fade, fly} from 'svelte/transition'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import createModifiersStore from '../stores/beatleader/modifiers'
@@ -54,6 +55,7 @@
   const dispatch = createEventDispatcher();
 
   const playerService = createPlayerService();
+  const account = createAccountStore();
 
   const params = [
     {key: 'countries', default: '', process: processStringFilter},
@@ -226,16 +228,6 @@
     return "#" + brightnessHex + brightnessHex + brightnessHex;
   }
 
-  let mainPlayer = null;
-  async function updateMainPlayer(playerId) {
-    if (!playerId) {
-      mainPlayer = null;
-      return;
-    }
-
-    mainPlayer = await playerService.get(playerId);
-  }
-
   function updateTypeOptions(country) {
     if (!country?.length) return;
 
@@ -283,9 +275,7 @@
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
-  $: mainPlayerId = opt($configStore, 'users.main');
-  $: updateMainPlayer = updateMainPlayer(mainPlayerId);
-  $: mainPlayerCountry = mainPlayer?.playerInfo?.countries?.[0]?.country ?? null
+  $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
   $: updateTypeOptions(mainPlayerCountry);
 </script>
 

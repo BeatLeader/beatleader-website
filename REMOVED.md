@@ -3,3 +3,4 @@
 - One PP calculator
 - Friends leaderboard (will be restored when new endpoints are added to the API)
 - If you play like this...
+- BL scores histogram

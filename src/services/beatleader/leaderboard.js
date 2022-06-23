@@ -2,30 +2,16 @@ import leaderboardApiClient from '../../network/clients/beatleader/leaderboard/a
 import leaderboardsApiClient from '../../network/clients/beatleader/leaderboard/api-leaderboards'
 import accSaberLeaderboardApiClient from '../../network/clients/accsaber/api-leaderboard'
 import makePendingPromisePool from '../../utils/pending-promises'
-import createPlayersService from './player'
-import createScoresService from './scores'
 import {PRIORITY} from '../../network/queues/http-queue'
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
 import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
-import {formatDateRelative, MINUTE} from '../../utils/date'
-import {convertArrayToObjectByKey, opt} from '../../utils/js'
-import eventBus from '../../utils/broadcast-channel-pubsub'
+import {MINUTE} from '../../utils/date'
 
 const ACCSABER_LEADERBOARD_NETWORK_TTL = MINUTE * 5;
 
 let service = null;
 export default () => {
   if (service) return service;
-
-  const playersService = createPlayersService();
-  const scoresService = createScoresService();
-
-  let friendsPromise = Promise.resolve([]);
-  const refreshFriends = async () => friendsPromise = playersService.getAll();
-  eventBus.on('player-profile-removed', playerId => refreshFriends());
-  eventBus.on('player-profile-added', player => refreshFriends());
-  eventBus.on('player-profile-changed', player => refreshFriends());
-  refreshFriends().then(_ => {});
 
   const resolvePromiseOrWaitForPending = makePendingPromisePool();
 

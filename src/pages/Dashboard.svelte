@@ -6,11 +6,8 @@
     import Button from "../components/Common/Button.svelte";
     import Range from "../components/Common/Range.svelte";
     import Select from "../components/Common/Select.svelte";
-    // import Refresh from "../components/Player/Refresh.svelte";
-    import createPlayersStore from '../stores/beatleader/players'
     import SearchPage from './Search.svelte'
     import ssrConfig from '../ssr-config'
-    import players from "../db/repository/players";
     import ContentBox from "../components/Common/ContentBox.svelte";
     import {configStore} from '../stores/config'
 
@@ -18,7 +15,6 @@
 
     var playersFilter = [];
     let refreshTag = null;
-    let playersStore = createPlayersStore();
 
     let strings = {
         lastSongsPeriods: [
@@ -31,12 +27,6 @@
 
     let values = {
         selectedSongPeriod: strings.lastSongsPeriods.find(p => p.value === 14),
-    }
-
-    async function filterPlayers() {
-        let players = await playersStore.get();
-
-        playersFilter = players;// ? players.filter(player => player.name).map(player => player.id).filter(s => s) : [];
     }
 
     let minPp = 300;
@@ -94,12 +84,6 @@
         selectedTabId = event.detail.id;
     }
 
-    $: {
-        filterPlayers();
-        playersStore.subscribe(value => {
-		    playersFilter = value;
-	    });
-    }
     $: billboardState = $configStore?.preferences?.billboardState;
     $: updateTabs(billboardState);
 </script>

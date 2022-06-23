@@ -13,8 +13,7 @@ import {roundToPrecision} from '../utils/format'
 import {serviceFilterFunc} from './utils'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 15;
-const CACHED_PLAYER_REFRESH_INTERVAL = HOUR * 3;
-const OTHER_PLAYER_REFRESH_INTERVAL = DAY;
+const OTHER_PLAYER_REFRESH_INTERVAL = HOUR * 3;
 
 const HISTOGRAM_ACC_THRESHOLD = 60;
 const HISTOGRAM_MISTAKES_THRESHOLD = 200;
@@ -250,9 +249,7 @@ export default () => {
     log.trace(`Starting refreshing BeatSavior for player "${playerId}" ${force ? ' (forced)' : ''}...`, 'BeatSaviorService')
 
     try {
-      const player = await playerService.get(playerId);
-
-      const REFRESH_INTERVAL = playerService.isMainPlayer(playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : (player ? CACHED_PLAYER_REFRESH_INTERVAL : OTHER_PLAYER_REFRESH_INTERVAL);
+      const REFRESH_INTERVAL = playerService.isMainPlayer(playerId) ? MAIN_PLAYER_REFRESH_INTERVAL : OTHER_PLAYER_REFRESH_INTERVAL;
 
       const bsPlayerInfo = await beatSaviorPlayersRepository().get(playerId);
       const nextUpdate = bsPlayerInfo && bsPlayerInfo.lastRefresh ? addToDate(REFRESH_INTERVAL, bsPlayerInfo.lastRefresh) : addToDate(-SECOND);
@@ -260,16 +257,6 @@ export default () => {
         log.debug(`Beat Savior data is still fresh, skipping. Next refresh on ${formatDate(nextUpdate)}`, 'BeatSaviorService')
 
         return null;
-
-        if (player) {
-          log.trace(`Player "${playerId}" is a cached one, checking recent play date`, 'BeatSaviorService')
-
-          if (player.recentPlay && player.recentPlay < bsPlayerInfo.lastRefresh) {
-            log.debug(`Beat Savior data for player "${playerId}" was refreshed after recent play, skipping`, 'BeatSaviorService')
-
-            return null;
-          }
-        }
       }
 
       return resolvePromiseOrWaitForPending(`refresh/${playerId}`, () => fetchPlayer(playerId, priority));
