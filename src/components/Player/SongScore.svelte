@@ -43,6 +43,7 @@
                      countryRankTotal={null}
                      country={score.country}
                      hmd={score.hmd}
+                     platform={score.platform}
           />
         {/if}
 

@@ -15,7 +15,6 @@
   export let replayLink = false;
   export let category = null;
   export let service = 'beatleader';
-  export let playerId = null;
 
   $: song = leaderboard?.song ?? null;
   $: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE

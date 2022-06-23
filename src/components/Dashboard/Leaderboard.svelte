@@ -73,7 +73,7 @@
 <div>
     <div class="tab">
         <div style="display: flex">
-            <span class="icons"><Icons hash={leaderboard.song.hash} diffInfo={leaderboard.diffInfo} playerId={row.player.playerId}/></span>
+            <span class="icons"><Icons hash={leaderboard.song.hash} diffInfo={leaderboard.diffInfo} scoreId={row.score.id}/></span>
         </div>
         
         <LeaderboardStats {leaderboard}/>

@@ -194,24 +194,16 @@
                 </ContentBox>
 
                 <ContentBox>
-                    {#if billboardState != 'hide'}
-                        <Switcher values={allTabs} value={tab} on:change={onServiceChanged}/>
-                    {/if}
-
-                    {#if selectedTabId == "topscores"}
-                        <div>
-                            <header>
-                                <h2 class="title is-5">Best scores</h2>
-                                <nav>
-                                    <Range bind:value={minPp} min={0.1} max={700} step={1} suffix="pp" inline={true}/>
-                                </nav>
-                            </header>
-        
-                            <Songs players={playersFilter} sortBy="pp" filterFunc={songScoresFilter} min={minPp} itemsPerPage={5} pagesDisplayMax={7} {refreshTag} />
-                        </div>
-                    {:else if selectedTabId == "billboard"}
-                        <Billboard />
-                    {/if}
+                    <div>
+                        <header>
+                            <h2 class="title is-5">Best scores</h2>
+                            <nav>
+                                <Range bind:value={minPp} min={0.1} max={700} step={1} suffix="pp" inline={true}/>
+                            </nav>
+                        </header>
+    
+                        <Songs players={playersFilter} sortBy="pp" filterFunc={songScoresFilter} min={minPp} itemsPerPage={5} pagesDisplayMax={7} {refreshTag} />
+                    </div>
                     
                 </ContentBox>
             </div>

@@ -1,5 +1,6 @@
 import queue from '../../../queues/queues'
 import createClient from '../../generic'
+import {getHeadsetForHMD, platformDescription} from "../../../../utils/beatleader/format";
 import {opt} from '../../../../utils/js'
 
 const process = response => {
@@ -12,6 +13,14 @@ const process = response => {
     ['averageAccuracy', 'averageRankedAccuracy', 'medianAccuracy', 'medianRankedAccuracy', 'topAccuracy'].forEach(k => {
       if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
     })
+
+    if (scoreStats["topHMD"]) {
+      scoreStats["topHMD"] = getHeadsetForHMD(scoreStats["topHMD"]).name
+    }
+
+    if (scoreStats["topPlatform"]) {
+      scoreStats["topPlatform"] = platformDescription[scoreStats["topPlatform"]]
+    }
   }
 
   if (statsHistory) {
@@ -43,6 +52,8 @@ const process = response => {
       'replaysWatched': processInt,
       'totalPlayCount': processInt,
       'totalScore': processInt,
+      'topHMD': f => f,
+      'topPlatform': f => f,
     };
 
     Object.entries(fields).forEach(([key, process]) => {

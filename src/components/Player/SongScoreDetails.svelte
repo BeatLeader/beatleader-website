@@ -69,7 +69,7 @@
                          dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
                          on:page-changed={onInBuiltLeaderboardPageChanged}
                          {fixedBrowserTitle}
-                         higlightedPlayerId={playerId}
+                         higlightedScore={score}
         />
       </div>
     {:else}
@@ -83,7 +83,7 @@
                            dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
                            on:page-changed={onInBuiltLeaderboardPageChanged}
                            {fixedBrowserTitle}
-                           higlightedPlayerId={playerId}
+                           higlightedScore={score}
           />
         </div>
       {/if}

@@ -43,7 +43,6 @@
   export let scrollOffset = 45;
   export let fixedBrowserTitle = null;
   export let higlightedScore = null;
-  export let higlightedPlayerId = null;
   export let iconsInInfo = false;
   export let noReplayInLeaderboard = false;
 
@@ -272,7 +271,7 @@
 
   $: changeParams(leaderboardId, type, page, location)
   $: scrollToTop($pending);
-  $: higlightedPlayerId = higlightedPlayerId ?? higlightedScore?.player?.playerId;
+  $: higlightedPlayerId = higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
@@ -405,7 +404,7 @@
                           <Button cls="replay-button-alt" icon="<div class='battleroyaleescape-icon'></div>" title="Remove from battle royal" noMargin={true} on:click={() => draftList = draftList.filter(el => el != score.player.playerId)}/>
                         {/if}
                         {:else}
-                        <Icons {hash} {diffInfo} icons={["replay"]} scoreId={score.id}/>
+                        <Icons {hash} {diffInfo} icons={["replay"]} scoreId={opt(score, 'score.id')}/>
                         {/if}
                       </div>
                     {/if}
