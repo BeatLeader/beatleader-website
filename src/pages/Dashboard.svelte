@@ -2,7 +2,6 @@
     import {configStore} from '../stores/config'
     import ssrConfig from '../ssr-config'
     import createAccountStore from '../stores/beatleader/account'
-    import Billboard from "../components/Dashboard/Billboard.svelte";
     import Button from "../components/Common/Button.svelte";
     import SearchPage from './Search.svelte'
     import ContentBox from "../components/Common/ContentBox.svelte";
