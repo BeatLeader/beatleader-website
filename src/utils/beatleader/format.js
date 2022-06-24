@@ -85,7 +85,7 @@ const HMDs = {
 };
 
 export function getHeadsetForHMD(hmd) {
-  return HMDs[hmd];
+  return HMDs?.[hmd] ?? null;
 }
 
 const platformColors = {

@@ -1,9 +1,11 @@
 <script>
   import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
+  import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic'
   import BeatSaviorDetails from '../BeatSavior/Details.svelte'
   import LeaderboardPage from '../../pages/Leaderboard.svelte'
   import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte'
+  import Spinner from '../Common/Spinner.svelte'
 
   export let playerId;
   export let songScore;
@@ -32,7 +34,7 @@
   $: leaderboard = songScore?.leaderboard ?? null;
   $: score = songScore?.score ??null;
   $: prevScore = songScore?.prevScore ?? null;
-  $: beatSavior = songScore?.beatSavior ?? null;
+  $: beatSaviorPromise = scoreStatisticEnhancer(songScore);
 
   $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, (showAccSaberLeaderboard ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE))
 </script>
@@ -43,9 +45,15 @@
       <LeaderboardStats {leaderboard}/>
     </div>
 
-    <div class="tab">
-      <BeatSaviorDetails {playerId} {beatSavior} {leaderboard}/>
-    </div>
+    {#await beatSaviorPromise}
+      <div class="tab">
+        <Spinner />
+      </div>
+    {:then beatSavior}
+      <div class="tab">
+        <BeatSaviorDetails {playerId} {beatSavior} {leaderboard}/>
+      </div>
+    {/await}
 
     {#if showAccSaberLeaderboard}
       <div class="tab">

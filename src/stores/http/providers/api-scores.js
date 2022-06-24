@@ -2,7 +2,6 @@ import createPlayerService from '../../../services/beatleader/player';
 import createScoresFetcher from './utils/scores-fetch'
 import queue from '../../../network/queues/queues'
 import {MINUTE} from '../../../utils/date'
-import eventBus from '../../../utils/broadcast-channel-pubsub'
 
 let playerService = null;
 let scoresFetcher = null;

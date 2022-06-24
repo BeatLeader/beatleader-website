@@ -33,10 +33,10 @@
     currentCountryRank.set(countryRank);
   }
 
-  $: headset = hmd != null ? getHeadsetForHMD(hmd) : null;
+  $: headset = getHeadsetForHMD(hmd);
   $: platformDescription = describePlatform(platform);
-  $: title = headset.name + (platformDescription.description ? ("\n" + platformDescription.description) : "")
-  $: headsetStyle = `width: 1.2em; filter: ${headset.color}` + (platformDescription.color ? `drop-shadow(0px 0px 2px ${platformDescription.color})` : "");
+  $: title = headset?.name + (platformDescription?.description ? ("\n" + platformDescription?.description) : "")
+  $: headsetStyle = `width: 1.2em; filter: ${headset?.color}` + (platformDescription?.color ? `drop-shadow(0px 0px 2px ${platformDescription?.color})` : "");
 </script>
 
 <span class="val">

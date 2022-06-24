@@ -149,17 +149,10 @@ export default () => {
   const fetchScoreStats = async (scoreId, priority = PRIORITY.FG_LOW, {...options} = {cacheTtl: HOUR, maxAge: HOUR}) =>
     scoreStatsApiClient.getProcessed({...options, scoreId, priority});
 
-  const fetchScoresPageAndUpdateIfNeeded = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {}}, priority = PRIORITY.FG_LOW, signal = null, canUseBrowserCache = false, refreshInterval = MINUTE) => {
-    const fetchedScoresResponse = await fetchScoresPage(playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: canUseBrowserCache ? 0 : refreshInterval, fullResponse: true});
-    if (scoresApiClient.isResponseCached(fetchedScoresResponse)) return scoresApiClient.getDataFromResponse(fetchedScoresResponse);
-
-    return scoresApiClient.getDataFromResponse(fetchedScoresResponse);
-  }
-
   const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
     if (!player || !player.playerId) return null;
 
-    return fetchScoresPageAndUpdateIfNeeded(player.playerId, serviceParams, priority, signal, false, refreshInterval);
+    return fetchScoresPage(player.playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: refreshInterval})
   }
 
   const destroyService = () => {
