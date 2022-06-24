@@ -177,16 +177,18 @@
              on:player-data-updated={onPlayerDataUpdated} {avatarHash} />
 
     {#if scoresPlayerId}
-      <Scores playerId={scoresPlayerId}
-              initialState={scoresState}
-              initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
-              initialService={$paramsStore.currentService}
-              initialServiceParams={$paramsStore.currentServiceParams}
-              numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
-              on:service-changed={onServiceChanged} on:service-params-changed={onServiceParamsChanged}
-              on:page-changed={onPageChanged}
-              fixedBrowserTitle={browserTitle}
-      />
+      <ContentBox>
+        <Scores playerId={scoresPlayerId}
+                initialState={scoresState}
+                initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
+                initialService={$paramsStore.currentService}
+                initialServiceParams={$paramsStore.currentServiceParams}
+                numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
+                on:service-changed={onServiceChanged} on:service-params-changed={onServiceParamsChanged}
+                on:page-changed={onPageChanged}
+                fixedBrowserTitle={browserTitle}
+        />
+      </ContentBox>
     {/if}
   {/if}
 </article>

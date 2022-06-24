@@ -37,6 +37,8 @@ export default () => {
     const processedServiceParams = processServiceParamsFilters(serviceParams);
 
     switch (service) {
+      case 'user-friends':
+        return blScoresService.fetchFriendsScores(processedServiceParams, otherParams?.refreshInterval, otherParams?.priority, otherParams?.signal, otherParams?.force);
       case 'beatsavior':
         return beatSaviorService.getPlayerScoresPage(player?.playerId, processedServiceParams);
       case 'accsaber':

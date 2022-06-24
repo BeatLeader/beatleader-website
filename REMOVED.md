@@ -1,5 +1,4 @@
 - Secondary PP metrics type (has been commented on before)
 - One PP calculator
-- Friends leaderboard (will be restored when new endpoints are added to the API)
 - If you play like this...
 - BL scores histogram

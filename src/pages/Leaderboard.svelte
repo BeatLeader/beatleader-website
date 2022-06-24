@@ -348,7 +348,6 @@
               <LeaderboardStats {leaderboard}/>
 
               {#if iconsInInfo}
-                xxx
               <span class="icons"><Icons {hash} {diffInfo} /></span>
               {/if}
             </div>

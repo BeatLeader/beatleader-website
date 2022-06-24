@@ -23,6 +23,8 @@
   export let initialServiceParams = {};
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
+  export let withPlayers = false;
+  export let noIcons = false;
 
   let scoresStore = createScoresStore(
     playerId,
@@ -113,7 +115,7 @@
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
 </script>
 
-<ContentBox bind:box={scoresBoxEl}>
+<div bind:this={scoresBoxEl}>
   {#if $error}
     <div><Error error={$error} /></div>
   {/if}
@@ -134,7 +136,7 @@
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
     {#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} {withPlayers} {noIcons} />
     {/each}
   </div>
   {:else}
@@ -148,7 +150,7 @@
                  on:page-changed={onPageChanged}
     />
   {/if}
-</ContentBox>
+</div>
 
 <style>
     .song-scores :global(> *:last-child) {

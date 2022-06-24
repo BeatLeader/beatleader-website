@@ -12,7 +12,7 @@ export default (refreshOnCreate = true) => {
 
   const checkResponse = async response => response.text();
 
-  let account = {};
+  let account = {loading: true};
 
   const {subscribe: subscribeState, set} = writable(account);
 

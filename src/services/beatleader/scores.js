@@ -146,6 +146,9 @@ export default () => {
   const fetchScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
      scoresApiClient.getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority, params: serviceParams});
 
+  const fetchFriendsScoresPage = async (serviceParams = {sort: 'date', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
+    scoresApiClient.getProcessed({...options, playerId: 'user-friends', page: serviceParams?.page ?? 1, priority, params: serviceParams});
+
   const fetchScoreStats = async (scoreId, priority = PRIORITY.FG_LOW, {...options} = {cacheTtl: HOUR, maxAge: HOUR}) =>
     scoreStatsApiClient.getProcessed({...options, scoreId, priority});
 
@@ -154,6 +157,8 @@ export default () => {
 
     return fetchScoresPage(player.playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: refreshInterval})
   }
+
+  const fetchFriendsScores = async (serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => fetchFriendsScoresPage(serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: refreshInterval});
 
   const destroyService = () => {
     serviceCreationCount--;
@@ -169,6 +174,7 @@ export default () => {
     getPlayerScores,
     fetchScoresPage,
     fetchScoresPageOrGetFromCache,
+    fetchFriendsScores,
     fetchScoreStats,
     getScoresHistogramDefinition,
     destroyService,

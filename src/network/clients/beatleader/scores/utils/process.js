@@ -1,4 +1,5 @@
 import {dateFromUnix} from '../../../../../utils/date'
+import processPlayer from '../../player/process'
 
 export default response => {
   if (!Array.isArray(response?.data)) return {metadata: response?.metadata ?? {}, data: []};
@@ -40,6 +41,7 @@ export default response => {
         },
         fetchedAt: new Date(),
         lastUpdated: new Date(),
+        player: s?.player ? processPlayer(s?.player) : null,
       };
     })
   };
