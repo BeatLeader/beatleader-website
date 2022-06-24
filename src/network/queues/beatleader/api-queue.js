@@ -15,7 +15,7 @@ export const BL_API_SCORES_URL = BL_API_URL + 'player/${playerId}/scores?page=${
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
 export const BL_API_RANKING_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}&countries=${country}&friends=${friends}'
-export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/id/${leaderboardId}?page=${page}&countries=${countries}'
+export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}'
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}'
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
