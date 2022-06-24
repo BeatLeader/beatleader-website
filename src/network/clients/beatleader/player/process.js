@@ -32,12 +32,13 @@ export default response => {
 		})
 	}
 
-	if (scoreStats?.["topHMD"]) {
-		scoreStats["topHMD"] = getHeadsetForHMD(scoreStats["topHMD"])?.name ?? ''
+	if (scoreStats?.topHMD) {
+		scoreStats.topHMD = getHeadsetForHMD(scoreStats.topHMD)?.name ?? ''
 	}
 
-	if (scoreStats?.["topPlatform"]) {
-		scoreStats["topPlatform"] = platformDescription?.[scoreStats["topPlatform"]] ?? ''
+	if (scoreStats?.topPlatform) {
+		const platformParts = (scoreStats?.topPlatform ?? '').split(',')
+		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? ''
 	}
 
 	if (statsHistory) {
