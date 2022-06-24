@@ -14,6 +14,7 @@ export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}';
 export const BL_API_SCORES_URL = BL_API_URL + 'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
 export const BL_API_FRIENDS_SCORES_URL = BL_API_URL + 'user/friendScores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
+export const BL_API_SCORES_HISTOGRAM_URL = BL_API_URL + 'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}';
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
 export const BL_API_RANKING_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}&countries=${country}&friends=${friends}'
 export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}'
@@ -52,6 +53,8 @@ export default (options = {}) => {
   const gameInfo = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(STEAM_API_GAME_INFO_URL, {steamKey: STEAM_KEY , playerId}), options, priority)
 
   const scores = async (playerId, page = 1, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) => fetchScores(substituteVars(playerId === 'user-friends' ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {...params, ...(params?.filters ?? {})}), playerId, page, priority, {...options, credentials: 'include'});
+
+  const scoresHistogram = async (playerId, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) => fetchScores(substituteVars(BL_API_SCORES_HISTOGRAM_URL, {...params, ...(params?.filters ?? {})}), playerId, priority, options);
 
   const scoreStats = async (scoreId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_SCORE_STATS_URL, {scoreId: encodeURIComponent(scoreId)}), options, priority);
 
@@ -232,6 +235,7 @@ export default (options = {}) => {
     rankingFriends,
     scores,
     scoreStats,
+    scoresHistogram,
     leaderboards,
     leaderboard,
     clans,

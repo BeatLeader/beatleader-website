@@ -2,12 +2,13 @@ import createPlayerService from './player';
 import {PRIORITY} from '../../network/queues/http-queue'
 import scoresApiClient from '../../network/clients/beatleader/scores/api'
 import scoreStatsApiClient from '../../network/clients/beatleader/scores/api-stats'
-import {HOUR, MINUTE, truncateDate} from '../../utils/date'
+import {dateFromUnix, DAY, HOUR, MINUTE, truncateDate} from '../../utils/date'
 import {opt} from '../../utils/js'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {roundToPrecision} from '../../utils/format'
 import {serviceFilterFunc} from '../utils'
 
+const HISTOGRAM_DATE_PRECISION = DAY / 1000;
 const HISTOGRAM_PP_PRECISION = 5;
 const HISTOGRAM_RANK_PRECISION = 5;
 const HISTOGRAM_ACC_PRECISION = 0.25;
@@ -48,6 +49,7 @@ export default () => {
 
     let round = 2;
     let bucketSize = HISTOGRAM_PP_PRECISION;
+    let bucketSizeServerConvert = v => v;
     let minBucketSize = null;
     let maxBucketSize = null;
     let bucketSizeStep = null;
@@ -66,13 +68,13 @@ export default () => {
 
     switch(sort) {
       case 'date':
-        valFunc = s => s?.timeSet;
+        valFunc = s => dateFromUnix(s);
         type = 'time';
-        bucketSize = 'day'
+        bucketSize = HISTOGRAM_DATE_PRECISION
         break;
 
       case 'pp':
-        valFunc = s => s?.pp ?? 0;
+        valFunc = s => parseFloat(s);
         filterFunc = s => (s?.pp ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
         bucketSize = HISTOGRAM_PP_PRECISION;
@@ -85,7 +87,7 @@ export default () => {
         break;
 
       case 'rank':
-        valFunc = s => s?.score?.rank ?? 1000000;
+        valFunc = s => parseInt(s, 10);
         type = 'linear';
         bucketSize = HISTOGRAM_RANK_PRECISION;
         minBucketSize = 1;
@@ -96,10 +98,11 @@ export default () => {
         break;
 
       case 'acc':
-        valFunc = s => s?.score?.maxScore && s?.score?.unmodifiedScore ? s.score.unmodifiedScore / s.score.maxScore * 100 : (s?.score?.acc && s?.score?.acc != Infinity ? s.score.acc : null)
+        valFunc = s => parseFloat(s) * 100,
         filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
         bucketSize = HISTOGRAM_ACC_PRECISION;
+        bucketSizeServerConvert = bucketSize => bucketSize / 100;
         minBucketSize = 0.05;
         maxBucketSize = 10;
         bucketSizeStep = 0.05;
@@ -109,7 +112,7 @@ export default () => {
         break;
 
       case 'stars':
-        valFunc = s => s?.leaderboard?.stars ?? null;
+        valFunc = s => parseFloat(s),
         filterFunc = s => (s?.leaderboard?.stars ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
         bucketSize = HISTOGRAM_STARS_PRECISION;
@@ -130,6 +133,7 @@ export default () => {
       sort: (a, b) => order === 'asc' ? valFunc(a) - valFunc(b) : valFunc(b) - valFunc(a),
       type,
       bucketSize,
+      bucketSizeServerConvert,
       minBucketSize,
       maxBucketSize,
       bucketSizeStep,
