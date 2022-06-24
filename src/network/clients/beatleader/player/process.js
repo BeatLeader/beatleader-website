@@ -1,3 +1,5 @@
+import {getHeadsetForHMD, platformDescription} from '../../../../utils/beatleader/format'
+
 export default response => {
 	const {
 		id: playerId,
@@ -30,6 +32,14 @@ export default response => {
 		})
 	}
 
+	if (scoreStats?.["topHMD"]) {
+		scoreStats["topHMD"] = getHeadsetForHMD(scoreStats["topHMD"])?.name ?? ''
+	}
+
+	if (scoreStats?.["topPlatform"]) {
+		scoreStats["topPlatform"] = platformDescription?.[scoreStats["topPlatform"]] ?? ''
+	}
+
 	if (statsHistory) {
 		const processInt = i => {
 			let out = parseInt(i, 10);
@@ -59,6 +69,8 @@ export default response => {
 			'replaysWatched': processInt,
 			'totalPlayCount': processInt,
 			'totalScore': processInt,
+			'topHMD': f => f,
+			'topPlatform': f => f,
 		};
 
 		Object.entries(fields).forEach(([key, process]) => {
