@@ -67,7 +67,7 @@
     $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
     $: replayUrl = replayLink?.length
         ? `https://www.replay.beatleader.xyz/?link=${replayLink}`
-        : `https://www.replay.beatleader.xyz/?scoreId=${scoreId}`
+        : (scoreId ? `https://www.replay.beatleader.xyz/?scoreId=${scoreId}` : null)
     $: previewUrl = `https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`;
 </script>
 

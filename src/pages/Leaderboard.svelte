@@ -285,6 +285,7 @@
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
+  $: higlightedPlayerId = $account?.id ?? null
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
@@ -334,7 +335,7 @@
                 {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
                                                                          reverseColors={true}/></span>{/if}
 
-                <span class="icons"><Icons {hash} {diffInfo} playerId={higlightedPlayerId}/></span>
+                <span class="icons"><Icons {hash} {diffInfo}/></span>
                 <Button cls="replay-button-alt battleroyalebtn" icon={`<div class='battleroyale${batleRoyaleDraft ? "stop" : ""}-icon'></div>`} title="Draft battle royal" noMargin={true} on:click={() => batleRoyaleDraft = !batleRoyaleDraft}/>
                 {#if batleRoyaleDraft && draftList && draftList.length > 0} 
                   <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let the battle begin!" noMargin={true} on:click={() => startBattleRoyale()}/>
@@ -347,7 +348,8 @@
               <LeaderboardStats {leaderboard}/>
 
               {#if iconsInInfo}
-              <span class="icons"><Icons {hash} {diffInfo} playerId={higlightedPlayerId}/></span>
+                xxx
+              <span class="icons"><Icons {hash} {diffInfo} /></span>
               {/if}
             </div>
           {/if}
@@ -405,7 +407,7 @@
                           <Button cls="replay-button-alt" icon="<div class='battleroyaleescape-icon'></div>" title="Remove from battle royal" noMargin={true} on:click={() => draftList = draftList.filter(el => el != score.player.playerId)}/>
                         {/if}
                         {:else}
-                        <Icons {hash} {diffInfo} icons={["replay"]} scoreId={opt(score, 'score.id')}/>
+                          <Icons {hash} {diffInfo} icons={["replay"]} scoreId={score?.score?.id}/>
                         {/if}
                       </div>
                     {/if}

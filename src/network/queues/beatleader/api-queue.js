@@ -130,6 +130,8 @@ export default (options = {}) => {
       ret.score.pp = s.pp;
       ret.score.acc = s.accuracy * 100;
 
+      ret.score.id = s?.id ?? null;
+
       return ret;
     });
   }
