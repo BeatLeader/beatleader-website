@@ -50,7 +50,7 @@
 		class={filters?.sortBy === "dailyImprovements" ? "fas fa-lightbulb icon dailyImprovements" :
 		"far fa-lightbulb icon off pp"}
 		on:click={() => dispatch('sort-toggled')}
-		title="Sort by amount of recycled scores">
+		title={filters?.sortBy === "dailyImprovements" ? "Sort by amount of recycled scores" : "Sort by PP" }>
 		<span class="sortBy">Sort by {filters?.sortBy === "dailyImprovements" ? "savings" : "pp"}</span>
 
 	</div>
