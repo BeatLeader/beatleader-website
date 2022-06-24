@@ -14,8 +14,7 @@ export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}';
 export const BL_API_SCORES_URL = BL_API_URL + 'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
-export const BL_API_RANKING_GLOBAL_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}'
-export const BL_API_RANKING_COUNTRY_URL = BL_API_URL + 'players?page=${page}&countries=${country}&sortBy=${sortBy}'
+export const BL_API_RANKING_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}&countries=${country}&friends=${friends}'
 export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/id/${leaderboardId}?page=${page}&countries=${countries}'
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}'
@@ -58,10 +57,10 @@ export default (options = {}) => {
   const findPlayer = async (query, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_FIND_PLAYER_URL, {query: encodeURIComponent(query)}), options, priority);
 
   const rankingGlobal = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => {
-    return fetchJson(substituteVars(BL_API_RANKING_GLOBAL_URL, {page, ...filters}), options, priority);
+    return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), options, priority);
   } 
 
-  const rankingCountry = async (country, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_RANKING_COUNTRY_URL, {country, page, ...filters}), options, priority);
+  const rankingCountry = async (country, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, country}, priority, options);
 
   const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
     if (filters && filters?.type !== 'ranked') {
