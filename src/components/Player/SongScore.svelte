@@ -91,7 +91,7 @@
           </span>
       </div>
 
-      <PlayerPerformance {service} {songScore} {showDetails} {modifiersStore}/>
+      <PlayerPerformance {service} songScore={songScore} {showDetails} {modifiersStore}/>
     </div>
 
     {#if showDetails}

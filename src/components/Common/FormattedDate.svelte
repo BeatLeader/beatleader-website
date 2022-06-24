@@ -1,5 +1,5 @@
 <script>
-  import {dateFromString, formatDate, formatDateRelative, isValidDate} from '../../utils/date'
+	import {dateFromUnix, formatDate, formatDateRelative, isValidDate} from '../../utils/date'
   import {configStore} from '../../stores/config'
 
   export let date = new Date();
