@@ -1,52 +1,21 @@
 <script>
-    import Ranking from "../components/Dashboard/Ranking.svelte";
-    import Songs from "../components/Dashboard/Songs.svelte";
-    import Billboard from "../components/Dashboard/Billboard.svelte";
-    import Switcher from '../components/Common/Switcher.svelte'
-    import Button from "../components/Common/Button.svelte";
-    import Range from "../components/Common/Range.svelte";
-    import Select from "../components/Common/Select.svelte";
-    import SearchPage from './Search.svelte'
-    import ssrConfig from '../ssr-config'
-    import ContentBox from "../components/Common/ContentBox.svelte";
     import {configStore} from '../stores/config'
+    import ssrConfig from '../ssr-config'
+    import createAccountStore from '../stores/beatleader/account'
+    import Billboard from "../components/Dashboard/Billboard.svelte";
+    import Button from "../components/Common/Button.svelte";
+    import SearchPage from './Search.svelte'
+    import ContentBox from "../components/Common/ContentBox.svelte";
+    import RankingTable from '../components/Ranking/RankingTable.svelte'
+    import Spinner from '../components/Common/Spinner.svelte'
 
-    export let overridePlayersPp = {};
+    let page = 1;
+    let filters = {sortBy: 'pp'}
 
-    var playersFilter = [];
-    let refreshTag = null;
+    let isLoading = false;
+    let pending = null;
 
-    let strings = {
-        lastSongsPeriods: [
-            {_key: 'dashboard.periods.last3Days', label: "Last 3 Days", value: 3},
-            {_key: 'dashboard.periods.lastWeek', label: "Last Week", value: 7},
-            {_key: 'dashboard.periods.last2Weeks', label: "Last 2 Weeks", value: 14},
-            {_key: 'dashboard.periods.lastMonth', label: "Last Month", value: 30},
-        ],
-    }
-
-    let values = {
-        selectedSongPeriod: strings.lastSongsPeriods.find(p => p.value === 14),
-    }
-
-    let minPp = 300;
-
-    function onTypeChange() {
-        const cont = document.querySelector('body > .section > .container.original');
-        const newCont = document.querySelector('body > .section > main');
-        if (!cont || !newCont) return;
-
-        newCont.style.display = 'none';
-        cont.style.display = 'block';
-    }
-
-    function songScoresFilter(song) {
-        return playersFilter;
-    }
-
-    function rankingFilter(player) {
-        return playersFilter && playersFilter.includes(player.id);
-    }
+    const account = createAccountStore();
 
     const billboardTab = {
       id: 'billboard',
@@ -66,7 +35,7 @@
     let selectedTabId;
 
     function updateTabs(billboardState) {
-        if (billboardState == 'show') {
+        if (billboardState === 'show') {
             allTabs = [billboardTab, topScoresTab];
             tab = billboardTab;
             selectedTabId = billboardTab.id;
@@ -77,26 +46,30 @@
         }
     }
 
-    function onServiceChanged(event) {
-        if (!event?.detail?.id) return;
-
-        tab = event.detail;
-        selectedTabId = event.detail.id;
+    function toggleSortBy() {
+        filters.sortBy = filters.sortBy === "dailyImprovements" ? "pp" : "dailyImprovements";
     }
 
+    function onPageChanged(event) {
+        if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
+
+        page = event.detail.page + 1;
+    }
+
+    $: friends = $account?.friends ?? null;
     $: billboardState = $configStore?.preferences?.billboardState;
     $: updateTabs(billboardState);
 </script>
 
 <svelte:head>
-  {#if !playersFilter.length}
-  <title>{ssrConfig.name}</title>
+  {#if !friends?.length}
+  <title>{$account?.player?.name}</title>
   {:else}
   <title>Dashboard - {ssrConfig.name}</title>
   {/if}
 </svelte:head>
 
-{#if !playersFilter.length}
+{#if !friends?.length}
 <div class="sspl-page-container">
     <div class="is-multiline">
         <h1 class="title is-4">Hello, future BeatLeader!</h1>
@@ -139,17 +112,27 @@
     </div>
 </div>
 {:else}
-    
     <div class="sspl-page-container">
         <div class="columns is-multiline">
-            <div class="leaderboard content column is-full-tablet is-half-widescreen is-two-fifths-fullhd">
+            <div class="leaderboard content column is-full is-two-fifths-fullhd">
                 <ContentBox>
                     <div class="ranking">
                         <header>
-                            <h2 class="title is-5">Ranking</h2>
+                            <h2 class="title is-5">
+                                Friends ranking
+                                {#if isLoading}
+                                    <Spinner />
+                                {/if}
+                            </h2>
                         </header>
 
-                        <Ranking players={playersFilter} {overridePlayersPp} itemsPerPage={20} filterFunc={rankingFilter} {refreshTag}/>
+                        <RankingTable type="friends" {page} filters={filters} noIcons={true}
+                                      on:page-changed={onPageChanged}
+                                      on:sort-toggled={toggleSortBy}
+                                      on:loading={e => isLoading = !!e?.detail}
+                                      on:pending={e => pending = e?.detail}
+                        />
+<!--                        <Ranking players={playersFilter} {overridePlayersPp} itemsPerPage={20} filterFunc={rankingFilter} {refreshTag}/>-->
                     </div>
                 </ContentBox>
                 <div class="downloadButtons">
@@ -162,31 +145,25 @@
                 </div>
             </div>
 
-            <div class="scores content column is-full-tablet is-half-widescreen is-three-fifths-fullhd">
+            <div class="scores content column is-full is-three-fifths-fullhd">
                 <ContentBox>
                     <header>
                         <h2>
                             <div class="title is-5">Recent scores</div>
                         </h2>
-                        <nav>
-                            <Select bind:value={values.selectedSongPeriod} items={strings.lastSongsPeriods} right={true}/>
-                        </nav>
                     </header>
-                    <Songs players={playersFilter} sortBy="timeSet" filterFunc={songScoresFilter} {refreshTag}
-                        min={new Date(Date.now()-values.selectedSongPeriod.value*1000*60*60*24)}
-                        itemsPerPage={5} pagesDisplayMax={7} noRank={true}/>
+<!--                    <Songs players={playersFilter} sortBy="timeSet" filterFunc={songScoresFilter} {refreshTag}-->
+<!--                        min={new Date(Date.now()-values.selectedSongPeriod.value*1000*60*60*24)}-->
+<!--                        itemsPerPage={5} pagesDisplayMax={7} noRank={true}/>-->
                 </ContentBox>
 
                 <ContentBox>
                     <div>
                         <header>
                             <h2 class="title is-5">Best scores</h2>
-                            <nav>
-                                <Range bind:value={minPp} min={0.1} max={700} step={1} suffix="pp" inline={true}/>
-                            </nav>
                         </header>
     
-                        <Songs players={playersFilter} sortBy="pp" filterFunc={songScoresFilter} min={minPp} itemsPerPage={5} pagesDisplayMax={7} {refreshTag} />
+<!--                        <Songs players={playersFilter} sortBy="pp" filterFunc={songScoresFilter} min={minPp} itemsPerPage={5} pagesDisplayMax={7} {refreshTag} />-->
                     </div>
                     
                 </ContentBox>
@@ -196,6 +173,9 @@
 {/if}
 
 <style>
+    .columns {
+        width: 100%;
+    }
     .sources {
         display: flex;
         margin-left: 1.5em;
@@ -234,19 +214,6 @@
         margin-right: .5em;
     }
 
-    .filters {
-        display: flex;
-        justify-content: flex-start;
-        margin-bottom: .5rem;
-        margin-top: 2.5rem;
-    }
-
-    .box {
-        min-height: 12rem;
-        overflow-x: hidden;
-        padding: .75rem 1rem 1rem 1rem;
-    }
-
     .box h2 {
         margin-bottom: 0;
     }
@@ -277,13 +244,12 @@
         max-width: 15rem;
     }
 
-    .ranking header nav {
-        font-size: .8em!important;
+    .ranking {
+        overflow: hidden;
     }
 
-    .country-remove {
-        text-align: right;
-        font-size: .75em;
+    .ranking header nav {
+        font-size: .8em!important;
     }
 
     .imageLink {

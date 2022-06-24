@@ -10,7 +10,8 @@
 
 	export let type = 'global';
 	export let page = 1;
-	export let filters = [];
+	export let filters = {};
+	export let noIcons = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -57,7 +58,9 @@
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
 				<PlayerCard player={player} playerId={mainPlayerId} currentFilters={filters}/>
-				<AddFriendButton playerId={player.playerId}/>
+				{#if !noIcons}
+					<AddFriendButton playerId={player.playerId}/>
+				{/if}
 			</div>
 		{/each}
 	</section>
