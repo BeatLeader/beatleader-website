@@ -1,5 +1,6 @@
 import playersGlobalRankingApiClient from '../../network/clients/beatleader/players/api-ranking-global'
 import playersCountryRankingApiClient from '../../network/clients/beatleader/players/api-ranking-country'
+import playersFriendsRankingApiClient from '../../network/clients/beatleader/players/api-ranking-friends'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {PRIORITY} from '../../network/queues/http-queue'
 import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts'
@@ -14,6 +15,8 @@ export default () => {
   const fetchGlobal = async (page = 1, filters, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`apiClient/ranking/global/${page}`, () => playersGlobalRankingApiClient.getProcessed({page, filters, signal, priority}));
 
   const fetchCountry = async (country, page = 1, filters, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`pageClient/ranking/${country}/${page}`, () => playersCountryRankingApiClient.getProcessed({country, page, filters, signal, priority}));
+
+  const fetchFriends = async (page = 1, filters, priority = PRIORITY.FG_LOW, signal = null) => resolvePromiseOrWaitForPending(`pageClient/ranking/friends/${page}`, () => playersFriendsRankingApiClient.getProcessed({page, filters, signal, priority}));
 
   async function fetchMiniRanking(rank, country = null, numOfPlayers = 5) {
     try {
@@ -50,6 +53,7 @@ export default () => {
   service = {
     getGlobal: fetchGlobal,
     getCountry: fetchCountry,
+    getFriends: fetchFriends,
     getMiniRanking: fetchMiniRanking,
     PLAYERS_PER_PAGE,
     destroyService,

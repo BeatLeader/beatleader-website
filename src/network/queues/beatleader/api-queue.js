@@ -62,6 +62,8 @@ export default (options = {}) => {
 
   const rankingCountry = async (country, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, country}, priority, options);
 
+  const rankingFriends = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, friends: "true"}, priority, {...options, credentials: 'include'});
+
   const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
     if (filters && filters?.type !== 'ranked') {
       delete filters.stars_from;
@@ -226,6 +228,7 @@ export default (options = {}) => {
     findPlayer,
     rankingGlobal,
     rankingCountry,
+    rankingFriends,
     scores,
     scoreStats,
     leaderboards,
