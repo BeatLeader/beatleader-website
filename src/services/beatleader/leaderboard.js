@@ -45,10 +45,6 @@ export default () => {
     }
   }
 
-  const getFriendsLeaderboard = async (leaderboardId, priority = PRIORITY.FG_LOW, signal = null) => {
-    return []; // TODO: restore it
-  }
-
   const destroyService = () => {
     service = null;
   }
@@ -57,7 +53,6 @@ export default () => {
     fetchAllLeaderboardsPage,
     fetchLeaderboardPage,
     fetchAccSaberPage,
-    getFriendsLeaderboard,
     LEADERBOARD_SCORES_PER_PAGE,
     destroyService,
   }
