@@ -113,6 +113,8 @@
 
   $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
+
+  $: itemsPerPage = ((itemsPerPage) => itemsPerPage && itemsPerPage.getItemsPerPage ? scoresStore.getItemsPerPage() : null)(scoresStore, $scoresStore);
 </script>
 
 <div bind:this={scoresBoxEl}>
@@ -145,7 +147,7 @@
 
   {#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
     <ScoresPager {playerId} service={currentService} serviceParams={currentServiceParams}
-                 totalItems={pagerTotalScores} currentPage={page-1}
+                 totalItems={pagerTotalScores} currentPage={page-1} fixedItemsPerPage={itemsPerPage}
                  loadingPage={$pending?.serviceParams?.page ? $pending.serviceParams.page - 1 : null}
                  on:page-changed={onPageChanged}
     />
