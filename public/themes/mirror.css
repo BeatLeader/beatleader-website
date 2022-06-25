@@ -211,16 +211,16 @@ body {
     -webkit-backdrop-filter: blur(10px);
   }
 }
-.page-content.svelte-qnwlci .compare-player-name * {
+.page-content .compare-player-name * {
   background: transparent !important;
   color: white !important;
   border: none !important;
 }
-.page-content.svelte-qnwlci .grid.svelte-moindq > span, .page-content.scores .grid.svelte-moindq > span {
+.page-content .grid.svelte-moindq > span, .page-content.scores .grid.svelte-moindq > span {
   padding: 1.7rem !important;
   background: rgba(255, 255, 255, 0.171) !important;
 }
-.page-content.svelte-qnwlci .badge, .page-content.scores .badge {
+.page-content .badge, .page-content.scores .badge {
   font-size: 0.8rem !important;
   color: white !important;
   background: rgba(255, 255, 255, 0.13) !important;
@@ -229,33 +229,33 @@ body {
   padding: 0.4rem 0.3rem;
 }
 
-.page-content.svelte-qnwlci .rank .badge, .page-content.scores .rank .badge {
+.page-content .rank .badge, .page-content.scores .rank .badge {
   border-radius: 0;
   background: none !important;
   border: none;
 }
-.page-content.svelte-qnwlci .player-score, .page-content.scores .player-score {
+.page-content .player-score, .page-content.scores .player-score {
   height: 3rem;
   border: none !important;
 }
-.page-content.svelte-qnwlci .player-score.highlight, .page-content.scores .player-score.highlight {
+.page-content .player-score.highlight, .page-content.scores .player-score.highlight {
   background: #ffffff33;
   margin: 0.4rem 0;
   padding: 0;
 }
-.page-content.svelte-qnwlci .player-score.highlight .badge {
+.page-content .player-score.highlight .badge {
   border: none;
   background: none !important;
 }
 @media screen and (max-width: 767px) {
-  .page-content.svelte-qnwlci .player-score, .page-content.scores .player-score {
+  .page-content .player-score, .page-content.scores .player-score {
     height: unset !important;
   }
-  .page-content.svelte-qnwlci .player-score .clan-badges, .page-content.scores .player-score .clan-badges {
+  .page-content .player-score .clan-badges, .page-content.scores .player-score .clan-badges {
     display: none;
   }
 }
-.page-content.svelte-qnwlci .scores-grid *, .page-content.scores .scores-grid * {
+.page-content .scores-grid *, .page-content.scores .scores-grid * {
   color: white !important;
 }
 .leaderboard,
