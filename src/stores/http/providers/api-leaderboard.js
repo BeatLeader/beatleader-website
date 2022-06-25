@@ -11,7 +11,6 @@ export default () => {
       case 'global': return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, filters, priority, signal, force);
       case 'friends': return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, {friends: true}, priority, signal, force);
       case 'accsaber': return await leaderboardService.fetchAccSaberPage(leaderboardId, page, priority, signal, force);
-      default: return await leaderboardService.getFriendsLeaderboard(leaderboardId, priority, signal, force);
     }
   }
 
