@@ -7,6 +7,8 @@
   import SongScoreDetails from './SongScoreDetails.svelte'
   import Icons from '../Song/Icons.svelte'
   import PlayerPerformance from "./PlayerPerformance.svelte";
+  import Avatar from '../Common/Avatar.svelte'
+  import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte'
 
   export let playerId = null;
   export let songScore = null;
@@ -14,6 +16,8 @@
   export let idx = 0;
   export let service = null;
   export let modifiersStore = null;
+  export let withPlayers = false;
+  export let noIcons = false;
 
   let showDetails = false;
 
@@ -31,9 +35,11 @@
        in:fly={{x: 300, delay: idx * 30, duration:500}} out:fade={{duration:100}}
        class:with-details={showDetails}>
 
-    <div class="icons up-to-tablet">
-      <Icons {hash} {twitchUrl} {diffInfo} {playerId} scoreId={score.id}/>
-    </div>
+    {#if !noIcons}
+      <div class="icons up-to-tablet">
+        <Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id}/>
+      </div>
+    {/if}
 
     <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
       <span class="rank">
@@ -43,6 +49,7 @@
                      countryRankTotal={null}
                      country={score.country}
                      hmd={score.hmd}
+                     platform={score.platform}
           />
         {/if}
 
@@ -62,9 +69,19 @@
       </span>
 
       <span class="song">
-        <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl}
-                  notClickable={['beatsavior'].includes(service)}
-                  category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}/>
+        <div>
+          {#if withPlayers}
+            <div class="player">
+              <PlayerNameWithFlag player={songScore.player}
+                                  type={service === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
+              />
+            </div>
+          {/if}
+
+          <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl}
+                    notClickable={['beatsavior'].includes(service)} {noIcons}
+                    category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}/>
+        </div>
       </span>
 
       <div class="score-options-section">
@@ -74,7 +91,7 @@
           </span>
       </div>
 
-      <PlayerPerformance {service} {songScore} {showDetails} {modifiersStore}/>
+      <PlayerPerformance {service} songScore={songScore} {showDetails} {modifiersStore}/>
     </div>
 
     {#if showDetails}
@@ -82,7 +99,7 @@
         <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle}
                           noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
                           showAccSaberLeaderboard={'accsaber' === service}
-                          noBeatSaviorHistory={service === 'beatsavior'}/>
+                          />
       </div>
     {/if}
   </div>
@@ -140,9 +157,19 @@
         min-width: 15.25em;
     }
 
+    .song > div {
+      display: flex;
+      flex-direction: column;
+    }
+
     .timeset {
         width: 8.5em;
         text-align: center;
+    }
+
+    .player {
+      text-align: left;
+      padding-bottom: .5rem;
     }
 
     .main.beat-savior .timeset {
@@ -224,5 +251,9 @@
         .icons {
             margin-bottom: .5em;
         }
+
+      .player {
+        text-align: center;
+      }
     }
 </style>

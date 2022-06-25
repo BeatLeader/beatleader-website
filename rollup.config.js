@@ -84,67 +84,9 @@ export default [
 			// If we're building for production (npm run build
 			// instead of npm run dev), minify
 			production && terser(),
-
-			{
-				name: 'copy-comlink',
-				generateBundle() {
-					const buildDir = './public/build'
-					if (!fs.existsSync(buildDir)){
-						fs.mkdirSync(buildDir);
-					}
-
-					fs.copyFileSync(
-						path.resolve('./node_modules/comlink/dist/umd/comlink.min.js'),
-						path.resolve('./public/build/comlink.min.js'),
-					);
-				},
-			},
 		],
 		watch: {
 			clearScreen: false,
 		},
-	},
-
-	{
-		input: 'src/workers/stats-worker.js',
-		output: {
-			sourcemap: true,
-			format: 'iife',
-			name: 'app',
-			file: 'public/build/stats-worker.js',
-		},
-		plugins: [
-			// If you have external dependencies installed from
-			// npm, you'll most likely need these plugins. In
-			// some cases you'll need additional configuration -
-			// consult the documentation for details:
-			// https://github.com/rollup/plugins/tree/master/packages/commonjs
-			resolve({
-				browser: true,
-				dedupe: ['svelte'],
-			}),
-			commonjs(),
-
-			// If we're building for production (npm run build
-			// instead of npm run dev), minify
-			production && terser(),
-			{
-				name: 'copy-test-worker',
-				load() {
-					this.addWatchFile(path.resolve('./src/workers/stats-worker.js'));
-				},
-				generateBundle() {
-					const buildDir = './public/build'
-					if (!fs.existsSync(buildDir)){
-						fs.mkdirSync(buildDir);
-					}
-
-					fs.copyFileSync(
-						path.resolve('./src/workers/stats-worker.js'),
-						path.resolve('./public/build/stats-worker.js'),
-					);
-				},
-			},
-		],
 	},
 ];

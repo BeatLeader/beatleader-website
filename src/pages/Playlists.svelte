@@ -1,7 +1,4 @@
 <script>
-    import eventBus from '../utils/broadcast-channel-pubsub'
-    import {onMount} from 'svelte'
-    import {navigate} from 'svelte-routing'
     import createPlaylistStore from '../stores/playlists'
     import Playlist from '../components/Playlists/Playlist.svelte'
     import Pager from '../components/Common/Pager.svelte'

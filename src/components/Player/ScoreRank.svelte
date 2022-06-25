@@ -3,7 +3,7 @@
   import {cubicOut} from 'svelte/easing';
   import Value from '../Common/Value.svelte'
   import {BL_CDN} from '../../network/queues/beatleader/page-queue'
-  import {getHeadsetForHMD} from "../../utils/beatleader/format";
+  import {getHeadsetForHMD, describePlatform} from "../../utils/beatleader/format";
 
   export let rank;
   export let country;
@@ -13,6 +13,7 @@
   export let inline = true;
 
   export let hmd = null;
+  export let platform = null;
 
   const currentRank = tweened(rank, {
     duration: 500,
@@ -32,7 +33,10 @@
     currentCountryRank.set(countryRank);
   }
 
-  $: headset = hmd != null ? getHeadsetForHMD(hmd) : null;
+  $: headset = getHeadsetForHMD(hmd);
+  $: platformDescription = describePlatform(platform);
+  $: title = headset?.name + (platformDescription?.description ? ("\n" + platformDescription?.description) : "")
+  $: headsetStyle = `width: 1.2em; filter: ${headset?.color}` + (platformDescription?.color ? `drop-shadow(0px 0px 2px ${platformDescription?.color})` : "");
 </script>
 
 <span class="val">
@@ -44,8 +48,8 @@
   {#if headset}
         <img src={'/assets/' + headset.icon + ".svg"}
              alt={headset.name}
-             title={headset.name}
-             style="width: 1.2em; filter: {headset.color}"
+             {title}
+             style={headsetStyle}
         />
 	{/if}
 </span>

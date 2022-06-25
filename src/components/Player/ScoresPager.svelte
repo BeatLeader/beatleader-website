@@ -3,6 +3,7 @@
   import {PLAYER_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
   import {PLAYER_SCORES_PER_PAGE as ACCSABER_PLAYER_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
   import {formatNumber} from '../../utils/format'
+  import blApiScoresHistogramClient from '../../network/clients/beatleader/scores/api-histogram'
   import createScoresService from '../../services/beatleader/scores'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
@@ -17,7 +18,7 @@
   export let currentPage = 0;
   export let loadingPage = null;
 
-  const DEBOUNCE_THRESHOLD = 500;
+  const DEBOUNCE_THRESHOLD = 1000;
 
   const scoresService = createScoresService();
   const beatSaviorService = createBeatSaviorService();
@@ -96,9 +97,12 @@
       playerScoresHistogramBucketSizeHash = currentHistogramBucketSizeHash;
     }
 
-    playerScores = (await serviceObj.getPlayerScores(playerId))
-      .filter(playerScoresHistogram.filter)
-      .sort(playerScoresHistogram.sort)
+    if (service === 'beatleader')
+      playerScores = []
+    else
+      playerScores = (await serviceObj.getPlayerScores(playerId))
+        .filter(playerScoresHistogram.filter)
+        .sort(playerScoresHistogram.sort)
   }
 
   function resetCurrentValues() {
@@ -110,7 +114,41 @@
       playerScoresHistogramBucketSize = null;
   }
 
+  async function fetchBlHistogram(hash) {
+    if (!playerId || !playerScoresHistogram) return;
+
+    try {
+      const params = JSON.parse(JSON.stringify(serviceParams))
+      if (!params.filters) params.filters = {}
+      params.filters.batch = playerScoresHistogram.bucketSizeServerConvert(playerScoresHistogramBucketSize)
+
+      const histogram = await blApiScoresHistogramClient.getProcessed({playerId, params})
+      if (!histogram) throw 'Data error'
+
+      if (hash === playerScoresHistogramBucketSizeHash) {
+        groupedPlayerScores = Object.entries(histogram)
+          .map(([key, data]) => {
+            return {
+              x: playerScoresHistogram.getValue(key),
+              y: data?.Value ?? 0,
+              page: data?.Page ?? 1,
+            }
+          })
+          .filter(h => h.y)
+      }
+    }
+    catch(err) {
+      groupedPlayerScores = null
+    }
+  }
+
   function refreshGroupedScores() {
+    if (service === 'beatleader') {
+      fetchBlHistogram(playerScoresHistogramBucketSizeHash)
+
+      return;
+    }
+
     groupedPlayerScores = playerScores?.length && playerScoresHistogram
       ? groupScores(
         playerScores,

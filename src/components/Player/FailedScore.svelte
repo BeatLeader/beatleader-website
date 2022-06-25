@@ -2,7 +2,6 @@
     import {fade, fly, slide} from 'svelte/transition'
     import {opt} from '../../utils/js'
     import SongInfo from './SongInfo.svelte'
-    import ScoreRank from './ScoreRank.svelte'
     import FormattedDate from '../Common/FormattedDate.svelte'
     import SongScoreDetails from './SongScoreDetails.svelte'
     import Icons from '../Song/Icons.svelte'
@@ -34,7 +33,7 @@
          class:with-details={showDetails}>
 
          <div class="icons up-to-tablet">
-            <Icons {hash} {twitchUrl} {diffInfo} {playerId} scoreId={score.id} replayLink={score.replay}/>
+            <Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay}/>
           </div>
   
       <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
@@ -70,7 +69,7 @@
             </span>
         </div>
   
-        <PlayerPerformance {service} {songScore} {showDetails} {modifiersStore}/>
+        <PlayerPerformance {service} {songScore} {showDetails} {modifiersStore} unmodifiedScore={true}/>
       </div>
 
       <div class="lowerContainer">
@@ -91,7 +90,7 @@
           <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle}
                             noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
                             showAccSaberLeaderboard={'accsaber' === service}
-                            noBeatSaviorHistory={service === 'beatsavior'}/>
+                            />
         </div>
       {/if}
     </div>

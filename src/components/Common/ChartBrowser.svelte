@@ -6,7 +6,7 @@
   import {formatNumber} from '../../utils/format'
 
   export let data = null;
-  export let color = "#2366d1";
+  export let color = "#eb008c";
   export let tooltipTitleFunc = null;
   export let tooltipLabelFunc = null;
   export let tickFormatFunc = null;

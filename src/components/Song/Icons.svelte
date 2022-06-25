@@ -14,9 +14,7 @@
     export let hash;
     export let diffInfo = null;
     export let twitchUrl = null;
-    export let playerId = null;
     export let icons = false;
-    export let jumpDistance = 0;
     export let scoreId = null;
     export let replayLink = null;
     const { open } = getContext('simple-modal');
@@ -61,7 +59,6 @@
     $: updateSongKey(hash)
     $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
     $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
-    $: modeName = diffInfo && diffInfo.type ? capitalize(diffInfo.type) : null
     $: selectedPlaylistIndex = opt($configStore, 'selectedPlaylist');
     $: selectedPlaylist = $playlists[selectedPlaylistIndex];
     $: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
@@ -70,7 +67,7 @@
     $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
     $: replayUrl = replayLink?.length
         ? `https://www.replay.beatleader.xyz/?link=${replayLink}`
-        : `https://www.replay.beatleader.xyz/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${modeName ? `&mode=${modeName}` : ''}${playerId ? `&playerID=${playerId}` : ''}${jumpDistance ? `&jd=${jumpDistance}` : ''}`
+        : (scoreId ? `https://www.replay.beatleader.xyz/?scoreId=${scoreId}` : null)
     $: previewUrl = `https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${charName ? `&charName=${charName}` : ''}`;
 </script>
 
@@ -131,7 +128,7 @@
                 noMargin={true}/>
     {/if}
 
-    {#if shownIcons.includes('replay') && playerId && replayUrl?.length}
+    {#if shownIcons.includes('replay') && replayUrl?.length}
         <Button url={replayUrl} 
                 on:click={showPreview(replayUrl)}
                 cls="{shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}"

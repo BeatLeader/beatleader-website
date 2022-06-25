@@ -16,7 +16,7 @@ const ACCSABER_TZ = 'Europe/Berlin';
 export const isValidDate = d =>d instanceof Date && !isNaN(d);
 
 export const dateFromUnix = str => {
-    return new Date(parseInt(str) * 1000)
+    return new Date(parseInt(str, 10) * 1000)
 }
 
 export const dateFromString = str => {

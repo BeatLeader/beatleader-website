@@ -202,9 +202,9 @@ select {
 .replay-icon {
     width: 100%;
     height: 100%;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-image: url("./bs-pepe.gif");
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-image: url("./bs-pepe.gif") !important;
 }
 
 .replay-icon-alt {

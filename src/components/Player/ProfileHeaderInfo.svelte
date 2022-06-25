@@ -9,11 +9,11 @@
   import Value from '../Common/Value.svelte'
   import Status from './Status.svelte'
   import Error from '../Common/Error.svelte'
-  import Badge from '../Common/Badge.svelte'
   import Button from '../Common/Button.svelte'
   import Preview from "../Common/Preview.svelte";
   import CountryPicker from "../Common/CountryPicker.svelte"
   import ClanBadges from './ClanBadges.svelte'
+  import BanForm from './BanForm.svelte';
 
   export let name;
   export let playerInfo;
@@ -131,14 +131,19 @@
     selectedCountry = event.detail.value.toUpperCase();
   }
 
+  let showBanForm = false;
+
   $: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
   $: countries = getPlayerCountries(playerInfo, statsHistory)
-  $: loggedInPlayer = $account.id;
-  $: isMain = configStore && $configStore?.users?.main === playerId;
-  $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
+  $: loggedInPlayer = $account?.id;
+  $: isMain = playerId && $account?.id === playerId;
+  $: isAdmin = $account?.player?.role?.includes("admin")
   $: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin
 </script>
 
+{#if showBanForm}
+	<BanForm playerId={playerId} accountStore={account} on:finished={() => (showBanForm = false)} />
+{/if}
 <div class="profile-header-info">
   {#if playerInfo}
     <div class="player-nickname {showRainbow(playerInfo) ? "rainbow" : ""}">
@@ -248,7 +253,7 @@
                           on:click={async () => await account.unbanPlayer(playerId)}/>
         {:else}
           <Button cls="banButton" title="Ban player" label="Ban player" type="danger"
-                          on:click={async () => await account.banPlayer(playerId)}/>
+                          on:click={async () => showBanForm = !showBanForm}/>
         {/if}
       {/if}
     </div>

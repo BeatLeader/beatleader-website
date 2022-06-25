@@ -19,6 +19,7 @@
   import DashboardPage from "./pages/Dashboard.svelte";
   import PlaylistsPage from "./pages/Playlists.svelte";
   import SigninPage from "./pages/SignIn.svelte";
+  import SupportPage from "./pages/Support.svelte";
   import Nav from "./components/Nav.svelte";
   import Modal from "svelte-simple-modal";
   import { configStore } from "./stores/config";
@@ -88,6 +89,7 @@
           <SearchPage changeTitle={true} />
         </Route>
         <Route path="/twitch" component={TwitchPage} />
+        <Route path="/support" component={SupportPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/signin/*action" let:params>
           <SigninPage action={params.action} />
@@ -105,6 +107,10 @@
   <p>
     <a href="/privacy" on:click|preventDefault={() => navigate("/privacy")}
       >Privacy policy</a
+    >
+    |
+    <a href="/support" on:click|preventDefault={() => navigate("/support")}
+      >Support</a
     >
     |
     <a href="/about" on:click|preventDefault={() => navigate("/about")}>About</a

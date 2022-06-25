@@ -1,16 +1,15 @@
 <script>
   import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
-  import {configStore} from '../../stores/config'
-  import {opt} from '../../utils/js'
+  import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic'
   import BeatSaviorDetails from '../BeatSavior/Details.svelte'
   import LeaderboardPage from '../../pages/Leaderboard.svelte'
   import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte'
+  import Spinner from '../Common/Spinner.svelte'
 
   export let playerId;
   export let songScore;
   export let fixedBrowserTitle = null;
-  export let noBeatSaviorHistory = false;
   export let noSsLeaderboard = false;
   export let showAccSaberLeaderboard = false;
 
@@ -26,17 +25,16 @@
   }
 
   function onInBuiltLeaderboardPageChanged(event) {
-    const newPage = opt(event, 'detail.page');
+    const newPage = event?.detail?.page;
     if (!Number.isFinite(newPage)) return;
 
     inBuiltLeaderboardPage = newPage;
   }
 
-  $: leaderboard = opt(songScore, 'leaderboard', null);
-  $: score = opt(songScore, 'score', null);
-  $: prevScore = opt(songScore, 'prevScore', null);
-  $: beatSavior = opt(songScore, 'beatSavior', null)
-  $: noHistory = noBeatSaviorHistory || $configStore?.preferences?.beatSaviorComparison != 'show';
+  $: leaderboard = songScore?.leaderboard ?? null;
+  $: score = songScore?.score ??null;
+  $: prevScore = songScore?.prevScore ?? null;
+  $: beatSaviorPromise = scoreStatisticEnhancer(songScore);
 
   $: updateInBuiltLeaderboardPage(score && score.rank ? score.rank : null, (showAccSaberLeaderboard ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE))
 </script>
@@ -47,9 +45,15 @@
       <LeaderboardStats {leaderboard}/>
     </div>
 
-    <div class="tab">
-      <BeatSaviorDetails {playerId} {beatSavior} {leaderboard} {noHistory}/>
-    </div>
+    {#await beatSaviorPromise}
+      <div class="tab">
+        <Spinner />
+      </div>
+    {:then beatSavior}
+      <div class="tab">
+        <BeatSaviorDetails {playerId} {beatSavior} {leaderboard}/>
+      </div>
+    {/await}
 
     {#if showAccSaberLeaderboard}
       <div class="tab">
@@ -61,7 +65,7 @@
                          dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
                          on:page-changed={onInBuiltLeaderboardPageChanged}
                          {fixedBrowserTitle}
-                         higlightedPlayerId={playerId}
+                         higlightedScore={score}
         />
       </div>
     {:else}
@@ -75,7 +79,7 @@
                            dontNavigate={true} withoutDiffSwitcher={true} withoutHeader={true}
                            on:page-changed={onInBuiltLeaderboardPageChanged}
                            {fixedBrowserTitle}
-                           higlightedPlayerId={playerId}
+                           higlightedScore={score}
           />
         </div>
       {/if}

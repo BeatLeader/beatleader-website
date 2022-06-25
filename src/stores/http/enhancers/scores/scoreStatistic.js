@@ -3,7 +3,8 @@ import createScoresService from '../../../../services/beatleader/scores'
 let scoresService = null;
 
 export default async (data) => {
-    if (!data || data.beatSavior) return;
+    if (!data) return null;
+    if (data.beatSavior) return data.beatSavior;
 
     try {
         if (!scoresService) scoresService = createScoresService();
@@ -36,7 +37,9 @@ export default async (data) => {
         beatSavior.stats = stats;
         beatSavior.trackers = statistic;
 
-        data.beatSavior = beatSavior;
+        return beatSavior;
     }
     catch(err) {}
+
+    return null;
 }

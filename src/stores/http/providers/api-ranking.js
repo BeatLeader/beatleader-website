@@ -9,9 +9,20 @@ export default () => {
   const getProcessed = async ({type = 'global', page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) => {
     page = parseInt(page, 10);
     if (isNaN(page)) page = 1;
-    const data = type === 'global'
-      ? await rankingService.getGlobal(page, filters, priority, signal, force)
-      : await rankingService.getCountry(type, page, filters, priority, signal, force);
+
+    let data = null;
+    switch(type) {
+      case 'global':
+        data = await rankingService.getGlobal(page, filters, priority, signal, force);
+        break;
+
+      case 'friends':
+        data = await rankingService.getFriends(page, filters, priority, signal, force);
+        break;
+
+      default:
+        data = await rankingService.getCountry(type, page, filters, priority, signal, force);
+    }
 
     return {total: data?.metadata?.total ?? null, data: data?.data ?? [] }
   }

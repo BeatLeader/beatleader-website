@@ -1,94 +1,35 @@
 import {writable} from 'svelte/store'
-import {configStore} from '../config'
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
-import createPlayerService from '../../services/beatleader/player'
-import eventBus from '../../utils/broadcast-channel-pubsub'
+import userApiClient from '../../network/clients/beatleader/account/api'
+import queue from '../../network/queues/queues'
 
 let store = null;
 let storeSubCount = 0;
-let playerService;
 
 export default (refreshOnCreate = true) => {
   storeSubCount++;
   if (store) return store;
 
-  let account = {};
+  const checkResponse = async response => response.text();
+
+  let account = {loading: true};
 
   const {subscribe: subscribeState, set} = writable(account);
 
-  const checkResponse = async response => {
-
-    return response.text();
-  }
-
-  const refreshAccount = () => {
-    fetch(BL_API_URL + "user", {credentials: 'include'})
-    .then(response => response.json())
-    .then(async data => {
-      account = {...data, id: data?.player?.id ?? null};
-      set(account);
-
-      if (!playerService) {
-        playerService = createPlayerService();
-      }
-
-      const friends = await playerService.getFriends();
-      if (!data?.friends?.length) {
-        friends.forEach(toAdd => {
-          fetch(BL_API_URL + "user/friend?playerId=" + toAdd, {credentials: 'include', method: 'POST'});
-        });
-      } else {
-        let toDelete = friends;
-        data.friends.forEach(friend => {
-          if (toDelete.includes(friend)) {
-            toDelete = toDelete.filter(f => f != friend);
-          } else {
-            eventBus.publish('player-add-cmd', {playerId: friend});
-          }
-        });
-
-        toDelete.forEach(friend => {
-          eventBus.publish('player-remove-cmd', {playerId: friend});
-        });
-      }
-    });
-  };
-
   const get = () => account;
-  const refresh = async (changeMain = false) => {
-    let config = configStore.get();
-    fetch(BL_API_URL + "user/id", {credentials: 'include'})
-      .then(checkResponse)
-      .then(data => {
-        if (data.length > 0) {
-            account.id = data;
-            refreshAccount();
-            if (changeMain) {
-                if (!config.users) {
-                    config.users = {};
-                }
-                config.users.main = data;
-                configStore.set(config);
-          
-                eventBus.publish('player-add-cmd', {playerId: data, fromAccount: true});
-            }
-        } else {
-            account = {};
 
-            if (changeMain) {
-                if (config.users && config.users.main) {
-                    let currentID = config.users.main;
-                    config.users.main = null;
-                    configStore.set(config);
-            
-                    eventBus.publish('player-remove-cmd', {playerId: currentID, fromAccount: true});
-                }
-            }
-            
-        }
-        set(account);
-      })
-      .catch(err => err); // swallow the error
+  const refresh = async () => {
+    try {
+      const user = await userApiClient.getProcessed();
+      if (!user) throw 'Data error'
+
+      account = {...user, id: user.player?.playerId ?? null};
+    }
+    catch(err) {
+      account = {}
+    }
+
+    set(account);
   }
 
   if (refreshOnCreate) refresh();
@@ -212,6 +153,33 @@ export default (refreshOnCreate = true) => {
         });
   }
 
+  const changeLogin = (newLogin) => {
+    let data = new FormData();
+    data.append('newLogin', newLogin);
+
+    fetch(BL_API_URL + "user/changeLogin", {
+        credentials: 'include',
+        method: 'PATCH',
+        body: data
+    })
+      .then(checkResponse)
+      .then(
+        data => {
+            if (data.length > 0) {
+                account.error = data;
+            } else {
+                account.message = "Login changed successfully ✔";
+                account.error = null;
+                refresh(true);
+                setTimeout(function(){
+                  account.message = null;
+                  set(account);
+                }, 3500);
+            }
+            set(account);
+        });
+  }
+
   const changeAvatar = (file, playerId) =>
     fetch(BL_API_URL + "user/avatar" + (playerId ? "?id=" + playerId : ""), { 
         method: 'PATCH', 
@@ -310,8 +278,10 @@ export default (refreshOnCreate = true) => {
     
   }
 
-  const banPlayer = (playerId) =>
-  fetch(BL_API_URL + "admin/ban?playerId=" + playerId, { 
+  const banPlayer = (playerId, reason, duration) => {
+  account.loading = true;
+  set(account);
+  fetch(BL_API_URL + "user/ban" + (playerId ? `?id=${playerId}&reason=${reason}&duration=${duration}` : ""), { 
       method: 'POST', 
       credentials: 'include'
   })
@@ -319,20 +289,30 @@ export default (refreshOnCreate = true) => {
     .then(
       data => {
           account.error = null;
-
+          account.loading = false;
           if (data.length > 0) {
-              account.error = data;
-              setTimeout(function(){
-                  account.error = null;
-                  set(account);
-              }, 3500);
+            account.error = data;
+          } else {
+            if (playerId) {
+              document.location.reload();
+            }
+            account.message = playerId ? "Player banned ✔" : "Account suspended ✔";
           }
+
+          setTimeout(function(){
+            account.error = null;
+            account.message = null;
+            set(account);
+        }, 6000);
 
           set(account);
       });
+    }
 
-  const unbanPlayer = (playerId) =>
-  fetch(BL_API_URL + "admin/unban?playerId=" + playerId, { 
+  const unbanPlayer = (playerId) => {
+  account.loading = true;
+  set(account);
+  fetch(BL_API_URL + "user/unban" + (playerId ? `?id=${playerId}` : ""), { 
       method: 'POST', 
       credentials: 'include'
   })
@@ -340,17 +320,25 @@ export default (refreshOnCreate = true) => {
     .then(
       data => {
           account.error = null;
-
+          account.loading = false;
           if (data.length > 0) {
-              account.error = data;
-              setTimeout(function(){
-                  account.error = null;
-                  set(account);
-              }, 3500);
+            account.error = data;
+          } else {
+            if (playerId) {
+              document.location.reload();
+            }
+            account.message = playerId ? "Player unbanned ✔" : "Welcome back ✔";
           }
+
+          setTimeout(function(){
+            account.error = null;
+            account.message = null;
+            set(account);
+        }, 6000);
 
           set(account);
       });
+    }
 
   const removeClanRequest = (clan, setAccount = true) => {
     if (Array.isArray(account?.clanRequest) && clan?.id) {
@@ -416,17 +404,9 @@ export default (refreshOnCreate = true) => {
     set(account);
   }
 
-  eventBus.on('player-add-cmd', async ({playerId, fromAccount}) => {
-    if (!fromAccount) {
-      fetch(BL_API_URL + "user/friend?playerId=" + playerId, {credentials: 'include', method: 'POST'})
-    }
-  });
+  const addFriend = async playerId => queue.BEATLEADER_API.addFriend(playerId).finally(refresh);
 
-  eventBus.on('player-remove-cmd', async ({playerId, fromAccount}) => {
-    if (!fromAccount) {
-      fetch(BL_API_URL + "user/friend?playerId=" + playerId, {credentials: 'include', method: 'DELETE'})
-    }
-  });
+  const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).finally(refresh);
 
   store = {
     subscribe,
@@ -451,6 +431,9 @@ export default (refreshOnCreate = true) => {
     unbanClan,
     addClanInvitation,
     removeClanInvitation,
+    changeLogin,
+    addFriend,
+    removeFriend,
   }
 
   return store;

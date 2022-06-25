@@ -24,6 +24,8 @@ function updateScoresStats(playerData) {
       {key: "medianAccuracy", label: 'Median acc', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
       {key: "averageRankedAccuracy", label: 'Average ranked acc', title: 'Average ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
       {key: "medianRankedAccuracy", label: 'Median ranked acc', title: 'Median ranked accuracy', digits: 2, suffix: '%', bgColor: 'var(--ppColour)'},
+      {key: "topPlatform", label: 'Platform', title: 'Last 50 scores top platform', bgColor: 'var(--selected)'},
+      {key: "topHMD", label: 'Headset', title: 'Last 50 scores top headset', bgColor: 'var(--selected)'},
     ]
     : [];
 
@@ -32,13 +34,20 @@ function updateScoresStats(playerData) {
       const value = scoreStats && scoreStats[s.key] ? scoreStats[s.key] : null;
       if (!value && !Number.isFinite(value)) return null;
 
-      if (!scoresStatsTweened.hasOwnProperty(s.key)) scoresStatsTweened[s.key] = tweened(value, TWEEN_DURATION);
-      else scoresStatsTweened[s.key].set(value);
+      let resultValue = value;
+      let type = "string";
+      if (Number.isFinite(value)) {
+        if (!scoresStatsTweened.hasOwnProperty(s.key)) scoresStatsTweened[s.key] = tweened(value, TWEEN_DURATION);
+        else scoresStatsTweened[s.key].set(value);
 
+        resultValue = scoresStatsTweened[s.key];
+        type = "number";
+      }
+      
       return {
         label: s.label,
         title: s?.title ?? '',
-        value: scoresStatsTweened[s.key],
+        value: resultValue,
         prevValue: s.suffix === '%' && statsHistory?.[s.key]?.length > 1 ? statsHistory[s.key][statsHistory[s.key].length - 2] : null,
         prevLabel: "Yesterday",
         digits: s?.digits ?? 0,
@@ -47,6 +56,7 @@ function updateScoresStats(playerData) {
         bgColor: s?.bgColor ?? 'var(--dimmed)',
         key: s.key,
         inline: true,
+        type
       }
     })
     .filter(s => s);

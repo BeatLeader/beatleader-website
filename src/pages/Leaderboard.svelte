@@ -1,6 +1,7 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {navigate} from "svelte-routing";
+  import createAccountStore from '../stores/beatleader/account'
   import {fade, fly} from 'svelte/transition'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import createModifiersStore from '../stores/beatleader/modifiers'
@@ -43,7 +44,6 @@
   export let scrollOffset = 45;
   export let fixedBrowserTitle = null;
   export let higlightedScore = null;
-  export let higlightedPlayerId = null;
   export let iconsInInfo = false;
   export let noReplayInLeaderboard = false;
 
@@ -55,6 +55,7 @@
   const dispatch = createEventDispatcher();
 
   const playerService = createPlayerService();
+  const account = createAccountStore();
 
   const params = [
     {key: 'countries', default: '', process: processStringFilter},
@@ -81,13 +82,6 @@
         label: 'Global',
         iconFa: 'fas fa-globe-americas',
         url: `/leaderboard/global/${currentLeaderboardId}/1`,
-        filters: {countries: ''},
-      },
-      {
-        type: 'friends',
-        label: 'Friends',
-        iconFa: 'fas fa-user-friends',
-        url: `/leaderboard/friends/${currentLeaderboardId}/1`,
         filters: {countries: ''},
       },
     ]
@@ -227,28 +221,35 @@
     return "#" + brightnessHex + brightnessHex + brightnessHex;
   }
 
-  let mainPlayer = null;
-  async function updateMainPlayer(playerId) {
-    if (!playerId) {
-      mainPlayer = null;
-      return;
-    }
+  function updateTypeOptions(country, playerHasFriends) {
+    if (!country?.length && !playerHasFriends) return;
 
-    mainPlayer = await playerService.get(playerId);
-  }
-
-  function updateTypeOptions(country) {
-    if (!country?.length) return;
-
-    typeOptions = availableTypeOptions.map(to => to).concat([
-      {
-        type: 'global',
-        label: 'Country',
-        icon: `<img src="https://cdn.beatleader.xyz/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
-        url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
-        filters: {countries: country}
-      },
-    ]);
+    typeOptions = availableTypeOptions.map(to => to)
+      .concat(playerHasFriends
+        ? [
+          {
+            type: 'friends',
+            label: 'Friends',
+            iconFa: 'fas fa-user-friends',
+            url: `/leaderboard/friends/${currentLeaderboardId}/1`,
+            filters: {countries: ''},
+          }
+        ]
+        : [],
+      )
+      .concat(country?.length
+        ? [
+          {
+            type: 'global',
+            label: 'Country',
+            icon: `<img src="https://cdn.beatleader.xyz/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
+            url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
+            filters: {countries: country},
+          },
+        ]
+        : [],
+      )
+    ;
 
     const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
     if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
@@ -272,7 +273,7 @@
 
   $: changeParams(leaderboardId, type, page, location)
   $: scrollToTop($pending);
-  $: higlightedPlayerId = higlightedPlayerId ?? higlightedScore?.player?.playerId;
+  $: higlightedPlayerId = higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
@@ -284,10 +285,10 @@
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
-  $: mainPlayerId = opt($configStore, 'users.main');
-  $: updateMainPlayer = updateMainPlayer(mainPlayerId);
-  $: mainPlayerCountry = mainPlayer?.playerInfo?.countries?.[0]?.country ?? null
-  $: updateTypeOptions(mainPlayerCountry);
+  $: higlightedPlayerId = $account?.id ?? null
+  $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
+  $: playerHasFriends = !!$account?.friends?.length
+  $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
 </script>
 
 <svelte:head>
@@ -334,7 +335,7 @@
                 {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
                                                                          reverseColors={true}/></span>{/if}
 
-                <span class="icons"><Icons {hash} {diffInfo} playerId={higlightedPlayerId}/></span>
+                <span class="icons"><Icons {hash} {diffInfo}/></span>
                 <Button cls="replay-button-alt battleroyalebtn" icon={`<div class='battleroyale${batleRoyaleDraft ? "stop" : ""}-icon'></div>`} title="Draft battle royal" noMargin={true} on:click={() => batleRoyaleDraft = !batleRoyaleDraft}/>
                 {#if batleRoyaleDraft && draftList && draftList.length > 0} 
                   <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let the battle begin!" noMargin={true} on:click={() => startBattleRoyale()}/>
@@ -347,7 +348,7 @@
               <LeaderboardStats {leaderboard}/>
 
               {#if iconsInInfo}
-              <span class="icons"><Icons {hash} {diffInfo} playerId={higlightedPlayerId}/></span>
+              <span class="icons"><Icons {hash} {diffInfo} /></span>
               {/if}
             </div>
           {/if}
@@ -405,7 +406,7 @@
                           <Button cls="replay-button-alt" icon="<div class='battleroyaleescape-icon'></div>" title="Remove from battle royal" noMargin={true} on:click={() => draftList = draftList.filter(el => el != score.player.playerId)}/>
                         {/if}
                         {:else}
-                        <Icons {hash} {diffInfo} icons={["replay"]} playerId={score.player.playerId}/>
+                          <Icons {hash} {diffInfo} icons={["replay"]} scoreId={score?.score?.id}/>
                         {/if}
                       </div>
                     {/if}

@@ -85,7 +85,37 @@ const HMDs = {
 };
 
 export function getHeadsetForHMD(hmd) {
-  return HMDs[hmd];
+  return HMDs?.[hmd] ?? null;
+}
+
+const platformColors = {
+  "oculus": "yellow",
+  "steam": "blue",
+  "oculuspc": "red"
+}
+
+export const platformDescription = {
+  "oculus": "Quest",
+  "steam": "PC Steam",
+  "oculuspc": "PC Oculus"
+}
+
+export function describePlatform(platform) {
+  let result = {};
+
+  if (platform) {
+    let parts = platform.split(",");
+    if (parts.length > 0) {
+      result.color = platformColors[parts[0]];
+      result.description = "Platform: " + platformDescription[parts[0]];
+
+      if (parts.length > 2) {
+        result.description += ", Game: " + parts[1] + ", Mod: " + parts[2];
+      }
+    }
+  }
+  
+  return result;
 }
 
 export function userDescriptionForModifier(modifier) {
@@ -99,6 +129,8 @@ export function userDescriptionForModifier(modifier) {
     case "NB": return "No bombs";
     case "NF": return "No fail";
     case "NO": return "No obstacles";
+    case "PM": return "Pro mode";
+    case "SC": return "Small cubes";
   }
   return "Undefined modifier";
 }
