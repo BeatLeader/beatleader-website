@@ -270,10 +270,23 @@
 
     .ranking {
         overflow: hidden;
+        font-size: .85rem;
     }
 
     .ranking header nav {
         font-size: .8em!important;
+    }
+
+    .ranking :global(.ranking-grid-row) {
+        grid-template-columns: auto;
+    }
+
+    .ranking :global(.clan-badges) {
+        font-size: .8rem;
+    }
+
+    .ranking :global(.steam-stats) {
+        display: none;
     }
 
     .imageLink {
