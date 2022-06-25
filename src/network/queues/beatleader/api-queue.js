@@ -61,11 +61,11 @@ export default (options = {}) => {
 
   const findPlayer = async (query, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_FIND_PLAYER_URL, {query: encodeURIComponent(query)}), options, priority);
 
-  const rankingGlobal = async (page = 1, count = 50, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => {
-    return fetchJson(substituteVars(BL_API_RANKING_URL, {page, count, ...filters}, true, true), options, priority);
+  const rankingGlobal = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => {
+    return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), options, priority);
   } 
 
-  const rankingCountry = async (country, page = 1, count = 50, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, count, {...filters, country}, priority, options);
+  const rankingCountry = async (country, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, country}, priority, options);
 
   const rankingFriends = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, friends: "true"}, priority, {...options, credentials: 'include'});
   const minirankings = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);
