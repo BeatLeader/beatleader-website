@@ -8,7 +8,7 @@ import makePendingPromisePool from '../../utils/pending-promises'
 import {roundToPrecision} from '../../utils/format'
 import {serviceFilterFunc} from '../utils'
 
-const HISTOGRAM_DATE_PRECISION = DAY / 1000;
+const HISTOGRAM_DATE_PRECISION = 'day';
 const HISTOGRAM_PP_PRECISION = 5;
 const HISTOGRAM_RANK_PRECISION = 5;
 const HISTOGRAM_ACC_PRECISION = 0.25;
@@ -71,6 +71,18 @@ export default () => {
         valFunc = s => dateFromUnix(s);
         type = 'time';
         bucketSize = HISTOGRAM_DATE_PRECISION
+        bucketSizeServerConvert = bucketSize => {
+          switch(bucketSize) {
+            case 'year': return DAY * 365 / 1000;
+            case 'month': return DAY * 30 / 1000;
+            case 'hour': return HOUR / 1000;
+            case 'minute': return MINUTE / 1000;
+
+            case 'day':
+            default:
+              return DAY / 1000;
+          }
+        }
         break;
 
       case 'pp':
