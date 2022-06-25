@@ -1,38 +1,36 @@
 <script>
-  import {opt} from '../../../utils/js'
   import createAccSaberService from '../../../services/accsaber'
-  import MiniRanking from '../../Ranking/Mini.svelte'
+  import MiniRankings from '../../Ranking/MiniRankings.svelte'
   import AccSaberMiniRanking from '../../Ranking/AccSaberMini.svelte'
 
   export let player = null;
+  export let selected = false;
 
   const accSaberService = createAccSaberService();
 
   $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player.playerId)
+
+  $: rank = player?.playerInfo.rank;
+  $: country = player?.playerInfo.countries[0].country;
+  $: countryRank = player?.playerInfo.countries[0].rank;
 </script>
 
-<div class="mini-ranking">
-  <div>
-    <MiniRanking rank={opt(player, 'playerInfo.rank')} numOfPlayers={5} on:height-changed />
+{#if selected}
+  <div class="mini-ranking">
+    <MiniRankings {rank} {country} {countryRank} on:height-changed />
+
+    {#await accSaberAvailable}
+        Loading...
+      {:then accSaberAvailable} 
+
+      {#if accSaberAvailable} 
+        <div>
+          <AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} />
+        </div>
+      {/if}
+    {/await}
   </div>
-
-  {#each opt(player, 'playerInfo.countries', []) as countryInfo (countryInfo.country)}
-    <div>
-      <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} on:height-changed />
-    </div>
-  {/each}
-
-  {#await accSaberAvailable}
-      Loading...
-    {:then accSaberAvailable} 
-
-    {#if accSaberAvailable} 
-      <div>
-        <AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} />
-      </div>
-    {/if}
-  {/await}
-</div>
+{/if}
 
 <style>
     .mini-ranking {
