@@ -2,7 +2,6 @@
     import {fade, fly, slide} from 'svelte/transition'
     import {opt} from '../../utils/js'
     import SongInfo from './SongInfo.svelte'
-    import ScoreRank from './ScoreRank.svelte'
     import FormattedDate from '../Common/FormattedDate.svelte'
     import SongScoreDetails from './SongScoreDetails.svelte'
     import Icons from '../Song/Icons.svelte'
@@ -91,7 +90,7 @@
           <SongScoreDetails {playerId} {songScore} {fixedBrowserTitle}
                             noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
                             showAccSaberLeaderboard={'accsaber' === service}
-                            noBeatSaviorHistory={service === 'beatsavior'}/>
+                            />
         </div>
       {/if}
     </div>

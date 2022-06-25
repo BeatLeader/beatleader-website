@@ -1,6 +1,4 @@
 <script>
-  import {configStore} from '../../stores/config'
-  import {opt} from '../../utils/js'
   import Value from '../Common/Value.svelte'
   import {formatNumber} from '../../utils/format'
   import {hoverable} from '../../svelte-utils/actions/hoverable'
@@ -26,11 +24,6 @@
     tooltipOpacity = 1;
   }
   const onUnhover = () => tooltipOpacity = 0;
-
-  $: secondaryMetricsPref = opt($configStore, 'preferences.secondaryPp', 'attribution')
-  $: secondaryMetricsType = secondaryMetricsPref === 'attribution' && attribution !== null && attribution !== undefined ? 'attribution' : 'weighted'
-  $: secondaryMetrics = secondaryMetricsType === 'attribution' ? attribution : weighted
-  $: secondaryMetricsTitle = secondaryMetricsType === 'attribution' ? `Actual contribution of the score to the total ${suffix.toUpperCase()}` : `Weighted ${suffix.toUpperCase()}`
 </script>
 
 <span class="pp" style="--color: {color}">
@@ -42,20 +35,16 @@
   </span>{/if}
 
   <span class="value">
-    <Value value="{pp}" {zero} {withZeroSuffix} prevValue={secondaryMetrics}
-           prevWithSign={secondaryMetricsType === 'attribution'} prevTitle={secondaryMetricsTitle}
-           prevAbsolute={secondaryMetrics !== null} {suffix} {...$$restProps}
+    <Value value="{pp}" {zero} {withZeroSuffix} prevValue={weighted}
+           prevWithSign={false} prevTitle={`Weighted ${suffix.toUpperCase()}`}
+           prevAbsolute={weighted !== null} {suffix} {...$$restProps}
            forcePrev={pp === weighted}
     >
       <span slot="value" let:formatted class="main-value"  class:whatIfAvailable={whatIf} use:hoverable on:hover={onHover} on:unhover={onUnhover}>
         {formatted} <i class="fas fa-question"></i>
       </span>
       <svelte:fragment slot="prev" let:formatted let:value>
-        {#if secondaryMetricsType === 'attribution'}
-          [ {value === 0 ? `+${formatNumber(Math.abs(value))}pp` : formatted} ]
-        {:else}
           ( {formatted} )
-        {/if}
       </svelte:fragment>
     </Value>
   </span>

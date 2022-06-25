@@ -85,27 +85,6 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
     }
   }
 
-  const DEFAULT_RECENT_PLAY_REFRESH_INTERVAL = MINUTE;
-
-  const enqueueRecentPlayRefresh = async () => {
-    if (!currentPlayerId) {
-      setTimeout(() => enqueueRecentPlayRefresh(), DEFAULT_RECENT_PLAY_REFRESH_INTERVAL);
-
-      return;
-    }
-
-    await playerService.fetchPlayerAndUpdateRecentPlay(currentPlayerId);
-
-    const refreshInterval = !lastRecentPlay || lastRecentPlay >= addToDate(-30 * MINUTE, new Date())
-      ? DEFAULT_RECENT_PLAY_REFRESH_INTERVAL
-      : 15 * MINUTE;
-
-    setTimeout(() => enqueueRecentPlayRefresh(), refreshInterval);
-
-  }
-
-  setTimeout(() => enqueueRecentPlayRefresh(), DEFAULT_RECENT_PLAY_REFRESH_INTERVAL);
-
   return {
     ...httpStore,
     subscribe,

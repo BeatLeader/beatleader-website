@@ -112,15 +112,6 @@ export default () => {
         }
       }
 
-      const player = playerService.get(playerId);
-      if (player && player.recentPlay) {
-        if (lastUpdated && lastUpdated > player.recentPlay) {
-          log.debug(`Twitch updated after recent player play, skipping`, 'TwitchService')
-
-          return twitchProfile;
-        }
-      }
-
       if (!twitchProfile.id) {
         const fetchedProfile = await fetchProfile(twitchProfile.login);
         if (!fetchedProfile) {

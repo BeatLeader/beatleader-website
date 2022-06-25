@@ -2,17 +2,14 @@ import App from './App.svelte';
 import log from './utils/logger'
 import initDb from './db/db'
 import initializeRepositories from './db/repositories-init';
+import initDownloadManager from './network/download-manager'
 import setupDataFixes from './db/fix-data'
 import createConfigStore from './stores/config'
+import createAccountStore from './stores/beatleader/account'
 import createPlayerService from './services/beatleader/player'
 import createBeatSaviorService from './services/beatsavior'
-import createRankedsStore from './stores/beatleader/rankeds'
-import initDownloadManager from './network/download-manager'
-import initCommandProcessor from './network/command-processor'
 import {enablePatches, setAutoFreeze} from 'immer'
-import {initCompareEnhancer} from './stores/http/enhancers/scores/compare'
 import ErrorComponent from './components/Common/Error.svelte'
-import initializeWorkers from './utils/worker-wrappers'
 
 let app = null;
 
@@ -35,17 +32,13 @@ let app = null;
     enablePatches();
     setAutoFreeze(false);
 
-    await initializeWorkers();
-
     // pre-warm cache && create singleton services
     await createConfigStore();
+    createAccountStore();
     createPlayerService();
     createBeatSaviorService();
-    await createRankedsStore();
 
-    await initCompareEnhancer();
-
-    initCommandProcessor(await initDownloadManager());
+    await initDownloadManager();
 
     log.info('Site initialized', 'Main')
 

@@ -2,7 +2,7 @@
   import {createEventDispatcher} from 'svelte'
   import createScoresStore from '../../stores/http/http-scores-store.js';
   import createModifiersStore from '../../stores/beatleader/modifiers'
-  import {configStore} from '../../stores/config'
+  import createAccountStore from '../../stores/beatleader/account'
   import createFailedScoresStore from '../../stores/beatleader/failed-scores'
   import {opt} from '../../utils/js'
   import {scrollToTargetAdjusted} from '../../utils/browser'
@@ -23,6 +23,8 @@
   export let initialServiceParams = {};
   export let numOfScores = null;
   export let fixedBrowserTitle = null;
+  export let withPlayers = false;
+  export let noIcons = false;
 
   let scoresStore = createScoresStore(
     playerId,
@@ -31,6 +33,8 @@
     initialState,
     initialStateType
   );
+
+  const account = createAccountStore();
 
   let scoresBoxEl = null;
 
@@ -103,7 +107,7 @@
   $: pending = scoresStore ? scoresStore.pending : null;
   $: error = scoresStore ? scoresStore.error : null;
   $: modifiers = $modifiersStore;
-  $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
+  $: isMain = playerId && $account?.id === playerId;
   $: isMain ? failedScores.refresh() : null;
   $: failedScoresArray = opt($failedScores, 'scores');
 
@@ -111,7 +115,7 @@
   $: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores
 </script>
 
-<ContentBox bind:box={scoresBoxEl}>
+<div bind:this={scoresBoxEl}>
   {#if $error}
     <div><Error error={$error} /></div>
   {/if}
@@ -131,8 +135,8 @@
 
   {#if $scoresStore && $scoresStore.length}
   <div class="song-scores grid-transition-helper">
-    {#each $scoresStore as songScore, idx (opt(songScore, 'score.id'))}
-      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
+    {#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
+      <SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} {withPlayers} {noIcons} />
     {/each}
   </div>
   {:else}
@@ -146,7 +150,7 @@
                  on:page-changed={onPageChanged}
     />
   {/if}
-</ContentBox>
+</div>
 
 <style>
     .song-scores :global(> *:last-child) {

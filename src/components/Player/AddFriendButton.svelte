@@ -1,32 +1,42 @@
 <script>
-  import {configStore} from "../../stores/config";
-  import {opt} from "../../utils/js";
-  import createPlayersStore from "../../stores/beatleader/players";
-  import eventBus from "../../utils/broadcast-channel-pubsub";
+  import createAccountStore from '../../stores/beatleader/account'
+  import friends from '../../stores/beatleader/friends'
+  import Spinner from '../Common/Spinner.svelte'
 
   export let playerId = null;
 
-  let playersStore = createPlayersStore();
+  const account = createAccountStore();
 
-  function onClick(operation) {
-    if (!playerId || !operation) return;
+  let operationInProgress = false;
+  async function onClick(op) {
+    if (!playerId || !op) return;
 
-    switch (operation) {
-      case 'add':
-        eventBus.publish('player-add-cmd', {playerId});
-        break;
-      case 'remove':
-        eventBus.publish('player-remove-cmd', {playerId});
-        break;
+    try {
+      operationInProgress = true;
+
+      switch (op) {
+        case 'add':
+          await account.addFriend(playerId);
+          break;
+        case 'remove':
+          await account.removeFriend(playerId);
+          break;
+      }
+    }
+    catch(err) {}
+    finally {
+      operationInProgress = false;
     }
   }
 
-  $: isMain = configStore && playerId && opt($configStore, 'users.main') === playerId;
-  $: isFriend = playerId && !!$playersStore.find(p => p.playerId === playerId);
+  $: isMain = playerId && $account?.id === playerId;
+  $: isFriend = playerId && !!$friends?.find(f => f?.playerId === playerId);
 </script>
 
 {#if isMain}
   <div class="fas fa-home icon main-profile" title="This is your profile"></div>
+{:else if operationInProgress}
+  <Spinner />
 {:else}
   <div class={isFriend ? "fas fa-user-minus icon remove-friend" : "fas fa-user-plus icon add-friend"}
        on:click={() => onClick(isFriend ? 'remove' : 'add')}

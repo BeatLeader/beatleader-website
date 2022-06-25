@@ -1,7 +1,6 @@
 <script>
   import {getContext} from 'svelte'
   import processPlayerData from './utils/profile';
-  import {worker} from '../../utils/worker-wrappers'
   import {BL_CDN} from '../../network/queues/beatleader/page-queue'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
@@ -12,11 +11,9 @@
   import BeatLeaderSwipeCard from './ProfileCards/BeatLeaderSwipeCard.svelte'
   import MiniRankingSwipeCard from './ProfileCards/MiniRankingSwipeCard.svelte'
   import TwitchVideosSwipeCard from './ProfileCards/TwitchVideosSwipeCard.svelte'
-  import PpCalcSwipeCard from './ProfileCards/PpCalcSwipeCard.svelte'
   import AccSaberSwipeCard from './ProfileCards/AccSaberSwipeCard.svelte'
   import BeatSaviorSwipeCard from './ProfileCards/BeatSaviorSwipeCard.svelte'
   import Carousel from '../Common/Carousel.svelte'
-  import Badge from '../Common/Badge.svelte'
   import BeatLeaderSummary from "./BeatLeaderSummary.svelte";
   import ContentBox from "../Common/ContentBox.svelte";
   import Error from '../Common/Error.svelte'
@@ -37,8 +34,6 @@
   let accSaberPlayerInfo = null;
   let accSaberCategories = null;
 
-  let onePpBoundary = null;
-
   let isBeatSaviorAvailable = false;
 
   async function refreshBeatSaviorState(playerId) {
@@ -47,30 +42,8 @@
     isBeatSaviorAvailable = await beatSaviorService.isDataForPlayerAvailable(playerId)
   }
 
-  async function calcOnePpBoundary(playerId, isCached) {
-    if (!playerId || !isCached) {
-      onePpBoundary = null;
-      return;
-    }
-
-    onePpBoundary = await worker.calcPpBoundary(playerId);
-  }
-
-  function generateScoresStats(stats, onePp) {
-    return (stats && stats.length ? stats : [])
-      .concat(
-        onePp
-          ? [{
-            label: '+ 1pp',
-            title: 'Determines how many raw PPs in the new play you need to achieve to increase your total PP by 1pp',
-            value: onePpBoundary,
-            digits: 2,
-            suffix: ' raw pp new play',
-            fluid: true,
-            bgColor: 'var(--dimmed)',
-          }]
-          : [],
-      )
+  function generateScoresStats(stats) {
+    return stats && stats.length ? stats : [];
   }
 
   async function updateAccSaberPlayerInfo(playerId) {
@@ -110,9 +83,8 @@
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData))
   $: updateRoleIcon(playerInfo?.role ?? null);
-  $: calcOnePpBoundary(playerId, isCached);
   $: refreshBeatSaviorState(playerId);
-  $: scoresStatsFinal = generateScoresStats(scoresStats, onePpBoundary);
+  $: scoresStatsFinal = generateScoresStats(scoresStats);
   $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank);
   $: updateAccSaberPlayerInfo(playerId);
 
@@ -138,16 +110,6 @@
                 name: `ranking-${playerId}`,
                 component: MiniRankingSwipeCard,
                 props: {player: playerData},
-              }]
-              : [],
-          )
-          .concat(
-            onePpBoundary
-              ?
-              [{
-                name: `ppcalc-${playerId}`,
-                component: PpCalcSwipeCard,
-                props: {playerId, worker},
               }]
               : [],
           )

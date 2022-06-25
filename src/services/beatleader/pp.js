@@ -23,7 +23,6 @@ export default () => {
 
   const getTotalPlayerPp = async (playerId, modifiedScores = {}) => getTotalPp(
     Object.values({
-      ...(await resolvePromiseOrWaitForPending(`scores/${playerId}`, () => scoresService.getPlayerScoresAsObject(playerId))),
       ...modifiedScores,
     }),
   );

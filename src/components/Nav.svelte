@@ -2,7 +2,7 @@
   import eventBus from '../utils/broadcast-channel-pubsub'
   import {onMount} from 'svelte'
   import {navigate} from 'svelte-routing'
-  import createFriendsStore from '../stores/beatleader/friends'
+  import friends from '../stores/beatleader/friends'
   import createAccountStore from '../stores/beatleader/account'
   import createPlaylistStore from '../stores/playlists'
   import {configStore} from '../stores/config'
@@ -11,7 +11,6 @@
   import MenuLine from './Player/MenuLine.svelte'
   import QueueStats from './Common/QueueStats.svelte'
   import {opt} from '../utils/js'
-  import {fade} from 'svelte/transition'
   import Settings from './Others/Settings.svelte'
   import Button from "./Common/Button.svelte";
 
@@ -60,20 +59,7 @@
     playlists.select(event.detail);
   }
 
-  async function updateMainPlayer(playerId) {
-    if (!playerId) {
-      player = null;
-      return;
-    }
-
-    player = await playerService.get(playerId);
-  }
-
   onMount(async () => {
-    const playerChangedUnsubscribe = eventBus.on('player-profile-changed', player => {
-      if (mainPlayerId && player && player.playerId === mainPlayerId) updateMainPlayer(mainPlayerId)
-    })
-
     const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => settingsNotificationBadge = message);
 
     const settingsOpenUnsubscribe = eventBus.on('show-settings', () => {
@@ -81,13 +67,11 @@
     })
 
     return () => {
-      playerChangedUnsubscribe();
       settingsBadgeUnsubscribe();
       settingsOpenUnsubscribe();
     }
   })
 
-  const friends = createFriendsStore();
   const playlists = createPlaylistStore();
   const account = createAccountStore();
 
@@ -125,10 +109,9 @@
     }
   }
 
+  $: player = $account?.player;
   $: selectedPlaylist = opt($configStore, 'selectedPlaylist');
-  $: mainPlayerId = opt($configStore, 'users.main');
   $: calculateSignUpOptions($account);
-  $: updateMainPlayer(mainPlayerId)
   $: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
   $: notificationBadgeTitle = (settingsNotificationBadge ? [settingsNotificationBadge + '\n'] : []).concat(newSettingsAvailable ? ['New settings are available:'].concat(newSettingsAvailable) : []).join('\n');
 </script>
@@ -140,7 +123,7 @@
   </a>
 
   {#if player}
-  <a href={`/u/${player.playerId}/beatleader/date/1`} class="me" on:click={(e) => { e.preventDefault(); onAccountClicked(e, player.playerId) }} transition:fade on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
+  <a href={`/u/${player.playerId}/beatleader/date/1`} class="me" on:click={(e) => { e.preventDefault(); onAccountClicked(e, player.playerId) }} on:mouseover={() => accountMenuShown = true} on:focus={() => accountMenuShown = true} on:mouseleave={() => accountMenuShown = false}>
     {#if opt(player, 'playerInfo.avatar')}
       <img src={player.playerInfo.avatar} class="avatar" alt="" />
     {:else}
@@ -160,7 +143,7 @@
     </Dropdown>
   </a>
   {:else}
-  <a href={`/signin`} transition:fade>
+  <a href={`/signin`}>
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
@@ -175,7 +158,7 @@
 
     Friends
 
-    <Dropdown items={$friends} shown={friendsMenuShown} on:select={onFriendClick} noItems="No friends, add someone">
+    <Dropdown items={$friends} shown={friendsMenuShown} on:select={onFriendClick} noItems={player ? "No friends, add someone" : "No friends, log in and add someone"}>
       <svelte:fragment slot="row" let:item>
         <MenuLine player={item} withRank={false} />
       </svelte:fragment>
@@ -469,7 +452,7 @@
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        width: 4em;
+        width: 100%;
     }
 
     .right.mobile-menu {

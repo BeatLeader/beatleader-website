@@ -27,63 +27,15 @@ async function openDatabase() {
 
         switch (true) {
           case newVersion >= 1 && oldVersion <= 0:
-            db.createObjectStore('players', {
-              keyPath: 'id',
-              autoIncrement: false,
-            });
-
-            const playersHistory = db.createObjectStore('players-history', {
-              keyPath: '_idbId',
-              autoIncrement: true,
-            });
-            playersHistory.createIndex('players-history-playerId', 'playerId', {unique: false});
-            playersHistory.createIndex('players-history-timestamp', 'timestamp', {unique: false});
-
-            const scoresStore = db.createObjectStore('scores', {
-              keyPath: 'id',
-              autoIncrement: false,
-            });
-            scoresStore.createIndex('scores-leaderboardId', 'leaderboardId', {unique: false});
-            scoresStore.createIndex('scores-playerId', 'playerId', {unique: false});
-            scoresStore.createIndex('scores-timeset', 'timeset', {unique: false});
-            scoresStore.createIndex('scores-pp', 'pp', {unique: false});
-
-            db.createObjectStore('rankeds', {
-              keyPath: 'leaderboardId',
-              autoIncrement: false,
-            });
-
-            const songsStore = db.createObjectStore('songs', {
-              keyPath: 'hash',
-              autoIncrement: false,
-            });
-            songsStore.createIndex('songs-key', 'key', {unique: true});
-
             db.createObjectStore('twitch', {
               keyPath: 'playerId',
               autoIncrement: false,
             });
 
-            const rankedsChangesStore = db.createObjectStore('rankeds-changes', {
-              keyPath: '_idbId',
-              autoIncrement: true,
-            });
-            rankedsChangesStore.createIndex('rankeds-changes-timestamp', 'timestamp', {unique: false});
-            rankedsChangesStore.createIndex('rankeds-changes-leaderboardId', 'leaderboardId', {unique: false});
-
             // no autoIncrement, no keyPath - key must be provided
             db.createObjectStore('key-value');
 
             db.createObjectStore('cache');
-
-            const groups = db.createObjectStore('groups', {keyPath: '_idbId', autoIncrement: true});
-            groups.createIndex('groups-name', 'name', {unique: false});
-            groups.createIndex('groups-playerId', 'playerId', {unique: false});
-
-            const beatSaviorFiles = db.createObjectStore('beat-savior-files', {
-              keyPath: 'fileId',
-              autoIncrement: false,
-            });
 
             const beatSavior = db.createObjectStore('beat-savior', {
               keyPath: 'beatSaviorId',
@@ -103,29 +55,6 @@ async function openDatabase() {
 
             // NO break here!
 
-          case newVersion >= 3 && oldVersion <=2:
-            db.deleteObjectStore('players');
-
-            db.createObjectStore('players', {
-              keyPath: 'playerId',
-              autoIncrement: false,
-            });
-
-            const scoresStore4 = transaction.objectStore('scores');
-            scoresStore4.deleteIndex('scores-timeset');
-            scoresStore4.createIndex('scores-timeSet', 'timeSet', {unique: false});
-
-            // NO break here
-
-          case newVersion >= 4 && oldVersion <=3:
-            db.deleteObjectStore('beat-savior-files');
-
-            const beatSaviorStore = transaction.objectStore('beat-savior');
-            beatSaviorStore.deleteIndex('beat-savior-fileId');
-            beatSaviorStore.deleteIndex('beat-savior-songId');
-
-          // NO break here
-
           case newVersion >= 5 && oldVersion <=4:
             const songsBeatMapsStore = db.createObjectStore('songs-beatmaps', {
               keyPath: 'hash',
@@ -142,23 +71,9 @@ async function openDatabase() {
 
           // NO break here
 
-          case newVersion >= 7 && oldVersion <=6:
-            const scoresUpdateQueue = db.createObjectStore('scores-update-queue', {
-              keyPath: 'id',
-              autoIncrement: false,
-            });
-            scoresUpdateQueue.createIndex('scores-update-queue-fetchedAt', 'fetchedAt', {unique: false});
-
           case newVersion >= 8 && oldVersion <= 7:
             const beatSaviorStorev8 = transaction.objectStore('beat-savior');
             beatSaviorStorev8.createIndex('beat-savior-hash', 'hash', {unique: false});
-
-          // NO break here
-
-          case newVersion >= 9 && oldVersion <= 8:
-            const playersHistoryStorev9 = transaction.objectStore('players-history');
-            playersHistoryStorev9.deleteIndex('players-history-timestamp');
-            playersHistoryStorev9.createIndex('players-history-playerIdSsTimestamp', 'playerIdSsTimestamp', {unique: true});
 
           // NO break here
 
@@ -205,15 +120,11 @@ async function openDatabase() {
         console.warn('DB blocking... will be closed')
         db.close();
 
-        eventBus.publish('dl-manager-pause-cmd');
-
         // TODO: should be reopened with new version: event.newVersion
         // TODO: or rather notify user / auto reload page
       },
       terminated() {
         console.warn('DB terminated');
-
-        eventBus.publish('dl-manager-pause-cmd');
       },
     });
 

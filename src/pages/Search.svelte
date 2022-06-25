@@ -41,7 +41,6 @@
     try {
       isLoading = true;
 
-      setPlayerData(await playerService.get(playerId));
       setPlayerData(await playerService.fetchPlayerOrGetFromCache(playerId));
     }
     catch(err) {

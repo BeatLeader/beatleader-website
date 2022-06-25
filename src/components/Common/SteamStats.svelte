@@ -6,11 +6,11 @@
   </script>
   
   {#if lastTwoWeeksTime}
-    <p title="{lastTwoWeeksTime} hours played last 2 weeks. And {allTime} hours played all time."><span style="color: #8992e8">{lastTwoWeeksTime}</span>|<span style="color: #8992e8">{allTime}</span>h </p>
+    <div title="{lastTwoWeeksTime} hours played last 2 weeks. And {allTime} hours played all time."><span style="color: #8992e8">{lastTwoWeeksTime}</span>|<span style="color: #8992e8">{allTime}</span>h </div>
   {/if}
   
   <style>
-      p {
-          margin-right: 8px;
+      div {
+          margin-right: .5rem;
       }
   </style>
