@@ -1,5 +1,5 @@
 <script>
-  import {createEventDispatcher} from 'svelte'
+  import {createEventDispatcher, tick} from 'svelte'
   import {opt} from '../../utils/js'
   import {navigate} from 'svelte-routing'
   import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte'
@@ -31,6 +31,7 @@
       comparePp = opt(players.find(p =>(country ? opt(p, 'countryRank') : opt(p, 'rank')) === rank), 'pp')
       miniRanking = players
 
+      await tick();
       dispatch('height-changed');
     } finally {
       isLoading = false
