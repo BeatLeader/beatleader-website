@@ -13,6 +13,7 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
   let currentServiceParams = serviceParams;
 
   let totalScores = null;
+  let itemsPerPage = null;
 
   const getCurrentEnhanceTaskId = () => `${currentPlayerId}/${currentService}/${stringify(currentServiceParams)}`;
   const getPatchId = (playerId, scoreRow) => `${playerId}/${scoreRow?.leaderboard?.leaderboardId}`
@@ -23,6 +24,7 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
   const onBeforeStateChange = (state) => {
     if (state?.data && state?.metadata) {
       totalScores = state?.metadata?.total ?? null;
+      itemsPerPage = state?.metadata?.itemsPerPage ?? null;
       return state.data;
     }
 
@@ -129,6 +131,7 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
     getService: () => currentService,
     getServiceParams: () => currentServiceParams,
     getTotalScores: () => totalScores,
+    getItemsPerPage: () => itemsPerPage
   }
 }
 

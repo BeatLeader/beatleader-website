@@ -13,7 +13,7 @@
   import eventBus from '../utils/broadcast-channel-pubsub'
   import Profile from '../components/Player/Profile.svelte'
   import Scores from '../components/Player/Scores.svelte'
-  import MiniRanking from '../components/Ranking/Mini.svelte'
+  import MiniRankings from '../components/Ranking/MiniRankings.svelte'
   import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte'
   import TwitchVideos from '../components/Player/TwitchVideos.svelte'
   import ContentBox from "../components/Common/ContentBox.svelte";
@@ -131,6 +131,9 @@
     }
   })
 
+  let innerWidth = 0;
+  let innerHeight = 0;
+
   $: processInitialParams(initialPlayerId, initialParams);
   $: changeParams(initialPlayerId, service, serviceParams)
 
@@ -160,13 +163,19 @@
     scoresPlayerId = currentPlayerId;
   }
   $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId)
+
+  $: rank = $playerStore?.playerInfo.rank
+  $: country = $playerStore?.playerInfo.countries[0].country
+  $: countryRank = $playerStore?.playerInfo.countries[0].rank
 </script>
 
 <svelte:head>
   <title>{browserTitle}</title>
 </svelte:head>
 
-<section class="align-content player-page">
+<svelte:window bind:innerWidth bind:innerHeight />
+
+<section class="align-content">
 <article class="page-content" bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <ContentBox>
@@ -193,16 +202,9 @@
   {/if}
 </article>
 
+{#if innerWidth > 1749}
 <aside>
-  <ContentBox>
-    <MiniRanking rank={opt($playerStore, 'playerInfo.rank')} numOfPlayers={5} />
-  </ContentBox>
-
-  {#each opt($playerStore, 'playerInfo.countries', []) as countryInfo (countryInfo.country)}
-    <ContentBox>
-      <MiniRanking rank={countryInfo.rank} country={countryInfo.country} numOfPlayers={5} />
-    </ContentBox>
-  {/each}
+  <MiniRankings {rank} {country} {countryRank} box={true} />
 
   {#if twitchVideos && twitchVideos.length}
     <ContentBox>
@@ -221,6 +223,7 @@
   {/await}
 
 </aside>
+{/if}
 </section>
 
 <style>
@@ -257,10 +260,6 @@
   @media screen and (max-width: 1749px) {
       article {
           width: 100%;
-      }
-
-      aside {
-          display: none;
       }
   }
 </style>
