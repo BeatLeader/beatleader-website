@@ -166,7 +166,7 @@
   <title>{browserTitle}</title>
 </svelte:head>
 
-<section class="align-content">
+<section class="align-content player-page">
 <article class="page-content" bind:this={playerEl} transition:fade>
   {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
     <ContentBox>

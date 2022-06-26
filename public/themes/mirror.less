@@ -14,7 +14,7 @@ body {
 }
 
 // Navigator
-.ssr-page-container.svelte-y3wm0x, .ssr-page-container.svelte-gyb9ut {
+nav.ssr-page-container {
     padding: .5rem;
     height: 4rem !important;
     box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
@@ -41,21 +41,25 @@ body {
     justify-content: center;
     text-align: center;
 
-    // Title
-    .title.is-4.svelte-ic5bju {
-        font-size: 50px;
-        position: relative;
+    .is-multiline {
 
-        &::after {
-            position: absolute;
-            bottom: -1rem;
-            left: 0px;
-            width: 100%;
-            background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
-            height: 0.4rem;
-            content: "";
+        // Title
+        .title.is-4:nth-child(1) {
+            font-size: 50px;
+            position: relative;
+
+            &::after {
+                position: absolute;
+                bottom: -1rem;
+                left: 0px;
+                width: 100%;
+                background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
+                height: 0.4rem;
+                content: "";
+            }
         }
     }
+
 
     // Icons
     .sources {
@@ -96,9 +100,9 @@ body {
         padding: .2rem 0;
         border-bottom: 1px rgba(189, 189, 189, 0.164) solid;
         transition: all .2s;
-        
 
-        &:hover{
+
+        &:hover {
             border-radius: 5px;
             background: rgba(255, 255, 255, 0.158);
         }
@@ -124,7 +128,7 @@ body {
                 }
             }
 
-            .clan-badges .badge{
+            .clan-badges .badge {
                 background: rgba(255, 255, 255, 0.123);
                 border-bottom: 2px solid var(--background-color);
                 border-radius: .1rem;
@@ -133,10 +137,10 @@ body {
                 filter: saturate(.5) brightness(1.4);
                 transform: scale(0.8);
                 font-weight: 400 !important;
-                color:white !important;
+                color: white !important;
                 margin: 0 0;
                 // opacity: 0.8;
-            }            
+            }
 
             .steam-and-pp {
                 * {
@@ -145,8 +149,9 @@ body {
                 }
             }
 
-            &.current{
+            &.current {
                 position: relative;
+
                 &::after {
                     position: absolute;
                     bottom: -0.4rem;
@@ -169,6 +174,7 @@ body {
                 color: rgb(255, 255, 255);
             }
         }
+
         .fa-user-minus {
             background: none !important;
             transition: all 0.1s;
@@ -194,16 +200,18 @@ body {
 }
 
 // User profile page
-.page-content.svelte-qnwlci, .page-content.scores {
+.player-page,
+.page-content.scores {
     .compare-player-name {
-        *{
+        * {
             background: transparent !important;
             color: white !important;
             border: none !important;
         }
     }
 
-    .grid.svelte-moindq>span{
+
+    .hands-and-grid>*:nth-child(2)>span {
         padding: 1.7rem !important;
         background: rgba(255, 255, 255, 0.171) !important;
     }
@@ -228,27 +236,32 @@ body {
     .player-score {
         height: 3rem;
         border: none !important;
-        &.highlight{
+
+        &.highlight {
             background: #ffffff33;
             margin: .4rem 0;
             padding: 0;
-            .badge{
+
+            .badge {
                 border: none;
                 background: none !important;
             }
         }
-        @media screen and (max-width: 767px){
-            &{
+
+        @media screen and (max-width: 767px) {
+            & {
                 height: unset !important;
-                .clan-badges{
+
+                .clan-badges {
                     display: none;
                 }
             }
         }
     }
-    .scores-grid{
-        *{
-            color:white !important;
+
+    .scores-grid {
+        * {
+            color: white !important;
         }
     }
 }
@@ -271,22 +284,23 @@ body {
 }
 
 
-.ranking.global.sspl{
-    *{
+.ranking.global.sspl {
+    * {
         background: transparent;
     }
 }
 
-button.pagination-link{
+button.pagination-link {
     font-size: smaller !important;
-    padding:13px 15px !important;
+    padding: 13px 15px !important;
     background: rgba(199, 199, 199, 0.363) !important;
-    &.is-current{
+
+    &.is-current {
         background: rgba(0, 112, 240, 0.521) !important;
     }
 }
 
-input{
+input {
     background: transparent !important;
     color: white !important;
     border: none;
@@ -294,13 +308,16 @@ input{
     border-bottom: 1px solid white !important;
 }
 
-.container.svelte-19ic7k8{
+// Login Page
+.login-page {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     background: rgba(199, 199, 199, 0.151) !important;
     border-radius: .5rem;
-    .title{
+
+    .title {
         position: relative;
+
         &::after {
             position: absolute;
             bottom: -1rem;
@@ -311,15 +328,25 @@ input{
             content: "";
         }
     }
-    .input-container{
+
+    .input-container {
         justify-items: center;
-        .cat{
+
+        .cat {
             font-size: 1.4rem;
         }
-        input{
+
+        input {
             font-size: 1.2rem;
             text-align: center;
             color: rgba(243, 243, 243, 0.63) !important;
         }
     }
+}
+
+
+.pagination{
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 5px;
 }

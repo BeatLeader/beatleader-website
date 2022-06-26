@@ -49,16 +49,18 @@ body {
 :root {
   --ppColour: #e2b7ff !important;
 }
-.ssr-page-container.svelte-y3wm0x {
+nav.ssr-page-container {
   padding: 0.5rem;
   height: 4rem !important;
   box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
   border-bottom: none !important;
   background: rgba(92, 92, 92, 0.281) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   max-width: none !important;
 }
-.ssr-page-container.svelte-y3wm0x a,
-.ssr-page-container.svelte-y3wm0x div {
+nav.ssr-page-container a,
+nav.ssr-page-container div {
   transition: all 0.1s;
   border-radius: 4px;
 }
@@ -68,11 +70,11 @@ body {
   justify-content: center;
   text-align: center;
 }
-.sspl-page-container .title.is-4.svelte-ic5bju {
+.sspl-page-container .is-multiline .title.is-4:nth-child(1) {
   font-size: 50px;
   position: relative;
 }
-.sspl-page-container .title.is-4.svelte-ic5bju::after {
+.sspl-page-container .is-multiline .title.is-4:nth-child(1)::after {
   position: absolute;
   bottom: -1rem;
   left: 0px;
@@ -192,10 +194,24 @@ body {
   color: #ffffff;
 }
 .content-box {
-  background: #2c2c2c !important;
-  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.192) !important;
+  background: rgba(131, 131, 131, 0.082) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: none !important;
 }
-.badge {
+.player-page .compare-player-name *,
+.page-content.scores .compare-player-name * {
+  background: transparent !important;
+  color: white !important;
+  border: none !important;
+}
+.player-page .hands-and-grid > *:nth-child(2) > span,
+.page-content.scores .hands-and-grid > *:nth-child(2) > span {
+  padding: 1.7rem !important;
+  background: rgba(255, 255, 255, 0.171) !important;
+}
+.player-page .badge,
+.page-content.scores .badge {
   font-size: 0.8rem !important;
   color: white !important;
   background: rgba(255, 255, 255, 0.13) !important;
@@ -203,42 +219,40 @@ body {
   border-radius: 0.25rem;
   padding: 0.4rem 0.3rem;
 }
-.page-content.svelte-qnwlci .compare-player-name * {
-  background: transparent !important;
-  color: white !important;
-  border: none !important;
-}
-.page-content.svelte-qnwlci .grid.svelte-moindq > span {
-  padding: 1.7rem !important;
-  background: rgba(255, 255, 255, 0.171) !important;
-}
-.page-content.svelte-qnwlci .rank .badge {
+.player-page .rank .badge,
+.page-content.scores .rank .badge {
   border-radius: 0;
   background: none !important;
   border: none;
 }
-.page-content.svelte-qnwlci .player-score {
+.player-page .player-score,
+.page-content.scores .player-score {
   height: 3rem;
   border: none !important;
 }
-.page-content.svelte-qnwlci .player-score.highlight {
+.player-page .player-score.highlight,
+.page-content.scores .player-score.highlight {
   background: #ffffff33;
   margin: 0.4rem 0;
   padding: 0;
 }
-.page-content.svelte-qnwlci .player-score.highlight .badge {
+.player-page .player-score.highlight .badge,
+.page-content.scores .player-score.highlight .badge {
   border: none;
   background: none !important;
 }
 @media screen and (max-width: 767px) {
-  .page-content.svelte-qnwlci .player-score {
+  .player-page .player-score,
+  .page-content.scores .player-score {
     height: unset !important;
   }
-  .page-content.svelte-qnwlci .player-score .clan-badges {
+  .player-page .player-score .clan-badges,
+  .page-content.scores .player-score .clan-badges {
     display: none;
   }
 }
-.page-content.svelte-qnwlci .scores-grid * {
+.player-page .scores-grid *,
+.page-content.scores .scores-grid * {
   color: white !important;
 }
 .leaderboard,
@@ -249,7 +263,7 @@ body {
 }
 .clanTag {
   filter: saturate(0.5) brightness(1.1);
-  font-size: 0.8rem;
+  font-size: 0.5rem;
   font-weight: 500 !important;
   border-bottom: 2px rgba(255, 255, 255, 0.315) solid;
   padding: 0 0.3rem;
@@ -272,14 +286,16 @@ input {
   opacity: 0.95;
   border-bottom: 1px solid white !important;
 }
-.container.svelte-19ic7k8 {
-  background: rgba(44, 44, 44, 0.151) !important;
+.login-page {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: rgba(199, 199, 199, 0.151) !important;
   border-radius: 0.5rem;
 }
-.container.svelte-19ic7k8 .title {
+.login-page .title {
   position: relative;
 }
-.container.svelte-19ic7k8 .title::after {
+.login-page .title::after {
   position: absolute;
   bottom: -1rem;
   left: 0px;
@@ -288,14 +304,19 @@ input {
   height: 0.4rem;
   content: "";
 }
-.container.svelte-19ic7k8 .input-container {
+.login-page .input-container {
   justify-items: center;
 }
-.container.svelte-19ic7k8 .input-container .cat {
+.login-page .input-container .cat {
   font-size: 1.4rem;
 }
-.container.svelte-19ic7k8 .input-container input {
+.login-page .input-container input {
   font-size: 1.2rem;
   text-align: center;
   color: rgba(243, 243, 243, 0.63) !important;
+}
+.pagination {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 5px;
 }

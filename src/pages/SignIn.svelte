@@ -32,7 +32,7 @@ import Spinner from "../components/Common/Spinner.svelte";
     $: performAction();
 </script>
 
-<div class="container">
+<div class="container login-page">
 {#if !action || action == "addHome"}
     {#if !loggedInPlayer}
     <div class="title">Login</div>
