@@ -125,6 +125,7 @@ export default response => {
 	let sponsor = role?.includes('sponsor');
 
 	return {
+		id: playerId,
 		playerId,
 		name,
 		playerInfo: {
