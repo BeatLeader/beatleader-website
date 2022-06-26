@@ -10,6 +10,7 @@
   import ChartBrowser from '../Common/ChartBrowser.svelte'
   import Pager from '../Common/Pager.svelte'
   import {debounce} from '../../utils/debounce'
+  import stringify from 'json-stable-stringify'
 
   export let playerId = null;
   export let service = null;
@@ -99,17 +100,30 @@
     }
 
     if (service === 'beatleader')
-      playerScores = []
+      playerScores = null
     else
       playerScores = (await serviceObj.getPlayerScores(playerId))
         .filter(playerScoresHistogram.filter)
         .sort(playerScoresHistogram.sort)
   }
 
+  let lastBlParams = null;
+  const getCurrentServiceParamsHash = () => {
+    const {page, ...restParams} = serviceParams ?? {}
+    return stringify(restParams) + `::${playerScoresHistogramBucketSize}::${service}`
+  }
+  const shouldRefreshBlHistogram = () => {
+    const currentBlParams = getCurrentServiceParamsHash(serviceParams);
+    return !(currentBlParams === lastBlParams);
+  }
+
   function resetCurrentValues() {
     playerScores = null;
-    groupedPlayerScores = null;
-    playerScoresHistogram = null;
+
+    if (service !== 'beatleader' || shouldRefreshBlHistogram()) {
+      groupedPlayerScores = null;
+      playerScoresHistogram = null;
+    }
 
     if (playerScoresHistogramBucketSizeHash !== getHistogramBucketSizeHash(playerId, service, serviceParams))
       playerScoresHistogramBucketSize = null;
@@ -145,7 +159,11 @@
 
   function refreshGroupedScores() {
     if (service === 'beatleader') {
-      fetchBlHistogram(playerScoresHistogramBucketSizeHash)
+      if (shouldRefreshBlHistogram()) {
+        lastBlParams = getCurrentServiceParamsHash();
+
+        fetchBlHistogram(playerScoresHistogramBucketSizeHash);
+      }
 
       return;
     }
