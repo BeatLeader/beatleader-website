@@ -136,6 +136,7 @@
       const params = JSON.parse(JSON.stringify(serviceParams))
       if (!params.filters) params.filters = {}
       params.filters.batch = playerScoresHistogram.bucketSizeServerConvert(playerScoresHistogramBucketSize)
+      params.filters.count = itemsPerPage;
 
       const histogram = await blApiScoresHistogramClient.getProcessed({playerId, params})
       if (!histogram) throw 'Data error'
