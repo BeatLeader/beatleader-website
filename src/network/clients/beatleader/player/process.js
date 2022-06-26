@@ -1,4 +1,5 @@
 import {getHeadsetForHMD, platformDescription} from '../../../../utils/beatleader/format'
+import {deepClone} from '../../../../utils/js'
 
 export default response => {
 	const {
@@ -41,7 +42,8 @@ export default response => {
 		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? ''
 	}
 
-	if (statsHistory) {
+	const processedStatsHistory = deepClone(statsHistory)
+	if (processedStatsHistory) {
 		const processInt = i => {
 			let out = parseInt(i, 10);
 			return !isNaN(out) ? out : null;
@@ -75,30 +77,30 @@ export default response => {
 		};
 
 		Object.entries(fields).forEach(([key, process]) => {
-			if (statsHistory[key] === undefined) statsHistory[key] = '';
+			if (processedStatsHistory[key] === undefined) processedStatsHistory[key] = '';
 
-			statsHistory[key] = statsHistory[key].length && statsHistory[key].split ? statsHistory[key].split(',').map(v => process(v)) : [];
+			processedStatsHistory[key] = processedStatsHistory[key].length && processedStatsHistory[key].split ? processedStatsHistory[key].split(',').map(v => process(v)) : [];
 
-			if (scoreStats[key] !== undefined) statsHistory[key].push(scoreStats[key]);
+			if (scoreStats[key] !== undefined) processedStatsHistory[key].push(scoreStats[key]);
 
 			if (['countryRank', 'pp', 'rank'].includes(key) && response[key] !== undefined) {
-				statsHistory[key].push(response[key]);
+				processedStatsHistory[key].push(response[key]);
 			}
 
-			if (statsHistory[key].length > maxEntries) maxEntries = statsHistory[key].length;
+			if (processedStatsHistory[key].length > maxEntries) maxEntries = processedStatsHistory[key].length;
 		});
 
 		Object.entries(fields).forEach(([key, _]) => {
-			if (statsHistory[key].length < maxEntries)
-				statsHistory[key] = Array(maxEntries - statsHistory[key].length).fill(null).concat(statsHistory[key]);
+			if (processedStatsHistory[key].length < maxEntries)
+				processedStatsHistory[key] = Array(maxEntries - processedStatsHistory[key].length).fill(null).concat(processedStatsHistory[key]);
 		});
 	}
 
 	['totalPlayCount', 'rankedPlayCount'].forEach(key => {
-		if (!statsHistory || !statsHistory[key]) return;
+		if (!processedStatsHistory || !processedStatsHistory[key]) return;
 
-		statsHistory[`${key}Daily`] = statsHistory[key].reduce((cum, item) => {
-			const prev = cum.length ? statsHistory[key][cum.length - 1] : 0;
+		processedStatsHistory[`${key}Daily`] = processedStatsHistory[key].reduce((cum, item) => {
+			const prev = cum.length ? processedStatsHistory[key][cum.length - 1] : 0;
 
 			let value = item ? item - (prev ?? 0) : 0
 			if (value && value < 0) value = 0;
@@ -109,11 +111,11 @@ export default response => {
 		}, [])
 	});
 
-	if (statsHistory && statsHistory.totalPlayCountDaily && statsHistory.rankedPlayCountDaily) {
-		statsHistory.unrankedPlayCountDaily = statsHistory.totalPlayCountDaily.map((value, idx) => {
+	if (processedStatsHistory && processedStatsHistory.totalPlayCountDaily && processedStatsHistory.rankedPlayCountDaily) {
+		processedStatsHistory.unrankedPlayCountDaily = processedStatsHistory.totalPlayCountDaily.map((value, idx) => {
 			if (value === null) return null;
 
-			let unranked = value - (statsHistory.rankedPlayCountDaily[idx] ?? 0);
+			let unranked = value - (processedStatsHistory.rankedPlayCountDaily[idx] ?? 0);
 			if (unranked < 0) unranked = 0;
 
 			return unranked;
@@ -146,6 +148,6 @@ export default response => {
 			clans,
 		},
 		scoreStats: scoreStats ? scoreStats : null,
-		statsHistory: statsHistory ? statsHistory : null,
+		statsHistory: processedStatsHistory ? processedStatsHistory : null,
 	};
 };

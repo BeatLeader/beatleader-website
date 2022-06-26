@@ -10,9 +10,9 @@
 
   const dispatch = createEventDispatcher();
 
-  $: country = opt(player, 'playerInfo.countries.0.country')
-  $: name = opt(player, 'name')
-  $: playerId = opt(player, 'playerId')
+  $: country = opt(player, 'playerInfo.countries.0.country') ?? player?.country;
+  $: name = player?.name;
+  $: playerId = player?.playerId ?? player?.id;
 </script>
 
 <a href={`/u/${playerId}/${type}/1`} class="player-name clickable has-pointer-events" title={name} on:click|preventDefault>

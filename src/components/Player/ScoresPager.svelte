@@ -17,6 +17,7 @@
   export let totalItems = null;
   export let currentPage = 0;
   export let loadingPage = null;
+  export let fixedItemsPerPage = null;
 
   const DEBOUNCE_THRESHOLD = 1000;
 
@@ -181,9 +182,11 @@
   $: playerId, service, serviceParams, resetCurrentValues();
   $: refreshAllPlayerServiceScores(playerId, service, serviceParams);
   $: debouncedRefreshGroupedScores(playerScores, playerScoresHistogram, playerScoresHistogramBucketSize);
+
+  $: itemsPerPage = fixedItemsPerPage ? fixedItemsPerPage : (service === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE)
 </script>
 
-<Pager {totalItems} itemsPerPage={service === 'accsaber' ? ACCSABER_PLAYER_SCORES_PER_PAGE : PLAYER_SCORES_PER_PAGE} itemsPerPageValues={null}
+<Pager {totalItems} {itemsPerPage} itemsPerPageValues={null}
        {currentPage} {loadingPage}
        mode={totalItems ? 'pages' : 'simple'}
        on:page-changed

@@ -1,6 +1,5 @@
 <script>
-  import {createEventDispatcher} from 'svelte'
-  import createRankingService from '../../services/beatleader/ranking'
+  import {createEventDispatcher, tick} from 'svelte'
   import {opt} from '../../utils/js'
   import {navigate} from 'svelte-routing'
   import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte'
@@ -11,11 +10,10 @@
 
   const dispatch = createEventDispatcher();
 
-  export let rank = null;
-  export let country = null;
-  export let numOfPlayers = 5;
+  export let players = null;
+  export let rank = 0;
+  export let country = false;
 
-  let rankingService = createRankingService();
   let miniRanking = null;
 
   let isLoading = false;
@@ -23,35 +21,31 @@
 
   const prevTitle = "vs ${value}"
 
-  async function onParamsChanged(rank, country, numOfPlayers) {
+  async function onParamsChanged(players) {
     try {
       miniRanking = null;
       comparePp = null;
 
-      if (!rank) return;
+      if (!players) return;
 
-      isLoading = true;
+      comparePp = opt(players.find(p =>(country ? opt(p, 'countryRank') : opt(p, 'rank')) === rank), 'pp')
+      miniRanking = players
 
-      const ranking = await rankingService.getMiniRanking(rank, country, numOfPlayers);
-      if (!ranking) return;
-
-      comparePp = opt(ranking.find(p =>(country ? opt(p, 'playerInfo.countries.0.rank') : opt(p, 'playerInfo.rank')) === rank), 'playerInfo.pp')
-      miniRanking = ranking
-
+      await tick();
       dispatch('height-changed');
     } finally {
       isLoading = false
     }
   }
 
-  $: onParamsChanged(rank, country, numOfPlayers)
+  $: onParamsChanged(players)
 </script>
 
-{#if miniRanking || isLoading}
+{#if miniRanking}
   <section transition:fade>
     <h3 class="title is-6">
       {#if country}
-        <Flag {country}/>
+        <Flag country={miniRanking[0].country}/>
       {:else}
         <i class="fas fa-globe-americas svelte-1pb1u1r"></i>
       {/if}
@@ -64,13 +58,13 @@
       <div class="players">
         {#each miniRanking as player}
           <div class="rank">
-            <Value value={country ? opt(player, 'playerInfo.countries.0.rank') : opt(player, 'playerInfo.rank')} zero="" digits={0} prefix="#"/>
+            <Value value={country ? player.countryRank : player.rank} zero="" digits={0} prefix="#"/>
           </div>
 
-          <PlayerNameWithFlag {player} on:click={() => navigate(`/u/${player.playerId}/beatleader/date/1`)}/>
+          <PlayerNameWithFlag {player} on:click={() => navigate(`/u/${player.id}/beatleader/date/1`)}/>
 
           <div class="pp">
-            <Value value={opt(player, 'playerInfo.pp')} prevValue={comparePp} zero="" suffix="pp" {prevTitle} />
+            <Value value={player.pp} prevValue={comparePp} zero="" suffix="pp" {prevTitle} />
           </div>
         {/each}
       </div>

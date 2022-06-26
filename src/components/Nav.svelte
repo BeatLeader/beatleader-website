@@ -9,7 +9,6 @@
   import createPlayerService from '../services/beatleader/player'
   import Dropdown from './Common/Dropdown.svelte'
   import MenuLine from './Player/MenuLine.svelte'
-  import QueueStats from './Common/QueueStats.svelte'
   import {opt} from '../utils/js'
   import Settings from './Others/Settings.svelte'
   import Button from "./Common/Button.svelte";
@@ -316,8 +315,6 @@
       {#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge"></div>{/if}
     </div>
   </div>
-
-  <QueueStats />
 </nav>
 
 <Settings bind:show={showSettings} />

@@ -17,7 +17,7 @@ export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
 export const BL_API_SCORES_HISTOGRAM_URL = BL_API_URL + 'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}';
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
 export const BL_API_RANKING_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}&countries=${country}&friends=${friends}'
-export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}'
+export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}'
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}'
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
@@ -34,6 +34,7 @@ export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?pla
 export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph'
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}'
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}'
+export const BL_API_MINIRANKINGS_URL = BL_API_URL + 'minirankings?rank=${rank}&country=${country}&countryRank=${countryRank}'
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}'
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}'
@@ -67,6 +68,7 @@ export default (options = {}) => {
   const rankingCountry = async (country, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, country}, priority, options);
 
   const rankingFriends = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, friends: "true"}, priority, {...options, credentials: 'include'});
+  const minirankings = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);
 
   const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
     if (filters && filters?.type !== 'ranked') {
@@ -213,7 +215,7 @@ export default (options = {}) => {
   }
 
   const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-    fetchJson(substituteVars(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true, true), options, priority)
+    fetchJson(substituteVars(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true, true), {...options, credentials: 'include'}, priority)
       .then(r => {
         r.body = processLeaderboard(leaderboardId, page, r);
 
@@ -253,6 +255,7 @@ export default (options = {}) => {
     accGraph,
     addFriend,
     removeFriend,
+    minirankings,
     BL_API_URL,
     PLAYER_SCORES_PER_PAGE,
     PLAYERS_PER_PAGE,

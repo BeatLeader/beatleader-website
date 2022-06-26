@@ -91,7 +91,7 @@
       {#each cards as card, cardIdx (card.name)}
         {#key card.name}
           <div>
-            <svelte:component this={card.component} {...card.props}
+            <svelte:component this={card.component} selected={cardIdx === currentItem} {...card.props}
                               on:height-changed={onCardHeightChanged}
                               on:player-gain-changed
             />

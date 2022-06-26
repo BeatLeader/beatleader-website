@@ -246,6 +246,14 @@
         justify-content: space-between !important;
     }
 
+		.pagination.no-items-per-page .position {
+				text-align: left;
+		}
+
+    .pagination.no-items-per-page .pagination-list {
+				margin-left: 0;
+    }
+
     .pagination-list {
         max-width: none !important;
         justify-content: center;
