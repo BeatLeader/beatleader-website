@@ -37,7 +37,7 @@
   export let unmodifiedScore = false
 
 	function getBeatSaviorCompatibleStats(score) {
-		if (!score?.accLeft) return null;
+		if (!score?.missedNotes === undefined) return null;
 
 		return {
 			stats: {
@@ -249,20 +249,42 @@
 				<span class="acc with-badge"></span>
 			{/if}
 
-      {#if myScore?.score.score}
-				<span class="score with-badge compare">
-					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-							<span slot="label">
-								<Value value={myScore?.score.score}
-											 inline={false} digits={0}
-											 title={myScore?.score.mods && myScore?.score.mods.length ? `Mods: ${myScore?.score.mods.join(', ')}` : ''}
-								/>
-							</span>
-					</Badge>
-				</span>
-      {/if}
+			{#if myScoreBeatSavior?.stats?.accLeft || myScoreBeatSavior?.stats?.miss === undefined}
+				{#if myScore?.score.score}
+					<span class="score with-badge compare">
+						<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								<span slot="label">
+									<Value value={myScore?.score.score}
+												 inline={false} digits={0}
+												 title={myScore?.score.mods && myScore?.score.mods.length ? `Mods: ${myScore?.score.mods.join(', ')}` : ''}
+									/>
+								</span>
+						</Badge>
+					</span>
+				{/if}
+			{:else if myScoreBeatSavior?.stats?.miss !== undefined}
+					<span class="beatSavior with-badge compare">
+						<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								<span slot="label"
+											title={`Missed notes: ${myScoreBeatSavior.stats.missedNotes}, Bad cuts: ${myScoreBeatSavior.stats.badCuts}, Bomb hit: ${myScoreBeatSavior.stats.bombHit}, Wall hit: ${myScoreBeatSavior.stats.wallHit}`}>
+									{#if myScoreBeatSavior.stats.miss || myScoreBeatSavior.stats.bombHit || myScoreBeatSavior.stats.wallHit}
+										<i class="fas fa-times"></i>
+										<Value
+											title={`Missed notes: ${myScoreBeatSavior.stats.missedNotes}, Bad cuts: ${myScoreBeatSavior.stats.badCuts}, Bomb hit: ${myScoreBeatSavior.stats.bombHit}, Wall hit: ${myScoreBeatSavior.stats.wallHit}`}
+											value="{myScoreBeatSavior.stats.miss + myScoreBeatSavior.stats.bombHit + myScoreBeatSavior.stats.wallHit}"	inline={false}
+											digits={0}
+										/>
+									{:else if (!myScoreBeatSavior.stats.wallHit && !myScoreBeatSavior.stats.bombHit)}
+										FC
+									{/if}
+								</span>
+						</Badge>
+					</span>
+			{:else}
+				<span class="beatSavior with-badge compare"></span>
+			{/if}
 
-      {#if myScoreBeatSavior?.stats}
+      {#if myScoreBeatSavior?.stats?.accLeft}
         {#if myScoreBeatSavior?.stats?.accLeft}
 					<span class="beatSavior with-badge compare">
 						<Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
@@ -288,7 +310,7 @@
 					</span>
         {/if}
 
-        {#if myScoreBeatSavior?.stats?.miss > 0}
+        {#if myScoreBeatSavior?.stats?.miss !== undefined}
 					<span class="beatSavior with-badge compare">
 						<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 								<span slot="label"
