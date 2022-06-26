@@ -77,6 +77,10 @@
         color: var(--alternate);
     }
 
+    .songinfo .name {
+      overflow-wrap: anywhere;
+    }
+
     .songinfo small {
         font-size: 0.75em;
         color: var(--ppColour);
