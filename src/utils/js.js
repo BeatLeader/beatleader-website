@@ -49,3 +49,7 @@ export const optSet = (obj, key, value, createKeys = true) => {
 
   return startObj;
 }
+
+// TODO: replace with structuredClone when it's mature enough
+// https://caniuse.com/?search=structuredclone
+export const deepClone = val => JSON.parse(JSON.stringify(val))
