@@ -47,6 +47,7 @@
   const themes = [
     { name: "Classic - Motzel", value: "default" },
     { name: "Mirror - MicroBlock", value: "mirror" },
+    { name: "Mirror(Low) - MicroBlock", value: "mirror-low" },
     { name: "Unbounded - MicroBlock", value: "unbounded" },
   ];
 
@@ -197,7 +198,7 @@
 
           <section class="option">
             <label title="Input url of the background image you want">Background Image</label>
-            <input type="url" bind:value={currentBGImage} disabled={currentTheme=="default"} />
+            <input type="url" bind:value={currentBGImage} disabled={currentTheme=="default"||currentTheme=="mirror-low"} />
           </section>
 
           <section class="option twitch">

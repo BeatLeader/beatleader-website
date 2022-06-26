@@ -33,7 +33,7 @@
 
   $: if (mainEl) containerStore.observe(mainEl);
 
-  if ($configStore.preferences.theme != "default") {
+  if ($configStore.preferences.theme != "default"&&$configStore.preferences.theme != "mirror-low") {
     let dom = document.createElement("style");
     dom.innerHTML = `html,body{background:url(${$configStore.preferences.bgimage}) var(--background) !important;background-size:cover !important;background-attachment: fixed !important;}`;
     document.head.appendChild(dom);
