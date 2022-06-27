@@ -142,12 +142,13 @@
           {#each leaderboardsPage as map, idx (map.id)}
             <div class={`song-line row-${idx}`}  in:fly={{delay: idx * 10, x: 100}}>
               <div class="icons mobile-only">
-                {#if map?.song?.hash?.length}
-                  <Icons hash={map.song.hash} diffInfo={map?.diffInfo} />
+                {#if map?.song?.id}
+                  <Icons key={map?.song?.id} hash={map?.song?.hash} diffInfo={map?.diffInfo} />
                 {/if}
               </div>
 
               <div class="main">
+                xxx
                 <SongCover leaderboard={map} url={`/leaderboard/global/${map.id}/1`}/>
 
                 <div class="songinfo">
@@ -158,9 +159,9 @@
                   </a>
                 </div>
 
-                {#if map?.song?.hash?.length}
+                {#if map?.song?.id}
                   <div class="icons tablet-and-up">
-                    <Icons hash={map.song.hash}
+                    <Icons key={map?.song?.id} hash={map?.song?.hash}
                            diffInfo={{diff: map?.difficulty?.difficultyName, type: map?.difficulty?.modeName}}/>
                   </div>
                 {/if}

@@ -4,6 +4,7 @@ import {dateFromString, formatDateRelative} from '../../../utils/date'
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../../utils/accsaber/consts'
 
 const process = response => {
+  console.warn(response);
   if (!response || !Array.isArray(response.responses) || response.responses.length !== 2 || !Array.isArray(response.responses[0])) return [];
 
   const page = response?.fetchOptions.page ?? 1;

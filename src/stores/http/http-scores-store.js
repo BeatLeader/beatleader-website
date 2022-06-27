@@ -1,5 +1,4 @@
 import createHttpStore from './http-store';
-import beatMapsEnhancer from './enhancers/common/beatmaps'
 import twitchEnhancer from './enhancers/scores/twitch'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
 import {debounce} from '../../utils/debounce'
@@ -86,9 +85,7 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
           .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
       } else {
-        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
-          .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-          .then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
+        stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId))
           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
       }
     }

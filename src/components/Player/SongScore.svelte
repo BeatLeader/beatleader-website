@@ -1,13 +1,11 @@
 <script>
   import {fade, fly, slide} from 'svelte/transition'
-  import {opt} from '../../utils/js'
   import SongInfo from './SongInfo.svelte'
   import ScoreRank from './ScoreRank.svelte'
   import FormattedDate from '../Common/FormattedDate.svelte'
   import SongScoreDetails from './SongScoreDetails.svelte'
   import Icons from '../Song/Icons.svelte'
   import PlayerPerformance from "./PlayerPerformance.svelte";
-  import Avatar from '../Common/Avatar.svelte'
   import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte'
 
   export let playerId = null;
@@ -21,13 +19,15 @@
 
   let showDetails = false;
 
-  $: leaderboard = opt(songScore, 'leaderboard', null);
-  $: score = opt(songScore, 'score', null);
-  $: prevScore = opt(songScore, 'prevScore', null);
-  $: beatSavior = opt(songScore, 'beatSavior', null)
-  $: hash = opt(leaderboard, 'song.hash')
-  $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
-  $: diffInfo = opt(leaderboard, 'diffInfo')
+  $: leaderboard = songScore?.leaderboard ?? null;
+  $: leaderboardId = leaderboard?.leaderboardId ?? null;
+  $: score = songScore?.score ?? null;
+  $: prevScore = songScore?.prevScore ?? null;
+  $: beatSavior = songScore?.beatSavior ?? null;
+  $: hash = leaderboard?.song?.hash ?? null;
+  $: key = leaderboardId?.substr(0, (leaderboardId?.length ?? 0) - 2)
+  $: twitchUrl = songScore?.twitchVideo?.url ?? null;
+  $: diffInfo = leaderboard?.diffInfo ?? null;
 </script>
 
 {#if songScore}
@@ -37,7 +37,7 @@
 
     {#if !noIcons}
       <div class="icons up-to-tablet">
-        <Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id}/>
+        <Icons {hash} {key} {twitchUrl} {diffInfo} scoreId={score.id}/>
       </div>
     {/if}
 

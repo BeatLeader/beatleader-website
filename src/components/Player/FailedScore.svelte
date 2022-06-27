@@ -19,10 +19,12 @@
     let showDetails = false;
   
     $: leaderboard = opt(songScore, 'leaderboard', null);
+    $: leaderboardId = leaderboard?.leaderboardId ?? null;
     $: score = opt(songScore, 'score', null);
     $: prevScore = opt(songScore, 'prevScore', null);
     $: beatSavior = opt(songScore, 'beatSavior', null)
     $: hash = opt(leaderboard, 'song.hash')
+    $: key = leaderboardId?.substr(0, (leaderboardId?.length ?? 0) - 2)
     $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
     $: diffInfo = opt(leaderboard, 'diffInfo')
   </script>
@@ -33,7 +35,7 @@
          class:with-details={showDetails}>
 
          <div class="icons up-to-tablet">
-            <Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay}/>
+            <Icons {key} {hash} {twitchUrl} {diffInfo} replayLink={score.replay}/>
           </div>
   
       <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>

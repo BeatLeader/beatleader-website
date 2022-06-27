@@ -2,8 +2,6 @@ import stringify from 'json-stable-stringify';
 import eventBus from '../../utils/broadcast-channel-pubsub'
 import createHttpStore from './http-store';
 import createApiPlayerWithScoresProvider from './providers/api-player-with-scores'
-import createPlayerService from '../../services/beatleader/player'
-import {addToDate, MINUTE} from '../../utils/date'
 import {writable} from 'svelte/store'
 
 export default (playerId = null, service = 'beatleader', serviceParams = {type: 'date', page: 1}, initialState = null, initialStateType = 'initial') => {
@@ -12,8 +10,6 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
   let currentServiceParams = serviceParams;
 
   const {subscribe: subscribeParams, set: setParams} = writable(null);
-
-  let playerService = createPlayerService();
 
   let lastRecentPlay = null;
   let playerForLastRecentPlay = null;

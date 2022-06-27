@@ -23,6 +23,7 @@
   $: diffInfo = leaderboard?.diffInfo ?? null;
   $: leaderboardId = leaderboard?.leaderboardId ?? '';
   $: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboardId}/${page ?? ''}`;
+  $: key = leaderboardId?.substr(0, (leaderboardId?.length ?? 0) - 2)
 </script>
 
 {#if song}
@@ -49,7 +50,7 @@
 
     {#if !noIcons && hash && hash.length}
       <div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-        <Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} {replayLink} />
+        <Icons {key} {hash} {twitchUrl} {diffInfo} scoreId={score.id} {replayLink} />
       </div>
     {/if}
   </section>
