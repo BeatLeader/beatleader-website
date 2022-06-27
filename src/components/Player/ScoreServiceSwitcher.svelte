@@ -270,6 +270,7 @@
 <nav>
   <Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged}
             loadingValue={loadingServiceObj}/>
+
   {#if serviceObj?.switcherComponents?.length}
     {#each serviceObj.switcherComponents as component (`${serviceObj?.id ?? ''}${component.key ?? 'sort'}`)}
       <svelte:component this={component.component} {...component.props}
