@@ -85,7 +85,7 @@
     }
 
     $: friends = $account?.friends ?? null;
-    $: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - {ssrConfig.name}`
+    $: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`
     $: billboardState = $configStore?.preferences?.billboardState;
     $: updateTabs(billboardState);
 </script>
