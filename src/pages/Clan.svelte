@@ -130,7 +130,7 @@
     $: playersPage = ($clanStore?.data ?? []);
 
     $: clanLeaderId = clan?.leaderID ?? null;
-    $: isFounder = clan?.id && clanLeaderId === $account?.player?.id;
+    $: isFounder = clan?.id && clanLeaderId === $account?.player?.playerId;
 
     $: mainPlayerId = $account?.id;
   </script>

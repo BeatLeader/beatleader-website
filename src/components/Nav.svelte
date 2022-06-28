@@ -88,7 +88,7 @@
       if (!loggedInUser.migrated) {
         signupOptions.push("Migrate");
       }
-      if (loggedInUser.player.id < 70000000000000000 || loggedInUser.migrated) {
+      if (loggedInUser.player.playerId < 70000000000000000 || loggedInUser.migrated) {
         signupOptions.push("Change password");
         signupOptions.push("My login");
       }

@@ -125,9 +125,9 @@ export default response => {
 	let sponsor = role?.includes('sponsor');
 
 	return {
-		id: playerId,
 		playerId,
 		name,
+		role,
 		playerInfo: {
 			avatar: profilePicture,
 			externalProfileUrl,

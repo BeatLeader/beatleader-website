@@ -135,7 +135,7 @@
   $: isMain = playerId && $account?.id === playerId;
   $: loggedInPlayer = $account?.id;
   $: isFriend = playerId && !!$friends?.find(f => f?.playerId === playerId);
-  $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin");
+  $: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes("admin");
   $: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
 
   $: isUserFounderOfTheClan = !!$account?.clan;

@@ -213,8 +213,8 @@
   $: playersCount = clan?.playersCount ?? 0;
 
   $: hasInvitation = clan?.id && $account?.clanRequest?.length && !!$account.clanRequest.find(r => r.id === clan.id);
-  $: isFounder = clan?.id && clan?.leaderID === $account?.player?.id;
-  $: canLeave = clan?.id && clan?.leaderID !== $account?.player?.id && !!$account.player?.clans?.find(c => c.id === clan.id)
+  $: isFounder = clan?.id && clan?.leaderID === $account?.player?.playerId;
+  $: canLeave = clan?.id && clan?.leaderID !== $account?.player?.playerId && !!$account.player?.clans?.find(c => c.id === clan.id)
   $: isBanned = clan?.id && $account?.bannedClans?.length && !! $account.bannedClans.find(b => b.id === clan.id);
 
   $: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;

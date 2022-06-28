@@ -64,7 +64,7 @@
     $: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
     $: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
     $: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
-    $: isAdmin = $account.player && $account.player.role && $account.player.role.includes("admin")
+    $: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes("admin")
     $: replayUrl = replayLink?.length
         ? `https://www.replay.beatleader.xyz/?link=${replayLink}`
         : (scoreId ? `https://www.replay.beatleader.xyz/?scoreId=${scoreId}` : null)
