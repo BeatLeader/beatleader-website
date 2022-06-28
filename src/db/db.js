@@ -1,7 +1,6 @@
 import {openDB} from 'idb'
 import log from '../utils/logger'
 import {isDateObject} from '../utils/js'
-import eventBus from '../utils/broadcast-channel-pubsub'
 
 const SSR_DB_VERSION = 12;
 export let db = null;
@@ -55,32 +54,10 @@ async function openDatabase() {
 
             // NO break here!
 
-          case newVersion >= 5 && oldVersion <=4:
-            const songsBeatMapsStore = db.createObjectStore('songs-beatmaps', {
-              keyPath: 'hash',
-              autoIncrement: false,
-            });
-            songsBeatMapsStore.createIndex('songs-beatmaps--key', 'key', {unique: true});
-
-          // NO break here
-
-          case newVersion >= 6 && oldVersion <=5:
-            const songsBeatMapsStorev6 = transaction.objectStore('songs-beatmaps');
-            songsBeatMapsStorev6.deleteIndex('songs-beatmaps--key');
-            songsBeatMapsStorev6.createIndex('songs-beatmaps-key', 'key', {unique: true});
-
-          // NO break here
 
           case newVersion >= 8 && oldVersion <= 7:
             const beatSaviorStorev8 = transaction.objectStore('beat-savior');
             beatSaviorStorev8.createIndex('beat-savior-hash', 'hash', {unique: false});
-
-          // NO break here
-
-          case newVersion >= 10 && oldVersion <= 9:
-            const songsBeatMapsStoreV10 = transaction.objectStore('songs-beatmaps');
-            songsBeatMapsStoreV10.deleteIndex('songs-beatmaps-key');
-            songsBeatMapsStoreV10.createIndex('songs-beatmaps-key', 'key', {unique: false});
 
           // NO break here
 
