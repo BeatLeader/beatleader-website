@@ -66,9 +66,7 @@
 	$: dispatch('loading', $isLoading);
 	$: dispatch('pending', $pending?.page);
 </script>
-
-{#if $rankingStore?.data?.length}
-	<Filter
+<Filter
 		filters={[
 			{
 				name: 'Sort By',
@@ -145,6 +143,8 @@
 		onFilterChange={result => {
 			changeParams(type, page, {filter: result.toUrl(), ...filters});
 		}} />
+{#if $rankingStore?.data?.length}
+	
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
