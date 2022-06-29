@@ -26,25 +26,24 @@
 
 	const rankingStore = createRankingStore(type, page, filters);
 
-	
-	     
-	function getRegions(){
-		const items = ['ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'ao', 'aq', 'ar', 'as', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bl', 'bm', 'bn', 'bo', 'bq', 'br', 'bs', 'bt', 'bv', 'bw', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck', 'cl', 'cm',  'co', 'cr', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec', 'ee', 'eg', 'eh', 'er', 'es', 'et', 'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg', 'gh', 'gi', 'gl', 'gm', 'gn', 'gp', 'gq', 'gr', 'gs', 'gt', 'gu', 'gw', 'gy', 'hm', 'hn', 'hr', 'ht', 'hu', 'id', 'ie', 'il', 'im', 'in', 'io', 'iq', 'ir', 'is', 'it', 'je', 'jm', 'jo', 'jp', 'ke', 'kg', 'kh', 'ki', 'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li', 'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mf', 'mg', 'mh', 'mk', 'ml', 'mm', 'mn', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'my', 'mz', 'na', 'nc', 'ne', 'nf', 'ng', 'ni', 'nl', 'no', 'np', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pf', 'pg', 'ph', 'pk', 'pl', 'pm', 'pn', 'pr', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs', 'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm', 'sn', 'so', 'sr', 'ss', 'st', 'sv', 'sx', 'sy', 'sz', 'tc', 'td', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tr', 'tt', 'tv',  'tz', 'ua', 'ug', 'um', 'us', 'uy', 'uz', 'va', 'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'xk', 'ye', 'yt', 'za', 'zm', 'zw'];
+	function getRegions() {
+		const items = "ad|ae|af|ag|ai|al|am|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bl|bm|bn|bo|bq|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|co|cr|cu|cv|cw|cx|cy|cz|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mf|mg|mh|mk|ml|mm|mn|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|ss|st|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tr|tt|tv|tz|ua|ug|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|xk|ye|yt|za|zm|zw".split("|");
 
-    	let generated={}
-    	for(let countryCode of items){
-   		   generated[countryCode]=new Intl.DisplayNames(['en'], {type: 'region'}).of(countryCode.toUpperCase())
-    	}
+		let generated = {};
+		for (let countryCode of items) {
+			generated[countryCode] = new Intl.DisplayNames(['en'], {type: 'region'}).of(countryCode.toUpperCase());
+		}
 
 		return {
-			"global":"Global",...generated,
-			"cn":"China Mainland",
-			"hk":"Hong Kong, China",
-			"tw":"Tai Wan, China",
-			"mo":"Macau, China"
+			global: 'Global',
+			...generated,
+			cn: 'China Mainland',
+			hk: 'Hong Kong, China',
+			tw: 'Tai Wan, China',
+			mo: 'Macau, China',
 		};
 	}
-	const countryChoices=getRegions();
+	const countryChoices = getRegions();
 
 	function changeParams(newType, newPage, newFilters) {
 		newPage = parseInt(newPage, 10);
@@ -66,85 +65,102 @@
 	$: dispatch('loading', $isLoading);
 	$: dispatch('pending', $pending?.page);
 </script>
+
 <Filter
-		filters={[
-			{
-				name: 'Sort By',
-				type: 'radio',
-				choices: {
-					pp: 'PP',
-					rank: 'Rank',
-					acc: 'Acc',
-					topAcc: 'Top Acc',
-					topPp: 'Top PP',
-					hmd: 'HMD',
-					playCount: 'Play Count',
-					score: 'Total Score',
-					dailyImprovements: 'Daily Improvements',
-				},
-				once: true,
-				identifier: 'sortBy',
-				default: 'pp',
+	filters={[
+		{
+			name: 'Sort By',
+			type: 'radio',
+			choices: {
+				pp: 'PP',
+				rank: 'Rank',
+				acc: 'Acc',
+				topAcc: 'Top Acc',
+				topPp: 'Top PP',
+				hmd: 'HMD',
+				playCount: 'Play Count',
+				score: 'Total Score',
+				dailyImprovements: 'Daily Improvements',
 			},
-			{
-				name: 'Order',
-				type: 'radio',
-				choices: {
-					desc: 'Descending ↓',
-					asc: 'Ascending ↑',
-				},
-				once: true,
-				identifier: 'order',
-				default: 'desc',
+			once: true,
+			identifier: 'sortBy',
+			default: 'pp',
+		},
+		{
+			name: 'Order',
+			type: 'radio',
+			choices: {
+				desc: 'Descending ↓',
+				asc: 'Ascending ↑',
 			},
-			{
-				name: 'Search',
-				type: 'text',
-				identifier: 'search',
-				once: true,
+			once: true,
+			identifier: 'order',
+			default: 'desc',
+		},
+		{
+			name: 'Search',
+			type: 'text',
+			identifier: 'search',
+			once: true,
+		},
+		{
+			name: 'Is Friend',
+			type: 'bool',
+			identifier: 'friend',
+			once: true,
+		},
+		{
+			name: 'Platform',
+			identifier: 'platform',
+			type: 'radio',
+			choices: {
+				steam: 'Steam',
+				oculus: 'Oculus Android',
+				oculuspc: 'Oculus PC',
 			},
-			{
-				name: 'Is Friend',
-				type: 'bool',
-				identifier: 'friend',
-				once: true,
+			once: true,
+		},
+		{
+			name: 'Role',
+			identifier: 'role',
+			type: 'radio',
+			choices: {
+				admin: 'Administrator',
+				rankedteam: 'Ranked Team',
+				tipper: 'Tipper',
+				supporter: 'Supporter',
+				sponsor: 'Sponsor',
 			},
-			{
-				name: 'Platform',
-				identifier: 'platform',
-				type: 'radio',
-				choices: {
-					steam: 'Steam',
-					oculus: 'Oculus Android',
-					oculuspc: 'Oculus PC',
-				},
-				once: true,
+			once: true,
+		},
+		{
+			name: 'Country/Region',
+			identifier: 'countries',
+			type: 'radio',
+			choices: countryChoices,
+		},
+		{
+			name: 'HMD',
+			identifier: 'hmd',
+			type: 'radio',
+			choices: {
+				0: 'Unknown headset',
+				1: 'Oculus Rift CV1',
+				2: 'Vive',
+				4: 'Vive Pro',
+				8: 'Windows Mixed Reality',
+				16: 'Rift S',
+				32: 'Oculus Quest',
+				64: 'Valve Index',
+				128: 'Vive Cosmos',
+				256: 'Oculus Quest 2',
 			},
-			{
-				name: 'Role',
-				identifier: 'role',
-				type: 'radio',
-				choices: {
-					admin: 'Administrator',
-					rankedteam: 'Ranked Team',
-					tipper: 'Tipper',
-					supporter: 'Supporter',
-					sponsor: 'Sponsor',
-				},
-				once: true,
-			},
-			{
-				name: 'Country/Region',
-				identifier: 'countries',
-				type: 'radio',
-				choices: countryChoices,
-			}
-		]}
-		onFilterChange={result => {
-			changeParams(type, page, {filter: result.toUrl(), ...filters});
-		}} />
+		},
+	]}
+	onFilterChange={result => {
+		changeParams(type, page, {filter: result.toUrl(), ...filters});
+	}} />
 {#if $rankingStore?.data?.length}
-	
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
