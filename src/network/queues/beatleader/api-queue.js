@@ -224,7 +224,7 @@ export default (options = {}) => {
   const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
     fetchJson(substituteVars(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true, true), {...options, credentials: 'include'}, priority)
       .then(r => {
-        r.body = {...r?.body, page};
+        r.body = processLeaderboard(leaderboardId, page, r);
 
         return r;
       })

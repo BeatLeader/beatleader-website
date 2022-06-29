@@ -10,9 +10,7 @@
     import {capitalize} from '../../utils/js';
     import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
 
-    export let hash;
-    export let key = null;
-    export let diffInfo = null;
+    export let leaderboard = null;
     export let twitchUrl = null;
     export let icons = false;
     export let scoreId = null;
@@ -31,6 +29,12 @@
 
     const account = createAccountStore();
     const playlists = createPlaylistStore();
+
+    $: key = leaderboard?.song?.id
+    $: hash = leaderboard?.song.hash
+    $: allDiffs = (leaderboard?.song?.difficulties ?? []).map(d => ({name: d?.difficultyName, characteristic: d?.modeName, id: d?.id}))
+    $: diffInfo = leaderboard ? {diff: leaderboard?.difficulty?.difficultyName ?? '', type: leaderboard?.difficulty?.modeName ?? 'Standard'} : null
+    $: songInfo = {hash, diffInfo, songName: leaderboard?.song?.name ?? '', levelAuthorName: leaderboard?.song?.levelAuthorName ?? leaderboard?.song?.mapper ?? '', allDiffs}
 
     $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
     $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
@@ -56,11 +60,11 @@
     {#if shownIcons.includes('playlist')}
         {#if selectedPlaylist != null}
             {#if playlistSong}
-                {#if difficulties.length == 1 && difficulties[0] == diffName}
+                {#if difficulties?.length === 1 && difficulties?.[0] === diffName}
                 <Button iconFa="fas fa-list-ul" title="Remove from the {selectedPlaylist.playlistTitle}" noMargin={true} type="danger"
                 on:click={() => playlists.remove(hash)}/>
                 {:else}
-                {#if difficulties.length == 1 || !difficulties.includes(diffName)}
+                {#if difficulties?.length === 1 || !difficulties?.includes(diffName)}
                 <Button iconFa="fas fa-list-ul" title="Add this diff to the {selectedPlaylist.playlistTitle}" noMargin={true}
                 on:click={() => playlists.addDiff(hash, diffInfo)}/>
                 {:else}

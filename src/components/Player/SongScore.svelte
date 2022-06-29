@@ -37,7 +37,7 @@
 
     {#if !noIcons}
       <div class="icons up-to-tablet">
-        <Icons {hash} {key} {twitchUrl} {diffInfo} scoreId={score.id}/>
+        <Icons {leaderboard} {twitchUrl} scoreId={score.id}/>
       </div>
     {/if}
 

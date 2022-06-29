@@ -52,7 +52,7 @@ export default async () => {
   const set = async (config, persist = true) => {
     const newConfig = {...DEFAULT_CONFIG};
     Object.keys(config).forEach(key => {
-      if (key === 'locale') {
+      if (['locale', 'selectedPlaylist'].includes(key)) {
         newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
         return;
       }
@@ -88,6 +88,8 @@ export default async () => {
     .filter(d => d)
 
   const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
+  if (dbConfig && !Number.isFinite(dbConfig.selectedPlaylist)) dbConfig.selectedPlaylist = null;
+
   const newSettings= determineNewSettingsAvailable(dbConfig);
   if (dbConfig) await set(dbConfig, false);
   newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;

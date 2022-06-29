@@ -33,7 +33,7 @@
         redactingTitle = !redactingTitle;
     }
 
-    $:songs = playlist.songs;
+    $:songs = playlist?.songs;
 </script>
 
 {#if playlist}
@@ -69,9 +69,9 @@
 
             <div>
                 <Button iconFa="fas fa-trash-alt" title="Delete playlist" noMargin={true} type="danger"
-                    on:click={store.deleteList(idx)}/>
+                    on:click={() => store.deleteList(idx)}/>
                 <Button iconFa="fas fa-download" title="Download playlist" noMargin={true} type="primary"
-                    on:click={store.download(idx)}/>
+                    on:click={() => store.download(idx)}/>
             </div>
 
         </div>

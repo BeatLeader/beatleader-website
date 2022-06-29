@@ -62,7 +62,7 @@ export default () => {
           return
         }
 
-      let playlists = await get();
+      let playlists = get();
       playlists.push(playlist)
 
       await set(playlists, true);
@@ -70,22 +70,22 @@ export default () => {
   };
 
   const deleteList = async (index) => {
-    let playlists = await get();
+    let playlists = get();
     playlists.splice(index, 1);
 
     await set(playlists, true);
   };
 
   const download = async (index) => {
-    let playlists = await get();
+    let playlists = get();
     let playlist = playlists[index];
 
     saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + ".bplist");
   };
 
   const add = async (song, playlistIndex) => {
-    let playlists = await get();
-    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+    let playlists = get();
+    let index = playlistIndex != null ? playlistIndex : configStore.get('selectedPlaylist');
 
     playlists[index].songs.push(song);
 
@@ -97,37 +97,37 @@ export default () => {
   }
 
   const addDiff = async (hash, diffInfo, playlistIndex) => {
-    let playlists = await get();
-    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+    let playlists = get();
+    let index = playlistIndex != null ? playlistIndex : configStore.get('selectedPlaylist');
 
-    let song = playlists[index].songs.find(el => el.hash == hash);
+    let song = playlists[index].songs.find(el => el.hash === hash);
     song.difficulties.push({name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type});
 
     await set(playlists, true);
   };
 
   const removeDiff = async (hash, diffInfo, playlistIndex) => {
-    let playlists = await get();
-    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+    let playlists = get();
+    let index = playlistIndex != null ? playlistIndex : configStore.get('selectedPlaylist');
 
-    let song = playlists[index].songs.find(el => el.hash == hash);
-    song.difficulties = song.difficulties.filter(el => el.name != decapitalizeFirstLetter(diffInfo.diff));
+    let song = playlists[index].songs.find(el => el.hash === hash);
+    song.difficulties = song.difficulties.filter(el => el.name !== decapitalizeFirstLetter(diffInfo.diff));
 
     await set(playlists, true);
   };
 
   const remove = async (hash, playlistIndex) => {
-      let playlists = await get();
-      let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+      let playlists = get();
+      let index = playlistIndex != null ? playlistIndex : configStore.get('selectedPlaylist');
 
-      playlists[index].songs = playlists[index].songs.filter(el => el.hash != hash)
+      playlists[index].songs = playlists[index].songs.filter(el => el.hash !== hash)
 
       await set(playlists, true);
   };
 
   const select = async (playlist) => {
     if (playlist) {
-      let playlists = await get();
+      let playlists = get();
       let index = playlists.indexOf(playlist);
 
       await configStore.setForKey('selectedPlaylist', index);
