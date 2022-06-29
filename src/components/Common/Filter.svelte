@@ -1,11 +1,20 @@
 <script>
 	import {now} from 'svelte/internal';
 	import {tick} from 'svelte';
+	import Button from '../Common/Button.svelte'
 	import {prefixed} from 'eventemitter3';
+	import Switcher from '../Common/Switcher.svelte'
+	import CountryPicker from '../Common/CountryPicker.svelte';
 
 	export let filters = [];
+	export let sortingMethods = [];
+	export let sortingMethodIdentifier="sortBy";
+	export let orderMethodIdentifier="order";
 	export let onFilterChange = filter => {};
 	export let filterChangeTimeRate = 200; //ms
+
+
+	let nowSortingMethod=sortingMethods[0];
 
 	function deepCopy(obj) {
 		return JSON.parse(JSON.stringify(obj));
@@ -13,7 +22,18 @@
 
 	class FilterResult {
 		constructor(raw) {
-			this.rawResult = raw || [];
+			this.rawResult = deepCopy(raw) || [];
+			this.rawResult.push({
+				identifier:sortingMethodIdentifier,
+				value:nowSortingMethod
+			})
+			this.rawResult.push({
+				identifier:orderMethodIdentifier,
+				value:nowSortingOrder
+			})
+		}
+		getSortBy(){
+			return nowSortingMethod
 		}
 		toUrl(repeatedFilterMode = 'joinComma') {
 			let args = {};
@@ -22,9 +42,9 @@
 				args[encodeURI(condition.identifier)].push(encodeURI(condition.value));
 			}
 
-			if ((repeatedFilterMode = 'joinComma')) {
+			if ((repeatedFilterMode == 'joinComma')) {
 				return Object.keys(args).reduce((pre, cur) => {
-					return pre + cur + '=' + args[cur].join(',');
+					return pre + cur + '=' + args[cur].join(',')+"&";
 				}, '');
 			}
 		}
@@ -72,9 +92,37 @@
 
 	$: {
 		nowFilter;
+		nowSortingOrder;
+		nowSortingMethod;
 		lastChange = new Date().getTime();
 	} // Update lastChange when nowFilter changed
 </script>
+
+<div class="sorting">
+
+	<Switcher values={sortingMethods} value={nowSortingMethod} on:change={onSortChange}
+      />
+
+	{#each sortingMethods as sortingMethod}
+	<Button
+	icon={sortingMethod.icon}
+	iconFa={sortingMethod.iconFa}
+	label={sortingMethod.label+((nowSortingMethod==sortingMethod.identifier)?(nowSortingOrder=="desc"?"↓":"↑"):"")}
+	title={sortingMethod.title}
+	color='black'
+	notSelected={nowSortingMethod!=sortingMethod.identifier}
+	on:click={() =>{
+		if(nowSortingMethod!=sortingMethod.identifier){
+			nowSortingMethod=sortingMethod.identifier
+			nowSortingOrder="desc"
+		}else {
+			if(nowSortingOrder=="desc")nowSortingOrder="asc"
+			else nowSortingOrder="desc"		
+		}
+	}}
+  />
+	{/each}
+</div>
 
 <div class="filter">
 	<span class="nowFilters">
@@ -82,12 +130,20 @@
 			<div class="activeFilter">
 				<span class="name">{condition.name}</span>
 				<span class="operations">
+					{#if condition.type == 'country'}
+						<CountryPicker
+							type="smaller"
+							on:select={e => {
+								condition.value = e.detail.value.toUpperCase();
+							}} />
+					{/if}
+
 					{#if condition.type == 'bool'}
-						<input type="checkbox" bind:value={nowFilter[thisIndex].value} />
+						<input type="checkbox" bind:checked={condition.value} />
 					{/if}
 
 					{#if condition.type == 'radio'}
-						<select id={thisIndex} bind:value={nowFilter[thisIndex].value}>
+						<select id={thisIndex} bind:value={condition.value}>
 							{#each Object.keys(condition.choices) as choiceVal}
 								<option value={choiceVal}>{condition.choices[choiceVal]}</option>
 							{/each}
@@ -95,7 +151,7 @@
 					{/if}
 
 					{#if condition.type == 'text'}
-						<input type="text" bind:value={nowFilter[thisIndex].value} class="filterInputText" />
+						<input type="text" bind:value={condition.value} class="filterInputText" />
 					{/if}
 
 					<span
@@ -175,6 +231,7 @@
 
 	.activeFilter .operations {
 		float: right;
+		position: relative;
 	}
 
 	.filterInputText {

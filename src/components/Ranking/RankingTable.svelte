@@ -9,6 +9,7 @@
 	import AddFriendButton from '../Player/AddFriendButton.svelte';
 	import Filter from '../Common/Filter.svelte';
 	import {identity} from 'svelte/internal';
+	import About from '../../pages/About.svelte';
 
 	export let type = 'global';
 	export let page = 1;
@@ -26,25 +27,6 @@
 
 	const rankingStore = createRankingStore(type, page, filters);
 
-	function getRegions() {
-		const items = "ad|ae|af|ag|ai|al|am|ao|aq|ar|as|at|au|aw|ax|az|ba|bb|bd|be|bf|bg|bh|bi|bj|bl|bm|bn|bo|bq|br|bs|bt|bv|bw|by|bz|ca|cc|cd|cf|cg|ch|ci|ck|cl|cm|co|cr|cu|cv|cw|cx|cy|cz|de|dj|dk|dm|do|dz|ec|ee|eg|eh|er|es|et|fi|fj|fk|fm|fo|fr|ga|gb|gd|ge|gf|gg|gh|gi|gl|gm|gn|gp|gq|gr|gs|gt|gu|gw|gy|hm|hn|hr|ht|hu|id|ie|il|im|in|io|iq|ir|is|it|je|jm|jo|jp|ke|kg|kh|ki|km|kn|kp|kr|kw|ky|kz|la|lb|lc|li|lk|lr|ls|lt|lu|lv|ly|ma|mc|md|me|mf|mg|mh|mk|ml|mm|mn|mp|mq|mr|ms|mt|mu|mv|mw|mx|my|mz|na|nc|ne|nf|ng|ni|nl|no|np|nr|nu|nz|om|pa|pe|pf|pg|ph|pk|pl|pm|pn|pr|ps|pt|pw|py|qa|re|ro|rs|ru|rw|sa|sb|sc|sd|se|sg|sh|si|sj|sk|sl|sm|sn|so|sr|ss|st|sv|sx|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tr|tt|tv|tz|ua|ug|um|us|uy|uz|va|vc|ve|vg|vi|vn|vu|wf|ws|xk|ye|yt|za|zm|zw".split("|");
-
-		let generated = {};
-		for (let countryCode of items) {
-			generated[countryCode] = new Intl.DisplayNames(['en'], {type: 'region'}).of(countryCode.toUpperCase());
-		}
-
-		return {
-			global: 'Global',
-			...generated,
-			cn: 'China Mainland',
-			hk: 'Hong Kong, China',
-			tw: 'Tai Wan, China',
-			mo: 'Macau, China',
-		};
-	}
-	const countryChoices = getRegions();
-
 	function changeParams(newType, newPage, newFilters) {
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
@@ -55,6 +37,12 @@
 	onMount(() => {
 		dispatch('loading', true);
 	});
+
+	let currentSortBy = 'pp';
+	const displaySortBy = {
+		pp: 'pp',
+		acc: 'averageAccuracy',
+	};
 
 	$: isLoading = rankingStore.isLoading;
 	$: pending = rankingStore.pending;
@@ -67,46 +55,20 @@
 </script>
 
 <Filter
+	sortingMethods={[
+		{identifier: 'topAcc', label: 'Top Acc', title: 'Sort by top acc', iconFa: 'fas fa-arrow-to-top'},
+		{identifier: 'topPp', label: 'Top PP', title: 'Sort by top PP', iconFa: 'fa fa-arrow-up-to-line'},
+		{identifier: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes'},
+		{identifier: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
+		{identifier: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol'},
+		{identifier: 'playCount', label: 'Play Count', title: 'Sort by play count', iconFa: 'fa fa-list-ol'},
+		{identifier: 'score', label: 'Total score', title: 'Sort by total score', iconFa: 'fa fa-list-ol'},
+	]}
 	filters={[
-		{
-			name: 'Sort By',
-			type: 'radio',
-			choices: {
-				pp: 'PP',
-				rank: 'Rank',
-				acc: 'Acc',
-				topAcc: 'Top Acc',
-				topPp: 'Top PP',
-				hmd: 'HMD',
-				playCount: 'Play Count',
-				score: 'Total Score',
-				dailyImprovements: 'Daily Improvements',
-			},
-			once: true,
-			identifier: 'sortBy',
-			default: 'pp',
-		},
-		{
-			name: 'Order',
-			type: 'radio',
-			choices: {
-				desc: 'Descending ↓',
-				asc: 'Ascending ↑',
-			},
-			once: true,
-			identifier: 'order',
-			default: 'desc',
-		},
-		{
-			name: 'Search',
-			type: 'text',
-			identifier: 'search',
-			once: true,
-		},
 		{
 			name: 'Is Friend',
 			type: 'bool',
-			identifier: 'friend',
+			identifier: 'friends',
 			once: true,
 		},
 		{
@@ -136,15 +98,14 @@
 		{
 			name: 'Country/Region',
 			identifier: 'countries',
-			type: 'radio',
-			choices: countryChoices,
+			type: 'country',
 		},
 		{
 			name: 'HMD',
 			identifier: 'hmd',
 			type: 'radio',
 			choices: {
-				0: 'Unknown headset',
+				0: '<div>aa</div>Unknown headset',
 				1: 'Oculus Rift CV1',
 				2: 'Vive',
 				4: 'Vive Pro',
@@ -164,7 +125,8 @@
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
-				<PlayerCard {player} playerId={mainPlayerId} currentFilters={filters} />
+				{console.log(player)}
+				<PlayerCard {player} playerId={mainPlayerId} currentFilters={filters} currentSortBy={currentSortBy} />
 				{#if !noIcons}
 					<AddFriendButton playerId={player.playerId} />
 				{/if}

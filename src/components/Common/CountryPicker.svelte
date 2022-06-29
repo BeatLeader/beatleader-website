@@ -3,6 +3,28 @@
 	import Item from './CountryPickerItem.svelte';
 
     export let selected = undefined;
+    export let type = "normal";
+
+    if(type=="smaller"){
+        // Adjust the height of the Select. Don't know if there's any other way to do this.
+        let style=document.createElement("style");
+        style.innerHTML=`
+.selectContainer{
+	height: 1.2rem !important;
+    position:absolute;
+    right:2rem;
+}
+
+.selectContainer input{
+    border:none !important;
+}
+
+.selectContainer *{
+    width:10rem;
+}
+`
+        document.body.appendChild(style)
+    }
 
     let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
     let itemFilter = (label, filterText, option) => {

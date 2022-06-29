@@ -14,6 +14,7 @@
     import {buildSearchFromFilters} from '../../utils/filters'
   
     export let player;
+    export let currentSortBy="pp";
     export let currentFilters = null;
     export let playerId = null;
     export let withCrown = false;
@@ -99,14 +100,14 @@
       {#if player.playerId > 70000000000000000}
         <SteamStats {player}/>
       {/if}
-      {#if currentFilters?.sortBy == "dailyImprovements"}<div style="color: {HSVtoRGB(player.others.improvement / 85, 1.0, 1.0)}">
-        <Value value={opt(player, 'others.improvement')} zero="Carbon positive" suffix={opt(player, 'others.improvement') == 1 ? " score" : " scores"} digits=0/>
-      </div>
-      {:else}
+
       <div style="color: {HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0)}">
-        <Value value={pp} zero="" suffix="pp"/>
+        <Value value={
+        player?.playerInfo[currentSortBy]||
+        player?.playerInfo?.scoreStats[currentSortBy]
+        } zero="" suffix="pp"/>
       </div>
-      {/if}
+
     </div>
   </div>
   
