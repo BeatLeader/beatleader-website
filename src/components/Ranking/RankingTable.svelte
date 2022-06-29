@@ -7,6 +7,8 @@
 	import Pager from '../Common/Pager.svelte'
 	import PlayerCard from "./PlayerCard.svelte";
 	import AddFriendButton from "../Player/AddFriendButton.svelte";
+	import Filter from '../Common/Filter.svelte';
+import { identity } from 'svelte/internal'
 
 	export let type = 'global';
 	export let page = 1;
@@ -46,6 +48,70 @@
 </script>
 
 {#if $rankingStore?.data?.length}
+
+	<Filter filters="{[
+		{
+			name:"Sort By",
+			type:"radio",
+			choices:{
+				pp:"PP",
+				rank:"Rank",
+				acc:"Acc",
+				topAcc:"Top Acc",
+				topPp:"Top PP",
+				hmd:"HMD",
+				playCount:"Play Count",
+				score:"Total Score",
+				dailyImprovements:"Daily Improvements"
+			},
+			once:true,
+			identifier:"sortBy",
+			default:"pp"
+		},{
+			name:"Order",
+			type:"radio",
+			choices:{
+				desc:"Descending ↓",
+				asc:"Ascending ↑"
+			},
+			once:true,
+			identifier:"order",
+			default:"desc"
+		},{
+			name:"Search",
+			type:"text",
+			identifier:"search",
+			once:true
+		},{
+			name:"Is Friend",
+			type:"bool",
+			identifier:"friend",
+			once:true,
+		},{
+			name:"Platform",
+			identifier:"platform",
+			type:"radio",
+			choices:{
+				steam:"Steam",
+				oculus:"Oculus Android",
+				oculuspc:"Oculus PC"
+			},
+			once:true
+		},{
+			name:"Role",
+			identifier:"role",
+			type:"radio",
+			choices:{
+				admin:"Administrator",
+				rankedteam:"Ranked Team",
+				tipper:"Tipper",
+				supporter:"Supporter",
+				sponsor:"Sponsor"
+			},
+			once:true
+		}
+	]}" onFilterChange={(result)=>{changeParams(type, page, {filter:result.toUrl(),...filters})}} />
+
 	<div
 		class={filters?.sortBy === "dailyImprovements" ? "fas fa-lightbulb icon dailyImprovements" :
 		"far fa-lightbulb icon off pp"}

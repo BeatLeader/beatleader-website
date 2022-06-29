@@ -1,0 +1,178 @@
+<script>
+	import {now} from 'svelte/internal';
+	import {tick} from 'svelte';
+
+	export let filters = [];
+	export let onFilterChange = filter => {};
+	export let filterChangeTimeRate = 200; //ms
+
+	class FilterResult {
+		constructor(raw) {
+			this.rawResult = raw || [];
+		}
+		toUrl() {
+			return this.rawResult
+				.map(condition => {
+					return encodeURI(condition.identifier) + '=' + encodeURI(condition.value);
+				})
+				.join('&');
+		}
+	}
+
+	let nowFilter = [];
+
+	function showAddFilter() {
+		setTimeout(() => {
+			addFilterPromptShow = true;
+		});
+	}
+
+	const defaultValues = {
+		bool: false,
+		text: '',
+	};
+
+	let lastChange = new Date().getTime(),
+		lastTrigger = new Date().getTime();
+
+	function addFilter(condition) {
+		condition.value = condition.default || defaultValues[condition.type];
+		nowFilter = nowFilter.concat(condition);
+	}
+
+	function deleteFilter(index) {
+		nowFilter.splice(index, 1);
+		nowFilter = nowFilter;
+	}
+
+	setInterval(() => {
+		if (lastChange > lastTrigger && new Date().getTime() - lastChange > filterChangeTimeRate) {
+            lastTrigger=new Date().getTime();
+            onFilterChange(new FilterResult(nowFilter));
+        }
+	}, 100);
+
+	window.addEventListener('click', e => {
+		if (addFilterPromptShow) addFilterPromptShow = false;
+	});
+
+	$: addFilterPromptShow = false;
+
+    $:{nowFilter; lastChange=new Date().getTime()} // Update lastChange when nowFilter changed
+</script>
+
+<div class="filter">
+	<span class="nowFilters">
+		{#each nowFilter as condition, thisIndex}
+			{#if condition.type == 'bool'}
+				<span class="activeFilter">
+					<input type="checkbox" bind:value={condition.value} />
+					{condition.name}
+					<span
+						class="deleteFilter"
+						style="color:gray;cursor:pointer;"
+						on:click={() => {
+							deleteFilter(thisIndex);
+						}}>×</span>
+				</span>
+			{/if}
+
+			{#if condition.type == 'radio'}
+				<span class="activeFilter">
+					{condition.name}
+					<select bind:value={condition.value}>
+						{#each Object.keys(condition.choices) as choiceVal}
+							<option value={choiceVal}>{condition.choices[choiceVal]}</option>
+						{/each}
+					</select>
+					<span
+						class="deleteFilter"
+						style="color:gray;cursor:pointer;"
+						on:click={() => {
+							deleteFilter(thisIndex);
+						}}>×</span>
+				</span>
+			{/if}
+			{#if condition.type == 'text'}
+				<div class="activeFilter">
+					{condition.name}
+					<input type="text" bind:value={condition.value} class="filterInputText" />
+					<span
+						class="deleteFilter"
+						style="color:gray;cursor:pointer;"
+						on:click={() => {
+							deleteFilter(thisIndex);
+						}}>×</span>
+				</div>
+			{/if}
+		{/each}
+	</span>
+
+	<span class="addFilter" on:click={showAddFilter}> Add Filter </span>
+	<div class="availableFilters" style="display:{addFilterPromptShow ? 'block' : 'none'};">
+		{#if filters}
+			{#each filters as condition}
+				{#if !condition.once || nowFilter.find(activeFilter => activeFilter.identifier == condition.identifier) == undefined}
+					<span
+						class="newFilter"
+						on:click={() => {
+							addFilter(condition);
+						}}>
+						{condition.name}
+					</span>
+				{/if}
+			{/each}
+		{/if}
+	</div>
+</div>
+
+<style>
+	.filter {
+		padding: 0.2rem;
+	}
+
+	.addFilter {
+		user-select: none;
+		border-radius: 0.2rem;
+		border-bottom: 0.3rem solid rgba(0, 102, 255, 0.507);
+		background: rgba(0, 110, 255, 0.158);
+		font-size: 0.8rem;
+		padding: 0.2rem 0.4rem;
+		cursor: pointer;
+		display: inline-block;
+	}
+
+	.availableFilters {
+		border-bottom: 0.1em solid rgba(0, 110, 255, 0.541);
+		background: rgba(0, 110, 255, 0.171);
+		padding: 0.4rem;
+		margin: 0.4rem;
+	}
+
+	.availableFilters .newFilter {
+		user-select: none;
+		cursor: pointer;
+		border-radius: 0.1rem;
+		box-shadow: 1px 2px 0.5em rgba(0, 0, 0, 0.199);
+		border: 0.1em solid rgba(0, 110, 255, 0.438);
+		background: rgba(0, 110, 255, 0.411);
+		font-size: 0.8rem;
+		padding: 0.2rem 0.4rem;
+		margin-right: 0.3rem;
+	}
+
+	.activeFilter {
+		user-select: none;
+		border-radius: 0.2rem;
+		box-shadow: 1px 2px 0.5em rgba(0, 0, 0, 0.199);
+		border: 0.1em solid rgba(0, 110, 255, 0.185);
+		background: rgba(0, 110, 255, 0.13);
+		margin: 0.2rem;
+		font-size: 0.8rem;
+		padding: 0.2rem 0.4rem;
+	}
+
+	.filterInputText {
+		width: calc(100% - 5rem);
+	}
+</style>
