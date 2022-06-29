@@ -264,7 +264,7 @@
 											on:change={param.onChange}
 						/>
 					{:else if param?.type === 'countries'}
-						<Countries value={param.value} on:change={param.onChange} />
+						<Countries countries={param.value} on:change={param.onChange} />
 					{/if}
         </section>
       {/each}
