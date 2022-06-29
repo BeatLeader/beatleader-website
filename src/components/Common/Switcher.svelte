@@ -6,6 +6,7 @@
   const dispatch = createEventDispatcher();
 
   export let values;
+  export let multi = false;
   export let value = values && values.length ? values[0] : null;
   export let loadingValue = null;
 
@@ -21,13 +22,13 @@
         <Button
           icon={currentValue.icon}
           iconFa={currentValue.iconFa}
-          loading={loadingValue === currentValue}
+          loading={multi ? (Array.isArray(loadingValue) && loadingValue.includes(currentValue)) : loadingValue === currentValue}
           label={currentValue.label}
           title={currentValue.title}
-          type={currentValue === value ? 'primary' : 'default'}
+          type={(multi && Array.isArray(value) & value.includes(currentValue)) || (!multi && currentValue === value) ? 'primary' : 'default'}
           color={currentValue.color ? 'white' : null}
           bgColor={currentValue.color ? currentValue.color : null}
-          notSelected={currentValue !== value}
+          notSelected={!((multi && Array.isArray(value) & value.includes(currentValue)) || (!multi && currentValue === value))}
           url={currentValue.url}
           on:click={() => onChange(currentValue)}
         />

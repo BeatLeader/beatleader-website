@@ -8,6 +8,13 @@ export const buildSearchFromFilters = filters => {
 }
 
 export const processStringFilter = val => val?.toString() ?? '';
+export const processStringArrayFilter = val => val?.toString()?.length ? val.toString().split(',') : [];
+export const processIntFilter = val => {
+  val = parseInt(val, 10);
+  if(isNaN(val)) return null;
+
+  return val < 0 ? 0 : val;
+}
 export const processFloatFilter = val => {
   val = parseFloat(val);
   if (isNaN(val)) return null;

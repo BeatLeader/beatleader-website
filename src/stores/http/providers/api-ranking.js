@@ -29,6 +29,6 @@ export default () => {
 
   return {
     getProcessed,
-    getCached: getProcessed
+    getCached: async () => null
   }
 }
