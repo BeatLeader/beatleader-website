@@ -34,6 +34,7 @@ export default response => {
           improvement: scoreStats?.dailyImprovements
         },
         clans,
+        scoreStats: player?.scoreStats ?? null
       }
     })
   };
