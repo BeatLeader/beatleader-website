@@ -89,8 +89,8 @@
 			value: [],
 			values: [
 				{id: 'steam', 'label': 'Steam', },
-				{id: 'oculus', 'label': 'Oculus Android'},
-				{id: 'oculuspc', 'label': 'Oculus PC'},
+				{id: 'oculus', 'label': 'Quest'},
+				{id: 'oculuspc', 'label': 'Oculus'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'platform'),
 			multi: true
