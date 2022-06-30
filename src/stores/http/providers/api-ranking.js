@@ -12,16 +12,12 @@ export default () => {
 
     let data = null;
     switch(type) {
-      case 'global':
-        data = await rankingService.getGlobal(page, filters, priority, signal, force);
-        break;
-
       case 'friends':
         data = await rankingService.getFriends(page, filters, priority, signal, force);
         break;
 
       default:
-        data = await rankingService.getCountry(type, page, filters, priority, signal, force);
+        data = await rankingService.getGlobal(page, filters, priority, signal, force);
     }
 
     return {total: data?.metadata?.total ?? null, data: data?.data ?? [] }
@@ -29,6 +25,6 @@ export default () => {
 
   return {
     getProcessed,
-    getCached: getProcessed
+    getCached: async () => null
   }
 }

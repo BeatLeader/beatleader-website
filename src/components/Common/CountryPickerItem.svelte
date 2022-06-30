@@ -1,8 +1,13 @@
 <script>
-	export let item = undefined;
-    let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
-    $: countryName = item.value == "not set" ? item.value : regionNames.of(item.value.toUpperCase());
+  export let item;
 </script>
+
+<div class="customItem">
+  <img src={`https://cdn.beatleader.xyz/flags/${item?.value}.png`} alt="{item?.label}">
+  <div class="customItem_title">
+    <div class="customItem_name">{item?.label}</div>
+  </div>
+</div>
 
 <style>
   .customItem {
@@ -25,14 +30,6 @@
   .customItem_name {
     display: inline-block;
     font-weight: 400;
-    
     margin-right: 10px;
   }
 </style>
-
-<div class="customItem">
-  <img src={`https://cdn.beatleader.xyz/flags/${item.value}.png`} alt="{countryName}">
-  <div class="customItem_title">
-    <div class="customItem_name">{countryName}</div>
-  </div>
-</div>

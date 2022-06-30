@@ -271,6 +271,15 @@ nav.ssr-page-container div {
 .ranking.global.sspl * {
   background: transparent;
 }
+.selectContainer {
+  background-color: transparent!important;
+}
+.selectContainer input {
+  border: none!important;
+}
+.selectContainer .listContainer {
+  background-color: var(--selected);
+}
 button.pagination-link {
   font-size: smaller !important;
   padding: 13px 15px !important;

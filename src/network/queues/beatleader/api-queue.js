@@ -16,7 +16,7 @@ export const BL_API_FRIENDS_SCORES_URL = BL_API_URL + 'user/friendScores?page=${
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
 export const BL_API_SCORES_HISTOGRAM_URL = BL_API_URL + 'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}';
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
-export const BL_API_RANKING_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}&countries=${country}&friends=${friends}'
+export const BL_API_RANKING_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}'
 export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}'
 export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}'
@@ -65,9 +65,10 @@ export default (options = {}) => {
     return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), options, priority);
   } 
 
-  const rankingCountry = async (country, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, country}, priority, options);
+  const rankingCountry = async (countries, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, countries}, priority, options);
 
   const rankingFriends = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, friends: "true"}, priority, {...options, credentials: 'include'});
+
   const minirankings = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);
 
   const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {

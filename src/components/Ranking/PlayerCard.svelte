@@ -12,12 +12,17 @@
     import ClanBadges from '../Player/ClanBadges.svelte'
     import {rankValue, accValue, ppValue, changingValuesClan} from '../../utils/clans'
     import {buildSearchFromFilters} from '../../utils/filters'
+    import {createEventDispatcher} from 'svelte'
   
     export let player;
     export let currentFilters = null;
     export let playerId = null;
     export let withCrown = false;
     export let selectedClanTag = null;
+    export let value = null;
+    export let valueProps = {};
+
+    const dispatch = createEventDispatcher();
   
     function navigateToPlayer(playerId) {
       if (!playerId) return;
@@ -36,14 +41,22 @@
   
     function onCountryClick(player) {
       if (!player) return;
-  
-      navigate(`/ranking/${player.playerInfo.countries[0].country}/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
+
+      if (currentFilters) {
+        currentFilters.countries = player?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '';
+
+        const currentPage = Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1;
+
+        dispatch('filters-updated', {currentFilters, currentPage});
+      }
+
+      navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`)
     }
   
     function onGlobalClick(player) {
       if (!player) return;
-  
-      navigate(`/ranking/global/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
+
+      navigate(`/ranking/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
     }
   
     function showRainbow(player) {
@@ -96,15 +109,17 @@
       <ClanBadges {player} />
     </div>
     <div class="steam-and-pp">
-      {#if player.playerId > 70000000000000000}
-        <SteamStats {player}/>
-      {/if}
-      {#if currentFilters?.sortBy == "dailyImprovements"}<div style="color: {HSVtoRGB(player.others.improvement / 85, 1.0, 1.0)}">
-        <Value value={opt(player, 'others.improvement')} zero="Carbon positive" suffix={opt(player, 'others.improvement') == 1 ? " score" : " scores"} digits=0/>
+      {#if currentFilters?.sortBy === "dailyImprovements"}
+      <div style="color:{HSVtoRGB(player.others.improvement / 85, 1.0, 1.0)}">
+        <Value value={player?.others?.improvement} zero="Carbon positive" suffix={player?.others?.improvement === 1 ? " score" : " scores"} digits=0 />
       </div>
+      {:else if currentFilters?.sortBy === 'hmd'}
+        <div style="color: {HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0)}">
+          {value}
+        </div>
       {:else}
       <div style="color: {HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0)}">
-        <Value value={pp} zero="" suffix="pp"/>
+        <Value {value} {...valueProps} />
       </div>
       {/if}
     </div>
