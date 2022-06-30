@@ -154,7 +154,7 @@
                                 </h2>
                             </header>
 
-                            <RankingTable type="friends" {page} filters={filters} noIcons={true}
+                            <RankingTable type="friends" {page} filters={filters} noIcons={true} useInternalFilters={true}
                                           on:page-changed={onRankingPageChanged}
                                           on:sort-toggled={toggleRankingSortBy}
                                           on:loading={e => isLoading = !!e?.detail}

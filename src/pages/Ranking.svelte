@@ -45,6 +45,7 @@
 			updateCurrentFiltersFromParams();
 		}
 	}
+
   const params = [
     {
       key: 'search',
@@ -132,6 +133,18 @@
 			onChange: e => onMultiSwitchChange(e, 'role'),
 			multi: true
 		},
+		{
+			key: 'sortBy',
+			default: 'pp',
+			process: processStringFilter,
+			type: null
+		},
+		{
+			key: 'order',
+			default: 'desc',
+			process: processStringFilter,
+			type: null
+		}
   ];
 
   const buildFiltersFromLocation = createBuildFiltersFromLocation(
@@ -140,19 +153,21 @@
 			params.forEach(p => {
 				if (p.bitArray) {
 					p.value = (p?.values ?? []).filter(v=> Number.isFinite(v.id) && ((1 << v.id) & (filters?.[p.key] ?? 0) ));
+					filters[p.key] = filters[p.key] ?? 0;
 				} else if (p.key === 'countries') {
-					p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : [];
+					p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : (p?.default ?? []);
+					filters[p.key] = filters[p.key] ?? [];
 				} else {
 					filters[p.key] = p.multi
 						? (
 							(p?.values ?? [])
 								?.map(v => v?.id)
 								?.filter(v => filters?.[p.key]?.includes(v))
-							?? []
+							?? p?.default ?? []
 						)
-						: (filters?.[p.key] ?? '');
+						: (filters?.[p.key]?.length ? filters[p.key] : (p?.default ?? ''));
 
-					p.value = p.multi ? (p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? []) : (filters?.[p.key] ?? '');
+					p.value = p.multi ? (p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? (p?.default ?? [])) : (filters?.[p.key] ?? p?.default ?? '');
 				}
 			});
 
@@ -173,10 +188,6 @@
   let isLoading = false;
   let pending = null;
 
-  if (!currentFilters?.sortBy?.length) {
-      currentFilters.sortBy = 'pp';
-  }
-
 	function updateCurrentFiltersFromParams() {
 		params.forEach(p => {
 			if (p.bitArray) {
@@ -189,6 +200,8 @@
 		});
 
 		params = params;
+
+		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -212,20 +225,27 @@
   }
 
   function onPageChanged(event) {
-    if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
+    if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-    navigate(`/ranking/${currentType}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+    navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
   }
 
   function navigateToCurrentPageAndFilters() {
     navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
   }
 
-  function toggleSortBy() {
-    currentFilters.sortBy = currentFilters.sortBy === "dailyImprovements" ? "pp" : "dailyImprovements";
+	function onSortChanged(event) {
+		if (!event?.detail?.id) return null;
 
-    navigateToCurrentPageAndFilters();
-  }
+		if (currentFilters.sortBy === event.detail.id) {
+			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+		} else {
+			currentFilters.sortBy = event.detail.id;
+			currentFilters.order = 'desc';
+		}
+
+		navigateToCurrentPageAndFilters();
+	}
 
   $: typeName = type && type.toUpperCase && !['global', 'friends'].includes(type) ? type.toUpperCase() : capitalize(type)
   $: changeParams(type, page, location)
@@ -249,7 +269,7 @@
 
       <RankingTable type={currentType} page={currentPage} filters={currentFilters}
                     on:page-changed={onPageChanged}
-                    on:sort-toggled={toggleSortBy}
+										on:sort-changed={onSortChanged}
                     on:loading={e => isLoading = !!e?.detail}
                     on:pending={e => pending = e?.detail}
       />
@@ -261,6 +281,7 @@
       <h2 class="title is-5">Filters</h2>
 
       {#each params as param}
+				{#if param.type}
         <section class="filter">
           <label>{param?.label ?? param?.key ?? ''}</label>
 
@@ -276,6 +297,7 @@
 						<Countries countries={param.value} on:change={param.onChange} />
 					{/if}
         </section>
+				{/if}
       {/each}
     </ContentBox>
   </aside>

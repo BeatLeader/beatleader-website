@@ -37,8 +37,7 @@
     function onCountryClick(player) {
       if (!player) return;
   
-      navigate(`/ranking/${player.playerInfo.countries[0].country}/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
-    }
+      navigate(`/ranking/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}?countries=${player?.playerInfo?.countries?.[0]?.country ?? ''}&${buildSearchFromFilters(currentFilters)}`)}
   
     function onGlobalClick(player) {
       if (!player) return;
