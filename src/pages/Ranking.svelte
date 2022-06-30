@@ -194,7 +194,7 @@
 	}
 
   function scrollToTop() {
-    if (boxEl) scrollToTargetAdjusted(boxEl, 44)
+    if (boxEl) scrollToTargetAdjusted(boxEl, 70)
   }
 
   function changeParams(newType, newPage, newLocation) {
