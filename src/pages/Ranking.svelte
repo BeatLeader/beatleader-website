@@ -5,7 +5,7 @@
 		createBuildFiltersFromLocation,
 		buildSearchFromFilters,
 		processStringFilter,
-		processStringArrayFilter, processIntFilter,
+		processStringArrayFilter,
 	} from '../utils/filters'
   import {capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
@@ -69,7 +69,14 @@
 			type: 'countries',
 			value: [],
 			values: [],
-			onChange: e => onMultiSwitchChange(e, 'platform'),
+			onChange: e => {
+				const param = findParam('countries');
+				if (param) {
+					param.value = e?.detail ?? [];
+
+					updateCurrentFiltersFromParams();
+				}
+			},
 			multi: true
 		},
     {
@@ -174,7 +181,9 @@
 		params.forEach(p => {
 			if (p.bitArray) {
 				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0)
-			} else {
+			} else if (p.key === 'countries') {
+				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : (p?.value ?? '');
+			} else{
 				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : (p?.value ?? '');
 			}
 		});
@@ -209,7 +218,7 @@
   }
 
   function navigateToCurrentPageAndFilters() {
-    navigate(`/ranking/${currentType}/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+    navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
   }
 
   function toggleSortBy() {
@@ -224,14 +233,14 @@
 </script>
 
 <svelte:head>
-  <title>{typeName} ranking / {currentPage} - {ssrConfig.name}</title>
+  <title>Ranking / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
 <section class="align-content">
   <article class="page-content" transition:fade>
     <ContentBox bind:box={boxEl}>
       <h1 class="title is-5">
-        {typeName} leaderboard
+        Ranking
 
         {#if isLoading}
           <Spinner/>

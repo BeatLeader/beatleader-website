@@ -32,7 +32,7 @@
     const country = countryObj?.country ?? null;
     if (!country) return null;
 
-    return `/ranking/${country.toLowerCase()}/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`;
+    return `/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}?countries=${country.toLowerCase()}`;
   }
 
   function navigateToCountryRanking(countryObj) {

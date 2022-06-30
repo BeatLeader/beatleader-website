@@ -1,42 +1,47 @@
 <script>
-	import Country from './Country.svelte'
+	import CountryPicker from '../Common/CountryPicker.svelte'
+	import {createEventDispatcher} from 'svelte'
 
 	export let countries = [];
 
-	let items = [];
-	function updateCountries() {
-		items = Array.isArray(countries) ? countries : [];
+	const dispatch = createEventDispatcher();
+
+	const regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
+
+	function getCountryName(code) {
+		try {
+			if (!code?.length) throw 'Unknown';
+
+			return code === "not set" ? code : regionNames.of(code.toUpperCase())
+		} catch (err) {
+			return 'Unknown';
+		}
 	}
 
-	$: updateCountries(countries)
+	const items = ['ad', 'ae', 'af', 'ag', 'ai', 'al', 'am', 'ao', 'aq', 'ar', 'as', 'at', 'au', 'aw', 'ax', 'az', 'ba', 'bb', 'bd', 'be', 'bf', 'bg', 'bh', 'bi', 'bj', 'bl', 'bm', 'bn', 'bo', 'bq', 'br', 'bs', 'bt', 'bv', 'bw', 'by', 'bz', 'ca', 'cc', 'cd', 'cf', 'cg', 'ch', 'ci', 'ck', 'cl', 'cm', 'cn', 'co', 'cr', 'cu', 'cv', 'cw', 'cx', 'cy', 'cz', 'de', 'dj', 'dk', 'dm', 'do', 'dz', 'ec', 'ee', 'eg', 'eh', 'er', 'es', 'et', 'fi', 'fj', 'fk', 'fm', 'fo', 'fr', 'ga', 'gb', 'gd', 'ge', 'gf', 'gg', 'gh', 'gi', 'gl', 'gm', 'gn', 'gp', 'gq', 'gr', 'gs', 'gt', 'gu', 'gw', 'gy', 'hk', 'hm', 'hn', 'hr', 'ht', 'hu', 'id', 'ie', 'il', 'im', 'in', 'io', 'iq', 'ir', 'is', 'it', 'je', 'jm', 'jo', 'jp', 'ke', 'kg', 'kh', 'ki', 'km', 'kn', 'kp', 'kr', 'kw', 'ky', 'kz', 'la', 'lb', 'lc', 'li', 'lk', 'lr', 'ls', 'lt', 'lu', 'lv', 'ly', 'ma', 'mc', 'md', 'me', 'mf', 'mg', 'mh', 'mk', 'ml', 'mm', 'mn', 'mo', 'mp', 'mq', 'mr', 'ms', 'mt', 'mu', 'mv', 'mw', 'mx', 'my', 'mz', 'na', 'nc', 'ne', 'nf', 'ng', 'ni', 'nl', 'no', 'np', 'nr', 'nu', 'nz', 'om', 'pa', 'pe', 'pf', 'pg', 'ph', 'pk', 'pl', 'pm', 'pn', 'pr', 'ps', 'pt', 'pw', 'py', 'qa', 're', 'ro', 'rs', 'ru', 'rw', 'sa', 'sb', 'sc', 'sd', 'se', 'sg', 'sh', 'si', 'sj', 'sk', 'sl', 'sm', 'sn', 'so', 'sr', 'ss', 'st', 'sv', 'sx', 'sy', 'sz', 'tc', 'td', 'tf', 'tg', 'th', 'tj', 'tk', 'tl', 'tm', 'tn', 'to', 'tr', 'tt', 'tv', 'tw', 'tz', 'ua', 'ug', 'um', 'us', 'uy', 'uz', 'va', 'vc', 've', 'vg', 'vi', 'vn', 'vu', 'wf', 'ws', 'xk', 'ye', 'yt', 'za', 'zm', 'zw', 'not set']
+		.map(code => ({value: code, label: getCountryName(code)}))
+		.sort((a, b) => a.label.localeCompare(b.label))
+	;
 
-	$: console.log(items);
+	function onSelect(e) {
+		dispatch('change', e?.detail?.map(i => i.value)?.filter(v => v?.length) ?? [])
+	}
+
+	$: value = items.filter(i => (countries ?? []).includes(i.value))
 </script>
 
-<section>
-	<span class="add-country badge-bg" on:click={() => items = [...items, null]}><span class="fas fa-plus-circle"></span> add</span>
-
-	{#each items as country}
-		<Country {country}/>
-	{/each}
+<section style=" --clearSelectTop: 8px; --multiItemBG: var(--selected); --multiClearBG: var(--selected); --listBackground:
+var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35px 2px 4px">
+	<CountryPicker {value} {items} on:select={onSelect}/>
 
 </section>
 
 <style>
-		section {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				gap: .25rem;
-		}
-    .add-country {
-        display: inline-flex;
+    section {
+        display: flex;
+        flex-wrap: wrap;
         align-items: center;
-        gap: .5rem;
-        cursor: pointer;
-    }
-    .add-country:hover {
-        border-bottom: 2px solid var(--beatleader-primary);
+        gap: .25rem;
     }
 
     section :global(.badge-bg) {
