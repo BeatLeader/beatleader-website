@@ -12,12 +12,15 @@
     import ClanBadges from '../Player/ClanBadges.svelte'
     import {rankValue, accValue, ppValue, changingValuesClan} from '../../utils/clans'
     import {buildSearchFromFilters} from '../../utils/filters'
+    import {createEventDispatcher} from 'svelte'
   
     export let player;
     export let currentFilters = null;
     export let playerId = null;
     export let withCrown = false;
     export let selectedClanTag = null;
+
+    const dispatch = createEventDispatcher();
   
     function navigateToPlayer(playerId) {
       if (!playerId) return;
@@ -36,13 +39,22 @@
   
     function onCountryClick(player) {
       if (!player) return;
-  
-      navigate(`/ranking/${Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1}?countries=${player?.playerInfo?.countries?.[0]?.country ?? ''}&${buildSearchFromFilters(currentFilters)}`)}
+
+      if (currentFilters) {
+        currentFilters.countries = player?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '';
+
+        const currentPage = Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1;
+
+        dispatch('filters-updated', {currentFilters, currentPage});
+      }
+
+      navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`)
+    }
   
     function onGlobalClick(player) {
       if (!player) return;
-  
-      navigate(`/ranking/global/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
+
+      navigate(`/ranking/${Math.floor((player.playerInfo.rank - 1) / PLAYERS_PER_PAGE) + 1}?${buildSearchFromFilters(currentFilters)}`)
     }
   
     function showRainbow(player) {

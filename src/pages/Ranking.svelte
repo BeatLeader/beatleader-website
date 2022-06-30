@@ -247,6 +247,16 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onFiltersUpdated(e) {
+		if (!e?.detail?.currentFilters) return;
+
+		currentFilters = {...e.detail.currentFilters};
+
+		currentPage = e?.detail?.currentPage ?? 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
   $: typeName = type && type.toUpperCase && !['global', 'friends'].includes(type) ? type.toUpperCase() : capitalize(type)
   $: changeParams(type, page, location)
   $: scrollToTop(pending);
@@ -268,6 +278,7 @@
       </h1>
 
       <RankingTable type={currentType} page={currentPage} filters={currentFilters}
+										on:filters-updated={onFiltersUpdated}
                     on:page-changed={onPageChanged}
 										on:sort-changed={onSortChanged}
                     on:loading={e => isLoading = !!e?.detail}

@@ -82,7 +82,7 @@
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
-				<PlayerCard player={player} playerId={mainPlayerId} currentFilters={filters}/>
+				<PlayerCard player={player} playerId={mainPlayerId} currentFilters={filters} on:filters-updated />
 				{#if !noIcons}
 					<AddFriendButton playerId={player.playerId}/>
 				{/if}

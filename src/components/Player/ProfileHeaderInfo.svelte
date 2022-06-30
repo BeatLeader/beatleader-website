@@ -187,7 +187,7 @@
     {/if}
 
     <div class="player-ranking">
-      <a style="flex: none" href={`/ranking/global/${Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1}`}
+      <a style="flex: none" href={`/ranking/${Math.floor((rank-1) / PLAYERS_PER_PAGE) + 1}`}
          on:click|preventDefault={() => navigateToGlobalRanking(rank)}
          title="Go to global ranking"
          class="clickable">
