@@ -169,7 +169,8 @@
           <div class="players grid-transition-helper" class:with-icons={isFounder}>
             {#each playersPage as player, idx (player.playerId)}
             <div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
-              <PlayerCard player={player} playerId={mainPlayerId} withCrown={clanLeaderId === player.playerId} selectedClanTag={clan?.tag} />
+              <PlayerCard player={player} playerId={mainPlayerId} withCrown={clanLeaderId === player.playerId}
+                          selectedClanTag={clan?.tag} value={player?.playerInfo?.pp} valueProps={{suffix: 'pp', zero: '-'}} />
 
               {#if isFounder && canBeKicked(clan, player)}
                 <Button iconFa="fas fa-trash-alt" title="Kick a player out of the clan" type="danger" noMargin={true}
