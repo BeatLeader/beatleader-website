@@ -9,7 +9,6 @@
 	import AddFriendButton from "../Player/AddFriendButton.svelte";
 	import Switcher from '../Common/Switcher.svelte'
 	import {opt} from '../../utils/js'
-	import {getHeadsetForHMD} from '../../utils/beatleader/format'
 
 	export let type = 'global';
 	export let page = 1;
@@ -23,16 +22,14 @@
 
 	const getStat = (data, key) => opt(data, key);
 	const getAcc = (data, key) => (getStat(data, key) ?? 0) * 100;
-	const getHmd = (data, key) => getHeadsetForHMD(getStat(data, key))?.name ?? 'Unknown headset'
 	
 	let allSortValues = [
 		{id: 'pp', 'label': 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', value: data => getStat(data, 'playerInfo.pp'), props: {suffix: 'pp', zero: '-'}},
-		{id: 'acc', 'label': 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', value: data => getAcc(data, 'scoreStats.averageRankedAccuracy'), props: {suffix: '%', zero: '-'}},
+		{id: 'acc', 'label': 'Acc', title: 'Sort by ranked accuracy', iconFa: 'fa fa-crosshairs', value: data => getAcc(data, 'scoreStats.averageRankedAccuracy'), props: {suffix: '%', zero: '-'}},
 		{id: 'topPp', 'label': 'Top PP', title: 'Sort by top PP', iconFa: 'fa fa-cubes', value: data => getStat(data, 'scoreStats.topPp'), props: {suffix: 'pp', zero: '-'}},
 		{id: 'topAcc', 'label': 'Top Acc', title: 'Sort by top accuracy', iconFa: 'fa fa-crosshairs', value: data => getAcc(data, 'scoreStats.topAccuracy'), props: {suffix: '%', zero: '-'}},
-		{id: 'hmd', 'label': 'HMD', title: 'Sort by HMD', iconFa: 'fas fa-vr-cardboard', value: data => getHmd(data, 'scoreStats.topHMD')},
-		{id: 'playCount', 'label': 'Play count', title: 'Sort by play count', iconFa: 'fas fa-calculator', value: data => getStat(data, 'scoreStats.rankedPlayCount'), props: {digits: 0}},
-		{id: 'dailyImprovements', 'label': 'Improvements', title: 'Sort by daily improvements', iconFa: 'far fa-lightbulb', value: data => getStat(data, 'scoreStats.dailyImprovements'), props: {digits: 0}},
+		{id: 'playCount', 'label': 'Play count', title: 'Sort by ranked play count', iconFa: 'fas fa-calculator', value: data => getStat(data, 'scoreStats.rankedPlayCount'), props: {digits: 0}},
+		{id: 'dailyImprovements', 'label': 'Improvements', title: 'Sort by today improved scores', iconFa: 'far fa-lightbulb', value: data => getStat(data, 'scoreStats.dailyImprovements'), props: {digits: 0}},
 	];
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);

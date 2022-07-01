@@ -6,6 +6,7 @@
 		buildSearchFromFilters,
 		processStringFilter,
 		processStringArrayFilter,
+		processIntArrayFilter
 	} from '../utils/filters'
   import {capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
@@ -13,6 +14,7 @@
   import Spinner from '../components/Common/Spinner.svelte'
   import ContentBox from "../components/Common/ContentBox.svelte";
   import RankingTable from '../components/Ranking/RankingTable.svelte'
+  import RangeSlider from "svelte-range-slider-pips";
   import {debounce} from '../utils/debounce'
 	import Switcher from '../components/Common/Switcher.svelte'
 	import Countries from '../components/Ranking/Countries.svelte'
@@ -35,6 +37,7 @@
 			updateCurrentFiltersFromParams();
 		}
 	}
+
 	const onMultiSwitchChange = (e, key) => {
 		const param = findParam(key);
 		if (param) {
@@ -44,6 +47,24 @@
 
 			updateCurrentFiltersFromParams();
 		}
+	}
+
+	let start = null;
+
+	var rangeChange = (event, key) => {
+		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
+
+		const range = findParam(key);
+		if (range) {
+			range.values = event.detail.values;
+		}
+
+		start = new Date().getTime();
+		setTimeout(() => {
+			if ((new Date().getTime() - start) > 499) {
+				updateCurrentFiltersFromParams(true);
+			}
+		}, 500);
 	}
 
   const params = [
@@ -134,6 +155,32 @@
 			multi: true
 		},
 		{
+			key: 'pp_range',
+			label: 'Pp range',
+			default: [0, 16000],
+			min: 0,
+			max: 16000,
+			step: 1,
+			pipstep: 2000,
+			type: 'slider',
+			process: processIntArrayFilter,
+			values: [],
+			onChange: e => rangeChange(e, 'pp_range'),
+		},
+		{
+			key: 'score_range',
+			label: 'Ranked scores count',
+			default: [0, 600],
+			min: 0,
+			max: 600,
+			step: 1,
+			pipstep: 100,
+			type: 'slider',
+			process: processIntArrayFilter,
+			values: [],
+			onChange: e => rangeChange(e, 'score_range'),
+		},
+		{
 			key: 'sortBy',
 			default: 'pp',
 			process: processStringFilter,
@@ -157,6 +204,9 @@
 				} else if (p.key === 'countries') {
 					p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : (p?.default ?? []);
 					filters[p.key] = filters[p.key] ?? [];
+				} else if (p.key === 'pp_range' || p.key === 'score_range') {
+					p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : (p?.default ?? []);
+					filters[p.key] = filters[p.key] ?? 0;
 				} else {
 					filters[p.key] = p.multi
 						? (
@@ -187,13 +237,16 @@
 
   let isLoading = false;
   let pending = null;
+  let preventScroll = false;
 
-	function updateCurrentFiltersFromParams() {
+	function updateCurrentFiltersFromParams(noScroll) {
 		params.forEach(p => {
 			if (p.bitArray) {
 				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0)
 			} else if (p.key === 'countries') {
 				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : (p?.value ?? '');
+			} else if (p.key === 'pp_range' || p.key === 'score_range') {
+				currentFilters[p.key] = (p?.values ?? []).map(i => i + "").join(',');
 			} else{
 				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : (p?.value ?? '');
 			}
@@ -202,12 +255,14 @@
 		params = params;
 
 		currentPage = 1;
+		preventScroll = noScroll;
 
 		navigateToCurrentPageAndFilters();
 	}
 
   function scrollToTop() {
-    if (boxEl) scrollToTargetAdjusted(boxEl, 70)
+    if (!preventScroll && boxEl) scrollToTargetAdjusted(boxEl, 70)
+	preventScroll = false;
   }
 
   function changeParams(newType, newPage, newLocation) {
@@ -306,6 +361,15 @@
 						/>
 					{:else if param?.type === 'countries'}
 						<Countries countries={param.value} on:change={param.onChange} />
+					{:else if param?.type === 'slider'}
+					<RangeSlider 
+						range 
+						min={param.min} 
+						max={param.max} 
+						step={param.step} 
+						values={param.values}
+						float hoverable pips pipstep={param.pipstep} all="label"
+						on:change={param.onChange}/>
 					{/if}
         </section>
 				{/if}

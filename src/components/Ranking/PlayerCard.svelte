@@ -111,14 +111,10 @@
     <div class="steam-and-pp">
       {#if currentFilters?.sortBy === "dailyImprovements"}
       <div style="color:{HSVtoRGB(player.others.improvement / 85, 1.0, 1.0)}">
-        <Value value={player?.others?.improvement} zero="Carbon positive" suffix={player?.others?.improvement === 1 ? " score" : " scores"} digits=0 />
+        <Value value={player?.others?.improvement} zero="-" suffix={player?.others?.improvement === 1 ? " score" : " scores"} digits=0 />
       </div>
-      {:else if currentFilters?.sortBy === 'hmd'}
-        <div style="color: {HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0)}">
-          {value}
-        </div>
       {:else}
-      <div style="color: {HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0)}">
+      <div style="color: {currentFilters?.sortBy === "pp" ? HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0) : ""}">
         <Value {value} {...valueProps} />
       </div>
       {/if}
