@@ -11,7 +11,7 @@
   import Error from '../Common/Error.svelte'
   import Button from '../Common/Button.svelte'
   import Preview from "../Common/Preview.svelte";
-  import CountryPicker from "../Common/CountryPicker.svelte"
+  import CountryPicker from "../Common/CountryPickerSingle.svelte"
   import ClanBadges from './ClanBadges.svelte'
   import BanForm from './BanForm.svelte';
 
