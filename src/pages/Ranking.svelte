@@ -298,6 +298,8 @@
 			currentFilters.sortBy = event.detail.id;
 			currentFilters.order = 'desc';
 		}
+		findParam('sortBy').value = currentFilters.sortBy;
+		findParam('order').value = currentFilters.order;
 
 		navigateToCurrentPageAndFilters();
 	}
