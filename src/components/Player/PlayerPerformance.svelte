@@ -55,7 +55,8 @@
 
   $: leaderboard = songScore?.leaderboard ?? null
   $: score = songScore?.score ?? null
-  $: prevScore = songScore?.prevScore ?? null
+	$: modifiedScore= score?.score ?? 0
+  $: prevModifiedScore = modifiedScore - (songScore?.score?.scoreImprovement?.score ?? 0)
   $: beatSavior = songScore?.beatSavior ?? getBeatSaviorCompatibleStats(score)
   $: failedAt = formatFailedAt(beatSavior)
   $: myScore = score?.myScore ?? null;
@@ -111,9 +112,8 @@
         <span class="score with-badge">
           <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
               <span slot="label">
-                <Value value="{unmodifiedScore ? score.unmodifiedScore : score.score}" prevValue={opt(prevScore, 'score')}
-                       inline={false} digits={0} prefix={score.scoreApproximate ? '~' : ''}
-                       prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
+                <Value value="{unmodifiedScore ? score.unmodifiedScore : modifiedScore}" prevValue={prevModifiedScore}
+                       inline={false} digits={0}
                 />
               </span>
           </Badge>
