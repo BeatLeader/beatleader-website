@@ -46,7 +46,7 @@
         prevWithSign = true;
         prevAbsolute = true;
         forcePrev = false;
-        prevTemplate = '${formatted}';
+        prevTemplate = prevValue ? '${formatted}' : '';
         break;
 
       case 'total-gain':
@@ -59,7 +59,7 @@
         prevWithSign = true;
         prevAbsolute = true;
         forcePrev = false;
-        prevTemplate = '[ ${formatted} ]';
+        prevTemplate = prevValue ? '[ ${formatted} ]' : '';
         break;
 
       case 'weighted':
@@ -68,7 +68,7 @@
         prevWithSign = false;
         prevAbsolute = true;
         forcePrev = true;
-        prevTemplate = '( ${formatted} )';
+        prevTemplate = prevValue ? '( ${formatted} )' : '';
         break;
     }
 
