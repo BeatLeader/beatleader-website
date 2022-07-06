@@ -1,5 +1,4 @@
 <script>
-    import {configStore} from '../stores/config'
     import ssrConfig from '../ssr-config'
     import createAccountStore from '../stores/beatleader/account'
     import createServiceParamsManager from '../components/Player/utils/service-param-manager'
@@ -26,12 +25,6 @@
 
     let serviceParams = {sort:"date", order:"desc", page:1, filters:{count: 5}};
 
-    const billboardTab = {
-      id: 'billboard',
-      label: 'Billboard',
-      icon: '<i class="fas fa-clipboard-list"></i>',
-      url: `/dashboard`
-    };
     const topScoresTab = {
       id: 'topscores',
       label: 'Top Scores',
@@ -42,18 +35,6 @@
 
     let tab;
     let selectedTabId;
-
-    function updateTabs(billboardState) {
-        if (billboardState === 'show') {
-            allTabs = [billboardTab, topScoresTab];
-            tab = billboardTab;
-            selectedTabId = billboardTab.id;
-        } else {
-            allTabs = [topScoresTab, billboardTab];
-            tab = topScoresTab;
-            selectedTabId = topScoresTab.id;
-        }
-    }
 
     function toggleRankingSortBy() {
         filters.sortBy = filters.sortBy === "dailyImprovements" ? "pp" : "dailyImprovements";
@@ -86,8 +67,6 @@
 
     $: friends = $account?.friends ?? null;
     $: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`
-    $: billboardState = $configStore?.preferences?.billboardState;
-    $: updateTabs(billboardState);
 </script>
 
 <svelte:head>

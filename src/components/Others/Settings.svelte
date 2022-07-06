@@ -27,12 +27,6 @@
 
   const { activeRoute } = getContext(ROUTER);
 
-  const billboardStateOptions = [
-    { name: "Show", value: DEFAULT_BILLBOARD_STATE },
-    { name: "Show, but in last tab", value: "lastTab" },
-    { name: "Hide", value: "hide" },
-  ];
-
   const scoreComparisonMethods = [
     { name: "In place", value: DEFAULT_SCORE_COMPARISON_METHOD },
     { name: "In details", value: "in-details" },
@@ -51,7 +45,6 @@
     { name: "Unbounded - MicroBlock", value: "unbounded" },
   ];
 
-  let currentBillboardState = DEFAULT_BILLBOARD_STATE;
   let currentTheme = DEFAULT_THEME;
   let currentBGImage = "";
   let currentLocale = DEFAULT_LOCALE;
@@ -60,9 +53,6 @@
 
   function onConfigUpdated(config) {
     if (config?.locale) currentLocale = config.locale;
-    if (config?.preferences?.billboardState)
-      currentBillboardState =
-        config?.preferences?.billboardState ?? DEFAULT_BILLBOARD_STATE;
     if (config?.scoreComparison)
       currentScoreComparisonMethod =
         config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
@@ -80,7 +70,6 @@
 
     $configStore = produce($configStore, (draft) => {
       draft.locale = currentLocale;
-      draft.preferences.billboardState = currentBillboardState;
       draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
       draft.preferences.theme = currentTheme;
@@ -94,7 +83,6 @@
   function onCancel() {
     if (configStore && $configStore) {
       currentLocale = $configStore.locale;
-      currentBillboardState = $configStore.preferences.billboardState;
       currentScoreComparisonMethod = $configStore.scoreComparison.method;
       currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
     }
@@ -155,15 +143,6 @@
     <svelte:fragment slot="content">
       {#if configStore && $configStore}
         <section class="options">
-          <section class="option">
-            <label title="Show billboard on dashboard">Billboard</label>
-            <Select bind:value={currentBillboardState}>
-              {#each billboardStateOptions as option (option.value)}
-                <option value={option.value}>{option.name}</option>
-              {/each}
-            </Select>
-          </section>
-
           <section class="option">
             <label
               title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"

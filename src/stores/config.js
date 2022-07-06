@@ -23,7 +23,6 @@ const DEFAULT_CONFIG = {
     method: 'in-place',
   },
   preferences: {
-    billboardState: 'show',
     iconsOnAvatars: 'show',
     theme:'mirror',
     bgimage:"/assets/background.png"
