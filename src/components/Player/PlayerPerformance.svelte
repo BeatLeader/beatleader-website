@@ -1,6 +1,4 @@
 <script>
-  import {formatDate} from '../../utils/date'
-  import ssrConfig from '../../ssr-config'
   import {configStore} from '../../stores/config'
   import {opt} from "../../utils/js";
   import Badge from '../Common/Badge.svelte'
@@ -55,11 +53,18 @@
 
   $: leaderboard = songScore?.leaderboard ?? null
   $: score = songScore?.score ?? null
+
 	$: modifiedScore= score?.score ?? 0
-  $: prevModifiedScore = modifiedScore - (songScore?.score?.scoreImprovement?.score ?? 0)
+  $: prevModifiedScore = modifiedScore - (score?.scoreImprovement?.score ?? 0)
+
   $: beatSavior = songScore?.beatSavior ?? getBeatSaviorCompatibleStats(score)
-  $: failedAt = formatFailedAt(beatSavior)
-  $: myScore = score?.myScore ?? null;
+	$: accLeft = beatSavior?.stats?.accLeft ?? 0
+	$: prevAccLeft = accLeft - (score?.scoreImprovement?.accLeft ?? 0)
+	$: accRight = beatSavior?.stats?.accRight ?? 0
+	$: prevAccRight = accRight - (score?.scoreImprovement?.accRight ?? 0)
+	$: failedAt = formatFailedAt(beatSavior)
+
+	$: myScore = score?.myScore ?? null;
 	$: myScoreBeatSavior = getBeatSaviorCompatibleStats(myScore?.score)
 </script>
 
@@ -120,101 +125,60 @@
         </span>
     {/if}
 
-    {#if beatSavior && beatSavior.stats}
-      {#if beatSavior.stats.accLeft}
+    {#if beatSavior}
+			{#if accLeft}
           <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
+            <Badge onlyLabel={true} color="white" inline={true}>
                 <span slot="label">
                   <Value
-                      title={`Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
-                      value="{beatSavior.stats.accLeft}"
-                      inline={false} digits={2}
-                  />
+										title={beatSavior?.stats?.leftAverageCut ? `Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}` : null}
+										value={accLeft} prevValue={prevAccLeft}
+										inline={true} digits={2}
+									/>
                 </span>
             </Badge>
           </span>
-      {/if}
+			{:else}
+				<span class="beatSavior with-badge"></span>
+			{/if}
 
-      {#if beatSavior.stats.accRight}
+			{#if accRight}
           <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
+            <Badge onlyLabel={true} color="white" inline={true}>
                 <span slot="label">
                   <Value
-                      title={`Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}`}
-                      value="{beatSavior.stats.accRight}" inline={false} digits={2}
-                  />
+										title={beatSavior?.stats?.rightAverageCut ? `Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}` : null}
+										value={accRight} prevValue={prevAccRight}
+										inline={true} digits={2}
+									/>
                 </span>
             </Badge>
           </span>
-      {/if}
+			{:else}
+				<span class="beatSavior with-badge"></span>
+			{/if}
 
-      {#if beatSavior.stats.miss !== undefined}
+			{#if beatSavior.stats.miss !== undefined}
           <span class="beatSavior with-badge">
             <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                 <span slot="label"
-                      title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}>
+											title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}>
                   {#if beatSavior.stats.miss || beatSavior.stats.bombHit || beatSavior.stats.wallHit}
                     <i class="fas fa-times"></i>
                     <Value
-                        title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}
-                        value="{beatSavior.stats.miss + beatSavior.stats.wallHit + beatSavior.stats.bombHit}"
-                        inline={false} digits={0}
-                    />
+											title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}
+											value="{beatSavior.stats.miss + beatSavior.stats.wallHit + beatSavior.stats.bombHit}"
+											inline={false} digits={0}
+										/>
                   {:else if (!beatSavior.stats.wallHit && !beatSavior.stats.bombHit)}
                   <span style="color: yellow">FC</span>
                   {/if}
                 </span>
             </Badge>
           </span>
-      {/if}
-    {:else if score.badCuts !== undefined}
-      {#if score.accLeft}
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
-                <span slot="label">
-                  <Value
-                      title="Left acc"
-                      value="{score.accLeft}"
-                      inline={false} digits={2}
-                  />
-                </span>
-            </Badge>
-          </span>
-      {:else}
-          <span></span>
-      {/if}
-
-      {#if score.accRight}
-          <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
-                <span slot="label">
-                  <Value
-                      title="Right acc"
-                      value="{score.accRight}" inline={false} digits={2}
-                  />
-                </span>
-            </Badge>
-          </span>
-      {:else}
-          <span></span>
-      {/if}
-
-      <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-                <span slot="label" title={`Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}>
-                  {#if !score.fullCombo}
-                    <i class="fas fa-times"></i>
-                    <Value
-                        title={`Missed notes: ${score.missedNotes}, Bad cuts: ${score.badCuts}`}
-                        value="{score.missedNotes + score.badCuts}"
-                        inline={false} digits={0}
-                    />
-                  {:else}
-                  <span style="color: yellow">FC</span>
-                  {/if}
-                </span>
-            </Badge>
-          </span>
+			{:else}
+				<span class="beatSavior with-badge"></span>
+			{/if}
     {/if}
   </div>
 
@@ -287,7 +251,7 @@
       {#if myScoreBeatSavior?.stats?.accLeft}
         {#if myScoreBeatSavior?.stats?.accLeft}
 					<span class="beatSavior with-badge compare">
-						<Badge onlyLabel={true} color="white" bgColor={ssrConfig.leftSaberColor}>
+						<Badge onlyLabel={true} color="white">
 								<span slot="label">
 									<Value
 											value="{myScoreBeatSavior.stats.accLeft}"
@@ -300,7 +264,7 @@
 
         {#if myScoreBeatSavior?.stats?.accRight}
 					<span class="beatSavior with-badge compare">
-						<Badge onlyLabel={true} color="white" bgColor={ssrConfig.rightSaberColor}>
+						<Badge onlyLabel={true} color="white">
 								<span slot="label">
 									<Value
 											value="{myScoreBeatSavior.stats.accRight}" inline={false} digits={2}
@@ -404,5 +368,12 @@
 
     .player-performance-badges .compare {
         opacity: .7;
+    }
+
+    .beatSavior.with-badge :global(.badge > .label) {
+        width: 100%;
+    }
+    .beatSavior.with-badge :global(.badge > .label small) {
+        margin-left: .35em;
     }
 </style>
