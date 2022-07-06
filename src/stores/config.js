@@ -23,6 +23,7 @@ const DEFAULT_CONFIG = {
     method: 'in-place',
   },
   preferences: {
+    ppMetric: 'weighted',
     iconsOnAvatars: 'show',
     theme:'mirror',
     bgimage:"/assets/background.png"
@@ -32,6 +33,7 @@ const DEFAULT_CONFIG = {
 }
 
 const newSettingsAvailableDefinition = {
+  'preferences.ppMetric': 'PP metric selection',
   'scoreComparison.method': 'Method of displaying the comparison of scores',
   'preferences.iconsOnAvatars': 'Showing icons on avatars',
   'locale': 'Locale selection',

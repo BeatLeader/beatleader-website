@@ -53,15 +53,16 @@
 
   $: leaderboard = songScore?.leaderboard ?? null
   $: score = songScore?.score ?? null
+	$: improvements = score?.scoreImprovement;
 
 	$: modifiedScore= score?.score ?? 0
-  $: prevModifiedScore = modifiedScore - (score?.scoreImprovement?.score ?? 0)
+  $: prevModifiedScore = modifiedScore - (improvements?.score ?? 0)
 
   $: beatSavior = songScore?.beatSavior ?? getBeatSaviorCompatibleStats(score)
 	$: accLeft = beatSavior?.stats?.accLeft ?? 0
-	$: prevAccLeft = accLeft - (score?.scoreImprovement?.accLeft ?? 0)
+	$: prevAccLeft = accLeft - (improvements?.accLeft ?? 0)
 	$: accRight = beatSavior?.stats?.accRight ?? 0
-	$: prevAccRight = accRight - (score?.scoreImprovement?.accRight ?? 0)
+	$: prevAccRight = accRight - (improvements?.accRight ?? 0)
 	$: failedAt = formatFailedAt(beatSavior)
 
 	$: myScore = score?.myScore ?? null;
@@ -75,9 +76,9 @@
             <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
               <span slot="label">
                 <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-                    pp="{score.pp}" weighted={score.ppWeighted} attribution={score.ppAttribution}
+                    pp="{score.pp}" weighted={score.ppWeighted} {improvements}
                     whatIf={score.whatIfPp}
-                    zero={(configStore, $configStore, formatNumber(0))} withZeroSuffix={true} inline={false}
+                    zero={formatNumber(0)} withZeroSuffix={true} inline={false}
                     color="white"
                 />
               </span>

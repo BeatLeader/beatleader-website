@@ -17,7 +17,7 @@
   export let show = false;
 
   const DEFAULT_THEME = "mirror";
-  const DEFAULT_BILLBOARD_STATE = "show";
+  const DEFAULT_PP_METRIC = 'weighted';
   const DEFAULT_SCORE_COMPARISON_METHOD = "in-place";
   const DEFAULT_AVATAR_ICONS = "show";
 
@@ -30,6 +30,12 @@
   const scoreComparisonMethods = [
     { name: "In place", value: DEFAULT_SCORE_COMPARISON_METHOD },
     { name: "In details", value: "in-details" },
+  ];
+
+  const ppMetrics = [
+    { name: "Weighted PP", value: DEFAULT_PP_METRIC },
+    { name: "PP improvement", value: "improvement" },
+    { name: "Total PP gain", value: "total-gain" },
   ];
 
   const avatarIcons = [
@@ -48,17 +54,18 @@
   let currentTheme = DEFAULT_THEME;
   let currentBGImage = "";
   let currentLocale = DEFAULT_LOCALE;
+  let currentPpMetric = DEFAULT_PP_METRIC;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
   let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 
   function onConfigUpdated(config) {
     if (config?.locale) currentLocale = config.locale;
+    if (config?.preferences?.ppMetric)
+      currentPpMetric = config?.preferences?.ppMetric ?? DEFAULT_PP_METRIC;
     if (config?.scoreComparison)
-      currentScoreComparisonMethod =
-        config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
+      currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
     if (config?.preferences?.iconsOnAvatars)
-      currentAvatarIcons =
-        config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
+      currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
     if (config?.preferences?.theme)
       currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
     if (config?.preferences?.bgimage)
@@ -70,6 +77,7 @@
 
     $configStore = produce($configStore, (draft) => {
       draft.locale = currentLocale;
+      draft.preferences.ppMetric = currentPpMetric;
       draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
       draft.preferences.theme = currentTheme;
@@ -83,6 +91,7 @@
   function onCancel() {
     if (configStore && $configStore) {
       currentLocale = $configStore.locale;
+      currentPpMetric = $configStore.preferences.ppMetric;
       currentScoreComparisonMethod = $configStore.scoreComparison.method;
       currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
     }
@@ -143,6 +152,18 @@
     <svelte:fragment slot="content">
       {#if configStore && $configStore}
         <section class="options">
+          <section class="option">
+            <label
+              title="Determines which metric will be displayed at the score under PP, if available. The others will be displayed in the tooltip."
+            >PP metric</label
+            >
+            <Select bind:value={currentPpMetric}>
+              {#each ppMetrics as option (option.value)}
+                <option value={option.value}>{option.name}</option>
+              {/each}
+            </Select>
+          </section>
+
           <section class="option">
             <label
               title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
