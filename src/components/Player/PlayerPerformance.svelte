@@ -99,13 +99,13 @@
       <span class="pp with-badge"></span>
     {/if}
 
-    {#if score.acc}
-            <span class="acc with-badge">
-              <Accuracy {score} {prevScore} {modifiersStore} noSecondMetric={true}/>
-            </span>
-    {:else}
-      <span class="acc with-badge"></span>
-    {/if}
+		{#if score.acc}
+			<span class="acc with-badge">
+				<Accuracy {score} {modifiersStore} />
+			</span>
+		{:else}
+			<span class="acc with-badge"></span>
+		{/if}
 
     {#if score.score}
         <span class="score with-badge">
@@ -243,7 +243,7 @@
 
 			{#if myScore?.score.acc}
 				<span class="acc with-badge compare">
-					<Accuracy score={myScore?.score} noSecondMetric={true}/>
+					<Accuracy score={myScore?.score} />
 				</span>
 			{:else}
 				<span class="acc with-badge"></span>
