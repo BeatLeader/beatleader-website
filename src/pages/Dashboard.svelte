@@ -19,26 +19,11 @@
 
     const account = createAccountStore();
 
-    const serviceParamsManager = createServiceParamsManager('user-friends');
+    const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
     serviceParamsManager.initFromUrl('beatleader/date/1');
     serviceParamsManager.update({filters: {count: 5}})
 
     let serviceParams = {sort:"date", order:"desc", page:1, filters:{count: 5}};
-
-    const topScoresTab = {
-      id: 'topscores',
-      label: 'Top Scores',
-      icon: '<i class="fab fa-grav"></i>',
-      url: `/dashboard`
-    };
-    let allTabs = [];
-
-    let tab;
-    let selectedTabId;
-
-    function toggleRankingSortBy() {
-        filters.sortBy = filters.sortBy === "dailyImprovements" ? "pp" : "dailyImprovements";
-    }
 
     function onRankingPageChanged(e) {
         if (e.detail.initial || !Number.isFinite(e.detail.page)) return;
@@ -135,7 +120,6 @@
 
                             <RankingTable type="friends" {page} filters={filters} noIcons={true} useInternalFilters={true}
                                           on:page-changed={onRankingPageChanged}
-                                          on:sort-toggled={toggleRankingSortBy}
                                           on:loading={e => isLoading = !!e?.detail}
                                           on:pending={e => pending = e?.detail}
                             />
@@ -159,7 +143,7 @@
                             </h2>
                         </header>
 
-                        <Scores playerId="user-friends"
+                        <Scores playerId={SPECIAL_PLAYER_ID}
                                 initialService="beatleader"
                                 initialServiceParams={serviceParams}
                                 on:page-changed={onScoresPageChanged}
