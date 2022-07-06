@@ -1,7 +1,5 @@
 <script>
-  import {configStore} from '../../stores/config'
   import {diffColors, describeModifiersAndMultipliers} from '../../utils/beatleader/format'
-  import {formatDate} from '../../utils/date'
   import Badge from './Badge.svelte'
   import Value from './Value.svelte'
 
@@ -42,7 +40,6 @@
       <slot name="label-before"></slot>
       <Value {value} {prevValue}
              title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
-             prevTitle={"${value} on " + (configStore, $configStore, formatDate(prevScore?.timeSet, 'short', 'short'))}
       />
       <slot name="label-after"></slot>
     </span>
