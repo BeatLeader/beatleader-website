@@ -433,8 +433,7 @@
                       </div>
                     {/if}
                     <div class="percentage with-badge">
-                      <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} noSecondMetric={true}
-                                showMods={false}/>
+                      <Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false}/>
                     </div>
                     <div class="score with-badge">
                       <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">

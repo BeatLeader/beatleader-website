@@ -1,13 +1,14 @@
 <script>
-  import Value from '../Common/Value.svelte'
-  import {formatNumber} from '../../utils/format'
+  import {configStore} from '../../stores/config'
+  import {formatNumber, substituteVars} from '../../utils/format'
   import {hoverable} from '../../svelte-utils/actions/hoverable'
+  import Value from '../Common/Value.svelte'
 
   export let pp = 0;
   export let zero = '-';
   export let withZeroSuffix = false;
   export let weighted = null;
-  export let attribution = null;
+  export let improvements = null;
   export let playerId = null;
   export let color = "var(--ppColour)"
   export let leaderboardId = null;
@@ -24,6 +25,59 @@
     tooltipOpacity = 1;
   }
   const onUnhover = () => tooltipOpacity = 0;
+
+  let prevValue = null;
+  let prevWithSign = false;
+  let prevAbsolute = false;
+  let forcePrev = false;
+  let prevTemplate = '( ${formatted} )';
+  let prevTitle = null;
+
+  function onUpdate(type, pp, weighted, improvements) {
+    console.log()
+    switch (type) {
+      case 'improvement':
+        prevValue = improvements?.pp ?? null;
+        if (!prevValue) {
+          onUpdate('weighted', pp, weighted, improvements);
+          return;
+        }
+
+        prevWithSign = true;
+        prevAbsolute = true;
+        forcePrev = false;
+        prevTemplate = prevValue ? '${formatted}' : '';
+        break;
+
+      case 'total-gain':
+        prevValue = improvements?.totalPp ?? null;
+        if (!prevValue) {
+          onUpdate('weighted', pp, weighted, improvements);
+          return;
+        }
+
+        prevWithSign = true;
+        prevAbsolute = true;
+        forcePrev = false;
+        prevTemplate = prevValue ? '[ ${formatted} ]' : '';
+        break;
+
+      case 'weighted':
+      default:
+        prevValue = weighted ?? null;
+        prevWithSign = false;
+        prevAbsolute = true;
+        forcePrev = true;
+        prevTemplate = prevValue ? '( ${formatted} )' : '';
+        break;
+    }
+
+    prevTitle = weighted || improvements
+      ? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}, ` : ''}${improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}, ` : ''}${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}` : ''}`
+      : null;
+  }
+
+  $: onUpdate($configStore?.preferences?.ppMetric ?? 'weighted', pp, weighted, improvements)
 </script>
 
 <span class="pp" style="--color: {color}">
@@ -35,16 +89,16 @@
   </span>{/if}
 
   <span class="value">
-    <Value value="{pp}" {zero} {withZeroSuffix} prevValue={weighted}
-           prevWithSign={false} prevTitle={`Weighted ${suffix.toUpperCase()}`}
-           prevAbsolute={weighted !== null} {suffix} {...$$restProps}
-           forcePrev={pp === weighted}
+    <Value value={pp} {zero} {withZeroSuffix} {prevValue}
+           {prevWithSign} {prevTitle}
+           {prevAbsolute} {suffix} {...$$restProps}
+           {forcePrev}
     >
       <span slot="value" let:formatted class="main-value"  class:whatIfAvailable={whatIf} use:hoverable on:hover={onHover} on:unhover={onUnhover}>
         {formatted} <i class="fas fa-question"></i>
       </span>
       <svelte:fragment slot="prev" let:formatted let:value>
-          ( {formatted} )
+        {substituteVars(prevTemplate, {formatted})}
       </svelte:fragment>
     </Value>
   </span>

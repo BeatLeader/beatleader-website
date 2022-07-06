@@ -21,6 +21,8 @@ const processScore = s => {
 
   const ppWeighted = pp * weight;
 
+  const {accuracy: improvedAcc} = s?.scoreImprovement ?? {}
+
   return {
     leaderboard,
     score: {
@@ -36,6 +38,12 @@ const processScore = s => {
       ppWeighted,
       rank,
       myScore: s?.myScore ? processScore(s.myScore) : null,
+      scoreImprovement: s?.scoreImprovement
+        ? {
+          ...s.scoreImprovement,
+          accuracy: (improvedAcc ?? 0) * 100,
+        }
+        : null
     },
     fetchedAt: new Date(),
     lastUpdated: new Date(),

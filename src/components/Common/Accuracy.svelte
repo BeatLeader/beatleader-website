@@ -1,16 +1,11 @@
 <script>
-  import {configStore} from '../../stores/config'
   import {diffColors, describeModifiersAndMultipliers} from '../../utils/beatleader/format'
-  import {opt} from '../../utils/js'
-  import {formatDate} from '../../utils/date'
   import Badge from './Badge.svelte'
   import Value from './Value.svelte'
 
   export let score;
   export let prevScore = null;
   export let showPercentageInstead = false;
-  export let noSecondMetric = false;
-  export let secondMetricInsteadOfDiff = false;
   export let showMods = true;
   export let modifiersStore = null;
 
@@ -33,17 +28,18 @@
     return badgesDef.reduce((cum, badge) => ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc)) ? badge : cum, badgesDef[badgesDef.length - 1]);
   }
 
-  $: badge = getBadge(opt(score, 'acc'));
-  $: mods = opt(score, 'mods')
+  $: badge = getBadge(score?.acc);
+  $: mods = score?.mods
+
+  $: value = score?.acc ?? 0
+  $: prevValue = value - (score?.scoreImprovement?.accuracy ?? 0)
 </script>
 
 <Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
     <span slot="label">
       <slot name="label-before"></slot>
-      <Value value={score.acc}
-             prevValue={opt(prevScore, 'acc')}
+      <Value {value} {prevValue}
              title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false}
-             prevTitle={"${value} on " + (configStore, $configStore, formatDate(opt(prevScore, 'timeSet'), 'short', 'short'))}
       />
       <slot name="label-after"></slot>
     </span>
