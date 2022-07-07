@@ -36,7 +36,7 @@ import Spinner from "../components/Common/Spinner.svelte";
 {#if !action || action == "addHome"}
     {#if !loggedInPlayer}
     <div class="title">Login</div>
-    <div class="tips">Login with the Steam or account you created in game.</div>
+    <div class="tips">Login with Steam or the account you created in game.</div>
         <b>Creating an account is only possible from in game!</b>
         <div class="input-container">
             <div class="cat">
