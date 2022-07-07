@@ -70,12 +70,12 @@
   const params = [
     {
       key: 'search',
-      label: 'Player name',
+      label: 'Player Name',
       default: '',
       process: processStringFilter,
       type: 'input',
 			value: '',
-			placeholder: 'Enter at least 3 characters...',
+			placeholder: 'Search for a player',
       onChange: e => {
 				const length = e?.target?.value?.length
 				if (length > 0 && length < 3) return;
@@ -161,7 +161,7 @@
 			min: 0,
 			max: 16000,
 			step: 1,
-			pipstep: 2000,
+			pipstep: 4000,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
