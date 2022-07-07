@@ -36,8 +36,8 @@ import Spinner from "../components/Common/Spinner.svelte";
 {#if !action || action == "addHome"}
     {#if !loggedInPlayer}
     <div class="title">Login</div>
-    <div class="tips">Login with the Steam or account you created in mod.</div>
-        <b>Signup is possible only from the mods!</b>
+    <div class="tips">Login with Steam or the account you created in game.</div>
+        <b>Creating an account is only possible from in game!</b>
         <div class="input-container">
             <div class="cat">
                 Account
@@ -126,7 +126,7 @@ import Spinner from "../components/Common/Spinner.svelte";
 <div>
 Link your account to receive patreon features for your tier.<br><br>
 
-If you not yet a patreon, you can become one right now at <a class="inlineLink" href="https://www.patreon.com/beatleader">patreon.com/beatleader</a>
+If you are not yet a patreon, you can become one <strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</strong>
 </div>
 
 <form action={BL_API_URL + "signin"} method="post">
@@ -157,15 +157,15 @@ If you not yet a patreon, you can become one right now at <a class="inlineLink" 
 {:else if action == "autoban"}
     {#if $account.ban}
     Your account was suspended {formatDateRelative(dateFromUnix($account.ban.timeset))}<br>
-    You can activate it back if more than a week passed.
+    You can activate it after a week has passed.
 
     <Button iconFa="fas fa-plus-square" label="Try activate my account" on:click={() => account.unbanPlayer()}/>
     {:else}
     You can suspend your BeatLeader account. It will disappear in the leaderboards and ranking.<br>
-    And your replays will not be accepted anymore.<br><br>
+    And you won't be able to submit scores.<br><br>
 
     <b>You can activate it back only after the week of suspension.<br>
-        All account data will be deleted after 6 month of suspension!</b><br>
+        All account data will be deleted after 6 months of suspension!</b><br>
     
     Account suspension may take up to 3 minutes.
 

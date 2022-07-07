@@ -24,12 +24,9 @@
     <ContentBox>
       <h1 class="title is-3">Support</h1>
     
-      If you have any issues with mods, websites or app - <br>
-      <b> the quiest and easiest way to resolve them will be to ping me in <a href="https://discord.com/users/698212038106677259">Discord(NSGolova#3325).</a></b><br><br>
+      If you have any issues with mods, websites or the app - <br>
 
-      or<br><br>
-
-      <a href="https://discord.gg/2RG5YVqtG6">Join our Discord server</a>. And ask in #help or write report in #bugreports.<br><br>
+      <a href="https://discord.gg/2RG5YVqtG6">Join our Discord server</a> and ask in <a href="https://discord.com/channels/921820046345523311/951919251227295844">#help</a>, write a report in <a href="https://discord.com/channels/921820046345523311/921826851528245318">#bugreports</a> or ping <a href="https://discord.com/users/698212038106677259">NSGolova#3325.</a><br><br>
       
       or<br><br>
 
