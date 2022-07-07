@@ -47,7 +47,7 @@
     <br><br><b>Can I delete my data from BeatLeader?</b><br>
     No. Work in progress, you will be able as soon as I finish implenting it.
 
-    <br><br><br>What data BeatLeader website/"electron app" collect?<br>
+    <br><br><br>What data does BeatLeader website/"electron app" collect?<br>
     <b>No data is collected.</b>
 
     <p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>

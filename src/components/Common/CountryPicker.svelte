@@ -10,7 +10,7 @@
 </script>
 
 <Select {value} {items} {itemFilter} {Item} MultiSelection={CountryPickerMultiItem}
-				placeholder="Click to select..." isSearchable={true} isMulti={true}
+				placeholder="Click to select country" isSearchable={true} isMulti={true}
 				placeholderAlwaysShow={true}
 				on:select on:clear
 />
