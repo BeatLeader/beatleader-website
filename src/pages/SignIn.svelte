@@ -126,7 +126,6 @@ import Spinner from "../components/Common/Spinner.svelte";
 <div>
 Link your account to receive patreon features for your tier.<br><br>
 
-<!-- If you are not yet a patreon, you can become one <a class="inlineLink" href="https://www.patreon.com/beatleader">here -->
 If you are not yet a patreon, you can become one <strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</strong>
 </div>
 
