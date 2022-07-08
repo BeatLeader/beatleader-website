@@ -349,7 +349,7 @@
 
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
-    <div class="leaderboard {type === 'accsaber' ? 'no-cover-image' : ''}"
+    <div class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
          style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
 
       {#if !$leaderboardStore && $isLoading}
