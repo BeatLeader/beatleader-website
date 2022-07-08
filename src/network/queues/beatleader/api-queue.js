@@ -75,6 +75,13 @@ export const processLeaderboardScore = s => {
 
   ret.score.id = s?.id ?? null;
 
+      ret.score = {...s, ...ret.score}
+
+      return ret;
+    });
+  }
+
+  const processLeaderboard = (leaderboardId, page, respons) => {
   return ret;
 }
 const processLeaderboardScores = response => response?.map(processLeaderboardScore) ?? null;
@@ -175,7 +182,7 @@ export default (options = {}) => {
 
   const rankingGlobal = async (page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => {
     return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), options, priority);
-  } 
+  }
 
   const rankingCountry = async (countries, page = 1, filters = {sortBy: "pp"}, priority = PRIORITY.FG_LOW, options = {}) => rankingGlobal(page, {...filters, countries}, priority, options);
 

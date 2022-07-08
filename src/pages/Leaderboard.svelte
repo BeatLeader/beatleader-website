@@ -2,7 +2,7 @@
   import {createEventDispatcher} from 'svelte'
   import {navigate} from "svelte-routing";
   import createAccountStore from '../stores/beatleader/account'
-  import {fade, fly} from 'svelte/transition'
+  import {fade, fly, slide} from 'svelte/transition'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import createModifiersStore from '../stores/beatleader/modifiers'
   import {opt, capitalize} from '../utils/js'
@@ -33,6 +33,7 @@
   import ClanBadges from '../components/Player/ClanBadges.svelte'
   import {flip} from 'svelte/animate'
   import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score'
+  import SongScoreDetails from '../components/Player/SongScoreDetails.svelte'
 
   export let leaderboardId;
   export let type = 'global';
@@ -74,6 +75,8 @@
   let currentFilters = buildFiltersFromLocation(location);
   let boxEl = null;
   let leaderboard = null;
+
+  let openedDetails = [];
 
   let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 
@@ -269,6 +272,16 @@
    window.open(link, "_blank");
   }
 
+  function toggleOpen(scoreId) {
+    if (!scoreId) return;
+
+    if(openedDetails.includes(scoreId)) {
+      openedDetails = openedDetails.filter(id => id !== scoreId)
+    } else {
+      openedDetails = [...openedDetails, scoreId]
+    }
+  }
+
   let userScore = null;
   let userScoreHash = null;
   async function fetchUserScore(playerId, hash, diff, type, userScoreOnCurrentPage = null) {
@@ -449,6 +462,11 @@
                         {/if}
                         {:else}
                           <Icons {hash} {diffInfo} icons={["replay"]} scoreId={score?.score?.id}/>
+
+                          <span class="beat-savior-reveal clickable" class:opened={openedDetails.includes(score?.score?.id)}
+                                on:click={() => toggleOpen(score?.score?.id)} title="Show details">
+                              <i class="fas fa-chevron-down"></i>
+                            </span>
                         {/if}
                       </div>
                     {/if}
@@ -487,6 +505,15 @@
                       </Badge>
                     </div>
                   </div>
+
+                  {#if openedDetails.includes(score?.score?.id)}
+                    <div transition:slide>
+                      <SongScoreDetails playerId={score?.player?.playerId} songScore={score} {fixedBrowserTitle}
+                                        noSsLeaderboard={true}
+                                        showAccSaberLeaderboard={false}
+                      />
+                    </div>
+                  {/if}
                 </div>
             {/each}
           </div>
@@ -804,5 +831,19 @@
 
     img.dummy {
         display: none;
+    }
+
+    .beat-savior-reveal {
+      align-self: end;
+      cursor: pointer;
+    }
+
+    .beat-savior-reveal > i {
+      transition: transform 500ms;
+      transform-origin: .42em .5em;
+    }
+
+    .beat-savior-reveal.opened > i {
+      transform: rotateZ(180deg);
     }
 </style>
