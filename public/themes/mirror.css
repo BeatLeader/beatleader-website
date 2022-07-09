@@ -236,7 +236,7 @@ nav.ssr-page-container div {
   margin: 0.4rem 0;
   padding: 0;
 }
-.player-page .player-score.highlight .badge,
+.player-page .player-score.highlight .mobile-second-line .badge,
 .page-content.scores .player-score.highlight .badge {
   border: none;
   background: none !important;
