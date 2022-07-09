@@ -420,38 +420,39 @@
         {#if scoresWithUser?.length}
           <div class="scores-grid grid-transition-helper">
             {#each scoresWithUser as score, idx (score?.player?.playerId)}
-                <div class={`player-score row-${idx} ${score.player.playerId === higlightedPlayerId ? "highlight" :""}`}
+                <div class={`row-${idx}`}
                      class:user-score={score?.isUserScore} class:user-score-top={score?.userScoreTop}
                      in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration:500} : {duration: 300}}
                      out:fade={!score?.isUserScore ? {duration:100} : {duration: 300}}
                      animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}
                 >
-                  <div class="mobile-first-line">
-                    <div class="rank with-badge">
-                      <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
-                'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
-                >= 10000 ? 'small' : 'var(--dimmed)')))}>
-                        <span slot="label">
-                          #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
-                        </span>
-                      </Badge>
-                    </div>
-                    <div class="player">
-                      <Avatar player={score.player}/>
-                      <PlayerNameWithFlag player={score.player}
-                                          type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
-                                          on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
-                      />
+                  <div class={"player-score" + (score.player.playerId === higlightedPlayerId ? " highlight" :"")}>
+                    <div class="mobile-first-line">
+                      <div class="rank with-badge">
+                        <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+                  'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
+                  >= 10000 ? 'small' : 'var(--dimmed)')))}>
+                          <span slot="label">
+                            #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
+                          </span>
+                        </Badge>
+                      </div>
+                      <div class="player">
+                        <Avatar player={score.player}/>
+                        <PlayerNameWithFlag player={score.player}
+                                            type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
+                                            on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                        />
 
-                      <ClanBadges player={score.player} />
+                        <ClanBadges player={score.player} />
+                      </div>
+                      <div class="timeset">
+                          <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
+                            {opt(score, 'score.timeSetString', '-')}
+                          </span>
+                      </div>
                     </div>
-                    <div class="timeset">
-                        <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
-                          {opt(score, 'score.timeSetString', '-')}
-                        </span>
-                    </div>
-                  </div>
-                  <div class="mobile-second-line">
+                    <div class="mobile-second-line">
                     {#if !noReplayInLeaderboard}
                       <div class="replay">
                         {#if batleRoyaleDraft}
@@ -505,9 +506,10 @@
                       </Badge>
                     </div>
                   </div>
+                  </div>
 
                   {#if openedDetails.includes(score?.score?.id)}
-                    <div transition:slide>
+                    <div>
                       <SongScoreDetails playerId={score?.player?.playerId} songScore={score} {fixedBrowserTitle}
                                         noSsLeaderboard={true}
                                         showAccSaberLeaderboard={false}
@@ -791,11 +793,11 @@
       height: auto!important;
     }
     .user-score:not(.user-score-top) > * {
-      padding-top: 1.5rem;
+      padding-top: 2rem;
     }
 
     .user-score.user-score-top > * {
-      padding-bottom: 1.5rem;
+      padding-bottom: 2rem;
     }
 
     @media screen and (max-width: 767px) {

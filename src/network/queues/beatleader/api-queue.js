@@ -75,15 +75,11 @@ export const processLeaderboardScore = s => {
 
   ret.score.id = s?.id ?? null;
 
-      ret.score = {...s, ...ret.score}
+  ret.score = {...s, ...ret.score}
 
-      return ret;
-    });
-  }
-
-  const processLeaderboard = (leaderboardId, page, respons) => {
   return ret;
 }
+
 const processLeaderboardScores = response => response?.map(processLeaderboardScore) ?? null;
 const processLeaderboard = (leaderboardId, page, respons) => {
 

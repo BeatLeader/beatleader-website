@@ -129,7 +129,7 @@
     {#if beatSavior}
 			{#if accLeft}
           <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" inline={true}>
+            <Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)" inline={true}>
                 <span slot="label">
                   <Value
 										title={beatSavior?.stats?.leftAverageCut ? `Left accuracy: ${beatSavior.stats.leftAverageCut ? beatSavior.stats.leftAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}` : null}
@@ -145,7 +145,7 @@
 
 			{#if accRight}
           <span class="beatSavior with-badge">
-            <Badge onlyLabel={true} color="white" inline={true}>
+            <Badge onlyLabel={true} color="white" bgColor="rgba(32,100,168,1)" inline={true}>
                 <span slot="label">
                   <Value
 										title={beatSavior?.stats?.rightAverageCut ? `Right accuracy: ${beatSavior.stats.rightAverageCut ? beatSavior.stats.rightAverageCut.map(v => (configStore, $configStore, formatNumber(v))).join('/') : ''}` : null}
