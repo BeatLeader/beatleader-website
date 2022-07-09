@@ -92,6 +92,7 @@ nav.ssr-page-container {
 
 // All Player grids
 .ranking-grid,
+.leaderboard,
 .players {
 
     grid-gap: 0rem !important;
@@ -200,7 +201,18 @@ nav.ssr-page-container {
 }
 
 // User profile page
+.leaderboard .player-score.highlight {
+    min-height: 3rem;
+    height: auto !important;
+}
+.song-score .leaderboard {
+    padding: 0!important;
+    background: none!important;
+    backdrop-filter: none!important;
+}
+
 .player-page,
+.leaderboard,
 .page-content.scores {
     .compare-player-name {
         * {

@@ -92,6 +92,7 @@
                     ticks: {
                       autoSkip: true,
                       autoSkipPadding: 4,
+                      color: "white",
                     },
                   },
                   y: {
@@ -101,6 +102,7 @@
                       callback: function(val) {
                         return val+'%'
                       },
+                      color: "white",
                     }
                   }
                 },

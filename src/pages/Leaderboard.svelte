@@ -2,7 +2,7 @@
   import {createEventDispatcher} from 'svelte'
   import {navigate} from "svelte-routing";
   import createAccountStore from '../stores/beatleader/account'
-  import {fade, fly} from 'svelte/transition'
+  import {fade, fly, slide} from 'svelte/transition'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import createModifiersStore from '../stores/beatleader/modifiers'
   import {opt, capitalize} from '../utils/js'
@@ -33,6 +33,7 @@
   import ClanBadges from '../components/Player/ClanBadges.svelte'
   import {flip} from 'svelte/animate'
   import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score'
+  import SongScoreDetails from '../components/Player/SongScoreDetails.svelte'
 
   export let leaderboardId;
   export let type = 'global';
@@ -74,6 +75,8 @@
   let currentFilters = buildFiltersFromLocation(location);
   let boxEl = null;
   let leaderboard = null;
+
+  let openedDetails = [];
 
   let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 
@@ -269,6 +272,16 @@
    window.open(link, "_blank");
   }
 
+  function toggleOpen(scoreId) {
+    if (!scoreId) return;
+
+    if(openedDetails.includes(scoreId)) {
+      openedDetails = openedDetails.filter(id => id !== scoreId)
+    } else {
+      openedDetails = [...openedDetails, scoreId]
+    }
+  }
+
   let userScore = null;
   let userScoreHash = null;
   async function fetchUserScore(playerId, hash, diff, type, userScoreOnCurrentPage = null) {
@@ -336,7 +349,7 @@
 
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
-    <div class="leaderboard {type === 'accsaber' ? 'no-cover-image' : ''}"
+    <div class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
          style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
 
       {#if !$leaderboardStore && $isLoading}
@@ -407,38 +420,39 @@
         {#if scoresWithUser?.length}
           <div class="scores-grid grid-transition-helper">
             {#each scoresWithUser as score, idx (score?.player?.playerId)}
-                <div class={`player-score row-${idx} ${score.player.playerId === higlightedPlayerId ? "highlight" :""}`}
+                <div class={`row-${idx}`}
                      class:user-score={score?.isUserScore} class:user-score-top={score?.userScoreTop}
                      in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration:500} : {duration: 300}}
                      out:fade={!score?.isUserScore ? {duration:100} : {duration: 300}}
                      animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}
                 >
-                  <div class="mobile-first-line">
-                    <div class="rank with-badge">
-                      <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
-                'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
-                >= 10000 ? 'small' : 'var(--dimmed)')))}>
-                        <span slot="label">
-                          #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
-                        </span>
-                      </Badge>
-                    </div>
-                    <div class="player">
-                      <Avatar player={score.player}/>
-                      <PlayerNameWithFlag player={score.player}
-                                          type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
-                                          on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
-                      />
+                  <div class={"player-score" + (score.player.playerId === higlightedPlayerId ? " highlight" :"")}>
+                    <div class="mobile-first-line">
+                      <div class="rank with-badge">
+                        <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
+                  'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
+                  >= 10000 ? 'small' : 'var(--dimmed)')))}>
+                          <span slot="label">
+                            #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
+                          </span>
+                        </Badge>
+                      </div>
+                      <div class="player">
+                        <Avatar player={score.player}/>
+                        <PlayerNameWithFlag player={score.player}
+                                            type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
+                                            on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null}
+                        />
 
-                      <ClanBadges player={score.player} />
+                        <ClanBadges player={score.player} />
+                      </div>
+                      <div class="timeset">
+                          <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
+                            {opt(score, 'score.timeSetString', '-')}
+                          </span>
+                      </div>
                     </div>
-                    <div class="timeset">
-                        <span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
-                          {opt(score, 'score.timeSetString', '-')}
-                        </span>
-                    </div>
-                  </div>
-                  <div class="mobile-second-line">
+                    <div class="mobile-second-line">
                     {#if !noReplayInLeaderboard}
                       <div class="replay">
                         {#if batleRoyaleDraft}
@@ -449,6 +463,11 @@
                         {/if}
                         {:else}
                           <Icons {hash} {diffInfo} icons={["replay"]} scoreId={score?.score?.id}/>
+
+                          <span class="beat-savior-reveal clickable" class:opened={openedDetails.includes(score?.score?.id)}
+                                on:click={() => toggleOpen(score?.score?.id)} title="Show details">
+                              <i class="fas fa-chevron-down"></i>
+                            </span>
                         {/if}
                       </div>
                     {/if}
@@ -487,6 +506,16 @@
                       </Badge>
                     </div>
                   </div>
+                  </div>
+
+                  {#if openedDetails.includes(score?.score?.id)}
+                    <div>
+                      <SongScoreDetails playerId={score?.player?.playerId} songScore={score} {fixedBrowserTitle}
+                                        noSsLeaderboard={true}
+                                        showAccSaberLeaderboard={false}
+                      />
+                    </div>
+                  {/if}
                 </div>
             {/each}
           </div>
@@ -764,11 +793,11 @@
       height: auto!important;
     }
     .user-score:not(.user-score-top) > * {
-      padding-top: 1.5rem;
+      padding-top: 2rem;
     }
 
     .user-score.user-score-top > * {
-      padding-bottom: 1.5rem;
+      padding-bottom: 2rem;
     }
 
     @media screen and (max-width: 767px) {
@@ -804,5 +833,19 @@
 
     img.dummy {
         display: none;
+    }
+
+    .beat-savior-reveal {
+      align-self: end;
+      cursor: pointer;
+    }
+
+    .beat-savior-reveal > i {
+      transition: transform 500ms;
+      transform-origin: .42em .5em;
+    }
+
+    .beat-savior-reveal.opened > i {
+      transform: rotateZ(180deg);
     }
 </style>

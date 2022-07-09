@@ -15,10 +15,10 @@ export default async (data) => {
 
         const stats = statistic.accuracyTracker;
 
-        stats.missedNotes = data.score.missedNotes;
-        stats.badCuts = data.score.badCuts;
-        stats.bombHit = data.score.bombCuts;
-        stats.wallHit = data.score.wallsHit;
+        stats.missedNotes = data.score.missedNotes ?? (statistic?.hitTracker?.leftMiss ?? 0) + (statistic?.hitTracker?.leftMiss ?? 0);
+        stats.badCuts = data.score.badCuts  ?? (statistic?.hitTracker?.leftBadCuts ?? 0) + (statistic?.hitTracker?.rightBadCuts ?? 0);
+        stats.bombHit = data.score.bombCuts ?? (statistic?.hitTracker?.leftBombs ?? 0) + (statistic?.hitTracker?.rightBombs ?? 0);
+        stats.wallHit = data.score.wallsHit ?? 0;
         stats.miss = stats.missedNotes + stats.badCuts;
         stats.maxCombo = statistic.hitTracker.maxCombo;
         stats.leftMiss = statistic.hitTracker.leftMiss;
