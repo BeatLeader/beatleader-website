@@ -27,14 +27,14 @@
   function onAccountClicked(event, playerId) {
     if (event.srcElement.innerText == "Migrate" || event.srcElement.innerText == "Log In") {
       navigate(`/signin`)
+    } else if (event.srcElement.innerText == "Link patreon") {
+      navigate(`/signin/linkPatreon`)
+    } else if (event.srcElement.innerText == "Change Username") {
+      navigate(`/signin/mylogin`)
     } else if (event.srcElement.innerText == "Change password") {
       navigate(`/signin/changePassword`)
     } else if (event.srcElement.innerText == "Suspend account" || event.srcElement.innerText == "Activate account") {
       navigate(`/signin/autoban`)
-    } else if (event.srcElement.innerText == "Link patreon") {
-      navigate(`/signin/linkPatreon`)
-    } else if (event.srcElement.innerText == "My login") {
-      navigate(`/signin/mylogin`)
     } else if (event.srcElement.innerText == "Log Out") {
       account.logOut();
     } else if (playerId) {
