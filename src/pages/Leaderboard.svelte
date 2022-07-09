@@ -31,6 +31,8 @@
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
   import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
   import ClanBadges from '../components/Player/ClanBadges.svelte'
+  import {flip} from 'svelte/animate'
+  import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score'
 
   export let leaderboardId;
   export let type = 'global';
@@ -267,6 +269,35 @@
    window.open(link, "_blank");
   }
 
+  let userScore = null;
+  let userScoreHash = null;
+  async function fetchUserScore(playerId, hash, diff, type, userScoreOnCurrentPage = null) {
+    if (!playerId?.length || !hash?.length || !diff?.length || !type?.length) {
+      userScore = null;
+      return;
+    }
+
+    const currentHash = `${playerId}${hash}:${diff}:${type}`;
+    if (userScoreHash === currentHash) return;
+
+    userScoreHash = currentHash;
+    if (userScoreOnCurrentPage) {
+      userScore = userScoreOnCurrentPage;
+      return;
+    }
+
+    try {
+      userScore = await playerScoreApiClient.getProcessed({playerId, hash, diff, type});
+
+      if (userScore && !userScore?.player?.clans?.length) {
+        userScore.player.clans = $account?.player?.playerInfo?.clans ?? [];
+      }
+    }
+    catch(err) {
+      userScore = null;
+    }
+  }
+
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
@@ -289,6 +320,14 @@
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
+
+  $: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
+  $: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage)
+  $: scoresWithUser = !userScoreOnCurrentPage && scores?.length && userScore
+    ? (userScore?.score?.score >= scores?.[0]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
+      .concat(scores)
+      .concat(userScore?.score?.score <= scores?.[scores.length - 1]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: false}] : [])
+    : scores;
 </script>
 
 <svelte:head>
@@ -365,20 +404,23 @@
           </nav>
         {/if}
 
-        {#if scores && scores.length}
+        {#if scoresWithUser?.length}
           <div class="scores-grid grid-transition-helper">
-            {#each scores as score, idx}
-              {#key opt(score, 'player.playerId')}
-                <div class={`player-score row-${idx} ${score.player.playerId == higlightedPlayerId ? "highlight" :""}`}
-                     in:fly={{x: 200, delay: idx * 20, duration:500}} out:fade={{duration:100}}>
+            {#each scoresWithUser as score, idx (score?.player?.playerId)}
+                <div class={`player-score row-${idx} ${score.player.playerId === higlightedPlayerId ? "highlight" :""}`}
+                     class:user-score={score?.isUserScore} class:user-score-top={score?.userScoreTop}
+                     in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration:500} : {duration: 300}}
+                     out:fade={!score?.isUserScore ? {duration:100} : {duration: 300}}
+                     animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}
+                >
                   <div class="mobile-first-line">
                     <div class="rank with-badge">
                       <Badge onlyLabel={true} color="white" bgColor={opt(score, 'score.rank') === 1 ? 'darkgoldenrod' : (opt(score,
                 'score.rank') === 2 ? '#888' : (opt(score, 'score.rank') === 3 ? 'saddlebrown' : (opt(score, 'score.rank')
                 >= 10000 ? 'small' : 'var(--dimmed)')))}>
-                    <span slot="label">
-                      #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
-                    </span>
+                        <span slot="label">
+                          #<Value value={opt(score, 'score.rank')} digits={0} zero="?"/>
+                        </span>
                       </Badge>
                     </div>
                     <div class="player">
@@ -446,7 +488,6 @@
                     </div>
                   </div>
                 </div>
-              {/key}
             {/each}
           </div>
 
@@ -717,6 +758,17 @@
     :global(.battleroyalebtn) {
       margin-left: 1em;
       margin-bottom: 0.5em;
+    }
+
+    .user-score {
+      height: auto!important;
+    }
+    .user-score:not(.user-score-top) > * {
+      padding-top: 1.5rem;
+    }
+
+    .user-score.user-score-top > * {
+      padding-bottom: 1.5rem;
     }
 
     @media screen and (max-width: 767px) {
