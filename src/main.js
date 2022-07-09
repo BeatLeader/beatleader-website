@@ -50,7 +50,7 @@ let app = null;
     console.error(error);
 
     if (error instanceof DOMException && error.toString() === 'InvalidStateError: A mutation operation was attempted on a database that did not allow mutations.')
-      error = new Error('Firefox in private mode does not support the database. Please run the site in normal mode.')
+      error = new Error('Firefox in private mode is not supported. Please run the site in normal mode.')
 
     app = new ErrorComponent({
       target: document.body,

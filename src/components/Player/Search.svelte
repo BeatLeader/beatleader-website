@@ -23,7 +23,7 @@
   }
 
   async function searchFunc(value) {
-    if (!value || !value.length) throw 'Please enter at least something'
+    if (value.length<1) throw ''
 
     try {
       const data = await search(value);

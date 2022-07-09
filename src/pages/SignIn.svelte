@@ -67,7 +67,7 @@ import Spinner from "../components/Common/Spinner.svelte";
             <br>
             If you using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
             Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
-            This is not required and no way back!
+            This is not required and there is no way to unmerge!
             <div class="input-container">
                 Login
                 <input bind:value={login} placeholder="Login">
@@ -145,7 +145,7 @@ If you are not yet a patreon, you can become one <strong> <a class="inlineLink" 
     {/if}
 {:else if action == "mylogin"}
     Your current login is: <b>{$account.login}</b><br>
-    It's a value you should use in Quest mod setting.<br>
+    It's the username you use to sign in with.<br>
     Your profile name is a different thing!<br>
 
     <div class="input-container">
