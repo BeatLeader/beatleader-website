@@ -88,12 +88,13 @@
       if (!loggedInUser.migrated) {
         signupOptions.push("Migrate");
       }
-      if (loggedInUser.player.playerId < 70000000000000000 || loggedInUser.migrated) {
-        signupOptions.push("Change password");
-        signupOptions.push("My login");
-      }
       if (!loggedInUser.patreoned) {
         signupOptions.push("Link patreon");
+      if (loggedInUser.player.playerId < 70000000000000000 || loggedInUser.migrated) {
+        signupOptions.push("My login");
+        signupOptions.push("Change password");
+      }
+      
       }
       if (loggedInUser.ban) {
          if (loggedInUser.ban.reason == "Self ban") {
@@ -113,6 +114,12 @@
   $: calculateSignUpOptions($account);
   $: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
   $: notificationBadgeTitle = (settingsNotificationBadge ? [settingsNotificationBadge + '\n'] : []).concat(newSettingsAvailable ? ['New settings are available:'].concat(newSettingsAvailable) : []).join('\n');
+
+  function getName(player) {
+    if (!player) throw new Error('Player is null');
+
+    return player.name;
+  }
 </script>
 
 <nav class="ssr-page-container">
@@ -131,8 +138,7 @@
       </svg>
     {/if}
 
-    Me
-
+    <span class="name">{getName(player)}</span>
     <Dropdown items={signupOptions} shown={accountMenuShown} noItems="">
       <svelte:fragment slot="row" let:item>
         <div>
@@ -146,8 +152,9 @@
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
-
-    Account
+    
+    Log In
+    
   </a>
   {/if}
   
