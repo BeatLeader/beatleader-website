@@ -7,7 +7,7 @@
     import beatSaverSvg from "../../resources/beatsaver.svg";
     import Button from "../Common/Button.svelte";
     import Preview from "../Common/Preview.svelte";
-    import {capitalize} from '../../utils/js';
+    import {capitalize, decapitalize} from '../../utils/js';
     import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
 
     export let leaderboard = null;
@@ -30,19 +30,25 @@
     const account = createAccountStore();
     const playlists = createPlaylistStore();
 
+    function playlistContainsDifficulty() {
+        return playlistSongDifficulties?.some(s => s && s.name === diffName && s.characteristic === charName) ?? false;
+    }
+
     $: key = leaderboard?.song?.id
     $: hash = leaderboard?.song.hash
-    $: allDiffs = (leaderboard?.song?.difficulties ?? []).map(d => ({name: d?.difficultyName, characteristic: d?.modeName, id: d?.id}))
+    $: allDiffs = leaderboard?.song?.difficulties?.sort((a,b) => ((a?.value ?? 0) + (a?.mode ?? 0) * 100) - ((b?.value ?? 0) + (b?.mode ?? 0) * 100))?.map(d => ({name: d?.difficultyName, characteristic: d?.modeName, id: d?.id})) ?? []
     $: diffInfo = leaderboard ? {diff: leaderboard?.difficulty?.difficultyName ?? '', type: leaderboard?.difficulty?.modeName ?? 'Standard'} : null
-    $: songInfo = {hash, diffInfo, songName: leaderboard?.song?.name ?? '', levelAuthorName: leaderboard?.song?.levelAuthorName ?? leaderboard?.song?.mapper ?? '', allDiffs}
+    $: songInfo = diffInfo?.diff && hash && leaderboard?.song
+      ? {hash, difficulties: [{name: decapitalize(diffInfo?.diff), characteristic: diffInfo?.type ?? 'Standard'}], songName: leaderboard?.song?.name ?? '', levelAuthorName:
+          leaderboard?.song?.levelAuthorName ?? leaderboard?.song?.mapper ?? '', allDiffs}
+      : null
 
-    $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
-    $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
+    $: diffName = diffInfo?.diff ? capitalize(diffInfo.diff) : null
+    $: charName = diffInfo?.type ?? null
     $: selectedPlaylistIndex = $configStore?.selectedPlaylist;
-    $: selectedPlaylist = $playlists[selectedPlaylistIndex];
-    $: playlistSongs = selectedPlaylist?.songs?.filter(el => el?.hash && el.hash === hash);
-    $: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
-    $: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
+    $: selectedPlaylist = $playlists[selectedPlaylistIndex] ?? null;
+    $: playlistSong = selectedPlaylist?.songs?.find(el => el?.hash && el.hash === hash);
+    $: playlistSongDifficulties = playlistSong?.difficulties?.map(el => ({name: capitalize(el.name), characteristic: el.characteristic}));
     $: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes("admin")
     $: replayUrl = replayLink?.length
         ? `https://www.replay.beatleader.xyz/?link=${replayLink}`
@@ -57,28 +63,29 @@
 {/if}
 
 {#if key?.length}
-    {#if shownIcons.includes('playlist')}
+    {#if shownIcons.includes('playlist') && songInfo}
         {#if selectedPlaylist != null}
             {#if playlistSong}
-                {#if difficulties?.length === 1 && difficulties?.[0] === diffName}
-                <Button iconFa="fas fa-list-ul" title="Remove from the {selectedPlaylist.playlistTitle}" noMargin={true} type="danger"
-                on:click={() => playlists.remove(hash)}/>
+                {#if playlistSongDifficulties?.length === 1 && playlistContainsDifficulty(playlistSongDifficulties, diffName, charName)}
+                    <Button iconFa="fas fa-list-ul" title="Remove song from the {selectedPlaylist.playlistTitle}"
+                            noMargin={true} type="danger"
+                            on:click={() => playlists.remove(hash)}/>
+                {:else if !playlistContainsDifficulty(playlistSongDifficulties, diffName, charName)}
+                    <Button iconFa="fas fa-list-ul" title="Add this diff to the {selectedPlaylist.playlistTitle}"
+                            noMargin={true}
+                            on:click={() => playlists.addDiff(hash, diffInfo)}/>
                 {:else}
-                {#if difficulties?.length === 1 || !difficulties?.includes(diffName)}
-                <Button iconFa="fas fa-list-ul" title="Add this diff to the {selectedPlaylist.playlistTitle}" noMargin={true}
-                on:click={() => playlists.addDiff(hash, diffInfo)}/>
-                {:else}
-                <Button iconFa="fas fa-list-ul" title="Remove this diff from the {selectedPlaylist.playlistTitle}" noMargin={true} type="lessdanger"
-                on:click={() => playlists.removeDiff(hash, diffInfo)}/>
-                {/if}
+                    <Button iconFa="fas fa-list-ul" title="Remove this diff from the {selectedPlaylist.playlistTitle}"
+                            noMargin={true} type="lessdanger"
+                            on:click={() => playlists.removeDiff(hash, diffInfo)}/>
                 {/if}
             {:else}
-            <Button iconFa="fas fa-list-ul" title="Add to the {selectedPlaylist.playlistTitle}" noMargin={true}
-            on:click={() => playlists.add(songInfo)}/>
+                <Button iconFa="fas fa-list-ul" title="Add to the {selectedPlaylist.playlistTitle}" noMargin={true}
+                        on:click={() => playlists.add(songInfo)}/>
             {/if}
         {:else}
-        <Button iconFa="fas fa-list-ul" title="Create new playlist with this song" noMargin={true}
-        on:click={() => playlists.create(songInfo)}/>
+            <Button iconFa="fas fa-list-ul" title="Create new playlist with this song" noMargin={true}
+                    on:click={() => playlists.create(songInfo)}/>
         {/if}
 
     {/if}

@@ -5,7 +5,7 @@ const processScore = s => {
   if (!s) return null;
 
   const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration, coverImage, id} = s?.leaderboard?.song ?? {};
-  const song = {hash, name, subName, authorName, levelAuthorName, duration, coverImage, id};
+  const song = {hash, name, subName, authorName, levelAuthorName, duration, coverImage, id, difficulties: s?.leaderboard?.song?.difficulties ?? []};
 
   const {id: leaderboardId} = s?.leaderboard ?? {};
 

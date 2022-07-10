@@ -23,7 +23,7 @@
   $: diffInfo = leaderboard?.diffInfo ?? null;
   $: leaderboardId = leaderboard?.leaderboardId ?? '';
   $: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboardId}/${page ?? ''}`;
-  $: key = leaderboardId?.substr(0, (leaderboardId?.length ?? 0) - 2)
+  $: key = service === 'beatleader' ? leaderboardId?.substr(0, (leaderboardId?.length ?? 0) - 2) : null
 </script>
 
 {#if song}

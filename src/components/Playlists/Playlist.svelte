@@ -1,5 +1,5 @@
 <script>
-    import {fade, fly, slide} from 'svelte/transition'
+    import {fade, fly} from 'svelte/transition'
     import Button from "../Common/Button.svelte";
     import Song from "./Song.svelte";
 
@@ -33,7 +33,7 @@
         redactingTitle = !redactingTitle;
     }
 
-    $:songs = playlist?.songs;
+    $: songs = playlist?.songs;
 </script>
 
 {#if playlist}
@@ -81,7 +81,7 @@
         {#if detailsOpened}
         <div class="tab">
             {#each songs as song, songId}
-            <Song {song} {songId} listId={idx} {store} />
+              <Song {song} {songId} listId={idx} {store} />
             {/each}
         </div>
         {/if}

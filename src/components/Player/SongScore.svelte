@@ -25,7 +25,7 @@
   $: prevScore = songScore?.prevScore ?? null;
   $: beatSavior = songScore?.beatSavior ?? null;
   $: hash = leaderboard?.song?.hash ?? null;
-  $: key = leaderboardId?.substr(0, (leaderboardId?.length ?? 0) - 2)
+  $: key = service === 'beatleader' ? leaderboardId?.substr(0, (leaderboardId?.length ?? 0) - 2) : null
   $: twitchUrl = songScore?.twitchVideo?.url ?? null;
   $: diffInfo = leaderboard?.diffInfo ?? null;
 </script>
@@ -85,10 +85,12 @@
       </span>
 
       <div class="score-options-section">
+        {#if service !== 'accsaber'}
           <span class="beat-savior-reveal clickable" class:opened={showDetails}
                 on:click={() => showDetails = !showDetails} title="Show details">
             <i class="fas fa-chevron-down"></i>
           </span>
+        {/if}
       </div>
 
       <PlayerPerformance {service} songScore={songScore} {showDetails} {modifiersStore}/>

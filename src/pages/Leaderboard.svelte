@@ -320,7 +320,7 @@
   $: higlightedPlayerId = higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
   $: leaderboard = $leaderboardStore?.leaderboard ?? null
-  $: key = currentLeaderboardId?.substr(0, (currentLeaderboardId?.length ?? 0) - 2)
+  $: key = currentLeaderboardId?.substr ? currentLeaderboardId?.substr(0, (currentLeaderboardId?.length ?? 0) - 2) : null
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
   $: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song)
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null

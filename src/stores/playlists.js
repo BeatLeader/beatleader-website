@@ -1,10 +1,9 @@
 import {writable} from 'svelte/store'
 import keyValueRepository from '../db/repository/key-value';
-import {opt} from '../utils/js'
+import {decapitalize} from '../utils/js'
 import {configStore} from './config'
 
 const STORE_PLAYLISTS_KEY = 'playlists';
-const defaultImage = ""
 
 export let playlistStore = null;
 
@@ -80,7 +79,17 @@ export default () => {
     let playlists = get();
     let playlist = playlists[index];
 
-    saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + ".bplist");
+    const process = playlist => ({
+      ...playlist,
+      songs: playlist?.songs?.map(s => ({
+        songName: s?.songName ?? '',
+        levelAuthorName: s?.levelAuthorName ?? '',
+        hash: s?.hash ?? '',
+        difficulties: s?.difficulties ?? [],
+      })) ?? [],
+    });
+
+    saveJSONAsFile(JSON.stringify(process(playlist)), playlist.playlistTitle + ".bplist");
   };
 
   const add = async (song, playlistIndex) => {
@@ -92,16 +101,12 @@ export default () => {
     await set(playlists, true);
   };
 
-  const decapitalizeFirstLetter = (string) => {
-    return string.charAt(0).toLowerCase() + string.slice(1);
-  }
-
   const addDiff = async (hash, diffInfo, playlistIndex) => {
     let playlists = get();
     let index = playlistIndex != null ? playlistIndex : configStore.get('selectedPlaylist');
 
     let song = playlists[index].songs.find(el => el.hash === hash);
-    song.difficulties.push({name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type});
+    song.difficulties.push({name: decapitalize(diffInfo.diff), characteristic: diffInfo.type});
 
     await set(playlists, true);
   };
@@ -111,7 +116,7 @@ export default () => {
     let index = playlistIndex != null ? playlistIndex : configStore.get('selectedPlaylist');
 
     let song = playlists[index].songs.find(el => el.hash === hash);
-    song.difficulties = song.difficulties.filter(el => el.name !== decapitalizeFirstLetter(diffInfo.diff));
+    song.difficulties = song.difficulties.filter(el => el.name !== decapitalize(diffInfo.diff) || el.characteristic !== diffInfo.type);
 
     await set(playlists, true);
   };

@@ -2,52 +2,33 @@
     import {BS_CDN} from '../../network/queues/beatleader/page-queue'
     import Difficulty from '../Song/Difficulty.svelte'
     import Button from "../Common/Button.svelte";
-
-    const DEFAULT_IMG = '/assets/song-default.png';
+    import {capitalize, decapitalize} from '../../utils/js'
 
     export let song;
     export let songId;
     export let listId;
     export let store;
 
-    function decapitalizeFirstLetter(string) {
-        return string.charAt(0).toLowerCase() + string.slice(1);
-    }
-
     let showDiffIcons;
     let diffs;
 
-    // async function updateSongKey(hash) {
-    //     const songInfoValue = await beatSaverService.byHash(hash);
-    //     if (songInfoValue && songInfoValue.key) {
-    //         songInfo = songInfoValue;
-    //         showDiffIcons = songInfo.versions[0].diffs.some(el => el.characteristic != 'Standard');
-    //         diffs = songInfo.versions[0].diffs
-    //     }
-    // }
-    //
-    // function toggleDifficulty(diff) {
-    //     const index = difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficulty) == el.name && diff.characteristic == el.characteristic);
-    //     if (index == -1) {
-    //         difficulties.push({
-    //             name: decapitalizeFirstLetter(diff.difficulty),
-    //             characteristic: diff.characteristic
-    //         })
-    //     } else {
-    //         difficulties.splice(index, 1);
-    //     }
-    //
-    //     difficulties = difficulties;
-    //     store.set($store);
-    // }
+    function toggleDifficulty(diff) {
+        if (!diff || !$store?.[listId]?.songs?.[songId]?.difficulties) return;
+
+        const existingDiff = difficulties.find(el => capitalize(el.name) === diff.name && el.characteristic === diff.characteristic);
+
+        if (existingDiff) {
+            $store[listId].songs[songId].difficulties = $store[listId].songs[songId].difficulties.filter(d => d !== existingDiff);
+        } else {
+            $store[listId].songs[songId].difficulties = [...$store[listId].songs[songId].difficulties, {name: decapitalize(diff.name), characteristic: diff.characteristic}];
+        }
+    }
 
     $: hash = song?.hash;
     $: difficulties = song?.difficulties ?? [];
     $: diffs = song?.allDiffs ?? [];
     $: ssCoverUrl = song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null);
     $: coverUrl = ssCoverUrl;
-
-    $: console.log(song, diffs)
 </script>
 
 <div class="container">
@@ -57,8 +38,11 @@
         <div class="author">{song.levelAuthorName} </div>
         {#if diffs?.length}
             <div style="display: inline;">
-                {#each diffs as diff, songId}
-                    <Difficulty diff={{type: diff.characteristic, diff: diff.difficulty, stars: diff.stars}} pointer={true} useShortName={true} reverseColors={true} {showDiffIcons} enabled={difficulties.some(el => el.name == decapitalizeFirstLetter(diff.difficulty) && el.characteristic == diff.characteristic)} on:click={() => toggleDifficulty(diff)} />
+                {#each diffs as diff}
+                    <Difficulty diff={{type: diff.characteristic, diff: diff.name}} pointer={true}
+                                useShortName={true} reverseColors={true} {showDiffIcons}
+                                enabled={difficulties.some(el => capitalize(el.name) === diff.name && el.characteristic === diff.characteristic)}
+                                on:click={() => toggleDifficulty(diff)}/>
                 {/each}
             </div>
         {/if}
