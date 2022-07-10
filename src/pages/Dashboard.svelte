@@ -65,8 +65,8 @@
     <div class="sspl-page-container">
         <div class="is-multiline">
             <h1 class="title is-4">Hello, future BeatLeader!</h1>
-            <h3 class="description">BeatLeader is a new and open Beat Saber leaderboard!</h3>
-            <h3 class="description">It also aggregates data from other cool projects:</h3>
+            <h3 class="description">BeatLeader is a open source Beat Saber leaderboard!</h3>
+            <h3 class="description">It aggregates data from other cool projects:</h3>
             <div class="sources">
                 <h3 class="title is-6">
                     <a class="imageLink" href={`https://beat-savior.herokuapp.com/`} target="_blank" rel="noreferrer">
@@ -99,7 +99,7 @@
             </div>
             <SearchPage focusField={false} title="Find your profile or friends"/>
             <div class="global-ranking-call">
-                <h3>Or check <a href="/ranking/global">the global ranking</a> to find the best players.</h3>
+                <h3><strong>Check out <a href="/ranking/global">the global rankings</a> to find the best players</strong></h3>
             </div>
         </div>
     </div>

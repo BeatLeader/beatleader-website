@@ -72,13 +72,22 @@
   }
 
   async function onSave() {
-    if (!name.length || name.length > 25) {
-      error = "Clan name is required and should be no more than 25 characters long";
+    if (name.length > 25) {
+      error = "Clan name should be no more than 25 characters long";
+      return;
+    }
+    if (!name.length){
+      error = "Clan name is required";
+      return;
+    }
+    
+    if (!tag.length){
+      error = "Clan tag is required";
       return;
     }
 
     if (tag.length < 2 || tag.length > 5) {
-      error = "Clan tag is required and should be 2 to 5 characters long";
+      error = "Clan tag should be 2 to 5 characters long";
       return;
     }
 
@@ -238,7 +247,7 @@
     <section class="form">
       <section class="title is-5">
         {#if editMode}
-          <input type="text" placeholder="Clan name" bind:value={name} disabled={!!pendingText}/>
+          <input type="text" placeholder="Clan Name" bind:value={name} disabled={!!pendingText}/>
         {:else}
           <span class="clanName {tag == "GAY" ? "rainbow" : ""}">{name}</span>
         {/if}
@@ -296,7 +305,7 @@
       {#if editMode}
         <section>
           {#if !pendingText}
-            <Button label="Save a clan" type="primary" on:click={onSave}/>
+            <Button label="Save clan" type="primary" on:click={onSave}/>
             <Button label="Cancel" on:click={() => {editMode=false; confirmedOperation = null; dispatch('cancel')}}/>
           {:else}
             <Spinner/>
@@ -311,7 +320,7 @@
             <Button label="Accept invitation" iconFa="fas fa-check" type="primary" on:click={onAccept}/>
             <Button label="Reject invitation" iconFa="fas fa-trash-alt" type="lessdanger"
                     on:click={() => {confirmedOperation = onReject}}/>
-            <Button label="Ban clan invitations" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
+            <Button label="Block invitations from this clan" iconFa="fas fa-ban" type="danger" on:click={() => {confirmedOperation = onBan}}/>
           </Confirmation>
         </section>
       {/if}
@@ -320,7 +329,7 @@
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
             <Button label="Edit clan" iconFa="fas fa-edit" type="primary" on:click={() => editMode = true}/>
-            <Button label="Remove clan" iconFa="fas fa-trash-alt" type="danger"
+            <Button label="Delete clan" iconFa="fas fa-trash-alt" type="danger"
                     on:click={() => confirmedOperation = onRemove}/>
           </Confirmation>
         </section>
@@ -329,7 +338,7 @@
       {#if canLeave && !noButtons}
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
-            <Button label="Leave a clan" iconFa="fab fa-accessible-icon" type="lessdanger"
+            <Button label="Leave clan" iconFa="fab fa-accessible-icon" type="lessdanger"
                     on:click={() => confirmedOperation = onLeave}/>
           </Confirmation>
         </section>
@@ -338,7 +347,7 @@
       {#if isBanned && !noButtons}
         <section>
           <Confirmation {pendingText} {confirmedOperation}>
-            <Button label="Unban clan invitations" iconFa="fas fa-user-friends" type="lessdanger" on:click={() => confirmedOperation = onUnban}/>
+            <Button label="Unblock invitations from this clan" iconFa="fas fa-user-friends" type="lessdanger" on:click={() => confirmedOperation = onUnban}/>
           </Confirmation>
         </section>
       {/if}

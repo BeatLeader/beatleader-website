@@ -12,7 +12,7 @@
   import Icons from '../components/Player/AvatarOverlayIcons.svelte'
   import ContentBox from "../components/Common/ContentBox.svelte";
 
-  const DEFAULT_NAME = 'Stranger';
+  const DEFAULT_NAME = 'Search a profile';
 
   export let title = 'Find a player profile';
   export let changeTitle = false;

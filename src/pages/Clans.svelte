@@ -184,7 +184,7 @@
 
     <ContentBox bind:box={boxEl}>
       <h1 class="title is-5">
-        All clans
+        Clans
 
         {#if $isLoading}
           <Spinner/>
@@ -229,8 +229,8 @@
       <h2 class="title is-5">Filters</h2>
 
       <section class="filter">
-        <label>Tag/Clan name</label>
-        <input type="text" placeholder="Search..." value={currentFilters.search} on:input={debouncedOnSearchChanged}/>
+        <label>Tag/Clan Name</label>
+        <input type="text" placeholder="Search for a clan..." value={currentFilters.search} on:input={debouncedOnSearchChanged}/>
       </section>
 
       <Switcher values={sortValues} value={sortValue} on:change={onSortChange}

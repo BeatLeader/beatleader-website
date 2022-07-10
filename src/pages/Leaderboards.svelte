@@ -185,12 +185,11 @@
       <h2 class="title is-5">Filters</h2>
 
       <section class="filter">
-        <label>Song/Author/Mapper name</label>
-        <input type="text" placeholder="Search..." value={currentFilters.search} on:input={debouncedOnSearchChanged} />
+        <label>Song/Author/Mapper Name</label>
+        <input type="text" placeholder="Search for a map..." value={currentFilters.search} on:input={debouncedOnSearchChanged} />
       </section>
 
       <section class="filter">
-        <label>Show maps</label>
 
         <Switcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentFilters.type)}
                   on:change={onTypeChanged}
