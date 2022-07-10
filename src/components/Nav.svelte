@@ -29,7 +29,7 @@
       navigate(`/signin`)
     } else if (event.srcElement.innerText == "Link patreon") {
       navigate(`/signin/linkPatreon`)
-    } else if (event.srcElement.innerText == "Change Username") {
+    } else if (event.srcElement.innerText == "My login") {
       navigate(`/signin/mylogin`)
     } else if (event.srcElement.innerText == "Change password") {
       navigate(`/signin/changePassword`)
