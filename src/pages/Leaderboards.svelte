@@ -142,7 +142,9 @@
           {#each leaderboardsPage as map, idx (map.id)}
             <div class={`song-line row-${idx}`}  in:fly={{delay: idx * 10, x: 100}}>
               <div class="icons mobile-only">
-                <Icons leaderboard={map} />
+                {#if map?.song?.id}
+                  <Icons leaderboard={map}/>
+                {/if}
               </div>
 
               <div class="main">
@@ -156,9 +158,11 @@
                   </a>
                 </div>
 
-                <div class="icons tablet-and-up">
-                  <Icons leaderboard={map}/>
-                </div>
+                {#if map?.song?.id}
+                  <div class="icons tablet-and-up">
+                    <Icons leaderboard={map}/>
+                  </div>
+                {/if}
               </div>
             </div>
           {/each}

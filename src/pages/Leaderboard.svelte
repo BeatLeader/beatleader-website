@@ -319,14 +319,14 @@
   $: scrollToTop($pending);
   $: higlightedPlayerId = higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
-  $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
+  $: leaderboard = $leaderboardStore?.leaderboard ?? null
+  $: key = currentLeaderboardId?.substr(0, (currentLeaderboardId?.length ?? 0) - 2)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
   $: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song)
   $: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null
   $: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
   $: hash = opt($leaderboardStore, 'leaderboard.song.hash')
   $: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo')
-  $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
   $: higlightedPlayerId = $account?.id ?? null
@@ -349,8 +349,7 @@
 
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
-    <div class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
-         style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
+    <div class="leaderboard content-box">
 
       {#if !$leaderboardStore && $isLoading}
         <div class="align-spinner">
@@ -362,37 +361,42 @@
         {#if leaderboard && song && withHeader}
           {#if !withoutHeader}
             <header transition:fade>
-              <h1 class="title is-4">
+              {#if $leaderboardStore?.leaderboard?.song?.imageUrl}
+                <img src={$leaderboardStore.leaderboard.song.imageUrl} />
+              {/if}
+
+              <div>
+                <h1 class="title is-4">
                 <span class="name">{song.name} {song.subName ? song.subName : ''}</span>
                 <span class="author">{song.authorName}</span>
                 <small class="level-author">{song.levelAuthorName}</small>
-              </h1>
+                </h1>
+                <h2 class="title is-6"
+                    class:unranked={!isRanked}>
+                  {#if leaderboard.categoryDisplayName}
+                    <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+                    <span slot="label">
+                      {leaderboard.categoryDisplayName}
+                      {#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero=""
+                                                         suffix="★"/>{/if}
+                    </span>
+                    </Badge>
+                  {/if}
 
-              <h2 class="title is-6"
-                  class:unranked={!isRanked}>
-                {#if leaderboard.categoryDisplayName}
-                  <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
-                  <span slot="label">
-                    {leaderboard.categoryDisplayName}
-                    {#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero=""
-                                                       suffix="★"/>{/if}
-                  </span>
-                  </Badge>
-                {/if}
+                  {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
+                  {#if leaderboard.stats && leaderboard.stats.stars}
+                    <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
+                  {/if}
+                  {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
+                                                                           reverseColors={true}/></span>{/if}
 
-                {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
-                {#if leaderboard.stats && leaderboard.stats.stars}
-                  <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
-                {/if}
-                {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
-                                                                         reverseColors={true}/></span>{/if}
-
-                <span class="icons"><Icons {hash} {diffInfo}/></span>
-                <Button cls="replay-button-alt battleroyalebtn" icon={`<div class='battleroyale${batleRoyaleDraft ? "stop" : ""}-icon'></div>`} title="Draft battle royal" noMargin={true} on:click={() => batleRoyaleDraft = !batleRoyaleDraft}/>
-                {#if batleRoyaleDraft && draftList && draftList.length > 0} 
-                  <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let the battle begin!" noMargin={true} on:click={() => startBattleRoyale()}/>
-                {/if}
-              </h2>
+                  <span class="icons"><Icons {leaderboard}/></span>
+                  <Button cls="replay-button-alt battleroyalebtn" icon={`<div class='battleroyale${batleRoyaleDraft ? "stop" : ""}-icon'></div>`} title="Draft battle royal" noMargin={true} on:click={() => batleRoyaleDraft = !batleRoyaleDraft}/>
+                  {#if batleRoyaleDraft && draftList && draftList.length > 0}
+                    <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let the battle begin!" noMargin={true} on:click={() => startBattleRoyale()}/>
+                  {/if}
+                </h2>
+              </div>
             </header>
           {/if}
           {#if showStats && leaderboard.stats}
@@ -400,7 +404,7 @@
               <LeaderboardStats {leaderboard}/>
 
               {#if iconsInInfo}
-              <span class="icons"><Icons {hash} {diffInfo} /></span>
+              <span class="icons"><Icons {leaderboard} /></span>
               {/if}
             </div>
           {/if}
@@ -462,7 +466,7 @@
                           <Button cls="replay-button-alt" icon="<div class='battleroyaleescape-icon'></div>" title="Remove from battle royal" noMargin={true} on:click={() => draftList = draftList.filter(el => el != score.player.playerId)}/>
                         {/if}
                         {:else}
-                          <Icons {hash} {diffInfo} icons={["replay"]} scoreId={score?.score?.id}/>
+                          <Icons {leaderboard} icons={["replay"]} scoreId={score?.score?.id}/>
 
                           <span class="beat-savior-reveal clickable" class:opened={openedDetails.includes(score?.score?.id)}
                                 on:click={() => toggleOpen(score?.score?.id)} title="Show details">
@@ -595,6 +599,8 @@
     }
 
     header {
+        display: flex;
+        gap: 1rem;
         color: var(--alternate);
     }
 
@@ -624,6 +630,10 @@
 
     header .icons {
         font-size: .65em;
+    }
+
+    header > img {
+      max-height: 4rem;
     }
 
     .stats-with-icons {
