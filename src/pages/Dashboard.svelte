@@ -52,6 +52,13 @@
 
     $: friends = $account?.friends ?? null;
     $: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`
+   const greetings = [
+    "Hey", 
+    "Welcome Back", 
+    "Howdy", 
+    "Get Grinding",
+    "Lookin good"
+    ];
 </script>
 
 <svelte:head>
@@ -106,6 +113,9 @@
     {:else}
         <div class="sspl-page-container">
             <div class="columns is-multiline">
+                <h1 class="title is-4"style="font-size: 30px">
+                    {greetings[Math.floor(Math.random() * greetings.length)]}, {$account?.player?.name}!
+                </h1>
                 <div class="leaderboard content column is-full is-two-fifths-fullhd">
                     <ContentBox>
                         <div class="ranking">
