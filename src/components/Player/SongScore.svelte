@@ -23,7 +23,7 @@
 
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
-  $: prevScore = score?.scoreImprovement ?? null;
+  $: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
   $: beatSavior = opt(songScore, 'beatSavior', null)
   $: hash = opt(leaderboard, 'song.hash')
   $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
