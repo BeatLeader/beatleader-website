@@ -23,7 +23,7 @@
 
   $: leaderboard = opt(songScore, 'leaderboard', null);
   $: score = opt(songScore, 'score', null);
-  $: prevScore = opt(songScore, 'prevScore', null);
+  $: prevScore = score?.scoreImprovement ?? null;
   $: beatSavior = opt(songScore, 'beatSavior', null)
   $: hash = opt(leaderboard, 'song.hash')
   $: twitchUrl = opt(songScore, 'twitchVideo.url', null)
@@ -56,7 +56,7 @@
         <div class="timeset tablet-and-up">
           <FormattedDate date={score.timeSet}
                          prevPrefix="vs "
-                         prevDate={prevScore ? prevScore.timeSet : null}
+                         prevDate={prevScore?.timeSet ?? null}
                          absolute={service === 'beatsavior'}/>
         </div>
       </span>
@@ -64,7 +64,7 @@
       <span class="timeset mobile-only">
         <FormattedDate date={score.timeSet}
                        prevPrefix="vs "
-                       prevDate={prevScore ? prevScore.timeSet : null}
+                       prevDate={prevScore?.timeSet ?? null}
                        absolute={service === 'beatsavior'}/>
       </span>
 
