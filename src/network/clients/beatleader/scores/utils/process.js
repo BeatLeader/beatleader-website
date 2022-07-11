@@ -21,7 +21,7 @@ const processScore = s => {
 
   const ppWeighted = pp * weight;
 
-  const {accuracy: improvedAcc} = s?.scoreImprovement ?? {}
+  const {accuracy: improvedAcc, timeset: improvedTimeset} = s?.scoreImprovement ?? {}
 
   return {
     leaderboard,
@@ -42,6 +42,7 @@ const processScore = s => {
         ? {
           ...s.scoreImprovement,
           accuracy: (improvedAcc ?? 0) * 100,
+          timeSet: improvedTimeset ? dateFromUnix(improvedTimeset) : null,
         }
         : null
     },
