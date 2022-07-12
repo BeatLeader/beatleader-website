@@ -88,6 +88,13 @@
     <div class="player-rank">
       <div class={`rank ${rank === 1 ? 'gold' : (rank === 2 ? 'silver' : (rank === 3 ? 'brown' : (rank >= 10000 ? 'small' : '')))}`} title="Go to global ranking" on:click={e => onGlobalClick(player)}>
         #<Value value={rank} digits={0} zero="?"/>
+        {#if rank == 1}
+          <span class="flag">🏆</span>
+        {:else if rank == 2}
+          <span class="flag">🥈</span>
+        {:else if rank == 3}
+          <span class="flag">🥉</span>
+        {/if}
       </div>
       <div class={`rank ${countryRank === 1 ? 'gold' : (countryRank === 2 ? 'silver' : (countryRank === 3 ? 'brown' : (countryRank >= 10000 ? 'small' : '')))}`} title="Go to country ranking" on:click={e => onCountryClick(player)}>
         #<Value value={countryRank} digits={0} zero="?"/>
@@ -203,14 +210,17 @@
 
     .player-card :global(.rank.gold) {
         background-color: darkgoldenrod;
+        color: #ffc628;
     }
 
     .player-card :global(.rank.silver) {
         background-color: #888;
+        color: #acacac;
     }
 
     .player-card :global(.rank.brown) {
         background-color: saddlebrown;
+        color: #db6526;
     }
 
     .player-card .player-rank {
