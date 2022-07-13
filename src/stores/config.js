@@ -8,14 +8,13 @@ export const DEFAULT_LOCALE = 'en-US';
 
 export let configStore = null;
 
+const BROWSER_MAGIC_VALUE = '__BROWSER'
+
 const locales = {
-  'de-DE': {id: 'de-DE', name: 'Deutschland'},
-  'es-ES': {id: 'es-ES', name: 'España'},
-  'pl-PL': {id: 'pl-PL', name: 'Polska'},
-  'en-GB': {id: 'en-GB', name: 'United Kingdom'},
   'en-US': {id: 'en-US', name: 'United States'},
+  BROWSER_MAGIC_VALUE: {id: BROWSER_MAGIC_VALUE, name: 'Browser settings'},
 };
-export const getCurrentLocale = () => configStore ? configStore.getLocale() : DEFAULT_LOCALE;
+export const getCurrentLocale = () => configStore?.getLocale();
 export const getSupportedLocales = () => Object.values(locales);
 
 const DEFAULT_CONFIG = {
@@ -81,7 +80,7 @@ export default async () => {
     return currentConfig;
   }
 
-  const getLocale = () => opt(currentConfig, 'locale', DEFAULT_LOCALE);
+  const getLocale = () => currentConfig?.locale === BROWSER_MAGIC_VALUE ? (navigator.language ?? DEFAULT_LOCALE) : (currentConfig?.locale ?? DEFAULT_LOCALE);
 
   const determineNewSettingsAvailable = dbConfig => Object.entries(newSettingsAvailableDefinition)
     .map(([key, description]) => opt(dbConfig, key) === undefined ? description : null)

@@ -2,7 +2,7 @@
   import produce from "immer";
   import {
     configStore,
-    DEFAULT_LOCALE,
+    DEFAULT_LOCALE, getSupportedLocales,
   } from "../../stores/config";
   import createTwitchService from "../../services/twitch";
   import { ROUTER } from "svelte-routing/src/contexts";
@@ -172,6 +172,16 @@
             <Select bind:value={currentScoreComparisonMethod}>
               {#each scoreComparisonMethods as option (option.value)}
                 <option value={option.value}>{option.name}</option>
+              {/each}
+            </Select>
+          </section>
+
+          <section class="option">
+            <label title="All numbers and dates will be formatted according to the rules of the selected locale"
+            >Locale</label>
+            <Select bind:value={currentLocale}>
+              {#each getSupportedLocales() as option (option.id)}
+                <option value={option.id}>{option.name}</option>
               {/each}
             </Select>
           </section>
