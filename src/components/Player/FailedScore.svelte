@@ -7,6 +7,7 @@
     import Icons from '../Song/Icons.svelte'
     import PlayerPerformance from "./PlayerPerformance.svelte";
     import Button from '../Common/Button.svelte'
+    import ScoreRank from './ScoreRank.svelte';
   
     export let playerId = null;
     export let songScore = null;
@@ -38,7 +39,12 @@
   
       <div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
         <span class="rank">
-  
+            <ScoreRank rank={0}
+                     countryRank={0}
+                     countryRankTotal={null}
+                     country={score.country}
+                     hmd={score.hmd}
+                     platform={score.player.scoreStats.platform} />
           <div class="timeset tablet-and-up">
             <FormattedDate date={score.timeSet}
                            prevPrefix="vs "
