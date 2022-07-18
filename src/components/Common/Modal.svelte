@@ -80,8 +80,7 @@
         height: var(--height);
         min-width: 25em;
         max-width: 60em;
-        max-height: 80vh;
-        overflow: auto;
+        max-height: 100vh;
         transform: translate(-50%, -50%);
         padding: 1em;
         color: var(--textColor);
@@ -90,7 +89,6 @@
         border-radius: .5em;
 
         display: flex;
-        overflow-x: hidden;
     }
 
     .ss-modal .inner {
@@ -98,7 +96,6 @@
         flex-direction: column;
         width: 100%;
         flex: 1;
-        overflow: hidden;
     }
 
     .ss-modal::-webkit-scrollbar {

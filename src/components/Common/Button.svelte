@@ -63,6 +63,14 @@
             border: "transparent",
             activeBorder: "transparent",
         },
+        green: {
+            color: "#dbdbdb",
+            activeColor: "#fff",
+            bgColor: "green",
+            activeBgColor: "#bf0000",
+            border: "transparent",
+            activeBorder: "transparent",
+        },
         lessdanger: {
             color: "#dbdbdb",
             activeColor: "#fff",
