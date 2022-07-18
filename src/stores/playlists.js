@@ -2,6 +2,7 @@ import {writable} from 'svelte/store'
 import keyValueRepository from '../db/repository/key-value';
 import {opt} from '../utils/js'
 import {configStore} from './config'
+import {BL_API_URL} from '../network/queues/beatleader/api-queue'
 
 const STORE_PLAYLISTS_KEY = 'playlists';
 const defaultImage = ""
@@ -69,6 +70,49 @@ export default () => {
       await select(playlist);
   };
 
+  const deleteOneClick = async () => {
+    let playlists = (await get()).filter(playlist => !playlist.oneclick);
+
+    await set(playlists, true);
+  };
+
+  const downloadOneClick = async () => {
+    fetch(BL_API_URL + "user/oneclickplaylist", {
+      credentials: 'include'
+  })
+  .then(response => response.json())
+  .then(
+    async playlist => {
+      if (!playlist.playlistTitle ||
+        !playlist.songs) {
+        return
+      }
+    
+    await deleteOneClick();
+    playlist.oneclick = true;
+    let playlists = await get();
+    playlists.unshift(playlist)
+
+    await set(playlists, true);
+    });
+  };
+
+  const updateOneClick = async (songs) => {
+    fetch(BL_API_URL + "user/oneclickplaylist", {
+      credentials: 'include',
+      method: 'POST',
+      body: JSON.stringify({songs})
+    })
+  };
+
+  const checkOneClick = async () => {
+    if (await configStore.get('preferences').oneclick == "playlist") {
+      downloadOneClick();
+    } else {
+      deleteOneClick();
+    }
+  };
+
   const deleteList = async (index) => {
     let playlists = await get();
     playlists.splice(index, 1);
@@ -89,6 +133,10 @@ export default () => {
 
     playlists[index].songs.push(song);
 
+    if (playlists[index].oneclick) {
+      updateOneClick(playlists[index].songs);
+    }
+
     await set(playlists, true);
   };
 
@@ -103,6 +151,10 @@ export default () => {
     let song = playlists[index].songs.find(el => el.hash == hash);
     song.difficulties.push({name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type});
 
+    if (playlists[index].oneclick) {
+      updateOneClick(playlists[index].songs);
+    }
+
     await set(playlists, true);
   };
 
@@ -113,6 +165,10 @@ export default () => {
     let song = playlists[index].songs.find(el => el.hash == hash);
     song.difficulties = song.difficulties.filter(el => el.name != decapitalizeFirstLetter(diffInfo.diff));
 
+    if (playlists[index].oneclick) {
+      updateOneClick(playlists[index].songs);
+    }
+
     await set(playlists, true);
   };
 
@@ -121,6 +177,10 @@ export default () => {
       let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
       playlists[index].songs = playlists[index].songs.filter(el => el.hash != hash)
+
+      if (playlists[index].oneclick) {
+        updateOneClick(playlists[index].songs);
+      }
 
       await set(playlists, true);
   };
@@ -138,6 +198,7 @@ export default () => {
 
   const dbConfig = keyValueRepository().get(STORE_PLAYLISTS_KEY);
   if (dbConfig) set(dbConfig, false, true);
+  checkOneClick();
 
   playlistStore =  {
     subscribe,

@@ -71,6 +71,14 @@
             border: "transparent",
             activeBorder: "transparent",
         },
+        purple: {
+            color: "white",
+            activeColor: "#fff",
+            bgColor: "#dd80f2",
+            activeBgColor: "#bf0000",
+            border: "transparent",
+            activeBorder: "transparent",
+        },
         lessdanger: {
             color: "#dbdbdb",
             activeColor: "#fff",
