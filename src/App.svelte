@@ -116,6 +116,7 @@
     <a href="/about" on:click|preventDefault={() => navigate("/about")}>About</a
     >
     |
+    <a href="https://twitter.com/beatleader_">Twitter</a> |
     <a href="https://github.com/BeatLeader/beatleader-website">Source</a> |
     <a href="https://discord.gg/2RG5YVqtG6">Discord</a> |
     <a href="https://patreon.com/BeatLeader">Patreon</a>
