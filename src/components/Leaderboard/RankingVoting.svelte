@@ -77,7 +77,7 @@
 						min={0}
 						max={15}
 						step={0.1}
-						values={[stars]}
+						value={stars}
 						float
 						hoverable
 						pips

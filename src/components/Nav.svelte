@@ -58,12 +58,37 @@
     playlists.select(event.detail);
   }
 
+  let friendsMenuShown = false;
+  let playlistMenuShown = false;
+  let accountMenuShown = false;
+  let mobileMenuShown = false;
+
+  let showSettings = false;
+
+  function hideAllMenus() {
+    friendsMenuShown = false;
+    playlistMenuShown = false;
+    accountMenuShown = false;
+    mobileMenuShown = false;
+  }
+
   onMount(async () => {
     const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => settingsNotificationBadge = message);
 
     const settingsOpenUnsubscribe = eventBus.on('show-settings', () => {
       showSettings = !showSettings;
     })
+
+    document.addEventListener("mousedown", (event) => {
+      if (friendsMenuShown || playlistMenuShown || accountMenuShown || mobileMenuShown) {
+        var element = event.srcElement;
+        while (element && !element.classList.contains("hovermenu")) {
+          element = element.parentElement;
+        }
+        if (element && element.classList.contains("hovermenu")) return;
+        hideAllMenus();
+      }
+    });
 
     return () => {
       settingsBadgeUnsubscribe();
@@ -74,12 +99,7 @@
   const playlists = createPlaylistStore();
   const account = createAccountStore();
 
-  let friendsMenuShown = false;
-  let playlistMenuShown = false;
-  let accountMenuShown = false;
-  let mobileMenuShown = false;
-
-  let showSettings = false;
+  
   let signupOptions = [];
 
   function calculateSignUpOptions(loggedInUser) {
@@ -152,7 +172,7 @@
   {/if}
   
 
-  <div class="friends" on:mouseover={() => friendsMenuShown = true} on:focus={() => friendsMenuShown = true} on:mouseleave={() => friendsMenuShown = false}>
+  <div class="friends hovermenu" on:mouseover={() => friendsMenuShown = true} on:focus={() => friendsMenuShown = true} on:mouseleave={() => friendsMenuShown = false}>
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
 
     Friends
@@ -177,7 +197,7 @@
     Clans
   </a>
 
-  <div class="right mobile-menu"  on:mouseover={() => mobileMenuShown = true} on:focus={() => mobileMenuShown = true} on:mouseleave={() => mobileMenuShown = false}>
+  <div class="right mobile-menu hovermenu"  on:mouseover={() => mobileMenuShown = true} on:focus={() => mobileMenuShown = true} on:mouseleave={() => mobileMenuShown = false}>
     <div class="hamburger">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
     </div>
@@ -263,7 +283,7 @@
       Maps
     </a>
 
-    <div class="playlists" on:mouseover={() => playlistMenuShown = true} on:focus={() => playlistMenuShown = true} on:mouseleave={() => playlistMenuShown = false}>
+    <div class="playlists hovermenu" on:mouseover={() => playlistMenuShown = true} on:focus={() => playlistMenuShown = true} on:mouseleave={() => playlistMenuShown = false}>
       {#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
       <figure>
         <div class="playlistInfo">
@@ -495,6 +515,7 @@
 
         .mobile-menu .dropdown-menu {
             max-width: 16rem;
+            margin-top: -1em;
         }
 
         .mobile-menu .dropdown-item > a {
