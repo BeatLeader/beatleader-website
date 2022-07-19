@@ -329,7 +329,6 @@
 
   $: changeParams(leaderboardId, type, page, location)
   $: scrollToTop($pending);
-  $: higlightedPlayerId = higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
@@ -341,6 +340,7 @@
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
+  $: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
@@ -542,6 +542,7 @@
                       </Badge>
                     </div>
                   </div>
+                </div>
 
                   {#if openedDetails.includes(score?.score?.id)}
                     <div>
@@ -551,7 +552,7 @@
                       />
                     </div>
                   {/if}
-                  </div>
+                  
                   {#if showVotings && score.score.rankVoting}
                   <div class="rank-voting">
                       <div class="score with-badge">
@@ -750,7 +751,7 @@
 
     .player-score {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         grid-gap: 0.4em;
         overflow: hidden;
         border-bottom: 1px solid var(--faded);
@@ -950,6 +951,11 @@
 
         .player-score .score {
             flex-grow: 1;
+        }
+
+        .switch-and-button {
+          display: inline-flex;
+          margin-top: 0.5em;
         }
     }
 
