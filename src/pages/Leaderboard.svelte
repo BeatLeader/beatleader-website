@@ -43,8 +43,8 @@
   import {flip} from 'svelte/animate'
   import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score'
   import SongScoreDetails from '../components/Player/SongScoreDetails.svelte'
-import PpCurve from '../components/Leaderboard/PPCurve.svelte';
-import ContentBox from '../components/Common/ContentBox.svelte';
+  import PpCurve from '../components/Leaderboard/PPCurve.svelte';
+  import ContentBox from '../components/Common/ContentBox.svelte';
 
   export let leaderboardId;
   export let type = 'global';
@@ -61,6 +61,7 @@ import ContentBox from '../components/Common/ContentBox.svelte';
   export let iconsInInfo = false;
   export let noReplayInLeaderboard = false;
   export let showVotings = false;
+  export let showCurve = false;
 
   export let autoScrollToTop = true;
   export let showStats = true;
@@ -634,7 +635,7 @@ import ContentBox from '../components/Common/ContentBox.svelte';
            on:error={() => ssCoverDoesNotExists = true}/>
     {/if}
   </article>
-  {#if isRanked}
+  {#if showCurve && isRanked}
     <aside>
       <ContentBox>
         <h2 class="title is-5">PP curve</h2>
