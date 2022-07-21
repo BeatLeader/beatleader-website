@@ -85,7 +85,7 @@
             <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
               <span slot="label">
                 <Pp playerId={score.playerId} leaderboardId={leaderboard.leaderboardId}
-                    pp="{score.pp}" weighted={score.ppWeighted} {improvements}
+                    pp="{score.pp}" bonusPp={score.bonusPp} weighted={score.ppWeighted} {improvements}
                     whatIf={score.whatIfPp}
                     zero={formatNumber(0)} withZeroSuffix={true} inline={false}
                     color="white"

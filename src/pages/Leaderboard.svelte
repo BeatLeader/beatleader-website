@@ -43,6 +43,8 @@
   import {flip} from 'svelte/animate'
   import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score'
   import SongScoreDetails from '../components/Player/SongScoreDetails.svelte'
+import PpCurve from '../components/Leaderboard/PPCurve.svelte';
+import ContentBox from '../components/Common/ContentBox.svelte';
 
   export let leaderboardId;
   export let type = 'global';
@@ -632,6 +634,15 @@
            on:error={() => ssCoverDoesNotExists = true}/>
     {/if}
   </article>
+  {#if isRanked}
+    <aside>
+      <ContentBox>
+        <h2 class="title is-5">PP curve</h2>
+        <PpCurve stars={leaderboard?.stats?.stars} />
+      </ContentBox>
+      
+    </aside>
+  {/if}
 </section>
 
 <style>
@@ -917,6 +928,18 @@
       margin-top: 1.4em !important;
       margin-bottom: -5em !important;
       height: 1.8em;
+    }
+
+    @media screen and (max-width: 1275px) {
+        .align-content {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        aside {
+            width: 100%;
+            max-width: 65em;
+        }
     }
 
     @media screen and (max-width: 767px) {

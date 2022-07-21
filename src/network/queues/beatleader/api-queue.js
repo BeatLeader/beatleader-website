@@ -71,6 +71,7 @@ export const processLeaderboardScore = s => {
   ret.score.mods = s.modifiers && s.modifiers.length ? s.modifiers.split(',').filter(m => m && m.trim().length) : null;
 
   ret.score.pp = s.pp;
+  ret.score.bonusPp = s.bonusPp;
   ret.score.acc = s.accuracy * 100;
 
   ret.score.id = s?.id ?? null;
