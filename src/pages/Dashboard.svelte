@@ -8,6 +8,7 @@
     import RankingTable from '../components/Ranking/RankingTable.svelte'
     import Spinner from '../components/Common/Spinner.svelte'
     import Scores from '../components/Player/Scores.svelte'
+    import Timeline from '../components/Twitter/Timeline.svelte';
 
     const SPECIAL_PLAYER_ID = 'user-friends';
 
@@ -125,6 +126,9 @@
                             />
                         </div>
                     </ContentBox>
+                    <div>
+                        <Timeline href="https://twitter.com/beatleader_" />
+                    </div>
                     <div class="downloadButtons">
                         <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
                             <Button iconFa="fas fa-download" label="Download PC mod"/>
