@@ -1,13 +1,13 @@
 <script>
-	import Chart from 'chart.js/auto'
+	import Chart from 'chart.js/auto';
 	import 'chartjs-adapter-luxon';
-	import {createEventDispatcher, getContext, onMount} from 'svelte'
-	import {formatNumber} from '../../utils/format'
+	import {createEventDispatcher, getContext, onMount} from 'svelte';
+	import {formatNumber} from '../../utils/format';
 
 	export let stars = 5;
-	export let height = "200px";
+	export let height = '200px';
 	export let logarithmic = false;
-	export let modifiers = {}
+	export let modifiers = {};
 
 	const pageContainer = getContext('pageContainer');
 
@@ -19,9 +19,9 @@
 	let selectedModifiers = [];
 
 	function curve(acc, stars) {
-		var l = (1 - (0.03 * (stars - 3.0) / 11.0));
+		var l = 1 - (0.03 * (stars - 3.0)) / 11.0;
 		var a = 0.96 * l;
-		var f = 1.2 - 0.6 * stars / 14.0;
+		var f = 1.2 - (0.6 * stars) / 14.0;
 
 		return Math.pow(Math.log10(l / (l - acc)) / Math.log10(l / (l - a)), f);
 	}
@@ -35,12 +35,12 @@
 
 		negativeModifiersSum = negativeModifiersSum < -1 ? -1 : negativeModifiersSum;
 
-		const gridColor = '#2a2a2a'
-		const rankColor = "#3e95cd";
+		const gridColor = '#2a2a2a';
+		const rankColor = '#3e95cd';
 		const data = [];
-		for (let acc = 0.60; acc < 1; acc += 0.001) {
+		for (let acc = 0.6; acc < 1; acc += 0.001) {
 			const finalAcc = acc * (1 + negativeModifiersSum);
-			data.push({x: logarithmic ? 1 - acc : acc, y: ppFromAcc(finalAcc, stars)})
+			data.push({x: logarithmic ? 1 - acc : acc, y: ppFromAcc(finalAcc, stars)});
 		}
 
 		const datasets = [
@@ -64,7 +64,7 @@
 				text: 'acc',
 			},
 			ticks: {
-				callback: val => val * 100 === Math.floor(val * 100) ? (logarithmic ? 1 - val : `${formatNumber(val * 100, 0)}%`) : null,
+				callback: val => (val * 100 === Math.floor(val * 100) ? (logarithmic ? 1 - val : `${formatNumber(val * 100, 0)}%`) : null),
 				autoSkip: true,
 				color: 'white',
 			},
@@ -84,7 +84,7 @@
 				color: 'white',
 			},
 			ticks: {
-				callback: val => val === Math.floor(val) ? val : null,
+				callback: val => (val === Math.floor(val) ? val : null),
 				precision: 0,
 				color: 'white',
 			},
@@ -95,53 +95,50 @@
 		};
 
 		if (!chart) {
-			chart = new Chart(
-				canvas,
-				{
-					type: 'line',
-					data: {datasets},
-					options: {
-						responsive: true,
-						animation: {
-							duration: 0, // general animation time
+			chart = new Chart(canvas, {
+				type: 'line',
+				data: {datasets},
+				options: {
+					responsive: true,
+					animation: {
+						duration: 0, // general animation time
+					},
+					maintainAspectRatio: false,
+					layout: {
+						padding: {
+							right: 0,
 						},
-						maintainAspectRatio: false,
-						layout: {
-							padding: {
-								right: 0,
-							},
+					},
+					interaction: {
+						mode: 'index',
+						intersect: false,
+					},
+					plugins: {
+						legend: {
+							display: false,
 						},
-						interaction: {
-							mode: 'index',
-							intersect: false,
-						},
-						plugins: {
-							legend: {
-								display: false,
-							},
-							tooltip: {
-								position: 'nearest',
-								callbacks: {
-									title(ctx) {
-										if (!ctx?.[0]?.raw) return '';
+						tooltip: {
+							position: 'nearest',
+							callbacks: {
+								title(ctx) {
+									if (!ctx?.[0]?.raw) return '';
 
-										const accuracy = Math.round(ctx[0].raw?.x * 10000) / 100;
+									const accuracy = Math.round(ctx[0].raw?.x * 10000) / 100;
 
-										return `acc: ${formatNumber(logarithmic ? 100 - accuracy : accuracy, 1)}%`;
-									},
-									label(ctx) {
-										return `${formatNumber(ctx.parsed.y, ctx.dataset.round)}pp`;
-									},
+									return `acc: ${formatNumber(logarithmic ? 100 - accuracy : accuracy, 1)}%`;
+								},
+								label(ctx) {
+									return `${formatNumber(ctx.parsed.y, ctx.dataset.round)}pp`;
 								},
 							},
 						},
-						scales: {
-							x: xAxis,
-							y: yAxis,
-						},
+					},
+					scales: {
+						x: xAxis,
+						y: yAxis,
 					},
 				},
-			);
+			});
 		} else {
 			chart.data = {datasets};
 			chart.options.scales = {x: xAxis, y: yAxis};
@@ -151,29 +148,32 @@
 
 	onMount(() => {
 		dispatch('modified-stars', stars);
-	})
+	});
 
-	$: modifiersArr = Object.entries(modifiers ?? {})?.map(m => ({
-		name: m[0],
-		value: m[1],
-	})).filter(m => m.value).sort((a, b) => b.value - a.value)
-	$: positiveModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value > 0 ? mod.value : 0), 0) ?? 0
-	$: negativeModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0
-	$: modifiedStars = stars * (1 + positiveModifiersSum * 2)
-	$: setupChart(canvas, modifiedStars, logarithmic, negativeModifiersSum)
+	$: modifiersArr = Object.entries(modifiers ?? {})
+		?.map(m => ({
+			name: m[0],
+			value: m[1],
+		}))
+		.filter(m => m.value)
+		.sort((a, b) => b.value - a.value);
+	$: positiveModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value > 0 ? mod.value : 0), 0) ?? 0;
+	$: negativeModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
+	$: modifiedStars = stars * (1 + positiveModifiersSum * 2);
+	$: setupChart(canvas, modifiedStars, logarithmic, negativeModifiersSum);
 
-	$: dispatch('modified-stars', modifiedStars)
+	$: dispatch('modified-stars', modifiedStars);
 </script>
 
 <section class="chart" style="--height: {height}">
-	<canvas class="chartjs" bind:this={canvas} height={parseInt(height,10)}></canvas>
+	<canvas class="chartjs" bind:this={canvas} height={parseInt(height, 10)} />
 </section>
 
 {#if modifiersArr?.length}
 	<div class="modifiers">
 		{#each modifiersArr as modifier}
 			<label title={`${formatNumber(modifier.value, 2, true)}%`}>
-				<input type="checkbox" bind:group={selectedModifiers} value={modifier}/>
+				<input type="checkbox" bind:group={selectedModifiers} value={modifier} />
 				{modifier.name}
 			</label>
 		{/each}
@@ -181,24 +181,23 @@
 {/if}
 
 <style>
-    section {
-        position: relative;
-        margin: 1rem auto 0 auto;
-        height: var(--height, 300px);
-    }
+	section {
+		position: relative;
+		margin: 1rem auto 0 auto;
+		height: var(--height, 300px);
+	}
 
-    canvas {
-        width: 100% !important;
-    }
+	canvas {
+		width: 100% !important;
+	}
 
-    .modifiers {
-        margin-top: 1rem;
-        text-align: center;
-    }
+	.modifiers {
+		margin-top: 1rem;
+		text-align: center;
+	}
 
-    .modifiers > * {
-        display: inline-block;
-        margin-right: .75rem;
-    }
+	.modifiers > * {
+		display: inline-block;
+		margin-right: 0.75rem;
+	}
 </style>
-  
