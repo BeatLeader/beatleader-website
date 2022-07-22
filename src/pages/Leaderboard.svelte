@@ -90,6 +90,8 @@
   let boxEl = null;
   let leaderboard = null;
 
+  let modifiedStars = null;
+
   let openedDetails = [];
 
   let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
@@ -638,8 +640,13 @@
   {#if showCurve && isRanked}
     <aside>
       <ContentBox>
-        <h2 class="title is-5">PP curve</h2>
-        <PpCurve stars={leaderboard?.stats?.stars} />
+        <h2 class="title is-5">
+					PP curve
+					(<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
+				</h2>
+        <PpCurve stars={leaderboard?.stats?.stars} modifiers={$modifiersStore}
+                 on:modified-stars={e => modifiedStars = e?.detail ?? 0}
+        />
       </ContentBox>
       
     </aside>
