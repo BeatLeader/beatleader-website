@@ -110,7 +110,7 @@
   let lastBlParams = null;
   const getCurrentServiceParamsHash = () => {
     const {page, ...restParams} = serviceParams ?? {}
-    return stringify(restParams) + `::${playerScoresHistogramBucketSize}::${service}`
+    return stringify(restParams) + `::${playerScoresHistogramBucketSize}::${service}::${playerId}`
   }
   const shouldRefreshBlHistogram = () => {
     const currentBlParams = getCurrentServiceParamsHash(serviceParams);
