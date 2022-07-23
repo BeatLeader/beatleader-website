@@ -279,9 +279,9 @@
     }
 
     .downloadButtons {
-        /* float: center; */
-        /* move to the right */
-        /* margin-left: auto; */
-    
+        margin-top: 1.5em;
+        margin-left: 0.6em;
+        margin-bottom: 2em;
+        float: center;
     }
 </style>
