@@ -1,5 +1,6 @@
 <script>
 	import Chart from 'chart.js/auto';
+	import regionsPlugin from './utils/regions-plugin';
 	import 'chartjs-adapter-luxon';
 	import {createEventDispatcher, getContext, onMount} from 'svelte';
 	import {formatNumber} from '../../utils/format';
@@ -37,10 +38,26 @@
 
 		const gridColor = '#2a2a2a';
 		const rankColor = '#3e95cd';
+		const annotationColor = '#aaa';
+
+		let minPp = 0;
+		let annotations = [];
 		const data = [];
 		for (let acc = 0.6; acc < 1; acc += 0.001) {
 			const finalAcc = acc * (1 + negativeModifiersSum);
-			data.push({x: logarithmic ? 1 - acc : acc, y: ppFromAcc(finalAcc, stars)});
+			const pp = ppFromAcc(finalAcc, stars);
+			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
+
+			if (!minPp) minPp = pp;
+
+			if (acc > 0.6 && (acc * 100) % 5 < 0.001)
+				annotations.push({
+					min: acc,
+					max: acc,
+					color: annotationColor,
+					label: `${formatNumber(pp, 0)}pp`,
+					position: {horizontal: 'left', vertical: 'top'},
+				});
 		}
 
 		const datasets = [
@@ -91,7 +108,7 @@
 			grid: {
 				color: gridColor,
 			},
-			min: 0,
+			min: Math.floor(minPp * 0.9),
 		};
 
 		if (!chart) {
@@ -132,16 +149,23 @@
 								},
 							},
 						},
+						regions: {
+							regions: annotations,
+						},
 					},
 					scales: {
 						x: xAxis,
 						y: yAxis,
 					},
 				},
+				plugins: [regionsPlugin],
 			});
 		} else {
 			chart.data = {datasets};
 			chart.options.scales = {x: xAxis, y: yAxis};
+			chart.options.plugins.regions = {
+				regions: annotations,
+			};
 			chart.update();
 		}
 	}
