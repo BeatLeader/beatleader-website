@@ -8,6 +8,17 @@
 
   let filterEl = null;
 
+	function onSubmit(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (filterEl) {
+			dispatch('change', filterEl?.value);
+		}
+
+		return false;
+	}
+
   function onKeyUp(e) {
     const value = e?.target?.value ?? null;
     if (!value?.length) return;
@@ -23,7 +34,9 @@
   $: if (!open && filterEl) filterEl.value = '';
 </script>
 
-<input type="text" {placeholder} class:open={open} bind:this={filterEl} on:keyup={onKeyUp} />
+<form on:submit={onSubmit}>
+	<input type="text" {placeholder} class:open={open} bind:this={filterEl} on:keyup={onKeyUp} />
+</form>
 
 <style>
     input {
