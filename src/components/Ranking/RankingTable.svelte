@@ -28,7 +28,7 @@
 		{id: 'acc', 'label': 'Acc', title: 'Sort by ranked accuracy', iconFa: 'fa fa-crosshairs', value: data => getAcc(data, 'scoreStats.averageRankedAccuracy'), props: {suffix: '%', zero: '-'}},
 		{id: 'topPp', 'label': 'Top PP', title: 'Sort by top PP', iconFa: 'fa fa-cubes', value: data => getStat(data, 'scoreStats.topPp'), props: {suffix: 'pp', zero: '-'}},
 		{id: 'topAcc', 'label': 'Top Acc', title: 'Sort by top accuracy', iconFa: 'fa fa-crosshairs', value: data => getAcc(data, 'scoreStats.topAccuracy'), props: {suffix: '%', zero: '-'}},
-		{id: 'playCount', 'label': 'Play count', title: 'Sort by ranked play count', iconFa: 'fas fa-calculator', value: data => getStat(data, 'scoreStats.rankedPlayCount'), props: {digits: 0}},
+		{id: 'playCount', 'label': 'Play count', title: 'Sort by ranked play count', iconFa: 'fas fa-calculator', value: data => getStat(data, 'scoreStats.rankedPlayCount'), props: {digits: 0, suffix: ''}},
 		{id: 'dailyImprovements', 'label': 'Improvements', title: 'Sort by today improved scores', iconFa: 'far fa-lightbulb', value: data => getStat(data, 'scoreStats.dailyImprovements'), props: {digits: 0}},
 	];
 
