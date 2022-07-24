@@ -1,31 +1,30 @@
 <script>
-  import {navigate} from "svelte-routing";
-  import {fade} from 'svelte/transition'
+	import {navigate} from 'svelte-routing';
+	import {fade} from 'svelte/transition';
 	import {
 		createBuildFiltersFromLocation,
 		buildSearchFromFilters,
 		processStringFilter,
 		processStringArrayFilter,
-		processIntArrayFilter
-	} from '../utils/filters'
-  import {capitalize} from '../utils/js'
-  import {scrollToTargetAdjusted} from '../utils/browser'
-  import ssrConfig from '../ssr-config'
-  import Spinner from '../components/Common/Spinner.svelte'
-  import ContentBox from "../components/Common/ContentBox.svelte";
-  import RankingTable from '../components/Ranking/RankingTable.svelte'
-  import RangeSlider from "svelte-range-slider-pips";
-  import {debounce} from '../utils/debounce'
-	import Switcher from '../components/Common/Switcher.svelte'
-	import Countries from '../components/Ranking/Countries.svelte'
+		processIntArrayFilter,
+	} from '../utils/filters';
+	import {capitalize} from '../utils/js';
+	import {scrollToTargetAdjusted} from '../utils/browser';
+	import ssrConfig from '../ssr-config';
+	import Spinner from '../components/Common/Spinner.svelte';
+	import ContentBox from '../components/Common/ContentBox.svelte';
+	import RankingTable from '../components/Ranking/RankingTable.svelte';
+	import RangeSlider from 'svelte-range-slider-pips';
+	import {debounce} from '../utils/debounce';
+	import Switcher from '../components/Common/Switcher.svelte';
+	import Countries from '../components/Ranking/Countries.svelte';
 
-  export let type = 'global';
-  export let page = 1;
+	export let type = 'global';
+	export let page = 1;
 
-  document.body.classList.remove('slim');
+	document.body.classList.remove('slim');
 
-
-  const FILTERS_DEBOUNCE_MS = 500;
+	const FILTERS_DEBOUNCE_MS = 500;
 
 	const findParam = key => params.find(p => p.key === key);
 
@@ -36,7 +35,7 @@
 
 			updateCurrentFiltersFromParams();
 		}
-	}
+	};
 
 	const onMultiSwitchChange = (e, key) => {
 		const param = findParam(key);
@@ -47,7 +46,7 @@
 
 			updateCurrentFiltersFromParams();
 		}
-	}
+	};
 
 	let start = null;
 
@@ -61,28 +60,28 @@
 
 		start = new Date().getTime();
 		setTimeout(() => {
-			if ((new Date().getTime() - start) > 499) {
+			if (new Date().getTime() - start > 499) {
 				updateCurrentFiltersFromParams(true);
 			}
 		}, 500);
-	}
+	};
 
-  const params = [
-    {
-      key: 'search',
-      label: 'Player Name',
-      default: '',
-      process: processStringFilter,
-      type: 'input',
+	const params = [
+		{
+			key: 'search',
+			label: 'Player Name',
+			default: '',
+			process: processStringFilter,
+			type: 'input',
 			value: '',
 			placeholder: 'Search for a player',
-      onChange: e => {
-				const length = e?.target?.value?.length
+			onChange: e => {
+				const length = e?.target?.value?.length;
 				if (length > 0 && length < 3) return;
 
 				onInputChange(e, 'search');
-      }
-    },
+			},
+		},
 		{
 			key: 'countries',
 			label: 'Countries',
@@ -99,23 +98,23 @@
 					updateCurrentFiltersFromParams();
 				}
 			},
-			multi: true
+			multi: true,
 		},
-    {
-      key: 'platform',
-      label: 'Platform',
-      default: '',
-      process: processStringArrayFilter,
-      type: 'switch',
+		{
+			key: 'platform',
+			label: 'Platform',
+			default: '',
+			process: processStringArrayFilter,
+			type: 'switch',
 			value: [],
 			values: [
-				{id: 'steam', 'label': 'Steam', },
-				{id: 'oculus', 'label': 'Quest'},
-				{id: 'oculuspc', 'label': 'Oculus'},
+				{id: 'steam', label: 'Steam'},
+				{id: 'oculus', label: 'Quest'},
+				{id: 'oculuspc', label: 'Oculus'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'platform'),
-			multi: true
-    },
+			multi: true,
+		},
 		{
 			key: 'hmd',
 			label: 'HMD',
@@ -124,15 +123,15 @@
 			type: 'switch',
 			value: [],
 			values: [
-				{id: '1', 'label': 'Rift CV1', },
-				{id: '16', 'label': 'Rift S', },
-				{id: '32', 'label': 'Quest 1', },
-				{id: '256', 'label': 'Quest 2', },
-				{id: '8', 'label': 'WMR', },
-				{id: '64', 'label': 'Valve Index', },
-				{id: '2', 'label': 'Vive', },
-				{id: '4', 'label': 'Vive Pro', },
-				{id: '128', 'label': 'Vive Cosmos', },
+				{id: '1', label: 'Rift CV1'},
+				{id: '16', label: 'Rift S'},
+				{id: '32', label: 'Quest 1'},
+				{id: '256', label: 'Quest 2'},
+				{id: '8', label: 'WMR'},
+				{id: '64', label: 'Valve Index'},
+				{id: '2', label: 'Vive'},
+				{id: '4', label: 'Vive Pro'},
+				{id: '128', label: 'Vive Cosmos'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'hmd'),
 			multi: true,
@@ -145,14 +144,14 @@
 			type: 'switch',
 			value: [],
 			values: [
-				{id: 'admin', 'label': 'Administrator',},
-				{id: 'rankedteam', 'label': 'Ranked Team',},
-				{id: 'tipper', 'label': 'Tipper',},
-				{id: 'supporter', 'label': 'Supporter',},
-				{id: 'sponsor', 'label': 'Sponsor',},
+				{id: 'admin', label: 'Administrator'},
+				{id: 'rankedteam', label: 'Ranked Team'},
+				{id: 'tipper', label: 'Tipper'},
+				{id: 'supporter', label: 'Supporter'},
+				{id: 'sponsor', label: 'Sponsor'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'role'),
-			multi: true
+			multi: true,
 		},
 		{
 			key: 'pp_range',
@@ -184,71 +183,67 @@
 			key: 'sortBy',
 			default: 'pp',
 			process: processStringFilter,
-			type: null
+			type: null,
 		},
 		{
 			key: 'order',
 			default: 'desc',
 			process: processStringFilter,
-			type: null
-		}
-  ];
+			type: null,
+		},
+	];
 
-  const buildFiltersFromLocation = createBuildFiltersFromLocation(
-    params,
-    filters => {
-			params.forEach(p => {
-				if (p.bitArray) {
-					p.value = (p?.values ?? []).filter(v=> Number.isFinite(v.id) && ((1 << v.id) & (filters?.[p.key] ?? 0) ));
-					filters[p.key] = filters[p.key] ?? 0;
-				} else if (p.key === 'countries') {
-					p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : (p?.default ?? []);
-					filters[p.key] = filters[p.key] ?? [];
-				} else if (p.key === 'pp_range' || p.key === 'score_range') {
-					p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : (p?.default ?? []);
-					filters[p.key] = filters[p.key] ?? 0;
-				} else {
-					filters[p.key] = p.multi
-						? (
-							(p?.values ?? [])
-								?.map(v => v?.id)
-								?.filter(v => filters?.[p.key]?.includes(v))
-							?? p?.default ?? []
-						)
-						: (filters?.[p.key]?.length ? filters[p.key] : (p?.default ?? ''));
+	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
+		params.forEach(p => {
+			if (p.bitArray) {
+				p.value = (p?.values ?? []).filter(v => Number.isFinite(v.id) && (1 << v.id) & (filters?.[p.key] ?? 0));
+				filters[p.key] = filters[p.key] ?? 0;
+			} else if (p.key === 'countries') {
+				p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : p?.default ?? [];
+				filters[p.key] = filters[p.key] ?? [];
+			} else if (p.key === 'pp_range' || p.key === 'score_range') {
+				p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
+				filters[p.key] = filters[p.key] ?? 0;
+			} else {
+				filters[p.key] = p.multi
+					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
+					: filters?.[p.key]?.length
+					? filters[p.key]
+					: p?.default ?? '';
 
-					p.value = p.multi ? (p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? (p?.default ?? [])) : (filters?.[p.key] ?? p?.default ?? '');
-				}
-			});
+				p.value = p.multi
+					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
+					: filters?.[p.key] ?? p?.default ?? '';
+			}
+		});
 
-      return filters;
-    }
-  );
+		return filters;
+	});
 
-  document.body.classList.add('slim');
+	document.body.classList.add('slim');
 
-  if (page && !Number.isFinite(page)) page = parseInt(page, 10);
-  if (!page || isNaN(page) || page <= 0) page = 1;
+	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+	if (!page || isNaN(page) || page <= 0) page = 1;
 
-  let currentType = type;
-  let currentPage = page;
-  let currentFilters = buildFiltersFromLocation(location);
-  let boxEl = null;
+	let currentType = type;
+	let currentPage = page;
+	let currentFilters = buildFiltersFromLocation(location);
+	let boxEl = null;
 
-  let isLoading = false;
-  let pending = null;
-  let preventScroll = false;
+	let isLoading = false;
+	let pending = null;
+	let preventScroll = false;
 
 	function updateCurrentFiltersFromParams(noScroll) {
 		params.forEach(p => {
 			if (p.bitArray) {
-				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0)
+				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0);
 			} else if (p.key === 'countries') {
-				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : (p?.value ?? '');
+				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : p?.value ?? '';
 			} else if (p.key === 'pp_range' || p.key === 'score_range') {
-				currentFilters[p.key] = (p?.values ?? []).map(i => i + "").join(',');
-			} else{
-				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : (p?.value ?? '');
+				currentFilters[p.key] = (p?.values ?? []).map(i => i + '').join(',');
+			} else {
+				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : p?.value ?? '';
 			}
 		});
 
@@ -260,34 +255,34 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-  function scrollToTop() {
-    if (!preventScroll && boxEl) scrollToTargetAdjusted(boxEl, 70)
-	preventScroll = false;
-  }
+	function scrollToTop() {
+		if (!preventScroll && boxEl) scrollToTargetAdjusted(boxEl, 70);
+		preventScroll = false;
+	}
 
-  function changeParams(newType, newPage, newLocation) {
-    currentType = newType;
-    currentFilters = buildFiltersFromLocation(newLocation);
-    if (!currentFilters?.sortBy?.length) {
-      currentFilters.sortBy = 'pp';
-    }
-    newPage = parseInt(newPage, 10);
-    if (isNaN(newPage)) newPage = 1;
+	function changeParams(newType, newPage, newLocation) {
+		currentType = newType;
+		currentFilters = buildFiltersFromLocation(newLocation);
+		if (!currentFilters?.sortBy?.length) {
+			currentFilters.sortBy = 'pp';
+		}
+		newPage = parseInt(newPage, 10);
+		if (isNaN(newPage)) newPage = 1;
 
-    currentPage = newPage;
+		currentPage = newPage;
 
-    navigateToCurrentPageAndFilters();
-  }
+		navigateToCurrentPageAndFilters();
+	}
 
-  function onPageChanged(event) {
-    if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
+	function onPageChanged(event) {
+		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-    navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
-  }
+		navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+	}
 
-  function navigateToCurrentPageAndFilters() {
-    navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
-  }
+	function navigateToCurrentPageAndFilters() {
+		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+	}
 
 	function onSortChanged(event) {
 		if (!event?.detail?.id) return null;
@@ -314,133 +309,139 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-  $: typeName = type && type.toUpperCase && !['global', 'friends'].includes(type) ? type.toUpperCase() : capitalize(type)
-  $: changeParams(type, page, location)
-  $: scrollToTop(pending);
+	$: typeName = type && type.toUpperCase && !['global', 'friends'].includes(type) ? type.toUpperCase() : capitalize(type);
+	$: changeParams(type, page, location);
+	$: scrollToTop(pending);
 </script>
 
 <svelte:head>
-  <title>Ranking / {currentPage} - {ssrConfig.name}</title>
+	<title>Ranking / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
 <section class="align-content">
-  <article class="page-content" transition:fade>
-    <ContentBox bind:box={boxEl}>
-      <h1 class="title is-5">
-        Ranking
+	<article class="page-content" transition:fade>
+		<ContentBox bind:box={boxEl}>
+			<h1 class="title is-5">
+				Ranking
 
-        {#if isLoading}
-          <Spinner/>
-        {/if}
-      </h1>
-
-      <RankingTable type={currentType} page={currentPage} filters={currentFilters}
-										on:filters-updated={onFiltersUpdated}
-                    on:page-changed={onPageChanged}
-										on:sort-changed={onSortChanged}
-                    on:loading={e => isLoading = !!e?.detail}
-                    on:pending={e => pending = e?.detail}
-      />
-    </ContentBox>
-  </article>
-
-  <aside>
-    <ContentBox>
-      <h2 class="title is-5">Filters</h2>
-
-      {#each params as param}
-				{#if param.type}
-        <section class="filter">
-          <label>{param?.label ?? param?.key ?? ''}</label>
-
-					{#if param?.type === 'input'}
-						<input type="text" placeholder={param.placeholder ?? null} value={param.value}
-									 on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)}
-						/>
-					{:else if param?.type === 'switch'}
-						<Switcher values={param.values} value={param.value} multi={!!param?.multi}
-											on:change={param.onChange}
-						/>
-					{:else if param?.type === 'countries'}
-						<Countries countries={param.value} on:change={param.onChange} />
-					{:else if param?.type === 'slider'}
-					<RangeSlider 
-						range 
-						min={param.min} 
-						max={param.max} 
-						step={param.step} 
-						values={param.values}
-						float hoverable pips pipstep={param.pipstep} all="label"
-						on:change={param.onChange}/>
-					{/if}
-        </section>
+				{#if isLoading}
+					<Spinner />
 				{/if}
-      {/each}
-    </ContentBox>
-  </aside>
+			</h1>
+
+			<RankingTable
+				type={currentType}
+				page={currentPage}
+				filters={currentFilters}
+				on:filters-updated={onFiltersUpdated}
+				on:page-changed={onPageChanged}
+				on:sort-changed={onSortChanged}
+				on:loading={e => (isLoading = !!e?.detail)}
+				on:pending={e => (pending = e?.detail)} />
+		</ContentBox>
+	</article>
+
+	<aside>
+		<ContentBox>
+			<h2 class="title is-5">Filters</h2>
+
+			{#each params as param}
+				{#if param.type}
+					<section class="filter">
+						<label>{param?.label ?? param?.key ?? ''}</label>
+
+						{#if param?.type === 'input'}
+							<input
+								type="text"
+								placeholder={param.placeholder ?? null}
+								value={param.value}
+								on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
+						{:else if param?.type === 'switch'}
+							<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
+						{:else if param?.type === 'countries'}
+							<Countries countries={param.value} on:change={param.onChange} />
+						{:else if param?.type === 'slider'}
+							<RangeSlider
+								range
+								min={param.min}
+								max={param.max}
+								step={param.step}
+								values={param.values}
+								float
+								hoverable
+								pips
+								pipstep={param.pipstep}
+								all="label"
+								on:change={param.onChange} />
+						{/if}
+					</section>
+				{/if}
+			{/each}
+		</ContentBox>
+	</aside>
 </section>
 
 <style>
-    .align-content {
-        display: flex;
-        justify-content: flex-end!important;
-    }
+	.align-content {
+		display: flex;
+		justify-content: flex-end !important;
+	}
 
-    .page-content {
-        max-width: 65em;
-        width: 100%;
-    }
+	.page-content {
+		max-width: 65em;
+		width: 100%;
+	}
 
-    aside {
-      width: 25em;
-    }
+	aside {
+		width: 25em;
+	}
 
-    aside .filter {
-      margin-bottom: 1.5rem;
-      transition: opacity 300ms;
-    }
+	aside .filter {
+		margin-bottom: 1.5rem;
+		transition: opacity 300ms;
+	}
 
-    aside .filter.disabled {
-      opacity: .25;
-    }
+	aside .filter.disabled {
+		opacity: 0.25;
+	}
 
-    aside label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 1rem;
-    }
+	aside label {
+		display: block;
+		font-weight: 500;
+		margin-bottom: 1rem;
+	}
 
-    aside .filter.disabled label {
-      cursor: help;
-    }
+	aside .filter.disabled label {
+		cursor: help;
+	}
 
-    aside label span {
-      color: var(--beatleader-primary);
-    }
+	aside label span {
+		color: var(--beatleader-primary);
+	}
 
-    aside input {
-      width: 100%;
-      font-size: 1em;
-      color: var(--beatleader-primary);
-      background-color: var(--foreground);
-      border: none;
-      border-bottom: 1px solid var(--faded);
-      outline: none;
-    }
+	aside input {
+		width: 100%;
+		font-size: 1em;
+		color: var(--beatleader-primary);
+		background-color: var(--foreground);
+		border: none;
+		border-bottom: 1px solid var(--faded);
+		outline: none;
+	}
 
-    aside :global(.switch-types) {
-      justify-content: flex-start;
-    }
+	aside :global(.switch-types) {
+		justify-content: flex-start;
+	}
 
-    @media screen and (max-width: 1275px) {
-        .align-content {
-            flex-direction: column-reverse;
-            align-items: center;
-        }
+	@media screen and (max-width: 1275px) {
+		.align-content {
+			flex-direction: column-reverse;
+			align-items: center;
+		}
 
-        aside {
-            width: 100%;
-            max-width: 65em;
-        }
-    }
+		aside {
+			width: 100%;
+			max-width: 65em;
+		}
+	}
 </style>
