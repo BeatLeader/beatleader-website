@@ -17,6 +17,14 @@
 	let canvas = null;
 	let chart = null;
 
+	const mutuallyExclusive = {
+		NA: ['DA'],
+		GN: ['DA'],
+		DA: ['GN', 'NA'],
+		SS: ['FS', 'SF'],
+		FS: ['SF', 'SS'],
+		SF: ['FS', 'SS'],
+	};
 	let selectedModifiers = [];
 
 	function curve(acc, stars) {
@@ -183,6 +191,10 @@
 		.sort((a, b) => b.value - a.value);
 	$: positiveModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value > 0 ? mod.value : 0), 0) ?? 0;
 	$: negativeModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
+	$: excludedModifiers = selectedModifiers.reduce(
+		(all, mod) => (mutuallyExclusive[mod?.name] ? all.concat(mutuallyExclusive[mod.name]) : all),
+		[]
+	);
 	$: modifiedStars = stars * (1 + positiveModifiersSum * 2);
 	$: setupChart(canvas, modifiedStars, logarithmic, negativeModifiersSum);
 
@@ -196,8 +208,8 @@
 {#if modifiersArr?.length}
 	<div class="modifiers">
 		{#each modifiersArr as modifier}
-			<label title={`${formatNumber(modifier.value, 2, true)}%`}>
-				<input type="checkbox" bind:group={selectedModifiers} value={modifier} />
+			<label title={`${formatNumber(modifier.value, 2, true)}%`} class:disabled={excludedModifiers.includes(modifier?.name)}>
+				<input type="checkbox" bind:group={selectedModifiers} value={modifier} disabled={excludedModifiers.includes(modifier?.name)} />
 				{modifier.name}
 			</label>
 		{/each}
@@ -223,5 +235,13 @@
 	.modifiers > * {
 		display: inline-block;
 		margin-right: 0.75rem;
+	}
+
+	.modifiers label {
+		transition: color 300ms;
+	}
+
+	.modifiers label.disabled {
+		color: var(--faded) !important;
 	}
 </style>
