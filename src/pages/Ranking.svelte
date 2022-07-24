@@ -157,9 +157,9 @@
 		{
 			key: 'pp_range',
 			label: 'Pp range',
-			default: [0, 16000],
+			default: [0, 20000],
 			min: 0,
-			max: 16000,
+			max: 20000,
 			step: 1,
 			pipstep: 4000,
 			type: 'slider',
@@ -170,9 +170,9 @@
 		{
 			key: 'score_range',
 			label: 'Ranked scores count',
-			default: [0, 600],
+			default: [0, 1000],
 			min: 0,
-			max: 600,
+			max: 1000,
 			step: 1,
 			pipstep: 100,
 			type: 'slider',
