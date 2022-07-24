@@ -18,10 +18,12 @@
 	let chart = null;
 
 	const mutuallyExclusive = {
-		DA: ['GN'],
+		NA: ['DA'],
 		GN: ['DA'],
-		SF: ['FS'],
-		FS: ['SF'],
+		DA: ['GN', 'NA'],
+		SS: ['FS', 'SF'],
+		FS: ['SF', 'SS'],
+		SF: ['FS', 'SS'],
 	};
 	let selectedModifiers = [];
 
@@ -236,7 +238,7 @@
 	}
 
 	.modifiers label {
-			transition: color 300ms;
+		transition: color 300ms;
 	}
 
 	.modifiers label.disabled {
