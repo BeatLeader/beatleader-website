@@ -8,6 +8,7 @@
   import {opt, capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import {configStore} from '../stores/config'
+  import createVotingStore from '../stores/beatleader/rankVoting'
   import stringify from 'json-stable-stringify';
   import createPlayerService from '../services/beatleader/player'
   import ssrConfig from '../ssr-config'
@@ -25,8 +26,16 @@
   import Switcher from '../components/Common/Switcher.svelte'
   import Button from '../components/Common/Button.svelte'
   import Icons from '../components/Song/Icons.svelte'
+  import RankingVoting from '../components/Leaderboard/RankingVoting.svelte'
+  
   import {formatNumber} from '../utils/format'
-  import {getIconNameForDiff, describeModifiersAndMultipliers, getDescriptionForDiff} from '../utils/beatleader/format'
+  import {
+		getIconNameForDiff,
+		describeModifiersAndMultipliers,
+		getDescriptionForDiff,
+		mapTypeFromMask,
+		votingsForTypeStats,
+	} from '../utils/beatleader/format';
   import {isValidDate, dateFromUnix} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
   import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
@@ -34,6 +43,8 @@
   import {flip} from 'svelte/animate'
   import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score'
   import SongScoreDetails from '../components/Player/SongScoreDetails.svelte'
+  import PpCurve from '../components/Leaderboard/PPCurve.svelte';
+  import ContentBox from '../components/Common/ContentBox.svelte';
 
   export let leaderboardId;
   export let type = 'global';
@@ -49,6 +60,8 @@
   export let higlightedScore = null;
   export let iconsInInfo = false;
   export let noReplayInLeaderboard = false;
+  export let showVotings = false;
+  export let showCurve = false;
 
   export let autoScrollToTop = true;
   export let showStats = true;
@@ -59,6 +72,7 @@
 
   const playerService = createPlayerService();
   const account = createAccountStore();
+  const votingStore = createVotingStore();
 
   const params = [
     {key: 'countries', default: '', process: processStringFilter},
@@ -75,6 +89,8 @@
   let currentFilters = buildFiltersFromLocation(location);
   let boxEl = null;
   let leaderboard = null;
+
+  let modifiedStars = null;
 
   let openedDetails = [];
 
@@ -311,13 +327,13 @@
     }
   }
 
+  let mapVoting = false;
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
 
   $: changeParams(leaderboardId, type, page, location)
   $: scrollToTop($pending);
-  $: higlightedPlayerId = higlightedScore?.player?.playerId;
   $: scores = opt($leaderboardStore, 'scores', null)
   $: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null)
   $: song = opt($leaderboardStore, 'leaderboard.song', null)
@@ -329,7 +345,7 @@
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
 
-  $: higlightedPlayerId = $account?.id ?? null
+  $: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
@@ -341,12 +357,20 @@
       .concat(scores)
       .concat(userScore?.score?.score <= scores?.[scores.length - 1]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: false}] : [])
     : scores;
+  $: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type)
+  $: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
+  $: if (showVotings) votingStore.fetchResults(leaderboardId);
+  $: votingStats = $votingStore[leaderboardId];
+  $: votingLoading = $votingStore.loading;
 </script>
 
 <svelte:head>
   <title>{fixedBrowserTitle ? fixedBrowserTitle : `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}`}</title>
 </svelte:head>
 
+{#if mapVoting}
+  <RankingVoting {votingStore} starChange={showVotings} currentStars={leaderboard?.stats?.stars} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => (mapVoting = false)} />
+{/if}
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
     <div class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
@@ -407,6 +431,22 @@
         {/if}
 
         {#if type !== 'accsaber'}
+        
+        <div class={votingStatus ? 'switch-and-button' : ''}>
+          {#if !votingLoading}
+          {#if showVotings || votingStatus == 2}
+          <Button cls="voteButton"                                 
+                  iconFa={showVotings ? "fas fa-star" : "fas fa-comment-dots"}
+                  title={showVotings ? "Update map config" : "Vote this map for ranking!"} 
+                  noMargin={true} on:click={() => mapVoting = !mapVoting}/>
+          {:else if votingStatus == 1}
+          <Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title="Pass this diff to vote on the map" noMargin={true}/>
+          {:else if votingStatus == 3}
+          <Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true}/>
+          {/if}
+          {:else}
+          <Spinner/>
+          {/if}
           <nav class="diff-switch">
             {#if !withoutDiffSwitcher && diffs && diffs.length}
               <Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff}/>
@@ -415,6 +455,7 @@
             <Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged}
                       loadingValue={currentlyLoadedDiff}/>
           </nav>
+        </div>
         {/if}
 
         {#if scoresWithUser?.length}
@@ -506,7 +547,7 @@
                       </Badge>
                     </div>
                   </div>
-                  </div>
+                </div>
 
                   {#if openedDetails.includes(score?.score?.id)}
                     <div>
@@ -516,8 +557,63 @@
                       />
                     </div>
                   {/if}
+                  
+                  {#if showVotings && score.score.rankVoting}
+                  <div class="rank-voting">
+                      <div class="score with-badge">
+                          <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                              <span slot="label">
+                                  <small title="Rankability">{score.score.rankVoting.rankability ? 'YES' : 'NO'} </small>
+                              </span>
+                          </Badge>
+                      </div>
+                      {#if score.score.rankVoting.stars}
+                          <div class="score with-badge">
+                              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                                  <span slot="label">
+                                      <Value title="Stars" value={score.score.rankVoting.stars} inline={false} digits={2} />
+                                  </span>
+                              </Badge>
+                          </div>
+                      {/if}
+                      {#if score.score.rankVoting.type}
+                          <div class="score with-badge">
+                              <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                                  <span slot="label">
+                                      <small class="nowrap-label" title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
+                                  </span>
+                              </Badge>
+                          </div>
+                      {/if}
+                  </div>
+                  {/if}
                 </div>
             {/each}
+            {#if votingStats}
+            <div class="rank-voting">
+                <div class="score with-badge">
+                    <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                        <span slot="label">
+                            <Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
+                        </span>
+                    </Badge>
+                </div>
+                <div class="score with-badge">
+                    <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                        <span slot="label">
+                            <Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
+                        </span>
+                    </Badge>
+                </div>
+                <div class="score with-badge">
+                    <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                        <span slot="label">
+                            <small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
+                        </span>
+                    </Badge>
+                </div>
+            </div>
+            {/if}
           </div>
 
           <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
@@ -541,6 +637,20 @@
            on:error={() => ssCoverDoesNotExists = true}/>
     {/if}
   </article>
+  {#if showCurve && isRanked}
+    <aside>
+      <ContentBox>
+        <h2 class="title is-5">
+					PP curve
+					(<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
+				</h2>
+        <PpCurve stars={leaderboard?.stats?.stars} modifiers={$modifiersStore}
+                 on:modified-stars={e => modifiedStars = e?.detail ?? 0}
+        />
+      </ContentBox>
+      
+    </aside>
+  {/if}
 </section>
 
 <style>
@@ -661,11 +771,12 @@
     .player-score {
         display: flex;
         flex-direction: row;
-        grid-gap: .4em;
+        grid-gap: 0.4em;
         overflow: hidden;
         border-bottom: 1px solid var(--faded);
-        padding-bottom: .2em;
+        padding-bottom: 0.2em;
         min-width: 19em;
+        justify-content: center;
     }
 
     .mobile-first-line {
@@ -784,6 +895,27 @@
         position: relative;
     }
 
+    .switch-and-button {
+        margin-top: -1.5em;
+    }
+
+    .mobile-container {
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+        min-width: 19em;
+    }
+
+    .rank-voting {
+        display: flex;
+        grid-gap: 0.4em;
+        align-items: center;
+    }
+
+    .nowrap-label {
+      white-space: nowrap;
+    }
+
     :global(.battleroyalebtn) {
       margin-left: 1em;
       margin-bottom: 0.5em;
@@ -800,6 +932,24 @@
       padding-bottom: 2rem;
     }
 
+    :global(.voteButton) {
+      margin-top: 1.4em !important;
+      margin-bottom: -5em !important;
+      height: 1.8em;
+    }
+
+    @media screen and (max-width: 1275px) {
+        .align-content {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        aside {
+            width: 100%;
+            max-width: 65em;
+        }
+    }
+
     @media screen and (max-width: 767px) {
         .diff-switch {
             flex-direction: column;
@@ -811,6 +961,10 @@
         }
 
         .player-score {
+            flex-direction: column;
+        }
+
+        .mobile-container {
             flex-direction: column;
         }
 
@@ -828,6 +982,11 @@
 
         .player-score .score {
             flex-grow: 1;
+        }
+
+        .switch-and-button {
+          display: inline-flex;
+          margin-top: 0.5em;
         }
     }
 

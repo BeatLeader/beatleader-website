@@ -10,6 +10,8 @@
     import Scores from '../components/Player/Scores.svelte'
     // import Timeline from '../components/Twitter/Timeline.svelte';
 
+
+
     const SPECIAL_PLAYER_ID = 'user-friends';
 
     let page = 1;
@@ -126,6 +128,7 @@
                             />
                         </div>
                     </ContentBox>
+
                 </div>
                             <div class="downloadButtons"> 
                                 <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">

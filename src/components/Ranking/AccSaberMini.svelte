@@ -35,16 +35,16 @@
 
         categories = await rankingService.getPlayer(playerId)
 
-        const currentCategory = categories.find(el => el.category == category)
+        const currentCategory = categories.find(el => el.category === category)
         
   
         isLoading = true;
   
-        const ranking = await rankingService.getMiniRanking(currentCategory.rank, category, numOfPlayers);
+        const ranking = await rankingService.getMiniRanking(currentCategory?.rank, category, numOfPlayers);
         if (!ranking) return;
         miniRanking = ranking
         categoriesOrder = categoriesOrder
-        compareAp = currentCategory.ap;
+        compareAp = currentCategory?.ap;
   
         dispatch('height-changed');
       } finally {
@@ -56,7 +56,7 @@
   </script>
   
   {#if miniRanking || isLoading}
-    <section transition:fade>
+    <section>
       <h3 style="display: flex;" class="title is-6">
         <div style="width: 20px; height: 20px" class="accsaber-icon"></div>
         <span>{capitalize(currentCategoryName)} accuracy ranking</span>
@@ -69,7 +69,7 @@
           {/each}
         </div>
       </h3>
-      {#if miniRanking}
+      {#if miniRanking?.length}
         <div class="players">
           {#each miniRanking as player}
             <div class="rank">
@@ -83,6 +83,8 @@
             </div>
           {/each}
         </div>
+      {:else}
+        No data.
       {/if}
     </section>
   {/if}

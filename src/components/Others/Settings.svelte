@@ -2,7 +2,7 @@
   import produce from "immer";
   import {
     configStore,
-    DEFAULT_LOCALE,
+    DEFAULT_LOCALE, getSupportedLocales,
   } from "../../stores/config";
   import createTwitchService from "../../services/twitch";
   import { ROUTER } from "svelte-routing/src/contexts";
@@ -20,6 +20,7 @@
   const DEFAULT_PP_METRIC = 'weighted';
   const DEFAULT_SCORE_COMPARISON_METHOD = "in-place";
   const DEFAULT_AVATAR_ICONS = "show";
+  const DEFAULT_ONECLICK_VALUE = "modassistant";
 
   let twitchToken = null;
 
@@ -50,6 +51,11 @@
     { name: "Mirror(Low) - MicroBlock", value: "mirror-low" },
     { name: "Unbounded - MicroBlock", value: "unbounded" },
   ];
+  
+  const oneclickOptions = [
+    { name: "Mod Assistant", value: DEFAULT_ONECLICK_VALUE },
+    { name: "Playlist sync", value: "playlist" },
+  ];
 
   let currentTheme = DEFAULT_THEME;
   let currentBGImage = "";
@@ -57,6 +63,7 @@
   let currentPpMetric = DEFAULT_PP_METRIC;
   let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
   let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
+  let currentOneclick = DEFAULT_ONECLICK_VALUE;
 
   function onConfigUpdated(config) {
     if (config?.locale) currentLocale = config.locale;
@@ -68,6 +75,8 @@
       currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
     if (config?.preferences?.theme)
       currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
+    if (config?.preferences?.oneclick)
+      currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
     if (config?.preferences?.bgimage)
       currentBGImage = config?.preferences?.bgimage ?? "";
   }
@@ -81,6 +90,7 @@
       draft.scoreComparison.method = currentScoreComparisonMethod;
       draft.preferences.iconsOnAvatars = currentAvatarIcons;
       draft.preferences.theme = currentTheme;
+      draft.preferences.oneclick = currentOneclick;
       draft.preferences.bgimage = currentBGImage;
       document.location.reload()
     });
@@ -177,6 +187,16 @@
           </section>
 
           <section class="option">
+            <label title="All numbers and dates will be formatted according to the rules of the selected locale"
+            >Locale</label>
+            <Select bind:value={currentLocale}>
+              {#each getSupportedLocales() as option (option.id)}
+                <option value={option.id}>{option.name}</option>
+              {/each}
+            </Select>
+          </section>
+
+          <section class="option">
             <label title="Determines when to show icons on player avatars"
               >Icons on avatars</label
             >
@@ -199,6 +219,15 @@
           <section class="option">
             <label title="Input url of the background image you want">Background Image</label>
             <input type="url" bind:value={currentBGImage} disabled={currentTheme=="default"||currentTheme=="mirror-low"} />
+          </section>
+
+          <section class="option">
+            <label title="How One-Click button will work">One-click installs</label>
+            <Select bind:value={currentOneclick}>
+              {#each oneclickOptions as option (option.value)}
+                <option value={option.value}>{option.name}</option>
+              {/each}
+            </Select>
           </section>
 
           <section class="option twitch">

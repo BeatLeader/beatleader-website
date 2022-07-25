@@ -103,7 +103,7 @@ export default response => {
 			const prev = cum.length ? processedStatsHistory[key][cum.length - 1] : 0;
 
 			let value = item ? item - (prev ?? 0) : 0
-			if (value && value < 0) value = 0;
+			if (value && value < 0 || !cum.length) value = 0;
 
 			cum.push(value);
 

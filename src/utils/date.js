@@ -8,15 +8,15 @@ export const MINUTE = 60 * SECOND;
 export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 
-const getCurrentLang = () => 'en';
-
 const BEATLEADER_TZ = 'Europe/Berlin';
 const ACCSABER_TZ = 'Europe/Berlin';
 
 export const isValidDate = d =>d instanceof Date && !isNaN(d);
 
 export const dateFromUnix = str => {
-    return new Date(parseInt(str, 10) * 1000)
+    const date = new Date(parseInt(str, 10) * 1000);
+
+    return isValidDate(date) ? date : null;
 }
 
 export const dateFromString = str => {
@@ -53,7 +53,6 @@ export const millisToDuration = millis => {
 }
 
 export const addToDate = (millis, date = new Date()) => new Date(date.getTime() + millis)
-export const daysAgo = days => addToDate(- days * DAY);
 
 export function truncateDate(date, precision = 'day') {
     const newDate = new Date(date.getTime());
@@ -70,8 +69,6 @@ export function truncateDate(date, precision = 'day') {
 
     return newDate;
 }
-
-export const correctOldSsDate = ssDate => DateTime.fromJSDate(ssDate).setZone('UTC').startOf('day').setZone(BEATLEADER_TZ, {keepLocalTime: true}).toJSDate();
 
 export const toTimezoneMidnight = (date, timezone) => DateTime.fromJSDate(date).setZone(timezone).startOf('day').toJSDate();
 export const toBlMidnight = date => toTimezoneMidnight(date, BEATLEADER_TZ);
@@ -94,20 +91,20 @@ export function formatDate(val, dateStyle = 'short', timeStyle = 'medium', local
     }, locale);
 }
 
-export function formatDateRelativeInUnits(val, unit = 'day') {
-    const rtf = new Intl.RelativeTimeFormat(getCurrentLang(), {
+export function formatDateRelativeInUnits(val, unit = 'day', locale = getCurrentLocale()) {
+    const rtf = new Intl.RelativeTimeFormat(locale, {
         localeMatcher: 'best fit',
         numeric: 'auto',
         style: 'long'
     });
 
-    return rtf.format(val, 'day');
+    return rtf.format(val, unit);
 }
 
-export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto') {
+export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto', locale = getCurrentLocale()) {
     if (!isValidDate(val)) return null;
 
-    const rtf = new Intl.RelativeTimeFormat(getCurrentLang(), {
+    const rtf = new Intl.RelativeTimeFormat(locale, {
         localeMatcher: 'best fit',
         numeric: 'auto',
         style: 'long'

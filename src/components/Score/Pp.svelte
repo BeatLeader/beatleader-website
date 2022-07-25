@@ -5,6 +5,7 @@
   import Value from '../Common/Value.svelte'
 
   export let pp = 0;
+  export let bonusPp = 0;
   export let zero = '-';
   export let withZeroSuffix = false;
   export let weighted = null;
@@ -34,7 +35,6 @@
   let prevTitle = null;
 
   function onUpdate(type, pp, weighted, improvements) {
-    console.log()
     switch (type) {
       case 'improvement':
         prevValue = improvements?.pp ?? null;
@@ -75,6 +75,10 @@
     prevTitle = weighted || improvements
       ? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}, ` : ''}${improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}, ` : ''}${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}` : ''}`
       : null;
+
+    if (bonusPp) {
+      prevTitle += " PP bonus: " + formatNumber(bonusPp) + suffix;
+    }
   }
 
   $: onUpdate($configStore?.preferences?.ppMetric ?? 'weighted', pp, weighted, improvements)
