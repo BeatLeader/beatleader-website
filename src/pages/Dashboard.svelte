@@ -55,7 +55,6 @@
 
     $: friends = $account?.friends ?? null;
     $: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`
-    let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
 </script>
 
 <svelte:head>
@@ -160,18 +159,22 @@
                     </ContentBox>
                 </div>
             </div>
-            {#if !isMobile}
             <div class="twitterEmbed">
                 <ContentBox>
                 <a class="twitter-timeline" href="https://twitter.com/beatleader_" data-lang="en" data-chrome="noheader noscrollbar transparent" data-theme="dark" data-width="40em" data-height="90em">Loading tweets from @beatleader_</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                 </ContentBox>
             </div>
-            {/if}
         </div>
     {/if}
 {/if}
 
 <style>
+    @media screen and (max-width: 767px)
+    {
+        .twitterEmbed {
+        display: none;
+    }
+    }
     .twitterEmbed {
         float: left;
     }
