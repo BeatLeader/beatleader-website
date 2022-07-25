@@ -48,10 +48,12 @@
        </td>
         <div class="imageInput" on:click={() => fileinput.click()}>
             <img class="playlistImage" src="{playlist.image}" alt="PlaylistImage"/>
+            {#if !playlist.oneclick}
             <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>changeImage(e)} bind:this={fileinput} >
             <span class="imageChange">
                 <h3 class="changeLabel">Change</h3>
             </span>
+            {/if}
         </div>
 
         <div class="titleAndButtons">
@@ -60,16 +62,24 @@
                 <div style="display: flex;">
                     <span class="playlistTitle" style="display: {redactingTitle ? "none" : "block"};">{playlist.playlistTitle}</span>
                     <input type="text" style="display: {redactingTitle ? "block" : "none"};" value="{playlist.playlistTitle}" placeholder="Playlist name" class="input-reset" bind:this={titleInput}>
+                    {#if !playlist.oneclick}
                     <Button type="text" cls="editTitleButton" iconFa={redactingTitle ? "fas fa-check" : "fas fa-edit"}
                         on:click={() => onRedactButtonClick()} />
+                    {/if}
                 </div>
+
+                {#if playlist.oneclick}
+                <span class="oneclick-title">This is magic playlist which will be automatically synced by mod. <br>Quest v0.4+.</span>
+                {/if}
                 
                 <span class="songs">{playlist.songs.length} songs</span>
             </div>
 
             <div>
+                {#if !playlist.oneclick}
                 <Button iconFa="fas fa-trash-alt" title="Delete playlist" noMargin={true} type="danger"
                     on:click={store.deleteList(idx)}/>
+                {/if}
                 <Button iconFa="fas fa-download" title="Download playlist" noMargin={true} type="primary"
                     on:click={store.download(idx)}/>
             </div>
@@ -189,5 +199,10 @@
     .changeLabel {
         top: 30%;
         position: absolute;
+    }
+
+    .oneclick-title {
+        font-size: 0.8em;
+        color: blueviolet;
     }
 </style>

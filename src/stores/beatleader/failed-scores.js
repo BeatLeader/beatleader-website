@@ -13,12 +13,13 @@ export default (refreshOnCreate = true) => {
   const get = () => totalScores;
   const {subscribe: subscribeState, set} = writable(totalScores);
 
-  const fetchScores = async () => {
-    fetch(BL_API_URL + "user/failedScores", {credentials: 'include'})
+  const fetchScores = async (page) => {
+    fetch(BL_API_URL + "user/failedScores?page=" + page, {credentials: 'include'})
     .then(response => response.json())
-    .then(data => process({data}))
-    .then(data =>{
+    .then(data => process(data))
+    .then(data => {
         totalScores.scores = data.data;
+        totalScores.metadata = data.metadata;
         set(totalScores);
     })
   }
@@ -43,7 +44,7 @@ export default (refreshOnCreate = true) => {
     })
   }
 
-  const refresh = async () => fetchScores();
+  const refresh = async () => fetchScores(1);
 
   const subscribe = fn => {
     const stateUnsubscribe = subscribeState(fn);
@@ -64,7 +65,8 @@ export default (refreshOnCreate = true) => {
     get,
     refresh,
     deleteScore,
-    retryScore
+    retryScore,
+    fetchScores
   }
 }
 

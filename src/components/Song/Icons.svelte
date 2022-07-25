@@ -59,11 +59,19 @@
     $: updateSongKey(hash)
     $: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null
     $: charName = diffInfo && diffInfo.type ? diffInfo.type : null
+    
     $: selectedPlaylistIndex = opt($configStore, 'selectedPlaylist');
     $: selectedPlaylist = $playlists[selectedPlaylistIndex];
     $: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
     $: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
     $: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
+
+    $: oneclickToPlaylist = opt($configStore, 'preferences')?.oneclick == "playlist";
+    $: ocPlaylistIndex = oneclickToPlaylist ? $playlists.findIndex(p => p.oneclick) : null;
+    $: ocPlaylist = ocPlaylistIndex != null ? $playlists[ocPlaylistIndex] : null;
+    $: ocplaylistSongs = ocPlaylist?.songs?.filter(el => el.hash == hash);
+    $: ocplaylistSong = ocplaylistSongs?.length ? ocplaylistSongs[0] : null;
+    $: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name));
     $: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes("admin")
     $: replayUrl = replayLink?.length
         ? `https://www.replay.beatleader.xyz/?link=${replayLink}`
@@ -115,9 +123,29 @@
     {/if}
 
     {#if shownIcons.includes('oneclick')}
+        {#if oneclickToPlaylist && ocPlaylist != null}
+            {#if ocplaylistSong}
+                {#if ocdifficulties.length == 1 && ocdifficulties[0] == diffName}
+                <Button iconFa="fas fa-hand-pointer" title="Remove from the One-Click playlist" noMargin={true} type="danger"
+                on:click={playlists.remove(hash, ocPlaylistIndex)}/>
+                {:else}
+                {#if ocdifficulties.length == 1 || !ocdifficulties.includes(diffName)}
+                <Button iconFa="fas fa-hand-pointer" title="Add this diff to the One-Click playlist" noMargin={true}
+                on:click={playlists.addDiff(hash, diffInfo, ocPlaylistIndex)}/>
+                {:else}
+                <Button iconFa="fas fa-hand-pointer" title="Remove this diff from the One-Click playlist" noMargin={true} type="lessdanger"
+                on:click={playlists.removeDiff(hash, diffInfo, ocPlaylistIndex)}/>
+                {/if}
+                {/if}
+            {:else}
+            <Button iconFa="fas fa-hand-pointer" title="Add to the One-Click playlist" type="purple" noMargin={true}
+            on:click={playlists.add(songInfo, ocPlaylistIndex)}/>
+            {/if}
+        {:else}
         <a href="beatsaver://{songKey}">
             <Button iconFa="far fa-hand-pointer" title="One click install" noMargin={true}/>
         </a>
+        {/if}
     {/if}
 
     {#if shownIcons.includes('preview')}

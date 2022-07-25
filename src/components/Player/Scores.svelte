@@ -13,6 +13,7 @@
   import ScoresPager from './ScoresPager.svelte'
   import stringify from 'json-stable-stringify'
   import ContentBox from "../Common/ContentBox.svelte";
+  import Pager from '../Common/Pager.svelte';
 
   const dispatch = createEventDispatcher();
 
@@ -95,6 +96,12 @@
     lastServiceParams = newServiceParams;
   }
 
+  function onFailedScoresPageChange(event) {
+    const page = (event?.detail?.page ?? 0) + 1
+
+    failedScores.fetchScores(page)
+  }
+
   let modifiersStore = createModifiersStore();
   const failedScores = createFailedScoresStore();
 
@@ -109,6 +116,9 @@
   $: modifiers = $modifiersStore;
   $: isMain = playerId && $account?.id === playerId;
   $: isMain ? failedScores.refresh() : null;
+
+  $: failedScoresPage = opt($failedScores, 'metadata.page');
+  $: totalFailedScores = opt($failedScores, 'metadata.total');
   $: failedScoresArray = opt($failedScores, 'scores');
 
   $: scoresStore && scoresStore.fetch(currentServiceParams, currentService)
@@ -133,6 +143,12 @@
       <FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} modifiersStore={modifiers} service={currentService} />
     {/each}
   </div>
+  {#if Number.isFinite(failedScoresPage) && (!Number.isFinite(totalFailedScores) || totalFailedScores > 0)}
+    <Pager totalItems={totalFailedScores} itemsPerPage={3} itemsPerPageValues={null}
+    currentPage={failedScoresPage - 1}
+    on:page-changed={onFailedScoresPageChange}
+  />
+  {/if}
   {/if}
 
   {#if $scoresStore && $scoresStore.length}

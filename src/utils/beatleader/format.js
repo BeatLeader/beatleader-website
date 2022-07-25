@@ -135,6 +135,36 @@ export function userDescriptionForModifier(modifier) {
   return "Undefined modifier";
 }
 
+export const votingTypes = ['acc', 'tech', 'midspeed', 'speed',]
+export const typesMap = {
+  'acc': 1,
+  'tech': 2,
+  'midspeed': 4,
+  'speed': 8,
+}
+
+export function mapTypeFromMask(type) {
+  let result = "";
+  Object.keys(typesMap).forEach(key => {
+    const mask = typesMap[key];
+    if ((type & mask) === mask) {
+      result += key + ", ";
+    }
+  })
+  return result.length ? result.substring(0, result.length - 2) : null;
+}
+
+export function votingsForTypeStats(stats) {
+
+  let result = "";
+  stats.forEach((element, i) => {
+    if (element > 0) {
+      result += votingTypes[i] + "  " + element + ", ";
+    }
+  });
+  return result.length ? result.substring(0, result.length - 2) : null;
+}
+
 export function describeModifiersAndMultipliers(modifiers, multipliers) {
   if (modifiers && multipliers) {
     let result = "Mods:";

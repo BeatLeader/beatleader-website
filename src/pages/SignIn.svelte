@@ -1,31 +1,39 @@
 <script>
     import Button from "../components/Common/Button.svelte";
     import createAccountStore from '../stores/beatleader/account'
+    import createOculusStore from '../stores/beatleader/oculususer'
     import {formatDateRelative, dateFromUnix} from '../utils/date'
     import {opt} from '../utils/js'
     import {CURRENT_URL, BL_API_URL} from '../network/queues/beatleader/api-queue'
     import { navigate } from "svelte-routing";
-import Dialog from "../components/Common/Dialog.svelte";
-import Spinner from "../components/Common/Spinner.svelte";
+    import Dialog from "../components/Common/Dialog.svelte";
+    import Spinner from "../components/Common/Spinner.svelte";
 
     export let action;
 
     const account = createAccountStore();
+    const oculus = createOculusStore();
 
     let login;
     let password;
     let newPassword;
     let newLogin = opt($account, 'login');
     let suspendingDialogShown = false;
+    let token = null;
 
     function performAction() {
         if (action == "addHome") {
             account.refresh(true);
         }
+        if (action == "oculuspc") {
+            const urlParams = new URLSearchParams(window.location.search);
+            token = urlParams.get('token');
+            oculus.fetchOculusUser(token);
+        }
     }
 
     $: loggedInPlayer = opt($account, 'id');
-    $: error = opt($account, 'error');
+    $: error = opt($account, 'error') ?? $oculus?.error;
     $: message = opt($account, 'message');
     $: patreoned = opt($account, 'patreoned');
     $: loading = opt($account, 'loading');
@@ -171,7 +179,45 @@ If you are not yet a patreon, you can become one <strong> <a class="inlineLink" 
 
     <Button iconFa="fas fa-plus-square" label="Yes, suspend my account" on:click={() => suspendingDialogShown = !suspendingDialogShown}/>
     {/if}
-    
+{:else if action == "oculuspc"}
+    {#if $oculus.name}
+        {#if !$oculus.migrated}
+        {$oculus.name}, hi!<br><br>
+        Please select preffered way to login on the website.<br>
+        <b>Steam account.</b> You don't need to own the game.<br>
+        Your ID will be changed to the Steam ID<br>
+
+        <form action={BL_API_URL + "signinmigrate/oculuspc"} method="post">
+            <input type="hidden" name="Provider" value="Steam" />
+            <input type="hidden" name="Token" value={token} />
+            <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
+
+            <Button iconFa="fas fa-plus-square" label="Use Steam" type="submit"/>
+        </form>
+
+        <b>Login and password.</b><br>
+        Your ID will remain the same.<br>
+        <form action={BL_API_URL + "signinoculus/oculuspc"} method="post">
+            <input type="hidden" name="action" value="signup" />
+            <input type="hidden" name="Token" value={token} />
+            <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
+        <div class="input-container">
+            Website Login
+            <input name="login" bind:value={login} placeholder="Login">
+        </div>
+        <div class="input-container">
+            New password
+            <input name="password" type="password" bind:value={password} placeholder="Password">
+        </div>
+        
+        <Button iconFa="fas fa-plus-square" label="Sign up" type="submit"/>
+        </form>
+        {:else}
+        {navigate("/u/" + $oculus.migratedId)}
+        {/if}
+    {:else}
+        Loading...
+    {/if}
 {/if}
 
 {#if suspendingDialogShown}
