@@ -32,10 +32,14 @@
         a.dispatchEvent(evt);
     }
 
-    let _pushState = window.history.pushState
+    
 
-    window.history.pushState = (...args) => {
-        if (ctrlPressState) openInBackground(args[2])
-        else _pushState(...args)
-    }
+    window.addEventListener("load",()=>{
+        let _pushState = 
+        window.history.pushState = (...args) => {
+            console.log(args)
+            if (ctrlPressState) openInBackground(args[2])
+            else window.history.replaceState(...args)
+        }
+    })
 })()
