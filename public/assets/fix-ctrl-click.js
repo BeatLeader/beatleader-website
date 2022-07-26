@@ -38,5 +38,4 @@
         if (ctrlPressState) openInBackground(args[2])
         else _pushState(...args)
     }
-    console.log(122)
 })()
