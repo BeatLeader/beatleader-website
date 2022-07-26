@@ -35,9 +35,7 @@
     
 
     window.addEventListener("load",()=>{
-        let _pushState = 
         window.history.pushState = (...args) => {
-            console.log(args)
             if (ctrlPressState) openInBackground(args[2])
             else window.history.replaceState(...args)
         }
