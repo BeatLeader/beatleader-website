@@ -13,10 +13,14 @@
 	export let hash;
 	export let diff;
 	export let mode;
-    export let starChange;
     export let currentStars;
 
-	let suitableForRank;
+	export let isRanked;
+	export let rtvoting;
+	const qualification = rtvoting && !isRanked;
+
+	let suitableForRank = qualification;
+	let allowed;
 	let stars = currentStars;
 
 	let selectedTypes = [];
@@ -25,8 +29,12 @@
 	let selectedType = '+';
 
 	function vote() {
-        if (starChange) {
-            votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
+        if (rtvoting) {
+			if (isRanked) {
+            	votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
+			} else {
+				votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes, allowed)
+			}
         } else {
             votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
         }
@@ -54,13 +62,14 @@
 <div class="ranking-voting">
 	<Dialog
 		type="confirm"
-		title={starChange ? "Update map ranking" : "Vote map for ranked"}
-		okButton="Submit"
+		title={rtvoting ? (isRanked ? "Update map ranking" : "Qualify map") : "Vote map for ranked"}
+		okButton={rtvoting ? (isRanked ? "Update" : "Qualify") : "Submit"}
 		cancelButton="Cancel"
         okButtonDisabled={suitableForRank == undefined}
 		on:confirm={() => vote()}
 		on:cancel={() => dispatch('finished')}>
 		<div slot="content">
+			{#if !qualification}
 			<div>Is this map suitable for rank?</div>
 			<Button
 				label="NO"
@@ -70,9 +79,20 @@
 				label="YES"
 				type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
 				on:click={() => (suitableForRank = true)} />
+			{:else}
+			<div>Is map ranking allowed by mapper?</div>
+			<Button
+				label="NO"
+				type={allowed || allowed == undefined ? 'default' : 'danger'}
+				on:click={() => (allowed = false)} />
+			<Button
+				label="YES"
+				type={allowed === false || allowed == undefined ? 'default' : 'green'}
+				on:click={() => (allowed = true)} />
+			{/if}
 			{#if suitableForRank}
 				<div>
-					<label>{starChange ? "New stars:" : "Stars (optional):"}</label>
+					<label>{rtvoting ? "Stars:" : "Stars (optional):"}</label>
 					<RangeSlider
 						min={0}
 						max={15}
@@ -88,7 +108,7 @@
 						}} />
 				</div>
 				<div>
-					<label>Type (optional):</label>
+					<label>{rtvoting ? "Type:" : "Type (optional):"}</label>
 					{#each selectedTypes as type, idx}
 						<div>
 							{type}

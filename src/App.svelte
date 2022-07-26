@@ -74,6 +74,7 @@
             {location}
             dontChangeType={false}
             showCurve={true}
+            showVotings={true}
           />
         </Route>
         <Route path="/leaderboards/*page" let:params let:location>

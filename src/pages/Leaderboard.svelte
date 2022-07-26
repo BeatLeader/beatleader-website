@@ -1,16 +1,15 @@
 <script>
   import {createEventDispatcher} from 'svelte'
   import {navigate} from "svelte-routing";
-  import createAccountStore from '../stores/beatleader/account'
   import {fade, fly, slide} from 'svelte/transition'
+  import createAccountStore from '../stores/beatleader/account'
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import createModifiersStore from '../stores/beatleader/modifiers'
+  import createVotingStore from '../stores/beatleader/rankVoting'
+  import createPlayerService from '../services/beatleader/player'
   import {opt, capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
-  import {configStore} from '../stores/config'
-  import createVotingStore from '../stores/beatleader/rankVoting'
   import stringify from 'json-stable-stringify';
-  import createPlayerService from '../services/beatleader/player'
   import ssrConfig from '../ssr-config'
   import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/beatleader/consts'
   import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../utils/accsaber/consts'
@@ -36,7 +35,7 @@
 		mapTypeFromMask,
 		votingsForTypeStats,
 	} from '../utils/beatleader/format';
-  import {isValidDate, dateFromUnix} from '../utils/date'
+  import {isValidDate, dateFromUnix, formatDateRelative} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
   import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
   import ClanBadges from '../components/Player/ClanBadges.svelte'
@@ -258,6 +257,18 @@
         ]
         : [],
       )
+      .concat(isRT
+        ? [
+          {
+            type: 'voters',
+            label: 'Voters',
+            iconFa: 'fas fa-user-friends',
+            url: `/leaderboard/voters/${currentLeaderboardId}/1`,
+            filters: {countries: ''},
+          }
+        ]
+        : [],
+      )
       .concat(country?.length
         ? [
           {
@@ -327,7 +338,40 @@
     }
   }
 
+  function updateVoteFeedback(score, value) {
+    votingStore.voteFeedback(score.id, value, () => {
+      if (!score.rankVoting.feedbacks) {
+        score.rankVoting.feedbacks = [];
+      }
+
+      score.rankVoting.feedbacks.push({
+        rtMember: $account.id,
+        value
+      })
+
+      scoresWithUser = scoresWithUser;
+    })
+  }
+
+  let qualifier;
+  async function retrieveQualifier(qualification) {
+    if (!qualification) return;
+
+    qualifier = await playerService.fetchPlayerOrGetFromCache(qualification.rtMember);
+  }
+
   let mapVoting = false;
+  let rtvoting = false;
+  let scoresWithUser;
+
+  function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
+    scoresWithUser = !userScoreOnCurrentPage && scores?.length && userScore
+    ? (userScore?.score?.score >= scores?.[0]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
+      .concat(scores)
+      .concat(userScore?.score?.score <= scores?.[scores.length - 1]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: false}] : [])
+    : scores;
+  }
+
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
@@ -344,22 +388,22 @@
   $: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo')
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
+  
+  $: qualification = leaderboard && leaderboard.qualification
+  $: retrieveQualifier(qualification);
 
   $: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
+  $: isRT = $account.player && $account.player.playerInfo.role && ($account.player.playerInfo.role.includes("admin") || $account.player.playerInfo.role.includes("rankedteam"));
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
 
   $: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
   $: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage)
-  $: scoresWithUser = !userScoreOnCurrentPage && scores?.length && userScore
-    ? (userScore?.score?.score >= scores?.[0]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
-      .concat(scores)
-      .concat(userScore?.score?.score <= scores?.[scores.length - 1]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: false}] : [])
-    : scores;
+  $: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore)
   $: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type)
   $: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
-  $: if (showVotings) votingStore.fetchResults(leaderboardId);
+  $: if (showVotings && isRT) votingStore.fetchResults(leaderboardId);
   $: votingStats = $votingStore[leaderboardId];
   $: votingLoading = $votingStore.loading;
 </script>
@@ -369,7 +413,7 @@
 </svelte:head>
 
 {#if mapVoting}
-  <RankingVoting {votingStore} starChange={showVotings} currentStars={leaderboard?.stats?.stars} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => (mapVoting = false)} />
+  <RankingVoting {votingStore} {rtvoting} {isRanked} currentStars={leaderboard?.stats?.stars} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => { mapVoting = false; rtvoting = false; }} />
 {/if}
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
@@ -434,16 +478,22 @@
         
         <div class={votingStatus ? 'switch-and-button' : ''}>
           {#if !votingLoading}
-          {#if showVotings || votingStatus == 2}
-          <Button cls="voteButton"                                 
-                  iconFa={showVotings ? "fas fa-star" : "fas fa-comment-dots"}
-                  title={showVotings ? "Update map config" : "Vote this map for ranking!"} 
-                  noMargin={true} on:click={() => mapVoting = !mapVoting}/>
-          {:else if votingStatus == 1}
-          <Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title="Pass this diff to vote on the map" noMargin={true}/>
-          {:else if votingStatus == 3}
-          <Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true}/>
-          {/if}
+            {#if votingStatus == 2}
+            <Button cls="voteButton"                                 
+                    iconFa={"fas fa-comment-dots"}
+                    title={"Vote this map for ranking!"} 
+                    noMargin={true} on:click={() => mapVoting = !mapVoting}/>
+            {:else if votingStatus == 1}
+            <Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title="Pass this diff to vote on the map" noMargin={true}/>
+            {:else if votingStatus == 3}
+            <Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true}/>
+            {/if}
+            {#if showVotings && isRT && qualification == null}
+            <Button cls="voteButton"                                 
+                    iconFa={isRanked ? "fas fa-star" : "fas fa-rocket"}
+                    title={isRanked ? "Update map stars" : "Qualify this map!"} 
+                    noMargin={true} on:click={() => { mapVoting = !mapVoting; rtvoting = true; }}/>
+            {/if}
           {:else}
           <Spinner/>
           {/if}
@@ -512,7 +562,7 @@
                         {/if}
                       </div>
                     {/if}
-                    {#if type === 'accsaber' || isRanked}
+                    {#if type === 'accsaber' || isRanked || qualification}
                       <div class="pp with-badge">
                         <Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
                           <span slot="label">
@@ -560,6 +610,7 @@
                   
                   {#if showVotings && score.score.rankVoting}
                   <div class="rank-voting">
+                    <div class="voting-result">
                       <div class="score with-badge">
                           <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                               <span slot="label">
@@ -585,12 +636,34 @@
                               </Badge>
                           </div>
                       {/if}
+                      {#if score.score.rankVoting.timeset}
+                        <div class="score with-badge">
+                          <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+                              <span slot="label">
+                                  <small class="nowrap-label" title="Timeset">{formatDateRelative(dateFromUnix(score.score.rankVoting.timeset))}</small>
+                              </span>
+                          </Badge>
+                        </div>
+                      {/if}
+                    </div>
+                    {#if opt(score, 'player.playerId') != $account?.id}
+                    <div class="voter-feedback">
+                      {#if score.score.rankVoting.feedbacks && score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id).length}
+                      {score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id)[0].value ? "Good voter" : "Bad voter"}
+                      {:else}
+                      <Button cls="voter-feedback-button" type="danger" label="Bad voter" title="Mark this vote as of bad quality." noMargin={true} on:click={() => updateVoteFeedback(score.score, 0)}/>
+                      <Button cls="voter-feedback-button" type="green" label="Good voter" title="This vote is decently represent the map." noMargin={true} on:click={() => updateVoteFeedback(score.score, 1)}/>
+                      {/if}
+                    </div>
+                    {/if}
                   </div>
+                  
                   {/if}
                 </div>
             {/each}
             {#if votingStats}
-            <div class="rank-voting">
+            <div class="voting-result">
+                <span>Average: </span>
                 <div class="score with-badge">
                     <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                         <span slot="label">
@@ -612,7 +685,25 @@
                         </span>
                     </Badge>
                 </div>
+                
             </div>
+            {/if}
+
+            {#if qualification && qualifier}
+            <div class="qualification-description">
+              <b>Qualified by:</b> 
+                <Avatar player={qualifier}/>
+                <PlayerNameWithFlag player={qualifier}
+                                    type={'beatleader/date'}
+                                    on:click={qualifier ? () => navigateToPlayer(qualifier.playerId) : null}
+                />
+              <div class="timeset">
+                <span style="color: {getTimeStringColor(opt(qualification, 'timeset', 'null'))}; ">
+                  {formatDateRelative(dateFromUnix(qualification.timeset))}
+                </span>
+             </div>
+            </div>
+            
             {/if}
           </div>
 
@@ -637,7 +728,7 @@
            on:error={() => ssCoverDoesNotExists = true}/>
     {/if}
   </article>
-  {#if showCurve && isRanked}
+  {#if showCurve && (isRanked || qualification)}
     <aside>
       <ContentBox>
         <h2 class="title is-5">
@@ -910,6 +1001,29 @@
         display: flex;
         grid-gap: 0.4em;
         align-items: center;
+        justify-content: space-between;
+    }
+
+    .voting-result {
+      display: flex;
+      grid-gap: 0.4em;
+      align-items: center;
+    }
+
+    .voter-feedback {
+      display: flex;
+      grid-gap: 0.4em;
+      align-items: center;
+    }
+
+    .qualification-description {
+      display: flex;
+      grid-gap: 0.4em;
+      align-items: center;
+    }
+
+    :global(.voter-feedback-button) {
+      height: 1.8em;
     }
 
     .nowrap-label {

@@ -18,6 +18,8 @@
   export let modifiersStore = null;
   export let withPlayers = false;
   export let noIcons = false;
+  export let showSong = true;
+  export let inList = true;
 
   let showDetails = false;
 
@@ -31,7 +33,7 @@
 </script>
 
 {#if songScore}
-  <div class={`song-score row-${idx}`}
+  <div class={`song-score row-${idx} ${inList ? "score-in-list" : ""}`}
        in:fly={{x: 300, delay: idx * 30, duration:500}} out:fade={{duration:100}}
        class:with-details={showDetails}>
 
@@ -70,17 +72,19 @@
 
       <span class="song">
         <div>
-          {#if withPlayers}
-            <div class="player">
-              <PlayerNameWithFlag player={songScore.player}
-                                  type={service === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
-              />
-            </div>
-          {/if}
+          {#if showSong}
+            {#if withPlayers}
+              <div class="player">
+                <PlayerNameWithFlag player={songScore.player}
+                                    type={service === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
+                />
+              </div>
+            {/if}
 
-          <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl}
-                    notClickable={['beatsavior'].includes(service)} {noIcons}
-                    category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}/>
+            <SongInfo {leaderboard} {score} rank={score.rank} {hash} {twitchUrl}
+                      notClickable={['beatsavior'].includes(service)} {noIcons}
+                      category={leaderboard?.categoryDisplayName ?? null} {service} {playerId}/>
+          {/if}
         </div>
       </span>
 
@@ -106,7 +110,7 @@
 {/if}
 
 <style>
-    .song-score {
+    .score-in-list {
         border-bottom: 1px solid var(--dimmed);
         padding: .5em 0;
     }

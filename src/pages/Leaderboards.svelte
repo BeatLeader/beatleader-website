@@ -2,6 +2,7 @@
   import {navigate} from "svelte-routing";
   import {fade, fly} from 'svelte/transition'
   import createLeaderboardsStore from '../stores/http/http-leaderboards-store'
+  import createAccountStore from '../stores/beatleader/account'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import ssrConfig from '../ssr-config'
   import Pager from '../components/Common/Pager.svelte'
@@ -11,8 +12,11 @@
   import SongCover from '../components/Player/SongCover.svelte'
   import RangeSlider from "svelte-range-slider-pips";
   import {debounce} from '../utils/debounce'
+  import {formatNumber} from '../utils/format'
   import Switcher from '../components/Common/Switcher.svelte'
   import {createBuildFiltersFromLocation, buildSearchFromFilters, processFloatFilter, processStringFilter,} from '../utils/filters'
+  import SongScore from "../components/Player/SongScore.svelte";
+  import {processScore} from "../network/clients/beatleader/scores/utils/processScore"
 
   export let page = 1;
   export let location;
@@ -21,11 +25,16 @@
   const MAX_STARS = 15;
   const FILTERS_DEBOUNCE_MS = 500;
 
+  const account = createAccountStore();
+
   const params = [
     {key: 'search', default: '', process: processStringFilter},
     {key: 'type', default: '', process: processStringFilter},
+    {key: 'mytype', default: '', process: processStringFilter},
     {key: 'stars_from', default: MIN_STARS, process: processFloatFilter},
     {key: 'stars_to', default: MAX_STARS, process: processFloatFilter},
+    {key: 'sortBy', default: 'voting', process: processStringFilter},
+    {key: 'order', default: 'asc', process: processStringFilter},
   ];
 
   const buildFiltersFromLocation = createBuildFiltersFromLocation(
@@ -52,8 +61,15 @@
 
   const typeFilterOptions = [
     {key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
-    {key: 'ranked', label: 'Ranked only', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-    // {key: 'unranked', label: 'Unranked only', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+    {key: 'qualified', label: 'Qualified', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+    {key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+    {key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+  ];
+
+  const mytypeFilterOptions = [
+    {key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
+    {key: 'played', label: 'Played', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+    {key: 'unplayed', label: 'Not played', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
   ];
 
   function scrollToTop() {
@@ -64,6 +80,16 @@
 
   function changePageAndFilters(newPage, newLocation) {
     currentFilters = buildFiltersFromLocation(newLocation);
+
+    sortValues = sortValues1.map(v => {
+      let result = {...v};
+      if (result.id == currentFilters.sortBy) {
+        result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
+        sortValue = result;
+      }
+
+      return result;
+    })
 
     newPage = parseInt(newPage, 10);
     if (isNaN(newPage)) newPage = 1;
@@ -96,6 +122,14 @@
     navigateToCurrentPageAndFilters();
   }
 
+  function onMyTypeChanged(event) {
+    if (!event?.detail) return;
+
+    currentFilters.mytype = event.detail.key ?? '';
+
+    navigateToCurrentPageAndFilters();
+  }
+
   function onStarsChanged(event) {
     if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
@@ -106,10 +140,32 @@
   }
   const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
 
+  let sortValues1 = [
+    {id: 'stars', 'label': 'Star', title: 'Sort by stars',iconFa: 'fa fa-list-ol'},
+    {id: 'voting', 'label': 'Voting', title: 'Sort by vote ratio', iconFa: 'fa fa-cubes'},
+    {id: 'votecount', 'label': 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-cubes'},
+    {id: 'playcount', 'label': 'Plays', title: 'Sort by play count', iconFa: 'fa fa-user'},
+  ];
+  let sortValues = sortValues1;
+  let sortValue = sortValues[0];
+
+  function onSortChange(event) {
+    if (!event?.detail?.id) return null;
+
+    if (currentFilters.sortBy == event.detail.id) {
+      currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+    } else {
+      currentFilters.sortBy = event.detail.id;
+    }
+
+    navigateToCurrentPageAndFilters();
+  }
+
   $: isLoading = leaderboardsStore.isLoading;
   $: pending = leaderboardsStore.pending;
   $: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
   $: itemsPerPage = $leaderboardsStore ? $leaderboardsStore?.metadata?.itemsPerPage : 10;
+  $: isRT = $account.player && $account.player.playerInfo.role && ($account.player.playerInfo.role.includes("admin") || $account.player.playerInfo.role.includes("rankedteam"));
 
   $: changePageAndFilters(page, location)
   $: scrollToTop($pending);
@@ -158,6 +214,21 @@
                   </a>
                 </div>
 
+                {#if map?.votes}
+                  <div>
+                    {#if isRT && map?.votes.filter(v => v.stars > 0).length}
+                    {formatNumber(map?.votes.filter(v => v.stars > 0).reduce((a, b) => a + b.stars, 0) / map?.votes.filter(v => v.stars > 0).length)}★
+                    {/if}
+                    <span title="{map?.votes.filter(v => v.rankability > 0).length} rankable / {map?.votes.filter(v => v.rankability <= 0).length} unrankable">Rating: {map?.votes.filter(v => v.rankability > 0).length - map?.votes.filter(v => v.rankability <= 0).length}</span>  
+                  </div>
+                {/if}
+
+                {#if map?.plays}
+                <div>
+                  {map?.plays} plays.
+                </div>
+                {/if}
+
                 {#if map?.song?.hash?.length}
                   <div class="icons tablet-and-up">
                     <Icons hash={map.song.hash}
@@ -165,6 +236,10 @@
                   </div>
                 {/if}
               </div>
+
+              {#if map?.myScore}
+              <SongScore playerId={map.myScore.playerId} songScore={processScore({leaderboard: map, ...map.myScore})} showSong={false} noIcons={true} inList={false} {idx} service={"beatleader"} />
+              {/if}
             </div>
           {/each}
         </div>
@@ -196,6 +271,15 @@
         />
       </section>
 
+      {#if $account.id}
+      <section class="filter">
+
+        <Switcher values={mytypeFilterOptions} value={mytypeFilterOptions.find(o => o.key === currentFilters.mytype)}
+                  on:change={onMyTypeChanged}
+        />
+      </section>
+      {/if}
+
       <section class="filter" class:disabled={currentFilters.type !== 'ranked'}
                title={currentFilters.type !== 'ranked' ? 'Filter only available for ranked maps' : null}
       >
@@ -206,6 +290,8 @@
                      disabled={currentFilters.type !== 'ranked'}
         />
       </section>
+
+      <Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
     </ContentBox>
   </aside>
 </section>

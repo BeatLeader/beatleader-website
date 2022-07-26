@@ -18,8 +18,8 @@ export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/$
 export const BL_API_SCORES_HISTOGRAM_URL = BL_API_URL + 'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}';
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
 export const BL_API_RANKING_URL = BL_API_URL + 'players?page=${page}&sortBy=${sortBy}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}'
-export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}'
-export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}'
+export const BL_API_LEADERBOARD_URL = BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}'
+export const BL_API_LEADERBOARDS_URL = BL_API_URL + 'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}'
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}'
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}'
 export const BL_API_CLAN_CREATE_URL = BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}'
@@ -106,7 +106,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
     {id: 'hash', value: led?.song?.hash},
     {id: 'id', value: led?.song?.id},
     {id: 'scores', value: led?.plays},
-    {id: 'status', value: currentDiff?.ranked ? "Ranked" : "Not Ranked"},
+    {id: 'status', value: currentDiff?.ranked ? "Ranked" : (currentDiff?.qualified ? "Qualified" : "Not Ranked")},
     {id: 'totalScores', value: led?.plays},
     {id: 'notes', value: currentDiff?.notes},
     {id: 'bpm', value: currentDiff?.bpm},
@@ -132,7 +132,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
     }, {imageUrl: led?.song?.coverImage, stats: {}});
 
   const {stats, ...song} = songInfo;
-  const leaderboard = {leaderboardId, song, diffInfo, stats};
+  const leaderboard = {leaderboardId, song, diffInfo, stats, qualification: led.qualification};
 
   const totalItems = led.plays;
   const pageQty = 10;
@@ -193,7 +193,7 @@ export default (options = {}) => {
       delete filters.stars_to;
     }
 
-    return fetchJson(substituteVars(BL_API_LEADERBOARDS_URL, {page, ...filters}, true, true), options, priority);
+    return fetchJson(substituteVars(BL_API_LEADERBOARDS_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
   }
 
   const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}), options, priority);

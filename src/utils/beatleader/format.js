@@ -1,3 +1,4 @@
+import { formatNumber } from '../format';
 import {capitalize, opt} from '../js'
 
 export const diffColors = {
@@ -159,7 +160,7 @@ export function votingsForTypeStats(stats) {
   let result = "";
   stats.forEach((element, i) => {
     if (element > 0) {
-      result += votingTypes[i] + "  " + element + ", ";
+      result += votingTypes[i] + "  " + formatNumber(element) + ", ";
     }
   });
   return result.length ? result.substring(0, result.length - 2) : null;

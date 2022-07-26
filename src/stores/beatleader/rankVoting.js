@@ -41,6 +41,34 @@ export default () => {
             })
     }
 
+    const qualifyMap = async (hash, diff, mode, rankability, stars, types, allowedByMapper) => {
+        if (!hash || !diff || !mode) return;
+        let type = 0;
+        types.forEach(typeName => {
+            type += typesMap[typeName];
+        });
+
+        votingStatuses.loading = true;
+        set(votingStatuses);
+
+        fetch(BL_API_URL + `qualify/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` 
+            + (stars ? "&stars=" + stars : "") 
+            + (type ? "&type=" + type : "")
+            + (allowedByMapper ? "&allowed=true" : ""),
+            { credentials: 'include', method: 'POST' }).then(() => {
+                votingStatuses.loading = false;
+                set(votingStatuses);
+                document.location.reload()
+            })
+    }
+
+    const voteFeedback = async (scoreId, value, completion) => {
+        fetch(BL_API_URL + `votefeedback?scoreId=${scoreId}&value=${value}`,
+            { credentials: 'include', method: 'POST' }).then(() => {
+                completion();
+            })
+    }
+
     const updateMap = async (hash, diff, mode, rankability, stars, types) => {
         if (!hash || !diff || !mode) return;
         let type = 0;
@@ -89,7 +117,9 @@ export default () => {
         fetchStatus,
         vote,
         fetchResults,
-        updateMap
+        updateMap,
+        qualifyMap,
+        voteFeedback
     }
 }
 
