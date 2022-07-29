@@ -145,6 +145,7 @@
 			values: [
 				{id: 'admin', label: 'Administrator'},
 				{id: 'rankedteam', label: 'Ranked Team'},
+				{id: 'mapper', label: 'Mapper'},
 				{id: 'tipper', label: 'Tipper'},
 				{id: 'supporter', label: 'Supporter'},
 				{id: 'sponsor', label: 'Sponsor'},

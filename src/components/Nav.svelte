@@ -29,6 +29,8 @@
       navigate(`/signin`)
     } else if (event.srcElement.innerText == "Link patreon") {
       navigate(`/signin/linkPatreon`)
+    } else if (event.srcElement.innerText == "Link BeatSaver") {
+      navigate(`/signin/linkBeatSaver`)
     } else if (event.srcElement.innerText == "My login") {
       navigate(`/signin/mylogin`)
     } else if (event.srcElement.innerText == "Change password") {
@@ -108,9 +110,12 @@
       if (!loggedInUser.migrated) {
         signupOptions.push("Migrate");
       }
-      if (loggedInUser.player.playerId < 70000000000000000 || loggedInUser.migrated) {
+      if (loggedInUser.player.playerId < 30000000 || loggedInUser.migrated) {
         signupOptions.push("Change password");
         signupOptions.push("My login");
+      }
+      if (!loggedInUser.player.playerInfo.mapperId) {
+        signupOptions.push("Link BeatSaver");
       }
       if (!loggedInUser.patreoned) {
         signupOptions.push("Link patreon");

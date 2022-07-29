@@ -14,6 +14,7 @@ export default response => {
 		rank,
 		banned,
 		inactive,
+		mapperId,
 		histories: history,
 		scoreStats,
 		statsHistory,
@@ -143,6 +144,7 @@ export default response => {
 			role,
 			sponsor,
 			patreonFeatures,
+			mapperId,
 			rankHistory: history && history.length
 				? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
 				: [],

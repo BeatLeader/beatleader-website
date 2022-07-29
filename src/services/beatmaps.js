@@ -1,8 +1,10 @@
 import hashApiClient from '../network/clients/beatmaps/api-hash';
+import mapperClient from '../network/clients/beatmaps/api-mapper';
 import keyApiClient from '../network/clients/beatmaps/api-key';
 import {PRIORITY} from '../network/queues/http-queue';
 import log from '../utils/logger'
 import {SsrHttpNotFoundError, SsrNetworkError} from '../network/errors'
+import keyValueRepository from '../db/repository/key-value';
 import songsBeatMapsRepository from "../db/repository/songs-beatmaps";
 import cacheRepository from "../db/repository/cache";
 import {addToDate, dateFromString, HOUR} from '../utils/date'
@@ -235,9 +237,20 @@ export default () => {
         }
     }
 
+    const getMapper = async (id, forceUpdate = false, cacheOnly = false, signal = null, priority = PRIORITY.FG_LOW) => {
+        var mapperInfo = await keyValueRepository().get("mapper-" + id);
+        if (!cacheOnly && (forceUpdate || !mapperInfo)) {
+            mapperInfo = await mapperClient.getProcessed({id, signal, priority})
+            keyValueRepository().set(mapperInfo, "mapper-" + id);
+        }
+
+        return mapperInfo;
+    }
+
     return {
         byHash,
         byKey,
+        getMapper,
         convertOldBeatSaverToBeatMaps
     }
 }

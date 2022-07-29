@@ -14,11 +14,13 @@
   import CountryPicker from "../Common/CountryPickerSingle.svelte"
   import ClanBadges from './ClanBadges.svelte'
   import BanForm from './BanForm.svelte';
+  import RoleIcon from './RoleIcon.svelte';
 
   export let name;
   export let playerInfo;
   export let playerId;
   export let statsHistory;
+  export let roles;
   export let error = null;
 
   const dispatch = createEventDispatcher();
@@ -262,6 +264,13 @@
     Make sure you selected right country. You can change it only every 30 days.
     {/if}
 
+    {#if roles}
+        <div class="role-icons">
+          {#each roles as role, idx }
+            <RoleIcon onAvatar={false} {role} mapperId={playerInfo?.mapperId} />
+          {/each}
+        </div>
+      {/if}
     {#if error}
       <div>
         <Error {error}/>
@@ -356,6 +365,10 @@
 
     .inlineLink {
         display: contents;
+    }
+
+    .role-icons {
+      display: flex;
     }
 
     :global(.editNameButton) {

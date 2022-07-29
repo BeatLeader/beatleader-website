@@ -46,6 +46,7 @@
   import SongScoreDetails from '../components/Player/SongScoreDetails.svelte'
   import PpCurve from '../components/Leaderboard/PPCurve.svelte';
   import ContentBox from '../components/Common/ContentBox.svelte';
+  import QualificationApproval from '../components/Leaderboard/QualificationApproval.svelte';
 
   export let leaderboardId;
   export let type = 'global';
@@ -66,6 +67,8 @@
 
   export let autoScrollToTop = true;
   export let showStats = true;
+
+  export let showApproveRequest = false;
 
   if (!dontNavigate) document.body.classList.add('slim');
 
@@ -421,8 +424,21 @@
 {#if mapVoting}
   <RankingVoting {votingStore} {rtvoting} {isRanked} currentStars={leaderboard?.stats?.stars} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => { mapVoting = false; rtvoting = false; }} />
 {/if}
+
+
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
+    {#if qualification && isRT} 
+    <a href={location.href.replace("leaderboard", "leaderboard/approval")}>Link for the mapper approval</a>
+    {/if}
+    {#if showApproveRequest && leaderboard && qualification}
+      <ContentBox>
+        <div class="qualification-container">
+          <QualificationApproval {leaderboard} {account} />
+        </div>
+      </ContentBox>
+    {/if}
+
     <div class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
          style={opt($leaderboardStore, 'leaderboard.song.imageUrl') ? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`: '' }>
 
@@ -1077,6 +1093,11 @@
 
     .user-score.user-score-top > * {
       padding-bottom: 2rem;
+    }
+
+    .qualification-container {
+      display: flex;
+      justify-content: center;
     }
 
     :global(.voteButton) {

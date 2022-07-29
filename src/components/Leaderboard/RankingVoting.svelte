@@ -20,7 +20,6 @@
 	const qualification = rtvoting && !isRanked;
 
 	let suitableForRank = qualification;
-	let allowed;
 	let stars = currentStars;
 
 	let selectedTypes = [];
@@ -33,7 +32,7 @@
 			if (isRanked) {
             	votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
 			} else {
-				votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes, allowed)
+				votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes)
 			}
         } else {
             votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
@@ -79,16 +78,6 @@
 				label="YES"
 				type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
 				on:click={() => (suitableForRank = true)} />
-			{:else}
-			<div>Is map ranking allowed by mapper?</div>
-			<Button
-				label="NO"
-				type={allowed || allowed == undefined ? 'default' : 'danger'}
-				on:click={() => (allowed = false)} />
-			<Button
-				label="YES"
-				type={allowed === false || allowed == undefined ? 'default' : 'green'}
-				on:click={() => (allowed = true)} />
 			{/if}
 			{#if suitableForRank}
 				<div>

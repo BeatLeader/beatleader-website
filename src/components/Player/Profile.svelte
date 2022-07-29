@@ -1,7 +1,6 @@
 <script>
   import {getContext} from 'svelte'
   import processPlayerData from './utils/profile';
-  import {BL_CDN} from '../../network/queues/beatleader/page-queue'
   import createBeatSaviorService from '../../services/beatsavior'
   import createAccSaberService from '../../services/accsaber'
   import createAccountStore from '../../stores/beatleader/account'
@@ -17,6 +16,7 @@
   import BeatLeaderSummary from "./BeatLeaderSummary.svelte";
   import ContentBox from "../Common/ContentBox.svelte";
   import Error from '../Common/Error.svelte'
+  import RoleIcon from './RoleIcon.svelte';
 
   export let playerData;
   export let isLoading = false;
@@ -58,23 +58,9 @@
     editError = err?.detail ?? null;
   }
 
-  let roleIcon = null;
-  let roleDescription = null;
-  function updateRoleIcon(role) {
-    if (role) {
-      if (role.includes("tipper")) {
-        roleIcon = BL_CDN + "/assets/patreon1.png";
-        roleDescription = "Tier 1 Patreon supporter."
-      } else if (role.includes("supporter")) {
-        roleIcon = BL_CDN + "/assets/patreon2.png";
-        roleDescription = "Tier 2 Patreon supporter."
-      } else if (role.includes("sponsor")) {
-        roleIcon = BL_CDN + "/assets/patreon3.png";
-        roleDescription = "Highest tier Patreon supporter. Crypto godge"
-    }
-    } else {
-      roleIcon = null;
-    }
+  let roles = null;
+  function updateRoles(role) {
+    roles = role?.split(",").reverse();
   }
 
   $: isCached = !!(playerData && playerData.scoresLastUpdated);
@@ -82,7 +68,7 @@
   $: statsHistory = playerData?.statsHistory ?? null;
   $: name = playerData && playerData.name ? playerData.name : null;
   $: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData))
-  $: updateRoleIcon(playerInfo?.role ?? null);
+  $: updateRoles(playerInfo?.role ?? null);
   $: refreshBeatSaviorState(playerId);
   $: scoresStatsFinal = generateScoresStats(scoresStats);
   $: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank);
@@ -148,18 +134,23 @@
 
 <ContentBox>
   <div class="player-general-info">
-    <div class="avatar-cell">
+    <div class="avatar-and-roles">
+      <div class="avatar-cell">
       <Avatar {isLoading} {playerInfo} hash={avatarHash} />
 
       {#if playerId && !isLoading}
         <AvatarOverlayIcons {playerId} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
       {/if}
+    </div>
 
-      {#if roleIcon}
-        <div class="player-role">
-          <img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon"/>
+      {#if roles}
+        <div class="role-icons">
+          {#each roles as role, idx }
+            <RoleIcon onAvatar={true} {role} mapperId={playerInfo?.mapperId} />
+          {/each}
         </div>
       {/if}
+    
     </div>
 
     <div class="rank-and-stats-cell">
@@ -167,8 +158,9 @@
         <Error error={editError} />
       {/if}
 
-      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} {statsHistory} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
+      <ProfileHeaderInfo {error} {name} {playerInfo} {playerId} {statsHistory} {roles} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
       <BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} />
+
       {#if $account.error}
         {$account.error}
       {/if}
@@ -205,16 +197,17 @@
         grid-gap: .4em;
     }
 
-    .player-role {
-        width: 100px;
-        padding-top: 7rem;
-        padding-left: 5rem;
+    .role-icons {
+      display: flex;
+      margin-right: -5.5em;
+      margin-top: -2.5em;
+      z-index: 5;
     }
 
-    .role-icon {
-      z-index: 5;
-      position: absolute;
-      width: 60%;
+    .avatar-and-roles {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     @media screen and (max-width: 767px) {

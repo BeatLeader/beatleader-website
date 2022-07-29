@@ -66,6 +66,12 @@
 
             <Button label="Login with Steam" type="submit"/>
         </form>
+        <form action={BL_API_URL + "signin"} method="post">
+            <input type="hidden" name="Provider" value="BeatSaver" />
+            <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
+
+            <Button label="Login with BeatSaver" type="submit"/>
+        </form>
     {:else if loggedInPlayer > 70000000000000000}
         {#if !$account.migrated}
             If you are using the <b>Steam game</b> - you are all set!<br>
@@ -134,7 +140,7 @@
 <div>
 Link your account to receive patreon features for your tier.<br><br>
 
-If you are not yet a patreon, you can become one <strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</strong>
+If you are not yet a patron, you can become one <strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</strong>
 </div>
 
 <form action={BL_API_URL + "signin"} method="post">
@@ -142,6 +148,19 @@ If you are not yet a patreon, you can become one <strong> <a class="inlineLink" 
     <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/patreon"} />
 
     <Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit"/>
+</form>
+{:else if action == "linkBeatSaver"}
+
+<div>
+Link your account to receive mapper role.<br>
+And receive a profile badge if you are approved mapper.<br>
+</div>
+
+<form action={BL_API_URL + "signin"} method="post">
+    <input type="hidden" name="Provider" value="BeatSaver" />
+    <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
+
+    <Button iconFa="fas fa-plus-square" label="Link to BeatSaver" type="submit"/>
 </form>
 {:else if action == "patreon"}
     {#if patreoned}

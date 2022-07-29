@@ -77,6 +77,22 @@
             showVotings={true}
           />
         </Route>
+        <Route
+          path="/leaderboard/approval/:type/:leaderboardId/*page"
+          let:params
+          let:location
+        >
+          <LeaderboardPage
+            leaderboardId={params.leaderboardId}
+            type={params.type}
+            page={params.page}
+            {location}
+            dontChangeType={false}
+            showCurve={true}
+            showVotings={true}
+            showApproveRequest={true}
+          />
+        </Route>
         <Route path="/leaderboards/*page" let:params let:location>
           <LeaderboardsPage page={params.page} {location} />
         </Route>
