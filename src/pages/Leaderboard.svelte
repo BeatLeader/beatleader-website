@@ -614,7 +614,7 @@
                       <div class="score with-badge">
                           <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                               <span slot="label">
-                                  <small title="Rankability">{score.score.rankVoting.rankability ? 'YES' : 'NO'} </small>
+                                  <small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
                               </span>
                           </Badge>
                       </div>
@@ -678,6 +678,7 @@
                         </span>
                     </Badge>
                 </div>
+                {#if votingsForTypeStats(votingStats.type)}
                 <div class="score with-badge">
                     <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
                         <span slot="label">
@@ -685,6 +686,7 @@
                         </span>
                     </Badge>
                 </div>
+                {/if}
                 
             </div>
             {/if}
