@@ -8,9 +8,7 @@
     import RankingTable from '../components/Ranking/RankingTable.svelte'
     import Spinner from '../components/Common/Spinner.svelte'
     import Scores from '../components/Player/Scores.svelte'
-    // import Timeline from '../components/Twitter/Timeline.svelte';
-
-
+    import Timeline from '../components/Twitter/Timeline.svelte';
 
     const SPECIAL_PLAYER_ID = 'user-friends';
 
@@ -128,17 +126,20 @@
                             />
                         </div>
                     </ContentBox>
-
+                    <div class="twitterEmbed">
+                        <ContentBox>
+                            <Timeline href="https://twitter.com/beatleader_" />
+                        </ContentBox>
+                    </div>
+                    <div class="downloadButtons"> 
+                        <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+                            <Button iconFa="fas fa-download" label="Download PC mod" color="#2d4150"/>
+                        </a>
+                        <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
+                            <Button iconFa="fas fa-download" label="Download Quest mod" color="#2d4150"/>
+                        </a>
+                    </div>
                 </div>
-                            <div class="downloadButtons"> 
-                                <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
-                                    <Button iconFa="fas fa-download" label="Download PC mod" color="#2d4150"/>
-                                </a>
-                                <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
-                                    <Button iconFa="fas fa-download" label="Download Quest mod" color="#2d4150"/>
-                                </a>
-                            </div>
-
                 <div class="scores content column is-full is-three-fifths-fullhd page-content">
                     <ContentBox>
                         <header>
@@ -157,30 +158,22 @@
                                 noIcons={true}
                         />
                     </ContentBox>
+                    <div class="twitterEmbedMobile">
+                        <ContentBox>
+                            <Timeline href="https://twitter.com/beatleader_" />
+                        </ContentBox>
+                    </div>
                 </div>
-            </div>
-            <div class="twitterEmbed">
-                <ContentBox>
-                <a class="twitter-timeline" href="https://twitter.com/beatleader_" data-lang="en" data-chrome="noheader noscrollbar transparent" data-theme="dark" data-width="40em" data-height="90em">Loading tweets from @beatleader_</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-                </ContentBox>
             </div>
         </div>
     {/if}
 {/if}
 
 <style>
-    @media screen and (max-width: 767px)
-    {
-        .twitterEmbed {
-        display: none;
-    }
-    }
-    .twitterEmbed {
-        float: left;
-    }
     .columns {
         width: 100%;
     }
+
     .sources {
         display: flex;
         margin-left: 1.5em;
@@ -292,5 +285,19 @@
         margin-left: 0.6em;
         margin-bottom: 2em;
         float: center;
+    }
+    
+    .twitterEmbedMobile {
+        display: none;
+    }
+
+    @media screen and (max-width: 767px) {
+        .twitterEmbed {
+            display: none;
+        }
+
+        .twitterEmbedMobile {
+            display: block;
+        }
     }
 </style>
