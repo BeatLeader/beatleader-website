@@ -23,6 +23,48 @@
 	const getStat = (data, key) => opt(data, key);
 	const getAcc = (data, key) => (getStat(data, key) ?? 0) * 100;
 
+	let allTypeValues = [
+		{
+			label: 'Ranked',
+			value: 'ranked',
+			icon: 'fa fa-cubes',
+		},
+		{
+			label: 'Unranked',
+			value: 'unranked',
+			icon: 'fa fa-cubes',
+		},
+		{
+			label: 'All',
+			value: 'all',
+			icon: 'fa fa-cubes',
+		},
+	];
+	let currentTypeValue = filters.mapsType;
+
+	const statKeys = {
+		'acc': {
+			'ranked': "scoreStats.averageRankedAccuracy",
+			'unranked': "scoreStats.averageUnrankedAccuracy",
+			'all': "scoreStats.averageAccuracy"
+		},
+		'topAcc': {
+			'ranked': "scoreStats.topRankedAccuracy",
+			'unranked': "scoreStats.topUnrankedAccuracy",
+			'all': "scoreStats.topAccuracy"
+		},
+		'playCount': {
+			'ranked': "scoreStats.rankedPlayCount",
+			'unranked': "scoreStats.unrankedPlayCount",
+			'all': "scoreStats.totalPlayCount"
+		},
+		'rank': {
+			'ranked': "scoreStats.averageRankedRank",
+			'unranked': "scoreStats.averageUnrankedRank",
+			'all': "scoreStats.averageRank"
+		}
+	};
+
 	let allSortValues = [
 		{
 			id: 'pp',
@@ -31,13 +73,14 @@
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'playerInfo.pp'),
 			props: {suffix: 'pp', zero: '-'},
+			hideForTypes: ["unranked"]
 		},
 		{
 			id: 'acc',
 			label: 'Acc',
-			title: 'Sort by ranked accuracy',
+			title: 'Sort by average accuracy',
 			iconFa: 'fa fa-crosshairs',
-			value: data => getAcc(data, 'scoreStats.averageRankedAccuracy'),
+			value: data => getAcc(data, statKeys['acc'][currentTypeValue]),
 			props: {suffix: '%', zero: '-'},
 		},
 		{
@@ -47,30 +90,31 @@
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'scoreStats.topPp'),
 			props: {suffix: 'pp', zero: '-'},
+			hideForTypes: ["unranked"]
 		},
 		{
 			id: 'topAcc',
 			label: 'Top Acc',
 			title: 'Sort by top accuracy',
 			iconFa: 'fa fa-crosshairs',
-			value: data => getAcc(data, 'scoreStats.topAccuracy'),
+			value: data => getAcc(data, statKeys['topAcc'][currentTypeValue]),
 			props: {suffix: '%', zero: '-'},
 		},
 		{
 			id: 'playCount',
 			label: 'Play count',
-			title: 'Sort by ranked play count',
+			title: 'Sort by play count',
 			iconFa: 'fas fa-calculator',
-			value: data => getStat(data, 'scoreStats.rankedPlayCount'),
+			value: data => getStat(data, statKeys['playCount'][currentTypeValue]),
 			props: {digits: 0, suffix: ''},
 		},
 		{
-			id: 'dailyImprovements',
-			label: 'Improvements',
-			title: 'Sort by today improved scores',
-			iconFa: 'far fa-lightbulb',
-			value: data => getStat(data, 'scoreStats.dailyImprovements'),
-			props: {digits: 0},
+			id: 'rank',
+			label: 'Rank',
+			title: 'Sort by average leaderboard rank',
+			iconFa: 'fa fa-chart-line',
+			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
+			props: {digits: 0, suffix: ''},
 		},
 	];
 
@@ -102,9 +146,47 @@
 		}
 	}
 
+	function onTypeChanged(e) {
+		if (!useInternalFilters) {
+			dispatch('maps-type-changed', currentTypeValue);
+			return;
+		}
+
+		filters.mapsType = currentTypeValue;
+		refreshSortValues(allSortValues, filters)
+	}
+
 	onMount(() => {
 		dispatch('loading', true);
 	});
+
+	let switcherSortValues;
+	let sortValue;
+
+	function refreshSortValues(allSortValues, filterValues) {
+		switcherSortValues = allSortValues
+		.filter(v => {
+			return !v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType)
+		})
+		.map(v => ({
+			...v,
+			iconFa: filterValues?.sortBy === v.id ? (filterValues?.order === 'asc' ? 'fas fa-long-arrow-alt-up' : 'fas fa-long-arrow-alt-down') : v.iconFa,
+		}));
+
+		if (filters?.sortBy?.length) {
+			sortValue = switcherSortValues.find(v => v.id === filters.sortBy)
+			if (!sortValue) {
+				setTimeout(() => {
+					sortValue = switcherSortValues[0];
+					filters.sortBy = sortValue.id
+					changeParams(type, page, filters);
+					rankingStore = rankingStore;
+				}, 500);
+			}
+		} else {
+			sortValue = switcherSortValues[0];
+		}
+	}
 
 	$: isLoading = rankingStore.isLoading;
 	$: pending = rankingStore.pending;
@@ -115,18 +197,17 @@
 	$: dispatch('loading', $isLoading);
 	$: dispatch('pending', $pending?.page);
 
-	$: switcherSortValues = allSortValues.map(v => ({
-		...v,
-		iconFa: filters?.sortBy === v.id ? (filters?.order === 'asc' ? 'fas fa-long-arrow-alt-up' : 'fas fa-long-arrow-alt-down') : v.iconFa,
-	}));
-	$: sortValue = filters?.sortBy?.length
-		? switcherSortValues.find(v => v.id === filters.sortBy) ?? switcherSortValues[0]
-		: switcherSortValues[0];
+	$: refreshSortValues(allSortValues, filters)
 </script>
 
 {#if $rankingStore?.data?.length}
-	<nav>
+	<nav class="switcher-nav">
 		<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+		<select class="type-select" bind:value={currentTypeValue} on:change={onTypeChanged}>
+			{#each allTypeValues as option (option.value)}
+				<option class="type-option" value={option.value}><i class={option.icon}></i>{option.label}</option>
+			{/each}
+		</select>
 	</nav>
 
 	<section class="ranking-grid">
@@ -159,6 +240,12 @@
 {/if}
 
 <style>
+	.switcher-nav {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
 	.ranking-grid {
 		display: grid;
 		grid-gap: 0.75em;
@@ -170,6 +257,29 @@
 		grid-gap: 0.4em;
 		align-items: center;
 		justify-items: center;
+	}
+
+	.type-select {
+		padding: 0.2em;
+		margin-top: 0.9em;
+		text-align: center;
+		white-space: nowrap;
+		border: 0;
+		border-radius: .2em;
+		font-size: inherit;
+		cursor: pointer;
+		color: var(--color, #363636);
+		background-color: #dbdbdb;
+		box-shadow: none;
+		opacity: .35;
+		font-family: 'Noto Sans SC', sans-serif;
+		font-size: 0.95rem;
+		font-weight: 500;
+	}
+
+	.type-option {
+		color: black;
+		font-family: 'Noto Sans SC', sans-serif;
 	}
 
 	nav > :global(*) {

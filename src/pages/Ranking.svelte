@@ -168,12 +168,12 @@
 		},
 		{
 			key: 'score_range',
-			label: 'Ranked scores count',
-			default: [0, 1000],
+			label: 'Scores count',
+			default: [0, 2000],
 			min: 0,
-			max: 1000,
+			max: 2000,
 			step: 1,
-			pipstep: 100,
+			pipstep: 250,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
@@ -188,6 +188,12 @@
 		{
 			key: 'order',
 			default: 'desc',
+			process: processStringFilter,
+			type: null,
+		},
+		{
+			key: 'mapsType',
+			default: 'ranked',
 			process: processStringFilter,
 			type: null,
 		},
@@ -299,6 +305,15 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onMapsTypeChanged(event) {
+
+		currentFilters.mapsType = event.detail;
+
+		findParam('mapsType').value = currentFilters.mapsType;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onFiltersUpdated(e) {
 		if (!e?.detail?.currentFilters) return;
 
@@ -336,6 +351,7 @@
 				on:filters-updated={onFiltersUpdated}
 				on:page-changed={onPageChanged}
 				on:sort-changed={onSortChanged}
+				on:maps-type-changed={onMapsTypeChanged}
 				on:loading={e => (isLoading = !!e?.detail)}
 				on:pending={e => (pending = e?.detail)} />
 		</ContentBox>
