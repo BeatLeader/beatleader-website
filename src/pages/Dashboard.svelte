@@ -126,19 +126,20 @@
                             />
                         </div>
                     </ContentBox>
-                    <div>
-                        <Timeline href="https://twitter.com/beatleader_" />
+                    <div class="twitterEmbed">
+                        <ContentBox>
+                            <Timeline href="https://twitter.com/beatleader_" />
+                        </ContentBox>
                     </div>
-                    <div class="downloadButtons">
+                    <div class="downloadButtons"> 
                         <a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
-                            <Button iconFa="fas fa-download" label="Download PC mod"/>
+                            <Button iconFa="fas fa-download" label="Download PC mod" color="#2d4150"/>
                         </a>
                         <a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
-                            <Button iconFa="fas fa-download" label="Download Quest mod"/>
+                            <Button iconFa="fas fa-download" label="Download Quest mod" color="#2d4150"/>
                         </a>
                     </div>
                 </div>
-
                 <div class="scores content column is-full is-three-fifths-fullhd page-content">
                     <ContentBox>
                         <header>
@@ -157,6 +158,11 @@
                                 noIcons={true}
                         />
                     </ContentBox>
+                    <div class="twitterEmbedMobile">
+                        <ContentBox>
+                            <Timeline href="https://twitter.com/beatleader_" />
+                        </ContentBox>
+                    </div>
                 </div>
             </div>
         </div>
@@ -167,6 +173,7 @@
     .columns {
         width: 100%;
     }
+
     .sources {
         display: flex;
         margin-left: 1.5em;
@@ -277,5 +284,20 @@
         margin-top: 1.5em;
         margin-left: 0.6em;
         margin-bottom: 2em;
+        float: center;
+    }
+    
+    .twitterEmbedMobile {
+        display: none;
+    }
+
+    @media screen and (max-width: 767px) {
+        .twitterEmbed {
+            display: none;
+        }
+
+        .twitterEmbedMobile {
+            display: block;
+        }
     }
 </style>
