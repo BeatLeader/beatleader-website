@@ -8,7 +8,6 @@
 		processStringArrayFilter,
 		processIntArrayFilter,
 	} from '../utils/filters';
-	import {capitalize} from '../utils/js';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -19,8 +18,8 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Countries from '../components/Ranking/Countries.svelte';
 
-	export let type = 'global';
 	export let page = 1;
+	export let location;
 
 	document.body.classList.remove('slim');
 
@@ -231,7 +230,6 @@
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
-	let currentType = type;
 	let currentPage = page;
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
@@ -266,8 +264,7 @@
 		preventScroll = false;
 	}
 
-	function changeParams(newType, newPage, newLocation) {
-		currentType = newType;
+	function changeParams(newPage, newLocation, replace) {
 		currentFilters = buildFiltersFromLocation(newLocation);
 		if (!currentFilters?.sortBy?.length) {
 			currentFilters.sortBy = 'pp';
@@ -276,8 +273,6 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		currentPage = newPage;
-
-		navigateToCurrentPageAndFilters();
 	}
 
 	function onPageChanged(event) {
@@ -286,8 +281,8 @@
 		navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
 	}
 
-	function navigateToCurrentPageAndFilters() {
-		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+	function navigateToCurrentPageAndFilters(replace) {
+		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace});
 	}
 
 	function onSortChanged(event) {
@@ -324,8 +319,7 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	$: typeName = type && type.toUpperCase && !['global', 'friends'].includes(type) ? type.toUpperCase() : capitalize(type);
-	$: changeParams(type, page, location);
+	$: changeParams(page, location, true);
 	$: scrollToTop(pending);
 </script>
 
@@ -345,7 +339,6 @@
 			</h1>
 
 			<RankingTable
-				type={currentType}
 				page={currentPage}
 				filters={currentFilters}
 				on:filters-updated={onFiltersUpdated}

@@ -44,7 +44,7 @@
   function navigateToGlobalRanking(rank) {
     if (!rank) return;
 
-    navigate(`/ranking/global/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`)
+    navigate(`/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`)
   }
 
   function getPlayerCountries(playerInfo, statsHistory) {

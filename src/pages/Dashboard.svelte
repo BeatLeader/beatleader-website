@@ -100,7 +100,7 @@
             </div>
             <SearchPage focusField={false} title="Find your profile or friends"/>
             <div class="global-ranking-call">
-                <h3><strong>Check out <a href="/ranking/global">the global rankings</a> to find the best players</strong></h3>
+                <h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
             </div>
         </div>
     </div>

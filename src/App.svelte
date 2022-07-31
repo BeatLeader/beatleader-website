@@ -59,8 +59,8 @@
         <Route path="/privacy" component={PrivacyPage} />
         <Route path="/about" component={AboutPage} />
         <Route path="/friends" component={FriendsPage} />
-        <Route path="/ranking/*page" let:params>
-          <RankingPage page={params.page} />
+        <Route path="/ranking/*page" let:params let:location>
+          <RankingPage page={params.page} {location}/>
         </Route>
         <Route
           path="/leaderboard/:type/:leaderboardId/*page"
