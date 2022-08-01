@@ -1,11 +1,12 @@
 import leaderboardApiClient from '../../network/clients/beatleader/leaderboard/api-leaderboard'
 import leaderboardsApiClient from '../../network/clients/beatleader/leaderboard/api-leaderboards'
 import accSaberLeaderboardApiClient from '../../network/clients/accsaber/api-leaderboard'
+import statsApiClient from '../../network/clients/beatleader/leaderboard/api-stats'
 import makePendingPromisePool from '../../utils/pending-promises'
 import {PRIORITY} from '../../network/queues/http-queue'
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts'
 import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts'
-import {MINUTE} from '../../utils/date'
+import {MINUTE, HOUR} from '../../utils/date'
 
 const ACCSABER_LEADERBOARD_NETWORK_TTL = MINUTE * 5;
 
@@ -45,6 +46,9 @@ export default () => {
     }
   }
 
+  const fetchLeaderboardStats = async (leaderboardId, priority = PRIORITY.FG_LOW, {...options} = {cacheTtl: HOUR, maxAge: HOUR}) =>
+  statsApiClient.getProcessed({...options, leaderboardId, priority});
+
   const destroyService = () => {
     service = null;
   }
@@ -53,6 +57,7 @@ export default () => {
     fetchAllLeaderboardsPage,
     fetchLeaderboardPage,
     fetchAccSaberPage,
+    fetchLeaderboardStats,
     LEADERBOARD_SCORES_PER_PAGE,
     destroyService,
   }

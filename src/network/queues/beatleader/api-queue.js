@@ -14,6 +14,7 @@ export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}';
 export const BL_API_SCORES_URL = BL_API_URL + 'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}';
 export const BL_API_FRIENDS_SCORES_URL = BL_API_URL + 'user/friendScores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}'
+export const BL_API_LEADERBOARD_STATS_URL = BL_API_URL + 'leaderboard/statistic/${leaderboardId}'
 export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}'
 export const BL_API_SCORES_HISTOGRAM_URL = BL_API_URL + 'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}';
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}'
@@ -172,6 +173,7 @@ export default (options = {}) => {
   const scoresHistogram = async (playerId, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) => fetchScores(substituteVars(BL_API_SCORES_HISTOGRAM_URL, {...params, ...(params?.filters ?? {})}), playerId, priority, options);
 
   const scoreStats = async (scoreId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_SCORE_STATS_URL, {scoreId: encodeURIComponent(scoreId)}), options, priority);
+  const leaderboardStats = async (leaderboardId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_LEADERBOARD_STATS_URL, {leaderboardId: encodeURIComponent(leaderboardId)}), options, priority);
 
   const playerScore = async (playerId, hash, diff, type, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(BL_API_PLAYER_SCORE_URL, {playerId, hash, diff, type}), options, priority);
 
@@ -245,6 +247,7 @@ export default (options = {}) => {
     rankingFriends,
     scores,
     scoreStats,
+    leaderboardStats,
     scoresHistogram,
     playerScore,
     leaderboards,

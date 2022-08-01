@@ -6,8 +6,6 @@
   import Chart from './Stats/Chart.svelte'
 
   export let beatSavior;
-  export let leaderboard;
-  export let playerId;
 
   function extractGridAcc(beatSavior) {
     const gridAcc = beatSavior?.trackers?.accuracyTracker?.gridAcc;
@@ -24,15 +22,15 @@
 {#if beatSavior}
   <section class="beat-savior" transition:fade>
     <div class="details-with-shadow details-and-hands">
-      <OtherStats {beatSavior} {name}/>
+      <OtherStats {beatSavior}/>
       <div class="hands-and-grid">
-        <Hands stats={beatSavior.stats} {name}/>
-        <Grid {accGrid} {name} />
+        <Hands stats={beatSavior.stats}/>
+        <Grid {accGrid} />
       </div>
     </div>
 
     <div class="details-with-shadow chart">
-      <Chart {beatSavior} {name} />
+      <Chart {beatSavior} />
     </div>
   </section>
 {/if}

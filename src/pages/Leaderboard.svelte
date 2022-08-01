@@ -7,6 +7,7 @@
   import createModifiersStore from '../stores/beatleader/modifiers'
   import createVotingStore from '../stores/beatleader/rankVoting'
   import createPlayerService from '../services/beatleader/player'
+  import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic'
   import {opt, capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
   import stringify from 'json-stable-stringify';
@@ -26,6 +27,7 @@
   import Button from '../components/Common/Button.svelte'
   import Icons from '../components/Song/Icons.svelte'
   import RankingVoting from '../components/Leaderboard/RankingVoting.svelte'
+  import BeatSaviorDetails from '../components/BeatSavior/Details.svelte'
   
   import {formatNumber} from '../utils/format'
   import {
@@ -372,6 +374,8 @@
     : scores;
   }
 
+  let showAverageStats = false;
+
   $: isLoading = leaderboardStore.isLoading;
   $: pending = leaderboardStore.pending;
   $: enhanced = leaderboardStore.enhanced
@@ -406,6 +410,8 @@
   $: if (showVotings && isRT) votingStore.fetchResults(leaderboardId);
   $: votingStats = $votingStore[leaderboardId];
   $: votingLoading = $votingStore.loading;
+
+  $: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
 </script>
 
 <svelte:head>
@@ -715,6 +721,31 @@
                  hide={!['global', 'accsaber'].includes(currentType)}
                  on:page-changed={onPageChanged}
           />
+
+          <div class="score-options-section">
+            <span class="beat-savior-reveal clickable" class:opened={showAverageStats}
+                  on:click={() => showAverageStats = !showAverageStats} title="Show average difficulty stats">
+              {#if showAverageStats}
+                Hide average map statistic
+              {:else}
+                Show average map statistic
+              {/if}
+              
+              <i class="fas fa-chevron-down"></i>
+            </span>
+          </div>
+          {#if showAverageStats}
+          {#await beatSaviorPromise}
+            <div class="tab">
+              <Spinner />
+            </div>
+          {:then beatSavior}
+            <div transition:slide class="tab">
+              <BeatSaviorDetails {beatSavior} />
+            </div>
+          {/await}
+          
+          {/if}
         {:else}
           <p transition:fade>No scores found.</p>
         {/if}
@@ -1122,5 +1153,11 @@
 
     .beat-savior-reveal.opened > i {
       transform: rotateZ(180deg);
+    }
+
+    .score-options-section {
+        display: grid;
+        justify-items: center;
+        margin: .3em;
     }
 </style>
