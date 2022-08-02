@@ -94,7 +94,7 @@
         {:else}
             {navigate("/u/" + loggedInPlayer)}
         {/if}
-    {:else}
+    {:else if ((loggedInPlayer < 30000000 || loggedInPlayer > 1000000000000000))}
         You can migrate this account to your Steam account.<br><br>
         Your current scores will migrate and<br>the new ones will be posted to the Steam account.<br>
         Or just use this account.<br>
@@ -106,6 +106,8 @@
 
             <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
         </form>
+    {:else}
+        {navigate("/u/" + loggedInPlayer)}
     {/if}
 {:else if action == "changePassword"}
     {#if !$account.migrated}

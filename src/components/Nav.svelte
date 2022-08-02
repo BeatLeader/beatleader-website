@@ -107,7 +107,7 @@
   function calculateSignUpOptions(loggedInUser) {
     if (loggedInUser.player) {
       signupOptions = [];
-      if (!loggedInUser.migrated) {
+      if ((loggedInUser.player.playerId < 30000000 || loggedInUser.player.playerId > 1000000000000000) && !loggedInUser.migrated) {
         signupOptions.push("Migrate");
       }
       if (loggedInUser.player.playerId < 30000000 || loggedInUser.migrated) {
