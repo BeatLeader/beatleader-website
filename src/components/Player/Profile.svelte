@@ -199,8 +199,6 @@
 
     .role-icons {
       display: flex;
-      margin-right: -5.5em;
-      margin-top: -2.5em;
       z-index: 5;
     }
 

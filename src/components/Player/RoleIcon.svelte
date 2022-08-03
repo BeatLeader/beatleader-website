@@ -77,11 +77,11 @@
 
 {#if show && roleIcon}
     {#if roleLink}
-    <a class="player-role {iconClass}" href={roleLink}>
+    <a class="player-role {iconClass} {onAvatar ? "on-avatar" : ""}" href={roleLink}>
         <img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon"/>
     </a>
     {:else}
-    <div class="player-role {iconClass}">
+    <div class="player-role {iconClass} {onAvatar ? "on-avatar" : ""}">
         <img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon"/>
     </div>
     {/if}
@@ -102,5 +102,10 @@
 
     .small {
         width: 2.5em;
+    }
+
+    .on-avatar {
+        margin-right: -5.5em;
+        margin-top: -2.5em;
     }
 </style>
