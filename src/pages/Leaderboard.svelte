@@ -428,7 +428,7 @@
 
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
-    {#if qualification && isRT} 
+    {#if qualification && !qualification.mapperAllowed && isRT} 
     <a href={location.href.replace("leaderboard", "leaderboard/approval")}>Link for the mapper approval</a>
     {/if}
     {#if showApproveRequest && leaderboard && qualification}
@@ -727,6 +727,11 @@
                 </span>
              </div>
             </div>
+              {#if qualification.mapperAllowed}
+              <span style="color: green;"><i class="fa fa-check"></i> Allowed by mapper</span>
+              {:else}
+              <span style="color: red;"><i class="fa fa-xmark"></i> Not yet allowed by mapper</span>
+              {/if}
             
             {/if}
           </div>
