@@ -115,6 +115,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
     {id: 'levelAuthorName', value: led?.song?.mapper},
     {id: 'authorName', value: led?.song?.author},
     {id: 'duration', value: led?.song?.duration},
+    {id: 'mapperId', value: led?.song?.mapperId},
     {id: 'name', value: led?.song?.name}]
     .reduce((cum, sid) => {
       let value = sid.value;
