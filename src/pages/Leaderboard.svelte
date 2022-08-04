@@ -429,7 +429,7 @@
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
     {#if qualification && !qualification.mapperAllowed && isRT} 
-    <a href={location.href.replace("leaderboard", "leaderboard/approval")}>Link for the mapper approval</a>
+    <a href={window.location.href.replace("leaderboard", "leaderboard/approval")}>Link for the mapper approval</a>
     {/if}
     {#if showApproveRequest && leaderboard && qualification}
       <ContentBox>
