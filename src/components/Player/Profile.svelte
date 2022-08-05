@@ -63,6 +63,8 @@
     roles = role?.split(",").reverse();
   }
 
+  let modalShown;
+
   $: isCached = !!(playerData && playerData.scoresLastUpdated);
   $: playerId = playerData && playerData.playerId ? playerData.playerId : null;
   $: statsHistory = playerData?.statsHistory ?? null;
@@ -132,14 +134,18 @@
     );
 </script>
 
-<ContentBox>
+<ContentBox cls={modalShown ? "inner-modal" : ""}>
   <div class="player-general-info">
     <div class="avatar-and-roles">
       <div class="avatar-cell">
       <Avatar {isLoading} {playerInfo} hash={avatarHash} />
 
       {#if playerId && !isLoading}
-        <AvatarOverlayIcons {playerId} on:player-data-updated on:player-data-edit-error={onPlayerDataEditError} />
+        <AvatarOverlayIcons {playerId} 
+        on:modal-shown={() => modalShown = true} 
+        on:modal-hidden={() => modalShown = false} 
+        on:player-data-updated 
+        on:player-data-edit-error={onPlayerDataEditError} />
       {/if}
     </div>
 
@@ -206,6 +212,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+    }
+
+    :global(.inner-modal) {
+      z-index: 100;
+      position: relative;
     }
 
     @media screen and (max-width: 767px) {

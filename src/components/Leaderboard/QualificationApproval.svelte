@@ -55,7 +55,7 @@
                 <div transition:slide class="tab title-box">
                     Ranking means players will be receiving PP from your map. And probably putting a lot of effort in improving on it.<br>
                     After your map is ranked - please don't remove or update it on the BeatSaver.<br>
-                    Maps from mappers removed their map will be much less likely selected in future!<br>
+                    Maps from Mappers who removed their ranked maps will be much less likely to be selected in the future!<br>
                 </div>
             {/if}
 
@@ -72,7 +72,7 @@
             {:else}
                 <div class="title-box">
                     You are not <b>{leaderboard?.song.levelAuthorName}</b>!<br>
-                    Please share this link with the <b>{leaderboard?.song.levelAuthorName}</b>.
+                    Please share this link with <b>{leaderboard?.song.levelAuthorName}</b>.
                 </div>
             {/if}
         {:else if currentMapperId && currentMapperId == leaderboard?.song.mapperId}

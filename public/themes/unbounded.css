@@ -183,6 +183,16 @@ body {
   background: transparent !important;
   box-shadow: none !important;
 }
+.ss-modal {
+  top: 10% !important;
+}
+.bg {
+  width: 100% !important;
+  height: 100% !important;
+}
+.window-wrap {
+  transform: translate(0, -50%);
+}
 .page-content.svelte-qnwlci .badge {
   font-size: 0.8rem !important;
   color: white !important;

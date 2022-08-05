@@ -20,6 +20,7 @@
         if (mapperInfoValue.verifiedMapper) {
             roleIcon = BL_CDN + "/assets/mapper.png";
             roleDescription = "Verified maps creator";
+            iconClass = null;
         } else {
             roleIcon = "https://beatsaver.com/static/favicon/apple-touch-icon.png";
             roleDescription = "Has BeatSaver account";
@@ -29,7 +30,7 @@
         roleLink = "https://beatsaver.com/profile/" + mapperId;
     }
 
-    function updateRoleIcon(role) {
+    function updateRoleIcon(role, mapperId) {
         if (role) {
             switch (role) {
                 case "mapper":
@@ -72,7 +73,7 @@
         }
     }
 
-    $: updateRoleIcon(role)
+    $: updateRoleIcon(role, mapperId)
 </script>
 
 {#if show && roleIcon}

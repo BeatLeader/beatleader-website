@@ -408,6 +408,17 @@ export default (refreshOnCreate = true) => {
 
   const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).finally(refresh);
 
+  const refreshLastQualificationTime = (completion) => {
+    fetch(BL_API_URL + "prevQualTime", { credentials: 'include' })
+      .then(response => response.json())
+      .then(
+        data => {
+            account.lastQualificationTime = data.time;
+            set(account);
+            completion(data.time);
+        });
+  }
+
   store = {
     subscribe,
     get,
@@ -434,6 +445,7 @@ export default (refreshOnCreate = true) => {
     changeLogin,
     addFriend,
     removeFriend,
+    refreshLastQualificationTime
   }
 
   return store;

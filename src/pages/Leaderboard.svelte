@@ -6,7 +6,7 @@
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import createModifiersStore from '../stores/beatleader/modifiers'
   import createVotingStore from '../stores/beatleader/rankVoting'
-  import createPlayerService from '../services/beatleader/player'
+  import createBeatSaverService from '../services/beatmaps'
   import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic'
   import {opt, capitalize} from '../utils/js'
   import {scrollToTargetAdjusted} from '../utils/browser'
@@ -37,7 +37,7 @@
 		mapTypeFromMask,
 		votingsForTypeStats,
 	} from '../utils/beatleader/format';
-  import {isValidDate, dateFromUnix, formatDateRelative} from '../utils/date'
+  import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../utils/date'
   import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
   import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters'
   import ClanBadges from '../components/Player/ClanBadges.svelte'
@@ -47,6 +47,7 @@
   import PpCurve from '../components/Leaderboard/PPCurve.svelte';
   import ContentBox from '../components/Common/ContentBox.svelte';
   import QualificationApproval from '../components/Leaderboard/QualificationApproval.svelte';
+  import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
 
   export let leaderboardId;
   export let type = 'global';
@@ -62,7 +63,7 @@
   export let higlightedScore = null;
   export let iconsInInfo = false;
   export let noReplayInLeaderboard = false;
-  export let showVotings = false;
+  export let separatePage = false;
   export let showCurve = false;
 
   export let autoScrollToTop = true;
@@ -74,7 +75,6 @@
 
   const dispatch = createEventDispatcher();
 
-  const playerService = createPlayerService();
   const account = createAccountStore();
   const votingStore = createVotingStore();
 
@@ -228,24 +228,6 @@
       }))
   }
 
-  const freshScoreAgeMillis = 0;
-  const oldScoreAgeMillis = 1000 * 60 * 60 * 24 * 30 * 8; //~8 months
-  const freshScoreBrightness = 255;
-  const oldScoreBrightness = 128;
-  let now = new Date().getTime();
-
-  function getTimeStringColor(timeSet) {
-    if (!timeSet) return "#ffffff";
-    const scoreAgeMillis = now - (isValidDate(timeSet) ? timeSet : dateFromUnix(timeSet)).getTime();
-    let ratio = (scoreAgeMillis - freshScoreAgeMillis) / (oldScoreAgeMillis - freshScoreAgeMillis);
-    if (ratio < 0) ratio = 0;
-    if (ratio > 1) ratio = 1;
-    ratio = Math.pow(1 - ratio, 3);
-    const brightnessInt = (oldScoreBrightness + (freshScoreBrightness - oldScoreBrightness) * ratio) | 0;
-    const brightnessHex = brightnessInt.toString(16);
-    return "#" + brightnessHex + brightnessHex + brightnessHex;
-  }
-
   function updateTypeOptions(country, playerHasFriends) {
     if (!country?.length && !playerHasFriends) return;
 
@@ -358,16 +340,13 @@
     })
   }
 
-  let qualifier;
-  async function retrieveQualifier(qualification) {
-    if (!qualification) return;
-
-    qualifier = await playerService.fetchPlayerOrGetFromCache(qualification.rtMember);
-  }
-
   let mapVoting = false;
   let rtvoting = false;
+  let qualificationUpdate = false;
   let scoresWithUser;
+
+  let verifiedMapperId;
+  let qualificationLimitError;
 
   function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
     scoresWithUser = !userScoreOnCurrentPage && scores?.length && userScore
@@ -375,6 +354,32 @@
       .concat(scores)
       .concat(userScore?.score?.score <= scores?.[scores.length - 1]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: false}] : [])
     : scores;
+  }
+
+  async function updateVerifiedMapperId(mapperId) {
+    if (mapperId) {
+      let beatSaverService = createBeatSaverService();
+      const mapperInfoValue = await beatSaverService.getMapper(mapperId);
+
+      if (mapperInfoValue.verifiedMapper) {
+        verifiedMapperId = mapperId;
+
+        const checkTime = (lastTime) => {
+          const currentSeconds = new Date().getTime() / 1000;
+          if ((currentSeconds - lastTime) < 60 * 60 * 24 * 7) {
+            qualificationLimitError = "You can qualify new map after " + Math.round(7 - (currentSeconds - lastTime) / (60 * 60 * 24)) + " day(s)";
+          }
+        }
+
+        if ($account.lastQualificationTime == undefined) {
+          account.refreshLastQualificationTime((time) => {
+            checkTime(time);
+          });
+        } else {
+          checkTime($account.lastQualificationTime);
+        }
+      }
+    }
   }
 
   let showAverageStats = false;
@@ -397,20 +402,20 @@
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
   
   $: qualification = leaderboard && leaderboard.qualification
-  $: retrieveQualifier(qualification);
 
   $: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
   $: isRT = $account.player && $account.player.playerInfo.role && ($account.player.playerInfo.role.includes("admin") || $account.player.playerInfo.role.includes("rankedteam"));
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
+  $: updateVerifiedMapperId($account?.player?.playerInfo.mapperId);
 
   $: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
   $: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage)
   $: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore)
   $: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type)
   $: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
-  $: if (showVotings && isRT) votingStore.fetchResults(leaderboardId);
+  $: if (separatePage && isRT) votingStore.fetchResults(leaderboardId);
   $: votingStats = $votingStore[leaderboardId];
   $: votingLoading = $votingStore.loading;
 
@@ -422,14 +427,13 @@
 </svelte:head>
 
 {#if mapVoting}
-  <RankingVoting {votingStore} {rtvoting} {isRanked} currentStars={leaderboard?.stats?.stars} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => { mapVoting = false; rtvoting = false; }} />
+  <RankingVoting insideLeaderboard={!separatePage} {votingStore} {rtvoting} {qualificationUpdate} {qualification} {isRanked} currentStars={leaderboard?.stats?.stars} currentType={leaderboard?.stats?.type} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => { mapVoting = false; rtvoting = false; qualificationUpdate = false; }} />
 {/if}
-
 
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
-    {#if qualification && !qualification.mapperAllowed && isRT} 
-    <a href={window.location.href.replace("leaderboard", "leaderboard/approval")}>Link for the mapper approval</a>
+    {#if separatePage && qualification && !qualification.mapperAllowed && isRT} 
+      <a href={window.location.href.replace("leaderboard", "leaderboard/approval")}>Link for the mapper approval</a>
     {/if}
     {#if showApproveRequest && leaderboard && qualification}
       <ContentBox>
@@ -460,6 +464,7 @@
 
               <h2 class="title is-6"
                   class:unranked={!isRanked}>
+                
                 {#if leaderboard.categoryDisplayName}
                   <Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
                   <span slot="label">
@@ -483,6 +488,10 @@
                   <Button cls="replay-button-alt battleroyalebtn" icon="<div class='battleroyalestart-icon'></div>" title="Let the battle begin!" noMargin={true} on:click={() => startBattleRoyale()}/>
                 {/if}
               </h2>
+
+              {#if qualification}
+                <QualificationStatus {qualification} />
+              {/if}
             </header>
           {/if}
           {#if showStats && leaderboard.stats}
@@ -510,11 +519,21 @@
             {:else if votingStatus == 3}
             <Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true}/>
             {/if}
-            {#if showVotings && isRT && qualification == null}
+            {#if separatePage && (isRT || (verifiedMapperId == leaderboard?.song.mapperId && !isRanked)) && qualification == null}
+              {#if !isRT && qualificationLimitError}
+              <Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true}/>
+              {:else}
+              <Button cls="voteButton"                                 
+                      iconFa={isRanked ? "fas fa-star" : "fas fa-rocket"}
+                      title={isRanked ? "Update map stars" : "Qualify this map!"} 
+                      noMargin={true} on:click={() => { mapVoting = !mapVoting; rtvoting = true; }}/>
+              {/if}
+            {/if}
+            {#if separatePage && isRT && qualification != null}
             <Button cls="voteButton"                                 
-                    iconFa={isRanked ? "fas fa-star" : "fas fa-rocket"}
-                    title={isRanked ? "Update map stars" : "Qualify this map!"} 
-                    noMargin={true} on:click={() => { mapVoting = !mapVoting; rtvoting = true; }}/>
+                    iconFa="fas fa-list-check"
+                    title="Update qualification details" 
+                    noMargin={true} on:click={() => { mapVoting = !mapVoting; rtvoting = true; qualificationUpdate = true; }}/>
             {/if}
           {:else}
           <Spinner/>
@@ -630,7 +649,7 @@
                     </div>
                   {/if}
                   
-                  {#if showVotings && score.score.rankVoting}
+                  {#if separatePage && score.score.rankVoting}
                   <div class="rank-voting">
                     <div class="voting-result">
                       <div class="score with-badge">
@@ -712,28 +731,6 @@
                 
             </div>
             {/if}
-
-            {#if qualification && qualifier}
-            <div class="qualification-description">
-              <b>Qualified by:</b> 
-                <Avatar player={qualifier}/>
-                <PlayerNameWithFlag player={qualifier}
-                                    type={'beatleader/date'}
-                                    on:click={qualifier ? () => navigateToPlayer(qualifier.playerId) : null}
-                />
-              <div class="timeset">
-                <span style="color: {getTimeStringColor(opt(qualification, 'timeset', 'null'))}; ">
-                  {formatDateRelative(dateFromUnix(qualification.timeset))}
-                </span>
-             </div>
-            </div>
-              {#if qualification.mapperAllowed}
-              <span style="color: green;"><i class="fa fa-check"></i> Allowed by mapper</span>
-              {:else}
-              <span style="color: red;"><i class="fa fa-xmark"></i> Not yet allowed by mapper</span>
-              {/if}
-            
-            {/if}
           </div>
 
           <Pager totalItems={$leaderboardStore.totalItems} {itemsPerPage} itemsPerPageValues={null}
@@ -763,6 +760,7 @@
           {:then beatSavior}
             <div transition:slide class="tab">
               <BeatSaviorDetails {beatSavior} />
+              <small class="level-author">{song.hash}</small>
             </div>
           {/await}
           
@@ -1065,12 +1063,6 @@
     }
 
     .voter-feedback {
-      display: flex;
-      grid-gap: 0.4em;
-      align-items: center;
-    }
-
-    .qualification-description {
       display: flex;
       grid-gap: 0.4em;
       align-items: center;

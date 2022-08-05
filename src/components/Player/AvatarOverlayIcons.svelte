@@ -55,6 +55,8 @@
     await twitchService.updatePlayerProfile({...event.detail, playerId, profileLastUpdated: new Date()})
 
     showLinkingModal = false;
+
+    dispatch('modal-hidden', null);
   }
 
   async function onPlayerChanged(playerId) {
@@ -175,7 +177,7 @@
     {#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isProfileLinkedToTwitch))}
       <Button type="twitch" iconFa="fab fa-twitch"
               title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
-              on:click={() => showLinkingModal = true}
+              on:click={() => { dispatch('modal-shown', null); showLinkingModal = true}}
       />
     {/if}
 

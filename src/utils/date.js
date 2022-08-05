@@ -153,3 +153,20 @@ export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto', l
             return rtf.format(-roundFunc(diffInSecs / unitDivider), unit);
     }
 }
+
+const freshScoreAgeMillis = 0;
+const oldScoreAgeMillis = 1000 * 60 * 60 * 24 * 30 * 8; //~8 months
+const freshScoreBrightness = 255;
+const oldScoreBrightness = 128;
+
+export function getTimeStringColor(timeSet) {
+    if (!timeSet) return "#ffffff";
+    const scoreAgeMillis = new Date().getTime() - (isValidDate(timeSet) ? timeSet : dateFromUnix(timeSet)).getTime();
+    let ratio = (scoreAgeMillis - freshScoreAgeMillis) / (oldScoreAgeMillis - freshScoreAgeMillis);
+    if (ratio < 0) ratio = 0;
+    if (ratio > 1) ratio = 1;
+    ratio = Math.pow(1 - ratio, 3);
+    const brightnessInt = (oldScoreBrightness + (freshScoreBrightness - oldScoreBrightness) * ratio) | 0;
+    const brightnessHex = brightnessInt.toString(16);
+    return "#" + brightnessHex + brightnessHex + brightnessHex;
+}

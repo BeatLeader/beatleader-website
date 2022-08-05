@@ -235,6 +235,7 @@
     .page-content {
         max-width: 65em;
         width: 100%;
+        overflow: inherit;
     }
 
   article {

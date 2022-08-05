@@ -74,7 +74,7 @@
             {location}
             dontChangeType={false}
             showCurve={true}
-            showVotings={true}
+            separatePage={true}
           />
         </Route>
         <Route
@@ -89,7 +89,7 @@
             {location}
             dontChangeType={false}
             showCurve={true}
-            showVotings={true}
+            separatePage={true}
             showApproveRequest={true}
           />
         </Route>
@@ -152,7 +152,6 @@
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
-    overflow: hidden;
     min-height: calc(100vh - 9rem);
   }
 

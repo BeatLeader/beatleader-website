@@ -50,11 +50,37 @@ export default () => {
 
         votingStatuses.loading = true;
         set(votingStatuses);
+        const url = BL_API_URL + `qualify/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` 
+        + (stars ? "&stars=" + stars : "") 
+        + (type ? "&type=" + type : "")
+        + (allowedByMapper ? "&allowed=true" : "");
 
-        fetch(BL_API_URL + `qualify/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` 
-            + (stars ? "&stars=" + stars : "") 
-            + (type ? "&type=" + type : "")
-            + (allowedByMapper ? "&allowed=true" : ""),
+        fetch(url,
+            { credentials: 'include', method: 'POST' }).then(() => {
+                votingStatuses.loading = false;
+                set(votingStatuses);
+                document.location.reload()
+            })
+    }
+
+    const updateQualification = async (hash, diff, mode, rankability, stars, types, allowedByMapper, criteriaMet, criteriaCommentary) => {
+        if (!hash || !diff || !mode) return;
+        let type = 0;
+        types.forEach(typeName => {
+            type += typesMap[typeName];
+        });
+
+        votingStatuses.loading = true;
+        set(votingStatuses);
+
+        const url = BL_API_URL + `qualification/${hash}/${diff}/${mode}?stilQualifying=${rankability}` 
+        + (stars ? "&stars=" + stars : "") 
+        + (type ? "&type=" + type : "")
+        + (allowedByMapper ? "&allowed=true" : "")
+        + (criteriaMet ? "&criteriaCheck=" + criteriaMet : "")
+        + (criteriaCommentary ? "&criteriaCommentary=" + encodeURIComponent(criteriaCommentary) : "");
+
+        fetch(url,
             { credentials: 'include', method: 'POST' }).then(() => {
                 votingStatuses.loading = false;
                 set(votingStatuses);
@@ -119,7 +145,8 @@ export default () => {
         fetchResults,
         updateMap,
         qualifyMap,
-        voteFeedback
+        voteFeedback,
+        updateQualification
     }
 }
 

@@ -1,9 +1,10 @@
 <script>
 export let box = null;
 export let background = 'var(--foreground)';
+export let cls = null;
 </script>
 
-<div class="content-box" bind:this={box} style="--box-background: {background}">
+<div class="content-box {cls ?? ""}" bind:this={box} style="--box-background: {background}">
   <slot></slot>
 </div>
 

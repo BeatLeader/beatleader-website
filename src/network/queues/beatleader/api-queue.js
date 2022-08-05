@@ -112,6 +112,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
     {id: 'notes', value: currentDiff?.notes},
     {id: 'bpm', value: currentDiff?.bpm},
     {id: 'stars', value: currentDiff?.stars},
+    {id: 'type', value: currentDiff?.type},
     {id: 'levelAuthorName', value: led?.song?.mapper},
     {id: 'authorName', value: led?.song?.author},
     {id: 'duration', value: led?.song?.duration},
@@ -120,7 +121,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
     .reduce((cum, sid) => {
       let value = sid.value;
 
-      if (value !== null && ['scores', 'totalScores', 'bpm', 'notes', 'stars', 'status'].includes(sid.id)) {
+      if (value !== null && ['scores', 'totalScores', 'bpm', 'notes', 'stars', 'status', 'type'].includes(sid.id)) {
 
         if (value !== null) {
           cum.stats[sid.id] = value;

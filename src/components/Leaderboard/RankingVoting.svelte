@@ -5,24 +5,32 @@
 	import Select from 'svelte-select';
 	import {createEventDispatcher} from 'svelte';
 
-	import {votingTypes} from '../../utils/beatleader/format';
+	import {votingTypes, mapTypeFromMask} from '../../utils/beatleader/format';
 
 	const dispatch = createEventDispatcher();
 
+	export let insideLeaderboard = false;
 	export let votingStore;
 	export let hash;
 	export let diff;
 	export let mode;
     export let currentStars;
+	export let currentType;
 
 	export let isRanked;
 	export let rtvoting;
-	const qualification = rtvoting && !isRanked;
 
-	let suitableForRank = qualification;
-	let stars = currentStars;
+	export let qualification;
+	export let qualificationUpdate;
 
-	let selectedTypes = [];
+	let suitableForRank = rtvoting && !isRanked;
+	let stars;
+
+	let mapperAllowed = qualification?.mapperAllowed;
+	let criteriaMet = qualification?.criteriaMet;
+	let criteriaCommentary = qualification?.criteriaCommentary;
+
+	let selectedTypes = currentType ? mapTypeFromMask(currentType).split(",") : [];
 	const allMapTypes = votingTypes;
 	let mapTypes = votingTypes;
 	let selectedType = '+';
@@ -32,7 +40,11 @@
 			if (isRanked) {
             	votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
 			} else {
-				votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes)
+				if (qualificationUpdate) {
+					votingStore.updateQualification(hash, diff, mode, suitableForRank, stars, selectedTypes, mapperAllowed, criteriaMet, criteriaCommentary);
+				} else {
+					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes)
+				}
 			}
         } else {
             votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
@@ -56,19 +68,63 @@
 		mapTypes.push(type);
 		mapTypes = mapTypes;
 	}
+
+	function updateStars(currentStars) {
+		stars = currentStars;
+	}
+
+	let dialogTitle;
+	function updateDialogTitle(rtvoting, isRanked, qualificationUpdate) {
+		if (rtvoting) {
+			if (isRanked) {
+				dialogTitle = "Update map ranking";
+			} else if (qualificationUpdate) {
+				dialogTitle = "Update map qualification";
+			} else {
+				dialogTitle = "Qualify map";
+			}
+		} else {
+			dialogTitle = "Vote map for ranked";
+		}
+	}
+
+	let actionButtonTitle;
+	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet) {
+		if (rtvoting) {
+			if (isRanked) {
+				actionButtonTitle = "Update";
+			} else if (qualificationUpdate) {
+				if (criteriaMet != 2) {
+					actionButtonTitle = "Update qualification";
+				} else {
+					actionButtonTitle = "Disqualify";
+				}
+			} else {
+				actionButtonTitle = "Qualify";
+			}
+		} else {
+			actionButtonTitle = "Submit";
+		}
+	}
+
+	$: updateStars(currentStars);
+	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate);
+	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet);
+	$: console.log(stars);
+
 </script>
 
-<div class="ranking-voting">
+<div class="ranking-voting {insideLeaderboard ? "inside-leaderboard" : ""}">
 	<Dialog
 		type="confirm"
-		title={rtvoting ? (isRanked ? "Update map ranking" : "Qualify map") : "Vote map for ranked"}
-		okButton={rtvoting ? (isRanked ? "Update" : "Qualify") : "Submit"}
+		title={dialogTitle}
+		okButton={actionButtonTitle}
 		cancelButton="Cancel"
         okButtonDisabled={suitableForRank == undefined}
 		on:confirm={() => vote()}
 		on:cancel={() => dispatch('finished')}>
 		<div slot="content">
-			{#if !qualification}
+			{#if !(rtvoting && !isRanked)}
 			<div>Is this map suitable for rank?</div>
 			<Button
 				label="NO"
@@ -79,6 +135,36 @@
 				type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
 				on:click={() => (suitableForRank = true)} />
 			{/if}
+			{#if qualificationUpdate}
+			<div>Qualification status</div>
+			<Button
+				label="STOP"
+				type={suitableForRank || suitableForRank == undefined ? 'default' : 'danger'}
+				on:click={() => (suitableForRank = false)} />
+			<Button
+				label="KEEP"
+				type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
+				on:click={() => (suitableForRank = true)} />
+			<div>Mapper allowed but can't/not want to use website</div>
+			<Button
+				label="YES"
+				type={mapperAllowed === false || mapperAllowed == undefined ? 'default' : 'green'}
+				on:click={() => (mapperAllowed = true)} />
+			{/if}
+			{#if qualificationUpdate}
+			<div>Criteria check result</div>
+			<Button
+				label="UNMET"
+				type={criteriaMet == 2 ? 'danger' : 'default'}
+				on:click={() => (criteriaMet = 2)} />
+			<Button
+				label="MET"
+				type={criteriaMet == 1 ? 'green' : 'default'}
+				on:click={() => (criteriaMet = 1)} />
+			{/if}
+			{#if criteriaMet == 2} 
+			<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset">
+			{/if}
 			{#if suitableForRank}
 				<div>
 					<label>{rtvoting ? "Stars:" : "Stars (optional):"}</label>
@@ -86,7 +172,7 @@
 						min={0}
 						max={15}
 						step={0.1}
-						value={stars}
+						values={[stars]}
 						float
 						hoverable
 						pips
@@ -113,10 +199,13 @@
 
 <style>
 	:global(.ranking-voting .ss-modal) {
+		--itemHoverBG: #eb008c;
+	}
+
+	:global(.inside-leaderboard .ss-modal) {
 		top: 0 !important;
 		position: sticky !important;
 		transform: none !important;
-		--itemHoverBG: #eb008c;
 	}
 
 	.remove-type {

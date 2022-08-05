@@ -17,6 +17,7 @@
   import {createBuildFiltersFromLocation, buildSearchFromFilters, processFloatFilter, processStringFilter,} from '../utils/filters'
   import SongScore from "../components/Player/SongScore.svelte";
   import {processScore} from "../network/clients/beatleader/scores/utils/processScore"
+import QualificationStatusSmall from "../components/Leaderboard/QualificationStatusSmall.svelte";
 
   export let page = 1;
   export let location;
@@ -62,15 +63,22 @@
   const typeFilterOptions = [
     {key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
     {key: 'qualified', label: 'Qualified', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+    {key: 'mapperqualified', label: 'Qualified by mapper', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
     {key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
     {key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
   ];
 
-  const mytypeFilterOptions = [
+  const baseMytypeFilterOptions = [
     {key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
     {key: 'played', label: 'Played', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
     {key: 'unplayed', label: 'Not played', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
   ];
+
+  let mytypeFilterOptions = baseMytypeFilterOptions;
+
+  function addMapperTypeFilter() {
+    mytypeFilterOptions.push({key: 'mymaps', label: 'My maps', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'})
+  }
 
   function scrollToTop() {
     if (boxEl) scrollToTargetAdjusted(boxEl, 44)
@@ -142,7 +150,8 @@
 
   let sortValues1 = [
     {id: 'stars', 'label': 'Star', title: 'Sort by stars',iconFa: 'fa fa-list-ol'},
-    {id: 'voting', 'label': 'Voting', title: 'Sort by vote ratio', iconFa: 'fa fa-cubes'},
+    {id: 'voting', 'label': 'Voting', title: 'Sort by positive minus negative vote count', iconFa: 'fa fa-cubes'},
+    {id: 'voteratio', 'label': 'Vote ratio', title: 'Sort by vote ratio', iconFa: 'fa fa-cubes'},
     {id: 'votecount', 'label': 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-cubes'},
     {id: 'playcount', 'label': 'Plays', title: 'Sort by play count', iconFa: 'fa fa-user'},
   ];
@@ -166,6 +175,7 @@
   $: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
   $: itemsPerPage = $leaderboardsStore ? $leaderboardsStore?.metadata?.itemsPerPage : 10;
   $: isRT = $account.player && $account.player.playerInfo.role && ($account.player.playerInfo.role.includes("admin") || $account.player.playerInfo.role.includes("rankedteam"));
+  $: if ($account.player && $account.player.playerInfo.mapperId) addMapperTypeFilter()
 
   $: changePageAndFilters(page, location)
   $: scrollToTop($pending);
@@ -178,6 +188,7 @@
         stars: m?.difficulty?.stars ?? null,
       }
     })
+  $: console.log(leaderboardsPage);
 </script>
 
 <svelte:head>
@@ -219,7 +230,15 @@
                     {#if isRT && map?.votes.filter(v => v.stars > 0).length}
                     {formatNumber(map?.votes.filter(v => v.stars > 0).reduce((a, b) => a + b.stars, 0) / map?.votes.filter(v => v.stars > 0).length)}★
                     {/if}
-                    <span title="{map?.votes.filter(v => v.rankability > 0).length} rankable / {map?.votes.filter(v => v.rankability <= 0).length} unrankable">Rating: {map?.votes.filter(v => v.rankability > 0).length - map?.votes.filter(v => v.rankability <= 0).length}</span>  
+                    <span title="{map?.votes.filter(v => v.rankability > 0).length} rankable / {map?.votes.filter(v => v.rankability <= 0).length} unrankable">
+                      {#if currentFilters.sortBy == "voting"}
+                      Rating: {map?.votes.filter(v => v.rankability > 0).length - map?.votes.filter(v => v.rankability <= 0).length}
+                      {:else if currentFilters.sortBy == "voteratio"}
+                      Ratio: {formatNumber((map?.votes.filter(v => v.rankability > 0).length / map?.votes.length) * 100)}%
+                      {:else}
+                      {map?.votes.length} vote{map?.votes.length > 1 ? "s" : ""}
+                      {/if}
+                    </span>  
                   </div>
                 {/if}
 
@@ -236,6 +255,10 @@
                   </div>
                 {/if}
               </div>
+
+              {#if map?.qualification}
+                <QualificationStatusSmall qualification={map.qualification} />
+              {/if}
 
               {#if map?.myScore}
               <SongScore playerId={map.myScore.playerId} songScore={processScore({leaderboard: map, ...map.myScore})} showSong={false} noIcons={true} inList={false} {idx} service={"beatleader"} />
