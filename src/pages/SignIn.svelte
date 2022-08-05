@@ -8,6 +8,8 @@
     import { navigate } from "svelte-routing";
     import Dialog from "../components/Common/Dialog.svelte";
     import Spinner from "../components/Common/Spinner.svelte";
+    import beatSaverSvg from "../resources/beatsaver.svg";
+    import steamSvg from "../resources/steam.svg";
 
     export let action;
 
@@ -64,14 +66,15 @@
             <input type="hidden" name="Provider" value="Steam" />
             <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
 
-            <Button label="Login with Steam" type="submit"/>
+            <Button icon={steamSvg} label="Login with Steam" type="submit"/>
         </form>
         <form action={BL_API_URL + "signin"} method="post">
             <input type="hidden" name="Provider" value="BeatSaver" />
             <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
 
-            <Button label="Login with BeatSaver" type="submit"/>
+            <Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit"/>
         </form>
+        <br>
     {:else if loggedInPlayer > 70000000000000000}
         {#if !$account.migrated}
             If you are using the <b>Steam game</b> - you are all set!<br>
@@ -284,6 +287,9 @@ And receive a profile badge if you are approved mapper.<br>
 
     .inlineLink {
         display: contents;
+    }
+    .title {
+        margin-top: 1em;
     }
 </style>
 

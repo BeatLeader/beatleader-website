@@ -43,7 +43,7 @@
                 case "rankedteam":
                     show = !onAvatar;
                     roleIcon = BL_CDN + "/assets/rankedteam.png";
-                    roleDescription = "Ranked team member";
+                    roleDescription = "Ranking team member";
                     break;
                 case "admin":
                     show = !onAvatar;
