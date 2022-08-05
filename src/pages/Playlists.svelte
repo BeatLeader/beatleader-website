@@ -1,5 +1,6 @@
 <script>
     import createPlaylistStore from '../stores/playlists'
+    import createAccountStore from '../stores/beatleader/account'
     import Playlist from '../components/Playlists/Playlist.svelte'
     import Pager from '../components/Common/Pager.svelte'
     import Button from '../components/Common/Button.svelte'
@@ -7,6 +8,7 @@
     import ContentBox from "../components/Common/ContentBox.svelte";
 
     const playlists = createPlaylistStore();
+    const account = createAccountStore();
     let page = 0;
     let itemsPerPage = 5;
     let itemsPerPageValues = [5, 10, 15];
@@ -51,7 +53,7 @@
   {#if $playlists && $playlists.length}
     <div class="song-scores grid-transition-helper">
       {#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, idx}
-        <Playlist {playlist} idx={page * itemsPerPage + idx} store={playlists} />
+        <Playlist accountStore={account} {playlist} idx={page * itemsPerPage + idx} store={playlists} />
       {/each}
     </div>
   {:else}

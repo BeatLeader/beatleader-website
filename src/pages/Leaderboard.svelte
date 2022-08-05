@@ -356,7 +356,7 @@
     : scores;
   }
 
-  async function updateVerifiedMapperId(mapperId) {
+  async function updateVerifiedMapperId(mapperId, hash) {
     if (mapperId) {
       let beatSaverService = createBeatSaverService();
       const mapperInfoValue = await beatSaverService.getMapper(mapperId);
@@ -364,20 +364,12 @@
       if (mapperInfoValue.verifiedMapper) {
         verifiedMapperId = mapperId;
 
-        const checkTime = (lastTime) => {
+        account.refreshLastQualificationTime(hash, (time) => {
           const currentSeconds = new Date().getTime() / 1000;
-          if ((currentSeconds - lastTime) < 60 * 60 * 24 * 7) {
-            qualificationLimitError = "You can qualify new map after " + Math.round(7 - (currentSeconds - lastTime) / (60 * 60 * 24)) + " day(s)";
+          if ((currentSeconds - time) < 60 * 60 * 24 * 7) {
+            qualificationLimitError = "You can qualify new map after " + Math.round(7 - (currentSeconds - time) / (60 * 60 * 24)) + " day(s)";
           }
-        }
-
-        if ($account.lastQualificationTime == undefined) {
-          account.refreshLastQualificationTime((time) => {
-            checkTime(time);
-          });
-        } else {
-          checkTime($account.lastQualificationTime);
-        }
+        });
       }
     }
   }
@@ -408,7 +400,7 @@
   $: isRT = $account.player && $account.player.playerInfo.role && ($account.player.playerInfo.role.includes("admin") || $account.player.playerInfo.role.includes("rankedteam"));
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
-  $: updateVerifiedMapperId($account?.player?.playerInfo.mapperId);
+  $: updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
 
   $: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
   $: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage)

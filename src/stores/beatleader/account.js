@@ -30,6 +30,15 @@ export default (refreshOnCreate = true) => {
     }
 
     set(account);
+
+    fetch(BL_API_URL + "user/playlists", {
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(playlists => {
+      account.playlists = playlists;
+      set(account);
+    });
   }
 
   if (refreshOnCreate) refresh();
@@ -408,13 +417,11 @@ export default (refreshOnCreate = true) => {
 
   const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).finally(refresh);
 
-  const refreshLastQualificationTime = (completion) => {
-    fetch(BL_API_URL + "prevQualTime", { credentials: 'include' })
+  const refreshLastQualificationTime = (hash, completion) => {
+    fetch(BL_API_URL + "prevQualTime/" + hash, { credentials: 'include' })
       .then(response => response.json())
       .then(
         data => {
-            account.lastQualificationTime = data.time;
-            set(account);
             completion(data.time);
         });
   }

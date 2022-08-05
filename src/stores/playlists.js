@@ -113,6 +113,29 @@ export default () => {
     }
   };
 
+  const share = async (index, callback) => {
+    let playlists = await get();
+    let playlist = playlists[index];
+
+    fetch(BL_API_URL + "user/playlist", {
+      credentials: 'include',
+      method: 'POST',
+      body: JSON.stringify(playlist)
+    })
+    .then(response => response.text())
+    .then(shareId => callback(shareId))
+  };
+
+  const getShared = (id, callback) => {
+    fetch(BL_API_URL + "playlist/" + id, {
+      credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(playlist => { 
+      callback(playlist)
+    });
+  };
+
   const deleteList = async (index) => {
     let playlists = await get();
     playlists.splice(index, 1);
@@ -212,7 +235,9 @@ export default () => {
     deleteList,
     download,
     removeDiff,
-    addDiff
+    addDiff,
+    getShared,
+    share
   }
 
   return playlistStore;

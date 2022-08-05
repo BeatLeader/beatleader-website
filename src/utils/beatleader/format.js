@@ -119,6 +119,49 @@ export function describePlatform(platform) {
   return result;
 }
 
+export function modeForModeName(modeName) {
+  switch (modeName) {
+      case "Standard":
+          return 1;
+      case "OneSaber":
+          return 2;
+      case "NoArrows":
+          return 3;
+      case "90Degree":
+          return 4;
+      case "360Degree":
+          return 5;
+      case "Lightshow":
+          return 6;
+      case "Lawless":
+          return 7;
+  }
+
+  return 0;
+}
+
+export function diffForDiffName(diffName) {
+  switch (diffName) {
+      case "Easy":
+      case "easy":
+          return 1;
+      case "Normal":
+      case "normal":
+          return 3;
+      case "Hard":
+      case "hard":
+          return 5;
+      case "Expert":
+      case "expert":
+          return 7;
+      case "ExpertPlus":
+      case "expertPlus":
+          return 9;
+  }
+
+  return 0;
+}
+
 export function userDescriptionForModifier(modifier) {
   switch (modifier) {
     case "DA": return "Dissapearing arrows";

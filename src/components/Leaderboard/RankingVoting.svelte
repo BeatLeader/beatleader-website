@@ -110,7 +110,6 @@
 	$: updateStars(currentStars);
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate);
 	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet);
-	$: console.log(stars);
 
 </script>
 

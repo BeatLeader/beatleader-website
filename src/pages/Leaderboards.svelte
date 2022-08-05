@@ -18,6 +18,7 @@
   import SongScore from "../components/Player/SongScore.svelte";
   import {processScore} from "../network/clients/beatleader/scores/utils/processScore"
 import QualificationStatusSmall from "../components/Leaderboard/QualificationStatusSmall.svelte";
+import Button from "../components/Common/Button.svelte";
 
   export let page = 1;
   export let location;
@@ -188,7 +189,6 @@ import QualificationStatusSmall from "../components/Leaderboard/QualificationSta
         stars: m?.difficulty?.stars ?? null,
       }
     })
-  $: console.log(leaderboardsPage);
 </script>
 
 <svelte:head>
@@ -315,6 +315,11 @@ import QualificationStatusSmall from "../components/Leaderboard/QualificationSta
       </section>
 
       <Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+
+      <div class="playlist-buttons">
+        <Button cls="playlist-button" iconFa="fas fa-list" label="Ranked playlist" on:click={() => navigate("/playlist/ranked")}/>
+        <Button cls="playlist-button" iconFa="fas fa-list" label="Qualified playlist" on:click={() => navigate("/playlist/qualified")}/>
+      </div>        
     </ContentBox>
   </aside>
 </section>
@@ -436,6 +441,16 @@ import QualificationStatusSmall from "../components/Leaderboard/QualificationSta
 
     .icons :global(> *) {
         margin-bottom: .25em!important;
+    }
+
+    .playlist-buttons {
+      display: flex;
+      margin-top: 0.5em;
+      column-gap: 0.5em;
+    }
+
+    :global(.playlist-button) {
+      height: 1.6em;
     }
 
     @media screen and (max-width: 1275px) {

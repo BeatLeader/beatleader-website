@@ -1,11 +1,16 @@
 <script>
+    import { navigate } from 'svelte-routing';
     import {fade, fly, slide} from 'svelte/transition'
     import Button from "../Common/Button.svelte";
+    import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+    import createPlayerService from '../../services/beatleader/player'
     import Song from "./Song.svelte";
 
     export let playlist;
     export let idx;
     export let store;
+    export let expanded = false;
+    export let accountStore;
 
     let fileinput;
     const changeImage = (e) => {
@@ -18,7 +23,7 @@
         };
     }
 
-    let detailsOpened = false;
+    let detailsOpened = expanded;
     function onDetailsButtonClick() {
         detailsOpened = !detailsOpened;
     }
@@ -33,7 +38,34 @@
         redactingTitle = !redactingTitle;
     }
 
-    $:songs = playlist.songs;
+    function sharePlaylist() {
+        store.share(idx, (shareId => {
+            navigate("/playlist/" + shareId);
+        }));
+    }
+
+    let owner;
+    let canModify = true;
+    let canShare = true;
+
+    async function retrieveOwner(playlist, playerId) {
+        if (playlist?.customData?.owner) {
+            canShare = false;
+            if (playlist.customData.owner == "BeatLeader") {
+                canModify = false;
+                return;
+            }
+            let playerService = createPlayerService();
+            owner = await playerService.fetchPlayerOrGetFromCache(playlist.customData.owner);
+
+            if (owner?.playerId != playerId) {
+                canModify = false;
+            }
+        }
+    }
+
+    $: songs = playlist.songs;
+    $: retrieveOwner(playlist, $accountStore?.player?.playerId);
 </script>
 
 {#if playlist}
@@ -47,8 +79,8 @@
                 on:click={() => onDetailsButtonClick()} />
        </td>
         <div class="imageInput" on:click={() => fileinput.click()}>
-            <img class="playlistImage" src="{playlist.image}" alt="PlaylistImage"/>
-            {#if !playlist.oneclick}
+            <img class="playlistImage" src="{playlist.image.startsWith("data") ? playlist.image : "data:image/png;base64," + playlist.image }" alt="PlaylistImage"/>
+            {#if canModify && !playlist.oneclick}
             <input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>changeImage(e)} bind:this={fileinput} >
             <span class="imageChange">
                 <h3 class="changeLabel">Change</h3>
@@ -62,7 +94,7 @@
                 <div style="display: flex;">
                     <span class="playlistTitle" style="display: {redactingTitle ? "none" : "block"};">{playlist.playlistTitle}</span>
                     <input type="text" style="display: {redactingTitle ? "block" : "none"};" value="{playlist.playlistTitle}" placeholder="Playlist name" class="input-reset" bind:this={titleInput}>
-                    {#if !playlist.oneclick}
+                    {#if canModify && !playlist.oneclick}
                     <Button type="text" cls="editTitleButton" iconFa={redactingTitle ? "fas fa-check" : "fas fa-edit"}
                         on:click={() => onRedactButtonClick()} />
                     {/if}
@@ -71,14 +103,28 @@
                 {#if playlist.oneclick}
                 <span class="oneclick-title">This is magic playlist which will be automatically synced by mod. <br>Quest v0.4+.</span>
                 {/if}
+
+                {#if owner}
+                    <div class="player">
+                        <PlayerNameWithFlag player={owner}
+                                            type={'beatleader/date'}
+                        />
+                  </div>
+                {/if}
                 
                 <span class="songs">{playlist.songs.length} songs</span>
             </div>
 
             <div>
                 {#if !playlist.oneclick}
+                {#if canModify}
                 <Button iconFa="fas fa-trash-alt" title="Delete playlist" noMargin={true} type="danger"
                     on:click={store.deleteList(idx)}/>
+                {/if}
+                {#if canShare}
+                    <Button iconFa="fas fa-upload" title="Share playlist" noMargin={true} type="primary"
+                    on:click={sharePlaylist(idx)}/>
+                {/if}
                 {/if}
                 <Button iconFa="fas fa-download" title="Download playlist" noMargin={true} type="primary"
                     on:click={store.download(idx)}/>
@@ -91,7 +137,7 @@
         {#if detailsOpened}
         <div class="tab">
             {#each songs as song, songId}
-            <Song {song} {songId} listId={idx} {store} />
+            <Song {song} {canModify} listId={idx} {store} />
             {/each}
         </div>
         {/if}
@@ -177,6 +223,9 @@
 
     .playlistImage {
         width: 10em;
+        height: fit-content;
+        aspect-ratio: 1 / 1;
+        min-width: 6em;
     }
 
     .imageChange {

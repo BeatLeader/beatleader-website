@@ -6,14 +6,11 @@
   import createAccountStore from '../stores/beatleader/account'
   import createPlaylistStore from '../stores/playlists'
   import {configStore} from '../stores/config'
-  import createPlayerService from '../services/beatleader/player'
   import Dropdown from './Common/Dropdown.svelte'
   import MenuLine from './Player/MenuLine.svelte'
   import {opt} from '../utils/js'
   import Settings from './Others/Settings.svelte'
   import Button from "./Common/Button.svelte";
-
-  const playerService = createPlayerService();
 
   let player = null;
   let settingsNotificationBadge = null;

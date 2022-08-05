@@ -18,11 +18,13 @@
   import AboutPage from "./pages/About.svelte";
   import DashboardPage from "./pages/Dashboard.svelte";
   import PlaylistsPage from "./pages/Playlists.svelte";
+  import PlaylistPage from "./pages/Playlist.svelte";
   import SigninPage from "./pages/SignIn.svelte";
   import SupportPage from "./pages/Support.svelte";
   import Nav from "./components/Nav.svelte";
   import Modal from "svelte-simple-modal";
   import { configStore } from "./stores/config";
+import Playlist from "./components/Playlists/Playlist.svelte";
   export let url = "";
 
   let mainEl = null;
@@ -103,6 +105,9 @@
           <ClansPage page={params.page} {location} />
         </Route>
         <Route path="/playlists" component={PlaylistsPage} />
+        <Route path="/playlist/:id" let:params>
+          <PlaylistPage id={params.id} />
+        </Route>
         <Route path="/search">
           <SearchPage changeTitle={true} />
         </Route>
