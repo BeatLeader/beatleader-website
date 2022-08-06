@@ -23,7 +23,7 @@
 	export let qualification;
 	export let qualificationUpdate;
 
-	let suitableForRank = rtvoting && !isRanked;
+	let suitableForRank = rtvoting && !isRanked ? true : undefined;
 	let stars;
 
 	let mapperAllowed = qualification?.mapperAllowed;
@@ -70,7 +70,7 @@
 	}
 
 	function updateStars(currentStars) {
-		stars = currentStars;
+		stars = currentStars ?? 7.5;
 	}
 
 	let dialogTitle;
