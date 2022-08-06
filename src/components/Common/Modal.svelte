@@ -131,6 +131,7 @@
             min-height: 12em;
             border-bottom-left-radius: 0;
             border-bottom-right-radius: 0;
+            overflow: scroll;
         }
     }
 </style>

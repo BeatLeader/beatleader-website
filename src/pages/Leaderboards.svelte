@@ -451,6 +451,7 @@ import Button from "../components/Common/Button.svelte";
 
     :global(.playlist-button) {
       height: 1.6em;
+      width: 11em;
     }
 
     @media screen and (max-width: 1275px) {
