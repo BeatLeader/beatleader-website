@@ -48,6 +48,7 @@
   import ContentBox from '../components/Common/ContentBox.svelte';
   import QualificationApproval from '../components/Leaderboard/QualificationApproval.svelte';
   import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
+  import RankedApproval from '../components/Leaderboard/RankedApproval.svelte';
 
   export let leaderboardId;
   export let type = 'global';
@@ -393,7 +394,8 @@
   $: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL')
   $: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked'
   
-  $: qualification = leaderboard && leaderboard.qualification
+  $: isQualified = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Qualified'
+  $: qualification = isQualified && leaderboard.qualification
 
   $: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
@@ -419,18 +421,46 @@
 </svelte:head>
 
 {#if mapVoting}
-  <RankingVoting insideLeaderboard={!separatePage} {votingStore} {rtvoting} {qualificationUpdate} {qualification} {isRanked} currentStars={leaderboard?.stats?.stars} currentType={leaderboard?.stats?.type} {hash} diff={diffInfo?.diff} mode={diffInfo?.type} on:finished={() => { mapVoting = false; rtvoting = false; qualificationUpdate = false; }} />
+  <RankingVoting 
+      insideLeaderboard={!separatePage}
+      playerId={$account.id}  
+      {votingStore} 
+      {rtvoting} 
+      {qualificationUpdate} 
+      {qualification} 
+      {isRanked} 
+      currentStars={leaderboard?.stats?.stars} 
+      currentType={leaderboard?.stats?.type} 
+      {hash} 
+      diff={diffInfo?.diff} 
+      mode={diffInfo?.type} 
+      on:finished={() => { mapVoting = false; rtvoting = false; qualificationUpdate = false; }} />
 {/if}
 
 <section class="align-content">
   <article bind:this={boxEl} class="page-content" transition:fade>
-    {#if separatePage && qualification && !qualification.mapperAllowed && isRT} 
+    {#if !showApproveRequest && separatePage && qualification && !qualification.mapperAllowed && isRT} 
       <a href={window.location.href.replace("leaderboard", "leaderboard/approval")}>Link for the mapper approval</a>
     {/if}
-    {#if showApproveRequest && leaderboard && qualification}
+
+    {#if (showApproveRequest || (qualification?.mapperAllowed == false && $account?.player?.playerInfo.mapperId == song?.mapperId) ) 
+      && leaderboard && qualification}
       <ContentBox>
         <div class="qualification-container">
           <QualificationApproval {leaderboard} {account} />
+        </div>
+      </ContentBox>
+    {/if}
+
+    {#if isRT && qualification && qualification.criteriaMet == 1 && qualification.mapperAllowed && qualification.approved}
+      <ContentBox>
+        <div class="qualification-container">  
+          <RankedApproval 
+            {hash} 
+            {leaderboard}
+            {votingStore}
+            diff={diffInfo?.diff} 
+            mode={diffInfo?.type} />
         </div>
       </ContentBox>
     {/if}
@@ -511,7 +541,7 @@
             {:else if votingStatus == 3}
             <Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true}/>
             {/if}
-            {#if separatePage && (isRT || (verifiedMapperId == leaderboard?.song.mapperId && !isRanked)) && qualification == null}
+            {#if separatePage && (isRT || (verifiedMapperId == leaderboard?.song.mapperId && !isRanked)) && !qualification}
               {#if !isRT && qualificationLimitError}
               <Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true}/>
               {:else}
@@ -521,7 +551,7 @@
                       noMargin={true} on:click={() => { mapVoting = !mapVoting; rtvoting = true; }}/>
               {/if}
             {/if}
-            {#if separatePage && isRT && qualification != null}
+            {#if separatePage && isRT && qualification}
             <Button cls="voteButton"                                 
                     iconFa="fas fa-list-check"
                     title="Update qualification details" 
@@ -732,30 +762,34 @@
                  on:page-changed={onPageChanged}
           />
 
-          <div class="score-options-section">
-            <span class="beat-savior-reveal clickable" class:opened={showAverageStats}
-                  on:click={() => showAverageStats = !showAverageStats} title="Show average difficulty stats">
-              {#if showAverageStats}
-                Hide average map statistic
-              {:else}
-                Show average map statistic
+          {#if separatePage}
+            <div class="score-options-section">
+              <span class="beat-savior-reveal clickable" class:opened={showAverageStats}
+                    on:click={() => showAverageStats = !showAverageStats} title="Show average difficulty stats">
+                {#if showAverageStats}
+                  Hide map statistic
+                {:else}
+                  Show map statistic
+                {/if}
+                
+                <i class="fas fa-chevron-down"></i>
+              </span>
+            </div>
+            {#if showAverageStats}
+              {#await beatSaviorPromise}
+                <div class="tab">
+                  <Spinner />
+                </div>
+              {:then beatSavior}
+                <div transition:slide class="tab">
+                  <BeatSaviorDetails {beatSavior} />
+                  <small class="level-author">{song.hash}</small>
+                </div>
+              {/await}
+              {#if leaderboard && leaderboard.qualification}
+                <QualificationStatus qualification={leaderboard.qualification} />
               {/if}
-              
-              <i class="fas fa-chevron-down"></i>
-            </span>
-          </div>
-          {#if showAverageStats}
-          {#await beatSaviorPromise}
-            <div class="tab">
-              <Spinner />
-            </div>
-          {:then beatSavior}
-            <div transition:slide class="tab">
-              <BeatSaviorDetails {beatSavior} />
-              <small class="level-author">{song.hash}</small>
-            </div>
-          {/await}
-          
+            {/if}
           {/if}
         {:else}
           <p transition:fade>No scores found.</p>
@@ -801,8 +835,10 @@
 
     .diff-switch {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         margin-bottom: 1em;
+        gap: 0.6em;
     }
 
     .diff-switch :global(> *:not(:last-child)) {
@@ -1108,9 +1144,6 @@
     }
 
     @media screen and (max-width: 767px) {
-        .diff-switch {
-            flex-direction: column;
-        }
 
         .diff-switch :global(> *:not(:last-child)) {
             margin-right: 0;

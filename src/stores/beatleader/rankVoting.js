@@ -98,9 +98,13 @@ export default () => {
     const updateMap = async (hash, diff, mode, rankability, stars, types) => {
         if (!hash || !diff || !mode) return;
         let type = 0;
-        types.forEach(typeName => {
-            type += typesMap[typeName];
-        });
+        if (Array.isArray(types)) {
+            types.forEach(typeName => {
+                type += typesMap[typeName];
+            });
+        } else if (Number.isInteger(types)) {
+            type = types;
+        }
 
         votingStatuses.loading = true;
         set(votingStatuses);

@@ -16,6 +16,7 @@
 	export let mode;
     export let currentStars;
 	export let currentType;
+	export let playerId;
 
 	export let isRanked;
 	export let rtvoting;
@@ -89,13 +90,19 @@
 	}
 
 	let actionButtonTitle;
-	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet) {
+	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId) {
 		if (rtvoting) {
 			if (isRanked) {
 				actionButtonTitle = "Update";
 			} else if (qualificationUpdate) {
 				if (criteriaMet != 2) {
-					actionButtonTitle = "Update qualification";
+					if (qualification.mapperAllowed 
+					&& qualification.rtMember != playerId 
+					&& qualification.criteriaChecker != playerId) {
+						actionButtonTitle = "Approve qualification!";
+					} else {
+						actionButtonTitle = "Update qualification";
+					}
 				} else {
 					actionButtonTitle = "Disqualify";
 				}
@@ -109,7 +116,7 @@
 
 	$: updateStars(currentStars);
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate);
-	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet);
+	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId);
 
 </script>
 

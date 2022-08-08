@@ -192,10 +192,10 @@ export function mapTypeFromMask(type) {
   Object.keys(typesMap).forEach(key => {
     const mask = typesMap[key];
     if ((type & mask) === mask) {
-      result += key + ", ";
+      result += key + ",";
     }
   })
-  return result.length ? result.substring(0, result.length - 2) : null;
+  return result.length ? result.substring(0, result.length - 1) : null;
 }
 
 export function votingsForTypeStats(stats) {

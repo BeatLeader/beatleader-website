@@ -8,7 +8,7 @@
     export let leaderboard;
     export let account;
 
-    let approved = leaderboard?.qualification?.mapperApproved;
+    let approved = leaderboard?.qualification?.mapperAllowed;
     let error;
     let showDetails;
 
