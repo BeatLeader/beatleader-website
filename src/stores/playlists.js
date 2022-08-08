@@ -143,9 +143,7 @@ export default () => {
     await set(playlists, true);
   };
 
-  const download = async (index) => {
-    let playlists = await get();
-    let playlist = playlists[index];
+  const download = async (playlist) => {
 
     saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + ".bplist");
   };

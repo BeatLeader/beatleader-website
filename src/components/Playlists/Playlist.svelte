@@ -127,7 +127,7 @@
                 {/if}
                 {/if}
                 <Button iconFa="fas fa-download" title="Download playlist" noMargin={true} type="primary"
-                    on:click={store.download(idx)}/>
+                    on:click={store.download(playlist)}/>
             </div>
 
         </div>
