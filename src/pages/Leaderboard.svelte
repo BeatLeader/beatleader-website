@@ -6,6 +6,7 @@
   import createLeaderboardStore from '../stores/http/http-leaderboard-store'
   import createModifiersStore from '../stores/beatleader/modifiers'
   import createVotingStore from '../stores/beatleader/rankVoting'
+  import createStarGeneratorStore from '../stores/beatleader/star-generator'
   import createBeatSaverService from '../services/beatmaps'
   import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic'
   import {opt, capitalize} from '../utils/js'
@@ -78,6 +79,7 @@
 
   const account = createAccountStore();
   const votingStore = createVotingStore();
+  const starGeneratorStore = createStarGeneratorStore();
 
   const params = [
     {key: 'countries', default: '', process: processStringFilter},
@@ -415,6 +417,10 @@
   $: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
   $: isRT = $account.player && $account.player.playerInfo.role && ($account.player.playerInfo.role.includes("admin") || $account.player.playerInfo.role.includes("rankedteam"));
+  
+  $: generatedStars = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type]
+  $: isRT && !generatedStars && starGeneratorStore.fetchStars(hash, diffInfo?.diff, diffInfo?.type);
+  
   $: playerHasFriends = !!$account?.friends?.length
   $: updateTypeOptions(mainPlayerCountry, playerHasFriends);
   $: updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
@@ -515,6 +521,16 @@
                 {#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
                 {#if leaderboard.stats && leaderboard.stats.stars}
                   <Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★"/>
+                {/if}
+                {#if isRT}
+                  {#if generatedStars}
+                  <span style="color: white;">
+                    EX MACHINA
+                    <Value value={generatedStars} digits={2} zero="" suffix="★"/>
+                  </span>
+                  {:else}
+                    <Spinner/>
+                  {/if}
                 {/if}
                 {#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo}
                                                                          reverseColors={true}/></span>{/if}

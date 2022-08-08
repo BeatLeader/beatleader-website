@@ -31,6 +31,7 @@
 	let criteriaMet = qualification?.criteriaMet;
 	let criteriaCommentary = qualification?.criteriaCommentary;
 
+	let originalTypes = currentType ? mapTypeFromMask(currentType).split(",") : [];
 	let selectedTypes = currentType ? mapTypeFromMask(currentType).split(",") : [];
 	const allMapTypes = votingTypes;
 	let mapTypes = votingTypes;
@@ -91,7 +92,7 @@
 
 	let actionButtonTitle;
 	let actionButtonType;
-	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId) {
+	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes) {
 		actionButtonType = "primary";
 		if (rtvoting) {
 			if (isRanked) {
@@ -101,7 +102,9 @@
 					if (qualification.mapperAllowed 
 					&& qualification.rtMember != playerId 
 					&& qualification.criteriaChecker != playerId
-					&& qualification.criteriaMet == 1) {
+					&& qualification.criteriaMet == 1
+					&& currentStars == stars
+					&& originalTypes.length === selectedTypes.length && originalTypes.every(function(value, index) { return value === selectedTypes[index]})) {
 						actionButtonTitle = "Approve qualification!";
 						actionButtonType = "purple";
 					} else {
@@ -120,7 +123,7 @@
 
 	$: updateStars(currentStars);
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate);
-	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId);
+	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes);
 
 </script>
 
