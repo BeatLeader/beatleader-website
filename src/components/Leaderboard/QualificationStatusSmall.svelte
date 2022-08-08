@@ -6,11 +6,13 @@
 
 {#if qualification}
     <div class="qualification-description">
-        <div class="timeset">
-        <span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-            Qualified {formatDateRelative(dateFromUnix(qualification.timeset))}
-        </span>
-        </div>
+        {#if !qualification.approved}
+            <div class="timeset">
+            <span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+                Qualified {formatDateRelative(dateFromUnix(qualification.timeset))}
+            </span>
+            </div>
+        {/if}
 
         {#if qualification.mapperAllowed}
             <span style="color: green;"><i class="fa fa-check"></i> Mapper</span>
@@ -26,10 +28,18 @@
             <span style="color: gray;"><i class="fa fa-xmark"></i> Criteria</span>
         {/if}
 
-        {#if qualification.RTVotes < 0}
-            <span style="color: red;"><i class="fa fa-xmark"></i> RT</span>
-        {:else if qualification.RTVotes == 1}
+        {#if qualification.approvers}
+            {#if qualification.approved}
             <span style="color: green;"><i class="fa fa-check"></i> RT</span>
+
+            <div class="timeset">
+                <span>
+                    Ready to rank {formatDateRelative(dateFromUnix(qualification.approvalTimeset + 60 * 60 * 24 * 7))}
+                </span>
+            </div>
+            {:else}
+            <span style="color: red;"><i class="fa fa-xmark"></i> RT</span>
+            {/if}
         {:else}
             <span style="color: gray;"><i class="fa fa-xmark"></i> RT</span>
         {/if}

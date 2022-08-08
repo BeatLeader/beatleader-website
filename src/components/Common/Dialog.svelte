@@ -10,6 +10,7 @@
   export let closeable = true;
   export let type = 'alert';
   export let okButton = "Ok";
+  export let okButtonType = "primary";
   export let okButtonDisabled = false;
   export let cancelButton = "Cancel";
 </script>
@@ -34,9 +35,9 @@
 
       <span class="right"><slot name="footer-right">
         {#if type === 'alert'}
-          <Button label={okButton} type="primary" disabled={okButtonDisabled} on:click={() => dispatch('confirm')}/>
+          <Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')}/>
         {:else if type === 'confirm'}
-          <Button label={okButton} type="primary" disabled={okButtonDisabled} on:click={() => dispatch('confirm')}/>
+          <Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')}/>
           <Button label={cancelButton} type="default" on:click={() => dispatch('cancel')}/>
         {/if}
       </slot></span>

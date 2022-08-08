@@ -375,6 +375,20 @@
     }
   }
 
+  let isRankable;
+  function calculateIsRankable(isRT, qualification) {
+    if (isRT 
+      && qualification 
+      && qualification.criteriaMet == 1 
+      && qualification.mapperAllowed 
+      && qualification.approved) {
+        const currentSeconds = new Date().getTime() / 1000;
+        isRankable = (currentSeconds - qualification.approvalTime) < 60 * 60 * 24 * 7;
+      } else {
+        isRankable = false;
+      }
+  }
+
   let showAverageStats = false;
 
   $: isLoading = leaderboardStore.isLoading;
@@ -396,6 +410,7 @@
   
   $: isQualified = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Qualified'
   $: qualification = isQualified && leaderboard.qualification
+  $: calculateIsRankable(isRT, qualification)
 
   $: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
   $: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null
@@ -452,7 +467,7 @@
       </ContentBox>
     {/if}
 
-    {#if isRT && qualification && qualification.criteriaMet == 1 && qualification.mapperAllowed && qualification.approved}
+    {#if isRankable}
       <ContentBox>
         <div class="qualification-container">  
           <RankedApproval 

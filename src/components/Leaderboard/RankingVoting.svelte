@@ -90,7 +90,9 @@
 	}
 
 	let actionButtonTitle;
+	let actionButtonType;
 	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId) {
+		actionButtonType = "primary";
 		if (rtvoting) {
 			if (isRanked) {
 				actionButtonTitle = "Update";
@@ -98,8 +100,10 @@
 				if (criteriaMet != 2) {
 					if (qualification.mapperAllowed 
 					&& qualification.rtMember != playerId 
-					&& qualification.criteriaChecker != playerId) {
+					&& qualification.criteriaChecker != playerId
+					&& qualification.criteriaMet == 1) {
 						actionButtonTitle = "Approve qualification!";
+						actionButtonType = "purple";
 					} else {
 						actionButtonTitle = "Update qualification";
 					}
@@ -125,6 +129,7 @@
 		type="confirm"
 		title={dialogTitle}
 		okButton={actionButtonTitle}
+		okButtonType={actionButtonType}
 		cancelButton="Cancel"
         okButtonDisabled={suitableForRank == undefined}
 		on:confirm={() => vote()}

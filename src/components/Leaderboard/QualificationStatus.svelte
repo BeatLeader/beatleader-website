@@ -105,6 +105,14 @@
             <span style="color: gray;"><i class="fa fa-xmark"></i> Not voted by RT yet</span>
         {/if}
     </div>
+
+    {#if qualification.approved}
+    <div class="timeset">
+        <span style="color: white;">
+            Ready to rank {formatDateRelative(dateFromUnix(qualification.approvalTimeset + 60 * 60 * 24 * 7))}
+        </span>
+    </div>
+    {/if}
 {/if}
   
 <style>

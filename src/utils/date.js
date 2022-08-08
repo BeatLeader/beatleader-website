@@ -111,18 +111,19 @@ export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto', l
     });
 
     const diffInSecs = (Date.now() - dateFromString(val)) / 1000;
+    const absDiff = Math.abs(diffInSecs);
 
     switch(unit) {
         case 'auto':
-            if (diffInSecs < 60)
+            if (absDiff < 60)
                 return rtf.format(-roundFunc(diffInSecs), 'second');
-            else if (diffInSecs < 60 * 60)
+            else if (absDiff < 60 * 60)
                 return rtf.format(-roundFunc(diffInSecs / 60), 'minute');
-            else if (diffInSecs < 60 * 60 * 24)
+            else if (absDiff < 60 * 60 * 24)
                 return rtf.format(-roundFunc(diffInSecs / (60 * 60)), 'hour');
-            else if (diffInSecs < 60 * 60 * 24 * 30)
+            else if (absDiff < 60 * 60 * 24 * 30)
                 return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24)), 'day');
-            else if (diffInSecs < 60 * 60 * 24 * 365)
+            else if (absDiff < 60 * 60 * 24 * 365)
                 return rtf.format(
                   -roundFunc(diffInSecs / (60 * 60 * 24 * 30)),
                   'month'

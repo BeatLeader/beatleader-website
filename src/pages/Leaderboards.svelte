@@ -256,7 +256,7 @@ import Button from "../components/Common/Button.svelte";
                 {/if}
               </div>
 
-              {#if map?.qualification}
+              {#if map?.difficulty?.qualified}
                 <QualificationStatusSmall qualification={map.qualification} />
               {/if}
 
