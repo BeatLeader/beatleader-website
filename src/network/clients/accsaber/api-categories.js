@@ -12,7 +12,7 @@ const process = response => {
   }));
 }
 
-const get = async ({priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.ACCSABER.categories(priority, queueOptions);
+const get = async ({ priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => queue.ACCSABER.categories(priority, queueOptions);
 
 const client = createClient(get, process);
 

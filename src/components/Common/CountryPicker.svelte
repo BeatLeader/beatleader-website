@@ -1,26 +1,33 @@
 <script>
 	import Select from 'svelte-select';
 	import Item from './CountryPickerItem.svelte';
-	import CountryPickerMultiItem from './CountryPickerMultiItem.svelte'
+	import CountryPickerMultiItem from './CountryPickerMultiItem.svelte';
 
 	export let value;
-	export let items
+	export let items;
 
-	const itemFilter = (label, filterText) => label.toLowerCase().includes(filterText.toLowerCase())
+	const itemFilter = (label, filterText) => label.toLowerCase().includes(filterText.toLowerCase());
 </script>
 
-<Select {value} {items} {itemFilter} {Item} MultiSelection={CountryPickerMultiItem}
-				placeholder="Click to select country" isSearchable={true} isMulti={true}
-				placeholderAlwaysShow={true}
-				on:select on:clear
-/>
+<Select
+	{value}
+	{items}
+	{itemFilter}
+	{Item}
+	MultiSelection={CountryPickerMultiItem}
+	placeholder="Click to select country"
+	isSearchable={true}
+	isMulti={true}
+	placeholderAlwaysShow={true}
+	on:select
+	on:clear />
 
 <style>
-    :global(.selectContainer) {
-				width: 100%;
-    }
+	:global(.selectContainer) {
+		width: 100%;
+	}
 
-		:global(.listItem) {
-				cursor: pointer;
-		}
+	:global(.listItem) {
+		cursor: pointer;
+	}
 </style>

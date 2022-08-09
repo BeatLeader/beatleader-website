@@ -1,4 +1,4 @@
-import {getCurrentLocale} from '../stores/config'
+import { getCurrentLocale } from '../stores/config'
 
 export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery = false, process = v => v) => {
   let replaced = Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), process(vars[key] ?? '')), url);
@@ -6,15 +6,15 @@ export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery =
   if (clearUnused) replaced = replaced.replace(new RegExp('\\${.*?}', 'gi'), '');
 
   if (clearEmptyQuery && replaced.length) {
-			if (replaced[0] === '/') replaced = window.location.protocol + "//" + window.location.host + replaced
+    if (replaced[0] === '/') replaced = window.location.protocol + "//" + window.location.host + replaced
 
-      const urlObj = new URL(replaced);
-      [...urlObj.searchParams.entries()]
-        .forEach(([k, v]) => {
-          if (!v?.toString()?.length) urlObj.searchParams.delete(k);
-        });
+    const urlObj = new URL(replaced);
+    [...urlObj.searchParams.entries()]
+      .forEach(([k, v]) => {
+        if (!v?.toString()?.length) urlObj.searchParams.delete(k);
+      });
 
-      replaced = urlObj.toString();
+    replaced = urlObj.toString();
   }
 
   return replaced;

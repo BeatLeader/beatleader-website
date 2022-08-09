@@ -1,6 +1,6 @@
-import {SsrError} from '../others/errors'
-import {delay} from '../utils/promise'
-import {parseRateLimitHeaders} from './utils'
+import { SsrError } from '../others/errors'
+import { delay } from '../utils/promise'
+import { parseRateLimitHeaders } from './utils'
 
 export class SsrNetworkError extends SsrError {
   constructor(message) {
@@ -34,7 +34,7 @@ export class SsrHttpResponseError extends SsrNetworkError {
     this.name = 'SsrHttpResponseError';
     this.response = response;
 
-    const {remaining, limit, resetAt} = parseRateLimitHeaders(response);
+    const { remaining, limit, resetAt } = parseRateLimitHeaders(response);
 
     this.remaining = remaining;
     this.limit = limit;

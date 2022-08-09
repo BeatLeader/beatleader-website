@@ -1,7 +1,7 @@
 export const processLeaderboardScore = s => {
 	if (!s) return null;
 
-	let {unmodififiedScore: unmodifiedScore, mods, ...score} = s.score;
+	let { unmodififiedScore: unmodifiedScore, mods, ...score } = s.score;
 
 	if (mods && typeof mods === 'string') mods = mods.split(',').map(m => m.trim().toUpperCase()).filter(m => m.length);
 	else if (!mods) mods = null;
@@ -11,7 +11,7 @@ export const processLeaderboardScore = s => {
 
 	return {
 		...s,
-		score: {...score, unmodifiedScore: unmodifiedScore || null, mods, ppWeighted},
+		score: { ...score, unmodifiedScore: unmodifiedScore || null, mods, ppWeighted },
 	};
 }
 

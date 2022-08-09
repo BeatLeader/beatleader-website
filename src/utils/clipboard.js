@@ -23,14 +23,14 @@ function fallbackCopyTextToClipboard(text) {
 }
 
 export function copyToClipboard(text) {
-    navigator.permissions.query({name: 'clipboard-write'})
+    navigator.permissions.query({ name: 'clipboard-write' })
         .then(result => {
             if (result.state === 'granted' || result.state === 'prompt') {
-                navigator.clipboard.writeText(text).then(() => {});
+                navigator.clipboard.writeText(text).then(() => { });
             } else {
                 fallbackCopyTextToClipboard(text);
             }
         })
         .catch(() => fallbackCopyTextToClipboard(text))
-    ;
+        ;
 }

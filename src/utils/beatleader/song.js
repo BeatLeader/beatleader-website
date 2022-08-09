@@ -1,4 +1,4 @@
-import {capitalize} from '../js'
+import { capitalize } from '../js'
 import createBeatMapsService from '../../services/beatmaps'
 
 export const getMaxScore = (blocks, maxScorePerBlock = 115) =>
@@ -76,8 +76,8 @@ export async function getSongDiffInfo(hash, diffAndType, leaderboardId = null, c
   const bpm = songInfo?.metadata?.bpm ?? null;
 
   return Object.assign(
-      {bpm, maxScore: await getSongMaxScore(hash, diffAndType, leaderboardId, true)},
-      songInfo,
-      diffInfo
+    { bpm, maxScore: await getSongMaxScore(hash, diffAndType, leaderboardId, true) },
+    songInfo,
+    diffInfo
   );
 }

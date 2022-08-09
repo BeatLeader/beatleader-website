@@ -1,6 +1,6 @@
-import {openDB} from 'idb'
+import { openDB } from 'idb'
 import log from '../utils/logger'
-import {isDateObject} from '../utils/js'
+import { isDateObject } from '../utils/js'
 import eventBus from '../utils/broadcast-channel-pubsub'
 
 const SSR_DB_VERSION = 12;
@@ -41,46 +41,46 @@ async function openDatabase() {
               keyPath: 'beatSaviorId',
               autoIncrement: false,
             });
-            beatSavior.createIndex('beat-savior-playerId', 'playerId', {unique: false});
-            beatSavior.createIndex('beat-savior-songId', 'songId', {unique: false});
-            beatSavior.createIndex('beat-savior-fileId', 'fileId', {unique: false});
+            beatSavior.createIndex('beat-savior-playerId', 'playerId', { unique: false });
+            beatSavior.createIndex('beat-savior-songId', 'songId', { unique: false });
+            beatSavior.createIndex('beat-savior-fileId', 'fileId', { unique: false });
 
-            // NO break here!
+          // NO break here!
 
-          case newVersion >=2 && oldVersion <= 1:
+          case newVersion >= 2 && oldVersion <= 1:
             db.createObjectStore('beat-savior-players', {
               keyPath: 'playerId',
               autoIncrement: false,
             });
 
-            // NO break here!
+          // NO break here!
 
-          case newVersion >= 5 && oldVersion <=4:
+          case newVersion >= 5 && oldVersion <= 4:
             const songsBeatMapsStore = db.createObjectStore('songs-beatmaps', {
               keyPath: 'hash',
               autoIncrement: false,
             });
-            songsBeatMapsStore.createIndex('songs-beatmaps--key', 'key', {unique: true});
+            songsBeatMapsStore.createIndex('songs-beatmaps--key', 'key', { unique: true });
 
           // NO break here
 
-          case newVersion >= 6 && oldVersion <=5:
+          case newVersion >= 6 && oldVersion <= 5:
             const songsBeatMapsStorev6 = transaction.objectStore('songs-beatmaps');
             songsBeatMapsStorev6.deleteIndex('songs-beatmaps--key');
-            songsBeatMapsStorev6.createIndex('songs-beatmaps-key', 'key', {unique: true});
+            songsBeatMapsStorev6.createIndex('songs-beatmaps-key', 'key', { unique: true });
 
           // NO break here
 
           case newVersion >= 8 && oldVersion <= 7:
             const beatSaviorStorev8 = transaction.objectStore('beat-savior');
-            beatSaviorStorev8.createIndex('beat-savior-hash', 'hash', {unique: false});
+            beatSaviorStorev8.createIndex('beat-savior-hash', 'hash', { unique: false });
 
           // NO break here
 
           case newVersion >= 10 && oldVersion <= 9:
             const songsBeatMapsStoreV10 = transaction.objectStore('songs-beatmaps');
             songsBeatMapsStoreV10.deleteIndex('songs-beatmaps-key');
-            songsBeatMapsStoreV10.createIndex('songs-beatmaps-key', 'key', {unique: false});
+            songsBeatMapsStoreV10.createIndex('songs-beatmaps-key', 'key', { unique: false });
 
           // NO break here
 
@@ -94,8 +94,8 @@ async function openDatabase() {
               keyPath: 'id',
               autoIncrement: false,
             });
-            accSaberPlayersStore.createIndex('accsaber-players-playerId', 'playerId', {unique: false});
-            accSaberPlayersStore.createIndex('accsaber-players-category', 'category', {unique: false});
+            accSaberPlayersStore.createIndex('accsaber-players-playerId', 'playerId', { unique: false });
+            accSaberPlayersStore.createIndex('accsaber-players-category', 'category', { unique: false });
 
           // NO break here
 
@@ -104,7 +104,7 @@ async function openDatabase() {
               keyPath: 'playerIdTimestamp',
               autoIncrement: false,
             });
-            accSaberPlayersHistoryStore.createIndex('accsaber-players-history-playerId', 'playerId', {unique: false});
+            accSaberPlayersHistoryStore.createIndex('accsaber-players-history-playerId', 'playerId', { unique: false });
 
           // NO break here
         }
@@ -130,7 +130,7 @@ async function openDatabase() {
 
     // Closure code should awaits DB operations ONLY or fail
     // https://github.com/jakearchibald/idb#user-content-transaction-lifetime
-    db.runInTransaction = async (objectStores, closure, mode = 'readwrite', options = {durability: 'strict'}) => {
+    db.runInTransaction = async (objectStores, closure, mode = 'readwrite', options = { durability: 'strict' }) => {
       try {
         const tx = db.transaction(objectStores, mode, options);
 
@@ -146,7 +146,7 @@ async function openDatabase() {
 
     return db;
   }
-  catch(e) {
+  catch (e) {
     log.error('Can not open DB.');
 
     throw e;

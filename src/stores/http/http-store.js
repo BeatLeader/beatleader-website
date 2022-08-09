@@ -1,7 +1,7 @@
-import {writable} from 'svelte/store'
+import { writable } from 'svelte/store'
 import stringify from 'json-stable-stringify';
-import {SsrNetworkTimeoutError} from '../../network/errors'
-import {deepClone} from '../../utils/js'
+import { SsrNetworkTimeoutError } from '../../network/errors'
+import { deepClone } from '../../utils/js'
 
 const hash = obj => stringify(obj);
 
@@ -19,7 +19,7 @@ export default (
   } = {},
   initialStateType = 'initial'
 ) => {
-  const getFinalParams = fetchParams => ({...defaultFetchParams, ...fetchParams});
+  const getFinalParams = fetchParams => ({ ...defaultFetchParams, ...fetchParams });
 
   let stateType = initialStateType;
   let state = initialState;
@@ -30,12 +30,12 @@ export default (
 
   const setProvider = provider => currentProvider = provider;
 
-  const {subscribe: subscribeState, set} = writable(state);
-  if (onInitialized) onInitialized({state, stateType, fetchParams, defaultFetchParams, set});
+  const { subscribe: subscribeState, set } = writable(state);
+  if (onInitialized) onInitialized({ state, stateType, fetchParams, defaultFetchParams, set });
 
-  const {subscribe: subscribeIsLoading, set: setIsLoading} = writable(false);
-  const {subscribe: subscribePending, set: setPending} = writable(null);
-  const {subscribe: subscribeError, set: setError} = writable(null);
+  const { subscribe: subscribeIsLoading, set: setIsLoading } = writable(false);
+  const { subscribe: subscribePending, set: setPending } = writable(null);
+  const { subscribe: subscribeError, set: setError } = writable(null);
 
   let pendingAbortController;
 
@@ -64,19 +64,19 @@ export default (
 
       setError(null);
       setIsLoading(true);
-      setPending(onSetPending ? onSetPending({fetchParams, abortController}) : fetchParams);
+      setPending(onSetPending ? onSetPending({ fetchParams, abortController }) : fetchParams);
 
       pendingAbortController = abortController;
 
       stateType = 'live';
-      state = await provider.getProcessed({...finalParams, signal: abortController.signal, force});
+      state = await provider.getProcessed({ ...finalParams, signal: abortController.signal, force });
 
       currentParams = fetchParams;
       currentParamsHash = hash(finalParams);
 
       set(onBeforeStateChange ? onBeforeStateChange(state, stateType) : state)
 
-      if (onAfterStateChange) onAfterStateChange({state, stateType, fetchParams: currentParams, defaultFetchParams, set});
+      if (onAfterStateChange) onAfterStateChange({ state, stateType, fetchParams: currentParams, defaultFetchParams, set });
 
       return true;
     } catch (err) {
@@ -123,9 +123,9 @@ export default (
     getProvider: () => currentProvider,
     getParams: () => currentParams,
     setProvider,
-    isLoading: {subscribe: subscribeIsLoading},
-    pending: {subscribe: subscribePending},
-    error: {subscribe: subscribeError},
+    isLoading: { subscribe: subscribeIsLoading },
+    pending: { subscribe: subscribePending },
+    error: { subscribe: subscribeError },
   }
 }
 

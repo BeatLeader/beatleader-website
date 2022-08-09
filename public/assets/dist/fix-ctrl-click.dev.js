@@ -21,7 +21,7 @@
     window.history.pushState = function () {
       var _window$history;
 
-      if (ctrlPressState) openInBackground(arguments.length <= 2 ? undefined : arguments[2]);else (_window$history = window.history).replaceState.apply(_window$history, arguments);
+      if (ctrlPressState) openInBackground(arguments.length <= 2 ? undefined : arguments[2]); else (_window$history = window.history).replaceState.apply(_window$history, arguments);
     };
   });
 }();

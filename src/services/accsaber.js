@@ -1,4 +1,4 @@
-import {db} from '../db/db'
+import { db } from '../db/db'
 import queues from '../network/queues/queues';
 import accSaberCategoriesApiClient from '../network/clients/accsaber/api-categories';
 import accSaberRankingApiClient from '../network/clients/accsaber/api-ranking';
@@ -9,7 +9,7 @@ import accSaberPlayersRepository from '../db/repository/accsaber-players'
 import accSaberPlayersHistoryRepository from '../db/repository/accsaber-players-history';
 import keyValueRepository from '../db/repository/key-value'
 import createPlayerService from './beatleader/player';
-import {capitalize, convertArrayToObjectByKey} from '../utils/js'
+import { capitalize, convertArrayToObjectByKey } from '../utils/js'
 import log from '../utils/logger'
 import {
   addToDate,
@@ -19,11 +19,11 @@ import {
   MINUTE,
   dateFromString, truncateDate,
 } from '../utils/date'
-import {PRIORITY} from '../network/queues/http-queue'
+import { PRIORITY } from '../network/queues/http-queue'
 import makePendingPromisePool from '../utils/pending-promises'
-import {getServicePlayerGain, serviceFilterFunc} from './utils'
-import {PLAYER_SCORES_PER_PAGE} from '../utils/accsaber/consts'
-import {roundToPrecision} from '../utils/format'
+import { getServicePlayerGain, serviceFilterFunc } from './utils'
+import { PLAYER_SCORES_PER_PAGE } from '../utils/accsaber/consts'
+import { roundToPrecision } from '../utils/format'
 
 const REFRESH_INTERVAL = HOUR;
 const SCORES_NETWORK_TTL = MINUTE * 5;
@@ -47,7 +47,7 @@ export default () => {
 
       return idx >= 0 ? idx : 100000;
     }
-    return categories.sort((a,b) => getIdx(a) - getIdx(b));
+    return categories.sort((a, b) => getIdx(a) - getIdx(b));
   }
 
   const getPlayer = async playerId => resolvePromiseOrWaitForPending(`accSaberPlayer/${playerId}`, () => accSaberPlayersRepository().getAllFromIndex('accsaber-players-playerId', playerId));
@@ -75,13 +75,13 @@ export default () => {
     return true;
   }
 
-  const fetchScoresPage = async (playerId, page = 1, priority = PRIORITY.FG_LOW, {...options} = {}) => {
+  const fetchScoresPage = async (playerId, page = 1, priority = PRIORITY.FG_LOW, { ...options } = {}) => {
     if (!options) options = {};
     if (!options.hasOwnProperty('cacheTtl')) options.cacheTtl = SCORES_NETWORK_TTL;
 
     const categoriesByDisplayName = convertArrayToObjectByKey(await getCategories(), 'displayName');
 
-    return (await resolvePromiseOrWaitForPending(`fetchPlayerScores/${playerId}/${page}`, () => accSaberScoresApiClient.getProcessed({...options, playerId, page, priority})))
+    return (await resolvePromiseOrWaitForPending(`fetchPlayerScores/${playerId}/${page}`, () => accSaberScoresApiClient.getProcessed({ ...options, playerId, page, priority })))
       .map(s => ({
         ...s,
         leaderboard: {
@@ -91,7 +91,7 @@ export default () => {
       }))
   }
 
-  const getScoresHistogramDefinition = (serviceParams = {type: 'overall', sort: 'ap', order: 'desc'}) => {
+  const getScoresHistogramDefinition = (serviceParams = { type: 'overall', sort: 'ap', order: 'desc' }) => {
     const scoreType = serviceParams?.type ?? 'overall';
     const sort = serviceParams?.sort ?? 'ap';
     const order = serviceParams?.order ?? 'desc';
@@ -116,7 +116,7 @@ export default () => {
     let suffix = '';
     let suffixLong = '';
 
-    switch(sort) {
+    switch (sort) {
       case 'ap':
         valFunc = s => s?.ap;
         type = 'linear';
@@ -190,11 +190,11 @@ export default () => {
     }
   }
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}) => {
+  const getPlayerScoresPage = async (playerId, serviceParams = { sort: 'date', order: 'desc', page: 1 }) => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
-    const NO_SCORES = {metadata: {total: 0}, data: []};
+    const NO_SCORES = { metadata: { total: 0 }, data: [] };
 
     let playerScores;
     try {
@@ -206,7 +206,7 @@ export default () => {
 
     if (!playerScores?.length) return NO_SCORES;
 
-    const {sort: sortFunc, filter: filterFunc} = getScoresHistogramDefinition(serviceParams);
+    const { sort: sortFunc, filter: filterFunc } = getScoresHistogramDefinition(serviceParams);
 
     playerScores = playerScores.filter(filterFunc).sort(sortFunc)
 
@@ -224,11 +224,11 @@ export default () => {
     }
   }
 
-  const fetchPlayerRankHistory = async (playerId, priority = PRIORITY.FG_LOW, {...options} = {}) => {
+  const fetchPlayerRankHistory = async (playerId, priority = PRIORITY.FG_LOW, { ...options } = {}) => {
     if (!options) options = {};
     if (!options.hasOwnProperty('cacheTtl')) options.cacheTtl = SCORES_NETWORK_TTL;
 
-    return accSaberPlayerRankHistoryApiClient.getProcessed({...options, playerId, priority});
+    return accSaberPlayerRankHistoryApiClient.getProcessed({ ...options, playerId, priority });
   }
 
   const refreshCategories = async (forceUpdate = false, priority = queues.PRIORITY.BG_NORMAL, throwErrors = false) => {
@@ -241,11 +241,11 @@ export default () => {
 
       log.trace(`DB categories fetched`, 'AccSaberService', dbCategories);
 
-      if (!await shouldRefresh('categories', forceUpdate)) return {changed: [], all: dbCategories};
+      if (!await shouldRefresh('categories', forceUpdate)) return { changed: [], all: dbCategories };
 
       log.trace(`Fetching current categories from AccSaber...`, 'AccSaberService');
 
-      let categories = await accSaberCategoriesApiClient.getProcessed({priority});
+      let categories = await accSaberCategoriesApiClient.getProcessed({ priority });
       if (!categories || !categories.length) {
         log.warn(`AccSaber returned empty categories list`, 'AccSaberService')
 
@@ -303,9 +303,9 @@ export default () => {
 
       log.debug(`Categories refreshing completed`, 'AccSaberService');
 
-      return {changed: newCategories, all: categories};
+      return { changed: newCategories, all: categories };
     }
-    catch(e) {
+    catch (e) {
       if (throwErrors) throw e;
 
       log.debug(`Categories refreshing error`, 'AccSaberService', e)
@@ -375,7 +375,7 @@ export default () => {
 
       log.debug(`Player ${player.playerId} history updated`, 'AccSaberService');
     }
-    catch(e) {
+    catch (e) {
       log.debug(`Player ${player.playerId} history updating error.`, 'AccSaberService', e);
     }
   }
@@ -396,7 +396,7 @@ export default () => {
 
       log.trace(`Fetching current ${category} ranking from AccSaber...`, 'AccSaberService');
 
-      const ranking = await accSaberRankingApiClient.getProcessed({category, priority});
+      const ranking = await accSaberRankingApiClient.getProcessed({ category, priority });
       if (!ranking || !ranking.length) {
         log.warn(`AccSaber returned empty ${category} ranking`, 'AccSaberService')
 
@@ -477,7 +477,7 @@ export default () => {
 
       Promise.all((await playerService.getAllActive()).map(async player => updatePlayerHistory(player))).then(_ => _);
 
-      return dbCategories.all.map(c => ({...c, ranking: rankings?.[c.name] ?? []}));
+      return dbCategories.all.map(c => ({ ...c, ranking: rankings?.[c.name] ?? [] }));
     } catch (e) {
       if (throwErrors) throw e;
 
@@ -508,14 +508,14 @@ export default () => {
           const rank = player?.rank
           return rank >= firstPlayerRank && rank <= lastPlayerRank;
         })
-        .sort((a,b) => a.rank - b.rank)
+        .sort((a, b) => a.rank - b.rank)
 
       return ranking;
-    } catch(err) {
+    } catch (err) {
       return null;
     }
   }
-  
+
   const destroyService = () => {
     service = null;
   }

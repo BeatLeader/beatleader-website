@@ -7,7 +7,7 @@ const process = response => {
   return response;
 };
 
-const get = async ({page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_API.leaderboards(page, filters, priority, queueOptions);
+const get = async ({ page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => queue.BEATLEADER_API.leaderboards(page, filters, priority, queueOptions);
 
 const client = createClient(get, process);
 

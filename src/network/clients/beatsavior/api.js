@@ -1,5 +1,5 @@
 import queue from '../../queues/queues'
-import {dateFromString} from '../../../utils/date'
+import { dateFromString } from '../../../utils/date'
 import createClient from '../generic'
 
 const SONG_DATA_TYPES = {
@@ -30,10 +30,10 @@ const process = response => {
         timeSet,
         trackers,
         trackers: {
-          accuracyTracker: {accLeft, accRight, leftAverageCut, rightAverageCut, leftTimeDependence, rightTimeDependence, leftPreswing, leftPostswing, rightPreswing, rightPostswing},
-          winTracker: {won, nbOfPause: pauses, rank},
-          hitTracker: {bombHit, miss, missedNotes, badCuts, nbOfWallHit: wallHit, maxCombo},
-          scoreTracker: {score},
+          accuracyTracker: { accLeft, accRight, leftAverageCut, rightAverageCut, leftTimeDependence, rightTimeDependence, leftPreswing, leftPostswing, rightPreswing, rightPostswing },
+          winTracker: { won, nbOfPause: pauses, rank },
+          hitTracker: { bombHit, miss, missedNotes, badCuts, nbOfWallHit: wallHit, maxCombo },
+          scoreTracker: { score },
         },
       } = s;
 
@@ -45,11 +45,11 @@ const process = response => {
 
       if (!playerId || !playerId.length || !hash || !hash.length || !diff || !diff.length || !score) return null;
 
-      const song = {hash, name, subName: '', authorName, levelAuthorName};
+      const song = { hash, name, subName: '', authorName, levelAuthorName };
       const leaderboard = {
         leaderboardId,
         difficulty,
-        diffInfo: {diff: diff === 'expertplus' ? 'expertPlus' : diff, type: 'Standard'},
+        diffInfo: { diff: diff === 'expertplus' ? 'expertPlus' : diff, type: 'Standard' },
         song,
       }
 
@@ -87,7 +87,7 @@ const process = response => {
     .filter(s => s);
 };
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATSAVIOR.player(playerId, priority, queueOptions);
+const get = async ({ playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => queue.BEATSAVIOR.player(playerId, priority, queueOptions);
 
 const client = createClient(get, process);
 

@@ -1,7 +1,7 @@
-import {BroadcastChannel, createLeaderElection} from 'broadcast-channel'
-import {readable} from 'svelte/store'
+import { BroadcastChannel, createLeaderElection } from 'broadcast-channel'
+import { readable } from 'svelte/store'
 import log from './logger'
-import {uuid} from './uuid'
+import { uuid } from './uuid'
 
 let bc;
 
@@ -13,19 +13,19 @@ const createGlobalPubSub = () => {
     const nodeId = uuid();
     log.info(`Create pub/sub channel for node ${nodeId} (${isWorker ? 'worker' : 'browser'})`, 'PubSub')
 
-    bc = new BroadcastChannel('global-pub-sub', {webWorkerSupport: true});
+    bc = new BroadcastChannel('global-pub-sub', { webWorkerSupport: true });
     const elector = createLeaderElection(bc);
 
     let isLeader = false;
     const leaderStore = readable(isLeader, set => {
-      elector.awaitLeadership().then(() => {
-        isLeader = true;
-        set(isLeader);
+        elector.awaitLeadership().then(() => {
+            isLeader = true;
+            set(isLeader);
 
-        log.info(`Node ${nodeId} is a new leader`, 'PubSub')
+            log.info(`Node ${nodeId} is a new leader`, 'PubSub')
 
-        return () => {}
-      });
+            return () => { }
+        });
     });
 
     const exists = eventName => Array.isArray(subscribers[eventName]);
@@ -45,10 +45,10 @@ const createGlobalPubSub = () => {
     const publish = (eventName, value) => {
         notify(eventName, value);
 
-        bc.postMessage({eventName, nodeId, value})
+        bc.postMessage({ eventName, nodeId, value })
     }
 
-    bc.onmessage = ({eventName, nodeId: eventNodeId, value}) => notify(eventName, value, eventNodeId === nodeId);
+    bc.onmessage = ({ eventName, nodeId: eventNodeId, value }) => notify(eventName, value, eventNodeId === nodeId);
 
     const removeNode = async () => {
         log.info(`Node ${nodeId} is about to be removed`, 'PubSub');
@@ -58,7 +58,7 @@ const createGlobalPubSub = () => {
 
     // add close handler (also prevents back-forward cache)
     if (!(typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope)) {
-        window.addEventListener('beforeunload', () => removeNode(), {capture: true});
+        window.addEventListener('beforeunload', () => removeNode(), { capture: true });
     }
 
     publish('node-added', nodeId)
@@ -80,8 +80,8 @@ const createGlobalPubSub = () => {
         unsubscribe,
         publish,
         leaderStore,
-        isLeader() {return isLeader},
-        getNodeId() {return nodeId},
+        isLeader() { return isLeader },
+        getNodeId() { return nodeId },
     }
 }
 

@@ -1,6 +1,6 @@
-import {default as createQueue, PRIORITY} from '../http-queue';
-import {BL_API_URL} from './api-queue'
-import {substituteVars} from '../../../utils/format'
+import { default as createQueue, PRIORITY } from '../http-queue';
+import { BL_API_URL } from './api-queue'
+import { substituteVars } from '../../../utils/format'
 
 export const BL_CDN = 'https://cdn.beatleader.xyz';
 export const BS_CDN = 'https://eu.cdn.beatsaver.com';
@@ -9,7 +9,7 @@ const RANKEDS_URL = BL_API_URL + 'maps?ranked=true&page=${page}';
 export default (options = {}) => {
   const queue = createQueue(options);
 
-  const {fetchJson, fetchHtml, ...queueToReturn} = queue;
+  const { fetchJson, fetchHtml, ...queueToReturn } = queue;
 
   const processRankeds = (data) => {
     if (!data || !Array.isArray(data)) return null;
@@ -28,19 +28,19 @@ export default (options = {}) => {
         const {
           stars,
           difficultyName: diff,
-          modeName: type 
+          modeName: type
         } = difficulty;
-  
-        const diffInfo = {diff, type};
-  
-        return {leaderboardId: id + "" + difficulty.value + "" + difficulty.mode, hash, name, subName, authorName, levelAuthorName, imageUrl, stars, diff, diffInfo};
+
+        const diffInfo = { diff, type };
+
+        return { leaderboardId: id + "" + difficulty.value + "" + difficulty.mode, hash, name, subName, authorName, levelAuthorName, imageUrl, stars, diff, diffInfo };
       });
     }).flat();
 
     return result;
   }
 
-  const rankeds = async (page = 1, priority = PRIORITY.BG_NORMAL, options = {}) => fetchJson(substituteVars(RANKEDS_URL, {page}), options, priority)
+  const rankeds = async (page = 1, priority = PRIORITY.BG_NORMAL, options = {}) => fetchJson(substituteVars(RANKEDS_URL, { page }), options, priority)
     .then(r => {
       r.body = processRankeds(r.body);
 

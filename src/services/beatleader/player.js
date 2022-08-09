@@ -1,7 +1,7 @@
 import playerApiClient from '../../network/clients/beatleader/player/api'
 import playerFindApiClient from '../../network/clients/beatleader/players/api-player-find'
 import playerAccGraphApiClient from '../../network/clients/beatleader/accgraph/api'
-import {PRIORITY} from '../../network/queues/http-queue'
+import { PRIORITY } from '../../network/queues/http-queue'
 import log from '../../utils/logger'
 import {
   addToDate,
@@ -10,7 +10,7 @@ import {
   toBlMidnight,
 } from '../../utils/date'
 import makePendingPromisePool from '../../utils/pending-promises'
-import {getServicePlayerGain} from '../utils'
+import { getServicePlayerGain } from '../utils'
 import createAccountStore from '../../stores/beatleader/account'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 3;
@@ -71,11 +71,11 @@ export default () => {
   const isResponseCached = response => playerApiClient.isResponseCached(response);
   const getDataFromResponse = response => playerApiClient.getDataFromResponse(response);
 
-  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) => resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}`, () => playerApiClient.getProcessed({...options, playerId, priority, fullResponse}));
+  const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, { fullResponse = false, ...options } = {}) => resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}`, () => playerApiClient.getProcessed({ ...options, playerId, priority, fullResponse }));
 
-  const findPlayer = async (query, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) => resolvePromiseOrWaitForPending(`apiClient/find/${query}/${fullResponse}`, () => playerFindApiClient.getProcessed({...options, query, priority, fullResponse}));
+  const findPlayer = async (query, priority = PRIORITY.FG_LOW, { fullResponse = false, ...options } = {}) => resolvePromiseOrWaitForPending(`apiClient/find/${query}/${fullResponse}`, () => playerFindApiClient.getProcessed({ ...options, query, priority, fullResponse }));
 
-  const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => fetchPlayer(playerId, priority, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval,})
+  const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) => fetchPlayer(playerId, priority, { signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval, })
 
   const fetchAccGraph = async (playerId, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
     try {
@@ -87,13 +87,13 @@ export default () => {
         return null;
       }
 
-      const accGraph = resolvePromiseOrWaitForPending(`apiClient/accgraph/${playerId}`, () => playerAccGraphApiClient.getProcessed({playerId, priority}));
+      const accGraph = resolvePromiseOrWaitForPending(`apiClient/accgraph/${playerId}`, () => playerAccGraphApiClient.getProcessed({ playerId, priority }));
 
       log.debug(`Player acc graph fetched.`, 'PlayerService', accGraph);
 
       return accGraph;
     }
-    catch(e) {
+    catch (e) {
       if (throwErrors) throw e;
 
       log.debug(`Fetching player acc graph error${e.toString ? `: ${e.toString()}` : ''}`, 'PlayerService', e)

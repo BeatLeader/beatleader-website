@@ -1,7 +1,7 @@
-import {processScore} from './processScore'
+import { processScore } from './processScore'
 
 export default response => {
-  if (!Array.isArray(response?.data)) return {metadata: response?.metadata ?? {}, data: []};
+  if (!Array.isArray(response?.data)) return { metadata: response?.metadata ?? {}, data: [] };
 
   return {
     metadata: response?.metadata ?? {},

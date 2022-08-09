@@ -1,5 +1,5 @@
-import {writable} from 'svelte/store'
-import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
+import { writable } from 'svelte/store'
+import { BL_API_URL } from '../../network/queues/beatleader/api-queue'
 import userApiClient from '../../network/clients/beatleader/account/api'
 
 let store = null;
@@ -9,9 +9,9 @@ export default (refreshOnCreate = true) => {
   storeSubCount++;
   if (store) return store;
 
-  let account = {loading: true};
+  let account = { loading: true };
 
-  const {subscribe: subscribeState, set} = writable(account);
+  const { subscribe: subscribeState, set } = writable(account);
 
   const get = () => account;
 
@@ -20,9 +20,9 @@ export default (refreshOnCreate = true) => {
       const user = await userApiClient.getProcessed();
       if (!user) throw 'Data error'
 
-      account = {...user, id: user.player?.playerId ?? null};
+      account = { ...user, id: user.player?.playerId ?? null };
     }
-    catch(err) {
+    catch (err) {
       account = {}
     }
 
@@ -47,26 +47,26 @@ export default (refreshOnCreate = true) => {
 
   const fetchOculusUser = (token) => {
     fetch(BL_API_URL + "oculususer?token=" + token, {
-        credentials: 'include',
+      credentials: 'include',
     })
-    .then(
-      response => {
-        if (response.status == 200) {
-          return response.json()
-        } else {
-          return response.text()
-        }
-      })
-    .then(
-      data => {
-          if (data.length > 0) {
-              account.error = data;
+      .then(
+        response => {
+          if (response.status == 200) {
+            return response.json()
           } else {
-              account = data;
+            return response.text()
+          }
+        })
+      .then(
+        data => {
+          if (data.length > 0) {
+            account.error = data;
+          } else {
+            account = data;
           }
 
           set(account);
-      });
+        });
   }
 
   store = {

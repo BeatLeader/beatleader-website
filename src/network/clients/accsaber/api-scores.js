@@ -1,6 +1,6 @@
 import queue from '../../queues/queues'
 import createClient from '../generic'
-import {dateFromString} from '../../../utils/date'
+import { dateFromString } from '../../../utils/date'
 
 const process = response => {
   const playerId = response?.fetchOptions?.playerId ?? null;
@@ -28,9 +28,9 @@ const process = response => {
     leaderboardId = parseInt(leaderboardId, 10);
     if (isNaN(leaderboardId)) leaderboardId = null;
 
-    const song = {hash, name, subName: '', authorName, levelAuthorName, beatsaverKey};
-    const diffInfo = {type: 'Standard', diff: difficulty?.toLowerCase()?.replace('plus', 'Plus')}
-    const leaderboard = {leaderboardId, song, diffInfo, complexity, categoryDisplayName};
+    const song = { hash, name, subName: '', authorName, levelAuthorName, beatsaverKey };
+    const diffInfo = { type: 'Standard', diff: difficulty?.toLowerCase()?.replace('plus', 'Plus') }
+    const leaderboard = { leaderboardId, song, diffInfo, complexity, categoryDisplayName };
 
     const timeSet = dateFromString(s.timeSet)
     return {
@@ -41,17 +41,17 @@ const process = response => {
       ap,
       acc,
       leaderboard,
-      score: {...originalScore, ap, unmodifiedScore: score, score, mods: null, timeSet, acc, percentage: acc, weightedAp},
+      score: { ...originalScore, ap, unmodifiedScore: score, score, mods: null, timeSet, acc, percentage: acc, weightedAp },
       fetchedAt: new Date(),
       lastUpdated: new Date(),
     }
   });
 }
 
-const get = async ({playerId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => {
+const get = async ({ playerId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => {
   const response = await queue.ACCSABER.scores(playerId, page, priority, queueOptions);
 
-  return {...response, body: {response: response.body, fetchOptions: {playerId, page}}}
+  return { ...response, body: { response: response.body, fetchOptions: { playerId, page } } }
 }
 
 const client = createClient(get, process);

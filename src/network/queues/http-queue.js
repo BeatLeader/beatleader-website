@@ -1,9 +1,9 @@
-import {default as createQueue, PRIORITY as QUEUE_PRIORITY} from '../../utils/queue';
-import {SsrError, SsrTimeoutError} from '../../others/errors'
-import {SsrHttpRateLimitError, SsrHttpResponseError, SsrNetworkError, SsrNetworkTimeoutError} from '../errors'
-import {fetchHtml, fetchJson} from '../fetch';
+import { default as createQueue, PRIORITY as QUEUE_PRIORITY } from '../../utils/queue';
+import { SsrError, SsrTimeoutError } from '../../others/errors'
+import { SsrHttpRateLimitError, SsrHttpResponseError, SsrNetworkError, SsrNetworkTimeoutError } from '../errors'
+import { fetchHtml, fetchJson } from '../fetch';
 import makePendingPromisePool from '../../utils/pending-promises'
-import {AbortError} from '../../utils/promise'
+import { AbortError } from '../../utils/promise'
 
 const DEFAULT_RETRIES = 2;
 
@@ -18,27 +18,27 @@ export const PRIORITY = {
 const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
 export default (options = {}) => {
-  const {retries, rateLimitTick, ...queueOptions} = {retries: DEFAULT_RETRIES, rateLimitTick: 500, ...options};
+  const { retries, rateLimitTick, ...queueOptions } = { retries: DEFAULT_RETRIES, rateLimitTick: 500, ...options };
   const queue = createQueue(queueOptions);
 
-  const {add, emitter, ...queueToReturn} = queue;
+  const { add, emitter, ...queueToReturn } = queue;
 
   let lastRateLimitError = null;
   let rateLimitTimerId = null;
-  let currentRateLimit = {waiting: 0, remaining: null, limit: null, resetAt: null};
+  let currentRateLimit = { waiting: 0, remaining: null, limit: null, resetAt: null };
 
   const rateLimitTicker = () => {
     const expiresInMs = lastRateLimitError && lastRateLimitError.resetAt ? lastRateLimitError.resetAt - new Date() + 1000 : 0;
     if (expiresInMs <= 0) {
-      emitter.emit('waiting', {waiting: 0, remaining: null, limit: null, resetAt: null});
+      emitter.emit('waiting', { waiting: 0, remaining: null, limit: null, resetAt: null });
 
       if (rateLimitTimerId) clearTimeout(rateLimitTimerId);
 
       return;
     }
 
-    const {remaining, limit, resetAt} = lastRateLimitError;
-    emitter.emit('waiting', {waiting: expiresInMs, remaining, limit, resetAt});
+    const { remaining, limit, resetAt } = lastRateLimitError;
+    emitter.emit('waiting', { waiting: expiresInMs, remaining, limit, resetAt });
 
     if (rateLimitTimerId) clearTimeout(rateLimitTimerId);
     rateLimitTimerId = setTimeout(rateLimitTicker, rateLimitTick);
@@ -50,30 +50,30 @@ export default (options = {}) => {
     for (let i = 0; i <= retriesCount; i++) {
       try {
         return await add(async () => {
-            if (lastRateLimitError) {
-              await lastRateLimitError.waitBeforeRetry();
+          if (lastRateLimitError) {
+            await lastRateLimitError.waitBeforeRetry();
 
-              lastRateLimitError = null;
-            }
+            lastRateLimitError = null;
+          }
 
-            return fetchFunc(url, options)
-              .then(response => {
-                currentRateLimit = {...response.rateLimit, waiting: 0};
+          return fetchFunc(url, options)
+            .then(response => {
+              currentRateLimit = { ...response.rateLimit, waiting: 0 };
 
-                return response;
-              })
-              .catch(err => {
-                if (err instanceof SsrTimeoutError) throw new SsrNetworkTimeoutError(err.timeout);
+              return response;
+            })
+            .catch(err => {
+              if (err instanceof SsrTimeoutError) throw new SsrNetworkTimeoutError(err.timeout);
 
-                throw err;
-              })
-          },
+              throw err;
+            })
+        },
           priority,
         )
       } catch (err) {
         if (err instanceof SsrHttpResponseError) {
-          const {remaining, limit, resetAt} = err;
-          currentRateLimit = {waiting: 0, remaining, limit, resetAt};
+          const { remaining, limit, resetAt } = err;
+          currentRateLimit = { waiting: 0, remaining, limit, resetAt };
         }
 
         if (err instanceof SsrNetworkError) {

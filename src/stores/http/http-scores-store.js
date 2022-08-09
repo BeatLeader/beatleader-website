@@ -2,12 +2,12 @@ import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps'
 import twitchEnhancer from './enhancers/scores/twitch'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
-import {debounce} from '../../utils/debounce'
+import { debounce } from '../../utils/debounce'
 import createApiScoresProvider from './providers/api-scores'
-import produce, {applyPatches} from 'immer'
+import produce, { applyPatches } from 'immer'
 import stringify from 'json-stable-stringify'
 
-export default (playerId = null, service = 'beatleader', serviceParams = {type: 'date', page: 1}, initialState = null, initialStateType = 'initial') => {
+export default (playerId = null, service = 'beatleader', serviceParams = { type: 'date', page: 1 }, initialState = null, initialStateType = 'initial') => {
   let currentPlayerId = playerId;
   let currentService = service;
   let currentServiceParams = serviceParams;
@@ -33,7 +33,7 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
     return state;
   }
 
-  const onNewData = ({fetchParams, state, stateType, set}) => {
+  const onNewData = ({ fetchParams, state, stateType, set }) => {
     currentPlayerId = fetchParams?.playerId ?? null;
     currentService = fetchParams?.service ?? null;
     currentServiceParams = fetchParams?.serviceParams ?? null;
@@ -98,13 +98,13 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
 
   const httpStore = createHttpStore(
     provider,
-    playerId ? {playerId, service, serviceParams} : null,
+    playerId ? { playerId, service, serviceParams } : null,
     initialState,
     {
       onInitialized: onNewData,
       onBeforeStateChange,
       onAfterStateChange: onNewData,
-      onSetPending: ({fetchParams}) => ({...fetchParams}),
+      onSetPending: ({ fetchParams }) => ({ ...fetchParams }),
     },
     initialStateType
   );
@@ -118,7 +118,7 @@ export default (playerId = null, service = 'beatleader', serviceParams = {type: 
     )
       return false;
 
-    return httpStore.fetch({playerId, service, serviceParams}, force, provider, !playerId || playerId !== currentPlayerId || force);
+    return httpStore.fetch({ playerId, service, serviceParams }, force, provider, !playerId || playerId !== currentPlayerId || force);
   }
 
   const refresh = async () => fetch(currentServiceParams, currentService, currentPlayerId, true);

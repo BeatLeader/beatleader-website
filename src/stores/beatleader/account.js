@@ -1,5 +1,5 @@
-import {writable} from 'svelte/store'
-import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
+import { writable } from 'svelte/store'
+import { BL_API_URL } from '../../network/queues/beatleader/api-queue'
 import userApiClient from '../../network/clients/beatleader/account/api'
 import queue from '../../network/queues/queues'
 
@@ -12,9 +12,9 @@ export default (refreshOnCreate = true) => {
 
   const checkResponse = async response => response.text();
 
-  let account = {loading: true};
+  let account = { loading: true };
 
-  const {subscribe: subscribeState, set} = writable(account);
+  const { subscribe: subscribeState, set } = writable(account);
 
   const get = () => account;
 
@@ -23,9 +23,9 @@ export default (refreshOnCreate = true) => {
       const user = await userApiClient.getProcessed();
       if (!user) throw 'Data error'
 
-      account = {...user, id: user.player?.playerId ?? null};
+      account = { ...user, id: user.player?.playerId ?? null };
     }
-    catch(err) {
+    catch (err) {
       account = {}
     }
 
@@ -34,11 +34,11 @@ export default (refreshOnCreate = true) => {
     fetch(BL_API_URL + "user/playlists", {
       credentials: 'include'
     })
-    .then(response => response.json())
-    .then(playlists => {
-      account.playlists = playlists;
-      set(account);
-    });
+      .then(response => response.json())
+      .then(playlists => {
+        account.playlists = playlists;
+        set(account);
+      });
   }
 
   if (refreshOnCreate) refresh();
@@ -64,20 +64,20 @@ export default (refreshOnCreate = true) => {
     data.append('password', password);
 
     fetch(BL_API_URL + "signinoculus", {
-        credentials: 'include',
-        method: 'POST',
-        body: data
+      credentials: 'include',
+      method: 'POST',
+      body: data
     })
       .then(checkResponse)
       .then(
         data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.error = null;
-                refresh(true);
-            }
-            set(account);
+          if (data.length > 0) {
+            account.error = data;
+          } else {
+            account.error = null;
+            refresh(true);
+          }
+          set(account);
         });
   }
 
@@ -88,20 +88,20 @@ export default (refreshOnCreate = true) => {
     data.append('password', password);
 
     fetch(BL_API_URL + "user/migrate", {
-        credentials: 'include',
-        method: 'POST',
-        body: data
+      credentials: 'include',
+      method: 'POST',
+      body: data
     })
       .then(checkResponse)
       .then(
         data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.error = null;
-                refresh(true);
-            }
-            set(account);
+          if (data.length > 0) {
+            account.error = data;
+          } else {
+            account.error = null;
+            refresh(true);
+          }
+          set(account);
         });
   }
 
@@ -112,25 +112,25 @@ export default (refreshOnCreate = true) => {
     data.append('newPassword', newPassword);
 
     fetch(BL_API_URL + "user/changePassword", {
-        credentials: 'include',
-        method: 'PATCH',
-        body: data
+      credentials: 'include',
+      method: 'PATCH',
+      body: data
     })
       .then(checkResponse)
       .then(
         data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.message = "Password changed successfully ✔";
-                account.error = null;
-                refresh(true);
-                setTimeout(function(){
-                  account.message = null;
-                  set(account);
-                }, 3500);
-            }
-            set(account);
+          if (data.length > 0) {
+            account.error = data;
+          } else {
+            account.message = "Password changed successfully ✔";
+            account.error = null;
+            refresh(true);
+            setTimeout(function () {
+              account.message = null;
+              set(account);
+            }, 3500);
+          }
+          set(account);
         });
   }
 
@@ -140,25 +140,25 @@ export default (refreshOnCreate = true) => {
     data.append('newPassword', newPassword);
 
     fetch(BL_API_URL + "user/resetPassword", {
-        credentials: 'include',
-        method: 'PATCH',
-        body: data
+      credentials: 'include',
+      method: 'PATCH',
+      body: data
     })
       .then(checkResponse)
       .then(
         data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.message = "Password changed successfully ✔";
-                account.error = null;
-                refresh(true);
-                setTimeout(function(){
-                  account.message = null;
-                  set(account);
-                }, 3500);
-            }
-            set(account);
+          if (data.length > 0) {
+            account.error = data;
+          } else {
+            account.message = "Password changed successfully ✔";
+            account.error = null;
+            refresh(true);
+            setTimeout(function () {
+              account.message = null;
+              set(account);
+            }, 3500);
+          }
+          set(account);
         });
   }
 
@@ -167,136 +167,136 @@ export default (refreshOnCreate = true) => {
     data.append('newLogin', newLogin);
 
     fetch(BL_API_URL + "user/changeLogin", {
-        credentials: 'include',
-        method: 'PATCH',
-        body: data
+      credentials: 'include',
+      method: 'PATCH',
+      body: data
     })
       .then(checkResponse)
       .then(
         data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.message = "Login changed successfully ✔";
-                account.error = null;
-                refresh(true);
-                setTimeout(function(){
-                  account.message = null;
-                  set(account);
-                }, 3500);
-            }
-            set(account);
+          if (data.length > 0) {
+            account.error = data;
+          } else {
+            account.message = "Login changed successfully ✔";
+            account.error = null;
+            refresh(true);
+            setTimeout(function () {
+              account.message = null;
+              set(account);
+            }, 3500);
+          }
+          set(account);
         });
   }
 
   const changeAvatar = (file, playerId) =>
-    fetch(BL_API_URL + "user/avatar" + (playerId ? "?id=" + playerId : ""), { 
-        method: 'PATCH', 
-        body: file, 
-        credentials: 'include'
+    fetch(BL_API_URL + "user/avatar" + (playerId ? "?id=" + playerId : ""), {
+      method: 'PATCH',
+      body: file,
+      credentials: 'include'
     })
       .then(checkResponse)
       .then(
         data => {
-            account.error = null;
+          account.error = null;
 
-            if (data.length > 0) {
-                account.error = data;
-                setTimeout(function(){
-                    account.error = null;
-                    set(account);
-                }, 3500);
-            }
+          if (data.length > 0) {
+            account.error = data;
+            setTimeout(function () {
+              account.error = null;
+              set(account);
+            }, 3500);
+          }
 
-            set(account);
+          set(account);
         });
 
   const changeName = (name, playerId) =>
-    fetch(BL_API_URL + "user/name?newName=" + encodeURIComponent(name) + (playerId ? "&id="+playerId : ""), { 
-        method: 'PATCH', 
-        credentials: 'include'
+    fetch(BL_API_URL + "user/name?newName=" + encodeURIComponent(name) + (playerId ? "&id=" + playerId : ""), {
+      method: 'PATCH',
+      credentials: 'include'
     })
       .then(checkResponse)
       .then(
         data => {
-            account.error = null;
+          account.error = null;
 
-            if (data.length > 0) {
-                account.error = data;
-                setTimeout(function(){
-                    account.error = null;
-                    set(account);
-                }, 3500);
-            }
+          if (data.length > 0) {
+            account.error = data;
+            setTimeout(function () {
+              account.error = null;
+              set(account);
+            }, 3500);
+          }
 
-            set(account);
+          set(account);
         });
 
   const changeCountry = (country, playerId) =>
-  fetch(BL_API_URL + "user/country?newCountry=" + country + (playerId ? "&id="+playerId : ""), { 
-      method: 'PATCH', 
+    fetch(BL_API_URL + "user/country?newCountry=" + country + (playerId ? "&id=" + playerId : ""), {
+      method: 'PATCH',
       credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
+    })
+      .then(checkResponse)
+      .then(
+        data => {
           account.error = null;
 
           if (data.length > 0) {
-              account.error = data;
-              setTimeout(function(){
-                  account.error = null;
-                  set(account);
-              }, 3500);
+            account.error = data;
+            setTimeout(function () {
+              account.error = null;
+              set(account);
+            }, 3500);
           }
 
           set(account);
-      });
+        });
 
   const changePatreonMessage = (message, playerId) =>
-  fetch(BL_API_URL + "user/patreon?message=" + encodeURIComponent(message) + (playerId ? "&id="+playerId : ""), { 
-      method: 'PATCH', 
+    fetch(BL_API_URL + "user/patreon?message=" + encodeURIComponent(message) + (playerId ? "&id=" + playerId : ""), {
+      method: 'PATCH',
       credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
+    })
+      .then(checkResponse)
+      .then(
+        data => {
           account.error = null;
 
           if (data.length > 0) {
-              account.error = data;
-              setTimeout(function(){
-                  account.error = null;
-                  set(account);
-              }, 3500);
+            account.error = data;
+            setTimeout(function () {
+              account.error = null;
+              set(account);
+            }, 3500);
           }
 
           set(account);
-      });
+        });
 
   const logOut = () => {
     fetch(BL_API_URL + "signout", {
-        credentials: 'include'
+      credentials: 'include'
     }).then(
-        _ => {
-            refresh(true);
-        });
+      _ => {
+        refresh(true);
+      });
   }
 
   const destroyClan = () => {
-    
+
   }
 
   const banPlayer = (playerId, reason, duration) => {
-  account.loading = true;
-  set(account);
-  fetch(BL_API_URL + "user/ban" + (playerId ? `?id=${playerId}&reason=${reason}&duration=${duration}` : ""), { 
-      method: 'POST', 
+    account.loading = true;
+    set(account);
+    fetch(BL_API_URL + "user/ban" + (playerId ? `?id=${playerId}&reason=${reason}&duration=${duration}` : ""), {
+      method: 'POST',
       credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
+    })
+      .then(checkResponse)
+      .then(
+        data => {
           account.error = null;
           account.loading = false;
           if (data.length > 0) {
@@ -308,26 +308,26 @@ export default (refreshOnCreate = true) => {
             account.message = playerId ? "Player banned ✔" : "Account suspended ✔";
           }
 
-          setTimeout(function(){
+          setTimeout(function () {
             account.error = null;
             account.message = null;
             set(account);
-        }, 6000);
+          }, 6000);
 
           set(account);
-      });
-    }
+        });
+  }
 
   const unbanPlayer = (playerId) => {
-  account.loading = true;
-  set(account);
-  fetch(BL_API_URL + "user/unban" + (playerId ? `?id=${playerId}` : ""), { 
-      method: 'POST', 
+    account.loading = true;
+    set(account);
+    fetch(BL_API_URL + "user/unban" + (playerId ? `?id=${playerId}` : ""), {
+      method: 'POST',
       credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
+    })
+      .then(checkResponse)
+      .then(
+        data => {
           account.error = null;
           account.loading = false;
           if (data.length > 0) {
@@ -339,15 +339,15 @@ export default (refreshOnCreate = true) => {
             account.message = playerId ? "Player unbanned ✔" : "Welcome back ✔";
           }
 
-          setTimeout(function(){
+          setTimeout(function () {
             account.error = null;
             account.message = null;
             set(account);
-        }, 6000);
+          }, 6000);
 
           set(account);
-      });
-    }
+        });
+  }
 
   const removeClanRequest = (clan, setAccount = true) => {
     if (Array.isArray(account?.clanRequest) && clan?.id) {
@@ -422,7 +422,7 @@ export default (refreshOnCreate = true) => {
       .then(response => response.json())
       .then(
         data => {
-            completion(data.time);
+          completion(data.time);
         });
   }
 

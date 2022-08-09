@@ -36,7 +36,7 @@ export const optSet = (obj, key, value, createKeys = true) => {
   const startObj = obj || {};
 
   let current = startObj;
-  for(const i of keys) {
+  for (const i of keys) {
     const propertyExists = current.hasOwnProperty(i);
     if (!propertyExists && !createKeys) return obj;
 

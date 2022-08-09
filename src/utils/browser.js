@@ -1,4 +1,4 @@
-import {opt} from './js'
+import { opt } from './js'
 
 export function scrollToTargetAdjusted(target, offset = 0) {
   if (!target) return;

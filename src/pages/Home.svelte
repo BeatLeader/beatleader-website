@@ -1,8 +1,8 @@
 <script>
-  import {navigate} from "svelte-routing";
-  import {onMount} from 'svelte'
+	import {navigate} from 'svelte-routing';
+	import {onMount} from 'svelte';
 
-  onMount(async () => {
-    navigate('/dashboard')
-  })
+	onMount(async () => {
+		navigate('/dashboard');
+	});
 </script>

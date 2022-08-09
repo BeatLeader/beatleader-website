@@ -1,7 +1,7 @@
 import createScoresService from '../../../../services/beatleader/scores'
 import createAccSaberService from '../../../../services/accsaber'
 import createBeatSaviorService from '../../../../services/beatsavior'
-import {capitalize} from '../../../../utils/js'
+import { capitalize } from '../../../../utils/js'
 
 let scoreFetcher = null;
 
@@ -19,7 +19,7 @@ export default () => {
   const processServiceParamsFilters = serviceParams => {
     if (!serviceParams) return serviceParams;
 
-    const {filters: {stars = {}, ...restFilters} = {}, ...restParams} = serviceParams;
+    const { filters: { stars = {}, ...restFilters } = {}, ...restParams } = serviceParams;
 
     return {
       ...restParams,
@@ -33,7 +33,7 @@ export default () => {
     }
   }
 
-  const fetchLiveScores = async (player, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
+  const fetchLiveScores = async (player, service, serviceParams = { sort: 'date', order: 'desc', page: 1 }, otherParams = {}) => {
     const processedServiceParams = processServiceParamsFilters(serviceParams);
 
     switch (service) {
@@ -49,7 +49,7 @@ export default () => {
     }
   }
 
-  scoreFetcher = {fetchCachedScores: fetchLiveScores, fetchLiveScores}
+  scoreFetcher = { fetchCachedScores: fetchLiveScores, fetchLiveScores }
 
   return scoreFetcher;
 }

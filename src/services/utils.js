@@ -1,12 +1,12 @@
-import {DateTime} from 'luxon';
+import { DateTime } from 'luxon';
 
 export const getServicePlayerGain = (playerHistory, dateTruncFunc, dateKey, daysAgo = 1, maxDaysAgo = 7) => {
   if (!playerHistory?.length) return null;
 
   let todayServiceMidnightDate = dateTruncFunc(new Date());
 
-  const compareToDate = DateTime.fromJSDate(todayServiceMidnightDate).minus({days: daysAgo}).toJSDate();
-  const maxServiceDate = DateTime.fromJSDate(todayServiceMidnightDate).minus({days: maxDaysAgo}).toJSDate();
+  const compareToDate = DateTime.fromJSDate(todayServiceMidnightDate).minus({ days: daysAgo }).toJSDate();
+  const maxServiceDate = DateTime.fromJSDate(todayServiceMidnightDate).minus({ days: maxDaysAgo }).toJSDate();
 
   return playerHistory
     .sort((a, b) => b?.[dateKey]?.getTime() - a?.[dateKey]?.getTime())

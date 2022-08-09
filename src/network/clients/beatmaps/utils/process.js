@@ -1,4 +1,4 @@
-import {opt} from '../../../../utils/js'
+import { opt } from '../../../../utils/js'
 
 export default response => {
   const versions = opt(response, 'versions');
@@ -11,5 +11,5 @@ export default response => {
 
   if (!hash || !key || !hash.toLowerCase) return null;
 
-  return {...response, hash: hash.toLowerCase(), key}
+  return { ...response, hash: hash.toLowerCase(), key }
 }

@@ -3,10 +3,10 @@ export default {
   beforeDraw(chart, args, options) {
     if (!options?.regions || !Array.isArray(options.regions)) return;
 
-    const {ctx, chartArea: {left, top, right, bottom}, scales: {y}} = chart;
+    const { ctx, chartArea: { left, top, right, bottom }, scales: { y } } = chart;
     const width = right - left;
 
-    let fontSize = parseInt(ctx.font,10);
+    let fontSize = parseInt(ctx.font, 10);
     if (isNaN(fontSize)) fontSize = 12;
 
     ctx.save();

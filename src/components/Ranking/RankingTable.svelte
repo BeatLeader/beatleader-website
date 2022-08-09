@@ -43,26 +43,26 @@
 	let currentTypeValue = filters.mapsType;
 
 	const statKeys = {
-		'acc': {
-			'ranked': "scoreStats.averageRankedAccuracy",
-			'unranked': "scoreStats.averageUnrankedAccuracy",
-			'all': "scoreStats.averageAccuracy"
+		acc: {
+			ranked: 'scoreStats.averageRankedAccuracy',
+			unranked: 'scoreStats.averageUnrankedAccuracy',
+			all: 'scoreStats.averageAccuracy',
 		},
-		'topAcc': {
-			'ranked': "scoreStats.topRankedAccuracy",
-			'unranked': "scoreStats.topUnrankedAccuracy",
-			'all': "scoreStats.topAccuracy"
+		topAcc: {
+			ranked: 'scoreStats.topRankedAccuracy',
+			unranked: 'scoreStats.topUnrankedAccuracy',
+			all: 'scoreStats.topAccuracy',
 		},
-		'playCount': {
-			'ranked': "scoreStats.rankedPlayCount",
-			'unranked': "scoreStats.unrankedPlayCount",
-			'all': "scoreStats.totalPlayCount"
+		playCount: {
+			ranked: 'scoreStats.rankedPlayCount',
+			unranked: 'scoreStats.unrankedPlayCount',
+			all: 'scoreStats.totalPlayCount',
 		},
-		'rank': {
-			'ranked': "scoreStats.averageRankedRank",
-			'unranked': "scoreStats.averageUnrankedRank",
-			'all': "scoreStats.averageRank"
-		}
+		rank: {
+			ranked: 'scoreStats.averageRankedRank',
+			unranked: 'scoreStats.averageUnrankedRank',
+			all: 'scoreStats.averageRank',
+		},
 	};
 
 	let allSortValues = [
@@ -73,7 +73,7 @@
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'playerInfo.pp'),
 			props: {suffix: 'pp', zero: '-'},
-			hideForTypes: ["unranked"]
+			hideForTypes: ['unranked'],
 		},
 		{
 			id: 'acc',
@@ -90,7 +90,7 @@
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'scoreStats.topPp'),
 			props: {suffix: 'pp', zero: '-'},
-			hideForTypes: ["unranked"]
+			hideForTypes: ['unranked'],
 		},
 		{
 			id: 'topAcc',
@@ -153,7 +153,7 @@
 		}
 
 		filters.mapsType = currentTypeValue;
-		refreshSortValues(allSortValues, filters)
+		refreshSortValues(allSortValues, filters);
 	}
 
 	onMount(() => {
@@ -165,20 +165,25 @@
 
 	function refreshSortValues(allSortValues, filterValues) {
 		switcherSortValues = allSortValues
-		.filter(v => {
-			return !v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType)
-		})
-		.map(v => ({
-			...v,
-			iconFa: filterValues?.sortBy === v.id ? (filterValues?.order === 'asc' ? 'fas fa-long-arrow-alt-up' : 'fas fa-long-arrow-alt-down') : v.iconFa,
-		}));
+			.filter(v => {
+				return !v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType);
+			})
+			.map(v => ({
+				...v,
+				iconFa:
+					filterValues?.sortBy === v.id
+						? filterValues?.order === 'asc'
+							? 'fas fa-long-arrow-alt-up'
+							: 'fas fa-long-arrow-alt-down'
+						: v.iconFa,
+			}));
 
 		if (filters?.sortBy?.length) {
-			sortValue = switcherSortValues.find(v => v.id === filters.sortBy)
+			sortValue = switcherSortValues.find(v => v.id === filters.sortBy);
 			if (!sortValue) {
 				setTimeout(() => {
 					sortValue = switcherSortValues[0];
-					filters.sortBy = sortValue.id
+					filters.sortBy = sortValue.id;
 					changeParams(type, page, filters);
 					rankingStore = rankingStore;
 				}, 500);
@@ -197,7 +202,7 @@
 	$: dispatch('loading', $isLoading);
 	$: dispatch('pending', $pending?.page);
 
-	$: refreshSortValues(allSortValues, filters)
+	$: refreshSortValues(allSortValues, filters);
 </script>
 
 {#if $rankingStore?.data?.length}
@@ -205,7 +210,7 @@
 		<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 		<select class="type-select" bind:value={currentTypeValue} on:change={onTypeChanged}>
 			{#each allTypeValues as option (option.value)}
-				<option class="type-option" value={option.value}><i class={option.icon}></i>{option.label}</option>
+				<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
 			{/each}
 		</select>
 	</nav>
@@ -265,13 +270,13 @@
 		text-align: center;
 		white-space: nowrap;
 		border: 0;
-		border-radius: .2em;
+		border-radius: 0.2em;
 		font-size: inherit;
 		cursor: pointer;
 		color: var(--color, #363636);
 		background-color: #dbdbdb;
 		box-shadow: none;
-		opacity: .35;
+		opacity: 0.35;
 		font-family: 'Noto Sans SC', sans-serif;
 		font-size: 0.95rem;
 		font-weight: 500;

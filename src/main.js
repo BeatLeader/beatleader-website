@@ -8,12 +8,12 @@ import createConfigStore from './stores/config'
 import createAccountStore from './stores/beatleader/account'
 import createPlayerService from './services/beatleader/player'
 import createBeatSaviorService from './services/beatsavior'
-import {enablePatches, setAutoFreeze} from 'immer'
+import { enablePatches, setAutoFreeze } from 'immer'
 import ErrorComponent from './components/Common/Error.svelte'
 
 let app = null;
 
-(async() => {
+(async () => {
   try {
     // TODO: remove level setting
     // log.setLevel(log.TRACE);
@@ -26,7 +26,7 @@ let app = null;
     await setupDataFixes();
 
     // WORKAROUND for immer.js esm (see https://github.com/immerjs/immer/issues/557)
-    window.process = {env: {NODE_ENV: "production"}};
+    window.process = { env: { NODE_ENV: "production" } };
 
     // setup immer.js
     enablePatches();
@@ -46,7 +46,7 @@ let app = null;
       target: document.body,
       props: {},
     });
-  } catch(error) {
+  } catch (error) {
     console.error(error);
 
     if (error instanceof DOMException && error.toString() === 'InvalidStateError: A mutation operation was attempted on a database that did not allow mutations.')
@@ -54,7 +54,7 @@ let app = null;
 
     app = new ErrorComponent({
       target: document.body,
-      props: {error, withTrace: true},
+      props: { error, withTrace: true },
     });
   }
 })();

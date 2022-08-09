@@ -1,5 +1,5 @@
-import {getHeadsetForHMD, platformDescription} from '../../../../utils/beatleader/format'
-import {deepClone} from '../../../../utils/js'
+import { getHeadsetForHMD, platformDescription } from '../../../../utils/beatleader/format'
+import { deepClone } from '../../../../utils/js'
 
 export default response => {
 	const {
@@ -133,7 +133,7 @@ export default response => {
 			avatar: profilePicture,
 			externalProfileUrl,
 			externalProfileCorsUrl,
-			countries: [{country, rank: countryRank}],
+			countries: [{ country, rank: countryRank }],
 			pp,
 			banned,
 			inactive,

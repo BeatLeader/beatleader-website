@@ -1,297 +1,301 @@
 <script>
-    import Button from "../components/Common/Button.svelte";
-    import createAccountStore from '../stores/beatleader/account'
-    import createOculusStore from '../stores/beatleader/oculususer'
-    import {formatDateRelative, dateFromUnix} from '../utils/date'
-    import {opt} from '../utils/js'
-    import {CURRENT_URL, BL_API_URL} from '../network/queues/beatleader/api-queue'
-    import { navigate } from "svelte-routing";
-    import Dialog from "../components/Common/Dialog.svelte";
-    import Spinner from "../components/Common/Spinner.svelte";
-    import beatSaverSvg from "../resources/beatsaver.svg";
-    import steamSvg from "../resources/steam.svg";
+	import Button from '../components/Common/Button.svelte';
+	import createAccountStore from '../stores/beatleader/account';
+	import createOculusStore from '../stores/beatleader/oculususer';
+	import {formatDateRelative, dateFromUnix} from '../utils/date';
+	import {opt} from '../utils/js';
+	import {CURRENT_URL, BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {navigate} from 'svelte-routing';
+	import Dialog from '../components/Common/Dialog.svelte';
+	import Spinner from '../components/Common/Spinner.svelte';
+	import beatSaverSvg from '../resources/beatsaver.svg';
+	import steamSvg from '../resources/steam.svg';
 
-    export let action;
+	export let action;
 
-    const account = createAccountStore();
-    const oculus = createOculusStore();
+	const account = createAccountStore();
+	const oculus = createOculusStore();
 
-    let login;
-    let password;
-    let newPassword;
-    let newLogin = opt($account, 'login');
-    let suspendingDialogShown = false;
-    let token = null;
+	let login;
+	let password;
+	let newPassword;
+	let newLogin = opt($account, 'login');
+	let suspendingDialogShown = false;
+	let token = null;
 
-    function performAction() {
-        if (action == "addHome") {
-            account.refresh(true);
-        }
-        if (action == "oculuspc") {
-            const urlParams = new URLSearchParams(window.location.search);
-            token = urlParams.get('token');
-            oculus.fetchOculusUser(token);
-        }
-    }
+	function performAction() {
+		if (action == 'addHome') {
+			account.refresh(true);
+		}
+		if (action == 'oculuspc') {
+			const urlParams = new URLSearchParams(window.location.search);
+			token = urlParams.get('token');
+			oculus.fetchOculusUser(token);
+		}
+	}
 
-    $: loggedInPlayer = opt($account, 'id');
-    $: error = opt($account, 'error') ?? $oculus?.error;
-    $: message = opt($account, 'message');
-    $: patreoned = opt($account, 'patreoned');
-    $: loading = opt($account, 'loading');
-    $: performAction();
+	$: loggedInPlayer = opt($account, 'id');
+	$: error = opt($account, 'error') ?? $oculus?.error;
+	$: message = opt($account, 'message');
+	$: patreoned = opt($account, 'patreoned');
+	$: loading = opt($account, 'loading');
+	$: performAction();
 </script>
 
 <div class="container login-page">
-{#if !action || action == "addHome"}
-    {#if !loggedInPlayer}
-    <div class="title">Login</div>
-    <div class="tips">Login with Steam or the account you created in game.</div>
-        <b>Creating an account is only possible from in game!</b>
-        <div class="input-container">
-            <div class="cat">
-                Account
-            </div>
-            <input bind:value={login} placeholder="Account">
-        </div>
-        <div class="input-container">
-            <div class="cat">
-                Password
-            </div>
-            <input type="password" bind:value={password} placeholder="Password">
-        </div>
+	{#if !action || action == 'addHome'}
+		{#if !loggedInPlayer}
+			<div class="title">Login</div>
+			<div class="tips">Login with Steam or the account you created in game.</div>
+			<b>Creating an account is only possible from in game!</b>
+			<div class="input-container">
+				<div class="cat">Account</div>
+				<input bind:value={login} placeholder="Account" />
+			</div>
+			<div class="input-container">
+				<div class="cat">Password</div>
+				<input type="password" bind:value={password} placeholder="Password" />
+			</div>
 
-        <Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)}/>
-        <form action={BL_API_URL + "signin"} method="post">
-            <input type="hidden" name="Provider" value="Steam" />
-            <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
+			<Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)} />
+			<form action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="Steam" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
 
-            <Button icon={steamSvg} label="Login with Steam" type="submit"/>
-        </form>
-        <form action={BL_API_URL + "signin"} method="post">
-            <input type="hidden" name="Provider" value="BeatSaver" />
-            <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
+				<Button icon={steamSvg} label="Login with Steam" type="submit" />
+			</form>
+			<form action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="BeatSaver" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
 
-            <Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit"/>
-        </form>
-        <br>
-    {:else if loggedInPlayer > 70000000000000000}
-        {#if !$account.migrated}
-            If you are using the <b>Steam game</b> - you are all set!<br>
-            Check <a class="inlineLink" href={"/u/" + loggedInPlayer}>your fancy profile </a>
-            <br>
-            <br>
-            <br>
-            If you are using Oculus (Quest or PC) - you can migrate<br>account created in mod to this <b class="inlineLink">Steam account.</b><br><br>
-            Your current scores will migrate and<br>the new ones will be posted to the Steam acc.<br>
-            This is not required and there is no way to unmerge!
-            <div class="input-container">
-                Login
-                <input bind:value={login} placeholder="Login">
-            </div>
-            <div class="input-container">
-                Password
-                <input type="password" bind:value={password} placeholder="Password">
-            </div>        
-            <Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)}/>
-        {:else}
-            {navigate("/u/" + loggedInPlayer)}
-        {/if}
-    {:else if ((loggedInPlayer < 30000000 || loggedInPlayer > 1000000000000000))}
-        You can migrate this account to your Steam account.<br><br>
-        Your current scores will migrate and<br>the new ones will be posted to the Steam account.<br>
-        Or just use this account.<br>
-        You can change your avatar and name in <a class="inlineLink" href={"/u/" + loggedInPlayer}>your profile.</a>
+				<Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit" />
+			</form>
+			<br />
+		{:else if loggedInPlayer > 70000000000000000}
+			{#if !$account.migrated}
+				If you are using the <b>Steam game</b> - you are all set!<br />
+				Check <a class="inlineLink" href={'/u/' + loggedInPlayer}>your fancy profile </a>
+				<br />
+				<br />
+				<br />
+				If you are using Oculus (Quest or PC) - you can migrate<br />account created in mod to this
+				<b class="inlineLink">Steam account.</b><br /><br />
+				Your current scores will migrate and<br />the new ones will be posted to the Steam acc.<br />
+				This is not required and there is no way to unmerge!
+				<div class="input-container">
+					Login
+					<input bind:value={login} placeholder="Login" />
+				</div>
+				<div class="input-container">
+					Password
+					<input type="password" bind:value={password} placeholder="Password" />
+				</div>
+				<Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)} />
+			{:else}
+				{navigate('/u/' + loggedInPlayer)}
+			{/if}
+		{:else if loggedInPlayer < 30000000 || loggedInPlayer > 1000000000000000}
+			You can migrate this account to your Steam account.<br /><br />
+			Your current scores will migrate and<br />the new ones will be posted to the Steam account.<br />
+			Or just use this account.<br />
+			You can change your avatar and name in <a class="inlineLink" href={'/u/' + loggedInPlayer}>your profile.</a>
 
-        <form action={BL_API_URL + "signinmigrate"} method="post">
-            <input type="hidden" name="Provider" value="Steam" />
-            <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
+			<form action={BL_API_URL + 'signinmigrate'} method="post">
+				<input type="hidden" name="Provider" value="Steam" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
 
-            <Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit"/>
-        </form>
-    {:else}
-        {navigate("/u/" + loggedInPlayer)}
-    {/if}
-{:else if action == "changePassword"}
-    {#if !$account.migrated}
-        <div class="input-container">
-            Login
-            <input bind:value={login} placeholder="Login">
-        </div>
-        <div class="input-container">
-            Current password
-            <input type="password" bind:value={password} placeholder="Password">
-        </div>
-        <div class="input-container">
-            New password
-            <input type="password" bind:value={newPassword} placeholder="New password">
-        </div>
-        
-        <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePassword(login, password, newPassword)}/>
-    {:else}
-        <div class="input-container">
-            Login
-            <input bind:value={login} placeholder="Login">
-        </div>
-        <div class="input-container">
-            New password
-            <input type="password" bind:value={newPassword} placeholder="Password">
-        </div>
-        
-        <Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)}/>
-    {/if}
-{:else if action == "linkPatreon"}
+				<Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit" />
+			</form>
+		{:else}
+			{navigate('/u/' + loggedInPlayer)}
+		{/if}
+	{:else if action == 'changePassword'}
+		{#if !$account.migrated}
+			<div class="input-container">
+				Login
+				<input bind:value={login} placeholder="Login" />
+			</div>
+			<div class="input-container">
+				Current password
+				<input type="password" bind:value={password} placeholder="Password" />
+			</div>
+			<div class="input-container">
+				New password
+				<input type="password" bind:value={newPassword} placeholder="New password" />
+			</div>
 
-<div>
-Link your account to receive patreon features for your tier.<br><br>
+			<Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePassword(login, password, newPassword)} />
+		{:else}
+			<div class="input-container">
+				Login
+				<input bind:value={login} placeholder="Login" />
+			</div>
+			<div class="input-container">
+				New password
+				<input type="password" bind:value={newPassword} placeholder="Password" />
+			</div>
 
-If you are not yet a patron, you can become one <strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</strong>
-</div>
+			<Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)} />
+		{/if}
+	{:else if action == 'linkPatreon'}
+		<div>
+			Link your account to receive patreon features for your tier.<br /><br />
 
-<form action={BL_API_URL + "signin"} method="post">
-    <input type="hidden" name="Provider" value="Patreon" />
-    <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/patreon"} />
+			If you are not yet a patron, you can become one
+			<strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</a></strong>
+		</div>
 
-    <Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit"/>
-</form>
-{:else if action == "linkBeatSaver"}
+		<form action={BL_API_URL + 'signin'} method="post">
+			<input type="hidden" name="Provider" value="Patreon" />
+			<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/patreon'} />
 
-<div>
-Link your account to receive mapper role.<br>
-And receive a profile badge if you are approved mapper.<br>
-</div>
+			<Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit" />
+		</form>
+	{:else if action == 'linkBeatSaver'}
+		<div>
+			Link your account to receive mapper role.<br />
+			And receive a profile badge if you are approved mapper.<br />
+		</div>
 
-<form action={BL_API_URL + "signin"} method="post">
-    <input type="hidden" name="Provider" value="BeatSaver" />
-    <input type="hidden" name="ReturnUrl" value={CURRENT_URL + "/signin/addHome"} />
+		<form action={BL_API_URL + 'signin'} method="post">
+			<input type="hidden" name="Provider" value="BeatSaver" />
+			<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
 
-    <Button iconFa="fas fa-plus-square" label="Link to BeatSaver" type="submit"/>
-</form>
-{:else if action == "patreon"}
-    {#if patreoned}
-    Yay!<br>
-    Thank you for supporting BeatLeader!
-    {:else}
-    Something went wrong while linking your account.<br>
-    If you used this account before, try unlink it first.
-    {/if}
-{:else if action == "mylogin"}
-    Your current login is: <b>{$account.login}</b><br>
-    It's the username you use to sign in with.<br>
-    Your profile name is a different thing!<br>
+			<Button iconFa="fas fa-plus-square" label="Link to BeatSaver" type="submit" />
+		</form>
+	{:else if action == 'patreon'}
+		{#if patreoned}
+			Yay!<br />
+			Thank you for supporting BeatLeader!
+		{:else}
+			Something went wrong while linking your account.<br />
+			If you used this account before, try unlink it first.
+		{/if}
+	{:else if action == 'mylogin'}
+		Your current login is: <b>{$account.login}</b><br />
+		It's the username you use to sign in with.<br />
+		Your profile name is a different thing!<br />
 
-    <div class="input-container">
-        You may change it once a week.<br>Make sure you don't use special characters not available in-game keyboard.
-        <input bind:value={newLogin} placeholder="New login">
-    </div>
+		<div class="input-container">
+			You may change it once a week.<br />Make sure you don't use special characters not available in-game keyboard.
+			<input bind:value={newLogin} placeholder="New login" />
+		</div>
 
-    <Button iconFa="fas fa-plus-square" label="Change login" on:click={() => account.changeLogin(newLogin)}/>
-{:else if action == "autoban"}
-    {#if $account.ban}
-    Your account was suspended {formatDateRelative(dateFromUnix($account.ban.timeset))}<br>
-    You can activate it after a week has passed.
+		<Button iconFa="fas fa-plus-square" label="Change login" on:click={() => account.changeLogin(newLogin)} />
+	{:else if action == 'autoban'}
+		{#if $account.ban}
+			Your account was suspended {formatDateRelative(dateFromUnix($account.ban.timeset))}<br />
+			You can activate it after a week has passed.
 
-    <Button iconFa="fas fa-plus-square" label="Try activate my account" on:click={() => account.unbanPlayer()}/>
-    {:else}
-    You can suspend your BeatLeader account. It will disappear in the leaderboards and ranking.<br>
-    And you won't be able to submit scores.<br><br>
+			<Button iconFa="fas fa-plus-square" label="Try activate my account" on:click={() => account.unbanPlayer()} />
+		{:else}
+			You can suspend your BeatLeader account. It will disappear in the leaderboards and ranking.<br />
+			And you won't be able to submit scores.<br /><br />
 
-    <b>You can activate it back only after the week of suspension.<br>
-        All account data will be deleted after 6 months of suspension!</b><br>
-    
-    Account suspension may take up to 3 minutes.
+			<b
+				>You can activate it back only after the week of suspension.<br />
+				All account data will be deleted after 6 months of suspension!</b
+			><br />
 
-    <Button iconFa="fas fa-plus-square" label="Yes, suspend my account" on:click={() => suspendingDialogShown = !suspendingDialogShown}/>
-    {/if}
-{:else if action == "oculuspc"}
-    {#if $oculus.name}
-        {#if !$oculus.migrated}
-        {$oculus.name}, hi!<br><br>
-        Please select preffered way to login on the website.<br>
-        <b>Steam account.</b> You don't need to own the game.<br>
-        Your ID will be changed to the Steam ID<br>
+			Account suspension may take up to 3 minutes.
 
-        <form action={BL_API_URL + "signinmigrate/oculuspc"} method="post">
-            <input type="hidden" name="Provider" value="Steam" />
-            <input type="hidden" name="Token" value={token} />
-            <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
+			<Button
+				iconFa="fas fa-plus-square"
+				label="Yes, suspend my account"
+				on:click={() => (suspendingDialogShown = !suspendingDialogShown)} />
+		{/if}
+	{:else if action == 'oculuspc'}
+		{#if $oculus.name}
+			{#if !$oculus.migrated}
+				{$oculus.name}, hi!<br /><br />
+				Please select preffered way to login on the website.<br />
+				<b>Steam account.</b> You don't need to own the game.<br />
+				Your ID will be changed to the Steam ID<br />
 
-            <Button iconFa="fas fa-plus-square" label="Use Steam" type="submit"/>
-        </form>
+				<form action={BL_API_URL + 'signinmigrate/oculuspc'} method="post">
+					<input type="hidden" name="Provider" value="Steam" />
+					<input type="hidden" name="Token" value={token} />
+					<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
 
-        <b>Login and password.</b><br>
-        Your ID will remain the same.<br>
-        <form action={BL_API_URL + "signinoculus/oculuspc"} method="post">
-            <input type="hidden" name="action" value="signup" />
-            <input type="hidden" name="Token" value={token} />
-            <input type="hidden" name="ReturnUrl" value= {CURRENT_URL + "/signin/addHome" } />
-        <div class="input-container">
-            Website Login
-            <input name="login" bind:value={login} placeholder="Login">
-        </div>
-        <div class="input-container">
-            New password
-            <input name="password" type="password" bind:value={password} placeholder="Password">
-        </div>
-        
-        <Button iconFa="fas fa-plus-square" label="Sign up" type="submit"/>
-        </form>
-        {:else}
-        {navigate("/u/" + $oculus.migratedId)}
-        {/if}
-    {:else}
-        Loading...
-    {/if}
-{/if}
+					<Button iconFa="fas fa-plus-square" label="Use Steam" type="submit" />
+				</form>
 
-{#if suspendingDialogShown}
-    <Dialog type="confirm" title="Are you sure?" okButton="Yeah!" cancelButton="Hell no!"
-            on:confirm={() => { account.banPlayer(); suspendingDialogShown = false} }
-            on:cancel={() => suspendingDialogShown = false}
-    >
-      <div slot="content">
-        <div>Your BeatLeader account will be suspended!</div>
-      </div>
-    </Dialog>
-  {/if}
-    
-  {#if loading}
-  <Spinner />
-  {/if}
-{#if error}
-<p class="error">{error}</p>
-{/if}
-{#if message}
-<p class="messagep">{message}</p>
-{/if}
+				<b>Login and password.</b><br />
+				Your ID will remain the same.<br />
+				<form action={BL_API_URL + 'signinoculus/oculuspc'} method="post">
+					<input type="hidden" name="action" value="signup" />
+					<input type="hidden" name="Token" value={token} />
+					<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+					<div class="input-container">
+						Website Login
+						<input name="login" bind:value={login} placeholder="Login" />
+					</div>
+					<div class="input-container">
+						New password
+						<input name="password" type="password" bind:value={password} placeholder="Password" />
+					</div>
+
+					<Button iconFa="fas fa-plus-square" label="Sign up" type="submit" />
+				</form>
+			{:else}
+				{navigate('/u/' + $oculus.migratedId)}
+			{/if}
+		{:else}
+			Loading...
+		{/if}
+	{/if}
+
+	{#if suspendingDialogShown}
+		<Dialog
+			type="confirm"
+			title="Are you sure?"
+			okButton="Yeah!"
+			cancelButton="Hell no!"
+			on:confirm={() => {
+				account.banPlayer();
+				suspendingDialogShown = false;
+			}}
+			on:cancel={() => (suspendingDialogShown = false)}>
+			<div slot="content">
+				<div>Your BeatLeader account will be suspended!</div>
+			</div>
+		</Dialog>
+	{/if}
+
+	{#if loading}
+		<Spinner />
+	{/if}
+	{#if error}
+		<p class="error">{error}</p>
+	{/if}
+	{#if message}
+		<p class="messagep">{message}</p>
+	{/if}
 </div>
 
 <style>
-    .container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        grid-gap: 2em;
-    }
-    .error {
-        color: red;
-    }
-    .messagep {
-        color: green;
-    }
+	.container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		grid-gap: 2em;
+	}
+	.error {
+		color: red;
+	}
+	.messagep {
+		color: green;
+	}
 
-    .input-container {
-        display: grid;
-    }
+	.input-container {
+		display: grid;
+	}
 
-    .inlineLink {
-        display: contents;
-    }
-    .title {
-        margin-top: 1em;
-    }
+	.inlineLink {
+		display: contents;
+	}
+	.title {
+		margin-top: 1em;
+	}
 </style>
-
-
-

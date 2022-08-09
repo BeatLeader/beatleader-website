@@ -1,5 +1,5 @@
 import createBeatMapsService from '../../../../services/beatmaps'
-import {opt} from '../../../../utils/js'
+import { opt } from '../../../../utils/js'
 
 const beatMaps = createBeatMapsService();
 

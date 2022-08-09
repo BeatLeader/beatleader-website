@@ -1,7 +1,7 @@
-import {DateTime} from 'luxon';
-import {isString} from "./js";
-import {getCurrentLocale} from '../stores/config'
-import {padNumber} from './format'
+import { DateTime } from 'luxon';
+import { isString } from "./js";
+import { getCurrentLocale } from '../stores/config'
+import { padNumber } from './format'
 
 export const SECOND = 1000;
 export const MINUTE = 60 * SECOND;
@@ -11,7 +11,7 @@ export const DAY = 24 * HOUR;
 const BEATLEADER_TZ = 'Europe/Berlin';
 const ACCSABER_TZ = 'Europe/Berlin';
 
-export const isValidDate = d =>d instanceof Date && !isNaN(d);
+export const isValidDate = d => d instanceof Date && !isNaN(d);
 
 export const dateFromUnix = str => {
     const date = new Date(parseInt(str, 10) * 1000);
@@ -36,15 +36,15 @@ export const durationToMillis = duration => {
     if (!match) return null;
 
     return (match[1] ? parseInt(match[1], 10) * 1000 * 60 * 60 : 0) +
-      (match[2] ? parseInt(match[2], 10) * 1000 * 60 : 0) +
-      (match[3] ? parseInt(match[3], 10) * 1000 : 0);
+        (match[2] ? parseInt(match[2], 10) * 1000 * 60 : 0) +
+        (match[3] ? parseInt(match[3], 10) * 1000 : 0);
 }
 
 export const millisToDuration = millis => {
     const hours = padNumber(Math.floor(millis / (1000 * 60 * 60)));
     millis -= hours * 1000 * 60 * 60;
 
-    const minutes = padNumber(Math.floor(millis  / (1000 * 60)));
+    const minutes = padNumber(Math.floor(millis / (1000 * 60)));
     millis -= minutes * 1000 * 60;
 
     const seconds = padNumber(Math.floor(millis / 1000));
@@ -58,7 +58,7 @@ export function truncateDate(date, precision = 'day') {
     const newDate = new Date(date.getTime());
 
     // no breaks here!
-    switch(precision) {
+    switch (precision) {
         case 'year': newDate.setMonth(0);
         case 'month': newDate.setDate(1);
         case 'day': newDate.setHours(0);
@@ -73,9 +73,9 @@ export function truncateDate(date, precision = 'day') {
 export const toTimezoneMidnight = (date, timezone) => DateTime.fromJSDate(date).setZone(timezone).startOf('day').toJSDate();
 export const toBlMidnight = date => toTimezoneMidnight(date, BEATLEADER_TZ);
 export const toAccSaberMidnight = date => toTimezoneMidnight(date, ACCSABER_TZ);
-export const fromAccSaberDateString = dateStr => DateTime.fromSQL(dateStr, {zone: ACCSABER_TZ}).toJSDate();
+export const fromAccSaberDateString = dateStr => DateTime.fromSQL(dateStr, { zone: ACCSABER_TZ }).toJSDate();
 
-export function formatDateWithOptions(val, options = {localeMatcher: 'best fit'}, locale = getCurrentLocale()) {
+export function formatDateWithOptions(val, options = { localeMatcher: 'best fit' }, locale = getCurrentLocale()) {
     if (!isValidDate(val)) return null;
 
     const rtf = new Intl.DateTimeFormat(locale, options);
@@ -113,7 +113,7 @@ export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto', l
     const diffInSecs = (Date.now() - dateFromString(val)) / 1000;
     const absDiff = Math.abs(diffInSecs);
 
-    switch(unit) {
+    switch (unit) {
         case 'auto':
             if (absDiff < 60)
                 return rtf.format(-roundFunc(diffInSecs), 'second');
@@ -125,28 +125,28 @@ export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto', l
                 return rtf.format(-roundFunc(diffInSecs / (60 * 60 * 24)), 'day');
             else if (absDiff < 60 * 60 * 24 * 365)
                 return rtf.format(
-                  -roundFunc(diffInSecs / (60 * 60 * 24 * 30)),
-                  'month'
+                    -roundFunc(diffInSecs / (60 * 60 * 24 * 30)),
+                    'month'
                 );
             else
                 return rtf.format(
-                  -roundFunc(diffInSecs / (60 * 60 * 24 * 365)),
-                  'year'
+                    -roundFunc(diffInSecs / (60 * 60 * 24 * 365)),
+                    'year'
                 );
 
         default:
             let unitDivider =
-              unit === 'second' ? 1 : (
-                unit === 'minute' ? 60 : (
-                  unit === 'hour' ? 60 * 60 : (
-                    unit === 'day' ? 60 * 60 * 24 : (
-                      unit === 'month' ? 60 * 60 * 24 * 30 : (
-                        unit === 'year' ? 60 * 60 * 24 * 365 : null
-                      )
+                unit === 'second' ? 1 : (
+                    unit === 'minute' ? 60 : (
+                        unit === 'hour' ? 60 * 60 : (
+                            unit === 'day' ? 60 * 60 * 24 : (
+                                unit === 'month' ? 60 * 60 * 24 * 30 : (
+                                    unit === 'year' ? 60 * 60 * 24 * 365 : null
+                                )
+                            )
+                        )
                     )
-                  )
-                )
-              );
+                );
             if (!unitDivider) {
                 unitDivider = 1;
                 unit = 'second';

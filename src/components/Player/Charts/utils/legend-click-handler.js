@@ -5,7 +5,7 @@ export const onLegendClick = (event, legendItem, legend) => {
   const scales = legend?.chart?.config?.options?.scales;
   if (!scales) return;
 
-  const {x: xAxis, ...yAxes} = scales;
+  const { x: xAxis, ...yAxes } = scales;
 
   if (ci.isDatasetVisible(idx)) {
     ci.hide(idx);
@@ -17,7 +17,7 @@ export const onLegendClick = (event, legendItem, legend) => {
 
   if (legend?.chart) {
     const yAxisIdsToShow = (legend?.legendItems ?? [])
-      .sort((a,b) => (ci?.config?.data?.datasets?.[a?.datasetIndex]?.axisOrder ?? a?.datasetIndex) - (ci?.config?.data?.datasets?.[b?.datasetIndex]?.axisOrder ?? b?.datasetIndex))
+      .sort((a, b) => (ci?.config?.data?.datasets?.[a?.datasetIndex]?.axisOrder ?? a?.datasetIndex) - (ci?.config?.data?.datasets?.[b?.datasetIndex]?.axisOrder ?? b?.datasetIndex))
       .reduce((cum, legendItem) => {
         // done
         if (cum.second) return cum;
@@ -35,7 +35,7 @@ export const onLegendClick = (event, legendItem, legend) => {
         }
 
         return cum;
-      }, {first: null, second: null});
+      }, { first: null, second: null });
 
     Object.keys(yAxes).forEach(currentAxisKey => {
       if (![yAxisIdsToShow.first, yAxisIdsToShow.second].includes(currentAxisKey)) {
@@ -48,7 +48,7 @@ export const onLegendClick = (event, legendItem, legend) => {
       if (yAxisIdsToShow.second === currentAxisKey) yAxes[currentAxisKey].position = 'right';
     });
 
-    legend.chart.options.scales = {x: xAxis, ...yAxes}
+    legend.chart.options.scales = { x: xAxis, ...yAxes }
     legend.chart.update();
   }
 }

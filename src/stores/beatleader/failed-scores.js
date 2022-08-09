@@ -1,5 +1,5 @@
-import {writable} from 'svelte/store'
-import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
+import { writable } from 'svelte/store'
+import { BL_API_URL } from '../../network/queues/beatleader/api-queue'
 import process from '../../network/clients/beatleader/scores/utils/process';
 
 let store = null;
@@ -11,37 +11,37 @@ export default (refreshOnCreate = true) => {
   let totalScores = {};
 
   const get = () => totalScores;
-  const {subscribe: subscribeState, set} = writable(totalScores);
+  const { subscribe: subscribeState, set } = writable(totalScores);
 
   const fetchScores = async (page) => {
-    fetch(BL_API_URL + "user/failedScores?page=" + page, {credentials: 'include'})
-    .then(response => response.json())
-    .then(data => process(data))
-    .then(data => {
+    fetch(BL_API_URL + "user/failedScores?page=" + page, { credentials: 'include' })
+      .then(response => response.json())
+      .then(data => process(data))
+      .then(data => {
         totalScores.scores = data.data;
         totalScores.metadata = data.metadata;
         set(totalScores);
-    })
+      })
   }
 
   const deleteScore = async (id) => {
     totalScores.scores = totalScores.scores.filter(s => s.score.id != id);
     set(totalScores);
 
-    fetch(BL_API_URL + "user/failedscore/remove?id=" + id, {credentials: 'include', method: 'POST'})
-    .then(() => {
+    fetch(BL_API_URL + "user/failedscore/remove?id=" + id, { credentials: 'include', method: 'POST' })
+      .then(() => {
         fetchScores();
-    })
+      })
   }
-  
+
   const retryScore = async (id) => {
     totalScores.scores = totalScores.scores.filter(s => s.score.id != id);
     set(totalScores);
 
-    fetch(BL_API_URL + "user/failedscore/retry?id=" + id, {credentials: 'include', method: 'POST'})
-    .then(() => {
+    fetch(BL_API_URL + "user/failedscore/retry?id=" + id, { credentials: 'include', method: 'POST' })
+      .then(() => {
         fetchScores();
-    })
+      })
   }
 
   const refresh = async () => fetchScores(1);

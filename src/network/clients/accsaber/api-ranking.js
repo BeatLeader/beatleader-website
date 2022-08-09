@@ -13,10 +13,10 @@ const process = response => {
   }));
 }
 
-const get = async ({category = 'overall', page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => {
+const get = async ({ category = 'overall', page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => {
   const response = await queue.ACCSABER.ranking(category, page, priority, queueOptions);
 
-  return {...response, body: {response: response.body, fetchOptions: {category}}}
+  return { ...response, body: { response: response.body, fetchOptions: { category } } }
 }
 
 const client = createClient(get, process);

@@ -1,6 +1,6 @@
 import cache from '../cache';
-import {db} from '../db';
-import {convertArrayToObjectByKey} from '../../utils/js'
+import { db } from '../db';
+import { convertArrayToObjectByKey } from '../../utils/js'
 import makePendingPromisePool from '../../utils/pending-promises'
 import eventBus from '../../utils/broadcast-channel-pubsub'
 
@@ -26,7 +26,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
 
   let repositoryCache = cache(repositoryName, getObjKey);
 
-  const getCacheKeyFor =  (query, indexName) => (indexName ? indexName : ALL_KEY) + '-' + (query ? query : NONE_KEY);
+  const getCacheKeyFor = (query, indexName) => (indexName ? indexName : ALL_KEY) + '-' + (query ? query : NONE_KEY);
 
   const getFieldForIndexName = indexName => indexesKeyNames[indexName];
   const isFieldForIndexDefined = indexName => !!getFieldForIndexName(indexName);
@@ -97,7 +97,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
     return repositoryCache.getByFilter(getFromDb, isAllDataAvailable() || isIndexDataAvailable(cacheKey) || isIndexDataAvailable(fullIndexCacheKey) ? filterItems : null);
   };
 
-  const getAll = async(refreshCache = false) => {
+  const getAll = async (refreshCache = false) => {
     const cacheKey = getCacheKeyFor();
 
     const getFromDb = () => resolvePromiseOrWaitForPending(cacheKey, () => db.getAll(storeName))
@@ -121,7 +121,7 @@ export default (storeName, inlineKeyName = undefined, indexesKeyNames = {}) => {
     return Object.values(repositoryCache.getAll()).filter(filterUndefined);
   }
 
-  const getAllFromIndex = async(indexName, query = undefined, refreshCache = false) => {
+  const getAllFromIndex = async (indexName, query = undefined, refreshCache = false) => {
     if (hasOutOfLineKey()) throw `getAllFromIndex() is not available for stores with out-of-line key`;
     if (!isFieldForIndexDefined(indexName)) throw `Index ${indexName} has no field set`;
 

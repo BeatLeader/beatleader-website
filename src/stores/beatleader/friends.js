@@ -1,4 +1,4 @@
-import {derived} from 'svelte/store'
+import { derived } from 'svelte/store'
 import createAccountStore from './account'
 
 const accountStore = createAccountStore();

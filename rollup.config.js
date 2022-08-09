@@ -50,7 +50,7 @@ export default [
 		},
 		plugins: [
 			svelte({
-				preprocess: sveltePreprocess({sourceMap: !production}),
+				preprocess: sveltePreprocess({ sourceMap: !production }),
 				compilerOptions: {
 					// enable run-time checks when not in production
 					dev: !production,
@@ -58,7 +58,7 @@ export default [
 			}),
 			// we'll extract any component CSS out into
 			// a separate file - better for performance
-			css({output: 'bundle.css'}),
+			css({ output: 'bundle.css' }),
 
 			svg(),
 

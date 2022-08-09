@@ -1,14 +1,14 @@
 import hashApiClient from '../network/clients/beatmaps/api-hash';
 import mapperClient from '../network/clients/beatmaps/api-mapper';
 import keyApiClient from '../network/clients/beatmaps/api-key';
-import {PRIORITY} from '../network/queues/http-queue';
+import { PRIORITY } from '../network/queues/http-queue';
 import log from '../utils/logger'
-import {SsrHttpNotFoundError, SsrNetworkError} from '../network/errors'
+import { SsrHttpNotFoundError, SsrNetworkError } from '../network/errors'
 import keyValueRepository from '../db/repository/key-value';
 import songsBeatMapsRepository from "../db/repository/songs-beatmaps";
 import cacheRepository from "../db/repository/cache";
-import {addToDate, dateFromString, HOUR} from '../utils/date'
-import {capitalize, opt} from '../utils/js'
+import { addToDate, dateFromString, HOUR } from '../utils/date'
+import { capitalize, opt } from '../utils/js'
 
 const BM_SUSPENSION_KEY = 'bmSuspension';
 const BM_NOT_FOUND_KEY = 'bm404';
@@ -16,7 +16,7 @@ const BM_NOT_FOUND_HOURS_BETWEEN_COUNTS = 1;
 
 const INVALID_NOTES_COUNT_FIXES = {
     'e738b38b594861745bfb0473c66ca5cca15072ff': [
-        {type: 'Standard', diff: "ExpertPlus", notes: 942}
+        { type: 'Standard', diff: "ExpertPlus", notes: 942 }
     ]
 }
 
@@ -43,7 +43,7 @@ export default () => {
     const prolongSuspension = async bsSuspension => {
         const current = new Date();
 
-        const suspension = isSuspended(bsSuspension) ? bsSuspension : {started: current, activeTo: new Date(), count: 0};
+        const suspension = isSuspended(bsSuspension) ? bsSuspension : { started: current, activeTo: new Date(), count: 0 };
 
         suspension.activeTo = addToDate(Math.pow(2, suspension.count) * HOUR, suspension.activeTo);
         suspension.count++;
@@ -57,7 +57,7 @@ export default () => {
         let songs404 = await get404Hashes();
         if (!songs404) songs404 = {};
 
-        const item = songs404[hash] ? songs404[hash] : {firstTry: new Date(), recentTry: null, count: 0};
+        const item = songs404[hash] ? songs404[hash] : { firstTry: new Date(), recentTry: null, count: 0 };
 
         if (!item.recentTry || addToDate(BM_NOT_FOUND_HOURS_BETWEEN_COUNTS * HOUR, item.recentTry) < new Date()) {
             item.recentTry = new Date();
@@ -94,7 +94,7 @@ export default () => {
     const fetchSong = async (songInfo, fetchFunc, forceUpdate = false, cacheOnly = false, errSongId = '', hash = null) => {
         if (!forceUpdate && songInfo) return fixInvalidNotesCount(hash, songInfo);
 
-        if(cacheOnly) return null;
+        if (cacheOnly) return null;
 
         let bsSuspension = await getCurrentSuspension();
 
@@ -114,7 +114,7 @@ export default () => {
             }
 
             if (err instanceof SsrNetworkError && err.message === 'Network error') {
-                try {await prolongSuspension(bsSuspension)} catch {}
+                try { await prolongSuspension(bsSuspension) } catch { }
             }
 
             log.warn(`Error fetching BeatSaver song "${errSongId}"`);
@@ -128,7 +128,7 @@ export default () => {
 
         const songInfo = await songsBeatMapsRepository().get(hash);
 
-        return fetchSong(songInfo, () => hashApiClient.getProcessed({hash, signal, priority}), forceUpdate, cacheOnly, hash, hash)
+        return fetchSong(songInfo, () => hashApiClient.getProcessed({ hash, signal, priority }), forceUpdate, cacheOnly, hash, hash)
     }
 
     const byKey = async (key, forceUpdate = false, cacheOnly = false, signal = null, priority = PRIORITY.FG_LOW) => {
@@ -136,11 +136,11 @@ export default () => {
 
         const songInfo = await songsBeatMapsRepository().getFromIndex('songs-beatmaps-key', key);
 
-        return fetchSong(songInfo, () => keyApiClient.getProcessed({key, signal, priority}), forceUpdate, cacheOnly, key)
+        return fetchSong(songInfo, () => keyApiClient.getProcessed({ key, signal, priority }), forceUpdate, cacheOnly, key)
     }
 
     const convertOldBeatSaverToBeatMaps = song => {
-        let {key, hash, name, metadata: {characteristics}} = song;
+        let { key, hash, name, metadata: { characteristics } } = song;
 
         if (!key || !hash || !name || !characteristics || !Array.isArray(characteristics)) return null;
 
@@ -151,41 +151,41 @@ export default () => {
             const characteristic = ch.name;
 
             return diffs.concat(
-              Object.entries(ch.difficulties)
-                .map(([difficulty, obj]) => {
-                    if (!obj) return null;
-                    difficulty = capitalize(difficulty);
+                Object.entries(ch.difficulties)
+                    .map(([difficulty, obj]) => {
+                        if (!obj) return null;
+                        difficulty = capitalize(difficulty);
 
-                    const seconds = opt(obj, 'length', null);
-                    const notes = opt(obj, 'notes', null)
+                        const seconds = opt(obj, 'length', null);
+                        const notes = opt(obj, 'notes', null)
 
-                    const nps = notes && seconds ? notes / seconds : null;
+                        const nps = notes && seconds ? notes / seconds : null;
 
-                    return {
-                        njs: opt(obj, 'njs', null),
-                        offset: opt(obj, 'njsOffset', null),
-                        notes,
-                        bombs: opt(obj, 'bombs', null),
-                        obstacles: opt(obj, 'obstacles', null),
-                        nps,
-                        length: opt(obj, 'duration', null),
-                        characteristic,
-                        difficulty,
-                        events: null,
-                        chroma: null,
-                        me: null,
-                        ne: null,
-                        cinema: null,
-                        seconds,
-                        paritySummary: {
-                            errors: null,
-                            warns: null,
-                            resets: null,
-                        },
-                        stars: null,
-                    };
-                }))
-              .filter(diff => diff)
+                        return {
+                            njs: opt(obj, 'njs', null),
+                            offset: opt(obj, 'njsOffset', null),
+                            notes,
+                            bombs: opt(obj, 'bombs', null),
+                            obstacles: opt(obj, 'obstacles', null),
+                            nps,
+                            length: opt(obj, 'duration', null),
+                            characteristic,
+                            difficulty,
+                            events: null,
+                            chroma: null,
+                            me: null,
+                            ne: null,
+                            cinema: null,
+                            seconds,
+                            paritySummary: {
+                                errors: null,
+                                warns: null,
+                                resets: null,
+                            },
+                            stars: null,
+                        };
+                    }))
+                .filter(diff => diff)
         }, []);
 
         return {
@@ -240,7 +240,7 @@ export default () => {
     const getMapper = async (id, forceUpdate = false, cacheOnly = false, signal = null, priority = PRIORITY.FG_LOW) => {
         var mapperInfo = await keyValueRepository().get("mapper-" + id);
         if (!cacheOnly && (forceUpdate || !mapperInfo)) {
-            mapperInfo = await mapperClient.getProcessed({id, signal, priority})
+            mapperInfo = await mapperClient.getProcessed({ id, signal, priority })
             keyValueRepository().set(mapperInfo, "mapper-" + id);
         }
 

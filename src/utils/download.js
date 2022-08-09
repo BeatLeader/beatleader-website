@@ -2,7 +2,7 @@ export default (data, filename, type) => {
     const link = document.createElement("a");
     if (link.download === undefined) return false;
 
-    const blob = new Blob([data], {type});
+    const blob = new Blob([data], { type });
 
     link.setAttribute("href", URL.createObjectURL(blob));
     link.setAttribute("download", filename);

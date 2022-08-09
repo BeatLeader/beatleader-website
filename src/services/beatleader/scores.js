@@ -1,12 +1,12 @@
 import createPlayerService from './player';
-import {PRIORITY} from '../../network/queues/http-queue'
+import { PRIORITY } from '../../network/queues/http-queue'
 import scoresApiClient from '../../network/clients/beatleader/scores/api'
 import scoreStatsApiClient from '../../network/clients/beatleader/scores/api-stats'
-import {dateFromUnix, DAY, HOUR, MINUTE, truncateDate} from '../../utils/date'
-import {opt} from '../../utils/js'
+import { dateFromUnix, DAY, HOUR, MINUTE, truncateDate } from '../../utils/date'
+import { opt } from '../../utils/js'
 import makePendingPromisePool from '../../utils/pending-promises'
-import {roundToPrecision} from '../../utils/format'
-import {serviceFilterFunc} from '../utils'
+import { roundToPrecision } from '../../utils/format'
+import { serviceFilterFunc } from '../utils'
 
 const HISTOGRAM_DATE_PRECISION = 'day';
 const HISTOGRAM_PP_PRECISION = 5;
@@ -33,15 +33,15 @@ export default () => {
     if (asArray) {
       if (!scoresObj[_id]) scoresObj[_id] = [];
 
-      scoresObj[_id].push({...score})
+      scoresObj[_id].push({ ...score })
     } else {
-      scoresObj[_id] = {...score};
+      scoresObj[_id] = { ...score };
     }
 
     return scoresObj;
   }, {})
 
-  const getScoresHistogramDefinition = (serviceParams = {sort: 'date', order: 'desc'}) => {
+  const getScoresHistogramDefinition = (serviceParams = { sort: 'date', order: 'desc' }) => {
     const sort = serviceParams?.sort ?? 'date';
     const order = serviceParams?.order ?? 'desc';
 
@@ -66,13 +66,13 @@ export default () => {
     let suffix = '';
     let suffixLong = '';
 
-    switch(sort) {
+    switch (sort) {
       case 'date':
         valFunc = s => dateFromUnix(s);
         type = 'time';
         bucketSize = HISTOGRAM_DATE_PRECISION
         bucketSizeServerConvert = bucketSize => {
-          switch(bucketSize) {
+          switch (bucketSize) {
             case 'year': return DAY * 365 / 1000;
             case 'month': return DAY * 30 / 1000;
             case 'hour': return HOUR / 1000;
@@ -111,7 +111,7 @@ export default () => {
 
       case 'acc':
         valFunc = s => parseFloat(s) * 100,
-        filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s)
+          filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
         bucketSize = HISTOGRAM_ACC_PRECISION;
         bucketSizeServerConvert = bucketSize => bucketSize / 100;
@@ -125,7 +125,7 @@ export default () => {
 
       case 'stars':
         valFunc = s => parseFloat(s),
-        filterFunc = s => (s?.leaderboard?.stars ?? 0) > 0 && commonFilterFunc(s)
+          filterFunc = s => (s?.leaderboard?.stars ?? 0) > 0 && commonFilterFunc(s)
         type = 'linear';
         bucketSize = HISTOGRAM_STARS_PRECISION;
         minBucketSize = 0.1;
@@ -159,22 +159,22 @@ export default () => {
     }
   }
 
-  const fetchScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
-     scoresApiClient.getProcessed({...options, playerId, page: serviceParams?.page ?? 1, priority, params: serviceParams});
+  const fetchScoresPage = async (playerId, serviceParams = { sort: 'date', order: 'desc', page: 1 }, priority = PRIORITY.FG_LOW, { ...options } = {}) =>
+    scoresApiClient.getProcessed({ ...options, playerId, page: serviceParams?.page ?? 1, priority, params: serviceParams });
 
-  const fetchFriendsScoresPage = async (serviceParams = {sort: 'date', order: 'desc', page: 1}, priority = PRIORITY.FG_LOW, {...options} = {}) =>
-    scoresApiClient.getProcessed({...options, playerId: 'user-friends', page: serviceParams?.page ?? 1, priority, params: serviceParams});
+  const fetchFriendsScoresPage = async (serviceParams = { sort: 'date', order: 'desc', page: 1 }, priority = PRIORITY.FG_LOW, { ...options } = {}) =>
+    scoresApiClient.getProcessed({ ...options, playerId: 'user-friends', page: serviceParams?.page ?? 1, priority, params: serviceParams });
 
-  const fetchScoreStats = async (scoreId, priority = PRIORITY.FG_LOW, {...options} = {cacheTtl: HOUR, maxAge: HOUR}) =>
-    scoreStatsApiClient.getProcessed({...options, scoreId, priority});
+  const fetchScoreStats = async (scoreId, priority = PRIORITY.FG_LOW, { ...options } = { cacheTtl: HOUR, maxAge: HOUR }) =>
+    scoreStatsApiClient.getProcessed({ ...options, scoreId, priority });
 
-  const fetchScoresPageOrGetFromCache = async (player, serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
+  const fetchScoresPageOrGetFromCache = async (player, serviceParams = { sort: 'date', order: 'desc', page: 1 }, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => {
     if (!player || !player.playerId) return null;
 
-    return fetchScoresPage(player.playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: refreshInterval})
+    return fetchScoresPage(player.playerId, serviceParams, priority, { signal, cacheTtl: MINUTE, maxAge: refreshInterval })
   }
 
-  const fetchFriendsScores = async (serviceParams = {sort: 'date', order: 'desc', page: 1}, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => fetchFriendsScoresPage(serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: refreshInterval});
+  const fetchFriendsScores = async (serviceParams = { sort: 'date', order: 'desc', page: 1 }, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null) => fetchFriendsScoresPage(serviceParams, priority, { signal, cacheTtl: MINUTE, maxAge: refreshInterval });
 
   const destroyService = () => {
     serviceCreationCount--;

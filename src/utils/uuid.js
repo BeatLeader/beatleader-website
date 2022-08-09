@@ -5,7 +5,7 @@ export const uuid = (a) => {
             a ^            // unless b is 8,
             crypto.getRandomValues(new Uint8Array(1))[0]  // in which case
             % 16           // a random number from
-            >> a/4         // 8 to 11
+            >> a / 4         // 8 to 11
         ).toString(16) // in hexadecimal
         : (              // or otherwise a concatenated string:
             [1e7] +        // 10000000 +

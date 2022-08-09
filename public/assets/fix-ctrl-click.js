@@ -31,8 +31,8 @@
         );
         a.dispatchEvent(evt);
     }
-    
-    window.addEventListener("load",()=>{
+
+    window.addEventListener("load", () => {
         window.history.oldPushState = window.history.pushState;
         window.history.pushState = (...args) => {
             if (ctrlPressState) openInBackground(args[2])

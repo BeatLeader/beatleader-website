@@ -4,19 +4,19 @@ export default () => {
 
   const getAllServices = () => ['beatleader', 'beatsavior', 'accsaber'];
 
-  const get = () => ({service: currentService, params: currentServiceParams});
+  const get = () => ({ service: currentService, params: currentServiceParams });
 
   const getDefaultParams = service => {
     switch (service) {
       case 'beatsavior':
-        return {sort: 'date', order: 'desc', page: 1, filters: {}};
+        return { sort: 'date', order: 'desc', page: 1, filters: {} };
 
       case 'accsaber':
-        return {type: 'overall', order: 'desc', sort: 'ap', page: 1, filters: {}}
+        return { type: 'overall', order: 'desc', sort: 'ap', page: 1, filters: {} }
 
       case 'beatleader':
       default:
-        return {sort: 'date', order: 'desc', page: 1, filters: {}}
+        return { sort: 'date', order: 'desc', page: 1, filters: {} }
     }
   }
 
@@ -32,14 +32,14 @@ export default () => {
     }
 
     // preserve old filters
-    serviceParams = {...serviceParams}
+    serviceParams = { ...serviceParams }
     serviceParams.filters = {
       ...(currentServiceParams?.filters ?? {}),
       ...(serviceParams?.filters ?? {}),
     }
 
     currentService = service;
-    currentServiceParams = {...defaultServiceParams, ...currentServiceParams, ...serviceParams}
+    currentServiceParams = { ...defaultServiceParams, ...currentServiceParams, ...serviceParams }
 
     return get();
   }

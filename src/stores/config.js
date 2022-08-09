@@ -1,6 +1,6 @@
-import {writable} from 'svelte/store'
+import { writable } from 'svelte/store'
 import keyValueRepository from '../db/repository/key-value';
-import {opt} from '../utils/js'
+import { opt } from '../utils/js'
 
 const STORE_CONFIG_KEY = 'config';
 
@@ -11,8 +11,8 @@ export let configStore = null;
 const BROWSER_MAGIC_VALUE = '__BROWSER'
 
 const locales = {
-  'en-US': {id: 'en-US', name: 'United States'},
-  BROWSER_MAGIC_VALUE: {id: BROWSER_MAGIC_VALUE, name: 'Browser settings'},
+  'en-US': { id: 'en-US', name: 'United States' },
+  BROWSER_MAGIC_VALUE: { id: BROWSER_MAGIC_VALUE, name: 'Browser settings' },
 };
 export const getCurrentLocale = () => configStore?.getLocale();
 export const getSupportedLocales = () => Object.values(locales);
@@ -24,9 +24,9 @@ const DEFAULT_CONFIG = {
   preferences: {
     ppMetric: 'weighted',
     iconsOnAvatars: 'show',
-    theme:'mirror',
+    theme: 'mirror',
     oneclick: 'modassistant',
-    bgimage:"/assets/background.png"
+    bgimage: "/assets/background.png"
   },
   locale: DEFAULT_LOCALE,
   selectedPlaylist: null
@@ -42,22 +42,22 @@ const newSettingsAvailableDefinition = {
 export default async () => {
   if (configStore) return configStore;
 
-  let currentConfig = {...DEFAULT_CONFIG};
+  let currentConfig = { ...DEFAULT_CONFIG };
 
   let newSettingsAvailable = undefined;
 
-  const {subscribe, set: storeSet} = writable(currentConfig);
+  const { subscribe, set: storeSet } = writable(currentConfig);
 
   const get = key => key ? currentConfig[key] : currentConfig;
   const set = async (config, persist = true) => {
-    const newConfig = {...DEFAULT_CONFIG};
+    const newConfig = { ...DEFAULT_CONFIG };
     Object.keys(config).forEach(key => {
       if (key === 'locale') {
         newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
         return;
       }
 
-      newConfig[key] = {...newConfig?.[key], ...config?.[key]}
+      newConfig[key] = { ...newConfig?.[key], ...config?.[key] }
     });
 
     if (persist) await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
@@ -88,11 +88,11 @@ export default async () => {
     .filter(d => d)
 
   const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
-  const newSettings= determineNewSettingsAvailable(dbConfig);
+  const newSettings = determineNewSettingsAvailable(dbConfig);
   if (dbConfig) await set(dbConfig, false);
   newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
-  configStore =  {
+  configStore = {
     subscribe,
     set,
     get,

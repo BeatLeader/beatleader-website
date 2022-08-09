@@ -1,6 +1,6 @@
 import createScoresService from './scores'
 import makePendingPromisePool from '../../utils/pending-promises'
-import {getTotalPpFromSortedPps} from '../../utils/beatleader/pp'
+import { getTotalPpFromSortedPps } from '../../utils/beatleader/pp'
 
 let service = null;
 let serviceCreationCount = 0;
@@ -32,7 +32,7 @@ export default () => {
     if (!currentTotalPp) return null;
 
     const newTotalPp = await getTotalPlayerPp(playerId, {
-      [leaderboardId]: {pp},
+      [leaderboardId]: { pp },
     });
 
     return {

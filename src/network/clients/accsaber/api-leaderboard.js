@@ -1,7 +1,7 @@
 import queue from '../../queues/queues'
 import createClient from '../generic'
-import {dateFromString, formatDateRelative} from '../../../utils/date'
-import {LEADERBOARD_SCORES_PER_PAGE} from '../../../utils/accsaber/consts'
+import { dateFromString, formatDateRelative } from '../../../utils/date'
+import { LEADERBOARD_SCORES_PER_PAGE } from '../../../utils/accsaber/consts'
 
 const process = response => {
   if (!response || !Array.isArray(response.responses) || response.responses.length !== 2 || !Array.isArray(response.responses[0])) return [];
@@ -25,9 +25,9 @@ const process = response => {
     difficulty,
   } = mapInfo;
 
-  const song = {hash, name, subName, authorName, levelAuthorName, beatsaverKey};
-  const diffInfo = {type: 'Standard', diff: difficulty?.toLowerCase()?.replace('plus', 'Plus')}
-  const leaderboard = {leaderboardId, song, diffInfo, complexity, categoryDisplayName};
+  const song = { hash, name, subName, authorName, levelAuthorName, beatsaverKey };
+  const diffInfo = { type: 'Standard', diff: difficulty?.toLowerCase()?.replace('plus', 'Plus') }
+  const leaderboard = { leaderboardId, song, diffInfo, complexity, categoryDisplayName };
 
   return {
     page,
@@ -55,7 +55,7 @@ const process = response => {
         player: {
           name,
           playerId,
-          playerInfo: {avatar: `https://cdn.accsaber.com/avatars/${playerId}.jpg`},
+          playerInfo: { avatar: `https://cdn.accsaber.com/avatars/${playerId}.jpg` },
         },
         score: {
           acc,
@@ -72,13 +72,13 @@ const process = response => {
   };
 }
 
-const get = async ({leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => {
+const get = async ({ leaderboardId, page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => {
   const responses = await Promise.all([
     queue.ACCSABER.leaderboard(leaderboardId, page, priority, queueOptions),
     queue.ACCSABER.leaderboardInfo(leaderboardId, priority, queueOptions)
   ]);
 
-  return {...responses[0], body: {responses: responses.map(r => r.body), fetchOptions: {leaderboardId, page}}}
+  return { ...responses[0], body: { responses: responses.map(r => r.body), fetchOptions: { leaderboardId, page } } }
 }
 
 const client = createClient(get, process);

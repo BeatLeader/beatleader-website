@@ -1,16 +1,16 @@
-import {PRIORITY} from '../network/queues/http-queue';
+import { PRIORITY } from '../network/queues/http-queue';
 import createPlayerService from './beatleader/player'
 import createScoresService from './beatleader/scores'
 import beatSaviorApiClient from '../network/clients/beatsavior/api';
 import beatSaviorRepository from '../db/repository/beat-savior'
 import beatSaviorPlayersRepository from '../db/repository/beat-savior-players'
-import {addToDate, DAY, formatDate, HOUR, MINUTE, SECOND, truncateDate} from '../utils/date'
+import { addToDate, DAY, formatDate, HOUR, MINUTE, SECOND, truncateDate } from '../utils/date'
 import log from '../utils/logger'
-import {opt, capitalize} from '../utils/js'
+import { opt, capitalize } from '../utils/js'
 import makePendingPromisePool from '../utils/pending-promises'
-import {PLAYER_SCORES_PER_PAGE} from '../utils/beatleader/consts'
-import {roundToPrecision} from '../utils/format'
-import {serviceFilterFunc} from './utils'
+import { PLAYER_SCORES_PER_PAGE } from '../utils/beatleader/consts'
+import { roundToPrecision } from '../utils/format'
+import { serviceFilterFunc } from './utils'
 
 const MAIN_PLAYER_REFRESH_INTERVAL = MINUTE * 15;
 const OTHER_PLAYER_REFRESH_INTERVAL = HOUR * 3;
@@ -69,7 +69,7 @@ export default () => {
     return false;
   }
 
-  const getScoresHistogramDefinition = (serviceParams = {sort: 'date', order: 'desc'}) => {
+  const getScoresHistogramDefinition = (serviceParams = { sort: 'date', order: 'desc' }) => {
     const sort = serviceParams?.sort ?? 'date';
     const order = serviceParams?.order ?? 'desc';
 
@@ -91,7 +91,7 @@ export default () => {
     let suffix = '';
     let suffixLong = '';
 
-    switch(sort) {
+    switch (sort) {
       case 'date':
         valFunc = s => s?.timeSet;
         type = 'time';
@@ -145,17 +145,17 @@ export default () => {
     }
   }
 
-  const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', page: 1}) => {
+  const getPlayerScoresPage = async (playerId, serviceParams = { sort: 'date', order: 'desc', page: 1 }) => {
     let page = serviceParams?.page ?? 1;
     if (page < 1) page = 1;
 
-    const NO_SCORES = {metadata: {total: 0}, data: []};
+    const NO_SCORES = { metadata: { total: 0 }, data: [] };
 
     let playerScores = await getPlayerScores(playerId);
 
     if (!playerScores || !playerScores.length) return NO_SCORES;
 
-    const {sort: sortFunc, filter: filterFunc}  = getScoresHistogramDefinition(serviceParams);
+    const { sort: sortFunc, filter: filterFunc } = getScoresHistogramDefinition(serviceParams);
 
     playerScores = playerScores.filter(filterFunc).sort(sortFunc)
 
@@ -215,7 +215,7 @@ export default () => {
 
     log.debug(`Update player "${playerId}" Beat Savior last refresh date...`, 'BeatSaviorService')
 
-    await beatSaviorPlayersRepository().set({playerId, lastRefresh: new Date()})
+    await beatSaviorPlayersRepository().set({ playerId, lastRefresh: new Date() })
 
     log.debug(`Beat Savior data for player "${playerId}" updated.`, 'BeatSaviorService')
 
@@ -226,7 +226,7 @@ export default () => {
     try {
       log.debug(`Fetching Beat Savior data for player "${playerId}"...`, 'BeatSaviorService');
 
-      const data = await beatSaviorApiClient.getProcessed({playerId, priority});
+      const data = await beatSaviorApiClient.getProcessed({ playerId, priority });
       if (!data) {
         log.debug(`No Beat Savior data for player "${playerId}"`, 'BeatSaviorService')
 

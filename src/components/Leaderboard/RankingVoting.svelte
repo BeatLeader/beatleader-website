@@ -14,7 +14,7 @@
 	export let hash;
 	export let diff;
 	export let mode;
-    export let currentStars;
+	export let currentStars;
 	export let currentType;
 	export let playerId;
 
@@ -31,26 +31,36 @@
 	let criteriaMet = qualification?.criteriaMet;
 	let criteriaCommentary = qualification?.criteriaCommentary;
 
-	let originalTypes = currentType ? mapTypeFromMask(currentType).split(",") : [];
-	let selectedTypes = currentType ? mapTypeFromMask(currentType).split(",") : [];
+	let originalTypes = currentType ? mapTypeFromMask(currentType).split(',') : [];
+	let selectedTypes = currentType ? mapTypeFromMask(currentType).split(',') : [];
 	const allMapTypes = votingTypes;
 	let mapTypes = votingTypes;
 	let selectedType = '+';
 
 	function vote() {
-        if (rtvoting) {
+		if (rtvoting) {
 			if (isRanked) {
-            	votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
+				votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
 			} else {
 				if (qualificationUpdate) {
-					votingStore.updateQualification(hash, diff, mode, suitableForRank, stars, selectedTypes, mapperAllowed, criteriaMet, criteriaCommentary);
+					votingStore.updateQualification(
+						hash,
+						diff,
+						mode,
+						suitableForRank,
+						stars,
+						selectedTypes,
+						mapperAllowed,
+						criteriaMet,
+						criteriaCommentary
+					);
 				} else {
-					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes)
+					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
 				}
 			}
-        } else {
-            votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
-        }
+		} else {
+			votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
+		}
 
 		dispatch('finished');
 	}
@@ -79,109 +89,107 @@
 	function updateDialogTitle(rtvoting, isRanked, qualificationUpdate) {
 		if (rtvoting) {
 			if (isRanked) {
-				dialogTitle = "Update map ranking";
+				dialogTitle = 'Update map ranking';
 			} else if (qualificationUpdate) {
-				dialogTitle = "Update map qualification";
+				dialogTitle = 'Update map qualification';
 			} else {
-				dialogTitle = "Qualify map";
+				dialogTitle = 'Qualify map';
 			}
 		} else {
-			dialogTitle = "Vote map for ranked";
+			dialogTitle = 'Vote map for ranked';
 		}
 	}
 
 	let actionButtonTitle;
 	let actionButtonType;
 	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes) {
-		actionButtonType = "primary";
+		actionButtonType = 'primary';
 		if (rtvoting) {
 			if (isRanked) {
-				actionButtonTitle = "Update";
+				actionButtonTitle = 'Update';
 			} else if (qualificationUpdate) {
 				if (criteriaMet != 2) {
-					if (qualification.mapperAllowed 
-					&& qualification.rtMember != playerId 
-					&& qualification.criteriaChecker != playerId
-					&& qualification.criteriaMet == 1
-					&& currentStars == stars
-					&& originalTypes.length === selectedTypes.length && originalTypes.every(function(value, index) { return value === selectedTypes[index]})) {
-						actionButtonTitle = "Approve qualification!";
-						actionButtonType = "purple";
+					if (
+						qualification.mapperAllowed &&
+						qualification.rtMember != playerId &&
+						qualification.criteriaChecker != playerId &&
+						qualification.criteriaMet == 1 &&
+						currentStars == stars &&
+						originalTypes.length === selectedTypes.length &&
+						originalTypes.every(function (value, index) {
+							return value === selectedTypes[index];
+						})
+					) {
+						actionButtonTitle = 'Approve qualification!';
+						actionButtonType = 'purple';
 					} else {
-						actionButtonTitle = "Update qualification";
+						actionButtonTitle = 'Update qualification';
 					}
 				} else {
-					actionButtonTitle = "Disqualify";
+					actionButtonTitle = 'Disqualify';
 				}
 			} else {
-				actionButtonTitle = "Qualify";
+				actionButtonTitle = 'Qualify';
 			}
 		} else {
-			actionButtonTitle = "Submit";
+			actionButtonTitle = 'Submit';
 		}
 	}
 
 	$: updateStars(currentStars);
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate);
 	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes);
-
 </script>
 
-<div class="ranking-voting {insideLeaderboard ? "inside-leaderboard" : ""}">
+<div class="ranking-voting {insideLeaderboard ? 'inside-leaderboard' : ''}">
 	<Dialog
 		type="confirm"
 		title={dialogTitle}
 		okButton={actionButtonTitle}
 		okButtonType={actionButtonType}
 		cancelButton="Cancel"
-        okButtonDisabled={suitableForRank == undefined}
+		okButtonDisabled={suitableForRank == undefined}
 		on:confirm={() => vote()}
 		on:cancel={() => dispatch('finished')}>
 		<div slot="content">
 			{#if !(rtvoting && !isRanked)}
-			<div>Is this map suitable for rank?</div>
-			<Button
-				label="NO"
-				type={suitableForRank || suitableForRank == undefined ? 'default' : 'danger'}
-				on:click={() => (suitableForRank = false)} />
-			<Button
-				label="YES"
-				type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
-				on:click={() => (suitableForRank = true)} />
+				<div>Is this map suitable for rank?</div>
+				<Button
+					label="NO"
+					type={suitableForRank || suitableForRank == undefined ? 'default' : 'danger'}
+					on:click={() => (suitableForRank = false)} />
+				<Button
+					label="YES"
+					type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
+					on:click={() => (suitableForRank = true)} />
 			{/if}
 			{#if qualificationUpdate}
-			<div>Qualification status</div>
-			<Button
-				label="STOP"
-				type={suitableForRank || suitableForRank == undefined ? 'default' : 'danger'}
-				on:click={() => (suitableForRank = false)} />
-			<Button
-				label="KEEP"
-				type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
-				on:click={() => (suitableForRank = true)} />
-			<div>Mapper allowed but can't/not want to use website</div>
-			<Button
-				label="YES"
-				type={mapperAllowed === false || mapperAllowed == undefined ? 'default' : 'green'}
-				on:click={() => (mapperAllowed = true)} />
+				<div>Qualification status</div>
+				<Button
+					label="STOP"
+					type={suitableForRank || suitableForRank == undefined ? 'default' : 'danger'}
+					on:click={() => (suitableForRank = false)} />
+				<Button
+					label="KEEP"
+					type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
+					on:click={() => (suitableForRank = true)} />
+				<div>Mapper allowed but can't/not want to use website</div>
+				<Button
+					label="YES"
+					type={mapperAllowed === false || mapperAllowed == undefined ? 'default' : 'green'}
+					on:click={() => (mapperAllowed = true)} />
 			{/if}
 			{#if qualificationUpdate}
-			<div>Criteria check result</div>
-			<Button
-				label="UNMET"
-				type={criteriaMet == 2 ? 'danger' : 'default'}
-				on:click={() => (criteriaMet = 2)} />
-			<Button
-				label="MET"
-				type={criteriaMet == 1 ? 'green' : 'default'}
-				on:click={() => (criteriaMet = 1)} />
+				<div>Criteria check result</div>
+				<Button label="UNMET" type={criteriaMet == 2 ? 'danger' : 'default'} on:click={() => (criteriaMet = 2)} />
+				<Button label="MET" type={criteriaMet == 1 ? 'green' : 'default'} on:click={() => (criteriaMet = 1)} />
 			{/if}
-			{#if criteriaMet == 2} 
-			<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset">
+			{#if criteriaMet == 2}
+				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />
 			{/if}
 			{#if suitableForRank}
 				<div>
-					<label>{rtvoting ? "Stars:" : "Stars (optional):"}</label>
+					<label>{rtvoting ? 'Stars:' : 'Stars (optional):'}</label>
 					<RangeSlider
 						min={0}
 						max={15}
@@ -197,7 +205,7 @@
 						}} />
 				</div>
 				<div>
-					<label>{rtvoting ? "Type:" : "Type (optional):"}</label>
+					<label>{rtvoting ? 'Type:' : 'Type (optional):'}</label>
 					{#each selectedTypes as type, idx}
 						<div>
 							{type}

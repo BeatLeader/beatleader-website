@@ -6,11 +6,11 @@ export default response => {
   return {
     metadata: response.metadata,
     data: response.data.map(player => {
-      let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime, clans, scoreStats} = player;
+      let { avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime, clans, scoreStats } = player;
       const rankHistory =
-       history && history.length
-            ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
-            : []
+        history && history.length
+          ? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
+          : []
       const difference = rankHistory.length > 1 ? rankHistory[rankHistory.length > 7 ? rankHistory.length - 7 : 0] - rank : null;
 
       if (avatar && !avatar.startsWith('http')) {
@@ -22,7 +22,7 @@ export default response => {
         name,
         playerInfo: {
           avatar,
-          countries: [{country, rank: countryRank}],
+          countries: [{ country, rank: countryRank }],
           pp,
           lastTwoWeeksTime,
           allTime,

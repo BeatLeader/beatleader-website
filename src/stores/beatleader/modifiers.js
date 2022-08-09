@@ -1,5 +1,5 @@
-import {writable} from 'svelte/store'
-import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
+import { writable } from 'svelte/store'
+import { BL_API_URL } from '../../network/queues/beatleader/api-queue'
 
 let store = null;
 let storeSubCount = 0;
@@ -9,15 +9,15 @@ export default (refreshOnCreate = true) => {
 
   let modifiers = {};
 
-  const {subscribe: subscribeState, set} = writable(modifiers);
+  const { subscribe: subscribeState, set } = writable(modifiers);
 
   const get = () => modifiers;
   const refresh = async () => {
     fetch(BL_API_URL + "modifiers").then(response => response.json()).then(
-    data => {
+      data => {
         modifiers = data;
         set(modifiers);
-    });
+      });
   }
 
   if (refreshOnCreate) refresh();

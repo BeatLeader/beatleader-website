@@ -1,5 +1,5 @@
 // import eventBus from '../utils/broadcast-channel-pubsub'
-import {addToDate, MINUTE} from '../utils/date'
+import { addToDate, MINUTE } from '../utils/date'
 
 const DEFAULT_CACHE_SIZE = 100;
 
@@ -14,7 +14,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   const packValue = value => {
     if (!value || typeof value !== 'object') return value;
 
-    const newValue = {...value};
+    const newValue = { ...value };
 
     if (value.headers && value.headers instanceof Headers) {
       newValue.headers = [...value.headers.entries()].reduce((cum, [key, value]) => {
@@ -33,7 +33,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   const unpackValue = value => {
     if (!value || typeof value !== 'object') return value;
 
-    const newValue = {...value};
+    const newValue = { ...value };
 
     if (value.headers) {
       const headers = new Headers();
@@ -61,7 +61,7 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
   const set = (key, value, expiryIn = null, emitEvent = true) => {
     expiryIn = expiryIn ? expiryIn : defaultExpiryIn;
 
-    cache[key] = {key, cachedAt: new Date(), expiryIn, expiryAt: addToDate(expiryIn, new Date()), value};
+    cache[key] = { key, cachedAt: new Date(), expiryIn, expiryAt: addToDate(expiryIn, new Date()), value };
 
     // if (emitEvent) eventBus.publish('net-cache-key-set', {key, value: packValue(value), expiryIn});
 
@@ -97,9 +97,9 @@ export default (size = DEFAULT_CACHE_SIZE, expiryIn = MINUTE) => {
     if (values.length < size) return;
 
     cache = values
-      .sort((a,b) => b.expiryAt - a.expiryAt)
+      .sort((a, b) => b.expiryAt - a.expiryAt)
       .slice(0, size)
-      .reduce((cum, item) => {cum[item.key] = item; return cum;}, {});
+      .reduce((cum, item) => { cum[item.key] = item; return cum; }, {});
   }
 
   const destroy = () => {

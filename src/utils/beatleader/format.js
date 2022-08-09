@@ -1,5 +1,5 @@
 import { formatNumber } from '../format';
-import {capitalize, opt} from '../js'
+import { capitalize, opt } from '../js'
 
 export const diffColors = {
   easy: 'MediumSeaGreen',
@@ -73,16 +73,16 @@ export function getDescriptionForDiff(diffInfo) {
 }
 
 const HMDs = {
-  0: {name: 'Unknown headset', icon: 'unknown', color: 'invert(70%) sepia(65%) saturate(4492%) hue-rotate(354deg) brightness(96%) contrast(91%)'},
-  1: {name: 'Oculus Rift CV1', icon: 'oculus', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)'},
-  2: {name: 'Vive', icon: 'vive', color: 'invert(54%) sepia(78%) saturate(2598%) hue-rotate(157deg) brightness(97%) contrast(101%)'},
-  4: {name: 'Vive Pro', icon: 'vive', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)'},
-  8: {name: 'Windows Mixed Reality', icon: 'wmr', color: 'invert(34%) sepia(67%) saturate(7482%) hue-rotate(193deg) brightness(103%) contrast(101%)'},
-  16: {name: 'Rift S', icon: 'oculus', color: 'invert(96%) sepia(9%) saturate(5456%) hue-rotate(170deg) brightness(100%) contrast(107%)'},
-  32: {name: 'Oculus Quest', icon: 'oculus', color: 'invert(73%) sepia(55%) saturate(5479%) hue-rotate(271deg) brightness(106%) contrast(107%)'},
-  64: {name: 'Valve Index', icon: 'index', color: 'invert(81%) sepia(27%) saturate(6288%) hue-rotate(344deg) brightness(103%) contrast(103%)'},
-  128: {name: 'Vive Cosmos', icon: 'vive', color: 'invert(11%) sepia(100%) saturate(7426%) hue-rotate(297deg) brightness(85%) contrast(109%)'},
-  256: {name: 'Oculus Quest 2', icon: 'oculus', color: 'invert(69%) sepia(52%) saturate(501%) hue-rotate(107deg) brightness(98%) contrast(86%)'}
+  0: { name: 'Unknown headset', icon: 'unknown', color: 'invert(70%) sepia(65%) saturate(4492%) hue-rotate(354deg) brightness(96%) contrast(91%)' },
+  1: { name: 'Oculus Rift CV1', icon: 'oculus', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)' },
+  2: { name: 'Vive', icon: 'vive', color: 'invert(54%) sepia(78%) saturate(2598%) hue-rotate(157deg) brightness(97%) contrast(101%)' },
+  4: { name: 'Vive Pro', icon: 'vive', color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)' },
+  8: { name: 'Windows Mixed Reality', icon: 'wmr', color: 'invert(34%) sepia(67%) saturate(7482%) hue-rotate(193deg) brightness(103%) contrast(101%)' },
+  16: { name: 'Rift S', icon: 'oculus', color: 'invert(96%) sepia(9%) saturate(5456%) hue-rotate(170deg) brightness(100%) contrast(107%)' },
+  32: { name: 'Oculus Quest', icon: 'oculus', color: 'invert(73%) sepia(55%) saturate(5479%) hue-rotate(271deg) brightness(106%) contrast(107%)' },
+  64: { name: 'Valve Index', icon: 'index', color: 'invert(81%) sepia(27%) saturate(6288%) hue-rotate(344deg) brightness(103%) contrast(103%)' },
+  128: { name: 'Vive Cosmos', icon: 'vive', color: 'invert(11%) sepia(100%) saturate(7426%) hue-rotate(297deg) brightness(85%) contrast(109%)' },
+  256: { name: 'Oculus Quest 2', icon: 'oculus', color: 'invert(69%) sepia(52%) saturate(501%) hue-rotate(107deg) brightness(98%) contrast(86%)' }
 };
 
 export function getHeadsetForHMD(hmd) {
@@ -115,26 +115,26 @@ export function describePlatform(platform) {
       }
     }
   }
-  
+
   return result;
 }
 
 export function modeForModeName(modeName) {
   switch (modeName) {
-      case "Standard":
-          return 1;
-      case "OneSaber":
-          return 2;
-      case "NoArrows":
-          return 3;
-      case "90Degree":
-          return 4;
-      case "360Degree":
-          return 5;
-      case "Lightshow":
-          return 6;
-      case "Lawless":
-          return 7;
+    case "Standard":
+      return 1;
+    case "OneSaber":
+      return 2;
+    case "NoArrows":
+      return 3;
+    case "90Degree":
+      return 4;
+    case "360Degree":
+      return 5;
+    case "Lightshow":
+      return 6;
+    case "Lawless":
+      return 7;
   }
 
   return 0;
@@ -142,21 +142,21 @@ export function modeForModeName(modeName) {
 
 export function diffForDiffName(diffName) {
   switch (diffName) {
-      case "Easy":
-      case "easy":
-          return 1;
-      case "Normal":
-      case "normal":
-          return 3;
-      case "Hard":
-      case "hard":
-          return 5;
-      case "Expert":
-      case "expert":
-          return 7;
-      case "ExpertPlus":
-      case "expertPlus":
-          return 9;
+    case "Easy":
+    case "easy":
+      return 1;
+    case "Normal":
+    case "normal":
+      return 3;
+    case "Hard":
+    case "hard":
+      return 5;
+    case "Expert":
+    case "expert":
+      return 7;
+    case "ExpertPlus":
+    case "expertPlus":
+      return 9;
   }
 
   return 0;
@@ -233,22 +233,22 @@ export function getHumanDiffInfo(diffInfo) {
   const name = diffInfo.diff;
   const typeSuffix = diffInfo.type !== 'Standard' ? '/' + diffInfo.type : '';
 
-  switch(name) {
+  switch (name) {
     case 'Easy':
     case 'easy':
-      return {name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'Es', difficulty: 1, color: getDiffColor(diffInfo)};
+      return { name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'Es', difficulty: 1, color: getDiffColor(diffInfo) };
     case 'Normal':
     case 'normal':
-      return {name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'N', difficulty: 3, color: getDiffColor(diffInfo)};
+      return { name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'N', difficulty: 3, color: getDiffColor(diffInfo) };
     case 'Hard':
     case 'hard':
-      return {name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'H', difficulty: 5, color: getDiffColor(diffInfo)};
+      return { name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'H', difficulty: 5, color: getDiffColor(diffInfo) };
     case 'Expert':
     case 'expert':
-      return {name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'Ex', difficulty: 7, color: getDiffColor(diffInfo)};
+      return { name, type: diffInfo.type, fullName: name + typeSuffix, shortName: 'Ex', difficulty: 7, color: getDiffColor(diffInfo) };
     case 'ExpertPlus':
     case 'expertPlus':
-      return {name, type: diffInfo.type, fullName: "Expert+" + typeSuffix, shortName: 'E+', difficulty: 9, color: getDiffColor(diffInfo)};
+      return { name, type: diffInfo.type, fullName: "Expert+" + typeSuffix, shortName: 'E+', difficulty: 9, color: getDiffColor(diffInfo) };
 
     default: return null;
   }

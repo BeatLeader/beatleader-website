@@ -7,7 +7,7 @@ export default (clanId, page = 1, filters = {}, initialState = null, initialStat
   let currentPage = page ? page : 1;
   let currentFilters = filters ?? {};
 
-  const onNewData = ({fetchParams, state, set}) => {
+  const onNewData = ({ fetchParams, state, set }) => {
     currentClanId = fetchParams?.clanId ?? null;
     currentPage = fetchParams?.page ?? 1;
     currentFilters = fetchParams?.filters ?? {};
@@ -17,12 +17,12 @@ export default (clanId, page = 1, filters = {}, initialState = null, initialStat
 
   const httpStore = createHttpStore(
     provider,
-    {clanId, page},
+    { clanId, page },
     initialState,
     {
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
-      onSetPending: ({fetchParams}) => ({...fetchParams}),
+      onSetPending: ({ fetchParams }) => ({ ...fetchParams }),
     },
     initialStateType
   );
@@ -30,7 +30,7 @@ export default (clanId, page = 1, filters = {}, initialState = null, initialStat
   const fetch = async (clanId = currentClanId, page = currentPage, filters = currentFilters, force = false) => {
     if (clanId && clanId === currentClanId && (!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
 
-    return httpStore.fetch({clanId, page, filters}, force, provider);
+    return httpStore.fetch({ clanId, page, filters }, force, provider);
   }
 
   const refresh = async () => fetch(currentClanId, currentPage, currentFilters, true);

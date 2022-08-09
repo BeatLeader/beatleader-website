@@ -6,8 +6,8 @@ import profileApiClient from '../network/clients/twitch/api-profile'
 import videosApiClient from '../network/clients/twitch/api-videos'
 import eventBus from '../utils/broadcast-channel-pubsub'
 import log from '../utils/logger'
-import {addToDate, dateFromString, durationToMillis, formatDate, millisToDuration, MINUTE} from '../utils/date'
-import {PRIORITY} from '../network/queues/http-queue'
+import { addToDate, dateFromString, durationToMillis, formatDate, millisToDuration, MINUTE } from '../utils/date'
+import { PRIORITY } from '../network/queues/http-queue'
 import makePendingPromisePool from '../utils/pending-promises'
 
 const TWITCH_TOKEN_KEY = 'twitchToken';
@@ -43,7 +43,7 @@ export default () => {
 
     const stateMatch = /state=(.*?)(&|$)/.exec(hash);
 
-    return {accessToken: accessTokenMatch[1], url: stateMatch ? decodeURIComponent(stateMatch[1]) : ''};
+    return { accessToken: accessTokenMatch[1], url: stateMatch ? decodeURIComponent(stateMatch[1]) : '' };
   }
 
   const processToken = async accessToken => {
@@ -69,18 +69,18 @@ export default () => {
 
   const getCurrentToken = async () => keyValueRepository().get(TWITCH_TOKEN_KEY, true);
 
-  const fetchProfile = async (login, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) => {
+  const fetchProfile = async (login, priority = PRIORITY.FG_LOW, { fullResponse = false, ...options } = {}) => {
     const token = await getCurrentToken();
     if (!token || !token.expires || token.expires <= new Date()) return null;
 
-    return resolvePromiseOrWaitForPending(`profileApiClient/${login}/${fullResponse}`, () => profileApiClient.getProcessed({...options, accessToken: token.accessToken, login, priority, fullResponse}));
+    return resolvePromiseOrWaitForPending(`profileApiClient/${login}/${fullResponse}`, () => profileApiClient.getProcessed({ ...options, accessToken: token.accessToken, login, priority, fullResponse }));
   }
 
-  const fetchVideos = async (userId, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) => {
+  const fetchVideos = async (userId, priority = PRIORITY.FG_LOW, { fullResponse = false, ...options } = {}) => {
     const token = await getCurrentToken();
     if (!token || !token.expires || token.expires <= new Date()) return null;
 
-    return resolvePromiseOrWaitForPending(`videosApiClient/${userId}/${fullResponse}`, () => videosApiClient.getProcessed({...options, accessToken: token.accessToken, userId, priority, fullResponse}));
+    return resolvePromiseOrWaitForPending(`videosApiClient/${userId}/${fullResponse}`, () => videosApiClient.getProcessed({ ...options, accessToken: token.accessToken, userId, priority, fullResponse }));
   }
 
   const getPlayerProfile = async playerId => twitchRepository().get(playerId);
@@ -120,7 +120,7 @@ export default () => {
           return twitchProfile;
         }
 
-        twitchProfile = {...twitchProfile, ...fetchedProfile, playerId};
+        twitchProfile = { ...twitchProfile, ...fetchedProfile, playerId };
 
         await updatePlayerProfile(twitchProfile);
       }
@@ -140,12 +140,12 @@ export default () => {
 
       return twitchProfile;
     } catch (e) {
-        if (throwErrors) throw e;
+      if (throwErrors) throw e;
 
-        log.debug(`Twitch player ${playerId} refreshing error`, 'TwitchService', e)
+      log.debug(`Twitch player ${playerId} refreshing error`, 'TwitchService', e)
 
-        return null;
-      }
+      return null;
+    }
   }
 
   async function findTwitchVideo(playerTwitchProfile, timeset, songLength) {
@@ -160,7 +160,7 @@ export default () => {
       }))
       .find(v => v.created_at <= songStarted && songStarted < v.ended_at);
 
-    return video ? {...video, url: video.url + '?t=' + millisToDuration(songStarted - video.created_at)} : null;
+    return video ? { ...video, url: video.url + '?t=' + millisToDuration(songStarted - video.created_at) } : null;
   }
 
   const destroyService = () => {

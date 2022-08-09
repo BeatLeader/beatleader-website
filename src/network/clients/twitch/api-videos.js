@@ -7,7 +7,7 @@ const process = response => {
   return response.data;
 };
 
-const get = async ({accessToken, userId, type = 'archive', priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.TWITCH.videos(accessToken, userId, type, queueOptions);
+const get = async ({ accessToken, userId, type = 'archive', priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => queue.TWITCH.videos(accessToken, userId, type, queueOptions);
 
 const client = createClient(get, process);
 

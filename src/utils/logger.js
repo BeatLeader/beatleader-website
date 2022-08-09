@@ -1,4 +1,4 @@
-import {arrayUnique} from "./js";
+import { arrayUnique } from "./js";
 
 const LEVELS = {
   NONE: 0,

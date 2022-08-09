@@ -18,7 +18,7 @@ const process = response => {
 		.filter(m => m);
 }
 
-const get = async ({playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => queue.BEATLEADER_API.accGraph(playerId, priority, queueOptions);
+const get = async ({ playerId, priority = queue.PRIORITY.FG_HIGH, ...queueOptions } = {}) => queue.BEATLEADER_API.accGraph(playerId, priority, queueOptions);
 
 const client = createClient(get, process);
 

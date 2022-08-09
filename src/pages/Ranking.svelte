@@ -302,7 +302,6 @@
 	}
 
 	function onMapsTypeChanged(event) {
-
 		currentFilters.mapsType = event.detail;
 
 		findParam('mapsType').value = currentFilters.mapsType;

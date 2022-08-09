@@ -1,10 +1,10 @@
 import eventBus from '../utils/broadcast-channel-pubsub'
 import log from '../utils/logger'
-import createQueue, {PRIORITY} from '../utils/queue'
+import createQueue, { PRIORITY } from '../utils/queue'
 import createBeatSaviorService from '../services/beatsavior'
 import createAccSaberService from '../services/accsaber'
-import {PRIORITY as HTTP_QUEUE_PRIORITY} from './queues/http-queue'
-import {HOUR, MINUTE} from '../utils/date'
+import { PRIORITY as HTTP_QUEUE_PRIORITY } from './queues/http-queue'
+import { HOUR, MINUTE } from '../utils/date'
 
 const INTERVAL_TICK = MINUTE;
 
@@ -13,8 +13,8 @@ let beatSaviorService = null;
 let accSaberService = null;
 
 const TYPES = {
-	BEATSAVIOR: {name: 'BEATSAVIOR', priority: PRIORITY.LOW},
-	ACCSABER: {name: 'ACCSABER', priority: PRIORITY.NORMAL},
+	BEATSAVIOR: { name: 'BEATSAVIOR', priority: PRIORITY.LOW },
+	ACCSABER: { name: 'ACCSABER', priority: PRIORITY.NORMAL },
 }
 
 const enqueue = async (queue, type, force = false, data = null, then = null) => {
@@ -31,9 +31,9 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
 
 	const processThen = async (promise, then = null) => {
 		promise.then(result => {
-			if(then) log.debug('Processing then command...', 'DlManager');
+			if (then) log.debug('Processing then command...', 'DlManager');
 
-			return then ? {result, thenResult: then()} : result;
+			return then ? { result, thenResult: then() } : result;
 		})
 	}
 

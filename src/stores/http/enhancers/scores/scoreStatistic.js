@@ -15,8 +15,8 @@ export default async (data, leaderboard) => {
             if (!scoresService) scoresService = createScoresService();
         }
 
-        const statistic = leaderboard 
-            ? await leaderboardService.fetchLeaderboardStats(leaderboard.leaderboardId) 
+        const statistic = leaderboard
+            ? await leaderboardService.fetchLeaderboardStats(leaderboard.leaderboardId)
             : await scoresService.fetchScoreStats(data.score.id);
 
         const beatSavior = {};
@@ -24,7 +24,7 @@ export default async (data, leaderboard) => {
         const stats = statistic.accuracyTracker;
 
         stats.missedNotes = data.score?.missedNotes ?? (statistic?.hitTracker?.leftMiss ?? 0) + (statistic?.hitTracker?.leftMiss ?? 0);
-        stats.badCuts = data.score?.badCuts  ?? (statistic?.hitTracker?.leftBadCuts ?? 0) + (statistic?.hitTracker?.rightBadCuts ?? 0);
+        stats.badCuts = data.score?.badCuts ?? (statistic?.hitTracker?.leftBadCuts ?? 0) + (statistic?.hitTracker?.rightBadCuts ?? 0);
         stats.bombHit = data.score?.bombCuts ?? (statistic?.hitTracker?.leftBombs ?? 0) + (statistic?.hitTracker?.rightBombs ?? 0);
         stats.wallHit = data.score?.wallsHit ?? 0;
         stats.miss = stats.missedNotes + stats.badCuts;
@@ -39,7 +39,7 @@ export default async (data, leaderboard) => {
         stats.won = statistic.winTracker.won;
         stats.pauses = statistic.winTracker.nbOfPause;
 
-        statistic.scoreTracker = {rawRatio: data.score?.unmodifiedAcc ? data.score.unmodifiedAcc / 100 : null};
+        statistic.scoreTracker = { rawRatio: data.score?.unmodifiedAcc ? data.score.unmodifiedAcc / 100 : null };
 
         beatSavior.songJumpDistance = statistic.winTracker.jumpDistance;
         beatSavior.stats = stats;
@@ -47,7 +47,7 @@ export default async (data, leaderboard) => {
 
         return beatSavior;
     }
-    catch(err) {
+    catch (err) {
         console.log(err);
     }
 

@@ -6,7 +6,7 @@ export default (page = 1, filters = {}, initialState = null, initialStateType = 
   let currentPage = page ?? 1;
   let currentFilters = filters ?? {};
 
-  const onNewData = ({fetchParams}) => {
+  const onNewData = ({ fetchParams }) => {
     currentPage = fetchParams?.page ?? 1;
     currentFilters = fetchParams?.filters ?? {};
   }
@@ -15,12 +15,12 @@ export default (page = 1, filters = {}, initialState = null, initialStateType = 
 
   const httpStore = createHttpStore(
     provider,
-    {page, filters},
+    { page, filters },
     initialState,
     {
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
-      onSetPending: ({fetchParams}) => ({...fetchParams}),
+      onSetPending: ({ fetchParams }) => ({ ...fetchParams }),
     },
     initialStateType
   );
@@ -28,7 +28,7 @@ export default (page = 1, filters = {}, initialState = null, initialStateType = 
   const fetch = async (page = currentPage, filters = currentFilters, force = false) => {
     if ((!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
 
-    return httpStore.fetch({page, filters}, force, provider);
+    return httpStore.fetch({ page, filters }, force, provider);
   }
 
   const refresh = async () => fetch(currentPage, currentFilters, true);

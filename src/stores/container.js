@@ -1,8 +1,8 @@
-import {writable} from 'svelte/store'
+import { writable } from 'svelte/store'
 
-export default (sizes = {phone: 0, tablet: 768, desktop: 1024, xxl: 1749}) => {
-  const defaultValue = {name: null, width: null, nodeWidth: null, rect: null}
-  const {subscribe, unsubscribe, set} = writable(defaultValue);
+export default (sizes = { phone: 0, tablet: 768, desktop: 1024, xxl: 1749 }) => {
+  const defaultValue = { name: null, width: null, nodeWidth: null, rect: null }
+  const { subscribe, unsubscribe, set } = writable(defaultValue);
 
   let ro = null;
   let node = null;
@@ -34,7 +34,7 @@ export default (sizes = {phone: 0, tablet: 768, desktop: 1024, xxl: 1749}) => {
       set(
         Object.entries(sizes)
           .sort((a, b) => a[1] - b[1])
-          .reduce((cum, item) => item[1] <= nodeWidth ? {name: item[0], width: item[1], nodeWidth, rect} : cum, defaultValue),
+          .reduce((cum, item) => item[1] <= nodeWidth ? { name: item[0], width: item[1], nodeWidth, rect } : cum, defaultValue),
       )
     });
 

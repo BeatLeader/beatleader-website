@@ -1,10 +1,10 @@
 import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps'
 import createLeaderboardPageProvider from './providers/api-leaderboard'
-import {writable} from 'svelte/store'
-import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/beatleader/song'
-import {debounce} from '../../utils/debounce'
-import produce, {applyPatches} from 'immer'
+import { writable } from 'svelte/store'
+import { findDiffInfoWithDiffAndTypeFromBeatMaps } from '../../utils/beatleader/song'
+import { debounce } from '../../utils/debounce'
+import produce, { applyPatches } from 'immer'
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
 import stringify from 'json-stable-stringify'
 
@@ -14,7 +14,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
   let currentPage = page ? page : 1;
   let currentFilters = filters ?? {};
 
-  const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
+  const { subscribe: subscribeEnhanced, set: setEnhanced } = writable(null);
 
   const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
   const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${scoreRow?.player?.playerId}`
@@ -22,7 +22,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
   let enhancePatches = {};
   let currentEnhanceTaskId = null;
 
-  const onNewData = ({fetchParams, state, set}) => {
+  const onNewData = ({ fetchParams, state, set }) => {
     currentLeaderboardId = fetchParams?.leaderboardId ?? null;
     currentType = fetchParams?.type ?? 'global';
     currentPage = fetchParams?.page ?? 1;
@@ -48,7 +48,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
       set(state);
     }, 100);
 
-    const newState = {...state};
+    const newState = { ...state };
 
     const setStateRow = (enhanceTaskId, scoreRow) => {
       if (currentEnhanceTaskId !== enhanceTaskId) return null;
@@ -95,12 +95,12 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 
   const httpStore = createHttpStore(
     provider,
-    {leaderboardId, type, page, filters},
+    { leaderboardId, type, page, filters },
     initialState,
     {
       onInitialized: onNewData,
       onAfterStateChange: onNewData,
-      onSetPending: ({fetchParams}) => ({...fetchParams}),
+      onSetPending: ({ fetchParams }) => ({ ...fetchParams }),
     },
     initialStateType
   );
@@ -110,7 +110,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 
     if (leaderboardId === currentLeaderboardId && (!type || type === currentType) && (!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
 
-    return httpStore.fetch({leaderboardId, type, page, filters}, force, provider);
+    return httpStore.fetch({ leaderboardId, type, page, filters }, force, provider);
   }
 
   const refresh = async () => fetch(currentLeaderboardId, currentType, currentPage, true);
@@ -123,6 +123,6 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
     getType: () => currentType,
     getPage: () => currentPage,
     getFilters: () => currentFilters,
-    enhanced: {subscribe: subscribeEnhanced},
+    enhanced: { subscribe: subscribeEnhanced },
   }
 }
