@@ -417,9 +417,16 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+	$: isSupporter =
+		$account.player &&
+		$account.player.playerInfo.role &&
+		($account.player.playerInfo.role.includes('supporter') ||
+			$account.player.playerInfo.role.includes('creator') ||
+			$account.player.playerInfo.role.includes('tipper') ||
+			$account.player.playerInfo.role.includes('sponsor'));
 
 	$: generatedStars = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type];
-	$: isRT && !generatedStars && starGeneratorStore.fetchStars(hash, diffInfo?.diff, diffInfo?.type);
+	$: (isRT || isSupporter) && !generatedStars && starGeneratorStore.fetchStars(hash, diffInfo?.diff, diffInfo?.type);
 
 	$: playerHasFriends = !!$account?.friends?.length;
 	$: updateTypeOptions(mainPlayerCountry, playerHasFriends);
@@ -524,7 +531,7 @@
 								{#if leaderboard.stats && leaderboard.stats.stars}
 									<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★" />
 								{/if}
-								{#if isRT}
+								{#if isRT || isSupporter}
 									{#if generatedStars}
 										<span style="color: white;">
 											EX MACHINA

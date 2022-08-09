@@ -144,6 +144,7 @@
 			value: [],
 			values: [
 				{id: 'admin', label: 'Administrator'},
+				{id: 'creator', label: 'BL creator'},
 				{id: 'rankedteam', label: 'Ranking Team'},
 				{id: 'mapper', label: 'Mapper'},
 				{id: 'tipper', label: 'Tipper'},

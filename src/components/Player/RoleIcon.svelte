@@ -45,6 +45,11 @@
 					roleIcon = BL_CDN + '/assets/rankedteam.png';
 					roleDescription = 'Ranking team member';
 					break;
+				case 'creator':
+					show = !onAvatar;
+					roleIcon = BL_CDN + '/assets/creator.gif';
+					roleDescription = 'BL creator';
+					break;
 				case 'admin':
 					show = !onAvatar;
 					roleIcon = BL_CDN + '/assets/admin.png';
