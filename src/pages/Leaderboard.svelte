@@ -371,7 +371,7 @@
 					const currentSeconds = new Date().getTime() / 1000;
 					if (currentSeconds - time < 60 * 60 * 24 * 7) {
 						qualificationLimitError =
-							'You can qualify new map after ' + Math.round(7 - (currentSeconds - time) / (60 * 60 * 24)) + ' day(s)';
+							'You can nominate new map after ' + Math.round(7 - (currentSeconds - time) / (60 * 60 * 24)) + ' day(s)';
 					}
 				});
 			}
@@ -406,9 +406,7 @@
 	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
 	$: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL');
 	$: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked';
-
-	$: isQualified = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Qualified';
-	$: qualification = isQualified && leaderboard.qualification;
+	$: qualification = leaderboard?.qualification;
 	$: calculateIsRankable(isRT, qualification);
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
@@ -598,7 +596,7 @@
 									<Button
 										cls="voteButton"
 										iconFa={isRanked ? 'fas fa-star' : 'fas fa-rocket'}
-										title={isRanked ? 'Update map stars' : 'Qualify this map!'}
+										title={isRanked ? 'Update map stars' : 'Nominate this map!'}
 										noMargin={true}
 										on:click={() => {
 											mapVoting = !mapVoting;

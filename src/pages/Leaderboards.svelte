@@ -60,8 +60,8 @@
 
 	const typeFilterOptions = [
 		{key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
-		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'mapperqualified', label: 'Qualified by mapper', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
+		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
 		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
 		{key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
 	];
@@ -257,7 +257,7 @@
 								{/if}
 							</div>
 
-							{#if map?.difficulty?.qualified}
+							{#if map?.difficulty?.qualified || map?.difficulty?.nominated}
 								<QualificationStatusSmall qualification={map.qualification} />
 							{/if}
 
@@ -335,6 +335,7 @@
 
 			<div class="playlist-buttons">
 				<Button cls="playlist-button" iconFa="fas fa-list" label="Ranked playlist" on:click={() => navigate('/playlist/ranked')} />
+				<Button cls="playlist-button" iconFa="fas fa-list" label="Nominated playlist" on:click={() => navigate('/playlist/nominated')} />
 				<Button cls="playlist-button" iconFa="fas fa-list" label="Qualified playlist" on:click={() => navigate('/playlist/qualified')} />
 			</div>
 		</ContentBox>
@@ -464,17 +465,22 @@
 		display: flex;
 		margin-top: 0.5em;
 		column-gap: 0.5em;
+		flex-direction: column;
 	}
 
 	:global(.playlist-button) {
 		height: 1.6em;
-		width: 11em;
+		width: 12em;
 	}
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
 			flex-direction: column-reverse;
 			align-items: center;
+		}
+
+		.playlist-buttons {
+			flex-direction: row;
 		}
 
 		aside {

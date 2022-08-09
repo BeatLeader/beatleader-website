@@ -91,9 +91,9 @@
 			if (isRanked) {
 				dialogTitle = 'Update map ranking';
 			} else if (qualificationUpdate) {
-				dialogTitle = 'Update map qualification';
+				dialogTitle = 'Update map nomination';
 			} else {
-				dialogTitle = 'Qualify map';
+				dialogTitle = 'Nominate map';
 			}
 		} else {
 			dialogTitle = 'Vote map for ranked';
@@ -123,13 +123,13 @@
 						actionButtonTitle = 'Approve qualification!';
 						actionButtonType = 'purple';
 					} else {
-						actionButtonTitle = 'Update qualification';
+						actionButtonTitle = 'Update nomination';
 					}
 				} else {
 					actionButtonTitle = 'Disqualify';
 				}
 			} else {
-				actionButtonTitle = 'Qualify';
+				actionButtonTitle = 'Nominate';
 			}
 		} else {
 			actionButtonTitle = 'Submit';

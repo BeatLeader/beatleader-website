@@ -103,11 +103,20 @@ const processLeaderboard = (leaderboardId, page, respons) => {
     diff = diffInfo.diff;
   }
 
+  let status = "Not Ranked";
+  if (currentDiff?.ranked) {
+    status = "Ranked";
+  } else if (currentDiff?.qualified) {
+    status = "Qualified";
+  } else if (currentDiff?.nominated) {
+    status = "Nominated";
+  }
+
   const songInfo = [
     { id: 'hash', value: led?.song?.hash },
     { id: 'id', value: led?.song?.id },
     { id: 'scores', value: led?.plays },
-    { id: 'status', value: currentDiff?.ranked ? "Ranked" : (currentDiff?.qualified ? "Qualified" : "Not Ranked") },
+    { id: 'status', value: status },
     { id: 'totalScores', value: led?.plays },
     { id: 'notes', value: currentDiff?.notes },
     { id: 'bpm', value: currentDiff?.bpm },

@@ -9,7 +9,7 @@
 		{#if !qualification.approved}
 			<div class="timeset">
 				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-					Qualified {formatDateRelative(dateFromUnix(qualification.timeset))}
+					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))}
 				</span>
 			</div>
 		{/if}

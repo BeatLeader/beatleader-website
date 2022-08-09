@@ -41,7 +41,7 @@
 
 {#if qualification}
 	<div class="qualification-description">
-		<b><i class="fa fa-check" /> Qualified by:</b>
+		<b><i class="fa fa-check" /> Nominated by:</b>
 		<Avatar player={qualifier} />
 		<PlayerNameWithFlag
 			player={qualifier}
