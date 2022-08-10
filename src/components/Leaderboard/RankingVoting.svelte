@@ -102,13 +102,13 @@
 
 	let actionButtonTitle;
 	let actionButtonType;
-	function updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes) {
+	function updateActionButtonTitle(suitableForRank, rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes) {
 		actionButtonType = 'primary';
 		if (rtvoting) {
 			if (isRanked) {
 				actionButtonTitle = 'Update';
 			} else if (qualificationUpdate) {
-				if (criteriaMet != 2) {
+				if (criteriaMet != 2 && suitableForRank) {
 					if (
 						qualification.mapperAllowed &&
 						qualification.rtMember != playerId &&
@@ -126,7 +126,8 @@
 						actionButtonTitle = 'Update nomination';
 					}
 				} else {
-					actionButtonTitle = 'Disqualify';
+					actionButtonTitle = 'Decline qualification!';
+					actionButtonType = 'danger';
 				}
 			} else {
 				actionButtonTitle = 'Nominate';
@@ -138,7 +139,7 @@
 
 	$: updateStars(currentStars);
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate);
-	$: updateActionButtonTitle(rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes);
+	$: updateActionButtonTitle(suitableForRank, rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes);
 </script>
 
 <div class="ranking-voting {insideLeaderboard ? 'inside-leaderboard' : ''}">

@@ -11,8 +11,8 @@
 
 {#if type}
 	{#each typeList as type, idx}
-		<span class="type {cram ? 'cram' : ''}" style="color: white; background-color: {type.color}; " title={type.title} on:click>
-			<span class="icon">
+		<span class="type {cram ? 'cram' : ''}" style="color: {type.textColor}; background-color: {type.color}; " title={type.title} on:click>
+			<span class="icon {!cram ? 'cram' : ''}">
 				<div class={type.icon} title={type.title} />
 			</span>
 			{#if !cram}
@@ -26,16 +26,24 @@
 	.type {
 		display: inline-block;
 		font-weight: 600;
-		padding: 0 2px;
+		padding: 1px 2px;
 		min-width: 1.5em;
 		max-height: 1.5em;
-		border-radius: 2px;
-		margin-left: 0.5em;
+		border-radius: 4px;
+		margin-right: 0.5em;
+		height: 2em;
 	}
 
 	.cram {
 		padding: 0;
-		margin-left: 0;
+		margin-right: 0;
+		border-radius: 2px;
+		height: 1.5em;
+	}
+
+	.icon.cram {
+		height: 1rem !important;
+		width: 1.5rem !important;
 	}
 
 	.icon {

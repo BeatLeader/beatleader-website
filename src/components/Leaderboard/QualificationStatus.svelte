@@ -27,12 +27,18 @@
 
 		if (qualification.mapperId) {
 			mapper = await playerService.fetchPlayerOrGetFromCache(qualification.mapperId);
+		} else {
+			mapper = null;
 		}
 		if (qualification.criteriaChecker) {
 			criteriaChecker = await playerService.fetchPlayerOrGetFromCache(qualification.criteriaChecker);
+		} else {
+			criteriaChecker = null;
 		}
 		if (qualification.approvers) {
 			approvers = qualification.approvers.split(',').map(async element => await playerService.fetchPlayerOrGetFromCache(element));
+		} else {
+			approvers = null;
 		}
 	}
 

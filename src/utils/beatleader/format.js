@@ -191,25 +191,29 @@ export const typesDescription = {
     title: "Accuracy",
     name: "acc",
     icon: "acc-icon",
-    color: "purple"
+    color: "purple",
+    textColor: "white"
   },
   'tech': {
     title: "Technical",
     name: "tech",
     icon: "tech-icon",
-    color: "red"
+    color: "red",
+    textColor: "white"
   },
   'midspeed': {
     title: "Mid speed",
     name: "midspeed",
     icon: "midspeed-icon",
-    color: "green"
+    color: "green",
+    textColor: "white"
   },
   'speed': {
     title: "Speed",
     name: "speed",
     icon: "speed-icon",
-    color: "orange"
+    color: "orange",
+    textColor: "black"
   },
 }
 

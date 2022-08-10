@@ -52,6 +52,9 @@ let app = null;
     if (error instanceof DOMException && error.toString() === 'InvalidStateError: A mutation operation was attempted on a database that did not allow mutations.')
       error = new Error('Firefox in private mode is not supported. Please run the site in normal mode.')
 
+    if (error instanceof DOMException && error.toString() === 'QuotaExceededError: The current transaction exceeded its quota limitations.')
+      error = new Error('Your device probably lacks free space for the website to operate.')
+
     app = new ErrorComponent({
       target: document.body,
       props: { error, withTrace: true },
