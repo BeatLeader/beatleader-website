@@ -186,6 +186,32 @@ export const typesMap = {
   'midspeed': 4,
   'speed': 8,
 }
+export const typesDescription = {
+  'acc': {
+    title: "Accuracy",
+    name: "acc",
+    icon: "acc-icon",
+    color: "purple"
+  },
+  'tech': {
+    title: "Technical",
+    name: "tech",
+    icon: "tech-icon",
+    color: "red"
+  },
+  'midspeed': {
+    title: "Mid speed",
+    name: "midspeed",
+    icon: "midspeed-icon",
+    color: "green"
+  },
+  'speed': {
+    title: "Speed",
+    name: "speed",
+    icon: "speed-icon",
+    color: "orange"
+  },
+}
 
 export function mapTypeFromMask(type) {
   let result = "";
@@ -196,6 +222,17 @@ export function mapTypeFromMask(type) {
     }
   })
   return result.length ? result.substring(0, result.length - 1) : null;
+}
+
+export function mapTypeListFromMask(type) {
+  let result = [];
+  Object.keys(typesMap).forEach(key => {
+    const mask = typesMap[key];
+    if ((type & mask) === mask) {
+      result.push(typesDescription[key]);
+    }
+  })
+  return result;
 }
 
 export function votingsForTypeStats(stats) {

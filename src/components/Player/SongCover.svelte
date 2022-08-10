@@ -2,6 +2,7 @@
 	import {BS_CDN} from '../../network/queues/beatleader/page-queue';
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
+	import MapTypeDescription from '../Leaderboard/MapTypeDescription.svelte';
 
 	export let leaderboard = null;
 	export let url = null;
@@ -58,6 +59,12 @@
 			</div>
 		{/if}
 
+		{#if leaderboard?.difficulty?.type}
+			<div class="type">
+				<MapTypeDescription cram={true} type={leaderboard.difficulty.type} />
+			</div>
+		{/if}
+
 		<div class="difficulty">
 			<Difficulty
 				diff={leaderboard.diffInfo}
@@ -88,6 +95,15 @@
 	}
 
 	.mode {
+		display: flex;
+		align-items: center;
+		position: absolute;
+		top: 0.8em;
+		right: 0;
+		font-size: 0.75em;
+	}
+
+	.type {
 		display: flex;
 		align-items: center;
 		position: absolute;

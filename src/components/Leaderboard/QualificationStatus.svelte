@@ -74,6 +74,10 @@
 				player={criteriaChecker}
 				type={'beatleader/date'}
 				on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
+
+			{#if qualification.criteriaCommentary}
+				<span style="color: red;">: {qualification.criteriaCommentary}</span>
+			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria not checked yet</span>
 		{/if}

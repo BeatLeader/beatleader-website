@@ -218,6 +218,41 @@ select {
     background-image: url("./replays.svg");
 }
 
+.acc-icon {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-image: url("./acc.svg") !important;
+}
+
+.tech-icon {
+    width: 100% !important;
+    height: 200% !important;
+    margin-bottom: 10% !important;
+    margin-top: -90% !important;
+    transform: translate(0px, 10%);
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-image: url("./tech.svg") !important;
+}
+
+.midspeed-icon {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-image: url("./midspeed.svg") !important;
+}
+
+.speed-icon {
+    width: 100% !important;
+    height: 100% !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-image: url("./speed.svg") !important;
+}
+
 .dropdown-menu {
     display: none;
     left: 0;

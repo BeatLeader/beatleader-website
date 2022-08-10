@@ -50,6 +50,7 @@
 	import QualificationApproval from '../components/Leaderboard/QualificationApproval.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
 	import RankedApproval from '../components/Leaderboard/RankedApproval.svelte';
+	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -535,11 +536,14 @@
 											EX MACHINA
 											<Value value={generatedStars} digits={2} zero="" suffix="★" />
 										</span>
-									{:else}
+									{:else if generatedStars !== 0}
 										<Spinner />
 									{/if}
 								{/if}
 								{#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span>{/if}
+								{#if leaderboard?.stats.type}
+									<MapTypeDescription type={leaderboard?.stats.type} />
+								{/if}
 
 								<span class="icons"><Icons {hash} {diffInfo} /></span>
 								<Button
@@ -895,7 +899,7 @@
 									<small class="level-author">{song.hash}</small>
 								</div>
 							{/await}
-							{#if leaderboard && leaderboard.qualification}
+							{#if !qualification && leaderboard && leaderboard.qualification}
 								<QualificationStatus qualification={leaderboard.qualification} />
 							{/if}
 						{/if}
