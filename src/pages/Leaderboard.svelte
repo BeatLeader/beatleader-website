@@ -379,6 +379,19 @@
 		}
 	}
 
+	let latestHash;
+
+	async function checkMapHash(hash) {
+		if (hash) {
+			let beatSaverService = createBeatSaverService();
+
+			const songInfoValue = await beatSaverService.byHash(hash);
+			console.log(songInfoValue);
+
+			latestHash = songInfoValue.versions[0].hash.toLowerCase() == hash.toLowerCase();
+		}
+	}
+
 	let isRankable;
 	function calculateIsRankable(isRT, qualification) {
 		if (isRT && qualification && qualification.criteriaMet == 1 && qualification.mapperAllowed && qualification.approved) {
@@ -417,6 +430,7 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+	$: isjuniorRT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('juniorrankedteam');
 	$: isSupporter =
 		$account.player &&
 		$account.player.playerInfo.role &&
@@ -442,6 +456,7 @@
 	$: votingLoading = $votingStore.loading;
 
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
+	$: if (showAverageStats) checkMapHash(song.hash);
 </script>
 
 <svelte:head>
@@ -458,6 +473,7 @@
 		insideLeaderboard={!separatePage}
 		playerId={$account.id}
 		{rtvoting}
+		{isjuniorRT}
 		{qualificationUpdate}
 		on:finished={() => {
 			mapVoting = false;
@@ -891,9 +907,16 @@
 							{:then beatSavior}
 								<div transition:slide class="tab">
 									<BeatSaviorDetails {beatSavior} />
-									<small class="level-author">{song.hash}</small>
 								</div>
 							{/await}
+							<small class="level-author">{song.hash}</small>
+							{#if latestHash}
+								<i class="fa fa-check" style="color: green;" title="Latest map version" />
+							{:else if latestHash == undefined}
+								<Spinner />
+							{:else}
+								<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+							{/if}
 							{#if !isNominated && leaderboard.qualification}
 								<QualificationStatus qualification={leaderboard.qualification} />
 							{/if}

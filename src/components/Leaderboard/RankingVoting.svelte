@@ -15,6 +15,7 @@
 	export let playerId;
 	export let rtvoting;
 	export let qualificationUpdate;
+	export let isjuniorRT;
 
 	let hash = leaderboard?.song?.hash;
 	let diff = leaderboard?.diffInfo?.diff;
@@ -127,6 +128,7 @@
 					if (
 						qualification.mapperAllowed &&
 						mapperAllowed &&
+						!isjuniorRT &&
 						qualification.rtMember != playerId &&
 						qualification.criteriaChecker != playerId &&
 						qualification.criteriaMet == 1 &&
