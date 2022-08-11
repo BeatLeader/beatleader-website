@@ -9,20 +9,21 @@
 
 	const dispatch = createEventDispatcher();
 
-	export let insideLeaderboard = false;
 	export let votingStore;
-	export let hash;
-	export let diff;
-	export let mode;
-	export let currentStars;
-	export let currentType;
+	export let leaderboard;
+	export let insideLeaderboard = false;
 	export let playerId;
-
-	export let isRanked;
 	export let rtvoting;
-
-	export let qualification;
 	export let qualificationUpdate;
+
+	let hash = leaderboard?.song?.hash;
+	let diff = leaderboard?.diffInfo?.diff;
+	let mode = leaderboard?.diffInfo?.type;
+	let currentStars = leaderboard?.stats?.stars;
+	let currentType = leaderboard?.stats?.type;
+	let isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked';
+	let isQualified = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Qualified';
+	let qualification = leaderboard?.qualification;
 
 	let suitableForRank = rtvoting && !isRanked ? true : undefined;
 	let stars;
@@ -86,12 +87,16 @@
 	}
 
 	let dialogTitle;
-	function updateDialogTitle(rtvoting, isRanked, qualificationUpdate) {
+	function updateDialogTitle(rtvoting, isRanked, qualificationUpdate, isQualified) {
 		if (rtvoting) {
 			if (isRanked) {
 				dialogTitle = 'Update map ranking';
 			} else if (qualificationUpdate) {
-				dialogTitle = 'Update map nomination';
+				if (isQualified) {
+					dialogTitle = 'Update map qualification';
+				} else {
+					dialogTitle = 'Update map nomination';
+				}
 			} else {
 				dialogTitle = 'Nominate map';
 			}
@@ -102,7 +107,17 @@
 
 	let actionButtonTitle;
 	let actionButtonType;
-	function updateActionButtonTitle(suitableForRank, rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes) {
+	function updateActionButtonTitle(
+		suitableForRank,
+		mapperAllowed,
+		rtvoting,
+		isRanked,
+		qualificationUpdate,
+		criteriaMet,
+		playerId,
+		stars,
+		selectedTypes
+	) {
 		actionButtonType = 'primary';
 		if (rtvoting) {
 			if (isRanked) {
@@ -111,6 +126,7 @@
 				if (criteriaMet != 2 && suitableForRank) {
 					if (
 						qualification.mapperAllowed &&
+						mapperAllowed &&
 						qualification.rtMember != playerId &&
 						qualification.criteriaChecker != playerId &&
 						qualification.criteriaMet == 1 &&
@@ -126,7 +142,12 @@
 						actionButtonTitle = 'Update nomination';
 					}
 				} else {
-					actionButtonTitle = 'Decline qualification!';
+					if (suitableForRank) {
+						actionButtonTitle = 'Stop nomination!';
+					} else {
+						actionButtonTitle = 'Decline qualification!';
+					}
+
 					actionButtonType = 'danger';
 				}
 			} else {
@@ -138,8 +159,18 @@
 	}
 
 	$: updateStars(currentStars);
-	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate);
-	$: updateActionButtonTitle(suitableForRank, rtvoting, isRanked, qualificationUpdate, criteriaMet, playerId, stars, selectedTypes);
+	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate, isQualified);
+	$: updateActionButtonTitle(
+		suitableForRank,
+		mapperAllowed,
+		rtvoting,
+		isRanked,
+		qualificationUpdate,
+		criteriaMet,
+		playerId,
+		stars,
+		selectedTypes
+	);
 </script>
 
 <div class="ranking-voting {insideLeaderboard ? 'inside-leaderboard' : ''}">
@@ -165,7 +196,7 @@
 					on:click={() => (suitableForRank = true)} />
 			{/if}
 			{#if qualificationUpdate}
-				<div>Qualification status</div>
+				<div>{isQualified ? 'Qualification status' : 'Nomination status'}</div>
 				<Button
 					label="STOP"
 					type={suitableForRank || suitableForRank == undefined ? 'default' : 'danger'}
@@ -174,16 +205,20 @@
 					label="KEEP"
 					type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
 					on:click={() => (suitableForRank = true)} />
-				<div>Mapper allowed but can't/not want to use website</div>
-				<Button
-					label="YES"
-					type={mapperAllowed === false || mapperAllowed == undefined ? 'default' : 'green'}
-					on:click={() => (mapperAllowed = true)} />
-			{/if}
-			{#if qualificationUpdate}
-				<div>Criteria check result</div>
-				<Button label="UNMET" type={criteriaMet == 2 ? 'danger' : 'default'} on:click={() => (criteriaMet = 2)} />
-				<Button label="MET" type={criteriaMet == 1 ? 'green' : 'default'} on:click={() => (criteriaMet = 1)} />
+				{#if !isQualified}
+					<div>Mapper allowed but can't/not want to use website</div>
+					<Button
+						label="NO"
+						type={mapperAllowed === true || mapperAllowed == undefined ? 'default' : 'danger'}
+						on:click={() => (mapperAllowed = false)} />
+					<Button
+						label="YES"
+						type={mapperAllowed === false || mapperAllowed == undefined ? 'default' : 'green'}
+						on:click={() => (mapperAllowed = true)} />
+					<div>Criteria check result</div>
+					<Button label="UNMET" type={criteriaMet == 2 ? 'danger' : 'default'} on:click={() => (criteriaMet = 2)} />
+					<Button label="MET" type={criteriaMet == 1 ? 'green' : 'default'} on:click={() => (criteriaMet = 1)} />
+				{/if}
 			{/if}
 			{#if criteriaMet == 2}
 				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />

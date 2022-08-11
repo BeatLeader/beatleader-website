@@ -74,8 +74,22 @@
 
 	let mytypeFilterOptions = baseMytypeFilterOptions;
 
-	function addMapperTypeFilter() {
-		mytypeFilterOptions.push({key: 'mymaps', label: 'My maps', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
+	function addAdditionalFilters(mapper, rt) {
+		mytypeFilterOptions = [...baseMytypeFilterOptions];
+		if (mapper) {
+			mytypeFilterOptions.push({key: 'mymaps', label: 'My maps', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
+		}
+		if (mapper || rt) {
+			mytypeFilterOptions.push({key: 'mynominated', label: 'My nominated', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
+		}
+		if (rt) {
+			mytypeFilterOptions.push({
+				key: 'othersnominated',
+				label: "Other's nominated",
+				iconFa: 'fa fa-cubes',
+				color: 'var(--beatleader-primary)',
+			});
+		}
 	}
 
 	function scrollToTop() {
@@ -124,6 +138,7 @@
 		if (!event?.detail) return;
 
 		currentFilters.type = event.detail.key ?? '';
+		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -132,6 +147,7 @@
 		if (!event?.detail) return;
 
 		currentFilters.mytype = event.detail.key ?? '';
+		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -141,6 +157,7 @@
 
 		currentFilters.stars_from = event.detail.values[0];
 		currentFilters.stars_to = event.detail.values[1];
+		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -152,6 +169,7 @@
 		{id: 'voteratio', label: 'Vote ratio', title: 'Sort by vote ratio', iconFa: 'fa fa-cubes'},
 		{id: 'votecount', label: 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-cubes'},
 		{id: 'playcount', label: 'Plays', title: 'Sort by play count', iconFa: 'fa fa-user'},
+		{id: 'scoreTime', label: 'Newest score', title: 'Sort by the last made score', iconFa: 'fa fa-leaf'},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -176,7 +194,8 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
-	$: if ($account.player && $account.player.playerInfo.mapperId) addMapperTypeFilter();
+
+	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
 	$: changePageAndFilters(page, location);
 	$: scrollToTop($pending);

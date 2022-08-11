@@ -76,7 +76,7 @@ export default () => {
         const url = BL_API_URL + `qualification/${hash}/${diff}/${mode}?stilQualifying=${rankability}`
             + (stars ? "&stars=" + stars : "")
             + (type ? "&type=" + type : "")
-            + (allowedByMapper ? "&allowed=true" : "")
+            + (allowedByMapper != undefined ? `&allowed=${allowedByMapper ? "true" : "false"}` : "")
             + (criteriaMet ? "&criteriaCheck=" + criteriaMet : "")
             + (criteriaCommentary ? "&criteriaCommentary=" + encodeURIComponent(criteriaCommentary) : "");
 

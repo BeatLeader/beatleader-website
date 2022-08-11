@@ -109,7 +109,7 @@
 				{/await}
 			{/each}
 		{:else}
-			<span style="color: gray;"><i class="fa fa-xmark" /> Not voted by RT yet</span>
+			<span style="color: gray;"><i class="fa fa-xmark" /> Not approved by other RT yet</span>
 		{/if}
 	</div>
 

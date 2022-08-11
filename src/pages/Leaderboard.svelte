@@ -452,18 +452,12 @@
 
 {#if mapVoting}
 	<RankingVoting
+		{votingStore}
+		{leaderboard}
 		insideLeaderboard={!separatePage}
 		playerId={$account.id}
-		{votingStore}
 		{rtvoting}
 		{qualificationUpdate}
-		{qualification}
-		{isRanked}
-		currentStars={leaderboard?.stats?.stars}
-		currentType={leaderboard?.stats?.type}
-		{hash}
-		diff={diffInfo?.diff}
-		mode={diffInfo?.type}
 		on:finished={() => {
 			mapVoting = false;
 			rtvoting = false;
