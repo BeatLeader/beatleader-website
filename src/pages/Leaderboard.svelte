@@ -406,7 +406,8 @@
 	$: hash = opt($leaderboardStore, 'leaderboard.song.hash');
 	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
 	$: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL');
-	$: isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked';
+	$: isRanked = leaderboard?.stats?.status === 'Ranked';
+	$: isNominated = leaderboard?.stats?.status === 'Qualified' || leaderboard?.stats?.status === 'Nominated';
 	$: qualification = leaderboard?.qualification;
 	$: calculateIsRankable(isRT, qualification);
 
@@ -556,7 +557,7 @@
 								{/if}
 							</h2>
 
-							{#if qualification}
+							{#if isNominated && qualification}
 								<QualificationStatus {qualification} />
 							{/if}
 						</header>
@@ -587,7 +588,7 @@
 							{:else if votingStatus == 3}
 								<Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true} />
 							{/if}
-							{#if separatePage && (isRT || (verifiedMapperId == leaderboard?.song.mapperId && !isRanked)) && !qualification}
+							{#if separatePage && (isRT || (verifiedMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
 								{#if !isRT && qualificationLimitError}
 									<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
 								{:else}
@@ -602,7 +603,7 @@
 										}} />
 								{/if}
 							{/if}
-							{#if separatePage && isRT && qualification}
+							{#if separatePage && isRT && isNominated}
 								<Button
 									cls="voteButton"
 									iconFa="fas fa-list-check"
@@ -893,7 +894,7 @@
 									<small class="level-author">{song.hash}</small>
 								</div>
 							{/await}
-							{#if !qualification && leaderboard && leaderboard.qualification}
+							{#if !isNominated && leaderboard.qualification}
 								<QualificationStatus qualification={leaderboard.qualification} />
 							{/if}
 						{/if}

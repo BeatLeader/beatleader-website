@@ -4,6 +4,7 @@
 	import Avatar from '../Common/Avatar.svelte';
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
+	import QualificationChange from './QualificationChange.svelte';
 
 	export let qualification;
 
@@ -41,6 +42,8 @@
 			approvers = null;
 		}
 	}
+
+	let showChanges;
 
 	$: retrievePlayers(qualification);
 </script>
@@ -120,6 +123,29 @@
 			</span>
 		</div>
 	{/if}
+
+	{#if qualification.changes && qualification.changes.length}
+		<div class="score-options-section">
+			<span
+				class="beat-savior-reveal clickable"
+				class:opened={showChanges}
+				on:click={() => (showChanges = !showChanges)}
+				title="Show average difficulty stats">
+				{#if showChanges}
+					Hide changelog
+				{:else}
+					Show changelog
+				{/if}
+
+				<i class="fas fa-chevron-down" />
+			</span>
+		</div>
+		{#if showChanges}
+			{#each qualification.changes as change, idx}
+				<QualificationChange {change} />
+			{/each}
+		{/if}
+	{/if}
 {/if}
 
 <style>
@@ -127,5 +153,19 @@
 		display: flex;
 		grid-gap: 0.4em;
 		align-items: center;
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
 	}
 </style>

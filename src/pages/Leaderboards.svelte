@@ -165,6 +165,7 @@
 
 	let sortValues1 = [
 		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-list-ol'},
+		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
 		{id: 'voting', label: 'Voting', title: 'Sort by positive minus negative vote count', iconFa: 'fa fa-cubes'},
 		{id: 'voteratio', label: 'Vote ratio', title: 'Sort by vote ratio', iconFa: 'fa fa-cubes'},
 		{id: 'votecount', label: 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-cubes'},
@@ -512,6 +513,10 @@
 		.icons {
 			margin-bottom: 0.5em;
 			width: 100%;
+		}
+
+		.playlist-buttons {
+			flex-direction: column;
 		}
 	}
 </style>
