@@ -723,7 +723,7 @@
 												{/if}
 											</div>
 										{/if}
-										{#if type === 'accsaber' || isRanked || qualification}
+										{#if type === 'accsaber' || isRanked || isNominated}
 											<div class="pp with-badge">
 												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 													<span slot="label">
@@ -910,7 +910,7 @@
 							{/await}
 							<small class="level-author">{song.hash}</small>
 							{#if latestHash}
-								<i class="fa fa-check" style="color: green;" title="Latest map version" />
+								<i class="fa fa-check" style="color: lime;" title="Latest map version" />
 							{:else if latestHash == undefined}
 								<Spinner />
 							{:else}
