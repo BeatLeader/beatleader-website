@@ -385,8 +385,7 @@
 		if (hash) {
 			let beatSaverService = createBeatSaverService();
 
-			const songInfoValue = await beatSaverService.byHash(hash);
-			console.log(songInfoValue);
+			const songInfoValue = await beatSaverService.byHash(hash, true);
 
 			latestHash = songInfoValue.versions[0].hash.toLowerCase() == hash.toLowerCase();
 		}
