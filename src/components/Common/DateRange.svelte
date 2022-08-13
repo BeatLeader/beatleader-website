@@ -1,6 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import { DateTime } from 'luxon';
+	import {DateTime} from 'luxon';
 
 	export let dateFrom = null;
 	export let dateTo = null;
@@ -9,12 +9,12 @@
 
 	const USER_TIMEZONE = Intl?.DateTimeFormat()?.resolvedOptions()?.timeZone ?? 'UTC';
 
-	const getLocalDateFromJsDate = date => date ? DateTime.fromJSDate(date).setZone(USER_TIMEZONE).toISODate() : null;
+	const getLocalDateFromJsDate = date => (date ? DateTime.fromJSDate(date).setZone(USER_TIMEZONE).toISODate() : null);
 
 	let initialized = false;
 
-	let localFrom = getLocalDateFromJsDate(dateFrom)
-	let localTo = getLocalDateFromJsDate(dateTo)
+	let localFrom = getLocalDateFromJsDate(dateFrom);
+	let localTo = getLocalDateFromJsDate(dateTo);
 
 	function onChanged(localFrom, localTo) {
 		if (!initialized) {
@@ -29,17 +29,13 @@
 		dispatch('change', {from: dateFrom, to: dateTo});
 	}
 
-	$: onChanged(localFrom, localTo)
+	$: onChanged(localFrom, localTo);
 </script>
 
 <div class="date-range">
-	<input type="date" bind:value={localFrom}
-				 min="2022-01-01" max={localTo ? localTo : getLocalDateFromJsDate(new Date())}
-	/>
+	<input type="date" bind:value={localFrom} min="2022-01-01" max={localTo ? localTo : getLocalDateFromJsDate(new Date())} />
 	to
-	<input type="date" bind:value={localTo}
-				 min={localFrom ? localFrom : '2022-01-01'} max={getLocalDateFromJsDate(new Date())}
-	/>
+	<input type="date" bind:value={localTo} min={localFrom ? localFrom : '2022-01-01'} max={getLocalDateFromJsDate(new Date())} />
 </div>
 
 <style>

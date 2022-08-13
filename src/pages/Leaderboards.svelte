@@ -208,7 +208,6 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
 	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
@@ -217,7 +216,7 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
-	$: isFilteringByDateEnabled = ['voting', 'playcount'].includes(currentFilters.sortBy)
+	$: isFilteringByDateEnabled = ['voting', 'playcount'].includes(currentFilters.sortBy);
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
@@ -388,18 +387,29 @@
 				title={!isFilteringByDateEnabled ? 'Filter only available when Voting or Plays sorting is selected' : null}>
 				<label>Date range</label>
 
-				<DateRange type='date' dateFrom={dateFromUnix(currentFilters.date_from)} dateTo={dateFromUnix(currentFilters.date_to)}
-									 on:change={onDateRangeChange} />
+				<DateRange
+					type="date"
+					dateFrom={dateFromUnix(currentFilters.date_from)}
+					dateTo={dateFromUnix(currentFilters.date_to)}
+					on:change={onDateRangeChange} />
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>
 			<div class="playlist-buttons">
-				<Button cls="playlist-button" iconFa="fas fa-cubes" label="Ranked" bgColor="var(--beatleader-primary)" color='white'
-								on:click={() => navigate('/playlist/ranked')} />
-				<Button cls="playlist-button" iconFa="fas fa-check" label="Qualified" type='primary'
-								on:click={() => navigate('/playlist/qualified')} />
-				<Button cls="playlist-button" iconFa="fas fa-rocket" label="Nominated"
-								on:click={() => navigate('/playlist/nominated')} />
+				<Button
+					cls="playlist-button"
+					iconFa="fas fa-cubes"
+					label="Ranked"
+					bgColor="var(--beatleader-primary)"
+					color="white"
+					on:click={() => navigate('/playlist/ranked')} />
+				<Button
+					cls="playlist-button"
+					iconFa="fas fa-check"
+					label="Qualified"
+					type="primary"
+					on:click={() => navigate('/playlist/qualified')} />
+				<Button cls="playlist-button" iconFa="fas fa-rocket" label="Nominated" on:click={() => navigate('/playlist/nominated')} />
 			</div>
 		</ContentBox>
 	</aside>
@@ -437,7 +447,7 @@
 	aside label {
 		display: block;
 		font-weight: 500;
-		margin: .75rem 0;
+		margin: 0.75rem 0;
 	}
 
 	aside .filter.disabled label {
@@ -463,12 +473,12 @@
 	}
 
 	aside h2:not(:first-of-type) {
-			margin-top: 1.5em;
+		margin-top: 1.5em;
 	}
 
 	aside :global(.rangeSlider.pip-labels) {
-			margin-top: 1.5em;
-			margin-bottom: 4em;
+		margin-top: 1.5em;
+		margin-bottom: 4em;
 	}
 
 	input::placeholder {
