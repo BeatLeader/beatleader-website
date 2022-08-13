@@ -14,11 +14,19 @@
 	import {debounce} from '../utils/debounce';
 	import {formatNumber} from '../utils/format';
 	import Switcher from '../components/Common/Switcher.svelte';
-	import {createBuildFiltersFromLocation, buildSearchFromFilters, processFloatFilter, processStringFilter} from '../utils/filters';
+	import {
+		createBuildFiltersFromLocation,
+		buildSearchFromFilters,
+		processFloatFilter,
+		processStringFilter,
+		processIntFilter,
+	} from '../utils/filters';
 	import SongScore from '../components/Player/SongScore.svelte';
 	import {processScore} from '../network/clients/beatleader/scores/utils/processScore';
 	import QualificationStatusSmall from '../components/Leaderboard/QualificationStatusSmall.svelte';
 	import Button from '../components/Common/Button.svelte';
+	import DateRange from '../components/Common/DateRange.svelte';
+	import {dateFromUnix, DAY} from '../utils/date';
 
 	export let page = 1;
 	export let location;
@@ -35,6 +43,8 @@
 		{key: 'mytype', default: '', process: processStringFilter},
 		{key: 'stars_from', default: MIN_STARS, process: processFloatFilter},
 		{key: 'stars_to', default: MAX_STARS, process: processFloatFilter},
+		{key: 'date_from', default: null, process: processIntFilter},
+		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
 		{key: 'order', default: 'asc', process: processStringFilter},
 	];
@@ -189,6 +199,16 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onDateRangeChange(event) {
+		if (!event?.detail) return;
+
+		currentFilters.date_from = event.detail?.from ? event.detail.from.getTime() / 1000 : null;
+		currentFilters.date_to = event.detail?.to ? (event.detail.to.getTime() + DAY) / 1000 : null;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
 	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
@@ -197,6 +217,7 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+	$: isFilteringByDateEnabled = ['voting', 'playcount'].includes(currentFilters.sortBy)
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
@@ -355,22 +376,12 @@
 
 			<section
 				class="filter"
-				class:disabled={currentFilters.type !== 'ranked'}
-				title={currentFilters.type !== 'ranked' ? 'Filter only available for ranked maps' : null}>
-				<label>Stars <span>{currentFilters.stars_from}<sup>★</sup></span> to <span>{currentFilters.stars_to}<sup>★</sup></span></label>
-				<RangeSlider
-					range
-					min={MIN_STARS}
-					max={MAX_STARS}
-					step={0.1}
-					values={[currentFilters.stars_from, currentFilters.stars_to]}
-					float
-					hoverable
-					pips
-					pipstep={20}
-					all="label"
-					on:change={debouncedOnStarsChanged}
-					disabled={currentFilters.type !== 'ranked'} />
+				class:disabled={!isFilteringByDateEnabled}
+				title={!isFilteringByDateEnabled ? 'Filter only available when Voting or Plays sorting is selected' : null}>
+				<label>Date range</label>
+
+				<DateRange type='date' dateFrom={dateFromUnix(currentFilters.date_from)} dateTo={dateFromUnix(currentFilters.date_to)}
+									 on:change={onDateRangeChange} />
 			</section>
 
 			<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
@@ -505,7 +516,7 @@
 
 	.playlist-buttons {
 		display: flex;
-		margin-top: 0.5em;
+		margin-top: 1em;
 		column-gap: 0.5em;
 		flex-direction: column;
 	}
