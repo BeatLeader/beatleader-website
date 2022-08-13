@@ -1,20 +1,18 @@
 <script>
-	import createBeatSaverService from '../../services/beatmaps';
-	import {modeForModeName, diffForDiffName} from '../../utils/beatleader/format';
+	import createLeaderboardsService from '../../services/beatleader/leaderboardsMap';
 	import {navigate} from 'svelte-routing';
 	import Button from '../Common/Button.svelte';
 	import Difficulty from '../Song/Difficulty.svelte';
-
-	const DEFAULT_IMG = '/assets/song-default.png';
 
 	export let song;
 	export let listId;
 	export let store;
 	export let canModify;
 
-	let beatSaverService = createBeatSaverService();
+	let leaderboardsService = createLeaderboardsService();
 
 	let songInfo;
+	let leaderboards;
 	let showDiffIcons;
 	let leaderboardUrl;
 	let coverUrl;
@@ -24,35 +22,32 @@
 	}
 
 	async function updateSongKey(hash) {
-		const songInfoValue = await beatSaverService.byHash(hash);
-		if (songInfoValue && songInfoValue.key) {
-			songInfo = songInfoValue;
+		const songInfoValue = await leaderboardsService.byHash(hash);
+		if (songInfoValue && songInfoValue.song.id) {
+			songInfo = songInfoValue.song;
+			leaderboards = songInfoValue.leaderboards;
+			coverUrl = songInfo.coverImage;
 
-			showDiffIcons = songInfo.versions[0].diffs.some(el => el.characteristic != 'Standard');
-
-			let firstDiff = songInfo.versions[0].diffs[0];
-			coverUrl = songInfo.versions[0].coverURL;
-			leaderboardUrl = `/leaderboard/global/${
-				songInfoValue.key + diffForDiffName(firstDiff.difficulty) + modeForModeName(firstDiff.characteristic)
-			}/1`;
+			showDiffIcons = leaderboards.some(el => el.difficulty.modeName != 'Standard');
+			leaderboardUrl = `/leaderboard/global/${leaderboards[0].id}/1`;
 		}
 	}
 
 	function toggleDifficulty(diff) {
 		const index = difficulties
-			? difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficulty) == el.name && diff.characteristic == el.characteristic)
+			? difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficultyName) == el.name && diff.modeName == el.characteristic)
 			: -1;
 		if (index == -1) {
 			if (difficulties) {
 				difficulties.push({
-					name: decapitalizeFirstLetter(diff.difficulty),
-					characteristic: diff.characteristic,
+					name: decapitalizeFirstLetter(diff.difficultyName),
+					characteristic: diff.modeName,
 				});
 			} else {
 				difficulties = [
 					{
-						name: decapitalizeFirstLetter(diff.difficulty),
-						characteristic: diff.characteristic,
+						name: decapitalizeFirstLetter(diff.difficultyName),
+						characteristic: diff.modeName,
 					},
 				];
 				song.difficulties = difficulties;
@@ -75,19 +70,23 @@
 	{#if songInfo}
 		<div style="display: grid; padding-left: 1em">
 			<a href={leaderboardUrl} class="name" on:click|preventDefault={() => navigate(leaderboardUrl)}>{songInfo.name}</a>
-			<div class="author">{songInfo.uploader.name}</div>
+			<div class="author">{songInfo.mapper}</div>
 			<div style="display: inline;">
-				{#each songInfo.versions[0].diffs as diff, songId}
+				{#each leaderboards as leaderboard, songId}
 					<Difficulty
-						diff={{type: diff.characteristic, diff: diff.difficulty, stars: diff.stars}}
+						diff={{type: leaderboard.difficulty.modeName, diff: leaderboard.difficulty.difficultyName, stars: leaderboard.difficulty.stars}}
 						pointer={true}
 						useShortName={true}
 						reverseColors={true}
 						{showDiffIcons}
 						enabled={difficulties
-							? difficulties.some(el => el.name == decapitalizeFirstLetter(diff.difficulty) && el.characteristic == diff.characteristic)
+							? difficulties.some(
+									el =>
+										el.name == decapitalizeFirstLetter(leaderboard.difficulty.difficultyName) &&
+										el.characteristic == leaderboard.difficulty.modeName
+							  )
 							: true}
-						on:click={() => toggleDifficulty(diff)} />
+						on:click={() => toggleDifficulty(leaderboard.difficulty)} />
 				{/each}
 			</div>
 		</div>

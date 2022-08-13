@@ -1,8 +1,6 @@
 <script>
 	import {mapTypeListFromMask} from '../../utils/beatleader/format';
 
-	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../../utils/date';
-
 	export let type;
 	export let cram = false;
 

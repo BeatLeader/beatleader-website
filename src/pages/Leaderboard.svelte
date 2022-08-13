@@ -933,7 +933,7 @@
 			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
 		{/if}
 	</article>
-	{#if showCurve && (isRanked || qualification)}
+	{#if showCurve && (isRanked || isNominated)}
 		<aside>
 			<ContentBox>
 				<h2 class="title is-5">

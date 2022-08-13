@@ -2,6 +2,7 @@
 	import {navigate} from 'svelte-routing';
 	import {fade, fly, slide} from 'svelte/transition';
 	import Button from '../Common/Button.svelte';
+	import Pager from '../Common/Pager.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import createPlayerService from '../../services/beatleader/player';
 	import Song from './Song.svelte';
@@ -11,6 +12,14 @@
 	export let store;
 	export let expanded = false;
 	export let accountStore;
+
+	let page = 0;
+	let itemsPerPage = 5;
+	let itemsPerPageValues = [5, 10, 15];
+
+	function onPageChanged(event) {
+		page = event.detail.page;
+	}
 
 	let fileinput;
 	const changeImage = e => {
@@ -64,7 +73,15 @@
 		}
 	}
 
+	function updatePage() {
+		if (totalItems <= itemsPerPage) {
+			page = 0;
+		}
+	}
+
 	$: songs = playlist.songs;
+	$: totalItems = songs.length;
+	$: updatePage(songs.length);
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
 </script>
 
@@ -143,10 +160,14 @@
 
 		{#if detailsOpened}
 			<div class="tab">
-				{#each songs as song, songId}
+				{#each songs.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as song, songId}
 					<Song {song} {canModify} listId={idx} {store} />
 				{/each}
 			</div>
+
+			{#if songs && songs.length > itemsPerPage}
+				<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} />
+			{/if}
 		{/if}
 	</div>
 {/if}
