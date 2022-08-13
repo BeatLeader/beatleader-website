@@ -208,6 +208,8 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	const debouncedOnDateRangeChanged = debounce(onDateRangeChange, FILTERS_DEBOUNCE_MS);
+
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
 	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
@@ -391,7 +393,7 @@
 					type="date"
 					dateFrom={dateFromUnix(currentFilters.date_from)}
 					dateTo={dateFromUnix(currentFilters.date_to)}
-					on:change={onDateRangeChange} />
+					on:change={debouncedOnDateRangeChanged} />
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>
