@@ -46,6 +46,8 @@
 			filters.stars_to = tmp;
 		}
 
+		if (!filters?.sortBy?.length) filters.sortBy = 'stars';
+
 		return filters;
 	});
 
@@ -330,6 +332,26 @@
 						on:change={onMyTypeChanged} />
 				</section>
 			{/if}
+
+			<section
+				class="filter"
+				class:disabled={currentFilters.type !== 'ranked'}
+				title={currentFilters.type !== 'ranked' ? 'Filter only available for ranked maps' : null}>
+				<label>Stars <span>{currentFilters.stars_from}<sup>★</sup></span> to <span>{currentFilters.stars_to}<sup>★</sup></span></label>
+				<RangeSlider
+					range
+					min={MIN_STARS}
+					max={MAX_STARS}
+					step={0.1}
+					values={[currentFilters.stars_from, currentFilters.stars_to]}
+					float
+					hoverable
+					pips
+					pipstep={20}
+					all="label"
+					on:change={debouncedOnStarsChanged}
+					disabled={currentFilters.type !== 'ranked'} />
+			</section>
 
 			<section
 				class="filter"
