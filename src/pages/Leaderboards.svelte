@@ -218,7 +218,6 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
-	$: isFilteringByDateEnabled = ['voting', 'playcount'].includes(currentFilters.sortBy);
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
@@ -383,10 +382,7 @@
 					disabled={currentFilters.type !== 'ranked'} />
 			</section>
 
-			<section
-				class="filter"
-				class:disabled={!isFilteringByDateEnabled}
-				title={!isFilteringByDateEnabled ? 'Filter only available when Voting or Plays sorting is selected' : null}>
+			<section class="filter">
 				<label>Date range</label>
 
 				<DateRange
