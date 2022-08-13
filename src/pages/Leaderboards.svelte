@@ -75,13 +75,13 @@
 		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
 		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
 		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+		{key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cube', color: 'var(--beatleader-primary)'},
 	];
 
 	const baseMytypeFilterOptions = [
 		{key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
-		{key: 'played', label: 'Played', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+		{key: 'played', label: 'Played', iconFa: 'fa fa-user', color: 'var(--beatleader-primary)'},
+		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-times', color: 'var(--beatleader-primary)'},
 	];
 
 	let mytypeFilterOptions = baseMytypeFilterOptions;
@@ -105,7 +105,7 @@
 	}
 
 	function scrollToTop() {
-		if (boxEl) scrollToTargetAdjusted(boxEl, 44);
+		if (boxEl) scrollToTargetAdjusted(boxEl, 60);
 	}
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
@@ -176,11 +176,11 @@
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
 
 	let sortValues1 = [
-		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-list-ol'},
+		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-star'},
 		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
-		{id: 'voting', label: 'Voting', title: 'Sort by positive minus negative vote count', iconFa: 'fa fa-cubes'},
-		{id: 'voteratio', label: 'Vote ratio', title: 'Sort by vote ratio', iconFa: 'fa fa-cubes'},
-		{id: 'votecount', label: 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-cubes'},
+		{id: 'voting', label: 'Voting', title: 'Sort by positive minus negative vote count', iconFa: 'fas fa-vote-yea'},
+		{id: 'voteratio', label: 'Vote ratio', title: 'Sort by vote ratio', iconFa: 'far fa-smile-beam'},
+		{id: 'votecount', label: 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-calculator'},
 		{id: 'playcount', label: 'Plays', title: 'Sort by play count', iconFa: 'fa fa-user'},
 		{id: 'scoreTime', label: 'Newest score', title: 'Sort by the last made score', iconFa: 'fa fa-leaf'},
 	];
@@ -334,6 +334,10 @@
 
 	<aside>
 		<ContentBox>
+			<h2 class="title is-5">Sorting</h2>
+
+			<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+
 			<h2 class="title is-5">Filters</h2>
 
 			<section class="filter">
@@ -358,7 +362,11 @@
 				class="filter"
 				class:disabled={currentFilters.type !== 'ranked'}
 				title={currentFilters.type !== 'ranked' ? 'Filter only available for ranked maps' : null}>
-				<label>Stars <span>{currentFilters.stars_from}<sup>★</sup></span> to <span>{currentFilters.stars_to}<sup>★</sup></span></label>
+				<label>
+					Stars
+					<span>{formatNumber(currentFilters.stars_from)}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.stars_to)}<sup>★</sup></span>
+				</label>
 				<RangeSlider
 					range
 					min={MIN_STARS}
@@ -384,12 +392,14 @@
 									 on:change={onDateRangeChange} />
 			</section>
 
-			<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
-
+			<h2 class="title is-5">Playlists</h2>
 			<div class="playlist-buttons">
-				<Button cls="playlist-button" iconFa="fas fa-list" label="Ranked playlist" on:click={() => navigate('/playlist/ranked')} />
-				<Button cls="playlist-button" iconFa="fas fa-list" label="Nominated playlist" on:click={() => navigate('/playlist/nominated')} />
-				<Button cls="playlist-button" iconFa="fas fa-list" label="Qualified playlist" on:click={() => navigate('/playlist/qualified')} />
+				<Button cls="playlist-button" iconFa="fas fa-cubes" label="Ranked" bgColor="var(--beatleader-primary)" color='white'
+								on:click={() => navigate('/playlist/ranked')} />
+				<Button cls="playlist-button" iconFa="fas fa-check" label="Qualified" type='primary'
+								on:click={() => navigate('/playlist/qualified')} />
+				<Button cls="playlist-button" iconFa="fas fa-rocket" label="Nominated"
+								on:click={() => navigate('/playlist/nominated')} />
 			</div>
 		</ContentBox>
 	</aside>
@@ -427,7 +437,7 @@
 	aside label {
 		display: block;
 		font-weight: 500;
-		margin-bottom: 1rem;
+		margin: .75rem 0;
 	}
 
 	aside .filter.disabled label {
@@ -450,6 +460,15 @@
 
 	aside :global(.switch-types) {
 		justify-content: flex-start;
+	}
+
+	aside h2:not(:first-of-type) {
+			margin-top: 1.5em;
+	}
+
+	aside :global(.rangeSlider.pip-labels) {
+			margin-top: 1.5em;
+			margin-bottom: 4em;
 	}
 
 	input::placeholder {
@@ -518,22 +537,17 @@
 		display: flex;
 		margin-top: 1em;
 		column-gap: 0.5em;
-		flex-direction: column;
+		flex-wrap: wrap;
 	}
 
 	:global(.playlist-button) {
 		height: 1.6em;
-		width: 12em;
 	}
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
 			flex-direction: column-reverse;
 			align-items: center;
-		}
-
-		.playlist-buttons {
-			flex-direction: row;
 		}
 
 		aside {
