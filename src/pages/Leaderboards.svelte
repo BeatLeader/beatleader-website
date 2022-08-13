@@ -178,6 +178,7 @@
 	let sortValues1 = [
 		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-star'},
 		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
+		{id: 'timestamp', label: 'Map date', title: 'Sort by the map date', iconFa: 'fas fa-map'},
 		{id: 'voting', label: 'Voting', title: 'Sort by positive minus negative vote count', iconFa: 'fas fa-vote-yea'},
 		{id: 'voteratio', label: 'Vote ratio', title: 'Sort by vote ratio', iconFa: 'far fa-smile-beam'},
 		{id: 'votecount', label: 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-calculator'},
