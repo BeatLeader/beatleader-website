@@ -409,7 +409,15 @@
 	$: filteredSongs =
 		songs
 			.filter(s => {
-				let result = true;
+				let result =
+					currentFilters?.mine === 'mine'
+						? !!s?.difficulties?.some(
+								d =>
+									d?.qualification?.rtMember === playerId ||
+									d?.qualification?.mapperId === playerId ||
+									d?.qualification?.criteriaChecker === playerId
+						  )
+						: true;
 
 				result &&= currentFilters?.mapper?.length
 					? (s?.mapper?.toLowerCase() ?? '').indexOf(currentFilters.mapper.toLowerCase()) >= 0
