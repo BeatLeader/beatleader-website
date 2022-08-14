@@ -71,6 +71,15 @@
 		}
 	};
 
+	const onConditionChange = (e, key) => {
+		const param = findParam(key);
+		if (param) {
+			param.valueCondition = e.target.value ?? 'or';
+
+			updateCurrentFiltersFromParams();
+		}
+	};
+
 	let start = null;
 	const rangeChange = (event, key) => {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
@@ -107,9 +116,11 @@
 			key: 'status',
 			label: 'It has a status of',
 			default: '',
+			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
+			valueCondition: 'or',
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
@@ -120,14 +131,18 @@
 			],
 			onChange: e => onMultiSwitchChange(e, 'status'),
 			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'status'),
 		},
 		{
 			key: 'status_not',
 			label: 'It has NOT a status of',
 			default: '',
+			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
+			valueCondition: 'or',
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
@@ -138,6 +153,8 @@
 			],
 			onChange: e => onMultiSwitchChange(e, 'status_not'),
 			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'status_not'),
 		},
 		{
 			key: 'mapper',
@@ -205,6 +222,10 @@
 				p.value = p.multi
 					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
 					: filters?.[p.key] ?? p?.default ?? '';
+
+				if (p.type === 'switch' && p.multi && p.withCondition) {
+					p.valueCondition = filters[p.key + '_cond'] ?? p.defaultCondition ?? 'or';
+				}
 			}
 		});
 
@@ -219,6 +240,10 @@
 				currentFilters[p.key] = p?.value?.id ?? '';
 			} else {
 				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id) : p?.value ?? '';
+
+				if (p.type === 'switch' && p.multi && p.withCondition) {
+					currentFilters[p.key + '_cond'] = p.valueCondition ?? 'or';
+				}
 			}
 		});
 
@@ -426,65 +451,81 @@
 						  )
 						: true;
 
+				const statusCond = currentFilters?.status_cond ?? 'or';
 				result &&= currentFilters?.status?.length
 					? currentFilters.status.reduce((result, key) => {
 							switch (key) {
 								case 'nominated':
-									result ||= s?.totals?.nominated > 0;
+									if (statusCond === 'or') result ||= s?.totals?.nominated > 0;
+									else result &&= s?.totals?.nominated > 0;
 									break;
 
 								case 'allowed':
-									result ||= s?.totals?.mapperAllowed > 0;
+									if (statusCond === 'or') result ||= s?.totals?.mapperAllowed > 0;
+									else result &&= s?.totals?.mapperAllowed > 0;
 									break;
 
 								case 'criteria':
-									result ||= s?.totals?.criteriaMet > 0;
+									if (statusCond === 'or') result ||= s?.totals?.criteriaMet > 0;
+									else result &&= s?.totals?.criteriaMet > 0;
 									break;
 
 								case 'approved':
-									result ||= s?.totals?.approved > 0;
+									if (statusCond === 'or') result ||= s?.totals?.approved > 0;
+									else result &&= s?.totals?.approved > 0;
 									break;
 
 								case 'voted':
-									result ||= s?.totals?.votesTotal > 0;
+									if (statusCond === 'or') result ||= s?.totals?.votesTotal > 0;
+									else result &&= s?.totals?.votesTotal > 0;
 									break;
 
 								case 'with_stars':
-									result ||= s?.minStars || s?.maxStars;
+									if (statusCond === 'or') result ||= s?.minStars || s?.maxStars;
+									else result &&= s?.minStars || s?.maxStars;
 									break;
 							}
+
 							return result;
-					  }, false)
+					  }, statusCond !== 'or')
 					: true;
 
+				const statusNotCond = currentFilters?.status_not_cond ?? 'or';
 				result &&= currentFilters?.status_not?.length
 					? currentFilters.status_not.reduce((result, key) => {
 							switch (key) {
 								case 'nominated':
-									result ||= s?.totals?.nominated < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.nominated < s?.difficulties?.length;
+									else result &&= s?.totals?.nominated < s?.difficulties?.length;
 									break;
 
 								case 'allowed':
-									result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
+									else result &&= s?.totals?.mapperAllowed < s?.difficulties?.length;
 									break;
 
 								case 'criteria':
-									result ||= s?.totals?.criteriaMet < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.criteriaMet < s?.difficulties?.length;
+									else result &&= s?.totals?.criteriaMet < s?.difficulties?.length;
 									break;
 
 								case 'approved':
-									result ||= s?.totals?.approved < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.approved < s?.difficulties?.length;
+									else result &&= s?.totals?.approved < s?.difficulties?.length;
 									break;
 
 								case 'voted':
-									result ||= s?.totals?.votesTotal === 0;
+									if (statusNotCond === 'or') result ||= s?.totals?.votesTotal === 0;
+									else result &&= s?.totals?.votesTotal === 0;
 									break;
 
 								case 'with_stars':
-									result ||= !s?.minStars && !s?.maxStars;
+									if (statusNotCond === 'or') result ||= !s?.minStars && !s?.maxStars;
+									else result &&= !s?.minStars && !s?.maxStars;
 							}
+
 							return result;
-					  }, false)
+					  }, statusNotCond !== 'or')
 					: true;
 
 				result &&= currentFilters?.mapper?.length
@@ -599,6 +640,8 @@
 											<div>
 												<QualificationStatus qualification={difficulty?.qualification} />
 											</div>
+										{:else}
+											<div>Not yet nominated.</div>
 										{/if}
 									</div>
 								{/each}
@@ -623,7 +666,15 @@
 				{#each params as param}
 					{#if param.type}
 						<section class="filter">
-							<label>{param?.label ?? param?.key ?? ''}</label>
+							<label>
+								{param?.label ?? param?.key ?? ''}
+
+								{#if param?.type === 'switch' && param?.multi && param?.withCondition}
+									<select value={param.valueCondition} on:change={param.onConditionChange}>
+										<option value="or">ANY </option><option value="and">ALL </option>
+									</select>
+								{/if}
+							</label>
 
 							{#if param?.type === 'input'}
 								<input type="text" placeholder={param.placeholder ?? null} value={param.value} on:input={param.onChange} />
@@ -683,9 +734,19 @@
 	}
 
 	aside label {
-		display: block;
+		display: inline-flex;
+		gap: 0.5rem;
 		font-weight: 500;
 		margin: 0.75rem 0;
+	}
+
+	aside label select {
+		background-color: transparent;
+	}
+
+	aside label select option {
+		color: var(--textColor);
+		background-color: var(--background);
 	}
 
 	aside .filter.disabled label {
