@@ -116,6 +116,7 @@
 				{id: 'criteria', label: 'Criteria checked'},
 				{id: 'approved', label: 'RT approved'},
 				{id: 'voted', label: 'Has votes'},
+				{id: 'with_stars', label: 'Has stars'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'status'),
 			multi: true,
@@ -133,6 +134,7 @@
 				{id: 'criteria', label: 'Criteria checked'},
 				{id: 'approved', label: 'RT approved'},
 				{id: 'voted', label: 'Has votes'},
+				{id: 'with_stars', label: 'Has stars'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'status_not'),
 			multi: true,
@@ -273,13 +275,7 @@
 			error = null;
 
 			songs = Object.values(
-				(
-					await Promise.all([
-						fetchAllMapsWithType('nominated'),
-						// fetchAllMapsWithType('qualified'), // TODO: enable it
-						// fetchVotedMaps(), // TODO: enable it
-					])
-				)
+				(await Promise.all([fetchAllMapsWithType('nominated'), fetchAllMapsWithType('qualified'), fetchVotedMaps()]))
 					.reduce((carry, maps) => [...carry, ...maps], [])
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, votes, ...rest} = map;
@@ -442,6 +438,10 @@
 								case 'voted':
 									result ||= s?.totals?.votesTotal > 0;
 									break;
+
+								case 'with_stars':
+									result ||= s?.minStars || s?.maxStars;
+									break;
 							}
 							return result;
 					  }, false)
@@ -469,6 +469,9 @@
 								case 'voted':
 									result ||= s?.totals?.votesTotal === 0;
 									break;
+
+								case 'with_stars':
+									result ||= !s?.minStars && !s?.maxStars;
 							}
 							return result;
 					  }, false)
@@ -481,6 +484,12 @@
 				result &&= currentFilters?.name?.length
 					? `${s?.name?.toLowerCase() ?? ''} ${s?.subName?.toLowerCase() ?? ''}`.indexOf(currentFilters.name.toLowerCase()) >= 0
 					: true;
+
+				result &&=
+					currentFilters?.star_range?.length === 2 &&
+					currentFilters?.star_range?.toString() !== findParam('star_range')?.default?.toString()
+						? s?.difficulties?.some(d => currentFilters.star_range[0] < d.stars && d.stars < currentFilters.star_range[1])
+						: true;
 
 				return result;
 			})
@@ -510,7 +519,7 @@
 				}
 			}) ?? [];
 
-	$: diffsCount = filteredSongs?.reduce((cnt, s) => cnt + (s?.difficulties?.length ?? 0), 0) ?? 0
+	$: diffsCount = filteredSongs?.reduce((cnt, s) => cnt + (s?.difficulties?.length ?? 0), 0) ?? 0;
 </script>
 
 <svelte:head>
@@ -523,8 +532,7 @@
 			<h1 class="title is-3">
 				RT Dashboard
 				{#if !error && !isLoading}
-					/ {formatNumber(filteredSongs?.length, 0)} song(s)
-					/ {formatNumber(diffsCount, 0)} diff(s)
+					/ {formatNumber(filteredSongs?.length, 0)} song(s) / {formatNumber(diffsCount, 0)} diff(s)
 				{/if}
 			</h1>
 
