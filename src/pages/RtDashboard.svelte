@@ -1,6 +1,7 @@
 <script>
 	import {fade} from 'svelte/transition';
 	import {onMount} from 'svelte';
+	import createAccountStore from '../stores/beatleader/account';
 	import apiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
 	import {copyToClipboard} from '../utils/clipboard';
 	import ContentBox from '../components/Common/ContentBox.svelte';
@@ -22,6 +23,8 @@
 	export let location;
 
 	document.body.classList.add('remove');
+
+	const account = createAccountStore();
 
 	const ITEMS_PER_PAGE = 100;
 	const VOTED = 100; // max 100
@@ -378,6 +381,10 @@
 
 		navigateToCurrentPageAndFilters();
 	}
+
+	$: isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
+	$: if (!$account?.loading && isRT) fetchMaps();
+	$: if (!$account?.loading && !isRT) navigate('/');
 
 	$: sortValue = sortValues.find(v => v.id === currentFilters.sortBy);
 
