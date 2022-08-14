@@ -2,6 +2,7 @@
 	import {setContext} from 'svelte';
 	import {Router, Route, navigate} from 'svelte-routing';
 	import buildInfo from '../build-info';
+	import {configStore} from './stores/config';
 	import createContainerStore from './stores/container';
 	import HomePage from './pages/Home.svelte';
 	import SearchPage from './pages/Search.svelte';
@@ -23,8 +24,8 @@
 	import SupportPage from './pages/Support.svelte';
 	import Nav from './components/Nav.svelte';
 	import Modal from 'svelte-simple-modal';
-	import {configStore} from './stores/config';
-	import Playlist from './components/Playlists/Playlist.svelte';
+	import RtDashboard from './pages/RtDashboard.svelte';
+
 	export let url = '';
 
 	let mainEl = null;
@@ -51,6 +52,7 @@
 				<Route path="/u/:initialPlayerId/*initialParams" let:params>
 					<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 				</Route>
+				<Route path="/rt" component={RtDashboard} />
 				<Route path="/privacy" component={PrivacyPage} />
 				<Route path="/about" component={AboutPage} />
 				<Route path="/friends" component={FriendsPage} />

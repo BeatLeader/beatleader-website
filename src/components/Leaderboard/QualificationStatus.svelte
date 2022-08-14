@@ -26,18 +26,18 @@
 
 		nominator = await playerService.fetchPlayerOrGetFromCache(qualification.rtMember);
 
-		if (qualification.mapperId) {
-			mapper = await playerService.fetchPlayerOrGetFromCache(qualification.mapperId);
+		if (qualification?.mapperId) {
+			mapper = await playerService.fetchPlayerOrGetFromCache(qualification?.mapperId);
 		} else {
 			mapper = null;
 		}
-		if (qualification.criteriaChecker) {
-			criteriaChecker = await playerService.fetchPlayerOrGetFromCache(qualification.criteriaChecker);
+		if (qualification?.criteriaChecker) {
+			criteriaChecker = await playerService.fetchPlayerOrGetFromCache(qualification?.criteriaChecker);
 		} else {
 			criteriaChecker = null;
 		}
-		if (qualification.approvers) {
-			approvers = qualification.approvers.split(',').map(async element => await playerService.fetchPlayerOrGetFromCache(element));
+		if (qualification?.approvers) {
+			approvers = qualification?.approvers.split(',').map(async element => await playerService.fetchPlayerOrGetFromCache(element));
 		} else {
 			approvers = null;
 		}
@@ -58,12 +58,12 @@
 			on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
 		<div class="timeset">
 			<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-				{formatDateRelative(dateFromUnix(qualification.timeset))}
+				{formatDateRelative(dateFromUnix(qualification?.timeset))}
 			</span>
 		</div>
 	</div>
 	<div class="qualification-description">
-		{#if qualification.mapperAllowed}
+		{#if qualification?.mapperAllowed}
 			<b><i class="fa fa-check" /> Allowed by mapper:</b>
 			<Avatar player={mapper} />
 			<PlayerNameWithFlag player={mapper} type={'beatleader/date'} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
@@ -72,10 +72,10 @@
 		{/if}
 	</div>
 	<div class="qualification-description">
-		{#if qualification.criteriaMet != 0}
-			{#if qualification.criteriaMet == 1}
-				<b><i class="fa fa-check" /> Criteria checked:</b>
-			{:else if qualification.criteriaMet == 2}
+		{#if qualification?.criteriaMet != 0}
+			{#if qualification?.criteriaMet == 1}
+				<b><i class="fa fa-check" /> Criteria checked by:</b>
+			{:else if qualification?.criteriaMet == 2}
 				<span style="color: red;"><i class="fa fa-xmark" /> Criteria check failed</span>
 			{/if}
 			<Avatar player={criteriaChecker} />
@@ -84,8 +84,14 @@
 				type={'beatleader/date'}
 				on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
 
-			{#if qualification.criteriaCommentary}
-				<span style="color: red;">: {qualification.criteriaCommentary}</span>
+			<div class="timeset">
+			<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+				{formatDateRelative(dateFromUnix(qualification?.criteriaTimeset))}
+			</span>
+			</div>
+
+			{#if qualification?.criteriaCommentary}
+				<span style="color: red;">({qualification?.criteriaCommentary})</span>
 			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria not checked yet</span>
@@ -94,7 +100,7 @@
 
 	<div class="qualification-description">
 		{#if approvers}
-			{#if qualification.approved}
+			{#if qualification?.approved}
 				<b><i class="fa fa-check" /> Approved by RT:</b>
 			{:else}
 				<span style="color: red;"><i class="fa fa-xmark" /> Declined by RT</span>
@@ -116,15 +122,15 @@
 		{/if}
 	</div>
 
-	{#if qualification.approved}
+	{#if qualification?.approved}
 		<div class="timeset">
 			<span style="color: white;">
-				Ready to rank {formatDateRelative(dateFromUnix(qualification.approvalTimeset + 60 * 60 * 24 * 7))}
+				Ready to rank {formatDateRelative(dateFromUnix(qualification?.approvalTimeset + 60 * 60 * 24 * 7))}
 			</span>
 		</div>
 	{/if}
 
-	{#if qualification.changes && qualification.changes.length}
+	{#if qualification?.changes && qualification?.changes.length}
 		<div class="score-options-section">
 			<span
 				class="beat-savior-reveal clickable"
@@ -141,7 +147,7 @@
 			</span>
 		</div>
 		{#if showChanges}
-			{#each qualification.changes as change, idx}
+			{#each qualification?.changes as change, idx}
 				<QualificationChange {change} />
 			{/each}
 		{/if}
@@ -167,5 +173,9 @@
 
 	.beat-savior-reveal.opened > i {
 		transform: rotateZ(180deg);
+	}
+
+	:global(.content figure:not(:first-child)) {
+			margin-top: 0;
 	}
 </style>
