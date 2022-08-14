@@ -1,52 +1,50 @@
-import { writable } from 'svelte/store'
-import { diffForDiffName } from '../../utils/beatleader/format';
+import {writable} from 'svelte/store';
+import {diffForDiffName} from '../../utils/beatleader/format';
 
 let store = null;
 let storeSubCount = 0;
 
 export default () => {
-    storeSubCount++;
-    if (store) return store;
+	storeSubCount++;
+	if (store) return store;
 
-    let starRatings = {};
+	let starRatings = {};
 
-    const get = () => starRatings;
-    const { subscribe: subscribeState, set } = writable(starRatings);
+	const get = () => starRatings;
+	const {subscribe: subscribeState, set} = writable(starRatings);
 
-    const fetchStars = async (hash, diff, mode) => {
-        if (!hash || !diff || !mode) return;
-        fetch(`https://bs-replays-ai.azurewebsites.net/json/${hash}/${diffForDiffName(diff)}/basic`)
-            .then(async response => {
-                if (response.status == 200) {
-                    const data = await response.json();
+	const fetchStars = async (hash, diff, mode) => {
+		if (!hash || !diff || !mode) return;
+		fetch(`https://bs-replays-ai.azurewebsites.net/json/${hash}/${diffForDiffName(diff)}/basic`).then(async response => {
+			if (response.status == 200) {
+				const data = await response.json();
 
-                    starRatings[hash + diff + mode] = parseFloat(data.balanced);
-                    set(starRatings);
-                } else {
-                    starRatings[hash + diff + mode] = 0;
-                    set(starRatings);
-                }
-            })
-    }
+				starRatings[hash + diff + mode] = parseFloat(data.balanced);
+				set(starRatings);
+			} else {
+				starRatings[hash + diff + mode] = 0;
+				set(starRatings);
+			}
+		});
+	};
 
-    const subscribe = fn => {
-        const stateUnsubscribe = subscribeState(fn);
+	const subscribe = fn => {
+		const stateUnsubscribe = subscribeState(fn);
 
-        return () => {
-            storeSubCount--;
+		return () => {
+			storeSubCount--;
 
-            if (storeSubCount === 0) {
-                store = null;
+			if (storeSubCount === 0) {
+				store = null;
 
-                stateUnsubscribe();
-            }
-        }
-    }
+				stateUnsubscribe();
+			}
+		};
+	};
 
-    return {
-        subscribe,
-        get,
-        fetchStars
-    }
-}
-
+	return {
+		subscribe,
+		get,
+		fetchStars,
+	};
+};

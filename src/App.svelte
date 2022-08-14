@@ -53,7 +53,7 @@
 					<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 				</Route>
 				<Route path="/rt" let:location>
-					<RtDashboard  {location} />
+					<RtDashboard {location} />
 				</Route>
 				<Route path="/privacy" component={PrivacyPage} />
 				<Route path="/about" component={AboutPage} />

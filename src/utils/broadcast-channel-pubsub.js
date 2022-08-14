@@ -1,89 +1,93 @@
-import { BroadcastChannel, createLeaderElection } from 'broadcast-channel'
-import { readable } from 'svelte/store'
-import log from './logger'
-import { uuid } from './uuid'
+import {BroadcastChannel, createLeaderElection} from 'broadcast-channel';
+import {readable} from 'svelte/store';
+import log from './logger';
+import {uuid} from './uuid';
 
 let bc;
 
 const createGlobalPubSub = () => {
-    const subscribers = {}
+	const subscribers = {};
 
-    const isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+	const isWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
 
-    const nodeId = uuid();
-    log.info(`Create pub/sub channel for node ${nodeId} (${isWorker ? 'worker' : 'browser'})`, 'PubSub')
+	const nodeId = uuid();
+	log.info(`Create pub/sub channel for node ${nodeId} (${isWorker ? 'worker' : 'browser'})`, 'PubSub');
 
-    bc = new BroadcastChannel('global-pub-sub', { webWorkerSupport: true });
-    const elector = createLeaderElection(bc);
+	bc = new BroadcastChannel('global-pub-sub', {webWorkerSupport: true});
+	const elector = createLeaderElection(bc);
 
-    let isLeader = false;
-    const leaderStore = readable(isLeader, set => {
-        elector.awaitLeadership().then(() => {
-            isLeader = true;
-            set(isLeader);
+	let isLeader = false;
+	const leaderStore = readable(isLeader, set => {
+		elector.awaitLeadership().then(() => {
+			isLeader = true;
+			set(isLeader);
 
-            log.info(`Node ${nodeId} is a new leader`, 'PubSub')
+			log.info(`Node ${nodeId} is a new leader`, 'PubSub');
 
-            return () => { }
-        });
-    });
+			return () => {};
+		});
+	});
 
-    const exists = eventName => Array.isArray(subscribers[eventName]);
+	const exists = eventName => Array.isArray(subscribers[eventName]);
 
-    const notify = (eventName, value, isLocal = true) => {
-        if (!exists(eventName)) return;
+	const notify = (eventName, value, isLocal = true) => {
+		if (!exists(eventName)) return;
 
-        subscribers[eventName].forEach(handler => handler(value, isLocal, eventName));
-    }
+		subscribers[eventName].forEach(handler => handler(value, isLocal, eventName));
+	};
 
-    const unsubscribe = (eventName, handler) => {
-        if (!exists(eventName)) return;
+	const unsubscribe = (eventName, handler) => {
+		if (!exists(eventName)) return;
 
-        subscribers[eventName] = subscribers[eventName].filter(h => h !== handler);
-    }
+		subscribers[eventName] = subscribers[eventName].filter(h => h !== handler);
+	};
 
-    const publish = (eventName, value) => {
-        notify(eventName, value);
+	const publish = (eventName, value) => {
+		notify(eventName, value);
 
-        bc.postMessage({ eventName, nodeId, value })
-    }
+		bc.postMessage({eventName, nodeId, value});
+	};
 
-    bc.onmessage = ({ eventName, nodeId: eventNodeId, value }) => notify(eventName, value, eventNodeId === nodeId);
+	bc.onmessage = ({eventName, nodeId: eventNodeId, value}) => notify(eventName, value, eventNodeId === nodeId);
 
-    const removeNode = async () => {
-        log.info(`Node ${nodeId} is about to be removed`, 'PubSub');
+	const removeNode = async () => {
+		log.info(`Node ${nodeId} is about to be removed`, 'PubSub');
 
-        publish('node-removed', nodeId);
-    }
+		publish('node-removed', nodeId);
+	};
 
-    // add close handler (also prevents back-forward cache)
-    if (!(typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope)) {
-        window.addEventListener('beforeunload', () => removeNode(), { capture: true });
-    }
+	// add close handler (also prevents back-forward cache)
+	if (!(typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope)) {
+		window.addEventListener('beforeunload', () => removeNode(), {capture: true});
+	}
 
-    publish('node-added', nodeId)
-    log.info(`Node ${nodeId} has been created`, 'PubSub')
+	publish('node-added', nodeId);
+	log.info(`Node ${nodeId} has been created`, 'PubSub');
 
-    return {
-        on(eventName, handler) {
-            if (!exists(eventName)) subscribers[eventName] = [];
+	return {
+		on(eventName, handler) {
+			if (!exists(eventName)) subscribers[eventName] = [];
 
-            // workaround - have no idea why some handlers are registered multiple times
-            if (subscribers[eventName].find(h => h === handler)) return;
+			// workaround - have no idea why some handlers are registered multiple times
+			if (subscribers[eventName].find(h => h === handler)) return;
 
-            subscribers[eventName].push(handler);
+			subscribers[eventName].push(handler);
 
-            return () => {
-                unsubscribe(eventName, handler);
-            }
-        },
-        unsubscribe,
-        publish,
-        leaderStore,
-        isLeader() { return isLeader },
-        getNodeId() { return nodeId },
-    }
-}
+			return () => {
+				unsubscribe(eventName, handler);
+			};
+		},
+		unsubscribe,
+		publish,
+		leaderStore,
+		isLeader() {
+			return isLeader;
+		},
+		getNodeId() {
+			return nodeId;
+		},
+	};
+};
 
 const pubSub = createGlobalPubSub();
 

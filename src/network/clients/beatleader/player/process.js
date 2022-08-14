@@ -1,5 +1,5 @@
-import { getHeadsetForHMD, platformDescription } from '../../../../utils/beatleader/format'
-import { deepClone } from '../../../../utils/js'
+import {getHeadsetForHMD, platformDescription} from '../../../../utils/beatleader/format';
+import {deepClone} from '../../../../utils/js';
 
 export default response => {
 	const {
@@ -26,61 +26,66 @@ export default response => {
 	} = response;
 
 	let profilePicture = avatar;
-	let externalProfileCorsUrl = externalProfileUrl ? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/') : null
+	let externalProfileCorsUrl = externalProfileUrl
+		? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/')
+		: null;
 
 	if (scoreStats) {
 		['averageAccuracy', 'averageRankedAccuracy', 'medianAccuracy', 'medianRankedAccuracy', 'topAccuracy'].forEach(k => {
 			if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
-		})
+		});
 	}
 
 	if (scoreStats?.topHMD) {
-		scoreStats.topHMD = getHeadsetForHMD(scoreStats.topHMD)?.name ?? ''
+		scoreStats.topHMD = getHeadsetForHMD(scoreStats.topHMD)?.name ?? '';
 	}
 
 	if (scoreStats?.topPlatform) {
-		const platformParts = (scoreStats?.topPlatform ?? '').split(',')
-		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? ''
+		const platformParts = (scoreStats?.topPlatform ?? '').split(',');
+		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? '';
 	}
 
-	const processedStatsHistory = deepClone(statsHistory)
+	const processedStatsHistory = deepClone(statsHistory);
 	if (processedStatsHistory) {
 		const processInt = i => {
 			let out = parseInt(i, 10);
 			return !isNaN(out) ? out : null;
-		}
+		};
 		const processFloat = f => {
 			let out = parseFloat(f);
 			return !isNaN(out) ? out : null;
-		}
+		};
 		const processFloat100 = f => {
 			let out = parseFloat(f);
 			return null !== out ? (out < 2 ? out * 100 : out) : null;
-		}
+		};
 
 		let maxEntries = 0;
 		let fields = {
-			'averageAccuracy': processFloat100,
-			'averageRankedAccuracy': processFloat100,
-			'medianAccuracy': processFloat100,
-			'medianRankedAccuracy': processFloat100,
-			'pp': processFloat,
-			'topAccuracy': processFloat100,
-			'topPp': processFloat,
-			'countryRank': processInt,
-			'rank': processInt,
-			'rankedPlayCount': processInt,
-			'replaysWatched': processInt,
-			'totalPlayCount': processInt,
-			'totalScore': processInt,
-			'topHMD': f => f,
-			'topPlatform': f => f,
+			averageAccuracy: processFloat100,
+			averageRankedAccuracy: processFloat100,
+			medianAccuracy: processFloat100,
+			medianRankedAccuracy: processFloat100,
+			pp: processFloat,
+			topAccuracy: processFloat100,
+			topPp: processFloat,
+			countryRank: processInt,
+			rank: processInt,
+			rankedPlayCount: processInt,
+			replaysWatched: processInt,
+			totalPlayCount: processInt,
+			totalScore: processInt,
+			topHMD: f => f,
+			topPlatform: f => f,
 		};
 
 		Object.entries(fields).forEach(([key, process]) => {
 			if (processedStatsHistory[key] === undefined) processedStatsHistory[key] = '';
 
-			processedStatsHistory[key] = processedStatsHistory[key].length && processedStatsHistory[key].split ? processedStatsHistory[key].split(',').map(v => process(v)) : [];
+			processedStatsHistory[key] =
+				processedStatsHistory[key].length && processedStatsHistory[key].split
+					? processedStatsHistory[key].split(',').map(v => process(v))
+					: [];
 
 			if (scoreStats[key] !== undefined) processedStatsHistory[key].push(scoreStats[key]);
 
@@ -93,7 +98,9 @@ export default response => {
 
 		Object.entries(fields).forEach(([key, _]) => {
 			if (processedStatsHistory[key].length < maxEntries)
-				processedStatsHistory[key] = Array(maxEntries - processedStatsHistory[key].length).fill(null).concat(processedStatsHistory[key]);
+				processedStatsHistory[key] = Array(maxEntries - processedStatsHistory[key].length)
+					.fill(null)
+					.concat(processedStatsHistory[key]);
 		});
 	}
 
@@ -103,13 +110,13 @@ export default response => {
 		processedStatsHistory[`${key}Daily`] = processedStatsHistory[key].reduce((cum, item) => {
 			const prev = cum.length ? processedStatsHistory[key][cum.length - 1] : 0;
 
-			let value = item ? item - (prev ?? 0) : 0
-			if (value && value < 0 || !cum.length) value = 0;
+			let value = item ? item - (prev ?? 0) : 0;
+			if ((value && value < 0) || !cum.length) value = 0;
 
 			cum.push(value);
 
 			return cum;
-		}, [])
+		}, []);
 	});
 
 	if (processedStatsHistory && processedStatsHistory.totalPlayCountDaily && processedStatsHistory.rankedPlayCountDaily) {
@@ -133,7 +140,7 @@ export default response => {
 			avatar: profilePicture,
 			externalProfileUrl,
 			externalProfileCorsUrl,
-			countries: [{ country, rank: countryRank }],
+			countries: [{country, rank: countryRank}],
 			pp,
 			banned,
 			inactive,
@@ -145,9 +152,13 @@ export default response => {
 			sponsor,
 			patreonFeatures,
 			mapperId,
-			rankHistory: history && history.length
-				? history.split(',').map(r => parseInt(r, 10)).filter(r => !isNaN(r))
-				: [],
+			rankHistory:
+				history && history.length
+					? history
+							.split(',')
+							.map(r => parseInt(r, 10))
+							.filter(r => !isNaN(r))
+					: [],
 			clans,
 		},
 		scoreStats: scoreStats ? scoreStats : null,

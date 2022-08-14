@@ -1,18 +1,19 @@
-import { default as createQueue, PRIORITY } from '../http-queue';
-import { substituteVars } from "../../../utils/format";
+import {default as createQueue, PRIORITY} from '../http-queue';
+import {substituteVars} from '../../../utils/format';
 
 const BEATSAVIOR_API_URL = '/cors/beat-savior';
 const PLAYER_URL = BEATSAVIOR_API_URL + '/${playerId}';
 
 export default (options = {}) => {
-  const queue = createQueue(options);
+	const queue = createQueue(options);
 
-  const { fetchJson, fetchHtml, ...queueToReturn } = queue;
+	const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
-  const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) => fetchJson(substituteVars(PLAYER_URL, { playerId }), options, priority)
+	const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(PLAYER_URL, {playerId}), options, priority);
 
-  return {
-    player,
-    ...queueToReturn,
-  }
-}
+	return {
+		player,
+		...queueToReturn,
+	};
+};

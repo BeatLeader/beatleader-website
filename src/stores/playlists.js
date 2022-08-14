@@ -1,242 +1,249 @@
-import { writable } from 'svelte/store'
+import {writable} from 'svelte/store';
 import keyValueRepository from '../db/repository/key-value';
-import { opt } from '../utils/js'
-import { configStore } from './config'
-import { BL_API_URL } from '../network/queues/beatleader/api-queue'
+import {opt} from '../utils/js';
+import {configStore} from './config';
+import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 const STORE_PLAYLISTS_KEY = 'playlists';
-const defaultImage = ""
+const defaultImage = '';
 
 export let playlistStore = null;
 
-const toDataURL = url => fetch(url)
-  .then(response => response.blob())
-  .then(blob => new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onloadend = () => resolve(reader.result)
-    reader.onerror = reject
-    reader.readAsDataURL(blob)
-  }))
+const toDataURL = url =>
+	fetch(url)
+		.then(response => response.blob())
+		.then(
+			blob =>
+				new Promise((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onloadend = () => resolve(reader.result);
+					reader.onerror = reject;
+					reader.readAsDataURL(blob);
+				})
+		);
 
 function saveJSONAsFile(json, fileName) {
-  var link = document.createElement("a");
+	var link = document.createElement('a');
 
-  document.body.appendChild(link); // for Firefox
+	document.body.appendChild(link); // for Firefox
 
-  link.setAttribute("href", URL.createObjectURL(new Blob([json], {
-    type: "text/plain"
-  })));
-  link.setAttribute("download", fileName);
-  link.click();
+	link.setAttribute(
+		'href',
+		URL.createObjectURL(
+			new Blob([json], {
+				type: 'text/plain',
+			})
+		)
+	);
+	link.setAttribute('download', fileName);
+	link.click();
 }
 
 export default () => {
-  if (playlistStore) return playlistStore;
+	if (playlistStore) return playlistStore;
 
-  let playlists = [];
+	let playlists = [];
 
-  const { subscribe, unsubscribe, set: storeSet } = writable(playlists);
+	const {subscribe, unsubscribe, set: storeSet} = writable(playlists);
 
-  const get = () => playlists;
-  const set = async (config, persist = true, promise = false) => {
-    const newConfig = promise ? await config : config;
-    if (!newConfig) return;
+	const get = () => playlists;
+	const set = async (config, persist = true, promise = false) => {
+		const newConfig = promise ? await config : config;
+		if (!newConfig) return;
 
-    if (persist) await keyValueRepository().set(newConfig, STORE_PLAYLISTS_KEY);
+		if (persist) await keyValueRepository().set(newConfig, STORE_PLAYLISTS_KEY);
 
-    playlists = newConfig;
-    storeSet(newConfig);
+		playlists = newConfig;
+		storeSet(newConfig);
 
-    return newConfig;
-  }
+		return newConfig;
+	};
 
-  const create = async (song = null, inputPlaylist = null) => {
-    const playlist = inputPlaylist ? inputPlaylist : {
-      playlistTitle: "New playlist",
-      playlistAuthor: "BeatLeader",
-      songs: song ? [song] : [],
-      image: await toDataURL("/assets/favicon-128.png")
-    }
+	const create = async (song = null, inputPlaylist = null) => {
+		const playlist = inputPlaylist
+			? inputPlaylist
+			: {
+					playlistTitle: 'New playlist',
+					playlistAuthor: 'BeatLeader',
+					songs: song ? [song] : [],
+					image: await toDataURL('/assets/favicon-128.png'),
+			  };
 
-    if (!playlist.playlistTitle ||
-      !playlist.songs) {
-      return
-    }
+		if (!playlist.playlistTitle || !playlist.songs) {
+			return;
+		}
 
-    let playlists = await get();
-    playlists.push(playlist)
+		let playlists = await get();
+		playlists.push(playlist);
 
-    await set(playlists, true);
-    await select(playlist);
-  };
+		await set(playlists, true);
+		await select(playlist);
+	};
 
-  const deleteOneClick = async () => {
-    let playlists = (await get()).filter(playlist => !playlist.oneclick);
+	const deleteOneClick = async () => {
+		let playlists = (await get()).filter(playlist => !playlist.oneclick);
 
-    await set(playlists, true);
-  };
+		await set(playlists, true);
+	};
 
-  const downloadOneClick = async () => {
-    fetch(BL_API_URL + "user/oneclickplaylist", {
-      credentials: 'include'
-    })
-      .then(response => response.json())
-      .then(
-        async playlist => {
-          if (!playlist.playlistTitle ||
-            !playlist.songs) {
-            return
-          }
+	const downloadOneClick = async () => {
+		fetch(BL_API_URL + 'user/oneclickplaylist', {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(async playlist => {
+				if (!playlist.playlistTitle || !playlist.songs) {
+					return;
+				}
 
-          await deleteOneClick();
-          playlist.oneclick = true;
-          let playlists = await get();
-          playlists.unshift(playlist)
+				await deleteOneClick();
+				playlist.oneclick = true;
+				let playlists = await get();
+				playlists.unshift(playlist);
 
-          await set(playlists, true);
-        });
-  };
+				await set(playlists, true);
+			});
+	};
 
-  const updateOneClick = async (songs) => {
-    fetch(BL_API_URL + "user/oneclickplaylist", {
-      credentials: 'include',
-      method: 'POST',
-      body: JSON.stringify({ songs })
-    })
-  };
+	const updateOneClick = async songs => {
+		fetch(BL_API_URL + 'user/oneclickplaylist', {
+			credentials: 'include',
+			method: 'POST',
+			body: JSON.stringify({songs}),
+		});
+	};
 
-  const checkOneClick = async () => {
-    if (await configStore.get('preferences').oneclick == "playlist") {
-      downloadOneClick();
-    } else {
-      deleteOneClick();
-    }
-  };
+	const checkOneClick = async () => {
+		if ((await configStore.get('preferences').oneclick) == 'playlist') {
+			downloadOneClick();
+		} else {
+			deleteOneClick();
+		}
+	};
 
-  const share = async (index, callback) => {
-    let playlists = await get();
-    let playlist = playlists[index];
+	const share = async (index, callback) => {
+		let playlists = await get();
+		let playlist = playlists[index];
 
-    fetch(BL_API_URL + "user/playlist", {
-      credentials: 'include',
-      method: 'POST',
-      body: JSON.stringify(playlist)
-    })
-      .then(response => response.text())
-      .then(shareId => callback(shareId))
-  };
+		fetch(BL_API_URL + 'user/playlist', {
+			credentials: 'include',
+			method: 'POST',
+			body: JSON.stringify(playlist),
+		})
+			.then(response => response.text())
+			.then(shareId => callback(shareId));
+	};
 
-  const getShared = (id, callback) => {
-    fetch(BL_API_URL + "playlist/" + id, {
-      credentials: 'include'
-    })
-      .then(response => response.json())
-      .then(playlist => {
-        callback(playlist)
-      });
-  };
+	const getShared = (id, callback) => {
+		fetch(BL_API_URL + 'playlist/' + id, {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(playlist => {
+				callback(playlist);
+			});
+	};
 
-  const deleteList = async (index) => {
-    let playlists = await get();
-    playlists.splice(index, 1);
+	const deleteList = async index => {
+		let playlists = await get();
+		playlists.splice(index, 1);
 
-    await set(playlists, true);
-  };
+		await set(playlists, true);
+	};
 
-  const download = async (playlist) => {
+	const download = async playlist => {
+		saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + '.bplist');
+	};
 
-    saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + ".bplist");
-  };
+	const add = async (song, playlistIndex) => {
+		let playlists = await get();
+		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
-  const add = async (song, playlistIndex) => {
-    let playlists = await get();
-    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+		playlists[index].songs.push(song);
 
-    playlists[index].songs.push(song);
+		if (playlists[index].oneclick) {
+			updateOneClick(playlists[index].songs);
+		}
 
-    if (playlists[index].oneclick) {
-      updateOneClick(playlists[index].songs);
-    }
+		await set(playlists, true);
+	};
 
-    await set(playlists, true);
-  };
+	const decapitalizeFirstLetter = string => {
+		return string.charAt(0).toLowerCase() + string.slice(1);
+	};
 
-  const decapitalizeFirstLetter = (string) => {
-    return string.charAt(0).toLowerCase() + string.slice(1);
-  }
+	const addDiff = async (hash, diffInfo, playlistIndex) => {
+		let playlists = await get();
+		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
-  const addDiff = async (hash, diffInfo, playlistIndex) => {
-    let playlists = await get();
-    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+		let song = playlists[index].songs.find(el => el.hash == hash);
+		song.difficulties.push({name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type});
 
-    let song = playlists[index].songs.find(el => el.hash == hash);
-    song.difficulties.push({ name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type });
+		if (playlists[index].oneclick) {
+			updateOneClick(playlists[index].songs);
+		}
 
-    if (playlists[index].oneclick) {
-      updateOneClick(playlists[index].songs);
-    }
+		await set(playlists, true);
+	};
 
-    await set(playlists, true);
-  };
+	const removeDiff = async (hash, diffInfo, playlistIndex) => {
+		let playlists = await get();
+		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
-  const removeDiff = async (hash, diffInfo, playlistIndex) => {
-    let playlists = await get();
-    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+		let song = playlists[index].songs.find(el => el.hash == hash);
+		song.difficulties = song.difficulties.filter(el => el.name != decapitalizeFirstLetter(diffInfo.diff));
 
-    let song = playlists[index].songs.find(el => el.hash == hash);
-    song.difficulties = song.difficulties.filter(el => el.name != decapitalizeFirstLetter(diffInfo.diff));
+		if (playlists[index].oneclick) {
+			updateOneClick(playlists[index].songs);
+		}
 
-    if (playlists[index].oneclick) {
-      updateOneClick(playlists[index].songs);
-    }
+		await set(playlists, true);
+	};
 
-    await set(playlists, true);
-  };
+	const remove = async (hash, playlistIndex) => {
+		let playlists = await get();
+		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
-  const remove = async (hash, playlistIndex) => {
-    let playlists = await get();
-    let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+		playlists[index].songs = playlists[index].songs.filter(el => el.hash != hash);
 
-    playlists[index].songs = playlists[index].songs.filter(el => el.hash != hash)
+		if (playlists[index].oneclick) {
+			updateOneClick(playlists[index].songs);
+		}
 
-    if (playlists[index].oneclick) {
-      updateOneClick(playlists[index].songs);
-    }
+		await set(playlists, true);
+	};
 
-    await set(playlists, true);
-  };
+	const select = async playlist => {
+		if (playlist) {
+			let playlists = await get();
+			let index = playlists.indexOf(playlist);
 
-  const select = async (playlist) => {
-    if (playlist) {
-      let playlists = await get();
-      let index = playlists.indexOf(playlist);
+			await configStore.setForKey('selectedPlaylist', index);
+		} else {
+			await configStore.setForKey('selectedPlaylist', null);
+		}
+	};
 
-      await configStore.setForKey('selectedPlaylist', index);
-    } else {
-      await configStore.setForKey('selectedPlaylist', null);
-    }
-  };
+	const dbConfig = keyValueRepository().get(STORE_PLAYLISTS_KEY);
+	if (dbConfig) set(dbConfig, false, true);
+	checkOneClick();
 
-  const dbConfig = keyValueRepository().get(STORE_PLAYLISTS_KEY);
-  if (dbConfig) set(dbConfig, false, true);
-  checkOneClick();
+	playlistStore = {
+		subscribe,
+		unsubscribe,
+		set,
+		get,
+		create,
+		select,
+		add,
+		remove,
+		deleteList,
+		download,
+		removeDiff,
+		addDiff,
+		getShared,
+		share,
+	};
 
-  playlistStore = {
-    subscribe,
-    unsubscribe,
-    set,
-    get,
-    create,
-    select,
-    add,
-    remove,
-    deleteList,
-    download,
-    removeDiff,
-    addDiff,
-    getShared,
-    share
-  }
-
-  return playlistStore;
-}
+	return playlistStore;
+};

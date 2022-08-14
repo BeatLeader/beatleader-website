@@ -5,8 +5,8 @@ export default {
 
 		const {
 			ctx,
-			chartArea: { left, top, right, bottom },
-			scales: { x, y },
+			chartArea: {left, top, right, bottom},
+			scales: {x, y},
 		} = chart;
 		const height = bottom - top;
 

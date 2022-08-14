@@ -1,44 +1,43 @@
 import createHttpStore from './http-store';
-import createApiLeaderboardsProvider from './providers/api-leaderboards'
-import stringify from 'json-stable-stringify'
+import createApiLeaderboardsProvider from './providers/api-leaderboards';
+import stringify from 'json-stable-stringify';
 
 export default (page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
-  let currentPage = page ?? 1;
-  let currentFilters = filters ?? {};
+	let currentPage = page ?? 1;
+	let currentFilters = filters ?? {};
 
-  const onNewData = ({ fetchParams }) => {
-    currentPage = fetchParams?.page ?? 1;
-    currentFilters = fetchParams?.filters ?? {};
-  }
+	const onNewData = ({fetchParams}) => {
+		currentPage = fetchParams?.page ?? 1;
+		currentFilters = fetchParams?.filters ?? {};
+	};
 
-  const provider = createApiLeaderboardsProvider();
+	const provider = createApiLeaderboardsProvider();
 
-  const httpStore = createHttpStore(
-    provider,
-    { page, filters },
-    initialState,
-    {
-      onInitialized: onNewData,
-      onAfterStateChange: onNewData,
-      onSetPending: ({ fetchParams }) => ({ ...fetchParams }),
-    },
-    initialStateType
-  );
+	const httpStore = createHttpStore(
+		provider,
+		{page, filters},
+		initialState,
+		{
+			onInitialized: onNewData,
+			onAfterStateChange: onNewData,
+			onSetPending: ({fetchParams}) => ({...fetchParams}),
+		},
+		initialStateType
+	);
 
-  const fetch = async (page = currentPage, filters = currentFilters, force = false) => {
-    if ((!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
+	const fetch = async (page = currentPage, filters = currentFilters, force = false) => {
+		if ((!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
 
-    return httpStore.fetch({ page, filters }, force, provider);
-  }
+		return httpStore.fetch({page, filters}, force, provider);
+	};
 
-  const refresh = async () => fetch(currentPage, currentFilters, true);
+	const refresh = async () => fetch(currentPage, currentFilters, true);
 
-  return {
-    ...httpStore,
-    fetch,
-    refresh,
-    getFilters: () => currentFilters,
-    getPage: () => currentPage,
-  }
-}
-
+	return {
+		...httpStore,
+		fetch,
+		refresh,
+		getFilters: () => currentFilters,
+		getPage: () => currentPage,
+	};
+};
