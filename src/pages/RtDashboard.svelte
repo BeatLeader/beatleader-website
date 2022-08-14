@@ -566,15 +566,17 @@
 									<div class="author">{song?.author} <small>{song?.mapper}</small></div>
 								</div>
 
-								<Totals totals={song.totals} count={song?.difficulties?.length} />
+								<div>
+									<Totals totals={song.totals} count={song?.difficulties?.length} />
 
-								<span
-									class="reveal clickable"
-									class:opened={detailsOpened.includes(song.hash)}
-									on:click={() => toggleSongDetails(song.hash)}
-									title="Show details">
-									<i class="fas fa-chevron-down" />
-								</span>
+									<span
+										class="reveal clickable"
+										class:opened={detailsOpened.includes(song.hash)}
+										on:click={() => toggleSongDetails(song.hash)}
+										title="Show details">
+										<i class="fas fa-chevron-down" />
+									</span>
+								</div>
 							</div>
 
 							{#if detailsOpened.includes(song.hash)}
@@ -724,6 +726,7 @@
 
 	.song {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
 	}
