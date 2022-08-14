@@ -36,6 +36,9 @@
 		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
 		{id: 'votescount', label: 'Votes count', title: 'Sort by votes count', iconFa: 'fas fa-calculator'},
 		{id: 'votesrating', label: 'Votes rating', title: 'Sort by votes rating', iconFa: 'far fa-smile-beam'},
+		{id: 'nomination', label: 'Nomination date', title: 'Sort by nomination date', iconFa: 'far fa-calendar'},
+		{id: 'criteria', label: 'Criteria date', title: 'Sort by criteria check date', iconFa: 'far fa-calendar'},
+		{id: 'approval', label: 'Approval date', title: 'Sort by approval date', iconFa: 'far fa-calendar'},
 	];
 
 	let sortValue = sortValues[0];
@@ -385,6 +388,9 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	const getMinQualificationTime = (song, key) =>
+		song?.difficulties?.reduce((min, d) => (min < d?.qualification?.[key] ? d.qualification[key] : min), 0) ?? 0;
+
 	$: playerId = $account?.id;
 	$: isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
 	$: if (!$account?.loading && isRT) fetchMaps();
@@ -513,6 +519,24 @@
 						return currentFilters?.order === 'asc'
 							? a?.totals?.votesRating - b?.totals?.votesRating
 							: b?.totals?.votesRating - a?.totals?.votesRating;
+
+					case 'nomination':
+						const minNominationTimeA = getMinQualificationTime(a, 'timeset');
+						const minNominationTimeB = getMinQualificationTime(b, 'timeset');
+
+						return currentFilters?.order === 'asc' ? minNominationTimeA - minNominationTimeB : minNominationTimeB - minNominationTimeA;
+
+					case 'criteria':
+						const minCriteraTimeA = getMinQualificationTime(a, 'criteriaTimeset');
+						const minCriteriaTimeB = getMinQualificationTime(b, 'criteriaTimeset');
+
+						return currentFilters?.order === 'asc' ? minCriteraTimeA - minCriteriaTimeB : minCriteriaTimeB - minCriteraTimeA;
+
+					case 'approval':
+						const minApprovalTimeA = getMinQualificationTime(a, 'approvalTimeset');
+						const minApprovalTimeB = getMinQualificationTime(b, 'approvalTimeset');
+
+						return currentFilters?.order === 'asc' ? minApprovalTimeA - minApprovalTimeB : minApprovalTimeB - minApprovalTimeA;
 
 					default:
 						return 0;
