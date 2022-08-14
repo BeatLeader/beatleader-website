@@ -510,8 +510,7 @@
 				}
 			}) ?? [];
 
-	$: console.log(filteredSongs);
-	$: console.warn(currentFilters);
+	$: diffsCount = filteredSongs?.reduce((cnt, s) => cnt + (s?.difficulties?.length ?? 0), 0) ?? 0
 </script>
 
 <svelte:head>
@@ -521,7 +520,13 @@
 <section class="align-content">
 	<article class="page-content" transition:fade>
 		<ContentBox>
-			<h1 class="title is-3">RT Dashboard</h1>
+			<h1 class="title is-3">
+				RT Dashboard
+				{#if !error && !isLoading}
+					/ {formatNumber(filteredSongs?.length, 0)} song(s)
+					/ {formatNumber(diffsCount, 0)} diff(s)
+				{/if}
+			</h1>
 
 			<section class="content">
 				{#if error}
