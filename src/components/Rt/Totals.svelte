@@ -58,7 +58,11 @@
 	}
 
 	.totals {
-		gap: 1.5rem;
+		gap: 1.25rem;
+	}
+
+	.totals .ratio {
+		min-width: 3rem;
 	}
 
 	.totals.with-count {

@@ -22,20 +22,22 @@
 	}
 
 	function onAccountClicked(event, playerId) {
-		if (event.srcElement.innerText == 'Migrate' || event.srcElement.innerText == 'Log In') {
+		if (event.srcElement.innerText === 'Migrate' || event.srcElement.innerText === 'Log In') {
 			navigate(`/signin`);
-		} else if (event.srcElement.innerText == 'Link patreon') {
+		} else if (event.srcElement.innerText === 'Link patreon') {
 			navigate(`/signin/linkPatreon`);
-		} else if (event.srcElement.innerText == 'Link BeatSaver') {
+		} else if (event.srcElement.innerText === 'Link BeatSaver') {
 			navigate(`/signin/linkBeatSaver`);
-		} else if (event.srcElement.innerText == 'My login') {
+		} else if (event.srcElement.innerText === 'My login') {
 			navigate(`/signin/mylogin`);
-		} else if (event.srcElement.innerText == 'Change password') {
+		} else if (event.srcElement.innerText === 'Change password') {
 			navigate(`/signin/changePassword`);
-		} else if (event.srcElement.innerText == 'Suspend account' || event.srcElement.innerText == 'Activate account') {
+		} else if (event.srcElement.innerText === 'Suspend account' || event.srcElement.innerText === 'Activate account') {
 			navigate(`/signin/autoban`);
-		} else if (event.srcElement.innerText == 'Log Out') {
+		} else if (event.srcElement.innerText === 'Log Out') {
 			account.logOut();
+		} else if (event.srcElement.innerText === 'RT Dashboard') {
+			navigate('/rt');
 		} else if (playerId) {
 			navigateToPlayer(playerId);
 		}
@@ -102,8 +104,13 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
+		const isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
+
 		if (loggedInUser.player) {
 			signupOptions = [];
+
+			if (isRT) signupOptions.push('RT Dashboard');
+
 			if ((loggedInUser.player.playerId < 30000000 || loggedInUser.player.playerId > 1000000000000000) && !loggedInUser.migrated) {
 				signupOptions.push('Migrate');
 			}

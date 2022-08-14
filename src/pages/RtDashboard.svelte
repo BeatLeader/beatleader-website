@@ -74,6 +74,15 @@
 		}
 	};
 
+	const onConditionChange = (e, key) => {
+		const param = findParam(key);
+		if (param) {
+			param.valueCondition = e.target.value ?? 'or';
+
+			updateCurrentFiltersFromParams();
+		}
+	};
+
 	let start = null;
 	const rangeChange = (event, key) => {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
@@ -110,9 +119,11 @@
 			key: 'status',
 			label: 'It has a status of',
 			default: '',
+			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
+			valueCondition: 'or',
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
@@ -123,14 +134,18 @@
 			],
 			onChange: e => onMultiSwitchChange(e, 'status'),
 			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'status'),
 		},
 		{
 			key: 'status_not',
 			label: 'It has NOT a status of',
 			default: '',
+			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
+			valueCondition: 'or',
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
@@ -141,6 +156,8 @@
 			],
 			onChange: e => onMultiSwitchChange(e, 'status_not'),
 			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'status_not'),
 		},
 		{
 			key: 'mapper',
@@ -208,6 +225,10 @@
 				p.value = p.multi
 					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
 					: filters?.[p.key] ?? p?.default ?? '';
+
+				if (p.type === 'switch' && p.multi && p.withCondition) {
+					p.valueCondition = filters[p.key + '_cond'] ?? p.defaultCondition ?? 'or';
+				}
 			}
 		});
 
@@ -222,6 +243,10 @@
 				currentFilters[p.key] = p?.value?.id ?? '';
 			} else {
 				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id) : p?.value ?? '';
+
+				if (p.type === 'switch' && p.multi && p.withCondition) {
+					currentFilters[p.key + '_cond'] = p.valueCondition ?? 'or';
+				}
 			}
 		});
 
@@ -242,14 +267,14 @@
 	let songs = [];
 	let detailsOpened = [];
 
-	async function fetchAllMapsWithType(type) {
+	async function fetchAllMapsWithType(type, sortBy = 'stars') {
 		let data = [];
 		let page = 1;
 		let count = ITEMS_PER_PAGE;
 		let pageCount = null;
 
 		while (!pageCount || page <= pageCount) {
-			const pageData = await apiClient.getProcessed({page, filters: {type, count}});
+			const pageData = await apiClient.getProcessed({page, filters: {type, sortBy, count}});
 
 			if (!pageData?.data?.length) return data;
 
@@ -278,7 +303,15 @@
 			error = null;
 
 			songs = Object.values(
-				(await Promise.all([fetchAllMapsWithType('nominated'), fetchAllMapsWithType('qualified'), fetchVotedMaps()]))
+				(
+					await Promise.all([
+						fetchAllMapsWithType('nominated'),
+						fetchAllMapsWithType('qualified'),
+						fetchAllMapsWithType('nominated', 'votecount'),
+						fetchAllMapsWithType('qualified', 'votecount'),
+						fetchVotedMaps(),
+					])
+				)
 					.reduce((carry, maps) => [...carry, ...maps], [])
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, votes, ...rest} = map;
@@ -321,44 +354,46 @@
 
 						return carry;
 					}, {})
-			).map(s => {
-				const totals = (s?.difficulties ?? []).reduce(
-					(carry, diff) => {
-						carry.nominated += !!diff?.qualification ? 1 : 0;
-						carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
-						carry.criteriaMet += diff?.qualification?.criteriaMet ? 1 : 0;
-						carry.approved += diff?.qualification?.approved ? 1 : 0;
-						carry.votesTotal += diff?.votes?.length ?? 0;
-						carry.votesPositive += diff?.votesPositive ?? 0;
-						carry.votesNegative += diff?.votesNegative ?? 0;
+			)
+				.map(s => {
+					const totals = (s?.difficulties ?? []).reduce(
+						(carry, diff) => {
+							carry.nominated += !!diff?.qualification ? 1 : 0;
+							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
+							carry.criteriaMet += diff?.qualification?.criteriaMet ? 1 : 0;
+							carry.approved += diff?.qualification?.approved ? 1 : 0;
+							carry.votesTotal += diff?.votes?.length ?? 0;
+							carry.votesPositive += diff?.votesPositive ?? 0;
+							carry.votesNegative += diff?.votesNegative ?? 0;
 
-						['nominated', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
-							carry[`${key}Ratio`] = s?.difficulties?.length ? carry[key] / s.difficulties.length : 0;
-						});
+							['nominated', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
+								carry[`${key}Ratio`] = s?.difficulties?.length ? carry[key] / s.difficulties.length : 0;
+							});
 
-						const votesScore = carry.votesTotal ? carry.votesPositive / carry.votesTotal : 0;
-						carry.votesRating = votesScore - (votesScore - 0.5) * Math.pow(2, -Math.log10(carry.votesTotal + 1));
+							const votesScore = carry.votesTotal ? carry.votesPositive / carry.votesTotal : 0;
+							carry.votesRating = votesScore - (votesScore - 0.5) * Math.pow(2, -Math.log10(carry.votesTotal + 1));
 
-						return carry;
-					},
-					{
-						nominated: 0,
-						nominatedRatio: 0,
-						mapperAllowed: 0,
-						mapperAllowedRatio: 0,
-						criteriaMet: 0,
-						criteriaMetRatio: 0,
-						approved: 0,
-						approvedRatio: 0,
-						votesTotal: 0,
-						votesPositive: 0,
-						votesNegative: 0,
-						votesRating: 0,
-					}
-				);
+							return carry;
+						},
+						{
+							nominated: 0,
+							nominatedRatio: 0,
+							mapperAllowed: 0,
+							mapperAllowedRatio: 0,
+							criteriaMet: 0,
+							criteriaMetRatio: 0,
+							approved: 0,
+							approvedRatio: 0,
+							votesTotal: 0,
+							votesPositive: 0,
+							votesNegative: 0,
+							votesRating: 0,
+						}
+					);
 
-				return {...s, totals};
-			});
+					return {...s, totals};
+				})
+				.filter(s => !s?.difficulties?.every(d => d?.ranked));
 		} catch (err) {
 			error = err;
 		} finally {
@@ -422,65 +457,81 @@
 						  )
 						: true;
 
+				const statusCond = currentFilters?.status_cond ?? 'or';
 				result &&= currentFilters?.status?.length
 					? currentFilters.status.reduce((result, key) => {
 							switch (key) {
 								case 'nominated':
-									result ||= s?.totals?.nominated > 0;
+									if (statusCond === 'or') result ||= s?.totals?.nominated > 0;
+									else result &&= s?.totals?.nominated > 0;
 									break;
 
 								case 'allowed':
-									result ||= s?.totals?.mapperAllowed > 0;
+									if (statusCond === 'or') result ||= s?.totals?.mapperAllowed > 0;
+									else result &&= s?.totals?.mapperAllowed > 0;
 									break;
 
 								case 'criteria':
-									result ||= s?.totals?.criteriaMet > 0;
+									if (statusCond === 'or') result ||= s?.totals?.criteriaMet > 0;
+									else result &&= s?.totals?.criteriaMet > 0;
 									break;
 
 								case 'approved':
-									result ||= s?.totals?.approved > 0;
+									if (statusCond === 'or') result ||= s?.totals?.approved > 0;
+									else result &&= s?.totals?.approved > 0;
 									break;
 
 								case 'voted':
-									result ||= s?.totals?.votesTotal > 0;
+									if (statusCond === 'or') result ||= s?.totals?.votesTotal > 0;
+									else result &&= s?.totals?.votesTotal > 0;
 									break;
 
 								case 'with_stars':
-									result ||= s?.minStars || s?.maxStars;
+									if (statusCond === 'or') result ||= s?.minStars || s?.maxStars;
+									else result &&= s?.minStars || s?.maxStars;
 									break;
 							}
+
 							return result;
-					  }, false)
+					  }, statusCond !== 'or')
 					: true;
 
+				const statusNotCond = currentFilters?.status_not_cond ?? 'or';
 				result &&= currentFilters?.status_not?.length
 					? currentFilters.status_not.reduce((result, key) => {
 							switch (key) {
 								case 'nominated':
-									result ||= s?.totals?.nominated < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.nominated < s?.difficulties?.length;
+									else result &&= s?.totals?.nominated < s?.difficulties?.length;
 									break;
 
 								case 'allowed':
-									result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
+									else result &&= s?.totals?.mapperAllowed < s?.difficulties?.length;
 									break;
 
 								case 'criteria':
-									result ||= s?.totals?.criteriaMet < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.criteriaMet < s?.difficulties?.length;
+									else result &&= s?.totals?.criteriaMet < s?.difficulties?.length;
 									break;
 
 								case 'approved':
-									result ||= s?.totals?.approved < s?.difficulties?.length;
+									if (statusNotCond === 'or') result ||= s?.totals?.approved < s?.difficulties?.length;
+									else result &&= s?.totals?.approved < s?.difficulties?.length;
 									break;
 
 								case 'voted':
-									result ||= s?.totals?.votesTotal === 0;
+									if (statusNotCond === 'or') result ||= s?.totals?.votesTotal === 0;
+									else result &&= s?.totals?.votesTotal === 0;
 									break;
 
 								case 'with_stars':
-									result ||= !s?.minStars && !s?.maxStars;
+									if (statusNotCond === 'or') result ||= !s?.minStars && !s?.maxStars;
+									else result &&= !s?.minStars && !s?.maxStars;
 							}
+
 							return result;
-					  }, false)
+					  }, statusNotCond !== 'or')
 					: true;
 
 				result &&= currentFilters?.mapper?.length
@@ -580,15 +631,17 @@
 									<div class="author">{song?.author} <small>{song?.mapper}</small></div>
 								</div>
 
-								<Totals totals={song.totals} count={song?.difficulties?.length} />
+								<div>
+									<Totals totals={song.totals} count={song?.difficulties?.length} />
 
-								<span
-									class="reveal clickable"
-									class:opened={detailsOpened.includes(song.hash)}
-									on:click={() => toggleSongDetails(song.hash)}
-									title="Show details">
-									<i class="fas fa-chevron-down" />
-								</span>
+									<span
+										class="reveal clickable"
+										class:opened={detailsOpened.includes(song.hash)}
+										on:click={() => toggleSongDetails(song.hash)}
+										title="Show details">
+										<i class="fas fa-chevron-down" />
+									</span>
+								</div>
 							</div>
 
 							{#if detailsOpened.includes(song.hash)}
@@ -611,6 +664,8 @@
 											<div>
 												<QualificationStatus qualification={difficulty?.qualification} />
 											</div>
+										{:else}
+											<div>Not yet nominated.</div>
 										{/if}
 									</div>
 								{/each}
@@ -635,7 +690,15 @@
 				{#each params as param}
 					{#if param.type}
 						<section class="filter">
-							<label>{param?.label ?? param?.key ?? ''}</label>
+							<label>
+								{param?.label ?? param?.key ?? ''}
+
+								{#if param?.type === 'switch' && param?.multi && param?.withCondition}
+									<select value={param.valueCondition} on:change={param.onConditionChange}>
+										<option value="or">ANY </option><option value="and">ALL </option>
+									</select>
+								{/if}
+							</label>
 
 							{#if param?.type === 'input'}
 								<input type="text" placeholder={param.placeholder ?? null} value={param.value} on:input={param.onChange} />
@@ -695,9 +758,19 @@
 	}
 
 	aside label {
-		display: block;
+		display: inline-flex;
+		gap: 0.5rem;
 		font-weight: 500;
 		margin: 0.75rem 0;
+	}
+
+	aside label select {
+		background-color: transparent;
+	}
+
+	aside label select option {
+		color: var(--textColor);
+		background-color: var(--background);
 	}
 
 	aside .filter.disabled label {
@@ -738,6 +811,7 @@
 
 	.song {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		gap: 0.5rem;
 	}
