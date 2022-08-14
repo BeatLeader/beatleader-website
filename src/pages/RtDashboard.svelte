@@ -19,6 +19,7 @@
 	} from '../utils/filters';
 	import {navigate} from 'svelte-routing';
 	import RangeSlider from 'svelte-range-slider-pips';
+	import {formatNumber} from '../utils/format';
 
 	export let location;
 
@@ -418,6 +419,60 @@
 									d?.qualification?.criteriaChecker === playerId
 						  )
 						: true;
+
+				result &&= currentFilters?.status?.length
+					? currentFilters.status.reduce((result, key) => {
+							switch (key) {
+								case 'nominated':
+									result ||= s?.totals?.nominated > 0;
+									break;
+
+								case 'allowed':
+									result ||= s?.totals?.mapperAllowed > 0;
+									break;
+
+								case 'criteria':
+									result ||= s?.totals?.criteriaMet > 0;
+									break;
+
+								case 'approved':
+									result ||= s?.totals?.approved > 0;
+									break;
+
+								case 'voted':
+									result ||= s?.totals?.votesTotal > 0;
+									break;
+							}
+							return result;
+					  }, false)
+					: true;
+
+				result &&= currentFilters?.status_not?.length
+					? currentFilters.status_not.reduce((result, key) => {
+							switch (key) {
+								case 'nominated':
+									result ||= s?.totals?.nominated < s?.difficulties?.length;
+									break;
+
+								case 'allowed':
+									result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
+									break;
+
+								case 'criteria':
+									result ||= s?.totals?.criteriaMet < s?.difficulties?.length;
+									break;
+
+								case 'approved':
+									result ||= s?.totals?.approved < s?.difficulties?.length;
+									break;
+
+								case 'voted':
+									result ||= s?.totals?.votesTotal === 0;
+									break;
+							}
+							return result;
+					  }, false)
+					: true;
 
 				result &&= currentFilters?.mapper?.length
 					? (s?.mapper?.toLowerCase() ?? '').indexOf(currentFilters.mapper.toLowerCase()) >= 0
