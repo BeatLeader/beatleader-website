@@ -3,11 +3,14 @@
 	import {navigate} from 'svelte-routing';
 	import Button from '../Common/Button.svelte';
 	import Difficulty from '../Song/Difficulty.svelte';
+	import {slide} from 'svelte/transition';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let song;
 	export let listId;
 	export let store;
 	export let canModify;
+	export let idx;
 
 	let leaderboardsService = createLeaderboardsService();
 
@@ -21,9 +24,11 @@
 		return string.charAt(0).toLowerCase() + string.slice(1);
 	}
 
-	async function updateSongKey(hash) {
-		const songInfoValue = await leaderboardsService.byHash(hash);
-		if (songInfoValue && songInfoValue.song.id) {
+	async function updateSongKey(mapHash) {
+		songInfo = null;
+
+		const songInfoValue = await leaderboardsService.byHash(mapHash);
+		if (songInfoValue && songInfoValue.song.id && songInfoValue.song.hash == hash) {
 			songInfo = songInfoValue.song;
 			leaderboards = songInfoValue.leaderboards;
 			coverUrl = songInfo.coverImage;
@@ -65,9 +70,9 @@
 	$: updateSongKey(hash);
 </script>
 
-<div class="container">
-	<img class="cover" src={coverUrl} alt="" />
+<div class="container row-${idx}" transition:slide>
 	{#if songInfo}
+		<img class="cover" src={coverUrl} alt="" />
 		<div style="display: grid; padding-left: 1em">
 			<a href={leaderboardUrl} class="name" on:click|preventDefault={() => navigate(leaderboardUrl)}>{songInfo.name}</a>
 			<div class="author">{songInfo.mapper}</div>
@@ -89,6 +94,10 @@
 						on:click={() => toggleDifficulty(leaderboard.difficulty)} />
 				{/each}
 			</div>
+		</div>
+	{:else}
+		<div class="cover">
+			<Spinner />
 		</div>
 	{/if}
 	{#if canModify}

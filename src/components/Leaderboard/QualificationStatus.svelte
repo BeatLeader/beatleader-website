@@ -16,7 +16,7 @@
 		navigate(`/u/${playerId}/beatleader/date/1`);
 	}
 
-	let qualifier;
+	let nominator;
 	let mapper;
 	let criteriaChecker;
 	let approvers;
@@ -24,7 +24,7 @@
 	async function retrievePlayers(qualification) {
 		if (!qualification) return;
 
-		qualifier = await playerService.fetchPlayerOrGetFromCache(qualification.rtMember);
+		nominator = await playerService.fetchPlayerOrGetFromCache(qualification.rtMember);
 
 		if (qualification.mapperId) {
 			mapper = await playerService.fetchPlayerOrGetFromCache(qualification.mapperId);
@@ -51,11 +51,11 @@
 {#if qualification}
 	<div class="qualification-description">
 		<b><i class="fa fa-check" /> Nominated by:</b>
-		<Avatar player={qualifier} />
+		<Avatar player={nominator} />
 		<PlayerNameWithFlag
-			player={qualifier}
+			player={nominator}
 			type={'beatleader/date'}
-			on:click={qualifier ? () => navigateToPlayer(qualifier.playerId) : null} />
+			on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
 		<div class="timeset">
 			<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
 				{formatDateRelative(dateFromUnix(qualification.timeset))}

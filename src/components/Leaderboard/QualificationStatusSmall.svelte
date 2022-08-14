@@ -1,19 +1,31 @@
 <script>
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../../utils/date';
+	import createPlayerService from '../../services/beatleader/player';
+	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import Avatar from '../Common/Avatar.svelte';
 
 	export let qualification;
+
+	function navigateToPlayer(playerId) {
+		if (!playerId) return;
+
+		navigate(`/u/${playerId}/beatleader/date/1`);
+	}
+
+	let nominator;
+
+	async function retrieveNominator(qualification) {
+		if (!qualification || qualification.approved) return;
+
+		const playerService = createPlayerService();
+		nominator = await playerService.fetchPlayerOrGetFromCache(qualification.rtMember);
+	}
+
+	$: retrieveNominator(qualification);
 </script>
 
 {#if qualification}
 	<div class="qualification-description">
-		{#if !qualification.approved}
-			<div class="timeset">
-				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))}
-				</span>
-			</div>
-		{/if}
-
 		{#if qualification.mapperAllowed}
 			<span style="color: green;"><i class="fa fa-check" /> Mapper</span>
 		{:else}
@@ -43,6 +55,21 @@
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> RT</span>
 		{/if}
+
+		{#if !qualification.approved}
+			<div class="timeset">
+				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))} by
+				</span>
+
+				<Avatar player={nominator} />
+				<PlayerNameWithFlag
+					player={nominator}
+					type={'beatleader/date'}
+					hideFlag={true}
+					on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
+			</div>
+		{/if}
 	</div>
 {/if}
 
@@ -51,5 +78,10 @@
 		display: flex;
 		grid-gap: 0.8em;
 		align-items: center;
+	}
+
+	.timeset {
+		display: flex;
+		grid-gap: 0.4em;
 	}
 </style>
