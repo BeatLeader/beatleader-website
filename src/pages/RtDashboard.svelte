@@ -318,44 +318,46 @@
 
 						return carry;
 					}, {})
-			).map(s => {
-				const totals = (s?.difficulties ?? []).reduce(
-					(carry, diff) => {
-						carry.nominated += !!diff?.qualification ? 1 : 0;
-						carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
-						carry.criteriaMet += diff?.qualification?.criteriaMet ? 1 : 0;
-						carry.approved += diff?.qualification?.approved ? 1 : 0;
-						carry.votesTotal += diff?.votes?.length ?? 0;
-						carry.votesPositive += diff?.votesPositive ?? 0;
-						carry.votesNegative += diff?.votesNegative ?? 0;
+			)
+				.map(s => {
+					const totals = (s?.difficulties ?? []).reduce(
+						(carry, diff) => {
+							carry.nominated += !!diff?.qualification ? 1 : 0;
+							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
+							carry.criteriaMet += diff?.qualification?.criteriaMet ? 1 : 0;
+							carry.approved += diff?.qualification?.approved ? 1 : 0;
+							carry.votesTotal += diff?.votes?.length ?? 0;
+							carry.votesPositive += diff?.votesPositive ?? 0;
+							carry.votesNegative += diff?.votesNegative ?? 0;
 
-						['nominated', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
-							carry[`${key}Ratio`] = s?.difficulties?.length ? carry[key] / s.difficulties.length : 0;
-						});
+							['nominated', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
+								carry[`${key}Ratio`] = s?.difficulties?.length ? carry[key] / s.difficulties.length : 0;
+							});
 
-						const votesScore = carry.votesTotal ? carry.votesPositive / carry.votesTotal : 0;
-						carry.votesRating = votesScore - (votesScore - 0.5) * Math.pow(2, -Math.log10(carry.votesTotal + 1));
+							const votesScore = carry.votesTotal ? carry.votesPositive / carry.votesTotal : 0;
+							carry.votesRating = votesScore - (votesScore - 0.5) * Math.pow(2, -Math.log10(carry.votesTotal + 1));
 
-						return carry;
-					},
-					{
-						nominated: 0,
-						nominatedRatio: 0,
-						mapperAllowed: 0,
-						mapperAllowedRatio: 0,
-						criteriaMet: 0,
-						criteriaMetRatio: 0,
-						approved: 0,
-						approvedRatio: 0,
-						votesTotal: 0,
-						votesPositive: 0,
-						votesNegative: 0,
-						votesRating: 0,
-					}
-				);
+							return carry;
+						},
+						{
+							nominated: 0,
+							nominatedRatio: 0,
+							mapperAllowed: 0,
+							mapperAllowedRatio: 0,
+							criteriaMet: 0,
+							criteriaMetRatio: 0,
+							approved: 0,
+							approvedRatio: 0,
+							votesTotal: 0,
+							votesPositive: 0,
+							votesNegative: 0,
+							votesRating: 0,
+						}
+					);
 
-				return {...s, totals};
-			});
+					return {...s, totals};
+				})
+				.filter(s => !s?.difficulties?.every(d => d?.ranked));
 		} catch (err) {
 			error = err;
 		} finally {
