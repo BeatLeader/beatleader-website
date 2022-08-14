@@ -30,7 +30,8 @@
 	const VOTED = 100; // max 100
 
 	const sortValues = [
-		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-star'},
+		{id: 'max_stars', label: 'Max stars', title: 'Sort by max diff stars', iconFa: 'fa fa-star'},
+		{id: 'min_stars', label: 'Min stars', title: 'Sort by min diff stars', iconFa: 'fa fa-star'},
 		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
 		{id: 'votescount', label: 'Votes count', title: 'Sort by votes count', iconFa: 'fas fa-calculator'},
 		{id: 'votesrating', label: 'Votes rating', title: 'Sort by votes rating', iconFa: 'far fa-smile-beam'},
@@ -180,7 +181,7 @@
 		},
 		{
 			key: 'sortBy',
-			default: 'stars',
+			default: 'max_stars',
 			process: processStringFilter,
 			type: null,
 		},
@@ -287,7 +288,16 @@
 						const {difficulty, qualification, song, votes, ...rest} = map;
 
 						if (song?.hash?.length && !carry[song.hash]) {
-							carry[song.hash] = song;
+							const minStars = song?.difficulties?.reduce(
+								(min, d) => (Number.isFinite(d?.stars) && (!Number.isFinite(min) || min > d.stars) ? d.stars : min),
+								null
+							);
+							const maxStars = song?.difficulties?.reduce(
+								(max, d) => (Number.isFinite(d?.stars) && (!Number.isFinite(max) || max < d.stars) ? d.stars : max),
+								null
+							);
+
+							carry[song.hash] = {...song, minStars, maxStars};
 						}
 
 						const diffIdx = carry[song.hash]?.difficulties?.findIndex(d => d.id === difficulty.id);
@@ -382,13 +392,52 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	$: playerId = $account?.id;
 	$: isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
 	$: if (!$account?.loading && isRT) fetchMaps();
 	$: if (!$account?.loading && !isRT) navigate('/');
 
-	$: sortValue = sortValues.find(v => v.id === currentFilters.sortBy);
+	$: currentSortValues = sortValues.map(v => {
+		return {
+			...v,
+			iconFa:
+				currentFilters?.sortBy === v.id
+					? currentFilters?.order === 'asc'
+						? 'fas fa-long-arrow-alt-up'
+						: 'fas fa-long-arrow-alt-down'
+					: v.iconFa,
+		};
+	});
+	$: sortValue = currentSortValues.find(v => v.id === currentFilters.sortBy);
 
-	$: console.log(songs);
+	$: filteredSongs =
+		songs.sort((a, b) => {
+			switch (currentFilters?.sortBy) {
+				case 'min_stars':
+					return currentFilters?.order === 'asc' ? a?.minStars - b?.minStars : b?.minStars - a?.minStars;
+
+				case 'max_stars':
+					return currentFilters?.order === 'asc' ? a?.maxStars - b?.maxStars : b?.maxStars - a?.maxStars;
+
+				case 'name':
+					return currentFilters?.order === 'asc' ? a?.name.localeCompare(b.name) : b?.name?.localeCompare(a.name);
+
+				case 'votescount':
+					return currentFilters?.order === 'asc'
+						? a?.totals?.votesTotal - b?.totals?.votesTotal
+						: b?.totals?.votesTotal - a?.totals?.votesTotal;
+
+				case 'votesrating':
+					return currentFilters?.order === 'asc'
+						? a?.totals?.votesRating - b?.totals?.votesRating
+						: b?.totals?.votesRating - a?.totals?.votesRating;
+
+				default:
+					return 0;
+			}
+		}) ?? [];
+
+	$: console.log(filteredSongs);
 	$: console.warn(currentFilters);
 </script>
 
@@ -406,8 +455,8 @@
 					<Error {error} />
 				{:else if isLoading}
 					<Spinner /> Loading...
-				{:else if songs?.length}
-					{#each songs as song (song.hash)}
+				{:else if filteredSongs?.length}
+					{#each filteredSongs as song (song.hash)}
 						<div class="row">
 							<div class="song">
 								<img
@@ -459,7 +508,7 @@
 						</div>
 					{/each}
 				{:else}
-					No maps found.
+					No songs found.
 				{/if}
 			</section>
 		</ContentBox>
@@ -470,7 +519,7 @@
 			{#if !isLoading}
 				<h2 class="title is-5">Sorting</h2>
 
-				<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+				<Switcher values={currentSortValues} value={sortValue} on:change={onSortChange} />
 
 				<h2 class="title is-5">Filtering</h2>
 				{#each params as param}
