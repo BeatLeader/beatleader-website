@@ -144,12 +144,7 @@
 			type: 'input',
 			value: '',
 			placeholder: 'Search for a mapper',
-			onChange: e => {
-				const length = e?.target?.value?.length;
-				if (length > 0 && length < 3) return;
-
-				onInputChange(e, 'mapper');
-			},
+			onChange: e => onInputChange(e, 'mapper'),
 		},
 		{
 			key: 'name',
@@ -159,12 +154,7 @@
 			type: 'input',
 			value: '',
 			placeholder: 'Search for a map',
-			onChange: e => {
-				const length = e?.target?.value?.length;
-				if (length > 0 && length < 3) return;
-
-				onInputChange(e, 'name');
-			},
+			onChange: e => onInputChange(e, 'name'),
 		},
 		{
 			key: 'star_range',
@@ -282,7 +272,13 @@
 			error = null;
 
 			songs = Object.values(
-				(await Promise.all([fetchAllMapsWithType('nominated'), fetchAllMapsWithType('qualified'), fetchVotedMaps()]))
+				(
+					await Promise.all([
+						fetchAllMapsWithType('nominated'),
+						// fetchAllMapsWithType('qualified'), // TODO: enable it
+						// fetchVotedMaps(), // TODO: enable it
+					])
+				)
 					.reduce((carry, maps) => [...carry, ...maps], [])
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, votes, ...rest} = map;
@@ -411,31 +407,45 @@
 	$: sortValue = currentSortValues.find(v => v.id === currentFilters.sortBy);
 
 	$: filteredSongs =
-		songs.sort((a, b) => {
-			switch (currentFilters?.sortBy) {
-				case 'min_stars':
-					return currentFilters?.order === 'asc' ? a?.minStars - b?.minStars : b?.minStars - a?.minStars;
+		songs
+			.filter(s => {
+				let result = true;
 
-				case 'max_stars':
-					return currentFilters?.order === 'asc' ? a?.maxStars - b?.maxStars : b?.maxStars - a?.maxStars;
+				result &&= currentFilters?.mapper?.length
+					? (s?.mapper?.toLowerCase() ?? '').indexOf(currentFilters.mapper.toLowerCase()) >= 0
+					: true;
 
-				case 'name':
-					return currentFilters?.order === 'asc' ? a?.name.localeCompare(b.name) : b?.name?.localeCompare(a.name);
+				result &&= currentFilters?.name?.length
+					? `${s?.name?.toLowerCase() ?? ''} ${s?.subName?.toLowerCase() ?? ''}`.indexOf(currentFilters.name.toLowerCase()) >= 0
+					: true;
 
-				case 'votescount':
-					return currentFilters?.order === 'asc'
-						? a?.totals?.votesTotal - b?.totals?.votesTotal
-						: b?.totals?.votesTotal - a?.totals?.votesTotal;
+				return result;
+			})
+			.sort((a, b) => {
+				switch (currentFilters?.sortBy) {
+					case 'min_stars':
+						return currentFilters?.order === 'asc' ? a?.minStars - b?.minStars : b?.minStars - a?.minStars;
 
-				case 'votesrating':
-					return currentFilters?.order === 'asc'
-						? a?.totals?.votesRating - b?.totals?.votesRating
-						: b?.totals?.votesRating - a?.totals?.votesRating;
+					case 'max_stars':
+						return currentFilters?.order === 'asc' ? a?.maxStars - b?.maxStars : b?.maxStars - a?.maxStars;
 
-				default:
-					return 0;
-			}
-		}) ?? [];
+					case 'name':
+						return currentFilters?.order === 'asc' ? a?.name.localeCompare(b.name) : b?.name?.localeCompare(a.name);
+
+					case 'votescount':
+						return currentFilters?.order === 'asc'
+							? a?.totals?.votesTotal - b?.totals?.votesTotal
+							: b?.totals?.votesTotal - a?.totals?.votesTotal;
+
+					case 'votesrating':
+						return currentFilters?.order === 'asc'
+							? a?.totals?.votesRating - b?.totals?.votesRating
+							: b?.totals?.votesRating - a?.totals?.votesRating;
+
+					default:
+						return 0;
+				}
+			}) ?? [];
 
 	$: console.log(filteredSongs);
 	$: console.warn(currentFilters);
