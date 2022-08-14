@@ -85,9 +85,9 @@
 				on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
 
 			<div class="timeset">
-			<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-				{formatDateRelative(dateFromUnix(qualification?.criteriaTimeset))}
-			</span>
+				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+					{formatDateRelative(dateFromUnix(qualification?.criteriaTimeset))}
+				</span>
 			</div>
 
 			{#if qualification?.criteriaCommentary}
@@ -176,6 +176,6 @@
 	}
 
 	:global(.content figure:not(:first-child)) {
-			margin-top: 0;
+		margin-top: 0;
 	}
 </style>
