@@ -52,7 +52,9 @@
 				<Route path="/u/:initialPlayerId/*initialParams" let:params>
 					<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 				</Route>
-				<Route path="/rt" component={RtDashboard} />
+				<Route path="/rt" let:location>
+					<RtDashboard  {location} />
+				</Route>
 				<Route path="/privacy" component={PrivacyPage} />
 				<Route path="/about" component={AboutPage} />
 				<Route path="/friends" component={FriendsPage} />

@@ -8,11 +8,233 @@
 	import Spinner from '../components/Common/Spinner.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
 	import Totals from '../components/Rt/Totals.svelte';
+	import Switcher from '../components/Common/Switcher.svelte';
+	import {
+		buildSearchFromFilters,
+		createBuildFiltersFromLocation,
+		processIntArrayFilter,
+		processStringArrayFilter,
+		processStringFilter,
+	} from '../utils/filters';
+	import {navigate} from 'svelte-routing';
+	import RangeSlider from 'svelte-range-slider-pips';
+
+	export let location;
 
 	document.body.classList.add('remove');
 
 	const ITEMS_PER_PAGE = 100;
 	const VOTED = 100; // max 100
+
+	const sortValues = [
+		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-star'},
+		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
+		{id: 'votescount', label: 'Votes count', title: 'Sort by votes count', iconFa: 'fas fa-calculator'},
+		{id: 'votesrating', label: 'Votes rating', title: 'Sort by votes rating', iconFa: 'far fa-smile-beam'},
+	];
+
+	let sortValue = sortValues[0];
+
+	const findParam = key => params.find(p => p.key === key);
+
+	const onInputChange = (e, key) => {
+		const param = findParam(key);
+		if (param) {
+			param.value = e.target.value ?? '';
+
+			updateCurrentFiltersFromParams();
+		}
+	};
+
+	const onSingleSwitchChange = (e, key) => {
+		const param = findParam(key);
+		if (param) {
+			param.value = (param.values ?? []).find(p => p?.id === e?.detail?.id);
+
+			updateCurrentFiltersFromParams();
+		}
+	};
+
+	const onMultiSwitchChange = (e, key) => {
+		const param = findParam(key);
+		if (param) {
+			param.value = (param?.value ?? []).includes(e.detail)
+				? (param?.value ?? []).filter(p => p?.id !== e.detail.id)
+				: [...(param?.value ?? []), e.detail];
+
+			updateCurrentFiltersFromParams();
+		}
+	};
+
+	let start = null;
+	const rangeChange = (event, key) => {
+		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
+
+		const range = findParam(key);
+		if (range) {
+			range.values = event.detail.values;
+		}
+
+		start = new Date().getTime();
+		setTimeout(() => {
+			if (new Date().getTime() - start > 499) {
+				updateCurrentFiltersFromParams(true);
+			}
+		}, 500);
+	};
+
+	const params = [
+		{
+			key: 'mine',
+			label: 'Engagement',
+			default: 'all',
+			process: processStringFilter,
+			type: 'switch',
+			value: null,
+			values: [
+				{id: 'all', label: 'All maps'},
+				{id: 'mine', label: 'Mine only'},
+			],
+			onChange: e => onSingleSwitchChange(e, 'mine'),
+			multi: false,
+		},
+		{
+			key: 'status',
+			label: 'It has a status of',
+			default: '',
+			process: processStringArrayFilter,
+			type: 'switch',
+			value: [],
+			values: [
+				{id: 'nominated', label: 'Nominated'},
+				{id: 'allowed', label: 'Mapper allowed'},
+				{id: 'criteria', label: 'Criteria checked'},
+				{id: 'approved', label: 'RT approved'},
+				{id: 'voted', label: 'Has votes'},
+			],
+			onChange: e => onMultiSwitchChange(e, 'status'),
+			multi: true,
+		},
+		{
+			key: 'status_not',
+			label: 'It has NOT a status of',
+			default: '',
+			process: processStringArrayFilter,
+			type: 'switch',
+			value: [],
+			values: [
+				{id: 'nominated', label: 'Nominated'},
+				{id: 'allowed', label: 'Mapper allowed'},
+				{id: 'criteria', label: 'Criteria checked'},
+				{id: 'approved', label: 'RT approved'},
+				{id: 'voted', label: 'Has votes'},
+			],
+			onChange: e => onMultiSwitchChange(e, 'status_not'),
+			multi: true,
+		},
+		{
+			key: 'mapper',
+			label: 'Mapper',
+			default: '',
+			process: processStringFilter,
+			type: 'input',
+			value: '',
+			placeholder: 'Search for a mapper',
+			onChange: e => {
+				const length = e?.target?.value?.length;
+				if (length > 0 && length < 3) return;
+
+				onInputChange(e, 'mapper');
+			},
+		},
+		{
+			key: 'name',
+			label: 'Map Name',
+			default: '',
+			process: processStringFilter,
+			type: 'input',
+			value: '',
+			placeholder: 'Search for a map',
+			onChange: e => {
+				const length = e?.target?.value?.length;
+				if (length > 0 && length < 3) return;
+
+				onInputChange(e, 'name');
+			},
+		},
+		{
+			key: 'star_range',
+			label: 'Star range',
+			default: [0, 20],
+			min: 0,
+			max: 20,
+			step: 0.1,
+			pipstep: 25,
+			type: 'slider',
+			process: processIntArrayFilter,
+			values: [],
+			onChange: e => rangeChange(e, 'star_range'),
+		},
+		{
+			key: 'sortBy',
+			default: 'stars',
+			process: processStringFilter,
+			type: null,
+		},
+		{
+			key: 'order',
+			default: 'desc',
+			process: processStringFilter,
+			type: null,
+		},
+	];
+
+	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
+		params.forEach(p => {
+			if (p.key === 'star_range') {
+				p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
+				filters[p.key] = filters[p.key] ?? 0;
+			} else if (p.type === 'switch' && !p.multi) {
+				filters[p.key] = (p?.values ?? [])?.map(v => v?.id)?.find(v => v === filters?.[p.key]) ?? p?.default ?? [];
+
+				p.value = p?.values?.find(v => v.id === filters?.[p.key]) ?? null;
+			} else {
+				filters[p.key] = p.multi
+					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
+					: filters?.[p.key]?.length
+					? filters[p.key]
+					: p?.default ?? '';
+
+				p.value = p.multi
+					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
+					: filters?.[p.key] ?? p?.default ?? '';
+			}
+		});
+
+		return filters;
+	});
+
+	function updateCurrentFiltersFromParams(noScroll) {
+		params.forEach(p => {
+			if (p.key === 'star_range') {
+				currentFilters[p.key] = p?.values ?? [];
+			} else if (p.type === 'switch' && !p.multi) {
+				currentFilters[p.key] = p?.value?.id ?? '';
+			} else {
+				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id) : p?.value ?? '';
+			}
+		});
+
+		params = params;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function navigateToCurrentPageAndFilters(replace) {
+		navigate(`/rt?${buildSearchFromFilters(currentFilters)}`, {replace});
+	}
+
+	let currentFilters = buildFiltersFromLocation(location);
 
 	let error = null;
 	let isLoading = true;
@@ -142,11 +364,25 @@
 		else detailsOpened = [...detailsOpened, hash];
 	}
 
-	onMount(async () => {
-		await fetchMaps();
-	});
+	function onSortChange(event) {
+		if (!event?.detail?.id) return null;
+
+		if (currentFilters.sortBy === event.detail.id) {
+			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+		} else {
+			currentFilters.sortBy = event.detail.id;
+			currentFilters.order = 'desc';
+		}
+		findParam('sortBy').value = currentFilters.sortBy;
+		findParam('order').value = currentFilters.order;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	$: sortValue = sortValues.find(v => v.id === currentFilters.sortBy);
 
 	$: console.log(songs);
+	$: console.warn(currentFilters);
 </script>
 
 <svelte:head>
@@ -224,7 +460,41 @@
 
 	<aside>
 		<ContentBox>
-			<h2 class="title is-5">Sorting</h2>
+			{#if !isLoading}
+				<h2 class="title is-5">Sorting</h2>
+
+				<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+
+				<h2 class="title is-5">Filtering</h2>
+				{#each params as param}
+					{#if param.type}
+						<section class="filter">
+							<label>{param?.label ?? param?.key ?? ''}</label>
+
+							{#if param?.type === 'input'}
+								<input type="text" placeholder={param.placeholder ?? null} value={param.value} on:input={param.onChange} />
+							{:else if param?.type === 'switch'}
+								<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
+							{:else if param?.type === 'slider'}
+								<RangeSlider
+									range
+									min={param.min}
+									max={param.max}
+									step={param.step}
+									values={param.values}
+									float
+									hoverable
+									pips
+									pipstep={param.pipstep}
+									all="label"
+									on:change={param.onChange} />
+							{/if}
+						</section>
+					{/if}
+				{/each}
+			{:else}
+				<Spinner /> Loading...
+			{/if}
 		</ContentBox>
 	</aside>
 </section>
