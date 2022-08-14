@@ -239,14 +239,14 @@
 	let songs = [];
 	let detailsOpened = [];
 
-	async function fetchAllMapsWithType(type) {
+	async function fetchAllMapsWithType(type, sortBy = 'stars') {
 		let data = [];
 		let page = 1;
 		let count = ITEMS_PER_PAGE;
 		let pageCount = null;
 
 		while (!pageCount || page <= pageCount) {
-			const pageData = await apiClient.getProcessed({page, filters: {type, count}});
+			const pageData = await apiClient.getProcessed({page, filters: {type, sortBy, count}});
 
 			if (!pageData?.data?.length) return data;
 
@@ -275,7 +275,15 @@
 			error = null;
 
 			songs = Object.values(
-				(await Promise.all([fetchAllMapsWithType('nominated'), fetchAllMapsWithType('qualified'), fetchVotedMaps()]))
+				(
+					await Promise.all([
+						fetchAllMapsWithType('nominated'),
+						fetchAllMapsWithType('qualified'),
+						fetchAllMapsWithType('nominated', 'votecount'),
+						fetchAllMapsWithType('qualified', 'votecount'),
+						fetchVotedMaps(),
+					])
+				)
 					.reduce((carry, maps) => [...carry, ...maps], [])
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, votes, ...rest} = map;
