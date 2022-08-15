@@ -11,6 +11,7 @@
 	export let pointer = false;
 	export let showDiffIcons = false;
 	export let hideTitle = false;
+	export let nameAndStars = false;
 
 	$: diffColor = enabled ? diffInfo.color : 'gray';
 	$: diffInfo = diff ? getHumanDiffInfo(diff) : null;
@@ -23,7 +24,7 @@
 		style="color: {reverseColors ? 'white' : diffColor}; background-color: {reverseColors ? diffColor : 'transparent'}; {pointer
 			? 'cursor: pointer !important'
 			: ''}"
-		{title}
+		title={!nameAndStars ? title : null}
 		on:click>
 		{#if showDiffIcons}
 			<span class="icon">
@@ -31,10 +32,12 @@
 			</span>
 		{/if}
 
-		{#if stars}
-			<Value value={stars} suffix={starsSuffix} zero="" {title} />
-		{:else if !hideTitle}
+		{#if !hideTitle && (!stars || nameAndStars)}
 			{useShortName ? diffInfo.shortName : diffInfo.fullName}
+		{/if}
+
+		{#if stars}
+			<Value value={stars} suffix={starsSuffix} zero="" title={!nameAndStars ? title : null} />
 		{/if}
 	</span>
 {/if}
