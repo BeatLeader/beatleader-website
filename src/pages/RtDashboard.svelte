@@ -620,6 +620,21 @@
 						? s?.difficulties?.some(d => currentFilters.star_range[0] < d.stars && d.stars < currentFilters.star_range[1])
 						: true;
 
+				const tagsCond = currentFilters?.tags_cond ?? 'or';
+				if (currentFilters?.tags?.length) {
+					const songLabels = s?.difficulties?.map(d => $labelsStore[d?.leaderboardId] ?? null).filter(l => l) ?? [];
+
+					switch (tagsCond) {
+						case 'or':
+							result &&= songLabels.some(labels => currentFilters.tags.some(filterLabel => labels.includes(filterLabel)));
+							break;
+
+						case 'and':
+							result &&= songLabels.some(labels => currentFilters.tags.every(filterLabel => labels.includes(filterLabel)));
+							break;
+					}
+				}
+
 				return result;
 			})
 			.sort((a, b) => {
@@ -754,7 +769,7 @@
 												value={allLabels.filter(l => ($labelsStore?.[difficulty?.leaderboardId] ?? []).includes(l.id))}
 												items={allLabels}
 												optionIdentifier="id"
-												placeholder="Click to add label..."
+												placeholder="Click to add tag..."
 												isSearchable={true}
 												isMulti={true}
 												isCreatable={true}
