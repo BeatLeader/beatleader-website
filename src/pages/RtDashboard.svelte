@@ -949,6 +949,7 @@
 		text-align: left;
 		font-size: 0.95rem;
 		font-weight: 500;
+		max-width: 35rem;
 	}
 
 	.songinfo {
