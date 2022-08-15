@@ -1,15 +1,10 @@
 <script>
 	import {fade} from 'svelte/transition';
-	import {onMount} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
+	import createLocalStorageStore from '../stores/localstorage';
 	import apiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
 	import {copyToClipboard} from '../utils/clipboard';
-	import ContentBox from '../components/Common/ContentBox.svelte';
-	import Error from '../components/Common/Error.svelte';
-	import Spinner from '../components/Common/Spinner.svelte';
-	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import Totals from '../components/Rt/Totals.svelte';
-	import Switcher from '../components/Common/Switcher.svelte';
 	import {
 		buildSearchFromFilters,
 		createBuildFiltersFromLocation,
@@ -17,20 +12,38 @@
 		processStringArrayFilter,
 		processStringFilter,
 	} from '../utils/filters';
-	import {navigate} from 'svelte-routing';
-	import RangeSlider from 'svelte-range-slider-pips';
 	import {formatNumber} from '../utils/format';
+	import ContentBox from '../components/Common/ContentBox.svelte';
+	import Error from '../components/Common/Error.svelte';
+	import Spinner from '../components/Common/Spinner.svelte';
+	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
+	import Totals from '../components/Rt/Totals.svelte';
+	import Switcher from '../components/Common/Switcher.svelte';
+	import RangeSlider from 'svelte-range-slider-pips';
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
+	import Select from 'svelte-select';
 
 	export let location;
 
 	document.body.classList.add('remove');
 
 	const account = createAccountStore();
+	const labelsStore = createLocalStorageStore('rt-maps-labels');
 
 	const ITEMS_PER_PAGE = 100;
 	const VOTED = 100; // max 100
+
+	let allLabels = [];
+
+	const updateAllLabels = store => {
+		allLabels = [...new Set(Object.values(store).reduce((carry, labels) => [...carry, ...labels], []))].map(label => ({
+			id: label,
+			label: label,
+		}));
+	};
+
+	updateAllLabels($labelsStore);
 
 	const sortValues = [
 		{id: 'max_stars', label: 'Max stars', title: 'Sort by max diff stars', iconFa: 'fa fa-star'},
@@ -162,6 +175,28 @@
 			onConditionChange: e => onConditionChange(e, 'status_not'),
 		},
 		{
+			key: 'tags',
+			label: 'Tags',
+			default: '',
+			defaultCondition: 'or',
+			process: processStringArrayFilter,
+			type: 'tags',
+			value: [],
+			values: allLabels,
+			valueCondition: 'or',
+			onChange: e => {
+				const param = findParam('tags');
+				if (param) {
+					param.value = e?.detail ?? [];
+
+					updateCurrentFiltersFromParams();
+				}
+			},
+			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'tags'),
+		},
+		{
 			key: 'mapper',
 			label: 'Mapper',
 			default: '',
@@ -210,27 +245,31 @@
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
 		params.forEach(p => {
-			if (p.key === 'star_range') {
-				p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
-				filters[p.key] = filters[p.key] ?? 0;
-			} else if (p.type === 'switch' && !p.multi) {
-				filters[p.key] = (p?.values ?? [])?.map(v => v?.id)?.find(v => v === filters?.[p.key]) ?? p?.default ?? [];
+			switch (true) {
+				case p.key === 'star_range':
+					p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
+					filters[p.key] = filters[p.key] ?? 0;
+					break;
 
-				p.value = p?.values?.find(v => v.id === filters?.[p.key]) ?? null;
-			} else {
-				filters[p.key] = p.multi
-					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
-					: filters?.[p.key]?.length
-					? filters[p.key]
-					: p?.default ?? '';
+				case p.type === 'switch' && !p.multi:
+					filters[p.key] = (p?.values ?? [])?.map(v => v?.id)?.find(v => v === filters?.[p.key]) ?? p?.default ?? [];
+					p.value = p?.values?.find(v => v.id === filters?.[p.key]) ?? null;
+					break;
 
-				p.value = p.multi
-					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
-					: filters?.[p.key] ?? p?.default ?? '';
+				default:
+					filters[p.key] = p.multi
+						? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
+						: filters?.[p.key]?.length
+						? filters[p.key]
+						: p?.default ?? '';
 
-				if (p.type === 'switch' && p.multi && p.withCondition) {
-					p.valueCondition = filters[p.key + '_cond'] ?? p.defaultCondition ?? 'or';
-				}
+					p.value = p.multi
+						? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
+						: filters?.[p.key] ?? p?.default ?? '';
+			}
+
+			if (p.multi && p.withCondition) {
+				p.valueCondition = filters[p.key + '_cond'] ?? p.defaultCondition ?? 'or';
 			}
 		});
 
@@ -239,22 +278,37 @@
 
 	function updateCurrentFiltersFromParams(noScroll) {
 		params.forEach(p => {
-			if (p.key === 'star_range') {
-				currentFilters[p.key] = p?.values ?? [];
-			} else if (p.type === 'switch' && !p.multi) {
-				currentFilters[p.key] = p?.value?.id ?? '';
-			} else {
-				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id) : p?.value ?? '';
+			switch (true) {
+				case p.key === 'star_range':
+					currentFilters[p.key] = p?.values ?? [];
+					break;
 
-				if (p.type === 'switch' && p.multi && p.withCondition) {
-					currentFilters[p.key + '_cond'] = p.valueCondition ?? 'or';
-				}
+				case p.type === 'switch' && !p.multi:
+					currentFilters[p.key] = p?.value?.id ?? '';
+					break;
+
+				default:
+					currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id) : p?.value ?? '';
+					break;
+			}
+
+			if (p.multi && p.withCondition) {
+				currentFilters[p.key + '_cond'] = p.valueCondition ?? 'or';
 			}
 		});
 
 		params = params;
 
 		navigateToCurrentPageAndFilters();
+	}
+
+	function updateTags(allLabels) {
+		const param = findParam('tags');
+		if (param) {
+			const currentValues = param?.value?.map(v => v?.id)?.filter(v => v) ?? [];
+			param.values = allLabels;
+			param.value = allLabels.filter(l => currentValues.includes(l.id));
+		}
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
@@ -425,8 +479,24 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onDiffLabelChange(leaderboardId, event) {
+		if (!leaderboardId?.length) return;
+
+		let current = $labelsStore;
+
+		const newLabels = (event?.detail ?? []).map(l => l?.id ?? l?.value).filter(l => l);
+		if (newLabels.length) current = {...current, [leaderboardId]: newLabels};
+		else delete current[leaderboardId];
+
+		$labelsStore = current;
+	}
+
 	const getMinQualificationTime = (song, key) =>
 		song?.difficulties?.reduce((min, d) => (min < d?.qualification?.[key] ? d.qualification[key] : min), 0) ?? 0;
+
+	$: updateAllLabels($labelsStore);
+	$: updateTags(allLabels);
+	$: allLabelsHash = allLabels.map(v => v?.id ?? '').join(':') ?? '';
 
 	$: playerId = $account?.id;
 	$: isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
@@ -674,6 +744,23 @@
 										{:else}
 											<div>Not yet nominated.</div>
 										{/if}
+
+										<div
+											class="tags"
+											style="--clearSelectTop: 8px; --multiItemBG: var(--selected); --multiClearBG: var(--selected); --listBackground:
+	var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35px 2px 4px; --itemColor:
+	var(--textColor); --itemHoverColor: var(--textColor); --itemHoverBG: var(--selected)">
+											<Select
+												value={allLabels.filter(l => ($labelsStore?.[difficulty?.leaderboardId] ?? []).includes(l.id))}
+												items={allLabels}
+												optionIdentifier="id"
+												placeholder="Click to add label..."
+												isSearchable={true}
+												isMulti={true}
+												isCreatable={true}
+												placeholderAlwaysShow={true}
+												on:select={e => onDiffLabelChange(difficulty?.leaderboardId, e)} />
+										</div>
 									</div>
 								{/each}
 							{/if}
@@ -700,7 +787,7 @@
 							<label>
 								{param?.label ?? param?.key ?? ''}
 
-								{#if param?.type === 'switch' && param?.multi && param?.withCondition}
+								{#if param?.multi && param?.withCondition}
 									<select value={param.valueCondition} on:change={param.onConditionChange}>
 										<option value="or">ANY </option><option value="and">ALL </option>
 									</select>
@@ -724,6 +811,25 @@
 									pipstep={param.pipstep}
 									all="label"
 									on:change={param.onChange} />
+							{:else if param?.type === 'tags'}
+								{#key allLabelsHash}
+									<div
+										class="tags"
+										style=" --clearSelectTop: 8px; --multiItemBG: var(--selected); --multiClearBG: var(--selected); --listBackground:
+	var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35px 2px 4px; --itemColor:
+	var(--textColor); --itemHoverColor: var(--textColor); --itemHoverBG: var(--selected)">
+										<Select
+											value={param.value}
+											items={param.values}
+											optionIdentifier="id"
+											placeholder="Click to select..."
+											isSearchable={true}
+											isMulti={true}
+											placeholderAlwaysShow={true}
+											on:select={param.onChange}
+											{allLabelsHash} />
+									</div>
+								{/key}
 							{/if}
 						</section>
 					{/if}
@@ -752,7 +858,7 @@
 	}
 
 	aside {
-		width: 25em;
+		width: 30em;
 	}
 
 	aside .filter {
@@ -873,6 +979,35 @@
 
 	.song-diff > a {
 		margin-bottom: 0.5rem;
+	}
+
+	.song-diff .tags {
+		margin-top: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem;
+		max-width: 30rem;
+	}
+
+	.tags :global(.badge-bg) {
+		background: rgba(255, 255, 255, 0.123);
+		border-bottom: 2px solid transparent;
+		border-radius: 0.1rem;
+		padding: 0.5rem;
+		filter: saturate(0.5) brightness(1.4);
+		transform: scale(0.8);
+		font-weight: 400 !important;
+		color: white !important;
+		margin: 0 0;
+	}
+
+	.tags :global(.listContainer) {
+		background-color: var(--background) !important;
 	}
 
 	@media screen and (max-width: 1275px) {
