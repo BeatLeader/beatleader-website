@@ -24,7 +24,7 @@
 		style="color: {reverseColors ? 'white' : diffColor}; background-color: {reverseColors ? diffColor : 'transparent'}; {pointer
 			? 'cursor: pointer !important'
 			: ''}"
-		{title}
+		title={!nameAndStars ? title : null}
 		on:click>
 		{#if showDiffIcons}
 			<span class="icon">
@@ -37,7 +37,7 @@
 		{/if}
 
 		{#if stars}
-			<Value value={stars} suffix={starsSuffix} zero="" {title} />
+			<Value value={stars} suffix={starsSuffix} zero="" title={!nameAndStars ? title : null} />
 		{/if}
 	</span>
 {/if}

@@ -21,6 +21,7 @@
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {formatNumber} from '../utils/format';
 	import Difficulty from '../components/Song/Difficulty.svelte';
+	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 
 	export let location;
 
@@ -660,6 +661,8 @@
 													<span>No star rating yet</span>
 												{/if}
 											</a>
+
+											<MapTypeDescription type={difficulty?.type} />
 
 											<Totals totals={difficulty} />
 										</div>
