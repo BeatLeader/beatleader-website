@@ -20,6 +20,7 @@
 	import {navigate} from 'svelte-routing';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {formatNumber} from '../utils/format';
+	import Difficulty from '../components/Song/Difficulty.svelte';
 
 	export let location;
 
@@ -649,10 +650,13 @@
 									<div class="song-diff">
 										<div class="diff-name">
 											<a href="/leaderboard/global/{difficulty.leaderboardId}/1">
-												{difficulty.difficultyName}
-												{#if difficulty.stars}
-													{difficulty.stars}<sup>★</sup>
-												{:else}
+												<Difficulty
+													diff={{type: difficulty?.modeName, diff: difficulty?.difficultyName}}
+													stars={difficulty?.stars}
+													nameAndStars={true}
+													reverseColors={true} />
+
+												{#if !difficulty.stars}
 													<span>No star rating yet</span>
 												{/if}
 											</a>

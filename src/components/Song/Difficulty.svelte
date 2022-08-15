@@ -11,6 +11,7 @@
 	export let pointer = false;
 	export let showDiffIcons = false;
 	export let hideTitle = false;
+	export let nameAndStars = false;
 
 	$: diffColor = enabled ? diffInfo.color : 'gray';
 	$: diffInfo = diff ? getHumanDiffInfo(diff) : null;
@@ -31,10 +32,12 @@
 			</span>
 		{/if}
 
+		{#if !hideTitle && (!stars || nameAndStars)}
+			{useShortName ? diffInfo.shortName : diffInfo.fullName}
+		{/if}
+
 		{#if stars}
 			<Value value={stars} suffix={starsSuffix} zero="" {title} />
-		{:else if !hideTitle}
-			{useShortName ? diffInfo.shortName : diffInfo.fullName}
 		{/if}
 	</span>
 {/if}
