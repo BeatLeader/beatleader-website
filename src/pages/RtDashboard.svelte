@@ -943,11 +943,11 @@
 	<aside>
 		<ContentBox>
 			{#if !isLoading}
-				<h2 class="title is-5">Sorting</h2>
+				<section class="filter">
+					<label>Sorting</label>
+					<Switcher values={currentSortValues} value={sortValue} on:change={onSortChange} />
+				</section>
 
-				<Switcher values={currentSortValues} value={sortValue} on:change={onSortChange} />
-
-				<h2 class="title is-5">Filtering</h2>
 				{#each params as param}
 					{#if param.type}
 						<section class="filter">
@@ -1090,7 +1090,7 @@
 	}
 
 	aside .filter {
-		margin-bottom: 1.5rem;
+		margin-bottom: 0.5rem;
 		transition: opacity 300ms;
 	}
 
@@ -1103,6 +1103,10 @@
 		gap: 0.5rem;
 		font-weight: 500;
 		margin: 0.75rem 0;
+	}
+
+	aside .filter:first-child label {
+		margin-top: 0;
 	}
 
 	aside label select {
