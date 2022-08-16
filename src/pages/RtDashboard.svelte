@@ -49,6 +49,14 @@
 
 	updateAllLabels($labelsStore);
 
+	const logTypeValues = [
+		{id: 'nomination', label: 'Nomination'},
+		{id: 'criteria', label: 'Criteria'},
+		{id: 'approval', label: 'Approval'},
+	];
+	let logTypeFilter = [];
+	let logPlayerFilter = '';
+
 	const sortValues = [
 		{id: 'max_stars', label: 'Max stars', title: 'Sort by max diff stars', iconFa: 'fa fa-star'},
 		{id: 'min_stars', label: 'Min stars', title: 'Sort by min diff stars', iconFa: 'fa fa-star'},
@@ -549,6 +557,12 @@
 		$labelsStore = current;
 	}
 
+	function onLogTypeChange(event) {
+		logTypeFilter = logTypeFilter.includes(event?.detail)
+			? logTypeFilter.filter(p => p?.id !== event?.detail?.id)
+			: [...logTypeFilter, event?.detail];
+	}
+
 	const getMinQualificationTime = (song, key) =>
 		song?.difficulties?.reduce((min, d) => (min < d?.qualification?.[key] ? d.qualification[key] : min), 0) ?? 0;
 
@@ -834,7 +848,15 @@
 	$: eventsPlayers = [...new Set(events.map(e => e?.playerId).filter(playerId => playerId))];
 	$: fetchPlayers(eventsPlayers);
 
-	$: filteredEventLog = events?.map(e => e);
+	$: filteredEventLog = events?.filter(
+		e =>
+			(!logPlayerFilter?.length || $playersCache[e?.playerId]?.name?.toLowerCase()?.indexOf(logPlayerFilter.toLowerCase()) >= 0) &&
+			(!logTypeFilter?.length ||
+				logTypeFilter
+					.map(lt => lt.id)
+					.filter(lt => lt)
+					.includes(e.type))
+	);
 </script>
 
 <svelte:head>
@@ -868,47 +890,55 @@
 				{:else if filteredSongs?.length}
 					{#if showEventLog}
 						<section class="event-log">
-							<table width="100%">
-								<thead>
-									<tr>
-										<th>When</th>
-										<th>Who</th>
-										<th>Action</th>
-										<th>Song</th>
-										<th>Diff</th>
-										<th>Notes</th>
-									</tr>
-								</thead>
+							<div class="log-filter">
+								<Switcher values={logTypeValues} value={logTypeFilter} multi={true} on:change={onLogTypeChange} />
 
-								<tbody>
-									{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
-										<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
-											<td>{formatDate(event.timestamp, 'short', 'short')}</td>
-											<td>
-												<a href={`/u/${event?.playerId}`} target="_blank"
-													>{$playersCache?.[event?.playerId]?.name ?? event?.playerId ?? 'Unknown'}</a>
-											</td>
-											<td>{event.type}</td>
-											<td>
-												<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
-													{event.song?.name}
-													{event.song?.subName} / {event.song?.mapper}
-												</a>
-											</td>
-											<td>
-												<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
-													<Difficulty
-														diff={{type: event.difficulty?.modeName, diff: event.difficulty?.name}}
-														stars={event.difficulty?.stars}
-														nameAndStars={true}
-														reverseColors={true} />
-												</a>
-											</td>
-											<td>{event.desc}</td>
+								<input type="log-filter" bind:value={logPlayerFilter} placeholder="Search for a player name..." />
+							</div>
+
+							<div class="wrapper">
+								<table width="100%">
+									<thead>
+										<tr>
+											<th>When</th>
+											<th>Who</th>
+											<th>Action</th>
+											<th>Song</th>
+											<th>Diff</th>
+											<th>Notes</th>
 										</tr>
-									{/each}
-								</tbody>
-							</table>
+									</thead>
+
+									<tbody>
+										{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
+											<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
+												<td>{formatDate(event.timestamp, 'short', 'short')}</td>
+												<td>
+													<a href={`/u/${event?.playerId}`} target="_blank"
+														>{$playersCache?.[event?.playerId]?.name ?? event?.playerId ?? 'Unknown'}</a>
+												</td>
+												<td>{event.type}</td>
+												<td>
+													<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
+														{event.song?.name}
+														{event.song?.subName} / {event.song?.mapper}
+													</a>
+												</td>
+												<td>
+													<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
+														<Difficulty
+															diff={{type: event.difficulty?.modeName, diff: event.difficulty?.name}}
+															stars={event.difficulty?.stars}
+															nameAndStars={true}
+															reverseColors={true} />
+													</a>
+												</td>
+												<td>{event.desc}</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
 						</section>
 					{/if}
 
@@ -1082,6 +1112,12 @@
 		overflow-x: hidden;
 	}
 
+	h1 {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
 	h1 > i {
 		font-size: 0.875em;
 		cursor: pointer !important;
@@ -1089,19 +1125,40 @@
 
 	.event-log {
 		max-width: calc(100vw - 2rem);
-		max-height: 70vh;
-		overflow-y: scroll;
 		font-size: 0.85em;
 		margin-bottom: 2rem;
 	}
 
-	.event-log::-webkit-scrollbar {
+	.event-log .wrapper {
+		max-height: 70vh;
+		overflow-y: scroll;
+	}
+
+	.event-log .wrapper::-webkit-scrollbar {
 		width: 0.25rem;
 	}
-	.event-log::-webkit-scrollbar-thumb {
-		background-color: var(--selected, #3273dc);
+	.event-log .wrapper::-webkit-scrollbar-thumb {
+		background-color: var(--beatleader-primary, #eb008cff);
 		border-radius: 6px;
-		border: 3px solid var(--selected, #3273dc);
+		border: 3px solid var(--beatleader-primary, #eb008cff);
+	}
+
+	.event-log .log-filter {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.event-log .log-filter input {
+		width: 100%;
+		max-width: 25em;
+		color: var(--beatleader-primary);
+		background-color: var(--foreground);
+		border: none;
+		border-bottom: 1px solid var(--faded);
+		outline: none;
 	}
 
 	.event-log table th,
