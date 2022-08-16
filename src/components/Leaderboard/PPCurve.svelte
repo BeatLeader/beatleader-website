@@ -2,6 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import regionsPlugin from './utils/regions-plugin';
 	import 'chartjs-adapter-luxon';
+	import RangeSlider from 'svelte-range-slider-pips';
 	import {createEventDispatcher, getContext, onMount} from 'svelte';
 	import {formatNumber} from '../../utils/format';
 
@@ -16,6 +17,10 @@
 
 	let canvas = null;
 	let chart = null;
+	let startAcc = 0.6,
+		endAcc = 1,
+		minAcc = 0.5,
+		maxAcc = 1;
 
 	const mutuallyExclusive = {
 		NA: ['DA'],
@@ -39,7 +44,7 @@
 		return curve(acc, stars - 0.5) * (stars + 0.5) * 42;
 	}
 
-	async function setupChart(canvas, stars, logarithmic, negativeModifiersSum) {
+	async function setupChart(canvas, stars, logarithmic, negativeModifiersSum, startAcc, endAcc) {
 		if (!canvas) return;
 
 		negativeModifiersSum = negativeModifiersSum < -1 ? -1 : negativeModifiersSum;
@@ -51,14 +56,14 @@
 		let minPp = 0;
 		let annotations = [];
 		const data = [];
-		for (let acc = 0.6; acc < 1; acc += 0.001) {
+		for (let acc = startAcc; acc < endAcc; acc += 0.001) {
 			const finalAcc = acc * (1 + negativeModifiersSum);
 			const pp = ppFromAcc(finalAcc, stars);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
 			if (!minPp) minPp = pp;
 
-			if (acc > 0.6 && (acc * 100) % 5 < 0.001)
+			if (acc > startAcc && (acc * 100) % Math.round(((maxAcc - startAcc) * 100) / 8) < 0.001)
 				annotations.push({
 					min: acc,
 					max: acc,
@@ -96,8 +101,8 @@
 			grid: {
 				color: gridColor,
 			},
-			min: 0.6,
-			max: 1,
+			min: startAcc,
+			max: endAcc,
 		};
 
 		const yAxis = {
@@ -196,7 +201,7 @@
 		[]
 	);
 	$: modifiedStars = stars * (1 + positiveModifiersSum * 2);
-	$: setupChart(canvas, modifiedStars, logarithmic, negativeModifiersSum);
+	$: setupChart(canvas, modifiedStars, logarithmic, negativeModifiersSum, startAcc, endAcc);
 
 	$: dispatch('modified-stars', modifiedStars);
 </script>
@@ -215,6 +220,30 @@
 		{/each}
 	</div>
 {/if}
+
+<div class="acc-range">
+	<RangeSlider
+		range
+		min={minAcc}
+		max={maxAcc}
+		step={(maxAcc - minAcc) / 2000}
+		values={[startAcc, endAcc]}
+		float
+		hoverable
+		pips
+		pipstep={(maxAcc - minAcc) * 1000}
+		all="label"
+		on:change={event => {
+			startAcc = event.detail.values[0];
+			endAcc = event.detail.values[1];
+
+			if (startAcc - minAcc < 0.05 && minAcc >= 0.05) {
+				minAcc -= 0.05;
+			} else if (startAcc - minAcc > 0.1) {
+				minAcc += 0.05;
+			}
+		}} />
+</div>
 
 <style>
 	section {
