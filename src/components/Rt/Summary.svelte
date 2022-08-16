@@ -20,7 +20,20 @@
 			class:ok={totals.votesRating >= 0.666}
 			class:warning={totals.votesRating < 0.666 && totals.votesRating > 0.5}
 			class:error={totals.votesRating <= 0.5}
-			title={`Positive: ${totals.votesPositive}, Negative: ${totals.votesNegative}, Total: ${totals.votesTotal}`}>
+			title={`${totals?.byDiff?.length > 1 ? 'Total / ' : ''}Positive: ${totals.votesPositive}, Negative: ${totals.votesNegative}, Total: ${
+				totals.votesTotal
+			}\n${
+				totals?.byDiff?.length > 1
+					? totals.byDiff
+							.map(
+								d =>
+									`${d.name} / Rating: ${formatNumber(d.votesRating)}, Positive: ${d.votesPositive}, Negative: ${d.votesNegative}, Total: ${
+										d.votesTotal
+									}`
+							)
+							.join('\n')
+					: ''
+			}`}>
 			{#if totals.votesRating >= 0.7}
 				<i class="fa fa-check" />
 			{:else}
@@ -36,7 +49,9 @@
 					class:ok={totals[`${key}Ratio`] === 1}
 					class:warning={totals[`${key}Ratio`] < 1 && totals[`${key}Ratio`] >= 0.5}
 					class:error={totals[`${key}Ratio`] < 0.5}
-					title={keys[key]}>
+					title={`${keys[key]}\n${
+						totals?.byDiff?.length > 1 ? totals.byDiff.map(d => `${d.name} / ${d?.[key] ?? '???'}`).join('\n') : ''
+					}`}>
 					{#if totals[`${key}Ratio`] === 1}
 						<i class="fa fa-check" />
 					{:else}

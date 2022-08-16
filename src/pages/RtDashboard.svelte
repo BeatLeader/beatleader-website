@@ -472,6 +472,19 @@
 							votesPositive: 0,
 							votesNegative: 0,
 							votesRating: 0,
+							byDiff: (s?.difficulties ?? []).map(diff => {
+								return {
+									name: diff.difficultyName,
+									votesPositive: diff.votesPositive ?? 0,
+									votesNegative: diff.votesNegative ?? 0,
+									votesTotal: diff.votesTotal ?? 0,
+									votesRating: diff.votesRating ?? 0,
+									nominated: !!diff?.qualification ? 'Yes' : 'No',
+									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
+									criteriaMet: diff?.qualification?.criteriaMet === 1 ? 'Yes' : diff?.qualification?.criteriaMet === 2 ? 'Failed' : 'No',
+									approved: diff?.qualification?.approved ? 'Yes' : 'No',
+								};
+							}),
 						}
 					);
 
