@@ -2,7 +2,7 @@
 	import createPlayerService from '../../services/beatleader/player';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import Avatar from '../Common/Avatar.svelte';
-	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../../utils/date';
+	import {dateFromUnix, formatDateRelative, getTimeStringColor, WEEKSECONDS} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
 	import QualificationChange from './QualificationChange.svelte';
 
@@ -124,9 +124,13 @@
 
 	{#if qualification?.approved}
 		<div class="timeset">
-			<span style="color: white;">
-				Ready to rank {formatDateRelative(dateFromUnix(qualification?.approvalTimeset + 60 * 60 * 24 * 7))}
-			</span>
+			{#if Date.now() / 1000 - qualification?.approvalTimeset < WEEKSECONDS}
+				<span style="color: white;">
+					Ready to rank {formatDateRelative(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}
+				</span>
+			{:else}
+				<span style="color: green;"><i class="fa fa-check" /> Ready to rank</span>
+			{/if}
 		</div>
 	{/if}
 

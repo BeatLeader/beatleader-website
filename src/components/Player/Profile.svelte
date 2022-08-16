@@ -177,7 +177,9 @@
 				{statsHistory}
 				{roles}
 				on:player-data-updated
-				on:player-data-edit-error={onPlayerDataEditError} />
+				on:player-data-edit-error={onPlayerDataEditError}
+				on:modal-shown={() => (modalShown = true)}
+				on:modal-hidden={() => (modalShown = false)} />
 			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} />
 
 			{#if $account.error}

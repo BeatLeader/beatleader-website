@@ -1,5 +1,5 @@
 <script>
-	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../../utils/date';
+	import {dateFromUnix, formatDateRelative, getTimeStringColor, WEEKSECONDS} from '../../utils/date';
 	import createPlayerService from '../../services/beatleader/player';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import Avatar from '../Common/Avatar.svelte';
@@ -45,9 +45,13 @@
 				<span style="color: green;"><i class="fa fa-check" /> RT</span>
 
 				<div class="timeset">
-					<span>
-						Ready to rank {formatDateRelative(dateFromUnix(qualification.approvalTimeset + 60 * 60 * 24 * 7))}
-					</span>
+					{#if Date.now() / 1000 - qualification.approvalTimeset < WEEKSECONDS}
+						<span>
+							Ready to rank {formatDateRelative(dateFromUnix(qualification.approvalTimeset + WEEKSECONDS))}
+						</span>
+					{:else}
+						<span style="color: green;"><i class="fa fa-check" /> Ready to rank</span>
+					{/if}
 				</div>
 			{:else}
 				<span style="color: red;"><i class="fa fa-xmark" /> RT</span>

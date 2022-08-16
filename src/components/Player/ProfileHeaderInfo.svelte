@@ -115,6 +115,12 @@
 		}
 
 		redactingName = !redactingName;
+
+		if (redactingName) {
+			dispatch('modal-shown', null);
+		} else {
+			dispatch('modal-hidden', null);
+		}
 	}
 
 	function showRainbow(player) {

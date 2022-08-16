@@ -223,12 +223,11 @@
 <style>
 	nav {
 		position: absolute;
-		top: 0;
+		top: 30px;
 		left: calc(50% - 50px);
 		text-align: left;
 		font-size: 0.75rem;
-		z-index: 15;
-		width: 100px;
+		z-index: 4;
 	}
 
 	nav :global(button) {
@@ -273,15 +272,15 @@
 		display: flex;
 		position: absolute;
 		width: 130px;
-		height: 130px;
+		height: 200px;
 		margin-left: -5px;
 		margin-top: -40px;
+		align-items: center;
 	}
 
 	.imageChange {
 		transition: opacity 0.2s ease-in-out;
 		background-color: rgba(32, 33, 36, 0.6);
-		bottom: 0;
 		height: 33%;
 		left: 0;
 		opacity: 0;
