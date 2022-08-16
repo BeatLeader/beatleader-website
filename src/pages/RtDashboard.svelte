@@ -909,8 +909,10 @@
 									title={`Click to copy hash "${song.hash}"`} />
 
 								<div class="songinfo">
-									<span class="name">{song?.name} {song?.subName}</span>
-									<div class="author">{song?.author} <small>{song?.mapper}</small></div>
+									<a href={`/leaderboard/global/${song?.difficulties?.[0]?.leaderboardId}/1`} target="_blank">
+										<span class="name">{song?.name} {song?.subName}</span>
+										<div class="author">{song?.author} <small>{song?.mapper}</small></div>
+									</a>
 								</div>
 
 								<div>
