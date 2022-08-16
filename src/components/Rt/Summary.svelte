@@ -6,8 +6,8 @@
 
 	const keys = {
 		nominated: 'Nominated',
-		mapperAllowed: 'Mapper allowed',
 		criteriaMet: 'Criteria checked',
+		mapperAllowed: 'Mapper allowed',
 		approved: 'RT approved',
 	};
 </script>

@@ -18,7 +18,7 @@
 	import Error from '../components/Common/Error.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import Totals from '../components/Rt/Totals.svelte';
+	import Totals from '../components/Rt/Summary.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import Difficulty from '../components/Song/Difficulty.svelte';
