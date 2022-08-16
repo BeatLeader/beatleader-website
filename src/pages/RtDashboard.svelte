@@ -3,7 +3,8 @@
 	import {navigate} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLocalStorageStore from '../stores/localstorage';
-	import apiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
+	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
+	import playersApiClient from '../network/clients/beatleader/player/api';
 	import {copyToClipboard} from '../utils/clipboard';
 	import {
 		buildSearchFromFilters,
@@ -17,12 +18,13 @@
 	import Error from '../components/Common/Error.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import Totals from '../components/Rt/Totals.svelte';
+	import Totals from '../components/Rt/Summary.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
+	import {dateFromUnix, DAY, formatDate} from '../utils/date';
 
 	export let location;
 
@@ -30,10 +32,12 @@
 
 	const account = createAccountStore();
 	const labelsStore = createLocalStorageStore('rt-maps-labels');
+	const playersCache = createLocalStorageStore('rt-players');
 
 	const ITEMS_PER_PAGE = 100;
 	const VOTED = 100; // max 100
 
+	let showEventLog = false;
 	let allLabels = [];
 
 	const updateAllLabels = store => {
@@ -44,6 +48,14 @@
 	};
 
 	updateAllLabels($labelsStore);
+
+	const logTypeValues = [
+		{id: 'nomination', label: 'Nomination'},
+		{id: 'criteria', label: 'Criteria'},
+		{id: 'approval', label: 'Approval'},
+	];
+	let logTypeFilter = [];
+	let logPlayerFilter = '';
 
 	const sortValues = [
 		{id: 'max_stars', label: 'Max stars', title: 'Sort by max diff stars', iconFa: 'fa fa-star'},
@@ -197,6 +209,28 @@
 			onConditionChange: e => onConditionChange(e, 'tags'),
 		},
 		{
+			key: 'tags_not',
+			label: 'No tags',
+			default: '',
+			defaultCondition: 'or',
+			process: processStringArrayFilter,
+			type: 'tags',
+			value: [],
+			values: allLabels,
+			valueCondition: 'or',
+			onChange: e => {
+				const param = findParam('tags_not');
+				if (param) {
+					param.value = e?.detail ?? [];
+
+					updateCurrentFiltersFromParams();
+				}
+			},
+			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'tags_not'),
+		},
+		{
 			key: 'mapper',
 			label: 'Mapper',
 			default: '',
@@ -303,11 +337,13 @@
 	}
 
 	function updateTags(allLabels) {
-		const param = findParam('tags');
-		if (param) {
-			const currentValues = param?.value?.map(v => v?.id)?.filter(v => v) ?? [];
-			param.values = allLabels;
-			param.value = allLabels.filter(l => currentValues.includes(l.id));
+		const params = [findParam('tags'), findParam('tags_not')].filter(p => p);
+		if (params.length) {
+			params.forEach(param => {
+				const currentValues = param?.value?.map(v => v?.id)?.filter(v => v) ?? [];
+				param.values = allLabels;
+				param.value = allLabels.filter(l => currentValues.includes(l.id));
+			});
 		}
 	}
 
@@ -330,7 +366,7 @@
 		let pageCount = null;
 
 		while (!pageCount || page <= pageCount) {
-			const pageData = await apiClient.getProcessed({page, filters: {type, sortBy, count}});
+			const pageData = await leaderboardsApiClient.getProcessed({page, filters: {type, sortBy, count}});
 
 			if (!pageData?.data?.length) return data;
 
@@ -348,7 +384,7 @@
 	}
 
 	async function fetchVotedMaps() {
-		const data = await apiClient.getProcessed({page: 1, filters: {sortBy: 'votecount', count: VOTED}});
+		const data = await leaderboardsApiClient.getProcessed({page: 1, filters: {sortBy: 'votecount', count: VOTED}});
 
 		return data?.data?.map(map => ({...map, type: 'voted'})) ?? [];
 	}
@@ -444,6 +480,19 @@
 							votesPositive: 0,
 							votesNegative: 0,
 							votesRating: 0,
+							byDiff: (s?.difficulties ?? []).map(diff => {
+								return {
+									name: diff.difficultyName,
+									votesPositive: diff.votesPositive ?? 0,
+									votesNegative: diff.votesNegative ?? 0,
+									votesTotal: diff.votesTotal ?? 0,
+									votesRating: diff.votesRating ?? 0,
+									nominated: !!diff?.qualification ? 'Yes' : 'No',
+									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
+									criteriaMet: diff?.qualification?.criteriaMet === 1 ? 'Yes' : diff?.qualification?.criteriaMet === 2 ? 'Failed' : 'No',
+									approved: diff?.qualification?.approved ? 'Yes' : 'No',
+								};
+							}),
 						}
 					);
 
@@ -454,6 +503,23 @@
 			error = err;
 		} finally {
 			isLoading = false;
+		}
+	}
+
+	function fetchPlayers(players) {
+		const cachedPlayerIds = Object.keys($playersCache);
+
+		const playersToFetch = players.filter(
+			playerId => !cachedPlayerIds.includes(playerId) || $playersCache[playerId]?.updated + DAY < Date.now()
+		);
+
+		if (playersToFetch.length) {
+			playersToFetch.map(async playerId =>
+				playersApiClient.getProcessed({playerId}).then(player => {
+					const {playerId, name} = player ?? {};
+					$playersCache[playerId] = {playerId, name, updated: Date.now()};
+				})
+			);
 		}
 	}
 
@@ -491,8 +557,36 @@
 		$labelsStore = current;
 	}
 
+	function onLogTypeChange(event) {
+		logTypeFilter = logTypeFilter.includes(event?.detail)
+			? logTypeFilter.filter(p => p?.id !== event?.detail?.id)
+			: [...logTypeFilter, event?.detail];
+	}
+
 	const getMinQualificationTime = (song, key) =>
 		song?.difficulties?.reduce((min, d) => (min < d?.qualification?.[key] ? d.qualification[key] : min), 0) ?? 0;
+
+	const getLogEntry = (song, difficulty) => ({
+		song: {
+			id: song.id,
+			hash: song.hash,
+			name: song.name,
+			subName: song.subName,
+			mapper: song.mapper,
+			author: song.author,
+			coverImage: song.coverImage,
+		},
+		difficulty: {
+			id: difficulty.id,
+			leaderboardId: difficulty.leaderboardId,
+			name: difficulty.difficultyName,
+			value: difficulty.value,
+			mode: difficulty.mode,
+			modeName: difficulty.modeName,
+			type: difficulty.type,
+			stars: difficulty.stars,
+		},
+	});
 
 	$: updateAllLabels($labelsStore);
 	$: updateTags(allLabels);
@@ -635,6 +729,23 @@
 					}
 				}
 
+				const noTagsCond = currentFilters?.tags_not_cond ?? 'or';
+				if (currentFilters?.tags_not?.length) {
+					switch (noTagsCond) {
+						case 'or':
+							result &&= (s?.difficulties ?? []).some(
+								d => !currentFilters.tags_not.some(filterLabel => ($labelsStore[d?.leaderboardId] ?? []).includes(filterLabel))
+							);
+							break;
+
+						case 'and':
+							result &&= (s?.difficulties ?? []).some(d =>
+								currentFilters.tags_not.some(filterLabel => !($labelsStore[d?.leaderboardId] ?? []).includes(filterLabel))
+							);
+							break;
+					}
+				}
+
 				return result;
 			})
 			.sort((a, b) => {
@@ -682,6 +793,70 @@
 			}) ?? [];
 
 	$: diffsCount = filteredSongs?.reduce((cnt, s) => cnt + (s?.difficulties?.length ?? 0), 0) ?? 0;
+
+	$: events = filteredSongs
+		.reduce((carry, song) => {
+			carry = [
+				...carry,
+				...(song?.difficulties?.reduce((diffCarry, difficulty) => {
+					const fullDiffName = `${song.name} ${song.subName} / ${difficulty.difficultyName} by ${song.mapper}`;
+
+					if (difficulty?.qualification) {
+						const qual = difficulty.qualification;
+
+						if (qual.rtMember?.length && qual.timeset)
+							diffCarry.push({
+								...getLogEntry(song, difficulty),
+								timestamp: dateFromUnix(qual.timeset),
+								playerId: qual.rtMember,
+								type: 'nomination',
+								value: null,
+								desc: ``,
+							});
+
+						if (qual.criteriaMet && qual.criteriaTimeset && qual.criteriaChecker?.length)
+							diffCarry.push({
+								...getLogEntry(song, difficulty),
+								timestamp: dateFromUnix(qual.criteriaTimeset),
+								playerId: qual.criteriaChecker,
+								type: 'criteria',
+								value: qual.criteriaMet,
+								notes: qual.criteriaCommentary,
+								desc: `${qual.criteriaMet === 1 ? 'ok' : `${qual.criteriaCommentary ?? 'no description'}`}`,
+								level: qual.criteriaMet === 2 ? 'error' : 'info',
+							});
+
+						if (qual.approved && qual.approvers?.length && qual.approvalTimeset)
+							diffCarry.push({
+								...getLogEntry(song, difficulty),
+								timestamp: dateFromUnix(qual.approvalTimeset),
+								playerId: qual.approvers,
+								type: 'approval',
+								value: null,
+								desc: `ok`,
+								level: 'ok',
+							});
+					}
+
+					return diffCarry;
+				}, []) ?? []),
+			];
+
+			return carry;
+		}, [])
+		.sort((a, b) => b.timestamp - a.timestamp);
+	$: eventsPlayers = [...new Set(events.map(e => e?.playerId).filter(playerId => playerId))];
+	$: fetchPlayers(eventsPlayers);
+
+	$: filteredEventLog = events?.filter(
+		e =>
+			(!logPlayerFilter?.length || $playersCache[e?.playerId]?.name?.toLowerCase()?.indexOf(logPlayerFilter.toLowerCase()) >= 0) &&
+			(!logTypeFilter?.length ||
+				logTypeFilter
+					.map(lt => lt.id)
+					.filter(lt => lt)
+					.includes(e.type))
+	);
 </script>
 
 <svelte:head>
@@ -692,6 +867,15 @@
 	<article class="page-content" transition:fade>
 		<ContentBox>
 			<h1 class="title is-3">
+				{#if !error && !isLoading}
+					<i
+						class="fa-calendar"
+						class:fas={showEventLog}
+						class:far={!showEventLog}
+						title="Click to show/hide event log"
+						on:click={() => (showEventLog = !showEventLog)} />
+				{/if}
+
 				RT Dashboard
 				{#if !error && !isLoading}
 					/ {formatNumber(filteredSongs?.length, 0)} song(s) / {formatNumber(diffsCount, 0)} diff(s)
@@ -704,6 +888,60 @@
 				{:else if isLoading}
 					<Spinner /> Loading...
 				{:else if filteredSongs?.length}
+					{#if showEventLog}
+						<section class="event-log">
+							<div class="log-filter">
+								<Switcher values={logTypeValues} value={logTypeFilter} multi={true} on:change={onLogTypeChange} />
+
+								<input type="log-filter" bind:value={logPlayerFilter} placeholder="Search for a player name..." />
+							</div>
+
+							<div class="wrapper">
+								<table width="100%">
+									<thead>
+										<tr>
+											<th>When</th>
+											<th>Who</th>
+											<th>Action</th>
+											<th>Song</th>
+											<th>Diff</th>
+											<th>Notes</th>
+										</tr>
+									</thead>
+
+									<tbody>
+										{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
+											<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
+												<td>{formatDate(event.timestamp, 'short', 'short')}</td>
+												<td>
+													<a href={`/u/${event?.playerId}`} target="_blank"
+														>{$playersCache?.[event?.playerId]?.name ?? event?.playerId ?? 'Unknown'}</a>
+												</td>
+												<td>{event.type}</td>
+												<td>
+													<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
+														{event.song?.name}
+														{event.song?.subName} / {event.song?.mapper}
+													</a>
+												</td>
+												<td>
+													<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
+														<Difficulty
+															diff={{type: event.difficulty?.modeName, diff: event.difficulty?.name}}
+															stars={event.difficulty?.stars}
+															nameAndStars={true}
+															reverseColors={true} />
+													</a>
+												</td>
+												<td>{event.desc}</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							</div>
+						</section>
+					{/if}
+
 					{#each filteredSongs as song (song.hash)}
 						<div class="row">
 							<div class="song">
@@ -714,8 +952,10 @@
 									title={`Click to copy hash "${song.hash}"`} />
 
 								<div class="songinfo">
-									<span class="name">{song?.name} {song?.subName}</span>
-									<div class="author">{song?.author} <small>{song?.mapper}</small></div>
+									<a href={`/leaderboard/global/${song?.difficulties?.[0]?.leaderboardId}/1`} target="_blank">
+										<span class="name">{song?.name} {song?.subName}</span>
+										<div class="author">{song?.author} <small>{song?.mapper}</small></div>
+									</a>
 								</div>
 
 								<div>
@@ -791,11 +1031,11 @@
 	<aside>
 		<ContentBox>
 			{#if !isLoading}
-				<h2 class="title is-5">Sorting</h2>
+				<section class="filter">
+					<label>Sorting</label>
+					<Switcher values={currentSortValues} value={sortValue} on:change={onSortChange} />
+				</section>
 
-				<Switcher values={currentSortValues} value={sortValue} on:change={onSortChange} />
-
-				<h2 class="title is-5">Filtering</h2>
 				{#each params as param}
 					{#if param.type}
 						<section class="filter">
@@ -872,12 +1112,100 @@
 		overflow-x: hidden;
 	}
 
+	h1 {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	h1 > i {
+		font-size: 0.875em;
+		cursor: pointer !important;
+	}
+
+	.event-log {
+		max-width: calc(100vw - 2rem);
+		font-size: 0.85em;
+		margin-bottom: 2rem;
+	}
+
+	.event-log .wrapper {
+		max-height: 70vh;
+		overflow-y: scroll;
+	}
+
+	.event-log .wrapper::-webkit-scrollbar {
+		width: 0.25rem;
+	}
+	.event-log .wrapper::-webkit-scrollbar-thumb {
+		background-color: var(--beatleader-primary, #eb008cff);
+		border-radius: 6px;
+		border: 3px solid var(--beatleader-primary, #eb008cff);
+	}
+
+	.event-log .log-filter {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-bottom: 1rem;
+	}
+
+	.event-log .log-filter input {
+		width: 100%;
+		max-width: 25em;
+		color: var(--beatleader-primary);
+		background-color: var(--foreground);
+		border: none;
+		border-bottom: 1px solid var(--faded);
+		outline: none;
+	}
+
+	.event-log table th,
+	.event-log table td {
+		padding: 0.25em 0.5em;
+		vertical-align: middle;
+	}
+
+	.event-log table th {
+		text-align: center;
+	}
+
+	.event-log table th:first-child {
+		width: 5.5em;
+	}
+
+	.event-log table td:nth-child(3) {
+		text-align: center;
+	}
+
+	.event-log table td:nth-child(4) {
+		font-weight: bold;
+	}
+
+	.event-log table th:nth-child(5) {
+		width: 5.5em;
+	}
+
+	.event-log tr.ok {
+		color: green;
+	}
+
+	.event-log tr.error {
+		color: orange;
+	}
+
+	.event-log :global(.diff) {
+		display: block;
+		max-height: none;
+	}
+
 	aside {
 		width: 30em;
 	}
 
 	aside .filter {
-		margin-bottom: 1.5rem;
+		margin-bottom: 0.5rem;
 		transition: opacity 300ms;
 	}
 
@@ -890,6 +1218,10 @@
 		gap: 0.5rem;
 		font-weight: 500;
 		margin: 0.75rem 0;
+	}
+
+	aside .filter:first-child label {
+		margin-top: 0;
 	}
 
 	aside label select {
