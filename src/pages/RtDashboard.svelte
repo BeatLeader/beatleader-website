@@ -24,7 +24,7 @@
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
-	import {dateFromUnix, formatDate} from '../utils/date';
+	import {dateFromUnix, DAY, formatDate} from '../utils/date';
 
 	export let location;
 
@@ -464,7 +464,9 @@
 	function fetchPlayers(players) {
 		const cachedPlayerIds = Object.keys($playersCache);
 
-		const playersToFetch = players.filter(playerId => !cachedPlayerIds.includes(playerId));
+		const playersToFetch = players.filter(
+			playerId => !cachedPlayerIds.includes(playerId) || $playersCache[playerId]?.updated + DAY < Date.now()
+		);
 
 		if (playersToFetch.length) {
 			playersToFetch.map(async playerId =>
