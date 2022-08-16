@@ -201,6 +201,28 @@
 			onConditionChange: e => onConditionChange(e, 'tags'),
 		},
 		{
+			key: 'tags_not',
+			label: 'No tags',
+			default: '',
+			defaultCondition: 'or',
+			process: processStringArrayFilter,
+			type: 'tags',
+			value: [],
+			values: allLabels,
+			valueCondition: 'or',
+			onChange: e => {
+				const param = findParam('tags_not');
+				if (param) {
+					param.value = e?.detail ?? [];
+
+					updateCurrentFiltersFromParams();
+				}
+			},
+			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'tags_not'),
+		},
+		{
 			key: 'mapper',
 			label: 'Mapper',
 			default: '',
@@ -307,11 +329,13 @@
 	}
 
 	function updateTags(allLabels) {
-		const param = findParam('tags');
-		if (param) {
-			const currentValues = param?.value?.map(v => v?.id)?.filter(v => v) ?? [];
-			param.values = allLabels;
-			param.value = allLabels.filter(l => currentValues.includes(l.id));
+		const params = [findParam('tags'), findParam('tags_not')].filter(p => p);
+		if (params.length) {
+			params.forEach(param => {
+				const currentValues = param?.value?.map(v => v?.id)?.filter(v => v) ?? [];
+				param.values = allLabels;
+				param.value = allLabels.filter(l => currentValues.includes(l.id));
+			});
 		}
 	}
 
@@ -674,6 +698,23 @@
 
 						case 'and':
 							result &&= songLabels.some(labels => currentFilters.tags.every(filterLabel => labels.includes(filterLabel)));
+							break;
+					}
+				}
+
+				const noTagsCond = currentFilters?.tags_not_cond ?? 'or';
+				if (currentFilters?.tags_not?.length) {
+					switch (noTagsCond) {
+						case 'or':
+							result &&= (s?.difficulties ?? []).some(
+								d => !currentFilters.tags_not.some(filterLabel => ($labelsStore[d?.leaderboardId] ?? []).includes(filterLabel))
+							);
+							break;
+
+						case 'and':
+							result &&= (s?.difficulties ?? []).some(d =>
+								currentFilters.tags_not.some(filterLabel => !($labelsStore[d?.leaderboardId] ?? []).includes(filterLabel))
+							);
 							break;
 					}
 				}
