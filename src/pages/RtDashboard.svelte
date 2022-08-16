@@ -3,7 +3,8 @@
 	import {navigate} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLocalStorageStore from '../stores/localstorage';
-	import apiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
+	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
+	import playersApiClient from '../network/clients/beatleader/player/api';
 	import {copyToClipboard} from '../utils/clipboard';
 	import {
 		buildSearchFromFilters,
@@ -23,6 +24,7 @@
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
+	import {dateFromUnix, formatDate} from '../utils/date';
 
 	export let location;
 
@@ -30,10 +32,12 @@
 
 	const account = createAccountStore();
 	const labelsStore = createLocalStorageStore('rt-maps-labels');
+	const playersCache = createLocalStorageStore('rt-players');
 
 	const ITEMS_PER_PAGE = 100;
 	const VOTED = 100; // max 100
 
+	let showEventLog = false;
 	let allLabels = [];
 
 	const updateAllLabels = store => {
@@ -330,7 +334,7 @@
 		let pageCount = null;
 
 		while (!pageCount || page <= pageCount) {
-			const pageData = await apiClient.getProcessed({page, filters: {type, sortBy, count}});
+			const pageData = await leaderboardsApiClient.getProcessed({page, filters: {type, sortBy, count}});
 
 			if (!pageData?.data?.length) return data;
 
@@ -348,7 +352,7 @@
 	}
 
 	async function fetchVotedMaps() {
-		const data = await apiClient.getProcessed({page: 1, filters: {sortBy: 'votecount', count: VOTED}});
+		const data = await leaderboardsApiClient.getProcessed({page: 1, filters: {sortBy: 'votecount', count: VOTED}});
 
 		return data?.data?.map(map => ({...map, type: 'voted'})) ?? [];
 	}
@@ -457,6 +461,21 @@
 		}
 	}
 
+	function fetchPlayers(players) {
+		const cachedPlayerIds = Object.keys($playersCache);
+
+		const playersToFetch = players.filter(playerId => !cachedPlayerIds.includes(playerId));
+
+		if (playersToFetch.length) {
+			playersToFetch.map(async playerId =>
+				playersApiClient.getProcessed({playerId}).then(player => {
+					const {playerId, name} = player ?? {};
+					$playersCache[playerId] = {playerId, name, updated: Date.now()};
+				})
+			);
+		}
+	}
+
 	function toggleSongDetails(hash) {
 		if (!hash?.length) return;
 
@@ -493,6 +512,28 @@
 
 	const getMinQualificationTime = (song, key) =>
 		song?.difficulties?.reduce((min, d) => (min < d?.qualification?.[key] ? d.qualification[key] : min), 0) ?? 0;
+
+	const getLogEntry = (song, difficulty) => ({
+		song: {
+			id: song.id,
+			hash: song.hash,
+			name: song.name,
+			subName: song.subName,
+			mapper: song.mapper,
+			author: song.author,
+			coverImage: song.coverImage,
+		},
+		difficulty: {
+			id: difficulty.id,
+			leaderboardId: difficulty.leaderboardId,
+			name: difficulty.difficultyName,
+			value: difficulty.value,
+			mode: difficulty.mode,
+			modeName: difficulty.modeName,
+			type: difficulty.type,
+			stars: difficulty.stars,
+		},
+	});
 
 	$: updateAllLabels($labelsStore);
 	$: updateTags(allLabels);
@@ -682,6 +723,62 @@
 			}) ?? [];
 
 	$: diffsCount = filteredSongs?.reduce((cnt, s) => cnt + (s?.difficulties?.length ?? 0), 0) ?? 0;
+
+	$: events = filteredSongs
+		.reduce((carry, song) => {
+			carry = [
+				...carry,
+				...(song?.difficulties?.reduce((diffCarry, difficulty) => {
+					const fullDiffName = `${song.name} ${song.subName} / ${difficulty.difficultyName} by ${song.mapper}`;
+
+					if (difficulty?.qualification) {
+						const qual = difficulty.qualification;
+
+						if (qual.rtMember?.length && qual.timeset)
+							diffCarry.push({
+								...getLogEntry(song, difficulty),
+								timestamp: dateFromUnix(qual.timeset),
+								playerId: qual.rtMember,
+								type: 'nomination',
+								value: null,
+								desc: ``,
+							});
+
+						if (qual.criteriaMet && qual.criteriaTimeset && qual.criteriaChecker?.length)
+							diffCarry.push({
+								...getLogEntry(song, difficulty),
+								timestamp: dateFromUnix(qual.criteriaTimeset),
+								playerId: qual.criteriaChecker,
+								type: 'criteria',
+								value: qual.criteriaMet,
+								notes: qual.criteriaCommentary,
+								desc: `${qual.criteriaMet === 1 ? 'ok' : `${qual.criteriaCommentary ?? 'no description'}`}`,
+								level: qual.criteriaMet === 2 ? 'error' : 'info',
+							});
+
+						if (qual.approved && qual.approvers?.length && qual.approvalTimeset)
+							diffCarry.push({
+								...getLogEntry(song, difficulty),
+								timestamp: dateFromUnix(qual.approvalTimeset),
+								playerId: qual.approvers,
+								type: 'approval',
+								value: null,
+								desc: `ok`,
+								level: 'ok',
+							});
+					}
+
+					return diffCarry;
+				}, []) ?? []),
+			];
+
+			return carry;
+		}, [])
+		.sort((a, b) => b.timestamp - a.timestamp);
+	$: eventsPlayers = [...new Set(events.map(e => e?.playerId).filter(playerId => playerId))];
+	$: fetchPlayers(eventsPlayers);
+
+	$: filteredEventLog = events?.map(e => e);
 </script>
 
 <svelte:head>
@@ -692,6 +789,15 @@
 	<article class="page-content" transition:fade>
 		<ContentBox>
 			<h1 class="title is-3">
+				{#if !error && !isLoading}
+					<i
+						class="fa-calendar"
+						class:fas={showEventLog}
+						class:far={!showEventLog}
+						title="Click to show/hide event log"
+						on:click={() => (showEventLog = !showEventLog)} />
+				{/if}
+
 				RT Dashboard
 				{#if !error && !isLoading}
 					/ {formatNumber(filteredSongs?.length, 0)} song(s) / {formatNumber(diffsCount, 0)} diff(s)
@@ -704,6 +810,52 @@
 				{:else if isLoading}
 					<Spinner /> Loading...
 				{:else if filteredSongs?.length}
+					{#if showEventLog}
+						<section class="event-log">
+							<table width="100%">
+								<thead>
+									<tr>
+										<th>When</th>
+										<th>Who</th>
+										<th>Action</th>
+										<th>Song</th>
+										<th>Diff</th>
+										<th>Notes</th>
+									</tr>
+								</thead>
+
+								<tbody>
+									{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
+										<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
+											<td>{formatDate(event.timestamp, 'short', 'short')}</td>
+											<td>
+												<a href={`/u/${event?.playerId}`} target="_blank"
+													>{$playersCache?.[event?.playerId]?.name ?? event?.playerId ?? 'Unknown'}</a>
+											</td>
+											<td>{event.type}</td>
+											<td>
+												<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
+													{event.song?.name}
+													{event.song?.subName} / {event.song?.mapper}
+												</a>
+											</td>
+											<td>
+												<a href={`/leaderboard/global/${event.difficulty?.leaderboardId}/1`} target="_blank">
+													<Difficulty
+														diff={{type: event.difficulty?.modeName, diff: event.difficulty?.name}}
+														stars={event.difficulty?.stars}
+														nameAndStars={true}
+														reverseColors={true} />
+												</a>
+											</td>
+											<td>{event.desc}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</section>
+					{/if}
+
 					{#each filteredSongs as song (song.hash)}
 						<div class="row">
 							<div class="song">
@@ -870,6 +1022,67 @@
 	article {
 		width: calc(100% - 25em);
 		overflow-x: hidden;
+	}
+
+	h1 > i {
+		font-size: 0.875em;
+		cursor: pointer !important;
+	}
+
+	.event-log {
+		max-width: calc(100vw - 2rem);
+		max-height: 70vh;
+		overflow-y: scroll;
+		font-size: 0.85em;
+		margin-bottom: 2rem;
+	}
+
+	.event-log::-webkit-scrollbar {
+		width: 0.25rem;
+	}
+	.event-log::-webkit-scrollbar-thumb {
+		background-color: var(--selected, #3273dc);
+		border-radius: 6px;
+		border: 3px solid var(--selected, #3273dc);
+	}
+
+	.event-log table th,
+	.event-log table td {
+		padding: 0.25em 0.5em;
+		vertical-align: middle;
+	}
+
+	.event-log table th {
+		text-align: center;
+	}
+
+	.event-log table th:first-child {
+		width: 5.5em;
+	}
+
+	.event-log table td:nth-child(3) {
+		text-align: center;
+	}
+
+	.event-log table td:nth-child(4) {
+		font-weight: bold;
+	}
+
+	.event-log table th:nth-child(5) {
+		width: 5.5em;
+	}
+
+	.event-log tr.ok {
+		color: green;
+	}
+
+	.event-log tr.error {
+		color: orange;
+	}
+
+	.event-log :global(.diff) {
+		display: block;
+		max-height: none;
 	}
 
 	aside {

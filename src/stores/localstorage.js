@@ -1,11 +1,11 @@
 import {writable} from 'svelte/store';
 
-export default (key, prefix = 'bl-') => {
+export default (key, initial = {}, prefix = 'bl-') => {
 	const lsKey = `${prefix}-${key}`;
 
-	const initial = JSON.parse(localStorage.getItem(lsKey)) ?? {};
+	const value = JSON.parse(localStorage.getItem(lsKey)) ?? initial;
 
-	const {subscribe, unsubscribe, set: storeSet} = writable(initial);
+	const {subscribe, unsubscribe, set: storeSet} = writable(value ?? initial);
 
 	const set = value => {
 		localStorage.setItem(lsKey, JSON.stringify(value));
