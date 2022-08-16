@@ -24,7 +24,7 @@
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
-	import {dateFromUnix, DAY, formatDate} from '../utils/date';
+	import {dateFromUnix, DAY, formatDate, formatDateRelative} from '../utils/date';
 
 	export let location;
 
@@ -912,7 +912,7 @@
 									<tbody>
 										{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
 											<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
-												<td>{formatDate(event.timestamp, 'short', 'short')}</td>
+												<td title={formatDate(event.timestamp, 'short', 'short')}>{formatDateRelative(new Date(event.timestamp))}</td>
 												<td>
 													<a href={`/u/${event?.playerId}`} target="_blank"
 														>{$playersCache?.[event?.playerId]?.name ?? event?.playerId ?? 'Unknown'}</a>
@@ -1172,7 +1172,7 @@
 	}
 
 	.event-log table th:first-child {
-		width: 5.5em;
+		width: 7em;
 	}
 
 	.event-log table td:nth-child(3) {
