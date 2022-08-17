@@ -176,3 +176,19 @@ export function getTimeStringColor(timeSet) {
 	const brightnessHex = brightnessInt.toString(16);
 	return '#' + brightnessHex + brightnessHex + brightnessHex;
 }
+
+export function getCurrentBatchDate() {
+	const now = DateTime.now().setZone('UTC');
+	const thisWeekFriday10Utc = now.startOf('week').plus({days: 5, hour: 10});
+	const currentBatchDate = now < thisWeekFriday10Utc ? thisWeekFriday10Utc : thisWeekFriday10Utc.plus({days: 7});
+
+	return currentBatchDate.toJSDate();
+}
+
+export function willBeRankedInCurrentBatch(approvalTimeset) {
+	if (!approvalTimeset) return false;
+
+	const readyToRankDate = DateTime.fromJSDate(dateFromUnix(approvalTimeset)).plus({days: 7}).toJSDate();
+
+	return readyToRankDate.getTime() < getCurrentBatchDate().getTime();
+}

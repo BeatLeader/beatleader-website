@@ -4,6 +4,7 @@
 	import createAccountStore from '../stores/beatleader/account';
 	import createLocalStorageStore from '../stores/localstorage';
 	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
+	import leaderboardByHashApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards-hash';
 	import playersApiClient from '../network/clients/beatleader/player/api';
 	import {copyToClipboard} from '../utils/clipboard';
 	import {
@@ -24,7 +25,8 @@
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
-	import {dateFromUnix, DAY, formatDate} from '../utils/date';
+	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
+	import Button from '../components/Common/Button.svelte';
 
 	export let location;
 
@@ -56,6 +58,12 @@
 	];
 	let logTypeFilter = [];
 	let logPlayerFilter = '';
+
+	let showMapSearch = true;
+	let mapIsSearched = false;
+	let mapSearchError = null;
+	let mapHash = '';
+	let mapFound = undefined;
 
 	const sortValues = [
 		{id: 'max_stars', label: 'Max stars', title: 'Sort by max diff stars', iconFa: 'fa fa-star'},
@@ -156,6 +164,7 @@
 				{id: 'allowed', label: 'Mapper allowed'},
 				{id: 'criteria', label: 'Criteria checked'},
 				{id: 'approved', label: 'RT approved'},
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
@@ -178,6 +187,7 @@
 				{id: 'allowed', label: 'Mapper allowed'},
 				{id: 'criteria', label: 'Criteria checked'},
 				{id: 'approved', label: 'RT approved'},
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
@@ -421,6 +431,13 @@
 							carry[song.hash] = {...song, minStars, maxStars};
 						}
 
+						const existingDiffs = (carry[song.hash]?.difficulties ?? []).map(d => ({mode: d?.mode, value: d?.value}));
+						const diffsToAdd = (song?.difficulties ?? []).filter(
+							d => !existingDiffs.find(ed => ed.mode === d?.mode && ed.value === d?.value)
+						);
+						if (diffsToAdd?.length)
+							carry[song.hash].difficulties = (carry[song.hash]?.difficulties ?? []).concat(diffsToAdd).sort((a, b) => b.value - a.value);
+
 						const diffIdx = carry[song.hash]?.difficulties?.findIndex(d => d.id === difficulty.id);
 						if (diffIdx >= 0) {
 							const votesPositive = votes?.reduce((sum, v) => sum + (v?.rankability > 0 ? 1 : 0), 0) ?? 0;
@@ -520,6 +537,22 @@
 					$playersCache[playerId] = {playerId, name, updated: Date.now()};
 				})
 			);
+		}
+	}
+
+	async function searchByMapHash(hash) {
+		if (!hash?.length) return;
+
+		try {
+			mapIsSearched = true;
+			mapSearchError = null;
+			mapFound = undefined;
+
+			mapFound = await leaderboardByHashApiClient.getProcessed({hash});
+		} catch (err) {
+			mapSearchError = err;
+		} finally {
+			mapIsSearched = false;
 		}
 	}
 
@@ -647,6 +680,17 @@
 									else result &&= s?.totals?.approved > 0;
 									break;
 
+								case 'current_batch':
+									if (statusCond === 'or')
+										result ||= (s?.difficulties ?? []).some(
+											d => d?.qualification?.approved && willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
+									else
+										result &&= (s?.difficulties ?? []).some(
+											d => d?.qualification?.approved && willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
+									break;
+
 								case 'voted':
 									if (statusCond === 'or') result ||= s?.totals?.votesTotal > 0;
 									else result &&= s?.totals?.votesTotal > 0;
@@ -684,6 +728,17 @@
 								case 'approved':
 									if (statusNotCond === 'or') result ||= s?.totals?.approved < s?.difficulties?.length;
 									else result &&= s?.totals?.approved < s?.difficulties?.length;
+									break;
+
+								case 'current_batch':
+									if (statusNotCond === 'or')
+										result ||= (s?.difficulties ?? []).every(
+											d => !d?.qualification?.approved || !willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
+									else
+										result &&= (s?.difficulties ?? []).every(
+											d => !d?.qualification?.approved || !willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
 									break;
 
 								case 'voted':
@@ -876,11 +931,57 @@
 						on:click={() => (showEventLog = !showEventLog)} />
 				{/if}
 
+				<i
+					class="fas"
+					class:fa-search-location={showMapSearch}
+					class:fa-search={!showMapSearch}
+					title="Click to show/hide map search tool"
+					on:click={() => (showMapSearch = !showMapSearch)} />
+
 				RT Dashboard
 				{#if !error && !isLoading}
 					/ {formatNumber(filteredSongs?.length, 0)} song(s) / {formatNumber(diffsCount, 0)} diff(s)
 				{/if}
 			</h1>
+
+			{#if showMapSearch}
+				<div class="map-search">
+					<div class="form">
+						<input
+							type="text"
+							bind:value={mapHash}
+							placeholder="Search for a map hash..."
+							on:focus={e => e?.target?.select()}
+							on:keyup={e => {
+								if (e.key === 'Enter') searchByMapHash(mapHash);
+							}} />
+						<Button
+							label="Search"
+							iconFa="fas fa-search"
+							type="primary"
+							loading={mapIsSearched}
+							disabled={mapIsSearched}
+							on:click={() => searchByMapHash(mapHash)} />
+					</div>
+
+					{#if mapSearchError}
+						<Error error={mapSearchError} />
+					{:else if mapFound}
+						<div class="row">
+							<div class="song">
+								<img src={mapFound?.song.coverImage} alt="Cover" />
+
+								<div class="songinfo">
+									<a href={`/leaderboard/global/${mapFound?.leaderboards?.[0]?.id}/1`} target="_blank">
+										<span class="name">{mapFound?.song?.name} {mapFound?.song?.subName}</span>
+										<div class="author">{mapFound?.song?.author} <small>{mapFound?.song?.mapper}</small></div>
+									</a>
+								</div>
+							</div>
+						</div>
+					{/if}
+				</div>
+			{/if}
 
 			<section class="content">
 				{#if error}
@@ -893,7 +994,7 @@
 							<div class="log-filter">
 								<Switcher values={logTypeValues} value={logTypeFilter} multi={true} on:change={onLogTypeChange} />
 
-								<input type="log-filter" bind:value={logPlayerFilter} placeholder="Search for a player name..." />
+								<input type="text" bind:value={logPlayerFilter} placeholder="Search for a player name..." />
 							</div>
 
 							<div class="wrapper">
@@ -912,7 +1013,7 @@
 									<tbody>
 										{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
 											<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
-												<td>{formatDate(event.timestamp, 'short', 'short')}</td>
+												<td title={formatDate(event.timestamp, 'short', 'short')}>{formatDateRelative(new Date(event.timestamp))}</td>
 												<td>
 													<a href={`/u/${event?.playerId}`} target="_blank"
 														>{$playersCache?.[event?.playerId]?.name ?? event?.playerId ?? 'Unknown'}</a>
@@ -1123,6 +1224,35 @@
 		cursor: pointer !important;
 	}
 
+	input {
+		width: 100%;
+		max-width: 25em;
+		font-size: 1em;
+		color: var(--beatleader-primary);
+		background-color: var(--foreground);
+		border: none;
+		border-bottom: 1px solid var(--faded);
+		outline: none;
+	}
+
+	.map-search {
+		padding-bottom: 2rem;
+		margin-bottom: 2rem;
+		border-bottom: 1px solid var(--faded);
+	}
+
+	.map-search .form {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+	}
+
+	.map-search input {
+		font-size: inherit;
+		max-width: none;
+	}
+
 	.event-log {
 		max-width: calc(100vw - 2rem);
 		font-size: 0.85em;
@@ -1151,16 +1281,6 @@
 		margin-bottom: 1rem;
 	}
 
-	.event-log .log-filter input {
-		width: 100%;
-		max-width: 25em;
-		color: var(--beatleader-primary);
-		background-color: var(--foreground);
-		border: none;
-		border-bottom: 1px solid var(--faded);
-		outline: none;
-	}
-
 	.event-log table th,
 	.event-log table td {
 		padding: 0.25em 0.5em;
@@ -1172,7 +1292,7 @@
 	}
 
 	.event-log table th:first-child {
-		width: 5.5em;
+		width: 7em;
 	}
 
 	.event-log table td:nth-child(3) {
@@ -1241,16 +1361,6 @@
 		color: var(--beatleader-primary);
 	}
 
-	aside input {
-		width: 100%;
-		font-size: 1em;
-		color: var(--beatleader-primary);
-		background-color: var(--foreground);
-		border: none;
-		border-bottom: 1px solid var(--faded);
-		outline: none;
-	}
-
 	aside :global(.switch-types) {
 		justify-content: flex-start;
 	}
@@ -1267,6 +1377,10 @@
 	.row {
 		border-bottom: 1px solid gray;
 		padding: 0.5rem 0;
+	}
+
+	.map-search .row {
+		border-bottom: none;
 	}
 
 	.song {
