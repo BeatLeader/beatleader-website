@@ -423,6 +423,13 @@
 							carry[song.hash] = {...song, minStars, maxStars};
 						}
 
+						const existingDiffs = (carry[song.hash]?.difficulties ?? []).map(d => ({mode: d?.mode, value: d?.value}));
+						const diffsToAdd = (song?.difficulties ?? []).filter(
+							d => !existingDiffs.find(ed => ed.mode === d?.mode && ed.value === d?.value)
+						);
+						if (diffsToAdd?.length)
+							carry[song.hash].difficulties = (carry[song.hash]?.difficulties ?? []).concat(diffsToAdd).sort((a, b) => b.value - a.value);
+
 						const diffIdx = carry[song.hash]?.difficulties?.findIndex(d => d.id === difficulty.id);
 						if (diffIdx >= 0) {
 							const votesPositive = votes?.reduce((sum, v) => sum + (v?.rankability > 0 ? 1 : 0), 0) ?? 0;
