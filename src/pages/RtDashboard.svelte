@@ -24,7 +24,7 @@
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
-	import {dateFromUnix, DAY, formatDate, formatDateRelative} from '../utils/date';
+	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
 
 	export let location;
 
@@ -156,6 +156,7 @@
 				{id: 'allowed', label: 'Mapper allowed'},
 				{id: 'criteria', label: 'Criteria checked'},
 				{id: 'approved', label: 'RT approved'},
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
@@ -178,6 +179,7 @@
 				{id: 'allowed', label: 'Mapper allowed'},
 				{id: 'criteria', label: 'Criteria checked'},
 				{id: 'approved', label: 'RT approved'},
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
@@ -647,6 +649,17 @@
 									else result &&= s?.totals?.approved > 0;
 									break;
 
+								case 'current_batch':
+									if (statusCond === 'or')
+										result ||= (s?.difficulties ?? []).some(
+											d => d?.qualification?.approved && willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
+									else
+										result &&= (s?.difficulties ?? []).some(
+											d => d?.qualification?.approved && willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
+									break;
+
 								case 'voted':
 									if (statusCond === 'or') result ||= s?.totals?.votesTotal > 0;
 									else result &&= s?.totals?.votesTotal > 0;
@@ -684,6 +697,17 @@
 								case 'approved':
 									if (statusNotCond === 'or') result ||= s?.totals?.approved < s?.difficulties?.length;
 									else result &&= s?.totals?.approved < s?.difficulties?.length;
+									break;
+
+								case 'current_batch':
+									if (statusNotCond === 'or')
+										result ||= (s?.difficulties ?? []).every(
+											d => !d?.qualification?.approved || !willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
+									else
+										result &&= (s?.difficulties ?? []).every(
+											d => !d?.qualification?.approved || !willBeRankedInCurrentBatch(d?.qualification?.approvalTimeset)
+										);
 									break;
 
 								case 'voted':
