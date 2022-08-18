@@ -59,7 +59,7 @@
 	let logTypeFilter = [];
 	let logPlayerFilter = '';
 
-	let showMapSearch = true;
+	let showMapSearch = false;
 	let mapIsSearched = false;
 	let mapSearchError = null;
 	let mapHash = '';
