@@ -468,7 +468,7 @@
 				.map(s => {
 					const totals = (s?.difficulties ?? []).reduce(
 						(carry, diff) => {
-							carry.nominated += !!diff?.nominated ? 1 : 0;
+							carry.nominated += !!diff?.nominated || !!diff?.qualified ? 1 : 0;
 							carry.qualified += !!diff?.qualified ? 1 : 0;
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
 							carry.criteriaMet += diff?.qualification?.criteriaMet === 1 ? 1 : 0;
@@ -508,7 +508,7 @@
 									votesNegative: diff.votesNegative ?? 0,
 									votesTotal: diff.votesTotal ?? 0,
 									votesRating: diff.votesRating ?? 0,
-									nominated: !!diff?.nominated ? 'Yes' : 'No',
+									nominated: !!diff?.nominated || !!diff?.qualified ? 'Yes' : 'No',
 									qualified: !!diff?.qualified ? 'Yes' : 'No',
 									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
 									criteriaMet: diff?.qualification?.criteriaMet === 1 ? 'Yes' : diff?.qualification?.criteriaMet === 2 ? 'Failed' : 'No',
