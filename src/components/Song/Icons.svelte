@@ -17,6 +17,7 @@
 	export let icons = false;
 	export let scoreId = null;
 	export let replayLink = null;
+	export let mapCheck = false;
 	const {open} = getContext('simple-modal');
 	const showPreview = previewLink => {
 		if (document.body.clientWidth < 800) {
@@ -29,6 +30,9 @@
 	let songKey;
 	let songInfo;
 	let shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'oneclick', 'twitch', 'delete'];
+	if (mapCheck) {
+		shownIcons.push('mapcheck');
+	}
 
 	let beatSaverService = createBeatSaverService();
 	const account = createAccountStore();
@@ -132,6 +136,12 @@
 	{#if shownIcons.includes('bs')}
 		<a href="https://beatsaver.com/maps/{songKey}" target="_blank" rel="noreferrer">
 			<Button icon={beatSaverSvg} title="Go to Beat Saver" noMargin={true} />
+		</a>
+	{/if}
+
+	{#if shownIcons.includes('mapcheck')}
+		<a href="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}" target="_blank" rel="noreferrer">
+			<Button iconFa="fas fa-magnifying-glass-location" title="Check the map" noMargin={true} />
 		</a>
 	{/if}
 

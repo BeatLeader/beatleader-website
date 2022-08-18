@@ -5,7 +5,7 @@
 	import Select from 'svelte-select';
 	import {createEventDispatcher} from 'svelte';
 
-	import {votingTypes, mapTypeFromMask} from '../../utils/beatleader/format';
+	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
 
 	const dispatch = createEventDispatcher();
 
@@ -22,8 +22,8 @@
 	let mode = leaderboard?.diffInfo?.type;
 	let currentStars = leaderboard?.stats?.stars;
 	let currentType = leaderboard?.stats?.type;
-	let isRanked = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Ranked';
-	let isQualified = leaderboard && leaderboard.stats && leaderboard.stats.status && leaderboard.stats.status === 'Qualified';
+	let isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
+	let isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
 	let qualification = leaderboard?.qualification;
 
 	let suitableForRank = rtvoting && !isRanked ? true : undefined;

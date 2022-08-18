@@ -29,7 +29,7 @@
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
-	import {typesDescription, typesMap} from '../utils/beatleader/format';
+	import {typesDescription, typesMap, DifficultyStatus} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 
 	export let page = 1;
@@ -342,7 +342,7 @@
 								{/if}
 							</div>
 
-							{#if map?.difficulty?.qualified || map?.difficulty?.nominated}
+							{#if map?.difficulty?.status == DifficultyStatus.nominated || map?.difficulty?.status == DifficultyStatus.qualified}
 								<QualificationStatusSmall qualification={map.qualification} />
 							{/if}
 

@@ -37,6 +37,8 @@
 		getDescriptionForDiff,
 		mapTypeFromMask,
 		votingsForTypeStats,
+		formatDiffStatus,
+		DifficultyStatus,
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
@@ -418,8 +420,8 @@
 	$: hash = opt($leaderboardStore, 'leaderboard.song.hash');
 	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
 	$: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL');
-	$: isRanked = leaderboard?.stats?.status === 'Ranked';
-	$: isNominated = leaderboard?.stats?.status === 'Qualified' || leaderboard?.stats?.status === 'Nominated';
+	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
+	$: isNominated = leaderboard?.stats?.status === DifficultyStatus.qualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
 	$: qualification = leaderboard?.qualification;
 	$: calculateIsRankable(isRT, qualification);
 
@@ -536,7 +538,7 @@
 									</Badge>
 								{/if}
 
-								{#if leaderboard.stats && leaderboard.stats.status}<span>{leaderboard.stats.status}</span>{/if}
+								{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
 								{#if leaderboard.stats && leaderboard.stats.stars}
 									<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★" />
 								{/if}
@@ -555,7 +557,7 @@
 									<MapTypeDescription type={leaderboard?.stats.type} />
 								{/if}
 
-								<span class="icons"><Icons {hash} {diffInfo} /></span>
+								<span class="icons"><Icons {hash} {diffInfo} mapCheck={true} /></span>
 								<Button
 									cls="replay-button-alt battleroyalebtn"
 									icon={`<div class='battleroyale${batleRoyaleDraft ? 'stop' : ''}-icon'></div>`}
@@ -582,7 +584,7 @@
 							<LeaderboardStats {leaderboard} />
 
 							{#if iconsInInfo}
-								<span class="icons"><Icons {hash} {diffInfo} /></span>
+								<span class="icons"><Icons {hash} {diffInfo} mapCheck={true} /></span>
 							{/if}
 						</div>
 					{/if}

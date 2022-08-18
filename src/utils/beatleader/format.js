@@ -218,6 +218,32 @@ export function userDescriptionForModifier(modifier) {
 	return 'Undefined modifier';
 }
 
+export const DifficultyStatus = {
+	unranked: 0,
+	nominated: 1,
+	qualified: 2,
+	ranked: 3,
+	unrankable: 4,
+	outdated: 5,
+};
+
+export function formatDiffStatus(status) {
+	switch (status) {
+		case DifficultyStatus.unranked:
+			return 'Unranked';
+		case DifficultyStatus.nominated:
+			return 'Nominated';
+		case DifficultyStatus.qualified:
+			return 'Qualified';
+		case DifficultyStatus.ranked:
+			return 'Ranked';
+		case DifficultyStatus.unrankable:
+			return 'Unrankable';
+		case DifficultyStatus.outdated:
+			return 'Outdated';
+	}
+}
+
 export const votingTypes = ['acc', 'tech', 'midspeed', 'speed'];
 export const typesMap = {
 	acc: 1,
