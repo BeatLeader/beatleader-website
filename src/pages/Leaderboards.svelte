@@ -27,6 +27,8 @@
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
+	import {typesDescription, typesMap} from '../utils/beatleader/format';
+	import {capitalize} from '../utils/js';
 
 	export let page = 1;
 	export let location;
@@ -47,6 +49,7 @@
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
 		{key: 'order', default: 'asc', process: processStringFilter},
+		{key: 'mapType', default: 0, process: processIntFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -85,6 +88,16 @@
 	];
 
 	let mytypeFilterOptions = baseMytypeFilterOptions;
+
+	const categoryFilterOptions = Object.entries(typesMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(typesDescription?.[key]?.name ?? key),
+			icon: `<span class="${typesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: typesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: typesDescription?.[key]?.textColor ?? null,
+		};
+	});
 
 	function addAdditionalFilters(mapper, rt) {
 		mytypeFilterOptions = [...baseMytypeFilterOptions];
@@ -150,6 +163,17 @@
 		if (!event?.detail) return;
 
 		currentFilters.type = event.detail.key ?? '';
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onCategoryChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (currentFilters.mapType & event.detail.key) currentFilters.mapType &= currentFilters.mapType ^ event.detail.key;
+		else currentFilters.mapType |= event.detail.key;
+
 		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
@@ -358,6 +382,14 @@
 						on:change={onMyTypeChanged} />
 				</section>
 			{/if}
+
+			<section class="filter">
+				<Switcher
+					values={categoryFilterOptions}
+					value={categoryFilterOptions.filter(c => currentFilters.mapType & c.key)}
+					multi={true}
+					on:change={onCategoryChanged} />
+			</section>
 
 			<section
 				class="filter"
