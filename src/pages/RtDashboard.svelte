@@ -407,8 +407,6 @@
 			songs = Object.values(
 				(
 					await Promise.all([
-						fetchAllMapsWithType('nominated'),
-						fetchAllMapsWithType('qualified'),
 						fetchAllMapsWithType('nominated', 'votecount'),
 						fetchAllMapsWithType('qualified', 'votecount'),
 						fetchVotedMaps(),
