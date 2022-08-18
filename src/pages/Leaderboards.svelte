@@ -49,7 +49,7 @@
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
 		{key: 'order', default: 'asc', process: processStringFilter},
-		{key: 'mapType', default: 0, process: processIntFilter},
+		{key: 'mapType', default: null, process: processIntFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -60,6 +60,8 @@
 		}
 
 		if (!filters?.sortBy?.length) filters.sortBy = 'stars';
+
+		if (!filters.mapType) filters.mapType = null;
 
 		return filters;
 	});
@@ -171,8 +173,12 @@
 	function onCategoryChanged(event) {
 		if (!event?.detail?.key) return;
 
+		if (!currentFilters.mapType) currentFilters.mapType = 0;
+
 		if (currentFilters.mapType & event.detail.key) currentFilters.mapType &= currentFilters.mapType ^ event.detail.key;
 		else currentFilters.mapType |= event.detail.key;
+
+		if (!currentFilters.mapType) currentFilters.mapType = null;
 
 		currentPage = 1;
 
