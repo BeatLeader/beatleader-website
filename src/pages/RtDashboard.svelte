@@ -465,7 +465,8 @@
 				.map(s => {
 					const totals = (s?.difficulties ?? []).reduce(
 						(carry, diff) => {
-							carry.nominated += !!diff?.qualification ? 1 : 0;
+							carry.nominated += !!diff?.nominated ? 1 : 0;
+							carry.qualified += !!diff?.qualified ? 1 : 0;
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
 							carry.criteriaMet += diff?.qualification?.criteriaMet === 1 ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
@@ -473,7 +474,7 @@
 							carry.votesPositive += diff?.votesPositive ?? 0;
 							carry.votesNegative += diff?.votesNegative ?? 0;
 
-							['nominated', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
+							['nominated', 'qualified', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
 								carry[`${key}Ratio`] = s?.difficulties?.length ? carry[key] / s.difficulties.length : 0;
 							});
 
@@ -485,6 +486,8 @@
 						{
 							nominated: 0,
 							nominatedRatio: 0,
+							qualified: 0,
+							qualifiedRatio: 0,
 							mapperAllowed: 0,
 							mapperAllowedRatio: 0,
 							criteriaMet: 0,
@@ -502,7 +505,8 @@
 									votesNegative: diff.votesNegative ?? 0,
 									votesTotal: diff.votesTotal ?? 0,
 									votesRating: diff.votesRating ?? 0,
-									nominated: !!diff?.qualification ? 'Yes' : 'No',
+									nominated: !!diff?.nominated ? 'Yes' : 'No',
+									qualified: !!diff?.qualified ? 'Yes' : 'No',
 									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
 									criteriaMet: diff?.qualification?.criteriaMet === 1 ? 'Yes' : diff?.qualification?.criteriaMet === 2 ? 'Failed' : 'No',
 									approved: diff?.qualification?.approved ? 'Yes' : 'No',
