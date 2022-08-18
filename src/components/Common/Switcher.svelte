@@ -28,8 +28,8 @@
 					type={(multi && Array.isArray(value) & value.includes(currentValue)) || (!multi && currentValue === value)
 						? 'primary'
 						: 'default'}
-					color={currentValue.color ? 'white' : null}
-					bgColor={currentValue.color ? currentValue.color : null}
+					color={currentValue?.textColor ?? (currentValue.color ? 'white' : null)}
+					bgColor={currentValue?.color ?? null}
 					notSelected={!((multi && Array.isArray(value) & value.includes(currentValue)) || (!multi && currentValue === value))}
 					url={currentValue.url}
 					on:click={() => onChange(currentValue)} />

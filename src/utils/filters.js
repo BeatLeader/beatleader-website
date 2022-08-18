@@ -30,6 +30,9 @@ export const processFloatFilter = val => {
 
 	return val < 0 ? 0 : val;
 };
+export const processBoolFilter = val => {
+	return val?.toString() === 'true';
+};
 
 export const createBuildFiltersFromLocation = (params, afterFunc = null) => {
 	return location => {

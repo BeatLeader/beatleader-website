@@ -1,4 +1,5 @@
 <script>
+	import {tick} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
@@ -20,6 +21,7 @@
 		processFloatFilter,
 		processStringFilter,
 		processIntFilter,
+		processBoolFilter,
 	} from '../utils/filters';
 	import SongScore from '../components/Player/SongScore.svelte';
 	import {processScore} from '../network/clients/beatleader/scores/utils/processScore';
@@ -27,6 +29,8 @@
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
+	import {typesDescription, typesMap} from '../utils/beatleader/format';
+	import {capitalize} from '../utils/js';
 
 	export let page = 1;
 	export let location;
@@ -47,6 +51,8 @@
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
 		{key: 'order', default: 'asc', process: processStringFilter},
+		{key: 'mapType', default: null, process: processIntFilter},
+		{key: 'allTypes', default: false, process: processBoolFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -57,6 +63,8 @@
 		}
 
 		if (!filters?.sortBy?.length) filters.sortBy = 'stars';
+
+		if (!filters.mapType) filters.mapType = null;
 
 		return filters;
 	});
@@ -85,6 +93,16 @@
 	];
 
 	let mytypeFilterOptions = baseMytypeFilterOptions;
+
+	const categoryFilterOptions = Object.entries(typesMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(typesDescription?.[key]?.name ?? key),
+			icon: `<span class="${typesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: typesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: typesDescription?.[key]?.textColor ?? null,
+		};
+	});
 
 	function addAdditionalFilters(mapper, rt) {
 		mytypeFilterOptions = [...baseMytypeFilterOptions];
@@ -150,6 +168,29 @@
 		if (!event?.detail) return;
 
 		currentFilters.type = event.detail.key ?? '';
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	async function onCategoryModeChanged() {
+		await tick();
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onCategoryChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.mapType) currentFilters.mapType = 0;
+
+		if (currentFilters.mapType & event.detail.key) currentFilters.mapType &= currentFilters.mapType ^ event.detail.key;
+		else currentFilters.mapType |= event.detail.key;
+
+		if (!currentFilters.mapType) currentFilters.mapType = null;
+
 		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
@@ -359,6 +400,19 @@
 				</section>
 			{/if}
 
+			<select bind:value={currentFilters.allTypes} on:change={onCategoryModeChanged}>
+				<option value={false}>ANY category</option>
+				<option value={true}>ALL categories</option>
+			</select>
+
+			<section class="filter">
+				<Switcher
+					values={categoryFilterOptions}
+					value={categoryFilterOptions.filter(c => currentFilters.mapType & c.key)}
+					multi={true}
+					on:change={onCategoryChanged} />
+			</section>
+
 			<section
 				class="filter"
 				class:disabled={currentFilters.type !== 'ranked'}
@@ -455,6 +509,16 @@
 
 	aside label span {
 		color: var(--beatleader-primary);
+	}
+
+	aside select {
+		background-color: transparent;
+		margin-bottom: 0.25em;
+	}
+
+	aside select option {
+		color: var(--textColor);
+		background-color: var(--background);
 	}
 
 	aside input {
