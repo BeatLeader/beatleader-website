@@ -27,6 +27,7 @@
 	import Select from 'svelte-select';
 	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
 	import Button from '../components/Common/Button.svelte';
+	import {mapTypeFromMask} from '../utils/beatleader/format';
 
 	export let location;
 
@@ -55,6 +56,8 @@
 		{id: 'nomination', label: 'Nomination'},
 		{id: 'criteria', label: 'Criteria'},
 		{id: 'approval', label: 'Approval'},
+		{id: 'stars', label: 'Stars'},
+		{id: 'category', label: 'Category'},
 	];
 	let logTypeFilter = [];
 	let logPlayerFilter = '';
@@ -407,9 +410,9 @@
 			songs = Object.values(
 				(
 					await Promise.all([
+						fetchVotedMaps(),
 						fetchAllMapsWithType('nominated', 'votecount'),
 						fetchAllMapsWithType('qualified', 'votecount'),
-						fetchVotedMaps(),
 					])
 				)
 					.reduce((carry, maps) => [...carry, ...maps], [])
@@ -856,8 +859,6 @@
 			carry = [
 				...carry,
 				...(song?.difficulties?.reduce((diffCarry, difficulty) => {
-					const fullDiffName = `${song.name} ${song.subName} / ${difficulty.difficultyName} by ${song.mapper}`;
-
 					if (difficulty?.qualification) {
 						const qual = difficulty.qualification;
 
@@ -893,6 +894,64 @@
 								desc: `ok`,
 								level: 'ok',
 							});
+
+						if (qual?.changes?.length) {
+							qual.changes.forEach(change => {
+								[
+									{
+										field: 'Rankability',
+										type: 'nomination',
+										shouldAdd: (field, change, diff) =>
+											!!change?.[`new${field}`] !== diff?.nominated || change?.['timeset'] !== diff?.nominatedTime,
+										notes: (field, change, diff) => (!!change?.[`new${field}`] ? 'unrankable' : ''),
+										level: (field, change, diff) => (!!change?.[`new${field}`] ? 'error' : 'info'),
+									},
+									{
+										field: 'CriteriaMet',
+										type: 'criteria',
+										shouldAdd: (field, change, diff) =>
+											change?.[`new${field}`] !== diff?.qualification?.criteriaMet ||
+											change?.['timeset'] !== diff?.qualification?.criteriaTimeset,
+										notes: (field, change, diff) =>
+											change?.[`new${field}`] === 2 ? diff?.qualification?.criteriaCommentary ?? 'no description' : 'ok',
+										level: (field, change, diff) => (change?.[`new${field}`] === 2 ? 'error' : 'info'),
+									},
+									{
+										field: 'Stars',
+										type: 'stars',
+										shouldAdd: () => true,
+										notes: (field, change, diff) => `${change?.[`old${field}`]}★ → ${change?.[`new${field}`]}★`,
+										level: () => 'info',
+									},
+									{
+										field: 'Type',
+										type: 'category',
+										shouldAdd: () => true,
+										notes: (field, change, diff) =>
+											`${mapTypeFromMask(change?.[`old${field}`])} → ${mapTypeFromMask(change?.[`new${field}`])}`,
+										level: () => 'info',
+									},
+								].forEach(def => {
+									if (
+										change?.[`new${def.field}`] === undefined ||
+										change?.[`new${def.field}`] === change?.[`old${def.field}`] ||
+										!def?.shouldAdd(def.field, change, difficulty)
+									)
+										return;
+
+									diffCarry.push({
+										...getLogEntry(song, difficulty),
+										timestamp: dateFromUnix(change?.timeset),
+										playerId: change?.playerId ?? null,
+										type: def.type,
+										value: change?.[`new${def.field}`],
+										notes: def?.notes(def.field, change, difficulty) ?? '',
+										desc: def?.notes(def.field, change, difficulty) ?? '',
+										level: def?.level(def.field, change, difficulty) ?? 'info',
+									});
+								});
+							});
+						}
 					}
 
 					return diffCarry;
@@ -1013,7 +1072,7 @@
 									</thead>
 
 									<tbody>
-										{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
+										{#each filteredEventLog as event, idx (idx + event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
 											<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
 												<td title={formatDate(event.timestamp, 'short', 'short')}>{formatDateRelative(new Date(event.timestamp))}</td>
 												<td>

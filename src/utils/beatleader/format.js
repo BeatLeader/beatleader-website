@@ -283,25 +283,16 @@ export const typesDescription = {
 };
 
 export function mapTypeFromMask(type) {
-	let result = '';
-	Object.keys(typesMap).forEach(key => {
-		const mask = typesMap[key];
-		if ((type & mask) === mask) {
-			result += key + ',';
-		}
-	});
-	return result.length ? result.substring(0, result.length - 1) : null;
+	const types = Object.keys(typesMap).filter(key => typesMap[key] & type);
+
+	return types?.length ? types.join(', ') : 'none';
 }
 
 export function mapTypeListFromMask(type) {
-	let result = [];
-	Object.keys(typesMap).forEach(key => {
-		const mask = typesMap[key];
-		if ((type & mask) === mask) {
-			result.push(typesDescription[key]);
-		}
-	});
-	return result;
+	return Object.keys(typesMap)
+		.filter(key => typesMap[key] & type)
+		.map(key => typesDescription[key])
+		.filter(d => d);
 }
 
 export function votingsForTypeStats(stats) {
