@@ -113,14 +113,6 @@ export default () => {
 		});
 	};
 
-	const checkOneClick = async () => {
-		if ((await configStore.get('preferences').oneclick) == 'playlist') {
-			downloadOneClick();
-		} else {
-			deleteOneClick();
-		}
-	};
-
 	const share = async (index, callback) => {
 		let playlists = await get();
 		let playlist = playlists[index];
@@ -224,9 +216,17 @@ export default () => {
 		}
 	};
 
-	const dbConfig = keyValueRepository().get(STORE_PLAYLISTS_KEY);
-	if (dbConfig) set(dbConfig, false, true);
-	checkOneClick();
+	const refresh = async () => {
+		const dbConfig = await keyValueRepository().get(STORE_PLAYLISTS_KEY);
+		if (dbConfig) set(dbConfig, false, true);
+
+		if ((await configStore.get('preferences').oneclick) == 'playlist') {
+			downloadOneClick();
+		} else {
+			deleteOneClick();
+		}
+	};
+	refresh();
 
 	playlistStore = {
 		subscribe,
