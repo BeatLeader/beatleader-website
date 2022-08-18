@@ -27,7 +27,8 @@
 	import Select from 'svelte-select';
 	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
 	import Button from '../components/Common/Button.svelte';
-	import {mapTypeFromMask} from '../utils/beatleader/format';
+	import {mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
+	import {capitalize} from '../utils/js';
 
 	export let location;
 
@@ -80,6 +81,16 @@
 	];
 
 	let sortValue = sortValues[0];
+
+	const categoryFilterOptions = Object.entries(typesMap).map(([key, type]) => {
+		return {
+			id: type,
+			label: capitalize(typesDescription?.[key]?.name ?? key),
+			icon: `<span class="${typesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: typesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: typesDescription?.[key]?.textColor ?? null,
+		};
+	});
 
 	const findParam = key => params.find(p => p.key === key);
 
@@ -198,6 +209,21 @@
 			multi: true,
 			withCondition: true,
 			onConditionChange: e => onConditionChange(e, 'status_not'),
+		},
+		{
+			key: 'mapType',
+			label: 'Map category',
+			default: [],
+			defaultCondition: 'or',
+			process: processIntArrayFilter,
+			type: 'switch',
+			value: [],
+			valueCondition: 'or',
+			values: categoryFilterOptions,
+			onChange: e => onMultiSwitchChange(e, 'mapType'),
+			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'mapType'),
 		},
 		{
 			key: 'tags',
@@ -520,7 +546,7 @@
 
 					return {...s, totals};
 				})
-				.filter(s => !s?.difficulties?.every(d => d?.ranked));
+				.filter(s => !(s?.difficulties ?? [])?.every(d => d?.ranked));
 		} catch (err) {
 			error = err;
 		} finally {
@@ -653,7 +679,7 @@
 			.filter(s => {
 				let result =
 					currentFilters?.mine === 'mine'
-						? !!s?.difficulties?.some(
+						? !!(s?.difficulties ?? [])?.some(
 								d =>
 									d?.qualification?.rtMember === playerId ||
 									d?.qualification?.mapperId === playerId ||
@@ -771,8 +797,21 @@
 				result &&=
 					currentFilters?.star_range?.length === 2 &&
 					currentFilters?.star_range?.toString() !== findParam('star_range')?.default?.toString()
-						? s?.difficulties?.some(d => currentFilters.star_range[0] < d.stars && d.stars < currentFilters.star_range[1])
+						? (s?.difficulties ?? [])?.some(d => currentFilters.star_range[0] < d.stars && d.stars < currentFilters.star_range[1])
 						: true;
+
+				const mapTypeCond = currentFilters?.mapType_cond ?? 'or';
+				if (currentFilters?.mapType?.length) {
+					switch (mapTypeCond) {
+						case 'or':
+							result &&= (s?.difficulties ?? [])?.some(d => currentFilters.mapType.some(t => d.type & t));
+							break;
+
+						case 'and':
+							result &&= (s?.difficulties ?? [])?.some(d => currentFilters.mapType.every(t => d.type & t));
+							break;
+					}
+				}
 
 				const tagsCond = currentFilters?.tags_cond ?? 'or';
 				if (currentFilters?.tags?.length) {
