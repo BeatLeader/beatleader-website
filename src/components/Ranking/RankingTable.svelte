@@ -9,6 +9,7 @@
 	import AddFriendButton from '../Player/AddFriendButton.svelte';
 	import Switcher from '../Common/Switcher.svelte';
 	import {opt} from '../../utils/js';
+	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 
 	export let type = 'global';
 	export let page = 1;
@@ -63,6 +64,11 @@
 			unranked: 'scoreStats.averageUnrankedRank',
 			all: 'scoreStats.averageRank',
 		},
+		lastplay: {
+			ranked: 'scoreStats.lastRankedScoreTime',
+			unranked: 'scoreStats.lastUnrankedScoreTime',
+			all: 'scoreStats.lastScoreTime',
+		},
 	};
 
 	let allSortValues = [
@@ -107,6 +113,17 @@
 			iconFa: 'fas fa-calculator',
 			value: data => getStat(data, statKeys['playCount'][currentTypeValue]),
 			props: {digits: 0, suffix: ''},
+		},
+		{
+			id: 'lastplay',
+			label: 'Recent',
+			title: 'Sort by the most recent score',
+			iconFa: 'fas fa-clock',
+			value: data => {
+				let timeset = getStat(data, statKeys['lastplay'][currentTypeValue]);
+				return timeset == 0 ? timeset : formatDateRelative(dateFromUnix(timeset));
+			},
+			props: {isText: true},
 		},
 		{
 			id: 'rank',

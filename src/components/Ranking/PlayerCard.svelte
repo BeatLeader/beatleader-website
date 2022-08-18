@@ -133,7 +133,11 @@
 			</div>
 		{:else}
 			<div style="color: {currentFilters?.sortBy === 'pp' ? HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0) : ''}">
-				<Value {value} {...valueProps} />
+				{#if valueProps.isText}
+					{value}
+				{:else}
+					<Value {value} {...valueProps} />
+				{/if}
 			</div>
 		{/if}
 	</div>
