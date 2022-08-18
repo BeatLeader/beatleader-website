@@ -1,4 +1,5 @@
 <script>
+	import {tick} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
@@ -20,6 +21,7 @@
 		processFloatFilter,
 		processStringFilter,
 		processIntFilter,
+		processBoolFilter,
 	} from '../utils/filters';
 	import SongScore from '../components/Player/SongScore.svelte';
 	import {processScore} from '../network/clients/beatleader/scores/utils/processScore';
@@ -50,6 +52,7 @@
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
 		{key: 'order', default: 'asc', process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
+		{key: 'allTypes', default: false, process: processBoolFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -165,6 +168,14 @@
 		if (!event?.detail) return;
 
 		currentFilters.type = event.detail.key ?? '';
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	async function onCategoryModeChanged() {
+		await tick();
+
 		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
@@ -389,6 +400,11 @@
 				</section>
 			{/if}
 
+			<select bind:value={currentFilters.allTypes} on:change={onCategoryModeChanged}>
+				<option value={false}>ANY category</option>
+				<option value={true}>ALL categories</option>
+			</select>
+
 			<section class="filter">
 				<Switcher
 					values={categoryFilterOptions}
@@ -493,6 +509,16 @@
 
 	aside label span {
 		color: var(--beatleader-primary);
+	}
+
+	aside select {
+		background-color: transparent;
+		margin-bottom: 0.25em;
+	}
+
+	aside select option {
+		color: var(--textColor);
+		background-color: var(--background);
 	}
 
 	aside input {
