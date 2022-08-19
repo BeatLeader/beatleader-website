@@ -421,7 +421,8 @@
 	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
 	$: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL');
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
-	$: isNominated = leaderboard?.stats?.status === DifficultyStatus.qualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
+	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
+	$: isNominated = isQualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
 	$: qualification = leaderboard?.qualification;
 	$: calculateIsRankable(isRT, qualification);
 
@@ -620,7 +621,7 @@
 										}} />
 								{/if}
 							{/if}
-							{#if separatePage && isRT && isNominated}
+							{#if separatePage && isRT && (!isjuniorRT || !isQualified)}
 								<Button
 									cls="voteButton"
 									iconFa="fas fa-list-check"
