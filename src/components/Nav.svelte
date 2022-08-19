@@ -104,7 +104,9 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
-		const isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
+		const isRT = $account?.player?.playerInfo?.role
+			?.split(',')
+			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
 
 		if (loggedInUser.player) {
 			signupOptions = [];

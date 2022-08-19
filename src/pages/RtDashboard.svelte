@@ -626,7 +626,9 @@
 	$: allLabelsHash = allLabels.map(v => v?.id ?? '').join(':') ?? '';
 
 	$: playerId = $account?.id;
-	$: isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
+	$: isRT = $account?.player?.playerInfo?.role
+		?.split(',')
+		?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
 	$: if (!$account?.loading && isRT) fetchMaps();
 	$: if (!$account?.loading && !isRT) navigate('/');
 
