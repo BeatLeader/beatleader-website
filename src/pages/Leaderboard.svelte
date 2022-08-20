@@ -352,10 +352,10 @@
 	function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
 		scoresWithUser =
 			!userScoreOnCurrentPage && scores?.length && userScore
-				? (userScore?.score?.score >= scores?.[0]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
+				? (userScore?.score?.rank < scores?.[0]?.score?.rank ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
 						.concat(scores)
 						.concat(
-							userScore?.score?.score <= scores?.[scores.length - 1]?.score?.score
+							userScore?.score?.rank > scores?.[scores.length - 1]?.score?.rank
 								? [{...userScore, isUserScore: true, userScoreTop: false}]
 								: []
 						)
