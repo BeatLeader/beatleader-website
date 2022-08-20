@@ -140,8 +140,8 @@
 	);
 </script>
 
-{#if playerInfo?.clans?.filter(cl => cl.tag == 'BSFR' || cl.tag == 'BB').length}
-	<Rain baguete={playerInfo?.clans?.filter(cl => cl.tag == 'BSFR').length} />
+{#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
+	<Rain />
 {/if}
 
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>

@@ -49,7 +49,7 @@
 	function onPageChanged(event) {
 		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/event/${currentEventId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/event/${currentEventId}/${event.detail.page + 1}`);
 	}
 
 	$: changeParams(page, eventId, true);
