@@ -70,18 +70,24 @@
 
 				<Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit" />
 			</form>
+			<b>You can't use BeatSaver only account to post scores. </b>
+			<b>To use Quest mod - signup in the mod preferences with new login and password </b>
 			<br />
 		{:else if loggedInPlayer > 70000000000000000}
 			{#if !$account.migrated}
-				If you are using the <b>Steam game</b> - you are all set!<br />
-				Check <a class="inlineLink" href={'/u/' + loggedInPlayer}>your fancy profile </a>
+				<span>
+					If you are using the <b>Steam game</b> you are all set!<br />
+					Check <a class="inlineLink" href={'/u/' + loggedInPlayer}>your fancy profile </a>
+				</span>
 				<br />
 				<br />
 				<br />
-				If you are using Oculus (Quest or PC) - you can migrate<br />account created in mod to this
-				<b class="inlineLink">Steam account.</b><br /><br />
-				Your current scores will migrate and<br />the new ones will be posted to the Steam acc.<br />
-				This is not required and there is no way to unmerge!
+				<span>
+					If you are using Quest - you can migrate<br />account created in mod to this
+					<b class="inlineLink">Steam account.</b><br /><br />
+					Your current scores will migrate and<br />the new ones will be posted to the Steam acc.<br />
+					This is not required and there is no way to unmerge!
+				</span>
 				<div class="input-container">
 					Login
 					<input bind:value={login} placeholder="Login" />
@@ -95,10 +101,12 @@
 				{navigate('/u/' + loggedInPlayer)}
 			{/if}
 		{:else if loggedInPlayer < 30000000 || loggedInPlayer > 1000000000000000}
-			You can migrate this account to your Steam account.<br /><br />
-			Your current scores will migrate and<br />the new ones will be posted to the Steam account.<br />
-			Or just use this account.<br />
-			You can change your avatar and name in <a class="inlineLink" href={'/u/' + loggedInPlayer}>your profile.</a>
+			<span>
+				You can migrate this account to your Steam account.<br /><br />
+				Your current scores will migrate and<br />the new ones will be posted to the Steam account.<br /><br />
+				Or just use this account ¯\_(ツ)_/¯.<br />
+				You can change your avatar and name in <a class="inlineLink" href={'/u/' + loggedInPlayer}>your profile.</a>
+			</span>
 
 			<form action={BL_API_URL + 'signinmigrate'} method="post">
 				<input type="hidden" name="Provider" value="Steam" />
@@ -172,9 +180,11 @@
 			If you used this account before, try unlink it first.
 		{/if}
 	{:else if action == 'mylogin'}
-		Your current login is: <b>{$account.login}</b><br />
-		It's the username you use to sign in with.<br />
-		Your profile name is a different thing!<br />
+		<span>
+			Your current login is: <b>{$account.login}</b><br />
+			It's the username you use to sign in with.<br />
+			Your profile name is a different thing!<br />
+		</span>
 
 		<div class="input-container">
 			You may change it once a week.<br />Make sure you don't use special characters not available in-game keyboard.
@@ -207,10 +217,15 @@
 	{:else if action == 'oculuspc'}
 		{#if $oculus.name}
 			{#if !$oculus.migrated}
-				{$oculus.name}, hi!<br /><br />
-				Please select preffered way to login on the website.<br />
-				<b>Steam account.</b> You don't need to own the game.<br />
-				Your ID will be changed to the Steam ID<br />
+				<span>
+					{$oculus.name}, hi! 👋<br /><br />
+					Please select preffered way to login on the website.<br />
+				</span>
+				<b>Steam account.</b>
+				<span>
+					You don't need to own the game.<br />
+					Your ID will be changed to the Steam ID<br />
+				</span>
 
 				<form action={BL_API_URL + 'signinmigrate/oculuspc'} method="post">
 					<input type="hidden" name="Provider" value="Steam" />
@@ -220,7 +235,8 @@
 					<Button iconFa="fas fa-plus-square" label="Use Steam" type="submit" />
 				</form>
 
-				<b>Login and password.</b><br />
+				<b>Login and password.</b>
+				New login and password just for this website.<br />
 				Your ID will remain the same.<br />
 				<form action={BL_API_URL + 'signinoculus/oculuspc'} method="post">
 					<input type="hidden" name="action" value="signup" />
@@ -234,8 +250,9 @@
 						New password
 						<input name="password" type="password" bind:value={password} placeholder="Password" />
 					</div>
-
-					<Button iconFa="fas fa-plus-square" label="Sign up" type="submit" />
+					<div class="button-container">
+						<Button iconFa="fas fa-plus-square" label="Sign up" type="submit" />
+					</div>
 				</form>
 			{:else}
 				{navigate('/u/' + $oculus.migratedId)}
@@ -274,6 +291,14 @@
 </div>
 
 <style>
+	b {
+		margin-left: 1em;
+		margin-right: 1em;
+	}
+	span {
+		margin-left: 1em;
+		margin-right: 1em;
+	}
 	.container {
 		display: flex;
 		align-items: center;
@@ -290,6 +315,12 @@
 
 	.input-container {
 		display: grid;
+	}
+
+	.button-container {
+		display: flex;
+		justify-content: center;
+		margin: 1em;
 	}
 
 	.inlineLink {

@@ -8,7 +8,7 @@
 	export let theme = 'dark';
 	export let width = undefined;
 	export let height = '40em';
-	export let tweetLimit = undefined;
+	export let tweetLimit = 3;
 	export let linkColor = undefined;
 	export let borderColor = undefined;
 	export let ariaPolite = undefined;

@@ -185,8 +185,8 @@
 	.playlistTitle {
 		display: block;
 		max-width: 80%;
-		overflow: hidden;
-		max-height: 80%;
+		max-height: 3em;
+		overflow: auto;
 	}
 
 	.titleAndButtons {
