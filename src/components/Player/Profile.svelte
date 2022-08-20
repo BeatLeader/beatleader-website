@@ -17,6 +17,7 @@
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
+	import Rain from '../Common/Rain.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -138,6 +139,10 @@
 			: []
 	);
 </script>
+
+{#if playerInfo?.clans?.filter(cl => cl.tag == 'BSFR' || cl.tag == 'BB').length}
+	<Rain baguete={playerInfo?.clans?.filter(cl => cl.tag == 'BSFR').length} />
+{/if}
 
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>
 	<div class="player-general-info">
