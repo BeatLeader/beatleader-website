@@ -36,6 +36,8 @@
 			<span style="color: green;"><i class="fa fa-check" /> Criteria</span>
 		{:else if qualification.criteriaMet == 2}
 			<span style="color: red;"><i class="fa fa-xmark" /> Criteria</span>
+		{:else if qualification?.criteriaMet == 3}
+			<span style="color: yellow;"><i class="fa fa-circle-pause" /> Criteria</span>
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria</span>
 		{/if}

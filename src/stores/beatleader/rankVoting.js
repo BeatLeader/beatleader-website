@@ -85,7 +85,7 @@ export default () => {
 			(stars ? '&stars=' + stars : '') +
 			(type ? '&type=' + type : '') +
 			(allowedByMapper != undefined ? `&allowed=${allowedByMapper ? 'true' : 'false'}` : '') +
-			(criteriaMet ? '&criteriaCheck=' + criteriaMet : '') +
+			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +
 			(criteriaCommentary ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '');
 
 		fetch(url, {credentials: 'include', method: 'POST'}).then(() => {

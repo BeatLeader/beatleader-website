@@ -218,11 +218,13 @@
 						type={mapperAllowed === false || mapperAllowed == undefined ? 'default' : 'green'}
 						on:click={() => (mapperAllowed = true)} />
 					<div>Criteria check result</div>
+					<Button label="UNKNOWN" type={criteriaMet == 0 ? 'lessdanger' : 'default'} on:click={() => (criteriaMet = 0)} />
 					<Button label="UNMET" type={criteriaMet == 2 ? 'danger' : 'default'} on:click={() => (criteriaMet = 2)} />
+					<Button label="HOLD" type={criteriaMet == 3 ? 'lessdanger' : 'default'} on:click={() => (criteriaMet = 3)} />
 					<Button label="MET" type={criteriaMet == 1 ? 'green' : 'default'} on:click={() => (criteriaMet = 1)} />
 				{/if}
 			{/if}
-			{#if criteriaMet == 2}
+			{#if criteriaMet == 2 || criteriaMet == 3}
 				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />
 			{/if}
 			{#if suitableForRank}

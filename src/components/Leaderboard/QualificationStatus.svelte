@@ -77,6 +77,8 @@
 				<b><i class="fa fa-check" /> Criteria checked by:</b>
 			{:else if qualification?.criteriaMet == 2}
 				<span style="color: red;"><i class="fa fa-xmark" /> Criteria check failed</span>
+			{:else if qualification?.criteriaMet == 3}
+				<span style="color: yellow;"><i class="fa fa-circle-pause" /> Check on hold</span>
 			{/if}
 			<Avatar player={criteriaChecker} />
 			<PlayerNameWithFlag

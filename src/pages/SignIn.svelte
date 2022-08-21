@@ -49,8 +49,8 @@
 			<div class="tips">Login with Steam or the account you created in game.</div>
 			<b>Creating an account is only possible from in game!</b>
 			<div class="input-container">
-				<div class="cat">Account</div>
-				<input bind:value={login} placeholder="Account" />
+				<div class="cat">Login (not username)</div>
+				<input bind:value={login} placeholder="Login (from the mod)" />
 			</div>
 			<div class="input-container">
 				<div class="cat">Password</div>

@@ -16,6 +16,19 @@
 		navigate(`/u/${playerId}/beatleader/date/1`);
 	}
 
+	function criteriaStatusDescription(criteriaMet) {
+		switch (criteriaMet) {
+			case 0:
+				return 'Not checked';
+			case 1:
+				return 'Met criteria';
+			case 2:
+				return 'Unmet criteria';
+			case 3:
+				return 'Criteria on hold';
+		}
+	}
+
 	let player;
 
 	async function retrievePlayer(change) {
@@ -46,7 +59,7 @@
 		{/if}
 
 		{#if change.oldCriteriaMet != change.newCriteriaMet}
-			{change.oldCriteriaMet == 1 ? 'Met criteria' : 'Unmet criteria'} -> {change.newCriteriaMet == 1 ? 'Met criteria' : 'Unmet criteria'}
+			{criteriaStatusDescription(change.oldCriteriaMet)} -> {criteriaStatusDescription(change.newCriteriaMet)}
 		{/if}
 
 		{#if change.oldRankability != change.newRankability}
