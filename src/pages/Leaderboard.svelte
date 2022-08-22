@@ -284,7 +284,7 @@
 	let draftList = [];
 
 	function startBattleRoyale() {
-		let link = `https://www.royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
+		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
 		window.open(link, '_blank');
 	}
 

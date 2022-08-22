@@ -78,9 +78,9 @@
 	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name));
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: replayUrl = replayLink?.length
-		? `https://www.replay.beatleader.xyz/?link=${replayLink}`
+		? `https://replay.beatleader.xyz/?link=${replayLink}`
 		: scoreId
-		? `https://www.replay.beatleader.xyz/?scoreId=${scoreId}`
+		? `https://replay.beatleader.xyz/?scoreId=${scoreId}`
 		: null;
 	$: previewUrl = `https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${
 		charName ? `&charName=${charName}` : ''
