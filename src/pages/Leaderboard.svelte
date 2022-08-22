@@ -144,7 +144,7 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
 	}
 
 	function scrollToTop() {
@@ -680,7 +680,7 @@
 											<Avatar player={score.player} />
 											<PlayerNameWithFlag
 												player={score.player}
-												type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
+												type={type === 'accsaber' ? 'accsaber/date' : ''}
 												on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
 											<ClanBadges player={score.player} />

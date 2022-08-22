@@ -1,3 +1,8 @@
+const STORE_SORTING_KEY = 'PlayerScoreSorting';
+const STORE_ORDER_KEY = 'PlayerScoreOrder';
+
+import keyValueRepository from '../../../db/repository/key-value';
+
 export default () => {
 	let currentService = null;
 	let currentServiceParams = {};
@@ -13,14 +18,12 @@ export default () => {
 
 			case 'accsaber':
 				return {type: 'overall', order: 'desc', sort: 'ap', page: 1, filters: {}};
-
-			case 'beatleader':
 			default:
-				return {sort: 'date', order: 'desc', page: 1, filters: {}};
+				return {sort: 'pp', order: 'desc', page: 1, filters: {}};
 		}
 	};
 
-	const update = (serviceParams = {}, service = currentService) => {
+	const update = (serviceParams = {}, service = currentService, init = false) => {
 		const availableServices = getAllServices();
 		if (!availableServices.includes(service)) service = availableServices?.[0] ?? 'beatleader';
 
@@ -40,6 +43,11 @@ export default () => {
 
 		currentService = service;
 		currentServiceParams = {...defaultServiceParams, ...currentServiceParams, ...serviceParams};
+
+		if (!init && currentService == 'beatleader') {
+			keyValueRepository().set(currentServiceParams.sort, STORE_SORTING_KEY);
+			keyValueRepository().set(currentServiceParams.order, STORE_ORDER_KEY);
+		}
 
 		return get();
 	};
@@ -63,7 +71,8 @@ export default () => {
 						order: 'desc',
 						page: paramsArr[2] ?? serviceDefaultParams?.page,
 					},
-					service
+					service,
+					true
 				);
 
 			case 'accsaber':
@@ -74,7 +83,8 @@ export default () => {
 						order: (paramsArr[2] ?? serviceDefaultParams?.sort) === 'rank' ? 'asc' : 'desc',
 						page: paramsArr[3] ?? serviceDefaultParams?.page,
 					},
-					service
+					service,
+					true
 				);
 
 			case 'beatleader':
@@ -85,7 +95,8 @@ export default () => {
 						order: (paramsArr[1] ?? serviceDefaultParams?.sort) === 'rank' ? 'asc' : 'desc',
 						page: paramsArr[2] ?? serviceDefaultParams?.page,
 					},
-					service
+					service,
+					true
 				);
 		}
 	};

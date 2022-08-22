@@ -13,7 +13,7 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
 	}
 
 	let nominator;
@@ -52,10 +52,7 @@
 	<div class="qualification-description">
 		<b><i class="fa fa-check" /> Nominated by:</b>
 		<Avatar player={nominator} />
-		<PlayerNameWithFlag
-			player={nominator}
-			type={'beatleader/date'}
-			on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
+		<PlayerNameWithFlag player={nominator} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
 		<div class="timeset">
 			<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
 				{formatDateRelative(dateFromUnix(qualification?.timeset))}
@@ -66,7 +63,7 @@
 		{#if qualification?.mapperAllowed}
 			<b><i class="fa fa-check" /> Allowed by mapper:</b>
 			<Avatar player={mapper} />
-			<PlayerNameWithFlag player={mapper} type={'beatleader/date'} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
+			<PlayerNameWithFlag player={mapper} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
 		{:else}
 			<span style="color: red;"><i class="fa fa-xmark" /> Mapper not allowed yet</span>
 		{/if}
@@ -81,10 +78,7 @@
 				<span style="color: yellow;"><i class="fa fa-circle-pause" /> Check on hold</span>
 			{/if}
 			<Avatar player={criteriaChecker} />
-			<PlayerNameWithFlag
-				player={criteriaChecker}
-				type={'beatleader/date'}
-				on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
+			<PlayerNameWithFlag player={criteriaChecker} on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
 
 			<div class="timeset">
 				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
@@ -113,10 +107,7 @@
 					Loading...
 				{:then approver}
 					<Avatar player={approver} />
-					<PlayerNameWithFlag
-						player={approver}
-						type={'beatleader/date'}
-						on:click={approver ? () => navigateToPlayer(approver.playerId) : null} />
+					<PlayerNameWithFlag player={approver} on:click={approver ? () => navigateToPlayer(approver.playerId) : null} />
 				{/await}
 			{/each}
 		{:else}

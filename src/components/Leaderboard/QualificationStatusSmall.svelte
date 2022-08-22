@@ -9,7 +9,7 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
 	}
 
 	let nominator;
@@ -69,11 +69,7 @@
 				</span>
 
 				<Avatar player={nominator} />
-				<PlayerNameWithFlag
-					player={nominator}
-					type={'beatleader/date'}
-					hideFlag={true}
-					on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
+				<PlayerNameWithFlag player={nominator} hideFlag={true} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
 			</div>
 		{/if}
 	</div>

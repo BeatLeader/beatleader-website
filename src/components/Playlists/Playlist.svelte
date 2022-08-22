@@ -137,7 +137,7 @@
 
 					{#if owner}
 						<div class="player">
-							<PlayerNameWithFlag player={owner} type={'beatleader/date'} />
+							<PlayerNameWithFlag player={owner} />
 						</div>
 					{/if}
 

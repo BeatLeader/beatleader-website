@@ -83,8 +83,7 @@
 
 			<p>
 				Special thanks to
-				<a href="/u/76561198023909718/beatleader/date/1" on:click|preventDefault={() => navigate('/u/76561198023909718/beatleader/date/1')}
-					>DanielDuel</a>
+				<a href="/u/76561198023909718" on:click|preventDefault={() => navigate('/u/76561198023909718')}>DanielDuel</a>
 				for making the default song icon.
 			</p>
 		</section>

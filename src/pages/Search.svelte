@@ -76,11 +76,7 @@
 		</div>
 
 		{#if player}
-			<Button
-				iconFa="fas fa-user"
-				label="Go to Player Profile"
-				type="primary"
-				on:click={() => navigate(`/u/${player.playerId}/beatleader/date/1`)} />
+			<Button iconFa="fas fa-user" label="Go to Player Profile" type="primary" on:click={() => navigate(`/u/${player.playerId}`)} />
 			<div class="another-search">
 				<a
 					on:click={() => {

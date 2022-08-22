@@ -18,6 +18,7 @@
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
+	const DEFAULT_SORT_VALUE = 'last';
 
 	let twitchToken = null;
 
@@ -54,6 +55,16 @@
 		{name: 'Playlist sync', value: 'playlist'},
 	];
 
+	const sortOptions = [
+		{name: 'Last selected option', value: 'last'},
+		{name: 'PP', value: 'pp'},
+		{name: 'Date', value: 'date'},
+		{name: 'Accuracy', value: 'acc'},
+		{name: 'Rank', value: 'rank'},
+		{name: 'Stars', value: 'stars'},
+		{name: 'Pauses', value: 'pauses'},
+	];
+
 	let currentTheme = DEFAULT_THEME;
 	let currentBGImage = '';
 	let currentLocale = DEFAULT_LOCALE;
@@ -61,6 +72,7 @@
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
+	let currentSortOption = DEFAULT_SORT_VALUE;
 
 	function onConfigUpdated(config) {
 		if (config?.locale) currentLocale = config.locale;
@@ -69,6 +81,7 @@
 		if (config?.preferences?.iconsOnAvatars) currentAvatarIcons = config?.preferences?.iconsOnAvatars ?? DEFAULT_AVATAR_ICONS;
 		if (config?.preferences?.theme) currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
 		if (config?.preferences?.oneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
+		if (config?.preferences?.scoresSortOptions) currentSortOption = config?.preferences?.scoresSortOptions ?? DEFAULT_SORT_VALUE;
 		if (config?.preferences?.bgimage) currentBGImage = config?.preferences?.bgimage ?? '';
 	}
 
@@ -83,6 +96,7 @@
 			draft.preferences.theme = currentTheme;
 			draft.preferences.oneclick = currentOneclick;
 			draft.preferences.bgimage = currentBGImage;
+			draft.preferences.scoresSortOptions = currentSortOption;
 			document.location.reload();
 		});
 
@@ -95,6 +109,7 @@
 			currentPpMetric = $configStore.preferences.ppMetric;
 			currentScoreComparisonMethod = $configStore.scoreComparison.method;
 			currentAvatarIcons = $configStore.preferences.iconsOnAvatars;
+			currentSortOption = $configStore.preferences.scoresSortOptions;
 		}
 
 		show = false;
@@ -195,6 +210,15 @@
 						<label title="How One-Click button will work">One-click installs</label>
 						<Select bind:value={currentOneclick}>
 							{#each oneclickOptions as option (option.value)}
+								<option value={option.value}>{option.name}</option>
+							{/each}
+						</Select>
+					</section>
+
+					<section class="option">
+						<label title="How to sort scores by defauls">Sort scores by</label>
+						<Select bind:value={currentSortOption}>
+							{#each sortOptions as option (option.value)}
 								<option value={option.value}>{option.name}</option>
 							{/each}
 						</Select>

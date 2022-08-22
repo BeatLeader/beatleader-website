@@ -27,7 +27,7 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
 	}
 
 	function onPlayerClick(event, player) {

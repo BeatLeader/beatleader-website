@@ -18,7 +18,7 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
 	}
 
 	function onAccountClicked(event, playerId) {
@@ -156,7 +156,7 @@
 
 	{#if player}
 		<a
-			href={`/u/${player.playerId}/beatleader/date/1`}
+			href={`/u/${player.playerId}`}
 			class="me hovermenu"
 			on:click={e => {
 				e.preventDefault();
