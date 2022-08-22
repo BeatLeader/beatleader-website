@@ -140,7 +140,7 @@
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
-	const rankingStore = eventId ? createEventRankingStore(type, page, eventId, {}, []) : createRankingStore(type, page, filters, []);
+	const rankingStore = eventId ? createEventRankingStore(type, page, eventId, filters, []) : createRankingStore(type, page, filters, []);
 
 	function changeParams(newType, newPage, newFilters) {
 		newPage = parseInt(newPage, 10);

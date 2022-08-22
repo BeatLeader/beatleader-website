@@ -75,6 +75,12 @@
 					roleIcon = BL_CDN + '/assets/patreon3.png';
 					roleDescription = 'Highest tier Patreon supporter. Crypto godge';
 					break;
+
+				case 'warplane':
+					show = onAvatar;
+					roleIcon = BL_CDN + '/assets/warplane.png';
+					roleDescription = 'Warplane';
+					break;
 				default:
 					break;
 			}

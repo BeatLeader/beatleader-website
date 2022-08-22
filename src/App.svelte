@@ -89,8 +89,8 @@
 				<Route path="/clan/:clanId/*page" let:params>
 					<ClanPage clanId={params.clanId} page={params.page} />
 				</Route>
-				<Route path="/event/:eventId/*page" let:params>
-					<EventPage eventId={params.eventId} page={params.page} />
+				<Route path="/event/:eventId/*page" let:params let:location>
+					<EventPage eventId={params.eventId} page={params.page} {location} />
 				</Route>
 				<Route path="/clans/*page" let:params let:location>
 					<ClansPage page={params.page} {location} />

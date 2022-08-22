@@ -238,10 +238,10 @@ export default (options = {}) => {
 		filters = {sortBy: 'pp'},
 		priority = PRIORITY.FG_LOW,
 		options = {}
-	) => rankingGlobal(page, {...filters, countries}, priority, options);
+	) => rankingEventGlobal(page, eventId, {...filters, countries}, priority, options);
 
 	const rankingEventFriends = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
-		rankingGlobal(page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
+		rankingEventGlobal(page, eventId, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
 	const minirankings = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);

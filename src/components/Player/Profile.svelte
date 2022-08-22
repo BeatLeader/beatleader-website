@@ -235,8 +235,8 @@
 	}
 
 	:global(.inner-modal) {
-		z-index: 100;
-		position: relative;
+		z-index: 100 !important;
+		position: relative !important;
 	}
 
 	@media screen and (max-width: 767px) {
