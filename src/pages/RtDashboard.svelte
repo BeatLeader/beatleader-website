@@ -27,6 +27,8 @@
 	import Select from 'svelte-select';
 	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
 	import Button from '../components/Common/Button.svelte';
+	import {mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
+	import {capitalize} from '../utils/js';
 
 	export let location;
 
@@ -55,6 +57,8 @@
 		{id: 'nomination', label: 'Nomination'},
 		{id: 'criteria', label: 'Criteria'},
 		{id: 'approval', label: 'Approval'},
+		{id: 'stars', label: 'Stars'},
+		{id: 'category', label: 'Category'},
 	];
 	let logTypeFilter = [];
 	let logPlayerFilter = '';
@@ -77,6 +81,16 @@
 	];
 
 	let sortValue = sortValues[0];
+
+	const categoryFilterOptions = Object.entries(typesMap).map(([key, type]) => {
+		return {
+			id: type,
+			label: capitalize(typesDescription?.[key]?.name ?? key),
+			icon: `<span class="${typesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: typesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: typesDescription?.[key]?.textColor ?? null,
+		};
+	});
 
 	const findParam = key => params.find(p => p.key === key);
 
@@ -195,6 +209,21 @@
 			multi: true,
 			withCondition: true,
 			onConditionChange: e => onConditionChange(e, 'status_not'),
+		},
+		{
+			key: 'mapType',
+			label: 'Map category',
+			default: [],
+			defaultCondition: 'or',
+			process: processIntArrayFilter,
+			type: 'switch',
+			value: [],
+			valueCondition: 'or',
+			values: categoryFilterOptions,
+			onChange: e => onMultiSwitchChange(e, 'mapType'),
+			multi: true,
+			withCondition: true,
+			onConditionChange: e => onConditionChange(e, 'mapType'),
 		},
 		{
 			key: 'tags',
@@ -407,11 +436,9 @@
 			songs = Object.values(
 				(
 					await Promise.all([
-						fetchAllMapsWithType('nominated'),
-						fetchAllMapsWithType('qualified'),
+						fetchVotedMaps(),
 						fetchAllMapsWithType('nominated', 'votecount'),
 						fetchAllMapsWithType('qualified', 'votecount'),
-						fetchVotedMaps(),
 					])
 				)
 					.reduce((carry, maps) => [...carry, ...maps], [])
@@ -467,7 +494,8 @@
 				.map(s => {
 					const totals = (s?.difficulties ?? []).reduce(
 						(carry, diff) => {
-							carry.nominated += !!diff?.qualification ? 1 : 0;
+							carry.nominated += !!diff?.nominated || !!diff?.qualified ? 1 : 0;
+							carry.qualified += !!diff?.qualified ? 1 : 0;
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
 							carry.criteriaMet += diff?.qualification?.criteriaMet !== 0 ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
@@ -475,7 +503,7 @@
 							carry.votesPositive += diff?.votesPositive ?? 0;
 							carry.votesNegative += diff?.votesNegative ?? 0;
 
-							['nominated', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
+							['nominated', 'qualified', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
 								carry[`${key}Ratio`] = s?.difficulties?.length ? carry[key] / s.difficulties.length : 0;
 							});
 
@@ -487,6 +515,8 @@
 						{
 							nominated: 0,
 							nominatedRatio: 0,
+							qualified: 0,
+							qualifiedRatio: 0,
 							mapperAllowed: 0,
 							mapperAllowedRatio: 0,
 							criteriaMet: 0,
@@ -504,7 +534,8 @@
 									votesNegative: diff.votesNegative ?? 0,
 									votesTotal: diff.votesTotal ?? 0,
 									votesRating: diff.votesRating ?? 0,
-									nominated: !!diff?.qualification ? 'Yes' : 'No',
+									nominated: !!diff?.nominated || !!diff?.qualified ? 'Yes' : 'No',
+									qualified: !!diff?.qualified ? 'Yes' : 'No',
 									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
 									criteriaMet: diff?.qualification?.criteriaMet === 1 ? 'Yes' : diff?.qualification?.criteriaMet === 2 ? 'Failed' : 'No',
 									approved: diff?.qualification?.approved ? 'Yes' : 'No',
@@ -515,7 +546,7 @@
 
 					return {...s, totals};
 				})
-				.filter(s => !s?.difficulties?.every(d => d?.ranked));
+				.filter(s => !(s?.difficulties ?? [])?.every(d => d?.ranked));
 		} catch (err) {
 			error = err;
 		} finally {
@@ -650,7 +681,7 @@
 			.filter(s => {
 				let result =
 					currentFilters?.mine === 'mine'
-						? !!s?.difficulties?.some(
+						? !!(s?.difficulties ?? [])?.some(
 								d =>
 									d?.qualification?.rtMember === playerId ||
 									d?.qualification?.mapperId === playerId ||
@@ -768,8 +799,21 @@
 				result &&=
 					currentFilters?.star_range?.length === 2 &&
 					currentFilters?.star_range?.toString() !== findParam('star_range')?.default?.toString()
-						? s?.difficulties?.some(d => currentFilters.star_range[0] < d.stars && d.stars < currentFilters.star_range[1])
+						? (s?.difficulties ?? [])?.some(d => currentFilters.star_range[0] < d.stars && d.stars < currentFilters.star_range[1])
 						: true;
+
+				const mapTypeCond = currentFilters?.mapType_cond ?? 'or';
+				if (currentFilters?.mapType?.length) {
+					switch (mapTypeCond) {
+						case 'or':
+							result &&= (s?.difficulties ?? [])?.some(d => currentFilters.mapType.some(t => d.type & t));
+							break;
+
+						case 'and':
+							result &&= (s?.difficulties ?? [])?.some(d => currentFilters.mapType.every(t => d.type & t));
+							break;
+					}
+				}
 
 				const tagsCond = currentFilters?.tags_cond ?? 'or';
 				if (currentFilters?.tags?.length) {
@@ -856,8 +900,6 @@
 			carry = [
 				...carry,
 				...(song?.difficulties?.reduce((diffCarry, difficulty) => {
-					const fullDiffName = `${song.name} ${song.subName} / ${difficulty.difficultyName} by ${song.mapper}`;
-
 					if (difficulty?.qualification) {
 						const qual = difficulty.qualification;
 
@@ -893,6 +935,64 @@
 								desc: `ok`,
 								level: 'ok',
 							});
+
+						if (qual?.changes?.length) {
+							qual.changes.forEach(change => {
+								[
+									{
+										field: 'Rankability',
+										type: 'nomination',
+										shouldAdd: (field, change, diff) =>
+											!!change?.[`new${field}`] !== diff?.nominated || change?.['timeset'] !== diff?.nominatedTime,
+										notes: (field, change, diff) => (!!change?.[`new${field}`] ? 'unrankable' : ''),
+										level: (field, change, diff) => (!!change?.[`new${field}`] ? 'error' : 'info'),
+									},
+									{
+										field: 'CriteriaMet',
+										type: 'criteria',
+										shouldAdd: (field, change, diff) =>
+											change?.[`new${field}`] !== diff?.qualification?.criteriaMet ||
+											change?.['timeset'] !== diff?.qualification?.criteriaTimeset,
+										notes: (field, change, diff) =>
+											change?.[`new${field}`] === 2 ? diff?.qualification?.criteriaCommentary ?? 'no description' : 'ok',
+										level: (field, change, diff) => (change?.[`new${field}`] === 2 ? 'error' : 'info'),
+									},
+									{
+										field: 'Stars',
+										type: 'stars',
+										shouldAdd: () => true,
+										notes: (field, change, diff) => `${change?.[`old${field}`]}★ → ${change?.[`new${field}`]}★`,
+										level: () => 'info',
+									},
+									{
+										field: 'Type',
+										type: 'category',
+										shouldAdd: () => true,
+										notes: (field, change, diff) =>
+											`${mapTypeFromMask(change?.[`old${field}`])} → ${mapTypeFromMask(change?.[`new${field}`])}`,
+										level: () => 'info',
+									},
+								].forEach(def => {
+									if (
+										change?.[`new${def.field}`] === undefined ||
+										change?.[`new${def.field}`] === change?.[`old${def.field}`] ||
+										!def?.shouldAdd(def.field, change, difficulty)
+									)
+										return;
+
+									diffCarry.push({
+										...getLogEntry(song, difficulty),
+										timestamp: dateFromUnix(change?.timeset),
+										playerId: change?.playerId ?? null,
+										type: def.type,
+										value: change?.[`new${def.field}`],
+										notes: def?.notes(def.field, change, difficulty) ?? '',
+										desc: def?.notes(def.field, change, difficulty) ?? '',
+										level: def?.level(def.field, change, difficulty) ?? 'info',
+									});
+								});
+							});
+						}
 					}
 
 					return diffCarry;
@@ -1013,7 +1113,7 @@
 									</thead>
 
 									<tbody>
-										{#each filteredEventLog as event (event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
+										{#each filteredEventLog as event, idx (idx + event?.type + event?.player?.id + event?.difficulty?.leaderboardId + event?.timestamp)}
 											<tr class:ok={event?.level === 'ok'} class:error={event?.level === 'error'}>
 												<td title={formatDate(event.timestamp, 'short', 'short')}>{formatDateRelative(new Date(event.timestamp))}</td>
 												<td>

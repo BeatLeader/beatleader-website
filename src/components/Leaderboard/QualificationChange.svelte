@@ -51,19 +51,19 @@
 		</div>
 
 		{#if change.oldStars != change.newStars}
-			{change.oldStars} -> {change.newStars} ★
+			{change.oldStars} → {change.newStars} ★
 		{/if}
 
 		{#if change.oldType != change.newType}
-			{mapTypeFromMask(change.oldType)} -> {mapTypeFromMask(change.newType)}
+			{mapTypeFromMask(change.oldType)} → {mapTypeFromMask(change.newType)}
 		{/if}
 
 		{#if change.oldCriteriaMet != change.newCriteriaMet}
-			{criteriaStatusDescription(change.oldCriteriaMet)} -> {criteriaStatusDescription(change.newCriteriaMet)}
+			{criteriaStatusDescription(change.oldCriteriaMet)} → {criteriaStatusDescription(change.newCriteriaMet)}
 		{/if}
 
 		{#if change.oldRankability != change.newRankability}
-			{change.oldRankability > 0 ? 'Nominated' : 'Unranked'} -> {change.newRankability > 0 ? 'Nominated' : 'Unranked'}
+			{change.oldRankability > 0 ? 'Nominated' : 'Unranked'} → {change.newRankability > 0 ? 'Nominated' : 'Unranked'}
 		{/if}
 	</div>
 {/if}
