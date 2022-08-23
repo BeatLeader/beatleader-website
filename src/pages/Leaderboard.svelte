@@ -648,7 +648,7 @@
 
 				{#if scoresWithUser?.length}
 					<div class="scores-grid grid-transition-helper">
-						{#each scoresWithUser as score, idx (score?.player?.playerId)}
+						{#each scoresWithUser as score, idx (score?.score?.id)}
 							<div
 								class={`row-${idx}`}
 								class:user-score={score?.isUserScore}
