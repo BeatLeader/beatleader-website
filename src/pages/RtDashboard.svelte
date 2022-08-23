@@ -176,7 +176,10 @@
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
-				{id: 'criteria', label: 'Criteria checked'},
+				{id: 'not_checked', label: 'Not checked', value: 0},
+				{id: 'ok', label: 'Checked', value: 1},
+				{id: 'failed', label: 'Failed', value: 2},
+				{id: 'hold', label: 'On hold', value: 3},
 				{id: 'approved', label: 'RT approved'},
 				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
@@ -199,7 +202,10 @@
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
-				{id: 'criteria', label: 'Criteria checked'},
+				{id: 'not_checked', label: 'Not checked', value: 0},
+				{id: 'ok', label: 'Checked', value: 1},
+				{id: 'failed', label: 'Failed', value: 2},
+				{id: 'hold', label: 'On hold', value: 3},
 				{id: 'approved', label: 'RT approved'},
 				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
@@ -703,9 +709,20 @@
 									else result &&= s?.totals?.mapperAllowed > 0;
 									break;
 
-								case 'criteria':
-									if (statusCond === 'or') result ||= s?.totals?.criteriaMet > 0;
-									else result &&= s?.totals?.criteriaMet > 0;
+								case 'not_checked':
+								case 'ok':
+								case 'failed':
+								case 'hold':
+									const criteriaVal = findParam('status')?.values?.find(v => v.id === key)?.value ?? 0;
+									switch (statusCond) {
+										case 'or':
+											result ||= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet === criteriaVal);
+											break;
+
+										case 'and':
+											result &&= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet === criteriaVal);
+											break;
+									}
 									break;
 
 								case 'approved':
@@ -753,9 +770,20 @@
 									else result &&= s?.totals?.mapperAllowed < s?.difficulties?.length;
 									break;
 
-								case 'criteria':
-									if (statusNotCond === 'or') result ||= s?.totals?.criteriaMet < s?.difficulties?.length;
-									else result &&= s?.totals?.criteriaMet < s?.difficulties?.length;
+								case 'not_checked':
+								case 'ok':
+								case 'failed':
+								case 'hold':
+									const criteriaVal = findParam('status_not')?.values?.find(v => v.id === key)?.value ?? 0;
+									switch (statusCond) {
+										case 'or':
+											result ||= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet !== criteriaVal);
+											break;
+
+										case 'and':
+											result &&= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet !== criteriaVal);
+											break;
+									}
 									break;
 
 								case 'approved':
