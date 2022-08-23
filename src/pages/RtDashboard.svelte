@@ -27,7 +27,7 @@
 	import Select from 'svelte-select';
 	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
 	import Button from '../components/Common/Button.svelte';
-	import {mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
+	import {DifficultyStatus, mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 
 	export let location;
@@ -552,7 +552,7 @@
 
 					return {...s, totals};
 				})
-				.filter(s => !(s?.difficulties ?? [])?.every(d => d?.ranked));
+				.filter(s => !(s?.difficulties ?? [])?.every(d => d?.status === DifficultyStatus.ranked));
 		} catch (err) {
 			error = err;
 		} finally {
