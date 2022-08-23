@@ -500,8 +500,16 @@
 				.map(s => {
 					const totals = (s?.difficulties ?? []).reduce(
 						(carry, diff) => {
-							carry.nominated += !!diff?.nominated || !!diff?.qualified ? 1 : 0;
-							carry.qualified += !!diff?.qualified ? 1 : 0;
+							carry.nominated +=
+								[DifficultyStatus.nominated, DifficultyStatus.qualified, DifficultyStatus.ranked].includes(diff?.status) ||
+								!!diff?.nominated ||
+								!!diff?.qualified ||
+								!!diff?.ranked ||
+								diff?.qualification?.timeset
+									? 1
+									: 0;
+							carry.qualified +=
+								diff?.status === DifficultyStatus.qualified || DifficultyStatus.ranked || !!diff?.qualified || !!diff?.ranked ? 1 : 0;
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
 							carry.criteriaMet += diff?.qualification?.criteriaMet === 1 ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
@@ -540,10 +548,27 @@
 									votesNegative: diff.votesNegative ?? 0,
 									votesTotal: diff.votesTotal ?? 0,
 									votesRating: diff.votesRating ?? 0,
-									nominated: !!diff?.nominated || !!diff?.qualified ? 'Yes' : 'No',
-									qualified: !!diff?.qualified ? 'Yes' : 'No',
+									nominated:
+										[DifficultyStatus.nominated, DifficultyStatus.qualified, DifficultyStatus.ranked].includes(diff?.status) ||
+										!!diff?.nominated ||
+										!!diff?.qualified ||
+										!!diff?.ranked ||
+										diff?.qualification?.timeset
+											? 'Yes'
+											: 'No',
+									qualified:
+										diff?.status === DifficultyStatus.qualified || DifficultyStatus.ranked || !!diff?.qualified || !!diff?.ranked
+											? 'Yes'
+											: 'No',
 									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
-									criteriaMet: diff?.qualification?.criteriaMet === 1 ? 'Yes' : diff?.qualification?.criteriaMet === 2 ? 'Failed' : 'No',
+									criteriaMet:
+										diff?.qualification?.criteriaMet === 1
+											? 'Yes'
+											: diff?.qualification?.criteriaMet === 2
+											? 'Failed'
+											: diff?.qualification?.criteriaMet === 3
+											? 'On hold'
+											: 'No',
 									approved: diff?.qualification?.approved ? 'Yes' : 'No',
 								};
 							}),
