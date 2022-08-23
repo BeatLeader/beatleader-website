@@ -25,6 +25,7 @@
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
+	import CustomSelect from '../components/Common/Select.svelte';
 	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
 	import Button from '../components/Common/Button.svelte';
 	import {DifficultyStatus, mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
@@ -123,6 +124,28 @@
 		}
 	};
 
+	const onSwitchWithMultiSelectChange = (e, key) => {
+		const param = findParam(key);
+		if (param) {
+			if (e?.detail?.componentValue) {
+				const paramValue = param?.values?.find(pv => pv.id === e?.detail?.id);
+				if (!paramValue?.componentProps?.value) return;
+
+				if (e.detail.componentValue?.value) {
+					paramValue.componentProps.value = e.detail.componentValue.value;
+				}
+
+				param.value = (param?.value ?? []).find(v => v.id === paramValue.id)
+					? (param?.value ?? []).filter(p => p?.id !== paramValue.id).concat(paramValue.componentProps.value?.length ? paramValue : [])
+					: [...(param?.value ?? []), paramValue];
+
+				updateCurrentFiltersFromParams();
+			} else {
+				onMultiSwitchChange(e, key);
+			}
+		}
+	};
+
 	const onConditionChange = (e, key) => {
 		const param = findParam(key);
 		if (param) {
@@ -149,6 +172,62 @@
 		}, 500);
 	};
 
+	const criteriaValues = [
+		{label: 'Met', value: 1},
+		{label: 'NOT checked', value: 0},
+		{label: 'On hold', value: 3},
+		{label: 'NOT met', value: 2},
+	];
+
+	const serializeCriteriaStatus = paramValue =>
+		paramValue?.id +
+		':' +
+		(paramValue?.componentProps?.value ?? [])
+			.map(v => v?.value)
+			.filter(v => Number.isFinite(v))
+			.join(':');
+
+	const deserializeCriteriaStatus = (paramValue, values) => {
+		if (!values?.length || !paramValue?.componentProps?.items?.length) return;
+
+		const valuesCasted = values.map(v => parseInt(v, 10)).filter(v => !isNaN(v));
+		paramValue.componentProps.value = paramValue.componentProps.items.filter(i => valuesCasted.includes(i.value));
+	};
+
+	const deserializeStatus = (param, filters) => {
+		if (param.multi) {
+			const filterValue = (filters?.[param.key] ?? [])
+				.map(filterValue => {
+					const parts = filterValue.split(':');
+					const id = parts.shift();
+
+					return id ? {id, rest: parts} : null;
+				})
+				.filter(fv => fv);
+			const filterIds = filterValue.map(fv => fv?.id).filter(id => id);
+
+			param.value = param?.values?.filter(v => filterIds.includes(v.id)) ?? param?.default ?? [];
+
+			param.value.forEach(pv => {
+				if (!pv.deserializeParam) return;
+
+				pv.deserializeParam(pv, filterValue.find(fv => fv.id === pv.id)?.rest ?? null);
+			});
+		} else {
+			param.value = filters?.[param.key] ?? param?.default ?? '';
+		}
+
+		filters[param.key] = param.multi
+			? (param?.value ?? [])
+					?.map(paramValue => (paramValue?.serializeParam ? paramValue.serializeParam(paramValue) : paramValue.id))
+					?.filter(v => v) ??
+			  param?.default ??
+			  []
+			: filters?.[param.key]?.length
+			? filters[param.key]
+			: param?.default ?? '';
+	};
+
 	const params = [
 		{
 			key: 'mine',
@@ -170,22 +249,35 @@
 			default: '',
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
+			deserialize: deserializeStatus,
 			type: 'switch',
 			value: [],
 			valueCondition: 'or',
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
-				{id: 'not_checked', label: 'Not checked', value: 0},
-				{id: 'ok', label: 'Checked', value: 1},
-				{id: 'failed', label: 'Failed', value: 2},
-				{id: 'hold', label: 'On hold', value: 3},
+				{
+					id: 'criteria',
+					label: 'Any Criteria',
+					component: CustomSelect,
+					componentProps: {
+						value: [],
+						items: criteriaValues.map(v => ({...v})),
+						multiple: true,
+						noSelected: 'Any Criteria',
+						prefix: 'Criteria: ',
+						right: true,
+						minSelected: 0,
+					},
+					serializeParam: serializeCriteriaStatus,
+					deserializeParam: deserializeCriteriaStatus,
+				},
 				{id: 'approved', label: 'RT approved'},
 				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
-			onChange: e => onMultiSwitchChange(e, 'status'),
+			onChange: e => onSwitchWithMultiSelectChange(e, 'status'),
 			multi: true,
 			withCondition: true,
 			onConditionChange: e => onConditionChange(e, 'status'),
@@ -196,22 +288,35 @@
 			default: '',
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
+			deserialize: deserializeStatus,
 			type: 'switch',
 			value: [],
 			valueCondition: 'or',
 			values: [
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
-				{id: 'not_checked', label: 'Not checked', value: 0},
-				{id: 'ok', label: 'Checked', value: 1},
-				{id: 'failed', label: 'Failed', value: 2},
-				{id: 'hold', label: 'On hold', value: 3},
+				{
+					id: 'criteria',
+					label: 'Any Criteria',
+					component: CustomSelect,
+					componentProps: {
+						value: [],
+						items: criteriaValues.map(v => ({...v})),
+						multiple: true,
+						noSelected: 'Any Criteria',
+						prefix: 'Criteria: ',
+						right: true,
+						minSelected: 0,
+					},
+					serializeParam: serializeCriteriaStatus,
+					deserializeParam: deserializeCriteriaStatus,
+				},
 				{id: 'approved', label: 'RT approved'},
 				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
-			onChange: e => onMultiSwitchChange(e, 'status_not'),
+			onChange: e => onSwitchWithMultiSelectChange(e, 'status_not'),
 			multi: true,
 			withCondition: true,
 			onConditionChange: e => onConditionChange(e, 'status_not'),
@@ -325,6 +430,10 @@
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
 		params.forEach(p => {
 			switch (true) {
+				case !!p.deserialize:
+					p.deserialize(p, filters);
+					break;
+
 				case p.key === 'star_range':
 					p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
 					filters[p.key] = filters[p.key] ?? 0;
@@ -367,7 +476,9 @@
 					break;
 
 				default:
-					currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id) : p?.value ?? '';
+					currentFilters[p.key] = p.multi
+						? (p?.value ?? [])?.map(paramValue => (paramValue?.serializeParam ? paramValue.serializeParam(paramValue) : paramValue.id))
+						: p?.value ?? '';
 					break;
 			}
 
@@ -723,6 +834,10 @@
 				const statusCond = currentFilters?.status_cond ?? 'or';
 				result &&= currentFilters?.status?.length
 					? currentFilters.status.reduce((result, key) => {
+							const parts = key.split(':');
+							key = parts?.length ? parts.shift() : key;
+							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
+
 							switch (key) {
 								case 'nominated':
 									if (statusCond === 'or') result ||= s?.totals?.nominated > 0;
@@ -734,18 +849,14 @@
 									else result &&= s?.totals?.mapperAllowed > 0;
 									break;
 
-								case 'not_checked':
-								case 'ok':
-								case 'failed':
-								case 'hold':
-									const criteriaVal = findParam('status')?.values?.find(v => v.id === key)?.value ?? 0;
+								case 'criteria':
 									switch (statusCond) {
 										case 'or':
-											result ||= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet === criteriaVal);
+											result ||= (s?.difficulties ?? [])?.some(d => values.includes(d?.qualification?.criteriaMet));
 											break;
 
 										case 'and':
-											result &&= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet === criteriaVal);
+											result &&= (s?.difficulties ?? [])?.some(d => values.includes(d?.qualification?.criteriaMet));
 											break;
 									}
 									break;
@@ -784,6 +895,10 @@
 				const statusNotCond = currentFilters?.status_not_cond ?? 'or';
 				result &&= currentFilters?.status_not?.length
 					? currentFilters.status_not.reduce((result, key) => {
+							const parts = key.split(':');
+							key = parts?.length ? parts.shift() : key;
+							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
+
 							switch (key) {
 								case 'nominated':
 									if (statusNotCond === 'or') result ||= s?.totals?.nominated < s?.difficulties?.length;
@@ -795,18 +910,14 @@
 									else result &&= s?.totals?.mapperAllowed < s?.difficulties?.length;
 									break;
 
-								case 'not_checked':
-								case 'ok':
-								case 'failed':
-								case 'hold':
-									const criteriaVal = findParam('status_not')?.values?.find(v => v.id === key)?.value ?? 0;
+								case 'criteria':
 									switch (statusCond) {
 										case 'or':
-											result ||= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet !== criteriaVal);
+											result ||= (s?.difficulties ?? [])?.some(d => !values.includes(d?.qualification?.criteriaMet));
 											break;
 
 										case 'and':
-											result &&= (s?.difficulties ?? [])?.some(d => d?.qualification?.criteriaMet !== criteriaVal);
+											result &&= (s?.difficulties ?? [])?.some(d => !values.includes(d?.qualification?.criteriaMet));
 											break;
 									}
 									break;

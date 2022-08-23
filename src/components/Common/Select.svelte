@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import Button from './Button.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -17,6 +18,7 @@
 	export let right = false;
 	export let top = false;
 	export let noLabel = false;
+	export let prefix = null;
 
 	function processItems(items, value, clickedIdx, multiple = false, minSelected = 1) {
 		if (multiple) {
@@ -73,17 +75,16 @@
 
 	$: current =
 		value && (!Array.isArray(value) || value.length)
-			? (Array.isArray(value) ? value : [value.label ? value : {label: value}]).map(v => v.label).join(', ')
+			? (prefix ?? '') + (Array.isArray(value) ? value : [value.label ? value : {label: value}]).map(v => v.label).join(', ')
 			: noSelected;
 </script>
 
-<div class="multi-select" class:disabled>
+<div class="multi-select" class:selected={multiple ? value?.length : value} class:disabled>
 	<div class="dropdown is-hoverable">
 		<div class="dropdown-trigger">
-			<button class="button" title={current}>
-				{#if !noLabel}<span>{current}</span>{/if}
+			<Button type="default" title={current} label={!noLabel ? current : null}>
 				<span class="icon is-small"><i class="fas fa-angle-down" aria-hidden="true" /></span>
-			</button>
+			</Button>
 		</div>
 		<div class:right class:top class="dropdown-menu" role="menu" on:click={onMenuClick}>
 			<div class="dropdown-content">
