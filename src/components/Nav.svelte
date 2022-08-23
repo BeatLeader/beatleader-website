@@ -18,7 +18,7 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
 	}
 
 	function onAccountClicked(event, playerId) {
@@ -104,7 +104,9 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
-		const isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
+		const isRT = $account?.player?.playerInfo?.role
+			?.split(',')
+			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
 
 		if (loggedInUser.player) {
 			signupOptions = [];
@@ -154,7 +156,7 @@
 
 	{#if player}
 		<a
-			href={`/u/${player.playerId}/beatleader/date/1`}
+			href={`/u/${player.playerId}`}
 			class="me hovermenu"
 			on:click={e => {
 				e.preventDefault();

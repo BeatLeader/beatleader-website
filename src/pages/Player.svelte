@@ -18,6 +18,12 @@
 	import TwitchVideos from '../components/Player/TwitchVideos.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 
+	const STORE_SORTING_KEY = 'PlayerScoreSorting';
+	const STORE_ORDER_KEY = 'PlayerScoreOrder';
+
+	import keyValueRepository from '../db/repository/key-value';
+	import {configStore} from '../stores/config';
+
 	export let initialPlayerId = null;
 	export let initialParams = null;
 
@@ -26,29 +32,13 @@
 	let playerEl = null;
 
 	let service = null;
-	let serviceParams = {};
+	let serviceParams = null;
 
 	const serviceParamsManager = createServiceParamsManager(initialPlayerId);
 
 	processInitialParams(initialPlayerId, initialParams);
 
 	let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
-
-	function processInitialParams(playerId, params) {
-		if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
-
-		const serviceInfo = serviceParamsManager.initFromUrl(params);
-
-		service = serviceInfo.service;
-		serviceParams = serviceInfo.params;
-
-		return {service, serviceParams};
-	}
-
-	const twitchService = createTwitchService();
-	let twitchVideos = [];
-
-	const accSaberService = createAccSaberService();
 
 	async function changeParams(newPlayerId, service, serviceParams) {
 		if (!newPlayerId) return;
@@ -60,6 +50,45 @@
 			playerStore.setServiceParams(serviceParams);
 		}
 	}
+
+	async function refreshSavedParams() {
+		let params = serviceParamsManager.getParams();
+		const scoresSortOptions = await configStore.get('preferences').scoresSortOptions;
+		if (scoresSortOptions == 'last') {
+			const sortingOption = await keyValueRepository().get(STORE_SORTING_KEY);
+			if (sortingOption) {
+				params.sort = sortingOption;
+			}
+			const orderOption = await keyValueRepository().get(STORE_ORDER_KEY);
+			if (orderOption) {
+				params.order = orderOption;
+			}
+		} else {
+			params.sort = scoresSortOptions;
+		}
+
+		changeParams(currentPlayerId, serviceParamsManager.getService(), params);
+	}
+
+	function processInitialParams(playerId, params) {
+		if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
+
+		const serviceInfo = serviceParamsManager.initFromUrl(params);
+
+		if (!params) {
+			refreshSavedParams();
+		}
+
+		service = serviceInfo.service;
+		serviceParams = serviceInfo.params;
+
+		return {service, serviceParams};
+	}
+
+	const twitchService = createTwitchService();
+	let twitchVideos = [];
+
+	const accSaberService = createAccSaberService();
 
 	function onPageChanged(event) {
 		let newPage = event?.detail ?? null;
@@ -140,8 +169,6 @@
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
-	$: currentService = $paramsStore.currentService;
-	$: currentServiceParams = $paramsStore.currentServiceParams;
 
 	$: playerIsLoading = playerStore ? playerStore.isLoading : null;
 	$: playerError = playerStore ? playerStore.error : null;

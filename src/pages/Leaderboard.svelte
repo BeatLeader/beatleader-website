@@ -144,7 +144,7 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
 	}
 
 	function scrollToTop() {
@@ -284,7 +284,7 @@
 	let draftList = [];
 
 	function startBattleRoyale() {
-		let link = `https://www.royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
+		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
 		window.open(link, '_blank');
 	}
 
@@ -352,10 +352,10 @@
 	function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
 		scoresWithUser =
 			!userScoreOnCurrentPage && scores?.length && userScore
-				? (userScore?.score?.score >= scores?.[0]?.score?.score ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
+				? (userScore?.score?.rank < scores?.[0]?.score?.rank ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
 						.concat(scores)
 						.concat(
-							userScore?.score?.score <= scores?.[scores.length - 1]?.score?.score
+							userScore?.score?.rank > scores?.[scores.length - 1]?.score?.rank
 								? [{...userScore, isUserScore: true, userScoreTop: false}]
 								: []
 						)
@@ -421,7 +421,8 @@
 	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
 	$: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL');
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
-	$: isNominated = leaderboard?.stats?.status === DifficultyStatus.qualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
+	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
+	$: isNominated = isQualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
 	$: qualification = leaderboard?.qualification;
 	$: calculateIsRankable(isRT, qualification);
 
@@ -620,7 +621,7 @@
 										}} />
 								{/if}
 							{/if}
-							{#if separatePage && isRT && isNominated}
+							{#if separatePage && isRT && (!isjuniorRT || !isQualified)}
 								<Button
 									cls="voteButton"
 									iconFa="fas fa-list-check"
@@ -679,7 +680,7 @@
 											<Avatar player={score.player} />
 											<PlayerNameWithFlag
 												player={score.player}
-												type={type === 'accsaber' ? 'accsaber/date' : 'beatleader/date'}
+												type={type === 'accsaber' ? 'accsaber/date' : ''}
 												on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
 											<ClanBadges player={score.player} />

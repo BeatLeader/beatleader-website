@@ -10,7 +10,7 @@ import stringify from 'json-stable-stringify';
 export default (
 	playerId = null,
 	service = 'beatleader',
-	serviceParams = {type: 'date', page: 1},
+	serviceParams = {type: 'pp', page: 1},
 	initialState = null,
 	initialStateType = 'initial'
 ) => {

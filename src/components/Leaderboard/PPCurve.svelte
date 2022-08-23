@@ -64,13 +64,14 @@
 			if (!minPp) minPp = pp;
 
 			if (acc > startAcc && (acc * 100) % Math.round(((maxAcc - startAcc) * 100) / 8) < 0.001)
-				annotations.push({
-					min: acc,
-					max: acc,
-					color: annotationColor,
-					label: `${formatNumber(pp, 0)}pp`,
-					position: {horizontal: 'left', vertical: 'top'},
-				});
+				if (pp)
+					annotations.push({
+						min: acc,
+						max: acc,
+						color: annotationColor,
+						label: `${formatNumber(pp, 0)}pp`,
+						position: {horizontal: 'left', vertical: 'top'},
+					});
 		}
 
 		const datasets = [

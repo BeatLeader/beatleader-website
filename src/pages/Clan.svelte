@@ -16,6 +16,7 @@
 	import Button from '../components/Common/Button.svelte';
 	import Dialog from '../components/Common/Dialog.svelte';
 	import Error from '../components/Common/Error.svelte';
+	import Rain from '../components/Common/Rain.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -139,6 +140,10 @@
 <svelte:head>
 	<title>{clan?.name ?? ''} / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
+
+{#if clan?.tag == 'BSFR' || clan?.tag == 'BB'}
+	<Rain baguete={clan?.tag == 'BSFR'} />
+{/if}
 
 <section class="align-content">
 	<article class="page-content">

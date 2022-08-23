@@ -17,6 +17,7 @@
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
+	import Rain from '../Common/Rain.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -139,6 +140,10 @@
 	);
 </script>
 
+{#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
+	<Rain />
+{/if}
+
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>
 	<div class="player-general-info">
 		<div class="avatar-and-roles">
@@ -230,8 +235,8 @@
 	}
 
 	:global(.inner-modal) {
-		z-index: 100;
-		position: relative;
+		z-index: 100 !important;
+		position: relative !important;
 	}
 
 	@media screen and (max-width: 767px) {

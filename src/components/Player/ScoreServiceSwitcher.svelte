@@ -10,7 +10,7 @@
 
 	export let playerId = null;
 	export let service = 'beatleader';
-	export let serviceParams = {sort: 'date', order: 'desc'};
+	export let serviceParams = {sort: 'pp', order: 'desc'};
 	export let loadingService = null;
 	export let loadingServiceParams = null;
 
@@ -27,14 +27,14 @@
 			id: 'beatleader',
 			label: 'BeatLeader',
 			icon: '<div class="beatleader-icon"></div>',
-			url: `/u/${playerId}/beatleader/date/1`,
+			url: `/u/${playerId}`,
 			switcherComponents: [
 				{
 					component: Switcher,
 					props: {
 						values: [
-							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/date/1`},
 							{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/pp/1`},
+							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/date/1`},
 							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/acc/1`},
 							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
 							{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/beatleader/stars/1`},

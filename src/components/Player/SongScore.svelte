@@ -70,7 +70,7 @@
 					{#if showSong}
 						{#if withPlayers}
 							<div class="player">
-								<PlayerNameWithFlag player={songScore.player} type={service === 'accsaber' ? 'accsaber/date' : 'beatleader/date'} />
+								<PlayerNameWithFlag player={songScore.player} type={service === 'accsaber' ? 'accsaber/date' : ''} />
 							</div>
 						{/if}
 

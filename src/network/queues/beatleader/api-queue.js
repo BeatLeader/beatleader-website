@@ -28,6 +28,9 @@ export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
 	'players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
+export const BL_API_EVENT_RANKING_URL =
+	BL_API_URL +
+	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
 export const BL_API_LEADERBOARD_URL =
 	BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}';
 export const BL_API_LEADERBOARDS_URL =
@@ -224,6 +227,22 @@ export default (options = {}) => {
 	const rankingFriends = async (page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
 		rankingGlobal(page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
+	const rankingEventGlobal = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) => {
+		return fetchJson(substituteVars(BL_API_EVENT_RANKING_URL, {page, eventId, ...filters}, true, true), options, priority);
+	};
+
+	const rankingEventCountry = async (
+		countries,
+		page = 1,
+		eventId = 1,
+		filters = {sortBy: 'pp'},
+		priority = PRIORITY.FG_LOW,
+		options = {}
+	) => rankingEventGlobal(page, eventId, {...filters, countries}, priority, options);
+
+	const rankingEventFriends = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
+		rankingEventGlobal(page, eventId, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
+
 	const minirankings = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);
 
@@ -364,6 +383,9 @@ export default (options = {}) => {
 		rankingGlobal,
 		rankingCountry,
 		rankingFriends,
+		rankingEventGlobal,
+		rankingEventCountry,
+		rankingEventFriends,
 		scores,
 		scoreStats,
 		leaderboardStats,

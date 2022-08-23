@@ -330,6 +330,13 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
+		<div class="event-banner" on:click={() => navigate('/event/1')}>
+			<span class="event-title">
+				The first ever batch of maps was ranked.<br />
+				Take part in a weekly small competition!
+			</span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/33-event.png" />
+		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
 				Ranking
@@ -441,6 +448,28 @@
 
 	aside :global(.switch-types) {
 		justify-content: flex-start;
+	}
+
+	.event-banner {
+		display: flex;
+		align-items: center;
+		background: blueviolet;
+		grid-gap: 1em;
+		justify-content: center;
+		margin: 0.6em;
+		padding: 1em;
+		border-radius: 0.5em;
+		cursor: pointer;
+	}
+
+	.event-image {
+		width: 4em;
+		height: 4em;
+	}
+
+	.event-title {
+		font-size: larger;
+		font-weight: 600;
 	}
 
 	@media screen and (max-width: 1275px) {

@@ -497,7 +497,7 @@
 							carry.nominated += !!diff?.nominated || !!diff?.qualified ? 1 : 0;
 							carry.qualified += !!diff?.qualified ? 1 : 0;
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
-							carry.criteriaMet += diff?.qualification?.criteriaMet === 1 ? 1 : 0;
+							carry.criteriaMet += diff?.qualification?.criteriaMet !== 0 ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
 							carry.votesTotal += diff?.votes?.length ?? 0;
 							carry.votesPositive += diff?.votesPositive ?? 0;
@@ -657,7 +657,9 @@
 	$: allLabelsHash = allLabels.map(v => v?.id ?? '').join(':') ?? '';
 
 	$: playerId = $account?.id;
-	$: isRT = $account?.player?.playerInfo?.role?.split(',')?.some(role => ['admin', 'rankedteam', 'creator'].includes(role));
+	$: isRT = $account?.player?.playerInfo?.role
+		?.split(',')
+		?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
 	$: if (!$account?.loading && isRT) fetchMaps();
 	$: if (!$account?.loading && !isRT) navigate('/');
 

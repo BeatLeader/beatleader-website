@@ -13,7 +13,20 @@
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}/beatleader/date/1`);
+		navigate(`/u/${playerId}`);
+	}
+
+	function criteriaStatusDescription(criteriaMet) {
+		switch (criteriaMet) {
+			case 0:
+				return 'Not checked';
+			case 1:
+				return 'Met criteria';
+			case 2:
+				return 'Unmet criteria';
+			case 3:
+				return 'Criteria on hold';
+		}
 	}
 
 	let player;
@@ -30,7 +43,7 @@
 {#if change}
 	<div class="qualification-description">
 		<Avatar {player} />
-		<PlayerNameWithFlag {player} type={'beatleader/date'} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+		<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
 		<div class="timeset">
 			<span style="color: {getTimeStringColor(change?.timeset)}; ">
 				{formatDateRelative(dateFromUnix(change.timeset))}
@@ -46,7 +59,7 @@
 		{/if}
 
 		{#if change.oldCriteriaMet != change.newCriteriaMet}
-			{change.oldCriteriaMet == 1 ? 'Met criteria' : 'Unmet criteria'} → {change.newCriteriaMet == 1 ? 'Met criteria' : 'Unmet criteria'}
+			{criteriaStatusDescription(change.oldCriteriaMet)} → {criteriaStatusDescription(change.newCriteriaMet)}
 		{/if}
 
 		{#if change.oldRankability != change.newRankability}

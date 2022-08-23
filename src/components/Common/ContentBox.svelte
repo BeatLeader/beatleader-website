@@ -16,6 +16,8 @@
 		margin: 4px 10px 18px;
 		border-radius: 6px;
 		padding: 1rem;
+		position: relative;
+		z-index: 1;
 	}
 
 	.content-box:hover {

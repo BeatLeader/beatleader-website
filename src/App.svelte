@@ -7,6 +7,7 @@
 	import HomePage from './pages/Home.svelte';
 	import SearchPage from './pages/Search.svelte';
 	import RankingPage from './pages/Ranking.svelte';
+	import EventPage from './pages/Event.svelte';
 	import LeaderboardPage from './pages/Leaderboard.svelte';
 	import LeaderboardsPage from './pages/Leaderboards.svelte';
 	import ClanPage from './pages/Clan.svelte';
@@ -87,6 +88,9 @@
 				</Route>
 				<Route path="/clan/:clanId/*page" let:params>
 					<ClanPage clanId={params.clanId} page={params.page} />
+				</Route>
+				<Route path="/event/:eventId/*page" let:params let:location>
+					<EventPage eventId={params.eventId} page={params.page} {location} />
 				</Route>
 				<Route path="/clans/*page" let:params let:location>
 					<ClansPage page={params.page} {location} />

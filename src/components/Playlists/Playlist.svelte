@@ -137,7 +137,7 @@
 
 					{#if owner}
 						<div class="player">
-							<PlayerNameWithFlag player={owner} type={'beatleader/date'} />
+							<PlayerNameWithFlag player={owner} />
 						</div>
 					{/if}
 
@@ -185,8 +185,8 @@
 	.playlistTitle {
 		display: block;
 		max-width: 80%;
-		overflow: hidden;
-		max-height: 80%;
+		max-height: 3em;
+		overflow: auto;
 	}
 
 	.titleAndButtons {

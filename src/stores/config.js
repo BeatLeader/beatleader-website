@@ -24,6 +24,7 @@ const DEFAULT_CONFIG = {
 	preferences: {
 		ppMetric: 'weighted',
 		iconsOnAvatars: 'show',
+		scoresSortOptions: 'last',
 		theme: 'mirror',
 		oneclick: 'modassistant',
 		bgimage: '/assets/background.png',

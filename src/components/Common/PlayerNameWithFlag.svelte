@@ -4,7 +4,7 @@
 	import Flag from './Flag.svelte';
 
 	export let player;
-	export let type = 'beatleader/date';
+	export let type = '';
 	export let hideFlag = false;
 	export let withCrown = false;
 

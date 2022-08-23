@@ -1,5 +1,4 @@
 <script>
-	import {fade} from 'svelte/transition';
 	import Value from './Value.svelte';
 
 	export let label = null;
@@ -31,7 +30,6 @@
 	class:fluid
 	style="--color:{color}; --background-color:{bgColor}"
 	{title}
-	transition:fade={{duration: 500}}
 	on:click>
 	<span class="label"><slot name="label">{label}</slot></span>
 	{#if !onlyLabel}

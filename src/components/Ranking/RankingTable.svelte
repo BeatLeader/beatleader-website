@@ -3,6 +3,7 @@
 	import {fly} from 'svelte/transition';
 	import createAccountStore from '../../stores/beatleader/account';
 	import createRankingStore from '../../stores/http/http-ranking-store';
+	import createEventRankingStore from '../../stores/http/http-event-ranking-store';
 	import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts';
 	import Pager from '../Common/Pager.svelte';
 	import PlayerCard from './PlayerCard.svelte';
@@ -15,6 +16,7 @@
 	export let page = 1;
 	export let filters = {};
 	export let noIcons = false;
+	export let eventId = null;
 	export let useInternalFilters = false;
 
 	const dispatch = createEventDispatcher();
@@ -138,13 +140,17 @@
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
-	const rankingStore = createRankingStore(type, page, filters, []);
+	const rankingStore = eventId ? createEventRankingStore(type, page, eventId, filters, []) : createRankingStore(type, page, filters, []);
 
 	function changeParams(newType, newPage, newFilters) {
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
 
-		rankingStore.fetch(newType, newPage, {...newFilters}, true);
+		if (eventId) {
+			rankingStore.fetch(newType, newPage, eventId, {...newFilters}, true);
+		} else {
+			rankingStore.fetch(newType, newPage, {...newFilters}, true);
+		}
 	}
 
 	function onSwitcherChanged(e) {
@@ -223,14 +229,16 @@
 </script>
 
 {#if $rankingStore?.data?.length}
-	<nav class="switcher-nav">
-		<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-		<select class="type-select" bind:value={currentTypeValue} on:change={onTypeChanged}>
-			{#each allTypeValues as option (option.value)}
-				<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
-			{/each}
-		</select>
-	</nav>
+	{#if !eventId}
+		<nav class="switcher-nav">
+			<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+			<select class="type-select" bind:value={currentTypeValue} on:change={onTypeChanged}>
+				{#each allTypeValues as option (option.value)}
+					<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
+				{/each}
+			</select>
+		</nav>
+	{/if}
 
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
