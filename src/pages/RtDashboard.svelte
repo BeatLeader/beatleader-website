@@ -254,6 +254,7 @@
 			value: [],
 			valueCondition: 'or',
 			values: [
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
 				{
@@ -272,7 +273,6 @@
 					deserializeParam: deserializeCriteriaStatus,
 				},
 				{id: 'approved', label: 'RT approved'},
-				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
@@ -292,6 +292,7 @@
 			value: [],
 			valueCondition: 'or',
 			values: [
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
 				{
@@ -310,7 +311,6 @@
 					deserializeParam: deserializeCriteriaStatus,
 				},
 				{id: 'approved', label: 'RT approved'},
-				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
