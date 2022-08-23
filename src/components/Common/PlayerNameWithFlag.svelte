@@ -20,7 +20,7 @@
 		<Flag {country} on:flag-click />
 	{/if}
 	<span class="name"
-		>{#if withCrown}<span class="crown">👑</span>{/if}{name}</span>
+		>{#if withCrown}<span class="crown">👑</span>{/if}{name ?? 'Unknown'}</span>
 </a>
 
 <style>
