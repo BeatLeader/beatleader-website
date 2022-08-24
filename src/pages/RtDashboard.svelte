@@ -25,9 +25,10 @@
 	import Difficulty from '../components/Song/Difficulty.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import Select from 'svelte-select';
+	import CustomSelect from '../components/Common/Select.svelte';
 	import {dateFromUnix, DAY, formatDate, formatDateRelative, willBeRankedInCurrentBatch} from '../utils/date';
 	import Button from '../components/Common/Button.svelte';
-	import {mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
+	import {DifficultyStatus, mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 
 	export let location;
@@ -123,6 +124,28 @@
 		}
 	};
 
+	const onSwitchWithMultiSelectChange = (e, key) => {
+		const param = findParam(key);
+		if (param) {
+			if (e?.detail?.componentValue) {
+				const paramValue = param?.values?.find(pv => pv.id === e?.detail?.id);
+				if (!paramValue?.componentProps?.value) return;
+
+				if (e.detail.componentValue?.value) {
+					paramValue.componentProps.value = e.detail.componentValue.value;
+				}
+
+				param.value = (param?.value ?? []).find(v => v.id === paramValue.id)
+					? (param?.value ?? []).filter(p => p?.id !== paramValue.id).concat(paramValue.componentProps.value?.length ? paramValue : [])
+					: [...(param?.value ?? []), paramValue];
+
+				updateCurrentFiltersFromParams();
+			} else {
+				onMultiSwitchChange(e, key);
+			}
+		}
+	};
+
 	const onConditionChange = (e, key) => {
 		const param = findParam(key);
 		if (param) {
@@ -149,6 +172,62 @@
 		}, 500);
 	};
 
+	const criteriaValues = [
+		{label: 'Met', value: 1},
+		{label: 'NOT checked', value: 0},
+		{label: 'On hold', value: 3},
+		{label: 'NOT met', value: 2},
+	];
+
+	const serializeCriteriaStatus = paramValue =>
+		paramValue?.id +
+		':' +
+		(paramValue?.componentProps?.value ?? [])
+			.map(v => v?.value)
+			.filter(v => Number.isFinite(v))
+			.join(':');
+
+	const deserializeCriteriaStatus = (paramValue, values) => {
+		if (!values?.length || !paramValue?.componentProps?.items?.length) return;
+
+		const valuesCasted = values.map(v => parseInt(v, 10)).filter(v => !isNaN(v));
+		paramValue.componentProps.value = paramValue.componentProps.items.filter(i => valuesCasted.includes(i.value));
+	};
+
+	const deserializeStatus = (param, filters) => {
+		if (param.multi) {
+			const filterValue = (filters?.[param.key] ?? [])
+				.map(filterValue => {
+					const parts = filterValue.split(':');
+					const id = parts.shift();
+
+					return id ? {id, rest: parts} : null;
+				})
+				.filter(fv => fv);
+			const filterIds = filterValue.map(fv => fv?.id).filter(id => id);
+
+			param.value = param?.values?.filter(v => filterIds.includes(v.id)) ?? param?.default ?? [];
+
+			param.value.forEach(pv => {
+				if (!pv.deserializeParam) return;
+
+				pv.deserializeParam(pv, filterValue.find(fv => fv.id === pv.id)?.rest ?? null);
+			});
+		} else {
+			param.value = filters?.[param.key] ?? param?.default ?? '';
+		}
+
+		filters[param.key] = param.multi
+			? (param?.value ?? [])
+					?.map(paramValue => (paramValue?.serializeParam ? paramValue.serializeParam(paramValue) : paramValue.id))
+					?.filter(v => v) ??
+			  param?.default ??
+			  []
+			: filters?.[param.key]?.length
+			? filters[param.key]
+			: param?.default ?? '';
+	};
+
 	const params = [
 		{
 			key: 'mine',
@@ -170,19 +249,34 @@
 			default: '',
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
+			deserialize: deserializeStatus,
 			type: 'switch',
 			value: [],
 			valueCondition: 'or',
 			values: [
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
-				{id: 'criteria', label: 'Criteria checked'},
+				{
+					id: 'criteria',
+					label: 'Any Criteria',
+					component: CustomSelect,
+					componentProps: {
+						value: [],
+						items: criteriaValues.map(v => ({...v})),
+						multiple: true,
+						noSelected: 'Any Criteria',
+						prefix: 'Criteria: ',
+						minSelected: 0,
+					},
+					serializeParam: serializeCriteriaStatus,
+					deserializeParam: deserializeCriteriaStatus,
+				},
 				{id: 'approved', label: 'RT approved'},
-				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
-			onChange: e => onMultiSwitchChange(e, 'status'),
+			onChange: e => onSwitchWithMultiSelectChange(e, 'status'),
 			multi: true,
 			withCondition: true,
 			onConditionChange: e => onConditionChange(e, 'status'),
@@ -193,19 +287,34 @@
 			default: '',
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
+			deserialize: deserializeStatus,
 			type: 'switch',
 			value: [],
 			valueCondition: 'or',
 			values: [
+				{id: 'current_batch', label: 'Current batch'},
 				{id: 'nominated', label: 'Nominated'},
 				{id: 'allowed', label: 'Mapper allowed'},
-				{id: 'criteria', label: 'Criteria checked'},
+				{
+					id: 'criteria',
+					label: 'Any Criteria',
+					component: CustomSelect,
+					componentProps: {
+						value: [],
+						items: criteriaValues.map(v => ({...v})),
+						multiple: true,
+						noSelected: 'Any Criteria',
+						prefix: 'Criteria: ',
+						minSelected: 0,
+					},
+					serializeParam: serializeCriteriaStatus,
+					deserializeParam: deserializeCriteriaStatus,
+				},
 				{id: 'approved', label: 'RT approved'},
-				{id: 'current_batch', label: 'Current batch'},
 				{id: 'voted', label: 'Has votes'},
 				{id: 'with_stars', label: 'Has stars'},
 			],
-			onChange: e => onMultiSwitchChange(e, 'status_not'),
+			onChange: e => onSwitchWithMultiSelectChange(e, 'status_not'),
 			multi: true,
 			withCondition: true,
 			onConditionChange: e => onConditionChange(e, 'status_not'),
@@ -319,6 +428,10 @@
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
 		params.forEach(p => {
 			switch (true) {
+				case !!p.deserialize:
+					p.deserialize(p, filters);
+					break;
+
 				case p.key === 'star_range':
 					p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
 					filters[p.key] = filters[p.key] ?? 0;
@@ -361,7 +474,9 @@
 					break;
 
 				default:
-					currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id) : p?.value ?? '';
+					currentFilters[p.key] = p.multi
+						? (p?.value ?? [])?.map(paramValue => (paramValue?.serializeParam ? paramValue.serializeParam(paramValue) : paramValue.id))
+						: p?.value ?? '';
 					break;
 			}
 
@@ -494,10 +609,18 @@
 				.map(s => {
 					const totals = (s?.difficulties ?? []).reduce(
 						(carry, diff) => {
-							carry.nominated += !!diff?.nominated || !!diff?.qualified ? 1 : 0;
-							carry.qualified += !!diff?.qualified ? 1 : 0;
+							carry.nominated +=
+								[DifficultyStatus.nominated, DifficultyStatus.qualified, DifficultyStatus.ranked].includes(diff?.status) ||
+								!!diff?.nominated ||
+								!!diff?.qualified ||
+								!!diff?.ranked ||
+								diff?.qualification?.timeset
+									? 1
+									: 0;
+							carry.qualified +=
+								diff?.status === DifficultyStatus.qualified || DifficultyStatus.ranked || !!diff?.qualified || !!diff?.ranked ? 1 : 0;
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
-							carry.criteriaMet += diff?.qualification?.criteriaMet !== 0 ? 1 : 0;
+							carry.criteriaMet += diff?.qualification?.criteriaMet === 1 ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
 							carry.votesTotal += diff?.votes?.length ?? 0;
 							carry.votesPositive += diff?.votesPositive ?? 0;
@@ -534,10 +657,27 @@
 									votesNegative: diff.votesNegative ?? 0,
 									votesTotal: diff.votesTotal ?? 0,
 									votesRating: diff.votesRating ?? 0,
-									nominated: !!diff?.nominated || !!diff?.qualified ? 'Yes' : 'No',
-									qualified: !!diff?.qualified ? 'Yes' : 'No',
+									nominated:
+										[DifficultyStatus.nominated, DifficultyStatus.qualified, DifficultyStatus.ranked].includes(diff?.status) ||
+										!!diff?.nominated ||
+										!!diff?.qualified ||
+										!!diff?.ranked ||
+										diff?.qualification?.timeset
+											? 'Yes'
+											: 'No',
+									qualified:
+										diff?.status === DifficultyStatus.qualified || DifficultyStatus.ranked || !!diff?.qualified || !!diff?.ranked
+											? 'Yes'
+											: 'No',
 									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
-									criteriaMet: diff?.qualification?.criteriaMet === 1 ? 'Yes' : diff?.qualification?.criteriaMet === 2 ? 'Failed' : 'No',
+									criteriaMet:
+										diff?.qualification?.criteriaMet === 1
+											? 'Yes'
+											: diff?.qualification?.criteriaMet === 2
+											? 'Failed'
+											: diff?.qualification?.criteriaMet === 3
+											? 'On hold'
+											: 'No',
 									approved: diff?.qualification?.approved ? 'Yes' : 'No',
 								};
 							}),
@@ -546,7 +686,7 @@
 
 					return {...s, totals};
 				})
-				.filter(s => !(s?.difficulties ?? [])?.every(d => d?.ranked));
+				.filter(s => !(s?.difficulties ?? [])?.every(d => d?.status === DifficultyStatus.ranked));
 		} catch (err) {
 			error = err;
 		} finally {
@@ -692,6 +832,10 @@
 				const statusCond = currentFilters?.status_cond ?? 'or';
 				result &&= currentFilters?.status?.length
 					? currentFilters.status.reduce((result, key) => {
+							const parts = key.split(':');
+							key = parts?.length ? parts.shift() : key;
+							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
+
 							switch (key) {
 								case 'nominated':
 									if (statusCond === 'or') result ||= s?.totals?.nominated > 0;
@@ -704,8 +848,15 @@
 									break;
 
 								case 'criteria':
-									if (statusCond === 'or') result ||= s?.totals?.criteriaMet > 0;
-									else result &&= s?.totals?.criteriaMet > 0;
+									switch (statusCond) {
+										case 'or':
+											result ||= (s?.difficulties ?? [])?.some(d => values.includes(d?.qualification?.criteriaMet));
+											break;
+
+										case 'and':
+											result &&= (s?.difficulties ?? [])?.some(d => values.includes(d?.qualification?.criteriaMet));
+											break;
+									}
 									break;
 
 								case 'approved':
@@ -742,6 +893,10 @@
 				const statusNotCond = currentFilters?.status_not_cond ?? 'or';
 				result &&= currentFilters?.status_not?.length
 					? currentFilters.status_not.reduce((result, key) => {
+							const parts = key.split(':');
+							key = parts?.length ? parts.shift() : key;
+							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
+
 							switch (key) {
 								case 'nominated':
 									if (statusNotCond === 'or') result ||= s?.totals?.nominated < s?.difficulties?.length;
@@ -754,8 +909,15 @@
 									break;
 
 								case 'criteria':
-									if (statusNotCond === 'or') result ||= s?.totals?.criteriaMet < s?.difficulties?.length;
-									else result &&= s?.totals?.criteriaMet < s?.difficulties?.length;
+									switch (statusCond) {
+										case 'or':
+											result ||= (s?.difficulties ?? [])?.some(d => !values.includes(d?.qualification?.criteriaMet));
+											break;
+
+										case 'and':
+											result &&= (s?.difficulties ?? [])?.some(d => !values.includes(d?.qualification?.criteriaMet));
+											break;
+									}
 									break;
 
 								case 'approved':

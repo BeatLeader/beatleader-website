@@ -49,9 +49,7 @@
 					class:ok={totals[`${key}Ratio`] === 1}
 					class:warning={totals[`${key}Ratio`] < 1 && totals[`${key}Ratio`] >= 0.5}
 					class:error={totals[`${key}Ratio`] < 0.5}
-					title={`${keys[key]}\n${
-						totals?.byDiff?.length > 1 ? totals.byDiff.map(d => `${d.name} / ${d?.[key] ?? '???'}`).join('\n') : ''
-					}`}>
+					title={`${keys[key]}\n${totals.byDiff.map(d => `${d.name} / ${d?.[key] ?? '???'}`).join('\n')}`}>
 					{#if totals[`${key}Ratio`] === 1}
 						<i class="fa fa-check" />
 					{:else}
