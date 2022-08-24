@@ -38,6 +38,7 @@ function updateScoresStats(playerData) {
 					suffix: '%',
 					bgColor: 'var(--ppColour)',
 				},
+				{key: 'averageRank', label: 'Average rank', title: 'Average rank', digits: 2, prefix: '#', bgColor: 'var(--selected)'},
 				{key: 'topPlatform', label: 'Platform', title: 'Last 50 scores top platform', bgColor: 'var(--selected)'},
 				{key: 'topHMD', label: 'Headset', title: 'Last 50 scores top headset', bgColor: 'var(--selected)'},
 		  ]
@@ -65,6 +66,7 @@ function updateScoresStats(playerData) {
 				prevValue: s.suffix === '%' && statsHistory?.[s.key]?.length > 1 ? statsHistory[s.key][statsHistory[s.key].length - 2] : null,
 				prevLabel: 'Yesterday',
 				digits: s?.digits ?? 0,
+				prefix: s?.prefix ?? '',
 				suffix: s?.suffix ?? '',
 				fluid: true,
 				bgColor: s?.bgColor ?? 'var(--dimmed)',
