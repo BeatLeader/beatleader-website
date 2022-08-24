@@ -9,7 +9,6 @@
 	let roleIcon;
 	let roleDescription;
 	let roleLink;
-	let iconClass;
 	let show = false;
 
 	async function verifyMapper(mapperId) {
@@ -20,14 +19,8 @@
 		if (mapperInfoValue.verifiedMapper) {
 			roleIcon = BL_CDN + '/assets/mapper.png';
 			roleDescription = 'Verified maps creator';
-			iconClass = null;
-		} else {
-			roleIcon = 'https://beatsaver.com/static/favicon/apple-touch-icon.png';
-			roleDescription = 'Has BeatSaver account';
-			iconClass = 'small';
+			roleLink = 'https://beatsaver.com/profile/' + mapperId;
 		}
-
-		roleLink = 'https://beatsaver.com/profile/' + mapperId;
 	}
 
 	function updateRoleIcon(role, mapperId) {
@@ -94,11 +87,11 @@
 
 {#if show && roleIcon}
 	{#if roleLink}
-		<a class="player-role {iconClass} {onAvatar ? 'on-avatar' : ''}" href={roleLink}>
+		<a class="player-role {onAvatar ? 'on-avatar' : ''}" href={roleLink}>
 			<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
 		</a>
 	{:else}
-		<div class="player-role {iconClass} {onAvatar ? 'on-avatar' : ''}">
+		<div class="player-role {onAvatar ? 'on-avatar' : ''}">
 			<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
 		</div>
 	{/if}
@@ -115,10 +108,6 @@
 	.role-icon {
 		z-index: 5;
 		width: 100%;
-	}
-
-	.small {
-		width: 2.5em;
 	}
 
 	.on-avatar {

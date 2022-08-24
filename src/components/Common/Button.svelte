@@ -19,6 +19,7 @@
 	export let selectedOption = null;
 	export let loading = false;
 	export let url = null;
+	export let onlyurl = false;
 
 	if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -52,6 +53,14 @@
 			activeColor: '#fff',
 			bgColor: '#9146ff',
 			activeBgColor: '#8333ff',
+			border: 'transparent',
+			activeBorder: 'transparent',
+		},
+		twitter: {
+			color: '#dbdbdb',
+			activeColor: '#fff',
+			bgColor: '#1DA1F2',
+			activeBgColor: '#1DA1F2',
 			border: 'transparent',
 			activeBorder: 'transparent',
 		},
@@ -101,7 +110,13 @@
 		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}"
-		on:click|preventDefault|stopPropagation={() => dispatch('click', selectedOption)}
+		on:click={e => {
+			if (!onlyurl) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+			dispatch('click', selectedOption);
+		}}
 		{disabled}
 		{title}
 		class={'button clickable ' + (type ? type : 'default') + ' ' + cls}

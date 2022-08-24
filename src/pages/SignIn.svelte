@@ -35,6 +35,8 @@
 	}
 
 	$: loggedInPlayer = opt($account, 'id');
+	$: socials = opt($account, 'player.playerInfo.socials');
+	$: console.log(socials);
 	$: error = opt($account, 'error') ?? $oculus?.error;
 	$: message = opt($account, 'message');
 	$: patreoned = opt($account, 'patreoned');
@@ -146,12 +148,12 @@
 			<Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)} />
 		{/if}
 	{:else if action == 'linkPatreon'}
-		<div>
+		<span>
 			Link your account to receive patreon features for your tier.<br /><br />
 
 			If you are not yet a patron, you can become one
 			<strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</a></strong>
-		</div>
+		</span>
 
 		<form action={BL_API_URL + 'signin'} method="post">
 			<input type="hidden" name="Provider" value="Patreon" />
@@ -159,18 +161,64 @@
 
 			<Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit" />
 		</form>
-	{:else if action == 'linkBeatSaver'}
-		<div>
-			Link your account to receive mapper role.<br />
-			And receive a profile badge if you are approved mapper.<br />
-		</div>
+	{:else if action == 'socials'}
+		{#if socials && socials.find(s => s.service == 'BeatSaver')}
+			{#if loggedInPlayer > 1000000000000000}
+				<form action={BL_API_URL + 'user/unlink'} method="post">
+					<input type="hidden" name="Provider" value="BeatSaver" />
+					<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
 
-		<form action={BL_API_URL + 'signin'} method="post">
-			<input type="hidden" name="Provider" value="BeatSaver" />
-			<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+					<Button icon={beatSaverSvg} label="Unlink BeatSaver" type="danger" />
+				</form>
+			{/if}
+		{:else}
+			<span>
+				Link BeatSaver to receive mapper role.<br />
+				And receive a profile badge if you are approved mapper.<br />
+			</span>
 
-			<Button iconFa="fas fa-plus-square" label="Link to BeatSaver" type="submit" />
-		</form>
+			<form action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="BeatSaver" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button iconFa="fas fa-plus-square" label="Link to BeatSaver" type="submit" />
+			</form>
+		{/if}
+
+		<span>
+			Link social platforms to add buttons on your profile and<br />
+			in-game if you are Patreon supporter.
+		</span>
+		{#if socials && socials.find(s => s.service == 'Twitch')}
+			<form action={BL_API_URL + 'user/unlink'} method="post">
+				<input type="hidden" name="Provider" value="Twitch" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button iconFa="fab fa-twitch" label="Unlink Twitch" type="danger" />
+			</form>
+		{:else}
+			<form class="twitch" action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="Twitch" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button type="twitch" iconFa="fab fa-twitch" label="Link Twitch" />
+			</form>
+		{/if}
+		{#if socials && socials.find(s => s.service == 'Twitter')}
+			<form action={BL_API_URL + 'user/unlink'} method="post">
+				<input type="hidden" name="Provider" value="Twitter" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button iconFa="fab fa-twitter" label="Unlink Twitter" type="danger" />
+			</form>
+		{:else}
+			<form class="twitter" action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="Twitter" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button type="twitter" iconFa="fab fa-twitter" label="Link Twitter" />
+			</form>
+		{/if}
 	{:else if action == 'patreon'}
 		{#if patreoned}
 			Yay!<br />
@@ -328,5 +376,9 @@
 	}
 	.title {
 		margin-top: 1em;
+	}
+	.twitch :global(.button) {
+		font-size: 0.875em;
+		width: max-content;
 	}
 </style>

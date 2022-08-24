@@ -1,29 +1,23 @@
 <script>
-	import createTwitchService from '../../services/twitch';
 	import {configStore} from '../../stores/config';
 	import createAccountStore from '../../stores/beatleader/account';
 	import friends from '../../stores/beatleader/friends';
-	import {opt} from '../../utils/js';
 	import {SsrHttpResponseError} from '../../network/errors';
-	import {createEventDispatcher, onMount} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	import createClanService from '../../services/beatleader/clan';
 	import Button from '../Common/Button.svelte';
-	import TwitchLinkModal from './TwitchLinkModal.svelte';
 	import Dialog from '../Common/Dialog.svelte';
 	import Error from '../Common/Error.svelte';
 
-	export let playerId;
+	export let playerData;
+
+	let playerInfo = playerData.playerInfo;
+	let playerId = playerData.playerId;
 
 	const dispatch = createEventDispatcher();
 
 	const account = createAccountStore();
-	const twitchService = createTwitchService();
 	const clanService = createClanService();
-
-	let twitchToken = null;
-	let playerTwitchProfile = null;
-
-	let showLinkingModal = false;
 
 	let operationInProgress = false;
 	async function onFriendsChange(op) {
@@ -45,28 +39,6 @@
 			operationInProgress = false;
 		}
 	}
-
-	async function onTwitchLink(event) {
-		if (!opt(event, 'detail.id')) return;
-
-		playerTwitchProfile = event.detail;
-
-		await twitchService.updatePlayerProfile({...event.detail, playerId, profileLastUpdated: new Date()});
-
-		showLinkingModal = false;
-
-		dispatch('modal-hidden', null);
-	}
-
-	async function onPlayerChanged(playerId) {
-		if (!playerId) return;
-
-		playerTwitchProfile = await twitchService.getPlayerProfile(playerId);
-	}
-
-	onMount(async () => {
-		twitchToken = await twitchService.getCurrentToken();
-	});
 
 	let fileinput;
 	const changeAvatar = e => {
@@ -130,13 +102,15 @@
 		}
 	}
 
-	$: onPlayerChanged(playerId);
-	$: isProfileLinkedToTwitch = !!playerTwitchProfile?.login ?? false;
 	$: isMain = playerId && $account?.id === playerId;
 	$: loggedInPlayer = $account?.id;
 	$: isFriend = playerId && !!$friends?.find(f => f?.playerId === playerId);
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
+
+	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
+	$: twitterSocial = playerInfo.socials?.find(s => s?.service === 'Twitter');
+	$: beatsaverSocial = playerInfo.socials?.find(s => s?.service === 'BeatSaver');
 
 	$: isUserFounderOfTheClan = !!$account?.clan;
 	$: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
@@ -178,17 +152,6 @@
 				on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')} />
 		{/if}
 
-		{#if twitchToken && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isProfileLinkedToTwitch))}
-			<Button
-				type="twitch"
-				iconFa="fab fa-twitch"
-				title={`${isProfileLinkedToTwitch ? 'Re-link' : 'Link'} Twitch profile`}
-				on:click={() => {
-					dispatch('modal-shown', null);
-					showLinkingModal = true;
-				}} />
-		{/if}
-
 		{#if isUserFounderOfTheClan}
 			{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
 				<Button
@@ -205,6 +168,36 @@
 			{/if}
 		{/if}
 
+		{#if twitchSocial}
+			<Button
+				cls="twitch"
+				url={twitchSocial.link}
+				onlyurl={true}
+				type="twitch"
+				iconFa="fab fa-twitch"
+				title="{twitchSocial.user} streamer" />
+		{/if}
+
+		{#if twitterSocial}
+			<Button
+				cls="twitter"
+				url={twitterSocial.link}
+				onlyurl={true}
+				type="twitter"
+				iconFa="fab fa-twitter"
+				title="{twitterSocial.user} drama starter" />
+		{/if}
+
+		{#if beatsaverSocial}
+			<Button
+				cls="beat-saver"
+				url={beatsaverSocial.link}
+				onlyurl={true}
+				type="purple"
+				icon="<img src='https://beatsaver.com/static/favicon/apple-touch-icon.png' />"
+				title="{beatsaverSocial.user} mapper" />
+		{/if}
+
 		{#if isMain || isAdmin}
 			<div class="imageInput" on:click={() => fileinput.click()}>
 				<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={e => changeAvatar(e)} bind:this={fileinput} />
@@ -216,10 +209,6 @@
 	</nav>
 {/if}
 
-{#if twitchToken}
-	<TwitchLinkModal {playerId} show={showLinkingModal} on:link={onTwitchLink} on:cancel={() => (showLinkingModal = false)} />
-{/if}
-
 <style>
 	nav {
 		position: absolute;
@@ -227,7 +216,7 @@
 		left: calc(50% - 50px);
 		text-align: left;
 		font-size: 0.75rem;
-		z-index: 4;
+		z-index: 6;
 	}
 
 	nav :global(button) {
@@ -236,19 +225,19 @@
 	}
 
 	nav :global(button):nth-child(1) {
-		transform: translate3d(-35px, 60px, 0);
+		transform: translate3d(-25px, 69px, 0);
 	}
 
 	nav :global(button):nth-child(1):hover {
-		transform: translate3d(-35px, 60px, 0) scale(1.2);
+		transform: translate3d(-25px, 69px, 0) scale(1.2);
 	}
 
 	nav :global(button):nth-child(2) {
-		transform: translate3d(-50px, 21px, 0);
+		transform: translate3d(-63px, 29px, 0);
 	}
 
 	nav :global(button):nth-child(2):hover {
-		transform: translate3d(-50px, 21px, 0) scale(1.2);
+		transform: translate3d(-63px, 29px, 0) scale(1.2);
 	}
 
 	nav :global(button):nth-child(3) {
@@ -267,14 +256,46 @@
 		transform: translate3d(50px, -45px, 0) scale(1.2);
 	}
 
+	nav :global(a) {
+		position: absolute !important;
+		border-radius: 50% !important;
+		transition: all 200ms !important;
+	}
+
+	nav :global(.beat-saver) {
+		left: 8.5em;
+		top: 5.8em;
+	}
+
+	nav :global(.beat-saver):hover {
+		transform: scale(1.2);
+	}
+
+	nav :global(.twitter) {
+		left: 9.5em;
+		top: 2.6em;
+	}
+
+	nav :global(.twitter):hover {
+		transform: scale(1.2);
+	}
+
+	nav :global(.twitch) {
+		left: 8.5em;
+		top: -0.6em;
+	}
+
+	nav :global(.twitch):hover {
+		transform: scale(1.2);
+	}
+
 	.imageInput {
 		cursor: pointer;
 		display: flex;
 		position: absolute;
-		width: 130px;
-		height: 200px;
-		margin-left: -5px;
-		margin-top: -40px;
+		width: 95px;
+		height: 96px;
+		margin-left: 1em;
 		align-items: center;
 	}
 

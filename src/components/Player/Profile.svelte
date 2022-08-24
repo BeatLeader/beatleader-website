@@ -150,9 +150,9 @@
 			<div class="avatar-cell">
 				<Avatar {isLoading} {playerInfo} hash={avatarHash} />
 
-				{#if playerId && !isLoading}
+				{#if playerInfo && !isLoading}
 					<AvatarOverlayIcons
-						{playerId}
+						{playerData}
 						on:modal-shown={() => (modalShown = true)}
 						on:modal-hidden={() => (modalShown = false)}
 						on:player-data-updated

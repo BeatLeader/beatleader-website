@@ -23,6 +23,7 @@ export default response => {
 		lastTwoWeekTime,
 		clans,
 		patreonFeatures,
+		socials,
 	} = response;
 
 	let profilePicture = avatar;
@@ -152,6 +153,7 @@ export default response => {
 			sponsor,
 			patreonFeatures,
 			mapperId,
+			socials,
 			rankHistory:
 				history && history.length
 					? history
