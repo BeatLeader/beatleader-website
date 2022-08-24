@@ -9,7 +9,7 @@
 	import PlayerStats from '../components/Player/ProfileHeaderInfo.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import Search from '../components/Player/Search.svelte';
-	import Icons from '../components/Player/AvatarOverlayIcons.svelte';
+	import AvatarOverlayIcons from '../components/Player/AvatarOverlayIcons.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 
 	const DEFAULT_NAME = 'Search a profile';
@@ -66,7 +66,7 @@
 	<ContentBox>
 		<div class="avatar">
 			{#if playerId && !isLoading}
-				<Icons {playerId} />
+				<AvatarOverlayIcons playerData={player} />
 			{/if}
 			<Avatar playerInfo={player ? player.playerInfo : null} {isLoading} centered={true} />
 		</div>

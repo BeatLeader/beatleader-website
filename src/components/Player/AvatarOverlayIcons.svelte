@@ -197,16 +197,16 @@
 				icon="<img src='https://beatsaver.com/static/favicon/apple-touch-icon.png' />"
 				title="{beatsaverSocial.user} mapper" />
 		{/if}
-
-		{#if isMain || isAdmin}
-			<div class="imageInput" on:click={() => fileinput.click()}>
-				<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={e => changeAvatar(e)} bind:this={fileinput} />
-				<span class="imageChange">
-					<h3 class="changeLabel">Change</h3>
-				</span>
-			</div>
-		{/if}
 	</nav>
+
+	{#if isMain || isAdmin}
+		<div class="imageInput" on:click={() => fileinput.click()}>
+			<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={e => changeAvatar(e)} bind:this={fileinput} />
+			<span class="imageChange">
+				<h3 class="changeLabel">Change</h3>
+			</span>
+		</div>
+	{/if}
 {/if}
 
 <style>
@@ -293,10 +293,12 @@
 		cursor: pointer;
 		display: flex;
 		position: absolute;
-		width: 95px;
-		height: 96px;
-		margin-left: 1em;
+		width: 100px;
+		height: 100px;
+		top: calc(50% - 48px);
+		left: calc(50% - 48px);
 		align-items: center;
+		z-index: 6;
 	}
 
 	.imageChange {
@@ -309,6 +311,7 @@
 		right: 0;
 		display: flex;
 		justify-content: center;
+		align-items: center;
 	}
 
 	.imageInput:hover .imageChange {
@@ -316,7 +319,6 @@
 	}
 
 	.changeLabel {
-		top: 30%;
 		position: absolute;
 	}
 </style>
