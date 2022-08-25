@@ -3,6 +3,6 @@
 	import {onMount} from 'svelte';
 
 	onMount(async () => {
-		navigate('/dashboard');
+		navigate('/dashboard', {replace: true});
 	});
 </script>

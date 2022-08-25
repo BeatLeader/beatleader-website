@@ -680,7 +680,7 @@
 											<Avatar player={score.player} />
 											<PlayerNameWithFlag
 												player={score.player}
-												type={type === 'accsaber' ? 'accsaber/date' : ''}
+												type={type === 'accsaber' ? 'accsaber/date' : null}
 												on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
 											<ClanBadges player={score.player} />

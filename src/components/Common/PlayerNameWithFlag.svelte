@@ -4,7 +4,7 @@
 	import Flag from './Flag.svelte';
 
 	export let player;
-	export let type = '';
+	export let type = null;
 	export let hideFlag = false;
 	export let withCrown = false;
 
@@ -15,7 +15,7 @@
 	$: playerId = player?.playerId ?? player?.id;
 </script>
 
-<a href={`/u/${playerId}/${type}/1`} class="player-name clickable has-pointer-events" title={name} on:click|preventDefault>
+<a href={`/u/${playerId}${type ? '/' + type : ''}/1`} class="player-name clickable has-pointer-events" title={name} on:click|preventDefault>
 	{#if !hideFlag}
 		<Flag {country} on:flag-click />
 	{/if}
