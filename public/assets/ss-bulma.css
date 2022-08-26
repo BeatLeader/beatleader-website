@@ -3035,7 +3035,7 @@ a.box:active {
 
 .button[disabled] {
   background-color: white;
-  border-color: #dbdbdb;
+  border-color: #dbdbdb00;
   box-shadow: none;
   opacity: 0.5;
 }
@@ -11354,7 +11354,7 @@ body {
 }
 
 a {
-  color: var(--alternate) !important;
+  color: var(--alternate);
 }
 
 a.navbar-item {

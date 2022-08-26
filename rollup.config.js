@@ -75,7 +75,7 @@ export default [
 				browser: true,
 				dedupe: ['svelte'],
 			}),
-			commonjs(),
+			commonjs({ sourceMap:false }),
 
 			// In dev mode, call `npm run start` once
 			// the bundle has been generated

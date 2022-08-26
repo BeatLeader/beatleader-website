@@ -98,50 +98,49 @@
 		{#if selectedPlaylist != null}
 			{#if playlistSong}
 				{#if difficulties.length == 1 && difficulties[0] == diffName}
-					<Button
+					<Button type="text"
 						iconFa="fas fa-list-ul"
 						title="Remove from the {selectedPlaylist.playlistTitle}"
 						noMargin={true}
-						type="danger"
 						on:click={playlists.remove(hash)} />
 				{:else if difficulties.length == 1 || !difficulties.includes(diffName)}
-					<Button
+					<Button type="text"
 						iconFa="fas fa-list-ul"
 						title="Add this diff to the {selectedPlaylist.playlistTitle}"
 						noMargin={true}
 						on:click={playlists.addDiff(hash, diffInfo)} />
 				{:else}
-					<Button
+					<Button type="text"
 						iconFa="fas fa-list-ul"
 						title="Remove this diff from the {selectedPlaylist.playlistTitle}"
 						noMargin={true}
-						type="lessdanger"
+					
 						on:click={playlists.removeDiff(hash, diffInfo)} />
 				{/if}
 			{:else}
-				<Button
+				<Button type="text"
 					iconFa="fas fa-list-ul"
 					title="Add to the {selectedPlaylist.playlistTitle}"
 					noMargin={true}
 					on:click={playlists.add(songInfo)} />
 			{/if}
 		{:else}
-			<Button iconFa="fas fa-list-ul" title="Create new playlist with this song" noMargin={true} on:click={playlists.create(songInfo)} />
+			<Button type="text" iconFa="fas fa-list-ul" title="Create new playlist with this song" noMargin={true} on:click={playlists.create(songInfo)} />
 		{/if}
 	{/if}
 	{#if shownIcons.includes('bsr')}
-		<Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={copyToClipboard('!bsr ' + songKey)} />
+		<Button type="text" iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={copyToClipboard('!bsr ' + songKey)} />
 	{/if}
 
 	{#if shownIcons.includes('bs')}
 		<a href="https://beatsaver.com/maps/{songKey}" target="_blank" rel="noreferrer">
-			<Button icon={beatSaverSvg} title="Go to Beat Saver" noMargin={true} />
+			<Button type="text" icon={beatSaverSvg} title="Go to Beat Saver" noMargin={true} />
 		</a>
 	{/if}
 
 	{#if shownIcons.includes('mapcheck')}
 		<a href="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}" target="_blank" rel="noreferrer">
-			<Button iconFa="fas fa-magnifying-glass-location" title="Check the map" noMargin={true} />
+			<Button type="text" iconFa="fas fa-magnifying-glass-location" title="Check the map" noMargin={true} />
 		</a>
 	{/if}
 
@@ -149,51 +148,51 @@
 		{#if oneclickToPlaylist && ocPlaylist != null}
 			{#if ocplaylistSong}
 				{#if ocdifficulties.length == 1 && ocdifficulties[0] == diffName}
-					<Button
+					<Button type="text"
 						iconFa="fas fa-hand-pointer"
 						title="Remove from the One-Click playlist"
 						noMargin={true}
-						type="danger"
+				
 						on:click={playlists.remove(hash, ocPlaylistIndex)} />
 				{:else if ocdifficulties.length == 1 || !ocdifficulties.includes(diffName)}
-					<Button
+					<Button type="text"
 						iconFa="fas fa-hand-pointer"
 						title="Add this diff to the One-Click playlist"
 						noMargin={true}
 						on:click={playlists.addDiff(hash, diffInfo, ocPlaylistIndex)} />
 				{:else}
-					<Button
+					<Button type="text"
 						iconFa="fas fa-hand-pointer"
 						title="Remove this diff from the One-Click playlist"
 						noMargin={true}
-						type="lessdanger"
+						
 						on:click={playlists.removeDiff(hash, diffInfo, ocPlaylistIndex)} />
 				{/if}
 			{:else}
-				<Button
+				<Button type="text"
 					iconFa="fas fa-hand-pointer"
 					title="Add to the One-Click playlist"
-					type="purple"
+					
 					noMargin={true}
 					on:click={playlists.add(songInfo, ocPlaylistIndex)} />
 			{/if}
 		{:else}
 			<a href="beatsaver://{songKey}">
-				<Button iconFa="far fa-hand-pointer" title="One click install" noMargin={true} />
+				<Button type="text" iconFa="far fa-hand-pointer" title="One click install" noMargin={true} />
 			</a>
 		{/if}
 	{/if}
 
-	{#if shownIcons.includes('preview')}
-		<Button url={previewUrl} on:click={showPreview(previewUrl)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true} />
-	{/if}
+	<!-- {#if shownIcons.includes('preview')}
+		<Button type="text" url={previewUrl} on:click={showPreview(previewUrl)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true} />
+	{/if} -->
 
 	{#if shownIcons.includes('replay') && replayUrl?.length}
-		<Button
+		<Button type="text"
 			url={replayUrl}
 			on:click={showPreview(replayUrl)}
 			cls={shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}
-			icon="<div class='{shownIcons.length == 1 ? `replay-icon-alt` : `replay-icon`}'></div>"
+			iconFa="fa fa-play-circle"
 			title="Replay"
 			noMargin={true} />
 	{/if}

@@ -27,20 +27,20 @@
 
 	const types = {
 		default: {
-			color: '#444',
+			color: '#1b1b1b',
 			activeColor: '#222',
-			bgColor: '#dbdbdb',
-			activeBgColor: '#aaa',
-			border: 'transparent',
-			activeBorder: 'transparent',
+			bgColor: '#fafafa',
+			activeBgColor: '#f0f0f0',
+			border: '#606060',
+			activeBorder: '#d2d2d2',
 		},
 		primary: {
-			color: '#dbdbdb',
+			color: '#fff',
 			activeColor: '#fff',
-			bgColor: '#3273db',
-			activeBgColor: '#2366d1',
-			border: 'transparent',
-			activeBorder: 'transparent',
+			bgColor: '#005fb8',
+			activeBgColor: '#196fbf',
+			border: '#00396e',
+			activeBorder: '#00396e',
 		},
 		text: {
 			color: 'var(--textColor)',
@@ -49,6 +49,7 @@
 			activeBgColor: 'transparent',
 			border: 'transparent',
 			activeBorder: 'transparent',
+			noBorder: true
 		},
 		twitch: {
 			color: '#dbdbdb',
@@ -138,7 +139,7 @@
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
-			: ''}"
+			: ''}{selectedType.noBorder&&"border:none !important;"}"
 		on:click|stopPropagation={() => dispatch('click', selectedOption)}
 		{disabled}
 		{title}
@@ -168,19 +169,28 @@
 		margin: var(--btn-margin, 0 0 0.45em 0);
 		text-align: center;
 		white-space: nowrap;
-		border: 1px solid var(--border, #dbdbdb);
-		border-radius: 0.2em;
+		
+		
+		border-radius: 0.3em;
+		transition: background-color 0.3s,box-shadow 0.3s;
 		font-size: inherit;
 		cursor: pointer;
-		color: var(--color, #363636) !important;
-		background-color: var(--bg-color, #3273dc) !important;
+		color: var(--color, #363636);
+		background-color: var(--bg-color, #3273dc);
 		outline: none !important;
-		box-shadow: none !important;
+	}
+
+	.button:not(.text) {
+		box-shadow: 0px 8px 16px hsla(0, 0%, 0%, 4%);
+		border: 1px solid rgba(0, 0, 0, 0.103);
+		border-bottom: 1px solid var(--border, hsla(0, 0%, 0%, 16.22%));
 	}
 
 	.button:hover {
+		box-shadow: 0px 8px 16px hsla(0, 0%, 0%, 14%);
 		color: var(--active-color, #fff);
-		border-color: var(--active-border, #b5b5b5);
+		/* border-color: var(--active-border, #b5b5b5); */
+		background-color: var(--active-bg-color, #fff);
 	}
 
 	.button:active {
@@ -216,7 +226,7 @@
 	}
 
 	.not-selected {
-		opacity: 0.35 !important;
+		/* opacity: 0.35 !important; */
 	}
 
 	.not-selected:hover {

@@ -37,12 +37,10 @@
 	$: platformDescription = describePlatform(platform);
 	$: title = headset?.name + (platformDescription?.description ? '\n' + platformDescription?.description : '');
 	$: headsetStyle =
-		`width: 1.2em; filter: ${headset?.color}` +
-		(platformDescription?.color ? `drop-shadow(0px 0px 2px ${platformDescription?.color})` : '');
+		`width: 1.2em; `;
 </script>
 
 <span class="val">
-	<i class="fas fa-globe-americas" />
 	<strong class="value">
 		<Value value={$currentRank} prefix="#" zero="-" digits={0} />
 	</strong>

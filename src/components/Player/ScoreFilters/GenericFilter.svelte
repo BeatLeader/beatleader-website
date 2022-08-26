@@ -26,7 +26,7 @@
 
 {#if filter?.component && filter?.props}
 	<div class="filter" class:open={filterOpen} title={filter?.props?.title}>
-		<span class="filter-component">
+		<span class="filter-component" style="opacity:{filterOpen?1:0};">
 			<svelte:component this={filter.component} {...filter.props} open={filterOpen} on:change={onFilterChanged} />
 		</span>
 
@@ -47,7 +47,9 @@
 		overflow: hidden;
 		transition: all 300ms ease-out;
 		margin-right: 0.25em;
+		border-radius: .2em;
 	}
+
 
 	.filter.open {
 		width: 11em;
@@ -64,6 +66,7 @@
 		background-color: transparent;
 		transition: all 300ms ease-out;
 		outline: none;
+		border-radius: .2em;
 	}
 
 	.filter-btn {
@@ -74,7 +77,6 @@
 		text-align: center;
 		padding: 0.4em;
 		transition: all 300ms ease-out;
-		background-color: var(--dimmed);
 		z-index: 1;
 		cursor: pointer;
 		border-radius: 0.2em;
@@ -82,8 +84,5 @@
 
 	.filter.open .filter-btn {
 		width: auto;
-		background-color: var(--error);
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
 	}
 </style>
