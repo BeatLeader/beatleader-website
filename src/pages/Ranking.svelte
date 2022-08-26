@@ -330,12 +330,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/1')}>
-			<span class="event-title">
-				The first ever batch of maps was ranked.<br />
-				Take part in a weekly small competition!
-			</span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/33-event.png" />
+		<div class="event-banner" on:click={() => navigate('/event/2')}>
+			<span class="event-title"> Second batch of maps was ranked! </span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/37-event.png" />
 		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -453,11 +450,11 @@
 	.event-banner {
 		display: flex;
 		align-items: center;
-		background: blueviolet;
+		background: rgb(97, 45, 255);
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;
-		padding: 1em;
+		padding: 0.3em;
 		border-radius: 0.5em;
 		cursor: pointer;
 	}
