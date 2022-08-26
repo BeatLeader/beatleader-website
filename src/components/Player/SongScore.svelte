@@ -117,7 +117,7 @@
 
 <style>
 	.score-in-list {
-		border-bottom: 1px solid var(--dimmed);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.253);
 		padding: 0.5em 0;
 	}
 
