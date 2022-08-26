@@ -20,6 +20,8 @@
 	export let loading = false;
 	export let url = null;
 	export let onlyurl = false;
+	export let square = false,
+		squareSize = '0';
 
 	if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -67,7 +69,7 @@
 		danger: {
 			color: '#dbdbdb',
 			activeColor: '#fff',
-			bgColor: 'red',
+			bgColor: '#f90716',
 			activeBgColor: '#bf0000',
 			border: 'transparent',
 			activeBorder: 'transparent',
@@ -109,7 +111,9 @@
 		href={url}
 		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
 			? bgColor
-			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}"
+			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}; {square
+			? `width:${squareSize};height:${squareSize};`
+			: ''}"
 		on:click={e => {
 			if (!onlyurl) {
 				e.preventDefault();
@@ -132,7 +136,9 @@
 	<button
 		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
 			? bgColor
-			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}"
+			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
+			? `width:${squareSize};height:${squareSize};`
+			: ''}"
 		on:click|stopPropagation={() => dispatch('click', selectedOption)}
 		{disabled}
 		{title}
@@ -156,7 +162,7 @@
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		justify-content: flex-start;
+		justify-content: center;
 		vertical-align: top;
 		padding: var(--btn-padding, calc(0.45em - 1px) 1em);
 		margin: var(--btn-margin, 0 0 0.45em 0);

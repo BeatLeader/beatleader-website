@@ -49,7 +49,7 @@
 		width: 2em;
 		height: 2em;
 		color: white;
-		border-radius: 0.4em;
+		border-radius: 100%;
 	}
 
 	.icon.main-profile {
