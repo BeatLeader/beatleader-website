@@ -1,6 +1,6 @@
-import {writable} from 'svelte/store'
+import {writable} from 'svelte/store';
 import keyValueRepository from '../db/repository/key-value';
-import {opt} from '../utils/js'
+import {opt} from '../utils/js';
 
 const STORE_CONFIG_KEY = 'config';
 
@@ -8,97 +8,101 @@ export const DEFAULT_LOCALE = 'en-US';
 
 export let configStore = null;
 
+const BROWSER_MAGIC_VALUE = '__BROWSER';
+
 const locales = {
-  'de-DE': {id: 'de-DE', name: 'Deutschland'},
-  'es-ES': {id: 'es-ES', name: 'España'},
-  'pl-PL': {id: 'pl-PL', name: 'Polska'},
-  'en-GB': {id: 'en-GB', name: 'United Kingdom'},
-  'en-US': {id: 'en-US', name: 'United States'},
+	'en-US': {id: 'en-US', name: 'United States'},
+	BROWSER_MAGIC_VALUE: {id: BROWSER_MAGIC_VALUE, name: 'Browser settings'},
 };
-export const getCurrentLocale = () => configStore ? configStore.getLocale() : DEFAULT_LOCALE;
+export const getCurrentLocale = () => configStore?.getLocale();
 export const getSupportedLocales = () => Object.values(locales);
 
 const DEFAULT_CONFIG = {
-  scoreComparison: {
-    method: 'in-place',
-  },
-  preferences: {
-    billboardState: 'show',
-    iconsOnAvatars: 'show',
-    theme:'mirror',
-    bgimage:"/assets/background.png"
-  },
-  locale: DEFAULT_LOCALE,
-  selectedPlaylist: null
-}
+	scoreComparison: {
+		method: 'in-place',
+	},
+	preferences: {
+		ppMetric: 'weighted',
+		iconsOnAvatars: 'show',
+		scoresSortOptions: 'last',
+		theme: 'mirror',
+		oneclick: 'modassistant',
+		bgimage: '/assets/background.png',
+	},
+	locale: DEFAULT_LOCALE,
+	selectedPlaylist: null,
+};
 
 const newSettingsAvailableDefinition = {
-  'scoreComparison.method': 'Method of displaying the comparison of scores',
-  'preferences.iconsOnAvatars': 'Showing icons on avatars',
-  'locale': 'Locale selection',
-}
+	'preferences.ppMetric': 'PP metric selection',
+	'scoreComparison.method': 'Method of displaying the comparison of scores',
+	'preferences.iconsOnAvatars': 'Showing icons on avatars',
+	locale: 'Locale selection',
+};
 
 export default async () => {
-  if (configStore) return configStore;
+	if (configStore) return configStore;
 
-  let currentConfig = {...DEFAULT_CONFIG};
+	let currentConfig = {...DEFAULT_CONFIG};
 
-  let newSettingsAvailable = undefined;
+	let newSettingsAvailable = undefined;
 
-  const {subscribe, set: storeSet} = writable(currentConfig);
+	const {subscribe, set: storeSet} = writable(currentConfig);
 
-  const get = key => key ? currentConfig[key] : currentConfig;
-  const set = async (config, persist = true) => {
-    const newConfig = {...DEFAULT_CONFIG};
-    Object.keys(config).forEach(key => {
-      if (key === 'locale') {
-        newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
-        return;
-      }
+	const get = key => (key ? currentConfig[key] : currentConfig);
+	const set = async (config, persist = true) => {
+		const newConfig = {...DEFAULT_CONFIG};
+		Object.keys(config).forEach(key => {
+			if (key === 'locale') {
+				newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
+				return;
+			}
 
-      newConfig[key] = {...newConfig?.[key], ...config?.[key]}
-    });
+			newConfig[key] = {...newConfig?.[key], ...config?.[key]};
+		});
 
-    if (persist) await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
+		if (persist) await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
 
-    newSettingsAvailable = undefined;
+		newSettingsAvailable = undefined;
 
-    currentConfig = newConfig;
-    storeSet(newConfig);
+		currentConfig = newConfig;
+		storeSet(newConfig);
 
-    return newConfig;
-  }
+		return newConfig;
+	};
 
-  const setForKey = async (key, value, persist = true) => {
-    currentConfig[key] = value;
+	const setForKey = async (key, value, persist = true) => {
+		currentConfig[key] = value;
 
-    if (persist) await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
+		if (persist) await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
 
-    currentConfig = currentConfig;
-    storeSet(currentConfig);
+		currentConfig = currentConfig;
+		storeSet(currentConfig);
 
-    return currentConfig;
-  }
+		return currentConfig;
+	};
 
-  const getLocale = () => opt(currentConfig, 'locale', DEFAULT_LOCALE);
+	const getLocale = () =>
+		currentConfig?.locale === BROWSER_MAGIC_VALUE ? navigator.language ?? DEFAULT_LOCALE : currentConfig?.locale ?? DEFAULT_LOCALE;
 
-  const determineNewSettingsAvailable = dbConfig => Object.entries(newSettingsAvailableDefinition)
-    .map(([key, description]) => opt(dbConfig, key) === undefined ? description : null)
-    .filter(d => d)
+	const determineNewSettingsAvailable = dbConfig =>
+		Object.entries(newSettingsAvailableDefinition)
+			.map(([key, description]) => (opt(dbConfig, key) === undefined ? description : null))
+			.filter(d => d);
 
-  const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
-  const newSettings= determineNewSettingsAvailable(dbConfig);
-  if (dbConfig) await set(dbConfig, false);
-  newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
+	const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
+	const newSettings = determineNewSettingsAvailable(dbConfig);
+	if (dbConfig) await set(dbConfig, false);
+	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
-  configStore =  {
-    subscribe,
-    set,
-    get,
-    getLocale,
-    setForKey,
-    getNewSettingsAvailable: () => newSettingsAvailable,
-  }
+	configStore = {
+		subscribe,
+		set,
+		get,
+		getLocale,
+		setForKey,
+		getNewSettingsAvailable: () => newSettingsAvailable,
+	};
 
-  return configStore;
-}
+	return configStore;
+};

@@ -1,90 +1,134 @@
 <script>
-    import {BS_CDN} from '../../network/queues/beatleader/page-queue'
-    import createBeatSaverService from '../../services/beatmaps'
-    import Button from "../Common/Button.svelte";
-    import Difficulty from '../Song/Difficulty.svelte'
+	import createLeaderboardsService from '../../services/beatleader/leaderboardsMap';
+	import {navigate} from 'svelte-routing';
+	import Button from '../Common/Button.svelte';
+	import Difficulty from '../Song/Difficulty.svelte';
+	import {slide} from 'svelte/transition';
+	import Spinner from '../Common/Spinner.svelte';
 
-    const DEFAULT_IMG = '/assets/song-default.png';
+	export let song;
+	export let listId;
+	export let store;
+	export let canModify;
+	export let idx;
 
-    export let song;
-    export let songId;
-    export let listId;
-    export let store;
+	let leaderboardsService = createLeaderboardsService();
 
-    let beatSaverService = createBeatSaverService();
+	let songInfo;
+	let leaderboards;
+	let showDiffIcons;
+	let leaderboardUrl;
+	let coverUrl;
 
-    let songInfo;
-    let showDiffIcons;
+	function decapitalizeFirstLetter(string) {
+		return string.charAt(0).toLowerCase() + string.slice(1);
+	}
 
-    function decapitalizeFirstLetter(string) {
-        return string.charAt(0).toLowerCase() + string.slice(1);
-    }
+	async function updateSongKey(mapHash) {
+		songInfo = null;
 
-    async function updateSongKey(hash) {
-        const songInfoValue = await beatSaverService.byHash(hash);
-        if (songInfoValue && songInfoValue.key) {
-            songInfo = songInfoValue;
-            showDiffIcons = songInfo.versions[0].diffs.some(el => el.characteristic != 'Standard');
-        }
-    }
+		const songInfoValue = await leaderboardsService.byHash(mapHash);
+		if (songInfoValue && songInfoValue.song.id && songInfoValue.song.hash == hash) {
+			songInfo = songInfoValue.song;
+			leaderboards = songInfoValue.leaderboards;
+			coverUrl = songInfo.coverImage;
 
-    function toggleDifficulty(diff) {
-        const index = difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficulty) == el.name && diff.characteristic == el.characteristic);
-        if (index == -1) {
-            difficulties.push({
-                name: decapitalizeFirstLetter(diff.difficulty), 
-                characteristic: diff.characteristic
-            })
-        } else {
-            difficulties.splice(index, 1);
-        }
+			showDiffIcons = leaderboards.some(el => el.difficulty.modeName != 'Standard');
+			leaderboardUrl = `/leaderboard/global/${leaderboards[0].id}/1`;
+		}
+	}
 
-        difficulties = difficulties;
-        store.set($store);
-    }
+	function toggleDifficulty(diff) {
+		const index = difficulties
+			? difficulties.findIndex(el => decapitalizeFirstLetter(diff.difficultyName) == el.name && diff.modeName == el.characteristic)
+			: -1;
+		if (index == -1) {
+			if (difficulties) {
+				difficulties.push({
+					name: decapitalizeFirstLetter(diff.difficultyName),
+					characteristic: diff.modeName,
+				});
+			} else {
+				difficulties = [
+					{
+						name: decapitalizeFirstLetter(diff.difficultyName),
+						characteristic: diff.modeName,
+					},
+				];
+				song.difficulties = difficulties;
+			}
+		} else {
+			difficulties.splice(index, 1);
+		}
 
-    $: hash = song.hash;
-    $: difficulties = song.difficulties;
-    $: updateSongKey(hash);
-    $: ssCoverUrl = song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null);
-    $: coverUrl = ssCoverUrl;
+		difficulties = difficulties;
+		store.set($store);
+	}
+
+	$: hash = song.hash;
+	$: difficulties = song.difficulties;
+	$: updateSongKey(hash);
 </script>
 
-<div class="container">
-    <img class="cover" src={coverUrl} alt=""/>
-    {#if songInfo}
-    <div style="display: grid; padding-left: 1em">
-        <span class="name">{songInfo.name}</span>
-        <div class="author">{songInfo.uploader.name} </div>
-        <div style="display: inline;">
-            {#each songInfo.versions[0].diffs as diff, songId}
-            <Difficulty diff={{type: diff.characteristic, diff: diff.difficulty, stars: diff.stars}} pointer={true} useShortName={true} reverseColors={true} {showDiffIcons} enabled={difficulties.some(el => el.name == decapitalizeFirstLetter(diff.difficulty) && el.characteristic == diff.characteristic)} on:click={() => toggleDifficulty(diff)} />
-            {/each}
-        </div>
-    </div>
-    {/if}
-    <Button cls="delistSong" iconFa="fas fa-list-ul" title="Remove from the {$store[listId].playlistTitle}" noMargin={true} type="danger"
-            on:click={store.remove(hash, listId)}/>
+<div class="container row-${idx}" transition:slide>
+	{#if songInfo}
+		<img class="cover" src={coverUrl} alt="" />
+		<div style="display: grid; padding-left: 1em">
+			<a href={leaderboardUrl} class="name" on:click|preventDefault={() => navigate(leaderboardUrl)}>{songInfo.name}</a>
+			<div class="author">{songInfo.mapper}</div>
+			<div style="display: inline;">
+				{#each leaderboards as leaderboard, songId}
+					<Difficulty
+						diff={{type: leaderboard.difficulty.modeName, diff: leaderboard.difficulty.difficultyName, stars: leaderboard.difficulty.stars}}
+						pointer={true}
+						useShortName={true}
+						reverseColors={true}
+						{showDiffIcons}
+						enabled={difficulties
+							? difficulties.some(
+									el =>
+										el.name == decapitalizeFirstLetter(leaderboard.difficulty.difficultyName) &&
+										el.characteristic == leaderboard.difficulty.modeName
+							  )
+							: true}
+						on:click={() => toggleDifficulty(leaderboard.difficulty)} />
+				{/each}
+			</div>
+		</div>
+	{:else}
+		<div class="cover">
+			<Spinner />
+		</div>
+	{/if}
+	{#if canModify}
+		<Button
+			cls="delistSong"
+			iconFa="fas fa-list-ul"
+			title="Remove from the {$store[listId]?.playlistTitle}"
+			noMargin={true}
+			type="danger"
+			on:click={store.remove(hash, listId)} />
+	{/if}
 </div>
 
 <style>
-.container {
-    display: flex;
-    margin: 1.5em;
-    border-radius: 1em;
-    padding: 0.8em;
-    background-color: rgba(87, 87, 87, 0.582);
-}
+	.container {
+		display: flex;
+		margin: 1.5em;
+		border-radius: 1em;
+		padding: 0.8em;
+		background-color: rgba(87, 87, 87, 0.582);
+	}
 
-.cover {
-    width: 6em;
-    height: 6em;
-    border-radius: 0.5em;
-}
+	.cover {
+		width: 6em;
+		height: 6em;
+		border-radius: 0.5em;
+	}
 
-:global(.delistSong) {
-    position: absolute !important;
-    right: 0.8em;
-    border-radius: 0.5em !important;
-}
+	:global(.delistSong) {
+		position: absolute !important;
+		right: 0.8em;
+		border-radius: 0.5em !important;
+	}
 </style>

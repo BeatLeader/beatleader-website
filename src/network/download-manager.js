@@ -1,10 +1,10 @@
-import eventBus from '../utils/broadcast-channel-pubsub'
-import log from '../utils/logger'
-import createQueue, {PRIORITY} from '../utils/queue'
-import createBeatSaviorService from '../services/beatsavior'
-import createAccSaberService from '../services/accsaber'
-import {PRIORITY as HTTP_QUEUE_PRIORITY} from './queues/http-queue'
-import {HOUR, MINUTE} from '../utils/date'
+import eventBus from '../utils/broadcast-channel-pubsub';
+import log from '../utils/logger';
+import createQueue, {PRIORITY} from '../utils/queue';
+import createBeatSaviorService from '../services/beatsavior';
+import createAccSaberService from '../services/accsaber';
+import {PRIORITY as HTTP_QUEUE_PRIORITY} from './queues/http-queue';
+import {HOUR, MINUTE} from '../utils/date';
 
 const INTERVAL_TICK = MINUTE;
 
@@ -15,7 +15,7 @@ let accSaberService = null;
 const TYPES = {
 	BEATSAVIOR: {name: 'BEATSAVIOR', priority: PRIORITY.LOW},
 	ACCSABER: {name: 'ACCSABER', priority: PRIORITY.NORMAL},
-}
+};
 
 const enqueue = async (queue, type, force = false, data = null, then = null) => {
 	if (!type || !type.name || !Number.isFinite(type.priority)) {
@@ -31,45 +31,46 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
 
 	const processThen = async (promise, then = null) => {
 		promise.then(result => {
-			if(then) log.debug('Processing then command...', 'DlManager');
+			if (then) log.debug('Processing then command...', 'DlManager');
 
 			return then ? {result, thenResult: then()} : result;
-		})
-	}
+		});
+	};
 
 	switch (type) {
 		case TYPES.BEATSAVIOR:
 			log.debug(`Enqueue Beat Savior`, 'DlManager');
 
-			processThen(queue.add(async () => beatSaviorService.refreshAll(force, networkPriority), priority), then)
-				.then(_ => log.debug('Enqueued Beat Savior processed.', 'DlManager'));
+			processThen(
+				queue.add(async () => beatSaviorService.refreshAll(force, networkPriority), priority),
+				then
+			).then(_ => log.debug('Enqueued Beat Savior processed.', 'DlManager'));
 
 			break;
 
 		case TYPES.ACCSABER:
 			log.debug(`Enqueue AccSaber updates`, 'DlManager');
 
-			processThen(queue.add(async () => accSaberService.refreshAll(), priority), then)
-				.then(_ => log.debug('Enqueued AccSaber updates processed.', 'DlManager'));
+			processThen(
+				queue.add(async () => accSaberService.refreshAll(), priority),
+				then
+			).then(_ => log.debug('Enqueued AccSaber updates processed.', 'DlManager'));
 
 			break;
 	}
-}
+};
 
 const enqueueAllJobs = async queue => {
 	log.debug(`Try to enqueue & process queue.`, 'DlManager');
 
-	await Promise.all([
-		enqueue(queue, TYPES.BEATSAVIOR),
-		enqueue(queue, TYPES.ACCSABER),
-	])
-}
+	await Promise.all([enqueue(queue, TYPES.BEATSAVIOR), enqueue(queue, TYPES.ACCSABER)]);
+};
 
 let intervalId;
 const startSyncing = async queue => {
 	await enqueueAllJobs(queue);
 	intervalId = setInterval(() => enqueueAllJobs(queue), INTERVAL_TICK);
-}
+};
 
 export default async () => {
 	if (initialized) {
@@ -93,11 +94,11 @@ export default async () => {
 			queue.start();
 
 			const nodeId = eventBus.getNodeId();
-			log.info(`Node ${nodeId} is a leader, queue processing enabled`, 'DlManager')
+			log.info(`Node ${nodeId} is a leader, queue processing enabled`, 'DlManager');
 
-			await startSyncing(queue)
+			await startSyncing(queue);
 		}
-	})
+	});
 
 	const pause = () => {
 		log.debug('Pause Dl Manager', 'DlManager');
@@ -122,5 +123,5 @@ export default async () => {
 	return {
 		start,
 		pause,
-	}
-}
+	};
+};

@@ -1,135 +1,149 @@
-import clansApiClient from '../../network/clients/beatleader/clans/api-clans'
-import clanApiClient from '../../network/clients/beatleader/clans/api-clan'
-import makePendingPromisePool from '../../utils/pending-promises'
-import {PRIORITY} from '../../network/queues/http-queue'
-import {CLANS_PER_PAGE} from '../../utils/beatleader/consts'
-import {MINUTE, SECOND} from '../../utils/date'
-import createAccountStore from '../../stores/beatleader/account'
+import clansApiClient from '../../network/clients/beatleader/clans/api-clans';
+import clanApiClient from '../../network/clients/beatleader/clans/api-clan';
+import makePendingPromisePool from '../../utils/pending-promises';
+import {PRIORITY} from '../../network/queues/http-queue';
+import {CLANS_PER_PAGE} from '../../utils/beatleader/consts';
+import {MINUTE, SECOND} from '../../utils/date';
+import createAccountStore from '../../stores/beatleader/account';
 
 let service = null;
 export default () => {
-  if (service) return service;
+	if (service) return service;
 
-  const account = createAccountStore();
+	const account = createAccountStore();
 
-  const resolvePromiseOrWaitForPending = makePendingPromisePool();
+	const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
-  const fetchClansPage = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(`apiClient/clans/${page}`, () => clansApiClient.getProcessed({page, filters, signal, priority, cacheTtl: force ? null : MINUTE, maxAge: force ? SECOND : MINUTE}));
+	const fetchClansPage = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
+		resolvePromiseOrWaitForPending(`apiClient/clans/${page}`, () =>
+			clansApiClient.getProcessed({page, filters, signal, priority, cacheTtl: force ? null : MINUTE, maxAge: force ? SECOND : MINUTE})
+		);
 
-  const fetchClanPage = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => resolvePromiseOrWaitForPending(`apiClient/clan/${clanId}/${page}`, () => clanApiClient.getProcessed({clanId, page, filters, signal, priority, cacheTtl: force ? null : MINUTE, maxAge: force ? SECOND : MINUTE}));
+	const fetchClanPage = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
+		resolvePromiseOrWaitForPending(`apiClient/clan/${clanId}/${page}`, () =>
+			clanApiClient.getProcessed({
+				clanId,
+				page,
+				filters,
+				signal,
+				priority,
+				cacheTtl: force ? null : MINUTE,
+				maxAge: force ? SECOND : MINUTE,
+			})
+		);
 
-  const create = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!clan?.name || !clan.tag || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');
+	const create = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!clan?.name || !clan.tag || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');
 
-    const createdClan = await clanApiClient.create({...clan, signal, priority});
+		const createdClan = await clanApiClient.create({...clan, signal, priority});
 
-    account.setPlayerClan(createdClan);
+		account.setPlayerClan(createdClan);
 
-    return createdClan;
-  }
+		return createdClan;
+	};
 
-  const update = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!clan?.name || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');
+	const update = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!clan?.name || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');
 
-    await clanApiClient.update({...clan, signal, priority});
+		await clanApiClient.update({...clan, signal, priority});
 
-    account.setPlayerClan(clan);
+		account.setPlayerClan(clan);
 
-    return clan;
-  }
+		return clan;
+	};
 
-  const accept = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!clan?.id) throw new Error('Clan is required');
+	const accept = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!clan?.id) throw new Error('Clan is required');
 
-    await clanApiClient.accept({clanId: clan.id, signal, priority});
+		await clanApiClient.accept({clanId: clan.id, signal, priority});
 
-    account.addClan(clan);
+		account.addClan(clan);
 
-    return clan;
-  }
+		return clan;
+	};
 
-  const reject = async (clan, ban = false, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!clan?.id) throw new Error('Clan is required');
+	const reject = async (clan, ban = false, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!clan?.id) throw new Error('Clan is required');
 
-    ban = !!ban;
+		ban = !!ban;
 
-    await clanApiClient.reject({clanId: clan.id, ban, signal, priority});
+		await clanApiClient.reject({clanId: clan.id, ban, signal, priority});
 
-    account.removeClanRequest(clan);
+		account.removeClanRequest(clan);
 
-    if (ban) account.banClan(clan);
+		if (ban) account.banClan(clan);
 
-    return clan;
-  }
+		return clan;
+	};
 
-  const remove = async (priority = PRIORITY.FG_HIGH, signal = null) => {
-    await clanApiClient.remove({signal, priority});
+	const remove = async (priority = PRIORITY.FG_HIGH, signal = null) => {
+		await clanApiClient.remove({signal, priority});
 
-    account.setPlayerClan(null);
-  }
+		account.setPlayerClan(null);
+	};
 
-  const leave = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!clan?.id) throw new Error('Clan is required');
+	const leave = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!clan?.id) throw new Error('Clan is required');
 
-    await clanApiClient.leave({clanId: clan.id, signal, priority});
+		await clanApiClient.leave({clanId: clan.id, signal, priority});
 
-    account.removeClan(clan);
+		account.removeClan(clan);
 
-    return clan;
-  }
+		return clan;
+	};
 
-  const unban = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!clan?.id) throw new Error('Clan is required');
+	const unban = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!clan?.id) throw new Error('Clan is required');
 
-    await clanApiClient.unban({clanId: clan.id, signal, priority});
+		await clanApiClient.unban({clanId: clan.id, signal, priority});
 
-    account.unbanClan(clan);
+		account.unbanClan(clan);
 
-    return clan;
-  }
+		return clan;
+	};
 
-  const kick = async (player, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!player?.playerId?.length) throw new Error('PlayerId is required');
+	const kick = async (player, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!player?.playerId?.length) throw new Error('PlayerId is required');
 
-    await clanApiClient.kick({playerId: player.playerId, signal, priority});
-  }
+		await clanApiClient.kick({playerId: player.playerId, signal, priority});
+	};
 
-  const invite = async (playerId, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!playerId?.length) throw new Error('PlayerId is required');
+	const invite = async (playerId, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!playerId?.length) throw new Error('PlayerId is required');
 
-    await clanApiClient.invite({playerId, signal, priority});
+		await clanApiClient.invite({playerId, signal, priority});
 
-    account.addClanInvitation(playerId);
-  }
+		account.addClanInvitation(playerId);
+	};
 
-  const cancelInvite = async (playerId, priority = PRIORITY.FG_HIGH, signal = null) => {
-    if (!playerId?.length) throw new Error('PlayerId is required');
+	const cancelInvite = async (playerId, priority = PRIORITY.FG_HIGH, signal = null) => {
+		if (!playerId?.length) throw new Error('PlayerId is required');
 
-    await clanApiClient.cancelInvite({playerId, signal, priority});
+		await clanApiClient.cancelInvite({playerId, signal, priority});
 
-    account.removeClanInvitation(playerId);
-  }
+		account.removeClanInvitation(playerId);
+	};
 
-  const destroyService = () => {
-    service = null;
-  }
+	const destroyService = () => {
+		service = null;
+	};
 
-  service = {
-    fetchClansPage,
-    fetchClanPage,
-    create,
-    update,
-    accept,
-    reject,
-    remove,
-    leave,
-    unban,
-    kick,
-    invite,
-    cancelInvite,
-    CLANS_PER_PAGE,
-    destroyService,
-  }
+	service = {
+		fetchClansPage,
+		fetchClanPage,
+		create,
+		update,
+		accept,
+		reject,
+		remove,
+		leave,
+		unban,
+		kick,
+		invite,
+		cancelInvite,
+		CLANS_PER_PAGE,
+		destroyService,
+	};
 
-  return service;
-}
+	return service;
+};

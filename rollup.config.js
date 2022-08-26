@@ -1,22 +1,26 @@
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require("child_process");
+const {execSync} = require('child_process');
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
-import { terser } from 'rollup-plugin-terser';
+import {terser} from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import css from 'rollup-plugin-css-only';
 import svg from 'rollup-plugin-svg';
 
 const production = !process.env.ROLLUP_WATCH;
 
-const buildVersion = execSync("git rev-parse --short HEAD").toString();
-fs.writeFileSync('build-info.js', 'export default ' + JSON.stringify({
-	buildDate: (new Date()).toISOString().substr(0, 19).replace('T', ' ') + ' UTC',
-	buildVersion
-}))
+const buildVersion = execSync('git rev-parse --short HEAD').toString();
+fs.writeFileSync(
+	'build-info.js',
+	'export default ' +
+		JSON.stringify({
+			buildDate: new Date().toISOString().substr(0, 19).replace('T', ' ') + ' UTC',
+			buildVersion,
+		})
+);
 
 function serve() {
 	let server;
@@ -30,12 +34,12 @@ function serve() {
 			if (server) return;
 			server = require('child_process').spawn('npm', ['run', 'start', '--', '--dev'], {
 				stdio: ['ignore', 'inherit', 'inherit'],
-				shell: true
+				shell: true,
 			});
 
 			process.on('SIGTERM', toExit);
 			process.on('exit', toExit);
-		}
+		},
 	};
 }
 

@@ -5,6 +5,7 @@
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kJo84MPvpLmixcA63oeALZTYKL.otf) format('opentype');
 }
+
 @font-face {
   font-family: 'Noto Sans SC';
   font-style: normal;
@@ -12,6 +13,7 @@
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZhaCt9w.otf) format('opentype');
 }
+
 @font-face {
   font-family: 'Noto Sans SC';
   font-style: normal;
@@ -19,6 +21,7 @@
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kXo84MPvpLmixcA63oeALhLw.otf) format('opentype');
 }
+
 @font-face {
   font-family: 'Noto Sans SC';
   font-style: normal;
@@ -26,6 +29,7 @@
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZ3aGt9w.otf) format('opentype');
 }
+
 @font-face {
   font-family: 'Noto Sans SC';
   font-style: normal;
@@ -33,6 +37,7 @@
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZlaet9w.otf) format('opentype');
 }
+
 @font-face {
   font-family: 'Noto Sans SC';
   font-style: normal;
@@ -40,19 +45,24 @@
   font-display: swap;
   src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZraWt9w.otf) format('opentype');
 }
+
 * {
   font-family: 'Noto Sans SC', sans-serif;
 }
+
 body {
   padding: 0;
 }
+
 body {
   background: transparent !important;
   backdrop-filter: blur(10px);
 }
+
 :root {
   --ppColour: #e2b7ff !important;
 }
+
 .ssr-page-container.svelte-y3wm0x {
   padding: 0.5rem;
   height: 4rem !important;
@@ -61,21 +71,25 @@ body {
   background: #242424 !important;
   max-width: none !important;
 }
+
 .ssr-page-container.svelte-y3wm0x a,
 .ssr-page-container.svelte-y3wm0x div {
   transition: all 0.1s;
   border-radius: 4px;
 }
+
 .sspl-page-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   text-align: center;
 }
+
 .sspl-page-container .title.is-4.svelte-ic5bju {
   font-size: 50px;
   position: relative;
 }
+
 .sspl-page-container .title.is-4.svelte-ic5bju::after {
   position: absolute;
   bottom: -1rem;
@@ -85,12 +99,15 @@ body {
   height: 0.4rem;
   content: "";
 }
+
 .sspl-page-container .sources {
   justify-content: center;
 }
+
 .sspl-page-container .sources * {
   cursor: pointer !important;
 }
+
 .sspl-page-container .sources .title.is-6 {
   filter: grayscale(1);
   box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.048);
@@ -100,21 +117,26 @@ body {
   margin: 0.5rem;
   transition: filter 0.1s;
 }
+
 .sspl-page-container .sources .title.is-6 .icon {
   margin: 0 !important;
 }
+
 .sspl-page-container .sources .title.is-6:hover {
   filter: none;
 }
+
 .ranking-grid,
 .players {
   grid-gap: 0rem !important;
 }
+
 .ranking-grid .ranking-grid-row,
 .players .ranking-grid-row {
   padding: 0.2rem 0;
   border-bottom: 1px rgba(189, 189, 189, 0.164) solid;
 }
+
 .ranking-grid .ranking-grid-row .player-card,
 .players .ranking-grid-row .player-card {
   padding: 0.4rem 0.8rem;
@@ -124,17 +146,20 @@ body {
   font-size: 0.8rem;
   border: none !important;
 }
+
 .ranking-grid .ranking-grid-row .player-card .rank,
 .players .ranking-grid-row .player-card .rank {
   background: none;
   font-weight: 600;
 }
+
 .ranking-grid .ranking-grid-row .player-card .player-avatar .image,
 .players .ranking-grid-row .player-card .player-avatar .image {
   overflow: hidden;
   border-radius: 3rem;
   background: #464646;
 }
+
 .ranking-grid .ranking-grid-row .player-card .clan-badges .badge,
 .players .ranking-grid-row .player-card .clan-badges .badge {
   background: rgba(255, 255, 255, 0.123);
@@ -148,15 +173,18 @@ body {
   color: white !important;
   margin: 0 0.2rem;
 }
+
 .ranking-grid .ranking-grid-row .player-card .steam-and-pp *,
 .players .ranking-grid-row .player-card .steam-and-pp * {
   font-size: 0.86rem;
   color: #afcbff !important;
 }
+
 .ranking-grid .ranking-grid-row .player-card.current,
 .players .ranking-grid-row .player-card.current {
   background: rgba(240, 240, 240, 0.164);
 }
+
 .ranking-grid .ranking-grid-row .fa-user-plus,
 .players .ranking-grid-row .fa-user-plus {
   background: transparent !important;
@@ -164,10 +192,12 @@ body {
   border-radius: 0.2rem !important;
   color: rgba(255, 255, 255, 0.425);
 }
+
 .ranking-grid .ranking-grid-row .fa-user-plus:hover,
 .players .ranking-grid-row .fa-user-plus:hover {
   color: #ffffff;
 }
+
 .ranking-grid .ranking-grid-row .fa-user-minus,
 .players .ranking-grid-row .fa-user-minus {
   background: none !important;
@@ -175,14 +205,30 @@ body {
   border-radius: 0.2rem !important;
   color: #ffffff;
 }
+
 .ranking-grid .ranking-grid-row .fa-user-minus:hover,
 .players .ranking-grid-row .fa-user-minus:hover {
   color: #ffffff;
 }
+
 .content-box {
   background: transparent !important;
   box-shadow: none !important;
 }
+
+.ss-modal {
+  top: 10% !important;
+}
+
+.bg {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.window-wrap {
+  transform: translate(0, -50%);
+}
+
 .page-content.svelte-qnwlci .badge {
   font-size: 0.8rem !important;
   color: white !important;
@@ -191,39 +237,47 @@ body {
   border-radius: 0.25rem;
   padding: 0.4rem 0.3rem;
 }
+
 .page-content.svelte-qnwlci .rank .badge {
   border-radius: 0;
   background: none !important;
   border: none;
 }
+
 .page-content.svelte-qnwlci .player-score {
   height: 3rem;
   border: none !important;
 }
+
 .page-content.svelte-qnwlci .player-score.highlight {
   background: #ffffff33;
   margin: 0.4rem 0;
   padding: 0;
 }
+
 .page-content.svelte-qnwlci .player-score.highlight .badge {
   border: none;
   background: none !important;
 }
+
 .page-content.svelte-qnwlci .scores-grid * {
   color: white !important;
 }
+
 .leaderboard,
 .chart,
 .details-with-shadow {
   background: none !important;
   box-shadow: none !important;
 }
+
 .clanTag {
   filter: saturate(0.5) brightness(1.1);
   font-weight: 500 !important;
   border-bottom: 2px rgba(255, 255, 255, 0.315) solid;
   padding: 0 0.3rem;
 }
+
 .ranking.global.sspl * {
   background: transparent;
 }

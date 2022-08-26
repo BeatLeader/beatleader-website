@@ -1,440 +1,443 @@
-import {writable} from 'svelte/store'
-import {BL_API_URL} from '../../network/queues/beatleader/api-queue'
-import userApiClient from '../../network/clients/beatleader/account/api'
-import queue from '../../network/queues/queues'
+import {writable} from 'svelte/store';
+import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+import userApiClient from '../../network/clients/beatleader/account/api';
+import queue from '../../network/queues/queues';
 
 let store = null;
 let storeSubCount = 0;
 
 export default (refreshOnCreate = true) => {
-  storeSubCount++;
-  if (store) return store;
+	storeSubCount++;
+	if (store) return store;
 
-  const checkResponse = async response => response.text();
+	const checkResponse = async response => response.text();
 
-  let account = {loading: true};
+	let account = {loading: true};
 
-  const {subscribe: subscribeState, set} = writable(account);
+	const {subscribe: subscribeState, set} = writable(account);
 
-  const get = () => account;
+	const get = () => account;
 
-  const refresh = async () => {
-    try {
-      const user = await userApiClient.getProcessed();
-      if (!user) throw 'Data error'
+	const refresh = async () => {
+		try {
+			const user = await userApiClient.getProcessed();
+			if (!user) throw 'Data error';
 
-      account = {...user, id: user.player?.playerId ?? null};
-    }
-    catch(err) {
-      account = {}
-    }
+			account = {...user, id: user.player?.playerId ?? null};
+		} catch (err) {
+			account = {};
+		}
 
-    set(account);
-  }
+		set(account);
 
-  if (refreshOnCreate) refresh();
+		fetch(BL_API_URL + 'user/playlists', {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(playlists => {
+				account.playlists = playlists;
+				set(account);
+			});
+	};
 
-  const subscribe = fn => {
-    const stateUnsubscribe = subscribeState(fn);
+	if (refreshOnCreate) refresh();
 
-    return () => {
-      storeSubCount--;
+	const subscribe = fn => {
+		const stateUnsubscribe = subscribeState(fn);
 
-      if (storeSubCount === 0) {
-        store = null;
+		return () => {
+			storeSubCount--;
 
-        stateUnsubscribe();
-      }
-    }
-  }
+			if (storeSubCount === 0) {
+				store = null;
 
-  const logIn = (login, password) => {
-    let data = new FormData();
-    data.append('action', 'login');
-    data.append('login', login);
-    data.append('password', password);
+				stateUnsubscribe();
+			}
+		};
+	};
 
-    fetch(BL_API_URL + "signinoculus", {
-        credentials: 'include',
-        method: 'POST',
-        body: data
-    })
-      .then(checkResponse)
-      .then(
-        data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.error = null;
-                refresh(true);
-            }
-            set(account);
-        });
-  }
+	const logIn = (login, password) => {
+		let data = new FormData();
+		data.append('action', 'login');
+		data.append('login', login);
+		data.append('password', password);
 
-  const migrate = (login, password) => {
-    let data = new FormData();
-    data.append('action', 'login');
-    data.append('login', login);
-    data.append('password', password);
+		fetch(BL_API_URL + 'signinoculus', {
+			credentials: 'include',
+			method: 'POST',
+			body: data,
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					account.error = null;
+					refresh(true);
+				}
+				set(account);
+			});
+	};
 
-    fetch(BL_API_URL + "user/migrate", {
-        credentials: 'include',
-        method: 'POST',
-        body: data
-    })
-      .then(checkResponse)
-      .then(
-        data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.error = null;
-                refresh(true);
-            }
-            set(account);
-        });
-  }
+	const migrate = (login, password) => {
+		let data = new FormData();
+		data.append('action', 'login');
+		data.append('login', login);
+		data.append('password', password);
 
-  const changePassword = (login, password, newPassword) => {
-    let data = new FormData();
-    data.append('login', login);
-    data.append('oldPassword', password);
-    data.append('newPassword', newPassword);
+		fetch(BL_API_URL + 'user/migrate', {
+			credentials: 'include',
+			method: 'POST',
+			body: data,
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					account.error = null;
+					refresh(true);
+				}
+				set(account);
+			});
+	};
 
-    fetch(BL_API_URL + "user/changePassword", {
-        credentials: 'include',
-        method: 'PATCH',
-        body: data
-    })
-      .then(checkResponse)
-      .then(
-        data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.message = "Password changed successfully ✔";
-                account.error = null;
-                refresh(true);
-                setTimeout(function(){
-                  account.message = null;
-                  set(account);
-                }, 3500);
-            }
-            set(account);
-        });
-  }
+	const changePassword = (login, password, newPassword) => {
+		let data = new FormData();
+		data.append('login', login);
+		data.append('oldPassword', password);
+		data.append('newPassword', newPassword);
 
-  const changePasswordMigrated = (login, newPassword) => {
-    let data = new FormData();
-    data.append('login', login);
-    data.append('newPassword', newPassword);
+		fetch(BL_API_URL + 'user/changePassword', {
+			credentials: 'include',
+			method: 'PATCH',
+			body: data,
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					account.message = 'Password changed successfully ✔';
+					account.error = null;
+					refresh(true);
+					setTimeout(function () {
+						account.message = null;
+						set(account);
+					}, 3500);
+				}
+				set(account);
+			});
+	};
 
-    fetch(BL_API_URL + "user/resetPassword", {
-        credentials: 'include',
-        method: 'PATCH',
-        body: data
-    })
-      .then(checkResponse)
-      .then(
-        data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.message = "Password changed successfully ✔";
-                account.error = null;
-                refresh(true);
-                setTimeout(function(){
-                  account.message = null;
-                  set(account);
-                }, 3500);
-            }
-            set(account);
-        });
-  }
+	const changePasswordMigrated = (login, newPassword) => {
+		let data = new FormData();
+		data.append('login', login);
+		data.append('newPassword', newPassword);
 
-  const changeLogin = (newLogin) => {
-    let data = new FormData();
-    data.append('newLogin', newLogin);
+		fetch(BL_API_URL + 'user/resetPassword', {
+			credentials: 'include',
+			method: 'PATCH',
+			body: data,
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					account.message = 'Password changed successfully ✔';
+					account.error = null;
+					refresh(true);
+					setTimeout(function () {
+						account.message = null;
+						set(account);
+					}, 3500);
+				}
+				set(account);
+			});
+	};
 
-    fetch(BL_API_URL + "user/changeLogin", {
-        credentials: 'include',
-        method: 'PATCH',
-        body: data
-    })
-      .then(checkResponse)
-      .then(
-        data => {
-            if (data.length > 0) {
-                account.error = data;
-            } else {
-                account.message = "Login changed successfully ✔";
-                account.error = null;
-                refresh(true);
-                setTimeout(function(){
-                  account.message = null;
-                  set(account);
-                }, 3500);
-            }
-            set(account);
-        });
-  }
+	const changeLogin = newLogin => {
+		let data = new FormData();
+		data.append('newLogin', newLogin);
 
-  const changeAvatar = (file, playerId) =>
-    fetch(BL_API_URL + "user/avatar" + (playerId ? "?id=" + playerId : ""), { 
-        method: 'PATCH', 
-        body: file, 
-        credentials: 'include'
-    })
-      .then(checkResponse)
-      .then(
-        data => {
-            account.error = null;
+		fetch(BL_API_URL + 'user/changeLogin', {
+			credentials: 'include',
+			method: 'PATCH',
+			body: data,
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					account.message = 'Login changed successfully ✔';
+					account.error = null;
+					refresh(true);
+					setTimeout(function () {
+						account.message = null;
+						set(account);
+					}, 3500);
+				}
+				set(account);
+			});
+	};
 
-            if (data.length > 0) {
-                account.error = data;
-                setTimeout(function(){
-                    account.error = null;
-                    set(account);
-                }, 3500);
-            }
+	const changeAvatar = (file, playerId) =>
+		fetch(BL_API_URL + 'user/avatar' + (playerId ? '?id=' + playerId : ''), {
+			method: 'PATCH',
+			body: file,
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				account.error = null;
 
-            set(account);
-        });
+				if (data.length > 0) {
+					account.error = data;
+					setTimeout(function () {
+						account.error = null;
+						set(account);
+					}, 3500);
+				}
 
-  const changeName = (name, playerId) =>
-    fetch(BL_API_URL + "user/name?newName=" + encodeURIComponent(name) + (playerId ? "&id="+playerId : ""), { 
-        method: 'PATCH', 
-        credentials: 'include'
-    })
-      .then(checkResponse)
-      .then(
-        data => {
-            account.error = null;
+				set(account);
+			});
 
-            if (data.length > 0) {
-                account.error = data;
-                setTimeout(function(){
-                    account.error = null;
-                    set(account);
-                }, 3500);
-            }
+	const changeName = (name, playerId) =>
+		fetch(BL_API_URL + 'user/name?newName=' + encodeURIComponent(name) + (playerId ? '&id=' + playerId : ''), {
+			method: 'PATCH',
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				account.error = null;
 
-            set(account);
-        });
+				if (data.length > 0) {
+					account.error = data;
+					setTimeout(function () {
+						account.error = null;
+						set(account);
+					}, 3500);
+				}
 
-  const changeCountry = (country, playerId) =>
-  fetch(BL_API_URL + "user/country?newCountry=" + country + (playerId ? "&id="+playerId : ""), { 
-      method: 'PATCH', 
-      credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
-          account.error = null;
+				set(account);
+			});
 
-          if (data.length > 0) {
-              account.error = data;
-              setTimeout(function(){
-                  account.error = null;
-                  set(account);
-              }, 3500);
-          }
+	const changeCountry = (country, playerId) =>
+		fetch(BL_API_URL + 'user/country?newCountry=' + country + (playerId ? '&id=' + playerId : ''), {
+			method: 'PATCH',
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				account.error = null;
 
-          set(account);
-      });
+				if (data.length > 0) {
+					account.error = data;
+					setTimeout(function () {
+						account.error = null;
+						set(account);
+					}, 3500);
+				}
 
-  const changePatreonMessage = (message, playerId) =>
-  fetch(BL_API_URL + "user/patreon?message=" + encodeURIComponent(message) + (playerId ? "&id="+playerId : ""), { 
-      method: 'PATCH', 
-      credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
-          account.error = null;
+				set(account);
+			});
 
-          if (data.length > 0) {
-              account.error = data;
-              setTimeout(function(){
-                  account.error = null;
-                  set(account);
-              }, 3500);
-          }
+	const changePatreonMessage = (message, playerId) =>
+		fetch(BL_API_URL + 'user/patreon?message=' + encodeURIComponent(message) + (playerId ? '&id=' + playerId : ''), {
+			method: 'PATCH',
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				account.error = null;
 
-          set(account);
-      });
+				if (data.length > 0) {
+					account.error = data;
+					setTimeout(function () {
+						account.error = null;
+						set(account);
+					}, 3500);
+				}
 
-  const logOut = () => {
-    fetch(BL_API_URL + "signout", {
-        credentials: 'include'
-    }).then(
-        _ => {
-            refresh(true);
-        });
-  }
+				set(account);
+			});
 
-  const destroyClan = () => {
-    
-  }
+	const logOut = () => {
+		fetch(BL_API_URL + 'signout', {
+			credentials: 'include',
+		}).then(_ => {
+			refresh(true);
+		});
+	};
 
-  const banPlayer = (playerId, reason, duration) => {
-  account.loading = true;
-  set(account);
-  fetch(BL_API_URL + "user/ban" + (playerId ? `?id=${playerId}&reason=${reason}&duration=${duration}` : ""), { 
-      method: 'POST', 
-      credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
-          account.error = null;
-          account.loading = false;
-          if (data.length > 0) {
-            account.error = data;
-          } else {
-            if (playerId) {
-              document.location.reload();
-            }
-            account.message = playerId ? "Player banned ✔" : "Account suspended ✔";
-          }
+	const destroyClan = () => {};
 
-          setTimeout(function(){
-            account.error = null;
-            account.message = null;
-            set(account);
-        }, 6000);
+	const banPlayer = (playerId, reason, duration) => {
+		account.loading = true;
+		set(account);
+		fetch(BL_API_URL + 'user/ban' + (playerId ? `?id=${playerId}&reason=${reason}&duration=${duration}` : ''), {
+			method: 'POST',
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				account.error = null;
+				account.loading = false;
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					if (playerId) {
+						document.location.reload();
+					}
+					account.message = playerId ? 'Player banned ✔' : 'Account suspended ✔';
+				}
 
-          set(account);
-      });
-    }
+				setTimeout(function () {
+					account.error = null;
+					account.message = null;
+					set(account);
+				}, 6000);
 
-  const unbanPlayer = (playerId) => {
-  account.loading = true;
-  set(account);
-  fetch(BL_API_URL + "user/unban" + (playerId ? `?id=${playerId}` : ""), { 
-      method: 'POST', 
-      credentials: 'include'
-  })
-    .then(checkResponse)
-    .then(
-      data => {
-          account.error = null;
-          account.loading = false;
-          if (data.length > 0) {
-            account.error = data;
-          } else {
-            if (playerId) {
-              document.location.reload();
-            }
-            account.message = playerId ? "Player unbanned ✔" : "Welcome back ✔";
-          }
+				set(account);
+			});
+	};
 
-          setTimeout(function(){
-            account.error = null;
-            account.message = null;
-            set(account);
-        }, 6000);
+	const unbanPlayer = playerId => {
+		account.loading = true;
+		set(account);
+		fetch(BL_API_URL + 'user/unban' + (playerId ? `?id=${playerId}` : ''), {
+			method: 'POST',
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				account.error = null;
+				account.loading = false;
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					if (playerId) {
+						document.location.reload();
+					}
+					account.message = playerId ? 'Player unbanned ✔' : 'Welcome back ✔';
+				}
 
-          set(account);
-      });
-    }
+				setTimeout(function () {
+					account.error = null;
+					account.message = null;
+					set(account);
+				}, 6000);
 
-  const removeClanRequest = (clan, setAccount = true) => {
-    if (Array.isArray(account?.clanRequest) && clan?.id) {
-      account.clanRequest = account.clanRequest.filter(r => r?.id !== clan.id);
-    }
+				set(account);
+			});
+	};
 
-    if (setAccount) set(account);
-  }
+	const removeClanRequest = (clan, setAccount = true) => {
+		if (Array.isArray(account?.clanRequest) && clan?.id) {
+			account.clanRequest = account.clanRequest.filter(r => r?.id !== clan.id);
+		}
 
-  const addClan = clan => {
-    if (Array.isArray(account?.player?.clans)) {
-      account.player.clans.push(clan);
-    }
+		if (setAccount) set(account);
+	};
 
-    removeClanRequest(clan, false);
+	const addClan = clan => {
+		if (Array.isArray(account?.player?.clans)) {
+			account.player.clans.push(clan);
+		}
 
-    set(account);
-  }
+		removeClanRequest(clan, false);
 
-  const removeClan = clan => {
-    if (Array.isArray(account?.player?.clans)) {
-      account.player.clans = account.player.clans.filter(c => c?.id !== clan.id);
-    }
+		set(account);
+	};
 
-    set(account);
-  }
+	const removeClan = clan => {
+		if (Array.isArray(account?.player?.clans)) {
+			account.player.clans = account.player.clans.filter(c => c?.id !== clan.id);
+		}
 
-  const banClan = clan => {
-    if (Array.isArray(account?.bannedClans)) {
-      account.bannedClans.push(clan);
-    }
+		set(account);
+	};
 
-    set(account);
-  }
+	const banClan = clan => {
+		if (Array.isArray(account?.bannedClans)) {
+			account.bannedClans.push(clan);
+		}
 
-  const unbanClan = clan => {
-    if (Array.isArray(account?.bannedClans)) {
-      account.bannedClans = account.bannedClans.filter(c => c?.id !== clan.id);
-    }
+		set(account);
+	};
 
-    set(account);
-  }
+	const unbanClan = clan => {
+		if (Array.isArray(account?.bannedClans)) {
+			account.bannedClans = account.bannedClans.filter(c => c?.id !== clan.id);
+		}
 
-  const addClanInvitation = playerId => {
-    if (Array.isArray(account?.clan?.pendingInvites)) {
-      account.clan.pendingInvites.push(playerId);
-    }
+		set(account);
+	};
 
-    set(account);
-  }
+	const addClanInvitation = playerId => {
+		if (Array.isArray(account?.clan?.pendingInvites)) {
+			account.clan.pendingInvites.push(playerId);
+		}
 
-  const removeClanInvitation = playerId => {
-    if (Array.isArray(account?.clan?.pendingInvites)) {
-      account.clan.pendingInvites = account.clan.pendingInvites.filter(pId => pId !== playerId);
-    }
+		set(account);
+	};
 
-    set(account);
-  }
+	const removeClanInvitation = playerId => {
+		if (Array.isArray(account?.clan?.pendingInvites)) {
+			account.clan.pendingInvites = account.clan.pendingInvites.filter(pId => pId !== playerId);
+		}
 
-  const setPlayerClan = clan => {
-    account.clan = clan;
+		set(account);
+	};
 
-    set(account);
-  }
+	const setPlayerClan = clan => {
+		account.clan = clan;
 
-  const addFriend = async playerId => queue.BEATLEADER_API.addFriend(playerId).finally(refresh);
+		set(account);
+	};
 
-  const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).finally(refresh);
+	const addFriend = async playerId => queue.BEATLEADER_API.addFriend(playerId).finally(refresh);
 
-  store = {
-    subscribe,
-    get,
-    refresh,
-    logIn,
-    logOut,
-    migrate,
-    changeAvatar,
-    changeName,
-    changeCountry,
-    changePatreonMessage,
-    banPlayer,
-    unbanPlayer,
-    changePassword,
-    changePasswordMigrated,
-    setPlayerClan,
-    addClan,
-    removeClan,
-    removeClanRequest,
-    banClan,
-    unbanClan,
-    addClanInvitation,
-    removeClanInvitation,
-    changeLogin,
-    addFriend,
-    removeFriend,
-  }
+	const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).finally(refresh);
 
-  return store;
-}
+	const refreshLastQualificationTime = (hash, completion) => {
+		fetch(BL_API_URL + 'prevQualTime/' + hash, {credentials: 'include'})
+			.then(response => response.json())
+			.then(data => {
+				completion(data.time);
+			});
+	};
+
+	store = {
+		subscribe,
+		get,
+		refresh,
+		logIn,
+		logOut,
+		migrate,
+		changeAvatar,
+		changeName,
+		changeCountry,
+		changePatreonMessage,
+		banPlayer,
+		unbanPlayer,
+		changePassword,
+		changePasswordMigrated,
+		setPlayerClan,
+		addClan,
+		removeClan,
+		removeClanRequest,
+		banClan,
+		unbanClan,
+		addClanInvitation,
+		removeClanInvitation,
+		changeLogin,
+		addFriend,
+		removeFriend,
+		refreshLastQualificationTime,
+	};
+
+	return store;
+};

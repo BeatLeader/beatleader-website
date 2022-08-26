@@ -92,6 +92,7 @@ nav.ssr-page-container {
 
 // All Player grids
 .ranking-grid,
+.leaderboard,
 .players {
 
     grid-gap: 0rem !important;
@@ -200,7 +201,18 @@ nav.ssr-page-container {
 }
 
 // User profile page
+.leaderboard .player-score.highlight {
+    min-height: 3rem;
+    height: auto !important;
+}
+.song-score .leaderboard {
+    padding: 0!important;
+    background: none!important;
+    backdrop-filter: none!important;
+}
+
 .player-page,
+.leaderboard,
 .page-content.scores {
     .compare-player-name {
         * {
@@ -242,9 +254,11 @@ nav.ssr-page-container {
             margin: .4rem 0;
             padding: 0;
 
-            .badge {
-                border: none;
-                background: none !important;
+            &.mobile-second-line {
+                .badge {
+                    border: none;
+                    background: none !important;
+                }
             }
         }
 
@@ -287,6 +301,18 @@ nav.ssr-page-container {
 .ranking.global.sspl {
     * {
         background: transparent;
+    }
+}
+
+.selectContainer {
+    background-color: transparent;
+
+    input {
+        border: none !important;
+    }
+
+    .listContainer {
+        background-color: var(--selected);
     }
 }
 

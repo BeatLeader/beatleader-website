@@ -1,128 +1,142 @@
 import createHttpStore from './http-store';
-import beatMapsEnhancer from './enhancers/common/beatmaps'
-import createLeaderboardPageProvider from './providers/api-leaderboard'
-import {writable} from 'svelte/store'
-import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/beatleader/song'
-import {debounce} from '../../utils/debounce'
-import produce, {applyPatches} from 'immer'
-import ppAttributionEnhancer from './enhancers/scores/pp-attribution'
-import stringify from 'json-stable-stringify'
+import beatMapsEnhancer from './enhancers/common/beatmaps';
+import createLeaderboardPageProvider from './providers/api-leaderboard';
+import {writable} from 'svelte/store';
+import {findDiffInfoWithDiffAndTypeFromBeatMaps} from '../../utils/beatleader/song';
+import {debounce} from '../../utils/debounce';
+import produce, {applyPatches} from 'immer';
+import ppAttributionEnhancer from './enhancers/scores/pp-attribution';
+import stringify from 'json-stable-stringify';
 
 export default (leaderboardId, type = 'global', page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
-  let currentLeaderboardId = leaderboardId ? leaderboardId : null;
-  let currentType = type ? type : 'global';
-  let currentPage = page ? page : 1;
-  let currentFilters = filters ?? {};
+	let currentLeaderboardId = leaderboardId ? leaderboardId : null;
+	let currentType = type ? type : 'global';
+	let currentPage = page ? page : 1;
+	let currentFilters = filters ?? {};
 
-  const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
+	const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
 
-  const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
-  const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${scoreRow?.player?.playerId}`
+	const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
+	const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${scoreRow?.player?.playerId}`;
 
-  let enhancePatches = {};
-  let currentEnhanceTaskId = null;
+	let enhancePatches = {};
+	let currentEnhanceTaskId = null;
 
-  const onNewData = ({fetchParams, state, set}) => {
-    currentLeaderboardId = fetchParams?.leaderboardId ?? null;
-    currentType = fetchParams?.type ?? 'global';
-    currentPage = fetchParams?.page ?? 1;
-    currentFilters = fetchParams?.filters ?? {};
+	const onNewData = ({fetchParams, state, set}) => {
+		currentLeaderboardId = fetchParams?.leaderboardId ?? null;
+		currentType = fetchParams?.type ?? 'global';
+		currentPage = fetchParams?.page ?? 1;
+		currentFilters = fetchParams?.filters ?? {};
 
-    if (!state) return;
+		if (!state) return;
 
-    const enhanceTaskId = getCurrentEnhanceTaskId();
-    if (currentEnhanceTaskId !== enhanceTaskId) {
-      enhancePatches = {}
-      currentEnhanceTaskId = enhanceTaskId;
-    }
+		const enhanceTaskId = getCurrentEnhanceTaskId();
+		if (currentEnhanceTaskId !== enhanceTaskId) {
+			enhancePatches = {};
+			currentEnhanceTaskId = enhanceTaskId;
+		}
 
-    const stateProduce = (state, patchId, producer) => produce(state, producer, patches => {
-      if (!enhancePatches[patchId]) enhancePatches[patchId] = [];
+		const stateProduce = (state, patchId, producer) =>
+			produce(state, producer, patches => {
+				if (!enhancePatches[patchId]) enhancePatches[patchId] = [];
 
-      enhancePatches[patchId].push(...patches)
-    })
+				enhancePatches[patchId].push(...patches);
+			});
 
-    const debouncedSetState = debounce((enhanceTaskId, state) => {
-      if (currentEnhanceTaskId !== enhanceTaskId) return;
+		const debouncedSetState = debounce((enhanceTaskId, state) => {
+			if (currentEnhanceTaskId !== enhanceTaskId) return;
 
-      set(state);
-    }, 100);
+			set(state);
+		}, 100);
 
-    const newState = {...state};
+		const newState = {...state};
 
-    const setStateRow = (enhanceTaskId, scoreRow) => {
-      if (currentEnhanceTaskId !== enhanceTaskId) return null;
+		const setStateRow = (enhanceTaskId, scoreRow) => {
+			if (currentEnhanceTaskId !== enhanceTaskId) return null;
 
-      const patchId = getPatchId(currentLeaderboardId, scoreRow)
-      const stateRowIdx = newState.scores.findIndex(s => getPatchId(currentLeaderboardId, s) === patchId)
-      if (stateRowIdx < 0) return;
+			const patchId = getPatchId(currentLeaderboardId, scoreRow);
+			const stateRowIdx = newState.scores.findIndex(s => getPatchId(currentLeaderboardId, s) === patchId);
+			if (stateRowIdx < 0) return;
 
-      newState.scores[stateRowIdx] = applyPatches(newState.scores[stateRowIdx], enhancePatches[patchId]);
+			newState.scores[stateRowIdx] = applyPatches(newState.scores[stateRowIdx], enhancePatches[patchId]);
 
-      debouncedSetState(enhanceTaskId, newState);
+			debouncedSetState(enhanceTaskId, newState);
 
-      return newState.scores[stateRowIdx];
-    }
+			return newState.scores[stateRowIdx];
+		};
 
-    // if (newState.leaderboard)
-    //   beatMapsEnhancer(newState)
-    //     .then(_ => {
-    //       const versions = newState?.leaderboard?.beatMaps?.versions ?? null
-    //       const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
+		// if (newState.leaderboard)
+		//   beatMapsEnhancer(newState)
+		//     .then(_ => {
+		//       const versions = newState?.leaderboard?.beatMaps?.versions ?? null
+		//       const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
 
-    //       const bpm = newState?.leaderboard?.beatMaps?.metadata?.bpm ?? null;
-    //       const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(newState?.leaderboard?.beatMaps?.versions?.[versionsLastIdx]?.diffs, newState?.leaderboard?.diffInfo);
-    //       if (!bmStats) return null;
+		//       const bpm = newState?.leaderboard?.beatMaps?.metadata?.bpm ?? null;
+		//       const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(newState?.leaderboard?.beatMaps?.versions?.[versionsLastIdx]?.diffs, newState?.leaderboard?.diffInfo);
+		//       if (!bmStats) return null;
 
-    //       newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
+		//       newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
 
-    //       setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
-    //       debouncedSetState(enhanceTaskId, newState);
+		//       setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
+		//       debouncedSetState(enhanceTaskId, newState);
 
-    //       return newState.leaderboard.beatMaps;
-    //     })
-    //     .then(_ => {
-    //       if (!newState.scores || !newState.scores.length) return;
+		//       return newState.leaderboard.beatMaps;
+		//     })
+		//     .then(_ => {
+		//       if (!newState.scores || !newState.scores.length) return;
 
-    //       for (const scoreRow of newState.scores) {
-    //           stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, scoreRow?.player?.playerId, true))
-    //           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-    //       }
-    //     })
-  }
+		//       for (const scoreRow of newState.scores) {
+		//           stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, scoreRow?.player?.playerId, true))
+		//           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
+		//       }
+		//     })
+	};
 
-  const provider = createLeaderboardPageProvider();
+	const provider = createLeaderboardPageProvider();
 
-  const httpStore = createHttpStore(
-    provider,
-    {leaderboardId, type, page, filters},
-    initialState,
-    {
-      onInitialized: onNewData,
-      onAfterStateChange: onNewData,
-      onSetPending: ({fetchParams}) => ({...fetchParams}),
-    },
-    initialStateType
-  );
+	const httpStore = createHttpStore(
+		provider,
+		{leaderboardId, type, page, filters},
+		initialState,
+		{
+			onInitialized: onNewData,
+			onAfterStateChange: onNewData,
+			onSetPending: ({fetchParams}) => ({...fetchParams}),
+		},
+		initialStateType
+	);
 
-  const fetch = async (leaderboardId = currentLeaderboardId, type = currentType, page = currentPage, filters = currentFilters, force = false) => {
-    if (!leaderboardId) return false;
+	const fetch = async (
+		leaderboardId = currentLeaderboardId,
+		type = currentType,
+		page = currentPage,
+		filters = currentFilters,
+		force = false
+	) => {
+		if (!leaderboardId) return false;
 
-    if (leaderboardId === currentLeaderboardId && (!type || type === currentType) && (!page || page === currentPage) && (!filters || stringify(filters) === stringify(currentFilters)) && !force) return false;
+		if (
+			leaderboardId === currentLeaderboardId &&
+			(!type || type === currentType) &&
+			(!page || page === currentPage) &&
+			(!filters || stringify(filters) === stringify(currentFilters)) &&
+			!force
+		)
+			return false;
 
-    return httpStore.fetch({leaderboardId, type, page, filters}, force, provider);
-  }
+		return httpStore.fetch({leaderboardId, type, page, filters}, force, provider);
+	};
 
-  const refresh = async () => fetch(currentLeaderboardId, currentType, currentPage, true);
+	const refresh = async () => fetch(currentLeaderboardId, currentType, currentPage, true);
 
-  return {
-    ...httpStore,
-    fetch,
-    refresh,
-    getLeaderboardId: () => currentLeaderboardId,
-    getType: () => currentType,
-    getPage: () => currentPage,
-    getFilters: () => currentFilters,
-    enhanced: {subscribe: subscribeEnhanced},
-  }
-}
+	return {
+		...httpStore,
+		fetch,
+		refresh,
+		getLeaderboardId: () => currentLeaderboardId,
+		getType: () => currentType,
+		getPage: () => currentPage,
+		getFilters: () => currentFilters,
+		enhanced: {subscribe: subscribeEnhanced},
+	};
+};

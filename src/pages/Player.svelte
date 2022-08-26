@@ -1,265 +1,303 @@
 <script>
-  import {onMount} from 'svelte'
-  import {navigate} from 'svelte-routing'
-  import {fade} from 'svelte/transition'
-  import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store'
-  import createTwitchService from '../services/twitch'
-  import createAccSaberService from '../services/accsaber'
-  import {capitalize, opt} from '../utils/js'
-  import ssrConfig from '../ssr-config'
-  import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors'
-  import {scrollToTargetAdjusted} from '../utils/browser'
-  import createServiceParamsManager from '../components/Player/utils/service-param-manager'
-  import eventBus from '../utils/broadcast-channel-pubsub'
-  import Profile from '../components/Player/Profile.svelte'
-  import Scores from '../components/Player/Scores.svelte'
-  import MiniRankings from '../components/Ranking/MiniRankings.svelte'
-  import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte'
-  import TwitchVideos from '../components/Player/TwitchVideos.svelte'
-  import ContentBox from "../components/Common/ContentBox.svelte";
+	import {onMount} from 'svelte';
+	import {navigate} from 'svelte-routing';
+	import {fade} from 'svelte/transition';
+	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
+	import createTwitchService from '../services/twitch';
+	import createAccSaberService from '../services/accsaber';
+	import {capitalize, opt} from '../utils/js';
+	import ssrConfig from '../ssr-config';
+	import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors';
+	import {scrollToTargetAdjusted} from '../utils/browser';
+	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
+	import eventBus from '../utils/broadcast-channel-pubsub';
+	import Profile from '../components/Player/Profile.svelte';
+	import Scores from '../components/Player/Scores.svelte';
+	import MiniRankings from '../components/Ranking/MiniRankings.svelte';
+	import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte';
+	import TwitchVideos from '../components/Player/TwitchVideos.svelte';
+	import ContentBox from '../components/Common/ContentBox.svelte';
 
-  export let initialPlayerId = null;
-  export let initialParams = null;
+	const STORE_SORTING_KEY = 'PlayerScoreSorting';
+	const STORE_ORDER_KEY = 'PlayerScoreOrder';
 
-  document.body.classList.remove('slim');
+	import keyValueRepository from '../db/repository/key-value';
+	import {configStore} from '../stores/config';
 
-  let playerEl = null;
+	export let initialPlayerId = null;
+	export let initialParams = null;
 
-  let service = null;
-  let serviceParams = {};
+	document.body.classList.remove('slim');
 
-  const serviceParamsManager = createServiceParamsManager(initialPlayerId);
+	let playerEl = null;
 
-  processInitialParams(initialPlayerId, initialParams);
+	let service = null;
+	let serviceParams = null;
 
-  let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
+	const serviceParamsManager = createServiceParamsManager(initialPlayerId);
 
-  function processInitialParams(playerId, params) {
-    if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
+	processInitialParams(initialPlayerId, initialParams);
 
-    const serviceInfo = serviceParamsManager.initFromUrl(params);
+	let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
 
-    service = serviceInfo.service;
-    serviceParams = serviceInfo.params;
+	async function changeParams(newPlayerId, service, serviceParams) {
+		if (!newPlayerId) return;
 
-    return {service, serviceParams}
-  }
+		if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
+			playerStore.fetch(newPlayerId, service, serviceParams);
+		} else {
+			playerStore.setService(service);
+			playerStore.setServiceParams(serviceParams);
+		}
+	}
 
-  const twitchService = createTwitchService();
-  let twitchVideos = [];
+	async function refreshSavedParams() {
+		let params = serviceParamsManager.getParams();
+		const scoresSortOptions = await configStore.get('preferences').scoresSortOptions;
+		if (scoresSortOptions == 'last') {
+			const sortingOption = await keyValueRepository().get(STORE_SORTING_KEY);
+			if (sortingOption) {
+				params.sort = sortingOption;
+			}
+			const orderOption = await keyValueRepository().get(STORE_ORDER_KEY);
+			if (orderOption) {
+				params.order = orderOption;
+			}
+		} else {
+			params.sort = scoresSortOptions;
+		}
 
-  const accSaberService = createAccSaberService();
+		changeParams(currentPlayerId, serviceParamsManager.getService(), params);
+	}
 
-  async function changeParams(newPlayerId, service, serviceParams) {
-    if (!newPlayerId) return;
+	function processInitialParams(playerId, params) {
+		if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
 
-    if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
-      playerStore.fetch(newPlayerId, service, serviceParams)
-    } else {
-      playerStore.setService(service)
-      playerStore.setServiceParams(serviceParams);
-    }
-  }
+		const serviceInfo = serviceParamsManager.initFromUrl(params);
 
-  function onPageChanged(event) {
-    let newPage = event?.detail ?? null;
-    if (!newPage) return;
+		if (!params) {
+			refreshSavedParams();
+		}
 
-    if (!Number.isFinite(newPage)) newPage = 1;
+		service = serviceInfo.service;
+		serviceParams = serviceInfo.params;
 
-    serviceParamsManager.update({page: newPage});
+		return {service, serviceParams};
+	}
 
-    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
-  }
+	const twitchService = createTwitchService();
+	let twitchVideos = [];
 
-  function onServiceChanged(event) {
-    const newService = event?.detail ?? null;
-    if (!newService) return;
+	const accSaberService = createAccSaberService();
 
-    if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
+	function onPageChanged(event) {
+		let newPage = event?.detail ?? null;
+		if (!newPage) return;
 
-    serviceParamsManager.update({}, newService)
+		if (!Number.isFinite(newPage)) newPage = 1;
 
-    navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
-  }
+		serviceParamsManager.update({page: newPage});
 
-  function onServiceParamsChanged(event) {
-    const newServiceParams = event?.detail ?? null;
-    if (!newServiceParams) return;
+		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+	}
 
-    const oldServiceUrl = serviceParamsManager.getCurrentServiceUrl();
+	function onServiceChanged(event) {
+		const newService = event?.detail ?? null;
+		if (!newService) return;
 
-    serviceParamsManager.update(newServiceParams);
+		if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
 
-    if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
-      navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
-    } else {
-      changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams())
-    }
-  }
+		serviceParamsManager.update({}, newService);
 
-  function scrollToTop() {
-    if (playerEl) scrollToTargetAdjusted(playerEl, 55)
-  }
+		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+	}
 
-  async function updateTwitchProfile(playerId) {
-    if (!playerId) return;
+	function onServiceParamsChanged(event) {
+		const newServiceParams = event?.detail ?? null;
+		if (!newServiceParams) return;
 
-    const twitchProfile = await twitchService.refresh(playerId);
-    twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
-  }
+		const oldServiceUrl = serviceParamsManager.getCurrentServiceUrl();
 
-  let avatarHash = '';
-  async function onPlayerDataUpdated() {
-    if(playerStore) {
-      await playerStore.refresh();
+		serviceParamsManager.update(newServiceParams);
 
-      // force refresh avatar url
-      avatarHash = (Math.random() * 100000).toString();
-    }
-  }
+		if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
+			navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+		} else {
+			changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
+		}
+	}
 
-  onMount(async () => {
-    const twitchUnsubscribe = eventBus.on('player-twitch-videos-updated', ({playerId: twitchPlayerId, twitchProfile}) => {
-      if (twitchPlayerId !== currentPlayerId) return;
+	function scrollToTop() {
+		if (playerEl) scrollToTargetAdjusted(playerEl, 55);
+	}
 
-      twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
-    })
+	async function updateTwitchProfile(playerId) {
+		if (!playerId) return;
 
-    return () => {
-      twitchUnsubscribe();
-    }
-  })
+		const twitchProfile = await twitchService.refresh(playerId);
+		twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
+	}
 
-  let innerWidth = 0;
-  let innerHeight = 0;
+	let avatarHash = '';
+	async function onPlayerDataUpdated() {
+		if (playerStore) {
+			await playerStore.refresh();
 
-  $: processInitialParams(initialPlayerId, initialParams);
-  $: changeParams(initialPlayerId, service, serviceParams)
+			// force refresh avatar url
+			avatarHash = (Math.random() * 100000).toString();
+		}
+	}
 
-  $: paramsStore = playerStore ? playerStore.params : null;
+	onMount(async () => {
+		const twitchUnsubscribe = eventBus.on('player-twitch-videos-updated', ({playerId: twitchPlayerId, twitchProfile}) => {
+			if (twitchPlayerId !== currentPlayerId) return;
 
-  $: currentPlayerId = $paramsStore.currentPlayerId;
-  $: currentService = $paramsStore.currentService;
-  $: currentServiceParams = $paramsStore.currentServiceParams;
+			twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
+		});
 
-  $: playerIsLoading = playerStore ? playerStore.isLoading : null;
-  $: playerError = playerStore ? playerStore.error : null;
-  $: skeleton = !$playerStore && $playerIsLoading;
-  $: browserTitle = `${$playerStore?.name ?? 'Player'} / ${serviceParamsManager.getCurrentServiceUrl()?.split('/').map(s => capitalize(s)).join(' / ')} - ${ssrConfig.name}`
+		return () => {
+			twitchUnsubscribe();
+		};
+	});
 
-  $: updateTwitchProfile(currentPlayerId);
+	let innerWidth = 0;
+	let innerHeight = 0;
 
-  let scoresPlayerId = null;
-  let scoresState = null;
-  $: if ($playerStore && !$playerIsLoading) {
-    if (scoresPlayerId && scoresPlayerId === currentPlayerId) {
-      scoresState = null;
-    } else {
-      scoresState = opt($playerStore, 'scores', null);
-      scrollToTop();
-    }
+	$: processInitialParams(initialPlayerId, initialParams);
+	$: changeParams(initialPlayerId, service, serviceParams);
 
-    scoresPlayerId = currentPlayerId;
-  }
-  $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId)
+	$: paramsStore = playerStore ? playerStore.params : null;
 
-  $: rank = $playerStore?.playerInfo.rank
-  $: country = $playerStore?.playerInfo.countries[0].country
-  $: countryRank = $playerStore?.playerInfo.countries[0].rank
+	$: currentPlayerId = $paramsStore.currentPlayerId;
+
+	$: playerIsLoading = playerStore ? playerStore.isLoading : null;
+	$: playerError = playerStore ? playerStore.error : null;
+	$: skeleton = !$playerStore && $playerIsLoading;
+	$: browserTitle = `${$playerStore?.name ?? 'Player'} / ${serviceParamsManager
+		.getCurrentServiceUrl()
+		?.split('/')
+		.map(s => capitalize(s))
+		.join(' / ')} - ${ssrConfig.name}`;
+
+	$: updateTwitchProfile(currentPlayerId);
+
+	let scoresPlayerId = null;
+	let scoresState = null;
+	$: if ($playerStore && !$playerIsLoading) {
+		if (scoresPlayerId && scoresPlayerId === currentPlayerId) {
+			scoresState = null;
+		} else {
+			scoresState = opt($playerStore, 'scores', null);
+			scrollToTop();
+		}
+
+		scoresPlayerId = currentPlayerId;
+	}
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
+
+	$: rank = $playerStore?.playerInfo.rank;
+	$: country = $playerStore?.playerInfo.countries[0].country;
+	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
 </script>
 
 <svelte:head>
-  <title>{browserTitle}</title>
+	<title>{browserTitle}</title>
 </svelte:head>
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
 <section class="align-content player-page">
-<article class="page-content" bind:this={playerEl} transition:fade>
-  {#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
-    <ContentBox>
-      <p class="error">Player not found.</p>
-    </ContentBox>
-  {:else}
-    <Profile playerData={$playerStore} isLoading={$playerIsLoading} error={$playerError} {skeleton} {twitchVideos}
-             on:player-data-updated={onPlayerDataUpdated} {avatarHash} />
+	<article class="page-content" bind:this={playerEl} transition:fade>
+		{#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
+			<ContentBox>
+				<p class="error">Player not found.</p>
+			</ContentBox>
+		{:else}
+			<Profile
+				playerData={$playerStore}
+				isLoading={$playerIsLoading}
+				error={$playerError}
+				{skeleton}
+				{twitchVideos}
+				on:player-data-updated={onPlayerDataUpdated}
+				{avatarHash} />
 
-    {#if scoresPlayerId}
-      <ContentBox>
-        <Scores playerId={scoresPlayerId}
-                initialState={scoresState}
-                initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
-                initialService={$paramsStore.currentService}
-                initialServiceParams={$paramsStore.currentServiceParams}
-                numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
-                on:service-changed={onServiceChanged} on:service-params-changed={onServiceParamsChanged}
-                on:page-changed={onPageChanged}
-                fixedBrowserTitle={browserTitle}
-        />
-      </ContentBox>
-    {/if}
-  {/if}
-</article>
+			{#if scoresPlayerId}
+				<ContentBox>
+					<Scores
+						playerId={scoresPlayerId}
+						initialState={scoresState}
+						initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
+						initialService={$paramsStore.currentService}
+						initialServiceParams={$paramsStore.currentServiceParams}
+						numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
+						on:service-changed={onServiceChanged}
+						on:service-params-changed={onServiceParamsChanged}
+						on:page-changed={onPageChanged}
+						fixedBrowserTitle={browserTitle} />
+				</ContentBox>
+			{/if}
+		{/if}
+	</article>
 
-{#if innerWidth > 1749}
-<aside>
-  <MiniRankings {rank} {country} {countryRank} box={true} />
+	{#if innerWidth > 1749}
+		<aside>
+			<MiniRankings {rank} {country} {countryRank} box={true} />
 
-  {#if twitchVideos && twitchVideos.length}
-    <ContentBox>
-      <TwitchVideos videos={twitchVideos} />
-    </ContentBox>
-  {/if}
+			{#if twitchVideos && twitchVideos.length}
+				<ContentBox>
+					<TwitchVideos videos={twitchVideos} />
+				</ContentBox>
+			{/if}
 
-  {#await accSaberAvailable}
-      Loading...
-  {:then accSaberAvailable} 
-    {#if accSaberAvailable}
-      <ContentBox>
-        <AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
-      </ContentBox>
-    {/if}
-  {/await}
-
-</aside>
-{/if}
+			{#await accSaberAvailable}
+				Loading...
+			{:then accSaberAvailable}
+				{#if accSaberAvailable}
+					<ContentBox>
+						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
+					</ContentBox>
+				{/if}
+			{/await}
+		</aside>
+	{/if}
 </section>
 
 <style>
-    .align-content {
-        display: flex;
-        justify-content: center;
-    }
+	.align-content {
+		display: flex;
+		justify-content: center;
+	}
 
-    .page-content {
-        max-width: 65em;
-        width: 100%;
-    }
+	.page-content {
+		max-width: 65em;
+		width: 100%;
+		overflow: inherit;
+	}
 
-  article {
-      width: calc(100% - 25em);
-      overflow-x: hidden;
-  }
+	article {
+		width: calc(100% - 25em);
+		overflow-x: hidden;
+	}
 
-  aside {
-      width: 25em;
-  }
+	aside {
+		width: 25em;
+	}
 
-  aside .box {
-      padding: 0;
-      margin-bottom: 1em;
-  }
+	aside .box {
+		padding: 0;
+		margin-bottom: 1em;
+	}
 
-  button {
-      cursor: pointer;
-      min-width: 2rem;
-      margin-right: .5rem;
-  }
+	button {
+		cursor: pointer;
+		min-width: 2rem;
+		margin-right: 0.5rem;
+	}
 
-  @media screen and (max-width: 1749px) {
-      article {
-          width: 100%;
-      }
-  }
+	@media screen and (max-width: 1749px) {
+		article {
+			width: 100%;
+		}
+	}
 </style>

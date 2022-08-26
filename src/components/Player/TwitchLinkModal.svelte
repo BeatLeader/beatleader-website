@@ -1,161 +1,169 @@
 <script>
-  import {createEventDispatcher} from 'svelte'
-  import createTwitchService from '../../services/twitch'
-  import Button from '../Common/Button.svelte'
-  import Dialog from '../Common/Dialog.svelte'
-  import {delay} from '../../utils/promise'
-  import {SsrHttpUnauthenticatedError, SsrHttpUnauthorizedError} from '../../network/errors'
+	import {createEventDispatcher} from 'svelte';
+	import createTwitchService from '../../services/twitch';
+	import Button from '../Common/Button.svelte';
+	import Dialog from '../Common/Dialog.svelte';
+	import {delay} from '../../utils/promise';
+	import {SsrHttpUnauthenticatedError, SsrHttpUnauthorizedError} from '../../network/errors';
 
-  export let playerId;
-  export let show = false;
+	export let playerId;
+	export let show = false;
 
-  const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-  const twitchService = createTwitchService();
+	const twitchService = createTwitchService();
 
-  let twitchProfile = null;
+	let twitchProfile = null;
 
-  let twitchUserName = "";
-  let alreadySearched = false;
-  let isSearching = false;
-  let error = null;
+	let twitchUserName = '';
+	let alreadySearched = false;
+	let isSearching = false;
+	let error = null;
 
-  async function onPlayerChanged(playerId) {
-    if (!playerId) return;
+	async function onPlayerChanged(playerId) {
+		if (!playerId) return;
 
-    twitchProfile = await twitchService.getPlayerProfile(playerId)
-    if (twitchProfile && twitchProfile.login) {
-      twitchUserName = twitchProfile.login;
+		twitchProfile = await twitchService.getPlayerProfile(playerId);
+		if (twitchProfile && twitchProfile.login) {
+			twitchUserName = twitchProfile.login;
 
-      if (!twitchProfile.id) onFindUser();
-    }
-  }
+			if (!twitchProfile.id) onFindUser();
+		}
+	}
 
-  function onCancel() {
-    dispatch('cancel')
-  }
+	function onCancel() {
+		dispatch('cancel');
+	}
 
-  async function onFindUser() {
-    if (!twitchUserName || !twitchUserName.length) return;
+	async function onFindUser() {
+		if (!twitchUserName || !twitchUserName.length) return;
 
-    try {
-      isSearching = true
-      alreadySearched = false;
-      twitchProfile = null;
-      error = null;
+		try {
+			isSearching = true;
+			alreadySearched = false;
+			twitchProfile = null;
+			error = null;
 
-      await delay(100);
-      twitchProfile = await twitchService.fetchProfile(twitchUserName);
+			await delay(100);
+			twitchProfile = await twitchService.fetchProfile(twitchUserName);
 
-      alreadySearched = true;
-    } catch(err) {
-      if (err instanceof SsrHttpUnauthenticatedError || err instanceof SsrHttpUnauthorizedError) {
-        error = 'Twitch authentication error. It is likely that your Twitch token is invalid. Go to Settings and reconnect service with your Twitch account.';
-      } else {
-        error = 'An error occurred while trying to connect to Twitch.';
-      }
-    }
-    finally {
-      isSearching = false;
-    }
-  }
+			alreadySearched = true;
+		} catch (err) {
+			if (err instanceof SsrHttpUnauthenticatedError || err instanceof SsrHttpUnauthorizedError) {
+				error =
+					'Twitch authentication error. It is likely that your Twitch token is invalid. Go to Settings and reconnect service with your Twitch account.';
+			} else {
+				error = 'An error occurred while trying to connect to Twitch.';
+			}
+		} finally {
+			isSearching = false;
+		}
+	}
 
-  function onTwitchUserNameKeyUp(e) {
-    if (e.code === 'Enter') {
-      e.preventDefault()
+	function onTwitchUserNameKeyUp(e) {
+		if (e.code === 'Enter') {
+			e.preventDefault();
 
-      onFindUser();
+			onFindUser();
 
-      return false
-    }
-  }
+			return false;
+		}
+	}
 
-  $: onPlayerChanged(playerId)
+	$: onPlayerChanged(playerId);
 </script>
 
 {#if show}
-  <Dialog closeable={true} on:confirm={onCancel}>
-    <svelte:fragment slot="header">
-      <div class="header-title">Set up a Twitch profile</div>
-    </svelte:fragment>
+	<Dialog closeable={true} on:confirm={onCancel}>
+		<svelte:fragment slot="header">
+			<div class="header-title">Set up a Twitch profile</div>
+		</svelte:fragment>
 
-    <svelte:fragment slot="content">
-      <div class="search">
-        <input type="text" bind:value={twitchUserName} placeholder="Enter Twitch username..." on:keyup={onTwitchUserNameKeyUp}/>
-        <Button iconFa="fas fa-search" type="primary" label="Search" on:click={onFindUser} loading={isSearching}/>
-      </div>
+		<svelte:fragment slot="content">
+			<div class="search">
+				<input type="text" bind:value={twitchUserName} placeholder="Enter Twitch username..." on:keyup={onTwitchUserNameKeyUp} />
+				<Button iconFa="fas fa-search" type="primary" label="Search" on:click={onFindUser} loading={isSearching} />
+			</div>
 
-      {#if twitchProfile && twitchProfile.id}
-        <div class="results">
-          <img src={twitchProfile.profile_image_url}/>
-          <div>
-            <h1 class="title is-4">{twitchProfile.display_name}</h1>
-            <h2 class="subtitle is-6"><a href="https://twitch.tv/{encodeURIComponent(twitchProfile.login)}" target="_blank" rel="noreferrer">https://twitch.tv/{twitchProfile.login}</a></h2>
-            <p>{twitchProfile.description}</p>
-          </div>
-        </div>
-      {:else if error}
-        <p class="error">{error}</p>
-      {:else if alreadySearched}
-        <p>Twitch user not found.</p>
-      {/if}
-    </svelte:fragment>
+			{#if twitchProfile && twitchProfile.id}
+				<div class="results">
+					<img src={twitchProfile.profile_image_url} />
+					<div>
+						<h1 class="title is-4">{twitchProfile.display_name}</h1>
+						<h2 class="subtitle is-6">
+							<a href="https://twitch.tv/{encodeURIComponent(twitchProfile.login)}" target="_blank" rel="noreferrer"
+								>https://twitch.tv/{twitchProfile.login}</a>
+						</h2>
+						<p>{twitchProfile.description}</p>
+					</div>
+				</div>
+			{:else if error}
+				<p class="error">{error}</p>
+			{:else if alreadySearched}
+				<p>Twitch user not found.</p>
+			{/if}
+		</svelte:fragment>
 
-    <svelte:fragment slot="footer-right">
-      <Button iconFa="fab fa-twitch" label="Link" type="twitch" on:click={() => dispatch('link', twitchProfile)} disabled={!twitchProfile}/>
-      <Button label="Cancel" on:click={onCancel}/>
-    </svelte:fragment>
-  </Dialog>
+		<svelte:fragment slot="footer-right">
+			<Button
+				iconFa="fab fa-twitch"
+				label="Link"
+				type="twitch"
+				on:click={() => dispatch('link', twitchProfile)}
+				disabled={!twitchProfile} />
+			<Button label="Cancel" on:click={onCancel} />
+		</svelte:fragment>
+	</Dialog>
 {/if}
 
 <style>
-    .header-title {
-        text-align: left;
-    }
+	.header-title {
+		text-align: left;
+	}
 
-    .search {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 1em;
-    }
+	.search {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-bottom: 1em;
+	}
 
-    input {
-        width: 100%;
-        padding: calc(0.65em - 1px) 1em;
-        margin: 0 0 0.45em 0;
-        outline: none;
-        color: var(--textColor);
-        background-color: var(--faded);
-        border: 2px solid var(--faded);
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-    }
+	input {
+		width: 100%;
+		padding: calc(0.65em - 1px) 1em;
+		margin: 0 0 0.45em 0;
+		outline: none;
+		color: var(--textColor);
+		background-color: var(--faded);
+		border: 2px solid var(--faded);
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
 
-    .search :global(.button) {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-    }
+	.search :global(.button) {
+		border-top-left-radius: 0;
+		border-bottom-left-radius: 0;
+	}
 
-    .results {
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-    }
+	.results {
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+	}
 
-    img {
-        width: 30%;
-        height: auto;
-        margin-right: 1.5em;
-        border-radius: 50%;
-    }
+	img {
+		width: 30%;
+		height: auto;
+		margin-right: 1.5em;
+		border-radius: 50%;
+	}
 
-    a {
-        color: #9146ff !important;
-        word-wrap: break-word;
-    }
+	a {
+		color: #9146ff !important;
+		word-wrap: break-word;
+	}
 
-    .error {
-        color: var(--error);
-    }
+	.error {
+		color: var(--error);
+	}
 </style>

@@ -1,23 +1,23 @@
-import queue from '../../queues/queues'
-import createClient from '../generic'
+import queue from '../../queues/queues';
+import createClient from '../generic';
 
 const process = response => {
-  const category = response?.fetchOptions?.category ?? 'overall';
-  if (!response?.response || !Array.isArray(response.response)) return [];
+	const category = response?.fetchOptions?.category ?? 'overall';
+	if (!response?.response || !Array.isArray(response.response)) return [];
 
-  return response.response.map(p => ({
-    ...p,
-    id: `${p.playerId}-${category}`,
-    category,
-    lastUpdated: new Date(),
-  }));
-}
+	return response.response.map(p => ({
+		...p,
+		id: `${p.playerId}-${category}`,
+		category,
+		lastUpdated: new Date(),
+	}));
+};
 
 const get = async ({category = 'overall', page = 1, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) => {
-  const response = await queue.ACCSABER.ranking(category, page, priority, queueOptions);
+	const response = await queue.ACCSABER.ranking(category, page, priority, queueOptions);
 
-  return {...response, body: {response: response.body, fetchOptions: {category}}}
-}
+	return {...response, body: {response: response.body, fetchOptions: {category}}};
+};
 
 const client = createClient(get, process);
 
