@@ -20,6 +20,7 @@
 	export let replayLink = null;
 	export let mapCheck = false;
 	export let serviceIcon = null;
+	export let noPin = false;
 
 	const {open} = getContext('simple-modal');
 	const showPreview = previewLink => {
@@ -90,7 +91,7 @@
 	}`;
 </script>
 
-{#if shownIcons.includes('pin')}
+{#if !noPin && shownIcons.includes('pin')}
 	<PinIcon {scoreId} on:score-pinned />
 {/if}
 

@@ -1,5 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
+	import createAccountStore from '../../stores/beatleader/account';
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
 	import Icons from '../Song/Icons.svelte';
@@ -18,13 +19,16 @@
 	export let noIcons = false;
 	export let icons = null;
 
+	const account = createAccountStore();
+
 	$: song = leaderboard?.song ?? null;
 	$: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 	$: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / scoresPerPage) + 1 : 1;
 	$: diffInfo = leaderboard?.diffInfo ?? null;
 	$: leaderboardId = leaderboard?.leaderboardId ?? '';
 	$: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboardId}/${page ?? ''}`;
-	$: serviceIcon = score?.metadata ?? null;
+	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
+	$: serviceIcon = isPlayerScore && score?.metadata ? score.metadata : null;
 </script>
 
 {#if song}
@@ -51,7 +55,7 @@
 
 		{#if !noIcons && hash && hash.length}
 			<div class="icons desktop-and-up" class:wide={!icons?.length || icons.length > 6}>
-				<Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} {replayLink} {icons} {serviceIcon} on:score-pinned />
+				<Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} {replayLink} {icons} {serviceIcon} noPin={!isPlayerScore} on:score-pinned />
 			</div>
 		{/if}
 	</section>

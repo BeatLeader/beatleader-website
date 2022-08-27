@@ -1,6 +1,7 @@
 <script>
 	import {fade, fly, slide} from 'svelte/transition';
 	import pinnedScoresStore from '../../stores/pinned-scores';
+	import createAccountStore from '../../stores/beatleader/account';
 	import {opt} from '../../utils/js';
 	import SongInfo from './SongInfo.svelte';
 	import ScoreRank from './ScoreRank.svelte';
@@ -24,6 +25,8 @@
 
 	let showDetails = false;
 
+	const account = createAccountStore();
+
 	function onScorePinned(e) {
 		if (!e?.detail || songScore?.score?.id !== e.detail) return;
 
@@ -38,7 +41,8 @@
 	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 
-	$: serviceIcon = score?.metadata ?? null;
+	$: isPlayerScore = $account?.id && $account?.id === score?.score?.playerId;
+	$: serviceIcon = isPlayerScore && score?.metadata ? score.metadata : null;
 </script>
 
 {#if songScore}
@@ -49,7 +53,15 @@
 		class:with-details={showDetails}>
 		{#if !noIcons}
 			<div class="icons up-to-tablet">
-				<Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} {icons} {serviceIcon} on:score-pinned={onScorePinned} />
+				<Icons
+					{hash}
+					{twitchUrl}
+					{diffInfo}
+					scoreId={score.id}
+					{icons}
+					{serviceIcon}
+					noPin={!isPlayerScore}
+					on:score-pinned={onScorePinned} />
 			</div>
 		{/if}
 
