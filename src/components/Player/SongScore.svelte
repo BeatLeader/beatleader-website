@@ -106,7 +106,8 @@
 							category={leaderboard?.categoryDisplayName ?? null}
 							{service}
 							{playerId}
-							{icons} />
+							{icons}
+							on:score-pinned={onScorePinned} />
 					{/if}
 				</div>
 			</span>

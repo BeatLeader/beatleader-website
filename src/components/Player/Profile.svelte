@@ -148,7 +148,7 @@
 			: []
 	);
 
-	$: pinnedScores = playerData?.pinnedScores?.sort((a, b) => a - b) ?? [];
+	$: pinnedScores = playerData?.pinnedScores?.sort((a, b) => a?.score?.metadata?.priority ?? 0 - b?.score?.metadata?.priority ?? 0) ?? [];
 
 	$: refreshPinnedScores(pinnedScores, playerData?.playerId);
 </script>
