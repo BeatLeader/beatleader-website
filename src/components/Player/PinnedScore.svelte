@@ -1,14 +1,18 @@
 <script>
 	import {getNotificationsContext} from 'svelte-notifications';
+	import pinnedScoresStore from '../../stores/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
 	import pinApiClient from '../../network/clients/beatleader/scores/api-pin';
 	import {SsrHttpClientError} from '../../network/errors';
 	import SongScore from './SongScore.svelte';
 	import Button from '../Common/Button.svelte';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let playerId;
 	export let songScore;
 	export let modifiers;
+	export let idx = 0;
+	export let length = 0;
 
 	const {addNotification} = getNotificationsContext();
 	const account = createAccountStore();
@@ -34,7 +38,7 @@
 
 			const pin = true;
 			const scoreId = songScore.score.id;
-			const pinPriority = songScore?.score?.metadata?.priority ?? 100;
+			const pinPriority = songScore?.score?.metadata?.priority ?? 1;
 
 			const response = await pinApiClient.update({scoreId, pin, description, link, pinPriority});
 			const data = await response.json();
@@ -42,6 +46,8 @@
 			songScore.score.metadata = data;
 
 			editMode = false;
+
+			return data;
 		} catch (err) {
 			let errMessage = err.toString();
 
@@ -55,10 +61,73 @@
 				type: 'error',
 				removeAfter: 4000,
 			});
+
+			return null;
 		} finally {
 			isLoading = false;
 		}
 	}
+
+	function reindex(arr) {
+		return arr
+			.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0))
+			.map((s, idx) => {
+				if (Number.isFinite(s?.score?.metadata?.priority)) s.score.metadata.priority = idx + 1;
+				return s;
+			})
+			.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0));
+	}
+
+	async function onUp() {
+		if (idx <= 0 || !Number.isFinite(songScore?.score?.metadata?.priority)) return;
+
+		const newPriority = songScore.score.metadata.priority - 1;
+
+		description = songScore?.score?.metadata?.description ?? '';
+		link = songScore?.score?.metadata?.link ?? '';
+		songScore.score.metadata.priority = newPriority;
+
+		const metadata = await onSave();
+		if (!metadata) return;
+
+		songScore.score.metadata = metadata;
+
+		$pinnedScoresStore = reindex(
+			$pinnedScoresStore.map(s => {
+				if (s !== songScore && Number.isFinite(s?.score?.metadata?.priority) && s.score.metadata.priority >= newPriority)
+					s.score.metadata.priority++;
+
+				return s;
+			})
+		);
+	}
+
+	async function onDown() {
+		if (idx >= length - 1 || !Number.isFinite(songScore?.score?.metadata?.priority)) return;
+
+		const newPriority = songScore.score.metadata.priority + 1;
+
+		description = songScore?.score?.metadata?.description ?? '';
+		link = songScore?.score?.metadata?.link ?? '';
+		songScore.score.metadata.priority = newPriority;
+
+		const metadata = await onSave();
+		if (!metadata) return;
+
+		songScore.score.metadata = metadata;
+
+		$pinnedScoresStore = reindex(
+			$pinnedScoresStore.map(s => {
+				if (s !== songScore && Number.isFinite(s?.score?.metadata?.priority) && s.score.metadata.priority <= newPriority)
+					s.score.metadata.priority--;
+
+				return s;
+			})
+		);
+	}
+
+	$: isFirst = idx === 0;
+	$: isLast = idx >= length - 1;
 </script>
 
 {#if songScore?.score?.id}
@@ -75,6 +144,26 @@
 				</form>
 			{:else}
 				<h3 class:editable={$account?.id && $account?.id === songScore.score?.playerId} on:click={enableEdit}>
+					{#if $account?.id && $account?.id === songScore.score?.playerId}
+						<span class="move">
+							{#if !isFirst}
+								{#if isLoading}
+									<i><Spinner /></i>
+								{:else}
+									<i class="fas fa-chevron-up" title="Move score up" on:click|stopPropagation={onUp} />
+								{/if}
+							{/if}
+
+							{#if !isLast}
+								{#if isLoading}
+									<i><Spinner /></i>
+								{:else}
+									<i class="fas fa-chevron-down" title="Move score down" on:click|stopPropagation={onDown} />
+								{/if}
+							{/if}
+						</span>
+					{/if}
+
 					{songScore.score?.metadata?.description ??
 						($account?.id && $account?.id === songScore.score?.playerId ? 'Click to edit description...' : '')}
 
@@ -104,7 +193,16 @@
 		cursor: pointer;
 	}
 
-	h3 i.fas {
+	h3 .move {
+		display: inline-block;
+		margin-right: 0.5em;
+	}
+
+	h3 .move i {
+		margin: 0 0.125em;
+	}
+
+	h3 i.fa-edit {
 		display: inline-block;
 		margin-left: 0.5em;
 	}

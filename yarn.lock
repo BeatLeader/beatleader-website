@@ -913,11 +913,6 @@ svelte-check@^1.0.0:
     svelte-preprocess "^4.0.0"
     typescript "*"
 
-svelte-dnd-action@^0.9.19:
-  version "0.9.19"
-  resolved "https://registry.yarnpkg.com/svelte-dnd-action/-/svelte-dnd-action-0.9.19.tgz#9fdde68a1d44ce323ff4b35bb10f1a24f7d46c03"
-  integrity sha512-1Jsym2HN0TJVUl09wLGASkHg937+ZecnnekPiwC0J6K7mCzOxCuIQSVnIxoQLLeiXv74joNVNpVofX9Z0jM4Vw==
-
 svelte-notifications@^0.9.97:
   version "0.9.97"
   resolved "https://registry.yarnpkg.com/svelte-notifications/-/svelte-notifications-0.9.97.tgz#ec3af6ac4b5b3c8566e0aa665a6bf3aa56e42e83"

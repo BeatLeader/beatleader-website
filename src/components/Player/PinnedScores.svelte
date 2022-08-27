@@ -1,19 +1,21 @@
 <script>
+	import pinnedScoresStore from '../../stores/pinned-scores';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import PinnedScore from './PinnedScore.svelte';
 
-	export let pinnedScores;
 	export let playerId;
 	export let modifiers;
+
+	$: sortedPinnedScores = $pinnedScoresStore?.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0));
 </script>
 
-{#if pinnedScores?.length}
+{#if $pinnedScoresStore?.length}
 	<ContentBox>
 		<section class="pinned-scores">
 			<h2>Pinned scores</h2>
 
-			{#each pinnedScores as songScore ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
-				<PinnedScore {playerId} {modifiers} {songScore} />
+			{#each sortedPinnedScores as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
+				<PinnedScore {playerId} {modifiers} {songScore} {idx} length={$pinnedScoresStore?.length ?? 0} />
 			{/each}
 		</section>
 	</ContentBox>

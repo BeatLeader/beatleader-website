@@ -34,7 +34,6 @@
     "rollup-plugin-terser": "^7.0.0",
     "svelte": "^3.0.0",
     "svelte-check": "^1.0.0",
-    "svelte-dnd-action": "^0.9.19",
     "svelte-notifications": "^0.9.97",
     "svelte-preprocess": "^4.0.0",
     "svelte-range-slider-pips": "^2.0.3",

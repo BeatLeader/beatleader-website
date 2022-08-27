@@ -148,10 +148,7 @@
 			: []
 	);
 
-	$: pinnedScores =
-		playerData?.pinnedScores?.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0)) ?? [];
-
-	$: refreshPinnedScores(pinnedScores, playerData?.playerId);
+	$: refreshPinnedScores(playerData?.pinnedScores ?? [], playerData?.playerId);
 </script>
 
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
@@ -208,7 +205,7 @@
 	</div>
 </ContentBox>
 
-<PinnedScores pinnedScores={$pinnedScoresStore} modifiers={$modifiersStore} playerId={playerData?.id} />
+<PinnedScores modifiers={$modifiersStore} playerId={playerData?.id} />
 
 <ContentBox>
 	<div class="columns">
