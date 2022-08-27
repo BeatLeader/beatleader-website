@@ -28,9 +28,17 @@
 					removeAfter: 2000,
 				});
 
-				$pinnedScoresStore = $pinnedScoresStore?.filter(s => s?.score?.id !== scoreId) ?? [];
+				$pinnedScoresStore =
+					$pinnedScoresStore
+						?.filter(s => s?.score?.id !== scoreId)
+						?.map((s, idx) => {
+							if (Number.isFinite(s?.score?.metadata?.priority)) s.score.metadata.priority = idx + 1;
+
+							return s;
+						}) ?? [];
 			} else {
-				const data = await pinApiClient.pin(scoreId);
+				const response = await pinApiClient.pin(scoreId);
+				const metadata = await response.json();
 
 				addNotification({
 					text: 'Score pinned. You can edit it in the Pinned scores section.',
@@ -39,7 +47,7 @@
 					removeAfter: 4000,
 				});
 
-				dispatch('score-pinned', {scoreId, data});
+				dispatch('score-pinned', {scoreId, metadata});
 			}
 		} catch (err) {
 			let errMessage = err.toString();

@@ -30,7 +30,19 @@
 	function onScorePinned(e) {
 		if (!e?.detail || songScore?.score?.id !== e.detail?.scoreId) return;
 
-		$pinnedScoresStore = [...new Set([songScore].concat($pinnedScoresStore))];
+		if (songScore?.score) songScore.score.metadata = e?.detail?.metadata ?? {};
+
+		$pinnedScoresStore = [
+			...new Set(
+				[songScore].concat(
+					$pinnedScoresStore?.map((s, idx) => {
+						if (Number.isFinite(s?.score?.metadata?.priority)) s.score.metadata.priority = idx + 2;
+
+						return s;
+					})
+				)
+			),
+		];
 	}
 
 	$: leaderboard = opt(songScore, 'leaderboard', null);

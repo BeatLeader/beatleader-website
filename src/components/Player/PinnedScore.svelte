@@ -69,13 +69,15 @@
 	}
 
 	function reindex(arr) {
+		const sortFunc = (a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0);
+
 		return arr
-			.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0))
+			.sort(sortFunc)
 			.map((s, idx) => {
 				if (Number.isFinite(s?.score?.metadata?.priority)) s.score.metadata.priority = idx + 1;
 				return s;
 			})
-			.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0));
+			.sort(sortFunc);
 	}
 
 	async function onUp() {
