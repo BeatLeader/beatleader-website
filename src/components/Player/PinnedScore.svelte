@@ -36,11 +36,10 @@
 			const scoreId = songScore.score.id;
 			const pinPriority = songScore?.score?.metadata?.priority ?? 100;
 
-			const data = await pinApiClient.update({scoreId, pin, description, link, pinPriority});
+			const response = await pinApiClient.update({scoreId, pin, description, link, pinPriority});
+			const data = await response.json();
 
-			console.log('DATA RETURNED', data);
-
-			// TODO: update score metadata
+			songScore.score.metadata = data;
 
 			editMode = false;
 		} catch (err) {
@@ -70,7 +69,7 @@
 					<textarea bind:value={description} placeholder="Enter description..." rows="5" />
 					<input type="text" bind:value={link} placeholder="Enter YT/Twitch/Twitter link..." />
 					<div>
-						<Button type="primary" iconFa="fas fa-save" label="Save" on:click={onSave} />
+						<Button type="primary" iconFa="fas fa-save" label="Save" on:click={onSave} loading={isLoading} disabled={isLoading} />
 						<Button type="default" label="Cancel" on:click={() => (editMode = false)} />
 					</div>
 				</form>

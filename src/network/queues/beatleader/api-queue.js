@@ -3,6 +3,7 @@ import {substituteVars} from '../../../utils/format';
 import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../../utils/beatleader/consts';
 import {dateFromUnix, formatDateRelative} from '../../../utils/date';
 import {getDiffColor} from '../../../utils/beatleader/format';
+import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
 export const BL_API_URL =
@@ -386,7 +387,7 @@ export default (options = {}) => {
 		priority = PRIORITY.FG_HIGH,
 		options = {}
 	) =>
-		fetchHtml(
+		fetchUrl(
 			substituteVars(
 				BL_API_SCORE_PIN_URL,
 				{scoreId, pin, description, link, service, priority: pinPriority},

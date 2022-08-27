@@ -28,9 +28,9 @@
 	const account = createAccountStore();
 
 	function onScorePinned(e) {
-		if (!e?.detail || songScore?.score?.id !== e.detail) return;
+		if (!e?.detail || songScore?.score?.id !== e.detail?.scoreId) return;
 
-		$pinnedScoresStore = [...new Set($pinnedScoresStore.concat([songScore]))];
+		$pinnedScoresStore = [...new Set([songScore].concat($pinnedScoresStore))];
 	}
 
 	$: leaderboard = opt(songScore, 'leaderboard', null);

@@ -30,7 +30,7 @@
 
 				$pinnedScoresStore = $pinnedScoresStore?.filter(s => s?.score?.id !== scoreId) ?? [];
 			} else {
-				await pinApiClient.pin(scoreId, (($pinnedScoresStore?.length ?? 0) + 1) * 100);
+				const data = await pinApiClient.pin(scoreId);
 
 				addNotification({
 					text: 'Score pinned. You can edit it in the Pinned scores section.',
@@ -39,7 +39,7 @@
 					removeAfter: 4000,
 				});
 
-				dispatch('score-pinned', scoreId);
+				dispatch('score-pinned', {scoreId, data});
 			}
 		} catch (err) {
 			let errMessage = err.toString();
