@@ -148,23 +148,7 @@
 			: []
 	);
 
-	$: pinnedScores = playerData?.pinnedScores ?? [];
-	//playerData?.scores?.data?.slice(0, 3).map(s => {
-	// 	return {
-	// 		...s,
-	// 		score: {
-	// 			...s?.score,
-	// 			metadata: {
-	// 				description:
-	// 					'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta porttitor tincidunt. Duis eu interdum lectus. Cras facilisis efficitur auctor. Sed at facilisis libero, id congue metus. Aliquam in laoreet eros, ut convallis lorem.',
-	// 				icon: 'https://www.youtube.com/s/desktop/70ea5db2/img/favicon.ico',
-	// 				linkService: 'YouTube',
-	// 				link: 'https://www.youtube.com/watch?v=fp2QvYUaJ_I',
-	// 				status: 1,
-	// 			},
-	// 		},
-	// 	};
-	// }) ?? null;
+	$: pinnedScores = playerData?.pinnedScores?.sort((a, b) => a - b) ?? [];
 
 	$: refreshPinnedScores(pinnedScores, playerData?.playerId);
 </script>

@@ -20,11 +20,7 @@
 
 			if (isPinned) {
 				await pinApiClient.unpin(scoreId);
-			} else {
-				await pinApiClient.pin(scoreId);
-			}
 
-			if (isPinned) {
 				addNotification({
 					text: 'Score unpinned.',
 					position: 'top-right',
@@ -34,6 +30,8 @@
 
 				$pinnedScoresStore = $pinnedScoresStore?.filter(s => s?.score?.id !== scoreId) ?? [];
 			} else {
+				await pinApiClient.pin(scoreId, (($pinnedScoresStore?.length ?? 0) + 1) * 100);
+
 				addNotification({
 					text: 'Score pinned. You can edit it in the Pinned scores section.',
 					position: 'top-right',

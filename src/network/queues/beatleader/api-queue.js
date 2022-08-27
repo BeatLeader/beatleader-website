@@ -20,7 +20,7 @@ export const BL_API_FRIENDS_SCORES_URL =
 	'user/friendScores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}';
 export const BL_API_SCORE_PIN_URL =
-	BL_API_URL + 'score/${scoreId}/pin?pin=${pin}&link=${link}&service=${service}&description=${description}';
+	BL_API_URL + 'score/${scoreId}/pin?pin=${pin}&link=${link}&service=${service}&description=${description}&priority=${priority}';
 export const BL_API_LEADERBOARD_STATS_URL = BL_API_URL + 'leaderboard/statistic/${leaderboardId}';
 export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}';
 export const BL_API_SCORES_HISTOGRAM_URL =

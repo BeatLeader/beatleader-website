@@ -16,7 +16,7 @@ const update = async ({
 	return fullResponse ? response : getResponseBody(response);
 };
 
-const pin = async scoreId => update({scoreId, pin: true});
+const pin = async (scoreId, pinPriority = 100) => update({scoreId, pin: true, pinPriority});
 const unpin = async scoreId => update({scoreId, pin: false});
 
 const client = {
