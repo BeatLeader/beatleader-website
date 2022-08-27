@@ -94,9 +94,9 @@
 	<PinIcon {scoreId} on:score-pinned />
 {/if}
 
-{#if shownIcons.includes('pin-service') && serviceIcon?.link?.length && serviceIcon?.icon?.length}
+{#if shownIcons.includes('pin-service') && serviceIcon?.link?.length && serviceIcon?.linkServiceIcon?.length}
 	<a href={serviceIcon.link} target="_blank" rel="noreferrer">
-		<Button icon={`<i class="service-icon"><img src="${serviceIcon.icon}" /></i>`} noMargin={true} />
+		<Button icon={`<i class="service-icon"><img src="${serviceIcon.linkServiceIcon}" /></i>`} noMargin={true} />
 	</a>
 {/if}
 
