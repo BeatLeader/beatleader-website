@@ -41,7 +41,7 @@
 	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 
-	$: isPlayerScore = $account?.id && $account?.id === score?.score?.playerId;
+	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = isPlayerScore && score?.metadata ? score.metadata : null;
 </script>
 
