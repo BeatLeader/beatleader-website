@@ -10,6 +10,7 @@
 	import Preview from '../Common/Preview.svelte';
 	import {capitalize, opt} from '../../utils/js';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import PinIcon from '../Player/PinIcon.svelte';
 
 	export let hash;
 	export let diffInfo = null;
@@ -18,6 +19,8 @@
 	export let scoreId = null;
 	export let replayLink = null;
 	export let mapCheck = false;
+	export let serviceIcon = null;
+
 	const {open} = getContext('simple-modal');
 	const showPreview = previewLink => {
 		if (document.body.clientWidth < 800) {
@@ -29,7 +32,7 @@
 
 	let songKey;
 	let songInfo;
-	let shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'oneclick', 'twitch', 'delete'];
+	let shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'oneclick', 'twitch', 'delete', 'pin'];
 	if (mapCheck) {
 		shownIcons.push('mapcheck');
 	}
@@ -87,6 +90,16 @@
 	}`;
 </script>
 
+{#if shownIcons.includes('pin')}
+	<PinIcon {scoreId} on:score-pinned />
+{/if}
+
+{#if shownIcons.includes('pin-service') && serviceIcon?.link?.length && serviceIcon?.icon?.length}
+	<a href={serviceIcon.link} target="_blank" rel="noreferrer">
+		<Button icon={`<i class="service-icon"><img src="${serviceIcon.icon}" /></i>`} noMargin={true} />
+	</a>
+{/if}
+
 {#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
 	<a class="video" href={twitchUrl} target="_blank" rel="noreferrer">
 		<Button iconFa="fab fa-twitch" type="twitch" title="Twitch VOD preview" noMargin={true} />
@@ -129,6 +142,7 @@
 			<Button iconFa="fas fa-list-ul" title="Create new playlist with this song" noMargin={true} on:click={playlists.create(songInfo)} />
 		{/if}
 	{/if}
+
 	{#if shownIcons.includes('bsr')}
 		<Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={copyToClipboard('!bsr ' + songKey)} />
 	{/if}
@@ -212,6 +226,10 @@
 {/if}
 
 <style>
+	:global(i.rotate) {
+		transform: rotateZ(45deg);
+	}
+
 	:global(.replay-button-alt) {
 		--bg-color: transparent !important;
 	}

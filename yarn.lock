@@ -913,6 +913,11 @@ svelte-check@^1.0.0:
     svelte-preprocess "^4.0.0"
     typescript "*"
 
+svelte-notifications@^0.9.97:
+  version "0.9.97"
+  resolved "https://registry.yarnpkg.com/svelte-notifications/-/svelte-notifications-0.9.97.tgz#ec3af6ac4b5b3c8566e0aa665a6bf3aa56e42e83"
+  integrity sha512-Ma89Ne6ClIy1kGDOHY2A+WpQ46knOC/6Ngj9IsvwiIBTmpmrvk+cD1Ixcib2rzn/fT0HHBFrsS60Owf2jh1m2Q==
+
 svelte-preprocess@^4.0.0:
   version "4.7.0"
   resolved "https://registry.npmjs.org/svelte-preprocess/-/svelte-preprocess-4.7.0.tgz"

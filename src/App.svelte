@@ -1,6 +1,7 @@
 <script>
 	import {setContext} from 'svelte';
 	import {Router, Route, navigate} from 'svelte-routing';
+	import Notifications from 'svelte-notifications';
 	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
 	import createContainerStore from './stores/container';
@@ -46,72 +47,74 @@
 
 <Router {url}>
 	<Nav />
-	<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
-		<main bind:this={mainEl}>
-			<div class="ssr-page-container">
-				<Route path="/" component={HomePage} />
-				<Route path="/u/:initialPlayerId/*initialParams" let:params>
-					<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
-				</Route>
-				<Route path="/rt" let:location>
-					<RtDashboard {location} />
-				</Route>
-				<Route path="/privacy" component={PrivacyPage} />
-				<Route path="/about" component={AboutPage} />
-				<Route path="/friends" component={FriendsPage} />
-				<Route path="/ranking/*page" let:params let:location>
-					<RankingPage page={params.page} {location} />
-				</Route>
-				<Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
-					<LeaderboardPage
-						leaderboardId={params.leaderboardId}
-						type={params.type}
-						page={params.page}
-						{location}
-						dontChangeType={false}
-						showCurve={true}
-						separatePage={true} />
-				</Route>
-				<Route path="/leaderboard/approval/:type/:leaderboardId/*page" let:params let:location>
-					<LeaderboardPage
-						leaderboardId={params.leaderboardId}
-						type={params.type}
-						page={params.page}
-						{location}
-						dontChangeType={false}
-						showCurve={true}
-						separatePage={true}
-						showApproveRequest={true} />
-				</Route>
-				<Route path="/leaderboards/*page" let:params let:location>
-					<LeaderboardsPage page={params.page} {location} />
-				</Route>
-				<Route path="/clan/:clanId/*page" let:params>
-					<ClanPage clanId={params.clanId} page={params.page} />
-				</Route>
-				<Route path="/event/:eventId/*page" let:params let:location>
-					<EventPage eventId={params.eventId} page={params.page} {location} />
-				</Route>
-				<Route path="/clans/*page" let:params let:location>
-					<ClansPage page={params.page} {location} />
-				</Route>
-				<Route path="/playlists" component={PlaylistsPage} />
-				<Route path="/playlist/:id" let:params>
-					<PlaylistPage id={params.id} />
-				</Route>
-				<Route path="/search">
-					<SearchPage changeTitle={true} />
-				</Route>
-				<Route path="/twitch" component={TwitchPage} />
-				<Route path="/support" component={SupportPage} />
-				<Route path="/dashboard" component={DashboardPage} />
-				<Route path="/signin/*action" let:params>
-					<SigninPage action={params.action} />
-				</Route>
-				<Route path="/*" component={NotFoundPage} />
-			</div>
-		</main>
-	</Modal>
+	<Notifications zIndex={10000}>
+		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
+			<main bind:this={mainEl}>
+				<div class="ssr-page-container">
+					<Route path="/" component={HomePage} />
+					<Route path="/u/:initialPlayerId/*initialParams" let:params>
+						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
+					</Route>
+					<Route path="/rt" let:location>
+						<RtDashboard {location} />
+					</Route>
+					<Route path="/privacy" component={PrivacyPage} />
+					<Route path="/about" component={AboutPage} />
+					<Route path="/friends" component={FriendsPage} />
+					<Route path="/ranking/*page" let:params let:location>
+						<RankingPage page={params.page} {location} />
+					</Route>
+					<Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
+						<LeaderboardPage
+							leaderboardId={params.leaderboardId}
+							type={params.type}
+							page={params.page}
+							{location}
+							dontChangeType={false}
+							showCurve={true}
+							separatePage={true} />
+					</Route>
+					<Route path="/leaderboard/approval/:type/:leaderboardId/*page" let:params let:location>
+						<LeaderboardPage
+							leaderboardId={params.leaderboardId}
+							type={params.type}
+							page={params.page}
+							{location}
+							dontChangeType={false}
+							showCurve={true}
+							separatePage={true}
+							showApproveRequest={true} />
+					</Route>
+					<Route path="/leaderboards/*page" let:params let:location>
+						<LeaderboardsPage page={params.page} {location} />
+					</Route>
+					<Route path="/clan/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} />
+					</Route>
+					<Route path="/event/:eventId/*page" let:params let:location>
+						<EventPage eventId={params.eventId} page={params.page} {location} />
+					</Route>
+					<Route path="/clans/*page" let:params let:location>
+						<ClansPage page={params.page} {location} />
+					</Route>
+					<Route path="/playlists" component={PlaylistsPage} />
+					<Route path="/playlist/:id" let:params>
+						<PlaylistPage id={params.id} />
+					</Route>
+					<Route path="/search">
+						<SearchPage changeTitle={true} />
+					</Route>
+					<Route path="/twitch" component={TwitchPage} />
+					<Route path="/support" component={SupportPage} />
+					<Route path="/dashboard" component={DashboardPage} />
+					<Route path="/signin/*action" let:params>
+						<SigninPage action={params.action} />
+					</Route>
+					<Route path="/*" component={NotFoundPage} />
+				</div>
+			</main>
+		</Modal>
+	</Notifications>
 </Router>
 
 <link rel="stylesheet" href="/themes/{$configStore.preferences.theme}.css" />
@@ -134,6 +137,24 @@
 </footer>
 
 <style>
+	:global(.notifications) {
+		position: fixed;
+		z-index: 10000;
+	}
+
+	:global(.notifications .position-top-left, .notifications .position-top-center, .notifications .position-top-right) {
+		top: 3.5rem !important;
+	}
+
+	:global(.notification) {
+		padding: 0;
+		width: 20rem;
+	}
+
+	:global(.notification .notification-content) {
+		width: auto !important;
+	}
+
 	main {
 		margin-top: 1em;
 	}

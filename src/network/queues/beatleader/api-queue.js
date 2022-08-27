@@ -19,6 +19,8 @@ export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
 	'user/friendScores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}';
+export const BL_API_SCORE_PIN_URL =
+	BL_API_URL + 'score/${scoreId}/pin?pin=${pin}&link=${link}&service=${service}&description=${description}';
 export const BL_API_LEADERBOARD_STATS_URL = BL_API_URL + 'leaderboard/statistic/${leaderboardId}';
 export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}';
 export const BL_API_SCORES_HISTOGRAM_URL =
@@ -374,6 +376,36 @@ export default (options = {}) => {
 			priority
 		);
 
+	const pinScore = async (
+		scoreId,
+		pin = true,
+		description = null,
+		link = null,
+		service = null,
+		pinPriority = 100,
+		priority = PRIORITY.FG_HIGH,
+		options = {}
+	) =>
+		fetchHtml(
+			substituteVars(
+				BL_API_SCORE_PIN_URL,
+				{scoreId, pin, description, link, service, priority: pinPriority},
+				true,
+				true,
+				encodeURIComponent
+			),
+			{
+				body: null,
+				...options,
+				retries: 0,
+				method: 'PUT',
+				credentials: 'include',
+				maxAge: 1,
+				cacheTtl: null,
+			},
+			priority
+		);
+
 	return {
 		user,
 		player,
@@ -410,6 +442,7 @@ export default (options = {}) => {
 		addFriend,
 		removeFriend,
 		minirankings,
+		pinScore,
 		BL_API_URL,
 		PLAYER_SCORES_PER_PAGE,
 		PLAYERS_PER_PAGE,

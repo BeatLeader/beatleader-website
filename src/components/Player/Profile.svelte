@@ -1,9 +1,11 @@
 <script>
-	import {getContext} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import processPlayerData from './utils/profile';
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
+	import createModifiersStore from '../../stores/beatleader/modifiers';
+	import pinnedScoresStore from '../../stores/pinned-scores';
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
@@ -18,6 +20,7 @@
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
 	import Rain from '../Common/Rain.svelte';
+	import PinnedScores from './PinnedScores.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -27,10 +30,12 @@
 	export let avatarHash = null;
 
 	const pageContainer = getContext('pageContainer');
+	const dispatch = createEventDispatcher();
 
 	const beatSaviorService = createBeatSaviorService();
 	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
+	const modifiersStore = createModifiersStore();
 
 	let accSaberPlayerInfo = null;
 	let accSaberCategories = null;
@@ -62,6 +67,10 @@
 	let roles = null;
 	function updateRoles(role) {
 		roles = role?.split(',').reverse();
+	}
+
+	function refreshPinnedScores(pinnedScores) {
+		$pinnedScoresStore = pinnedScores ?? [];
 	}
 
 	let modalShown;
@@ -138,6 +147,26 @@
 					)
 			: []
 	);
+
+	$: pinnedScores = playerData?.pinnedScores ?? [];
+	//playerData?.scores?.data?.slice(0, 3).map(s => {
+	// 	return {
+	// 		...s,
+	// 		score: {
+	// 			...s?.score,
+	// 			metadata: {
+	// 				description:
+	// 					'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porta porttitor tincidunt. Duis eu interdum lectus. Cras facilisis efficitur auctor. Sed at facilisis libero, id congue metus. Aliquam in laoreet eros, ut convallis lorem.',
+	// 				icon: 'https://www.youtube.com/s/desktop/70ea5db2/img/favicon.ico',
+	// 				linkService: 'YouTube',
+	// 				link: 'https://www.youtube.com/watch?v=fp2QvYUaJ_I',
+	// 				status: 1,
+	// 			},
+	// 		},
+	// 	};
+	// }) ?? null;
+
+	$: refreshPinnedScores(pinnedScores, playerData?.playerId);
 </script>
 
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
@@ -193,6 +222,8 @@
 		</div>
 	</div>
 </ContentBox>
+
+<PinnedScores pinnedScores={$pinnedScoresStore} modifiers={$modifiersStore} playerId={playerData?.id} />
 
 <ContentBox>
 	<div class="columns">
