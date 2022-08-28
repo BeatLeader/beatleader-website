@@ -179,10 +179,14 @@ export function getTimeStringColor(timeSet) {
 
 export function getCurrentBatchDate() {
 	const now = DateTime.now().setZone('UTC');
-	const thisWeekFriday10Utc = now.startOf('week').plus({days: 5, hour: 10});
+	const thisWeekFriday10Utc = now.startOf('week').plus({days: 4, hour: 10});
 	const currentBatchDate = now < thisWeekFriday10Utc ? thisWeekFriday10Utc : thisWeekFriday10Utc.plus({days: 7});
 
 	return currentBatchDate.toJSDate();
+}
+
+export function rankedIn() {
+	return DateTime.fromJSDate(getCurrentBatchDate()).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
 }
 
 export function willBeRankedInCurrentBatch(approvalTimeset) {

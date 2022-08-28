@@ -31,6 +31,7 @@
 	import {dateFromUnix, DAY} from '../utils/date';
 	import {typesDescription, typesMap, DifficultyStatus} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
+	import RankedTimer from '../components/Others/RankedTimer.svelte';
 
 	export let page = 1;
 	export let location;
@@ -287,6 +288,8 @@
 
 				{#if $isLoading}<Spinner />{/if}
 			</h1>
+
+			<RankedTimer />
 
 			{#if leaderboardsPage?.length}
 				<div class="songs grid-transition-helper">

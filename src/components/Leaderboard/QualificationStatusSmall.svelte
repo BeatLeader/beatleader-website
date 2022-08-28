@@ -80,6 +80,7 @@
 		display: flex;
 		grid-gap: 0.8em;
 		align-items: center;
+		flex-wrap: wrap;
 	}
 
 	.timeset {
