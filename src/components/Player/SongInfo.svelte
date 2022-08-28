@@ -1,5 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
+	import createAccountStore from '../../stores/beatleader/account';
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
 	import Icons from '../Song/Icons.svelte';
@@ -16,6 +17,9 @@
 	export let category = null;
 	export let service = 'beatleader';
 	export let noIcons = false;
+	export let icons = null;
+
+	const account = createAccountStore();
 
 	$: song = leaderboard?.song ?? null;
 	$: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
@@ -23,6 +27,8 @@
 	$: diffInfo = leaderboard?.diffInfo ?? null;
 	$: leaderboardId = leaderboard?.leaderboardId ?? '';
 	$: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboardId}/${page ?? ''}`;
+	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
+	$: serviceIcon = isPlayerScore && score?.metadata ? score.metadata : null;
 </script>
 
 {#if song}
@@ -48,8 +54,8 @@
 		</div>
 
 		{#if !noIcons && hash && hash.length}
-			<div class="icons desktop-and-up" class:wide={twitchUrl && twitchUrl.length}>
-				<Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} {replayLink} />
+			<div class="icons desktop-and-up" class:wide={!icons?.length || icons.length > 6}>
+				<Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} {replayLink} {icons} {serviceIcon} noPin={!isPlayerScore} on:score-pinned />
 			</div>
 		{/if}
 	</section>
@@ -102,17 +108,7 @@
 		min-width: 4.66em;
 		width: 4.66em;
 		margin-right: 0;
-		align-self: flex-end;
-	}
-
-	.icons.wide :global(> *:not(:first-child)) {
-		margin-left: 0.25em;
-		margin-bottom: 0.25em;
-	}
-
-	.icons:not(.wide) :global(> *:not(:nth-child(2n + 1))) {
-		margin-left: 0.25em;
-		margin-bottom: 0.25em;
+		gap: 0.25em;
 	}
 
 	.icons.wide {

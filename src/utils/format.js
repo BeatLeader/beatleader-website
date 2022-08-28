@@ -10,7 +10,8 @@ export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery =
 
 		const urlObj = new URL(replaced);
 		[...urlObj.searchParams.entries()].forEach(([k, v]) => {
-			if (!v?.toString()?.length) urlObj.searchParams.delete(k);
+			if ((clearEmptyQuery === 'null-only' && (v === null || v === undefined)) || (clearEmptyQuery === true && !v?.toString()?.length))
+				urlObj.searchParams.delete(k);
 		});
 
 		replaced = urlObj.toString();

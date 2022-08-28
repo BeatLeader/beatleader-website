@@ -1,9 +1,11 @@
 <script>
-	import {getContext} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import processPlayerData from './utils/profile';
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
+	import createModifiersStore from '../../stores/beatleader/modifiers';
+	import pinnedScoresStore from '../../stores/pinned-scores';
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
@@ -18,6 +20,7 @@
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
 	import Rain from '../Common/Rain.svelte';
+	import PinnedScores from './PinnedScores.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -27,10 +30,12 @@
 	export let avatarHash = null;
 
 	const pageContainer = getContext('pageContainer');
+	const dispatch = createEventDispatcher();
 
 	const beatSaviorService = createBeatSaviorService();
 	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
+	const modifiersStore = createModifiersStore();
 
 	let accSaberPlayerInfo = null;
 	let accSaberCategories = null;
@@ -62,6 +67,10 @@
 	let roles = null;
 	function updateRoles(role) {
 		roles = role?.split(',').reverse();
+	}
+
+	function refreshPinnedScores(pinnedScores) {
+		$pinnedScoresStore = pinnedScores ?? [];
 	}
 
 	let modalShown;
@@ -138,6 +147,8 @@
 					)
 			: []
 	);
+
+	$: refreshPinnedScores(playerData?.pinnedScores ?? [], playerData?.playerId);
 </script>
 
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
@@ -201,6 +212,8 @@
 		</div>
 	</div>
 </ContentBox>
+
+<PinnedScores modifiers={$modifiersStore} playerId={playerData?.id} />
 
 <style>
 	.player-general-info {

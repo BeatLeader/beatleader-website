@@ -1,5 +1,6 @@
 import {getHeadsetForHMD, platformDescription} from '../../../../utils/beatleader/format';
 import {deepClone} from '../../../../utils/js';
+import {processScore} from '../scores/utils/processScore';
 
 export default response => {
 	const {
@@ -24,6 +25,7 @@ export default response => {
 		clans,
 		patreonFeatures,
 		socials,
+		pinnedScores,
 	} = response;
 
 	let profilePicture = avatar;
@@ -46,7 +48,7 @@ export default response => {
 		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? '';
 	}
 
-	const processedStatsHistory = deepClone(statsHistory);
+	const processedStatsHistory = deepClone(statsHistory ?? null);
 	if (processedStatsHistory) {
 		const processInt = i => {
 			let out = parseInt(i, 10);
@@ -133,6 +135,8 @@ export default response => {
 
 	let sponsor = role?.includes('sponsor');
 
+	const processedPinnedScores = pinnedScores?.map(s => processScore(s)) ?? [];
+
 	return {
 		playerId,
 		name,
@@ -165,5 +169,6 @@ export default response => {
 		},
 		scoreStats: scoreStats ? scoreStats : null,
 		statsHistory: processedStatsHistory ? processedStatsHistory : null,
+		pinnedScores: processedPinnedScores,
 	};
 };

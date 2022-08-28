@@ -1,5 +1,7 @@
 <script>
 	import {fade, fly, slide} from 'svelte/transition';
+	import pinnedScoresStore from '../../stores/pinned-scores';
+	import createAccountStore from '../../stores/beatleader/account';
 	import {opt} from '../../utils/js';
 	import SongInfo from './SongInfo.svelte';
 	import ScoreRank from './ScoreRank.svelte';
@@ -7,7 +9,6 @@
 	import SongScoreDetails from './SongScoreDetails.svelte';
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from './PlayerPerformance.svelte';
-	import Avatar from '../Common/Avatar.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 
 	export let playerId = null;
@@ -18,10 +19,31 @@
 	export let modifiersStore = null;
 	export let withPlayers = false;
 	export let noIcons = false;
+	export let icons = null;
 	export let showSong = true;
 	export let inList = true;
 
 	let showDetails = false;
+
+	const account = createAccountStore();
+
+	function onScorePinned(e) {
+		if (!e?.detail || songScore?.score?.id !== e.detail?.scoreId) return;
+
+		if (songScore?.score) songScore.score.metadata = e?.detail?.metadata ?? {};
+
+		$pinnedScoresStore = [
+			...new Set(
+				[songScore].concat(
+					$pinnedScoresStore?.map((s, idx) => {
+						if (Number.isFinite(s?.score?.metadata?.priority)) s.score.metadata.priority = idx + 2;
+
+						return s;
+					})
+				)
+			),
+		];
+	}
 
 	$: leaderboard = opt(songScore, 'leaderboard', null);
 	$: score = opt(songScore, 'score', null);
@@ -30,6 +52,9 @@
 	$: hash = opt(leaderboard, 'song.hash');
 	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
 	$: diffInfo = opt(leaderboard, 'diffInfo');
+
+	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
+	$: serviceIcon = isPlayerScore && score?.metadata ? score.metadata : null;
 </script>
 
 {#if songScore}
@@ -40,7 +65,15 @@
 		class:with-details={showDetails}>
 		{#if !noIcons}
 			<div class="icons up-to-tablet">
-				<Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} />
+				<Icons
+					{hash}
+					{twitchUrl}
+					{diffInfo}
+					scoreId={score.id}
+					{icons}
+					{serviceIcon}
+					noPin={!isPlayerScore}
+					on:score-pinned={onScorePinned} />
 			</div>
 		{/if}
 
@@ -84,7 +117,9 @@
 							{noIcons}
 							category={leaderboard?.categoryDisplayName ?? null}
 							{service}
-							{playerId} />
+							{playerId}
+							{icons}
+							on:score-pinned={onScorePinned} />
 					{/if}
 				</div>
 			</span>
