@@ -205,8 +205,6 @@
 	</div>
 </ContentBox>
 
-<PinnedScores modifiers={$modifiersStore} playerId={playerData?.id} />
-
 <ContentBox>
 	<div class="columns">
 		<div class="column">
@@ -214,6 +212,8 @@
 		</div>
 	</div>
 </ContentBox>
+
+<PinnedScores modifiers={$modifiersStore} playerId={playerData?.id} />
 
 <style>
 	.player-general-info {
