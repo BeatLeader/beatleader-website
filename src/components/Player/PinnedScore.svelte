@@ -201,12 +201,14 @@
 	}
 
 	h3 .move i {
-		margin: 0 0.125em;
+		padding: 0.25em 0.125em;
+		cursor: pointer !important;
 	}
 
 	h3 i.fa-edit {
 		display: inline-block;
 		margin-left: 0.5em;
+		cursor: pointer !important;
 	}
 
 	textarea,
