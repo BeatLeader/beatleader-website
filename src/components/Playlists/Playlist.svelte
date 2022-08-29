@@ -53,23 +53,39 @@
 		});
 	}
 
-	let owner;
+	let owners = [];
 	let canModify = true;
 	let canShare = true;
+	var fetchingOwner = false;
 
 	async function retrieveOwner(playlist, playerId) {
-		if (playlist?.customData?.owner) {
+		if (playlist?.customData?.owner && !fetchingOwner) {
 			canShare = false;
 			if (playlist.customData.owner == 'BeatLeader') {
 				canModify = false;
 				return;
 			}
-			let playerService = createPlayerService();
-			owner = await playerService.fetchPlayerOrGetFromCache(playlist.customData.owner);
 
-			if (owner?.playerId != playerId) {
-				canModify = false;
+			fetchingOwner = true;
+
+			let ownersIds = playlist.customData.owner.split(',');
+
+			for (let index = 0; index < ownersIds.length; index++) {
+				const element = ownersIds[index];
+
+				let playerService = createPlayerService();
+				let owner = await playerService.fetchPlayerOrGetFromCache(element);
+
+				if (owner?.playerId != playerId) {
+					canModify = false;
+				}
+				if (owner) {
+					owners.push(owner);
+				}
 			}
+			fetchingOwner = false;
+
+			owners = owners;
 		}
 	}
 
@@ -135,10 +151,12 @@
 						<span class="oneclick-title">This is magic playlist which will be automatically synced by mod. <br />Quest v0.4+.</span>
 					{/if}
 
-					{#if owner}
-						<div class="player">
-							<PlayerNameWithFlag player={owner} />
-						</div>
+					{#if owners.length}
+						{#each owners as owner}
+							<div class="player">
+								<PlayerNameWithFlag player={owner} />
+							</div>
+						{/each}
 					{/if}
 
 					<span class="songs">{playlist.songs.length} songs</span>

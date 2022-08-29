@@ -83,6 +83,8 @@
 						pointer={true}
 						useShortName={true}
 						reverseColors={true}
+						stars={leaderboard.difficulty.stars}
+						starsSuffix="★"
 						{showDiffIcons}
 						enabled={difficulties
 							? difficulties.some(

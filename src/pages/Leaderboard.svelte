@@ -726,7 +726,7 @@
 												{/if}
 											</div>
 										{/if}
-										{#if type === 'accsaber' || isRanked || isNominated}
+										{#if type === 'accsaber' || opt(score, 'score.pp')}
 											<div class="pp with-badge">
 												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 													<span slot="label">

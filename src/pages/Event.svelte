@@ -12,6 +12,7 @@
 	import {createBuildFiltersFromLocation, buildSearchFromFilters, processStringFilter, processStringArrayFilter} from '../utils/filters';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {debounce} from '../utils/debounce';
+	import {dateFromUnix, formatDateRelative, formatDate} from '../utils/date';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Countries from '../components/Ranking/Countries.svelte';
 
@@ -172,6 +173,9 @@
 				<div class="info-container">
 					<img src={currentEvent.image} />
 					<h2>{currentEvent.name}</h2>
+					<span style="color: white;" title={formatDate(dateFromUnix(currentEvent.endDate))}>
+						Will end {formatDateRelative(dateFromUnix(currentEvent.endDate))}
+					</span>
 					<Button label="Show playlist" on:click={() => navigate('/playlist/' + currentEvent.playlistId)} />
 				</div>
 			{/if}
