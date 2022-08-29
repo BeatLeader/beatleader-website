@@ -686,7 +686,7 @@
 
 					return {...s, totals};
 				})
-				.filter(s => !(s?.difficulties ?? [])?.every(d => d?.status === DifficultyStatus.ranked));
+				.filter(s => !(s?.difficulties ?? [])?.every(d => [DifficultyStatus.ranked, DifficultyStatus.unrankable].includes(d?.status)));
 		} catch (err) {
 			error = err;
 		} finally {
