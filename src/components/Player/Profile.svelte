@@ -247,7 +247,7 @@
 	}
 
 	:global(.inner-modal) {
-		z-index: 100 !important;
+		z-index: 10 !important;
 		position: relative !important;
 	}
 
