@@ -9,7 +9,7 @@
 	import PlayerCard from './PlayerCard.svelte';
 	import AddFriendButton from '../Player/AddFriendButton.svelte';
 	import Switcher from '../Common/Switcher.svelte';
-	import {opt} from '../../utils/js';
+	import {deepClone, opt} from '../../utils/js';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 
 	export let type = 'global';
@@ -18,6 +18,8 @@
 	export let noIcons = false;
 	export let eventId = null;
 	export let useInternalFilters = false;
+
+	let currentFilters = filters;
 
 	const dispatch = createEventDispatcher();
 
@@ -80,7 +82,7 @@
 			title: 'Sort by PP',
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'playerInfo.pp'),
-			props: {suffix: 'pp', zero: '-'},
+			props: {suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
 		{
@@ -89,7 +91,7 @@
 			title: 'Sort by average accuracy',
 			iconFa: 'fa fa-crosshairs',
 			value: data => getAcc(data, statKeys['acc'][currentTypeValue]),
-			props: {suffix: '%', zero: '-'},
+			props: {suffix: '%', zero: '-', digits: 2},
 		},
 		{
 			id: 'topPp',
@@ -97,7 +99,7 @@
 			title: 'Sort by top PP',
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'scoreStats.topPp'),
-			props: {suffix: 'pp', zero: '-'},
+			props: {suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
 		{
@@ -106,7 +108,7 @@
 			title: 'Sort by top accuracy',
 			iconFa: 'fa fa-crosshairs',
 			value: data => getAcc(data, statKeys['topAcc'][currentTypeValue]),
-			props: {suffix: '%', zero: '-'},
+			props: {suffix: '%', zero: '-', digits: 2},
 		},
 		{
 			id: 'playCount',
@@ -133,7 +135,7 @@
 			title: 'Sort by average leaderboard rank',
 			iconFa: 'fa fa-chart-line',
 			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
-			props: {digits: 0, suffix: ''},
+			props: {digits: 2, prefix: '#', suffix: ''},
 		},
 	];
 
@@ -208,7 +210,7 @@
 					sortValue = switcherSortValues[0];
 					filters.sortBy = sortValue.id;
 					changeParams(type, page, filters);
-					rankingStore = rankingStore;
+					$rankingStore = $rankingStore;
 				}, 500);
 			}
 		} else {
@@ -225,7 +227,8 @@
 	$: dispatch('loading', $isLoading);
 	$: dispatch('pending', $pending?.page);
 
-	$: refreshSortValues(allSortValues, filters);
+	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
+	$: refreshSortValues(allSortValues, currentFilters);
 </script>
 
 {#if $rankingStore?.data?.length}
@@ -246,7 +249,7 @@
 				<PlayerCard
 					{player}
 					playerId={mainPlayerId}
-					currentFilters={filters}
+					{currentFilters}
 					value={sortValue?.value(player)}
 					valueProps={sortValue?.props ?? {}}
 					on:filters-updated />
@@ -290,26 +293,25 @@
 	}
 
 	.type-select {
-		padding: 0.2em;
-		margin-top: 0.9em;
+		padding: 0.175rem;
+		margin-top: 0.875rem;
 		text-align: center;
 		white-space: nowrap;
 		border: 0;
 		border-radius: 0.2em;
-		font-size: inherit;
 		cursor: pointer;
 		color: var(--color, #363636);
 		background-color: #dbdbdb;
 		box-shadow: none;
 		opacity: 0.35;
-		font-family: 'Noto Sans SC', sans-serif;
-		font-size: 0.95rem;
+		font-family: inherit;
+		font-size: 0.875rem;
 		font-weight: 500;
 	}
 
 	.type-option {
 		color: black;
-		font-family: 'Noto Sans SC', sans-serif;
+		font-family: inherit;
 	}
 
 	nav > :global(*) {
