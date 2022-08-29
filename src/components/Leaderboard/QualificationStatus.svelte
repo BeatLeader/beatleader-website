@@ -59,15 +59,7 @@
 			</span>
 		</div>
 	</div>
-	<div class="qualification-description">
-		{#if qualification?.mapperAllowed}
-			<b><i class="fa fa-check" /> Allowed by mapper:</b>
-			<Avatar player={mapper} />
-			<PlayerNameWithFlag player={mapper} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
-		{:else}
-			<span style="color: red;"><i class="fa fa-xmark" /> Mapper not allowed yet</span>
-		{/if}
-	</div>
+
 	<div class="qualification-description">
 		{#if qualification?.criteriaMet != 0}
 			{#if qualification?.criteriaMet == 1}
@@ -91,6 +83,16 @@
 			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria not checked yet</span>
+		{/if}
+	</div>
+
+	<div class="qualification-description">
+		{#if qualification?.mapperAllowed}
+			<b><i class="fa fa-check" /> Allowed by mapper:</b>
+			<Avatar player={mapper} />
+			<PlayerNameWithFlag player={mapper} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
+		{:else}
+			<span style="color: red;"><i class="fa fa-xmark" /> Mapper not allowed yet</span>
 		{/if}
 	</div>
 
