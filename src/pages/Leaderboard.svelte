@@ -420,6 +420,7 @@
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
 	$: isNominated = isQualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
+	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
 	$: calculateIsRankable(isRT, qualification);
 
@@ -935,7 +936,7 @@
 			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
 		{/if}
 	</article>
-	{#if showCurve && (isRanked || isNominated)}
+	{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
 		<aside>
 			<ContentBox>
 				<h2 class="title is-5">
