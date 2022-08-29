@@ -621,7 +621,7 @@
 										}} />
 								{/if}
 							{/if}
-							{#if separatePage && isRT && (!isjuniorRT || !isQualified)}
+							{#if separatePage && isRT && (leaderboard?.stats?.status === DifficultyStatus.nominated || (!isjuniorRT && isQualified))}
 								<Button
 									cls="voteButton"
 									iconFa="fas fa-list-check"
