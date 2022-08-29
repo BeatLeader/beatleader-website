@@ -82,7 +82,7 @@
 			title: 'Sort by PP',
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'playerInfo.pp'),
-			props: {suffix: 'pp', zero: '-', digits: 2},
+			props: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
 		{
@@ -91,7 +91,7 @@
 			title: 'Sort by average accuracy',
 			iconFa: 'fa fa-crosshairs',
 			value: data => getAcc(data, statKeys['acc'][currentTypeValue]),
-			props: {suffix: '%', zero: '-', digits: 2},
+			props: {prefix: '', suffix: '%', zero: '-', digits: 2},
 		},
 		{
 			id: 'topPp',
@@ -99,7 +99,7 @@
 			title: 'Sort by top PP',
 			iconFa: 'fa fa-cubes',
 			value: data => getStat(data, 'scoreStats.topPp'),
-			props: {suffix: 'pp', zero: '-', digits: 2},
+			props: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
 		{
@@ -108,7 +108,7 @@
 			title: 'Sort by top accuracy',
 			iconFa: 'fa fa-crosshairs',
 			value: data => getAcc(data, statKeys['topAcc'][currentTypeValue]),
-			props: {suffix: '%', zero: '-', digits: 2},
+			props: {prefix: '', suffix: '%', zero: '-', digits: 2},
 		},
 		{
 			id: 'playCount',
@@ -116,7 +116,7 @@
 			title: 'Sort by play count',
 			iconFa: 'fas fa-calculator',
 			value: data => getStat(data, statKeys['playCount'][currentTypeValue]),
-			props: {digits: 0, suffix: ''},
+			props: {digits: 0, prefix: '', suffix: ''},
 		},
 		{
 			id: 'lastplay',
