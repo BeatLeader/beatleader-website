@@ -15,17 +15,19 @@ export default () => {
 
 	const fetchStars = async (hash, diff, mode) => {
 		if (!hash || !diff || !mode) return;
-		fetch(`https://bs-replays-ai.azurewebsites.net/json/${hash}/${diffForDiffName(diff)}/basic`).then(async response => {
-			if (response.status == 200) {
-				const data = await response.json();
+		fetch(`https://bs-replays-ai.azurewebsites.net/json/${hash}/${diffForDiffName(diff)}/basic`)
+			.then(async response => {
+				if (response.status == 200) {
+					const data = await response.json();
 
-				starRatings[hash + diff + mode] = parseFloat(data.balanced);
-				set(starRatings);
-			} else {
-				starRatings[hash + diff + mode] = 0;
-				set(starRatings);
-			}
-		});
+					starRatings[hash + diff + mode] = parseFloat(data?.balanced);
+					set(starRatings);
+				} else {
+					starRatings[hash + diff + mode] = 0;
+					set(starRatings);
+				}
+			})
+			.catch(err => null);
 	};
 
 	const subscribe = fn => {
