@@ -135,7 +135,7 @@
 			title: 'Sort by average leaderboard rank',
 			iconFa: 'fa fa-chart-line',
 			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
-			props: {digits: 2, prefix: '#', suffix: ''},
+			props: {digits: 0, prefix: '#', suffix: ''},
 		},
 	];
 
