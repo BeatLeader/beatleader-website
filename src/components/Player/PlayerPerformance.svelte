@@ -31,7 +31,7 @@
 	export let service = null;
 	export let songScore = null;
 	export let showDetails = false;
-	export let modifiersStore = null;
+	export let modifiers = null;
 	export let unmodifiedScore = false;
 
 	function getBeatSaviorCompatibleStats(score) {
@@ -127,7 +127,7 @@
 
 		{#if score.acc}
 			<span class="acc with-badge">
-				<Accuracy {score} {modifiersStore} />
+				<Accuracy {score} {modifiers} />
 			</span>
 		{:else}
 			<span class="acc with-badge" />

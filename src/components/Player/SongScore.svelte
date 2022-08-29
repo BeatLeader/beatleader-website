@@ -16,7 +16,6 @@
 	export let fixedBrowserTitle = null;
 	export let idx = 0;
 	export let service = null;
-	export let modifiersStore = null;
 	export let withPlayers = false;
 	export let noIcons = false;
 	export let icons = null;
@@ -52,6 +51,7 @@
 	$: hash = opt(leaderboard, 'song.hash');
 	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
 	$: diffInfo = opt(leaderboard, 'diffInfo');
+	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
 
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = isPlayerScore && score?.metadata ? score.metadata : null;
@@ -134,7 +134,7 @@
 				</span>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiersStore} />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} />
 		</div>
 
 		{#if showDetails}
