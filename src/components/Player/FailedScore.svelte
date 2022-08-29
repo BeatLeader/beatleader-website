@@ -14,7 +14,6 @@
 	export let fixedBrowserTitle = null;
 	export let idx = 0;
 	export let service = null;
-	export let modifiersStore = null;
 	export let store = null;
 
 	let showDetails = false;
@@ -26,6 +25,7 @@
 	$: hash = opt(leaderboard, 'song.hash');
 	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
 	$: diffInfo = opt(leaderboard, 'diffInfo');
+	$: modifiers = songScore?.leaderboard?.difficultyBl?.modifierValues ?? null;
 </script>
 
 {#if songScore}
@@ -89,7 +89,7 @@
 				</span>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiersStore} unmodifiedScore={true} />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} unmodifiedScore={true} />
 		</div>
 
 		<div class="lowerContainer">

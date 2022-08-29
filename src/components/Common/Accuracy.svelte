@@ -7,7 +7,7 @@
 	export let prevScore = null;
 	export let showPercentageInstead = false;
 	export let showMods = true;
-	export let modifiersStore = null;
+	export let modifiers = null;
 
 	const badgesDef = [
 		{name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -46,7 +46,7 @@
 		<Value {value} {prevValue} title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false} />
 		<slot name="label-after" />
 	</span>
-	<small class="mods" slot="additional" title={showMods && mods ? describeModifiersAndMultipliers(mods, modifiersStore) : null}
+	<small class="mods" slot="additional" title={showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
 		>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
 

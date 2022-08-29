@@ -1,10 +1,11 @@
 <script>
+	import {createEventDispatcher, getContext, onMount} from 'svelte';
+	import 'chartjs-adapter-luxon';
 	import Chart from 'chart.js/auto';
 	import regionsPlugin from './utils/regions-plugin';
-	import 'chartjs-adapter-luxon';
-	import RangeSlider from 'svelte-range-slider-pips';
-	import {createEventDispatcher, getContext, onMount} from 'svelte';
 	import {formatNumber} from '../../utils/format';
+	import {userDescriptionForModifier} from '../../utils/beatleader/format';
+	import RangeSlider from 'svelte-range-slider-pips';
 
 	export let stars = 5;
 	export let height = '200px';
@@ -50,7 +51,7 @@
 		negativeModifiersSum = negativeModifiersSum < -1 ? -1 : negativeModifiersSum;
 
 		const gridColor = '#2a2a2a';
-		const rankColor = '#3e95cd';
+		const mainColor = '#eb008c';
 		const annotationColor = '#aaa';
 
 		let minPp = 0;
@@ -77,7 +78,7 @@
 		const datasets = [
 			{
 				data,
-				borderColor: rankColor,
+				borderColor: mainColor,
 				borderWidth: 2,
 				pointRadius: 0,
 				tension: 0.4,
@@ -189,11 +190,12 @@
 	});
 
 	$: modifiersArr = Object.entries(modifiers ?? {})
+		?.filter(m => m?.[0] !== 'modifierId')
 		?.map(m => ({
-			name: m[0],
-			value: m[1],
+			name: m[0]?.toUpperCase() ?? null,
+			value: m[1] ?? null,
 		}))
-		.filter(m => m.value)
+		.filter(m => m.name && m.value)
 		.sort((a, b) => b.value - a.value);
 	$: positiveModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value > 0 ? mod.value : 0), 0) ?? 0;
 	$: negativeModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
@@ -214,8 +216,10 @@
 {#if modifiersArr?.length}
 	<div class="modifiers">
 		{#each modifiersArr as modifier}
-			<label title={`${formatNumber(modifier.value, 2, true)}%`} class:disabled={excludedModifiers.includes(modifier?.name)}>
-				<input type="checkbox" bind:group={selectedModifiers} value={modifier} disabled={excludedModifiers.includes(modifier?.name)} />
+			<label
+				title={`${userDescriptionForModifier(modifier.name)}: ${formatNumber(modifier.value * 100, 0, true)}%`}
+				class:disabled={excludedModifiers.includes(modifier.name)}>
+				<input type="checkbox" bind:group={selectedModifiers} value={modifier} disabled={excludedModifiers.includes(modifier.name)} />
 				{modifier.name}
 			</label>
 		{/each}
@@ -225,18 +229,20 @@
 <div class="acc-range">
 	<RangeSlider
 		range
-		min={minAcc}
-		max={maxAcc}
-		step={(maxAcc - minAcc) / 2000}
-		values={[startAcc, endAcc]}
+		min={minAcc * 100}
+		max={maxAcc * 100}
+		step={((maxAcc - minAcc) * 100) / 2000}
+		values={[startAcc * 100, endAcc * 100]}
+		suffix="%"
 		float
 		hoverable
 		pips
-		pipstep={(maxAcc - minAcc) * 1000}
+		pipstep={225}
 		all="label"
+		formatter={v => formatNumber(v, 0)}
 		on:change={event => {
-			startAcc = event.detail.values[0];
-			endAcc = event.detail.values[1];
+			startAcc = event.detail.values[0] / 100;
+			endAcc = event.detail.values[1] / 100;
 
 			if (startAcc - minAcc < 0.05 && minAcc >= 0.05) {
 				minAcc -= 0.05;

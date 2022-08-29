@@ -4,7 +4,6 @@
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
-	import createModifiersStore from '../../stores/beatleader/modifiers';
 	import pinnedScoresStore from '../../stores/pinned-scores';
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
@@ -36,7 +35,6 @@
 	const beatSaviorService = createBeatSaviorService();
 	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
-	const modifiersStore = createModifiersStore();
 
 	let accSaberPlayerInfo = null;
 	let accSaberCategories = null;
@@ -214,7 +212,7 @@
 	</div>
 </ContentBox>
 
-<PinnedScores modifiers={$modifiersStore} playerId={playerData?.id} {fixedBrowserTitle} />
+<PinnedScores playerId={playerData?.id} {fixedBrowserTitle} />
 
 <style>
 	.player-general-info {
@@ -249,7 +247,7 @@
 	}
 
 	:global(.inner-modal) {
-		z-index: 100 !important;
+		z-index: 10 !important;
 		position: relative !important;
 	}
 

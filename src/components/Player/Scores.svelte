@@ -1,7 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
 	import createScoresStore from '../../stores/http/http-scores-store.js';
-	import createModifiersStore from '../../stores/beatleader/modifiers';
 	import createAccountStore from '../../stores/beatleader/account';
 	import createFailedScoresStore from '../../stores/beatleader/failed-scores';
 	import {opt} from '../../utils/js';
@@ -12,7 +11,6 @@
 	import ScoreServiceSwitcher from './ScoreServiceSwitcher.svelte';
 	import ScoresPager from './ScoresPager.svelte';
 	import stringify from 'json-stable-stringify';
-	import ContentBox from '../Common/ContentBox.svelte';
 	import Pager from '../Common/Pager.svelte';
 
 	const dispatch = createEventDispatcher();
@@ -96,7 +94,6 @@
 		failedScores.fetchScores(page);
 	}
 
-	let modifiersStore = createModifiersStore();
 	const failedScores = createFailedScoresStore();
 
 	$: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType);
@@ -110,7 +107,6 @@
 	$: isLoading = scoresStore ? scoresStore.isLoading : false;
 	$: pending = scoresStore ? scoresStore.pending : null;
 	$: error = scoresStore ? scoresStore.error : null;
-	$: modifiers = $modifiersStore;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isMain ? failedScores.refresh() : null;
 
@@ -144,14 +140,7 @@
 	{#if isMain && failedScoresArray && failedScoresArray.length}
 		<div class="song-scores grid-transition-helper">
 			{#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
-				<FailedScore
-					store={failedScores}
-					{playerId}
-					{songScore}
-					{fixedBrowserTitle}
-					{idx}
-					modifiersStore={modifiers}
-					service={currentService} />
+				<FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} />
 			{/each}
 		</div>
 		{#if Number.isFinite(failedScoresPage) && (!Number.isFinite(totalFailedScores) || totalFailedScores > 0)}
@@ -167,15 +156,7 @@
 	{#if $scoresStore && $scoresStore.length}
 		<div class="song-scores grid-transition-helper">
 			{#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
-				<SongScore
-					{playerId}
-					{songScore}
-					{fixedBrowserTitle}
-					{idx}
-					modifiersStore={modifiers}
-					service={currentService}
-					{withPlayers}
-					{noIcons} />
+				<SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} {withPlayers} {noIcons} />
 			{/each}
 		</div>
 	{:else}

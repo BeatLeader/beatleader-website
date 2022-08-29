@@ -15,6 +15,7 @@ export const processScore = s => {
 		song,
 		diffInfo,
 		difficulty: s?.leaderboard?.difficulty?.value,
+		difficultyBl: s?.leaderboard?.difficulty ?? null,
 		stars: s?.leaderboard?.difficulty?.stars ?? null,
 	};
 

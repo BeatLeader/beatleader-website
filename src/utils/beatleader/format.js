@@ -193,7 +193,7 @@ export function diffForDiffName(diffName) {
 export function userDescriptionForModifier(modifier) {
 	switch (modifier) {
 		case 'DA':
-			return 'Dissapearing arrows';
+			return 'Disappearing arrows';
 		case 'FS':
 			return 'Faster song';
 		case 'SS':
@@ -214,8 +214,10 @@ export function userDescriptionForModifier(modifier) {
 			return 'Pro mode';
 		case 'SC':
 			return 'Small cubes';
+		case 'BE':
+			return 'Battery energy';
 	}
-	return 'Undefined modifier';
+	return 'Unknown modifier';
 }
 
 export const DifficultyStatus = {
@@ -313,9 +315,9 @@ export function describeModifiersAndMultipliers(modifiers, multipliers) {
 		let result = 'Mods:';
 		let total = 0;
 		modifiers.forEach(key => {
-			const value = multipliers[key];
+			const value = multipliers[key.toLowerCase()] ?? 0;
 			total += value;
-			result += '\n' + userDescriptionForModifier(key) + (value > 0 ? ' +' : ' ') + Math.round(value * 100) + '%';
+			result += '\n' + userDescriptionForModifier(key) + ': ' + (value > 0 ? ' +' : ' ') + Math.round(value * 100) + '%';
 		});
 		if (modifiers.length > 1) {
 			result += '\nTotal:' + (total > 0 ? ' +' : ' ') + Math.round(total * 100) + '%';

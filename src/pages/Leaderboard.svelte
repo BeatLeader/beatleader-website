@@ -4,7 +4,6 @@
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
-	import createModifiersStore from '../stores/beatleader/modifiers';
 	import createVotingStore from '../stores/beatleader/rankVoting';
 	import createStarGeneratorStore from '../stores/beatleader/star-generator';
 	import createBeatSaverService from '../services/beatmaps';
@@ -276,8 +275,6 @@
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 	}
 
-	const modifiersStore = createModifiersStore();
-
 	let ssCoverDoesNotExists = false;
 
 	let batleRoyaleDraft = false;
@@ -423,6 +420,7 @@
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
 	$: isNominated = isQualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
+	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
 	$: calculateIsRankable(isRT, qualification);
 
@@ -459,6 +457,8 @@
 
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
 	$: if (showAverageStats) checkMapHash(song.hash);
+
+	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
 </script>
 
 <svelte:head>
@@ -761,7 +761,7 @@
 												<span slot="label">
 													<Value value={opt(score, 'score.score')} inline={false} digits={0} />
 
-													<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), $modifiersStore)}
+													<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), modifiers)}
 														>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
 												</span>
 											</Badge>
@@ -936,13 +936,13 @@
 			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
 		{/if}
 	</article>
-	{#if showCurve && (isRanked || isNominated)}
+	{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
 		<aside>
 			<ContentBox>
 				<h2 class="title is-5">
 					PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
 				</h2>
-				<PpCurve stars={leaderboard?.stats?.stars} modifiers={$modifiersStore} on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
+				<PpCurve stars={leaderboard?.stats?.stars} {modifiers} on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
 			</ContentBox>
 		</aside>
 	{/if}

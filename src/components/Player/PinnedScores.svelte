@@ -4,7 +4,6 @@
 	import PinnedScore from './PinnedScore.svelte';
 
 	export let playerId;
-	export let modifiers;
 	export let fixedBrowserTitle = null;
 
 	$: sortedPinnedScores = $pinnedScoresStore?.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0));
@@ -16,7 +15,7 @@
 			<h2>Pinned scores</h2>
 
 			{#each sortedPinnedScores as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
-				<PinnedScore {playerId} {modifiers} {songScore} {idx} length={$pinnedScoresStore?.length ?? 0} {fixedBrowserTitle} />
+				<PinnedScore {playerId} {songScore} {idx} length={$pinnedScoresStore?.length ?? 0} {fixedBrowserTitle} />
 			{/each}
 		</section>
 	</ContentBox>
