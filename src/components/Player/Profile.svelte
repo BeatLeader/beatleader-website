@@ -28,6 +28,7 @@
 	export let skeleton = false;
 	export let twitchVideos = null;
 	export let avatarHash = null;
+	export let fixedBrowserTitle = null;
 
 	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
@@ -213,7 +214,7 @@
 	</div>
 </ContentBox>
 
-<PinnedScores modifiers={$modifiersStore} playerId={playerData?.id} />
+<PinnedScores modifiers={$modifiersStore} playerId={playerData?.id} {fixedBrowserTitle} />
 
 <style>
 	.player-general-info {
