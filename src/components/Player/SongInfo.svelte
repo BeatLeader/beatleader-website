@@ -28,7 +28,7 @@
 	$: leaderboardId = leaderboard?.leaderboardId ?? '';
 	$: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboardId}/${page ?? ''}`;
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
-	$: serviceIcon = isPlayerScore && score?.metadata ? score.metadata : null;
+	$: serviceIcon = score?.metadata ?? null;
 </script>
 
 {#if song}
