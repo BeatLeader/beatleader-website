@@ -26,10 +26,15 @@
 
 {#if qualification}
 	<div class="qualification-description">
-		{#if qualification.mapperAllowed}
-			<span style="color: green;"><i class="fa fa-check" /> Mapper</span>
-		{:else}
-			<span style="color: gray;"><i class="fa fa-xmark" /> Mapper</span>
+		{#if !qualification.approved}
+			<div class="timeset">
+				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))} by
+				</span>
+
+				<Avatar player={nominator} />
+				<PlayerNameWithFlag player={nominator} hideFlag={true} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
+			</div>
 		{/if}
 
 		{#if qualification.criteriaMet == 1}
@@ -40,6 +45,12 @@
 			<span style="color: yellow;"><i class="fa fa-circle-pause" /> Criteria</span>
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria</span>
+		{/if}
+
+		{#if qualification.mapperAllowed}
+			<span style="color: green;"><i class="fa fa-check" /> Mapper</span>
+		{:else}
+			<span style="color: gray;"><i class="fa fa-xmark" /> Mapper</span>
 		{/if}
 
 		{#if qualification.approvers}
@@ -60,17 +71,6 @@
 			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> RT</span>
-		{/if}
-
-		{#if !qualification.approved}
-			<div class="timeset">
-				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))} by
-				</span>
-
-				<Avatar player={nominator} />
-				<PlayerNameWithFlag player={nominator} hideFlag={true} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
-			</div>
 		{/if}
 	</div>
 {/if}
