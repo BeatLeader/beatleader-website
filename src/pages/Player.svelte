@@ -220,7 +220,8 @@
 				{skeleton}
 				{twitchVideos}
 				on:player-data-updated={onPlayerDataUpdated}
-				{avatarHash} />
+				{avatarHash}
+				fixedBrowserTitle={browserTitle} />
 
 			{#if scoresPlayerId}
 				<ContentBox>

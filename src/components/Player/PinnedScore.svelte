@@ -13,6 +13,7 @@
 	export let modifiers;
 	export let idx = 0;
 	export let length = 0;
+	export let fixedBrowserTitle = null;
 
 	const {addNotification} = getNotificationsContext();
 	const account = createAccountStore();
@@ -176,7 +177,13 @@
 			{/if}
 		</header>
 
-		<SongScore {playerId} {songScore} modifiersStore={modifiers} service="beatleader" icons={['bs', 'replay', 'pin', 'pin-service']} />
+		<SongScore
+			{playerId}
+			{songScore}
+			modifiersStore={modifiers}
+			service="beatleader"
+			icons={['bs', 'replay', 'pin', 'pin-service']}
+			{fixedBrowserTitle} />
 	</div>
 {/if}
 
