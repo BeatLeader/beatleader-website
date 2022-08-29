@@ -450,7 +450,6 @@
 		background: rgb(0, 0, 0);
 		height: 4em;
 		margin: 0.6em;
-		padding: 0.3em;
 		border-radius: 0.5em;
 		cursor: pointer;
 	}
