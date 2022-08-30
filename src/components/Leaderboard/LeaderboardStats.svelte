@@ -29,12 +29,12 @@
 <article transition:fade>
 	{#if diff}
 		<div class="stats">
-			{#if metadata?.duration}
+			{#if leaderboard?.song?.duration}
 				<div transition:fade>
 					<span class="time" transition:fade={{duration: 500}}>
-						<i class="fas fa-clock" /> Length:
+						<i class="fas fa-clock" /> Duration:
 						<strong>
-							<Duration value={metadata.duration} />
+							<Duration value={leaderboard.song.duration} />
 						</strong></span>
 				</div>
 			{/if}
@@ -48,11 +48,11 @@
 				</div>
 			{/if}
 
-			{#if metadata?.bpm}
+			{#if leaderboard?.song?.bpm}
 				<div transition:fade>
 					<i class="fas fa-drum" /> BPM:
 					<strong>
-						<Value value={metadata.bpm} digits={0} />
+						<Value value={leaderboard.song.bpm} digits={0} />
 					</strong>
 				</div>
 			{/if}
@@ -66,11 +66,11 @@
 				</div>
 			{/if}
 
-			{#if Number.isFinite(diff.njsOffset)}
+			{#if Number.isFinite(diff.offset)}
 				<div transition:fade>
 					<i class="fas fa-ruler-horizontal" /> Offset:
 					<strong>
-						<Value value={diff.njsOffset} digits={2} />
+						<Value value={diff.offset} digits={2} />
 					</strong>
 				</div>
 			{/if}

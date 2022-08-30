@@ -126,23 +126,23 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 	const songInfo = [
 		{id: 'hash', value: led?.song?.hash},
 		{id: 'id', value: led?.song?.id},
-		{id: 'scores', value: led?.plays},
+		{id: 'scores', value: led?.plays ?? 0},
 		{id: 'status', value: currentDiff?.status},
-		{id: 'totalScores', value: led?.plays},
-		{id: 'notes', value: currentDiff?.notes},
-		{id: 'bpm', value: currentDiff?.bpm},
-		{id: 'stars', value: currentDiff?.stars},
+		{id: 'totalScores', value: led?.plays ?? 0},
+		{id: 'notes', value: currentDiff?.notes ?? null},
+		{id: 'bpm', value: led?.song?.bpm ?? null},
+		{id: 'stars', value: currentDiff?.stars ?? null},
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},
-		{id: 'name', value: led?.song?.name},
+		{id: 'name', value: `${led?.song?.name ?? ''} ${led?.song?.subName ?? ''}`},
 	].reduce(
 		(cum, sid) => {
 			let value = sid.value;
 
-			if (value !== null && ['scores', 'totalScores', 'bpm', 'notes', 'stars', 'status', 'type'].includes(sid.id)) {
+			if (value !== null && ['scores', 'totalScores', 'notes', 'stars', 'status', 'type'].includes(sid.id)) {
 				if (value !== null) {
 					cum.stats[sid.id] = value;
 				}
