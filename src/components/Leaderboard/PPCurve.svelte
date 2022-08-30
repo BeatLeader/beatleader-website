@@ -203,7 +203,7 @@
 		(all, mod) => (mutuallyExclusive[mod?.name] ? all.concat(mutuallyExclusive[mod.name]) : all),
 		[]
 	);
-	$: modifiedStars = stars * (1 + positiveModifiersSum * 2);
+	$: modifiedStars = stars * (1 + positiveModifiersSum);
 	$: setupChart(canvas, modifiedStars, logarithmic, negativeModifiersSum, startAcc, endAcc);
 
 	$: dispatch('modified-stars', modifiedStars);
