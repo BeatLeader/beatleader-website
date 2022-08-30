@@ -290,7 +290,7 @@ export const typesDescription = {
 export function mapTypeFromMask(type) {
 	const types = Object.keys(typesMap).filter(key => typesMap[key] & type);
 
-	return types?.length ? types.join(', ') : 'none';
+	return types?.length ? types.join(',') : 'none';
 }
 
 export function mapTypeListFromMask(type) {

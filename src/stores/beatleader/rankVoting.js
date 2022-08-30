@@ -83,7 +83,7 @@ export default () => {
 			BL_API_URL +
 			`qualification/${hash}/${diff}/${mode}?stilQualifying=${rankability}` +
 			(stars ? '&stars=' + stars : '') +
-			(type ? '&type=' + type : '') +
+			(type != null ? '&type=' + type : '') +
 			(allowedByMapper != undefined ? `&allowed=${allowedByMapper ? 'true' : 'false'}` : '') +
 			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +
 			(criteriaCommentary ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '');
