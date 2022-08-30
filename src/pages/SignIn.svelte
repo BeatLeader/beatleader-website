@@ -204,6 +204,21 @@
 				<Button type="twitch" iconFa="fab fa-twitch" label="Link Twitch" />
 			</form>
 		{/if}
+		{#if socials && socials.find(s => s.service == 'YouTube')}
+			<form action={BL_API_URL + 'user/unlink'} method="post">
+				<input type="hidden" name="Provider" value="Google" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button iconFa="fab fa-youtube" label="Unlink YouTube" type="danger" />
+			</form>
+		{:else}
+			<form class="youtube" action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="Google" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button type="youtube" iconFa="fab fa-youtube" label="Link YouTube" />
+			</form>
+		{/if}
 		{#if socials && socials.find(s => s.service == 'Twitter')}
 			<form action={BL_API_URL + 'user/unlink'} method="post">
 				<input type="hidden" name="Provider" value="Twitter" />

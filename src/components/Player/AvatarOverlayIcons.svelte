@@ -111,6 +111,7 @@
 	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
 	$: twitterSocial = playerInfo.socials?.find(s => s?.service === 'Twitter');
 	$: beatsaverSocial = playerInfo.socials?.find(s => s?.service === 'BeatSaver');
+	$: youtubeSocial = playerInfo.socials?.find(s => s?.service === 'YouTube');
 
 	$: isUserFounderOfTheClan = !!$account?.clan;
 	$: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
@@ -186,6 +187,16 @@
 				type="twitter"
 				iconFa="fab fa-twitter"
 				title="{twitterSocial.user} drama starter" />
+		{/if}
+
+		{#if youtubeSocial}
+			<Button
+				cls="youtube"
+				url={youtubeSocial.link}
+				onlyurl={true}
+				type="danger"
+				iconFa="fab fa-youtube"
+				title="{youtubeSocial.user} influencer" />
 		{/if}
 
 		{#if beatsaverSocial}
@@ -277,6 +288,15 @@
 	}
 
 	nav :global(.twitter):hover {
+		transform: scale(1.2);
+	}
+
+	nav :global(.youtube) {
+		left: 6.3em;
+		top: -3.1em;
+	}
+
+	nav :global(.youtube):hover {
 		transform: scale(1.2);
 	}
 
