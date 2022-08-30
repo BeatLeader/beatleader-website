@@ -135,7 +135,8 @@ export default () => {
 			.then(data => {
 				votingStatuses[id] = data;
 				set(votingStatuses);
-			});
+			})
+			.catch(err => null);
 	};
 
 	const subscribe = fn => {
