@@ -201,7 +201,7 @@
 
 	function processDiffs(diffArray, song) {
 		if (song) {
-			const idLength = song.id.length;
+			const idLength = song?.id?.length;
 			diffArray = diffArray.sort(function (a, b) {
 				let diffNumA = parseInt(a.leaderboardId[idLength]);
 				let diffNumB = parseInt(b.leaderboardId[idLength]);
@@ -554,7 +554,7 @@
 									{/if}
 								{/if}
 								{#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span>{/if}
-								{#if leaderboard?.stats.type}
+								{#if leaderboard?.stats?.type}
 									<MapTypeDescription type={leaderboard?.stats.type} />
 								{/if}
 
@@ -648,7 +648,7 @@
 
 				{#if scoresWithUser?.length}
 					<div class="scores-grid grid-transition-helper">
-						{#each scoresWithUser as score, idx (score?.score?.id)}
+						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
 							<div
 								class={`row-${idx}`}
 								class:user-score={score?.isUserScore}
@@ -692,7 +692,7 @@
 										</div>
 									</div>
 									<div class="mobile-second-line">
-										{#if !noReplayInLeaderboard}
+										{#if !noReplayInLeaderboard && type !== 'accsaber'}
 											<div class="replay">
 												{#if batleRoyaleDraft}
 													{#if !draftList.includes(score.player.playerId) && draftList.length < 10}
@@ -885,7 +885,7 @@
 						hide={!['global', 'accsaber'].includes(currentType)}
 						on:page-changed={onPageChanged} />
 
-					{#if separatePage}
+					{#if separatePage && type !== 'accsaber'}
 						<div class="score-options-section">
 							<span
 								class="beat-savior-reveal clickable"

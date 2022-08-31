@@ -26,7 +26,7 @@ export default () => {
 			leaderboardApiClient.getProcessed({leaderboardId, page, filters, signal, priority, cacheTtl: force ? null : MINUTE})
 		);
 
-	const fetchAccSaberPage = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+	const fetchAccSaberPage = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
 		if (page < 1) page = 1;
 
 		const data = await resolvePromiseOrWaitForPending(`accSaberApiClient/leaderboard/${leaderboardId}/${page}`, () =>
