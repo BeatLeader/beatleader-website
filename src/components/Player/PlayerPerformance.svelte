@@ -46,7 +46,7 @@
 				fullCombo: !!score?.fullCombo,
 				missedNotes: score?.missedNotes ?? null,
 				wallHit: score?.wallsHit ?? null,
-				miss: (score?.badCuts ?? 0) + (score?.missedNotes ?? 0),
+				miss: score?.badCuts !== undefined || score?.missedNotes !== undefined ? (score?.badCuts ?? 0) + (score?.missedNotes ?? 0) : null,
 			},
 		};
 	}
@@ -147,7 +147,7 @@
 			</span>
 		{/if}
 
-		{#if beatSavior}
+		{#if accLeft || accRight || Number.isFinite(beatSavior.stats.miss)}
 			{#if accLeft}
 				<span class="beatSavior with-badge">
 					<Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)" inline={true}>
@@ -194,7 +194,7 @@
 				<span class="beatSavior with-badge" />
 			{/if}
 
-			{#if beatSavior.stats.miss !== undefined}
+			{#if Number.isFinite(beatSavior.stats.miss)}
 				<span class="beatSavior with-badge">
 					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 						<span

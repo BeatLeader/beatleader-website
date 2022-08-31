@@ -46,9 +46,7 @@ export default async (data, leaderboard) => {
 		beatSavior.trackers = statistic;
 
 		return beatSavior;
-	} catch (err) {
-		console.log(err);
-	}
+	} catch (err) {}
 
 	return null;
 };
