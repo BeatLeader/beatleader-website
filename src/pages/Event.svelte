@@ -174,7 +174,11 @@
 					<img src={currentEvent.image} />
 					<h2>{currentEvent.name}</h2>
 					<span style="color: white;" title={formatDate(dateFromUnix(currentEvent.endDate))}>
-						Will end {formatDateRelative(dateFromUnix(currentEvent.endDate))}
+						{#if Date.now() / 1000 < currentEvent.endDate}
+							Will end {formatDateRelative(dateFromUnix(currentEvent.endDate))}
+						{:else}
+							Ended {formatDateRelative(dateFromUnix(currentEvent.endDate))}
+						{/if}
 					</span>
 					<Button label="Show playlist" on:click={() => navigate('/playlist/' + currentEvent.playlistId)} />
 				</div>
