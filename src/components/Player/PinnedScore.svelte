@@ -130,6 +130,7 @@
 
 	$: isFirst = idx === 0;
 	$: isLast = idx >= length - 1;
+	$: editable = $account?.id && $account?.id === songScore.score?.playerId;
 </script>
 
 {#if songScore?.score?.id}
@@ -145,8 +146,12 @@
 					</div>
 				</form>
 			{:else}
-				<h3 class:editable={$account?.id && $account?.id === songScore.score?.playerId} on:click={enableEdit}>
-					{#if $account?.id && $account?.id === songScore.score?.playerId}
+				<h3
+					class:editable
+					on:click={() => {
+						if (editable) enableEdit();
+					}}>
+					{#if editable}
 						<span class="move">
 							{#if !isFirst}
 								{#if isLoading}
@@ -166,10 +171,9 @@
 						</span>
 					{/if}
 
-					{songScore.score?.metadata?.description ??
-						($account?.id && $account?.id === songScore.score?.playerId ? 'Click to edit description...' : '')}
+					{songScore.score?.metadata?.description ?? (editable ? 'Click to edit description...' : '')}
 
-					{#if $account?.id && $account?.id === songScore.score?.playerId}
+					{#if editable}
 						<i class="fas fa-edit" on:click={enableEdit} title="Click to edit" />
 					{/if}
 				</h3>
