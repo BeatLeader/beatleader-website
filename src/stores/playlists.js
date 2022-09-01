@@ -3,6 +3,7 @@ import keyValueRepository from '../db/repository/key-value';
 import {opt} from '../utils/js';
 import {configStore} from './config';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+import {substituteVars} from '../utils/format';
 
 const STORE_PLAYLISTS_KEY = 'playlists';
 const defaultImage = '';
@@ -136,6 +137,38 @@ export default () => {
 			});
 	};
 
+	const generatePlaylist = (count, filters, callback) => {
+		if (!filters.order) {
+			filters.order = 'desc';
+		}
+
+		let url = substituteVars(
+			BL_API_URL +
+				'playlist/generate?count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&allTypes=${allTypes}',
+			{count, ...filters},
+			true,
+			true
+		);
+
+		fetch(url, {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(async playlist => {
+				if (!playlist.playlistTitle || !playlist.songs) {
+					return;
+				}
+
+				let playlists = await get();
+				playlists.push(playlist);
+
+				await set(playlists, true);
+				await select(playlist);
+
+				callback();
+			});
+	};
+
 	const deleteList = async index => {
 		let playlists = await get();
 		playlists.splice(index, 1);
@@ -243,6 +276,7 @@ export default () => {
 		addDiff,
 		getShared,
 		share,
+		generatePlaylist,
 	};
 
 	return playlistStore;

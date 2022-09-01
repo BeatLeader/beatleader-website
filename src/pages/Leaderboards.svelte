@@ -4,6 +4,7 @@
 	import {fade, fly} from 'svelte/transition';
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
+	import createPlaylistStore from '../stores/playlists';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
@@ -41,6 +42,7 @@
 	const FILTERS_DEBOUNCE_MS = 500;
 
 	const account = createAccountStore();
+	const playlists = createPlaylistStore();
 
 	const params = [
 		{key: 'search', default: '', process: processStringFilter},
@@ -252,6 +254,16 @@
 	}
 
 	const debouncedOnDateRangeChanged = debounce(onDateRangeChange, FILTERS_DEBOUNCE_MS);
+
+	let searchToPlaylist = false;
+	let makingPlaylist = false;
+	let mapCount = 100;
+	function generatePlaylist() {
+		makingPlaylist = true;
+		playlists.generatePlaylist(mapCount, currentFilters, () => {
+			navigate('/playlists');
+		});
+	}
 
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
@@ -466,7 +478,34 @@
 					type="primary"
 					on:click={() => navigate('/playlist/qualified')} />
 				<Button cls="playlist-button" iconFa="fas fa-rocket" label="Nominated" on:click={() => navigate('/playlist/nominated')} />
+				<Button
+					cls="playlist-button"
+					iconFa="fas fa-list"
+					type={searchToPlaylist ? 'danger' : 'default'}
+					label={searchToPlaylist ? 'Cancel' : 'Playlist from search'}
+					on:click={() => (searchToPlaylist = !searchToPlaylist)} />
 			</div>
+			{#if searchToPlaylist}
+				{#if makingPlaylist}
+					<Spinner />
+				{:else}
+					<RangeSlider
+						range
+						min={0}
+						max={1000}
+						step={1}
+						values={[mapCount]}
+						hoverable
+						float
+						pips
+						pipstep={100}
+						all="label"
+						on:change={event => {
+							mapCount = event.detail.values[0];
+						}} />
+					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
+				{/if}
+			{/if}
 		</ContentBox>
 	</aside>
 </section>
