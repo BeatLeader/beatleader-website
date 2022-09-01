@@ -330,8 +330,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/3')}>
-			<div class="event-image" />
+		<div class="event-banner" on:click={() => navigate('/event/2')}>
+			<span class="event-title"> Second batch of maps was ranked! </span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/37-event.png" />
 		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -447,22 +448,25 @@
 	}
 
 	.event-banner {
-		background: rgb(0, 0, 0);
-		height: 4em;
+		display: flex;
+		align-items: center;
+		background: rgb(97, 45, 255);
+		grid-gap: 1em;
+		justify-content: center;
 		margin: 0.6em;
+		padding: 0.3em;
 		border-radius: 0.5em;
 		cursor: pointer;
 	}
 
 	.event-image {
-		width: 100%;
-		height: 100%;
-		background-size: contain;
-		background-image: url('https://cdn.beatleader.xyz/assets/gladde-paling.png'), url('https://cdn.beatleader.xyz/assets/gladde-paling.png');
+		width: 4em;
+		height: 4em;
+	}
 
-		background-repeat: repeat-x, repeat-x;
-		background-position-y: -13px, 13px;
-		background-position-x: 9px, -31px;
+	.event-title {
+		font-size: larger;
+		font-weight: 600;
 	}
 
 	@media screen and (max-width: 1275px) {

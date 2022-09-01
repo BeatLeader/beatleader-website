@@ -9,11 +9,13 @@ export default (refreshOnCreate = true) => {
 	if (store) return store;
 
 	let totalScores = {};
+	let currentPage = 1;
 
 	const get = () => totalScores;
 	const {subscribe: subscribeState, set} = writable(totalScores);
 
 	const fetchScores = async page => {
+		currentPage = page;
 		fetch(BL_API_URL + 'user/failedScores?page=' + page, {credentials: 'include'})
 			.then(response => response.json())
 			.then(data => process(data))
@@ -29,7 +31,7 @@ export default (refreshOnCreate = true) => {
 		set(totalScores);
 
 		fetch(BL_API_URL + 'user/failedscore/remove?id=' + id, {credentials: 'include', method: 'POST'}).then(() => {
-			fetchScores();
+			fetchScores(currentPage);
 		});
 	};
 
@@ -38,7 +40,7 @@ export default (refreshOnCreate = true) => {
 		set(totalScores);
 
 		fetch(BL_API_URL + 'user/failedscore/retry?id=' + id, {credentials: 'include', method: 'POST'}).then(() => {
-			fetchScores();
+			fetchScores(currentPage);
 		});
 	};
 
