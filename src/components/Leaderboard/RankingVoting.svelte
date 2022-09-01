@@ -182,7 +182,7 @@
 		okButton={actionButtonTitle}
 		okButtonType={actionButtonType}
 		cancelButton="Cancel"
-		okButtonDisabled={suitableForRank == undefined}
+		okButtonDisabled={suitableForRank == undefined || ((criteriaMet == 2 || criteriaMet == 3) && !criteriaCommentary)}
 		on:confirm={() => vote()}
 		on:cancel={() => dispatch('finished')}>
 		<div slot="content">
@@ -224,7 +224,7 @@
 					<Button label="MET" type={criteriaMet == 1 ? 'green' : 'default'} on:click={() => (criteriaMet = 1)} />
 				{/if}
 			{/if}
-			{#if criteriaMet == 2 || criteriaMet == 3}
+			{#if criteriaMet != 0}
 				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />
 			{/if}
 			{#if suitableForRank}

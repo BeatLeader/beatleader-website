@@ -7,7 +7,13 @@
 {#if badges}
 	<div class="bl-badges" transition:fade={{duration: 500}}>
 		{#each badges as badge (badge.src)}
-			<img src={badge.src} alt={badge.title} title={badge.title} />
+			{#if badge.link}
+				<a href={badge.link}>
+					<img class="clickable" src={badge.src} alt={badge.title} title={badge.title} />
+				</a>
+			{:else}
+				<img src={badge.src} alt={badge.title} title={badge.title} />
+			{/if}
 		{/each}
 	</div>
 {/if}

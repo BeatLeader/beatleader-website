@@ -86,7 +86,7 @@ export default () => {
 			(type != null ? '&type=' + type : '') +
 			(allowedByMapper != undefined ? `&allowed=${allowedByMapper ? 'true' : 'false'}` : '') +
 			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +
-			(criteriaCommentary ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '');
+			(criteriaCommentary != null ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '');
 
 		fetch(url, {credentials: 'include', method: 'POST'}).then(() => {
 			votingStatuses.loading = false;

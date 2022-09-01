@@ -65,6 +65,20 @@
 		{#if change.oldRankability != change.newRankability}
 			{change.oldRankability > 0 ? 'Nominated' : 'Unranked'} → {change.newRankability > 0 ? 'Nominated' : 'Unranked'}
 		{/if}
+
+		{#if change.oldCriteriaCommentary != change.newCriteriaCommentary}
+			{#if change.oldCriteriaCommentary}
+				"{change.oldCriteriaCommentary}"
+			{:else}
+				No commentary
+			{/if}
+			→
+			{#if change.newCriteriaCommentary}
+				"{change.newCriteriaCommentary}"
+			{:else}
+				No commentary
+			{/if}
+		{/if}
 	</div>
 {/if}
 
