@@ -489,6 +489,7 @@
 				{#if makingPlaylist}
 					<Spinner />
 				{:else}
+					<span>Maps count:</span>
 					<RangeSlider
 						range
 						min={0}
