@@ -7,8 +7,8 @@
 	export let chrome = 'noheader noscrollbar transparent';
 	export let theme = 'dark';
 	export let width = undefined;
-	export let height = '40em';
-	export let tweetLimit = 3;
+	export let height = '500px';
+	export let tweetLimit = undefined;
 	export let linkColor = undefined;
 	export let borderColor = undefined;
 	export let ariaPolite = undefined;
