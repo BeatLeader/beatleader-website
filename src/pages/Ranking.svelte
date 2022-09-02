@@ -330,9 +330,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/2')}>
-			<span class="event-title"> Second batch of maps was ranked! </span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/37-event.png" />
+		<div class="event-banner" on:click={() => navigate('/event/4')}>
+			<span class="event-title"> The king has been dethroned! OV is no longer the highest ranked map</span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/shockpika.png" />
 		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -450,7 +450,7 @@
 	.event-banner {
 		display: flex;
 		align-items: center;
-		background: rgb(97, 45, 255);
+		background: rgb(233, 75, 104);
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;
@@ -462,6 +462,7 @@
 	.event-image {
 		width: 4em;
 		height: 4em;
+		margin-top: -1em;
 	}
 
 	.event-title {
