@@ -114,7 +114,11 @@
 			<div class="imageInput" on:click={() => fileinput.click()}>
 				<img
 					class="playlistImage"
-					src={playlist.image.startsWith('data') ? playlist.image : 'data:image/png;base64,' + playlist.image}
+					src={playlist.image
+						? playlist.image.startsWith('data')
+							? playlist.image
+							: 'data:image/png;base64,' + playlist.image
+						: '/assets/song-default.png'}
 					alt="PlaylistImage" />
 				{#if canModify && !playlist.oneclick}
 					<input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={e => changeImage(e)} bind:this={fileinput} />
