@@ -560,6 +560,8 @@
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, votes, ...rest} = map;
 
+						song.difficulties = (song?.difficulties ?? []).filter(d => d?.modeName === 'Standard');
+
 						if (song?.hash?.length && !carry[song.hash]) {
 							const minStars = song?.difficulties?.reduce(
 								(min, d) => (Number.isFinite(d?.stars) && (!Number.isFinite(min) || min > d.stars) ? d.stars : min),
