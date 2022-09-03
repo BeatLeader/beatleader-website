@@ -10,6 +10,8 @@
 		mapperAllowed: 'Mapper allowed',
 		approved: 'RT approved',
 	};
+
+	$: diffsReversed = (totals?.byDiff ?? []).reverse();
 </script>
 
 {#if totals}
@@ -60,9 +62,9 @@
 						{/if}
 						{totals[key]} / {count}
 					</div>
-					{#if totals?.byDiff?.length}
+					{#if diffsReversed.length}
 						<div class="dots">
-							{#each totals.byDiff as d}
+							{#each diffsReversed as d}
 								<div
 									title={`${d.name} / ${d?.[key] ?? '???'}`}
 									class:ok={d?.[key] === 'Yes'}
