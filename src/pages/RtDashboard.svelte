@@ -560,6 +560,8 @@
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, votes, ...rest} = map;
 
+						song.difficulties = (song?.difficulties ?? []).filter(d => d?.modeName === 'Standard');
+
 						if (song?.hash?.length && !carry[song.hash]) {
 							const minStars = song?.difficulties?.reduce(
 								(min, d) => (Number.isFinite(d?.stars) && (!Number.isFinite(min) || min > d.stars) ? d.stars : min),
@@ -620,7 +622,7 @@
 							carry.qualified +=
 								diff?.status === DifficultyStatus.qualified || DifficultyStatus.ranked || !!diff?.qualified || !!diff?.ranked ? 1 : 0;
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
-							carry.criteriaMet += diff?.qualification?.criteriaMet === 1 ? 1 : 0;
+							carry.criteriaMet += [1, 2].includes(diff?.qualification?.criteriaMet) ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
 							carry.votesTotal += diff?.votes?.length ?? 0;
 							carry.votesPositive += diff?.votesPositive ?? 0;
