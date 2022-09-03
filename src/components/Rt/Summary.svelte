@@ -34,12 +34,14 @@
 							.join('\n')
 					: ''
 			}`}>
-			{#if totals.votesRating >= 0.7}
-				<i class="fa fa-check" />
-			{:else}
-				<i class="fa fa-xmark" />
-			{/if}
-			<span>{formatNumber(totals.votesRating)}</span>
+			<div class="value">
+				{#if totals.votesRating >= 0.7}
+					<i class="fa fa-check" />
+				{:else}
+					<i class="fa fa-xmark" />
+				{/if}
+				<span>{formatNumber(totals.votesRating)}</span>
+			</div>
 		</div>
 
 		{#if count}
@@ -47,15 +49,28 @@
 				<div
 					class="ratio"
 					class:ok={totals[`${key}Ratio`] === 1}
-					class:warning={totals[`${key}Ratio`] < 1 && totals[`${key}Ratio`] >= 0.5}
-					class:error={totals[`${key}Ratio`] < 0.5}
+					class:warning={totals[`${key}Ratio`] < 1 && totals[`${key}Ratio`] > 0}
+					class:error={totals[`${key}Ratio`] === 0}
 					title={`${keys[key]}\n${totals.byDiff.map(d => `${d.name} / ${d?.[key] ?? '???'}`).join('\n')}`}>
-					{#if totals[`${key}Ratio`] === 1}
-						<i class="fa fa-check" />
-					{:else}
-						<i class="fa fa-xmark" />
+					<div class="value">
+						{#if totals[`${key}Ratio`] === 1}
+							<i class="fa fa-check" />
+						{:else}
+							<i class="fa fa-xmark" />
+						{/if}
+						{totals[key]} / {count}
+					</div>
+					{#if totals?.byDiff?.length}
+						<div class="dots">
+							{#each totals.byDiff as d}
+								<div
+									title={`${d.name} / ${d?.[key] ?? '???'}`}
+									class:ok={d?.[key] === 'Yes'}
+									class:warning={d?.[key] === 'On hold'}
+									class:error={d?.[key] === 'Failed'} />
+							{/each}
+						</div>
 					{/if}
-					{totals[key]} / {count}
 				</div>
 			{/each}
 		{/if}
@@ -65,17 +80,26 @@
 <style>
 	.totals,
 	.totals .ratio {
-		display: inline-flex;
 		gap: 0.25rem;
 		align-items: center;
 	}
 
 	.totals {
+		display: inline-flex;
+		align-items: flex-start;
 		gap: 1.25rem;
 	}
 
 	.totals .ratio {
+		display: flex;
+		flex-direction: column;
 		min-width: 3rem;
+	}
+
+	.totals .ratio .value {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	.totals.with-count {
@@ -96,5 +120,29 @@
 
 	.totals .ratio.neutral {
 		color: var(--faded);
+	}
+
+	.dots {
+		display: inline-flex;
+		gap: 0.25rem;
+	}
+
+	.dots > div {
+		min-width: 0.75rem;
+		min-height: 0.75rem;
+		border-radius: 0.75rem;
+		background-color: var(--faded);
+	}
+
+	.dots > div.ok {
+		background-color: green;
+	}
+
+	.dots > div.warning {
+		background-color: orange;
+	}
+
+	.dots > div.error {
+		background-color: red;
 	}
 </style>
