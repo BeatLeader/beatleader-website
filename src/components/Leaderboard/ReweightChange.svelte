@@ -81,7 +81,7 @@
 			{/if}
 		{/if}
 
-		{#if (!change.oldModifiers && change.newModifiers) || !shallowEqual(change.oldModifiers, change.newModifiers)}
+		{#if !shallowEqual(change.oldModifiers, change.newModifiers)}
 			Modifiers updated
 		{/if}
 	</div>
