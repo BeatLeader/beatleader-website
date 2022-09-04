@@ -157,7 +157,15 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 	);
 
 	const {stats, ...song} = songInfo;
-	const leaderboard = {leaderboardId, song, diffInfo, stats, qualification: led.qualification, difficultyBl: led?.difficulty ?? null};
+	const leaderboard = {
+		leaderboardId,
+		song,
+		diffInfo,
+		stats,
+		qualification: led.qualification,
+		reweight: led.reweight,
+		difficultyBl: led?.difficulty ?? null,
+	};
 
 	const totalItems = led.plays;
 	const pageQty = 10;

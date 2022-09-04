@@ -50,3 +50,17 @@ export const optSet = (obj, key, value, createKeys = true) => {
 // TODO: replace with structuredClone when it's mature enough
 // https://caniuse.com/?search=structuredclone
 export const deepClone = val => JSON.parse(JSON.stringify(val));
+
+export function shallowEqual(object1, object2) {
+	const keys1 = Object.keys(object1);
+	const keys2 = Object.keys(object2);
+	if (keys1.length !== keys2.length) {
+		return false;
+	}
+	for (let key of keys1) {
+		if (object1[key] !== object2[key]) {
+			return false;
+		}
+	}
+	return true;
+}

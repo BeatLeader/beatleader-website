@@ -27,6 +27,7 @@
 	import Button from '../components/Common/Button.svelte';
 	import Icons from '../components/Song/Icons.svelte';
 	import RankingVoting from '../components/Leaderboard/RankingVoting.svelte';
+	import RankUpdate from '../components/Leaderboard/RankUpdate.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
 	import {formatNumber} from '../utils/format';
@@ -52,6 +53,8 @@
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
 	import RankedApproval from '../components/Leaderboard/RankedApproval.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
+	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
+	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -341,6 +344,7 @@
 	let mapVoting = false;
 	let rtvoting = false;
 	let qualificationUpdate = false;
+	let rankUpdate = false;
 	let scoresWithUser;
 
 	let verifiedMapperId;
@@ -422,6 +426,7 @@
 	$: isNominated = isQualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
 	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
+	$: reweight = leaderboard?.reweight;
 	$: calculateIsRankable(isRT, qualification);
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
@@ -481,6 +486,17 @@
 			mapVoting = false;
 			rtvoting = false;
 			qualificationUpdate = false;
+		}} />
+{/if}
+
+{#if rankUpdate}
+	<RankUpdate
+		{votingStore}
+		{leaderboard}
+		playerId={$account.id}
+		{reweight}
+		on:finished={() => {
+			rankUpdate = false;
 		}} />
 {/if}
 
@@ -578,6 +594,10 @@
 							{#if isNominated && qualification}
 								<QualificationStatus {qualification} />
 							{/if}
+
+							{#if leaderboard.reweight && !leaderboard.reweight.finished}
+								<ReweightStatus map={leaderboard} />
+							{/if}
 						</header>
 					{/if}
 					{#if showStats && leaderboard.stats}
@@ -620,6 +640,16 @@
 											rtvoting = true;
 										}} />
 								{/if}
+							{/if}
+							{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || !isjuniorRT)}
+								<Button
+									cls="voteButton"
+									iconFa="fa fa-scale-balanced"
+									title={reweight ? (reweight.rtMember == $account?.id ? 'Update' : 'Approve reweight') : 'Start map reweight!'}
+									noMargin={true}
+									on:click={() => {
+										rankUpdate = !rankUpdate;
+									}} />
 							{/if}
 							{#if separatePage && isRT && (leaderboard?.stats?.status === DifficultyStatus.nominated || (!isjuniorRT && isQualified))}
 								<Button

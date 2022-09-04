@@ -33,6 +33,7 @@
 	import {typesDescription, typesMap, DifficultyStatus} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Others/RankedTimer.svelte';
+	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 
 	export let page = 1;
 	export let location;
@@ -86,6 +87,8 @@
 		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
 		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
 		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+		{key: 'reweighting', label: 'Ranked, reweighting', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+		{key: 'reweighted', label: 'Ranked, reweighted', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
 		{key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cube', color: 'var(--beatleader-primary)'},
 	];
 
@@ -359,6 +362,10 @@
 
 							{#if map?.difficulty?.status == DifficultyStatus.nominated || map?.difficulty?.status == DifficultyStatus.qualified}
 								<QualificationStatusSmall qualification={map.qualification} />
+							{/if}
+
+							{#if map?.reweight && !map.reweight.finished}
+								<ReweightStatusSmall {map} />
 							{/if}
 
 							{#if map?.myScore}

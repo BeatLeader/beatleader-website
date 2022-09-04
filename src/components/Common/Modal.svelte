@@ -90,7 +90,6 @@
 		height: var(--height);
 		min-width: 25em;
 		max-width: 60em;
-		max-height: 100vh;
 		transform: translate(-50%, -50%);
 		padding: 1em;
 		color: var(--textColor);
