@@ -13,6 +13,7 @@
 	export let okButtonType = 'primary';
 	export let okButtonDisabled = false;
 	export let cancelButton = 'Cancel';
+	export let deleteButton = 'Delete';
 </script>
 
 <Modal showCloseButton={false} {closeable} on:close={() => dispatch(type === 'alert' ? 'confirm' : 'cancel')} width="auto" height="auto">
@@ -30,13 +31,18 @@
 
 	<footer>
 		<slot name="footer">
-			<span class="left"><slot name="footer-left" /></span>
+			<span class="left"
+				><slot name="footer-left" />
+				{#if type === 'update'}
+					<Button label={deleteButton} type="danger" on:click={() => dispatch('delete')} />
+				{/if}
+			</span>
 
 			<span class="right"
 				><slot name="footer-right">
 					{#if type === 'alert'}
 						<Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')} />
-					{:else if type === 'confirm'}
+					{:else if type === 'confirm' || type === 'update'}
 						<Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')} />
 						<Button label={cancelButton} type="default" on:click={() => dispatch('cancel')} />
 					{/if}

@@ -66,6 +66,11 @@
 		dispatch('finished');
 	}
 
+	function stop() {
+		votingStore.stopReweight(hash, diff, mode);
+		dispatch('finished');
+	}
+
 	function selectType(type) {
 		if (type != '+') {
 			selectedTypes.push(type);
@@ -131,14 +136,16 @@
 
 <div class="ranking-voting inside-leaderboard">
 	<Dialog
-		type="confirm"
+		type="update"
 		title={dialogTitle}
 		okButton={actionButtonTitle}
 		okButtonType={actionButtonType}
 		cancelButton="Cancel"
+		deleteButton="Stop"
 		okButtonDisabled={suitableForRank == undefined || ((criteriaMet == 2 || criteriaMet == 3) && !criteriaCommentary)}
 		on:confirm={() => vote()}
-		on:cancel={() => dispatch('finished')}>
+		on:cancel={() => dispatch('finished')}
+		on:delete={() => stop()}>
 		<div slot="content">
 			<div>Keep this map ranked?</div>
 			<Button

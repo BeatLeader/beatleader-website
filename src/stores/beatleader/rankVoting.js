@@ -181,6 +181,20 @@ export default () => {
 		});
 	};
 
+	const stopReweight = async (hash, diff, mode) => {
+		if (!hash || !diff || !mode) return;
+
+		votingStatuses.loading = true;
+		set(votingStatuses);
+		const url = BL_API_URL + `reweight/cancel/${hash}/${diff}/${mode}`;
+
+		fetch(url, {credentials: 'include', method: 'POST'}).then(() => {
+			votingStatuses.loading = false;
+			set(votingStatuses);
+			document.location.reload();
+		});
+	};
+
 	const subscribe = fn => {
 		const stateUnsubscribe = subscribeState(fn);
 
@@ -207,5 +221,6 @@ export default () => {
 		updateQualification,
 		updateReweight,
 		approveReweight,
+		stopReweight,
 	};
 };

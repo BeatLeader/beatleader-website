@@ -317,11 +317,38 @@ export function describeModifiersAndMultipliers(modifiers, multipliers) {
 		modifiers.forEach(key => {
 			const value = multipliers[key.toLowerCase()] ?? 0;
 			total += value;
-			result += '\n' + userDescriptionForModifier(key) + ': ' + (value > 0 ? ' +' : ' ') + Math.round(value * 100) + '%';
+			result +=
+				'\n' + userDescriptionForModifier(key.toUpperCase()) + ': ' + (value > 0 ? ' +' : ' ') + Math.round(value * 10000) / 100 + '%';
 		});
 		if (modifiers.length > 1) {
-			result += '\nTotal:' + (total > 0 ? ' +' : ' ') + Math.round(total * 100) + '%';
+			result += '\nTotal:' + (total > 0 ? ' +' : ' ') + Math.round(total * 10000) / 100 + '%';
 		}
+		return result;
+	} else {
+		return '';
+	}
+}
+
+export function describeModifiersChanges(oldModifiers, newModifiers) {
+	if (oldModifiers && newModifiers) {
+		let result = '';
+		Object.keys(oldModifiers).forEach(key => {
+			const oldvalue = oldModifiers[key.toLowerCase()] ?? 0;
+			const newvalue = newModifiers[key.toLowerCase()] ?? 0;
+
+			if (oldvalue != newvalue) {
+				result +=
+					userDescriptionForModifier(key.toUpperCase()) +
+					': ' +
+					(oldvalue > 0 ? ' +' : ' ') +
+					Math.round(oldvalue * 10000) / 100 +
+					'% -> ' +
+					(newvalue > 0 ? ' +' : ' ') +
+					Math.round(newvalue * 10000) / 100 +
+					'%' +
+					'\n';
+			}
+		});
 		return result;
 	} else {
 		return '';

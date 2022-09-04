@@ -3,7 +3,7 @@
 	import createPlayerService from '../../services/beatleader/player';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import Avatar from '../Common/Avatar.svelte';
-	import {mapTypeFromMask} from '../../utils/beatleader/format';
+	import {describeModifiersChanges, mapTypeFromMask} from '../../utils/beatleader/format';
 	import {shallowEqual} from '../../utils/js';
 	import ReweightChange from './ReweightChange.svelte';
 
@@ -56,7 +56,7 @@
 		{/if}
 
 		{#if !shallowEqual(reweight.modifiers, diff.modifierValues)}
-			Modifiers updated
+			<span title={describeModifiersChanges(diff.modifierValues, reweight.modifiers)}>Modifiers updated</span>
 		{/if}
 	</div>
 
