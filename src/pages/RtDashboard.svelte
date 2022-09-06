@@ -81,7 +81,7 @@
 		{id: 'approval', label: 'Approval date', title: 'Sort by approval date', iconFa: 'far fa-calendar'},
 	];
 
-	let sortValue = sortValues[0];
+	let sortValue;
 
 	const categoryFilterOptions = Object.entries(typesMap).map(([key, type]) => {
 		return {
@@ -413,7 +413,7 @@
 		},
 		{
 			key: 'sortBy',
-			default: 'max_stars',
+			default: 'votesrating',
 			process: processStringFilter,
 			type: null,
 		},
