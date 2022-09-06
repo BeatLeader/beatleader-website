@@ -663,6 +663,10 @@
 			margin-top: 0.5rem;
 			margin-left: 1rem;
 		}
+
+		.notification-badge {
+			left: 0.75rem;
+		}
 	}
 
 	@keyframes pulse {

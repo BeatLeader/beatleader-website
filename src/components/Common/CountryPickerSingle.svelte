@@ -275,6 +275,7 @@
 	}
 	:global(.listContainer) {
 		background-color: darkslategray !important;
+		z-index: 8 !important;
 	}
 	:global(.selectContainer input) {
 		color: white !important;

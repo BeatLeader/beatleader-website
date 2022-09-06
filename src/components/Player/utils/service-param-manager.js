@@ -92,8 +92,8 @@ export default () => {
 				return update(
 					{
 						sort: paramsArr[1] ?? serviceDefaultParams?.sort,
-						order: (paramsArr[1] ?? serviceDefaultParams?.sort) === 'rank' ? 'asc' : 'desc',
-						page: paramsArr[2] ?? serviceDefaultParams?.page,
+						order: paramsArr[2] ?? serviceDefaultParams?.order,
+						page: paramsArr[3] ?? serviceDefaultParams?.page,
 					},
 					service,
 					true
@@ -116,7 +116,9 @@ export default () => {
 				}`;
 
 			case 'beatleader':
-				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}${noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`}`;
+				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.order ?? serviceDefaultParams?.order}${
+					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
+				}`;
 		}
 	};
 

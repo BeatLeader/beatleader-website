@@ -281,3 +281,7 @@ body {
 .ranking.global.sspl * {
   background: transparent;
 }
+
+.is-multiline {
+  margin-left: 0 !important;
+}

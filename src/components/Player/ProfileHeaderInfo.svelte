@@ -336,7 +336,7 @@
 
 	.player-ranking {
 		display: flex;
-		flex-wrap: nowrap;
+		flex-wrap: wrap;
 		grid-gap: 0.7em;
 		font-size: 1.25em;
 		font-weight: 500;

@@ -68,26 +68,38 @@
 			<h3 class="description">BeatLeader is a open source Beat Saber leaderboard!</h3>
 			<h3 class="description">It aggregates data from other cool projects:</h3>
 			<div class="sources">
-				<h3 class="title is-6">
-					<a class="imageLink" href={`https://beat-savior.herokuapp.com/`} target="_blank" rel="noreferrer">
-						<span class="icon beatsavior-icon" title="BeatSavior" />
-					</a>
-				</h3>
-				<h3 class="title is-6">
-					<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-						<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
-					</a>
-				</h3>
-				<h3 class="title is-6">
-					<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-						<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaberLogo" />
-					</a>
-				</h3>
-				<h3 class="title is-6">
-					<a class="imageLink replays" href={`https://replay.beatleader.xyz/`} target="_blank" rel="noreferrer">
-						<img src="/assets/replays.svg" title="Replays" class="icon" alt="Replays" />
-					</a>
-				</h3>
+				<div>
+					<h3 class="title is-6">
+						<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
+							<span class="icon beatsavior-icon" title="BeatSavior" />
+						</a>
+					</h3>
+					<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
+				</div>
+				<div>
+					<h3 class="title is-6">
+						<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
+							<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
+						</a>
+					</h3>
+					<a class="imageLink" href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
+				</div>
+				<div>
+					<h3 class="title is-6">
+						<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
+							<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaberLogo" />
+						</a>
+					</h3>
+					<a class="imageLink" href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
+				</div>
+				<div>
+					<h3 class="title is-6">
+						<a class="imageLink replays" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer">
+							<img src="/assets/replays.svg" title="Replays" class="icon" alt="Replays" />
+						</a>
+					</h3>
+					<a class="imageLink" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer"> Replays </a>
+				</div>
 			</div>
 			<div class="downloadButtons">
 				<a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
@@ -176,24 +188,21 @@
 		width: 100%;
 	}
 
-	.sources {
-		display: flex;
+	.is-multiline {
 		margin-left: 1.5em;
-		flex-wrap: wrap;
 	}
 
-	.description {
-		margin-left: 1.5em;
+	.sources {
+		display: flex;
+		flex-wrap: wrap;
 	}
 
 	.title.is-4 {
 		margin-top: 1.2em;
-		margin-left: 1.2em;
 	}
 
 	.global-ranking-call {
 		margin-top: 2em;
-		margin-left: 1.5em;
 	}
 
 	h3 {
@@ -268,18 +277,6 @@
 	.imageLink {
 		width: 4em;
 		height: 4em;
-	}
-
-	.imageLink.replays {
-		width: 5em;
-		height: 5em;
-		margin-top: -0.5em;
-		margin-left: -0.5em;
-	}
-
-	.replays .icon {
-		width: 5em;
-		height: 5em;
 	}
 
 	.downloadButtons {

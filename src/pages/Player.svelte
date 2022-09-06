@@ -40,14 +40,14 @@
 
 	let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
 
-	async function changeParams(newPlayerId, service, serviceParams) {
+	async function changeParams(newPlayerId, service, newServiceParams) {
 		if (!newPlayerId) return;
-
+		serviceParams = newServiceParams;
 		if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
-			playerStore.fetch(newPlayerId, service, serviceParams);
+			playerStore.fetch(newPlayerId, service, newServiceParams);
 		} else {
 			playerStore.setService(service);
-			playerStore.setServiceParams(serviceParams);
+			playerStore.setServiceParams(newServiceParams);
 		}
 	}
 
