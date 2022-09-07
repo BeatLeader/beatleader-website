@@ -55,6 +55,7 @@
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
+	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -951,6 +952,9 @@
 							{/if}
 							{#if !isNominated && leaderboard.qualification}
 								<QualificationStatus qualification={leaderboard.qualification} />
+							{/if}
+							{#if leaderboard.changes}
+								<ReweightStatusRanked map={leaderboard} />
 							{/if}
 						{/if}
 					{/if}

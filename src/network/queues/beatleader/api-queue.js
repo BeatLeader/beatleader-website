@@ -163,6 +163,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		diffInfo,
 		stats,
 		qualification: led.qualification,
+		changes: led.changes,
 		reweight: led.reweight,
 		difficultyBl: led?.difficulty ?? null,
 	};
