@@ -49,7 +49,7 @@
 					return value === selectedTypes[index];
 				})
 			) ||
-			!shallowEqual(modifiers, reweight?.modifiers)
+			!shallowEqual(modifiers, reweight?.modifiers, ['modifierId'])
 		);
 	}
 

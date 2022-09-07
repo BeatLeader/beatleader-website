@@ -153,7 +153,7 @@ export default () => {
 		}
 		const url =
 			BL_API_URL +
-			`reweight/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` +
+			`reweight/${hash}/${diff}/${mode}?keep=${rankability ? 'true' : 'false'}` +
 			(stars ? '&stars=' + stars : '') +
 			(type ? '&type=' + type : '') +
 			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +

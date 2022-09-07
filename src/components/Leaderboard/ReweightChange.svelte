@@ -81,7 +81,7 @@
 			{/if}
 		{/if}
 
-		{#if !shallowEqual(change.oldModifiers, change.newModifiers)}
+		{#if !shallowEqual(change.oldModifiers, change.newModifiers, ['modifierId'])}
 			<span title={describeModifiersChanges(change.oldModifiers, change.newModifiers)}>Modifiers updated</span>
 		{/if}
 	</div>

@@ -51,7 +51,7 @@ export const optSet = (obj, key, value, createKeys = true) => {
 // https://caniuse.com/?search=structuredclone
 export const deepClone = val => JSON.parse(JSON.stringify(val));
 
-export function shallowEqual(object1, object2) {
+export function shallowEqual(object1, object2, exceptionKeys = []) {
 	if (!object1 && !object2) return true;
 	if ((!object1 && object2) || (object1 && !object2)) return false;
 
@@ -61,7 +61,7 @@ export function shallowEqual(object1, object2) {
 		return false;
 	}
 	for (let key of keys1) {
-		if (object1[key] !== object2[key]) {
+		if (!exceptionKeys.includes(key) && object1[key] !== object2[key]) {
 			return false;
 		}
 	}

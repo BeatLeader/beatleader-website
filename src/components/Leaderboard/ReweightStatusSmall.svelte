@@ -26,6 +26,12 @@
 		nominator = await playerService.fetchPlayerOrGetFromCache(reweight.rtMember);
 	}
 
+	function updateReweightAndDiff(map) {
+		reweight = map.reweight;
+		diff = map.difficulty ?? map.difficultyBl;
+	}
+
+	$: updateReweightAndDiff(map);
 	$: retrieveNominator(reweight);
 </script>
 
@@ -52,7 +58,11 @@
 			Ranked → Unranked
 		{/if}
 
-		{#if !shallowEqual(reweight.modifiers, diff.modifierValues)}
+		{#if reweight.criteriaCommentary}
+			<span style="color: red">({reweight.criteriaCommentary})</span>
+		{/if}
+
+		{#if !shallowEqual(reweight.modifiers, diff.modifierValues, ['modifierId'])}
 			<span title={describeModifiersChanges(diff.modifierValues, reweight.modifiers)}>Modifiers updated</span>
 		{/if}
 	</div>
