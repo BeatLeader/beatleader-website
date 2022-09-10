@@ -21,8 +21,8 @@
 	const account = createAccountStore();
 
 	const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
-	serviceParamsManager.initFromUrl('beatleader/date/1');
-	serviceParamsManager.update({filters: {count: 5}});
+	serviceParamsManager.initFromUrl('');
+	serviceParamsManager.update({filters: {count: 5}}, 'beatleader', true);
 
 	let serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {count: 5}};
 

@@ -75,7 +75,7 @@
 
 		const serviceInfo = serviceParamsManager.initFromUrl(params);
 
-		if (!params) {
+		if (!params || !params.length) {
 			refreshSavedParams();
 		}
 
