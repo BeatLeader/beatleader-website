@@ -41,17 +41,15 @@
 			}
 			loading = true;
 
-			fetch(BL_API_URL + 'map/approve?songId=' + song.id + '&approval=' + newStatus, {
+			fetch(BL_API_URL + 'maps/approve?songId=' + song.id + '&approval=' + newStatus, {
 				credentials: 'include',
 				method: 'POST',
-			})
-				.then(response => response.text())
-				.then(response => {
-					if (response.status == 200) {
-						loading = false;
-						status = newStatus;
-					}
-				});
+			}).then(response => {
+				if (response.status == 200) {
+					loading = false;
+					status = newStatus;
+				}
+			});
 		}
 	}
 
