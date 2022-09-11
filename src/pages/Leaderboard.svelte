@@ -38,6 +38,8 @@
 		mapTypeFromMask,
 		votingsForTypeStats,
 		formatDiffStatus,
+		formatDiffApproval,
+		formatDiffApprovalColor,
 		DifficultyStatus,
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../utils/date';
@@ -465,6 +467,7 @@
 	$: if (showAverageStats) checkMapHash(song.hash);
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: mapperApproval = $leaderboardStore?.leaderboard?.difficultyBl?.mapperApproval;
 </script>
 
 <svelte:head>
@@ -569,6 +572,12 @@
 									{:else if generatedStars !== 0}
 										<Spinner />
 									{/if}
+								{/if}
+								{#if leaderboard.stats.status == DifficultyStatus.ranked && !qualification}
+									<span style="color: white;">
+										Mapper decision: <span style="color: {formatDiffApprovalColor(leaderboard.stats.status, mapperApproval)}};">
+											{formatDiffApproval(leaderboard.stats.status, mapperApproval)}</span>
+									</span>
 								{/if}
 								{#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span>{/if}
 								{#if leaderboard?.stats?.type}

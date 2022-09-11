@@ -30,7 +30,7 @@
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
-	import {typesDescription, typesMap, DifficultyStatus} from '../utils/beatleader/format';
+	import {typesDescription, typesMap, DifficultyStatus, formatDiffApproval, formatDiffApprovalColor} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Others/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
@@ -366,6 +366,14 @@
 
 							{#if map?.reweight && !map.reweight.finished}
 								<ReweightStatusSmall {map} />
+							{/if}
+
+							{#if map?.difficulty?.status == DifficultyStatus.ranked && !map.qualification}
+								<span style="color: white;">
+									Mapper decision: <span
+										style="color: {formatDiffApprovalColor(map?.difficulty?.status, map?.difficulty?.mapperApproval)}};">
+										{formatDiffApproval(map?.difficulty?.status, map?.difficulty?.mapperApproval)}</span>
+								</span>
 							{/if}
 
 							{#if map?.myScore}

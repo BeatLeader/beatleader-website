@@ -66,6 +66,14 @@
 			border: 'transparent',
 			activeBorder: 'transparent',
 		},
+		gray: {
+			color: '#dbdbdb',
+			activeColor: '#fff',
+			bgColor: '#8d8473',
+			activeBgColor: '#1DA1F2',
+			border: 'transparent',
+			activeBorder: 'transparent',
+		},
 		danger: {
 			color: '#dbdbdb',
 			activeColor: '#fff',
