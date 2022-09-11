@@ -1,6 +1,5 @@
 <script>
-	import {navigate} from 'svelte-routing';
-	import {fade, fly, slide} from 'svelte/transition';
+	import {fade, fly} from 'svelte/transition';
 	import Button from '../components/Common/Button.svelte';
 	import Pager from '../components/Common/Pager.svelte';
 	import createAccountStore from '../stores/beatleader/account';
@@ -28,6 +27,7 @@
 	}
 
 	let songs;
+	let decidedCount;
 
 	function fetchSongs() {
 		fetch(BL_API_URL + 'maps/forapprove', {
@@ -36,6 +36,7 @@
 			.then(response => response.json())
 			.then(data => {
 				songs = data;
+				decidedCount = songs.filter(s => s.difficulties[0].mapperApproval > 0).length;
 				totalItems = songs.length;
 				updatePage(songs.length);
 			});
@@ -54,13 +55,21 @@
 		{#if songs.length}
 			<div class="header">
 				<h3>Hi! We borrowed some of your ranked maps.</h3>
+
 				<span> We are sorry for not asking approval before and asking it rn. Select the maps you want to keep.<br /></span>
 				<span><b>Everything else will be unranked on the 1st of October</b></span>
+				{#if decidedCount}
+					{#if decidedCount != songs.length}
+						<span style="color: yellow;">{decidedCount} of {songs.length} maps decided.</span>
+					{:else}
+						<span style="color: green;"><b>You reviewed all maps. Good job, thank you!</b></span>
+					{/if}
+				{/if}
 			</div>
 			<div class={`song-score`} in:fly={{x: 300, delay: 30, duration: 500}} out:fade={{duration: 100}}>
 				<div class="tab">
 					{#each songs.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as song, songId}
-						<ApprovalSong {song} listId={songId} {account} />
+						<ApprovalSong {song} listId={songId} {account} on:decided={() => decidedCount++} />
 					{/each}
 				</div>
 

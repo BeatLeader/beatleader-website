@@ -6,6 +6,9 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import Dialog from '../Common/Dialog.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {createEventDispatcher} from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let song;
 	export let idx;
@@ -48,6 +51,7 @@
 				if (response.status == 200) {
 					loading = false;
 					status = newStatus;
+					dispatch('decided');
 				}
 			});
 		}
@@ -103,7 +107,6 @@
 				<Spinner />
 			{:else}
 				<div class="buttons">
-					<Button label="Unknown" type={status == 0 ? 'gray' : 'default'} on:click={() => updateStatus(0)} />
 					<Button label="Unrank" type={status == 1 ? 'danger' : 'default'} on:click={() => updateStatus(1)} />
 					<Button label="Keep ranked" type={status == 2 ? 'green' : 'default'} on:click={() => updateStatus(2)} />
 				</div>

@@ -575,7 +575,7 @@
 								{/if}
 								{#if leaderboard.stats.status == DifficultyStatus.ranked && !qualification}
 									<span style="color: white;">
-										Mapper decision: <span style="color: {formatDiffApprovalColor(leaderboard.stats.status, mapperApproval)}};">
+										Mapper decision: <span style={`color: ${formatDiffApprovalColor(leaderboard.stats.status, mapperApproval)};`}>
 											{formatDiffApproval(leaderboard.stats.status, mapperApproval)}</span>
 									</span>
 								{/if}

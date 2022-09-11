@@ -371,7 +371,7 @@
 							{#if map?.difficulty?.status == DifficultyStatus.ranked && !map.qualification}
 								<span style="color: white;">
 									Mapper decision: <span
-										style="color: {formatDiffApprovalColor(map?.difficulty?.status, map?.difficulty?.mapperApproval)}};">
+										style={`color: ${formatDiffApprovalColor(map?.difficulty?.status, map?.difficulty?.mapperApproval)};`}>
 										{formatDiffApproval(map?.difficulty?.status, map?.difficulty?.mapperApproval)}</span>
 								</span>
 							{/if}
