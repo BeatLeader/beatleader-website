@@ -57,7 +57,7 @@
 		let minPp = 0;
 		let annotations = [];
 		const data = [];
-		for (let acc = startAcc; acc < endAcc; acc += 0.001) {
+		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
 			const finalAcc = acc * (1 + negativeModifiersSum);
 			const pp = ppFromAcc(finalAcc, stars);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
@@ -155,9 +155,9 @@
 								title(ctx) {
 									if (!ctx?.[0]?.raw) return '';
 
-									const accuracy = Math.round(ctx[0].raw?.x * 10000) / 100;
+									const accuracy = Math.round(ctx[0].raw?.x * 100000) / 1000;
 
-									return `acc: ${formatNumber(logarithmic ? 100 - accuracy : accuracy, 1)}%`;
+									return `acc: ${formatNumber(logarithmic ? 100 - accuracy : accuracy, 3)}%`;
 								},
 								label(ctx) {
 									return `${formatNumber(ctx.parsed.y, ctx.dataset.round)}pp`;

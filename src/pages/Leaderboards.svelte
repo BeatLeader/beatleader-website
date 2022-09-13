@@ -166,6 +166,7 @@
 
 	function onSearchChanged(e) {
 		currentFilters.search = e.target.value ?? '';
+		currentPage = 1;
 		navigateToCurrentPageAndFilters();
 	}
 	const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
@@ -244,6 +245,8 @@
 			currentFilters.sortBy = event.detail.id;
 		}
 
+		currentPage = 1;
+
 		navigateToCurrentPageAndFilters();
 	}
 
@@ -252,6 +255,8 @@
 
 		currentFilters.date_from = event.detail?.from ? event.detail.from.getTime() / 1000 : null;
 		currentFilters.date_to = event.detail?.to ? (event.detail.to.getTime() + DAY) / 1000 : null;
+
+		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
 	}

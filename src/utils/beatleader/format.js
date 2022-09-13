@@ -294,28 +294,28 @@ export const typesMap = {
 };
 export const typesDescription = {
 	acc: {
-		title: 'Accuracy',
+		title: 'Slower map suitable for high accuracy plays.',
 		name: 'acc',
 		icon: 'acc-icon',
 		color: 'purple',
 		textColor: 'white',
 	},
 	tech: {
-		title: 'Technical',
+		title: 'Tech map with quirky patterns',
 		name: 'tech',
 		icon: 'tech-icon',
 		color: 'red',
 		textColor: 'white',
 	},
 	midspeed: {
-		title: 'Mid speed',
+		title: 'Medium speed map with regular patterns',
 		name: 'midspeed',
 		icon: 'midspeed-icon',
 		color: 'green',
 		textColor: 'white',
 	},
 	speed: {
-		title: 'Speed',
+		title: 'High speed map. Please warm up before playing!',
 		name: 'speed',
 		icon: 'speed-icon',
 		color: 'orange',
