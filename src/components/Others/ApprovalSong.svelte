@@ -50,8 +50,11 @@
 			}).then(response => {
 				if (response.status == 200) {
 					loading = false;
+					const statusWasUndecided = status == 0;
 					status = newStatus;
-					dispatch('decided');
+					if (statusWasUndecided) {
+						dispatch('decided');
+					}
 				}
 			});
 		}

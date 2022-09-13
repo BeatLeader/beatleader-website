@@ -75,7 +75,7 @@
 							listId={songId}
 							{account}
 							on:decided={() => {
-								if (song.difficulties[0].mapperApproval == 0) decidedCount++;
+								decidedCount++;
 							}} />
 					{/each}
 				</div>
