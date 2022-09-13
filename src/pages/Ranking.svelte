@@ -157,9 +157,9 @@
 		{
 			key: 'pp_range',
 			label: 'Pp range',
-			default: [0, 20000],
+			default: [0, 24000],
 			min: 0,
-			max: 20000,
+			max: 24000,
 			step: 1,
 			pipstep: 4000,
 			type: 'slider',

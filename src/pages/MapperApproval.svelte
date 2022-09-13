@@ -8,6 +8,7 @@
 	import beatSaverSvg from '../resources/beatsaver.svg';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
+	import Song from '../components/Playlists/Song.svelte';
 
 	const account = createAccountStore();
 
@@ -69,7 +70,13 @@
 			<div class={`song-score`} in:fly={{x: 300, delay: 30, duration: 500}} out:fade={{duration: 100}}>
 				<div class="tab">
 					{#each songs.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as song, songId}
-						<ApprovalSong {song} listId={songId} {account} on:decided={() => decidedCount++} />
+						<ApprovalSong
+							{song}
+							listId={songId}
+							{account}
+							on:decided={() => {
+								if (song.difficulties[0].mapperApproval == 0) decidedCount++;
+							}} />
 					{/each}
 				</div>
 
