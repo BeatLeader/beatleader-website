@@ -286,8 +286,13 @@
 		float: center;
 	}
 
+	.twitterEmbed {
+		max-width: 100%;
+	}
+
 	.twitterEmbedMobile {
 		display: none;
+		max-width: 100%;
 	}
 
 	@media screen and (max-width: 767px) {
