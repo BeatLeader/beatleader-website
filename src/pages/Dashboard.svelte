@@ -173,11 +173,11 @@
 						withPlayers={true}
 						noIcons={true} />
 				</ContentBox>
-				<div class="twitterEmbedMobile">
-					<ContentBox>
-						<Timeline href="https://twitter.com/beatleader_" />
-					</ContentBox>
-				</div>
+			</div>
+			<div class="twitterEmbedMobile">
+				<ContentBox cls="twitterBox">
+					<Timeline href="https://twitter.com/beatleader_" />
+				</ContentBox>
 			</div>
 		</div>
 	</div>
@@ -185,7 +185,7 @@
 
 <style>
 	.columns {
-		width: 100%;
+		width: 94%;
 	}
 
 	.is-multiline {
@@ -286,13 +286,13 @@
 		float: center;
 	}
 
-	.twitterEmbed {
-		max-width: 100%;
-	}
-
 	.twitterEmbedMobile {
 		display: none;
-		max-width: 100%;
+		width: 100%;
+	}
+
+	:global(.twitterBox) {
+		width: 100%;
 	}
 
 	@media screen and (max-width: 767px) {
@@ -301,7 +301,7 @@
 		}
 
 		.twitterEmbedMobile {
-			display: block;
+			display: flex;
 		}
 	}
 </style>
