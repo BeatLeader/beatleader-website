@@ -67,6 +67,7 @@
 		}
 
 		if (!filters?.sortBy?.length) filters.sortBy = 'stars';
+		if (!filters?.type?.length) filters.type = 'ranked';
 
 		if (!filters.mapType) filters.mapType = null;
 
@@ -83,7 +84,7 @@
 	let boxEl = null;
 
 	const typeFilterOptions = [
-		{key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
+		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
 		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
 		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
 		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
@@ -169,7 +170,6 @@
 		currentPage = 1;
 		navigateToCurrentPageAndFilters();
 	}
-	const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
 
 	function onTypeChanged(event) {
 		if (!event?.detail) return;
@@ -419,7 +419,14 @@
 
 			<section class="filter">
 				<label>Song/Author/Mapper Name</label>
-				<input type="text" placeholder="Search for a map..." value={currentFilters.search} on:input={debouncedOnSearchChanged} />
+				<input
+					type="text"
+					class="search"
+					placeholder="Search for a map..."
+					value={currentFilters.search}
+					on:keydown={e => {
+						if (e.key === 'Enter') onSearchChanged(e);
+					}} />
 			</section>
 
 			<section class="filter">
