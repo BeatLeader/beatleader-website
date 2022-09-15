@@ -4,7 +4,8 @@
 	import Avatar from '../Common/Avatar.svelte';
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
-	import {mapTypeFromMask} from '../../utils/beatleader/format';
+	import {describeModifiersChanges, mapTypeFromMask} from '../../utils/beatleader/format';
+	import {shallowEqual} from '../../utils/js';
 
 	export let change;
 
@@ -78,6 +79,10 @@
 			{:else}
 				No commentary
 			{/if}
+		{/if}
+
+		{#if !shallowEqual(change.oldModifiers, change.newModifiers, ['modifierId'])}
+			<span title={describeModifiersChanges(change.oldModifiers, change.newModifiers)}>Modifiers updated</span>
 		{/if}
 	</div>
 {/if}

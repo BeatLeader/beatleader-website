@@ -46,7 +46,7 @@ export default () => {
 			});
 	};
 
-	const qualifyMap = async (hash, diff, mode, rankability, stars, types, allowedByMapper) => {
+	const qualifyMap = async (hash, diff, mode, rankability, stars, types, modifiers) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		types.forEach(typeName => {
@@ -55,12 +55,15 @@ export default () => {
 
 		votingStatuses.loading = true;
 		set(votingStatuses);
+		if (modifiers != null) {
+			modifiers.modifierId = 0;
+		}
 		const url =
 			BL_API_URL +
 			`qualify/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` +
 			(stars ? '&stars=' + stars : '') +
 			(type ? '&type=' + type : '') +
-			(allowedByMapper ? '&allowed=true' : '');
+			(modifiers != null ? '&modifiers=' + encodeURIComponent(JSON.stringify(modifiers)) : '');
 
 		fetch(url, {credentials: 'include', method: 'POST'}).then(() => {
 			votingStatuses.loading = false;
@@ -69,7 +72,18 @@ export default () => {
 		});
 	};
 
-	const updateQualification = async (hash, diff, mode, rankability, stars, types, allowedByMapper, criteriaMet, criteriaCommentary) => {
+	const updateQualification = async (
+		hash,
+		diff,
+		mode,
+		rankability,
+		stars,
+		types,
+		allowedByMapper,
+		criteriaMet,
+		criteriaCommentary,
+		modifiers
+	) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		types.forEach(typeName => {
@@ -79,6 +93,10 @@ export default () => {
 		votingStatuses.loading = true;
 		set(votingStatuses);
 
+		if (modifiers != null) {
+			modifiers.modifierId = 0;
+		}
+
 		const url =
 			BL_API_URL +
 			`qualification/${hash}/${diff}/${mode}?stilQualifying=${rankability}` +
@@ -86,7 +104,8 @@ export default () => {
 			(type != null ? '&type=' + type : '') +
 			(allowedByMapper != undefined ? `&allowed=${allowedByMapper ? 'true' : 'false'}` : '') +
 			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +
-			(criteriaCommentary != null ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '');
+			(criteriaCommentary != null ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '') +
+			(modifiers != null ? '&modifiers=' + encodeURIComponent(JSON.stringify(modifiers)) : '');
 
 		fetch(url, {credentials: 'include', method: 'POST'}).then(() => {
 			votingStatuses.loading = false;

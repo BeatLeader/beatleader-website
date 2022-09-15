@@ -6,6 +6,8 @@
 	import {createEventDispatcher} from 'svelte';
 
 	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
+	import {deepClone, shallowEqual} from '../../utils/js';
+	import ModifiersUpdate from './ModifiersUpdate.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -28,10 +30,12 @@
 
 	let suitableForRank = rtvoting && !isRanked ? true : undefined;
 	let stars;
+	let modifiers;
 
 	let mapperAllowed = qualification?.mapperAllowed;
 	let criteriaMet = qualification?.criteriaMet;
 	let criteriaCommentary = qualification?.criteriaCommentary;
+	let currentModifiers = qualification?.modifiers ?? leaderboard?.difficultyBl?.modifierValues;
 
 	let originalTypes = currentType ? mapTypeFromMask(currentType).split(',') : [];
 	let selectedTypes = currentType ? mapTypeFromMask(currentType).split(',') : [];
@@ -54,10 +58,11 @@
 						selectedTypes,
 						mapperAllowed,
 						criteriaMet,
-						criteriaCommentary
+						criteriaCommentary,
+						modifiers
 					);
 				} else {
-					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
+					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes, modifiers);
 				}
 			}
 		} else {
@@ -85,6 +90,10 @@
 
 	function updateStars(currentStars) {
 		stars = currentStars ?? 7.5;
+	}
+
+	function modifiersUpdated(modifiersUpdate) {
+		modifiers = modifiersUpdate;
 	}
 
 	let dialogTitle;
@@ -117,7 +126,8 @@
 		criteriaMet,
 		playerId,
 		stars,
-		selectedTypes
+		selectedTypes,
+		modifiers
 	) {
 		actionButtonType = 'primary';
 		if (rtvoting) {
@@ -134,6 +144,8 @@
 						qualification.criteriaMet == 1 &&
 						currentStars == stars &&
 						originalTypes.length === selectedTypes.length &&
+						((qualification?.modifiers == null && shallowEqual(modifiers, leaderboard?.difficultyBl?.modifierValues, ['modifierId'])) ||
+							shallowEqual(modifiers, qualification?.modifiers, ['modifierId'])) &&
 						originalTypes.every(function (value, index) {
 							return value === selectedTypes[index];
 						})
@@ -160,7 +172,10 @@
 		}
 	}
 
+	let showModifiers = false;
+
 	$: updateStars(currentStars);
+	$: modifiersUpdated(deepClone(currentModifiers));
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate, isQualified);
 	$: updateActionButtonTitle(
 		suitableForRank,
@@ -171,11 +186,12 @@
 		criteriaMet,
 		playerId,
 		stars,
-		selectedTypes
+		selectedTypes,
+		modifiers
 	);
 </script>
 
-<div class="ranking-voting {insideLeaderboard ? 'inside-leaderboard' : ''}">
+<div class="ranking-voting {insideLeaderboard || showModifiers ? 'inside-leaderboard' : ''}">
 	<Dialog
 		type="confirm"
 		title={dialogTitle}
@@ -254,6 +270,28 @@
 					{/each}
 					<Select bind:value={selectedType} items={mapTypes} isSearchable={true} on:select={e => selectType(e.detail.value)} />
 				</div>
+				{#if rtvoting}
+					<div>
+						<div class="score-options-section">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showModifiers}
+								on:click={() => (showModifiers = !showModifiers)}
+								title="Show average difficulty stats">
+								{#if showModifiers}
+									Hide modifiers
+								{:else}
+									Show modifiers
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+						</div>
+						{#if showModifiers}
+							<ModifiersUpdate {modifiers} on:modifiersUpdated={e => modifiersUpdated(e.detail)} />
+						{/if}
+					</div>
+				{/if}
 			{/if}
 		</div>
 	</Dialog>
@@ -276,5 +314,25 @@
 		background-color: transparent;
 		cursor: pointer;
 		transform: translate(-7px, -2px);
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
+	}
+
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		margin: 0.3em;
 	}
 </style>
