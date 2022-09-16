@@ -42,7 +42,10 @@
 	const MAX_STARS = 15;
 	const FILTERS_DEBOUNCE_MS = 500;
 
+	document.body.classList.remove('slim');
+
 	const account = createAccountStore();
+
 	const playlists = createPlaylistStore();
 
 	const params = [
@@ -74,14 +77,13 @@
 		return filters;
 	});
 
-	document.body.classList.remove('slim');
-
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
+	let searchInputEl = null;
 
 	const typeFilterOptions = [
 		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
@@ -165,10 +167,19 @@
 		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
 	}
 
-	function onSearchChanged(e) {
-		currentFilters.search = e.target.value ?? '';
+	function onSearchChanged(value) {
+		currentFilters.search = value ?? '';
 		currentPage = 1;
 		navigateToCurrentPageAndFilters();
+	}
+
+	function onSearchSubmit(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		if (searchInputEl) onSearchChanged(searchInputEl.value);
+
+		return false;
 	}
 
 	function onTypeChanged(event) {
@@ -419,14 +430,10 @@
 
 			<section class="filter">
 				<label>Song/Author/Mapper Name</label>
-				<input
-					type="text"
-					class="search"
-					placeholder="Search for a map..."
-					value={currentFilters.search}
-					on:keydown={e => {
-						if (e.key === 'Enter') onSearchChanged(e);
-					}} />
+
+				<form on:submit={onSearchSubmit}>
+					<input bind:this={searchInputEl} type="text" class="search" placeholder="Search for a map..." value={currentFilters.search} />
+				</form>
 			</section>
 
 			<section class="filter">
