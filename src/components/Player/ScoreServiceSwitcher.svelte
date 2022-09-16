@@ -229,6 +229,8 @@
 											iconFa: 'fa fa-calendar',
 											title: 'Filter by event',
 											values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
+											open: !!serviceParams?.filters?.eventId,
+											defaultValue: serviceParams?.filters?.eventId ?? null,
 										},
 									},
 								]);

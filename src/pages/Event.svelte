@@ -206,6 +206,7 @@
 			<RankingTable
 				page={currentPage}
 				filters={currentFilters}
+				playerClickFilter={`eventId=${currentEvent?.id ?? ''}`}
 				eventId={currentEventId}
 				on:page-changed={onPageChanged}
 				on:loading={e => (isLoading = !!e?.detail)}

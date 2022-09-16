@@ -7,6 +7,7 @@
 	export let type = null;
 	export let hideFlag = false;
 	export let withCrown = false;
+	export let playerClickFilter = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -15,7 +16,11 @@
 	$: playerId = player?.playerId ?? player?.id;
 </script>
 
-<a href={`/u/${playerId}${type ? '/' + type : ''}/1`} class="player-name clickable has-pointer-events" title={name} on:click|preventDefault>
+<a
+	href={`/u/${playerId}${type ? '/' + type : ''}/1?${playerClickFilter ?? ''}`}
+	class="player-name clickable has-pointer-events"
+	title={name}
+	on:click|preventDefault>
 	{#if !hideFlag}
 		<Flag {country} on:flag-click />
 	{/if}

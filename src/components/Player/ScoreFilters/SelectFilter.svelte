@@ -3,10 +3,11 @@
 
 	export let open = false;
 	export let values = [];
+	export let defaultValue = null;
 
 	const dispatch = createEventDispatcher();
 
-	let value = values?.length ? values[0]?.id : null;
+	let value = defaultValue ? defaultValue : values?.length ? values[0]?.id : null;
 
 	async function onChanged() {
 		await tick();
