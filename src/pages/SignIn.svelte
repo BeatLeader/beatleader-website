@@ -36,7 +36,6 @@
 
 	$: loggedInPlayer = opt($account, 'id');
 	$: socials = opt($account, 'player.playerInfo.socials');
-	$: console.log(socials);
 	$: error = opt($account, 'error') ?? $oculus?.error;
 	$: message = opt($account, 'message');
 	$: patreoned = opt($account, 'patreoned');
