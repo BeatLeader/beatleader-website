@@ -42,7 +42,7 @@
 				Ended {formatDateRelative(dateFromUnix(event.endDate))}
 			{/if}
 		</span>
-		<Button label="Show playlist" on:click={() => dispatch('show-playlist', event)} />
+		<Button label="Show playlist" preventDefault={true} on:click={() => dispatch('show-playlist', event)} />
 	</section>
 {/if}
 
