@@ -26,7 +26,7 @@ export const BL_API_LEADERBOARD_STATS_URL = BL_API_URL + 'leaderboard/statistic/
 export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}';
 export const BL_API_SCORES_HISTOGRAM_URL =
 	BL_API_URL +
-	'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}';
+	'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}&eventId=${eventId}';
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
