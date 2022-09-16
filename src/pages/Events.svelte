@@ -105,7 +105,10 @@
 					{#each eventsPage as event, idx (event.id)}
 						<a
 							href={`/event/${event.id}`}
-							on:click={() => navigate(`/event/${event.id}`)}
+							on:click={e => {
+								navigate(`/event/${event.id}`);
+								e.preventDefault();
+							}}
 							class="event-box"
 							class:finished={Date.now() / 1000 > event?.endDate}
 							in:fade={{delay: idx * 10}}>

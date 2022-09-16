@@ -21,8 +21,9 @@
 				<label>Leader</label>
 				<PlayerNameWithFlag
 					player={event.leader}
+					playerClickFilter={`eventId=${event.id}`}
 					on:click={e => {
-						navigate(`/u/${event?.leader?.id}`);
+						navigate(`/u/${event?.leader?.id}?eventId=${event.id}`);
 						e.stopPropagation();
 					}} />
 			</div>
@@ -42,7 +43,7 @@
 				Ended {formatDateRelative(dateFromUnix(event.endDate))}
 			{/if}
 		</span>
-		<Button label="Show playlist" on:click={() => dispatch('show-playlist', event)} />
+		<Button label="Show playlist" preventDefault={true} on:click={() => dispatch('show-playlist', event)} />
 	</section>
 {/if}
 

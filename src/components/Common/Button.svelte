@@ -22,6 +22,7 @@
 	export let onlyurl = false;
 	export let square = false,
 		squareSize = '0';
+	export let preventDefault = false;
 
 	if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -147,7 +148,10 @@
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
 			: ''}"
-		on:click|stopPropagation={() => dispatch('click', selectedOption)}
+		on:click|stopPropagation={e => {
+			dispatch('click', selectedOption);
+			if (preventDefault) e.preventDefault();
+		}}
 		{disabled}
 		{title}
 		class={'button clickable ' + (type ? type : 'default') + ' ' + cls}
