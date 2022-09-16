@@ -170,7 +170,7 @@
 <section class="align-content">
 	<aside>
 		<ContentBox>
-			<Event event={currentEvent} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
+			<Event event={currentEvent} withLeader={false} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
 		</ContentBox>
 	</aside>
 
