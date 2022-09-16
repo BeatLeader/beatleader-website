@@ -21,13 +21,14 @@
 	export let selectedClanTag = null;
 	export let value = null;
 	export let valueProps = {};
+	export let playerClickFilter = null;
 
 	const dispatch = createEventDispatcher();
 
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
-		navigate(`/u/${playerId}`);
+		navigate(`/u/${playerId}?${playerClickFilter ?? ''}`);
 	}
 
 	function onPlayerClick(event, player) {
@@ -116,7 +117,7 @@
 		<Avatar {player} />
 	</div>
 	<div class="player-name-and-rank">
-		<PlayerNameWithFlag {player} hideFlag={true} {withCrown} />
+		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} />
 		<span class="change">
 			{#if opt(player, 'others.difference') > 900000}
 				<span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">resurrected</span>

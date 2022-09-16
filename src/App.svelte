@@ -28,6 +28,7 @@
 	import Modal from 'svelte-simple-modal';
 	import RtDashboard from './pages/RtDashboard.svelte';
 	import MapperApproval from './pages/MapperApproval.svelte';
+	import EventsPage from './pages/Events.svelte';
 
 	export let url = '';
 
@@ -95,6 +96,9 @@
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
+					</Route>
+					<Route path="/events/*page" let:params let:location>
+						<EventsPage page={params.page} {location} />
 					</Route>
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />

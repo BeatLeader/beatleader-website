@@ -26,6 +26,7 @@ export default response => {
 		patreonFeatures,
 		socials,
 		pinnedScores,
+		eventsParticipating,
 	} = response;
 
 	let profilePicture = avatar;
@@ -135,6 +136,8 @@ export default response => {
 
 	let sponsor = role?.includes('sponsor');
 
+	let processedEventsParticipating = eventsParticipating?.map(e => ({id: e?.eventId, name: e?.name}));
+
 	const processedPinnedScores = pinnedScores?.map(s => processScore(s)) ?? [];
 
 	return {
@@ -170,5 +173,6 @@ export default response => {
 		scoreStats: scoreStats ? scoreStats : null,
 		statsHistory: processedStatsHistory ? processedStatsHistory : null,
 		pinnedScores: processedPinnedScores,
+		eventsParticipating: processedEventsParticipating,
 	};
 };

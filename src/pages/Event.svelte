@@ -15,6 +15,7 @@
 	import {dateFromUnix, formatDateRelative, formatDate} from '../utils/date';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Countries from '../components/Ranking/Countries.svelte';
+	import Event from '../components/Event/Event.svelte';
 
 	export let page = 1;
 	export let location;
@@ -169,20 +170,7 @@
 <section class="align-content">
 	<aside>
 		<ContentBox>
-			{#if currentEvent}
-				<div class="info-container">
-					<img src={currentEvent.image} />
-					<h2>{currentEvent.name}</h2>
-					<span style="color: white;" title={formatDate(dateFromUnix(currentEvent.endDate))}>
-						{#if Date.now() / 1000 < currentEvent.endDate}
-							Will end {formatDateRelative(dateFromUnix(currentEvent.endDate))}
-						{:else}
-							Ended {formatDateRelative(dateFromUnix(currentEvent.endDate))}
-						{/if}
-					</span>
-					<Button label="Show playlist" on:click={() => navigate('/playlist/' + currentEvent.playlistId)} />
-				</div>
-			{/if}
+			<Event event={currentEvent} withLeader={false} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
 		</ContentBox>
 	</aside>
 
@@ -218,6 +206,7 @@
 			<RankingTable
 				page={currentPage}
 				filters={currentFilters}
+				playerClickFilter={`eventId=${currentEvent?.id ?? ''}`}
 				eventId={currentEventId}
 				on:page-changed={onPageChanged}
 				on:loading={e => (isLoading = !!e?.detail)}
@@ -229,14 +218,7 @@
 <style>
 	.align-content {
 		display: flex;
-		justify-content: flex-end !important;
-	}
-
-	.info-container {
-		display: flex;
-		align-items: center;
-		flex-direction: column;
-		grid-gap: 1em;
+		justify-content: flex-start;
 	}
 
 	.page-content {

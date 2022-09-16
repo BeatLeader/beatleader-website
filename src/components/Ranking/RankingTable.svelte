@@ -18,6 +18,7 @@
 	export let noIcons = false;
 	export let eventId = null;
 	export let useInternalFilters = false;
+	export let playerClickFilter = null;
 
 	let currentFilters = filters;
 
@@ -249,6 +250,7 @@
 				<PlayerCard
 					{player}
 					playerId={mainPlayerId}
+					{playerClickFilter}
 					{currentFilters}
 					value={sortValue?.value(player)}
 					valueProps={sortValue?.props ?? {}}

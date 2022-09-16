@@ -89,6 +89,13 @@ export default () => {
 
 			case 'beatleader':
 			default:
+				const urlParams = new URLSearchParams(window?.location?.search);
+				let eventId = urlParams.get('eventId') ?? null;
+				if (eventId?.length) {
+					eventId = parseInt(eventId, 10);
+					if (!isNaN(eventId)) update({filters: {eventId}});
+				}
+
 				return update(
 					{
 						sort: paramsArr[1] ?? serviceDefaultParams?.sort,

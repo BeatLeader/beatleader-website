@@ -5,7 +5,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	let filterOpen = false;
+	let filterOpen = filter?.props?.open ?? false;
 
 	function dispatchValue(value) {
 		if (filter?.props?.id?.length) dispatch('change', {id: filter.props.id, value});

@@ -9,6 +9,7 @@
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
 
 	export let playerId = null;
+	export let player = null;
 	export let service = 'beatleader';
 	export let serviceParams = {sort: 'pp', order: 'desc'};
 	export let loadingService = null;
@@ -134,7 +135,15 @@
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
 	}
 
-	function updateAvailableServices(avaiableServiceNames, service, loadingService, serviceParams, loadingServiceParams, accSaberCategories) {
+	function updateAvailableServices(
+		avaiableServiceNames,
+		service,
+		loadingService,
+		serviceParams,
+		loadingServiceParams,
+		accSaberCategories,
+		eventsParticipating
+	) {
 		const commonFilters = [
 			{
 				component: TextFilter,
@@ -210,6 +219,21 @@
 									},
 								},
 							]);
+
+							if (eventsParticipating?.length)
+								serviceDef.filters = [...serviceDef.filters].concat([
+									{
+										component: SelectFilter,
+										props: {
+											id: 'eventId',
+											iconFa: 'fa fa-calendar',
+											title: 'Filter by event',
+											values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
+											open: !!serviceParams?.filters?.eventId,
+											defaultValue: serviceParams?.filters?.eventId ?? null,
+										},
+									},
+								]);
 						}
 						break;
 
@@ -274,6 +298,8 @@
 		dispatch('service-params-change', changesToPush);
 	}
 
+	$: eventsParticipating = player?.eventsParticipating ?? null;
+
 	$: updateAvailableServiceNames(playerId);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
@@ -281,7 +307,8 @@
 		loadingService,
 		serviceParams,
 		loadingServiceParams,
-		accSaberCategories
+		accSaberCategories,
+		eventsParticipating
 	);
 
 	$: serviceObj = availableServices.find(s => s.id === service);
