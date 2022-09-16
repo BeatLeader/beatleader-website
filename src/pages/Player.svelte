@@ -227,6 +227,7 @@
 				<ContentBox>
 					<Scores
 						playerId={scoresPlayerId}
+						player={$playerStore}
 						initialState={scoresState}
 						initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
 						initialService={$paramsStore.currentService}

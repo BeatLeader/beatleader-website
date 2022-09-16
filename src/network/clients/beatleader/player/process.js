@@ -26,6 +26,7 @@ export default response => {
 		patreonFeatures,
 		socials,
 		pinnedScores,
+		eventsParticipating,
 	} = response;
 
 	let profilePicture = avatar;
@@ -170,5 +171,6 @@ export default response => {
 		scoreStats: scoreStats ? scoreStats : null,
 		statsHistory: processedStatsHistory ? processedStatsHistory : null,
 		pinnedScores: processedPinnedScores,
+		eventsParticipating,
 	};
 };

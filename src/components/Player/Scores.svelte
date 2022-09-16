@@ -16,6 +16,7 @@
 	const dispatch = createEventDispatcher();
 
 	export let playerId = null;
+	export let player = null;
 	export let initialState = null;
 	export let initialStateType = null;
 	export let initialService = 'beatleader';
@@ -130,6 +131,7 @@
 
 	<ScoreServiceSwitcher
 		{playerId}
+		{player}
 		service={currentService}
 		serviceParams={currentServiceParams}
 		loadingService={$pending?.service}
