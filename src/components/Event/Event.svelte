@@ -21,8 +21,9 @@
 				<label>Leader</label>
 				<PlayerNameWithFlag
 					player={event.leader}
+					playerClickFilter={`eventId=${event.id}`}
 					on:click={e => {
-						navigate(`/u/${event?.leader?.id}`);
+						navigate(`/u/${event?.leader?.id}?eventId=${event.id}`);
 						e.stopPropagation();
 					}} />
 			</div>
