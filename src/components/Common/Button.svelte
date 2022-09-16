@@ -147,7 +147,7 @@
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
 			: ''}"
-		on:click|stopPropagation|preventDefault={() => dispatch('click', selectedOption)}
+		on:click|stopPropagation={() => dispatch('click', selectedOption)}
 		{disabled}
 		{title}
 		class={'button clickable ' + (type ? type : 'default') + ' ' + cls}
