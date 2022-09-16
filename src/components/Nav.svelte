@@ -276,6 +276,24 @@
 
 				<div class="dropdown-item">
 					<a
+						href="/events"
+						on:click|preventDefault={() => {
+							navigate('/events');
+							mobileMenuShown = false;
+						}}>
+						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+							><path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+
+						Events
+					</a>
+				</div>
+
+				<div class="dropdown-item">
+					<a
 						href="/playlists"
 						on:click|preventDefault={() => {
 							navigate('/playlists');
@@ -376,6 +394,22 @@
 					d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
 
 			Maps
+		</a>
+
+		<a
+			href="/events"
+			on:click|preventDefault={() => {
+				navigate('/events');
+				mobileMenuShown = false;
+			}}>
+			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+				><path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+
+			Events
 		</a>
 
 		<div
@@ -596,7 +630,7 @@
 		display: none;
 	}
 
-	@media screen and (max-width: 767px) {
+	@media screen and (max-width: 900px) {
 		nav {
 			height: 3.5rem;
 		}

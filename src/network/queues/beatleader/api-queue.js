@@ -57,6 +57,7 @@ export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph';
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_MINIRANKINGS_URL = BL_API_URL + 'minirankings?rank=${rank}&country=${country}&countryRank=${countryRank}';
+export const BL_API_EVENTS_URL = BL_API_URL + 'events?page=${page}';
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}';
 export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${steamKey}&steamid=${playerId}';
@@ -416,6 +417,9 @@ export default (options = {}) => {
 			priority
 		);
 
+	const events = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_EVENTS_URL, {page, ...filters}), options, priority);
+
 	return {
 		user,
 		player,
@@ -453,6 +457,7 @@ export default (options = {}) => {
 		removeFriend,
 		minirankings,
 		pinScore,
+		events,
 		BL_API_URL,
 		PLAYER_SCORES_PER_PAGE,
 		PLAYERS_PER_PAGE,
