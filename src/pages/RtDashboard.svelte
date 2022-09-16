@@ -239,6 +239,7 @@
 			values: [
 				{id: 'all', label: 'All maps'},
 				{id: 'mine', label: 'Mine only'},
+				{id: 'others', label: 'Others only'},
 			],
 			onChange: e => onSingleSwitchChange(e, 'mine'),
 			multi: false,
@@ -828,6 +829,13 @@
 									d?.qualification?.rtMember === playerId ||
 									d?.qualification?.mapperId === playerId ||
 									d?.qualification?.criteriaChecker === playerId
+						  )
+						: currentFilters?.mine === 'others'
+						? !!(s?.difficulties ?? [])?.every(
+								d =>
+									d?.qualification?.rtMember !== playerId &&
+									d?.qualification?.mapperId !== playerId &&
+									d?.qualification?.criteriaChecker !== playerId
 						  )
 						: true;
 
