@@ -216,6 +216,8 @@ export function userDescriptionForModifier(modifier) {
 			return 'Small cubes';
 		case 'BE':
 			return 'Battery energy';
+		case 'SA':
+			return 'Strict angles';
 	}
 	return 'Unknown modifier';
 }
