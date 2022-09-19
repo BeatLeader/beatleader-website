@@ -1352,6 +1352,10 @@
 			display: inline-flex;
 			margin-top: 0.5em;
 		}
+
+		:global(.clan-badges) {
+			display: none;
+		}
 	}
 
 	img.dummy {
