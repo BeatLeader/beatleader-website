@@ -116,6 +116,20 @@ export function formatDateRelativeInUnits(val, unit = 'day', locale = getCurrent
 	return rtf.format(val, unit);
 }
 
+export function formatDateRelativeShort(val, roundFunc = Math.round) {
+	if (!isValidDate(val)) return null;
+
+	const diffInSecs = (Date.now() - dateFromString(val)) / 1000;
+	const absDiff = Math.abs(diffInSecs);
+
+	if (absDiff < 60) return roundFunc(diffInSecs) + 's';
+	else if (absDiff < 60 * 60) return roundFunc(diffInSecs / 60) + 'min';
+	else if (absDiff < 60 * 60 * 24) return roundFunc(diffInSecs / (60 * 60)) + 'h';
+	else if (absDiff < 60 * 60 * 24 * 30) return roundFunc(diffInSecs / (60 * 60 * 24)) + 'd';
+	else if (absDiff < 60 * 60 * 24 * 365) return roundFunc(diffInSecs / (60 * 60 * 24 * 30)) + 'mon';
+	else return roundFunc(diffInSecs / (60 * 60 * 24 * 365)) + 'y';
+}
+
 export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto', locale = getCurrentLocale()) {
 	if (!isValidDate(val)) return null;
 

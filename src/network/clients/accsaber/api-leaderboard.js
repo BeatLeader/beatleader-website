@@ -1,6 +1,6 @@
 import queue from '../../queues/queues';
 import createClient from '../generic';
-import {dateFromString, formatDateRelative} from '../../../utils/date';
+import {dateFromString, formatDateRelative, formatDateRelativeShort} from '../../../utils/date';
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../../utils/accsaber/consts';
 
 const process = response => {
@@ -42,6 +42,7 @@ const process = response => {
 
 			timeSet = dateFromString(timeSet);
 			const timeSetString = formatDateRelative(timeSet);
+			const timeSetStringShort = formatDateRelativeShort(timeSet);
 
 			return {
 				player: {
@@ -57,6 +58,7 @@ const process = response => {
 					score,
 					timeSet,
 					timeSetString,
+					timeSetStringShort,
 				},
 				other: rest,
 			};

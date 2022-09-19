@@ -725,9 +725,14 @@
 
 											<ClanBadges player={score.player} />
 										</div>
-										<div class="timeset">
+										<div class="timeset above-tablet">
 											<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
 												{opt(score, 'score.timeSetString', '-')}
+											</span>
+										</div>
+										<div class="timeset mobile-only">
+											<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
+												{score?.score?.timeSetStringShort ?? ''}
 											</span>
 										</div>
 									</div>
@@ -1347,6 +1352,10 @@
 			display: inline-flex;
 			margin-top: 0.5em;
 		}
+
+		:global(.clan-badges) {
+			display: none;
+		}
 	}
 
 	img.dummy {
@@ -1371,5 +1380,10 @@
 		display: grid;
 		justify-items: center;
 		margin: 0.3em;
+	}
+
+	.player-score .timeset {
+		text-align: right;
+		min-width: auto;
 	}
 </style>

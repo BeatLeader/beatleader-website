@@ -510,7 +510,7 @@
 		align-items: center;
 		height: 100%;
 		font-size: 1rem;
-		padding: 0.5rem 0.5rem;
+		padding: 0.25rem 0.5rem;
 		cursor: pointer;
 		position: relative;
 	}
