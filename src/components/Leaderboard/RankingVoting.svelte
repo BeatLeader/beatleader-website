@@ -127,14 +127,15 @@
 		playerId,
 		stars,
 		selectedTypes,
-		modifiers
+		modifiers,
+		isQualified
 	) {
 		actionButtonType = 'primary';
 		if (rtvoting) {
 			if (isRanked) {
 				actionButtonTitle = 'Update';
 			} else if (qualificationUpdate) {
-				if (criteriaMet != 2 && suitableForRank) {
+				if (suitableForRank) {
 					if (
 						qualification.mapperAllowed &&
 						mapperAllowed &&
@@ -142,6 +143,7 @@
 						qualification.rtMember != playerId &&
 						qualification.criteriaChecker != playerId &&
 						qualification.criteriaMet == 1 &&
+						qualification.criteriaMet == criteriaMet &&
 						currentStars == stars &&
 						originalTypes.length === selectedTypes.length &&
 						((qualification?.modifiers == null && shallowEqual(modifiers, leaderboard?.difficultyBl?.modifierValues, ['modifierId'])) ||
@@ -156,7 +158,7 @@
 						actionButtonTitle = 'Update nomination';
 					}
 				} else {
-					if (suitableForRank) {
+					if (!isQualified) {
 						actionButtonTitle = 'Stop nomination!';
 					} else {
 						actionButtonTitle = 'Decline qualification!';
@@ -187,7 +189,8 @@
 		playerId,
 		stars,
 		selectedTypes,
-		modifiers
+		modifiers,
+		isQualified
 	);
 </script>
 
