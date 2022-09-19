@@ -1,7 +1,7 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {substituteVars} from '../../../utils/format';
 import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../../utils/beatleader/consts';
-import {dateFromUnix, formatDateRelative} from '../../../utils/date';
+import {dateFromUnix, formatDateRelative, formatDateRelativeShort} from '../../../utils/date';
 import {getDiffColor} from '../../../utils/beatleader/format';
 import {fetchUrl} from '../../fetch';
 
@@ -87,6 +87,7 @@ export const processLeaderboardScore = s => {
 	ret.score.score = s.modifiedScore;
 
 	ret.score.timeSetString = formatDateRelative(dateFromUnix(s.timeset));
+	ret.score.timeSetStringShort = formatDateRelativeShort(dateFromUnix(s.timeset));
 	ret.score.timeSet = s.timeset;
 	if (ret.score.timeSetString) ret.score.timeSetString = ret.score.timeSetString.trim();
 
