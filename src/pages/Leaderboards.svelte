@@ -70,6 +70,7 @@
 		}
 
 		if (!filters?.sortBy?.length) filters.sortBy = 'stars';
+		if (!filters?.order?.length) filters.order = 'desc';
 		if (!filters?.type?.length) filters.type = 'ranked';
 
 		if (!filters.mapType) filters.mapType = null;
