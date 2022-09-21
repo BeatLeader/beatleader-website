@@ -22,6 +22,8 @@
 	export let statsHistory;
 	export let roles;
 	export let error = null;
+	export let profileAppearance;
+	export let editEnabled = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -285,7 +287,7 @@
 		{#if roles}
 			<div class="role-icons">
 				{#each roles as role, idx}
-					<RoleIcon onAvatar={false} {role} mapperId={playerInfo?.mapperId} />
+					<RoleIcon onAvatar={false} {role} mapperId={playerInfo?.mapperId} {profileAppearance} {editEnabled} />
 				{/each}
 			</div>
 		{/if}
@@ -387,6 +389,8 @@
 
 	.role-icons {
 		display: flex;
+		gap: 1rem;
+		align-items: center;
 	}
 
 	:global(.editNameButton) {

@@ -27,6 +27,7 @@ export default response => {
 		socials,
 		pinnedScores,
 		eventsParticipating,
+		profileAppearance,
 	} = response;
 
 	let profilePicture = avatar;
@@ -169,6 +170,7 @@ export default response => {
 							.filter(r => !isNaN(r))
 					: [],
 			clans,
+			profileAppearance,
 		},
 		scoreStats: scoreStats ? scoreStats : null,
 		statsHistory: processedStatsHistory ? processedStatsHistory : null,

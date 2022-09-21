@@ -29,6 +29,8 @@
 	export let avatarHash = null;
 	export let fixedBrowserTitle = null;
 
+	let customizeProfileEnabled = false;
+
 	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
 
@@ -73,6 +75,32 @@
 	}
 
 	let modalShown;
+
+	$: profileAppearance = playerData?.playerInfo?.profileAppearance ?? [
+		// badges
+		// 'totalPlayCount',
+		// 'totalScore',
+		'rankedPlayCount',
+		// 'totalRankedScore',
+		// 'topPp',
+		'topAccuracy',
+		// 'averageAccuracy',
+		'medianAccuracy',
+		// 'averageRankedAccuracy',
+		'medianRankedAccuracy',
+		// 'averageRank',
+		// 'topPlatform',
+		// 'topHMD',
+		'sspPlays',
+		'ssPlays',
+		'spPlays',
+		'sPlays',
+		// 'aPlays',
+
+		// roles
+		// 'juniorrankedteam',
+		// 'creator',
+	];
 
 	$: isCached = !!(playerData && playerData.scoresLastUpdated);
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -191,11 +219,13 @@
 				{playerId}
 				{statsHistory}
 				{roles}
+				{profileAppearance}
+				editEnabled={customizeProfileEnabled}
 				on:player-data-updated
 				on:player-data-edit-error={onPlayerDataEditError}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} />
+			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} editEnabled={customizeProfileEnabled} />
 
 			{#if $account.error}
 				{$account.error}
@@ -233,6 +263,7 @@
 		flex-direction: column;
 		justify-content: center;
 		grid-gap: 0.4em;
+		flex-grow: 1;
 	}
 
 	.role-icons {
