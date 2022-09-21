@@ -1,6 +1,7 @@
 <script>
 	import {BL_CDN} from '../../network/queues/beatleader/page-queue';
 	import createBeatSaverService from '../../services/beatmaps';
+	import {createEventDispatcher} from 'svelte';
 
 	export let role;
 	export let onAvatar;
@@ -82,16 +83,22 @@
 		}
 	}
 
-	$: updateRoleIcon(role, mapperId);
+	$: updateRoleIcon(role, mapperId, profileAppearance);
 </script>
 
 {#if (show || editEnabled) && roleIcon}
 	{#if roleLink}
-		<a class="player-role {onAvatar ? 'on-avatar' : ''}" href={roleLink} class:disabled={!show}>
-			<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
-		</a>
+		{#if editEnabled}
+			<div class="player-role" class:on-avatar={onAvatar} class:disabled={!show} class:edit-enabled={editEnabled} on:click>
+				<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
+			</div>
+		{:else}
+			<a class="player-role" class:on-avatar={onAvatar} href={roleLink}>
+				<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
+			</a>
+		{/if}
 	{:else}
-		<div class="player-role {onAvatar ? 'on-avatar' : ''}" class:disabled={editEnabled && !show}>
+		<div class="player-role" class:on-avatar={onAvatar} class:disabled={editEnabled && !show} class:edit-enabled={editEnabled} on:click>
 			<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
 		</div>
 	{/if}
@@ -115,8 +122,21 @@
 		margin-top: -2.5em;
 	}
 
+	img {
+		transition: all 200ms;
+	}
+
+	.edit-enabled img {
+		cursor: cell;
+	}
+
 	.disabled img {
 		filter: grayscale(1);
 		opacity: 0.25;
+	}
+
+	.disabled img:hover {
+		filter: none;
+		opacity: 0.5;
 	}
 </style>

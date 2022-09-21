@@ -30,6 +30,7 @@
 	export let fixedBrowserTitle = null;
 
 	let customizeProfileEnabled = false;
+	let profileAppearance = null;
 
 	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
@@ -74,33 +75,48 @@
 		$pinnedScoresStore = pinnedScores ?? [];
 	}
 
+	function updateProfileAppearance(value) {
+		profileAppearance = value ?? [
+			// badges
+			// 'totalPlayCount',
+			// 'totalScore',
+			'rankedPlayCount',
+			// 'totalRankedScore',
+			// 'topPp',
+			'topAccuracy',
+			// 'averageAccuracy',
+			'medianAccuracy',
+			// 'averageRankedAccuracy',
+			'medianRankedAccuracy',
+			// 'averageRank',
+			// 'topPlatform',
+			// 'topHMD',
+			'sspPlays',
+			'ssPlays',
+			'spPlays',
+			'sPlays',
+			// 'aPlays',
+
+			// roles
+			// 'juniorrankedteam',
+			// 'creator',
+		];
+	}
+
+	function onToggleStat(e) {
+		if (!e?.detail?.length) return;
+
+		if (!profileAppearance) profileAppearance = [];
+
+		if (profileAppearance.includes(e.detail)) {
+			profileAppearance = profileAppearance.filter(s => s !== e.detail);
+			if (!profileAppearance.length) profileAppearance = null;
+		} else profileAppearance = [...profileAppearance, e.detail];
+	}
+
 	let modalShown;
 
-	$: profileAppearance = playerData?.playerInfo?.profileAppearance ?? [
-		// badges
-		// 'totalPlayCount',
-		// 'totalScore',
-		'rankedPlayCount',
-		// 'totalRankedScore',
-		// 'topPp',
-		'topAccuracy',
-		// 'averageAccuracy',
-		'medianAccuracy',
-		// 'averageRankedAccuracy',
-		'medianRankedAccuracy',
-		// 'averageRank',
-		// 'topPlatform',
-		// 'topHMD',
-		'sspPlays',
-		'ssPlays',
-		'spPlays',
-		'sPlays',
-		// 'aPlays',
-
-		// roles
-		// 'juniorrankedteam',
-		// 'creator',
-	];
+	$: updateProfileAppearance(playerData?.playerInfo?.profileAppearance);
 
 	$: isCached = !!(playerData && playerData.scoresLastUpdated);
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -224,8 +240,16 @@
 				on:player-data-updated
 				on:player-data-edit-error={onPlayerDataEditError}
 				on:modal-shown={() => (modalShown = true)}
-				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} editEnabled={customizeProfileEnabled} />
+				on:modal-hidden={() => (modalShown = false)}
+				on:toggle-stat={onToggleStat} />
+			<BeatLeaderSummary
+				{playerId}
+				{scoresStats}
+				{accBadges}
+				{skeleton}
+				{profileAppearance}
+				editEnabled={customizeProfileEnabled}
+				on:toggle-stat={onToggleStat} />
 
 			{#if $account.error}
 				{$account.error}

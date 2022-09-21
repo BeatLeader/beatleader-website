@@ -287,7 +287,13 @@
 		{#if roles}
 			<div class="role-icons">
 				{#each roles as role, idx}
-					<RoleIcon onAvatar={false} {role} mapperId={playerInfo?.mapperId} {profileAppearance} {editEnabled} />
+					<RoleIcon
+						onAvatar={false}
+						{role}
+						mapperId={playerInfo?.mapperId}
+						{profileAppearance}
+						{editEnabled}
+						on:click={() => dispatch('toggle-stat', role)} />
 				{/each}
 			</div>
 		{/if}

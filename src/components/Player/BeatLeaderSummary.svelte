@@ -1,5 +1,6 @@
 <script>
 	import ScoresStats from './ScoresStats.svelte';
+	import {createEventDispatcher} from 'svelte';
 
 	export let playerId = null;
 	export let scoresStats = null;
@@ -7,6 +8,8 @@
 	export let skeleton = false;
 	export let profileAppearance;
 	export let editEnabled = false;
+
+	const dispatch = createEventDispatcher();
 
 	let showHidden = false;
 
@@ -32,11 +35,14 @@
 	<div class="beatleader-summary" class:edit-enabled={editEnabled}>
 		{#if scoresStats || skeleton}
 			{#if scoresStats}
-				<ScoresStats stats={showHidden ? scoresStats : visibleScoresStats} {skeleton} />
+				<ScoresStats
+					stats={showHidden ? scoresStats : visibleScoresStats}
+					{skeleton}
+					on:click={e => dispatch('toggle-stat', e?.detail?.key)} />
 			{/if}
 			<div>
 				{#if accBadges}
-					<ScoresStats stats={showHidden ? accBadges : visibleAccStats} />
+					<ScoresStats stats={showHidden ? accBadges : visibleAccStats} on:click={e => dispatch('toggle-stat', e?.detail?.key)} />
 				{/if}
 			</div>
 		{/if}
@@ -67,8 +73,18 @@
 		cursor: pointer;
 	}
 
+	.edit-enabled :global(.badge) {
+		cursor: cell;
+	}
+
 	.edit-enabled :global(.badge.disabled) {
 		filter: grayscale(1);
 		opacity: 0.25;
+		transition: all 200ms;
+	}
+
+	.edit-enabled :global(.badge.disabled:hover) {
+		filter: none;
+		opacity: 0.5;
 	}
 </style>
