@@ -379,6 +379,8 @@
 					if (currentSeconds - time < 60 * 60 * 24 * 7) {
 						qualificationLimitError =
 							'You can nominate new map after ' + Math.round(7 - (currentSeconds - time) / (60 * 60 * 24)) + ' day(s)';
+					} else {
+						qualificationLimitError = null;
 					}
 				});
 			}
