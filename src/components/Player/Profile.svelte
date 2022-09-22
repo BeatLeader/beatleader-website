@@ -78,6 +78,10 @@
 		editModel = editModel = {
 			name: playerData?.name ?? '',
 			country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
+			avatarInput: null,
+			avatar: playerData?.playerInfo?.avatar
+				? playerData.playerInfo.avatar + (playerData.playerInfo.avatar.includes('beatleader') ? `?${avatarHash}` : '')
+				: null,
 			patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
 			profileAppearance: playerData?.playerInfo?.profileAppearance ?? null,
 		};
@@ -87,9 +91,24 @@
 		editModel = null;
 	}
 
-	function onSaveEditModel() {
+	const readFile = async fileInput =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = () => reject(reader.error);
+
+			reader.readAsArrayBuffer(fileInput);
+		});
+
+	async function onSaveEditModel() {
 		// TODO: country.toUpperCase() before save
+
 		console.error('TODO: save model', editModel);
+
+		if (editModel.avatarInput) {
+			const avatarBuffer = await readFile(editModel.avatarInput);
+			console.log(avatarBuffer);
+		}
 	}
 
 	// TODO: old save method
@@ -144,6 +163,26 @@
 			dispatch('modal-hidden', null);
 		}
 	}
+	const changeAvatar = e => {
+		let image = e.target.files[0];
+		let reader = new FileReader();
+		reader.readAsArrayBuffer(image);
+		reader.onload = async e => {
+			try {
+				dispatch('player-data-edit-error', null);
+
+				if (loggedInPlayer === playerId) {
+					await account.changeAvatar(e.target.result);
+				} else {
+					await account.changeAvatar(e.target.result, playerId);
+				}
+
+				dispatch('player-data-updated', {avatar: e.target.result});
+			} catch (err) {
+				dispatch('player-data-edit-error', err);
+			}
+		};
+	};
 
 	let modalShown;
 
@@ -236,11 +275,12 @@
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
-				<Avatar {isLoading} {playerInfo} hash={avatarHash} />
+				<Avatar {isLoading} {playerInfo} hash={avatarHash} {editModel} />
 
 				{#if playerInfo && !isLoading}
 					<AvatarOverlayIcons
 						{playerData}
+						bind:editModel
 						on:modal-shown={() => (modalShown = true)}
 						on:modal-hidden={() => (modalShown = false)}
 						on:player-data-updated

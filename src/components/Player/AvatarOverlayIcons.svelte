@@ -10,9 +10,10 @@
 	import Error from '../Common/Error.svelte';
 
 	export let playerData;
+	export let editModel = null;
 
-	let playerInfo = playerData.playerInfo;
-	let playerId = playerData.playerId;
+	let playerInfo = playerData?.playerInfo;
+	let playerId = playerData?.playerId;
 
 	const dispatch = createEventDispatcher();
 
@@ -42,24 +43,8 @@
 
 	let fileinput;
 	const changeAvatar = e => {
-		let image = e.target.files[0];
-		let reader = new FileReader();
-		reader.readAsArrayBuffer(image);
-		reader.onload = async e => {
-			try {
-				dispatch('player-data-edit-error', null);
-
-				if (loggedInPlayer === playerId) {
-					await account.changeAvatar(e.target.result);
-				} else {
-					await account.changeAvatar(e.target.result, playerId);
-				}
-
-				dispatch('player-data-updated', {avatar: e.target.result});
-			} catch (err) {
-				dispatch('player-data-edit-error', err);
-			}
-		};
+		editModel.avatarInput = e.target.files[0];
+		editModel.avatar = URL.createObjectURL(e.target.files[0]);
 	};
 
 	let invitationConfirmationType = null;
@@ -145,7 +130,7 @@
 	<nav class:main={isMain}>
 		{#if loggedInPlayer && !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFriend))}
 			<Button
-				square={true},
+				square="{true},"
 				squareSize="1.7rem"
 				title={isFriend ? 'Remove from Friends' : 'Add to Friends'}
 				iconFa={isFriend ? 'fas fa-user-minus' : 'fas fa-user-plus'}
@@ -212,9 +197,9 @@
 		{/if}
 	</nav>
 
-	{#if isMain || isAdmin}
+	{#if !!editModel && (isMain || isAdmin)}
 		<div class="imageInput" on:click={() => fileinput.click()}>
-			<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={e => changeAvatar(e)} bind:this={fileinput} />
+			<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeAvatar} bind:this={fileinput} />
 			<span class="imageChange">
 				<h3 class="changeLabel">Change</h3>
 			</span>

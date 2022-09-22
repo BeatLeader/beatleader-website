@@ -5,8 +5,13 @@
 	export let isLoading = false;
 	export let centered = false;
 	export let hash = '';
+	export let editModel = null;
 
-	$: avatar = playerInfo?.avatar ? playerInfo.avatar + (playerInfo.avatar.includes('beatleader') ? `?${hash}` : '') : null;
+	$: avatar = editModel?.avatar
+		? editModel.avatar
+		: playerInfo?.avatar
+		? playerInfo.avatar + (playerInfo.avatar.includes('beatleader') ? `?${hash}` : '')
+		: null;
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered>

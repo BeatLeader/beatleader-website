@@ -128,8 +128,20 @@
 
 				{#if canRedact}
 					{#if !!editModel}
-						<Button type="text" title="Save" cls="editNameButton" iconFa="fas fa-check" on:click={() => dispatch('edit-model-save')} />
-						<Button type="text" title="Cancel" cls="editNameButton" iconFa="fas fa-times" on:click={() => dispatch('edit-model-cancel')} />
+						<Button
+							color="green"
+							type="text"
+							title="Save"
+							cls="editNameButton"
+							iconFa="fas fa-check"
+							on:click={() => dispatch('edit-model-save')} />
+						<Button
+							color="red"
+							type="text"
+							title="Cancel"
+							cls="editNameButton"
+							iconFa="fas fa-times"
+							on:click={() => dispatch('edit-model-cancel')} />
 					{:else}
 						<Button
 							type="text"
