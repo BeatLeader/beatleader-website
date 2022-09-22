@@ -21,10 +21,9 @@
 	const account = createAccountStore();
 
 	const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
-	serviceParamsManager.initFromUrl('');
-	serviceParamsManager.update({filters: {count: 5}}, 'beatleader', true);
 
 	let serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {count: 5}};
+	serviceParamsManager.update(serviceParams, 'beatleader', true);
 
 	function onRankingPageChanged(e) {
 		if (e.detail.initial || !Number.isFinite(e.detail.page)) return;
