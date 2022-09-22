@@ -67,7 +67,11 @@
 
 	let roles = null;
 	function updateRoles(role) {
-		roles = role?.split(',').reverse();
+		roles =
+			role
+				?.split(',')
+				?.reverse()
+				?.filter(r => r?.length) ?? [];
 	}
 
 	function refreshPinnedScores(pinnedScores) {
@@ -291,7 +295,11 @@
 			{#if roles}
 				<div class="role-icons">
 					{#each roles as role, idx}
-						<RoleIcon onAvatar={true} {role} mapperId={playerInfo?.mapperId} />
+						<RoleIcon
+							{role}
+							mapperId={playerInfo?.mapperId}
+							profileAppearance={playerData?.playerInfo?.profileAppearance ?? null}
+							bind:editModel />
 					{/each}
 				</div>
 			{/if}
@@ -308,7 +316,6 @@
 				{playerInfo}
 				{playerId}
 				{statsHistory}
-				{roles}
 				profileAppearance={playerData?.playerInfo?.profileAppearance}
 				bind:editModel
 				on:player-data-updated
@@ -348,6 +355,7 @@
 		display: flex;
 		flex-wrap: nowrap;
 		grid-gap: 1.5em;
+		align-items: flex-start;
 	}
 
 	.avatar-cell {
@@ -368,6 +376,10 @@
 	.role-icons {
 		display: flex;
 		z-index: 5;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 0.5rem;
+		width: calc(100% - 2rem);
 	}
 
 	.avatar-and-roles {

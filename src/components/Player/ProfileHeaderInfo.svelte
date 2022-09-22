@@ -20,7 +20,6 @@
 	export let playerInfo;
 	export let playerId;
 	export let statsHistory;
-	export let roles;
 	export let error = null;
 	export let profileAppearance;
 	export let editModel = null;
@@ -77,18 +76,6 @@
 	}
 
 	let showBanForm = false;
-
-	function onToggleRole(role) {
-		console.warn('onToggleRole', role);
-		if (!role?.length || !editModel) return;
-
-		if (!editModel.profileAppearance) editModel.profileAppearance = [];
-
-		if (editModel.profileAppearance.includes(role)) {
-			editModel.profileAppearance = editModel.profileAppearance.filter(s => s !== role);
-			if (!editModel.profileAppearance.length) editModel.profileAppearance = null;
-		} else editModel.profileAppearance = [...editModel.profileAppearance, role];
-	}
 
 	$: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
 	$: countries = getPlayerCountries(playerInfo, statsHistory);
@@ -251,19 +238,6 @@
 			Make sure you selected right country. You can change it only every 30 days.
 		{/if}
 
-		{#if roles}
-			<div class="role-icons">
-				{#each roles as role, idx}
-					<RoleIcon
-						onAvatar={false}
-						{role}
-						mapperId={playerInfo?.mapperId}
-						{profileAppearance}
-						bind:editModel
-						on:click={_ => onToggleRole(role)} />
-				{/each}
-			</div>
-		{/if}
 		{#if error}
 			<div>
 				<Error {error} />
@@ -318,6 +292,10 @@
 		align-items: center;
 	}
 
+	:global(.edit-enabled) .player-ranking {
+		margin: 1rem 0;
+	}
+
 	.pp {
 		color: var(--ppColour) !important;
 	}
@@ -361,12 +339,6 @@
 		display: contents;
 	}
 
-	.role-icons {
-		display: flex;
-		gap: 1rem;
-		align-items: center;
-	}
-
 	.pickerContainer {
 		font-size: 1rem;
 	}
@@ -380,5 +352,11 @@
 	:global(.banButton) {
 		padding: 0 !important;
 		font-size: 0.8em !important;
+	}
+
+	@media screen and (max-width: 767px) {
+		.input-reset {
+			flex: 1;
+		}
 	}
 </style>

@@ -16,7 +16,7 @@
 	function processStats(stats, profileAppearance, editEnabled) {
 		const visible =
 			stats?.length && editEnabled
-				? stats.map(s => ({...s, disabled: profileAppearance && !profileAppearance.includes(s.key)}))
+				? stats.map(s => ({...s, title: 'Click to toggle', disabled: profileAppearance && !profileAppearance.includes(s.key)}))
 				: (stats ?? []).filter(s => !profileAppearance || profileAppearance.includes(s?.key));
 
 		const hidden = (stats ?? []).filter(s => !visible.some(v => v.key === s.key));
