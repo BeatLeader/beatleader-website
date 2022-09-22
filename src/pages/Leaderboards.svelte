@@ -34,6 +34,7 @@
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Others/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
+	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
 
 	export let page = 1;
 	export let location;
@@ -69,7 +70,7 @@
 			filters.stars_to = tmp;
 		}
 
-		if (!filters?.sortBy?.length) filters.sortBy = 'stars';
+		if (!filters?.sortBy?.length) filters.sortBy = 'timestamp';
 		if (!filters?.order?.length) filters.order = 'desc';
 		if (!filters?.type?.length) filters.type = 'ranked';
 
@@ -368,6 +369,10 @@
 									<div>
 										{map?.plays} plays.
 									</div>
+								{/if}
+
+								{#if currentFilters.sortBy == 'timestamp'}
+									<MapTimesetDescription {map} />
 								{/if}
 
 								{#if map?.song?.hash?.length}
