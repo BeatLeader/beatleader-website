@@ -23,7 +23,7 @@
 	export let roles;
 	export let error = null;
 	export let profileAppearance;
-	export let editEnabled = false;
+	export let editModel = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -65,66 +65,6 @@
 		open(Preview, {previewLink: profileLink});
 	};
 
-	let nameInput;
-	let messageInput;
-	let redactingName = false;
-	async function onRedactButtonClick() {
-		if (!redactingName) {
-			nameInput = name;
-			messageInput = playerInfo.patreonFeatures?.message;
-		}
-
-		if (redactingName && nameInput !== name) {
-			try {
-				dispatch('player-data-edit-error', null);
-
-				if (loggedInPlayer === playerId) {
-					await account.changeName(nameInput);
-				} else {
-					await account.changeName(nameInput, playerId);
-				}
-
-				dispatch('player-data-updated', {name: nameInput});
-			} catch (err) {
-				dispatch('player-data-edit-error', err);
-			}
-		}
-
-		if (redactingName && selectedCountry && selectedCountry != countries[0]) {
-			if (loggedInPlayer === playerId) {
-				await account.changeCountry(selectedCountry);
-			} else {
-				await account.changeCountry(selectedCountry, playerId);
-			}
-
-			dispatch('player-data-updated', {country: selectedCountry});
-		}
-
-		if (redactingName && messageInput !== playerInfo.patreonFeatures?.message) {
-			try {
-				dispatch('player-data-edit-error', null);
-
-				if (loggedInPlayer === playerId) {
-					await account.changePatreonMessage(messageInput);
-				} else {
-					await account.changePatreonMessage(messageInput, playerId);
-				}
-
-				dispatch('player-data-updated', {message: messageInput});
-			} catch (err) {
-				dispatch('player-data-edit-error', err);
-			}
-		}
-
-		redactingName = !redactingName;
-
-		if (redactingName) {
-			dispatch('modal-shown', null);
-		} else {
-			dispatch('modal-hidden', null);
-		}
-	}
-
 	function showRainbow(player) {
 		var result = false;
 		player.clans?.forEach(element => {
@@ -136,12 +76,19 @@
 		return result;
 	}
 
-	let selectedCountry = null;
-	function handleCountrySelect(event) {
-		selectedCountry = event.detail.value.toUpperCase();
-	}
-
 	let showBanForm = false;
+
+	function onToggleRole(role) {
+		console.warn('onToggleRole', role);
+		if (!role?.length || !editModel) return;
+
+		if (!editModel.profileAppearance) editModel.profileAppearance = [];
+
+		if (editModel.profileAppearance.includes(role)) {
+			editModel.profileAppearance = editModel.profileAppearance.filter(s => s !== role);
+			if (!editModel.profileAppearance.length) editModel.profileAppearance = null;
+		} else editModel.profileAppearance = [...editModel.profileAppearance, role];
+	}
 
 	$: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
 	$: countries = getPlayerCountries(playerInfo, statsHistory);
@@ -158,8 +105,8 @@
 	{#if playerInfo}
 		<div class="player-nickname {showRainbow(playerInfo) ? 'rainbow' : ''}">
 			{#if name}
-				{#if redactingName}
-					<input type="text" bind:value={nameInput} placeholder="Your name" class="input-reset" />
+				{#if !!editModel}
+					<input type="text" bind:value={editModel.name} placeholder="Your name" class="input-reset" />
 				{:else if playerInfo.externalProfileUrl}
 					<a
 						href={playerInfo.externalProfileUrl}
@@ -175,14 +122,22 @@
 					{name}
 				{/if}
 
-				<span class="clan-badges"><ClanBadges player={playerInfo} /></span>
+				{#if !editModel}
+					<span class="clan-badges"><ClanBadges player={playerInfo} /></span>
+				{/if}
 
 				{#if canRedact}
-					<Button
-						type="text"
-						cls="editNameButton"
-						iconFa={redactingName ? 'fas fa-check' : 'fas fa-edit'}
-						on:click={() => onRedactButtonClick()} />
+					{#if !!editModel}
+						<Button type="text" title="Save" cls="editNameButton" iconFa="fas fa-check" on:click={() => dispatch('edit-model-save')} />
+						<Button type="text" title="Cancel" cls="editNameButton" iconFa="fas fa-times" on:click={() => dispatch('edit-model-cancel')} />
+					{:else}
+						<Button
+							type="text"
+							title="Edit profile"
+							cls="editNameButton"
+							iconFa="fas fa-edit"
+							on:click={() => dispatch('edit-model-enable')} />
+					{/if}
 				{/if}
 			{/if}
 
@@ -192,12 +147,12 @@
 		</div>
 
 		{#if playerInfo.sponsor}
-			{#if redactingName}
+			{#if !!editModel}
 				<div class="sponsor-message">
 					<span
 						>This message will be shown in-game for your scores.<br />
 						You can use <a class="inlineLink" href="http://digitalnativestudios.com/textmeshpro/docs/rich-text">Unity tags</a> here.</span>
-					<input type="text" bind:value={messageInput} placeholder="Promotion message" class="sponsor-input" />
+					<input type="text" bind:value={editModel.patreonMessage} placeholder="Promotion message" class="sponsor-input" />
 				</div>
 			{/if}
 		{/if}
@@ -222,9 +177,9 @@
 					reversePrevSign={true} />
 			</a>
 
-			{#if canRedact && redactingName}
+			{#if canRedact && !!editModel}
 				<div class="pickerContainer">
-					<CountryPicker selected={countries[0].country.toLowerCase()} on:select={handleCountrySelect} />
+					<CountryPicker selected={editModel.country} on:select={e => (editModel.country = e.detail.value)} />
 				</div>
 			{:else}
 				{#each countries as country}
@@ -280,7 +235,7 @@
 			{/if}
 		</div>
 
-		{#if selectedCountry && redactingName}
+		{#if !!editModel && editModel?.country?.toUpperCase() !== playerInfo?.countries?.[0]?.country}
 			Make sure you selected right country. You can change it only every 30 days.
 		{/if}
 
@@ -292,8 +247,8 @@
 						{role}
 						mapperId={playerInfo?.mapperId}
 						{profileAppearance}
-						{editEnabled}
-						on:click={() => dispatch('toggle-stat', role)} />
+						bind:editModel
+						on:click={_ => onToggleRole(role)} />
 				{/each}
 			</div>
 		{/if}
@@ -348,6 +303,7 @@
 		grid-gap: 0.7em;
 		font-size: 1.25em;
 		font-weight: 500;
+		align-items: center;
 	}
 
 	.pp {
@@ -397,6 +353,10 @@
 		display: flex;
 		gap: 1rem;
 		align-items: center;
+	}
+
+	.pickerContainer {
+		font-size: 1rem;
 	}
 
 	:global(.editNameButton) {

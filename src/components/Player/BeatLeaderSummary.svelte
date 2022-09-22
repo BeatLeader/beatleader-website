@@ -7,7 +7,7 @@
 	export let accBadges = null;
 	export let skeleton = false;
 	export let profileAppearance;
-	export let editEnabled = false;
+	export let editModel = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -27,22 +27,38 @@
 		};
 	}
 
-	$: ({visible: visibleScoresStats, hidden: hiddenScoresStats} = processStats(scoresStats, profileAppearance, editEnabled));
-	$: ({visible: visibleAccStats, hidden: hiddenAccStats} = processStats(accBadges, profileAppearance, editEnabled));
+	function onToggleStat(key) {
+		if (!key?.length || !editModel) return;
+
+		if (!editModel.profileAppearance) editModel.profileAppearance = [];
+
+		if (editModel.profileAppearance.includes(key)) {
+			editModel.profileAppearance = editModel.profileAppearance.filter(s => s !== key);
+			if (!editModel.profileAppearance.length) editModel.profileAppearance = null;
+		} else editModel.profileAppearance = [...editModel.profileAppearance, key];
+	}
+
+	$: ({visible: visibleScoresStats, hidden: hiddenScoresStats} = processStats(
+		scoresStats,
+		editModel?.profileAppearance ?? profileAppearance,
+		!!editModel
+	));
+	$: ({visible: visibleAccStats, hidden: hiddenAccStats} = processStats(
+		accBadges,
+		editModel?.profileAppearance ?? profileAppearance,
+		!!editModel
+	));
 </script>
 
 <div class="wrapper">
-	<div class="beatleader-summary" class:edit-enabled={editEnabled}>
+	<div class="beatleader-summary">
 		{#if scoresStats || skeleton}
 			{#if scoresStats}
-				<ScoresStats
-					stats={showHidden ? scoresStats : visibleScoresStats}
-					{skeleton}
-					on:click={e => dispatch('toggle-stat', e?.detail?.key)} />
+				<ScoresStats stats={showHidden ? scoresStats : visibleScoresStats} {skeleton} on:click={e => onToggleStat(e?.detail?.key)} />
 			{/if}
 			<div>
 				{#if accBadges}
-					<ScoresStats stats={showHidden ? accBadges : visibleAccStats} on:click={e => dispatch('toggle-stat', e?.detail?.key)} />
+					<ScoresStats stats={showHidden ? accBadges : visibleAccStats} on:click={e => onToggleStat(e?.detail?.key)} />
 				{/if}
 			</div>
 		{/if}
@@ -73,17 +89,17 @@
 		cursor: pointer;
 	}
 
-	.edit-enabled :global(.badge) {
+	:global(.edit-enabled) * :global(.badge) {
 		cursor: cell;
 	}
 
-	.edit-enabled :global(.badge.disabled) {
+	:global(.edit-enabled) * :global(.badge.disabled) {
 		filter: grayscale(1);
 		opacity: 0.25;
 		transition: all 200ms;
 	}
 
-	.edit-enabled :global(.badge.disabled:hover) {
+	:global(.edit-enabled) * :global(.badge.disabled:hover) {
 		filter: none;
 		opacity: 0.5;
 	}

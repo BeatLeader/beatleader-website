@@ -7,7 +7,7 @@
 	export let onAvatar;
 	export let mapperId = null;
 	export let profileAppearance;
-	export let editEnabled = false;
+	export let editModel = null;
 
 	let roleIcon;
 	let roleDescription;
@@ -26,7 +26,7 @@
 		}
 	}
 
-	function updateRoleIcon(role, mapperId) {
+	function updateRoleIcon(role, mapperId, profileAppearance) {
 		if (role) {
 			switch (role) {
 				case 'mapper':
@@ -83,13 +83,13 @@
 		}
 	}
 
-	$: updateRoleIcon(role, mapperId, profileAppearance);
+	$: updateRoleIcon(role, mapperId, editModel?.profileAppearance ?? profileAppearance);
 </script>
 
-{#if (show || editEnabled) && roleIcon}
+{#if (show || !!editModel) && roleIcon}
 	{#if roleLink}
-		{#if editEnabled}
-			<div class="player-role" class:on-avatar={onAvatar} class:disabled={!show} class:edit-enabled={editEnabled} on:click>
+		{#if !!editModel}
+			<div class="player-role" class:on-avatar={onAvatar} class:disabled={!show} on:click>
 				<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
 			</div>
 		{:else}
@@ -98,7 +98,7 @@
 			</a>
 		{/if}
 	{:else}
-		<div class="player-role" class:on-avatar={onAvatar} class:disabled={editEnabled && !show} class:edit-enabled={editEnabled} on:click>
+		<div class="player-role" class:on-avatar={onAvatar} class:disabled={!!editModel && !show} on:click>
 			<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
 		</div>
 	{/if}
@@ -126,7 +126,7 @@
 		transition: all 200ms;
 	}
 
-	.edit-enabled img {
+	:global(.edit-enabled) img {
 		cursor: cell;
 	}
 

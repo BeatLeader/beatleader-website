@@ -29,8 +29,7 @@
 	export let avatarHash = null;
 	export let fixedBrowserTitle = null;
 
-	let customizeProfileEnabled = false;
-	let profileAppearance = null;
+	let editModel = null;
 
 	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
@@ -75,48 +74,78 @@
 		$pinnedScoresStore = pinnedScores ?? [];
 	}
 
-	function updateProfileAppearance(value) {
-		profileAppearance = value ?? [
-			// badges
-			// 'totalPlayCount',
-			// 'totalScore',
-			'rankedPlayCount',
-			// 'totalRankedScore',
-			// 'topPp',
-			'topAccuracy',
-			// 'averageAccuracy',
-			'medianAccuracy',
-			// 'averageRankedAccuracy',
-			'medianRankedAccuracy',
-			// 'averageRank',
-			// 'topPlatform',
-			// 'topHMD',
-			'sspPlays',
-			'ssPlays',
-			'spPlays',
-			'sPlays',
-			// 'aPlays',
-
-			// roles
-			// 'juniorrankedteam',
-			// 'creator',
-		];
+	function onEnableEditModel() {
+		editModel = editModel = {
+			name: playerData?.name ?? '',
+			country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
+			patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
+			profileAppearance: playerData?.playerInfo?.profileAppearance ?? null,
+		};
 	}
 
-	function onToggleStat(e) {
-		if (!e?.detail?.length) return;
+	function onCancelEditModel() {
+		editModel = null;
+	}
 
-		if (!profileAppearance) profileAppearance = [];
+	function onSaveEditModel() {
+		// TODO: country.toUpperCase() before save
+		console.error('TODO: save model', editModel);
+	}
 
-		if (profileAppearance.includes(e.detail)) {
-			profileAppearance = profileAppearance.filter(s => s !== e.detail);
-			if (!profileAppearance.length) profileAppearance = null;
-		} else profileAppearance = [...profileAppearance, e.detail];
+	// TODO: old save method
+	async function onEditButtonClick() {
+		if (!!editModel && nameInput !== name) {
+			try {
+				dispatch('player-data-edit-error', null);
+
+				if (loggedInPlayer === playerId) {
+					await account.changeName(nameInput);
+				} else {
+					await account.changeName(nameInput, playerId);
+				}
+
+				dispatch('player-data-updated', {name: nameInput});
+			} catch (err) {
+				dispatch('player-data-edit-error', err);
+			}
+		}
+
+		if (!!editModel && selectedCountry && selectedCountry != countries[0]) {
+			if (loggedInPlayer === playerId) {
+				await account.changeCountry(selectedCountry);
+			} else {
+				await account.changeCountry(selectedCountry, playerId);
+			}
+
+			dispatch('player-data-updated', {country: selectedCountry});
+		}
+
+		if (!!editModel && messageInput !== playerInfo.patreonFeatures?.message) {
+			try {
+				dispatch('player-data-edit-error', null);
+
+				if (loggedInPlayer === playerId) {
+					await account.changePatreonMessage(messageInput);
+				} else {
+					await account.changePatreonMessage(messageInput, playerId);
+				}
+
+				dispatch('player-data-updated', {message: messageInput});
+			} catch (err) {
+				dispatch('player-data-edit-error', err);
+			}
+		}
+
+		dispatch('edit-mode', false);
+
+		if (!!editModel) {
+			dispatch('modal-shown', null);
+		} else {
+			dispatch('modal-hidden', null);
+		}
 	}
 
 	let modalShown;
-
-	$: updateProfileAppearance(playerData?.playerInfo?.profileAppearance);
 
 	$: isCached = !!(playerData && playerData.scoresLastUpdated);
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -128,6 +157,11 @@
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 	$: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank);
 	$: updateAccSaberPlayerInfo(playerId);
+
+	$: loggedInPlayer = $account?.id;
+	$: isMain = playerId && $account?.id === playerId;
+	$: isAdmin = $account?.player?.role?.includes('admin');
+	$: canEdit = (isMain && loggedInPlayer === playerId) || isAdmin;
 
 	$: swipeCards = [].concat(
 		playerId
@@ -199,7 +233,7 @@
 {/if}
 
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>
-	<div class="player-general-info">
+	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
 				<Avatar {isLoading} {playerInfo} hash={avatarHash} />
@@ -235,21 +269,22 @@
 				{playerId}
 				{statsHistory}
 				{roles}
-				{profileAppearance}
-				editEnabled={customizeProfileEnabled}
+				profileAppearance={playerData?.playerInfo?.profileAppearance}
+				bind:editModel
 				on:player-data-updated
 				on:player-data-edit-error={onPlayerDataEditError}
+				on:edit-model-enable={onEnableEditModel}
+				on:edit-model-cancel={onCancelEditModel}
+				on:edit-model-save={onSaveEditModel}
 				on:modal-shown={() => (modalShown = true)}
-				on:modal-hidden={() => (modalShown = false)}
-				on:toggle-stat={onToggleStat} />
+				on:modal-hidden={() => (modalShown = false)} />
 			<BeatLeaderSummary
 				{playerId}
 				{scoresStats}
 				{accBadges}
 				{skeleton}
-				{profileAppearance}
-				editEnabled={customizeProfileEnabled}
-				on:toggle-stat={onToggleStat} />
+				profileAppearance={playerData?.playerInfo?.profileAppearance}
+				bind:editModel />
 
 			{#if $account.error}
 				{$account.error}

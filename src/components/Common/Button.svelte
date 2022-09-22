@@ -111,7 +111,7 @@
 
 	$: selectedType = types[type] ? types[type] : types.default;
 	$: margin = label && label.length ? '.45em' : '1px';
-	$: btnPadding = label && label.length ? 'calc(.45em - 1px) 1em' : 'calc(.45em - 1px) .25em';
+	$: btnPadding = type === 'text' ? 0 : label && label.length ? 'calc(.45em - 1px) 1em' : 'calc(.45em - 1px) .25em';
 	$: btnMargin = noMargin ? 0 : '0 0 .45em 0';
 </script>
 
