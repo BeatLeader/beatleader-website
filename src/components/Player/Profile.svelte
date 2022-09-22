@@ -375,11 +375,13 @@
 
 	.role-icons {
 		display: flex;
+		position: relative;
 		z-index: 5;
 		justify-content: space-between;
 		align-items: center;
 		margin-top: 0.5rem;
-		width: calc(100% - 2rem);
+		width: 100%;
+		min-height: 1.5rem;
 	}
 
 	.avatar-and-roles {

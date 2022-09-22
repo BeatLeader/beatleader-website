@@ -127,10 +127,11 @@
 
 <style>
 	.player-role {
+		position: absolute;
+		top: -2.5em;
+		left: 2em;
 		width: 6em;
 		display: block;
-		margin-left: -0.5em;
-		margin-right: -0.5em;
 	}
 
 	.role-icon {
