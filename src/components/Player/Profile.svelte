@@ -116,7 +116,7 @@
 		console.error('TODO: save model', editModel);
 
 		if (editModel.avatarInput) {
-			const avatarBuffer = await readFile(editModel.avatarInput);
+			const avatarBuffer = await readFile(editModel.avatarInput)?.catch(_ => _);
 			console.log(avatarBuffer);
 		}
 	}
@@ -333,7 +333,6 @@
 				{playerInfo}
 				{playerId}
 				{statsHistory}
-				profileAppearance={playerData?.playerInfo?.profileAppearance}
 				bind:editModel
 				on:player-data-updated
 				on:player-data-edit-error={onPlayerDataEditError}

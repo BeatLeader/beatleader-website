@@ -20,7 +20,6 @@
 	export let playerId;
 	export let statsHistory;
 	export let error = null;
-	export let profileAppearance;
 	export let editModel = null;
 
 	const dispatch = createEventDispatcher();
