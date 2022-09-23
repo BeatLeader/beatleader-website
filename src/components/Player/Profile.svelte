@@ -20,7 +20,8 @@
 	import RoleIcon from './RoleIcon.svelte';
 	import Rain from '../Common/Rain.svelte';
 	import PinnedScores from './PinnedScores.svelte';
-	import AvatarOverlayEditor from './AvatarOverlayEditor.svelte';
+	import AvatarOverlayEditor from './Overlay/AvatarOverlayEditor.svelte';
+	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -280,18 +281,10 @@
 	<Rain />
 {/if}
 
-<AvatarOverlayEditor bind:editModel />
+<AvatarOverlayEditor bind:editModel {roles} />
 
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>
-	{#if playerInfo?.avatarOverlay || editModel?.avatarOverlay}
-		<span
-			style={`
-			--hue: ${editModel?.avatarHue ?? playerInfo?.avatarHue ?? 0}deg;
-			--saturation: ${editModel?.avatarSaturation ?? playerInfo?.avatarSaturation ?? 1}
-			`}>
-			<img class="avatar-overlay" src={editModel?.avatarOverlay ?? playerInfo.avatarOverlay} />
-		</span>
-	{/if}
+	<AvatarOverlay data={editModel ?? playerInfo} {roles} />
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
@@ -375,17 +368,6 @@
 <PinnedScores playerId={playerData?.id} {fixedBrowserTitle} />
 
 <style>
-	.avatar-overlay {
-		position: absolute;
-		top: -24px;
-		left: -24px;
-		width: 230px;
-		z-index: 3;
-		mix-blend-mode: screen;
-		filter: hue-rotate(var(--hue, 0deg)) saturate(var(--saturation, 1));
-		pointer-events: none;
-	}
-
 	.player-general-info {
 		display: flex;
 		flex-wrap: nowrap;
@@ -439,10 +421,6 @@
 
 		.rank-and-stats-cell {
 			align-items: center;
-		}
-
-		.avatar-overlay {
-			left: calc(50% - 115px);
 		}
 	}
 </style>
