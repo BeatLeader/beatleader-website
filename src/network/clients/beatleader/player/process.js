@@ -29,6 +29,8 @@ export default response => {
 		eventsParticipating,
 		profileAppearance,
 		avatarOverlay,
+		avatarHue,
+		avatarSaturation,
 	} = response;
 
 	let profilePicture = avatar;
@@ -173,6 +175,8 @@ export default response => {
 			clans,
 			profileAppearance,
 			avatarOverlay,
+			avatarHue,
+			avatarSaturation,
 		},
 		scoreStats: scoreStats ? scoreStats : null,
 		statsHistory: processedStatsHistory ? processedStatsHistory : null,

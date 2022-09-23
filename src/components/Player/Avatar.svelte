@@ -14,7 +14,7 @@
 		: null;
 </script>
 
-<span class="avatar-container" class:loading={isLoading} class:centered>
+<span class="avatar-container" class:loading={isLoading} class:centered title={editModel ? 'Click to edit avatar' : null} on:click>
 	{#if avatar}
 		<img src={avatar} class="avatar" alt="" />
 	{:else}
@@ -29,6 +29,10 @@
 <style>
 	.avatar-container {
 		display: flex;
+	}
+
+	:global(.edit-enabled) .avatar-container {
+		cursor: pointer;
 	}
 
 	img {

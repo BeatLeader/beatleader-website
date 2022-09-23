@@ -61,19 +61,19 @@
 				roleDescription = 'Administrator';
 				break;
 			case 'tipper':
-				show = true;
+				show = !profileAppearance || profileAppearance.includes('tipper');
 				roleIcon = BL_CDN + '/assets/patreon1.png';
 				roleDescription = 'Tier 1 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'supporter':
-				show = true;
+				show = !profileAppearance || profileAppearance.includes('supporter');
 				roleIcon = BL_CDN + '/assets/patreon2.png';
 				roleDescription = 'Tier 2 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'sponsor':
-				show = true;
+				show = !profileAppearance || profileAppearance.includes('sponsor');
 				roleIcon = BL_CDN + '/assets/patreon3.png';
 				roleDescription = 'Highest tier Patreon supporter. Crypto godge';
 				cls = 'player-role';

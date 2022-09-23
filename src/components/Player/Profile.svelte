@@ -20,6 +20,7 @@
 	import RoleIcon from './RoleIcon.svelte';
 	import Rain from '../Common/Rain.svelte';
 	import PinnedScores from './PinnedScores.svelte';
+	import AvatarOverlayEditor from './AvatarOverlayEditor.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -89,6 +90,9 @@
 			patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
 			profileAppearance: playerData?.playerInfo?.profileAppearance ?? null,
 			avatarOverlay: playerData?.playerInfo?.avatarOverlay ?? null,
+			avatarOverlayEdit: false,
+			avatarHue: playerData?.playerInfo?.avatarHue ?? 0,
+			avatarSaturation: playerData?.playerInfo?.avatarSaturation ?? 1,
 		};
 	}
 
@@ -276,15 +280,30 @@
 	<Rain />
 {/if}
 
+<AvatarOverlayEditor bind:editModel />
+
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>
 	{#if playerInfo?.avatarOverlay || editModel?.avatarOverlay}
-		<img class="avatar-overlay" src={editModel?.avatarOverlay ?? playerInfo.avatarOverlay} />
+		<span
+			style={`
+			--hue: ${editModel?.avatarHue ?? playerInfo?.avatarHue ?? 0}deg;
+			--saturation: ${editModel?.avatarSaturation ?? playerInfo?.avatarSaturation ?? 1}
+			`}>
+			<img class="avatar-overlay" src={editModel?.avatarOverlay ?? playerInfo.avatarOverlay} />
+		</span>
 	{/if}
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
-				<Avatar {isLoading} {playerInfo} hash={avatarHash} {editModel} />
+				<Avatar
+					{isLoading}
+					{playerInfo}
+					hash={avatarHash}
+					{editModel}
+					on:click={() => {
+						if (editModel) editModel.avatarOverlayEdit = true;
+					}} />
 
 				{#if playerInfo && !isLoading}
 					<AvatarOverlayIcons
@@ -363,6 +382,8 @@
 		width: 230px;
 		z-index: 3;
 		mix-blend-mode: screen;
+		filter: hue-rotate(var(--hue, 0deg)) saturate(var(--saturation, 1));
+		pointer-events: none;
 	}
 
 	.player-general-info {
