@@ -1,7 +1,124 @@
 <script>
 	import Button from '../Common/Button.svelte';
+	import ContentBox from '../Common/ContentBox.svelte';
 
 	export let editModel;
+
+	const OVERLAY_URL = ''; // TODO: replace it with BL CDN
+
+	const allOverlays = [
+		{
+			title: 'The Sun',
+			items: [
+				{
+					title: 'Tier 1',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier1.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier1_preview.webp',
+				},
+				{
+					title: 'Tier 2',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier2.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier2_preview.webp',
+				},
+				{
+					title: 'Tier 3',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier3.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier3_preview.webp',
+					locked: true,
+				},
+			],
+		},
+
+		{
+			title: 'The Moon',
+			items: [
+				{
+					title: 'Tier 1',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier1.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier1_preview.webp',
+				},
+				{
+					title: 'Tier 2',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier2.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier2_preview.webp',
+				},
+				{
+					title: 'Tier 3',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier3.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier3_preview.webp',
+					locked: true,
+				},
+			],
+		},
+
+		{
+			title: 'The Star',
+			items: [
+				{
+					title: 'Tier 1',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier1.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier1_preview.webp',
+				},
+				{
+					title: 'Tier 2',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier2.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier2_preview.webp',
+				},
+				{
+					title: 'Tier 3',
+					url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier3.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier3_preview.webp',
+					locked: true,
+				},
+			],
+		},
+
+		{
+			title: 'Sparks',
+			items: [
+				{
+					title: 'Tier 1',
+					url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier1.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier1_preview.webp',
+				},
+				{
+					title: 'Tier 2',
+					url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier2.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier2_preview.webp',
+				},
+				{
+					title: 'Tier 3',
+					url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier3.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier3_preview.webp',
+					locked: true,
+				},
+			],
+		},
+
+		{
+			title: 'Special',
+			items: [
+				{
+					title: 'Tier 1',
+					url: OVERLAY_URL + '/assets/profile-overlay/Special_Tier1.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/Special_Tier1_preview.webp',
+					locked: true,
+				},
+				{
+					title: 'Tier 2',
+					url: OVERLAY_URL + '/assets/profile-overlay/Special_Tier2.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/Special_Tier2_preview.webp',
+					locked: true,
+				},
+				{
+					title: 'Tier 3',
+					url: OVERLAY_URL + '/assets/profile-overlay/Special_Tier3.webp',
+					preview: OVERLAY_URL + '/assets/profile-overlay/Special_Tier3_preview.webp',
+					locked: true,
+				},
+			],
+		},
+	];
 
 	let fileinput;
 	const changeAvatar = e => {
@@ -42,7 +159,33 @@
 				<span title="Saturation" on:click={() => (editModel.avatarSaturation = 1)}>Sat</span>
 			</div>
 		</div>
-		<div class="avatar-main">TODO: effect selection</div>
+		<div class="avatar-main">
+			{#each allOverlays as overlay}
+				<ContentBox>
+					<header>{overlay.title}</header>
+
+					<div class="choices">
+						{#each overlay.items as item}
+							<div
+								class="choice"
+								class:locked={item.locked}
+								on:click={() => {
+									if (!item.locked) {
+										editModel.avatarOverlay = item.url;
+										editModel.avatarHue = 0;
+										editModel.avatarSaturation = 1;
+									}
+								}}>
+								<img src={item.preview} />
+								{#if item.locked}
+									<i class="fas fa-lock" />
+								{/if}
+							</div>
+						{/each}
+					</div>
+				</ContentBox>
+			{/each}
+		</div>
 	</div>
 {/if}
 
@@ -94,12 +237,58 @@
 		flex: 1;
 	}
 
+	.avatar-buttons > .range span {
+		min-width: 2rem;
+	}
+
 	:global(.mirror) .avatar-buttons {
 		top: calc(175px - 120px + 230px + 1rem);
 	}
 
 	.avatar-main {
 		padding-left: calc((100vw - min(65em, 100vw - 2rem)) / 2 - 0.75rem + 240px);
+		display: flex;
+		justify-content: flex-start;
+		flex-wrap: wrap;
+	}
+
+	.avatar-main header {
+		font-size: 1em;
+		text-transform: uppercase;
+	}
+
+	.avatar-main :global(> *) {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		max-width: calc(128px + 2rem);
+		min-width: 128px;
+	}
+
+	.avatar-main .choices {
+		display: contents;
+	}
+
+	.avatar-main .choice {
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: 1fr;
+		place-items: center;
+		cursor: pointer;
+	}
+
+	.avatar-main .choice.locked {
+		cursor: not-allowed;
+	}
+
+	.avatar-main .choice > * {
+		grid-row: 1/1;
+		grid-column: 1/1;
+	}
+
+	.avatar-main .choice i {
+		font-size: 1.5em;
 	}
 
 	input[type='range'] {
@@ -174,6 +363,13 @@
 		.avatar-main {
 			position: relative;
 			padding-left: 0;
+			margin-top: 1rem;
+		}
+	}
+
+	@media screen and (max-height: 799px) {
+		.avatar-main {
+			overflow-y: scroll;
 		}
 	}
 </style>
