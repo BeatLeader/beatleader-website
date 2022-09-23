@@ -57,9 +57,10 @@
 							<div
 								class="choice"
 								class:locked={item.locked}
+								title={item.locked ? item.tooltip : null}
 								on:click={() => {
 									if (!item.locked) {
-										editModel.avatarOverlay = item.url;
+										editModel.avatarOverlay = item.name;
 										editModel.avatarHue = 0;
 										editModel.avatarSaturation = 1;
 									}

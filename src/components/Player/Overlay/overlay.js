@@ -10,6 +10,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier1_preview.webp',
 				neededRoles: ['tipper'],
+				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
 				title: 'Tier 2',
@@ -17,6 +18,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier2_preview.webp',
 				neededRoles: ['supporter'],
+				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
 				title: 'Tier 3',
@@ -24,6 +26,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier3.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier3_preview.webp',
 				neededRoles: ['sponsor'],
+				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
 	},
@@ -37,6 +40,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier1_preview.webp',
 				neededRoles: ['tipper'],
+				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
 				title: 'Tier 2',
@@ -44,6 +48,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier2_preview.webp',
 				neededRoles: ['supporter'],
+				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
 				title: 'Tier 3',
@@ -51,6 +56,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier3.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier3_preview.webp',
 				neededRoles: ['sponsor'],
+				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
 	},
@@ -64,6 +70,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier1_preview.webp',
 				neededRoles: ['tipper'],
+				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
 				title: 'Tier 2',
@@ -71,6 +78,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier2_preview.webp',
 				neededRoles: ['supporter'],
+				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
 				title: 'Tier 3',
@@ -78,6 +86,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier3.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier3_preview.webp',
 				neededRoles: ['sponsor'],
+				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
 	},
@@ -91,6 +100,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier1_preview.webp',
 				neededRoles: ['tipper'],
+				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
 				title: 'Tier 2',
@@ -98,6 +108,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier2_preview.webp',
 				neededRoles: ['supporter'],
+				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
 				title: 'Tier 3',
@@ -105,6 +116,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier3.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier3_preview.webp',
 				neededRoles: ['sponsor'],
+				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
 	},
@@ -118,6 +130,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/Special_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Special_Tier1_preview.webp',
 				neededRoles: ['rankedteam', 'juniorrankedteam', 'creator', 'admin'],
+				tooltip: 'You must be a Beat Leader Creator to use this overlay',
 			},
 			{
 				title: 'Tier 2',
@@ -125,6 +138,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/Special_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Special_Tier2_preview.webp',
 				neededRoles: ['rankedteam', 'juniorrankedteam', 'creator', 'admin'],
+				tooltip: 'You must be a Beat Leader Creator to use this overlay',
 			},
 			{
 				title: 'Tier 3',
@@ -132,6 +146,7 @@ const allOverlays = [
 				url: OVERLAY_URL + '/assets/profile-overlay/Special_Tier3.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Special_Tier3_preview.webp',
 				neededRoles: ['rankedteam', 'juniorrankedteam', 'creator', 'admin'],
+				tooltip: 'You must be a Beat Leader Creator to use this overlay',
 			},
 		],
 	},
