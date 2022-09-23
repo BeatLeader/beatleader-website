@@ -88,6 +88,7 @@
 				: null,
 			patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
 			profileAppearance: playerData?.playerInfo?.profileAppearance ?? null,
+			avatarOverlay: playerData?.playerInfo?.avatarOverlay ?? null,
 		};
 	}
 
@@ -276,6 +277,10 @@
 {/if}
 
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>
+	{#if playerInfo?.avatarOverlay || editModel?.avatarOverlay}
+		<img class="avatar-overlay" src={editModel?.avatarOverlay ?? playerInfo.avatarOverlay} />
+	{/if}
+
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
@@ -351,6 +356,15 @@
 <PinnedScores playerId={playerData?.id} {fixedBrowserTitle} />
 
 <style>
+	.avatar-overlay {
+		position: absolute;
+		top: -24px;
+		left: -24px;
+		width: 230px;
+		z-index: 3;
+		mix-blend-mode: screen;
+	}
+
 	.player-general-info {
 		display: flex;
 		flex-wrap: nowrap;
@@ -404,6 +418,10 @@
 
 		.rank-and-stats-cell {
 			align-items: center;
+		}
+
+		.avatar-overlay {
+			left: calc(50% - 115px);
 		}
 	}
 </style>

@@ -28,6 +28,7 @@ export default response => {
 		pinnedScores,
 		eventsParticipating,
 		profileAppearance,
+		avatarOverlay,
 	} = response;
 
 	let profilePicture = avatar;
@@ -171,6 +172,7 @@ export default response => {
 					: [],
 			clans,
 			profileAppearance,
+			avatarOverlay,
 		},
 		scoreStats: scoreStats ? scoreStats : null,
 		statsHistory: processedStatsHistory ? processedStatsHistory : null,
