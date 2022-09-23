@@ -178,6 +178,12 @@
 
 	.avatar-main .choice i {
 		font-size: 1.5em;
+		color: var(--faded);
+	}
+
+	.avatar-main .choice img {
+		aspect-ratio: 1/1;
+		width: 128px;
 	}
 
 	input[type='range'] {
