@@ -13,6 +13,7 @@
 	let roleDescription;
 	let roleLink;
 	let show = false;
+	let cls = null;
 
 	async function verifyMapper(mapperId) {
 		if (!mapperId) return;
@@ -21,6 +22,7 @@
 		const mapperInfoValue = await beatSaverService.getMapper(mapperId);
 		if (mapperInfoValue.verifiedMapper) {
 			roleIcon = null;
+			cls = null;
 			roleIconClass = 'fas fa-hat-wizard';
 			roleDescription = 'Verified maps creator';
 			roleLink = 'https://beatsaver.com/profile/' + mapperId;
@@ -28,6 +30,11 @@
 	}
 
 	function updateRoleIcon(role, mapperId, profileAppearance) {
+		cls = null;
+		roleIcon = null;
+		roleIconClass = null;
+		show = false;
+
 		switch (role) {
 			case 'mapper':
 				show = !profileAppearance || profileAppearance.includes('mapper');
@@ -35,25 +42,21 @@
 				break;
 			case 'rankedteam':
 				show = !profileAppearance || profileAppearance.includes('rankedteam');
-				roleIcon = null;
 				roleIconClass = 'fas fa-balance-scale-right';
 				roleDescription = 'Ranking team member';
 				break;
 			case 'juniorrankedteam':
 				show = !profileAppearance || profileAppearance.includes('juniorrankedteam');
-				roleIcon = null;
 				roleIconClass = 'fas fa-balance-scale';
 				roleDescription = 'Junior Ranking team member';
 				break;
 			case 'creator':
 				show = !profileAppearance || profileAppearance.includes('creator');
-				roleIcon = null;
 				roleIconClass = 'fab fa-creative-commons-by';
 				roleDescription = 'BL creator';
 				break;
 			case 'admin':
 				show = !profileAppearance || profileAppearance.includes('admin');
-				roleIcon = null;
 				roleIconClass = 'fas fa-user-shield';
 				roleDescription = 'Administrator';
 				break;
@@ -61,16 +64,19 @@
 				show = true;
 				roleIcon = BL_CDN + '/assets/patreon1.png';
 				roleDescription = 'Tier 1 Patreon supporter.';
+				cls = 'player-role';
 				break;
 			case 'supporter':
 				show = true;
 				roleIcon = BL_CDN + '/assets/patreon2.png';
 				roleDescription = 'Tier 2 Patreon supporter.';
+				cls = 'player-role';
 				break;
 			case 'sponsor':
 				show = true;
 				roleIcon = BL_CDN + '/assets/patreon3.png';
 				roleDescription = 'Highest tier Patreon supporter. Crypto godge';
+				cls = 'player-role';
 				break;
 			case 'warplane':
 				show = !profileAppearance || profileAppearance.includes('warplane');
@@ -78,15 +84,14 @@
 				roleIconClass = 'fas fa-plane';
 				roleDescription = 'Warplane';
 				break;
-			default:
-				roleIcon = null;
-				roleIconClass = null;
-				break;
 		}
 	}
 
-	function onToggleRole(role) {
+	function onToggleRole(role, e) {
 		if (!role?.length || !editModel) return;
+
+		e.preventDefault();
+		e.stopPropagation();
 
 		if (!editModel.profileAppearance) editModel.profileAppearance = [];
 
@@ -100,28 +105,22 @@
 </script>
 
 {#if (show || !!editModel) && (roleIcon || roleIconClass)}
-	{#if roleLink}
-		{#if !!editModel}
-			{#if roleIcon}
-				<div class="player-role" class:disabled={!show} on:click={() => onToggleRole(role)}>
-					<img class="role-icon" src={roleIcon} title={editModel ? 'Click to toggle' : roleDescription} alt="Role icon" />
-				</div>
-			{:else if roleIconClass}
-				<i class={roleIconClass} class:disabled={!!editModel && !show} on:click={() => onToggleRole(role)} />
-			{/if}
-		{:else if roleIcon}
-			<a class="player-role" href={roleLink}>
-				<img class="role-icon" src={roleIcon} title={roleDescription} alt="Role icon" />
-			</a>
-		{:else if roleIconClass}
-			<i class={roleIconClass} class:disabled={!!editModel && !show} on:click={() => onToggleRole(role)} />
-		{/if}
+	{#if roleLink && roleIcon}
+		<a class={cls} href={roleLink} class:disabled={!show} on:click={e => onToggleRole(role, e)}>
+			<img class="role-icon" src={roleIcon} title={editModel ? 'Click to toggle' : roleDescription} alt="Role icon" />
+		</a>
+	{:else if roleLink && roleIconClass}
+		<a class={cls} href={roleLink} class:disabled={!!editModel && !show} on:click={e => onToggleRole(role, e)}>
+			<i class={roleIconClass} title={editModel ? 'Click to toggle' : roleDescription} />
+		</a>
 	{:else if roleIcon}
-		<div class="player-role" class:disabled={!!editModel && !show} on:click={() => onToggleRole(role)}>
+		<div class={cls} class:disabled={!!editModel && !show} on:click={e => onToggleRole(role, e)}>
 			<img class="role-icon" src={roleIcon} title={editModel ? 'Click to toggle' : roleDescription} alt="Role icon" />
 		</div>
 	{:else if roleIconClass}
-		<i class={roleIconClass} class:disabled={!!editModel && !show} on:click={() => onToggleRole(role)} />
+		<div class={cls} class:disabled={!!editModel && !show} on:click={e => onToggleRole(role, e)}>
+			<i class={roleIconClass} title={editModel ? 'Click to toggle' : roleDescription} />
+		</div>
 	{/if}
 {/if}
 
@@ -155,17 +154,17 @@
 	}
 
 	.disabled img,
-	i.disabled {
+	.disabled i {
 		filter: grayscale(1);
 		opacity: 0.25;
 	}
 
-	i.disabled {
+	.disabled i {
 		opacity: 0.75;
 	}
 
 	.disabled img:hover,
-	i.disabled:hover {
+	.disabled i:hover {
 		filter: none;
 		opacity: 0.5;
 	}

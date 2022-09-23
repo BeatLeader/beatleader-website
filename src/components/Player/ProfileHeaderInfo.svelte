@@ -14,7 +14,6 @@
 	import CountryPicker from '../Common/CountryPickerSingle.svelte';
 	import ClanBadges from './ClanBadges.svelte';
 	import BanForm from './BanForm.svelte';
-	import RoleIcon from './RoleIcon.svelte';
 
 	export let name;
 	export let playerInfo;
