@@ -52,7 +52,7 @@
 				break;
 			case 'creator':
 				show = !profileAppearance || profileAppearance.includes('creator');
-				roleIconClass = 'fab fa-creative-commons-by';
+				roleIconClass = 'fas fa-tools';
 				roleDescription = 'BL creator';
 				break;
 			case 'admin':
