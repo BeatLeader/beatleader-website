@@ -1,7 +1,7 @@
 <script>
 	import Button from '../../Common/Button.svelte';
 	import ContentBox from '../../Common/ContentBox.svelte';
-	import {allOverlays} from './overlay';
+	import {getAllOverlays} from './overlay';
 
 	export let editModel;
 	export let roles;
@@ -24,6 +24,8 @@
 
 	$: modalEnabled = !!editModel?.avatarOverlayEdit;
 	$: onModalStateChange(modalEnabled);
+
+	$: allOverlays = getAllOverlays(roles);
 </script>
 
 {#if modalEnabled}
