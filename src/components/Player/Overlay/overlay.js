@@ -1,6 +1,6 @@
 const OVERLAY_URL = ''; // TODO: replace it with BL CDN
 
-export const allOverlays = [
+const allOverlays = [
 	{
 		title: 'The Sun',
 		items: [
@@ -145,3 +145,6 @@ export const getAllOverlays = roles => {
 		}),
 	}));
 };
+
+export const getOverlayByName = (name, full = true) =>
+	allOverlays.reduce((acc, o) => acc.concat(o.items), []).find(i => i.name === name)?.[full ? 'url' : 'preview'] ?? null;

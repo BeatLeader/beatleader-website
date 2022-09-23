@@ -284,7 +284,7 @@
 <AvatarOverlayEditor bind:editModel {roles} />
 
 <ContentBox cls={modalShown ? 'inner-modal' : ''}>
-	<AvatarOverlay data={editModel ?? playerInfo} {roles} />
+	<AvatarOverlay data={editModel ?? playerInfo} />
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">

@@ -1,15 +1,18 @@
 <script>
+	import {getOverlayByName} from './overlay';
+
 	export let data;
-	export let roles;
+
+	$: overlayUrl = getOverlayByName(data?.avatarOverlay);
 </script>
 
-{#if data?.avatarOverlay}
+{#if overlayUrl}
 	<span
 		style={`
-			--hue: ${data?.avatarHue}deg;
-			--saturation: ${data.avatarSaturation ?? 1}
+			--hue: ${data?.avatarHue ?? 0}deg;
+			--saturation: ${data?.avatarSaturation ?? 1}
 			`}>
-		<img class="avatar-overlay" src={data.avatarOverlay} />
+		<img class="avatar-overlay" src={overlayUrl} />
 	</span>
 {/if}
 
