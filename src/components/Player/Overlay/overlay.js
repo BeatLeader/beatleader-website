@@ -9,7 +9,7 @@ const allOverlays = [
 				name: 'TheSun_Tier1',
 				url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier1_preview.webp',
-				neededRoles: ['tipper'],
+				neededRoles: ['tipper', 'supporter', 'sponsor'],
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -17,7 +17,7 @@ const allOverlays = [
 				name: 'TheSun_Tier2',
 				url: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheSun_Tier2_preview.webp',
-				neededRoles: ['supporter'],
+				neededRoles: ['supporter', 'sponsor'],
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
@@ -39,7 +39,7 @@ const allOverlays = [
 				name: 'TheMoon_Tier1',
 				url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier1_preview.webp',
-				neededRoles: ['tipper'],
+				neededRoles: ['tipper', 'supporter', 'sponsor'],
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -47,7 +47,7 @@ const allOverlays = [
 				name: 'TheMoon_Tier2',
 				url: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheMoon_Tier2_preview.webp',
-				neededRoles: ['supporter'],
+				neededRoles: ['supporter', 'sponsor'],
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
@@ -69,7 +69,7 @@ const allOverlays = [
 				name: 'TheStar_Tier1',
 				url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier1_preview.webp',
-				neededRoles: ['tipper'],
+				neededRoles: ['tipper', 'supporter', 'sponsor'],
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -77,7 +77,7 @@ const allOverlays = [
 				name: 'TheStar_Tier2',
 				url: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/TheStar_Tier2_preview.webp',
-				neededRoles: ['supporter'],
+				neededRoles: ['supporter', 'sponsor'],
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
@@ -99,7 +99,7 @@ const allOverlays = [
 				name: 'Sparks_Tier1',
 				url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier1.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier1_preview.webp',
-				neededRoles: ['tipper'],
+				neededRoles: ['tipper', 'supporter', 'sponsor'],
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -107,7 +107,7 @@ const allOverlays = [
 				name: 'Sparks_Tier2',
 				url: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier2.webp',
 				preview: OVERLAY_URL + '/assets/profile-overlay/Sparks_Tier2_preview.webp',
-				neededRoles: ['supporter'],
+				neededRoles: ['supporter', 'sponsor'],
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
