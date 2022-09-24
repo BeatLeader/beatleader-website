@@ -2,9 +2,10 @@
 	export let box = null;
 	export let background = 'var(--foreground)';
 	export let cls = null;
+	export let zIndex = 1;
 </script>
 
-<div class="content-box {cls ?? ''}" bind:this={box} style="--box-background: {background}">
+<div class="content-box {cls ?? ''}" bind:this={box} style="--box-background: {background}; --z-index: {zIndex}">
 	<slot />
 </div>
 
@@ -17,7 +18,7 @@
 		border-radius: 6px;
 		padding: 1rem;
 		position: relative;
-		z-index: 1;
+		z-index: var(--z-index);
 	}
 
 	.content-box:hover {
