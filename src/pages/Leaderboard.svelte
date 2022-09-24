@@ -500,7 +500,7 @@
 		{votingStore}
 		{leaderboard}
 		playerId={$account.id}
-		{reweight}
+		reweight={reweight && !reweight.finished ? reweight : null}
 		on:finished={() => {
 			rankUpdate = false;
 		}} />
@@ -653,11 +653,15 @@
 										}} />
 								{/if}
 							{/if}
-							{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || !isjuniorRT)}
+							{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
 								<Button
 									cls="voteButton"
 									iconFa="fa fa-scale-balanced"
-									title={reweight ? (reweight.rtMember == $account?.id ? 'Update' : 'Approve reweight') : 'Start map reweight!'}
+									title={reweight && !reweight.finished
+										? reweight.rtMember == $account?.id
+											? 'Update'
+											: 'Approve reweight'
+										: 'Start map reweight!'}
 									noMargin={true}
 									on:click={() => {
 										rankUpdate = !rankUpdate;
