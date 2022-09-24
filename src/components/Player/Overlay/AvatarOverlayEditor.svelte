@@ -48,32 +48,44 @@
 			</div>
 		</div>
 		<div class="avatar-main">
-			{#each allOverlays as overlay}
-				<ContentBox>
-					<header>{overlay.title}</header>
+			<div class="wrapper">
+				{#each allOverlays as overlay}
+					<ContentBox>
+						<header>{overlay.title}</header>
 
-					<div class="choices">
-						{#each overlay.items as item}
-							<div
-								class="choice"
-								class:locked={item.locked}
-								title={item.locked ? item.tooltip : null}
-								on:click={() => {
-									if (!item.locked) {
-										editModel.avatarOverlay = item.name;
-										editModel.avatarHue = 0;
-										editModel.avatarSaturation = 1;
-									}
-								}}>
-								<img src={item.preview} />
-								{#if item.locked}
-									<i class="fas fa-lock" />
-								{/if}
-							</div>
-						{/each}
-					</div>
-				</ContentBox>
-			{/each}
+						<div class="choices">
+							{#each overlay.items as item}
+								<div
+									class="choice"
+									class:locked={item.locked}
+									title={item.locked ? item.tooltip : null}
+									on:click={() => {
+										if (!item.locked) {
+											editModel.avatarOverlay = item.name;
+											editModel.avatarHue = 0;
+											editModel.avatarSaturation = 1;
+										}
+									}}>
+									<img src={item.preview} />
+									{#if item.locked}
+										<i class="fas fa-lock" />
+									{/if}
+								</div>
+							{/each}
+						</div>
+					</ContentBox>
+				{/each}
+			</div>
+			<footer>
+				<Button
+					type="text"
+					label="Clear selection"
+					on:click={() => {
+						editModel.avatarOverlay = null;
+						editModel.avatarHue = 0;
+						editModel.avatarSaturation = 1;
+					}} />
+			</footer>
 		</div>
 	</div>
 {/if}
@@ -86,13 +98,14 @@
 		bottom: 0;
 		right: 0;
 		z-index: 100;
-		background: rgba(0, 0, 0, 0.9);
+		background: rgba(0, 0, 0, 0.8);
 		-webkit-mask-image: radial-gradient(
 			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 155px,
 			transparent 120px,
 			black 0
 		);
 		padding-top: 44px;
+		overflow: hidden auto;
 	}
 
 	:global(.mirror) .avatar-modal {
@@ -136,17 +149,30 @@
 
 	.avatar-main {
 		padding-left: calc((100vw - min(65em, 100vw - 2rem)) / 2 - 0.75rem + 240px);
+	}
+
+	.avatar-main .wrapper {
 		display: flex;
 		justify-content: flex-start;
 		flex-wrap: wrap;
 	}
 
-	.avatar-main header {
+	.avatar-main :global(.content-box) {
+		margin: 0;
+	}
+
+	.avatar-main header,
+	.avatar-main footer {
 		font-size: 1em;
 		text-transform: uppercase;
 	}
 
-	.avatar-main :global(> *) {
+	.avatar-main footer {
+		display: flex;
+		justify-content: center;
+	}
+
+	.avatar-main .wrapper :global(> *) {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
@@ -259,12 +285,6 @@
 			position: relative;
 			padding-left: 0;
 			margin-top: 1rem;
-		}
-	}
-
-	@media screen and (max-height: 799px) {
-		.avatar-main {
-			overflow-y: scroll;
 		}
 	}
 </style>
