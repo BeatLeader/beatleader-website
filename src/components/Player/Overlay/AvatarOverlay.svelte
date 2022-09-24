@@ -3,7 +3,19 @@
 
 	export let data;
 
-	$: overlayUrl = getOverlayByName(data?.effectName);
+	let overlayUrl = null;
+
+	function onOverlayChange(effectName) {
+		overlayUrl = getOverlayByName(effectName, false);
+
+		const fullUrl = getOverlayByName(effectName, true);
+
+		const img = new Image();
+		img.src = fullUrl;
+		img.onload = () => (overlayUrl = fullUrl);
+	}
+
+	$: onOverlayChange(data?.effectName);
 </script>
 
 {#if overlayUrl}
