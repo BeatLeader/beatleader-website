@@ -1,5 +1,10 @@
 import {BL_CDN} from '../../../network/queues/beatleader/page-queue';
 
+const CREATOR = ['rankedteam', 'juniorrankedteam', 'creator', 'admin'];
+const SPONSOR = ['sponsor', ...CREATOR];
+const SUPPORTER = ['supporter', ...SPONSOR];
+const TIPPER = ['tipper', ...SUPPORTER];
+
 const allOverlays = [
 	{
 		title: 'The Sun',
@@ -9,7 +14,7 @@ const allOverlays = [
 				name: 'TheSun_Tier1',
 				url: BL_CDN + '/assets/TheSun_Tier1.webp',
 				preview: BL_CDN + '/assets/TheSun_Tier1_preview.webp',
-				neededRoles: ['tipper', 'supporter', 'sponsor'],
+				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -17,7 +22,7 @@ const allOverlays = [
 				name: 'TheSun_Tier2',
 				url: BL_CDN + '/assets/TheSun_Tier2.webp',
 				preview: BL_CDN + '/assets/TheSun_Tier2_preview.webp',
-				neededRoles: ['supporter', 'sponsor'],
+				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
@@ -25,7 +30,7 @@ const allOverlays = [
 				name: 'TheSun_Tier3',
 				url: BL_CDN + '/assets/TheSun_Tier3.webp',
 				preview: BL_CDN + '/assets/TheSun_Tier3_preview.webp',
-				neededRoles: ['sponsor'],
+				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
@@ -39,7 +44,7 @@ const allOverlays = [
 				name: 'TheMoon_Tier1',
 				url: BL_CDN + '/assets/TheMoon_Tier1.webp',
 				preview: BL_CDN + '/assets/TheMoon_Tier1_preview.webp',
-				neededRoles: ['tipper', 'supporter', 'sponsor'],
+				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -47,7 +52,7 @@ const allOverlays = [
 				name: 'TheMoon_Tier2',
 				url: BL_CDN + '/assets/TheMoon_Tier2.webp',
 				preview: BL_CDN + '/assets/TheMoon_Tier2_preview.webp',
-				neededRoles: ['supporter', 'sponsor'],
+				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
@@ -55,7 +60,7 @@ const allOverlays = [
 				name: 'TheMoon_Tier3',
 				url: BL_CDN + '/assets/TheMoon_Tier3.webp',
 				preview: BL_CDN + '/assets/TheMoon_Tier3_preview.webp',
-				neededRoles: ['sponsor'],
+				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
@@ -69,7 +74,7 @@ const allOverlays = [
 				name: 'TheStar_Tier1',
 				url: BL_CDN + '/assets/TheStar_Tier1.webp',
 				preview: BL_CDN + '/assets/TheStar_Tier1_preview.webp',
-				neededRoles: ['tipper', 'supporter', 'sponsor'],
+				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -77,7 +82,7 @@ const allOverlays = [
 				name: 'TheStar_Tier2',
 				url: BL_CDN + '/assets/TheStar_Tier2.webp',
 				preview: BL_CDN + '/assets/TheStar_Tier2_preview.webp',
-				neededRoles: ['supporter', 'sponsor'],
+				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
@@ -85,7 +90,7 @@ const allOverlays = [
 				name: 'TheStar_Tier3',
 				url: BL_CDN + '/assets/TheStar_Tier3.webp',
 				preview: BL_CDN + '/assets/TheStar_Tier3_preview.webp',
-				neededRoles: ['sponsor'],
+				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
@@ -99,7 +104,7 @@ const allOverlays = [
 				name: 'Sparks_Tier1',
 				url: BL_CDN + '/assets/Sparks_Tier1.webp',
 				preview: BL_CDN + '/assets/Sparks_Tier1_preview.webp',
-				neededRoles: ['tipper', 'supporter', 'sponsor'],
+				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
 			},
 			{
@@ -107,7 +112,7 @@ const allOverlays = [
 				name: 'Sparks_Tier2',
 				url: BL_CDN + '/assets/Sparks_Tier2.webp',
 				preview: BL_CDN + '/assets/Sparks_Tier2_preview.webp',
-				neededRoles: ['supporter', 'sponsor'],
+				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
 			},
 			{
@@ -115,7 +120,7 @@ const allOverlays = [
 				name: 'Sparks_Tier3',
 				url: BL_CDN + '/assets/Sparks_Tier3.webp',
 				preview: BL_CDN + '/assets/Sparks_Tier3_preview.webp',
-				neededRoles: ['sponsor'],
+				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
 			},
 		],
@@ -129,7 +134,7 @@ const allOverlays = [
 				name: 'Special_Tier1',
 				url: BL_CDN + '/assets/Special_Tier1.webp',
 				preview: BL_CDN + '/assets/Special_Tier1_preview.webp',
-				neededRoles: ['rankedteam', 'juniorrankedteam', 'creator', 'admin'],
+				neededRoles: CREATOR,
 				tooltip: 'You must be a Beat Leader Creator to use this overlay',
 			},
 			{
@@ -137,7 +142,7 @@ const allOverlays = [
 				name: 'Special_Tier2',
 				url: BL_CDN + '/assets/Special_Tier2.webp',
 				preview: BL_CDN + '/assets/Special_Tier2_preview.webp',
-				neededRoles: ['rankedteam', 'juniorrankedteam', 'creator', 'admin'],
+				neededRoles: CREATOR,
 				tooltip: 'You must be a Beat Leader Creator to use this overlay',
 			},
 			{
@@ -145,7 +150,7 @@ const allOverlays = [
 				name: 'Special_Tier3',
 				url: BL_CDN + '/assets/Special_Tier3.webp',
 				preview: BL_CDN + '/assets/Special_Tier3_preview.webp',
-				neededRoles: ['rankedteam', 'juniorrankedteam', 'creator', 'admin'],
+				neededRoles: CREATOR,
 				tooltip: 'You must be a Beat Leader Creator to use this overlay',
 			},
 		],
