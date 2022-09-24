@@ -28,24 +28,24 @@
 	}
 
 	function onToggleStat(key) {
-		if (!key?.length || !editModel) return;
+		if (!key?.length || !editModel?.data) return;
 
-		if (!editModel.profileAppearance) editModel.profileAppearance = [];
+		if (!editModel.data?.profileAppearance) editModel.data.profileAppearance = [];
 
-		if (editModel.profileAppearance.includes(key)) {
-			editModel.profileAppearance = editModel.profileAppearance.filter(s => s !== key);
-			if (!editModel.profileAppearance.length) editModel.profileAppearance = null;
-		} else editModel.profileAppearance = [...editModel.profileAppearance, key];
+		if (editModel.data?.profileAppearance.includes(key)) {
+			editModel.data.profileAppearance = editModel.data?.profileAppearance.filter(s => s !== key);
+			if (!editModel.data.profileAppearance.length) editModel.data.profileAppearance = null;
+		} else editModel.data.profileAppearance = [...editModel.data?.profileAppearance, key];
 	}
 
 	$: ({visible: visibleScoresStats, hidden: hiddenScoresStats} = processStats(
 		scoresStats,
-		editModel?.profileAppearance ?? profileAppearance,
+		editModel?.data?.profileAppearance ?? profileAppearance,
 		!!editModel
 	));
 	$: ({visible: visibleAccStats, hidden: hiddenAccStats} = processStats(
 		accBadges,
-		editModel?.profileAppearance ?? profileAppearance,
+		editModel?.data?.profileAppearance ?? profileAppearance,
 		!!editModel
 	));
 </script>

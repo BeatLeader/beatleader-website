@@ -3,14 +3,14 @@
 
 	export let data;
 
-	$: overlayUrl = getOverlayByName(data?.avatarOverlay);
+	$: overlayUrl = getOverlayByName(data?.effectName);
 </script>
 
 {#if overlayUrl}
 	<span
 		style={`
-			--hue: ${data?.avatarHue ?? 0}deg;
-			--saturation: ${data?.avatarSaturation ?? 1}
+			--hue: ${data?.hue ?? 0}deg;
+			--saturation: ${data?.saturation ?? 1}
 			`}>
 		<img class="avatar-overlay" src={overlayUrl} />
 	</span>

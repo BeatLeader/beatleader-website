@@ -90,8 +90,8 @@
 	{#if playerInfo}
 		<div class="player-nickname {showRainbow(playerInfo) ? 'rainbow' : ''}">
 			{#if name}
-				{#if !!editModel}
-					<input type="text" bind:value={editModel.name} placeholder="Your name" class="input-reset" />
+				{#if editModel?.data}
+					<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
 				{:else if playerInfo.externalProfileUrl}
 					<a
 						href={playerInfo.externalProfileUrl}
@@ -112,7 +112,7 @@
 				{/if}
 
 				{#if canRedact}
-					{#if !!editModel}
+					{#if editModel?.data}
 						<Button
 							color="green"
 							type="text"
@@ -144,12 +144,12 @@
 		</div>
 
 		{#if playerInfo.sponsor}
-			{#if !!editModel}
+			{#if editModel?.data}
 				<div class="sponsor-message">
 					<span
 						>This message will be shown in-game for your scores.<br />
 						You can use <a class="inlineLink" href="http://digitalnativestudios.com/textmeshpro/docs/rich-text">Unity tags</a> here.</span>
-					<input type="text" bind:value={editModel.patreonMessage} placeholder="Promotion message" class="sponsor-input" />
+					<input type="text" bind:value={editModel.data.patreonMessage} placeholder="Promotion message" class="sponsor-input" />
 				</div>
 			{/if}
 		{/if}
@@ -174,9 +174,9 @@
 					reversePrevSign={true} />
 			</a>
 
-			{#if canRedact && !!editModel}
+			{#if canRedact && editModel?.data}
 				<div class="pickerContainer">
-					<CountryPicker selected={editModel.country} on:select={e => (editModel.country = e.detail.value)} />
+					<CountryPicker selected={editModel.data.country} on:select={e => (editModel.data.country = e.detail.value)} />
 				</div>
 			{:else}
 				{#each countries as country}
@@ -232,7 +232,7 @@
 			{/if}
 		</div>
 
-		{#if !!editModel && editModel?.country?.toUpperCase() !== playerInfo?.countries?.[0]?.country}
+		{#if editModel?.data && editModel?.data?.country?.toUpperCase() !== playerInfo?.countries?.[0]?.country}
 			Make sure you selected right country. You can change it only every 30 days.
 		{/if}
 

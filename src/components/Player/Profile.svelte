@@ -82,18 +82,20 @@
 
 	function onEnableEditModel() {
 		editModel = editModel = {
-			name: playerData?.name ?? '',
-			country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
-			avatarInput: null,
+			data: {
+				name: playerData?.name ?? '',
+				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
+				avatar: null,
+				patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
+				profileAppearance: playerData?.playerInfo?.profileAppearance ?? null,
+				effectName: playerData?.playerInfo?.effectName ?? null,
+				hue: playerData?.playerInfo?.hue ?? 0,
+				saturation: playerData?.playerInfo?.saturation ?? 1,
+			},
 			avatar: playerData?.playerInfo?.avatar
 				? playerData.playerInfo.avatar + (playerData.playerInfo.avatar.includes('beatleader') ? `?${avatarHash}` : '')
 				: null,
-			patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
-			profileAppearance: playerData?.playerInfo?.profileAppearance ?? null,
-			avatarOverlay: playerData?.playerInfo?.avatarOverlay ?? null,
 			avatarOverlayEdit: false,
-			avatarHue: playerData?.playerInfo?.avatarHue ?? 0,
-			avatarSaturation: playerData?.playerInfo?.avatarSaturation ?? 1,
 		};
 	}
 
@@ -101,24 +103,10 @@
 		editModel = null;
 	}
 
-	const readFile = async fileInput =>
-		new Promise((resolve, reject) => {
-			const reader = new FileReader();
-			reader.onload = () => resolve(reader.result);
-			reader.onerror = () => reject(reader.error);
-
-			reader.readAsArrayBuffer(fileInput);
-		});
-
 	async function onSaveEditModel() {
 		// TODO: country.toUpperCase() before save
 
 		console.error('TODO: save model', editModel);
-
-		if (editModel.avatarInput) {
-			const avatarBuffer = await readFile(editModel.avatarInput)?.catch(_ => _);
-			console.log(avatarBuffer);
-		}
 	}
 
 	// TODO: old save method

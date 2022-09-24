@@ -6,10 +6,19 @@
 	export let editModel;
 	export let roles;
 
+	const readFile = async fileInput =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = () => reject(reader.error);
+
+			reader.readAsArrayBuffer(fileInput);
+		});
+
 	let fileinput;
-	const changeAvatar = e => {
-		editModel.avatarInput = e.target.files[0];
+	const changeAvatar = async e => {
 		editModel.avatar = URL.createObjectURL(e.target.files[0]);
+		editModel.data.avatar = await readFile(e.target.files[0])?.catch(_ => _);
 	};
 
 	function onModalStateChange(modalEnabled) {
@@ -38,13 +47,13 @@
 			</Button>
 
 			<div class="range">
-				<input type="range" min="0" max="359" step="1" bind:value={editModel.avatarHue} class="hue" />
-				<span title="Hue" on:click={() => (editModel.avatarHue = 0)}>Hue</span>
+				<input type="range" min="0" max="359" step="1" bind:value={editModel.data.hue} class="hue" />
+				<span title="Hue" on:click={() => (editModel.data.hue = 0)}>Hue</span>
 			</div>
 
 			<div class="range">
-				<input type="range" min="0" max="3" step="0.01" bind:value={editModel.avatarSaturation} class="saturation" />
-				<span title="Saturation" on:click={() => (editModel.avatarSaturation = 1)}>Sat</span>
+				<input type="range" min="0" max="3" step="0.01" bind:value={editModel.data.saturation} class="saturation" />
+				<span title="Saturation" on:click={() => (editModel.data.saturation = 1)}>Sat</span>
 			</div>
 		</div>
 		<div class="avatar-main">
@@ -61,9 +70,9 @@
 									title={item.locked ? item.tooltip : null}
 									on:click={() => {
 										if (!item.locked) {
-											editModel.avatarOverlay = item.name;
-											editModel.avatarHue = 0;
-											editModel.avatarSaturation = 1;
+											editModel.data.effectName = item.name;
+											editModel.data.hue = 0;
+											editModel.data.saturation = 1;
 										}
 									}}>
 									<img src={item.preview} />
@@ -81,9 +90,9 @@
 					type="text"
 					label="Clear selection"
 					on:click={() => {
-						editModel.avatarOverlay = null;
-						editModel.avatarHue = 0;
-						editModel.avatarSaturation = 1;
+						editModel.data.effectName = null;
+						editModel.data.hue = 0;
+						editModel.data.saturation = 1;
 					}} />
 			</footer>
 		</div>

@@ -93,15 +93,15 @@
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (!editModel.profileAppearance) editModel.profileAppearance = [];
+		if (!editModel.data.profileAppearance) editModel.data.profileAppearance = [];
 
-		if (editModel.profileAppearance.includes(role)) {
-			editModel.profileAppearance = editModel.profileAppearance.filter(s => s !== role);
-			if (!editModel.profileAppearance.length) editModel.profileAppearance = null;
-		} else editModel.profileAppearance = [...editModel.profileAppearance, role];
+		if (editModel.data.profileAppearance.includes(role)) {
+			editModel.data.profileAppearance = editModel.data.profileAppearance.filter(s => s !== role);
+			if (!editModel.data.profileAppearance.length) editModel.data.profileAppearance = null;
+		} else editModel.data.profileAppearance = [...editModel.data.profileAppearance, role];
 	}
 
-	$: updateRoleIcon(role, mapperId, editModel?.profileAppearance ?? profileAppearance);
+	$: updateRoleIcon(role, mapperId, editModel?.data?.profileAppearance ?? profileAppearance);
 </script>
 
 {#if (show || !!editModel) && (roleIcon || roleIconClass)}
