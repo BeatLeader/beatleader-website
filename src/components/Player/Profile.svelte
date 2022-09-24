@@ -107,6 +107,8 @@
 		// TODO: country.toUpperCase() before save
 
 		console.error('TODO: save model', editModel);
+
+		dispatch('player-data-updated');
 	}
 
 	let modalShown;
@@ -219,8 +221,6 @@
 						bind:editModel
 						on:modal-shown={() => (modalShown = true)}
 						on:modal-hidden={() => (modalShown = false)}
-						on:player-data-updated
-						on:player-data-edit-error={onPlayerDataEditError} />
 				{/if}
 			</div>
 
@@ -249,8 +249,6 @@
 				{playerId}
 				{statsHistory}
 				bind:editModel
-				on:player-data-updated
-				on:player-data-edit-error={onPlayerDataEditError}
 				on:edit-model-enable={onEnableEditModel}
 				on:edit-model-cancel={onCancelEditModel}
 				on:edit-model-save={onSaveEditModel}
