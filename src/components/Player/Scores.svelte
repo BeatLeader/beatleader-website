@@ -105,11 +105,10 @@
 		scoresStore,
 		$scoresStore
 	);
-	$: isLoading = scoresStore ? scoresStore.isLoading : false;
 	$: pending = scoresStore ? scoresStore.pending : null;
 	$: error = scoresStore ? scoresStore.error : null;
-	$: isMain = playerId && $account?.id === playerId;
-	$: isMain ? failedScores.refresh() : null;
+	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
+	$: isAdmin ? failedScores.refresh() : null;
 
 	$: failedScoresPage = opt($failedScores, 'metadata.page');
 	$: totalFailedScores = opt($failedScores, 'metadata.total');
@@ -139,7 +138,7 @@
 		on:service-change={onServiceChanged}
 		on:service-params-change={onServiceParamsChanged} />
 
-	{#if isMain && failedScoresArray && failedScoresArray.length}
+	{#if isAdmin && failedScoresArray && failedScoresArray.length}
 		<div class="song-scores grid-transition-helper">
 			{#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
 				<FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} />
