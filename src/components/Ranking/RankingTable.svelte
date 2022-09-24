@@ -50,7 +50,7 @@
 
 	const statKeys = {
 		acc: {
-			ranked: 'scoreStats.averageRankedAccuracy',
+			ranked: 'scoreStats.averageWeightedRankedAccuracy',
 			unranked: 'scoreStats.averageUnrankedAccuracy',
 			all: 'scoreStats.averageAccuracy',
 		},
@@ -87,12 +87,23 @@
 			hideForTypes: ['unranked'],
 		},
 		{
+			id: 'weightedAcc',
+			label: 'Acc',
+			title: 'Sort by weighted accuracy',
+			iconFa: 'fa fa-crosshairs',
+			value: data => getAcc(data, statKeys['acc'][currentTypeValue]),
+			props: {prefix: '', suffix: '%', zero: '-', digits: 2},
+			hideForTypes: ['unranked'],
+		},
+
+		{
 			id: 'acc',
 			label: 'Acc',
 			title: 'Sort by average accuracy',
 			iconFa: 'fa fa-crosshairs',
 			value: data => getAcc(data, statKeys['acc'][currentTypeValue]),
 			props: {prefix: '', suffix: '%', zero: '-', digits: 2},
+			hideForTypes: ['ranked'],
 		},
 		{
 			id: 'topPp',

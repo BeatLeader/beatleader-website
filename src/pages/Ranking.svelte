@@ -330,9 +330,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/6')}>
-			<span class="event-title"> Ranked.Fifth.Week.Play! </span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/86-event.png" />
+		<div class="event-banner" on:click={() => navigate('/event/10')}>
+			<span class="event-title"> Sixth batch of maps ranked! </span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/95-event.png" />
 		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -450,7 +450,7 @@
 	.event-banner {
 		display: flex;
 		align-items: center;
-		background: #363a38;
+		background: #8470df;
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;

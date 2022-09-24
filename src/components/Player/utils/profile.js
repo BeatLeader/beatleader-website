@@ -23,9 +23,9 @@ function updateScoresStats(playerData) {
 				{key: 'averageAccuracy', label: 'Average acc', title: 'Average accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
 				{key: 'medianAccuracy', label: 'Median acc', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
 				{
-					key: 'averageRankedAccuracy',
+					key: 'averageWeightedRankedAccuracy',
 					label: 'Average ranked acc',
-					title: 'Average ranked accuracy',
+					title: 'Average ranked accuracy (weighted)',
 					digits: 2,
 					suffix: '%',
 					bgColor: 'var(--ppColour)',

@@ -35,7 +35,14 @@ export default response => {
 		: null;
 
 	if (scoreStats) {
-		['averageAccuracy', 'averageRankedAccuracy', 'medianAccuracy', 'medianRankedAccuracy', 'topAccuracy'].forEach(k => {
+		[
+			'averageAccuracy',
+			'averageRankedAccuracy',
+			'averageWeightedRankedAccuracy',
+			'medianAccuracy',
+			'medianRankedAccuracy',
+			'topAccuracy',
+		].forEach(k => {
 			if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
 		});
 	}
