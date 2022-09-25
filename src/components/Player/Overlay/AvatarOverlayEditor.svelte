@@ -168,6 +168,7 @@
 		display: flex;
 		justify-content: flex-start;
 		flex-wrap: wrap;
+		gap: 0.5em;
 	}
 
 	.avatar-main :global(.content-box) {
@@ -191,7 +192,7 @@
 		flex-direction: column;
 		align-items: center;
 		max-width: calc(128px + 2rem);
-		min-width: 128px;
+		min-width: 144px;
 	}
 
 	.avatar-main .choices {

@@ -93,6 +93,12 @@
 		cursor: cell;
 	}
 
+	:global(.edit-enabled) * :global(.badge:not(.disabled)) {
+		background: transparent !important;
+		border-style: dotted;
+		border-width: 0.15em;
+	}
+
 	:global(.edit-enabled) * :global(.badge.disabled) {
 		filter: grayscale(1);
 		opacity: 0.25;
