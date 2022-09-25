@@ -86,7 +86,7 @@
 				name: playerData?.name ?? '',
 				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
 				avatar: null,
-				patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
+				message: playerData?.profileSettings?.message ?? '',
 				profileAppearance: playerData?.profileSettings?.profileAppearance ?? null,
 				effectName: playerData?.profileSettings?.effectName ?? null,
 				hue: playerData?.profileSettings?.hue ?? 0,
@@ -114,7 +114,7 @@
 	async function onSaveEditModel() {
 		if (!editModel) return;
 
-		let {profileAppearance, country, avatar, patreonMessage, ...data} = editModel?.data ?? {};
+		let {profileAppearance, country, avatar, message, ...data} = editModel?.data ?? {};
 
 		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : null;
 		country =
@@ -122,7 +122,7 @@
 
 		data = {...data, profileAppearance};
 		if (country) data.country = country;
-		if (patreonMessage?.length) data.patreonMessage = patreonMessage;
+		if (message?.length) data.message = message;
 
 		try {
 			editModel.isSaving = true;
