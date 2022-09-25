@@ -16,6 +16,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheSun_Tier1_preview.webp',
 				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 2',
@@ -24,6 +25,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheSun_Tier2_preview.webp',
 				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 3',
@@ -32,6 +34,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheSun_Tier3_preview.webp',
 				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
+				patreonLink: true,
 			},
 		],
 	},
@@ -46,6 +49,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheMoon_Tier1_preview.webp',
 				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 2',
@@ -54,6 +58,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheMoon_Tier2_preview.webp',
 				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 3',
@@ -62,6 +67,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheMoon_Tier3_preview.webp',
 				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
+				patreonLink: true,
 			},
 		],
 	},
@@ -76,6 +82,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheStar_Tier1_preview.webp',
 				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 2',
@@ -84,6 +91,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheStar_Tier2_preview.webp',
 				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 3',
@@ -92,6 +100,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/TheStar_Tier3_preview.webp',
 				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
+				patreonLink: true,
 			},
 		],
 	},
@@ -106,6 +115,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/Sparks_Tier1_preview.webp',
 				neededRoles: TIPPER,
 				tooltip: 'You must be a Tipper to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 2',
@@ -114,6 +124,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/Sparks_Tier2_preview.webp',
 				neededRoles: SUPPORTER,
 				tooltip: 'You must be a Supporter to use this overlay',
+				patreonLink: true,
 			},
 			{
 				title: 'Tier 3',
@@ -122,6 +133,7 @@ const allOverlays = [
 				preview: BL_CDN + '/assets/Sparks_Tier3_preview.webp',
 				neededRoles: SPONSOR,
 				tooltip: 'You must be a Sponsor to use this overlay',
+				patreonLink: true,
 			},
 		],
 	},

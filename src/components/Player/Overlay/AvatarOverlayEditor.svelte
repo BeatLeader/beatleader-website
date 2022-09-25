@@ -67,6 +67,7 @@
 								<div
 									class="choice"
 									class:locked={item.locked}
+									class:with-patreon={!!item.patreonLink}
 									title={item.locked ? item.tooltip : null}
 									on:click={() => {
 										if (!item.locked) {
@@ -78,6 +79,9 @@
 									<img src={item.preview} />
 									{#if item.locked}
 										<i class="fas fa-lock" />
+										{#if item.patreonLink}
+											<a href="https://patreon.com/BeatLeader" target="_blank">Patreon</a>
+										{/if}
 									{/if}
 								</div>
 							{/each}
@@ -211,9 +215,20 @@
 		grid-column: 1/1;
 	}
 
+	.avatar-main .choice a {
+		color: var(--textColor) !important;
+		font-size: 0.875em;
+		margin-top: 1.75em;
+		text-decoration: underline;
+	}
+
 	.avatar-main .choice i {
 		font-size: 1.5em;
 		color: var(--faded);
+	}
+
+	.avatar-main .choice.with-patreon i {
+		margin-bottom: 1em;
 	}
 
 	.avatar-main .choice img {
