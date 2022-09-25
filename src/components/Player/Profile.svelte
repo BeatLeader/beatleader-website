@@ -63,9 +63,6 @@
 	}
 
 	let editError = null;
-	function onPlayerDataEditError(err) {
-		editError = err?.detail ?? null;
-	}
 
 	let roles = null;
 	function updateRoles(role) {
@@ -87,15 +84,16 @@
 				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
 				avatar: null,
 				patreonMessage: playerData?.playerInfo?.patreonFeatures?.message ?? '',
-				profileAppearance: playerData?.playerInfo?.profileAppearance ?? null,
-				effectName: playerData?.playerInfo?.effectName ?? null,
-				hue: playerData?.playerInfo?.hue ?? 0,
-				saturation: playerData?.playerInfo?.saturation ?? 1,
+				profileAppearance: playerData?.profileSettings?.profileAppearance ?? null,
+				effectName: playerData?.profileSettings?.effectName ?? null,
+				hue: playerData?.profileSettings?.hue ?? 0,
+				saturation: playerData?.profileSettings?.saturation ?? 1,
 			},
 			avatar: playerData?.playerInfo?.avatar
 				? playerData.playerInfo.avatar + (playerData.playerInfo.avatar.includes('beatleader') ? `?${avatarHash}` : '')
 				: null,
 			avatarOverlayEdit: false,
+			isSaving: false,
 		};
 	}
 
@@ -104,11 +102,33 @@
 	}
 
 	async function onSaveEditModel() {
-		// TODO: country.toUpperCase() before save
+		if (!editModel) return;
 
-		console.error('TODO: save model', editModel);
+		let {profileAppearance, country, avatar, patreonMessage, ...data} = editModel?.data ?? {};
 
-		dispatch('player-data-updated');
+		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : null;
+		country =
+			country?.length && (country !== playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
+
+		data = {...data, profileAppearance};
+		if (country) data.country = country;
+		if (patreonMessage?.length) data.patreonMessage = patreonMessage;
+
+		try {
+			editModel.isSaving = true;
+
+			await account.update(data, avatar);
+
+			setTimeout(() => {
+				dispatch('player-data-updated');
+			}, 1000);
+
+			editModel = null;
+		} catch (err) {
+			editError = err;
+		} finally {
+			if (editModel) editModel.isSaving = false;
+		}
 	}
 
 	let modalShown;
@@ -201,7 +221,7 @@
 <AvatarOverlayEditor bind:editModel {roles} />
 
 <ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
-	<AvatarOverlay data={editModel?.data ?? playerInfo} />
+	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
@@ -220,7 +240,7 @@
 						{playerData}
 						bind:editModel
 						on:modal-shown={() => (modalShown = true)}
-						on:modal-hidden={() => (modalShown = false)}
+						on:modal-hidden={() => (modalShown = false)} />
 				{/if}
 			</div>
 
@@ -230,7 +250,7 @@
 						<RoleIcon
 							{role}
 							mapperId={playerInfo?.mapperId}
-							profileAppearance={playerData?.playerInfo?.profileAppearance ?? null}
+							profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
 							bind:editModel />
 					{/each}
 				</div>
@@ -259,11 +279,11 @@
 				{scoresStats}
 				{accBadges}
 				{skeleton}
-				profileAppearance={playerData?.playerInfo?.profileAppearance}
+				profileAppearance={playerData?.profileSettings?.profileAppearance}
 				bind:editModel />
 
 			{#if $account.error}
-				{$account.error}
+				<Error error={$account.error} />
 			{/if}
 		</div>
 	</div>

@@ -114,6 +114,7 @@
 				{#if canRedact}
 					{#if editModel?.data}
 						<Button
+							loading={editModel.isSaving}
 							color="green"
 							type="text"
 							title="Save"
@@ -121,6 +122,7 @@
 							iconFa="fas fa-check"
 							on:click={() => dispatch('edit-model-save')} />
 						<Button
+							disabled={editModel.isSaving}
 							color="red"
 							type="text"
 							title="Cancel"

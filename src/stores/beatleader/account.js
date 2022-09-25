@@ -157,6 +157,38 @@ export default (refreshOnCreate = true) => {
 			});
 	};
 
+	const update = async (data, avatar = null) => {
+		const url = new URL(BL_API_URL + 'user');
+		Object.entries(data).forEach(([key, value]) => {
+			url.searchParams.append(key, value);
+		});
+
+		return fetch(url.toString(), {
+			credentials: 'include',
+			method: 'PATCH',
+			body: avatar ?? null,
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+
+					throw data;
+				} else {
+					account.message = 'Data saved!';
+					account.error = null;
+					refresh(true);
+					setTimeout(function () {
+						account.message = null;
+						set(account);
+					}, 3500);
+				}
+				set(account);
+
+				return account;
+			});
+	};
+
 	const changeLogin = newLogin => {
 		let data = new FormData();
 		data.append('newLogin', newLogin);
@@ -417,6 +449,7 @@ export default (refreshOnCreate = true) => {
 		logIn,
 		logOut,
 		migrate,
+		update,
 		changeAvatar,
 		changeName,
 		changeCountry,
