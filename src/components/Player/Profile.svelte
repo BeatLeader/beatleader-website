@@ -81,7 +81,7 @@
 	}
 
 	function onEnableEditModel() {
-		editModel = editModel = {
+		editModel = {
 			data: {
 				name: playerData?.name ?? '',
 				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',

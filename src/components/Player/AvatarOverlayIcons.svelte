@@ -123,7 +123,7 @@
 	<nav class:main={isMain}>
 		{#if loggedInPlayer && !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFriend))}
 			<Button
-				square="{true},"
+				square={true}
 				squareSize="1.7rem"
 				title={isFriend ? 'Remove from Friends' : 'Add to Friends'}
 				iconFa={isFriend ? 'fas fa-user-minus' : 'fas fa-user-plus'}
