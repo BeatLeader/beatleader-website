@@ -114,8 +114,15 @@
 		background: rgba(0, 0, 0, 0.8);
 		-webkit-mask-image: radial-gradient(
 			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 155px,
+			transparent 0,
 			transparent 120px,
-			black 0
+			black 121px
+		);
+		mask-image: radial-gradient(
+			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 155px,
+			transparent 0,
+			transparent 120px,
+			black 121px
 		);
 		padding-top: 44px;
 		overflow: hidden auto;
@@ -124,8 +131,15 @@
 	:global(.mirror) .avatar-modal {
 		-webkit-mask-image: radial-gradient(
 			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 175px,
+			transparent 0,
 			transparent 120px,
-			black 0
+			black 121px
+		);
+		mask-image: radial-gradient(
+			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 175px,
+			transparent 0,
+			transparent 120px,
+			black 121px
 		);
 		padding-top: 64px;
 	}
@@ -253,16 +267,30 @@
 		.avatar-modal {
 			-webkit-mask-image: radial-gradient(
 				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 155px,
+				transparent 0,
 				transparent 120px,
-				black 0
+				black 121px
+			);
+			mask-image: radial-gradient(
+				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 155px,
+				transparent 0,
+				transparent 120px,
+				black 121px
 			);
 		}
 
 		:global(.mirror) .avatar-modal {
 			-webkit-mask-image: radial-gradient(
 				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 175px,
+				transparent 0,
 				transparent 120px,
-				black 0
+				black 121px
+			);
+			mask-image: radial-gradient(
+				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 175px,
+				transparent 0,
+				transparent 120px,
+				black 121px
 			);
 		}
 
@@ -277,10 +305,17 @@
 
 	@media screen and (max-width: 899px) {
 		.avatar-modal {
+			mask-image: radial-gradient(
+				circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 167px,
+				transparent 0,
+				transparent 120px,
+				black 121px
+			);
 			-webkit-mask-image: radial-gradient(
 				circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 167px,
+				transparent 0,
 				transparent 120px,
-				black 0
+				black 121px
 			);
 		}
 
@@ -292,12 +327,14 @@
 
 	@media screen and (max-width: 767px) {
 		.avatar-modal {
-			-webkit-mask-image: radial-gradient(circle 120px at calc(100vw / 2 - 0.5rem) 103px, transparent 120px, black 0);
+			mask-image: radial-gradient(circle 120px at calc(100vw / 2 - 0.5rem) 103px, transparent 0, transparent 120px, black 121px);
+			-webkit-mask-image: radial-gradient(circle 120px at calc(100vw / 2 - 0.5rem) 103px, transparent 0, transparent 120px, black 121px);
 			padding-top: 240px !important;
 		}
 
 		:global(.mirror) .avatar-modal {
-			-webkit-mask-image: radial-gradient(circle 120px at calc(100vw / 2 - 0.5rem) 113px, transparent 120px, black 0);
+			mask-image: radial-gradient(circle 120px at calc(100vw / 2 - 0.5rem) 113px, transparent 0, transparent 120px, black 121px);
+			-webkit-mask-image: radial-gradient(circle 120px at calc(100vw / 2 - 0.5rem) 113px, transparent 0, transparent 120px, black 121px);
 		}
 
 		.avatar-buttons {
