@@ -22,6 +22,7 @@
 	import PinnedScores from './PinnedScores.svelte';
 	import AvatarOverlayEditor from './Overlay/AvatarOverlayEditor.svelte';
 	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
+	import {getNotificationsContext} from 'svelte-notifications';
 
 	export let playerData;
 	export let isLoading = false;
@@ -32,6 +33,8 @@
 	export let fixedBrowserTitle = null;
 
 	let editModel = null;
+
+	const {addNotification} = getNotificationsContext();
 
 	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
@@ -95,6 +98,13 @@
 			avatarOverlayEdit: false,
 			isSaving: false,
 		};
+
+		addNotification({
+			text: 'You can click on each badge to turn it on or off. Click on an avatar to change it or set an overlay.',
+			position: 'top-right',
+			type: 'success',
+			removeAfter: 4000,
+		});
 	}
 
 	function onCancelEditModel() {
