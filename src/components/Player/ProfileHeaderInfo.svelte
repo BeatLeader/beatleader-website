@@ -309,6 +309,7 @@
 		border: none;
 		border-bottom: solid 1px var(--dimmed);
 		outline: none;
+		max-width: 80vw;
 	}
 
 	.input-reset::placeholder {
