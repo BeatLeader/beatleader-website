@@ -111,32 +111,13 @@
 					<span class="clan-badges"><ClanBadges player={playerInfo} /></span>
 				{/if}
 
-				{#if canRedact}
-					{#if editModel?.data}
-						<Button
-							loading={editModel.isSaving}
-							color="green"
-							type="text"
-							title="Save"
-							cls="editNameButton"
-							iconFa="fas fa-check"
-							on:click={() => dispatch('edit-model-save')} />
-						<Button
-							disabled={editModel.isSaving}
-							color="red"
-							type="text"
-							title="Cancel"
-							cls="editNameButton"
-							iconFa="fas fa-times"
-							on:click={() => dispatch('edit-model-cancel')} />
-					{:else}
-						<Button
-							type="text"
-							title="Edit profile"
-							cls="editNameButton"
-							iconFa="fas fa-edit"
-							on:click={() => dispatch('edit-model-enable')} />
-					{/if}
+				{#if canRedact && !editModel?.data}
+					<Button
+						type="text"
+						title="Edit profile"
+						cls="editNameButton"
+						iconFa="fas fa-edit"
+						on:click={() => dispatch('edit-model-enable')} />
 				{/if}
 			{/if}
 
@@ -321,7 +302,6 @@
 	}
 
 	.input-reset {
-		width: 70%;
 		font-size: inherit;
 		padding: 0;
 		color: var(--textColor);

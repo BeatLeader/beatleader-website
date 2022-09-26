@@ -23,6 +23,7 @@
 	import AvatarOverlayEditor from './Overlay/AvatarOverlayEditor.svelte';
 	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
+	import Button from '../Common/Button.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -280,8 +281,6 @@
 				{statsHistory}
 				bind:editModel
 				on:edit-model-enable={onEnableEditModel}
-				on:edit-model-cancel={onCancelEditModel}
-				on:edit-model-save={onSaveEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
 			<BeatLeaderSummary
@@ -291,6 +290,26 @@
 				{skeleton}
 				profileAppearance={playerData?.profileSettings?.profileAppearance}
 				bind:editModel />
+
+			{#if editModel}
+				<div class="edit-buttons">
+					<Button
+						loading={editModel.isSaving}
+						color="white"
+						bgColor="var(--beatleader-primary)"
+						label="Save"
+						iconFa="fas fa-check"
+						noMargin={true}
+						on:click={onSaveEditModel} />
+					<Button
+						disabled={editModel.isSaving}
+						type="default"
+						label="Cancel"
+						iconFa="fas fa-times"
+						noMargin={true}
+						on:click={onCancelEditModel} />
+				</div>
+			{/if}
 
 			{#if $account.error}
 				<Error error={$account.error} />
