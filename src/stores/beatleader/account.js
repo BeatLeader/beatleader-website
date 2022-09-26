@@ -157,6 +157,38 @@ export default (refreshOnCreate = true) => {
 			});
 	};
 
+	const update = async (data, avatar = null) => {
+		const url = new URL(BL_API_URL + 'user');
+		Object.entries(data).forEach(([key, value]) => {
+			url.searchParams.append(key, value);
+		});
+
+		return fetch(url.toString(), {
+			credentials: 'include',
+			method: 'PATCH',
+			body: avatar ?? null,
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+
+					throw data;
+				} else {
+					account.message = 'Data saved!';
+					account.error = null;
+					refresh(true);
+					setTimeout(function () {
+						account.message = null;
+						set(account);
+					}, 3500);
+				}
+				set(account);
+
+				return account;
+			});
+	};
+
 	const changeLogin = newLogin => {
 		let data = new FormData();
 		data.append('newLogin', newLogin);
@@ -183,87 +215,6 @@ export default (refreshOnCreate = true) => {
 			});
 	};
 
-	const changeAvatar = (file, playerId) =>
-		fetch(BL_API_URL + 'user/avatar' + (playerId ? '?id=' + playerId : ''), {
-			method: 'PATCH',
-			body: file,
-			credentials: 'include',
-		})
-			.then(checkResponse)
-			.then(data => {
-				account.error = null;
-
-				if (data.length > 0) {
-					account.error = data;
-					setTimeout(function () {
-						account.error = null;
-						set(account);
-					}, 3500);
-				}
-
-				set(account);
-			});
-
-	const changeName = (name, playerId) =>
-		fetch(BL_API_URL + 'user/name?newName=' + encodeURIComponent(name) + (playerId ? '&id=' + playerId : ''), {
-			method: 'PATCH',
-			credentials: 'include',
-		})
-			.then(checkResponse)
-			.then(data => {
-				account.error = null;
-
-				if (data.length > 0) {
-					account.error = data;
-					setTimeout(function () {
-						account.error = null;
-						set(account);
-					}, 3500);
-				}
-
-				set(account);
-			});
-
-	const changeCountry = (country, playerId) =>
-		fetch(BL_API_URL + 'user/country?newCountry=' + country + (playerId ? '&id=' + playerId : ''), {
-			method: 'PATCH',
-			credentials: 'include',
-		})
-			.then(checkResponse)
-			.then(data => {
-				account.error = null;
-
-				if (data.length > 0) {
-					account.error = data;
-					setTimeout(function () {
-						account.error = null;
-						set(account);
-					}, 3500);
-				}
-
-				set(account);
-			});
-
-	const changePatreonMessage = (message, playerId) =>
-		fetch(BL_API_URL + 'user/patreon?message=' + encodeURIComponent(message) + (playerId ? '&id=' + playerId : ''), {
-			method: 'PATCH',
-			credentials: 'include',
-		})
-			.then(checkResponse)
-			.then(data => {
-				account.error = null;
-
-				if (data.length > 0) {
-					account.error = data;
-					setTimeout(function () {
-						account.error = null;
-						set(account);
-					}, 3500);
-				}
-
-				set(account);
-			});
-
 	const logOut = () => {
 		fetch(BL_API_URL + 'signout', {
 			credentials: 'include',
@@ -271,8 +222,6 @@ export default (refreshOnCreate = true) => {
 			refresh(true);
 		});
 	};
-
-	const destroyClan = () => {};
 
 	const banPlayer = (playerId, reason, duration) => {
 		account.loading = true;
@@ -417,10 +366,7 @@ export default (refreshOnCreate = true) => {
 		logIn,
 		logOut,
 		migrate,
-		changeAvatar,
-		changeName,
-		changeCountry,
-		changePatreonMessage,
+		update,
 		banPlayer,
 		unbanPlayer,
 		changePassword,

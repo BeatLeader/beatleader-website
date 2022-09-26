@@ -51,7 +51,7 @@
 	<Nav />
 	<Notifications zIndex={10000}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
-			<main bind:this={mainEl}>
+			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
 					<Route path="/" component={HomePage} />
 					<Route path="/u/:initialPlayerId/*initialParams" let:params>

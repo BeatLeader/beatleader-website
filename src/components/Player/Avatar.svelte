@@ -5,11 +5,16 @@
 	export let isLoading = false;
 	export let centered = false;
 	export let hash = '';
+	export let editModel = null;
 
-	$: avatar = playerInfo?.avatar ? playerInfo.avatar + (playerInfo.avatar.includes('beatleader') ? `?${hash}` : '') : null;
+	$: avatar = editModel?.avatar
+		? editModel.avatar
+		: playerInfo?.avatar
+		? playerInfo.avatar + (playerInfo.avatar.includes('beatleader') ? `?${hash}` : '')
+		: null;
 </script>
 
-<span class="avatar-container" class:loading={isLoading} class:centered>
+<span class="avatar-container" class:loading={isLoading} class:centered title={editModel ? 'Click to edit avatar' : null} on:click>
 	{#if avatar}
 		<img src={avatar} class="avatar" alt="" />
 	{:else}
@@ -24,6 +29,10 @@
 <style>
 	.avatar-container {
 		display: flex;
+	}
+
+	:global(.edit-enabled) .avatar-container {
+		cursor: pointer;
 	}
 
 	img {

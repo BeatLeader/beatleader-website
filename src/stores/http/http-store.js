@@ -53,7 +53,7 @@ export default (
 			if (fetchCachedFirst) {
 				const beforeState = state;
 
-				provider.getCached(finalParams).then(cachedState => {
+				provider.getCached({...finalParams, force}).then(cachedState => {
 					if (cachedState && beforeState === state) {
 						state = cachedState;
 						set(onBeforeStateChange ? onBeforeStateChange(cachedState, stateType) : cachedState);

@@ -27,6 +27,7 @@ export default response => {
 		socials,
 		pinnedScores,
 		eventsParticipating,
+		profileSettings,
 	} = response;
 
 	let profilePicture = avatar;
@@ -177,6 +178,9 @@ export default response => {
 					: [],
 			clans,
 		},
+		profileSettings: profileSettings
+			? {...profileSettings, profileAppearance: profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : null}
+			: null,
 		scoreStats: scoreStats ? scoreStats : null,
 		statsHistory: processedStatsHistory ? processedStatsHistory : null,
 		pinnedScores: processedPinnedScores,

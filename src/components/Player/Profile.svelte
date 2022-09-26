@@ -20,6 +20,10 @@
 	import RoleIcon from './RoleIcon.svelte';
 	import Rain from '../Common/Rain.svelte';
 	import PinnedScores from './PinnedScores.svelte';
+	import AvatarOverlayEditor from './Overlay/AvatarOverlayEditor.svelte';
+	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
+	import {getNotificationsContext} from 'svelte-notifications';
+	import Button from '../Common/Button.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -28,6 +32,10 @@
 	export let twitchVideos = null;
 	export let avatarHash = null;
 	export let fixedBrowserTitle = null;
+
+	let editModel = null;
+
+	const {addNotification} = getNotificationsContext();
 
 	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
@@ -59,17 +67,79 @@
 	}
 
 	let editError = null;
-	function onPlayerDataEditError(err) {
-		editError = err?.detail ?? null;
-	}
 
 	let roles = null;
 	function updateRoles(role) {
-		roles = role?.split(',').reverse();
+		roles =
+			role
+				?.split(',')
+				?.reverse()
+				?.filter(r => r?.length) ?? [];
 	}
 
 	function refreshPinnedScores(pinnedScores) {
 		$pinnedScoresStore = pinnedScores ?? [];
+	}
+
+	function onEnableEditModel() {
+		editModel = {
+			data: {
+				name: playerData?.name ?? '',
+				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
+				avatar: null,
+				message: playerData?.profileSettings?.message ?? '',
+				profileAppearance: playerData?.profileSettings?.profileAppearance ?? null,
+				effectName: playerData?.profileSettings?.effectName ?? null,
+				hue: playerData?.profileSettings?.hue ?? 0,
+				saturation: playerData?.profileSettings?.saturation ?? 1,
+			},
+			avatar: playerData?.playerInfo?.avatar
+				? playerData.playerInfo.avatar + (playerData.playerInfo.avatar.includes('beatleader') ? `?${avatarHash}` : '')
+				: null,
+			avatarOverlayEdit: false,
+			isSaving: false,
+		};
+
+		addNotification({
+			text: 'You can click on each badge to turn it on or off. Click on an avatar to change it or set an overlay.',
+			position: 'top-right',
+			type: 'success',
+			removeAfter: 4000,
+		});
+	}
+
+	function onCancelEditModel() {
+		editModel = null;
+	}
+
+	async function onSaveEditModel() {
+		if (!editModel) return;
+
+		let {profileAppearance, country, avatar, message, ...data} = editModel?.data ?? {};
+
+		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : null;
+		country =
+			country?.length && (country !== playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
+
+		data = {...data, profileAppearance};
+		if (country) data.country = country;
+		if (message?.length) data.message = message;
+
+		try {
+			editModel.isSaving = true;
+
+			await account.update(data, avatar);
+
+			setTimeout(() => {
+				dispatch('player-data-updated');
+			}, 1000);
+
+			editModel = null;
+		} catch (err) {
+			editError = err;
+		} finally {
+			if (editModel) editModel.isSaving = false;
+		}
 	}
 
 	let modalShown;
@@ -84,6 +154,11 @@
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 	$: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank);
 	$: updateAccSaberPlayerInfo(playerId);
+
+	$: loggedInPlayer = $account?.id;
+	$: isMain = playerId && $account?.id === playerId;
+	$: isAdmin = $account?.player?.role?.includes('admin');
+	$: canEdit = (isMain && loggedInPlayer === playerId) || isAdmin;
 
 	$: swipeCards = [].concat(
 		playerId
@@ -154,26 +229,40 @@
 	<Rain />
 {/if}
 
-<ContentBox cls={modalShown ? 'inner-modal' : ''}>
-	<div class="player-general-info">
+<AvatarOverlayEditor bind:editModel {roles} />
+
+<ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
+	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
+
+	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
-				<Avatar {isLoading} {playerInfo} hash={avatarHash} />
+				<Avatar
+					{isLoading}
+					{playerInfo}
+					hash={avatarHash}
+					{editModel}
+					on:click={() => {
+						if (editModel) editModel.avatarOverlayEdit = true;
+					}} />
 
 				{#if playerInfo && !isLoading}
 					<AvatarOverlayIcons
 						{playerData}
+						bind:editModel
 						on:modal-shown={() => (modalShown = true)}
-						on:modal-hidden={() => (modalShown = false)}
-						on:player-data-updated
-						on:player-data-edit-error={onPlayerDataEditError} />
+						on:modal-hidden={() => (modalShown = false)} />
 				{/if}
 			</div>
 
 			{#if roles}
 				<div class="role-icons">
 					{#each roles as role, idx}
-						<RoleIcon onAvatar={true} {role} mapperId={playerInfo?.mapperId} />
+						<RoleIcon
+							{role}
+							mapperId={playerInfo?.mapperId}
+							profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
+							bind:editModel />
 					{/each}
 				</div>
 			{/if}
@@ -190,15 +279,40 @@
 				{playerInfo}
 				{playerId}
 				{statsHistory}
-				{roles}
-				on:player-data-updated
-				on:player-data-edit-error={onPlayerDataEditError}
+				bind:editModel
+				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} />
+			<BeatLeaderSummary
+				{playerId}
+				{scoresStats}
+				{accBadges}
+				{skeleton}
+				profileAppearance={playerData?.profileSettings?.profileAppearance}
+				bind:editModel />
+
+			{#if editModel}
+				<div class="edit-buttons">
+					<Button
+						loading={editModel.isSaving}
+						color="white"
+						bgColor="var(--beatleader-primary)"
+						label="Save"
+						iconFa="fas fa-check"
+						noMargin={true}
+						on:click={onSaveEditModel} />
+					<Button
+						disabled={editModel.isSaving}
+						type="default"
+						label="Cancel"
+						iconFa="fas fa-times"
+						noMargin={true}
+						on:click={onCancelEditModel} />
+				</div>
+			{/if}
 
 			{#if $account.error}
-				{$account.error}
+				<Error error={$account.error} />
 			{/if}
 		</div>
 	</div>
@@ -219,6 +333,7 @@
 		display: flex;
 		flex-wrap: nowrap;
 		grid-gap: 1.5em;
+		align-items: flex-start;
 	}
 
 	.avatar-cell {
@@ -233,11 +348,18 @@
 		flex-direction: column;
 		justify-content: center;
 		grid-gap: 0.4em;
+		flex-grow: 1;
 	}
 
 	.role-icons {
 		display: flex;
+		position: relative;
 		z-index: 5;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 0.5rem;
+		width: 100%;
+		min-height: 1.5rem;
 	}
 
 	.avatar-and-roles {

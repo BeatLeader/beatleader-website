@@ -21,11 +21,13 @@
 	export let prevSuffix = null;
 	export let reversePrevSign = false;
 	export let inline = false;
+	export let disabled = false;
 </script>
 
 <span
 	class={'badge ' + styling}
 	class:clickable
+	class:disabled
 	class:not-selected={notSelected}
 	class:fluid
 	style="--color:{color}; --background-color:{bgColor}"

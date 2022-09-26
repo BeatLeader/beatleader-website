@@ -51,6 +51,17 @@ body {
 	min-height: -webkit-fill-available;
 }
 
+body.avatar-edit {
+	overflow: hidden;
+	height: 100vh;
+}
+
+@media screen and (max-width: 767px) {
+	body.avatar-edit > nav {
+		display: none !important;
+	}
+}
+
 select {
 	color: var(--textColor);
 	background-color: var(--foreground);

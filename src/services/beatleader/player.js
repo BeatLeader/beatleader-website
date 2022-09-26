@@ -70,7 +70,7 @@ export default () => {
 	const getDataFromResponse = response => playerApiClient.getDataFromResponse(response);
 
 	const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) =>
-		resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}`, () =>
+		resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}/${options.maxAge ?? MINUTE}`, () =>
 			playerApiClient.getProcessed({...options, playerId, priority, fullResponse})
 		);
 

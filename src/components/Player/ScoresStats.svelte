@@ -1,16 +1,19 @@
 <script>
 	import Badge from '../Common/Badge.svelte';
 	import Skeleton from '../Common/Skeleton.svelte';
+	import {createEventDispatcher} from 'svelte';
 
 	export let stats;
 	export let skeleton = false;
+
+	const dispatch = createEventDispatcher();
 </script>
 
 {#if stats}
 	<div class="badges has-text-centered-mobile">
 		{#each stats as stat}
 			{#key stat.label}
-				<Badge {...stat} />
+				<Badge {...stat} on:click={() => dispatch('click', stat)} />
 			{/key}
 		{/each}
 	</div>
