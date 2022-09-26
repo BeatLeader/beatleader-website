@@ -342,7 +342,8 @@
 	}
 
 	@media screen and (max-width: 767px) {
-		.avatar-modal {
+		.avatar-modal,
+		:global(.mirror) .avatar-modal {
 			mask-image: radial-gradient(circle 120px at calc(100vw / 2) 113px, transparent 0, transparent 120px, black 121px);
 			-webkit-mask-image: radial-gradient(circle 120px at calc(100vw / 2) 113px, transparent 0, transparent 120px, black 121px);
 			padding-top: 240px !important;
