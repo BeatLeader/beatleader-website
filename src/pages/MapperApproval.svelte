@@ -8,7 +8,6 @@
 	import beatSaverSvg from '../resources/beatsaver.svg';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
-	import Song from '../components/Playlists/Song.svelte';
 
 	const account = createAccountStore();
 
@@ -76,6 +75,9 @@
 							{account}
 							on:decided={() => {
 								decidedCount++;
+							}}
+							on:updated={status => {
+								song.difficulties[0].mapperApproval = status.detail;
 							}} />
 					{/each}
 				</div>

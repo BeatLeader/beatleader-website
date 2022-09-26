@@ -55,6 +55,7 @@
 					if (statusWasUndecided) {
 						dispatch('decided');
 					}
+					dispatch('updated', status);
 				}
 			});
 		}
@@ -65,25 +66,27 @@
 </script>
 
 {#if popupVisible}
-	<Dialog
-		type="confirm"
-		title="Are you sure you want to unrank your map?"
-		okButton="Yes, go ahead"
-		okButtonType="danger"
-		cancelButton="Cancel"
-		on:confirm={() => {
-			updateStatus(1);
-			popupVisible = false;
-		}}
-		on:cancel={() => {
-			popupVisible = false;
-		}}>
-		<div slot="content">
-			{#if ppStatus}
-				<span style="color: red">{ppStatus.playerCount} people will lose {Math.round(ppStatus.totalPP)}pp in total!</span>
-			{/if}
-		</div>
-	</Dialog>
+	<div class="popup-container">
+		<Dialog
+			type="confirm"
+			title="Are you sure you want to unrank your map?"
+			okButton="Yes, go ahead"
+			okButtonType="danger"
+			cancelButton="Cancel"
+			on:confirm={() => {
+				updateStatus(1);
+				popupVisible = false;
+			}}
+			on:cancel={() => {
+				popupVisible = false;
+			}}>
+			<div slot="content">
+				{#if ppStatus}
+					<span style="color: red">{ppStatus.playerCount} people will lose {Math.round(ppStatus.totalPP)}pp in total!</span>
+				{/if}
+			</div>
+		</Dialog>
+	</div>
 {/if}
 
 <div class="container row-${idx}" transition:slide>
@@ -141,6 +144,12 @@
 		position: absolute !important;
 		right: 0.8em;
 		border-radius: 0.5em !important;
+	}
+
+	:global(.popup-container .ss-modal) {
+		top: 0 !important;
+		position: sticky !important;
+		transform: none !important;
 	}
 
 	.buttons {
