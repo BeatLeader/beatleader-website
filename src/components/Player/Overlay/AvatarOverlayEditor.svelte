@@ -62,6 +62,14 @@
 					disabled={!editModel.data.effectName} />
 				<span title="Saturation" on:click={() => (editModel.data.saturation = 1)}>Sat</span>
 			</div>
+
+			<Button
+				color="white"
+				bgColor="var(--beatleader-primary)"
+				iconFa="far fa-save"
+				label="Apply changes"
+				cls="apply"
+				on:click={() => (editModel.avatarOverlayEdit = false)} />
 		</div>
 		<div class="avatar-main">
 			<div class="wrapper">
@@ -263,6 +271,7 @@
 	}
 
 	.close {
+		display: none;
 		position: absolute;
 		top: 1em;
 		left: 1em;
@@ -354,6 +363,14 @@
 			position: relative;
 			padding-left: 0;
 			margin-top: 1rem;
+		}
+
+		.close {
+			display: inline-block;
+		}
+
+		:global(.button.apply) {
+			display: none !important;
 		}
 	}
 </style>
