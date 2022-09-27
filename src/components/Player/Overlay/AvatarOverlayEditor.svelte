@@ -67,7 +67,7 @@
 				color="white"
 				bgColor="var(--beatleader-primary)"
 				iconFa="far fa-save"
-				label="Apply changes"
+				label="Close"
 				cls="apply"
 				on:click={() => (editModel.avatarOverlayEdit = false)} />
 		</div>

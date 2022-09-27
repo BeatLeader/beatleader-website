@@ -277,6 +277,15 @@
 		transform: rotateZ(180deg);
 	}
 
+	:global(main.default) .player-avatar :global(img.overlay) {
+		width: 60px;
+		height: 60px;
+	}
+
+	:global(main.mirror) .player-avatar {
+		overflow: visible;
+	}
+
 	@media screen and (max-width: 768px) {
 		.player-card {
 			grid-template-columns: 50% 50%;

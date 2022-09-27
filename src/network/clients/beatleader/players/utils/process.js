@@ -19,6 +19,7 @@ export default response => {
 				allTime,
 				clans,
 				scoreStats,
+				profileSettings,
 			} = player;
 			const rankHistory =
 				history && history.length
@@ -51,6 +52,7 @@ export default response => {
 				},
 				clans,
 				scoreStats: player?.scoreStats ?? null,
+				profileSettings: profileSettings ?? null,
 			};
 		}),
 	};

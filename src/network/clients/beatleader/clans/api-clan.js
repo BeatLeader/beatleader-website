@@ -8,7 +8,19 @@ const process = response => {
 		metadata: response.metadata,
 		container: response.container,
 		data: response.data.map(player => {
-			let {avatar, country, countryRank, histories: history, id: playerId, name, pp, rank, lastTwoWeeksTime, allTime} = player;
+			let {
+				avatar,
+				country,
+				countryRank,
+				histories: history,
+				id: playerId,
+				name,
+				pp,
+				rank,
+				lastTwoWeeksTime,
+				allTime,
+				profileSettings,
+			} = player;
 			const rankHistory =
 				history && history.length
 					? history
@@ -37,6 +49,7 @@ const process = response => {
 				others: {
 					difference,
 				},
+				profileSettings: profileSettings ?? null,
 			};
 		}),
 	};

@@ -84,6 +84,8 @@ export const processLeaderboardScore = s => {
 
 	ret.player.clans = player?.clans ?? null;
 
+	ret.player.profileSettings = player?.profileSettings ?? null;
+
 	ret.score.score = s.modifiedScore;
 
 	ret.score.timeSetString = formatDateRelative(dateFromUnix(s.timeset));
