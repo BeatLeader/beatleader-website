@@ -28,6 +28,7 @@
 <style>
 	figure {
 		position: relative;
+		overflow: visible !important;
 	}
 
 	img {
@@ -45,5 +46,6 @@
 		max-width: none;
 		mix-blend-mode: screen;
 		filter: hue-rotate(var(--hue, 0deg)) saturate(var(--saturation, 1));
+		overflow: visible !important;
 	}
 </style>
