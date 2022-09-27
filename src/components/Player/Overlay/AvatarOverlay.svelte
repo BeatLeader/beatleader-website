@@ -1,14 +1,14 @@
 <script>
-	import {getOverlayByName} from './overlay';
+	import {getOverlayUrlByName} from './overlay';
 
 	export let data;
 
 	let overlayUrl = null;
 
 	function onOverlayChange(effectName) {
-		overlayUrl = getOverlayByName(effectName, false);
+		overlayUrl = getOverlayUrlByName(effectName, 'preview');
 
-		const fullUrl = getOverlayByName(effectName, true);
+		const fullUrl = getOverlayUrlByName(effectName);
 
 		const img = new Image();
 		img.src = fullUrl;
