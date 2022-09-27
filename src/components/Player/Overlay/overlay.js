@@ -139,7 +139,8 @@ const allOverlays = [
 	},
 ];
 
-export const getOverlayUrlByName = (effectName, type = '') => `${BL_CDN}/assets/${effectName}${type?.length ? `_${type}` : ''}.webp`;
+export const getOverlayUrlByName = (effectName, type = '') =>
+	effectName?.length ? `${BL_CDN}/assets/${effectName}${type?.length ? `_${type}` : ''}.webp` : null;
 
 export const getAllOverlays = roles => {
 	return allOverlays.map(a => ({
