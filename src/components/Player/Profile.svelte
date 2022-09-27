@@ -117,13 +117,14 @@
 
 		let {profileAppearance, country, avatar, message, ...data} = editModel?.data ?? {};
 
-		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : null;
+		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : '';
 		country =
 			country?.length && (country !== playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
 
 		data = {...data, profileAppearance};
 		if (country) data.country = country;
 		if (message?.length) data.message = message;
+		if (!data?.effectName?.length) data.effectName = '';
 
 		try {
 			editModel.isSaving = true;
