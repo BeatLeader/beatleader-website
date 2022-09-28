@@ -6,7 +6,10 @@
 	let overlayUrl = null;
 
 	function onOverlayChange(effectName) {
-		if (!effectName?.length) return;
+		if (!effectName?.length) {
+			overlayUrl = null;
+			return;
+		}
 
 		overlayUrl = getOverlayUrlByName(effectName, 'preview');
 
