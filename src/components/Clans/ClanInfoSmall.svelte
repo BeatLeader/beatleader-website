@@ -129,7 +129,7 @@
 	.info {
 		max-width: 92%;
 		overflow: hidden;
-		word-break: break-all;
+		word-break: break-word;
 	}
 
 	.up-to-tablet {
