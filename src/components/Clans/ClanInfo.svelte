@@ -473,12 +473,12 @@
 
 	.info {
 		overflow: hidden;
-		word-break: break-all;
+		word-break: break-word;
 	}
 
 	.bio {
 		overflow: hidden;
-		word-break: break-all;
+		word-break: break-word;
 	}
 
 	@media screen and (max-width: 500px) {
