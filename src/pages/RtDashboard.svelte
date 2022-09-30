@@ -521,7 +521,7 @@
 		let pageCount = null;
 
 		while (!pageCount || page <= pageCount) {
-			const pageData = await leaderboardsApiClient.getProcessed({page, filters: {type, sortBy, count}});
+			const pageData = await leaderboardsApiClient.getProcessed({page, filters: {type, sortBy, order: 'desc', count}});
 
 			if (!pageData?.data?.length) return data;
 
@@ -539,7 +539,10 @@
 	}
 
 	async function fetchVotedMaps() {
-		const data = await leaderboardsApiClient.getProcessed({page: 1, filters: {sortBy: 'votecount', count: VOTED}});
+		const data = await leaderboardsApiClient.getProcessed({
+			page: 1,
+			filters: {type: 'unranked', sortBy: 'votecount', order: 'desc', count: VOTED},
+		});
 
 		return data?.data?.map(map => ({...map, type: 'voted'})) ?? [];
 	}
