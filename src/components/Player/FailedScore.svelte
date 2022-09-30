@@ -1,11 +1,13 @@
 <script>
 	import {fade, fly, slide} from 'svelte/transition';
 	import {opt} from '../../utils/js';
+	import {navigate} from 'svelte-routing';
 	import SongInfo from './SongInfo.svelte';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import SongScoreDetails from './SongScoreDetails.svelte';
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from './PlayerPerformance.svelte';
+	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import Button from '../Common/Button.svelte';
 	import ScoreRank from './ScoreRank.svelte';
 
@@ -17,6 +19,12 @@
 	export let store = null;
 
 	let showDetails = false;
+
+	function navigateToPlayer(playerId) {
+		if (!playerId) return;
+
+		navigate(`/u/${playerId}`);
+	}
 
 	$: leaderboard = opt(songScore, 'leaderboard', null);
 	$: score = opt(songScore, 'score', null);
@@ -91,6 +99,7 @@
 
 			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} unmodifiedScore={true} />
 		</div>
+		<PlayerNameWithFlag player={score.player} on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
 		<div class="lowerContainer">
 			Fail reason: {score.error}
