@@ -38,10 +38,10 @@
 
 	img.overlay {
 		position: absolute;
-		top: -12px;
-		left: -12px;
-		width: 48px;
-		height: 48px;
+		top: -50%;
+		left: -50%;
+		width: 200%;
+		height: 200%;
 		aspect-ratio: auto;
 		max-width: none;
 		mix-blend-mode: screen;
