@@ -177,7 +177,7 @@
 
 	.player-card .player-avatar {
 		position: relative;
-		overflow: hidden;
+		overflow: visible;
 	}
 
 	.player-card .player-avatar :global(figure) {
@@ -275,15 +275,6 @@
 
 	.details-reveal.opened {
 		transform: rotateZ(180deg);
-	}
-
-	:global(main.default) .player-avatar :global(img.overlay) {
-		width: 60px;
-		height: 60px;
-	}
-
-	:global(main.mirror) .player-avatar {
-		overflow: visible;
 	}
 
 	@media screen and (max-width: 768px) {
