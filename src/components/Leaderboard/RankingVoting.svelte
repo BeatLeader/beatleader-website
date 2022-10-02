@@ -247,40 +247,42 @@
 			{#if qualification && rtvoting}
 				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />
 			{/if}
-			{#if suitableForRank && !hideStarSlider}
-				<div>
-					<label>{rtvoting ? 'Stars:' : 'Stars (optional):'}</label>
-					<div class="buttons-and-slider">
-						<Button
-							title="Less"
-							iconFa="fas fa-caret-left"
-							type="text"
-							on:click={() => {
-								if (stars > 0) stars -= 0.05;
-							}} />
+			{#if suitableForRank}
+				{#if !hideStarSlider}
+					<div>
+						<label>{rtvoting ? 'Stars:' : 'Stars (optional):'}</label>
+						<div class="buttons-and-slider">
+							<Button
+								title="Less"
+								iconFa="fas fa-caret-left"
+								type="text"
+								on:click={() => {
+									if (stars > 0) stars -= 0.05;
+								}} />
 
-						<RangeSlider
-							min={0}
-							max={18}
-							step={0.05}
-							values={[stars]}
-							float
-							hoverable
-							pips
-							pipstep={20}
-							all="label"
-							on:change={event => {
-								stars = event.detail.values[0];
-							}} />
-						<Button
-							title="More"
-							iconFa="fas fa-caret-right"
-							type="text"
-							on:click={() => {
-								if (stars > 0) stars += 0.05;
-							}} />
+							<RangeSlider
+								min={0}
+								max={18}
+								step={0.05}
+								values={[stars]}
+								float
+								hoverable
+								pips
+								pipstep={20}
+								all="label"
+								on:change={event => {
+									stars = event.detail.values[0];
+								}} />
+							<Button
+								title="More"
+								iconFa="fas fa-caret-right"
+								type="text"
+								on:click={() => {
+									if (stars > 0) stars += 0.05;
+								}} />
+						</div>
 					</div>
-				</div>
+				{/if}
 				<div>
 					<label>{rtvoting ? 'Type:' : 'Type (optional):'}</label>
 					{#each selectedTypes as type, idx}

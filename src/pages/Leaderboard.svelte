@@ -637,7 +637,7 @@
 							{:else if votingStatus == 3}
 								<Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true} />
 							{/if}
-							{#if separatePage && (isRT || (verifiedMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
+							{#if separatePage && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
 								{#if !isRT && qualificationLimitError}
 									<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
 								{:else}
