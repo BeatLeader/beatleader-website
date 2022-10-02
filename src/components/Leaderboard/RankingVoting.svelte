@@ -18,6 +18,7 @@
 	export let rtvoting;
 	export let qualificationUpdate;
 	export let isjuniorRT;
+	export let hideStarSlider = false;
 
 	let hash = leaderboard?.song?.hash;
 	let diff = leaderboard?.diffInfo?.diff;
@@ -246,7 +247,7 @@
 			{#if criteriaMet != 0}
 				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />
 			{/if}
-			{#if suitableForRank}
+			{#if suitableForRank && !hideStarSlider}
 				<div>
 					<label>{rtvoting ? 'Stars:' : 'Stars (optional):'}</label>
 					<RangeSlider

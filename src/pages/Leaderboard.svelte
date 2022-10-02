@@ -38,8 +38,6 @@
 		mapTypeFromMask,
 		votingsForTypeStats,
 		formatDiffStatus,
-		formatDiffApproval,
-		formatDiffApprovalColor,
 		DifficultyStatus,
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../utils/date';
@@ -351,6 +349,7 @@
 	let scoresWithUser;
 
 	let verifiedMapperId;
+	let generalMapperId;
 	let qualificationLimitError;
 
 	function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
@@ -371,19 +370,25 @@
 			let beatSaverService = createBeatSaverService();
 			const mapperInfoValue = await beatSaverService.getMapper(mapperId);
 
+			var timeToNomination;
 			if (mapperInfoValue.verifiedMapper) {
+				timeToNomination = 7;
 				verifiedMapperId = mapperId;
-
-				account.refreshLastQualificationTime(hash, time => {
-					const currentSeconds = new Date().getTime() / 1000;
-					if (currentSeconds - time < 60 * 60 * 24 * 7) {
-						qualificationLimitError =
-							'You can nominate new map after ' + Math.round(7 - (currentSeconds - time) / (60 * 60 * 24)) + ' day(s)';
-					} else {
-						qualificationLimitError = null;
-					}
-				});
+			} else {
+				timeToNomination = 30;
+				verifiedMapperId = 0;
 			}
+			generalMapperId = mapperId;
+
+			account.refreshLastQualificationTime(hash, time => {
+				const currentSeconds = new Date().getTime() / 1000;
+				if (currentSeconds - time < 60 * 60 * 24 * timeToNomination) {
+					qualificationLimitError =
+						'You can nominate new map after ' + Math.round(timeToNomination - (currentSeconds - time) / (60 * 60 * 24)) + ' day(s)';
+				} else {
+					qualificationLimitError = null;
+				}
+			});
 		}
 	}
 
@@ -454,7 +459,7 @@
 
 	$: playerHasFriends = !!$account?.friends?.length;
 	$: updateTypeOptions(mainPlayerCountry, playerHasFriends);
-	$: updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
+	$: if (song?.mapperId == $account?.player?.playerInfo.mapperId) updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
 
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
 	$: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage);
@@ -469,7 +474,6 @@
 	$: if (showAverageStats) checkMapHash(song.hash);
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
-	$: mapperApproval = $leaderboardStore?.leaderboard?.difficultyBl?.mapperApproval;
 </script>
 
 <svelte:head>
@@ -488,6 +492,7 @@
 		{rtvoting}
 		{isjuniorRT}
 		{qualificationUpdate}
+		hideStarSlider={rtvoting && verifiedMapperId != generalMapperId}
 		on:finished={() => {
 			mapVoting = false;
 			rtvoting = false;
@@ -574,12 +579,6 @@
 									{:else if generatedStars !== 0}
 										<Spinner />
 									{/if}
-								{/if}
-								{#if leaderboard.stats.status == DifficultyStatus.ranked && !qualification}
-									<span style="color: white;">
-										Mapper decision: <span style={`color: ${formatDiffApprovalColor(leaderboard.stats.status, mapperApproval)};`}>
-											{formatDiffApproval(leaderboard.stats.status, mapperApproval)}</span>
-									</span>
 								{/if}
 								{#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span>{/if}
 								{#if leaderboard?.stats?.type}

@@ -251,42 +251,6 @@ export function formatDiffStatus(status) {
 	}
 }
 
-export const MapperAllowedStatus = {
-	unknown: 0,
-	unrank: 1,
-	keep: 2,
-};
-
-export function formatDiffApproval(status, mapperAllowed) {
-	if (status == DifficultyStatus.ranked) {
-		switch (mapperAllowed) {
-			case MapperAllowedStatus.unknown:
-				return 'Unknown';
-			case MapperAllowedStatus.unrank:
-				return 'Unrank';
-			case MapperAllowedStatus.keep:
-				return 'Allow';
-		}
-	} else {
-		return '';
-	}
-}
-
-export function formatDiffApprovalColor(status, mapperAllowed) {
-	if (status == DifficultyStatus.ranked) {
-		switch (mapperAllowed) {
-			case MapperAllowedStatus.unknown:
-				return 'gray';
-			case MapperAllowedStatus.unrank:
-				return 'red';
-			case MapperAllowedStatus.keep:
-				return 'green';
-		}
-	} else {
-		return '';
-	}
-}
-
 export const votingTypes = ['acc', 'tech', 'midspeed', 'speed'];
 export const typesMap = {
 	acc: 1,
