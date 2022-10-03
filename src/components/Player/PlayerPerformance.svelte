@@ -83,8 +83,12 @@
 	<div class="player-performance-badges">
 		{#if score.pp}
 			<span class="pp with-badge">
-				<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-					<span slot="label">
+				<Badge
+					onlyLabel={true}
+					color="white"
+					styling={score.ppWeighted ? '' : 'nominated-pp'}
+					bgColor={score.ppWeighted ? 'var(--ppColour)' : 'transparent'}>
+					<span slot="label" title={score.ppWeighted ? '' : 'Approximate PP if the map will be ranked'}>
 						<Pp
 							playerId={score.playerId}
 							leaderboardId={leaderboard.leaderboardId}
@@ -453,5 +457,10 @@
 	}
 	.fc small {
 		color: white;
+	}
+
+	:global(.badge.nominated-pp) {
+		border: 2px dashed #ffffffb3;
+		--badge-color: transparent !important;
 	}
 </style>

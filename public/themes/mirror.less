@@ -234,8 +234,9 @@ nav.ssr-page-container {
     .badge {
         font-size: 0.8rem !important;
         color: white !important;
-        background: rgba(255, 255, 255, 0.13) !important;
+        --badge-color: rgba(255, 255, 255, 0.13);
         border-bottom: 2px solid var(--background-color);
+        background: var(--badge-color) !important;
         border-radius: 0.25rem;
         padding: 0.4rem 0.3rem;
     }
@@ -280,6 +281,10 @@ nav.ssr-page-container {
         * {
             color: white !important;
         }
+    }
+
+    .badge.nominated-pp {
+        --background-color: var(--ppColour) !important;
     }
 }
 
