@@ -94,6 +94,13 @@ nav.ssr-page-container {
 	-webkit-backdrop-filter: blur(10px);
 	max-width: none !important;
 }
+@-moz-document url-prefix() {
+	nav.ssr-page-container {
+		background: rgba(92, 92, 92, 0.481) !important;
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+}
 nav.ssr-page-container a,
 nav.ssr-page-container div {
 	transition: all 0.1s;
@@ -253,6 +260,13 @@ nav.ssr-page-container div {
 	-webkit-backdrop-filter: blur(10px);
 	box-shadow: none !important;
 }
+@-moz-document url-prefix() {
+	.content-box {
+		background: rgba(46, 47, 60, 0.75) !important;
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+	}
+}
 .leaderboard .player-score.highlight {
 	min-height: 3rem;
 	height: auto !important;
@@ -373,6 +387,13 @@ input {
 	-webkit-backdrop-filter: blur(10px);
 	background: rgba(199, 199, 199, 0.151) !important;
 	border-radius: 0.5rem;
+}
+@-moz-document url-prefix() {
+	.login-page {
+		backdrop-filter: none;
+		-webkit-backdrop-filter: none;
+		background: rgba(46, 47, 60, 0.75) !important;
+	}
 }
 .login-page .title {
 	position: relative;
