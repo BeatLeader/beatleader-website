@@ -344,22 +344,19 @@
 									</a>
 								</div>
 
-								{#if map?.positiveVotes || map?.negativeVotes}
+								{#if Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
 									<div>
 										{#if isRT && map?.voteStars}
 											{formatNumber(map?.voteStars ?? 0)}★
 										{/if}
-										<span title={`${map?.positiveVotes ?? 0} rankable / ${map?.negativeVotes ?? 0} unrankable`}>
-											{#if currentFilters.sortBy == 'voting'}
-												Rating: {(map?.positiveVotes ?? 0) - (map?.negativeVotes ?? 0)}
-											{:else if currentFilters.sortBy == 'voteratio'}
+										<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
+											{#if currentFilters.sortBy === 'voting'}
+												Rating: {map.positiveVotes - map.negativeVotes}
+											{:else if currentFilters.sortBy === 'voteratio'}
 												Ratio:
-												{formatNumber(((map?.positiveVotes ?? 0) / ((map?.positiveVotes ?? 0) + (map?.negativeVotes ?? 0))) * 100)}%
+												{formatNumber((map.positiveVotes / (map.positiveVotes + map.negativeVotes)) * 100)}%
 											{:else}
-												{(map?.positiveVotes ?? 0) + (map?.negativeVotes ?? 0)} vote{(map?.positiveVotes ?? 0) + (map?.negativeVotes ?? 0) >
-												1
-													? 's'
-													: ''}
+												{map.positiveVotes + map.negativeVotes} vote{map.positiveVotes + map.negativeVotes > 1 ? 's' : ''}
 											{/if}
 										</span>
 									</div>
