@@ -39,8 +39,8 @@
 	const labelsStore = createLocalStorageStore('rt-maps-labels');
 	const playersCache = createLocalStorageStore('rt-players');
 
-	const ITEMS_PER_PAGE = 100;
-	const VOTED = 100; // max 100
+	const ITEMS_PER_PAGE = 50;
+	const VOTED = 100;
 
 	let showEventLog = false;
 	let allLabels = [];
@@ -514,7 +514,7 @@
 	let songs = [];
 	let detailsOpened = [];
 
-	async function fetchAllMapsWithType(type, sortBy = 'stars') {
+	async function fetchMapsWithType(type, sortBy = 'stars', maxNum = null) {
 		let data = [];
 		let page = 1;
 		let count = ITEMS_PER_PAGE;
@@ -527,6 +527,8 @@
 
 			data = [...data, ...pageData.data.map(map => ({...map, type}))];
 
+			if (maxNum && data.length >= maxNum) return data;
+
 			if (!pageCount) {
 				count = pageData?.metadata?.itemsPerPage ?? ITEMS_PER_PAGE;
 				pageCount = pageData?.metadata?.total ? Math.ceil(pageData.metadata.total / count) : null;
@@ -538,15 +540,6 @@
 		return data;
 	}
 
-	async function fetchVotedMaps() {
-		const data = await leaderboardsApiClient.getProcessed({
-			page: 1,
-			filters: {type: 'unranked', sortBy: 'votecount', order: 'desc', count: VOTED},
-		});
-
-		return data?.data?.map(map => ({...map, type: 'voted'})) ?? [];
-	}
-
 	async function fetchMaps() {
 		try {
 			isLoading = true;
@@ -554,10 +547,9 @@
 
 			songs = Object.values(
 				(
-					await Promise.all([
-						fetchVotedMaps(),
-						fetchAllMapsWithType('nominated', 'votecount'),
-						fetchAllMapsWithType('qualified', 'votecount'),
+					await Promise.all([fetchMapsWithType('nominated', 'votecount'), fetchMapsWithType('qualified', 'votecount')]).then(async data => [
+						...data,
+						await fetchMapsWithType('unranked', 'votecount', VOTED),
 					])
 				)
 					.reduce((carry, maps) => [...carry, ...maps], [])
