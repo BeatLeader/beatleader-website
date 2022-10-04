@@ -344,22 +344,19 @@
 									</a>
 								</div>
 
-								{#if map?.votes}
+								{#if Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
 									<div>
-										{#if isRT && map?.votes.filter(v => v.stars > 0).length}
-											{formatNumber(
-												map?.votes.filter(v => v.stars > 0).reduce((a, b) => a + b.stars, 0) / map?.votes.filter(v => v.stars > 0).length
-											)}★
+										{#if isRT && map?.voteStars}
+											{formatNumber(map?.voteStars ?? 0)}★
 										{/if}
-										<span
-											title="{map?.votes.filter(v => v.rankability > 0).length} rankable / {map?.votes.filter(v => v.rankability <= 0)
-												.length} unrankable">
-											{#if currentFilters.sortBy == 'voting'}
-												Rating: {map?.votes.filter(v => v.rankability > 0).length - map?.votes.filter(v => v.rankability <= 0).length}
-											{:else if currentFilters.sortBy == 'voteratio'}
-												Ratio: {formatNumber((map?.votes.filter(v => v.rankability > 0).length / map?.votes.length) * 100)}%
+										<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
+											{#if currentFilters.sortBy === 'voting'}
+												Rating: {map.positiveVotes - map.negativeVotes}
+											{:else if currentFilters.sortBy === 'voteratio'}
+												Ratio:
+												{formatNumber((map.positiveVotes / (map.positiveVotes + map.negativeVotes)) * 100)}%
 											{:else}
-												{map?.votes.length} vote{map?.votes.length > 1 ? 's' : ''}
+												{map.positiveVotes + map.negativeVotes} vote{map.positiveVotes + map.negativeVotes > 1 ? 's' : ''}
 											{/if}
 										</span>
 									</div>
