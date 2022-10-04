@@ -554,7 +554,7 @@
 				)
 					.reduce((carry, maps) => [...carry, ...maps], [])
 					.reduce((carry, map) => {
-						const {difficulty, qualification, song, votes, ...rest} = map;
+						const {difficulty, qualification, song, positiveVotes, negativeVotes, ...rest} = map;
 
 						song.difficulties = (song?.difficulties ?? []).filter(d => d?.modeName === 'Standard');
 
@@ -580,11 +580,10 @@
 
 						const diffIdx = carry[song.hash]?.difficulties?.findIndex(d => d.id === difficulty.id);
 						if (diffIdx >= 0) {
-							const votesPositive = votes?.reduce((sum, v) => sum + (v?.rankability > 0 ? 1 : 0), 0) ?? 0;
-							const votesNegative =
-								votes?.reduce((sum, v) => sum + (Number.isFinite(v?.rankability) && v.rankability <= 0 ? 1 : 0), 0) ?? 0;
+							const votesPositive = positiveVotes ?? 0;
+							const votesNegative = negativeVotes ?? 0;
 
-							const votesTotal = votes?.length ?? 0;
+							const votesTotal = votesPositive + votesNegative ?? 0;
 							const votesScore = votesTotal ? votesPositive / votesTotal : 0;
 							const votesRating = votesScore - (votesScore - 0.5) * Math.pow(2, -Math.log10(votesTotal + 1));
 
@@ -593,7 +592,6 @@
 								...carry[song.hash].difficulties[diffIdx],
 								qualification,
 								leaderboardId: rest?.id,
-								votes,
 								votesPositive,
 								votesNegative,
 								votesRating,
@@ -620,7 +618,7 @@
 							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
 							carry.criteriaMet += [1, 2].includes(diff?.qualification?.criteriaMet) ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
-							carry.votesTotal += diff?.votes?.length ?? 0;
+							carry.votesTotal += diff?.votesTotal ?? 0;
 							carry.votesPositive += diff?.votesPositive ?? 0;
 							carry.votesNegative += diff?.votesNegative ?? 0;
 
