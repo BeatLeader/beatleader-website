@@ -53,7 +53,6 @@
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
 	import RankedApproval from '../components/Leaderboard/RankedApproval.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
-	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 

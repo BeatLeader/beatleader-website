@@ -118,15 +118,17 @@
 	</div>
 
 	{#if qualification?.approved}
-		<div class="timeset">
-			{#if Date.now() / 1000 - qualification?.approvalTimeset < WEEKSECONDS}
-				<span style="color: white;" title={formatDate(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}>
-					Ready to rank {formatDateRelative(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}
-				</span>
-			{:else}
-				<span style="color: green;" title={formatDate(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}
-					><i class="fa fa-check" /> Ready to rank</span>
-			{/if}
+		<div class="qualification-description">
+			<div class="timeset">
+				{#if Date.now() / 1000 - qualification?.approvalTimeset < WEEKSECONDS}
+					<span style="color: white;" title={formatDate(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}>
+						Ready to rank {formatDateRelative(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}
+					</span>
+				{:else}
+					<span style="color: green;" title={formatDate(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}
+						><i class="fa fa-check" /> Ready to rank</span>
+				{/if}
+			</div>
 		</div>
 	{/if}
 
@@ -138,9 +140,9 @@
 				on:click={() => (showChanges = !showChanges)}
 				title="Show average difficulty stats">
 				{#if showChanges}
-					Hide changelog
+					Hide qualification changelog
 				{:else}
-					Show changelog
+					Show qualification changelog
 				{/if}
 
 				<i class="fas fa-chevron-down" />
@@ -160,6 +162,7 @@
 		grid-gap: 0.4em;
 		align-items: center;
 		flex-wrap: wrap;
+		margin-top: 0.25em;
 	}
 
 	.beat-savior-reveal {
@@ -178,5 +181,17 @@
 
 	:global(.content figure:not(:first-child)) {
 		margin-top: 0;
+	}
+
+	.score-options-section {
+		margin-top: 0.5rem;
+	}
+
+	:global(.qualification-description) + .score-options-section {
+		margin-top: 1rem;
+	}
+
+	.score-options-section :global(+ *) {
+		margin-top: 0.5rem;
 	}
 </style>
