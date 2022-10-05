@@ -22,9 +22,9 @@
 			on:click={() => (showChanges = !showChanges)}
 			title="Show average difficulty stats">
 			{#if showChanges}
-				Hide changelog
+				Hide ranking changelog
 			{:else}
-				Show changelog
+				Show ranking changelog
 			{/if}
 
 			<i class="fas fa-chevron-down" />
@@ -38,18 +38,6 @@
 {/if}
 
 <style>
-	.qualification-description {
-		display: flex;
-		grid-gap: 0.8em;
-		align-items: center;
-		flex-wrap: wrap;
-	}
-
-	.timeset {
-		display: flex;
-		grid-gap: 0.4em;
-	}
-
 	.beat-savior-reveal {
 		align-self: end;
 		cursor: pointer;
@@ -66,5 +54,17 @@
 
 	:global(.content figure:not(:first-child)) {
 		margin-top: 0;
+	}
+
+	.score-options-section {
+		margin-top: 0.5rem;
+	}
+
+	:global(.qualification-description) + .score-options-section {
+		margin-top: 1rem;
+	}
+
+	.score-options-section :global(+ *) {
+		margin-top: 0.5rem;
 	}
 </style>

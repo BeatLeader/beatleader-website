@@ -92,5 +92,6 @@
 		display: flex;
 		grid-gap: 0.4em;
 		align-items: center;
+		margin-top: 0.25em;
 	}
 </style>

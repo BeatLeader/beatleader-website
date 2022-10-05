@@ -78,9 +78,9 @@
 				on:click={() => (showChanges = !showChanges)}
 				title="Show average difficulty stats">
 				{#if showChanges}
-					Hide changelog
+					Hide reweighing changelog
 				{:else}
-					Show changelog
+					Show reweighing changelog
 				{/if}
 
 				<i class="fas fa-chevron-down" />
@@ -100,6 +100,7 @@
 		grid-gap: 0.8em;
 		align-items: center;
 		flex-wrap: wrap;
+		margin-top: 0.25em;
 	}
 
 	.timeset {
@@ -123,5 +124,17 @@
 
 	:global(.content figure:not(:first-child)) {
 		margin-top: 0;
+	}
+
+	.score-options-section {
+		margin-top: 0.5rem;
+	}
+
+	:global(.qualification-description) + .score-options-section {
+		margin-top: 1rem;
+	}
+
+	.score-options-section :global(+ *) {
+		margin-top: 0.5rem;
 	}
 </style>

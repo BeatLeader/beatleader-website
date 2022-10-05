@@ -51,23 +51,27 @@
 			</span>
 		</div>
 
-		{#if change.oldStars != change.newStars}
+		{#if change.oldRankability !== change.newRankability}
+			{change.oldRankability ? 'Ranked' : 'Unranked'} → {change.newRankability ? 'Ranked' : 'Unranked'}
+		{/if}
+
+		{#if change.oldStars !== change.newStars}
 			{change.oldStars} → {change.newStars} ★
 		{/if}
 
-		{#if change.oldType != change.newType}
+		{#if change.oldType !== change.newType}
 			{mapTypeFromMask(change.oldType)} → {mapTypeFromMask(change.newType)}
 		{/if}
 
-		{#if change.oldCriteriaMet != change.newCriteriaMet}
+		{#if change.oldCriteriaMet !== change.newCriteriaMet}
 			{criteriaStatusDescription(change.oldCriteriaMet)} → {criteriaStatusDescription(change.newCriteriaMet)}
 		{/if}
 
-		{#if change.oldKeep != change.newKeep}
+		{#if change.oldKeep !== change.newKeep}
 			{change.oldKeep ? 'Ranked' : 'Unranked'} → {change.newKeep ? 'Ranked' : 'Unranked'}
 		{/if}
 
-		{#if change.oldCriteriaCommentary != change.newCriteriaCommentary}
+		{#if change.oldCriteriaCommentary !== change.newCriteriaCommentary}
 			{#if change.oldCriteriaCommentary}
 				"{change.oldCriteriaCommentary}"
 			{:else}
@@ -92,5 +96,6 @@
 		display: flex;
 		grid-gap: 0.4em;
 		align-items: center;
+		margin-top: 0.25em;
 	}
 </style>
