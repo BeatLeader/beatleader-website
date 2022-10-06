@@ -28,7 +28,7 @@
 	.bl-badges img {
 		margin-right: 0.5rem;
 		margin-bottom: 0.25rem;
-		width: 151px;
+		height: 41px;
 	}
 
 	@media (max-width: 768px) {
