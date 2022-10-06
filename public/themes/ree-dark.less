@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&display=swap');
+
+* {
+  font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
+}
+
+//<--- Background ----->
+html, body {
+  background: url("/assets/ree-dark-bg.png") !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+}
+
+//<--- Content box ----->
+.content-box {
+  background: rgb(60 60 60 / 20%) !important;
+  backdrop-filter: blur(4px);
+
+  > div > header, > header {
+    justify-content: center !important;
+  }
+}
+
+//<--- Pinned scores ----->
+.pinned-scores {
+  .score {
+    width: 100%;
+    padding: 0em !important;
+    border-bottom: 1px solid #2c2c2c;
+  }
+
+  > *:last-child {
+    border-bottom: 0px solid #2c2c2c;
+  }
+
+  > h2 {
+    text-align: center;
+  }
+
+  header {
+    display: flex;
+    margin-top: .5em !important;
+    margin-bottom: 0 !important;
+
+    h3 {
+      background: #303030;
+      width: fit-content;
+      border-radius: .4em;
+      padding: .2em;
+
+      > i {
+        margin: 0 .4em !important;
+      }
+    }
+  }
+
+  :has(.editable) > header {
+    margin-left: 5em;
+
+    .move {
+      display: inline-flex !important;
+      flex-direction: row;
+      justify-content: center;
+      width: 5em;
+      margin-left: -5em;
+      grid-gap: 0.4em;
+    }
+  }
+}
+
+//<--- Song score / Icons ----->
+.song-score {
+  .icons:not(.up-to-tablet) {
+    justify-content: flex-start !important;
+    max-width: 6.85em !important;
+    width: auto !important;
+
+    > * {
+      overflow: hidden;
+      transition: opacity 0.2s;
+      opacity: 0.6 !important;
+    }
+
+    > *:hover {
+      opacity: 1 !important;
+    }
+
+    .button:has(i.fa-thumbtack) {
+      position: absolute !important;
+      align-self: center;
+      transform: translate(-130%, 0em);
+    }
+
+    .button.danger {
+      position: absolute !important;
+      align-self: center;
+      transform: translate(-260%, 0em);
+    }
+  }
+}
+
+//<--- Profile chart ----->
+.beatleader-swipe-card {
+  div.chart {
+    border-top: 1px solid #2c2c2c;
+    border-bottom: 1px solid #2c2c2c;
+    border-radius: 0em !important;
+    margin: 0em !important;
+    box-shadow: none !important;
+    background: none !important;
+  }
+
+  section.chart {
+    margin: 0em !important;
+  }
+}
+
+//<--- Admin page tweaks ----->
+.content-box:has(.scores-date-browse):has(div + nav + div + nav) > div {
+  display: flex;
+  flex-direction: column;
+
+  > div:not(div + nav + div) {
+    margin-top: 1em;
+    padding-top: 1em;
+    border-top: 10px solid #2c2c2c;
+    order: 1;
+  }
+
+  > nav:not(:first-child):not(div + nav + div + nav) {
+    order: 1;
+  }
+}
+
+//<--- Ranking ----->
+.content-box:has(.ranking-grid-row) {
+  > h1 {
+    text-align: center;
+  }
+
+  .players, .ranking-grid {
+    grid-gap: 2px !important;
+
+    .player-card {
+      transition: background-color ease 0.2s;
+      border: none !important;
+      background: #212121 !important;
+      box-shadow: 0 4px 8px rgb(0 0 0 / 80%) !important;
+    }
+
+    .player-card:hover {
+      background: #313131 !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+//<--- Clan Badges ----->
+.clan-badges {
+  display: flex;
+
+  > a {
+    margin: 0 -0.2em;
+    opacity: 0.2;
+    transition: opacity ease 0.2s;
+
+    > span {
+      width: 2em;
+      transform: scale(70%);
+    }
+  }
+
+  > a:hover {
+    opacity: 1 !important;
+
+    > span {
+      transform: scale(90%);
+    }
+  }
+}
+
+//<--- Score Details ----->
+.details {
+  .leaderboard, .details-with-shadow {
+    padding: .5em;
+    background: #151515 !important;
+    border: 1px solid #2e2e2e;
+    box-shadow: none !important;
+  }
+}
+
+//<--- Leaderboard ----->
+.leaderboard {
+  .player-score {
+    border: none !important;
+    margin-bottom: 0 !important;
+
+    .rank > .badge {
+      background: none !important;
+    }
+
+    .country {
+      margin: 0 .4em 0.1em .4em !important;
+    }
+  }
+
+  > div > div:has(.player-score):not(:last-child) {
+    border-bottom: 1px solid #2c2c2c !important;
+  }
+
+  .highlight {
+    overflow: visible !important;
+    background: none !important;
+  }
+}
+
+
