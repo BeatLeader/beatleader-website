@@ -36,9 +36,7 @@
 	$: headset = getHeadsetForHMD(hmd);
 	$: platformDescription = describePlatform(platform);
 	$: title = headset?.name + (platformDescription?.description ? '\n' + platformDescription?.description : '');
-	$: headsetStyle =
-		`width: 1.2em; filter: ${headset?.color}` +
-		(platformDescription?.color ? `drop-shadow(0px 0px 2px ${platformDescription?.color})` : '');
+	$: headsetStyle = `width: 1.2em; filter: ${headset?.color}`;
 </script>
 
 <span class="val">
@@ -48,7 +46,7 @@
 	</strong>
 
 	{#if headset}
-		<img src={'/assets/' + headset.icon + '.svg'} alt={headset.name} {title} style={headsetStyle} />
+		<img src={'/assets/' + headset.icon} alt={headset.name} {title} style={headsetStyle} />
 	{/if}
 </span>
 

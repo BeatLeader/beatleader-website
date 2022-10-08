@@ -17,6 +17,7 @@
 	import {debounce} from '../utils/debounce';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Countries from '../components/Ranking/Countries.svelte';
+	import Headsets from '../components/Ranking/Headsets.svelte';
 
 	export let page = 1;
 	export let location;
@@ -116,23 +117,20 @@
 		},
 		{
 			key: 'hmd',
-			label: 'HMD',
+			label: 'Headsets',
 			default: '',
 			process: processStringArrayFilter,
-			type: 'switch',
+			type: 'headsets',
 			value: [],
-			values: [
-				{id: '1', label: 'Rift CV1'},
-				{id: '16', label: 'Rift S'},
-				{id: '32', label: 'Quest 1'},
-				{id: '256', label: 'Quest 2'},
-				{id: '8', label: 'WMR'},
-				{id: '64', label: 'Valve Index'},
-				{id: '2', label: 'Vive'},
-				{id: '4', label: 'Vive Pro'},
-				{id: '128', label: 'Vive Cosmos'},
-			],
-			onChange: e => onMultiSwitchChange(e, 'hmd'),
+			values: [],
+			onChange: e => {
+				const param = findParam('hmd');
+				if (param) {
+					param.value = e?.detail ?? [];
+
+					updateCurrentFiltersFromParams();
+				}
+			},
 			multi: true,
 		},
 		{
@@ -205,7 +203,7 @@
 			if (p.bitArray) {
 				p.value = (p?.values ?? []).filter(v => Number.isFinite(v.id) && (1 << v.id) & (filters?.[p.key] ?? 0));
 				filters[p.key] = filters[p.key] ?? 0;
-			} else if (p.key === 'countries') {
+			} else if (p.key === 'countries' || p.key === 'hmd') {
 				p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : p?.default ?? [];
 				filters[p.key] = filters[p.key] ?? [];
 			} else if (p.key === 'pp_range' || p.key === 'score_range') {
@@ -244,7 +242,7 @@
 		params.forEach(p => {
 			if (p.bitArray) {
 				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0);
-			} else if (p.key === 'countries') {
+			} else if (p.key === 'countries' || p.key === 'hmd') {
 				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : p?.value ?? '';
 			} else if (p.key === 'pp_range' || p.key === 'score_range') {
 				currentFilters[p.key] = (p?.values ?? []).map(i => i + '').join(',');
@@ -374,6 +372,8 @@
 							<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
 						{:else if param?.type === 'countries'}
 							<Countries countries={param.value} on:change={param.onChange} />
+						{:else if param?.type === 'headsets'}
+							<Headsets headsets={param.value} on:change={param.onChange} />
 						{:else if param?.type === 'slider'}
 							<RangeSlider
 								range
