@@ -146,37 +146,39 @@
 					</div>
 				</form>
 			{:else}
-				<h3
-					class:editable
-					on:click={() => {
-						if (editable) enableEdit();
-					}}>
-					{#if editable}
-						<span class="move">
-							{#if !isFirst}
-								{#if isLoading}
-									<i><Spinner /></i>
-								{:else}
-									<i class="fas fa-chevron-up" title="Move score up" on:click|stopPropagation={onUp} />
-								{/if}
+				{#if editable}
+					<span class="move">
+						{#if !isFirst}
+							{#if isLoading}
+								<i><Spinner /></i>
+							{:else}
+								<i class="fas fa-chevron-up" title="Move score up" on:click|stopPropagation={onUp} />
 							{/if}
+						{/if}
 
-							{#if !isLast}
-								{#if isLoading}
-									<i><Spinner /></i>
-								{:else}
-									<i class="fas fa-chevron-down" title="Move score down" on:click|stopPropagation={onDown} />
-								{/if}
+						{#if !isLast}
+							{#if isLoading}
+								<i><Spinner /></i>
+							{:else}
+								<i class="fas fa-chevron-down" title="Move score down" on:click|stopPropagation={onDown} />
 							{/if}
-						</span>
-					{/if}
+						{/if}
+					</span>
+				{/if}
 
-					{songScore.score?.metadata?.description ?? (editable ? 'Click to edit description...' : '')}
+				{#if songScore.score?.metadata?.description}
+					<h3
+						class:editable
+						on:click={() => {
+							if (editable) enableEdit();
+						}}>
+						{songScore.score?.metadata?.description ?? (editable ? 'Click to edit description...' : '')}
+					</h3>
+				{/if}
 
-					{#if editable}
-						<i class="fas fa-edit" on:click={enableEdit} title="Click to edit" />
-					{/if}
-				</h3>
+				{#if editable}
+					<i class="fas fa-edit" on:click={enableEdit} title="Click to edit" />
+				{/if}
 			{/if}
 		</header>
 
@@ -185,23 +187,34 @@
 {/if}
 
 <style>
-	.score {
-		padding: 1em 0;
+	.score:not(:first-child) {
+		border-top: 1px solid var(--row-separator);
 	}
 
 	header {
+		display: flex;
+		align-items: center;
+		grid-gap: .5em;
 		font-size: 0.875em;
-		margin-top: 1em;
-		margin-bottom: 0.5em;
+	}
+
+	header > h3 {
+		width: fit-content;
+		border-bottom-left-radius: .5em;
+		border-bottom-right-radius: .5em;
+		background: var(--row-separator);
+		padding: 0 1em .2em;
+	}
+
+	.move {
+		display: flex;
+		justify-content: center;
+		grid-gap: .5em;
+		width: 3em;
 	}
 
 	h3.editable {
 		cursor: pointer;
-	}
-
-	h3 .move {
-		display: inline-block;
-		margin-right: 0.5em;
 	}
 
 	h3 .move i {
@@ -227,6 +240,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		width: 100%;
 	}
 
 	textarea::placeholder,

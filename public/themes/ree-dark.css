@@ -78,6 +78,9 @@
 * {
   font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
 }
+:root {
+  --row-separator: #2e2e2e !important;
+}
 html,
 body {
   background: url("/assets/ree-dark-bg.png") !important;
@@ -92,45 +95,9 @@ body {
 .content-box > header {
   justify-content: center !important;
 }
-.pinned-scores .score {
-  width: 100%;
-  padding: 0em !important;
-  border-bottom: 1px solid #2c2c2c;
-}
-.pinned-scores > *:last-child {
-  border-bottom: 0px solid #2c2c2c;
-}
-.pinned-scores > h2 {
-  text-align: center;
-}
-.pinned-scores header {
-  display: flex;
-  margin-top: 0.5em !important;
-  margin-bottom: 0 !important;
-}
-.pinned-scores header h3 {
-  background: #303030;
-  width: fit-content;
-  border-radius: 0.4em;
-  padding: 0.2em;
-}
-.pinned-scores header h3 > i {
-  margin: 0 0.4em !important;
-}
-.pinned-scores :has(.editable) > header {
-  margin-left: 5em;
-}
-.pinned-scores :has(.editable) > header .move {
-  display: inline-flex !important;
-  flex-direction: row;
-  justify-content: center;
-  width: 5em;
-  margin-left: -5em;
-  grid-gap: 0.4em;
-}
 .beatleader-swipe-card div.chart {
-  border-top: 1px solid #2c2c2c;
-  border-bottom: 1px solid #2c2c2c;
+  border-top: 1px solid var(--row-separator);
+  border-bottom: 1px solid var(--row-separator);
   border-radius: 0em !important;
   margin: 0em !important;
   box-shadow: none !important;
@@ -142,7 +109,7 @@ body {
 .failed-scores {
   margin-top: 1em;
   padding-top: 1em;
-  border-top: 10px solid #2c2c2c;
+  border-top: 10px solid var(--row-separator);
 }
 .content-box:has(.ranking-grid-row) > h1 {
   text-align: center;
@@ -185,7 +152,7 @@ body {
 .details .details-with-shadow {
   padding: 0.5em;
   background: #151515 !important;
-  border: 1px solid #2e2e2e;
+  border: 1px solid var(--row-separator);
   box-shadow: none !important;
 }
 .leaderboard .player-score {

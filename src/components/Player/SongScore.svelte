@@ -152,7 +152,7 @@
 
 <style>
 	.score-in-list {
-		border-bottom: 1px solid var(--dimmed);
+		border-bottom: 1px solid var(--row-separator);
 		padding: 0.5em 0;
 	}
 
