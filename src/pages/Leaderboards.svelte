@@ -328,7 +328,7 @@
 				<div class="songs grid-transition-helper">
 					{#each leaderboardsPage as map, idx (map.id)}
 						<div class={`song-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
-							<div class="icons mobile-only">
+							<div class="mobile-only">
 								{#if map?.song?.hash?.length}
 									<Icons hash={map.song.hash} diffInfo={map?.diffInfo} />
 								{/if}
@@ -373,7 +373,7 @@
 								{/if}
 
 								{#if map?.song?.hash?.length}
-									<div class="icons tablet-and-up">
+									<div class="tablet-and-up">
 										<Icons hash={map.song.hash} diffInfo={{diff: map?.difficulty?.difficultyName, type: map?.difficulty?.modeName}} />
 									</div>
 								{/if}

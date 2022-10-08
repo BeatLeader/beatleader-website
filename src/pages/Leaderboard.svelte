@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
@@ -55,6 +55,7 @@
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
+	import Preview from "../components/Common/Preview.svelte";
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -282,6 +283,15 @@
 
 	let batleRoyaleDraft = false;
 	let draftList = [];
+
+	const {open} = getContext('simple-modal');
+	const showPreview = previewLink => {
+		if (document.body.clientWidth < 800) {
+			window.open(previewLink, '_blank');
+		} else {
+			open(Preview, {previewLink: previewLink});
+		}
+	};
 
 	function startBattleRoyale() {
 		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
@@ -584,7 +594,7 @@
 									<MapTypeDescription type={leaderboard?.stats.type} />
 								{/if}
 
-								<span class="icons"><Icons {hash} {diffInfo} mapCheck={true} /></span>
+								<Icons {hash} {diffInfo} mapCheck={true} />
 								<Button
 									cls="replay-button-alt battleroyalebtn"
 									icon={`<div class='battleroyale${batleRoyaleDraft ? 'stop' : ''}-icon'></div>`}
@@ -615,7 +625,7 @@
 							<LeaderboardStats {leaderboard} />
 
 							{#if iconsInInfo}
-								<span class="icons"><Icons {hash} {diffInfo} mapCheck={true} /></span>
+								<Icons {hash} {diffInfo} mapCheck={true} />
 							{/if}
 						</div>
 					{/if}
@@ -763,7 +773,13 @@
 															on:click={() => (draftList = draftList.filter(el => el != score.player.playerId))} />
 													{/if}
 												{:else}
-													<Icons {hash} {diffInfo} icons={['replay']} scoreId={score?.score?.id} />
+													<Button
+															url={score.replay}
+															on:click={showPreview(score.replay)}
+															cls='replay-button-alt'
+															icon="<div class='replay-icon-alt'></div>"
+															title="Replay"
+															noMargin={true} />
 
 													<span
 														class="beat-savior-reveal clickable"
