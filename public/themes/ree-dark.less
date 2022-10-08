@@ -135,13 +135,13 @@ html, body {
     }
   }
 
-  > div > div:has(.player-score):not(:last-child) {
-    border-bottom: 1px solid #2c2c2c !important;
-  }
-
   .highlight {
     overflow: visible !important;
-    background: none !important;
+    background: #252525 !important;
+  }
+
+  > div > div:has(.player-score):not(:last-child) {
+    border-bottom: 1px solid var(--row-separator) !important;
   }
 }
 

@@ -910,35 +910,36 @@
 								{/if}
 							</div>
 						{/each}
-						{#if votingStats}
-							<div class="voting-result">
-								<span>Average: </span>
-								<div class="score with-badge">
-									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+					</div>
+
+					{#if votingStats}
+						<div class="voting-result">
+							<span>Average: </span>
+							<div class="score with-badge">
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 										<span slot="label">
 											<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
 										</span>
-									</Badge>
-								</div>
-								<div class="score with-badge">
-									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								</Badge>
+							</div>
+							<div class="score with-badge">
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 										<span slot="label">
 											<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
 										</span>
-									</Badge>
-								</div>
-								{#if votingsForTypeStats(votingStats.type)}
-									<div class="score with-badge">
-										<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								</Badge>
+							</div>
+							{#if votingsForTypeStats(votingStats.type)}
+								<div class="score with-badge">
+									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 											<span slot="label">
 												<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
 											</span>
-										</Badge>
-									</div>
-								{/if}
-							</div>
-						{/if}
-					</div>
+									</Badge>
+								</div>
+							{/if}
+						</div>
+					{/if}
 
 					<Pager
 						totalItems={$leaderboardStore.totalItems}
@@ -1124,9 +1125,12 @@
 	.scores-grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		grid-row-gap: 0.2em;
 		max-width: 100%;
 		position: relative;
+	}
+
+	.scores-grid > *:not(:last-child) {
+		border-bottom: 1px solid var(--row-separator);
 	}
 
 	.replay-button {
@@ -1138,8 +1142,7 @@
 		flex-direction: row;
 		grid-gap: 0.4em;
 		overflow: hidden;
-		border-bottom: 1px solid var(--faded);
-		padding-bottom: 0.2em;
+		padding: 0.2em 0;
 		min-width: 19em;
 		justify-content: center;
 	}
@@ -1160,8 +1163,8 @@
 	.player-score.highlight {
 		background: linear-gradient(45deg, #defb6996, transparent, transparent);
 		border-radius: 4px;
-		padding: 4px;
-		margin: -4px -4px 0px -4px;
+		padding: 0.2em;
+		margin: 0 -0.2em;
 		max-width: 130%;
 	}
 

@@ -172,11 +172,11 @@ body {
 .leaderboard .player-score .country {
   margin: 0 0.4em 0.1em 0.4em !important;
 }
-.leaderboard > div > div:has(.player-score):not(:last-child) {
-  border-bottom: 1px solid #2c2c2c !important;
-}
 .leaderboard .highlight {
   overflow: visible !important;
-  background: none !important;
+  background: #252525 !important;
+}
+.leaderboard > div > div:has(.player-score):not(:last-child) {
+  border-bottom: 1px solid var(--row-separator) !important;
 }
 /*# sourceMappingURL=ree-dark.css.map */
