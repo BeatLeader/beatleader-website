@@ -330,9 +330,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/11')}>
-			<span class="event-title"> The biggest batch of maps ranked! </span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/109-event.png" />
+		<div class="event-banner" on:click={() => navigate('/event/12')}>
+			<span class="event-title"> The smallest batch of maps ranked! </span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/cheems.webp" />
 		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -450,7 +450,7 @@
 	.event-banner {
 		display: flex;
 		align-items: center;
-		background: #2e0e01;
+		background: #544fbd;
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;
@@ -466,10 +466,9 @@
 	}
 
 	.event-title {
-		color: #efe5d1;
+		color: white;
 		font-size: larger;
 		font-weight: 600;
-		text-shadow: 0 0 0.15em #fff813;
 	}
 
 	@media screen and (max-width: 1275px) {
