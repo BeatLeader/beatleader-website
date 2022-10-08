@@ -45,6 +45,7 @@
         flex-wrap: wrap;
         grid-gap: 3px;
         max-width: 75px;
+        width: max-content;
     }
 
     .main-grid:not(:has(span>*:nth-child(5))) {
