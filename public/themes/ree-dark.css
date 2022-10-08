@@ -128,29 +128,6 @@ body {
   margin-left: -5em;
   grid-gap: 0.4em;
 }
-.song-score .icons:not(.up-to-tablet) {
-  justify-content: flex-start !important;
-  max-width: 6.85em !important;
-  width: auto !important;
-}
-.song-score .icons:not(.up-to-tablet) > * {
-  overflow: hidden;
-  transition: opacity 0.2s;
-  opacity: 0.6 !important;
-}
-.song-score .icons:not(.up-to-tablet) > *:hover {
-  opacity: 1 !important;
-}
-.song-score .icons:not(.up-to-tablet) .button:has(i.fa-thumbtack) {
-  position: absolute !important;
-  align-self: center;
-  transform: translate(-130%, 0em);
-}
-.song-score .icons:not(.up-to-tablet) .button.danger {
-  position: absolute !important;
-  align-self: center;
-  transform: translate(-260%, 0em);
-}
 .beatleader-swipe-card div.chart {
   border-top: 1px solid #2c2c2c;
   border-bottom: 1px solid #2c2c2c;
@@ -162,18 +139,10 @@ body {
 .beatleader-swipe-card section.chart {
   margin: 0em !important;
 }
-.content-box:has(.scores-date-browse):has(div + nav + div + nav) > div {
-  display: flex;
-  flex-direction: column;
-}
-.content-box:has(.scores-date-browse):has(div + nav + div + nav) > div > div:not(div + nav + div) {
+.failed-scores {
   margin-top: 1em;
   padding-top: 1em;
   border-top: 10px solid #2c2c2c;
-  order: 1;
-}
-.content-box:has(.scores-date-browse):has(div + nav + div + nav) > div > nav:not(:first-child):not(div + nav + div + nav) {
-  order: 1;
 }
 .content-box:has(.ranking-grid-row) > h1 {
   text-align: center;

@@ -138,22 +138,6 @@
 		on:service-change={onServiceChanged}
 		on:service-params-change={onServiceParamsChanged} />
 
-	{#if isAdmin && failedScoresArray && failedScoresArray.length}
-		<div class="song-scores grid-transition-helper">
-			{#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
-				<FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} />
-			{/each}
-		</div>
-		{#if Number.isFinite(failedScoresPage) && (!Number.isFinite(totalFailedScores) || totalFailedScores > 0)}
-			<Pager
-				totalItems={totalFailedScores}
-				itemsPerPage={3}
-				itemsPerPageValues={null}
-				currentPage={failedScoresPage - 1}
-				on:page-changed={onFailedScoresPageChange} />
-		{/if}
-	{/if}
-
 	{#if $scoresStore && $scoresStore.length}
 		<div class="song-scores grid-transition-helper">
 			{#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
@@ -174,6 +158,22 @@
 			fixedItemsPerPage={itemsPerPage}
 			loadingPage={$pending?.serviceParams?.page ? $pending.serviceParams.page - 1 : null}
 			on:page-changed={onPageChanged} />
+	{/if}
+
+	{#if isAdmin && failedScoresArray && failedScoresArray.length}
+		<div class="song-scores failed-scores grid-transition-helper">
+			{#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
+				<FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} />
+			{/each}
+		</div>
+		{#if Number.isFinite(failedScoresPage) && (!Number.isFinite(totalFailedScores) || totalFailedScores > 0)}
+			<Pager
+					totalItems={totalFailedScores}
+					itemsPerPage={3}
+					itemsPerPageValues={null}
+					currentPage={failedScoresPage - 1}
+					on:page-changed={onFailedScoresPageChange} />
+		{/if}
 	{/if}
 </div>
 

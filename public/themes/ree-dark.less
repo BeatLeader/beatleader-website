@@ -70,37 +70,6 @@ html, body {
   }
 }
 
-//<--- Song score / Icons ----->
-.song-score {
-  .icons:not(.up-to-tablet) {
-    justify-content: flex-start !important;
-    max-width: 6.85em !important;
-    width: auto !important;
-
-    > * {
-      overflow: hidden;
-      transition: opacity 0.2s;
-      opacity: 0.6 !important;
-    }
-
-    > *:hover {
-      opacity: 1 !important;
-    }
-
-    .button:has(i.fa-thumbtack) {
-      position: absolute !important;
-      align-self: center;
-      transform: translate(-130%, 0em);
-    }
-
-    .button.danger {
-      position: absolute !important;
-      align-self: center;
-      transform: translate(-260%, 0em);
-    }
-  }
-}
-
 //<--- Profile chart ----->
 .beatleader-swipe-card {
   div.chart {
@@ -118,20 +87,10 @@ html, body {
 }
 
 //<--- Admin page tweaks ----->
-.content-box:has(.scores-date-browse):has(div + nav + div + nav) > div {
-  display: flex;
-  flex-direction: column;
-
-  > div:not(div + nav + div) {
-    margin-top: 1em;
-    padding-top: 1em;
-    border-top: 10px solid #2c2c2c;
-    order: 1;
-  }
-
-  > nav:not(:first-child):not(div + nav + div + nav) {
-    order: 1;
-  }
+.failed-scores {
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: 10px solid #2c2c2c;
 }
 
 //<--- Ranking ----->
