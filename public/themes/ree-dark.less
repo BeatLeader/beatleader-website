@@ -28,6 +28,42 @@ html, body {
   }
 }
 
+//<--- Summary Badges ----->
+.beatleader-summary {
+  .badge {
+    background-color: #2c2c2c !important;
+    box-shadow: 0 0 6px #00000077;
+  }
+}
+
+//<--- Clan Badges ----->
+.clan-badges {
+  display: flex;
+
+  .label {
+    font-weight: 900 !important;
+  }
+
+  > a {
+    margin: 0 -0.2em;
+    opacity: 0.2;
+    transition: opacity ease 0.2s;
+
+    > span {
+      width: 2em;
+      transform: scale(70%);
+    }
+  }
+
+  > a:hover {
+    opacity: 1 !important;
+
+    > span {
+      transform: scale(90%);
+    }
+  }
+}
+
 //<--- Profile chart ----->
 .beatleader-swipe-card {
   div.chart {
@@ -70,30 +106,6 @@ html, body {
     .player-card:hover {
       background: #313131 !important;
       box-shadow: none !important;
-    }
-  }
-}
-
-//<--- Clan Badges ----->
-.clan-badges {
-  display: flex;
-
-  > a {
-    margin: 0 -0.2em;
-    opacity: 0.2;
-    transition: opacity ease 0.2s;
-
-    > span {
-      width: 2em;
-      transform: scale(70%);
-    }
-  }
-
-  > a:hover {
-    opacity: 1 !important;
-
-    > span {
-      transform: scale(90%);
     }
   }
 }

@@ -75,10 +75,7 @@
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
-	}
-
-	section :global(> *) {
-		margin-right: 0.75em;
+		grid-gap: 0.75em;
 	}
 
 	.songinfo {

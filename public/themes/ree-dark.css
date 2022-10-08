@@ -95,6 +95,31 @@ body {
 .content-box > header {
   justify-content: center !important;
 }
+.beatleader-summary .badge {
+  background-color: #2c2c2c !important;
+  box-shadow: 0 0 6px #00000077;
+}
+.clan-badges {
+  display: flex;
+}
+.clan-badges .label {
+  font-weight: 900 !important;
+}
+.clan-badges > a {
+  margin: 0 -0.2em;
+  opacity: 0.2;
+  transition: opacity ease 0.2s;
+}
+.clan-badges > a > span {
+  width: 2em;
+  transform: scale(70%);
+}
+.clan-badges > a:hover {
+  opacity: 1 !important;
+}
+.clan-badges > a:hover > span {
+  transform: scale(90%);
+}
 .beatleader-swipe-card div.chart {
   border-top: 1px solid var(--row-separator);
   border-bottom: 1px solid var(--row-separator);
@@ -129,24 +154,6 @@ body {
 .content-box:has(.ranking-grid-row) .ranking-grid .player-card:hover {
   background: #313131 !important;
   box-shadow: none !important;
-}
-.clan-badges {
-  display: flex;
-}
-.clan-badges > a {
-  margin: 0 -0.2em;
-  opacity: 0.2;
-  transition: opacity ease 0.2s;
-}
-.clan-badges > a > span {
-  width: 2em;
-  transform: scale(70%);
-}
-.clan-badges > a:hover {
-  opacity: 1 !important;
-}
-.clan-badges > a:hover > span {
-  transform: scale(90%);
 }
 .details .leaderboard,
 .details .details-with-shadow {
