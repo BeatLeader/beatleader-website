@@ -54,8 +54,17 @@
 		</div>
 
 		{#if !noIcons && hash && hash.length}
-			<div class="icons desktop-and-up" class:wide={!icons?.length || icons.length > 6}>
-				<Icons {hash} {twitchUrl} {diffInfo} scoreId={score.id} {replayLink} {icons} {serviceIcon} noPin={!isPlayerScore} on:score-pinned />
+			<div class="desktop-and-up">
+				<Icons layoutType="large"
+					   {hash}
+					   {twitchUrl}
+					   {diffInfo}
+					   scoreId={score.id}
+					   {replayLink}
+					   {icons}
+					   {serviceIcon}
+					   noPin={!isPlayerScore}
+					   on:score-pinned/>
 			</div>
 		{/if}
 	</section>
@@ -66,10 +75,7 @@
 		display: flex;
 		justify-content: flex-start;
 		align-items: center;
-	}
-
-	section :global(> *) {
-		margin-right: 0.75em;
+		grid-gap: 0.75em;
 	}
 
 	.songinfo {
@@ -98,24 +104,5 @@
 
 	.songinfo .category :global(.badge) {
 		width: auto;
-	}
-
-	.icons {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: flex-end;
-		font-size: 0.65em;
-		min-width: 4.66em;
-		width: 4.66em;
-		margin-right: 0;
-		gap: 0.25em;
-	}
-
-	.icons.wide {
-		min-width: 6.85em;
-	}
-
-	.icons:empty {
-		margin-bottom: 0;
 	}
 </style>

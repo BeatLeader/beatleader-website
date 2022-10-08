@@ -1,0 +1,182 @@
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosans/v27/o-0IIpQlx3QUlC5A4PNb4g.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosans/v27/o-0NIpQlx3QUlC5A4PNjFhdlYw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosans/v27/o-0NIpQlx3QUlC5A4PNjOhBlYw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosans/v27/o-0NIpQlx3QUlC5A4PNjXhFlYw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosans/v27/o-0NIpQlx3QUlC5A4PNjQhJlYw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kJo84MPvpLmixcA63oeALZTYKL.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZhaCt9w.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kXo84MPvpLmixcA63oeALhLw.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZ3aGt9w.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZlaet9w.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans SC';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanssc/v26/k3kIo84MPvpLmixcA63oeALZraWt9w.otf) format('opentype');
+}
+* {
+  font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
+}
+:root {
+  --row-separator: #2e2e2e !important;
+}
+html,
+body {
+  background: url("/assets/ree-dark-bg.png") !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+}
+.content-box {
+  background: rgba(60, 60, 60, 0.2) !important;
+  backdrop-filter: blur(4px);
+}
+.content-box > div > header,
+.content-box > header {
+  justify-content: center !important;
+}
+.beatleader-summary .badge {
+  background-color: #2c2c2c !important;
+  box-shadow: 0 0 6px #00000077;
+}
+.clan-badges {
+  display: flex;
+}
+.clan-badges .label {
+  font-weight: 900 !important;
+}
+.clan-badges > a {
+  margin: 0 -0.2em;
+  opacity: 0.2;
+  transition: opacity ease 0.2s;
+}
+.clan-badges > a > span {
+  width: 2em;
+  transform: scale(70%);
+}
+.clan-badges > a:hover {
+  opacity: 1 !important;
+}
+.clan-badges > a:hover > span {
+  transform: scale(90%);
+}
+.beatleader-swipe-card div.chart {
+  border-top: 1px solid var(--row-separator);
+  border-bottom: 1px solid var(--row-separator);
+  border-radius: 0em !important;
+  margin: 0em !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+.beatleader-swipe-card section.chart {
+  margin: 0em !important;
+}
+.failed-scores {
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: 10px solid var(--row-separator);
+}
+.content-box:has(.ranking-grid-row) > h1 {
+  text-align: center;
+}
+.content-box:has(.ranking-grid-row) .players,
+.content-box:has(.ranking-grid-row) .ranking-grid {
+  grid-gap: 2px !important;
+}
+.content-box:has(.ranking-grid-row) .players .player-card,
+.content-box:has(.ranking-grid-row) .ranking-grid .player-card {
+  transition: background-color ease 0.2s;
+  border: none !important;
+  background: #212121 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8) !important;
+}
+.content-box:has(.ranking-grid-row) .players .player-card:hover,
+.content-box:has(.ranking-grid-row) .ranking-grid .player-card:hover {
+  background: #313131 !important;
+  box-shadow: none !important;
+}
+.details .leaderboard,
+.details .details-with-shadow {
+  padding: 0.5em;
+  background: #151515 !important;
+  border: 1px solid var(--row-separator);
+  box-shadow: none !important;
+}
+.leaderboard .player-score {
+  border: none !important;
+  margin-bottom: 0 !important;
+}
+.leaderboard .player-score .rank > .badge {
+  background: none !important;
+}
+.leaderboard .player-score .country {
+  margin: 0 0.4em 0.1em 0.4em !important;
+}
+.leaderboard .highlight {
+  overflow: visible !important;
+  background: #252525 !important;
+}
+.leaderboard > div > div:has(.player-score):not(:last-child) {
+  border-bottom: 1px solid var(--row-separator) !important;
+}
+/*# sourceMappingURL=ree-dark.css.map */

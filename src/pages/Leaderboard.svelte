@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
@@ -55,6 +55,7 @@
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
+	import Preview from "../components/Common/Preview.svelte";
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -282,6 +283,15 @@
 
 	let batleRoyaleDraft = false;
 	let draftList = [];
+
+	const {open} = getContext('simple-modal');
+	const showPreview = previewLink => {
+		if (document.body.clientWidth < 800) {
+			window.open(previewLink, '_blank');
+		} else {
+			open(Preview, {previewLink: previewLink});
+		}
+	};
 
 	function startBattleRoyale() {
 		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
@@ -584,7 +594,7 @@
 									<MapTypeDescription type={leaderboard?.stats.type} />
 								{/if}
 
-								<span class="icons"><Icons {hash} {diffInfo} mapCheck={true} /></span>
+								<Icons {hash} {diffInfo} mapCheck={true} />
 								<Button
 									cls="replay-button-alt battleroyalebtn"
 									icon={`<div class='battleroyale${batleRoyaleDraft ? 'stop' : ''}-icon'></div>`}
@@ -615,7 +625,7 @@
 							<LeaderboardStats {leaderboard} />
 
 							{#if iconsInInfo}
-								<span class="icons"><Icons {hash} {diffInfo} mapCheck={true} /></span>
+								<Icons {hash} {diffInfo} mapCheck={true} />
 							{/if}
 						</div>
 					{/if}
@@ -763,7 +773,13 @@
 															on:click={() => (draftList = draftList.filter(el => el != score.player.playerId))} />
 													{/if}
 												{:else}
-													<Icons {hash} {diffInfo} icons={['replay']} scoreId={score?.score?.id} />
+													<Button
+															url={score.replay}
+															on:click={showPreview(score.replay)}
+															cls='replay-button-alt'
+															icon="<div class='replay-icon-alt'></div>"
+															title="Replay"
+															noMargin={true} />
 
 													<span
 														class="beat-savior-reveal clickable"
@@ -894,35 +910,36 @@
 								{/if}
 							</div>
 						{/each}
-						{#if votingStats}
-							<div class="voting-result">
-								<span>Average: </span>
-								<div class="score with-badge">
-									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+					</div>
+
+					{#if votingStats}
+						<div class="voting-result">
+							<span>Average: </span>
+							<div class="score with-badge">
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 										<span slot="label">
 											<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
 										</span>
-									</Badge>
-								</div>
-								<div class="score with-badge">
-									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								</Badge>
+							</div>
+							<div class="score with-badge">
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 										<span slot="label">
 											<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
 										</span>
-									</Badge>
-								</div>
-								{#if votingsForTypeStats(votingStats.type)}
-									<div class="score with-badge">
-										<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								</Badge>
+							</div>
+							{#if votingsForTypeStats(votingStats.type)}
+								<div class="score with-badge">
+									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
 											<span slot="label">
 												<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
 											</span>
-										</Badge>
-									</div>
-								{/if}
-							</div>
-						{/if}
-					</div>
+									</Badge>
+								</div>
+							{/if}
+						</div>
+					{/if}
 
 					<Pager
 						totalItems={$leaderboardStore.totalItems}
@@ -1108,9 +1125,12 @@
 	.scores-grid {
 		display: grid;
 		grid-template-columns: 1fr;
-		grid-row-gap: 0.2em;
 		max-width: 100%;
 		position: relative;
+	}
+
+	.scores-grid > *:not(:last-child) {
+		border-bottom: 1px solid var(--row-separator);
 	}
 
 	.replay-button {
@@ -1122,8 +1142,7 @@
 		flex-direction: row;
 		grid-gap: 0.4em;
 		overflow: hidden;
-		border-bottom: 1px solid var(--faded);
-		padding-bottom: 0.2em;
+		padding: 0.2em 0;
 		min-width: 19em;
 		justify-content: center;
 	}
@@ -1144,8 +1163,8 @@
 	.player-score.highlight {
 		background: linear-gradient(45deg, #defb6996, transparent, transparent);
 		border-radius: 4px;
-		padding: 4px;
-		margin: -4px -4px 0px -4px;
+		padding: 0.2em;
+		margin: 0 -0.2em;
 		max-width: 130%;
 	}
 

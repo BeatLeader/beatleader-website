@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&display=swap');
+
+* {
+  font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
+}
+
+//<--- Constants ----->
+:root {
+  --row-separator: #2e2e2e !important;
+}
+
+//<--- Background ----->
+html, body {
+  background: url("/assets/ree-dark-bg.png") !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+}
+
+//<--- Content box ----->
+.content-box {
+  background: rgb(60 60 60 / 20%) !important;
+  backdrop-filter: blur(4px);
+
+  > div > header, > header {
+    justify-content: center !important;
+  }
+}
+
+//<--- Summary Badges ----->
+.beatleader-summary {
+  .badge {
+    background-color: #2c2c2c !important;
+    box-shadow: 0 0 6px #00000077;
+  }
+}
+
+//<--- Clan Badges ----->
+.clan-badges {
+  display: flex;
+
+  .label {
+    font-weight: 900 !important;
+  }
+
+  > a {
+    margin: 0 -0.2em;
+    opacity: 0.2;
+    transition: opacity ease 0.2s;
+
+    > span {
+      width: 2em;
+      transform: scale(70%);
+    }
+  }
+
+  > a:hover {
+    opacity: 1 !important;
+
+    > span {
+      transform: scale(90%);
+    }
+  }
+}
+
+//<--- Profile chart ----->
+.beatleader-swipe-card {
+  div.chart {
+    border-top: 1px solid var(--row-separator);
+    border-bottom: 1px solid var(--row-separator);
+    border-radius: 0em !important;
+    margin: 0em !important;
+    box-shadow: none !important;
+    background: none !important;
+  }
+
+  section.chart {
+    margin: 0em !important;
+  }
+}
+
+//<--- Admin page tweaks ----->
+.failed-scores {
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: 10px solid var(--row-separator);
+}
+
+//<--- Ranking ----->
+.content-box:has(.ranking-grid-row) {
+  > h1 {
+    text-align: center;
+  }
+
+  .players, .ranking-grid {
+    grid-gap: 2px !important;
+
+    .player-card {
+      transition: background-color ease 0.2s;
+      border: none !important;
+      background: #212121 !important;
+      box-shadow: 0 4px 8px rgb(0 0 0 / 80%) !important;
+    }
+
+    .player-card:hover {
+      background: #313131 !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+//<--- Score Details ----->
+.details {
+  .leaderboard, .details-with-shadow {
+    padding: .5em;
+    background: #151515 !important;
+    border: 1px solid var(--row-separator);
+    box-shadow: none !important;
+  }
+}
+
+//<--- Leaderboard ----->
+.leaderboard {
+  .player-score {
+    border: none !important;
+    margin-bottom: 0 !important;
+
+    .rank > .badge {
+      background: none !important;
+    }
+
+    .country {
+      margin: 0 .4em 0.1em .4em !important;
+    }
+  }
+
+  .highlight {
+    overflow: visible !important;
+    background: #252525 !important;
+  }
+
+  > div > div:has(.player-score):not(:last-child) {
+    border-bottom: 1px solid var(--row-separator) !important;
+  }
+}
+
+

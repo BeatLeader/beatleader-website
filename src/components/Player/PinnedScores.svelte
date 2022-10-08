@@ -24,6 +24,7 @@
 <style>
 	.pinned-scores h2 {
 		font-size: 1.125em;
+		text-align: center;
 	}
 
 	.pinned-scores :global(.score-in-list) {

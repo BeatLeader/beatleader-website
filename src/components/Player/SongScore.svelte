@@ -64,16 +64,16 @@
 		out:fade={{duration: 100}}
 		class:with-details={showDetails}>
 		{#if !noIcons}
-			<div class="icons up-to-tablet">
-				<Icons
-					{hash}
-					{twitchUrl}
-					{diffInfo}
-					scoreId={score.id}
-					{icons}
-					{serviceIcon}
-					noPin={!isPlayerScore}
-					on:score-pinned={onScorePinned} />
+			<div class="up-to-tablet">
+				<Icons layoutType="flat"
+					   {hash}
+					   {twitchUrl}
+					   {diffInfo}
+					   scoreId={score.id}
+					   {icons}
+					   {serviceIcon}
+					   noPin={!isPlayerScore}
+					   on:score-pinned={onScorePinned}/>
 			</div>
 		{/if}
 
@@ -152,11 +152,11 @@
 
 <style>
 	.score-in-list {
-		border-bottom: 1px solid var(--dimmed);
+		border-bottom: 1px solid var(--row-separator);
 		padding: 0.5em 0;
 	}
 
-	.song-score .icons.up-to-tablet + .main {
+	.song-score .up-to-tablet + .main {
 		padding-top: 0;
 	}
 
@@ -260,18 +260,6 @@
 		transform: rotateZ(180deg);
 	}
 
-	.icons {
-		width: 100%;
-		font-size: 0.75em;
-		text-align: right;
-		margin-right: 0;
-		margin-bottom: 0.5em;
-	}
-
-	.icons:empty {
-		margin-bottom: 0 !important;
-	}
-
 	@media screen and (max-width: 767px) {
 		.song-score {
 			padding: 0.75em 0;
@@ -295,7 +283,7 @@
 			padding-bottom: 0.75em;
 		}
 
-		.icons {
+		.up-to-tablet {
 			margin-bottom: 0.5em;
 		}
 
