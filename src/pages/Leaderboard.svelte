@@ -55,7 +55,7 @@
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
-	import Preview from "../components/Common/Preview.svelte";
+	import Preview from '../components/Common/Preview.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -774,12 +774,12 @@
 													{/if}
 												{:else}
 													<Button
-															url={score.replay}
-															on:click={showPreview(score.replay)}
-															cls='replay-button-alt'
-															icon="<div class='replay-icon-alt'></div>"
-															title="Replay"
-															noMargin={true} />
+														url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
+														on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
+														cls="replay-button-alt"
+														icon="<div class='replay-icon-alt'></div>"
+														title="Replay"
+														noMargin={true} />
 
 													<span
 														class="beat-savior-reveal clickable"
@@ -917,24 +917,24 @@
 							<span>Average: </span>
 							<div class="score with-badge">
 								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-										<span slot="label">
-											<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
-										</span>
+									<span slot="label">
+										<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
+									</span>
 								</Badge>
 							</div>
 							<div class="score with-badge">
 								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-										<span slot="label">
-											<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
-										</span>
+									<span slot="label">
+										<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
+									</span>
 								</Badge>
 							</div>
 							{#if votingsForTypeStats(votingStats.type)}
 								<div class="score with-badge">
 									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-											<span slot="label">
-												<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
-											</span>
+										<span slot="label">
+											<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
+										</span>
 									</Badge>
 								</div>
 							{/if}
