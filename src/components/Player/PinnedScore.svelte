@@ -166,7 +166,7 @@
 					</span>
 				{/if}
 
-				{#if songScore.score?.metadata?.description}
+				{#if editable || songScore.score?.metadata?.description}
 					<h3
 						class:editable
 						on:click={() => {
