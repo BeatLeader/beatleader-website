@@ -65,7 +65,7 @@
 			all: 'scoreStats.totalPlayCount',
 		},
 		rank: {
-			ranked: 'scoreStats.averageRankedRank',
+			ranked: 'scoreStats.averageWeightedRankedRank',
 			unranked: 'scoreStats.averageUnrankedRank',
 			all: 'scoreStats.averageRank',
 		},
@@ -88,8 +88,8 @@
 		},
 		{
 			id: 'weightedAcc',
-			label: 'Acc',
-			title: 'Sort by weighted accuracy',
+			label: 'Weighted Acc',
+			title: 'Sort by weighted accuracy from top 100 plays',
 			iconFa: 'fa fa-crosshairs',
 			value: data => getAcc(data, statKeys['acc'][currentTypeValue]),
 			props: {prefix: '', suffix: '%', zero: '-', digits: 2},
@@ -142,12 +142,22 @@
 			props: {isText: true},
 		},
 		{
+			id: 'weightedRank',
+			label: 'Weighted Rank',
+			title: 'Sort by weighted average leaderboard rank from top 100 plays',
+			iconFa: 'fa fa-chart-line',
+			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
+			props: {digits: 0, prefix: '#', suffix: ''},
+			hideForTypes: ['unranked'],
+		},
+		{
 			id: 'rank',
 			label: 'Rank',
 			title: 'Sort by average leaderboard rank',
 			iconFa: 'fa fa-chart-line',
 			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
 			props: {digits: 0, prefix: '#', suffix: ''},
+			hideForTypes: ['ranked'],
 		},
 	];
 
