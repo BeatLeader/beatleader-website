@@ -128,7 +128,9 @@
 
 		try {
 			editModel.isSaving = true;
-
+			if (isAdmin) {
+				data.id = playerData?.playerId;
+			}
 			await account.update(data, avatar);
 
 			setTimeout(() => {
@@ -145,21 +147,15 @@
 
 	let modalShown;
 
-	$: isCached = !!(playerData && playerData.scoresLastUpdated);
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: statsHistory = playerData?.statsHistory ?? null;
 	$: name = playerData && playerData.name ? playerData.name : null;
-	$: ({playerInfo, scoresStats, accStats, accBadges, ssBadges} = processPlayerData(playerData));
+	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
 	$: refreshBeatSaviorState(playerId);
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
-	$: rankChartData = (playerData?.playerInfo.rankHistory ?? []).concat(playerData?.playerInfo.rank);
 	$: updateAccSaberPlayerInfo(playerId);
-
-	$: loggedInPlayer = $account?.id;
-	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
-	$: canEdit = (isMain && loggedInPlayer === playerId) || isAdmin;
 
 	$: swipeCards = [].concat(
 		playerId
