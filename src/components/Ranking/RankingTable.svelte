@@ -147,7 +147,7 @@
 			title: 'Sort by weighted average leaderboard rank from top 100 plays',
 			iconFa: 'fa fa-chart-line',
 			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
-			props: {digits: 0, prefix: '#', suffix: ''},
+			props: {digits: 0, prefix: '#', suffix: '', digits: 2},
 			hideForTypes: ['unranked'],
 		},
 		{
