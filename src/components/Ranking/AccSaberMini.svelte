@@ -115,7 +115,7 @@
 	}
 
 	.players :global(> *) {
-		border-bottom: 1px solid var(--dimmed);
+		border-bottom: 1px solid var(--row-separator);
 		padding: 0.125em 0.25em;
 	}
 

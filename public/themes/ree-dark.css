@@ -83,13 +83,12 @@
 }
 html,
 body {
-  background: url("/assets/ree-dark-bg.png") !important;
+  background: #070707 url("/assets/ree-dark-bg.png") !important;
   background-size: cover !important;
   background-attachment: fixed !important;
 }
 .content-box {
-  background: rgba(60, 60, 60, 0.2) !important;
-  backdrop-filter: blur(4px);
+  background: #1a1a1a !important;
 }
 .content-box > div > header,
 .content-box > header {
