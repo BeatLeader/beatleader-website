@@ -328,9 +328,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/12')}>
-			<span class="event-title"> The smallest batch of maps ranked! </span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/cheems.webp" />
+		<div class="event-banner" on:click={() => navigate('/event/13')}>
+			<span class="event-title"> 12 new 9★+ maps in our 9th batch ranked!</span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/135-event.png" />
 		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -450,7 +450,7 @@
 	.event-banner {
 		display: flex;
 		align-items: center;
-		background: #544fbd;
+		background: #2b2b32;
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;

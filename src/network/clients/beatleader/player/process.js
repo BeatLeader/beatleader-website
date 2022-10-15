@@ -28,6 +28,7 @@ export default response => {
 		pinnedScores,
 		eventsParticipating,
 		profileSettings,
+		changes,
 	} = response;
 
 	let profilePicture = avatar;
@@ -169,6 +170,7 @@ export default response => {
 			patreonFeatures,
 			mapperId,
 			socials,
+			changes,
 			rankHistory:
 				history && history.length
 					? history

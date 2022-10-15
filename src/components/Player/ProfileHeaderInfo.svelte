@@ -14,6 +14,7 @@
 	import CountryPicker from '../Common/CountryPickerSingle.svelte';
 	import ClanBadges from './ClanBadges.svelte';
 	import BanForm from './BanForm.svelte';
+	import ProfileChange from './ProfileChange.svelte';
 
 	export let name;
 	export let playerInfo;
@@ -74,8 +75,10 @@
 	}
 
 	let showBanForm = false;
+	let showChanges = false;
 
 	$: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
+	$: changes = playerInfo?.changes;
 	$: countries = getPlayerCountries(playerInfo, statsHistory);
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
@@ -111,6 +114,18 @@
 					<span class="clan-badges"><ClanBadges player={playerInfo} /></span>
 				{/if}
 
+				{#if changes && changes.length}
+					<div class="score-options-section">
+						<span
+							class="beat-savior-reveal clickable"
+							class:opened={showChanges}
+							on:click={() => (showChanges = !showChanges)}
+							title={showChanges ? 'Hide profile changelog' : 'Show profile changelog'}>
+							<i class="fas fa-chevron-down" />
+						</span>
+					</div>
+				{/if}
+
 				{#if canRedact && !editModel?.data}
 					<Button
 						type="text"
@@ -125,6 +140,12 @@
 				<Status {playerInfo} />
 			</span>
 		</div>
+
+		{#if showChanges}
+			{#each changes as change, idx}
+				<ProfileChange {change} />
+			{/each}
+		{/if}
 
 		{#if playerInfo.sponsor}
 			{#if editModel?.data}
@@ -333,6 +354,31 @@
 	:global(.banButton) {
 		padding: 0 !important;
 		font-size: 0.8em !important;
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
+	}
+
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		margin: 0.3em;
+		opacity: 0;
+	}
+
+	.score-options-section:hover {
+		opacity: 1;
 	}
 
 	@media screen and (max-width: 767px) {
