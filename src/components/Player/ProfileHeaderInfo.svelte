@@ -346,7 +346,6 @@
 	}
 
 	:global(.editNameButton) {
-		padding-bottom: 1.2em !important;
 		margin-bottom: -1em !important;
 		font-size: 0.75em !important;
 	}
@@ -373,7 +372,6 @@
 	.score-options-section {
 		display: grid;
 		justify-items: center;
-		margin: 0.3em;
 		opacity: 0;
 	}
 
