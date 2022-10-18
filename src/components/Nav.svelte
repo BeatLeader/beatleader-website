@@ -11,6 +11,7 @@
 	import {opt} from '../utils/js';
 	import Settings from './Others/Settings.svelte';
 	import Button from './Common/Button.svelte';
+	import Avatar from './Common/Avatar.svelte';
 
 	let player = null;
 	let settingsNotificationBadge = null;
@@ -164,7 +165,7 @@
 			on:focus={() => (accountMenuShown = true)}
 			on:mouseleave={() => (accountMenuShown = false)}>
 			{#if opt(player, 'playerInfo.avatar')}
-				<img src={player.playerInfo.avatar} class="avatar" alt="" />
+				<Avatar {player} />
 			{:else}
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path
@@ -579,14 +580,10 @@
 	}
 
 	nav svg,
-	nav .avatar {
+	nav .me :global(figure) {
 		width: 1.25rem;
 		height: 1.25rem;
 		margin-right: 0.5rem;
-	}
-
-	nav .avatar {
-		border-radius: 50%;
 	}
 
 	nav .right {
@@ -648,7 +645,7 @@
 		}
 
 		nav svg,
-		nav .avatar {
+		nav .me :global(figure) {
 			margin-right: 0;
 		}
 
