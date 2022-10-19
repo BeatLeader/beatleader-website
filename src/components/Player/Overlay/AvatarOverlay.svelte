@@ -36,9 +36,9 @@
 <style>
 	.avatar-overlay {
 		position: absolute;
-		top: -22px;
-		left: -22px;
-		width: 225px;
+		top: -21px;
+		left: -21px;
+		width: 224px;
 		z-index: 3;
 		mix-blend-mode: screen;
 		filter: hue-rotate(var(--hue, 0deg)) saturate(var(--saturation, 1));
