@@ -12,7 +12,7 @@
 
 	export let show = false;
 
-	const DEFAULT_THEME = 'mirror';
+	const DEFAULT_THEME = 'ree-dark';
 	const DEFAULT_PP_METRIC = 'weighted';
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_AVATAR_ICONS = 'show';

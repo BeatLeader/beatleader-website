@@ -58,7 +58,7 @@
 	let canShare = true;
 
 	async function retrieveOwner(playlist, playerId) {
-		owners = [];
+		var newOwners = [];
 		if (playlist?.customData?.owner) {
 			canShare = false;
 			if (playlist.customData.owner == 'BeatLeader') {
@@ -78,11 +78,11 @@
 					canModify = false;
 				}
 				if (owner) {
-					owners.push(owner);
+					newOwners.push(owner);
 				}
 			}
 
-			owners = owners;
+			owners = newOwners;
 		}
 	}
 

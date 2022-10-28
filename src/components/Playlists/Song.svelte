@@ -28,7 +28,7 @@
 		songInfo = null;
 
 		const songInfoValue = await leaderboardsService.byHash(mapHash);
-		if (songInfoValue && songInfoValue.song.id && songInfoValue.song.hash == hash) {
+		if (songInfoValue && songInfoValue.song.id && songInfoValue.song.hash.toLowerCase() == hash.toLowerCase()) {
 			songInfo = songInfoValue.song;
 			leaderboards = songInfoValue.leaderboards;
 			coverUrl = songInfo.coverImage;
