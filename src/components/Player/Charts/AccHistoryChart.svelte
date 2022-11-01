@@ -1,5 +1,6 @@
 <script>
 	import Chart from 'chart.js/auto';
+	import createStatsHistoryStore from '../../../stores/beatleader/stats-history';
 	import {formatNumber} from '../../../utils/format';
 	import {formatDate, formatDateWithOptions, toBlMidnight} from '../../../utils/date';
 	import {debounce} from '../../../utils/debounce';
@@ -9,13 +10,13 @@
 	import stringify from 'json-stable-stringify';
 
 	export let playerId = null;
-	export let statsHistory = null;
 	export let height = '350px';
 
 	const CHART_DAYS = 50;
 	const CHART_DEBOUNCE = 300;
 
 	const pageContainer = getContext('pageContainer');
+	const statsHistoryStore = createStatsHistoryStore();
 
 	let canvas = null;
 	let chart = null;
@@ -24,7 +25,7 @@
 
 	const calcHistoryHash = accHistory => stringify(accHistory);
 
-	async function setupChart(hash, canvas) {
+	async function setupChart(hash, canvas, statsHistory) {
 		if (!hash || !canvas || chartHash === lastHistoryHash || !statsHistory?.averageAccuracy?.length) return;
 
 		lastHistoryHash = chartHash;
@@ -229,9 +230,10 @@
 	let debouncedChartHash = null;
 	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
 
+	$: statsHistory = $statsHistoryStore[playerId];
 	$: chartHash = calcHistoryHash(statsHistory);
 	$: debounceChartHash(chartHash);
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas);
+	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, statsHistory);
 </script>
 
 {#if statsHistory?.averageAccuracy?.length}

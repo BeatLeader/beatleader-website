@@ -1,6 +1,6 @@
 <script>
 	import {fade, fly, slide} from 'svelte/transition';
-	import pinnedScoresStore from '../../stores/pinned-scores';
+	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {opt} from '../../utils/js';
 	import SongInfo from './SongInfo.svelte';
@@ -25,16 +25,17 @@
 	let showDetails = false;
 
 	const account = createAccountStore();
+	const pinnedScoresStore = createPinnedScoresStore();
 
 	function onScorePinned(e) {
 		if (!e?.detail || songScore?.score?.id !== e.detail?.scoreId) return;
 
 		if (songScore?.score) songScore.score.metadata = e?.detail?.metadata ?? {};
 
-		$pinnedScoresStore = [
+		$pinnedScoresStore[playerId] = [
 			...new Set(
 				[songScore].concat(
-					$pinnedScoresStore?.map((s, idx) => {
+					$pinnedScoresStore[playerId]?.map((s, idx) => {
 						if (Number.isFinite(s?.score?.metadata?.priority)) s.score.metadata.priority = idx + 2;
 
 						return s;
@@ -65,15 +66,16 @@
 		class:with-details={showDetails}>
 		{#if !noIcons}
 			<div class="up-to-tablet">
-				<Icons layoutType="flat"
-					   {hash}
-					   {twitchUrl}
-					   {diffInfo}
-					   scoreId={score.id}
-					   {icons}
-					   {serviceIcon}
-					   noPin={!isPlayerScore}
-					   on:score-pinned={onScorePinned}/>
+				<Icons
+					layoutType="flat"
+					{hash}
+					{twitchUrl}
+					{diffInfo}
+					scoreId={score.id}
+					{icons}
+					{serviceIcon}
+					noPin={!isPlayerScore}
+					on:score-pinned={onScorePinned} />
 			</div>
 		{/if}
 

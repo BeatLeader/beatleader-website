@@ -19,7 +19,6 @@
 	export let name;
 	export let playerInfo;
 	export let playerId;
-	export let statsHistory;
 	export let error = null;
 	export let editModel = null;
 
@@ -49,12 +48,12 @@
 		navigate(`/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`);
 	}
 
-	function getPlayerCountries(playerInfo, statsHistory) {
+	function getPlayerCountries(playerInfo) {
 		if (!playerInfo?.countries) return [];
 
 		return playerInfo.countries.map(c => ({
 			...c,
-			prevRank: statsHistory?.countryRank?.length > 1 ? statsHistory.countryRank[statsHistory.countryRank.length - 2] : null,
+			prevRank: playerInfo?.lastWeekCountryRank,
 		}));
 	}
 
@@ -79,7 +78,7 @@
 
 	$: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
 	$: changes = playerInfo?.changes;
-	$: countries = getPlayerCountries(playerInfo, statsHistory);
+	$: countries = getPlayerCountries(playerInfo);
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
@@ -169,7 +168,7 @@
 
 				<Value
 					value={playerInfo?.rank}
-					prevValue={statsHistory?.rank?.length > 1 ? statsHistory.rank[statsHistory.rank.length - 2] : null}
+					prevValue={playerInfo?.lastWeekRank}
 					prevLabel="Yesterday"
 					prefix="#"
 					digits={0}
@@ -213,13 +212,7 @@
 			{/if}
 
 			<span class="pp">
-				<Value
-					value={playerInfo?.pp}
-					suffix="pp"
-					prevValue={statsHistory?.pp?.length > 1 ? statsHistory.pp[statsHistory.pp.length - 2] : null}
-					prevLabel="Yesterday"
-					inline={true}
-					zero="0pp" />
+				<Value value={playerInfo?.pp} suffix="pp" prevValue={playerInfo?.lastWeekPp} prevLabel="Yesterday" inline={true} zero="0pp" />
 			</span>
 
 			{#if isAdmin && loggedInPlayer != playerId}

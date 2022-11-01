@@ -1,6 +1,6 @@
 <script>
 	import {getNotificationsContext} from 'svelte-notifications';
-	import pinnedScoresStore from '../../stores/pinned-scores';
+	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
 	import pinApiClient from '../../network/clients/beatleader/scores/api-pin';
 	import {SsrHttpClientError} from '../../network/errors';
@@ -16,6 +16,7 @@
 
 	const {addNotification} = getNotificationsContext();
 	const account = createAccountStore();
+	const pinnedScoresStore = createPinnedScoresStore();
 
 	let editMode = false;
 
@@ -94,8 +95,8 @@
 
 		songScore.score.metadata = metadata;
 
-		$pinnedScoresStore = reindex(
-			$pinnedScoresStore.map(s => {
+		$pinnedScoresStore[playerId] = reindex(
+			$pinnedScoresStore[playerId].map(s => {
 				if (s !== songScore && Number.isFinite(s?.score?.metadata?.priority) && s.score.metadata.priority >= newPriority)
 					s.score.metadata.priority++;
 
@@ -118,8 +119,8 @@
 
 		songScore.score.metadata = metadata;
 
-		$pinnedScoresStore = reindex(
-			$pinnedScoresStore.map(s => {
+		$pinnedScoresStore[playerId] = reindex(
+			$pinnedScoresStore[playerId].map(s => {
 				if (s !== songScore && Number.isFinite(s?.score?.metadata?.priority) && s.score.metadata.priority <= newPriority)
 					s.score.metadata.priority--;
 
@@ -194,22 +195,22 @@
 	header {
 		display: flex;
 		align-items: center;
-		grid-gap: .5em;
+		grid-gap: 0.5em;
 		font-size: 0.875em;
 	}
 
 	header > h3 {
 		width: fit-content;
-		border-bottom-left-radius: .5em;
-		border-bottom-right-radius: .5em;
+		border-bottom-left-radius: 0.5em;
+		border-bottom-right-radius: 0.5em;
 		background: var(--row-separator);
-		padding: 0 1em .2em;
+		padding: 0 1em 0.2em;
 	}
 
 	.move {
 		display: flex;
 		justify-content: center;
-		grid-gap: .5em;
+		grid-gap: 0.5em;
 		width: 3em;
 	}
 

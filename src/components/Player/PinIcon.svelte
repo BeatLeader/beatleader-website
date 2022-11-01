@@ -1,7 +1,7 @@
 <script>
 	import {getNotificationsContext} from 'svelte-notifications';
-	import {configStore} from '../../stores/config';
-	import pinnedScoresStore from '../../stores/pinned-scores';
+	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
+	import createAccountStore from '../../stores/beatleader/account';
 	import pinApiClient from '../../network/clients/beatleader/scores/api-pin';
 	import {SsrHttpClientError} from '../../network/errors';
 	import Button from '../Common/Button.svelte';
@@ -11,6 +11,9 @@
 
 	const {addNotification} = getNotificationsContext();
 	const dispatch = createEventDispatcher();
+
+	const account = createAccountStore();
+	const pinnedScoresStore = createPinnedScoresStore();
 
 	let isLoading = false;
 
@@ -28,8 +31,8 @@
 					removeAfter: 2000,
 				});
 
-				$pinnedScoresStore =
-					$pinnedScoresStore
+				$pinnedScoresStore[$account.id] =
+					$pinnedScoresStore[$account.id]
 						?.filter(s => s?.score?.id !== scoreId)
 						?.map((s, idx) => {
 							if (Number.isFinite(s?.score?.metadata?.priority)) s.score.metadata.priority = idx + 1;
@@ -67,7 +70,7 @@
 		}
 	}
 
-	$: pinnedScoreIds = $pinnedScoresStore?.map(s => s?.score?.id)?.filter(scoreId => scoreId) ?? [];
+	$: pinnedScoreIds = $account?.id ? $pinnedScoresStore[$account.id]?.map(s => s?.score?.id)?.filter(scoreId => scoreId) ?? [] : [];
 	$: isPinned = pinnedScoreIds.includes(scoreId);
 </script>
 

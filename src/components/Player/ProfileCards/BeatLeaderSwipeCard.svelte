@@ -8,7 +8,6 @@
 	export let playerId = null;
 	export let scoresStats = null;
 	export let ssBadges = null;
-	export let statsHistory = null;
 
 	const allSwitcherOptions = [
 		{id: 'rank', label: 'Rank & PP', iconFa: 'fas fa-chart-line'},
@@ -26,7 +25,7 @@
 		switch (option?.id) {
 			case 'rank':
 				chartComponent = BlChart;
-				chartComponentProps = {playerId, statsHistory};
+				chartComponentProps = {playerId};
 				break;
 
 			case 'accmaps':
@@ -36,7 +35,7 @@
 
 			case 'acchistory':
 				chartComponent = AccHistoryChart;
-				chartComponentProps = {playerId, statsHistory};
+				chartComponentProps = {playerId};
 				break;
 
 			default:

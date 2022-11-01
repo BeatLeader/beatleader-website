@@ -4,7 +4,8 @@
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
-	import pinnedScoresStore from '../../stores/pinned-scores';
+	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
+	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
@@ -43,6 +44,8 @@
 	const beatSaviorService = createBeatSaviorService();
 	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
+	const pinnedScoresStore = createPinnedScoresStore();
+	const statsHistoryStore = createStatsHistoryStore();
 
 	let accSaberPlayerInfo = null;
 	let accSaberCategories = null;
@@ -75,10 +78,6 @@
 				?.split(',')
 				?.reverse()
 				?.filter(r => r?.length) ?? [];
-	}
-
-	function refreshPinnedScores(pinnedScores) {
-		$pinnedScoresStore = pinnedScores ?? [];
 	}
 
 	function onEnableEditModel() {
@@ -148,7 +147,6 @@
 	let modalShown;
 
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
-	$: statsHistory = playerData?.statsHistory ?? null;
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
@@ -167,7 +165,6 @@
 							playerId,
 							scoresStats: scoresStatsFinal,
 							ssBadges,
-							statsHistory,
 						},
 						delay: 500,
 					},
@@ -219,7 +216,8 @@
 			: []
 	);
 
-	$: refreshPinnedScores(playerData?.pinnedScores ?? [], playerData?.playerId);
+	$: pinnedScoresStore.fetchScores(playerData?.playerId);
+	$: statsHistoryStore.fetchStats(playerData?.playerId);
 </script>
 
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
@@ -275,7 +273,6 @@
 				{name}
 				{playerInfo}
 				{playerId}
-				{statsHistory}
 				bind:editModel
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
@@ -323,7 +320,7 @@
 	</div>
 </ContentBox>
 
-<PinnedScores playerId={playerData?.id} {fixedBrowserTitle} />
+<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
 
 <style>
 	.player-general-info {

@@ -5,19 +5,20 @@
 	import {DateTime} from 'luxon';
 	import {getContext} from 'svelte';
 	import {formatNumber} from '../../../utils/format';
+	import createStatsHistoryStore from '../../../stores/beatleader/stats-history';
 	import {formatDate, formatDateWithOptions, toBlMidnight} from '../../../utils/date';
 	import {debounce} from '../../../utils/debounce';
 	import {onLegendClick} from './utils/legend-click-handler';
 	import stringify from 'json-stable-stringify';
 
 	export let playerId = null;
-	export let statsHistory = null;
 	export let height = '350px';
 
 	const CHART_DEBOUNCE = 300;
 	const MAGIC_INACTIVITY_RANK = 999999;
 
 	const pageContainer = getContext('pageContainer');
+	const statsHistoryStore = createStatsHistoryStore();
 
 	let canvas = null;
 	let chart = null;
@@ -27,7 +28,7 @@
 
 	const calcHistoryHash = statsHistory => stringify(statsHistory);
 
-	async function setupChart(hash, canvas) {
+	async function setupChart(hash, canvas, statsHistory) {
 		if (!hash || !canvas || !statsHistory?.rank?.length || chartHash === lastHistoryHash) return;
 
 		let rankHistory = statsHistory.rank;
@@ -313,9 +314,10 @@
 	let debouncedChartHash = null;
 	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
 
+	$: statsHistory = $statsHistoryStore[playerId];
 	$: chartHash = calcHistoryHash(statsHistory);
 	$: debounceChartHash(chartHash);
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas);
+	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, statsHistory);
 </script>
 
 {#if statsHistory?.rank?.length}
