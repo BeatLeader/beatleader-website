@@ -328,17 +328,10 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/15')}>
-			<span class="event-title">
-				<b>BOOO!</b> You should be scared!<br />
-				25 tech maps waiting behind this banner ready to attack at every moment. <br />
-				Attack them first to take a badge from their dead cold hands!
-			</span>
-			<div>
-				<img class="web1" src="/assets/spiderweb1.png" />
-				<img class="web2" src="/assets/spiderweb2.png" />
-			</div>
-		</div>
+		<!-- <div class="event-banner" on:click={() => navigate('/event/13')}>
+			<span class="event-title"> 12 new 9★+ maps in our 9th batch ranked!</span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/135-event.png" />
+		</div> -->
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
 				Ranking
@@ -455,15 +448,15 @@
 	}
 
 	.event-banner {
-		position: relative;
 		display: flex;
 		align-items: center;
-		background: #000000;
+		background: #2b2b32;
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;
 		padding: 0.3em;
 		border-radius: 0.5em;
+		height: 4em;
 		cursor: pointer;
 	}
 
@@ -473,24 +466,9 @@
 	}
 
 	.event-title {
-		color: rgb(255, 196, 0);
+		color: white;
 		font-size: larger;
 		font-weight: 600;
-		margin: 1em;
-	}
-
-	.web1 {
-		position: absolute;
-		left: -8px;
-		top: -12px;
-		width: 105px;
-	}
-
-	.web2 {
-		position: absolute;
-		right: -13px;
-		bottom: -6px;
-		width: 106px;
 	}
 
 	@media screen and (max-width: 1275px) {
