@@ -18,12 +18,14 @@ export default () => {
 		fetch(BL_API_URL + `player/${id}/history`)
 			.then(response => response.json())
 			.then(data => {
-				var processedStatsHistory = data ?? [];
+				var processedStatsHistory = {};
+				var statsHistory = data ?? [];
 
-				if (processedStatsHistory.length) {
-					Object.keys(processedStatsHistory[0]).forEach(key => {
+				if (statsHistory.length) {
+					const reversedStatsHistory = statsHistory.reverse();
+					Object.keys(statsHistory[0]).forEach(key => {
 						processedStatsHistory[key] = [];
-						processedStatsHistory.reverse().forEach(element => {
+						reversedStatsHistory.forEach(element => {
 							processedStatsHistory[key].push(element[key]);
 						});
 					});
