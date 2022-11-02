@@ -6,7 +6,20 @@ export default response => {
 	return {
 		metadata: response.metadata,
 		data: response.data.map(player => {
-			let {avatar, country, countryRank, id: playerId, name, pp, rank, lastWeekRank, clans, profileSettings} = player;
+			let {
+				avatar,
+				country,
+				countryRank,
+				id: playerId,
+				name,
+				pp,
+				rank,
+				lastWeekPp,
+				lastWeekRank,
+				lastWeekCountryRank,
+				clans,
+				profileSettings,
+			} = player;
 			const difference = lastWeekRank > 0 ? lastWeekRank - rank : null;
 
 			if (avatar && !avatar.startsWith('http')) {
@@ -18,9 +31,12 @@ export default response => {
 				name,
 				playerInfo: {
 					avatar,
-					countries: [{country, rank: countryRank}],
+					countries: [{country, rank: countryRank, lastWeekCountryRank}],
 					pp,
 					rank,
+					lastWeekPp,
+					lastWeekRank,
+					lastWeekCountryRank,
 				},
 				others: {
 					difference,

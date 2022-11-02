@@ -6,7 +6,7 @@
 	import {getContext} from 'svelte';
 	import {formatNumber} from '../../../utils/format';
 	import createStatsHistoryStore from '../../../stores/beatleader/stats-history';
-	import {formatDate, formatDateWithOptions, toBlMidnight} from '../../../utils/date';
+	import {formatDate, formatDateWithOptions, toBlMidnight, dateFromUnix} from '../../../utils/date';
 	import {debounce} from '../../../utils/debounce';
 	import {onLegendClick} from './utils/legend-click-handler';
 	import stringify from 'json-stable-stringify';
@@ -45,10 +45,13 @@
 		const activityColor = '#333';
 		const rankedActivityColor = '#eb008c';
 
-		const dtBlToday = DateTime.fromJSDate(toBlMidnight(new Date()));
-		const dayTimestamps = rankHistory.map((_, idx) => toBlMidnight(dtBlToday.minus({days: CHART_DAYS - 1 - idx}).toJSDate()).getTime());
+		const dayTimestamps = statsHistory.timestamp.map(unix => dateFromUnix(unix).getTime());
 
-		const data = rankHistory.map((h, idx) => ({x: dayTimestamps[idx], y: h === MAGIC_INACTIVITY_RANK ? null : h}));
+		const nomTimestamp = dayTimestamps[dayTimestamps.length - 1];
+		const data = rankHistory.map((h, idx) => ({
+			x: dayTimestamps[idx],
+			y: h === MAGIC_INACTIVITY_RANK ? null : h,
+		}));
 
 		const datasets = [
 			{
@@ -278,10 +281,7 @@
 								title(ctx) {
 									if (!ctx?.[0]?.raw) return '';
 
-									const nextDayDate = DateTime.fromMillis(ctx[0].raw?.x).plus({days: 1}).toJSDate();
-									const nextDayDateFormatted = nextDayDate > new Date() ? 'now' : formatDate(nextDayDate, 'short', 'short');
-
-									return `${formatDate(new Date(ctx[0].raw?.x), 'short', 'short')} - ${nextDayDateFormatted}`;
+									return ctx[0].raw?.x == nomTimestamp ? 'Now' : formatDate(new Date(ctx[0].raw?.x), 'short', 'short');
 								},
 								label(ctx) {
 									switch (ctx.dataset.label) {

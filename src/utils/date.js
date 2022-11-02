@@ -11,7 +11,7 @@ export const WEEK = 7 * DAY;
 
 export const WEEKSECONDS = (7 * DAY) / 1000;
 
-const BEATLEADER_TZ = 'Europe/Berlin';
+const BEATLEADER_TZ = 'UTC';
 const ACCSABER_TZ = 'Europe/Berlin';
 
 export const isValidDate = d => d instanceof Date && !isNaN(d);

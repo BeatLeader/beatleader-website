@@ -217,7 +217,7 @@
 	);
 
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
-	$: statsHistoryStore.fetchStats(playerData?.playerId);
+	$: statsHistoryStore.fetchStats(playerData);
 </script>
 
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}

@@ -13,13 +13,15 @@ export default () => {
 	const get = () => votingStatuses;
 	const {subscribe: subscribeState, set} = writable(votingStatuses);
 
-	const fetchStats = async id => {
-		if (!id) return;
-		fetch(BL_API_URL + `player/${id}/history`)
+	const fetchStats = async playerData => {
+		if (!playerData) return;
+		fetch(BL_API_URL + `player/${playerData.playerId}/history`)
 			.then(response => response.json())
 			.then(data => {
 				var processedStatsHistory = {};
 				var statsHistory = data ?? [];
+
+				console.log(playerData);
 
 				if (statsHistory.length) {
 					const reversedStatsHistory = statsHistory.reverse();
@@ -28,7 +30,13 @@ export default () => {
 						reversedStatsHistory.forEach(element => {
 							processedStatsHistory[key].push(element[key]);
 						});
+						const current = playerData.scoreStats[key] ?? playerData.playerInfo[key];
+						if (current) {
+							processedStatsHistory[key].push(current);
+						}
 					});
+					processedStatsHistory['timestamp'].push(new Date().getTime() / 1000);
+					processedStatsHistory['countryRank'].push(playerData.playerInfo.countries[0].rank);
 				}
 
 				['totalPlayCount', 'rankedPlayCount'].forEach(key => {
@@ -57,7 +65,7 @@ export default () => {
 					});
 				}
 
-				votingStatuses[id] = processedStatsHistory;
+				votingStatuses[playerData.playerId] = processedStatsHistory;
 				set(votingStatuses);
 			});
 	};

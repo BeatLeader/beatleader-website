@@ -169,7 +169,7 @@
 				<Value
 					value={playerInfo?.rank}
 					prevValue={playerInfo?.lastWeekRank}
-					prevLabel="Yesterday"
+					prevLabel="Last week"
 					prefix="#"
 					digits={0}
 					zero="#0"
@@ -196,8 +196,8 @@
 
 						<Value
 							value={country.rank}
-							prevValue={country.prevRank}
-							prevLabel="Yesterday"
+							prevValue={country.lastWeekCountryRank}
+							prevLabel="Last week"
 							prefix="#"
 							digits={0}
 							zero="#0"
@@ -212,7 +212,7 @@
 			{/if}
 
 			<span class="pp">
-				<Value value={playerInfo?.pp} suffix="pp" prevValue={playerInfo?.lastWeekPp} prevLabel="Yesterday" inline={true} zero="0pp" />
+				<Value value={playerInfo?.pp} suffix="pp" prevValue={playerInfo?.lastWeekPp} prevLabel="Last week" inline={true} zero="0pp" />
 			</span>
 
 			{#if isAdmin && loggedInPlayer != playerId}

@@ -8,7 +8,19 @@ const process = response => {
 		metadata: response.metadata,
 		container: response.container,
 		data: response.data.map(player => {
-			let {avatar, country, countryRank, id: playerId, name, pp, rank, lastWeekRank, profileSettings} = player;
+			let {
+				avatar,
+				country,
+				countryRank,
+				id: playerId,
+				name,
+				pp,
+				rank,
+				lastWeekPp,
+				lastWeekRank,
+				lastWeekCountryRank,
+				profileSettings,
+			} = player;
 			const difference = lastWeekRank > 0 ? lastWeekRank - rank : null;
 
 			if (avatar && !avatar.startsWith('http')) {
@@ -20,9 +32,12 @@ const process = response => {
 				name,
 				playerInfo: {
 					avatar,
-					countries: [{country, rank: countryRank}],
+					countries: [{country, rank: countryRank, lastWeekCountryRank}],
 					pp,
 					rank,
+					lastWeekPp,
+					lastWeekRank,
+					lastWeekCountryRank,
 				},
 				others: {
 					difference,
