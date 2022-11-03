@@ -2,8 +2,7 @@
 	import Chart from 'chart.js/auto';
 	Chart.defaults.color = '#fff';
 	import 'chartjs-adapter-luxon';
-	import {DateTime} from 'luxon';
-	import {getContext} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {formatNumber} from '../../../utils/format';
 	import createStatsHistoryStore from '../../../stores/beatleader/stats-history';
 	import {formatDate, formatDateWithOptions, toBlMidnight, dateFromUnix} from '../../../utils/date';
@@ -19,6 +18,7 @@
 
 	const pageContainer = getContext('pageContainer');
 	const statsHistoryStore = createStatsHistoryStore();
+	const dispatch = createEventDispatcher();
 
 	let canvas = null;
 	let chart = null;
@@ -309,6 +309,8 @@
 			chart.options.scales = {x: xAxis, ...yAxes};
 			chart.update();
 		}
+
+		dispatch('height-changed');
 	}
 
 	let debouncedChartHash = null;

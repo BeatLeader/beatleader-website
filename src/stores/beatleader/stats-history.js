@@ -21,14 +21,24 @@ export default () => {
 				var processedStatsHistory = {};
 				var statsHistory = data ?? [];
 
-				console.log(playerData);
-
 				if (statsHistory.length) {
 					const reversedStatsHistory = statsHistory.reverse();
 					Object.keys(statsHistory[0]).forEach(key => {
 						processedStatsHistory[key] = [];
 						reversedStatsHistory.forEach(element => {
-							processedStatsHistory[key].push(element[key]);
+							switch (key) {
+								case 'averageAccuracy':
+								case 'averageRankedAccuracy':
+								case 'medianAccuracy':
+								case 'medianRankedAccuracy':
+								case 'topAccuracy':
+									processedStatsHistory[key].push(element[key] * 100);
+									break;
+
+								default:
+									processedStatsHistory[key].push(element[key]);
+									break;
+							}
 						});
 						const current = playerData.scoreStats[key] ?? playerData.playerInfo[key];
 						if (current) {

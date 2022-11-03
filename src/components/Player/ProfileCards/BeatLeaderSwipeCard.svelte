@@ -66,7 +66,7 @@
 	{/if}
 	{#if selectedOption}
 		<div class="chart">
-			<svelte:component this={chartComponent} {...chartComponentProps} />
+			<svelte:component this={chartComponent} {...chartComponentProps} on:height-changed />
 		</div>
 
 		<div class="chart-switcher">
