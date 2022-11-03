@@ -1,5 +1,6 @@
 import {writable} from 'svelte/store';
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+import {toBlMidnight} from '../../utils/date';
 
 let store = null;
 let storeSubCount = 0;
@@ -45,7 +46,7 @@ export default () => {
 							processedStatsHistory[key].push(current);
 						}
 					});
-					processedStatsHistory['timestamp'].push(new Date().getTime() / 1000);
+					processedStatsHistory['timestamp'].push(toBlMidnight(new Date()).getTime() / 1000 + 60 * 60 * 24);
 					processedStatsHistory['countryRank'].push(playerData.playerInfo.countries[0].rank);
 				}
 

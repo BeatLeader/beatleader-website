@@ -376,5 +376,9 @@
 		.input-reset {
 			flex: 1;
 		}
+
+		.player-ranking {
+			justify-content: center;
+		}
 	}
 </style>

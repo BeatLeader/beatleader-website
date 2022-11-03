@@ -83,7 +83,7 @@
 	}
 
 	.chart {
-		margin: 0.4em 0.4em 0.6em;
+		margin: 0 0.4em 0 0.4em;
 		padding: 0.4em;
 		box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
 		border-radius: 0.4em;
