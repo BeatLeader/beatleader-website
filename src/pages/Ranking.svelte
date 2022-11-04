@@ -328,10 +328,10 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<!-- <div class="event-banner" on:click={() => navigate('/event/13')}>
-			<span class="event-title"> 12 new 9★+ maps in our 9th batch ranked!</span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/135-event.png" />
-		</div> -->
+		<div class="event-banner" on:click={() => navigate('/event/16')}>
+			<span class="event-title"> Two weeks of ranked maps in one event!</span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/168-event.png" />
+		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
 				Ranking

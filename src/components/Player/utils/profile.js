@@ -112,7 +112,7 @@ function updateAccBadges(playerData) {
 		return {
 			...badge,
 			value: scoresStatsTweened[badge.label],
-			title: !badge.min ? `< ${badge.max}%` : !badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`,
+			title: (!badge.min ? `< ${badge.max}%` : !badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`) + ' (On ranked maps)',
 			fluid: true,
 			digits: 0,
 		};
