@@ -42,7 +42,7 @@ export const processScore = s => {
 			score: modifiedScore,
 			unmodifiedScore,
 			mods,
-			timeSet: dateFromUnix(score.timepost),
+			timeSet: dateFromUnix(score.timepost ?? score.timeset),
 			acc,
 			percentage: acc,
 			unmodifiedAcc: modifiedScore && unmodifiedScore && acc ? (unmodifiedScore / modifiedScore) * acc : acc,

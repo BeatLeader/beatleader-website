@@ -28,7 +28,7 @@ function saveJSONAsFile(json, fileName) {
 
 	document.body.appendChild(link); // for Firefox
 
-	link.setAttribute('href', URL.createObjectURL(new Blob([json])));
+	link.setAttribute('href', URL.createObjectURL(new Blob([json], {type: 'application/bplist'})));
 	link.setAttribute('download', fileName);
 	link.click();
 }

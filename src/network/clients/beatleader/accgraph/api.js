@@ -6,7 +6,7 @@ const process = response => {
 
 	return response
 		.map(m => {
-			const timeset = parseInt(m?.timepost, 10);
+			const timeset = parseInt(m?.timepost ?? m?.timeset, 10);
 			if (isNaN(timeset)) return null;
 
 			return {
