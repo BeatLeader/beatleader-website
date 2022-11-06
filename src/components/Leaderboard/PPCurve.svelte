@@ -45,10 +45,8 @@
 		return curve(acc, stars - 0.5) * (stars + 0.5) * 42;
 	}
 
-	async function setupChart(canvas, stars, logarithmic, negativeModifiersSum, startAcc, endAcc) {
+	async function setupChart(canvas, stars, logarithmic, startAcc, endAcc) {
 		if (!canvas) return;
-
-		negativeModifiersSum = negativeModifiersSum < -1 ? -1 : negativeModifiersSum;
 
 		const gridColor = '#2a2a2a';
 		const mainColor = '#eb008c';
@@ -58,8 +56,7 @@
 		let annotations = [];
 		const data = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
-			const finalAcc = acc * (1 + negativeModifiersSum);
-			const pp = ppFromAcc(finalAcc, stars);
+			const pp = ppFromAcc(acc, stars);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
 			if (!minPp) minPp = pp;
@@ -195,7 +192,7 @@
 			name: m[0]?.toUpperCase() ?? null,
 			value: m[1] ?? null,
 		}))
-		.filter(m => m.name && m.value)
+		.filter(m => m.name && m.value && m.name != 'NF')
 		.sort((a, b) => b.value - a.value);
 	$: positiveModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value > 0 ? mod.value : 0), 0) ?? 0;
 	$: negativeModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
@@ -203,8 +200,8 @@
 		(all, mod) => (mutuallyExclusive[mod?.name] ? all.concat(mutuallyExclusive[mod.name]) : all),
 		[]
 	);
-	$: modifiedStars = stars * (1 + positiveModifiersSum);
-	$: setupChart(canvas, modifiedStars, logarithmic, negativeModifiersSum, startAcc, endAcc);
+	$: modifiedStars = stars * (1 + positiveModifiersSum + negativeModifiersSum);
+	$: setupChart(canvas, modifiedStars, logarithmic, startAcc, endAcc);
 
 	$: dispatch('modified-stars', modifiedStars);
 </script>
