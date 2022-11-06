@@ -88,9 +88,9 @@ export const processLeaderboardScore = s => {
 
 	ret.score.score = s.modifiedScore;
 
-	ret.score.timeSetString = formatDateRelative(dateFromUnix(s.timepost ?? s.timeset));
-	ret.score.timeSetStringShort = formatDateRelativeShort(dateFromUnix(s.timepost ?? s.timeset));
-	ret.score.timeSet = s.timepost ?? s.timeset;
+	ret.score.timeSetString = formatDateRelative(dateFromUnix(s.timepost > 0 ? s.timepost : s.timeset));
+	ret.score.timeSetStringShort = formatDateRelativeShort(dateFromUnix(s.timepost > 0 ? s.timepost : s.timeset));
+	ret.score.timeSet = s.timepost > 0 ? s.timepost : s.timeset;
 	if (ret.score.timeSetString) ret.score.timeSetString = ret.score.timeSetString.trim();
 
 	ret.score.mods = s.modifiers && s.modifiers.length ? s.modifiers.split(',').filter(m => m && m.trim().length) : null;

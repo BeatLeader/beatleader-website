@@ -169,6 +169,7 @@
 
 				{#if editable || songScore.score?.metadata?.description}
 					<h3
+						class="pin-description"
 						class:editable
 						on:click={() => {
 							if (editable) enableEdit();
@@ -248,5 +249,9 @@
 	input::placeholder {
 		color: var(--dimmed);
 		opacity: 0.5;
+	}
+
+	.pin-description {
+		overflow-wrap: anywhere;
 	}
 </style>
