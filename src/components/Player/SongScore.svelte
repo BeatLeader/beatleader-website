@@ -10,6 +10,7 @@
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import {navigate} from 'svelte-routing';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -43,6 +44,12 @@
 				)
 			),
 		];
+	}
+
+	function navigateToPlayer(playerId) {
+		if (!playerId) return;
+
+		navigate(`/u/${playerId}`);
 	}
 
 	$: leaderboard = opt(songScore, 'leaderboard', null);
@@ -105,7 +112,10 @@
 					{#if showSong}
 						{#if withPlayers}
 							<div class="player">
-								<PlayerNameWithFlag player={songScore.player} type={service === 'accsaber' ? 'accsaber/date' : null} />
+								<PlayerNameWithFlag
+									player={songScore.player}
+									type={service === 'accsaber' ? 'accsaber/date' : null}
+									on:click={() => navigateToPlayer(songScore.player.playerId)} />
 							</div>
 						{/if}
 

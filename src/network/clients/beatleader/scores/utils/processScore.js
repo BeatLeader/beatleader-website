@@ -32,7 +32,7 @@ export const processScore = s => {
 
 	const ppWeighted = pp * weight;
 
-	const {accuracy: improvedAcc, timeset: improvedTimeset} = s?.scoreImprovement ?? {};
+	const {accuracy: improvedAcc, timepost: improvedTimeset} = s?.scoreImprovement ?? {};
 
 	return {
 		leaderboard,
@@ -42,7 +42,7 @@ export const processScore = s => {
 			score: modifiedScore,
 			unmodifiedScore,
 			mods,
-			timeSet: dateFromUnix(score.timeset),
+			timeSet: dateFromUnix(score.timepost),
 			acc,
 			percentage: acc,
 			unmodifiedAcc: modifiedScore && unmodifiedScore && acc ? (unmodifiedScore / modifiedScore) * acc : acc,
