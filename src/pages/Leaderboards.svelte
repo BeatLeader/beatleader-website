@@ -475,7 +475,7 @@
 					float
 					hoverable
 					pips
-					pipstep={20}
+					pipstep={2/Ranked_Const.STAR_GRANULARITY}
 					all="label"
 					on:change={debouncedOnStarsChanged}
 					disabled={currentFilters.type !== 'ranked'} />
