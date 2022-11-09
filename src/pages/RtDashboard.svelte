@@ -30,7 +30,7 @@
 	import Button from '../components/Common/Button.svelte';
 	import {DifficultyStatus, mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
-	import {Ranked_Const} from './../utils/beatleader/consts'
+	import {Ranked_Const} from './../utils/beatleader/consts';
 
 	export let location;
 
@@ -229,7 +229,6 @@
 			: param?.default ?? '';
 	};
 
-	let constants;
 	const params = [
 		{
 			key: 'mine',
@@ -408,7 +407,7 @@
 			min: Ranked_Const.MIN_STARS,
 			max: Ranked_Const.MAX_STARS,
 			step: Ranked_Const.STAR_GRANULARITY,
-			pipstep: 2/Ranked_Const.STAR_GRANULARITY,
+			pipstep: 2 / Ranked_Const.STAR_GRANULARITY,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
@@ -914,7 +913,7 @@
 									break;
 
 								case 'criteria':
-									switch (statusCond) {
+									switch (statusNotCond) {
 										case 'or':
 											result ||= (s?.difficulties ?? [])?.some(d => !values.includes(d?.qualification?.criteriaMet));
 											break;
@@ -1753,5 +1752,3 @@
 		}
 	}
 </style>
-
-
