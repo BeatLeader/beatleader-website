@@ -30,8 +30,8 @@
 <div transition:fade>
 	{#if !approved}
 		<div class="title-box">
-			Hai hai {leaderboard?.song.levelAuthorName}, your map made such an impression on our community that we wanted to rank it!🎉<br />
-			This means either players or RT pushed it so hard that it made it to your eyes ^u^<br />
+			Hello {leaderboard?.song.levelAuthorName}, your map made such an impression on our community that we wanted to rank it!🎉<br />
+			This means either players or RT pushed it so hard that it made it to your eyes <br />
 			Great job!<br />
 		</div>
 
