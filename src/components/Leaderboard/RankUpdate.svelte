@@ -176,7 +176,7 @@
 							iconFa="fas fa-caret-left"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars -= STAR_GRANULARITY;
+								if (stars > 0) stars -= Ranked_Const.STAR_GRANULARITY;
 							}} />
 
 						<RangeSlider
@@ -197,7 +197,7 @@
 							iconFa="fas fa-caret-right"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars += STAR_GRANULARITY;
+								if (stars > 0) stars += Ranked_Const.STAR_GRANULARITY;
 							}} />
 					</div>
 				</div>
