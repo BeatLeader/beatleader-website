@@ -40,7 +40,7 @@
 	export let page = 1;
 	export let location;
 
-	let constants;
+	
 	const FILTERS_DEBOUNCE_MS = 500;
 
 	document.body.classList.remove('slim');
@@ -53,8 +53,8 @@
 		{key: 'search', default: '', process: processStringFilter},
 		{key: 'type', default: '', process: processStringFilter},
 		{key: 'mytype', default: '', process: processStringFilter},
-		{key: 'stars_from', default: constants.MIN_STARS, process: processFloatFilter},
-		{key: 'stars_to', default: constants.MAX_STARS, process: processFloatFilter},
+		{key: 'stars_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
+		{key: 'stars_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
