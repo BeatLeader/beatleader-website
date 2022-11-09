@@ -8,6 +8,7 @@
 	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
 	import {deepClone, shallowEqual} from '../../utils/js';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
+	import {Ranked_Const} from '../../utils/beatleader/consts';
 
 	const dispatch = createEventDispatcher();
 
@@ -257,18 +258,18 @@
 								iconFa="fas fa-caret-left"
 								type="text"
 								on:click={() => {
-									if (stars > 0) stars -= 0.05;
+									if (stars > 0) stars -= Ranked_Const.STAR_GRANULARITY;
 								}} />
 
 							<RangeSlider
-								min={0}
-								max={18}
-								step={0.05}
+								min={Ranked_Const.MIN_STARS}
+								max={Ranked_Const.MAX_STARS}
+								step={Ranked_Const.STAR_GRANULARITY}
 								values={[stars]}
 								float
 								hoverable
 								pips
-								pipstep={20}
+								pipstep={2/Ranked_Const.STAR_GRANULARITY}
 								all="label"
 								on:change={event => {
 									stars = event.detail.values[0];
@@ -278,7 +279,7 @@
 								iconFa="fas fa-caret-right"
 								type="text"
 								on:click={() => {
-									if (stars > 0) stars += 0.05;
+									if (stars > 0) stars += Ranked_Const.STAR_GRANULARITY;
 								}} />
 						</div>
 					</div>

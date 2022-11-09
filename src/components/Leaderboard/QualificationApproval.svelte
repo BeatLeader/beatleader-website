@@ -30,8 +30,8 @@
 <div transition:fade>
 	{#if !approved}
 		<div class="title-box">
-			Hi, your map was selected for the qualification🎉<br />
-			This means either people or RT voted for it.<br />
+			Hello {leaderboard?.song.levelAuthorName}, your map made such an impression on our community that we wanted to rank it!🎉<br />
+			This means either players or RT pushed it so hard that it made it to your eyes <br />
 			Great job!<br />
 		</div>
 
@@ -58,7 +58,8 @@
 			<div transition:slide class="tab title-box">
 				Ranking means players will be receiving PP from your map. And probably putting a lot of effort in improving on it.<br />
 				After your map is ranked - please don't remove or update it on the BeatSaver.<br />
-				Maps from Mappers who removed their ranked maps will be much less likely to be selected in the future!<br />
+				Doing so will make the ranked leaderboard impossible to score on for new players which will bar you from ranking future maps<br />
+				More details <a href="https://github.com/BeatLeader/Ranking-Criteria/wiki#restrictions">here</a>
 			</div>
 		{/if}
 
@@ -81,7 +82,7 @@
 	{:else if currentMapperId && currentMapperId == leaderboard?.song.mapperId}
 		<div class="title-box">
 			Thank you!<br />
-			This map will probably be ranked soon.<br />
+			The map will soon enter qualifications assuming all other requirements are met 🎉<br />
 		</div>
 	{/if}
 

@@ -35,12 +35,12 @@
 	import RankedTimer from '../components/Others/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
+	import {Ranked_Const} from './../utils/beatleader/consts'
 
 	export let page = 1;
 	export let location;
 
-	const MIN_STARS = 0;
-	const MAX_STARS = 15;
+	
 	const FILTERS_DEBOUNCE_MS = 500;
 
 	document.body.classList.remove('slim');
@@ -53,8 +53,8 @@
 		{key: 'search', default: '', process: processStringFilter},
 		{key: 'type', default: '', process: processStringFilter},
 		{key: 'mytype', default: '', process: processStringFilter},
-		{key: 'stars_from', default: MIN_STARS, process: processFloatFilter},
-		{key: 'stars_to', default: MAX_STARS, process: processFloatFilter},
+		{key: 'stars_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
+		{key: 'stars_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
@@ -468,14 +468,14 @@
 				</label>
 				<RangeSlider
 					range
-					min={MIN_STARS}
-					max={MAX_STARS}
-					step={0.1}
+					min={Ranked_Const.MIN_STARS}
+					max={Ranked_Const.MAX_STARS}
+					step={Ranked_Const.STAR_GRANULARITY}
 					values={[currentFilters.stars_from, currentFilters.stars_to]}
 					float
 					hoverable
 					pips
-					pipstep={20}
+					pipstep={2/Ranked_Const.STAR_GRANULARITY}
 					all="label"
 					on:change={debouncedOnStarsChanged}
 					disabled={currentFilters.type !== 'ranked'} />
@@ -712,3 +712,4 @@
 		}
 	}
 </style>
+
