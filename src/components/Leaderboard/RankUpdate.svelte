@@ -8,7 +8,7 @@
 	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {deepClone, shallowEqual} from '../../utils/js';
-	import Constants from '../svelte-utils/Constants.svelte';
+	import Constants from '.../svelte-utils/Constants.svelte';
 
 	const dispatch = createEventDispatcher();
 
