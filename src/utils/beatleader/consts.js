@@ -6,5 +6,4 @@ export const Ranked_Const = {
     MAX_STARS: 18,
     MIN_STARS: 0,
     STAR_GRANULARITY: 0.05
-}
-    
+};
