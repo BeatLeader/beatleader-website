@@ -8,7 +8,7 @@
 	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {deepClone, shallowEqual} from '../../utils/js';
-	import {MAX_STARS, MIN_STARS, STAR_GRANULARITY} from '../../utils/beatleader/consts';
+	import {Ranked_Const} from '../../utils/beatleader/consts';
 
 	const dispatch = createEventDispatcher();
 
@@ -180,9 +180,9 @@
 							}} />
 
 						<RangeSlider
-							min={MIN_STARS}
-							max={MAX_STARS}
-							step={STAR_GRANULARITY}
+							min={Ranked_Const.MIN_STARS}
+							max={Ranked_Const.MAX_STARS}
+							step={Ranked_Const.STAR_GRANULARITY}
 							values={[stars]}
 							float
 							hoverable
@@ -289,4 +289,3 @@
 	}
 </style>
 
-<Constants bind:this={constants} />
