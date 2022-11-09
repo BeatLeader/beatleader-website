@@ -408,7 +408,7 @@
 			min: Ranked_Const.MIN_STARS,
 			max: Ranked_Const.MAX_STARS,
 			step: Ranked_Const.STAR_GRANULARITY,
-			pipstep: 25,
+			pipstep: 2/Ranked_Const.STAR_GRANULARITY,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
