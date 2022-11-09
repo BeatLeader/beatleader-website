@@ -176,12 +176,12 @@
 							iconFa="fas fa-caret-left"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars -= STAR_GRANULARITY;
+								if (stars > 0) stars -= constants.STAR_GRANULARITY;
 							}} />
 
 						<RangeSlider
 							min={constants.MIN_STARS}
-							max={onstants.MAX_STARS}
+							max={constants.MAX_STARS}
 							step={constants.STAR_GRANULARITY}
 							values={[stars]}
 							float
@@ -197,7 +197,7 @@
 							iconFa="fas fa-caret-right"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars += STAR_GRANULARITY;
+								if (stars > 0) stars += constants.STAR_GRANULARITY;
 							}} />
 					</div>
 				</div>
