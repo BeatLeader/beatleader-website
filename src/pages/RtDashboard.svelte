@@ -30,7 +30,7 @@
 	import Button from '../components/Common/Button.svelte';
 	import {DifficultyStatus, mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
-	import Constants from '../svelte-utils/Constants.svelte';
+	import {MAX_STARS, MIN_STARS, STAR_GRANULARITY} from './../utils/beatleader/consts'
 
 	export let location;
 
@@ -404,10 +404,10 @@
 		{
 			key: 'star_range',
 			label: 'Star range',
-			default: [constants.MIN_STARS, constants.MAX_STARS],
-			min: constants.MIN_STARS,
-			max: constants.MAX_STARS,
-			step: constants.STAR_GRANULARITY,
+			default: [MIN_STARS, MAX_STARS],
+			min: MIN_STARS,
+			max: MAX_STARS,
+			step: STAR_GRANULARITY,
 			pipstep: 25,
 			type: 'slider',
 			process: processIntArrayFilter,

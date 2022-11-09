@@ -35,7 +35,7 @@
 	import RankedTimer from '../components/Others/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
-	import Constants from '../svelte-utils/Constants.svelte';
+	import {MAX_STARS, MIN_STARS, STAR_GRANULARITY} from './../utils/beatleader/consts'
 
 	export let page = 1;
 	export let location;
@@ -468,9 +468,9 @@
 				</label>
 				<RangeSlider
 					range
-					min={constants.MIN_STARS}
-					max={constants.MAX_STARS}
-					step={0.1}
+					min={MIN_STARS}
+					max={MAX_STARS}
+					step={STAR_GRANULARITY}
 					values={[currentFilters.stars_from, currentFilters.stars_to]}
 					float
 					hoverable

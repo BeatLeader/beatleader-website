@@ -8,7 +8,7 @@
 	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {deepClone, shallowEqual} from '../../utils/js';
-	import Constants from '.../svelte-utils/Constants.svelte';
+	import {MAX_STARS, MIN_STARS, STAR_GRANULARITY} from '../../utils/beatleader/consts';
 
 	const dispatch = createEventDispatcher();
 
@@ -176,13 +176,13 @@
 							iconFa="fas fa-caret-left"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars -= constants.STAR_GRANULARITY;
+								if (stars > 0) stars -= STAR_GRANULARITY;
 							}} />
 
 						<RangeSlider
-							min={constants.MIN_STARS}
-							max={constants.MAX_STARS}
-							step={constants.STAR_GRANULARITY}
+							min={MIN_STARS}
+							max={MAX_STARS}
+							step={STAR_GRANULARITY}
 							values={[stars]}
 							float
 							hoverable
@@ -197,7 +197,7 @@
 							iconFa="fas fa-caret-right"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars += constants.STAR_GRANULARITY;
+								if (stars > 0) stars += STAR_GRANULARITY;
 							}} />
 					</div>
 				</div>
