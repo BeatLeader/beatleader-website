@@ -8,6 +8,7 @@
 	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {deepClone, shallowEqual} from '../../utils/js';
+	import Constants from '../svelte-utils/Constants.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -25,6 +26,7 @@
 
 	let suitableForRank = reweight?.keep ?? 1;
 
+	let constants;
 	let stars;
 	let modifiers;
 
@@ -88,7 +90,7 @@
 	}
 
 	function updateStars(currentStars) {
-		stars = currentStars ?? 7.5;
+		stars = currentStars ?? 0;
 	}
 
 	function modifiersUpdated(modifiersUpdate) {
@@ -174,13 +176,13 @@
 							iconFa="fas fa-caret-left"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars -= 0.05;
+								if (stars > 0) stars -= STAR_GRANULARITY;
 							}} />
 
 						<RangeSlider
-							min={0}
-							max={18}
-							step={0.05}
+							min={constants.MIN_STARS}
+							max={onstants.MAX_STARS}
+							step={constants.STAR_GRANULARITY}
 							values={[stars]}
 							float
 							hoverable
@@ -195,7 +197,7 @@
 							iconFa="fas fa-caret-right"
 							type="text"
 							on:click={() => {
-								if (stars > 0) stars += 0.05;
+								if (stars > 0) stars += STAR_GRANULARITY;
 							}} />
 					</div>
 				</div>
@@ -286,3 +288,5 @@
 		margin-right: -1em;
 	}
 </style>
+
+<Constants bind:this={constants} />
