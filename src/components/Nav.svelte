@@ -61,10 +61,21 @@
 		playlists.select(event.detail);
 	}
 
+	function onHelpClick(event) {
+		if (event.srcElement.innerText === 'FAQ') {
+			navigate('/faq');
+		} else if (event.srcElement.innerText === 'Criteria'){
+			navigate('https://github.com/BeatLeader/Ranking-Criteria/wiki');
+		}
+		helpMenuShown = false
+	}
+
+
 	let friendsMenuShown = false;
 	let playlistMenuShown = false;
 	let accountMenuShown = false;
 	let mobileMenuShown = false;
+	let helpMenuShown = false;
 
 	let showSettings = false;
 
@@ -73,6 +84,7 @@
 		playlistMenuShown = false;
 		accountMenuShown = false;
 		mobileMenuShown = false;
+		helpMenuShown = false;
 	}
 
 	onMount(async () => {
@@ -103,6 +115,7 @@
 	const account = createAccountStore();
 
 	let signupOptions = [];
+	let helpOptions = ["FAQ", "Criteria"];
 
 	function calculateSignUpOptions(loggedInUser) {
 		const isRT = $account?.player?.playerInfo?.role
@@ -153,50 +166,7 @@
 		<img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
 	</a>
 
-	{#if player}
-		<a
-			href={`/u/${player.playerId}`}
-			class="me hovermenu"
-			on:click={e => {
-				e.preventDefault();
-				onAccountClicked(e, player.playerId);
-			}}
-			on:mouseover={() => (accountMenuShown = true)}
-			on:focus={() => (accountMenuShown = true)}
-			on:mouseleave={() => (accountMenuShown = false)}>
-			{#if opt(player, 'playerInfo.avatar')}
-				<Avatar {player} />
-			{:else}
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-				</svg>
-			{/if}
-
-			Me
-
-			<Dropdown items={signupOptions} shown={accountMenuShown} noItems="">
-				<svelte:fragment slot="row" let:item>
-					<span class="accountMenuItem">{item}</span>
-				</svelte:fragment>
-			</Dropdown>
-		</a>
-	{:else}
-		<a href={`/signin`}>
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-			</svg>
-
-			Account
-		</a>
-	{/if}
+	
 
 	<div
 		class="friends hovermenu"
@@ -223,6 +193,26 @@
 		</Dropdown>
 	</div>
 
+	<a
+		href="/leaderboards"
+		on:click|preventDefault={() => {
+			navigate('/leaderboards');
+			mobileMenuShown = false;
+		}}>
+		<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+			><path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+
+		Maps
+	</a>
+
 	<a href="/ranking/1" on:click|preventDefault={() => navigate('/ranking/1')}>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
 			<path
@@ -242,6 +232,26 @@
 	</a>
 
 	<div
+		class="help hovermenu"
+		on:mouseover={() => (helpMenuShown = true)}
+		on:focus={() => (helpMenuShown = true)}
+		on:mouseleave={() => (helpMenuShown = false)}
+		on:click={e => {
+			navigate("/about");
+		}} >
+		<i class="fas fa-question-circle" />
+		Help
+		
+
+		<Dropdown items={helpOptions} shown={helpMenuShown}
+			on:select={onHelpClick}>
+			<svelte:fragment slot="row" let:item>
+				<span class="helpMenuItem">{item}</span>
+			</svelte:fragment>
+		</Dropdown>
+	</div>
+
+	<div
 		class="right mobile-menu hovermenu"
 		on:mouseover={() => (mobileMenuShown = true)}
 		on:focus={() => (mobileMenuShown = true)}
@@ -253,27 +263,55 @@
 
 		<div class="dropdown-menu left" class:shown={mobileMenuShown}>
 			<div class="dropdown-content">
-				<div class="dropdown-item">
+
+				{#if player}
 					<a
-						href="/leaderboards"
+						href={`/u/${player.playerId}`}
+						class="me hovermenu"
+						on:click={e => {
+							e.preventDefault();
+							onAccountClicked(e, player.playerId);
+						}}
+						on:mouseover={() => (accountMenuShown = true)}
+						on:focus={() => (accountMenuShown = true)}
+						on:mouseleave={() => (accountMenuShown = false)}>
+						{#if opt(player, 'playerInfo.avatar')}
+							<Avatar {player} />
+						{:else}
+							<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" stroke="currentColor">
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						{/if}
+
+						Me
+
+						<Dropdown items={signupOptions} shown={accountMenuShown} noItems="">
+							<svelte:fragment slot="row" let:item>
+								<span class="accountMenuItem">{item}</span>
+							</svelte:fragment>
+						</Dropdown>
+					</a>
+				{:else}
+					<a 
+						href=/signin
 						on:click|preventDefault={() => {
-							navigate('/leaderboards');
+							navigate('/signin');
 							mobileMenuShown = false;
 						}}>
-						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-							><path
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
-								d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+								d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
 
-						Maps
+						Account
 					</a>
-				</div>
+				{/if}
 
 				<div class="dropdown-item">
 					<a
@@ -282,7 +320,7 @@
 							navigate('/events');
 							mobileMenuShown = false;
 						}}>
-						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -377,26 +415,7 @@
 	</div>
 
 	<div class="right">
-		<a
-			href="/leaderboards"
-			on:click|preventDefault={() => {
-				navigate('/leaderboards');
-				mobileMenuShown = false;
-			}}>
-			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-				><path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-
-			Maps
-		</a>
-
+		
 		<a
 			href="/events"
 			on:click|preventDefault={() => {
@@ -464,7 +483,7 @@
 
 			Search
 		</a>
-
+		
 		<div
 			class="settings"
 			title={notificationBadgeTitle}
@@ -485,6 +504,54 @@
 
 			{#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge" />{/if}
 		</div>
+
+		{#if player}
+			<a
+				href={`/u/${player.playerId}`}
+				class="me hovermenu"
+				on:click={e => {
+					e.preventDefault();
+					onAccountClicked(e, player.playerId);
+				}}
+				on:mouseover={() => (accountMenuShown = true)}
+				on:focus={() => (accountMenuShown = true)}
+				on:mouseleave={() => (accountMenuShown = false)}>
+				{#if opt(player, 'playerInfo.avatar')}
+					<Avatar {player} />
+				{:else}
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				{/if}
+
+				Me
+
+				<Dropdown items={signupOptions} shown={accountMenuShown} noItems="">
+					<svelte:fragment slot="row" let:item>
+						<span class="accountMenuItem">{item}</span>
+					</svelte:fragment>
+				</Dropdown>
+			</a>
+		{:else}
+			<a href={`/signin`}>
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+				</svg>
+
+				Account
+			</a>
+		{/if}
+
+
+
 	</div>
 </nav>
 
