@@ -402,6 +402,8 @@ export function userDescriptionForModifier(modifier) {
 			return 'Battery energy';
 		case 'SA':
 			return 'Strict angles';
+		case 'OD':
+			return 'Old dot hitboxes';
 	}
 	return 'Unknown modifier';
 }
