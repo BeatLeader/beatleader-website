@@ -22,6 +22,7 @@
 	export let reversePrevSign = false;
 	export let inline = false;
 	export let disabled = false;
+	export let iconClass = null;
 </script>
 
 <span
@@ -33,7 +34,14 @@
 	style="--color:{color}; --background-color:{bgColor}"
 	{title}
 	on:click>
-	<span class="label"><slot name="label">{label}</slot></span>
+	<span class="label">
+		<slot name="label">
+			{label}
+		</slot>
+		{#if iconClass}
+			<i class={iconClass} />
+		{/if}
+	</span>
 	{#if !onlyLabel}
 		<span class="spacer" />
 		<span class="value">

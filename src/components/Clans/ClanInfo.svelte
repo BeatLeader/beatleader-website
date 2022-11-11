@@ -6,7 +6,7 @@
 	import Error from '../Common/Error.svelte';
 	import Spinner from '../Common/Spinner.svelte';
 	import {SsrHttpResponseError} from '../../network/errors';
-	import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue} from '../../utils/clans';
+	import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue, ppIcon} from '../../utils/clans';
 	import createClanService from '../../services/beatleader/clan';
 	import Confirmation from '../Common/Confirmation.svelte';
 	import Badge from '../Common/Badge.svelte';
@@ -275,7 +275,7 @@
 					<section class="title is-5">
 						<section class="title is-7">
 							{playersCount}
-							{playersCount == 1 ? playersTitle(tag) : playersTitle(tag) + 's'}
+							{playersTitle(tag, playersCount)}
 						</section>
 					</section>
 
@@ -283,7 +283,7 @@
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
 							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
 							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
-							<Badge label={ppLabel(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />
+							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />
 						</section>
 					{/if}
 

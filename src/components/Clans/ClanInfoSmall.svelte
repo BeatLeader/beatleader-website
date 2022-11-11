@@ -1,7 +1,7 @@
 <script>
 	import {fade} from 'svelte/transition';
 	import Badge from '../Common/Badge.svelte';
-	import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue} from '../../utils/clans';
+	import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue, ppIcon} from '../../utils/clans';
 
 	export let clan;
 
@@ -54,14 +54,14 @@
 					</section>
 					<section class="title is-7">
 						{playersCount}
-						{playersCount == 1 ? playersTitle(tag) : playersTitle(tag) + 's'}
+						{playersTitle(tag, playersCount)}
 					</section>
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
 							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
 							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
-							<Badge label={ppLabel(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />
+							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />
 						</section>
 					{/if}
 				</section>

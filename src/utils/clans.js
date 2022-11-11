@@ -1,12 +1,14 @@
-export function playersTitle(tag) {
+export function playersTitle(tag, count) {
 	switch (tag) {
 		case 'DUH':
-			return 'prayer';
+			return 'prayer' + (count ? 's' : '');
 		case 'JML':
-			return 'jamal';
+			return 'jamal' + (count ? 's' : '');
+		case 'OOTK':
+			return 'varma' + (count ? 'a' : '');
 
 		default:
-			return 'player';
+			return 'player' + (count ? 's' : '');
 	}
 }
 
@@ -14,6 +16,8 @@ export function rankLabel(tag) {
 	switch (tag) {
 		case 'JML':
 			return 'Jamal';
+		case 'OOTK':
+			return 'Ootko Ränkki';
 
 		default:
 			return 'Average Rank';
@@ -24,6 +28,8 @@ export function accLabel(tag) {
 	switch (tag) {
 		case 'JML':
 			return 'Jamal';
+		case 'OOTK':
+			return 'Ootko Äcc';
 
 		default:
 			return 'Average Acc';
@@ -34,9 +40,21 @@ export function ppLabel(tag) {
 	switch (tag) {
 		case 'JML':
 			return 'Jamal';
+		case 'OOTK':
+			return 'Ootko';
 
 		default:
 			return 'Total PP';
+	}
+}
+
+export function ppIcon(tag) {
+	switch (tag) {
+		case 'OOTK':
+			return 'coolpepe-icon';
+
+		default:
+			return null;
 	}
 }
 

@@ -273,6 +273,16 @@ select {
 	background-image: url('./baguette.svg');
 }
 
+.coolpepe-icon {
+	width: 1.3em !important;
+	height: 1.3em !important;
+	margin-bottom: -0.3em;
+	display: inline-flex;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url(./coolpepe.webp) !important;
+}
+
 .dropdown-menu {
 	display: none;
 	left: 0;
