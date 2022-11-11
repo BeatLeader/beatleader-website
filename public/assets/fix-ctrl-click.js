@@ -2,14 +2,21 @@
 	let ctrlPressState = false;
 
 	window.addEventListener('mousedown', function (e) {
-		ctrlPressState = e.ctrlKey;
+		ctrlPressState = e.ctrlKey || e.metaKey;
 	});
 
 	function openInBackground(url) {
 		const a = document.createElement('a');
 		a.href = url;
-		const evt = document.createEvent('MouseEvents');
-		evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, true, false, false, false, 0, null);
+		a.setAttribute('target', '_blank');
+
+		let evt = new MouseEvent("click", {
+			bubbles: true,
+			cancelable: true,
+			view: window,
+			ctrlKey: true,
+			metaKey: true
+		  });
 		a.dispatchEvent(evt);
 	}
 
