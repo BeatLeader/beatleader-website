@@ -328,9 +328,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div class="event-banner" on:click={() => navigate('/event/16')}>
-			<span class="event-title"> Two weeks of ranked maps in one event!</span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/168-event.png" />
+		<div class="event-banner" on:click={() => navigate('/event/17')}>
+			<span class="event-title"> 13th week. Will it be lucky for you?</span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/178-event.png" />
 		</div>
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -450,7 +450,7 @@
 	.event-banner {
 		display: flex;
 		align-items: center;
-		background: #2b2b32;
+		background: #6b5d5d;
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;

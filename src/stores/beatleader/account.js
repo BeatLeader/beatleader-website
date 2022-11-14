@@ -120,11 +120,10 @@ export default (refreshOnCreate = true) => {
 				} else {
 					account.message = 'Password changed successfully ✔';
 					account.error = null;
-					refresh(true);
+
 					setTimeout(function () {
-						account.message = null;
-						set(account);
-					}, 3500);
+						refresh(true);
+					}, 6000);
 				}
 				set(account);
 			});
@@ -147,11 +146,10 @@ export default (refreshOnCreate = true) => {
 				} else {
 					account.message = 'Password changed successfully ✔';
 					account.error = null;
-					refresh(true);
+
 					setTimeout(function () {
-						account.message = null;
-						set(account);
-					}, 3500);
+						refresh(true);
+					}, 6000);
 				}
 				set(account);
 			});
@@ -177,11 +175,9 @@ export default (refreshOnCreate = true) => {
 				} else {
 					account.message = 'Data saved!';
 					account.error = null;
-					refresh(true);
 					setTimeout(function () {
-						account.message = null;
-						set(account);
-					}, 3500);
+						refresh(true);
+					}, 6000);
 				}
 				set(account);
 
@@ -204,11 +200,9 @@ export default (refreshOnCreate = true) => {
 					account.error = data;
 				} else {
 					account.message = 'Login changed successfully ✔';
-					account.error = null;
-					refresh(true);
+
 					setTimeout(function () {
-						account.message = null;
-						set(account);
+						refresh(true);
 					}, 3500);
 				}
 				set(account);
