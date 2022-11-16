@@ -307,7 +307,8 @@
 		display: flex;
 		align-items: center;
 		flex-direction: column;
-		padding: 2.5em;
+		width: 13em;
+		padding: 1em;
 	}
 
 	.memberTitle {
