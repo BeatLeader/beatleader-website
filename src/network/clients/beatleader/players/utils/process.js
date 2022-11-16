@@ -19,6 +19,7 @@ export default response => {
 				lastWeekCountryRank,
 				clans,
 				profileSettings,
+				role,
 			} = player;
 			const difference = lastWeekRank > 0 ? lastWeekRank - rank : null;
 
@@ -37,6 +38,7 @@ export default response => {
 					lastWeekPp,
 					lastWeekRank,
 					lastWeekCountryRank,
+					role,
 				},
 				others: {
 					difference,
