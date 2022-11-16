@@ -307,7 +307,8 @@
 		display: flex;
 		align-items: center;
 		flex-direction: column;
-		padding: 0.5em;
+		width: 13em;
+		padding: 1em;
 	}
 
 	.memberTitle {
@@ -318,13 +319,14 @@
 	.memberDescription {
 		font-size: smaller;
 		text-align: center;
+		inline-size: 11em;
+		overflow-wrap: break-word;
 	}
 
 	.center {
-		display: grid;
+		display: flex;
 		justify-content: center;
-		grid-template-columns: repeat(auto-fill, 13em);
-		flex-direction: column;
+		flex-wrap: wrap;
 	}
 
 	.single {
