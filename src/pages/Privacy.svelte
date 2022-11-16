@@ -24,21 +24,20 @@
 	<ContentBox>
 		<h1 class="title is-3">Privacy policy</h1>
 
-		<p><strong>BeatLeader Oculus Store application does not collect any data locally, nor connects to the internet.</strong></p>
+		<p><strong>The BeatLeader Oculus Store application does not store any data locally and does not connect to the internet.</strong></p>
 
 		<br />What data BeatLeader mods collect?<br />
 		<br /><b>1. Platform specific ID</b><br />
-		In order to identify you as a Beat Saber player we collect your personal ID from the platform you own the Game. For example: Steam ID, Oculus
-		ID. Then this ID is used as ID in BeatLeader system. (Not changeable)
+		In order to identify you as a Beat Saber player, we collect your personal ID from the platform on which you own the game. For example: Steam ID, Oculus
+		ID. This ID is then used as ID in BeatLeader system. (Not changeable)
 		<br /><b>2. Profile picture</b><br />
 		Your Oculus or Steam profile picture will be used as BeatLeader profile picture. (Changeable)
 		<br /><b>3. Profile name</b><br />
 		Your Oculus or Steam profile name will be used as BeatLeader profile name. (Changeable)
 		<br /><b>IP address</b><br />
-		Some requests will use your IP address to set a country for profile or to protect sensitive endpoints(for example "log in").
+		Some requests will use your IP address to set a country for profile or to protect sensitive endpoints (for example "log in").
 		<br /><b>Replays</b><br />
-		The main purpose of this service is to collect your Beat Saber plays, so yes, we collect them.
-
+		The main purpose of this service is to collect your Beat Saber plays, so yes, we collect them. 
 		<br /><br /><b>Steam specific</b><br />
 		BS played hours amount and country. This data is used on the website. (Country is changeable)
 		<br /><br /><b>Patreon specific</b><br />
