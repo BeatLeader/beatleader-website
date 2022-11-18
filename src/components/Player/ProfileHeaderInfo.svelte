@@ -380,5 +380,10 @@
 		.player-ranking {
 			justify-content: center;
 		}
+
+		.player-nickname {
+			flex-wrap: wrap !important;
+			justify-content: center;
+		}
 	}
 </style>

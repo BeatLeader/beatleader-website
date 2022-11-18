@@ -6,10 +6,9 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import createAccountStore from '../stores/beatleader/account';
 	import createRankingStore from '../stores/http/http-ranking-store';
-	import player from '../services/beatleader/player';
 	import {BL_CDN} from '../network/queues/beatleader/page-queue';
 
-	const rankingStore = createRankingStore('global', 1, {role: 'sponsor,supporter,tipper'});
+	const rankingStore = createRankingStore('global', 1, {role: 'sponsor,supporter,tipper', count: 500});
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
@@ -20,7 +19,7 @@
 		if (articleEl) scrollToTargetAdjusted(articleEl, 50);
 	}
 
-	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper'}, true);
+	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 500}, true);
 	$: scrollToTop(articleEl);
 </script>
 
@@ -217,8 +216,8 @@
 			<section class="content single">
 				<div class="member">
 					<img src={$account.player.playerInfo.avatar} alt={$account.player.name} /><a
-						href="https://www.beatleader.xyz/u/{$account.player.id}">{$account.player.name}</a>
-					<p class="memberDescription">Thank you for using BeatLeader and beliving in the open-source!</p>
+						href={`https://www.beatleader.xyz/u/${$account.player.playerId}`}>{$account.player.name}</a>
+					<p class="memberDescription">Thank you for using BeatLeader and believing in the open-source!</p>
 				</div>
 			</section>
 		{/if}

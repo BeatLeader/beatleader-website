@@ -346,5 +346,9 @@
 		.ranking-grid {
 			grid-template-columns: 1fr;
 		}
+
+		:global(.player-name-and-rank .clan-badges) {
+			display: none;
+		}
 	}
 </style>

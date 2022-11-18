@@ -1376,7 +1376,7 @@
 			margin-top: 0.5em;
 		}
 
-		:global(.clan-badges) {
+		:global(.player .clan-badges) {
 			display: none;
 		}
 	}
