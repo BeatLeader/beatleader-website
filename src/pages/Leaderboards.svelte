@@ -35,12 +35,11 @@
 	import RankedTimer from '../components/Others/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
-	import {Ranked_Const} from './../utils/beatleader/consts'
+	import {Ranked_Const} from './../utils/beatleader/consts';
 
 	export let page = 1;
 	export let location;
 
-	
 	const FILTERS_DEBOUNCE_MS = 500;
 
 	document.body.classList.remove('slim');
@@ -279,9 +278,10 @@
 	let searchToPlaylist = false;
 	let makingPlaylist = false;
 	let mapCount = 100;
+	let duplicateDiffs = false;
 	function generatePlaylist() {
 		makingPlaylist = true;
-		playlists.generatePlaylist(mapCount, currentFilters, () => {
+		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs}, () => {
 			navigate('/playlists');
 		});
 	}
@@ -475,7 +475,7 @@
 					float
 					hoverable
 					pips
-					pipstep={2/Ranked_Const.STAR_GRANULARITY}
+					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 					all="label"
 					on:change={debouncedOnStarsChanged}
 					disabled={currentFilters.type !== 'ranked'} />
@@ -533,6 +533,10 @@
 						on:change={event => {
 							mapCount = event.detail.values[0];
 						}} />
+					<div class="duplicateDiffsContainer">
+						<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
+						<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+					</div>
 					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
 				{/if}
 			{/if}
@@ -685,6 +689,14 @@
 		flex-wrap: wrap;
 	}
 
+	.duplicateDiffsContainer {
+		display: flex;
+	}
+
+	#duplicateDiffs {
+		width: auto;
+	}
+
 	:global(.playlist-button) {
 		height: 1.6em;
 	}
@@ -712,4 +724,3 @@
 		}
 	}
 </style>
-
