@@ -28,6 +28,7 @@
 	import Modal from 'svelte-simple-modal';
 	import RtDashboard from './pages/RtDashboard.svelte';
 	import EventsPage from './pages/Events.svelte';
+	import Socket from './pages/Socket.svelte';
 
 	export let url = '';
 
@@ -61,6 +62,7 @@
 					</Route>
 					<Route path="/privacy" component={PrivacyPage} />
 					<Route path="/about" component={AboutPage} />
+					<Route path="/socket" component={Socket} />
 					<Route path="/friends" component={FriendsPage} />
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />
