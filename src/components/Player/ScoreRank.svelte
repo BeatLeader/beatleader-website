@@ -3,7 +3,7 @@
 	import {cubicOut} from 'svelte/easing';
 	import Value from '../Common/Value.svelte';
 	import {BL_CDN} from '../../network/queues/beatleader/page-queue';
-	import {getHeadsetForHMD, describePlatform} from '../../utils/beatleader/format';
+	import {getHeadsetForHMD, describePlatform, getControllerForEnum} from '../../utils/beatleader/format';
 
 	export let rank;
 	export let country;
@@ -14,6 +14,7 @@
 
 	export let hmd = null;
 	export let platform = null;
+	export let controller = null;
 
 	const currentRank = tweened(rank, {
 		duration: 500,
@@ -34,8 +35,9 @@
 	}
 
 	$: headset = getHeadsetForHMD(hmd);
+	$: controllerDescription = getControllerForEnum(controller).length > 0 ? ' with ' + getControllerForEnum(controller) : '';
 	$: platformDescription = describePlatform(platform);
-	$: title = headset?.name + (platformDescription?.description ? '\n' + platformDescription?.description : '');
+	$: title = headset?.name + controllerDescription + (platformDescription?.description ? '\n' + platformDescription?.description : '');
 	$: headsetStyle = `width: 1.2em; filter: ${headset?.color}`;
 </script>
 

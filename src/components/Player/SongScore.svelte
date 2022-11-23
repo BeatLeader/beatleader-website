@@ -95,6 +95,7 @@
 						countryRankTotal={null}
 						country={score.country}
 						hmd={score.hmd}
+						controller={score.controller}
 						platform={score.platform} />
 				{/if}
 

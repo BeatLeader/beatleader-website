@@ -301,6 +301,54 @@ export function getHeadsetForHMD(hmd) {
 	return HMDs?.[hmd] ?? null;
 }
 
+export function getControllerForEnum(controller) {
+	console.log(controller);
+	switch (controller) {
+		case 1:
+			return 'Oculus Touch controllers';
+		case 16:
+			return 'Oculus Touch 2 controllers';
+		case 256:
+			return 'Quest 2 controllers';
+		case 2:
+			return 'VIVE wands';
+		case 4:
+			return 'VIVE 2 wands';
+		case 128:
+			return 'VIVE cosmos controllers';
+		case 64:
+			return 'Knuckles';
+		case 8:
+			return 'WMR controllers';
+		case 33:
+			return 'Pico controllers';
+		case 34:
+			return 'Pico controllers';
+		case 35:
+			return 'VIVE Pro dudads';
+		case 37:
+			return 'Miramar controllers';
+		case 44:
+			return 'disco controllers';
+		case 61:
+			return 'Quest PRO controllers';
+		case 62:
+			return 'VIVE tracker';
+		case 63:
+			return 'VIVE tracker 2';
+		case 64:
+			return 'VIVE tracker 3';
+		case 65:
+			return 'nolo controllers';
+		case 66:
+			return 'Pico phoenix';
+		case 67:
+			return 'Hands 🙌';
+	}
+
+	return '';
+}
+
 const platformColors = {
 	oculus: 'yellow',
 	steam: 'blue',
@@ -403,7 +451,7 @@ export function userDescriptionForModifier(modifier) {
 		case 'SA':
 			return 'Strict angles';
 		case 'OD':
-			return 'Old dot hitboxes';
+			return 'Old dot note hitboxes';
 	}
 	return 'Unknown modifier';
 }
