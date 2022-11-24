@@ -39,3 +39,8 @@ export function HSVtoRGB(h, s, v) {
 	}
 	return rgbToHex(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
 }
+
+export function setGlobalCSSValue(name, value) {
+	var r = document.querySelector(':root');
+	r.style.setProperty('--' + name, value);
+}

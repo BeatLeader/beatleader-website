@@ -29,6 +29,7 @@
 	import RtDashboard from './pages/RtDashboard.svelte';
 	import EventsPage from './pages/Events.svelte';
 	import Socket from './pages/Socket.svelte';
+	import {setGlobalCSSValue} from './utils/color';
 
 	export let url = '';
 
@@ -43,6 +44,8 @@
 	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'mirror-low') {
 		let dom = document.createElement('style');
 		dom.innerHTML = `html,body{background:url(${$configStore.preferences.bgimage}) var(--background) !important;background-size:cover !important;background-attachment: fixed !important;}`;
+		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgcolor);
+		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
 		document.head.appendChild(dom);
 	}
 </script>

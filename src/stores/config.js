@@ -28,6 +28,8 @@ const DEFAULT_CONFIG = {
 		theme: 'mirror',
 		oneclick: 'modassistant',
 		bgimage: '/assets/background.png',
+		bgColor: 'rgba(131, 131, 131, 0.082)',
+		headerColor: 'rgba(92, 92, 92, 0.281)',
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: null,

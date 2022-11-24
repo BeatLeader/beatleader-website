@@ -1,14 +1,11 @@
 <script>
 	import produce from 'immer';
 	import {configStore, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config';
-	import {ROUTER} from 'svelte-routing/src/contexts';
-	import {getContext, onMount} from 'svelte';
-	import {opt} from '../../utils/js';
-	import eventBus from '../../utils/broadcast-channel-pubsub';
-	import {DAY} from '../../utils/date';
 	import Dialog from '../Common/Dialog.svelte';
 	import Button from '../Common/Button.svelte';
 	import Select from './Select.svelte';
+	import {setGlobalCSSValue} from '../../utils/color';
+	import ColorPicker from './ColorPicker.svelte';
 
 	export let show = false;
 
@@ -18,8 +15,6 @@
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 	const DEFAULT_SORT_VALUE = 'last';
-
-	const {activeRoute} = getContext(ROUTER);
 
 	const scoreComparisonMethods = [
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
@@ -63,6 +58,8 @@
 
 	let currentTheme = DEFAULT_THEME;
 	let currentBGImage = '';
+	let currentBGColor = 'rgba(131, 131, 131, 0.082)';
+	let currentHeaderColor = 'rgba(92, 92, 92, 0.281)';
 	let currentLocale = DEFAULT_LOCALE;
 	let currentPpMetric = DEFAULT_PP_METRIC;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
@@ -79,6 +76,8 @@
 		if (config?.preferences?.oneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
 		if (config?.preferences?.scoresSortOptions) currentSortOption = config?.preferences?.scoresSortOptions ?? DEFAULT_SORT_VALUE;
 		if (config?.preferences?.bgimage) currentBGImage = config?.preferences?.bgimage ?? '';
+		if (config?.preferences?.bgcolor) currentBGColor = config?.preferences?.bgcolor ?? '';
+		if (config?.preferences?.headerColor) currentHeaderColor = config?.preferences?.headerColor ?? '';
 	}
 
 	function onSave() {
@@ -92,6 +91,8 @@
 			draft.preferences.theme = currentTheme;
 			draft.preferences.oneclick = currentOneclick;
 			draft.preferences.bgimage = currentBGImage;
+			draft.preferences.bgcolor = currentBGColor;
+			draft.preferences.headerColor = currentHeaderColor;
 			draft.preferences.scoresSortOptions = currentSortOption;
 			document.location.reload();
 		});
@@ -109,6 +110,15 @@
 		}
 
 		show = false;
+	}
+
+	function bgColorCallback(rgba) {
+		currentBGColor = rgba.detail;
+		setGlobalCSSValue('customizable-color-1', rgba.detail);
+	}
+	function headerColorCallback(rgba) {
+		currentHeaderColor = rgba.detail;
+		setGlobalCSSValue('customizable-color-2', rgba.detail);
 	}
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
@@ -173,6 +183,18 @@
 						<input type="url" bind:value={currentBGImage} disabled={currentTheme == 'default' || currentTheme == 'mirror-low'} />
 					</section>
 
+					{#if currentTheme == 'mirror'}
+						<section class="option">
+							<label title="Select color for the backgrounds of the elements">Main Color</label>
+							<ColorPicker on:colorChange={bgColorCallback} startColor={currentBGColor} />
+						</section>
+
+						<section class="option">
+							<label title="Select color for the backgrounds of the elements">Header Color</label>
+							<ColorPicker on:colorChange={headerColorCallback} startColor={currentHeaderColor} />
+						</section>
+					{/if}
+
 					<section class="option">
 						<label title="How One-Click button will work">One-click installs</label>
 						<Select bind:value={currentOneclick}>
@@ -225,6 +247,19 @@
 		text-transform: uppercase;
 		color: var(--faded) !important;
 		margin-bottom: 0.25em;
+	}
+
+	.alpha-label {
+		font-size: 14px;
+		display: flex;
+	}
+
+	.alpha-label input {
+		margin: 0.3em 0 0 0.3em;
+	}
+
+	.color-picker {
+		width: 100%;
 	}
 
 	@media screen and (max-width: 600px) {

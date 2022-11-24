@@ -302,7 +302,6 @@ export function getHeadsetForHMD(hmd) {
 }
 
 export function getControllerForEnum(controller) {
-	console.log(controller);
 	switch (controller) {
 		case 1:
 			return 'Oculus Touch controllers';

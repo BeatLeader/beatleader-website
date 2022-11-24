@@ -17,6 +17,9 @@
 	--color-highlight: darkgreen;
 	--error: red;
 
+	--customizable-color-1: rgba(131, 131, 131, 0.082);
+	--customizable-color-2: rgba(92, 92, 92, 0.281);
+
 	--beatleader-primary: #eb008c;
 	--beatleader-secondary: #562a56;
 
