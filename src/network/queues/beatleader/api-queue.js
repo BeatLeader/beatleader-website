@@ -161,12 +161,15 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{imageUrl: led?.song?.coverImage, stats: {}}
 	);
 
+	const leaderboardGroup = led.leaderboardGroup.sort((a, b) => b.timestamp - a.timestamp);
+
 	const {stats, ...song} = songInfo;
 	const leaderboard = {
 		leaderboardId,
 		song,
 		diffInfo,
 		stats,
+		leaderboardGroup: leaderboardGroup,
 		qualification: led.qualification,
 		changes: led.changes,
 		reweight: led.reweight,

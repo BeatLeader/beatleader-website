@@ -203,6 +203,12 @@
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
 
+	function onSelectedGroupEntryChanged(event) {
+		const newLeaderboardId = selectedGroupEntry;
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
+	}
+
 	function processDiffs(diffArray, song) {
 		if (song) {
 			const idLength = song?.id?.length;
@@ -361,6 +367,11 @@
 	let generalMapperId;
 	let qualificationLimitError;
 
+	let selectedGroupEntry
+	function updateGroupSelection(leaderboardGroup) {
+		selectedGroupEntry = currentLeaderboardId;
+	}
+
 	function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
 		scoresWithUser =
 			!userScoreOnCurrentPage && scores?.length && userScore
@@ -434,6 +445,7 @@
 	$: scores = opt($leaderboardStore, 'scores', null);
 	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
+	$: leaderboardGroup = opt($leaderboardStore, 'leaderboard.leaderboardGroup', null);
 	$: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song);
 	$: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null;
 	$: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
@@ -473,6 +485,7 @@
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
 	$: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage);
 	$: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore);
+	$: updateGroupSelection(leaderboardGroup);
 	$: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
 	$: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
 	$: if (separatePage && isRT) votingStore.fetchResults(leaderboardId);
@@ -559,11 +572,23 @@
 				{#if leaderboard && song && withHeader}
 					{#if !withoutHeader}
 						<header transition:fade>
-							<h1 class="title is-4">
-								<span class="name">{song.name} {song.subName ? song.subName : ''}</span>
-								<span class="author">{song.authorName}</span>
-								<small class="level-author">{song.levelAuthorName}</small>
-							</h1>
+							<div class="header-container">
+								<h1 class="title is-4">
+									<span class="name">{song.name} {song.subName ? song.subName : ''}</span>
+									<span class="author">{song.authorName}</span>
+									<small class="level-author">{song.levelAuthorName}</small>
+								</h1>
+
+								{#if leaderboardGroup && leaderboardGroup.length > 1}
+									<select class="group-select" bind:value={selectedGroupEntry} on:change={onSelectedGroupEntryChanged}>
+										{#each leaderboardGroup as option (option.id)}
+											<option class="group-option" value={option.id}>
+												{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
+											</option>
+										{/each}
+									</select>
+								{/if}
+							</div>
 
 							<h2 class="title is-6" class:unranked={!isRanked}>
 								{#if leaderboard.categoryDisplayName}
@@ -1100,6 +1125,33 @@
 
 	header .icons {
 		font-size: 0.65em;
+	}
+
+	.header-container {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.group-select {
+		height: fit-content;
+		padding: 0.175rem;
+		text-align: center;
+		white-space: nowrap;
+		border: 0;
+		border-radius: 0.2em;
+		cursor: pointer;
+		color: var(--color, #363636);
+		background-color: #dbdbdb;
+		box-shadow: none;
+		opacity: 0.35;
+		font-family: inherit;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.group-option {
+		color: black;
+		font-family: inherit;
 	}
 
 	.stats-with-icons {
