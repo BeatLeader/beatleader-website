@@ -5,7 +5,7 @@
 	export let zIndex = 1;
 </script>
 
-<div class="content-box {cls ?? ''}" bind:this={box} style="--box-background: {background}; --z-index: {zIndex}">
+<div class="content-box {cls ?? ''}" bind:this={box} style="--box-background: {background}; --z-index: {zIndex}" on:click>
 	<slot />
 </div>
 
