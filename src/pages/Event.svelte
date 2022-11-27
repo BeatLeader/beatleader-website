@@ -34,7 +34,7 @@
 		}
 	};
 
-	const params = [
+	var params = [
 		{
 			key: 'search',
 			label: 'Player Name',

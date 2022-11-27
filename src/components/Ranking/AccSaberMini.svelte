@@ -25,7 +25,7 @@
 	var currentCategoryName = category;
 
 	const prevTitle = 'vs ${value}';
-	const categoriesOrder = ['overall', 'true', 'standard', 'tech'];
+	var categoriesOrder = ['overall', 'true', 'standard', 'tech'];
 
 	async function onParamsChanged(playerId, category, numOfPlayers) {
 		try {
