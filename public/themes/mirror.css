@@ -330,7 +330,6 @@ nav.ssr-page-container div {
 .page-content.scores .badge.nominated-pp {
 	--background-color: var(--ppColour) !important;
 }
-.leaderboard,
 .chart,
 .details-with-shadow {
 	background: none !important;
