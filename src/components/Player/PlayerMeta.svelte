@@ -27,27 +27,20 @@
 
 	let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
 	$: countryName = country == 'not set' ? country : regionNames.of((country ?? 'AD').toUpperCase());
-	$: metaDescription = `
+	$: description = `
   	${fillWithSpaces('#' + formatNumber(rank, 0), 7)}Beat Saber player 🌐
 	${fillWithSpaces('#' + formatNumber(countryRank, 0), 7)}in ${countryName} ${getFlagEmoji(country ?? 'AD')}
 	${fillWithSpaces('' + formatNumber(pp, 0), 7)}pp (performance points) 
 	${fillWithSpaces(Math.round($playerStore?.scoreStats?.averageRankedAccuracy ?? 0, 2) + '%', 7)}average accuracy
 	`;
-
-	$: twitterDescription = `
-      Top #${formatNumber(rank, 0)} Beat Saber player
-    from ${countryName}
-    with ${formatNumber(pp, 0)} performance points 
-    and ${Math.round($playerStore?.scoreStats?.averageRankedAccuracy ?? 0, 2)}% average accuracy
-    `;
 </script>
 
 <MetaTags
 	title={$playerStore?.name}
-	description={metaDescription}
+	{description}
 	openGraph={{
 		title: $playerStore?.name,
-		description: metaDescription,
+		description,
 		images: [{url: $playerStore?.playerInfo.avatar}],
 		site_name: ssrConfig.name,
 	}}
@@ -56,7 +49,7 @@
 		site: '@beatleader_',
 		cardType: 'summary',
 		title: $playerStore?.name,
-		description: twitterDescription,
+		description,
 		image: $playerStore?.playerInfo.avatar,
 		imageAlt: $playerStore?.name + ' profile picture',
 	}} />
