@@ -59,7 +59,7 @@
 		{key: 'sortBy', default: 'voting', process: processStringFilter},
 		{key: 'order', default: 'asc', process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
-		{key: 'allTypes', default: false, process: processBoolFilter},
+		{key: 'allTypes', default: 0, process: processIntFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -445,8 +445,9 @@
 			{/if}
 
 			<select bind:value={currentFilters.allTypes} on:change={onCategoryModeChanged}>
-				<option value={false}>ANY category</option>
-				<option value={true}>ALL categories</option>
+				<option value={0}>ANY category</option>
+				<option value={1}>ALL categories</option>
+				<option value={2}>NO categories</option>
 			</select>
 
 			<section class="filter">

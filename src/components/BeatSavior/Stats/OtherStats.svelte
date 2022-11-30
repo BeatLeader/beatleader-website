@@ -212,6 +212,20 @@
 			</svelte:fragment>
 		</Badge>
 
+		{#if stats?.fcAcc && !stats?.fc}
+			<Badge label="FC accuracy" color="white" bgColor="var(--dimmed)" fluid={true}>
+				<svelte:fragment slot="value">
+					<Value
+						value={stats.fcAcc * 100.0}
+						digits={2}
+						prevValue={compareToStats ? compareToStats.fcAcc * 100 : null}
+						prevAbsolute={true}
+						prevWithSign={false}
+						suffix="%" />
+				</svelte:fragment>
+			</Badge>
+		{/if}
+
 		{#if jumpDistance > 0}
 			<Badge label="JD" color="white" bgColor="var(--dimmed)" fluid={true}>
 				<svelte:fragment slot="value">

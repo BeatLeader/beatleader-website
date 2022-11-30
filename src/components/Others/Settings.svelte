@@ -25,6 +25,7 @@
 		{name: 'Weighted PP', value: DEFAULT_PP_METRIC},
 		{name: 'PP improvement', value: 'improvement'},
 		{name: 'Total PP gain', value: 'total-gain'},
+		{name: 'PP on full combo', value: 'full-combo'},
 	];
 
 	const avatarIcons = [

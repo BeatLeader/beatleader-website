@@ -10,9 +10,8 @@
 	export let withZeroSuffix = false;
 	export let weighted = null;
 	export let improvements = null;
-	export let playerId = null;
+	export let fcPp = null;
 	export let color = 'var(--ppColour)';
-	export let leaderboardId = null;
 	export let whatIf = null;
 	export let suffix = 'pp';
 
@@ -61,6 +60,14 @@
 				forcePrev = false;
 				prevTemplate = prevValue ? '[ ${formatted} ]' : '';
 				break;
+			case 'full-combo':
+				prevValue = fcPp;
+
+				prevWithSign = true;
+				prevAbsolute = true;
+				forcePrev = true;
+				prevTemplate = prevValue ? '[ ${formatted} ]' : '';
+				break;
 
 			case 'weighted':
 			default:
@@ -81,6 +88,9 @@
 
 		if (bonusPp) {
 			prevTitle += ' PP bonus: ' + formatNumber(bonusPp) + suffix;
+		}
+		if (fcPp) {
+			prevTitle += ', Full combo PP: ' + formatNumber(fcPp) + suffix;
 		}
 	}
 

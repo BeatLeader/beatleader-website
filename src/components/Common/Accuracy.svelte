@@ -26,7 +26,6 @@
 
 	function getBadge(acc) {
 		if (!acc) return null;
-
 		return badgesDef.reduce(
 			(cum, badge) => ((!badge.min || badge.min <= acc) && (!badge.max || badge.max > acc) ? badge : cum),
 			badgesDef[badgesDef.length - 1]
@@ -34,16 +33,25 @@
 	}
 
 	$: badge = getBadge(score?.acc);
+	$: fcacc = score.fcAccuracy ? ' FC acc: ' + Math.round(score.fcAccuracy * 100, 2) + '%' : '';
 	$: mods = score?.mods;
 
 	$: value = score?.acc ?? 0;
 	$: prevValue = value - (score?.scoreImprovement?.accuracy ?? 0);
 </script>
 
-<Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc : badge} label="">
+<Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc + fcacc : badge} label="">
 	<span slot="label">
 		<slot name="label-before" />
-		<Value {value} {prevValue} title={badge ? badge.desc : null} inline={false} suffix="%" suffixPrev="%" zero="-" withZeroSuffix={false} />
+		<Value
+			{value}
+			{prevValue}
+			title={badge ? badge.desc + fcacc : null}
+			inline={false}
+			suffix="%"
+			suffixPrev="%"
+			zero="-"
+			withZeroSuffix={false} />
 		<slot name="label-after" />
 	</span>
 	<small class="mods" slot="additional" title={showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}

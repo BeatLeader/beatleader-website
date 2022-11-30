@@ -90,11 +90,10 @@
 					bgColor={score.ppWeighted ? 'var(--ppColour)' : 'transparent'}>
 					<span slot="label" title={score.ppWeighted ? '' : 'Approximate PP if the map will be ranked'}>
 						<Pp
-							playerId={score.playerId}
-							leaderboardId={leaderboard.leaderboardId}
 							pp={score.pp}
 							bonusPp={score.bonusPp}
 							weighted={score.ppWeighted}
+							fcPp={score.fcPp}
 							{improvements}
 							whatIf={score.whatIfPp}
 							zero={formatNumber(0)}
