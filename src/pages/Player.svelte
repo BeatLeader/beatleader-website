@@ -17,6 +17,7 @@
 	import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte';
 	import TwitchVideos from '../components/Player/TwitchVideos.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -178,7 +179,6 @@
 		?.split('/')
 		.map(s => capitalize(s))
 		.join(' / ')} - ${ssrConfig.name}`;
-
 	$: updateTwitchProfile(currentPlayerId);
 
 	let scoresPlayerId = null;
@@ -196,8 +196,18 @@
 	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
 
 	$: rank = $playerStore?.playerInfo.rank;
+	$: pp = $playerStore?.playerInfo.pp;
 	$: country = $playerStore?.playerInfo.countries[0].country;
 	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
+
+	let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
+	$: countryName = country == 'not set' ? country : regionNames.of((country ?? 'AC').toUpperCase());
+	$: metaDescription = `
+  	Top #${rank} Beat Saber player
+	from ${countryName}
+	with ${Math.round(pp)} performance points 
+	and ${Math.round($playerStore?.scoreStats?.averageRankedAccuracy ?? 0, 2)}% average accuracy
+	`;
 </script>
 
 <svelte:head>
@@ -264,6 +274,24 @@
 		</aside>
 	{/if}
 </section>
+<MetaTags
+	title={$playerStore?.name}
+	description={metaDescription}
+	openGraph={{
+		title: $playerStore?.name,
+		description: metaDescription,
+		image: {url: $playerStore?.playerInfo.avatar},
+		site_name: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: $playerStore?.name,
+		description: metaDescription,
+		image: $playerStore?.playerInfo.avatar,
+		imageAlt: $playerStore?.name + ' profile picture',
+	}} />
 
 <style>
 	.align-content {

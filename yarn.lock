@@ -820,6 +820,11 @@ safe-buffer@^5.1.0:
   resolved "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.2.1.tgz"
   integrity sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==
 
+schema-dts@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/schema-dts/-/schema-dts-1.1.0.tgz#33227971076ef1daa33e56a3127a8aae030e81c9"
+  integrity sha512-vdmbs/5ycj4zyKpZIDqTcy+IZi4s7c38RVAYuDmRi7zgxUT8wRWPMLzg0jr7FjdVunYu9yZ00F3+XcZTTFcTOQ==
+
 semiver@^1.0.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/semiver/-/semiver-1.1.0.tgz"
@@ -912,6 +917,13 @@ svelte-check@^1.0.0:
     source-map "^0.7.3"
     svelte-preprocess "^4.0.0"
     typescript "*"
+
+svelte-meta-tags@^2.6.4:
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/svelte-meta-tags/-/svelte-meta-tags-2.6.4.tgz#ead86a01a4f645a7b7ad7b7f52248fb58564fd64"
+  integrity sha512-S4CfxkLfPzAFRTRlF5YX5BEbU36CpC63cG86pXgsQQZun5kQ1JY7jLFTrb5hfHnvFFjkss52kq4+M53mTLfcig==
+  dependencies:
+    schema-dts "^1.1.0"
 
 svelte-notifications@^0.9.97:
   version "0.9.97"
