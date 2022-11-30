@@ -5,19 +5,19 @@
 
 	export let leaderboard;
 	export let song;
-	export let beatSaverCoverUrl;
 
 	$: diffInfo = leaderboard?.diffInfo ? getHumanDiffInfo(leaderboard.diffInfo) : null;
+	$: image = song?.imageUrl ?? '';
 
 	$: title = song?.name + ' | ' + (diffInfo?.type !== 'Standard' ? diffInfo?.name : diffInfo?.fullName) + ' | Beat Saber leaderboard';
-	$: description = `
+	$: description =
+		`
     Author: ${song?.authorName}
   	Mapped by: ${song?.levelAuthorName}
-    
-    ${leaderboard?.stats.type ? 'Type: ' + mapTypeFromMask(leaderboard?.stats.type) : ''}
     Status: ${formatDiffStatus(leaderboard?.stats?.status ?? '')}
-    ${leaderboard?.stats?.stars ? 'Stars: ' + leaderboard?.stats?.stars : ''}
-	`;
+	` +
+		(leaderboard?.stats?.stars ? `Stars: ${leaderboard?.stats?.stars}\n` : '') +
+		(leaderboard?.stats.type ? `Type: ${mapTypeFromMask(leaderboard?.stats.type)}\n` : '');
 </script>
 
 <MetaTags
@@ -26,7 +26,7 @@
 	openGraph={{
 		title,
 		description,
-		image: {url: beatSaverCoverUrl},
+		images: [{url: image}],
 		site_name: ssrConfig.name,
 	}}
 	twitter={{
@@ -35,6 +35,6 @@
 		cardType: 'summary',
 		title,
 		description,
-		image: beatSaverCoverUrl,
+		image,
 		imageAlt: song?.name + ' cover',
 	}} />

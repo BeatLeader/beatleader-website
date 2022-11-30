@@ -48,7 +48,7 @@
 	openGraph={{
 		title: $playerStore?.name,
 		description: metaDescription,
-		image: {url: $playerStore?.playerInfo.avatar},
+		images: [{url: $playerStore?.playerInfo.avatar}],
 		site_name: ssrConfig.name,
 	}}
 	twitter={{

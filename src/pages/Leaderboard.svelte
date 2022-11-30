@@ -1043,7 +1043,7 @@
 	{/if}
 </section>
 
-<LeaderboardMeta {leaderboard} {song} {currentDiff} {beatSaverCoverUrl} />
+<LeaderboardMeta {leaderboard} {song} />
 
 <style>
 	.align-content {

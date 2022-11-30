@@ -11,6 +11,7 @@
 	import Scores from '../components/Player/Scores.svelte';
 	import Timeline from '../components/Twitter/Timeline.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
+	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 
 	const SPECIAL_PLAYER_ID = 'user-friends';
 
@@ -191,7 +192,7 @@
 	openGraph={{
 		title: ssrConfig.name + ' - Website',
 		description: metaDescription,
-		image: {url: '/assets/logo-small.png'},
+		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
 		site_name: ssrConfig.name,
 	}}
 	twitter={{
@@ -200,7 +201,7 @@
 		cardType: 'summary',
 		title: ssrConfig.name + ' - Website',
 		description: metaDescription,
-		image: '/assets/logo-small.png',
+		image: CURRENT_URL + '/assets/logo-small.png',
 		imageAlt: ssrConfig.name + "'s logo",
 	}} />
 
