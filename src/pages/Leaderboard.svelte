@@ -56,6 +56,7 @@
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 	import Preview from '../components/Common/Preview.svelte';
+	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -367,7 +368,7 @@
 	let generalMapperId;
 	let qualificationLimitError;
 
-	let selectedGroupEntry
+	let selectedGroupEntry;
 	function updateGroupSelection(leaderboardGroup) {
 		selectedGroupEntry = currentLeaderboardId;
 	}
@@ -1041,6 +1042,8 @@
 		</aside>
 	{/if}
 </section>
+
+<LeaderboardMeta {leaderboard} {song} {currentDiff} {beatSaverCoverUrl} />
 
 <style>
 	.align-content {

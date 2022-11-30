@@ -148,7 +148,7 @@
 </script>
 
 <nav class="ssr-page-container">
-	<a href="/dashboard" on:click|preventDefault={() => navigate('/dashboard')}>
+	<a href="/" on:click|preventDefault={() => navigate('/')}>
 		<img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
 		<img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
 	</a>

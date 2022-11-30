@@ -10,6 +10,7 @@
 	import Spinner from '../components/Common/Spinner.svelte';
 	import Scores from '../components/Player/Scores.svelte';
 	import Timeline from '../components/Twitter/Timeline.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
 
 	const SPECIAL_PLAYER_ID = 'user-friends';
 
@@ -53,6 +54,9 @@
 
 	$: friends = $account?.friends ?? null;
 	$: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`;
+	$: metaDescription =
+		ssrConfig.name +
+		" is Beat Saber's leaderboard with open code and community. Start posting your scores to compete with others on more than 100,000 different maps.";
 </script>
 
 <svelte:head>
@@ -180,6 +184,25 @@
 		</div>
 	{/if}
 </article>
+
+<MetaTags
+	title={ssrConfig.name + ' - Website'}
+	description={metaDescription}
+	openGraph={{
+		title: ssrConfig.name + ' - Website',
+		description: metaDescription,
+		image: {url: '/assets/logo-small.png'},
+		site_name: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: ssrConfig.name + ' - Website',
+		description: metaDescription,
+		image: '/assets/logo-small.png',
+		imageAlt: ssrConfig.name + "'s logo",
+	}} />
 
 <style>
 	.columns {

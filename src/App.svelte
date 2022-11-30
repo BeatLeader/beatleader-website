@@ -5,7 +5,6 @@
 	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
 	import createContainerStore from './stores/container';
-	import HomePage from './pages/Home.svelte';
 	import SearchPage from './pages/Search.svelte';
 	import RankingPage from './pages/Ranking.svelte';
 	import EventPage from './pages/Event.svelte';
@@ -56,7 +55,7 @@
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
-					<Route path="/" component={HomePage} />
+					<Route path="/" component={DashboardPage} />
 					<Route path="/u/:initialPlayerId/*initialParams" let:params>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 					</Route>

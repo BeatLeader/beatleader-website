@@ -212,7 +212,7 @@
 			</svelte:fragment>
 		</Badge>
 
-		{#if stats?.fcAcc && !stats?.fc}
+		{#if stats?.fcAcc && !fc}
 			<Badge label="FC accuracy" color="white" bgColor="var(--dimmed)" fluid={true}>
 				<svelte:fragment slot="value">
 					<Value

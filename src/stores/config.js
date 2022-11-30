@@ -27,7 +27,7 @@ const DEFAULT_CONFIG = {
 		scoresSortOptions: 'last',
 		theme: 'mirror',
 		oneclick: 'modassistant',
-		bgimage: '/assets/background.png',
+		bgimage: '/assets/background.webp',
 		bgColor: 'rgba(131, 131, 131, 0.082)',
 		headerColor: 'rgba(92, 92, 92, 0.281)',
 	},

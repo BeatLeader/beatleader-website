@@ -1,5 +1,6 @@
 <script>
 	import {diffColors, describeModifiersAndMultipliers} from '../../utils/beatleader/format';
+	import {formatNumber} from '../../utils/format';
 	import Badge from './Badge.svelte';
 	import Value from './Value.svelte';
 
@@ -33,7 +34,10 @@
 	}
 
 	$: badge = getBadge(score?.acc);
-	$: fcacc = score.fcAccuracy ? ' FC acc: ' + Math.round(score.fcAccuracy * 100, 2) + '%' : '';
+	$: fcacc =
+		score.fcAccuracy && score.acc && Math.abs(score.fcAccuracy * 100 - score.acc) > 0.01
+			? ' FC acc: ' + formatNumber(score.fcAccuracy * 100) + '%'
+			: '';
 	$: mods = score?.mods;
 
 	$: value = score?.acc ?? 0;
