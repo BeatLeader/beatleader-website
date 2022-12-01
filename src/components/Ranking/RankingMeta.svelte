@@ -11,7 +11,7 @@
 	let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
 
 	$: countriesArray = isString(countries) ? countries.split(',') : countries;
-	$: countryName = countriesArray.length ? countriesArray.map(a => regionNames.of((a ?? 'AD').toUpperCase())).join(',') : null;
+	$: countryName = countriesArray?.length ? countriesArray.map(a => regionNames.of((a ?? 'AD').toUpperCase())).join(',') : null;
 
 	function fillWithSpaces(value, length) {
 		while (value.length < length) {

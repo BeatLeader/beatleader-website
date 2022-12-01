@@ -345,6 +345,7 @@
 			<RankingTable
 				page={currentPage}
 				filters={currentFilters}
+				meta={true}
 				on:filters-updated={onFiltersUpdated}
 				on:page-changed={onPageChanged}
 				on:sort-changed={onSortChanged}

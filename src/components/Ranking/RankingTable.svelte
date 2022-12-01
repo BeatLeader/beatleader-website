@@ -20,6 +20,7 @@
 	export let eventId = null;
 	export let useInternalFilters = false;
 	export let playerClickFilter = null;
+	export let meta = false;
 
 	let currentFilters = filters;
 
@@ -296,7 +297,9 @@
 	<p>No players found.</p>
 {/if}
 
-<RankingMeta {rankingStore} countries={filters.countries} />
+{#if meta}
+	<RankingMeta {rankingStore} countries={filters.countries} />
+{/if}
 
 <style>
 	.switcher-nav {
