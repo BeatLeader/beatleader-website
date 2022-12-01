@@ -10,17 +10,9 @@
 	$: country = $playerStore?.playerInfo.countries[0].country;
 	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
 
-	function getFlagEmoji(countryCode) {
-		const codePoints = countryCode
-			.toUpperCase()
-			.split('')
-			.map(char => 127397 + char.charCodeAt());
-		return String.fromCodePoint(...codePoints);
-	}
-
 	function fillWithSpaces(value, length) {
 		while (value.length < length) {
-			value += ' ';
+			value += ' ';
 		}
 		return value;
 	}
@@ -29,7 +21,7 @@
 	$: countryName = country == 'not set' ? country : regionNames.of((country ?? 'AD').toUpperCase());
 	$: description = `
   	${fillWithSpaces('#' + formatNumber(rank, 0), 7)}Beat Saber player 🌐
-	${fillWithSpaces('#' + formatNumber(countryRank, 0), 7)}in ${countryName} ${getFlagEmoji(country ?? 'AD')}
+	${fillWithSpaces('#' + formatNumber(countryRank, 0), 7)}in ${countryName}
 	${fillWithSpaces('' + formatNumber(pp, 0), 7)}pp (performance points) 
 	${fillWithSpaces(Math.round($playerStore?.scoreStats?.averageRankedAccuracy ?? 0, 2) + '%', 7)}average accuracy
 	`;

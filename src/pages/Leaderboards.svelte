@@ -36,6 +36,8 @@
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
 	import {Ranked_Const} from './../utils/beatleader/consts';
+	import {MetaTags} from 'svelte-meta-tags';
+	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 
 	export let page = 1;
 	export let location;
@@ -307,6 +309,7 @@
 			stars: m?.difficulty?.stars ?? null,
 		};
 	});
+	$: metaDescription = 'Search for ranked maps, playlists and leaderboards for Beat Saber';
 </script>
 
 <svelte:head>
@@ -545,6 +548,25 @@
 	</aside>
 </section>
 
+<MetaTags
+	title={ssrConfig.name + ' - Maps'}
+	description={metaDescription}
+	openGraph={{
+		title: ssrConfig.name + ' - Maps',
+		description: metaDescription,
+		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
+		site_name: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: ssrConfig.name + ' - Maps',
+		description: metaDescription,
+		image: CURRENT_URL + '/assets/logo-small.png',
+		imageAlt: ssrConfig.name + "'s logo",
+	}} />
+
 <style>
 	.align-content {
 		display: flex;
@@ -722,6 +744,20 @@
 
 		.playlist-buttons {
 			flex-direction: column;
+		}
+	}
+
+	@media screen and (max-width: 520px) {
+		.song-line .main {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			grid-column-gap: 0.75em;
+		}
+
+		.songinfo {
+			text-align: center;
 		}
 	}
 </style>

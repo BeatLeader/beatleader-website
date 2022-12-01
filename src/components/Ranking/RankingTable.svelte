@@ -11,6 +11,7 @@
 	import Switcher from '../Common/Switcher.svelte';
 	import {deepClone, opt} from '../../utils/js';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
+	import RankingMeta from './RankingMeta.svelte';
 
 	export let type = 'global';
 	export let page = 1;
@@ -294,6 +295,8 @@
 {:else if !$isLoading}
 	<p>No players found.</p>
 {/if}
+
+<RankingMeta {rankingStore} countries={filters.countries} />
 
 <style>
 	.switcher-nav {
