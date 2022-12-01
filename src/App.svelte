@@ -29,6 +29,7 @@
 	import EventsPage from './pages/Events.svelte';
 	import Socket from './pages/Socket.svelte';
 	import {setGlobalCSSValue} from './utils/color';
+	import ContentBox from './components/Common/ContentBox.svelte';
 
 	export let url = '';
 
@@ -43,7 +44,7 @@
 	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'mirror-low') {
 		let dom = document.createElement('style');
 		dom.innerHTML = `html,body{background:url(${$configStore.preferences.bgimage}) var(--background) !important;background-size:cover !important;background-attachment: fixed !important;}`;
-		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgcolor);
+		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
 		document.head.appendChild(dom);
 	}
@@ -129,19 +130,21 @@
 
 <footer>
 	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
-	<p>
-		<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
-		|
-		<a href="/support" on:click|preventDefault={() => navigate('/support')}>Support</a>
-		|
-		<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
-		|
-		<a href="https://twitter.com/beatleader_">Twitter</a>
-		|
-		<a href="https://github.com/BeatLeader/beatleader-website">Source</a> |
-		<a href="https://discord.gg/2RG5YVqtG6">Discord</a> |
-		<a href="https://patreon.com/BeatLeader">Patreon</a>
-	</p>
+	<ContentBox cls="footer-box">
+		<p>
+			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
+			|
+			<a href="/support" on:click|preventDefault={() => navigate('/support')}>Support</a>
+			|
+			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
+			|
+			<a href="https://twitter.com/beatleader_">Twitter</a>
+			|
+			<a href="https://github.com/BeatLeader/beatleader-website">Source</a> |
+			<a href="https://discord.gg/2RG5YVqtG6">Discord</a> |
+			<a href="https://patreon.com/BeatLeader">Patreon</a>
+		</p>
+	</ContentBox>
 </footer>
 
 <style>
@@ -161,6 +164,11 @@
 
 	:global(.notification .notification-content) {
 		width: auto !important;
+	}
+
+	:global(.footer-box) {
+		margin: 1em 0 0 0 !important;
+		border-radius: 0 !important;
 	}
 
 	main {
@@ -184,7 +192,6 @@
 	}
 
 	footer {
-		margin: 1rem 0;
 		font-size: 0.75em;
 		text-align: center;
 	}

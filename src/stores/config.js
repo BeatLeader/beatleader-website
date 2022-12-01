@@ -27,9 +27,9 @@ const DEFAULT_CONFIG = {
 		scoresSortOptions: 'last',
 		theme: 'mirror',
 		oneclick: 'modassistant',
-		bgimage: '/assets/background.webp',
-		bgColor: 'rgba(131, 131, 131, 0.082)',
-		headerColor: 'rgba(92, 92, 92, 0.281)',
+		bgimage: '/assets/background.jpeg',
+		bgColor: 'rgba(20, 45, 57, 0.5427)',
+		headerColor: 'rgba(21, 31, 35, 0.6382)',
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: null,
@@ -94,7 +94,14 @@ export default async () => {
 
 	const dbConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
 	const newSettings = determineNewSettingsAvailable(dbConfig);
-	if (dbConfig) await set(dbConfig, false);
+	if (dbConfig) {
+		if (dbConfig.preferences.bgcolor) {
+			dbConfig.preferences.bgColor = dbConfig.preferences.bgcolor;
+			dbConfig.preferences.bgcolor = 0;
+			await keyValueRepository().set(dbConfig, STORE_CONFIG_KEY);
+		}
+		await set(dbConfig, false);
+	}
 	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
 	configStore = {

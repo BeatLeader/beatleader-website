@@ -106,6 +106,9 @@ nav.ssr-page-container div {
 	justify-content: center;
 	text-align: center;
 }
+.is-multiline {
+	margin-left: 0 !important;
+}
 .sspl-page-container .is-multiline .title.is-4:nth-child(1) {
 	font-size: 50px;
 	position: relative;

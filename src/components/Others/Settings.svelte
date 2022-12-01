@@ -77,7 +77,7 @@
 		if (config?.preferences?.oneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
 		if (config?.preferences?.scoresSortOptions) currentSortOption = config?.preferences?.scoresSortOptions ?? DEFAULT_SORT_VALUE;
 		if (config?.preferences?.bgimage) currentBGImage = config?.preferences?.bgimage ?? '';
-		if (config?.preferences?.bgcolor) currentBGColor = config?.preferences?.bgcolor ?? '';
+		if (config?.preferences?.bgColor) currentBGColor = config?.preferences?.bgColor ?? '';
 		if (config?.preferences?.headerColor) currentHeaderColor = config?.preferences?.headerColor ?? '';
 	}
 
@@ -92,7 +92,7 @@
 			draft.preferences.theme = currentTheme;
 			draft.preferences.oneclick = currentOneclick;
 			draft.preferences.bgimage = currentBGImage;
-			draft.preferences.bgcolor = currentBGColor;
+			draft.preferences.bgColor = currentBGColor;
 			draft.preferences.headerColor = currentHeaderColor;
 			draft.preferences.scoresSortOptions = currentSortOption;
 			document.location.reload();

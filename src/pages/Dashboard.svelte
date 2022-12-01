@@ -67,57 +67,60 @@
 <article class="page-content" transition:fade>
 	{#if !friends?.length}
 		<div class="sspl-page-container">
-			<div class="is-multiline">
-				<h1 class="title is-4">Hello, future BeatLeader!</h1>
-				<h3 class="description">BeatLeader is a open source Beat Saber leaderboard!</h3>
-				<h3 class="description">It aggregates data from other cool projects:</h3>
-				<div class="sources">
-					<div>
-						<h3 class="title is-6">
-							<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
-								<span class="icon beatsavior-icon" title="BeatSavior" />
-							</a>
-						</h3>
-						<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
+			<ContentBox>
+				<div class="is-multiline">
+					<h1 class="title is-4">Hello, future BeatLeader!</h1>
+					<h3 class="description">This is an open source Beat Saber leaderboard!</h3>
+					<h3 class="description"><b>Start posting your scores to compete with others on more than 100,000 different maps.</b></h3>
+					<h3 class="description">It aggregates data from other cool projects to help you play better:</h3>
+					<div class="sources">
+						<div>
+							<h3 class="title is-6">
+								<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
+									<span class="icon beatsavior-icon" title="BeatSavior" />
+								</a>
+							</h3>
+							<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
+						</div>
+						<div>
+							<h3 class="title is-6">
+								<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
+									<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
+								</a>
+							</h3>
+							<a class="imageLink" href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
+						</div>
+						<div>
+							<h3 class="title is-6">
+								<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
+									<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaberLogo" />
+								</a>
+							</h3>
+							<a class="imageLink" href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
+						</div>
+						<div>
+							<h3 class="title is-6">
+								<a class="imageLink replays" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer">
+									<img src="/assets/replays.svg" title="Replays" class="icon" alt="Replays" />
+								</a>
+							</h3>
+							<a class="imageLink" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer"> Replays </a>
+						</div>
 					</div>
-					<div>
-						<h3 class="title is-6">
-							<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-								<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
-							</a>
-						</h3>
-						<a class="imageLink" href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
+					<div class="downloadButtons">
+						<a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-download" label="Download PC mod" />
+						</a>
+						<a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-download" label="Download Quest mod" />
+						</a>
 					</div>
-					<div>
-						<h3 class="title is-6">
-							<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-								<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaberLogo" />
-							</a>
-						</h3>
-						<a class="imageLink" href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
-					</div>
-					<div>
-						<h3 class="title is-6">
-							<a class="imageLink replays" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer">
-								<img src="/assets/replays.svg" title="Replays" class="icon" alt="Replays" />
-							</a>
-						</h3>
-						<a class="imageLink" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer"> Replays </a>
+					<SearchPage focusField={false} title="Find your profile or friends" />
+					<div class="global-ranking-call">
+						<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
 					</div>
 				</div>
-				<div class="downloadButtons">
-					<a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" label="Download PC mod" />
-					</a>
-					<a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" label="Download Quest mod" />
-					</a>
-				</div>
-				<SearchPage focusField={false} title="Find your profile or friends" />
-				<div class="global-ranking-call">
-					<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
-				</div>
-			</div>
+			</ContentBox>
 		</div>
 	{:else}
 		<div class="columns is-multiline">
