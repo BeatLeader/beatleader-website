@@ -1,4 +1,5 @@
 <script>
+	import {computeModifierStars, getFCPPTitle, getPPFromAcc} from '../../utils/beatleader/pp.js';
 	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
 	import Badge from '../Common/Badge.svelte';
@@ -77,6 +78,53 @@
 		improvements && beatSavior?.stats && improvements.timeset?.length && improvements.score
 			? prevMissedNotes + prevBadCuts + prevWallsHit + prevBombHit
 			: null;
+
+	function getNominatedPPHoverTitle() {
+
+		let title = 'Approximate PP if the map will be ranked';
+
+		if (!Number.isFinite(beatSavior.stats.miss)) {
+			return title;
+		}
+
+		let fcPp = score.fcPp
+		if (!fcPp || fcPp <= 0) {
+
+			// we need to compute it using fcAccuracy.
+			const fcAccuracy = score.fcAccuracy
+
+			// if the score is ranked, we should show how much pp this score would
+			// have been worth if the player had not made any mistakes
+			const stars = score?.leaderboard?.difficulty?.stars ?? 0;
+			let modArr = []
+			console.log(modifiers);
+			if (score.mods) {
+				for (const mod of score.mods) {
+					const lookupKey = mod.toLowerCase();
+					modArr.push({
+						name: mod,
+						value: modifiers[lookupKey]
+					})
+				}
+			}
+			const modifiedStars = computeModifierStars(stars, modArr);
+			const pp = getPPFromAcc(fcAccuracy, modifiedStars);
+			const roundedPP = Math.round(pp * 100) / 100;
+			const fcPpTitle = getFCPPTitle(roundedPP, 'pp')
+			console.log("fcPpTitle", fcPpTitle)
+			title += `\n${fcPpTitle}`;
+
+			if (!fcAccuracy || !fcAccuracy <= 0) {
+				// Not enough data to compute
+				return title;
+			}
+
+		}
+
+		return title
+
+	}
+
 </script>
 
 <div class="player-performance">
@@ -88,7 +136,7 @@
 					color="white"
 					styling={score.ppWeighted ? '' : 'nominated-pp'}
 					bgColor={score.ppWeighted ? 'var(--ppColour)' : 'transparent'}>
-					<span slot="label" title={score.ppWeighted ? '' : 'Approximate PP if the map will be ranked'}>
+					<span slot="label" title={score.ppWeighted ? '' : getNominatedPPHoverTitle()}>
 						<Pp
 							pp={score.pp}
 							bonusPp={score.bonusPp}
