@@ -93,7 +93,6 @@
 						rank={score.rank}
 						countryRank={score.ssplCountryRank}
 						countryRankTotal={null}
-						country={score.country}
 						hmd={score.hmd}
 						controller={score.controller}
 						platform={score.platform} />

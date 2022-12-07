@@ -6,6 +6,8 @@
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import createPlayerService from '../../services/beatleader/player';
 	import Song from './Song.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import ssrConfig from '../../ssr-config';
 
 	export let playlist;
 	export let idx;
@@ -96,6 +98,10 @@
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
+	$: description = `
+		Beat Saber playlist
+		${totalItems} songs
+		Made by: ${playlist?.customData?.owner}`;
 </script>
 
 {#if playlist}
@@ -189,6 +195,36 @@
 			{/if}
 		{/if}
 	</div>
+	<MetaTags
+		title={playlist.playlistTitle}
+		{description}
+		openGraph={{
+			title: playlist.playlistTitle,
+			description,
+			images: [
+				{
+					url: playlist.image
+						? playlist.image.startsWith('data')
+							? playlist.image
+							: 'data:image/png;base64,' + playlist.image
+						: '/assets/song-default.png',
+				},
+			],
+			site_name: ssrConfig.name,
+		}}
+		twitter={{
+			handle: '@handle',
+			site: '@beatleader_',
+			cardType: 'summary',
+			title: playlist.playlistTitle,
+			description,
+			image: playlist.image
+				? playlist.image.startsWith('data')
+					? playlist.image
+					: 'data:image/png;base64,' + playlist.image
+				: '/assets/song-default.png',
+			imageAlt: playlist.playlistTitle + ' picture',
+		}} />
 {/if}
 
 <style>
