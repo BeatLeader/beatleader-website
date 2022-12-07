@@ -81,16 +81,16 @@
 
 		prevTitle =
 			weighted || improvements
-				? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}, ` : ''}${
-						improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}, ` : ''
-				  }${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}` : ''}`
+				? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}\n` : ''}${
+						improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}\n` : ''
+				  }${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}\n` : ''}`
 				: null;
 
 		if (bonusPp) {
-			prevTitle += ' PP bonus: ' + formatNumber(bonusPp) + suffix;
+			prevTitle += `PP bonus: ${formatNumber(bonusPp)}${suffix}\n`;
 		}
 		if (fcPp) {
-			prevTitle += ', Full combo PP: ' + formatNumber(fcPp) + suffix;
+			prevTitle += `Full combo PP: ${formatNumber(fcPp)}${suffix}\n`;
 		}
 	}
 

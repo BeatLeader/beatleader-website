@@ -36,7 +36,7 @@
 	$: badge = getBadge(score?.acc);
 	$: fcacc =
 		score.fcAccuracy && score.acc && Math.abs(score.fcAccuracy * 100 - score.acc) > 0.01
-			? ' FC acc: ' + formatNumber(score.fcAccuracy * 100) + '%'
+			? '\nFC acc: ' + formatNumber(score.fcAccuracy * 100) + '%'
 			: '';
 	$: mods = score?.mods;
 

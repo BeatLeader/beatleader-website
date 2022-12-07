@@ -5,6 +5,7 @@
 	import regionsPlugin from './utils/regions-plugin';
 	import {formatNumber} from '../../utils/format';
 	import {userDescriptionForModifier} from '../../utils/beatleader/format';
+	import {getPPFromAcc, computeModifierStars} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
 
 	export let stars = 5;
@@ -33,18 +34,6 @@
 	};
 	let selectedModifiers = [];
 
-	function curve(acc, stars) {
-		var l = 1 - (0.03 * (stars - 3.0)) / 11.0;
-		var a = 0.96 * l;
-		var f = 1.2 - (0.6 * stars) / 14.0;
-
-		return Math.pow(Math.log10(l / (l - acc)) / Math.log10(l / (l - a)), f);
-	}
-
-	function ppFromAcc(acc, stars) {
-		return curve(acc, stars - 0.5) * (stars + 0.5) * 42;
-	}
-
 	async function setupChart(canvas, stars, logarithmic, startAcc, endAcc) {
 		if (!canvas) return;
 
@@ -56,7 +45,7 @@
 		let annotations = [];
 		const data = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
-			const pp = ppFromAcc(acc, stars);
+			const pp = getPPFromAcc(acc, stars);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
 			if (!minPp) minPp = pp;
@@ -194,13 +183,11 @@
 		}))
 		.filter(m => m.name && m.value && m.name != 'NF')
 		.sort((a, b) => b.value - a.value);
-	$: positiveModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value > 0 ? mod.value : 0), 0) ?? 0;
-	$: negativeModifiersSum = selectedModifiers?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
 	$: excludedModifiers = selectedModifiers.reduce(
 		(all, mod) => (mutuallyExclusive[mod?.name] ? all.concat(mutuallyExclusive[mod.name]) : all),
 		[]
 	);
-	$: modifiedStars = stars * (1 + positiveModifiersSum + negativeModifiersSum);
+	$: modifiedStars = computeModifierStars(stars, selectedModifiers);
 	$: setupChart(canvas, modifiedStars, logarithmic, startAcc, endAcc);
 
 	$: dispatch('modified-stars', modifiedStars);
