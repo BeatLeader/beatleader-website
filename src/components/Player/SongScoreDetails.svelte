@@ -6,6 +6,8 @@
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
 	import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte';
 	import Spinner from '../Common/Spinner.svelte';
+	import ContentBox from '../Common/ContentBox.svelte';
+	import ReplayDetails from '../../_ReeTemp/ReplayDetails.svelte';
 
 	export let playerId;
 	export let songScore;
@@ -57,6 +59,12 @@
 				<BeatSaviorDetails {playerId} {beatSavior} {leaderboard} />
 			</div>
 		{/await}
+
+		{#if score?.replay}
+			<ContentBox>
+				<ReplayDetails {score} />
+			</ContentBox>
+		{/if}
 
 		{#if showAccSaberLeaderboard}
 			<div class="tab">

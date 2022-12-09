@@ -1,87 +1,42 @@
-function useReplayOrNull(replayLink, completion) {
-	console.log("Downloading replay... " + replayLink)
+function downloadReplay(score, completion) {
+	console.log('Downloading replay... ' + score.replay);
 
-	checkBSOR(replayLink, true, function (result) {
+	checkBSOR(score.replay, score.offsets, function (result) {
 		if (!result || !result.notes) {
-			console.log("Unable to decode replay! " + result)
+			console.log('Unable to decode replay! ' + result);
 			completion(null);
 		} else {
-			console.log("Replay decoded!")
+			console.log('Replay decoded!');
 			completion(result);
 		}
 	});
 }
 
-function checkBSOR(file, isLink, completion) {
-	if (isLink) {
-		if (file.split('.').pop() == 'bsor' || file.split('.').pop() == 'bsortemp') {
-			file = file.replace('https://cdn.discordapp.com/', '/cors/discord-cdn/');
-			var xhr = new XMLHttpRequest();
-			xhr.open('GET', file, true);
-			xhr.responseType = 'blob';
-
-			xhr.onload = function () {
-				checkBSORFile(xhr.response, completion);
-			};
-			xhr.send();
-		} else {
-			completion(null);
-		}
-	} else {
-		checkBSORFile(file, completion);
+function checkBSOR(link, offsets, completion) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', link, true);
+	xhr.responseType = 'blob';
+	if (offsets) {
+		xhr.setRequestHeader('Range', `bytes=${offsets.notes}-${offsets.walls}`);
 	}
+
+	xhr.onload = function () {
+		checkBSORFile(xhr.response, offsets, completion);
+	};
+	xhr.send();
 }
 
-function checkBSORFile(file, completion) {
+function checkBSORFile(file, onlyNotes, completion) {
 	var reader = new FileReader();
 	reader.onload = function (e) {
-		console.log("result: " + e.target.result)
-		decode(e.target.result, completion);
+		console.log('result: ' + e.target.result);
+		decode(e.target.result, onlyNotes, completion);
 	};
 	reader.onerror = function (e) {
 		// error occurred
 		completion('Error: ' + e.type);
 	};
 	reader.readAsArrayBuffer(file);
-}
-
-function ssReplayToBSOR(ssReplay) {
-	var result = {};
-
-	result.info = ssReplay.info;
-	if (ssReplay.dynamicHeight) {
-		result.heights = ssReplay.dynamicHeight.map(el => ({time: el.a, height: el.h}));
-	}
-
-	result.notes = [];
-	result.walls = [];
-	ssReplay.scores.forEach((score, i) => {
-		if (i < ssReplay.noteInfos.length) {
-			var note = {};
-			const info = ssReplay.noteInfos[i];
-			var noteType = parseInt(info[3]);
-			if (isNaN(noteType)) {
-				noteType = 3;
-			}
-			note.noteID = parseInt(info[0]) * 1000 + parseInt(info[1]) * 100 + noteType * 10 + parseInt(info[2]);
-			note.eventTime = ssReplay.noteTime[i];
-			note.spawnTime = i;
-			note.eventType = score > 0 ? NoteEventType.good : (score + 1) * -1;
-			note.score = score;
-			result.notes.push(note);
-		} else {
-			var wall = {};
-			wall.time = ssReplay.noteTime[i];
-			result.walls.push(wall);
-		}
-	});
-	result.frames = ssReplay.frames;
-	result.frames.forEach(frame => {
-		frame.time = frame.a;
-		frame.fps = frame.i;
-	});
-
-	return result;
 }
 
 const StructType = {
@@ -100,9 +55,20 @@ const NoteEventType = {
 	bomb: 3,
 };
 
-function decode(arrayBuffer, completion) {
+function decode(arrayBuffer, onlyNotes, completion) {
 	const dataView = new DataView(arrayBuffer);
 	dataView.pointer = 0;
+
+	if (onlyNotes) {
+		try {
+			var replay = {};
+			replay.notes = DecodeNotes(dataView);
+			completion(replay);
+		} catch {
+			completion(null);
+		}
+		return;
+	}
 
 	const magic = DecodeInt(dataView);
 	const version = DecodeUint8(dataView);
@@ -387,7 +353,6 @@ function DecodeBool(dataView) {
 	return result;
 }
 
-module.exports.useReplayOrNull = useReplayOrNull;
+module.exports.downloadReplay = downloadReplay;
 module.exports.checkBSOR = checkBSOR;
-module.exports.ssReplayToBSOR = ssReplayToBSOR;
 module.exports.NoteEventType = NoteEventType;
