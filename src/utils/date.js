@@ -9,7 +9,8 @@ export const HOUR = 60 * MINUTE;
 export const DAY = 24 * HOUR;
 export const WEEK = 7 * DAY;
 
-export const WEEKSECONDS = (7 * DAY) / 1000;
+export const DAYSECONDS = DAY / 1000;
+export const WEEKSECONDS = 7 * DAYSECONDS;
 
 const BEATLEADER_TZ = 'UTC';
 const ACCSABER_TZ = 'Europe/Berlin';

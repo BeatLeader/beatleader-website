@@ -201,6 +201,19 @@
 			</svelte:fragment>
 		</Badge>
 
+		{#if stats.maxStreak > 1}
+			<Badge label="115 streak" color="white" bgColor="var(--dimmed)" fluid={true}>
+				<svelte:fragment slot="value">
+					<Value
+						value={stats.maxStreak}
+						digits={isAverage ? 2 : 0}
+						prevValue={compareToStats ? compareToStats.maxStreak : null}
+						prevAbsolute={true}
+						prevWithSign={false} />
+				</svelte:fragment>
+			</Badge>
+		{/if}
+
 		<Badge label="Pauses" color="white" bgColor="var(--dimmed)" fluid={true}>
 			<svelte:fragment slot="value">
 				<Value

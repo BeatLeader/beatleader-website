@@ -29,6 +29,7 @@ export default async (data, leaderboard) => {
 		stats.wallHit = data.score?.wallsHit ?? 0;
 		stats.miss = stats.missedNotes + stats.badCuts;
 		stats.maxCombo = statistic.hitTracker.maxCombo;
+		stats.maxStreak = statistic.hitTracker.maxStreak;
 		stats.leftMiss = statistic.hitTracker.leftMiss;
 		stats.rightMiss = statistic.hitTracker.rightMiss;
 		stats.leftBadCuts = statistic.hitTracker.leftBadCuts;
