@@ -23,7 +23,7 @@
 
 <ContentBox>
 	{#if playlist}
-		<Playlist accountStore={account} expanded={true} {playlist} idx={0} store={playlists} />
+		<Playlist playlistId={id} accountStore={account} expanded={true} {playlist} idx={0} store={playlists} />
 	{:else}
 		<Spinner />
 	{/if}

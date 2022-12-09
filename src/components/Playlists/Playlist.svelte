@@ -8,12 +8,14 @@
 	import Song from './Song.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import ssrConfig from '../../ssr-config';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let playlist;
 	export let idx;
 	export let store;
 	export let expanded = false;
 	export let accountStore;
+	export let playlistId;
 
 	let page = 0;
 	let itemsPerPage = 5;
@@ -94,34 +96,10 @@
 		}
 	}
 
-	const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
-		const byteCharacters = atob(b64Data);
-		const byteArrays = [];
-
-		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-			const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-			const byteNumbers = new Array(slice.length);
-			for (let i = 0; i < slice.length; i++) {
-				byteNumbers[i] = slice.charCodeAt(i);
-			}
-
-			const byteArray = new Uint8Array(byteNumbers);
-			byteArrays.push(byteArray);
-		}
-
-		const blob = new Blob(byteArrays, {type: contentType});
-		return blob;
-	};
-
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
-	$: imageBase64 =
-		playlist.image && (playlist.image.startsWith('data') ? playlist.image.replace('data:image/png;base64,', '') : playlist.image);
-	$: blob = b64toBlob(imageBase64, 'image/png');
-	$: blobUrl = URL.createObjectURL(blob);
 	$: description = `
 		Beat Saber playlist
 		${totalItems} songs
@@ -142,7 +120,14 @@
 					on:click={() => onDetailsButtonClick()} />
 			</td>
 			<div class="imageInput" on:click={() => fileinput.click()}>
-				<img class="playlistImage" src={blobUrl ? blobUrl : '/assets/song-default.png'} alt="PlaylistImage" />
+				<img
+					class="playlistImage"
+					src={playlist.image
+						? playlist.image.startsWith('data')
+							? playlist.image
+							: 'data:image/png;base64,' + playlist.image
+						: '/assets/song-default.png'}
+					alt="PlaylistImage" />
 				{#if canModify && !playlist.oneclick}
 					<input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={e => changeImage(e)} bind:this={fileinput} />
 					<span class="imageChange">
@@ -212,28 +197,30 @@
 			{/if}
 		{/if}
 	</div>
-	<MetaTags
-		title={playlist.playlistTitle}
-		{description}
-		openGraph={{
-			title: playlist.playlistTitle,
-			description,
-			images: [
-				{
-					url: blobUrl ? blobUrl : '/assets/song-default.png',
-				},
-			],
-			site_name: ssrConfig.name,
-		}}
-		twitter={{
-			handle: '@handle',
-			site: '@beatleader_',
-			cardType: 'summary',
-			title: playlist.playlistTitle,
-			description,
-			image: blobUrl ? blobUrl : '/assets/song-default.png',
-			imageAlt: playlist.playlistTitle + ' picture',
-		}} />
+	{#if playlistId}
+		<MetaTags
+			title={playlist.playlistTitle}
+			{description}
+			openGraph={{
+				title: playlist.playlistTitle,
+				description,
+				images: [
+					{
+						url: BL_API_URL + 'playlist/image/' + playlistId + '.png',
+					},
+				],
+				site_name: ssrConfig.name,
+			}}
+			twitter={{
+				handle: '@handle',
+				site: '@beatleader_',
+				cardType: 'summary',
+				title: playlist.playlistTitle,
+				description,
+				image: BL_API_URL + 'playlist/image/' + playlistId + '.png',
+				imageAlt: playlist.playlistTitle + ' picture',
+			}} />
+	{/if}
 {/if}
 
 <style>

@@ -12,6 +12,7 @@
 	import Settings from './Others/Settings.svelte';
 	import Button from './Common/Button.svelte';
 	import Avatar from './Common/Avatar.svelte';
+	import SelectedPlaylist from './Playlists/SelectedPlaylist.svelte';
 
 	let player = null;
 	let settingsNotificationBadge = null;
@@ -307,12 +308,7 @@
 
 					<div>
 						{#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
-							<figure class="selected-playlist">
-								<div class="playlistInfo">
-									<img class="playlistImage" src={$playlists[selectedPlaylist].image} alt="PlaylistImage" />
-									<span class="playlistTitle">{$playlists[selectedPlaylist].playlistTitle}</span>
-								</div>
-							</figure>
+							<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
 						{/if}
 
 						<Dropdown items={[{firstRow: true}].concat($playlists.length ? $playlists : [])} shown={true} on:select={onPlaylistClick}>
@@ -323,12 +319,7 @@
 										<Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')} />
 									</div>
 								{:else}
-									<figure>
-										<div class="playlistInfo">
-											<img class="playlistImage" src={item.image} alt="PlaylistImage" />
-											<span class="playlistTitle">{item.playlistTitle} - {item.songs.length} songs</span>
-										</div>
-									</figure>
+									<SelectedPlaylist playlist={item} songsCounter={true} />
 								{/if}
 							</svelte:fragment>
 						</Dropdown>
@@ -419,12 +410,7 @@
 			on:focus={() => (playlistMenuShown = true)}
 			on:mouseleave={() => (playlistMenuShown = false)}>
 			{#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
-				<figure>
-					<div class="playlistInfo">
-						<img class="playlistImage" src={$playlists[selectedPlaylist].image} alt="PlaylistImage" />
-						<span class="playlistTitle">{$playlists[selectedPlaylist].playlistTitle}</span>
-					</div>
-				</figure>
+				<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
 			{:else}
 				<i class="fas fa-list-ul" />
 				Playlists
@@ -441,12 +427,7 @@
 							<Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')} />
 						</div>
 					{:else}
-						<figure>
-							<div class="playlistInfo">
-								<img class="playlistImage" src={item.image} alt="PlaylistImage" />
-								<span class="playlistTitle">{item.playlistTitle} - {item.songs.length} songs</span>
-							</div>
-						</figure>
+						<SelectedPlaylist playlist={item} songsCounter={true} />
 					{/if}
 				</svelte:fragment>
 			</Dropdown>
@@ -546,16 +527,6 @@
 
 	.playlists :global(.dropdown-item:first-child):hover {
 		background: transparent !important;
-	}
-
-	.playlistImage {
-		height: 1.5em;
-		width: 1.5em;
-	}
-
-	.playlistTitle {
-		bottom: 0.3em;
-		position: relative;
 	}
 
 	.playlistButtonsContainer {
