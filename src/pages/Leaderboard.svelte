@@ -1043,7 +1043,9 @@
 	{/if}
 </section>
 
-<LeaderboardMeta {leaderboard} {song} />
+{#if separatePage}
+	<LeaderboardMeta {leaderboard} {song} />
+{/if}
 
 <style>
 	.align-content {

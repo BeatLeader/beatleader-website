@@ -94,14 +94,38 @@
 		}
 	}
 
+	const b64toBlob = (b64Data, contentType = '', sliceSize = 512) => {
+		const byteCharacters = atob(b64Data);
+		const byteArrays = [];
+
+		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+			const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+			const byteNumbers = new Array(slice.length);
+			for (let i = 0; i < slice.length; i++) {
+				byteNumbers[i] = slice.charCodeAt(i);
+			}
+
+			const byteArray = new Uint8Array(byteNumbers);
+			byteArrays.push(byteArray);
+		}
+
+		const blob = new Blob(byteArrays, {type: contentType});
+		return blob;
+	};
+
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
+	$: imageBase64 =
+		playlist.image && (playlist.image.startsWith('data') ? playlist.image.replace('data:image/png;base64,', '') : playlist.image);
+	$: blob = b64toBlob(imageBase64, 'image/png');
+	$: blobUrl = URL.createObjectURL(blob);
 	$: description = `
 		Beat Saber playlist
 		${totalItems} songs
-		Made by: ${playlist?.customData?.owner}`;
+		${owners.length ? `Made by: ${owners.map(o => o.name).join(', ')}` : ''}`;
 </script>
 
 {#if playlist}
@@ -118,14 +142,7 @@
 					on:click={() => onDetailsButtonClick()} />
 			</td>
 			<div class="imageInput" on:click={() => fileinput.click()}>
-				<img
-					class="playlistImage"
-					src={playlist.image
-						? playlist.image.startsWith('data')
-							? playlist.image
-							: 'data:image/png;base64,' + playlist.image
-						: '/assets/song-default.png'}
-					alt="PlaylistImage" />
+				<img class="playlistImage" src={blobUrl ? blobUrl : '/assets/song-default.png'} alt="PlaylistImage" />
 				{#if canModify && !playlist.oneclick}
 					<input style="display:none" type="file" accept=".jpg, .jpeg, .png" on:change={e => changeImage(e)} bind:this={fileinput} />
 					<span class="imageChange">
@@ -203,11 +220,7 @@
 			description,
 			images: [
 				{
-					url: playlist.image
-						? playlist.image.startsWith('data')
-							? playlist.image
-							: 'data:image/png;base64,' + playlist.image
-						: '/assets/song-default.png',
+					url: blobUrl ? blobUrl : '/assets/song-default.png',
 				},
 			],
 			site_name: ssrConfig.name,
@@ -218,11 +231,7 @@
 			cardType: 'summary',
 			title: playlist.playlistTitle,
 			description,
-			image: playlist.image
-				? playlist.image.startsWith('data')
-					? playlist.image
-					: 'data:image/png;base64,' + playlist.image
-				: '/assets/song-default.png',
+			image: blobUrl ? blobUrl : '/assets/song-default.png',
 			imageAlt: playlist.playlistTitle + ' picture',
 		}} />
 {/if}
