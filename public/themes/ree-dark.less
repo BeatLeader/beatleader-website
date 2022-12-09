@@ -6,19 +6,26 @@
   font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
 }
 
-//<--- Constants ----->
+//region Constants
+
 :root {
   --row-separator: #2e2e2e !important;
 }
 
-//<--- Background ----->
+//endregion
+
+//region Background
+
 html, body {
   background: #070707 url("/assets/ree-dark-bg.webp") !important;
   background-size: cover !important;
   background-attachment: fixed !important;
 }
 
-//<--- Content box ----->
+//endregion
+
+//region Content box
+
 .content-box {
   background: rgb(26 26 26) !important;
 
@@ -27,7 +34,10 @@ html, body {
   }
 }
 
-//<--- Summary Badges ----->
+//endregion
+
+//region Summary Badges
+
 .beatleader-summary {
   .badge {
     background-color: #2c2c2c !important;
@@ -35,7 +45,10 @@ html, body {
   }
 }
 
-//<--- Clan Badges ----->
+//endregion
+
+//region Clan Badges
+
 .clan-badges {
   display: flex;
 
@@ -63,7 +76,10 @@ html, body {
   }
 }
 
-//<--- Profile chart ----->
+//endregion
+
+//region Profile chart
+
 .beatleader-swipe-card {
   div.chart {
     border-top: 1px solid var(--row-separator);
@@ -79,14 +95,20 @@ html, body {
   }
 }
 
-//<--- Admin page tweaks ----->
+//endregion
+
+//region Admin page tweaks
+
 .failed-scores {
   margin-top: 1em;
   padding-top: 1em;
   border-top: 10px solid var(--row-separator);
 }
 
-//<--- Ranking ----->
+//endregion
+
+//region Ranking
+
 .content-box:has(.ranking-grid-row) {
   > h1 {
     text-align: center;
@@ -109,17 +131,21 @@ html, body {
   }
 }
 
-//<--- Score Details ----->
-.details {
-  .leaderboard, .details-with-shadow {
+//endregion
+
+//region Score Details
+
+.details .leaderboard, .details-box {
     padding: .5em;
     background: #151515 !important;
     border: 1px solid var(--row-separator);
     box-shadow: none !important;
-  }
 }
 
-//<--- Leaderboard ----->
+//endregion
+
+//region Leaderboard
+
 .leaderboard {
   .player-score {
     border: none !important;
@@ -143,5 +169,7 @@ html, body {
     border-bottom: 1px solid var(--row-separator) !important;
   }
 }
+
+//endregion
 
 

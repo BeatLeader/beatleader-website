@@ -24,6 +24,7 @@
 	import keyValueRepository from '../db/repository/key-value';
 	import {configStore} from '../stores/config';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
+	import ReplayDetails from "../_ReeTemp/ReplayDetails.svelte";
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
@@ -208,6 +209,10 @@
 
 <section class="align-content player-page">
 	<article class="page-content" bind:this={playerEl} transition:fade>
+		<ContentBox>
+			<ReplayDetails/>
+		</ContentBox>
+
 		{#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
 			<ContentBox>
 				<p class="error">Player not found.</p>
