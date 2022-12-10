@@ -9,6 +9,7 @@ import {terser} from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import css from 'rollup-plugin-css-only';
 import svg from 'rollup-plugin-svg';
+import less from 'rollup-plugin-less';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -53,6 +54,14 @@ export default [
 			file: 'public/build/bundle.js',
 		},
 		plugins: [
+			less({
+				include: ['**/*.less'],
+				output: (css, id) => {
+					const parts = id.replaceAll('\\', '.').replaceAll('/', '.').split('.');
+					const filename = parts[parts.length - 2];
+					return `public/build/themes/${filename}.css`;
+				},
+			}),
 			svelte({
 				preprocess: sveltePreprocess({sourceMap: !production}),
 				compilerOptions: {

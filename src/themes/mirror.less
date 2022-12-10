@@ -22,7 +22,7 @@ nav.ssr-page-container {
     height: 4rem !important;
     box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
     border-bottom: none !important;
-    background: rgba(92, 92, 92, 0.281) !important;
+    background: var(--customizable-color-2) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     max-width: none !important;
@@ -91,6 +91,10 @@ nav.ssr-page-container {
         }
     }
 
+}
+
+.is-multiline {
+    margin-left: 0 !important;
 }
 
 // All Player grids
@@ -197,7 +201,7 @@ nav.ssr-page-container {
 
 // Content Box
 .content-box {
-    background: rgba(131, 131, 131, 0.082) !important;
+    background: var(--customizable-color-1) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     box-shadow: none !important;
@@ -271,7 +275,7 @@ nav.ssr-page-container {
             & {
                 height: unset !important;
 
-                .player .clan-badges {
+                .clan-badges {
                     display: none;
                 }
             }

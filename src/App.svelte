@@ -126,7 +126,7 @@
 	</Notifications>
 </Router>
 
-<link rel="stylesheet" href="/themes/{$configStore.preferences.theme}.css" />
+<link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
 
 <footer>
 	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
