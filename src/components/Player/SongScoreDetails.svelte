@@ -6,7 +6,7 @@
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
 	import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte';
 	import Spinner from '../Common/Spinner.svelte';
-	import ReplayDetails from '../../_ReeTemp/ReplayDetails.svelte';
+	import ReplayDetails from '../Score/ReplayDetails.svelte';
 
 	export let playerId;
 	export let songScore;

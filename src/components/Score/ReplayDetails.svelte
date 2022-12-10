@@ -1,9 +1,9 @@
 <script>
-	import {downloadReplay} from './open-replay-decoder';
-	import {processAccuracySpread, processSliceDetails} from './process-replay-data';
+	import {downloadReplay} from '../../utils/beatleader/open-replay-decoder';
+	import {processAccuracySpread, processSliceDetails} from '../../utils/beatleader/process-replay-data';
 	import SliceDetails from './SliceDetails.svelte';
 	import AccuracySpreadChart from './AccuracySpreadChart.svelte';
-	import DetailsBox from '../components/Common/DetailsBox.svelte';
+	import DetailsBox from '../Common/DetailsBox.svelte';
 
 	export let score;
 
