@@ -14,7 +14,7 @@
 		showSecondaryGrid = true;
 	}
 
-	function miniMainGridOnClick() {
+	function backOnClick() {
 		showSecondaryGrid = false;
 	}
 
@@ -55,7 +55,7 @@
 {#if sliceDetailsData}
 	<div class="slide-details">
 		{#if showSecondaryGrid}
-			<div class="secondary-grid">
+			<div class="secondary-grid" on:click={backOnClick}>
 				{#each leftData as cell, idx}
 					<div class="grid-cell left" title={formatHoverHint(cell)} style={'transform: rotate(' + getSecondaryGridRotation(idx) + ');'}>
 						{#if isDot(idx)}
@@ -71,12 +71,12 @@
 					</div>
 				{/each}
 			</div>
-			<div class="mini-main-grid" on:click={miniMainGridOnClick}>
+			<div class="mini-main-grid" on:click={backOnClick}>
 				{#each sliceDetailsData as cell, idx}
 					<div class="mini-main-grid-cell {idx === selectedSecondaryGridIndex ? 'selected' : ''}" />
 				{/each}
 			</div>
-			<div class="secondary-grid">
+			<div class="secondary-grid" on:click={backOnClick}>
 				{#each rightData as cell, idx}
 					<div class="grid-cell right" title={formatHoverHint(cell)} style={'transform: rotate(' + getSecondaryGridRotation(idx) + ');'}>
 						{#if isDot(idx)}
