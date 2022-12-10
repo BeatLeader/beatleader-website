@@ -46,7 +46,8 @@
             count: {
                 display: false,
                 min: minCount,
-                max: maxCount
+                max: maxCount,
+                position: 'right'
             },
             td: {
                 display: true,
@@ -61,6 +62,7 @@
                 yAxisID: 'count',
                 label: 'Left count',
                 data: chartData.leftCount,
+                round: 0,
                 type: 'bar',
                 backgroundColor: '#ee5555',
                 order: 2
@@ -69,6 +71,7 @@
                 yAxisID: 'count',
                 label: 'Right count',
                 data: chartData.rightCount,
+                round: 0,
                 type: 'bar',
                 backgroundColor: '#5555ee',
                 order: 3
