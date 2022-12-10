@@ -26,7 +26,9 @@
 		chartData.rightTD = chartData.rightTD.slice(startIndex, 16);
 
 		const minCount = 0;
-		const maxCount = chartData.maxCount * 1.05;
+		const maxCount = chartData.maxCount;
+		const minTD = 0.0;
+		const maxTD = Math.ceil(chartData.maxTD / 0.05) * 0.05;
 
 		const xAxis = {
 			scaleLabel: {
@@ -44,16 +46,25 @@
 
 		const yAxes = {
 			count: {
-				display: false,
+				display: true,
 				min: minCount,
 				max: maxCount,
 				position: 'right',
+				ticks: {
+					autoSkipPadding: 12,
+				},
 			},
 			td: {
 				display: true,
-				min: 0,
-				max: Math.max(chartData.maxTD * 1.05, 0.2),
+				min: minTD,
+				max: maxTD,
 				position: 'left',
+				grid: {
+					drawOnChartArea: false,
+				},
+				ticks: {
+					autoSkipPadding: 14,
+				},
 			},
 		};
 
