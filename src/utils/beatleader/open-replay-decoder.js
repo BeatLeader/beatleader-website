@@ -1,12 +1,8 @@
 function downloadReplay(score, completion) {
-	console.log('Downloading replay... ' + score.replay);
-
 	checkBSOR(score.replay, score.offsets, function (result) {
 		if (!result || !result.notes) {
-			console.log('Unable to decode replay! ' + result);
 			completion(null);
 		} else {
-			console.log('Replay decoded!');
 			completion(result);
 		}
 	});
@@ -29,7 +25,6 @@ function checkBSOR(link, offsets, completion) {
 function checkBSORFile(file, onlyNotes, completion) {
 	var reader = new FileReader();
 	reader.onload = function (e) {
-		console.log('result: ' + e.target.result);
 		decode(e.target.result, onlyNotes, completion);
 	};
 	reader.onerror = function (e) {

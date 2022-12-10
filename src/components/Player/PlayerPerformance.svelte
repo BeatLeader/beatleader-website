@@ -80,51 +80,44 @@
 			: null;
 
 	function getNominatedPPHoverTitle() {
-
 		let title = 'Approximate PP if the map will be ranked';
 
 		if (!Number.isFinite(beatSavior.stats.miss)) {
 			return title;
 		}
 
-		let fcPp = score.fcPp
+		let fcPp = score.fcPp;
 		if (!fcPp || fcPp <= 0) {
-
 			// we need to compute it using fcAccuracy.
-			const fcAccuracy = score.fcAccuracy
+			const fcAccuracy = score.fcAccuracy;
 
 			// if the score is ranked, we should show how much pp this score would
 			// have been worth if the player had not made any mistakes
 			const stars = score?.leaderboard?.difficulty?.stars ?? 0;
-			let modArr = []
-			console.log(modifiers);
+			let modArr = [];
 			if (score.mods) {
 				for (const mod of score.mods) {
 					const lookupKey = mod.toLowerCase();
 					modArr.push({
 						name: mod,
-						value: modifiers[lookupKey]
-					})
+						value: modifiers[lookupKey],
+					});
 				}
 			}
 			const modifiedStars = computeModifierStars(stars, modArr);
 			const pp = getPPFromAcc(fcAccuracy, modifiedStars);
 			const roundedPP = Math.round(pp * 100) / 100;
-			const fcPpTitle = getFCPPTitle(roundedPP, 'pp')
-			console.log("fcPpTitle", fcPpTitle)
+			const fcPpTitle = getFCPPTitle(roundedPP, 'pp');
 			title += `\n${fcPpTitle}`;
 
 			if (!fcAccuracy || !fcAccuracy <= 0) {
 				// Not enough data to compute
 				return title;
 			}
-
 		}
 
-		return title
-
+		return title;
 	}
-
 </script>
 
 <div class="player-performance">

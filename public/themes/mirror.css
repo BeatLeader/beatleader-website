@@ -90,7 +90,7 @@ nav.ssr-page-container {
 	height: 4rem !important;
 	box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
 	border-bottom: none !important;
-	background: rgba(92, 92, 92, 0.281) !important;
+	background: var(--customizable-color-2) !important;
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
 	max-width: none !important;
@@ -105,6 +105,9 @@ nav.ssr-page-container div {
 	flex-direction: row;
 	justify-content: center;
 	text-align: center;
+}
+.is-multiline {
+	margin-left: 0 !important;
 }
 .sspl-page-container .is-multiline .title.is-4:nth-child(1) {
 	font-size: 50px;
@@ -244,7 +247,7 @@ nav.ssr-page-container div {
 	color: #ffffff;
 }
 .content-box {
-	background: rgba(131, 131, 131, 0.082) !important;
+	background: var(--customizable-color-1) !important;
 	backdrop-filter: blur(10px);
 	-webkit-backdrop-filter: blur(10px);
 	box-shadow: none !important;
@@ -314,9 +317,9 @@ nav.ssr-page-container div {
 	.page-content.scores .player-score {
 		height: unset !important;
 	}
-	.player-page .player-score .player .clan-badges,
-	.leaderboard .player-score .player .clan-badges,
-	.page-content.scores .player-score .player .clan-badges {
+	.player-page .player-score .clan-badges,
+	.leaderboard .player-score .clan-badges,
+	.page-content.scores .player-score .clan-badges {
 		display: none;
 	}
 }
