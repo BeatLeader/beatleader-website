@@ -6,6 +6,7 @@
 	import Select from './Select.svelte';
 	import {setGlobalCSSValue} from '../../utils/color';
 	import ColorPicker from './ColorPicker.svelte';
+	import RangeSlider from 'svelte-range-slider-pips';
 
 	export let show = false;
 
@@ -15,6 +16,8 @@
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 	const DEFAULT_SORT_VALUE = 'last';
+	const DEFAULT_DAYS_TO_COMPARE = 1;
+	const DEFAULT_DAYS_OF_HISTORY = 30;
 
 	const scoreComparisonMethods = [
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
@@ -67,6 +70,8 @@
 	let currentAvatarIcons = DEFAULT_AVATAR_ICONS;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
 	let currentSortOption = DEFAULT_SORT_VALUE;
+	let currentDaysToCompare = DEFAULT_DAYS_TO_COMPARE;
+	let currentDaysOfHistory = DEFAULT_DAYS_OF_HISTORY;
 
 	function onConfigUpdated(config) {
 		if (config?.locale) currentLocale = config.locale;
@@ -79,6 +84,8 @@
 		if (config?.preferences?.bgimage) currentBGImage = config?.preferences?.bgimage ?? '';
 		if (config?.preferences?.bgColor) currentBGColor = config?.preferences?.bgColor ?? '';
 		if (config?.preferences?.headerColor) currentHeaderColor = config?.preferences?.headerColor ?? '';
+		if (config?.preferences?.daysToCompare) currentDaysToCompare = config?.preferences?.daysToCompare ?? DEFAULT_DAYS_TO_COMPARE;
+		if (config?.preferences?.daysOfHistory) currentDaysOfHistory = config?.preferences?.daysOfHistory ?? DEFAULT_DAYS_OF_HISTORY;
 	}
 
 	function onSave() {
@@ -95,6 +102,8 @@
 			draft.preferences.bgColor = currentBGColor;
 			draft.preferences.headerColor = currentHeaderColor;
 			draft.preferences.scoresSortOptions = currentSortOption;
+			draft.preferences.daysToCompare = currentDaysToCompare;
+			draft.preferences.daysOfHistory = currentDaysOfHistory;
 			document.location.reload();
 		});
 
@@ -212,6 +221,40 @@
 								<option value={option.value}>{option.name}</option>
 							{/each}
 						</Select>
+					</section>
+
+					<section class="option">
+						<label title="How many days of history to show on the profile">Rank and pp gain</label>
+						<RangeSlider
+							min={1}
+							max={30}
+							step={1}
+							values={[currentDaysToCompare]}
+							float
+							hoverable
+							pips
+							pipstep={6}
+							all="label"
+							on:change={event => {
+								currentDaysToCompare = event.detail.values[0];
+							}} />
+					</section>
+
+					<section class="option">
+						<label title="How many days of history to show on the profile">Days of history</label>
+						<RangeSlider
+							min={2}
+							max={100}
+							step={1}
+							values={[currentDaysOfHistory]}
+							float
+							hoverable
+							pips
+							pipstep={30}
+							all="label"
+							on:change={event => {
+								currentDaysOfHistory = event.detail.values[0];
+							}} />
 					</section>
 				</section>
 			{:else}

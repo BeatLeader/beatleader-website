@@ -25,6 +25,7 @@
 	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
+	import {configStore} from '../../stores/config';
 
 	export let playerData;
 	export let isLoading = false;
@@ -217,7 +218,7 @@
 	);
 
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
-	$: statsHistoryStore.fetchStats(playerData);
+	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
 
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}

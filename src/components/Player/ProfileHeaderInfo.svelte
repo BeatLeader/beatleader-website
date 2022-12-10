@@ -3,6 +3,7 @@
 	import {createEventDispatcher, getContext} from 'svelte';
 	import {BL_CDN} from '../../network/queues/beatleader/page-queue';
 	import createAccountStore from '../../stores/beatleader/account';
+	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
 	import {configStore} from '../../stores/config';
 	import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts';
 
@@ -25,6 +26,7 @@
 	const dispatch = createEventDispatcher();
 
 	const account = createAccountStore();
+	const historyStore = createStatsHistoryStore();
 
 	function getCountryRankingUrl(countryObj) {
 		const rank = countryObj?.rankValue ?? countryObj?.rank ?? null;
@@ -83,6 +85,34 @@
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin;
+
+	function getIndex(array) {
+		if (array.length == 1) {
+			return 0;
+		} else {
+			return array.length - Math.min($configStore.preferences.daysToCompare, array.length) - 1;
+		}
+	}
+
+	function getPrevLabel() {
+		switch ($configStore.preferences.daysToCompare) {
+			case 1:
+				return 'Yesterday';
+			case 7:
+				return 'Last week';
+			case 30:
+				return 'Last month';
+
+			default:
+				return `${$configStore.preferences.daysToCompare} days ago`;
+		}
+	}
+
+	$: history = $historyStore[playerId];
+	$: prevLabel = getPrevLabel();
+	$: prevRank = history ? history.rank[getIndex(history.rank)] : playerInfo?.rank;
+	$: prevPp = history ? history.pp[getIndex(history.pp)] : playerInfo?.pp;
+	$: prevCountryRank = history ? history.countryRank[getIndex(history.countryRank)] : playerInfo?.countryRank;
 </script>
 
 {#if showBanForm}
@@ -168,8 +198,8 @@
 
 				<Value
 					value={playerInfo?.rank}
-					prevValue={playerInfo?.lastWeekRank}
-					prevLabel="Last week"
+					prevValue={prevRank}
+					{prevLabel}
 					prefix="#"
 					digits={0}
 					zero="#0"
@@ -196,8 +226,8 @@
 
 						<Value
 							value={country.rank}
-							prevValue={country.lastWeekCountryRank}
-							prevLabel="Last week"
+							prevValue={prevCountryRank}
+							{prevLabel}
 							prefix="#"
 							digits={0}
 							zero="#0"
@@ -212,7 +242,7 @@
 			{/if}
 
 			<span class="pp">
-				<Value value={playerInfo?.pp} suffix="pp" prevValue={playerInfo?.lastWeekPp} prevLabel="Last week" inline={true} zero="0pp" />
+				<Value value={playerInfo?.pp} suffix="pp" prevValue={prevPp} {prevLabel} inline={true} zero="0pp" />
 			</span>
 
 			{#if isAdmin && loggedInPlayer != playerId}

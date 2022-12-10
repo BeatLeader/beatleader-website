@@ -14,9 +14,9 @@ export default () => {
 	const get = () => votingStatuses;
 	const {subscribe: subscribeState, set} = writable(votingStatuses);
 
-	const fetchStats = async playerData => {
+	const fetchStats = async (playerData, count = 50) => {
 		if (!playerData) return;
-		fetch(BL_API_URL + `player/${playerData.playerId}/history`)
+		fetch(BL_API_URL + `player/${playerData.playerId}/history?count=${count}`)
 			.then(response => response.json())
 			.then(data => {
 				var processedStatsHistory = {};

@@ -30,6 +30,8 @@ const DEFAULT_CONFIG = {
 		bgimage: '/assets/background.jpeg',
 		bgColor: 'rgba(20, 45, 57, 0.5427)',
 		headerColor: 'rgba(21, 31, 35, 0.6382)',
+		daysToCompare: 1,
+		daysOfHistory: 30,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: null,
