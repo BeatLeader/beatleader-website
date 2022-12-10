@@ -31,7 +31,6 @@ export function processSliceDetails(replay) {
         let mainGridIndex = getMainGridIndex(noteData.noteLineLayer, noteData.lineIndex);
         let secondaryGridIndex = getSecondaryGridIndex(noteData.cutDirection);
 
-        console.log(mainGridIndex + " : " + secondaryGridIndex);
         const mainCell = result[mainGridIndex];
         let secondaryCell;
         if (note.noteCutInfo.saberType === 0) {

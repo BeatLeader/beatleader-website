@@ -26,7 +26,6 @@
 			<OtherStats {beatSavior} />
 			<div class="hands-and-grid">
 				<Hands stats={beatSavior.stats} />
-				<Grid {accGrid} />
 			</div>
 		</DetailsBox>
 
@@ -42,14 +41,14 @@
 		flex-direction: row;
 		flex-wrap: nowrap;
 		justify-content: center;
-		margin: 0em 0.3em;
 	}
 
 	.beat-savior > :global(.details-and-hands) {
-		display: grid;
+		display: flex;
+		flex-direction: column;
 		justify-content: center;
+		align-items: center;
 		grid-gap: 0.5em;
-		grid-template-columns: min-content;
 	}
 
 	.hands-and-grid {
@@ -60,7 +59,7 @@
 
 	.beat-savior > :global(.chart) {
 		min-width: 12em;
-		max-width: 29.5em;
+		max-width: 31.5em;
 	}
 
 	header {

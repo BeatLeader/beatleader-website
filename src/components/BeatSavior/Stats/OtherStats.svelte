@@ -254,7 +254,6 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		align-self: flex-start;
 		flex-wrap: wrap;
 		font-size: 0.9em;
 	}

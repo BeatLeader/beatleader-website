@@ -61,9 +61,9 @@
 		{/await}
 
 		{#if score?.replay}
-			<ContentBox>
+			<div className="tab">
 				<ReplayDetails {score} />
-			</ContentBox>
+			</div>
 		{/if}
 
 		{#if showAccSaberLeaderboard}

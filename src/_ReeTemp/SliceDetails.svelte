@@ -22,6 +22,25 @@
         if (!cell.count) return '';
         return formatNumber((cell.averageScore * 100 / 115), 2) + '%';
     }
+
+    function getSecondaryGridRotation(cellIndex) {
+        switch (cellIndex) {
+            case 0: return '135deg';
+            case 1: return '180deg';
+            case 2: return '225deg';
+            case 3: return '90deg';
+            case 4: return '0deg';
+            case 5: return '270deg';
+            case 6: return '45deg';
+            case 7: return '0deg';
+            case 8: return '315deg';
+        }
+        return '0deg';
+    }
+
+    function isDot(cellIndex) {
+        return cellIndex === 4;
+    }
 </script>
 
 {#if sliceDetailsData}
@@ -29,12 +48,18 @@
         {#if showSecondaryGrid}
             <div class="secondary-grid">
                 {#each leftData as cell, idx}
-                    <div class="grid-cell left" title={formatHoverHint(cell)}>
-                        {#if cell.count}
-                            <p>{cell.count}</p>
-                            <p>{formatNumber(cell.averageScore, 2)}</p>
+                    <div class="grid-cell left"
+                         title={formatHoverHint(cell)}
+                         style={"transform: rotate(" + getSecondaryGridRotation(idx) + ");"}>
+                        {#if isDot(idx)}
+                            <img src="/assets/noteDot.png" class="note-icon dot" alt="dot"/>
                         {:else}
-                            <p>-</p>
+                            <img src="/assets/noteArrow.png" class="note-icon arrow" alt="arrow"/>
+                        {/if}
+                        {#if cell.count}
+                            <p style={"transform: rotate(-" + getSecondaryGridRotation(idx) + ");"}>
+                                {cell.count}<br>{formatNumber(cell.averageScore, 2)}
+                            </p>
                         {/if}
                     </div>
                 {/each}
@@ -47,12 +72,18 @@
             </div>
             <div class="secondary-grid">
                 {#each rightData as cell, idx}
-                    <div class="grid-cell right" title={formatHoverHint(cell)}>
-                        {#if cell.count}
-                            <p>{cell.count}</p>
-                            <p>{formatNumber(cell.averageScore, 2)}</p>
+                    <div class="grid-cell right"
+                         title={formatHoverHint(cell)}
+                         style={"transform: rotate(" + getSecondaryGridRotation(idx) + ");"}>
+                        {#if isDot(idx)}
+                            <img src="/assets/noteDot.png" class="note-icon dot" alt="dot"/>
                         {:else}
-                            <p>-</p>
+                            <img src="/assets/noteArrow.png" class="note-icon arrow" alt="arrow"/>
+                        {/if}
+                        {#if cell.count}
+                            <p style={"transform: rotate(-" + getSecondaryGridRotation(idx) + ");"}>
+                                {cell.count}<br>{formatNumber(cell.averageScore, 2)}
+                            </p>
                         {/if}
                     </div>
                 {/each}
@@ -62,10 +93,7 @@
                 {#each sliceDetailsData as cell, idx}
                     <div class="grid-cell main" title={formatHoverHint(cell)} on:click={() => mainGridCellOnClick(idx)}>
                         {#if cell.count}
-                            <p>{cell.count}</p>
-                            <p>{formatNumber(cell.averageScore, 2)}</p>
-                        {:else}
-                            <p>-</p>
+                            <p>{cell.count}<br>{formatNumber(cell.averageScore, 2)}</p>
                         {/if}
                     </div>
                 {/each}
@@ -93,7 +121,7 @@
         display: grid;
         grid-template-columns: auto auto auto;
         grid-template-rows: auto auto auto;
-        grid-gap: 4px;
+        grid-gap: 14px;
     }
 
     .mini-main-grid {
@@ -102,7 +130,9 @@
         grid-template-rows: auto auto auto;
         grid-gap: 1px;
 
-        background: #00000066;
+        padding: 2px;
+        border-radius: 4px;
+        background: #00000099;
         box-shadow: #00000066 0px 0px 4px 1px;
     }
 
@@ -126,15 +156,15 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        justify-items: center;
+        align-items: center;
 
         width: 50px;
         height: 50px;
         border-radius: 4px;
 
         text-align: center;
-        font-size: .8em;
-        font-weight: 400;
+        font-size: 12px;
+        font-weight: 600;
 
         box-shadow: #00000066 0px 0px 6px;
     }
@@ -154,5 +184,17 @@
 
     .grid-cell.right {
         background: linear-gradient(180deg, #5c5cffcc, #4949a5cc);
+    }
+
+    .grid-cell.right > p, .grid-cell.left > p {
+        padding: 2px;
+        border-radius: 12px;
+        background: #00000066;
+        box-shadow: #000000 0px 0px 2px;
+    }
+
+    .note-icon {
+        opacity: 25%;
+        position: absolute;
     }
 </style>

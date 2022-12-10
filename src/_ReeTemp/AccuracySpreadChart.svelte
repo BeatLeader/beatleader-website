@@ -11,6 +11,20 @@
     async function setupChart(canvas, chartData) {
         if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
+        let labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+        let startIndex;
+        for (startIndex = 0; startIndex <= 15;) {
+            if (chartData.leftCount[startIndex] !== 0 || chartData.rightCount[startIndex] !== 0) break;
+            startIndex += 1;
+        }
+
+        labels = labels.slice(startIndex, 16);
+        chartData.leftCount = chartData.leftCount.slice(startIndex, 16);
+        chartData.leftTD = chartData.leftTD.slice(startIndex, 16);
+        chartData.rightCount = chartData.rightCount.slice(startIndex, 16);
+        chartData.rightTD = chartData.rightTD.slice(startIndex, 16);
+
         const minCount = 0;
         const maxCount = chartData.maxCount * 1.05;
 
@@ -32,14 +46,13 @@
             count: {
                 display: false,
                 min: minCount,
-                max: maxCount,
-                position: 'left'
+                max: maxCount
             },
             td: {
-                display: false,
+                display: true,
                 min: 0,
                 max: Math.max(chartData.maxTD * 1.05, 0.2),
-                position: 'right'
+                position: 'left'
             },
         };
 
@@ -91,8 +104,6 @@
                 order: 1
             },
         ];
-
-        const labels = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
         if (!chart) {
             chart = new Chart(canvas, {
