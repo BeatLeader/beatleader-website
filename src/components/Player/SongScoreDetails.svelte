@@ -6,7 +6,6 @@
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
 	import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte';
 	import Spinner from '../Common/Spinner.svelte';
-	import ContentBox from '../Common/ContentBox.svelte';
 	import ReplayDetails from '../../_ReeTemp/ReplayDetails.svelte';
 
 	export let playerId;
@@ -56,12 +55,12 @@
 			</div>
 		{:then beatSavior}
 			<div class="tab">
-				<BeatSaviorDetails {playerId} {beatSavior} {leaderboard} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} />
 			</div>
 		{/await}
 
 		{#if score?.replay}
-			<div className="tab">
+			<div class="tab">
 				<ReplayDetails {score} />
 			</div>
 		{/if}

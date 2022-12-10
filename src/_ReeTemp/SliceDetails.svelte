@@ -107,7 +107,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        grid-gap: 10px;
+        min-height: 200px;
     }
 
     .main-grid {
@@ -122,6 +122,7 @@
         grid-template-columns: auto auto auto;
         grid-template-rows: auto auto auto;
         grid-gap: 14px;
+        padding: 10px;
     }
 
     .mini-main-grid {
@@ -149,7 +150,7 @@
     }
 
     .mini-main-grid-cell.selected {
-        background: #999999;
+        background: #aaaaaa;
     }
 
     .grid-cell {
@@ -196,5 +197,21 @@
     .note-icon {
         opacity: 25%;
         position: absolute;
+    }
+
+    @media screen and (max-width: 767px) {
+        .secondary-grid > .grid-cell {
+            width: 45px;
+            height: 45px;
+            font-size: 12px;
+        }
+    }
+
+    @media screen and (max-width: 520px) {
+        .secondary-grid > .grid-cell {
+            width: 35px;
+            height: 35px;
+            font-size: 10px;
+        }
     }
 </style>

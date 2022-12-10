@@ -1,7 +1,6 @@
 <script>
 	import {downloadReplay} from './open-replay-decoder';
 	import {processAccuracySpread, processSliceDetails} from './process-replay-data';
-	import Spinner from '../components/Common/Spinner.svelte';
 	import SliceDetails from './SliceDetails.svelte';
 	import AccuracySpreadChart from './AccuracySpreadChart.svelte';
 	import DetailsBox from '../components/Common/DetailsBox.svelte';
@@ -10,37 +9,31 @@
 
 	let accSpreadData;
 	let sliceDetailsData;
-	let isLoading = true;
 
 	function processReplay(score) {
 		downloadReplay(score, replay => {
 			accSpreadData = processAccuracySpread(replay);
 			sliceDetailsData = processSliceDetails(replay);
 		});
-		isLoading = false;
 	}
 
 	$: processReplay(score);
 </script>
 
 <div class="replay-details">
-	{#if isLoading}
-		<Spinner />
-	{:else}
-		<DetailsBox cls="slice-details-container">
-			<SliceDetails {sliceDetailsData} />
-		</DetailsBox>
-		<DetailsBox cls="accuracy-spread-container">
-			<AccuracySpreadChart {accSpreadData} />
-		</DetailsBox>
-	{/if}
+	<DetailsBox cls="slice-details-container">
+		<SliceDetails {sliceDetailsData} />
+	</DetailsBox>
+	<DetailsBox cls="accuracy-spread-container">
+		<AccuracySpreadChart {accSpreadData} />
+	</DetailsBox>
 </div>
 
 <style>
 	.replay-details {
-		display: flex;
-		justify-content: center;
-		align-items: stretch;
+		display: grid;
+		grid-template-columns: 49.9% 49.9%;
+		grid-gap: 0.2%;
 	}
 
 	.replay-details > :global(.slice-details-container) {
@@ -51,5 +44,17 @@
 
 	.replay-details > :global(.accuracy-spread-container) {
 		display: block;
+	}
+
+	@media screen and (max-width: 767px) {
+		.replay-details {
+			grid-template-columns: 100%;
+		}
+	}
+
+	@media screen and (max-width: 520px) {
+		.replay-details {
+			grid-template-columns: 100%;
+		}
 	}
 </style>
