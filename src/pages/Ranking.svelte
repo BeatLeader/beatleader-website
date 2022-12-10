@@ -328,9 +328,9 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/19')}>
-			<span class="event-title"> 15th ranked week competition</span>
-			<img class="event-image" src="https://cdn.beatleader.xyz/assets/207-event.png" />
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/20')}>
+			<span class="event-title">One event - two batches of cool maps!</span>
+			<img class="event-image" src="https://cdn.beatleader.xyz/assets/1235-event.png" />
 		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
