@@ -4,7 +4,7 @@
 	import OtherStats from './Stats/OtherStats.svelte';
 	import Grid from './Stats/Grid.svelte';
 	import Chart from './Stats/Chart.svelte';
-	import DetailsBox from "../Common/DetailsBox.svelte";
+	import DetailsBox from '../Common/DetailsBox.svelte';
 
 	export let beatSavior;
 	export let showGrid = true;
