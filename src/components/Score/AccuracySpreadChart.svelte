@@ -24,11 +24,14 @@
 		chartData.leftTD = chartData.leftTD.slice(startIndex, 16);
 		chartData.rightCount = chartData.rightCount.slice(startIndex, 16);
 		chartData.rightTD = chartData.rightTD.slice(startIndex, 16);
+		chartData.timeDeviation = chartData.timeDeviation.slice(startIndex, 16);
 
 		const minCount = 0;
 		const maxCount = chartData.maxCount;
 		const minTD = 0.0;
 		const maxTD = Math.ceil(chartData.maxTD / 0.05) * 0.05;
+		const minTimeDeviation = 0.0;
+		const maxTimeDeviation = Math.max(Math.ceil(chartData.maxTimeDeviation / 0.01) * 0.01, 0.02);
 
 		const xAxis = {
 			scaleLabel: {
@@ -66,6 +69,12 @@
 					autoSkipPadding: 14,
 				},
 			},
+			timeDeviation: {
+				display: false,
+				min: minTimeDeviation,
+				max: maxTimeDeviation,
+				position: 'left'
+			},
 		};
 
 		const datasets = [
@@ -76,7 +85,7 @@
 				round: 0,
 				type: 'bar',
 				backgroundColor: '#ee5555',
-				order: 2,
+				order: 4,
 			},
 			{
 				yAxisID: 'count',
@@ -85,7 +94,7 @@
 				round: 0,
 				type: 'bar',
 				backgroundColor: '#5555ee',
-				order: 3,
+				order: 5,
 			},
 			{
 				yAxisID: 'td',
@@ -117,6 +126,21 @@
 				spanGaps: true,
 				order: 1,
 			},
+			{
+				yAxisID: 'timeDeviation',
+				label: 'Timing',
+				data: chartData.timeDeviation,
+				round: 1,
+				type: 'line',
+				borderColor: '#ffff6688',
+				backgroundColor: '#ffff6688',
+				borderWidth: 2,
+				pointRadius: 2,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4,
+				spanGaps: true,
+				order: 2,
+			}
 		];
 
 		if (!chart) {
@@ -136,7 +160,12 @@
 						tooltip: {
 							callbacks: {
 								label(ctx) {
-									return ` ${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
+									switch (ctx.dataset.label) {
+										case 'Timing':
+											return `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y * 1000, ctx.dataset.round)} ms`;
+										default:
+											return `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
+									}
 								},
 							},
 						},

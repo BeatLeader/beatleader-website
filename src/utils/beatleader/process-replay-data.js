@@ -74,15 +74,22 @@ export function processAccuracySpread(replay) {
 		rightCount: [],
 		rightTD: [],
 
+		timeDeviation: [],
+
 		maxCount: 0,
 		maxTD: 0.0,
+		maxTimeDeviation: 0.0,
 	};
+
+	const timings = [];
 
 	for (let i = 0; i <= 15; i++) {
 		result.leftCount.push(0);
-		result.leftTD.push(0);
+		result.leftTD.push(0.0);
 		result.rightCount.push(0);
-		result.rightTD.push(0);
+		result.rightTD.push(0.0);
+		result.timeDeviation.push(0.0);
+		timings.push([]);
 	}
 
 	for (let i = 0; i < replay.notes.length; i++) {
@@ -100,17 +107,30 @@ export function processAccuracySpread(replay) {
 			result.rightCount[acc] += 1;
 			result.rightTD[acc] += td;
 		}
+
+		result.timeDeviation[acc] += note.noteCutInfo.timeDeviation;
+		timings[acc].push(note.noteCutInfo.timeDeviation);
 	}
 
+
 	for (let i = 0; i <= 15; i++) {
+		//<-- Averages ---
+		const totalCount = result.rightCount[i] + result.leftCount[i];
 		result.leftTD[i] = result.leftCount[i] > 0 ? result.leftTD[i] / result.leftCount[i] : null;
 		result.rightTD[i] = result.rightCount[i] > 0 ? result.rightTD[i] / result.rightCount[i] : null;
+		result.timeDeviation[i] = totalCount > 0 ? result.timeDeviation[i] / totalCount : null;
 
+		//<-- TimeDeviation ---
+		result.timeDeviation[i] = getStandardDeviation(timings[i], result.timeDeviation[i]);
+
+		//<-- Min / Max ---
 		if (result.leftCount[i] > result.maxCount) result.maxCount = result.leftCount[i];
 		if (result.rightCount[i] > result.maxCount) result.maxCount = result.rightCount[i];
 
 		if (result.leftTD[i] > result.maxTD) result.maxTD = result.leftTD[i];
 		if (result.rightTD[i] > result.maxTD) result.maxTD = result.rightTD[i];
+
+		if (result.timeDeviation[i] > result.maxTimeDeviation) result.maxTimeDeviation = result.timeDeviation[i];
 	}
 
 	return result;
@@ -119,6 +139,16 @@ export function processAccuracySpread(replay) {
 //endregion
 
 //region Utils
+
+function getStandardDeviation(numArray, mean) {
+	if (numArray.length === 0) return null;
+
+	let sqrSum = 0.0;
+	numArray.forEach(num => {
+		sqrSum += Math.pow(num - mean, 2);
+	});
+	return Math.sqrt(sqrSum / numArray.length);
+}
 
 function getMainGridIndex(noteLineLayer, noteLineIndex) {
 	switch (noteLineLayer) {
