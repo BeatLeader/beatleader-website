@@ -74,7 +74,8 @@
 				<p class="memberDescription">Ranking AI developer and biggest supporter</p>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198072855418.gif" alt="LackWiz" /><a href="https://github.com/LackWiz">LackWiz</a>
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198072855418.gif" alt="LackWiz" /><a
+					href="https://github.com/LackWiz">LackWiz</a>
 				<p class="memberTitle">soft leader</p>
 				<p class="memberDescription">Head of the Ranking Team</p>
 			</div>
@@ -91,8 +92,8 @@
 				<p class="memberDescription">Made theme system on the website</p>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198133201952.png" alt="Tatenshi" /><a href="https://github.com/Tatenshi"
-					>Tatenshi</a>
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198133201952.png" alt="Tatenshi" /><a
+					href="https://github.com/Tatenshi">Tatenshi</a>
 				<p class="memberTitle">distracted from the master's thesis</p>
 				<p class="memberDescription">Quest mod and server contributor</p>
 			</div>
@@ -103,15 +104,15 @@
 
 		<section class="content center">
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198072855418.gif" alt="LackWiz" /><a
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198072855418.gif" alt="LackWiz" /><a
 					href="https://www.beatleader.xyz/u/76561198072855418">LackWiz</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198143307741.png" alt="shrado" /><a
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198143307741.png" alt="shrado" /><a
 					href="https://www.beatleader.xyz/u/76561198143307741">shrado</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198960449289.png" alt="Aquaflee" /><a
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198960449289.png" alt="Aquaflee" /><a
 					href="https://www.beatleader.xyz/u/76561198960449289">Aquaflee</a>
 			</div>
 		</section>
@@ -123,11 +124,11 @@
 					href="https://www.beatleader.xyz/u/76561198967815164">iPixelGalaxy</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198044544317.png" alt="TG90" /><a
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198044544317.png" alt="TG90" /><a
 					href="https://www.beatleader.xyz/u/76561198044544317">TG90</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561199257569878.gif" alt="Uragirimono" /><a
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561199257569878.gif" alt="Uragirimono" /><a
 					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
 			</div>
 		</section>
@@ -138,7 +139,7 @@
 					href="https://www.beatleader.xyz/u/76561198297176204">Alpal</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198125474611.png" alt="AntiLink" /><a
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198125474611.png" alt="AntiLink" /><a
 					href="https://www.beatleader.xyz/u/76561198125474611">AntiLink</a>
 			</div>
 			<div class="member">
@@ -146,12 +147,12 @@
 					href="https://www.beatleader.xyz/u/76561198147746455">CookedChili</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/76561198965889412.gif" alt="Emy" /><a
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/76561198965889412.gif" alt="Emy" /><a
 					href="https://www.beatleader.xyz/u/76561198965889412">Emy</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.beatleader.xyz/assets/34288863.png" alt="fvrwvrd" /><a href="https://www.beatleader.xyz/u/34288863"
-					>fvrwvrd</a>
+				<img src="https://beatleadercdn.blob.core.windows.net/assets/34288863.png" alt="fvrwvrd" /><a
+					href="https://www.beatleader.xyz/u/34288863">fvrwvrd</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/64b7d765323b85e5e91b8f1d522cfd71aaed7a36_full.jpg" alt="monke" /><a

@@ -18,7 +18,7 @@
 		name = clan?.name ?? '';
 		tag = clan?.tag ?? '';
 		color = clan?.color ?? '#ff0000';
-		iconUrl = clan?.icon ?? 'https://cdn.beatleader.xyz/assets/NTG.png';
+		iconUrl = clan?.icon ?? 'https://beatleadercdn.blob.core.windows.net/assets/NTG.png';
 		iconData = clan?.icon ?? null;
 		description = clan?.description ?? '';
 	}

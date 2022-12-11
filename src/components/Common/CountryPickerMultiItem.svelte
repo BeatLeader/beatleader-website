@@ -20,7 +20,7 @@
 		class="multiSelectItem {activeValue === i ? 'active' : ''} {isDisabled ? 'disabled' : ''}"
 		on:click={event => (multiFullItemClearable ? handleClear(i, event) : {})}>
 		<div class="multiSelectItem_label">
-			<img class="flag" src={`https://cdn.beatleader.xyz/flags/${item?.value}.png`} alt={item?.label} />
+			<img class="flag" src={`https://beatleadercdn.blob.core.windows.net/flags/${item?.value}.png`} alt={item?.label} />
 
 			{@html getSelectionLabel(item)}
 		</div>

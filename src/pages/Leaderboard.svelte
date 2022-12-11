@@ -274,7 +274,7 @@
 							{
 								type: 'global',
 								label: 'Country',
-								icon: `<img src="https://cdn.beatleader.xyz/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
+								icon: `<img src="https://beatleadercdn.blob.core.windows.net/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
 								url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
 								filters: {countries: country},
 							},
