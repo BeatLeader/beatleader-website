@@ -57,7 +57,7 @@ export default [
 			less({
 				include: ['**/*.less'],
 				output: (css, id) => {
-					const parts = id.replaceAll('\\', '.').replaceAll('/', '.').split('.');
+					const parts = id.replace(/\\/g, '.').replace(/\//g, '.').split('.');
 					const filename = parts[parts.length - 2];
 					return `public/build/themes/${filename}.css`;
 				},
