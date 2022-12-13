@@ -8,7 +8,7 @@
 
 {#if country && country.length}
 	<img
-		src={`https://beatleadercdn.blob.core.windows.net/flags/${country ? country.toLowerCase() : ''}.png`}
+		src={`/assets/flags/${country ? country.toLowerCase() : ''}.png`}
 		loading="lazy"
 		class="country"
 		on:click|preventDefault={() => dispatch('flag-click', {country: country.toLowerCase()})} />

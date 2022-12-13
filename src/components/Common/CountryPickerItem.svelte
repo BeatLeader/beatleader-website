@@ -5,7 +5,7 @@
 </script>
 
 <div class="customItem">
-	<img src={`https://beatleadercdn.blob.core.windows.net/flags/${item.value}.png`} alt={countryName} />
+	<img src={`/assets/flags/${item.value}.png`} alt={countryName} />
 	<div class="customItem_title">
 		<div class="customItem_name">{countryName}</div>
 	</div>
