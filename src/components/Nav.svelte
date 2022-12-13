@@ -342,7 +342,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a
+					<div
 						class="settings"
 						title={notificationBadgeTitle}
 						on:click={() => {
@@ -361,7 +361,7 @@
 						Settings
 
 						{#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge" />{/if}
-					</a>
+					</div>
 				</div>
 			</div>
 		</div>

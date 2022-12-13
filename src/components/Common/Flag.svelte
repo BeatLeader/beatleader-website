@@ -8,6 +8,7 @@
 
 {#if country && country.length}
 	<img
+		alt={`${country ? country.toLowerCase() : ''} flag`}
 		src={`/assets/flags/${country ? country.toLowerCase() : ''}.png`}
 		loading="lazy"
 		class="country"

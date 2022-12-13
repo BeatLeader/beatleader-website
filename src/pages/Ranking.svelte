@@ -330,7 +330,7 @@
 	<article class="page-content" transition:fade>
 		<ContentBox cls="event-banner" on:click={() => navigate('/event/20')}>
 			<span class="event-title">One event - two batches of cool maps!</span>
-			<img class="event-image" src="https://beatleadercdn.blob.core.windows.net/assets/1235-event.png" />
+			<img alt="Event banner" class="event-image" src="https://beatleadercdn.blob.core.windows.net/assets/1235-event.png" />
 		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>

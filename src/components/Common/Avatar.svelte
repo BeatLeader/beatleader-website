@@ -15,6 +15,7 @@
 		<img src={avatar} alt="" />
 		{#if overlayUrl}
 			<img
+				alt="Avatar overlay effect"
 				class="overlay"
 				src={overlayUrl}
 				style={`
