@@ -1,20 +1,30 @@
 import {NoteEventType, useReplayOrNull} from './open-replay-decoder';
 import {ColorType, NoteCutDirection, NoteLineLayer, NoteScoringType} from './note-constants';
 
-//region SliceDetails
+//region SliceSummary
 
-export function processSliceDetails(replay) {
+export function processSliceSummary(replay) {
 	if (replay == null) return null;
 
-	let result = [];
+	function createEmptySummary(label) {
+		return {
+			label,
+			left: {count: 0, averageScore: 0.0, averageTD: 0.0},
+			right: {count: 0, averageScore: 0.0, averageTD: 0.0},
+		};
+	}
 
-	for (let i = 0; i < 12; i++) {
-		let mainGridCell = {count: 0, averageScore: 0.0, left: [], right: []};
-		for (let j = 0; j < 9; j++) {
-			mainGridCell.left.push({count: 0, averageScore: 0.0});
-			mainGridCell.right.push({count: 0, averageScore: 0.0});
-		}
-		result.push(mainGridCell);
+	let result = [createEmptySummary('Midlanes'), createEmptySummary('Outerlanes'), createEmptySummary('Crossovers')];
+
+	function getSummaryEntry(noteLineIndex, saberType) {
+		let summaryGroup = getSummaryGroup(noteLineIndex, saberType);
+		return saberType === 0 ? result[summaryGroup].left : result[summaryGroup].right;
+	}
+
+	function applyAverage(handSummary) {
+		if (handSummary.count === 0) return;
+		handSummary.averageScore /= handSummary.count;
+		handSummary.averageTD /= handSummary.count;
 	}
 
 	for (let i = 0; i < replay.notes.length; i++) {
@@ -23,41 +33,142 @@ export function processSliceDetails(replay) {
 		const noteData = decodeNoteData(note.noteID);
 		if (noteData.scoringType !== NoteScoringType.Normal) continue;
 
-		let score = 0.0;
-		score += getAccForDistance(note.noteCutInfo.cutDistanceToCenter);
-		score += getPreSwingScore(note.noteCutInfo.beforeCutRating);
-		score += getPostSwingScore(note.noteCutInfo.afterCutRating);
+		let summaryEntry = getSummaryEntry(noteData.lineIndex, note.noteCutInfo.saberType);
+
+		const score = getScore(note.noteCutInfo);
+		const td = Math.abs(note.noteCutInfo.cutNormal.z);
+
+		summaryEntry.count += 1;
+		summaryEntry.averageScore += score;
+		summaryEntry.averageTD += td;
+	}
+
+	result.forEach(summary => {
+		applyAverage(summary.left);
+		applyAverage(summary.right);
+	});
+
+	return result;
+}
+
+//endregion
+
+//region SliceDetails
+
+export function processSliceDetails(replay) {
+	if (replay == null) return null;
+
+	let result = {
+		mainGrid: [],
+		summaryGrids: [],
+	};
+
+	for (let i = 0; i < 12; i++) {
+		let mainGridCell = {count: 0, averageScore: 0.0, left: [], right: []};
+		for (let j = 0; j < 9; j++) {
+			mainGridCell.left.push({count: 0, averageScore: 0.0});
+			mainGridCell.right.push({count: 0, averageScore: 0.0});
+		}
+		result.mainGrid.push(mainGridCell);
+	}
+
+	for (let summaryGroup = 0; summaryGroup < 3; summaryGroup++) {
+		let summaryGrid = [];
+		for (let i = 0; i < 12; i++) {
+			summaryGrid.push({count: 0, averageScore: 0.0});
+		}
+		result.summaryGrids.push(summaryGrid);
+	}
+
+	function addScore(cell, score) {
+		cell.count += 1;
+		cell.averageScore += score;
+	}
+
+	function applyAverageScore(cell) {
+		if (cell.count === 0) return;
+		cell.averageScore /= cell.count;
+	}
+
+	for (let i = 0; i < replay.notes.length; i++) {
+		const note = replay.notes[i];
+		if (note.eventType !== NoteEventType.good) continue;
+		const noteData = decodeNoteData(note.noteID);
+		if (noteData.scoringType !== NoteScoringType.Normal) continue;
 
 		let mainGridIndex = getMainGridIndex(noteData.noteLineLayer, noteData.lineIndex);
 		let secondaryGridIndex = getSecondaryGridIndex(noteData.cutDirection);
+		let summaryGroup = getSummaryGroup(noteData.lineIndex, note.noteCutInfo.saberType);
 
-		const mainCell = result[mainGridIndex];
+		const mainCell = result.mainGrid[mainGridIndex];
 		let secondaryCell;
 		if (note.noteCutInfo.saberType === 0) {
 			secondaryCell = mainCell.left[secondaryGridIndex];
 		} else {
 			secondaryCell = mainCell.right[secondaryGridIndex];
 		}
+		const summaryCell = result.summaryGrids[summaryGroup][mainGridIndex];
 
-		mainCell.count += 1;
-		mainCell.averageScore += score;
-		secondaryCell.count += 1;
-		secondaryCell.averageScore += score;
+		const score = getScore(note.noteCutInfo);
+		addScore(mainCell, score);
+		addScore(secondaryCell, score);
+		addScore(summaryCell, score);
 	}
 
 	for (let i = 0; i < 12; i++) {
-		const mainCell = result[i];
-		mainCell.averageScore /= mainCell.count;
+		const mainCell = result.mainGrid[i];
+		applyAverageScore(mainCell);
 
 		for (let j = 0; j < 9; j++) {
-			const l = mainCell.left[j];
-			l.averageScore /= l.count;
-			const r = mainCell.right[j];
-			r.averageScore /= r.count;
+			applyAverageScore(mainCell.left[j]);
+			applyAverageScore(mainCell.right[j]);
+		}
+	}
+
+	for (let summaryGroup = 0; summaryGroup < 3; summaryGroup++) {
+		let summaryGrid = result.summaryGrids[summaryGroup];
+		for (let i = 0; i < 12; i++) {
+			applyAverageScore(summaryGrid[i]);
 		}
 	}
 
 	return result;
+}
+
+function getMainGridIndex(noteLineLayer, noteLineIndex) {
+	switch (noteLineLayer) {
+		case NoteLineLayer.Top:
+			return noteLineIndex;
+		case NoteLineLayer.Upper:
+			return noteLineIndex + 4;
+		case NoteLineLayer.Base:
+			return noteLineIndex + 8;
+	}
+	return -1;
+}
+
+function getSecondaryGridIndex(noteCutDirection) {
+	switch (noteCutDirection) {
+		case NoteCutDirection.UpLeft:
+			return 0;
+		case NoteCutDirection.Up:
+			return 1;
+		case NoteCutDirection.UpRight:
+			return 2;
+		case NoteCutDirection.Left:
+			return 3;
+		case NoteCutDirection.Any:
+			return 4;
+		case NoteCutDirection.Right:
+			return 5;
+		case NoteCutDirection.DownLeft:
+			return 6;
+		case NoteCutDirection.Down:
+			return 7;
+		case NoteCutDirection.DownRight:
+			return 8;
+	}
+	return -1;
 }
 
 //endregion
@@ -112,7 +223,6 @@ export function processAccuracySpread(replay) {
 		timings[acc].push(note.noteCutInfo.timeDeviation);
 	}
 
-
 	for (let i = 0; i <= 15; i++) {
 		//<-- Averages ---
 		const totalCount = result.rightCount[i] + result.leftCount[i];
@@ -140,6 +250,25 @@ export function processAccuracySpread(replay) {
 
 //region Utils
 
+function getSummaryGroup(noteLineIndex, saberType) {
+	switch (saberType) {
+		case 0:
+			if (noteLineIndex >= 2) return SummaryGroup.Crossovers;
+			break;
+		case 1:
+			if (noteLineIndex <= 1) return SummaryGroup.Crossovers;
+			break;
+	}
+	if (noteLineIndex === 1 || noteLineIndex === 2) return SummaryGroup.Midlanes;
+	return SummaryGroup.Outerlanes;
+}
+
+const SummaryGroup = {
+	Midlanes: 0,
+	Outerlanes: 1,
+	Crossovers: 2,
+};
+
 function getStandardDeviation(numArray, mean) {
 	if (numArray.length === 0) return null;
 
@@ -150,40 +279,12 @@ function getStandardDeviation(numArray, mean) {
 	return Math.sqrt(sqrSum / numArray.length);
 }
 
-function getMainGridIndex(noteLineLayer, noteLineIndex) {
-	switch (noteLineLayer) {
-		case NoteLineLayer.Top:
-			return noteLineIndex;
-		case NoteLineLayer.Upper:
-			return noteLineIndex + 4;
-		case NoteLineLayer.Base:
-			return noteLineIndex + 8;
-	}
-	return -1;
-}
-
-function getSecondaryGridIndex(noteCutDirection) {
-	switch (noteCutDirection) {
-		case NoteCutDirection.UpLeft:
-			return 0;
-		case NoteCutDirection.Up:
-			return 1;
-		case NoteCutDirection.UpRight:
-			return 2;
-		case NoteCutDirection.Left:
-			return 3;
-		case NoteCutDirection.Any:
-			return 4;
-		case NoteCutDirection.Right:
-			return 5;
-		case NoteCutDirection.DownLeft:
-			return 6;
-		case NoteCutDirection.Down:
-			return 7;
-		case NoteCutDirection.DownRight:
-			return 8;
-	}
-	return -1;
+function getScore(noteCutInfo) {
+	let score = 0.0;
+	score += getAccForDistance(noteCutInfo.cutDistanceToCenter);
+	score += getPreSwingScore(noteCutInfo.beforeCutRating);
+	score += getPostSwingScore(noteCutInfo.afterCutRating);
+	return score;
 }
 
 function getPreSwingScore(preSwingRating) {

@@ -1,21 +1,68 @@
 <script>
 	import {formatNumber} from '../../utils/format';
+	import SliceSummary from './SliceSummary.svelte';
 
 	export let sliceDetailsData = null;
+	export let sliceSummaryData = null;
 	let leftData = null;
 	let rightData = null;
 	let selectedSecondaryGridIndex = 0;
 	let showSecondaryGrid = false;
+	let showSummaryGrid = false;
+	let summaryIndex = 0;
 
 	function mainGridCellOnClick(index) {
-		leftData = sliceDetailsData[index].left;
-		rightData = sliceDetailsData[index].right;
+		leftData = sliceDetailsData.mainGrid[index].left;
+		rightData = sliceDetailsData.mainGrid[index].right;
 		selectedSecondaryGridIndex = index;
 		showSecondaryGrid = true;
 	}
 
 	function backOnClick() {
 		showSecondaryGrid = false;
+	}
+
+	function onSummaryHover(evt) {
+		summaryIndex = evt.detail.groupIndex;
+		showSummaryGrid = true;
+	}
+
+	function onSummaryLeave(evt) {
+		showSummaryGrid = false;
+	}
+
+	function getHighlightClass(mainIndex) {
+		const columnIndex = mainIndex % 4;
+
+		switch (summaryIndex) {
+			case 0: //Midlanes
+				switch (columnIndex) {
+					case 1:
+						return 'highlight-l';
+					case 2:
+						return 'highlight-r';
+				}
+				break;
+			case 1: //Outerlanes
+				switch (columnIndex) {
+					case 0:
+						return 'highlight-l';
+					case 3:
+						return 'highlight-r';
+				}
+				break;
+			case 2: //Crossovers
+				switch (columnIndex) {
+					case 0:
+					case 1:
+						return 'highlight-r';
+					case 2:
+					case 3:
+						return 'highlight-l';
+				}
+				break;
+		}
+		return 'highlight-fade';
 	}
 
 	function formatHoverHint(cell) {
@@ -53,7 +100,7 @@
 </script>
 
 {#if sliceDetailsData}
-	<div class="slide-details">
+	<div class="slice-details">
 		{#if showSecondaryGrid}
 			<div class="secondary-grid" on:click={backOnClick}>
 				{#each leftData as cell, idx}
@@ -72,7 +119,7 @@
 				{/each}
 			</div>
 			<div class="mini-main-grid" on:click={backOnClick}>
-				{#each sliceDetailsData as cell, idx}
+				{#each sliceDetailsData.mainGrid as cell, idx}
 					<div class="mini-main-grid-cell {idx === selectedSecondaryGridIndex ? 'selected' : ''}" />
 				{/each}
 			</div>
@@ -94,20 +141,31 @@
 			</div>
 		{:else}
 			<div class="main-grid">
-				{#each sliceDetailsData as cell, idx}
-					<div class="grid-cell main" title={formatHoverHint(cell)} on:click={() => mainGridCellOnClick(idx)}>
-						{#if cell.count}
-							<p>{cell.count}<br />{formatNumber(cell.averageScore, 2)}</p>
-						{/if}
-					</div>
-				{/each}
+				{#if showSummaryGrid}
+					{#each sliceDetailsData.summaryGrids[summaryIndex] as cell, idx}
+						<div class="grid-cell {getHighlightClass(idx)}" title={formatHoverHint(cell)}>
+							{#if cell.count}
+								<p>{cell.count}<br />{formatNumber(cell.averageScore, 2)}</p>
+							{/if}
+						</div>
+					{/each}
+				{:else}
+					{#each sliceDetailsData.mainGrid as cell, idx}
+						<div class="grid-cell main" title={formatHoverHint(cell)} on:click={() => mainGridCellOnClick(idx)}>
+							{#if cell.count}
+								<p>{cell.count}<br />{formatNumber(cell.averageScore, 2)}</p>
+							{/if}
+						</div>
+					{/each}
+				{/if}
 			</div>
+			<SliceSummary {sliceSummaryData} on:groupHover={onSummaryHover} on:groupLeave={onSummaryLeave} />
 		{/if}
 	</div>
 {/if}
 
 <style>
-	.slide-details {
+	.slice-details {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -183,12 +241,16 @@
 		background: linear-gradient(180deg, #88888877, #5a5a5a77);
 	}
 
-	.grid-cell.left {
+	.grid-cell.left, .grid-cell.highlight-l {
 		background: linear-gradient(180deg, #ff5c5ccc, #a54949cc);
 	}
 
-	.grid-cell.right {
+	.grid-cell.right, .grid-cell.highlight-r {
 		background: linear-gradient(180deg, #5c5cffcc, #4949a5cc);
+	}
+
+	.grid-cell.highlight-fade {
+		background: linear-gradient(180deg, #55555577, #44444477);
 	}
 
 	.grid-cell.right > p,

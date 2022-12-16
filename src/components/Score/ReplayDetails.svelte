@@ -1,6 +1,10 @@
 <script>
 	import {downloadReplay} from '../../utils/beatleader/open-replay-decoder';
-	import {processAccuracySpread, processSliceDetails} from '../../utils/beatleader/process-replay-data';
+	import {
+		processAccuracySpread,
+		processSliceDetails,
+		processSliceSummary
+	} from '../../utils/beatleader/process-replay-data';
 	import SliceDetails from './SliceDetails.svelte';
 	import AccuracySpreadChart from './AccuracySpreadChart.svelte';
 	import DetailsBox from '../Common/DetailsBox.svelte';
@@ -9,11 +13,13 @@
 
 	let accSpreadData;
 	let sliceDetailsData;
+	let sliceSummaryData;
 
 	function processReplay(score) {
 		downloadReplay(score, replay => {
 			accSpreadData = processAccuracySpread(replay);
 			sliceDetailsData = processSliceDetails(replay);
+			sliceSummaryData = processSliceSummary(replay);
 		});
 	}
 
@@ -22,7 +28,7 @@
 
 <div class="replay-details">
 	<DetailsBox cls="slice-details-container">
-		<SliceDetails {sliceDetailsData} />
+		<SliceDetails {sliceDetailsData} {sliceSummaryData} />
 	</DetailsBox>
 	<DetailsBox cls="accuracy-spread-container">
 		<AccuracySpreadChart {accSpreadData} />
