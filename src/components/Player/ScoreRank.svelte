@@ -54,7 +54,7 @@
 
 {#if country}
 	<span class="val" style="display:{inline ? 'inline' : 'block'};">
-		<img src={`${BL_CDN}/flags/${country}.png`} alt="" />
+		<img src={`/assets/flags/${country}.png`} alt="" />
 		<strong
 			class="value"
 			title={!showCountryTotal && country && $currentCountryRank && countryRankTotal

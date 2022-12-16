@@ -572,14 +572,16 @@
 			{#if $leaderboardStore}
 				{#if leaderboard && song && withHeader}
 					{#if !withoutHeader}
-						<header transition:fade>
+						<header class="header" transition:fade>
 							<div class="header-container">
 								<h1 class="title is-4">
-									<span class="name">{song.name} {song.subName ? song.subName : ''}</span>
-									<span class="author">{song.authorName}</span>
-									<small class="level-author">{song.levelAuthorName}</small>
+									<span class="name" title="Song name">{song.name} {song.subName ? song.subName : ''}</span>
+									<span class="author" title="Song author name">{song.authorName}</span>
+									<small class="level-author" title="Mapper">{song.levelAuthorName}</small>
 								</h1>
+							</div>
 
+							<div>
 								{#if leaderboardGroup && leaderboardGroup.length > 1}
 									<select class="group-select" bind:value={selectedGroupEntry} on:change={onSelectedGroupEntryChanged}>
 										{#each leaderboardGroup as option (option.id)}
@@ -589,141 +591,134 @@
 										{/each}
 									</select>
 								{/if}
+
+								{#if !votingLoading}
+									{#if votingStatus == 2}
+										<Button
+											cls="voteButton"
+											iconFa={'fas fa-comment-dots'}
+											title={'Vote this map for ranking!'}
+											noMargin={true}
+											on:click={() => (mapVoting = !mapVoting)} />
+									{:else if votingStatus == 1}
+										<Button
+											cls="voteButton"
+											disabled={true}
+											iconFa="fas fa-lock"
+											title="Pass this diff to vote on the map"
+											noMargin={true} />
+									{:else if votingStatus == 3}
+										<Button
+											cls="voteButton"
+											type="green"
+											iconFa="fas fa-clipboard-check"
+											title="Thank your for the vote!"
+											noMargin={true} />
+									{/if}
+									{#if separatePage && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
+										{#if !isRT && qualificationLimitError}
+											<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
+										{:else}
+											<Button
+												cls="voteButton"
+												iconFa={isRanked ? 'fas fa-star' : 'fas fa-rocket'}
+												title={isRanked ? 'Update map stars' : 'Nominate this map!'}
+												noMargin={true}
+												on:click={() => {
+													mapVoting = !mapVoting;
+													rtvoting = true;
+												}} />
+										{/if}
+									{/if}
+									{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
+										<Button
+											cls="voteButton"
+											iconFa="fa fa-scale-balanced"
+											title={reweight && !reweight.finished
+												? reweight.rtMember == $account?.id
+													? 'Update'
+													: 'Approve reweight'
+												: 'Start map reweight!'}
+											noMargin={true}
+											on:click={() => {
+												rankUpdate = !rankUpdate;
+											}} />
+									{/if}
+									{#if separatePage && isRT && (leaderboard?.stats?.status === DifficultyStatus.nominated || (!isjuniorRT && isQualified))}
+										<Button
+											cls="voteButton"
+											iconFa="fas fa-list-check"
+											title="Update qualification details"
+											noMargin={true}
+											on:click={() => {
+												mapVoting = !mapVoting;
+												rtvoting = true;
+												qualificationUpdate = true;
+											}} />
+									{/if}
+								{:else}
+									<Spinner />
+								{/if}
 							</div>
 
-							<h2 class="title is-6" class:unranked={!isRanked}>
-								{#if leaderboard.categoryDisplayName}
-									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
-										<span slot="label">
-											{leaderboard.categoryDisplayName}
-											{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
-										</span>
-									</Badge>
-								{/if}
-
-								{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-								{#if leaderboard.stats && leaderboard.stats.stars}
-									<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★" />
-								{/if}
-								{#if isRT || isSupporter}
-									{#if generatedStars}
-										<span style="color: white;">
-											EX MACHINA
-											<Value value={generatedStars} digits={2} zero="" suffix="★" />
-										</span>
-									{:else if generatedStars !== 0}
-										<Spinner />
+							<div class="title-and-buttons">
+								<h2 class="title is-6" class:unranked={!isRanked}>
+									{#if leaderboard.categoryDisplayName}
+										<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+											<span slot="label">
+												{leaderboard.categoryDisplayName}
+												{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
+											</span>
+										</Badge>
 									{/if}
-								{/if}
-								{#if leaderboard.diffInfo}<span class="diff"><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span>{/if}
-								{#if leaderboard?.stats?.type}
-									<MapTypeDescription type={leaderboard?.stats.type} />
-								{/if}
 
-								<Icons {hash} {diffInfo} mapCheck={true} />
-								<Button
-									cls="replay-button-alt battleroyalebtn"
-									icon={`<div class='battleroyale${batleRoyaleDraft ? 'stop' : ''}-icon'></div>`}
-									title="Draft battle royal"
-									noMargin={true}
-									on:click={() => (batleRoyaleDraft = !batleRoyaleDraft)} />
-								{#if batleRoyaleDraft && draftList && draftList.length > 0}
+									{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
+									{#if leaderboard.stats && leaderboard.stats.stars}
+										<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★" />
+									{/if}
+									{#if isRT || isSupporter}
+										{#if generatedStars}
+											<span style="color: white;">
+												EX MACHINA
+												<Value value={generatedStars} digits={2} zero="" suffix="★" />
+											</span>
+										{:else if generatedStars !== 0}
+											<Spinner />
+										{/if}
+									{/if}
+									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
+											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span
+										>{/if}
+									{#if leaderboard?.stats?.type}
+										<MapTypeDescription type={leaderboard?.stats.type} />
+									{/if}
+								</h2>
+								<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
+							</div>
+
+							{#if batleRoyaleDraft}
+								<div class="royale-title-container">
+									<span class="royale-title">Select players from the leaderboard to join</span>
 									<Button
-										cls="replay-button-alt battleroyalebtn"
-										icon="<div class='battleroyalestart-icon'></div>"
-										title="Let the battle begin!"
-										noMargin={true}
+										type="purple"
+										label="Let the battle begin!"
+										title="Use the button to the right of timeset for every score to toggle player"
+										disabled={!draftList || draftList.length == 0}
 										on:click={() => startBattleRoyale()} />
-								{/if}
-							</h2>
-
-							{#if isNominated && qualification}
-								<QualificationStatus {qualification} />
-							{/if}
-
-							{#if leaderboard.reweight && !leaderboard.reweight.finished}
-								<ReweightStatus map={leaderboard} />
+								</div>
 							{/if}
 						</header>
-					{/if}
-					{#if showStats && leaderboard.stats}
-						<div class="stats-with-icons">
-							<LeaderboardStats {leaderboard} />
-
-							{#if iconsInInfo}
-								<Icons {hash} {diffInfo} mapCheck={true} />
-							{/if}
-						</div>
 					{/if}
 				{/if}
 
 				{#if type !== 'accsaber'}
-					<div class={votingStatus ? 'switch-and-button' : ''}>
-						{#if !votingLoading}
-							{#if votingStatus == 2}
-								<Button
-									cls="voteButton"
-									iconFa={'fas fa-comment-dots'}
-									title={'Vote this map for ranking!'}
-									noMargin={true}
-									on:click={() => (mapVoting = !mapVoting)} />
-							{:else if votingStatus == 1}
-								<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title="Pass this diff to vote on the map" noMargin={true} />
-							{:else if votingStatus == 3}
-								<Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true} />
-							{/if}
-							{#if separatePage && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
-								{#if !isRT && qualificationLimitError}
-									<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
-								{:else}
-									<Button
-										cls="voteButton"
-										iconFa={isRanked ? 'fas fa-star' : 'fas fa-rocket'}
-										title={isRanked ? 'Update map stars' : 'Nominate this map!'}
-										noMargin={true}
-										on:click={() => {
-											mapVoting = !mapVoting;
-											rtvoting = true;
-										}} />
-								{/if}
-							{/if}
-							{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
-								<Button
-									cls="voteButton"
-									iconFa="fa fa-scale-balanced"
-									title={reweight && !reweight.finished
-										? reweight.rtMember == $account?.id
-											? 'Update'
-											: 'Approve reweight'
-										: 'Start map reweight!'}
-									noMargin={true}
-									on:click={() => {
-										rankUpdate = !rankUpdate;
-									}} />
-							{/if}
-							{#if separatePage && isRT && (leaderboard?.stats?.status === DifficultyStatus.nominated || (!isjuniorRT && isQualified))}
-								<Button
-									cls="voteButton"
-									iconFa="fas fa-list-check"
-									title="Update qualification details"
-									noMargin={true}
-									on:click={() => {
-										mapVoting = !mapVoting;
-										rtvoting = true;
-										qualificationUpdate = true;
-									}} />
-							{/if}
-						{:else}
-							<Spinner />
+					<nav class="diff-switch">
+						{#if !withoutDiffSwitcher && diffs && diffs.length}
+							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
 						{/if}
-						<nav class="diff-switch">
-							{#if !withoutDiffSwitcher && diffs && diffs.length}
-								<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
-							{/if}
 
-							<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
-						</nav>
-					</div>
+						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
+					</nav>
 				{/if}
 
 				{#if scoresWithUser?.length}
@@ -793,7 +788,7 @@
 													{:else if draftList.includes(score.player.playerId)}
 														<Button
 															cls="replay-button-alt"
-															icon="<div class='battleroyaleescape-icon'></div>"
+															icon="<div class='battleroyalestop-icon'></div>"
 															title="Remove from battle royal"
 															noMargin={true}
 															on:click={() => (draftList = draftList.filter(el => el != score.player.playerId))} />
@@ -1022,6 +1017,15 @@
 				{:else}
 					<p transition:fade>No scores found.</p>
 				{/if}
+				{#if showStats && leaderboard.stats}
+					<div class="stats-with-icons">
+						<LeaderboardStats {leaderboard} />
+
+						{#if iconsInInfo}
+							<Icons {hash} {diffInfo} mapCheck={true} />
+						{/if}
+					</div>
+				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>
 			{/if}
@@ -1031,14 +1035,27 @@
 			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
 		{/if}
 	</article>
-	{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
+	{#if (showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars) || (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
 		<aside>
-			<ContentBox>
-				<h2 class="title is-5">
-					PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
-				</h2>
-				<PpCurve stars={leaderboard?.stats?.stars} {modifiers} on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
-			</ContentBox>
+			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
+				<ContentBox>
+					{#if isNominated && qualification}
+						<QualificationStatus {qualification} />
+					{/if}
+
+					{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
+						<ReweightStatus map={leaderboard} />
+					{/if}
+				</ContentBox>
+			{/if}
+			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
+				<ContentBox>
+					<h2 class="title is-5">
+						PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
+					</h2>
+					<PpCurve stars={leaderboard?.stats?.stars} {modifiers} on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
+				</ContentBox>
+			{/if}
 		</aside>
 	{/if}
 </section>
@@ -1060,10 +1077,10 @@
 
 	.diff-switch {
 		display: flex;
-		flex-direction: column;
 		justify-content: center;
 		margin-bottom: 1em;
 		gap: 0.6em;
+		flex-wrap: wrap;
 	}
 
 	.diff-switch :global(> *:not(:last-child)) {
@@ -1102,6 +1119,11 @@
 
 	header {
 		color: var(--alternate);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-bottom: 1.2em;
+		margin-top: 1em;
 	}
 
 	header .title {
@@ -1109,18 +1131,18 @@
 	}
 
 	header h1 {
-		font-size: 1.5em !important;
+		font-size: 1em !important;
 		margin-bottom: 0.5em;
 	}
 
 	header h1 span.name {
-		font-size: 0.875em;
+		font-size: 1.8em;
 	}
 
 	header h2.title {
 		font-size: 1em !important;
-		margin-top: 0;
 		color: var(--increase, #42b129) !important;
+		margin-top: 0.5em;
 		margin-bottom: 0.5em;
 	}
 
@@ -1152,6 +1174,7 @@
 		font-family: inherit;
 		font-size: 0.875rem;
 		font-weight: 500;
+		margin: 0.4em;
 	}
 
 	.group-option {
@@ -1364,6 +1387,28 @@
 		margin-bottom: 0.5em;
 	}
 
+	.title-and-buttons {
+		display: flex;
+		align-items: center;
+		margin-top: 0.5em;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.6em;
+	}
+
+	.royale-title {
+		color: white;
+		text-align: center;
+		padding: 1em;
+		font-size: large;
+	}
+
+	.royale-title-container {
+		flex-direction: column;
+		display: flex;
+		align-items: center;
+	}
+
 	.user-score {
 		height: auto !important;
 	}
@@ -1381,8 +1426,7 @@
 	}
 
 	:global(.voteButton) {
-		margin-top: 1.4em !important;
-		margin-bottom: -5em !important;
+		margin-top: 0.25em !important;
 		height: 1.8em;
 	}
 

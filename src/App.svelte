@@ -132,16 +132,20 @@
 	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
 	<ContentBox cls="footer-box">
 		<p>
+			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
+			|
+			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
+			|
 			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
 			|
 			<a href="/support" on:click|preventDefault={() => navigate('/support')}>Support</a>
 			|
-			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
+			<a href="/socket" on:click|preventDefault={() => navigate('/socket')}>Scores feed</a>
 			|
 			<a href="https://twitter.com/beatleader_">Twitter</a>
 			|
-			<a href="https://github.com/BeatLeader/beatleader-website">Source</a> |
-			<a href="https://discord.gg/2RG5YVqtG6">Discord</a> |
+			<a href="https://discord.gg/2RG5YVqtG6">Discord</a>
+			|
 			<a href="https://patreon.com/BeatLeader">Patreon</a>
 		</p>
 	</ContentBox>

@@ -11744,10 +11744,9 @@ body::-webkit-scrollbar-track {
 }
 
 .battleroyale-icon {
-	margin-left: -0.5em;
-	margin-bottom: 0.8em;
-	width: 130%;
-	height: 130%;
+	margin-left: -0.36em;
+	width: 140%;
+	height: 140%;
 	background-size: cover;
 	background-repeat: no-repeat;
 	filter: grayscale(100%);
@@ -11755,44 +11754,22 @@ body::-webkit-scrollbar-track {
 }
 
 .battleroyalestop-icon {
-	margin-left: -0.5em;
-	margin-bottom: 0.8em;
-	width: 130%;
-	height: 130%;
+	margin-left: -0.36em;
+	width: 140%;
+	height: 140%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./battleRoyale.png');
+	background-image: url(./battleRoyale.png);
 }
 
 .battleroyalejoin-icon {
-	margin-left: -0.5em;
-	margin-bottom: 0.5em;
-	width: 130%;
-	height: 130%;
+	margin-left: -0.36em;
+	width: 140%;
+	height: 140%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	filter: grayscale(100%);
-	background-image: url('./battleRoyaleJoin.png');
-}
-
-.battleroyaleescape-icon {
-	margin-left: -0.5em;
-	margin-bottom: 0.5em;
-	width: 130%;
-	height: 130%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./battleRoyaleJoin.png');
-}
-
-.battleroyalestart-icon {
-	margin-left: -0.5em;
-	margin-bottom: 0.8em;
-	width: 130%;
-	height: 130%;
-	background-size: cover;
-	background-repeat: no-repeat;
-	background-image: url('./battleRoyaleStart.png');
+	filter: grayscale(90%) brightness(2);
+	background-image: url(./battleRoyale.png);
 }
 
 .grid-transition-helper {

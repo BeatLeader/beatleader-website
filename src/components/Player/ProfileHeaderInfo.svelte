@@ -220,7 +220,7 @@
 						title="Go to country ranking"
 						class="clickable">
 						<img
-							src={`${BL_CDN}/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
+							src={`/assets/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
 							class="countryIcon"
 							alt={country?.country} />
 

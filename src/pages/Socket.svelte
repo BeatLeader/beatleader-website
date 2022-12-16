@@ -1,4 +1,5 @@
 <script>
+	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Pager from '../components/Common/Pager.svelte';
 	import SongScore from '../components/Player/SongScore.svelte';
 	import {processScore} from '../network/clients/beatleader/scores/utils/processScore';
@@ -27,7 +28,9 @@
 	{#if totalItems}
 		<div class="song-scores grid-transition-helper">
 			{#each scores.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
-				<SongScore playerId={songScore.player.id} {songScore} {idx} service="BeatLeader" withPlayers="true" />
+				<ContentBox>
+					<SongScore playerId={songScore.player.id} {songScore} {idx} inList={false} service="BeatLeader" withPlayers="true" />
+				</ContentBox>
 			{/each}
 		</div>
 	{:else}
