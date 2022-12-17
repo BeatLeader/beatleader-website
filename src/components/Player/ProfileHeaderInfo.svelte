@@ -87,7 +87,7 @@
 	$: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin;
 
 	function getIndex(array) {
-		if (array.length == 1) {
+		if (!array || array.length == 1) {
 			return 0;
 		} else {
 			return array.length - Math.min($configStore.preferences.daysToCompare, array.length) - 1;
@@ -110,9 +110,9 @@
 
 	$: history = $historyStore[playerId];
 	$: prevLabel = getPrevLabel();
-	$: prevRank = history ? history.rank[getIndex(history.rank)] : playerInfo?.rank;
-	$: prevPp = history ? history.pp[getIndex(history.pp)] : playerInfo?.pp;
-	$: prevCountryRank = history ? history.countryRank[getIndex(history.countryRank)] : playerInfo?.countryRank;
+	$: prevRank = history?.rank ? history.rank[getIndex(history.rank)] : playerInfo?.rank;
+	$: prevPp = history?.pp ? history.pp[getIndex(history.pp)] : playerInfo?.pp;
+	$: prevCountryRank = history?.countryRank ? history.countryRank[getIndex(history.countryRank)] : playerInfo?.countryRank;
 </script>
 
 {#if showBanForm}
