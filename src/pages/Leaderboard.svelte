@@ -586,7 +586,11 @@
 									<select class="group-select" bind:value={selectedGroupEntry} on:change={onSelectedGroupEntryChanged}>
 										{#each leaderboardGroup as option (option.id)}
 											<option class="group-option" value={option.id}>
-												{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
+												{#if option.timestamp}
+													{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
+												{:else}
+													{formatDiffStatus(option.status)}
+												{/if}
 											</option>
 										{/each}
 									</select>
@@ -713,6 +717,36 @@
 
 				{#if type !== 'accsaber'}
 					<nav class="diff-switch">
+						{#if !separatePage}
+							{#if !votingLoading}
+								<div class="embeded-voting">
+									{#if votingStatus == 2}
+										<Button
+											cls="voteButton"
+											iconFa={'fas fa-comment-dots'}
+											title={'Vote this map for ranking!'}
+											noMargin={true}
+											on:click={() => (mapVoting = !mapVoting)} />
+									{:else if votingStatus == 1}
+										<Button
+											cls="voteButton"
+											disabled={true}
+											iconFa="fas fa-lock"
+											title="Pass this diff to vote on the map"
+											noMargin={true} />
+									{:else if votingStatus == 3}
+										<Button
+											cls="voteButton"
+											type="green"
+											iconFa="fas fa-clipboard-check"
+											title="Thank your for the vote!"
+											noMargin={true} />
+									{/if}
+								</div>
+							{:else}
+								<Spinner />
+							{/if}
+						{/if}
 						{#if !withoutDiffSwitcher && diffs && diffs.length}
 							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
 						{/if}
@@ -1035,7 +1069,7 @@
 			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
 		{/if}
 	</article>
-	{#if (showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars) || (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
+	{#if separatePage && ((showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars) || (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished))}
 		<aside>
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
 				<ContentBox>
@@ -1428,6 +1462,12 @@
 	:global(.voteButton) {
 		margin-top: 0.25em !important;
 		height: 1.8em;
+	}
+
+	.embeded-voting {
+		position: fixed;
+		left: 1.5em;
+		transform: translateY(-0.28em);
 	}
 
 	@media screen and (max-width: 1275px) {
