@@ -132,7 +132,8 @@
 		.ss-modal {
 			top: auto;
 			left: 0;
-			bottom: 0;
+			max-height: 90%;
+			bottom: 10%;
 			transform: none;
 			width: 100%;
 			min-width: min(20em, 100vw);
