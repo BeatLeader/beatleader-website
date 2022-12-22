@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const {execSync} = require('child_process');
+import replace from 'rollup-plugin-replace';
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -54,6 +55,11 @@ export default [
 			file: 'public/build/bundle.js',
 		},
 		plugins: [
+			replace({
+				include: 'node_modules/svelte/internal/*',
+				"text('')": "document.createComment('')",
+				delimiters: ['', ''],
+			}),
 			less({
 				include: ['**/*.less'],
 				output: (css, id) => {
