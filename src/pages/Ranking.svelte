@@ -328,9 +328,14 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/20')}>
-			<span class="event-title">One event - two batches of cool maps!</span>
-			<img alt="Event banner" class="event-image" src="https://beatleadercdn.blob.core.windows.net/assets/1235-event.png" />
+		<ContentBox cls="event-banner festive" on:click={() => navigate('/event/23')}>
+			<div class="event-container">
+				<img alt="Event banner" class="event-image" src="https://api.beatleader.xyz/playlist/image/1248.png" />
+				<div class="event-text-container">
+					<span class="event-title">Happy holidays, gamers!</span>
+					<span class="event-text">Check out special event with custom scoring rules.<br />Only timing matters!</span>
+				</div>
+			</div>
 		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
@@ -449,7 +454,7 @@
 		justify-content: flex-start;
 	}
 
-	:global(.event-banner) {
+	:global(.content-box.event-banner) {
 		display: flex;
 		align-items: center;
 		grid-gap: 1em;
@@ -457,16 +462,37 @@
 		margin: 0.6em;
 		padding: 0.3em;
 		border-radius: 0.5em;
-		height: 4em;
+		height: 8em;
 		cursor: pointer;
+		background-image: url(/assets/lights2.gif) !important;
+	}
+
+	.event-container {
+		backdrop-filter: blur(10px) brightness(0.9);
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.event-text-container {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.event-image {
-		width: 3em;
-		height: 3em;
+		width: 8em;
+		height: 8em;
 	}
 
 	.event-title {
+		color: white;
+		font-size: x-large;
+		font-weight: 800;
+	}
+
+	.event-text {
 		color: white;
 		font-size: larger;
 		font-weight: 600;

@@ -112,7 +112,7 @@
 							class="event-box"
 							class:finished={Date.now() / 1000 > event?.endDate}
 							in:fade={{delay: idx * 10}}>
-							<ContentBox>
+							<ContentBox cls={event.id == 23 ? 'festive' : ''}>
 								<Event {event} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
 							</ContentBox>
 						</a>

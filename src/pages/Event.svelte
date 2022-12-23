@@ -169,12 +169,35 @@
 
 <section class="align-content">
 	<aside>
-		<ContentBox>
+		<ContentBox cls={eventId == 23 ? 'festive' : ''}>
 			<Event event={currentEvent} withLeader={false} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
 		</ContentBox>
 	</aside>
 
 	<article class="page-content" transition:fade>
+		{#if eventId == 23}
+			<ContentBox cls="inner-modal">
+				<span>
+					Have you ever wondered how Beat Saber would feel with timing based scoring instead of accuracy based? Wonder no more!<br />
+					Limited time offer from BeatLeader. Install the mods and play custom mode to try our attempt at reimagining the game.<br />
+					No preswing, postswing or accuracy, only you and cubes. <br /><br />
+				</span>
+				<div class="downloadButtons">
+					<a href="https://github.com/BeatLeader/beatleader-modifiers-mod/releases" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download PC mod" color="#2d4150" />
+					</a>
+					<a href="https://github.com/BeatLeader/beatleader-modifiers-qmod/releases" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download Quest mod" color="#2d4150" />
+					</a>
+				</div>
+				<span>
+					<br />
+					Event consists of 10 Christmas themed songs and 10 most voted ranked maps.<br />
+					Thank you mappers and ranking team for the productive year<br />
+					<b>Happy holidays and have fun!</b>
+				</span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls="inner-modal">
 			{#each params as param}
 				{#if param.type}
