@@ -12,6 +12,7 @@
 	export let height = '200px';
 	export let logarithmic = false;
 	export let modifiers = {};
+	export let mode;
 
 	const pageContainer = getContext('pageContainer');
 
@@ -45,7 +46,7 @@
 		let annotations = [];
 		const data = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
-			const pp = getPPFromAcc(acc, stars);
+			const pp = getPPFromAcc(acc, stars, mode);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
 			if (!minPp) minPp = pp;

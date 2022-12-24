@@ -1087,7 +1087,11 @@
 					<h2 class="title is-5">
 						PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
 					</h2>
-					<PpCurve stars={leaderboard?.stats?.stars} {modifiers} on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
+					<PpCurve
+						stars={leaderboard?.stats?.stars}
+						{modifiers}
+						mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
+						on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
 				</ContentBox>
 			{/if}
 		</aside>
