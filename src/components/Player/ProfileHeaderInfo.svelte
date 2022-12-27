@@ -1,7 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import {createEventDispatcher, getContext} from 'svelte';
-	import {BL_CDN} from '../../network/queues/beatleader/page-queue';
 	import createAccountStore from '../../stores/beatleader/account';
 	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
 	import {configStore} from '../../stores/config';

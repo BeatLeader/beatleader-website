@@ -2,7 +2,6 @@
 	import {tweened} from 'svelte/motion';
 	import {cubicOut} from 'svelte/easing';
 	import Value from '../Common/Value.svelte';
-	import {BL_CDN} from '../../network/queues/beatleader/page-queue';
 	import {getHeadsetForHMD, describePlatform, getControllerForEnum} from '../../utils/beatleader/format';
 
 	export let rank;

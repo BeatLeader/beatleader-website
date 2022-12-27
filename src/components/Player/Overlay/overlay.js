@@ -1,4 +1,4 @@
-import {BL_CDN} from '../../../network/queues/beatleader/page-queue';
+import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 
 const CREATOR = ['rankedteam', 'juniorrankedteam', 'creator', 'admin'];
 const SPONSOR = ['sponsor', ...CREATOR];
@@ -140,7 +140,7 @@ const allOverlays = [
 ];
 
 export const getOverlayUrlByName = (effectName, type = '') =>
-	effectName?.length ? `${BL_CDN}/assets/${effectName}${type?.length ? `_${type}` : ''}.webp` : null;
+	effectName?.length ? `${BL_ASSETS_CDN}/${effectName}${type?.length ? `_${type}` : ''}.webp` : null;
 
 export const getAllOverlays = roles => {
 	return allOverlays.map(a => ({
