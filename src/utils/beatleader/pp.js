@@ -20,7 +20,7 @@ export const buildCurve = (acc, stars) => {
 };
 
 export const getPPFromAcc = (acc, stars, mode) => {
-	return mode == 'rhythmgamestandard' ? (acc * stars - 0.5) * (stars + 0.5) * 5 : buildCurve(acc, stars - 0.5) * (stars + 0.5) * 42;
+	return mode == 'rhythmgamestandard' ? acc * stars * 55 : buildCurve(acc, stars - 0.5) * (stars + 0.5) * 42;
 };
 
 export const computeModifierStars = (stars, mods) => {
