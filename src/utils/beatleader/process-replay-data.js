@@ -14,11 +14,28 @@ export function processSliceSummary(replay) {
 		};
 	}
 
-	let result = [createEmptySummary('Midlanes'), createEmptySummary('Outerlanes'), createEmptySummary('Crossovers')];
+	let result = [
+		createEmptySummary('Midlanes'),
+		createEmptySummary('Outerlanes'),
+		createEmptySummary('Crossovers'),
+		createEmptySummary('Forehands'),
+		createEmptySummary('Backhands'),
+	];
 
-	function getSummaryEntry(noteLineIndex, saberType) {
-		let summaryGroup = getSummaryGroup(noteLineIndex, saberType);
+	function getLaneSummaryEntry(noteLineIndex, saberType) {
+		let summaryGroup = getLaneSummaryGroup(noteLineIndex, saberType);
 		return saberType === 0 ? result[summaryGroup].left : result[summaryGroup].right;
+	}
+
+	function getParitySummaryEntry(noteCutInfo, saberType) {
+		let summaryGroup = getParitySummaryGroup(noteCutInfo);
+		return saberType === 0 ? result[summaryGroup].left : result[summaryGroup].right;
+	}
+
+	function addScore(handSummary, score, td) {
+		handSummary.count += 1;
+		handSummary.averageScore += score;
+		handSummary.averageTD += td;
 	}
 
 	function applyAverage(handSummary) {
@@ -33,14 +50,13 @@ export function processSliceSummary(replay) {
 		const noteData = decodeNoteData(note.noteID);
 		if (noteData.scoringType !== NoteScoringType.Normal) continue;
 
-		let summaryEntry = getSummaryEntry(noteData.lineIndex, note.noteCutInfo.saberType);
+		let laneSummaryEntry = getLaneSummaryEntry(noteData.lineIndex, note.noteCutInfo.saberType);
+		let paritySummaryEntry = getParitySummaryEntry(note.noteCutInfo, note.noteCutInfo.saberType);
 
 		const score = getScore(note.noteCutInfo);
 		const td = Math.abs(note.noteCutInfo.cutNormal.z);
-
-		summaryEntry.count += 1;
-		summaryEntry.averageScore += score;
-		summaryEntry.averageTD += td;
+		addScore(laneSummaryEntry, score, td);
+		addScore(paritySummaryEntry, score, td);
 	}
 
 	result.forEach(summary => {
@@ -72,7 +88,7 @@ export function processSliceDetails(replay) {
 		result.mainGrid.push(mainGridCell);
 	}
 
-	for (let summaryGroup = 0; summaryGroup < 3; summaryGroup++) {
+	for (let summaryGroup = 0; summaryGroup < 5; summaryGroup++) {
 		let summaryGrid = [];
 		for (let i = 0; i < 12; i++) {
 			summaryGrid.push({count: 0, averageScore: 0.0});
@@ -98,7 +114,8 @@ export function processSliceDetails(replay) {
 
 		let mainGridIndex = getMainGridIndex(noteData.noteLineLayer, noteData.lineIndex);
 		let secondaryGridIndex = getSecondaryGridIndex(noteData.cutDirection);
-		let summaryGroup = getSummaryGroup(noteData.lineIndex, note.noteCutInfo.saberType);
+		let laneSummaryGroup = getLaneSummaryGroup(noteData.lineIndex, note.noteCutInfo.saberType);
+		let paritySummaryGroup = getParitySummaryGroup(note.noteCutInfo);
 
 		const mainCell = result.mainGrid[mainGridIndex];
 		let secondaryCell;
@@ -107,12 +124,14 @@ export function processSliceDetails(replay) {
 		} else {
 			secondaryCell = mainCell.right[secondaryGridIndex];
 		}
-		const summaryCell = result.summaryGrids[summaryGroup][mainGridIndex];
+		const laneSummaryCell = result.summaryGrids[laneSummaryGroup][mainGridIndex];
+		const paritySummaryCell = result.summaryGrids[paritySummaryGroup][mainGridIndex];
 
 		const score = getScore(note.noteCutInfo);
 		addScore(mainCell, score);
 		addScore(secondaryCell, score);
-		addScore(summaryCell, score);
+		addScore(laneSummaryCell, score);
+		addScore(paritySummaryCell, score);
 	}
 
 	for (let i = 0; i < 12; i++) {
@@ -125,7 +144,7 @@ export function processSliceDetails(replay) {
 		}
 	}
 
-	for (let summaryGroup = 0; summaryGroup < 3; summaryGroup++) {
+	for (let summaryGroup = 0; summaryGroup < 5; summaryGroup++) {
 		let summaryGrid = result.summaryGrids[summaryGroup];
 		for (let i = 0; i < 12; i++) {
 			applyAverageScore(summaryGrid[i]);
@@ -250,7 +269,12 @@ export function processAccuracySpread(replay) {
 
 //region Utils
 
-function getSummaryGroup(noteLineIndex, saberType) {
+function getParitySummaryGroup(noteCutInfo) {
+	const isForehand = noteCutInfo.cutNormal.x < 0;
+	return isForehand ? SummaryGroup.Forehands : SummaryGroup.Backhands;
+}
+
+function getLaneSummaryGroup(noteLineIndex, saberType) {
 	switch (saberType) {
 		case 0:
 			if (noteLineIndex >= 2) return SummaryGroup.Crossovers;
@@ -267,6 +291,8 @@ const SummaryGroup = {
 	Midlanes: 0,
 	Outerlanes: 1,
 	Crossovers: 2,
+	Forehands: 3,
+	Backhands: 4,
 };
 
 function getStandardDeviation(numArray, mean) {
