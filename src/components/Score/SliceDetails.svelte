@@ -61,6 +61,9 @@
 						return 'highlight-l';
 				}
 				break;
+			case 3: //Forehands
+			case 4: //Backhands
+				return 'main';
 		}
 		return 'highlight-fade';
 	}
