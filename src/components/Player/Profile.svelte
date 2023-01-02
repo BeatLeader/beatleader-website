@@ -144,7 +144,13 @@
 			if (editModel) editModel.isSaving = false;
 		}
 	}
-
+	function onKeyUp(event){
+		switch (event.key){
+			case "Escape": 
+				onCancelEditModel();
+			
+		}		
+	}
 	let modalShown;
 
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -220,7 +226,7 @@
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
-
+<svelte:window on:keyup={onKeyUp}/>
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
 	<Rain />
 {/if}
