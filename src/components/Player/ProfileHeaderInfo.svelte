@@ -162,6 +162,12 @@
 						iconFa="fas fa-edit"
 						on:click={() => dispatch('edit-model-enable')} />
 				{/if}
+				<Button
+					type="text"
+					title="Screenshot profile"
+					iconFa="fas fa-camera"
+					cls="screenshotButton"
+					on:click={() => dispatch('screenshot-profile')} />
 			{/if}
 
 			<span class="status">
@@ -371,7 +377,10 @@
 		margin-bottom: -1em !important;
 		font-size: 0.75em !important;
 	}
-
+	:global(.screenshotButton) {
+		margin-bottom: -1em !important;
+		font-size: 0.75em !important;
+	}
 	:global(.banButton) {
 		padding: 0 !important;
 		font-size: 0.8em !important;
