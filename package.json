@@ -45,6 +45,7 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "html2canvas": "^1.4.1",
     "sirv-cli": "^1.0.0",
     "svelte-select": "^4.4.7",
     "svelte-simple-modal": "^1.1.1"
