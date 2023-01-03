@@ -26,7 +26,7 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
 	import {configStore} from '../../stores/config';
-
+	import html2canvas from 'html2canvas';
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
@@ -144,12 +144,22 @@
 			if (editModel) editModel.isSaving = false;
 		}
 	}
-	function onKeyUp(event){
-		switch (event.key){
-			case "Escape": 
+	async function takeScreenshot() {
+		let element = document.querySelector('.content-box');
+		let canvas = await html2canvas(element, {useCORS: true});
+		canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
+		addNotification({
+			text: 'Screenshot Successful',
+			position: 'top-right',
+			type: 'success',
+			removeAfter: 2000,
+		});
+	}
+	function onKeyUp(event) {
+		switch (event.key) {
+			case 'Escape':
 				onCancelEditModel();
-			
-		}		
+		}
 	}
 	let modalShown;
 
@@ -226,7 +236,8 @@
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
-<svelte:window on:keyup={onKeyUp}/>
+
+<svelte:window on:keyup={onKeyUp} />
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
 	<Rain />
 {/if}
@@ -282,6 +293,7 @@
 				{playerId}
 				bind:editModel
 				on:edit-model-enable={onEnableEditModel}
+				on:screenshot-profile={takeScreenshot}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
 			<BeatLeaderSummary
