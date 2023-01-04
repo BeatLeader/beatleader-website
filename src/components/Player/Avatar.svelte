@@ -16,7 +16,7 @@
 
 <span class="avatar-container" class:loading={isLoading} class:centered title={editModel ? 'Click to edit avatar' : null} on:click>
 	{#if avatar}
-		<img src={avatar} class="avatar" alt="" />
+		<img src={avatar} class="avatar" alt="" crossorigin="anonymous" />
 	{:else}
 		<span class="no-image">?</span>
 	{/if}

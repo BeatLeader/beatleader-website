@@ -26,7 +26,7 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
 	import {configStore} from '../../stores/config';
-
+	import html2canvas from 'html2canvas';
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
@@ -144,12 +144,31 @@
 			if (editModel) editModel.isSaving = false;
 		}
 	}
-	function onKeyUp(event){
-		switch (event.key){
-			case "Escape": 
+	async function takeScreenshot() {
+		try {
+			let element = document.querySelector('.content-box');
+			let canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
+			canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
+			addNotification({
+				text: 'Screenshot Copied to Clipboard',
+				position: 'top-right',
+				type: 'success',
+				removeAfter: 2000,
+			});
+		} catch {
+			addNotification({
+				text: 'Screenshot Failed',
+				position: 'top-right',
+				type: 'error',
+				removeAfter: 2000,
+			});
+		}
+	}
+	function onKeyUp(event) {
+		switch (event.key) {
+			case 'Escape':
 				onCancelEditModel();
-			
-		}		
+		}
 	}
 	let modalShown;
 
@@ -226,15 +245,18 @@
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
-<svelte:window on:keyup={onKeyUp}/>
+
+<svelte:window on:keyup={onKeyUp} />
 {#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
 	<Rain />
 {/if}
 
 <AvatarOverlayEditor bind:editModel {roles} />
-
 <ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
 	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
+	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+		<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+	</div>
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
@@ -249,11 +271,13 @@
 					}} />
 
 				{#if playerInfo && !isLoading}
-					<AvatarOverlayIcons
-						{playerData}
-						bind:editModel
-						on:modal-shown={() => (modalShown = true)}
-						on:modal-hidden={() => (modalShown = false)} />
+					<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+						<AvatarOverlayIcons
+							{playerData}
+							bind:editModel
+							on:modal-shown={() => (modalShown = true)}
+							on:modal-hidden={() => (modalShown = false)} />
+					</div>
 				{/if}
 			</div>
 
@@ -368,7 +392,12 @@
 		flex-direction: column;
 		align-items: center;
 	}
-
+	:global(.screenshotButton) {
+		font-size: 1.5em !important;
+		position: absolute !important;
+		right: 0.4em;
+		top: 0em;
+	}
 	:global(.inner-modal) {
 		z-index: 10 !important;
 		position: relative !important;

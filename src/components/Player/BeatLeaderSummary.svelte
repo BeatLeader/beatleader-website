@@ -64,13 +64,15 @@
 		{/if}
 	</div>
 	{#if hiddenScoresStats?.length || hiddenAccStats?.length}
-		<span
-			class="reveal clickable"
-			class:opened={showHidden}
-			on:click={() => (showHidden = !showHidden)}
-			title={showHidden ? 'Hide all stats' : 'Show rest of the stats'}>
-			<i class={showHidden ? 'fas fa-eye-slash' : 'far fa-eye'} />
-		</span>
+		<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+			<span
+				class="reveal clickable"
+				class:opened={showHidden}
+				on:click={() => (showHidden = !showHidden)}
+				title={showHidden ? 'Hide all stats' : 'Show rest of the stats'}>
+				<i class={showHidden ? 'fas fa-eye-slash' : 'far fa-eye'} />
+			</span>
+		</div>
 	{/if}
 </div>
 

@@ -21,7 +21,6 @@
 	export let playerId;
 	export let error = null;
 	export let editModel = null;
-
 	const dispatch = createEventDispatcher();
 
 	const account = createAccountStore();
@@ -155,12 +154,15 @@
 				{/if}
 
 				{#if canRedact && !editModel?.data}
-					<Button
-						type="text"
-						title="Edit profile"
-						cls="editNameButton"
-						iconFa="fas fa-edit"
-						on:click={() => dispatch('edit-model-enable')} />
+					<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+						<Button
+							type="text"
+							title="Edit profile"
+							cls="editNameButton"
+							iconFa="fas fa-edit"
+							on:click={() => dispatch('edit-model-enable')}
+							data-html2canvas-ignore />
+					</div>
 				{/if}
 			{/if}
 
@@ -371,7 +373,6 @@
 		margin-bottom: -1em !important;
 		font-size: 0.75em !important;
 	}
-
 	:global(.banButton) {
 		padding: 0 !important;
 		font-size: 0.8em !important;
