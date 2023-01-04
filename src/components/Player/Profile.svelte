@@ -150,7 +150,7 @@
 			let canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
 			canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
 			addNotification({
-				text: 'Screenshot Successful',
+				text: 'Screenshot Copied to Clipboard',
 				position: 'top-right',
 				type: 'success',
 				removeAfter: 2000,
