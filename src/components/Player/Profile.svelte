@@ -147,7 +147,7 @@
 	async function takeScreenshot() {
 		try {
 			let element = document.querySelector('.content-box');
-			let canvas = await html2canvas(element, {useCORS: true});
+			let canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
 			canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
 			addNotification({
 				text: 'Screenshot Successful',
