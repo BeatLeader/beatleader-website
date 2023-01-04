@@ -303,7 +303,6 @@
 				{playerId}
 				bind:editModel
 				on:edit-model-enable={onEnableEditModel}
-				on:screenshot-profile={takeScreenshot}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
 			<BeatLeaderSummary
