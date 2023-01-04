@@ -21,7 +21,6 @@
 	export let playerId;
 	export let error = null;
 	export let editModel = null;
-	export let isScreenshotting = false;
 	const dispatch = createEventDispatcher();
 
 	const account = createAccountStore();
@@ -154,13 +153,16 @@
 					</div>
 				{/if}
 
-				{#if canRedact && !editModel?.data && !isScreenshotting}
-					<Button
-						type="text"
-						title="Edit profile"
-						cls="editNameButton"
-						iconFa="fas fa-edit"
-						on:click={() => dispatch('edit-model-enable')} />
+				{#if canRedact && !editModel?.data}
+					<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+						<Button
+							type="text"
+							title="Edit profile"
+							cls="editNameButton"
+							iconFa="fas fa-edit"
+							on:click={() => dispatch('edit-model-enable')}
+							data-html2canvas-ignore />
+					</div>
 				{/if}
 			{/if}
 
