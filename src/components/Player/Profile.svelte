@@ -145,15 +145,26 @@
 		}
 	}
 	async function takeScreenshot() {
-		let element = document.querySelector('.content-box');
-		let canvas = await html2canvas(element, {useCORS: true});
-		canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
-		addNotification({
-			text: 'Screenshot Successful',
-			position: 'top-right',
-			type: 'success',
-			removeAfter: 2000,
-		});
+		document.querySelector('.screenshotButton').style.visibility = 'hidden';
+		try {
+			let element = document.querySelector('.content-box');
+			let canvas = await html2canvas(element, {useCORS: true});
+			canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
+			addNotification({
+				text: 'Screenshot Successful',
+				position: 'top-right',
+				type: 'success',
+				removeAfter: 2000,
+			});
+		} catch {
+			addNotification({
+				text: 'Screenshot Failed',
+				position: 'top-right',
+				type: 'error',
+				removeAfter: 2000,
+			});
+		}
+		document.querySelector('.screenshotButton').style.visibility = 'visible';
 	}
 	function onKeyUp(event) {
 		switch (event.key) {
@@ -243,10 +254,9 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel {roles} />
-
 <ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
 	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
-
+	<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
@@ -380,7 +390,12 @@
 		flex-direction: column;
 		align-items: center;
 	}
-
+	:global(.screenshotButton) {
+		font-size: 1.5em !important;
+		position: absolute !important;
+		right: 0.4em;
+		top: 0em;
+	}
 	:global(.inner-modal) {
 		z-index: 10 !important;
 		position: relative !important;
