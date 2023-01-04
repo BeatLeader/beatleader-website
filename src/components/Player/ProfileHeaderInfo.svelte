@@ -21,7 +21,7 @@
 	export let playerId;
 	export let error = null;
 	export let editModel = null;
-
+	export let isScreenshotting = false;
 	const dispatch = createEventDispatcher();
 
 	const account = createAccountStore();
@@ -154,7 +154,7 @@
 					</div>
 				{/if}
 
-				{#if canRedact && !editModel?.data}
+				{#if canRedact && !editModel?.data && !isScreenshotting}
 					<Button
 						type="text"
 						title="Edit profile"

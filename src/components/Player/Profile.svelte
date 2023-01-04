@@ -36,6 +36,7 @@
 	export let fixedBrowserTitle = null;
 
 	let editModel = null;
+	let isScreenshotting = false;
 
 	const {addNotification} = getNotificationsContext();
 
@@ -145,7 +146,6 @@
 		}
 	}
 	async function takeScreenshot() {
-		document.querySelector('.screenshotButton').style.visibility = 'hidden';
 		try {
 			let element = document.querySelector('.content-box');
 			let canvas = await html2canvas(element, {useCORS: true});
@@ -164,7 +164,6 @@
 				removeAfter: 2000,
 			});
 		}
-		document.querySelector('.screenshotButton').style.visibility = 'visible';
 	}
 	function onKeyUp(event) {
 		switch (event.key) {
@@ -256,7 +255,20 @@
 <AvatarOverlayEditor bind:editModel {roles} />
 <ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
 	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
-	<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+	{#if !isScreenshotting}
+		<Button
+			type="text"
+			title="Screenshot profile"
+			iconFa="fas fa-camera"
+			cls="screenshotButton"
+			on:click={async () => {
+				isScreenshotting = true;
+				setTimeout(async () => {
+					await takeScreenshot();
+					isScreenshotting = false;
+				}, 10);
+			}} />
+	{/if}
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
@@ -269,7 +281,7 @@
 						if (editModel) editModel.avatarOverlayEdit = true;
 					}} />
 
-				{#if playerInfo && !isLoading}
+				{#if playerInfo && !isLoading && !isScreenshotting}
 					<AvatarOverlayIcons
 						{playerData}
 						bind:editModel
@@ -301,6 +313,7 @@
 				{name}
 				{playerInfo}
 				{playerId}
+				{isScreenshotting}
 				bind:editModel
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
