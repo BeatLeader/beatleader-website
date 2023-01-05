@@ -13,32 +13,28 @@
 	export let players = null;
 	export let rank = 0;
 	export let country = false;
+	export let isLoading = true;
 
 	let miniRanking = null;
 
-	let isLoading = false;
 	let comparePp = null;
 
 	const prevTitle = 'vs ${value}';
 
 	async function onParamsChanged(players) {
-		try {
-			miniRanking = null;
-			comparePp = null;
+		miniRanking = null;
+		comparePp = null;
 
-			if (!players) return;
+		if (!players) return;
 
-			comparePp = opt(
-				players.find(p => (country ? opt(p, 'countryRank') : opt(p, 'rank')) === rank),
-				'pp'
-			);
-			miniRanking = players;
+		comparePp = opt(
+			players.find(p => (country ? opt(p, 'countryRank') : opt(p, 'rank')) === rank),
+			'pp'
+		);
+		miniRanking = players;
 
-			await tick();
-			dispatch('height-changed');
-		} finally {
-			isLoading = false;
-		}
+		await tick();
+		dispatch('height-changed');
 	}
 
 	$: onParamsChanged(players);
@@ -53,11 +49,10 @@
 				<i class="fas fa-globe-americas svelte-1pb1u1r" />
 			{/if}
 			<span>{country ? 'Country' : 'Global'} ranking</span>
-			{#if isLoading}
-				<Spinner />
-			{/if}
 		</h3>
-		{#if miniRanking}
+		{#if isLoading}
+			<Spinner />
+		{:else if miniRanking}
 			<div class="players">
 				{#each miniRanking as player}
 					<div class="rank">
