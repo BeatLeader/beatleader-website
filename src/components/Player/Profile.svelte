@@ -145,10 +145,16 @@
 		}
 	}
 	async function takeScreenshot() {
+		let isFirefox = false;
+		if (navigator.userAgent.indexOf('Firefox') != -1) {
+			isFirefox = true;
+		}
 		try {
-			let element = document.querySelector('.content-box');
-			let canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
-			canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})]));
+			const element = document.querySelector('.content-box');
+			const canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
+			const blob = await new Promise(resolve => canvas.toBlob(resolve));
+			await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+
 			addNotification({
 				text: 'Screenshot Copied to Clipboard',
 				position: 'top-right',
@@ -156,11 +162,14 @@
 				removeAfter: 2000,
 			});
 		} catch {
+			const errorText =
+				'Screenshot Failed: ' +
+				(isFirefox ? 'On firefox, the "clipboardItem" permission is disabled by default' : 'You do not have the correct permissions');
 			addNotification({
-				text: 'Screenshot Failed',
+				text: errorText,
 				position: 'top-right',
 				type: 'error',
-				removeAfter: 2000,
+				removeAfter: 4000,
 			});
 		}
 	}
