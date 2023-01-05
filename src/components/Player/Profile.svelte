@@ -164,7 +164,7 @@
 		} catch {
 			const errorText =
 				'Screenshot Failed: ' +
-				(isFirefox ? 'On firefox, the "clipboardItem" permission is disabled by default' : 'You do not have the correct permissions');
+				(isFirefox ? 'The issue could be that, on firefox, the "clipboardItem" permission is disabled by default.' : 'You likely do not have the correct permissions');
 			addNotification({
 				text: errorText,
 				position: 'top-right',
