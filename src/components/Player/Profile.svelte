@@ -144,29 +144,37 @@
 			if (editModel) editModel.isSaving = false;
 		}
 	}
+	function successToast(text) {
+		addNotification({
+			text: text,
+			position: 'top-right',
+			type: 'success',
+			removeAfter: 2000,
+		});
+	}
 	async function takeScreenshot() {
-		let isFirefox = false;
-		if (navigator.userAgent.indexOf('Firefox') != -1) {
-			isFirefox = true;
-		}
 		try {
 			const element = document.querySelector('.content-box');
 			const canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
 			const blob = await new Promise(resolve => canvas.toBlob(resolve));
-			await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
-
+			try {
+				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+				successToast('Screenshot Copied to Clipboard');
+			} catch {
+				const anchor = document.createElement('a');
+				const objURL = URL.createObjectURL(blob);
+				anchor.href = objURL;
+				anchor.style.display = 'none';
+				anchor.download = name + '.png';
+				document.body.appendChild(anchor);
+				anchor.click();
+				document.body.removeChild(anchor);
+				URL.revokeObjectURL(objURL);
+				successToast('Screenshot Saved');
+			}
+		} catch (e) {
 			addNotification({
-				text: 'Screenshot Copied to Clipboard',
-				position: 'top-right',
-				type: 'success',
-				removeAfter: 2000,
-			});
-		} catch {
-			const errorText =
-				'Screenshot Failed: ' +
-				(isFirefox ? 'The issue could be that, on firefox, the "clipboardItem" permission is disabled by default.' : 'You likely do not have the correct permissions');
-			addNotification({
-				text: errorText,
+				text: 'Screenshot Failed',
 				position: 'top-right',
 				type: 'error',
 				removeAfter: 4000,
@@ -289,7 +297,6 @@
 					</div>
 				{/if}
 			</div>
-
 			{#if roles}
 				<div class="role-icons">
 					{#each roles as role, idx}
