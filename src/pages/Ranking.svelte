@@ -328,7 +328,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox cls="event-banner festive" on:click={() => navigate('/event/23')}>
+		<!-- <ContentBox cls="event-banner festive" on:click={() => navigate('/event/23')}>
 			<div class="event-container">
 				<img alt="Event banner" class="event-image" src="https://api.beatleader.xyz/playlist/image/1248.png" />
 				<div class="event-text-container">
@@ -336,7 +336,7 @@
 					<span class="event-text">Check out special event with custom scoring rules.<br />Only timing matters!</span>
 				</div>
 			</div>
-		</ContentBox>
+		</ContentBox> -->
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
