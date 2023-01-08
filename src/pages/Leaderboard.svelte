@@ -60,6 +60,7 @@
 
 	export let leaderboardId;
 	export let type = 'global';
+	export let leaderboardType = 4;
 	export let page = 1;
 	export let location;
 	export let withHeader = true;
@@ -97,6 +98,7 @@
 
 	let currentLeaderboardId = leaderboardId;
 	let currentType = type;
+	let currentLeaderboardType = leaderboardType;
 	let currentPage = page;
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
@@ -132,6 +134,31 @@
 
 	let typeOptions = availableTypeOptions.map(to => to);
 
+	let availableLeaderboardTypeOptions = [
+		{
+			type: 1,
+			label: 'Standard',
+			iconFa: 'fas fa-globe-americas',
+			url: `/leaderboard/global/${currentLeaderboardId}/1`,
+			filters: {countries: ''},
+		},
+		{
+			type: 2,
+			label: 'No mods',
+			iconFa: 'fas fa-m',
+			url: `/leaderboard/global/${currentLeaderboardId}/1`,
+			filters: {countries: ''},
+		},
+		{
+			type: 4,
+			label: 'Golf',
+			iconFa: 'fas fa-golf-ball-tee',
+			url: `/leaderboard/global/${currentLeaderboardId}/1`,
+			filters: {countries: ''},
+		},
+	];
+	let leaderboardTypeOptions = availableLeaderboardTypeOptions.map(to => to);
+
 	const stringifyFilters = (query, keys) =>
 		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
 	const findCurrentTypeOption = (type, filters) => {
@@ -145,6 +172,12 @@
 
 	let currentTypeOption = findCurrentTypeOption(currentType, currentFilters) ?? typeOptions[0];
 
+	const findCurrentLeaderboardTypeOption = (type, filters) => {
+		return leaderboardTypeOptions.find(to => to?.type === type) ?? null;
+	};
+
+	let currentLeaderboardTypeOption = findCurrentLeaderboardTypeOption(currentLeaderboardType, currentFilters) ?? leaderboardTypeOptions[0];
+
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
 
@@ -155,9 +188,9 @@
 		if (autoScrollToTop && boxEl) scrollToTargetAdjusted(boxEl, scrollOffset);
 	}
 
-	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
+	const leaderboardStore = createLeaderboardStore(leaderboardId, type, leaderboardType, page, currentFilters);
 
-	function changeParams(newLeaderboardId, newType, newPage, newLocation) {
+	function changeParams(newLeaderboardId, newType, newLeaderboardType, newPage, newLocation) {
 		if (newLocation === undefined) newLocation = {search: `?${buildSearchFromFilters(currentFilters)}`};
 
 		currentFilters = buildFiltersFromLocation(newLocation);
@@ -165,14 +198,19 @@
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
+		currentLeaderboardType = newLeaderboardType;
+
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 
+		const newCurrentLeaderboardTypeOption = findCurrentLeaderboardTypeOption(currentLeaderboardType, currentFilters);
+		if (newCurrentLeaderboardTypeOption) currentLeaderboardTypeOption = newCurrentLeaderboardTypeOption;
+
 		currentPage = newPage;
-		leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage, {...currentFilters});
+		leaderboardStore.fetch(currentLeaderboardId, currentType, currentLeaderboardType, currentPage, {...currentFilters});
 	}
 
 	function onPageChanged(event) {
@@ -190,7 +228,7 @@
 		if (!newLeaderboardId) return;
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
-		else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
+		else changeParams(newLeaderboardId, currentType, currentLeaderboardType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
 	}
 
 	function onTypeChanged(event) {
@@ -199,15 +237,25 @@
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
 		if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`);
-		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
+		else if (!dontChangeType)
+			changeParams(currentLeaderboardId, newType, currentLeaderboardType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
+	}
+
+	function onLeaderboardTypeChanged(event) {
+		const newType = event?.detail?.type;
+
+		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
+		changeParams(currentLeaderboardId, currentType, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
+
+		// dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
 
 	function onSelectedGroupEntryChanged(event) {
 		const newLeaderboardId = selectedGroupEntry;
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
-		else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
+		else changeParams(newLeaderboardId, currentType, currentLeaderboardType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
 	}
 
 	function processDiffs(diffArray, song) {
@@ -441,7 +489,7 @@
 	$: pending = leaderboardStore.pending;
 	$: enhanced = leaderboardStore.enhanced;
 
-	$: changeParams(leaderboardId, type, page, location);
+	$: changeParams(leaderboardId, type, leaderboardType, page, location);
 	$: scrollToTop($pending);
 	$: scores = opt($leaderboardStore, 'scores', null);
 	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
@@ -752,6 +800,11 @@
 						{/if}
 
 						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
+						<Switcher
+							values={leaderboardTypeOptions}
+							value={currentLeaderboardTypeOption}
+							on:change={onLeaderboardTypeChanged}
+							loadingValue={currentlyLoadedDiff} />
 					</nav>
 				{/if}
 

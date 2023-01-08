@@ -21,9 +21,17 @@ export default () => {
 			leaderboardsApiClient.getProcessed({page, filters, signal, priority, cacheTtl: force ? null : MINUTE})
 		);
 
-	const fetchLeaderboardPage = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
-		resolvePromiseOrWaitForPending(`apiClient/leaderboard/${leaderboardId}/${page}`, () =>
-			leaderboardApiClient.getProcessed({leaderboardId, page, filters, signal, priority, cacheTtl: force ? null : MINUTE})
+	const fetchLeaderboardPage = async (
+		leaderboardId,
+		leaderboardType = 0,
+		page = 1,
+		filters = {},
+		priority = PRIORITY.FG_LOW,
+		signal = null,
+		force = false
+	) =>
+		resolvePromiseOrWaitForPending(`apiClient/leaderboard/${leaderboardId}/${leaderboardType}/${page}`, () =>
+			leaderboardApiClient.getProcessed({leaderboardId, leaderboardType, page, filters, signal, priority, cacheTtl: force ? null : MINUTE})
 		);
 
 	const fetchAccSaberPage = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, signal = null, force = false) => {

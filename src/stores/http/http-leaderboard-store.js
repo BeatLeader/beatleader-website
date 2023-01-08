@@ -8,15 +8,24 @@ import produce, {applyPatches} from 'immer';
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution';
 import stringify from 'json-stable-stringify';
 
-export default (leaderboardId, type = 'global', page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
+export default (
+	leaderboardId,
+	type = 'global',
+	leaderboardType = 0,
+	page = 1,
+	filters = {},
+	initialState = null,
+	initialStateType = 'initial'
+) => {
 	let currentLeaderboardId = leaderboardId ? leaderboardId : null;
 	let currentType = type ? type : 'global';
 	let currentPage = page ? page : 1;
 	let currentFilters = filters ?? {};
+	let currentLeaderboardType = leaderboardType;
 
 	const {subscribe: subscribeEnhanced, set: setEnhanced} = writable(null);
 
-	const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}`;
+	const getCurrentEnhanceTaskId = () => `${currentLeaderboardId}/${currentPage}/${currentType}/${currentLeaderboardType}`;
 	const getPatchId = (leaderboardId, scoreRow) => `${leaderboardId}/${scoreRow?.player?.playerId}`;
 
 	let enhancePatches = {};
@@ -27,6 +36,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 		currentType = fetchParams?.type ?? 'global';
 		currentPage = fetchParams?.page ?? 1;
 		currentFilters = fetchParams?.filters ?? {};
+		currentLeaderboardType = fetchParams?.leaderboardType ?? 0;
 
 		if (!state) return;
 
@@ -96,7 +106,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 
 	const httpStore = createHttpStore(
 		provider,
-		{leaderboardId, type, page, filters},
+		{leaderboardId, type, leaderboardType, page, filters},
 		initialState,
 		{
 			onInitialized: onNewData,
@@ -109,6 +119,7 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 	const fetch = async (
 		leaderboardId = currentLeaderboardId,
 		type = currentType,
+		leaderboardType = currentLeaderboardType,
 		page = currentPage,
 		filters = currentFilters,
 		force = false
@@ -118,16 +129,19 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 		if (
 			leaderboardId === currentLeaderboardId &&
 			(!type || type === currentType) &&
+			(!leaderboardType || leaderboardType === currentLeaderboardType) &&
 			(!page || page === currentPage) &&
 			(!filters || stringify(filters) === stringify(currentFilters)) &&
 			!force
 		)
 			return false;
 
-		return httpStore.fetch({leaderboardId, type, page, filters}, force, provider);
+		console.log(leaderboardType);
+
+		return httpStore.fetch({leaderboardId, type, leaderboardType, page, filters}, force, provider);
 	};
 
-	const refresh = async () => fetch(currentLeaderboardId, currentType, currentPage, true);
+	const refresh = async () => fetch(currentLeaderboardId, currentType, currentLeaderboardType, currentPage, true);
 
 	return {
 		...httpStore,
