@@ -60,7 +60,7 @@
 
 	export let leaderboardId;
 	export let type = 'global';
-	export let leaderboardType = 4;
+	export let leaderboardType = 1;
 	export let page = 1;
 	export let location;
 	export let withHeader = true;

@@ -6,10 +6,7 @@ import {getDiffColor} from '../../../utils/beatleader/format';
 import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
-export const BL_API_URL =
-	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888'
-		? `https://stage.api.beatleader.net/`
-		: `/cors/blapi/`;
+export const BL_API_URL = `https://stage.api.beatleader.net/`;
 export const BL_SOCKET_URL = 'wss://api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
@@ -33,7 +30,7 @@ export const BL_API_SCORES_HISTOGRAM_URL =
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'players?page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
+	'players?page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}&leaderboardType=${leaderboardType}';
 export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';

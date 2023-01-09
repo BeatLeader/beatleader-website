@@ -32,6 +32,7 @@ const DEFAULT_CONFIG = {
 		headerColor: 'rgba(21, 31, 35, 0.6382)',
 		daysToCompare: 1,
 		daysOfHistory: 30,
+		defaultLeaderboardType: 1,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: null,

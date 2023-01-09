@@ -50,6 +50,25 @@
 	];
 	let currentTypeValue = filters.mapsType;
 
+	let allLeaderboardTypeValues = [
+		{
+			label: 'Standard',
+			value: 1,
+			icon: 'fa fa-cubes',
+		},
+		{
+			label: 'No mods',
+			value: 2,
+			icon: 'fa fa-cubes',
+		},
+		{
+			label: 'Golf',
+			value: 4,
+			icon: 'fa fa-cubes',
+		},
+	];
+	let currentLeaderboardTypeValue = filters.leaderboardType;
+
 	const statKeys = {
 		acc: {
 			ranked: 'scoreStats.averageWeightedRankedAccuracy',
@@ -205,6 +224,16 @@
 		refreshSortValues(allSortValues, filters);
 	}
 
+	function onLeaderboardTypeChanged(e) {
+		if (!useInternalFilters) {
+			dispatch('leaderboard-type-changed', currentLeaderboardTypeValue);
+			return;
+		}
+
+		filters.leaderboardType = currentLeaderboardTypeValue;
+		refreshSortValues(allSortValues, filters);
+	}
+
 	onMount(() => {
 		dispatch('loading', true);
 	});
@@ -258,6 +287,11 @@
 {#if $rankingStore?.data?.length}
 	{#if !eventId}
 		<nav class="switcher-nav">
+			<select class="type-select" bind:value={currentLeaderboardTypeValue} on:change={onLeaderboardTypeChanged}>
+				{#each allLeaderboardTypeValues as option (option.value)}
+					<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
+				{/each}
+			</select>
 			<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 			<select class="type-select" bind:value={currentTypeValue} on:change={onTypeChanged}>
 				{#each allTypeValues as option (option.value)}
@@ -324,6 +358,7 @@
 	.type-select {
 		padding: 0.175rem;
 		margin-top: 0.875rem;
+		margin-right: 0.2em;
 		text-align: center;
 		white-space: nowrap;
 		border: 0;

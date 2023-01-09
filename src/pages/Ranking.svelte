@@ -7,6 +7,7 @@
 		processStringFilter,
 		processStringArrayFilter,
 		processIntArrayFilter,
+		processIntFilter,
 	} from '../utils/filters';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
@@ -196,6 +197,12 @@
 			process: processStringFilter,
 			type: null,
 		},
+		{
+			key: 'leaderboardType',
+			default: 1,
+			process: processIntFilter,
+			type: null,
+		},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -308,6 +315,14 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onLeaderboardTypeChanged(event) {
+		currentFilters.leaderboardType = event.detail;
+
+		findParam('leaderboardType').value = currentFilters.leaderboardType;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onFiltersUpdated(e) {
 		if (!e?.detail?.currentFilters) return;
 
@@ -355,6 +370,7 @@
 				on:page-changed={onPageChanged}
 				on:sort-changed={onSortChanged}
 				on:maps-type-changed={onMapsTypeChanged}
+				on:leaderboard-type-changed={onLeaderboardTypeChanged}
 				on:loading={e => (isLoading = !!e?.detail)}
 				on:pending={e => (pending = e?.detail)} />
 		</ContentBox>
