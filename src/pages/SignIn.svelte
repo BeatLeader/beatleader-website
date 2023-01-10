@@ -10,6 +10,7 @@
 	import Spinner from '../components/Common/Spinner.svelte';
 	import beatSaverSvg from '../resources/beatsaver.svg';
 	import steamSvg from '../resources/steam.svg';
+	import ContentBox from '../components/Common/ContentBox.svelte';
 
 	export let action;
 
@@ -43,7 +44,7 @@
 	$: performAction();
 </script>
 
-<div class="container login-page">
+<ContentBox cls="login-container login-page">
 	{#if !action || action == 'addHome'}
 		{#if !loggedInPlayer}
 			<div class="title">Login</div>
@@ -57,6 +58,10 @@
 				<div class="cat">Password</div>
 				<input type="password" bind:value={password} placeholder="Password" />
 			</div>
+
+			{#if error}
+				<p class="error">{error}</p>
+			{/if}
 
 			<Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password)} />
 			<form action={BL_API_URL + 'signin'} method="post">
@@ -350,7 +355,7 @@
 	{#if message}
 		<p class="messagep">{message}</p>
 	{/if}
-</div>
+</ContentBox>
 
 <style>
 	b {
@@ -361,7 +366,8 @@
 		margin-left: 1em;
 		margin-right: 1em;
 	}
-	.container {
+
+	:global(.login-container) {
 		display: flex;
 		align-items: center;
 		justify-content: center;

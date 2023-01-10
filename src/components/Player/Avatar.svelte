@@ -10,13 +10,13 @@
 	$: avatar = editModel?.avatar
 		? editModel.avatar
 		: playerInfo?.avatar
-		? playerInfo.avatar + (playerInfo.avatar.includes('beatleader') ? `?${hash}` : '')
+		? playerInfo.avatar + (playerInfo.avatar.includes('beatleader') && hash?.length ? `?${hash}` : '')
 		: null;
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered title={editModel ? 'Click to edit avatar' : null} on:click>
 	{#if avatar}
-		<img src={avatar} class="avatar" alt="" crossorigin="anonymous" />
+		<img src={avatar} class="avatar" alt="" />
 	{:else}
 		<span class="no-image">?</span>
 	{/if}
