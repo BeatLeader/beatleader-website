@@ -34,31 +34,35 @@
 	style="--color:{color}; --background-color:{bgColor}"
 	{title}
 	on:click>
-	<span class="label">
-		<slot name="label">
-			{label}
-		</slot>
-		{#if iconClass}
-			<i class={iconClass} />
-		{/if}
-	</span>
+	<!-- <span> -->
+		<span class="label">
+			<slot name="label">
+				{label}
+			</slot>
+			{#if iconClass}
+				<i class={iconClass} />
+			{/if}
+		</span>
+	<!-- </span> -->
 	{#if !onlyLabel}
 		<span class="spacer" />
-		<span class="value">
-			<slot name="value">
-				{#if type === 'number'}<Value
-						{value}
-						{zero}
-						{digits}
-						{prefix}
-						{suffix}
-						{prevValue}
-						{prevLabel}
-						suffixPrev={prevSuffix}
-						{reversePrevSign}
-						{inline} />{:else}{value}{/if}
-			</slot>
-		</span>
+		<!-- <span> -->
+			<span class="value">
+				<slot name="value">
+					{#if type === 'number'}<Value
+							{value}
+							{zero}
+							{digits}
+							{prefix}
+							{suffix}
+							{prevValue}
+							{prevLabel}
+							suffixPrev={prevSuffix}
+							{reversePrevSign}
+							{inline} />{:else}{value}{/if}
+				</slot>
+			</span>
+		<!-- </span> -->
 	{/if}
 	{#if $$slots.additional}<slot name="additional" />{/if}
 </span>
@@ -94,6 +98,8 @@
 	}
 
 	.badge .spacer {
+		position: relative;
+		z-index: 9999;
 		width: 1px;
 		min-width: auto;
 		height: 0.875em;
@@ -102,6 +108,8 @@
 	}
 
 	.badge span.label {
+		position: relative;
+		z-index: 999;
 		font-weight: 500;
 		font-size: 1em;
 		color: inherit;
@@ -109,6 +117,8 @@
 	}
 
 	.badge span.value {
+		position: relative;
+		z-index: 999;
 		font-weight: 300;
 	}
 
