@@ -56,7 +56,7 @@
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
-					<Route path="/" component={DashboardPage} />
+					<!-- <Route path="/" component={DashboardPage} />
 					<Route path="/u/:initialPlayerId/*initialParams" let:params>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 					</Route>
@@ -118,7 +118,7 @@
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>
 						<SigninPage action={params.action} />
-					</Route>
+					</Route> -->
 					<Route path="/*" component={NotFoundPage} />
 				</div>
 			</main>
