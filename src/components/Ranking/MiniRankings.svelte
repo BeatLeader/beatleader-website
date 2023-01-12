@@ -32,24 +32,22 @@
 	$: onParamsChanged(rank, country, countryRank);
 </script>
 
-{#if !isLoading}
-	{#if !box}
-		<div>
-			<Mini players={globalRanking} {rank} on:height-changed />
-		</div>
+{#if !box}
+	<div>
+		<Mini {isLoading} players={globalRanking} {rank} on:height-changed />
+	</div>
 
-		<div>
-			<Mini players={countryRanking} rank={countryRank} country={true} on:height-changed />
-		</div>
-	{:else}
-		<ContentBox>
-			<Mini players={globalRanking} {rank} on:height-changed />
-		</ContentBox>
+	<div>
+		<Mini {isLoading} players={countryRanking} rank={countryRank} country={true} on:height-changed />
+	</div>
+{:else}
+	<ContentBox>
+		<Mini {isLoading} players={globalRanking} {rank} on:height-changed />
+	</ContentBox>
 
-		<ContentBox>
-			<Mini players={countryRanking} rank={countryRank} country={true} on:height-changed />
-		</ContentBox>
-	{/if}
+	<ContentBox>
+		<Mini {isLoading} players={countryRanking} rank={countryRank} country={true} on:height-changed />
+	</ContentBox>
 {/if}
 
 <style>

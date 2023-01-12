@@ -17,7 +17,7 @@
     Status: ${formatDiffStatus(leaderboard?.stats?.status ?? '')}
 	` +
 		(leaderboard?.stats?.stars ? `Stars: ${leaderboard?.stats?.stars}\n` : '') +
-		(leaderboard?.stats.type ? `Type: ${mapTypeFromMask(leaderboard?.stats.type)}\n` : '');
+		(leaderboard?.stats?.type ? `Type: ${mapTypeFromMask(leaderboard?.stats.type)}\n` : '');
 </script>
 
 <MetaTags
