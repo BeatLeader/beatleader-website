@@ -34,31 +34,31 @@
 	style="--color:{color}; --background-color:{bgColor}"
 	{title}
 	on:click>
-		<span class="label">
-			<slot name="label">
-				{label}
-			</slot>
-			{#if iconClass}
-				<i class={iconClass} />
-			{/if}
-		</span>
+	<span class="label">
+		<slot name="label">
+			{label}
+		</slot>
+		{#if iconClass}
+			<i class={iconClass} />
+		{/if}
+	</span>
 	{#if !onlyLabel}
 		<span class="spacer" />
-			<span class="value">
-				<slot name="value">
-					{#if type === 'number'}<Value
-							{value}
-							{zero}
-							{digits}
-							{prefix}
-							{suffix}
-							{prevValue}
-							{prevLabel}
-							suffixPrev={prevSuffix}
-							{reversePrevSign}
-							{inline} />{:else}{value}{/if}
-				</slot>
-			</span>
+		<span class="value">
+			<slot name="value">
+				{#if type === 'number'}<Value
+						{value}
+						{zero}
+						{digits}
+						{prefix}
+						{suffix}
+						{prevValue}
+						{prevLabel}
+						suffixPrev={prevSuffix}
+						{reversePrevSign}
+						{inline} />{:else}{value}{/if}
+			</slot>
+		</span>
 	{/if}
 	{#if $$slots.additional}<slot name="additional" />{/if}
 </span>
