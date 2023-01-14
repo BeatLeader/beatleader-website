@@ -34,7 +34,6 @@
 	style="--color:{color}; --background-color:{bgColor}"
 	{title}
 	on:click>
-	<!-- <span> -->
 		<span class="label">
 			<slot name="label">
 				{label}
@@ -43,10 +42,8 @@
 				<i class={iconClass} />
 			{/if}
 		</span>
-	<!-- </span> -->
 	{#if !onlyLabel}
 		<span class="spacer" />
-		<!-- <span> -->
 			<span class="value">
 				<slot name="value">
 					{#if type === 'number'}<Value
@@ -62,7 +59,6 @@
 							{inline} />{:else}{value}{/if}
 				</slot>
 			</span>
-		<!-- </span> -->
 	{/if}
 	{#if $$slots.additional}<slot name="additional" />{/if}
 </span>
@@ -99,7 +95,7 @@
 
 	.badge .spacer {
 		position: relative;
-		z-index: 9999;
+		z-index: 999;
 		width: 1px;
 		min-width: auto;
 		height: 0.875em;
