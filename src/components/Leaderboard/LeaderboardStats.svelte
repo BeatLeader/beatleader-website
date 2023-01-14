@@ -3,11 +3,15 @@
 	import Value from '../Common/Value.svelte';
 	import Duration from '../Song/Duration.svelte';
 	import createBeatSaverService from '../../services/beatmaps';
+	import createStarGeneratorStore from '../../stores/beatleader/star-generator';
+	import ExmachinaCurve from './ExmachinaCurve.svelte';
 
 	export let leaderboard;
 
 	let diff;
 	let beatSaverService;
+
+	const starGeneratorStore = createStarGeneratorStore();
 
 	async function findDiff(leaderboard) {
 		if (leaderboard?.beatMaps) {
@@ -24,11 +28,32 @@
 
 	$: metadata = leaderboard?.beatMaps?.metadata;
 	$: findDiff(leaderboard);
+
+	$: hash = leaderboard.song.hash;
+	$: diffInfo = leaderboard.diffInfo;
+	$: exmachinadata = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type];
+	$: exmachinastats = exmachinadata?.stats;
+	$: notes = exmachinadata?.notes;
+	$: !exmachinadata && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type);
 </script>
 
 <article transition:fade>
 	{#if diff}
 		<div class="stats">
+			{#if exmachinastats}
+				<div transition:fade>
+					<i class="fas fa-robot" /> EX MACHINA:
+					<strong>
+						<Value value={exmachinastats.balanced} digits={2} />
+					</strong>
+				</div>
+				<div transition:fade>
+					<i class="fas fa-face-dizzy" /> Techiness:
+					<strong>
+						<Value value={exmachinastats.tech} digits={2} />
+					</strong>
+				</div>
+			{/if}
 			{#if leaderboard?.song?.duration}
 				<div transition:fade>
 					<span class="time" transition:fade={{duration: 500}}>
@@ -102,6 +127,10 @@
 				</div>
 			{/if}
 		</div>
+	{/if}
+
+	{#if notes}
+		<ExmachinaCurve {notes} on:speed-changed={e => starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, e.detail)} />
 	{/if}
 </article>
 

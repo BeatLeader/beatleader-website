@@ -5,7 +5,6 @@
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
 	import createVotingStore from '../stores/beatleader/rankVoting';
-	import createStarGeneratorStore from '../stores/beatleader/star-generator';
 	import createBeatSaverService from '../services/beatmaps';
 	import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic';
 	import {opt, capitalize} from '../utils/js';
@@ -57,6 +56,8 @@
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 	import Preview from '../components/Common/Preview.svelte';
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
+	import produce from 'immer';
+	import {configStore} from '../stores/config';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -86,7 +87,6 @@
 
 	const account = createAccountStore();
 	const votingStore = createVotingStore();
-	const starGeneratorStore = createStarGeneratorStore();
 
 	const params = [{key: 'countries', default: '', process: processStringFilter}];
 
@@ -468,16 +468,6 @@
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
 	$: isjuniorRT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('juniorrankedteam');
-	$: isSupporter =
-		$account.player &&
-		$account.player.playerInfo.role &&
-		($account.player.playerInfo.role.includes('supporter') ||
-			$account.player.playerInfo.role.includes('creator') ||
-			$account.player.playerInfo.role.includes('tipper') ||
-			$account.player.playerInfo.role.includes('sponsor'));
-
-	$: generatedStars = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type];
-	$: (isRT || isSupporter) && !generatedStars && starGeneratorStore.fetchStars(hash, diffInfo?.diff, diffInfo?.type);
 
 	$: playerHasFriends = !!$account?.friends?.length;
 	$: updateTypeOptions(mainPlayerCountry, playerHasFriends);
@@ -497,6 +487,16 @@
 	$: if (showAverageStats) checkMapHash(song.hash);
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
+
+	function boolflip(name) {
+		$configStore = produce($configStore, draft => {
+			draft.preferences[name] = !draft.preferences[name];
+		});
+	}
+
+	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
+	$: curveShown = $configStore?.preferences?.curveShown;
+	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
 </script>
 
 <svelte:head>
@@ -679,16 +679,6 @@
 									{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
 									{#if leaderboard.stats && leaderboard.stats.stars}
 										<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★" />
-									{/if}
-									{#if isRT || isSupporter}
-										{#if generatedStars}
-											<span style="color: white;">
-												EX MACHINA
-												<Value value={generatedStars} digits={2} zero="" suffix="★" />
-											</span>
-										{:else if generatedStars !== 0}
-											<Spinner />
-										{/if}
 									{/if}
 									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
 											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span
@@ -1051,15 +1041,6 @@
 				{:else}
 					<p transition:fade>No scores found.</p>
 				{/if}
-				{#if showStats && leaderboard.stats}
-					<div class="stats-with-icons">
-						<LeaderboardStats {leaderboard} />
-
-						{#if iconsInInfo}
-							<Icons {hash} {diffInfo} mapCheck={true} />
-						{/if}
-					</div>
-				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>
 			{/if}
@@ -1069,10 +1050,53 @@
 			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
 		{/if}
 	</article>
-	{#if separatePage && ((showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars) || (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished))}
-		<aside>
-			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
+	<aside>
+		{#if !leaderboardStatsShown}
+			<div class="score-options-section">
+				<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
+					<i class="fas fa-magnifying-glass" />
+
+					<i class="fas fa-chevron-right" />
+				</span>
+			</div>
+		{:else}
+			<ContentBox>
+				<div class="score-options-section to-the-left">
+					<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
+						<i class="fas fa-chevron-left" />
+					</span>
+				</div>
+				{#if showStats && leaderboard?.stats}
+					<div class="stats-with-icons">
+						<LeaderboardStats {leaderboard} />
+
+						{#if iconsInInfo}
+							<Icons {hash} {diffInfo} mapCheck={true} />
+						{/if}
+					</div>
+				{/if}
+			</ContentBox>
+		{/if}
+
+		{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
+			{#if !qualificationInfoShown}
+				<div class="score-options-section">
+					<span class="beat-savior-reveal clickable" on:click={() => boolflip('qualificationInfoShown')} title="Show qualification details">
+						<i class="fas fa-list-ul" />
+
+						<i class="fas fa-chevron-right" />
+					</span>
+				</div>
+			{:else}
 				<ContentBox>
+					<div class="score-options-section to-the-left">
+						<span
+							class="beat-savior-reveal clickable"
+							on:click={() => boolflip('qualificationInfoShown')}
+							title="Hide qualification details">
+							<i class="fas fa-chevron-left" />
+						</span>
+					</div>
 					{#if isNominated && qualification}
 						<QualificationStatus {qualification} />
 					{/if}
@@ -1082,8 +1106,22 @@
 					{/if}
 				</ContentBox>
 			{/if}
-			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
+		{/if}
+		{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
+			{#if !curveShown}
+				<div class="score-options-section">
+					<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
+						<i class="fas fa-bezier-curve" />
+						<i class="fas fa-chevron-right" />
+					</span>
+				</div>
+			{:else}
 				<ContentBox>
+					<div class="score-options-section to-the-left">
+						<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
+							<i class="fas fa-chevron-left" />
+						</span>
+					</div>
 					<h2 class="title is-5">
 						PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
 					</h2>
@@ -1094,8 +1132,8 @@
 						on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
 				</ContentBox>
 			{/if}
-		</aside>
-	{/if}
+		{/if}
+	</aside>
 </section>
 
 {#if separatePage}
@@ -1106,6 +1144,10 @@
 	.align-content {
 		display: flex;
 		justify-content: center;
+	}
+
+	aside {
+		max-width: 35em;
 	}
 
 	.page-content {
@@ -1224,6 +1266,7 @@
 		display: flex;
 		align-content: center;
 		justify-content: space-evenly;
+		flex-direction: column;
 		padding: 1em;
 	}
 
@@ -1472,6 +1515,12 @@
 		position: fixed;
 		left: 1.5em;
 		transform: translateY(-0.28em);
+	}
+
+	.to-the-left {
+		position: absolute;
+		left: 0.1em;
+		top: 50%;
 	}
 
 	@media screen and (max-width: 1275px) {

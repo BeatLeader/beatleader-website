@@ -13,17 +13,17 @@ export default () => {
 	const get = () => starRatings;
 	const {subscribe: subscribeState, set} = writable(starRatings);
 
-	const fetchStars = async (hash, diff, mode) => {
+	const fetchExMachina = async (hash, diff, mode, scale = 1) => {
 		if (!hash || !diff || !mode) return;
-		fetch(`https://bs-replays-ai.azurewebsites.net/json/${hash}/${diffForDiffName(diff)}/basic`)
+		fetch(`https://bs-replays-ai.azurewebsites.net/json/${hash}/${mode}/${diffForDiffName(diff)}/full/time-scale/${scale}`)
 			.then(async response => {
 				if (response.status == 200) {
 					const data = await response.json();
 
-					starRatings[hash + diff + mode] = parseFloat(data?.balanced);
+					starRatings[hash + diff + mode] = data;
 					set(starRatings);
 				} else {
-					starRatings[hash + diff + mode] = 0;
+					starRatings[hash + diff + mode] = undefined;
 					set(starRatings);
 				}
 			})
@@ -47,6 +47,6 @@ export default () => {
 	return {
 		subscribe,
 		get,
-		fetchStars,
+		fetchExMachina,
 	};
 };
