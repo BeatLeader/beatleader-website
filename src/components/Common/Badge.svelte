@@ -65,6 +65,7 @@
 
 <style>
 	.badge {
+		position: relative;
 		display: inline-flex;
 		justify-content: space-around;
 		align-items: center;
@@ -94,8 +95,6 @@
 	}
 
 	.badge .spacer {
-		position: relative;
-		z-index: 999;
 		width: 1px;
 		min-width: auto;
 		height: 0.875em;
@@ -104,8 +103,6 @@
 	}
 
 	.badge span.label {
-		position: relative;
-		z-index: 999;
 		font-weight: 500;
 		font-size: 1em;
 		color: inherit;
@@ -113,8 +110,6 @@
 	}
 
 	.badge span.value {
-		position: relative;
-		z-index: 999;
 		font-weight: 300;
 	}
 
