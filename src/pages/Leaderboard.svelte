@@ -996,6 +996,18 @@
 						hide={!['global', 'accsaber'].includes(currentType)}
 						on:page-changed={onPageChanged} />
 
+					{#if !separatePage}
+						{#if showStats && leaderboard?.stats}
+							<div class="stats-with-icons">
+								<LeaderboardStats {leaderboard} />
+
+								{#if iconsInInfo}
+									<Icons {hash} {diffInfo} mapCheck={true} />
+								{/if}
+							</div>
+						{/if}
+					{/if}
+
 					{#if separatePage && type !== 'accsaber'}
 						<div class="score-options-section">
 							<span
@@ -1050,39 +1062,12 @@
 			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
 		{/if}
 	</article>
-	<aside>
-		{#if !leaderboardStatsShown}
-			<div class="score-options-section">
-				<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
-					<i class="fas fa-magnifying-glass" />
-
-					<i class="fas fa-chevron-right" />
-				</span>
-			</div>
-		{:else}
-			<ContentBox>
-				<div class="score-options-section to-the-left">
-					<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
-						<i class="fas fa-chevron-left" />
-					</span>
-				</div>
-				{#if showStats && leaderboard?.stats}
-					<div class="stats-with-icons">
-						<LeaderboardStats {leaderboard} />
-
-						{#if iconsInInfo}
-							<Icons {hash} {diffInfo} mapCheck={true} />
-						{/if}
-					</div>
-				{/if}
-			</ContentBox>
-		{/if}
-
-		{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-			{#if !qualificationInfoShown}
+	{#if separatePage}
+		<aside>
+			{#if !leaderboardStatsShown}
 				<div class="score-options-section">
-					<span class="beat-savior-reveal clickable" on:click={() => boolflip('qualificationInfoShown')} title="Show qualification details">
-						<i class="fas fa-list-ul" />
+					<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
+						<i class="fas fa-magnifying-glass" />
 
 						<i class="fas fa-chevron-right" />
 					</span>
@@ -1090,50 +1075,82 @@
 			{:else}
 				<ContentBox>
 					<div class="score-options-section to-the-left">
+						<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
+							<i class="fas fa-chevron-left" />
+						</span>
+					</div>
+					{#if showStats && leaderboard?.stats}
+						<div class="stats-with-icons">
+							<LeaderboardStats {leaderboard} curve={true} />
+
+							{#if iconsInInfo}
+								<Icons {hash} {diffInfo} mapCheck={true} />
+							{/if}
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
+
+			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
+				{#if !qualificationInfoShown}
+					<div class="score-options-section">
 						<span
 							class="beat-savior-reveal clickable"
 							on:click={() => boolflip('qualificationInfoShown')}
-							title="Hide qualification details">
-							<i class="fas fa-chevron-left" />
-						</span>
-					</div>
-					{#if isNominated && qualification}
-						<QualificationStatus {qualification} />
-					{/if}
+							title="Show qualification details">
+							<i class="fas fa-list-ul" />
 
-					{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
-						<ReweightStatus map={leaderboard} />
-					{/if}
-				</ContentBox>
-			{/if}
-		{/if}
-		{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
-			{#if !curveShown}
-				<div class="score-options-section">
-					<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
-						<i class="fas fa-bezier-curve" />
-						<i class="fas fa-chevron-right" />
-					</span>
-				</div>
-			{:else}
-				<ContentBox>
-					<div class="score-options-section to-the-left">
-						<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
-							<i class="fas fa-chevron-left" />
+							<i class="fas fa-chevron-right" />
 						</span>
 					</div>
-					<h2 class="title is-5">
-						PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
-					</h2>
-					<PpCurve
-						stars={leaderboard?.stats?.stars}
-						{modifiers}
-						mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
-						on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
-				</ContentBox>
+				{:else}
+					<ContentBox>
+						<div class="score-options-section to-the-left">
+							<span
+								class="beat-savior-reveal clickable"
+								on:click={() => boolflip('qualificationInfoShown')}
+								title="Hide qualification details">
+								<i class="fas fa-chevron-left" />
+							</span>
+						</div>
+						{#if isNominated && qualification}
+							<QualificationStatus {qualification} />
+						{/if}
+
+						{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
+							<ReweightStatus map={leaderboard} />
+						{/if}
+					</ContentBox>
+				{/if}
 			{/if}
-		{/if}
-	</aside>
+			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
+				{#if !curveShown}
+					<div class="score-options-section">
+						<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
+							<i class="fas fa-bezier-curve" />
+							<i class="fas fa-chevron-right" />
+						</span>
+					</div>
+				{:else}
+					<ContentBox>
+						<div class="score-options-section to-the-left">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
+								<i class="fas fa-chevron-left" />
+							</span>
+						</div>
+						<h2 class="title is-5">
+							PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
+						</h2>
+						<PpCurve
+							stars={leaderboard?.stats?.stars}
+							{modifiers}
+							mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
+							on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
+					</ContentBox>
+				{/if}
+			{/if}
+		</aside>
+	{/if}
 </section>
 
 {#if separatePage}

@@ -7,6 +7,7 @@
 	import ExmachinaCurve from './ExmachinaCurve.svelte';
 
 	export let leaderboard;
+	export let curve = false;
 
 	let diff;
 	let beatSaverService;
@@ -29,8 +30,8 @@
 	$: metadata = leaderboard?.beatMaps?.metadata;
 	$: findDiff(leaderboard);
 
-	$: hash = leaderboard.song.hash;
-	$: diffInfo = leaderboard.diffInfo;
+	$: hash = leaderboard?.song?.hash;
+	$: diffInfo = leaderboard?.diffInfo;
 	$: exmachinadata = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type];
 	$: exmachinastats = exmachinadata?.stats;
 	$: notes = exmachinadata?.notes;
@@ -129,7 +130,7 @@
 		</div>
 	{/if}
 
-	{#if notes}
+	{#if curve && notes}
 		<ExmachinaCurve {notes} on:speed-changed={e => starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, e.detail)} />
 	{/if}
 </article>
