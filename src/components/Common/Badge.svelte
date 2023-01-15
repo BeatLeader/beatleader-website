@@ -65,6 +65,7 @@
 
 <style>
 	.badge {
+		position: relative;
 		display: inline-flex;
 		justify-content: space-around;
 		align-items: center;
