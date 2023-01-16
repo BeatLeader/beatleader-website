@@ -22,8 +22,32 @@
 
 		const accColor = theme && theme.alternate ? theme.alternate : '#72a8ff';
 		const compareColor = theme && theme.dimmed ? theme.alternate : '#3e3e3e';
+		var windowSize = chartData.length / chartData[chartData.length - 1][4];
+		if (windowSize < 1) {
+			windowSize = 1;
+		}
+		windowSize = Math.round(windowSize);
 
-		var data = chartData.map(v => v[0] * 15);
+		var data = [];
+		for (let i = 0; i < chartData.length; i++) {
+			var accumulator = chartData[i][0];
+			var counter = 1;
+
+			for (let j = 1; j < windowSize; j++) {
+				if (i + j < chartData.length) {
+					accumulator += chartData[i + j][0];
+					counter++;
+				}
+			}
+			for (let j = 1; j < windowSize; j++) {
+				if (i - j >= 0) {
+					accumulator += chartData[i - j][0];
+					counter++;
+				}
+			}
+
+			data.push((100 + (accumulator / counter) * 15) / 1.15);
+		}
 
 		const mainMinValue = Math.floor(Math.max(Math.floor(data.reduce((min, cur) => (cur < min ? cur : min), 100)), 0) * 0.99);
 		const mainMaxValue = Math.ceil(Math.min(Math.ceil(data.reduce((max, cur) => (cur > max ? cur : max), 0)), 100));
@@ -90,7 +114,7 @@
 						tooltip: {
 							callbacks: {
 								label(ctx) {
-									return formatNumber(ctx.parsed.y);
+									return formatNumber(ctx.parsed.y) + '%';
 								},
 							},
 						},
@@ -111,7 +135,7 @@
 							max: maxValue,
 							ticks: {
 								callback: function (val) {
-									return val;
+									return val + '%';
 								},
 								color: 'white',
 							},
