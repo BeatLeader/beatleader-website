@@ -484,7 +484,7 @@
 	$: votingLoading = $votingStore.loading;
 
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
-	$: if (showAverageStats) checkMapHash(song.hash);
+	$: if (song) checkMapHash(song.hash);
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
 
@@ -993,7 +993,6 @@
 						currentPage={currentPage - 1}
 						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
 						mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
-						hide={!['global', 'accsaber'].includes(currentType)}
 						on:page-changed={onPageChanged} />
 
 					{#if !separatePage}
@@ -1034,14 +1033,6 @@
 									<BeatSaviorDetails {beatSavior} />
 								</div>
 							{/await}
-							<small class="level-author">{song.hash}</small>
-							{#if latestHash}
-								<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-							{:else if latestHash == undefined}
-								<Spinner />
-							{:else}
-								<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-							{/if}
 							{#if !isNominated && leaderboard.qualification}
 								<QualificationStatus qualification={leaderboard.qualification} />
 							{/if}
@@ -1082,6 +1073,16 @@
 					{#if showStats && leaderboard?.stats}
 						<div class="stats-with-icons">
 							<LeaderboardStats {leaderboard} curve={true} />
+							<div>
+								<small class="level-author">{song.hash}</small>
+								{#if latestHash}
+									<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+								{:else if latestHash == undefined}
+									<Spinner />
+								{:else}
+									<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+								{/if}
+							</div>
 
 							{#if iconsInInfo}
 								<Icons {hash} {diffInfo} mapCheck={true} />

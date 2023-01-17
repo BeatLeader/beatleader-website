@@ -112,6 +112,16 @@ export default () => {
 				round = 0;
 				prefixLong = '#';
 				break;
+			case 'pauses':
+			case 'maxStreak':
+				valFunc = s => parseInt(s, 10);
+				type = 'linear';
+				bucketSize = 1;
+				minBucketSize = 1;
+				maxBucketSize = 100;
+				bucketSizeStep = 0.1;
+				round = 1;
+				break;
 
 			case 'acc':
 				(valFunc = s => parseFloat(s) * 100), (filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s));

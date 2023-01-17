@@ -22,6 +22,7 @@
 	export let icons = null;
 	export let showSong = true;
 	export let inList = true;
+	export let additionalStat = null;
 
 	let showDetails = false;
 
@@ -146,7 +147,7 @@
 				</span>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} />
 		</div>
 
 		{#if showDetails}

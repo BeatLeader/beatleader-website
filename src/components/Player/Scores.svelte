@@ -141,7 +141,15 @@
 	{#if $scoresStore && $scoresStore.length}
 		<div class="song-scores grid-transition-helper">
 			{#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
-				<SongScore {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} {withPlayers} {noIcons} />
+				<SongScore
+					{playerId}
+					{songScore}
+					{fixedBrowserTitle}
+					{idx}
+					service={currentService}
+					{withPlayers}
+					{noIcons}
+					additionalStat={currentServiceParams?.sort} />
 			{/each}
 		</div>
 	{:else}
@@ -168,11 +176,11 @@
 		</div>
 		{#if Number.isFinite(failedScoresPage) && (!Number.isFinite(totalFailedScores) || totalFailedScores > 0)}
 			<Pager
-					totalItems={totalFailedScores}
-					itemsPerPage={3}
-					itemsPerPageValues={null}
-					currentPage={failedScoresPage - 1}
-					on:page-changed={onFailedScoresPageChange} />
+				totalItems={totalFailedScores}
+				itemsPerPage={3}
+				itemsPerPageValues={null}
+				currentPage={failedScoresPage - 1}
+				on:page-changed={onFailedScoresPageChange} />
 		{/if}
 	{/if}
 </div>

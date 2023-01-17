@@ -34,6 +34,7 @@
 	export let showDetails = false;
 	export let modifiers = null;
 	export let unmodifiedScore = false;
+	export let additionalStat = null;
 
 	function getBeatSaviorCompatibleStats(score) {
 		if (!score?.missedNotes === undefined) return null;
@@ -50,6 +51,29 @@
 				miss: score?.badCuts !== undefined || score?.missedNotes !== undefined ? (score?.badCuts ?? 0) + (score?.missedNotes ?? 0) : null,
 			},
 		};
+	}
+
+	function getAdditionalStatKey(additionalStat) {
+		if (!additionalStat) return null;
+		switch (additionalStat) {
+			case 'pauses':
+			case 'maxStreak':
+				return additionalStat;
+		}
+
+		return null;
+	}
+
+	function getAdditionalStatSuffix(additionalStat) {
+		if (!additionalStat) return null;
+		switch (additionalStat) {
+			case 'pauses':
+				return ' pause';
+			case 'maxStreak':
+				return ' in a row';
+		}
+
+		return null;
 	}
 
 	$: leaderboard = songScore?.leaderboard ?? null;
@@ -73,6 +97,9 @@
 	$: prevBadCuts = (beatSavior?.stats?.badCuts ?? 0) - (improvements?.badCuts ?? 0);
 	$: prevWallsHit = (beatSavior?.stats?.wallHit ?? 0) - (improvements?.wallHit ?? 0);
 	$: prevBombHit = (beatSavior?.stats?.bombHit ?? 0) - (improvements?.bombHit ?? 0);
+
+	$: additionalStatKey = getAdditionalStatKey(additionalStat);
+	$: additionalStatSuffix = getAdditionalStatSuffix(additionalStat);
 
 	$: prevMistakes =
 		improvements && beatSavior?.stats && improvements.timeset?.length && improvements.score
@@ -288,6 +315,16 @@
 				</span>
 			{:else}
 				<span class="beatSavior with-badge" />
+			{/if}
+
+			{#if additionalStatKey}
+				<span class="score with-badge">
+					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+						<span slot="label">
+							<Value value={score[additionalStatKey]} inline={false} digits={0} suffix={additionalStatSuffix} />
+						</span>
+					</Badge>
+				</span>
 			{/if}
 		{/if}
 	</div>
