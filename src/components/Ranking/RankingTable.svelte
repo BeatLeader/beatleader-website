@@ -76,6 +76,11 @@
 			unranked: 'scoreStats.lastUnrankedScoreTime',
 			all: 'scoreStats.lastScoreTime',
 		},
+		maxStreak: {
+			ranked: 'scoreStats.rankedMaxStreak',
+			unranked: 'scoreStats.unrankedMaxStreak',
+			all: 'scoreStats.maxStreak',
+		},
 	};
 
 	let allSortValues = [
@@ -117,12 +122,12 @@
 			hideForTypes: ['unranked'],
 		},
 		{
-			id: 'topAcc',
-			label: 'Top Acc',
-			title: 'Sort by top accuracy',
-			iconFa: 'fa fa-crosshairs',
-			value: data => getAcc(data, statKeys['topAcc'][currentTypeValue]),
-			props: {prefix: '', suffix: '%', zero: '-', digits: 2},
+			id: 'maxStreak',
+			label: '115 Streak',
+			title: 'Sort by longest 115 streak',
+			iconFa: 'icon115s',
+			value: data => getStat(data, statKeys['maxStreak'][currentTypeValue]),
+			props: {prefix: '', suffix: '', zero: '-', digits: 0},
 		},
 		{
 			id: 'playCount',
