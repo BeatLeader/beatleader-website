@@ -6,8 +6,7 @@ import {getDiffColor} from '../../../utils/beatleader/format';
 import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
-export const BL_API_URL =
-	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? `https://api.beatleader.xyz/` : `/cors/blapi/`;
+export const BL_API_URL = `https://stage.api.beatleader.net/`;
 export const BL_SOCKET_URL = 'wss://api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
@@ -140,6 +139,9 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'notes', value: currentDiff?.notes ?? null},
 		{id: 'bpm', value: led?.song?.bpm ?? null},
 		{id: 'stars', value: currentDiff?.stars ?? null},
+		{id: 'accRating', value: currentDiff?.accRating ?? null},
+		{id: 'passRating', value: currentDiff?.passRating ?? null},
+		{id: 'predictedAcc', value: currentDiff?.predictedAcc ?? null},
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
 		{id: 'authorName', value: led?.song?.author},
@@ -150,12 +152,10 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		(cum, sid) => {
 			let value = sid.value;
 
-			if (value !== null && ['scores', 'totalScores', 'notes', 'stars', 'status', 'type'].includes(sid.id)) {
+			if (value !== null) {
 				if (value !== null) {
 					cum.stats[sid.id] = value;
 				}
-
-				return cum;
 			}
 			if (value !== null) cum[sid.id] = value;
 

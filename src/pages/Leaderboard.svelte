@@ -828,8 +828,11 @@
 									{/if}
 
 									{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-									{#if leaderboard.stats && leaderboard.stats.stars}
-										<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★" />
+									{#if leaderboard.stats && leaderboard.stats.passRating}
+										<Value value={leaderboard.stats.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
+									{/if}
+									{#if leaderboard.stats && leaderboard.stats.accRating}
+										<Value value={leaderboard.stats.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
 									{/if}
 									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
 											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span

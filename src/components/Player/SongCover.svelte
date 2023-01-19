@@ -7,6 +7,7 @@
 	export let leaderboard = null;
 	export let url = null;
 	export let notClickable = false;
+	export let starsKey = 'stars';
 
 	const DEFAULT_IMG = '/assets/song-default.png';
 
@@ -70,7 +71,7 @@
 				diff={leaderboard.diffInfo}
 				useShortName={true}
 				reverseColors={true}
-				stars={leaderboard.complexity ?? leaderboard.stars}
+				stars={leaderboard?.difficulty[starsKey]}
 				starsSuffix={leaderboard.complexity ? '' : '★'} />
 		</div>
 	{:else}
