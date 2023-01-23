@@ -266,6 +266,7 @@
 		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-star'},
 		{id: 'accRating', label: 'Accability', title: 'Sort by acc rating', iconFa: 'fa fa-star'},
 		{id: 'passRating', label: 'Passability', title: 'Sort by pass rating', iconFa: 'fa fa-star'},
+		{id: 'techRating', label: 'Tech', title: 'Sort by tech rating', iconFa: 'fa fa-star'},
 		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
 		{id: 'timestamp', label: 'Map date', title: 'Sort by the map date', iconFa: 'fas fa-map'},
 		{id: 'voting', label: 'Voting', title: 'Sort by positive minus negative vote count', iconFa: 'fas fa-vote-yea'},
@@ -330,7 +331,10 @@
 
 	$: changePageAndFilters(page, location);
 
-	$: starsKey = currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' ? currentFilters.sortBy : 'stars';
+	$: starsKey =
+		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'
+			? currentFilters.sortBy
+			: 'stars';
 
 	$: leaderboardsPage = ($leaderboardsStore?.data ?? []).map(m => {
 		return {

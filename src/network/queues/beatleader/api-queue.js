@@ -141,6 +141,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'stars', value: currentDiff?.stars ?? null},
 		{id: 'accRating', value: currentDiff?.accRating ?? null},
 		{id: 'passRating', value: currentDiff?.passRating ?? null},
+		{id: 'techRating', value: currentDiff?.techRating ?? null},
 		{id: 'predictedAcc', value: currentDiff?.predictedAcc ?? null},
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
