@@ -683,6 +683,9 @@
 									{#if leaderboard.stats && leaderboard.stats.accRating}
 										<Value value={leaderboard.stats.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
 									{/if}
+									{#if leaderboard.stats && leaderboard.stats.techRating}
+										<Value value={leaderboard.stats.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
+									{/if}
 									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
 											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span
 										>{/if}
