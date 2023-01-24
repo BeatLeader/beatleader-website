@@ -162,7 +162,9 @@
 	let currentFilters = buildFiltersFromLocation(location);
 	let leaderboard = null;
 
-	let modifiedStars = null;
+	let modifiedPass = null;
+	let modifiedAcc = null;
+	let modifiedTech = null;
 
 	let openedDetails = [];
 
@@ -817,7 +819,7 @@
 							</div>
 
 							<div class="title-and-buttons">
-								<h2 class="title is-6" class:unranked={!isRanked}>
+								<h2 class="title is-6" style="display: contents;" class:unranked={!isRanked}>
 									{#if leaderboard.categoryDisplayName}
 										<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
 											<span slot="label">
@@ -829,13 +831,19 @@
 
 									{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
 									{#if leaderboard.stats && leaderboard.stats.passRating}
-										<Value value={leaderboard.stats.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
+										<div class="map-rating" style="background-color: rgb(0 255 0 / {(leaderboard.stats.passRating / 20) * 100}%);">
+											<Value value={leaderboard.stats.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
+										</div>
 									{/if}
 									{#if leaderboard.stats && leaderboard.stats.accRating}
-										<Value value={leaderboard.stats.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
+										<div class="map-rating" style="background-color: rgb(128 0 128 / {(leaderboard.stats.accRating / 20) * 100}%);">
+											<Value value={leaderboard.stats.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
+										</div>
 									{/if}
 									{#if leaderboard.stats && leaderboard.stats.techRating}
-										<Value value={leaderboard.stats.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
+										<div class="map-rating" style="background-color: rgb(255 0 0 / {(leaderboard.stats.techRating / 20) * 100}%);">
+											<Value value={leaderboard.stats.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
+										</div>
 									{/if}
 									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
 											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span
@@ -1405,13 +1413,27 @@
 							</div>
 							<div>
 								<h2 class="title is-5">
-									PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
+									PP curve (<Value
+										value={modifiedPass}
+										prevValue={leaderboard?.stats?.passRating ?? 0}
+										inline="true"
+										prefix="Pass "
+										suffix="*" />,
+									<Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="*" />,
+									<Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="*" />)
 								</h2>
 								<PpCurve
-									stars={leaderboard?.stats?.stars}
+									passRating={leaderboard?.stats?.passRating}
+									accRating={leaderboard?.stats?.accRating}
+									techRating={leaderboard?.stats?.techRating}
 									{modifiers}
+									modifiersRating={leaderboard?.difficultyBl?.modifiersRating}
 									mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
-									on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
+									on:modified-stars={e => {
+										modifiedPass = e?.detail[0] ?? 0;
+										modifiedAcc = e?.detail[1] ?? 0;
+										modifiedTech = e?.detail[2] ?? 0;
+									}} />
 							</div>
 						</div>
 					{/if}
@@ -1833,6 +1855,11 @@
 		font-size: 120%;
 		font-weight: bolder;
 		padding-bottom: 0.4em;
+	}
+
+	.map-rating {
+		padding: 0.5em;
+		color: white;
 	}
 
 	@media screen and (max-width: 1275px) {

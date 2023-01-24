@@ -12,26 +12,87 @@ export const getFCPPTitle = (fcPp, suffix) => {
 	return `Full combo PP: ${formatNumber(fcPp)}${suffix}`;
 };
 
-export const buildCurve = (acc, stars) => {
-	var l = 1 - (0.03 * (stars - 3.0)) / 11.0;
-	var a = 0.96 * l;
-	var f = 1.2 - (0.6 * stars) / 14.0;
-	return Math.pow(Math.log10(l / (l - acc)) / Math.log10(l / (l - a)), f);
+const pointList = [
+	[1, 7],
+	[0.999, 5.8],
+	[0.9975, 4.7],
+	[0.995, 3.76],
+	[0.9925, 3.17],
+	[0.99, 2.73],
+	[0.9875, 2.38],
+	[0.985, 2.1],
+	[0.9825, 1.88],
+	[0.98, 1.71],
+	[0.9775, 1.57],
+	[0.975, 1.45],
+	[0.9725, 1.37],
+	[0.97, 1.31],
+	[0.965, 1.2],
+	[0.96, 1.11],
+	[0.955, 1.045],
+	[0.95, 1],
+	[0.94, 0.94],
+	[0.93, 0.885],
+	[0.92, 0.835],
+	[0.91, 0.79],
+	[0.9, 0.75],
+	[0.875, 0.655],
+	[0.85, 0.57],
+	[0.825, 0.51],
+	[0.8, 0.47],
+	[0.75, 0.4],
+	[0.7, 0.34],
+	[0.65, 0.29],
+	[0.6, 0.25],
+	[0.0, 0.0],
+];
+
+const Curve2 = acc => {
+	var i = 0;
+	for (; i < pointList.length; i++) {
+		if (pointList[i][0] <= acc) {
+			break;
+		}
+	}
+
+	if (i == 0) {
+		i = 1;
+	}
+
+	var middle_dis = (acc - pointList[i - 1][0]) / (pointList[i][0] - pointList[i - 1][0]);
+	return pointList[i - 1][1] + middle_dis * (pointList[i][1] - pointList[i - 1][1]);
 };
 
-export const getPPFromAcc = (acc, stars, mode) => {
-	return mode == 'rhythmgamestandard' ? acc * stars * 55 : buildCurve(acc, stars - 0.5) * (stars + 0.5) * 42;
+export const buildCurve = (accuracy, passRating, accRating, techRating) => {
+	var passPP = passRating * 14;
+	var accPP = Curve2(accuracy) * accRating * 27.5;
+	var techPP = ((1 / (1 + Math.pow(Math.E, -16 * (accuracy - 0.9)))) * techRating * accRating) / Math.max(0.3333 * passRating, 1);
+	return passPP + accPP + techPP;
 };
 
-export const computeModifierStars = (stars, mods) => {
+export const getPPFromAcc = (acc, passRating, accRating, techRating, mode) => {
+	return mode == 'rhythmgamestandard' ? acc * passRating * 55 : buildCurve(acc, passRating, accRating, techRating);
+};
+
+export const computeModifiedRating = (rating, ratingName, modifiersRating, mods) => {
 	// Make sure we have a valid modifiers array
+	rating = rating ?? 0;
 	if (!mods || !Array.isArray(mods) || mods.length === 0) {
-		return stars;
+		return rating;
+	}
+
+	if (modifiersRating) {
+		for (let index = 0; index < mods.length; index++) {
+			const mod = mods[index];
+			if (modifiersRating[mod.name.toLowerCase() + ratingName]) {
+				rating = modifiersRating[mod.name.toLowerCase() + ratingName];
+				mods = mods.filter(m => m != mod);
+				break;
+			}
+		}
 	}
 
 	const positiveModifiersSum = mods?.reduce((sum, mod) => sum + (mod.value > 0 ? mod.value : 0), 0) ?? 0;
 	const negativeModifiersSum = mods?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
-	const modifiedStars = stars * (1 + positiveModifiersSum + negativeModifiersSum);
-
-	return modifiedStars;
+	return rating * (1 + positiveModifiersSum + negativeModifiersSum);
 };

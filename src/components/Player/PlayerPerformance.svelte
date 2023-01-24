@@ -1,5 +1,5 @@
 <script>
-	import {computeModifierStars, getFCPPTitle, getPPFromAcc} from '../../utils/beatleader/pp.js';
+	import {computeModifiedRating, getFCPPTitle, getPPFromAcc} from '../../utils/beatleader/pp.js';
 	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
 	import Badge from '../Common/Badge.svelte';
@@ -120,7 +120,7 @@
 
 			// if the score is ranked, we should show how much pp this score would
 			// have been worth if the player had not made any mistakes
-			const stars = score?.leaderboard?.difficulty?.stars ?? 0;
+
 			let modArr = [];
 			if (score.mods) {
 				for (const mod of score.mods) {
@@ -131,8 +131,14 @@
 					});
 				}
 			}
-			const modifiedStars = computeModifierStars(stars, modArr);
-			const pp = getPPFromAcc(fcAccuracy, modifiedStars);
+
+			const diff = score?.leaderboard?.difficulty;
+			const modifiersRating = score?.leaderboard?.difficulty?.modifiersRating;
+
+			const modifiedPassRating = computeModifiedRating(diff?.passRating, 'PassRating', modifiersRating, modArr);
+			const modifiedAccRating = computeModifiedRating(diff?.accRating, 'AccRating', modifiersRating, modArr);
+			const modifiedTechRating = computeModifiedRating(diff?.techRating, 'TechRating', modifiersRating, modArr);
+			const pp = getPPFromAcc(fcAccuracy, modifiedPassRating, modifiedAccRating, modifiedTechRating);
 			const roundedPP = Math.round(pp * 100) / 100;
 			const fcPpTitle = getFCPPTitle(roundedPP, 'pp');
 			title += `\n${fcPpTitle}`;
