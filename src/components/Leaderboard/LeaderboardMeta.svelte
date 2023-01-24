@@ -16,8 +16,9 @@
   	Mapped by: ${song?.levelAuthorName}
     Status: ${formatDiffStatus(leaderboard?.stats?.status ?? '')}
 	` +
-		(leaderboard?.stats?.stars ? `Stars: ${leaderboard?.stats?.stars}\n` : '') +
-		(leaderboard?.stats?.type ? `Type: ${mapTypeFromMask(leaderboard?.stats.type)}\n` : '');
+		(leaderboard?.stats?.passRating ? `Pass rating: ${leaderboard?.stats?.passRating}\n` : '') +
+		(leaderboard?.stats?.accRating ? `Acc rating: ${leaderboard?.stats?.accRating}\n` : '') +
+		(leaderboard?.stats?.techRating ? `Tech rating: ${leaderboard?.stats?.techRating}\n` : '');
 </script>
 
 <MetaTags

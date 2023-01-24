@@ -16,7 +16,6 @@ export const processScore = s => {
 		diffInfo,
 		difficulty: s?.leaderboard?.difficulty?.value,
 		difficultyBl: s?.leaderboard?.difficulty ?? null,
-		stars: s?.leaderboard?.difficulty?.stars ?? null,
 	};
 
 	let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: acc, ...score} = s;
