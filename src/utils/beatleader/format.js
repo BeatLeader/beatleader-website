@@ -330,8 +330,6 @@ export function getControllerForEnum(controller) {
 			return 'VIVE 2 wands';
 		case 128:
 			return 'VIVE cosmos controllers';
-		case 64:
-			return 'Knuckles';
 		case 8:
 			return 'WMR controllers';
 		case 33:
@@ -351,13 +349,15 @@ export function getControllerForEnum(controller) {
 		case 63:
 			return 'VIVE tracker 2';
 		case 64:
-			return 'VIVE tracker 3';
+			return 'Knuckles';
 		case 65:
 			return 'nolo controllers';
 		case 66:
 			return 'Pico phoenix';
 		case 67:
 			return 'Hands 🙌';
+		case 68:
+			return 'VIVE tracker 3';
 	}
 
 	return '';
