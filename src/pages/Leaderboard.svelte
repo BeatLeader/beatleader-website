@@ -1054,7 +1054,7 @@
 		{/if}
 	</article>
 	{#if separatePage}
-		<aside>
+		<aside transition:fade>
 			{#if !leaderboardStatsShown}
 				<div class="score-options-section">
 					<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
