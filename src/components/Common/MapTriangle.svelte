@@ -77,8 +77,8 @@
 						y1={corner2.y}
 						x2={(corner3.x + corner1.x) / 2}
 						y2={(corner1.y + corner3.y) / 2}>
-						<stop offset="0%" stop-color="rgb(128 0 128 / {(mapRating.accRating / maxRating) * 100}%)" />
-						<stop offset="100%" stop-color="rgb(128 0 128 / {(mapRating.accRating / maxRating) * 25}%)" />
+						<stop offset="0%" stop-color="rgb(0 0 255 / {(mapRating.accRating / maxRating) * 100}%)" />
+						<stop offset="100%" stop-color="rgb(0 0 255 / {(mapRating.accRating / maxRating) * 25}%)" />
 					</linearGradient>
 
 					<!-- <path id="pathA-1" d="M {corner3.x},{corner3.y} L {corner1.x},{corner1.y} {corner2.x},{corner2.y} Z" fill="url(#fadeA-1)" />
