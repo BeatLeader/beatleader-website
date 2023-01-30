@@ -58,6 +58,7 @@
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
 	import produce from 'immer';
 	import {configStore} from '../stores/config';
+	import MapTriangle from '../components/Common/MapTriangle.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -679,21 +680,8 @@
 									{/if}
 
 									{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-									{#if leaderboard.stats && leaderboard.stats.passRating}
-										<div class="map-rating" style="background-color: rgb(0 255 0 / {(leaderboard.stats.passRating / 20) * 100}%);">
-											<Value value={leaderboard.stats.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
-										</div>
-									{/if}
-									{#if leaderboard.stats && leaderboard.stats.accRating}
-										<div class="map-rating" style="background-color: rgb(128 0 128 / {(leaderboard.stats.accRating / 20) * 100}%);">
-											<Value value={leaderboard.stats.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
-										</div>
-									{/if}
-									{#if leaderboard.stats && leaderboard.stats.techRating}
-										<div class="map-rating" style="background-color: rgb(255 0 0 / {(leaderboard.stats.techRating / 20) * 100}%);">
-											<Value value={leaderboard.stats.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
-										</div>
-									{/if}
+
+									<MapTriangle mapRating={leaderboard.stats} showRatings={true} />
 									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
 											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span
 										>{/if}
@@ -701,8 +689,9 @@
 										<MapTypeDescription type={leaderboard?.stats.type} />
 									{/if}
 								</h2>
-								<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
 							</div>
+
+							<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
 
 							{#if batleRoyaleDraft}
 								<div class="royale-title-container">
@@ -1517,7 +1506,8 @@
 	.title-and-buttons {
 		display: flex;
 		align-items: center;
-		margin-top: 0.5em;
+		margin: 1.4em;
+		margin-right: 5.3em;
 		justify-content: center;
 		flex-wrap: wrap;
 		gap: 0.6em;
