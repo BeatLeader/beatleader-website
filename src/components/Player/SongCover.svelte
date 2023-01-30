@@ -2,7 +2,7 @@
 	import {BS_CDN} from '../../network/queues/beatleader/page-queue';
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
-	import MapTypeDescription from '../Leaderboard/MapTypeDescription.svelte';
+	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
 
 	export let leaderboard = null;
 	export let url = null;
@@ -60,9 +60,9 @@
 			</div>
 		{/if}
 
-		{#if leaderboard?.difficulty?.type}
+		{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
 			<div class="type">
-				<MapTypeDescription cram={true} type={leaderboard.difficulty.type} />
+				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} />
 			</div>
 		{/if}
 
@@ -71,7 +71,7 @@
 				diff={leaderboard.diffInfo}
 				useShortName={true}
 				reverseColors={true}
-				stars={leaderboard?.difficulty[starsKey]}
+				stars={leaderboard?.difficulty[starsKey] ?? leaderboard?.difficultyBl[starsKey]}
 				starsSuffix={leaderboard.complexity ? '' : '★'} />
 		</div>
 	{:else}
@@ -91,7 +91,7 @@
 		align-items: center;
 		position: absolute;
 		bottom: 0.8em;
-		right: 0;
+		right: -0.5em;
 		font-size: 0.75em;
 	}
 
@@ -108,8 +108,8 @@
 		display: flex;
 		align-items: center;
 		position: absolute;
-		top: 0.8em;
-		right: 0;
+		top: -0.5em;
+		right: -0.5em;
 		font-size: 0.75em;
 	}
 
