@@ -108,7 +108,7 @@ export default () => {
 		});
 	};
 
-	const updateMap = async (hash, diff, mode, rankability, stars, types) => {
+	const updateMap = async (hash, diff, mode, rankability, accRating, passRating, techRating, types) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		if (Array.isArray(types)) {
@@ -125,7 +125,9 @@ export default () => {
 		fetch(
 			BL_API_URL +
 				`rank/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` +
-				(stars ? '&stars=' + stars : '') +
+				(accRating ? '&accRating=' + accRating : '') +
+				(passRating ? '&passRating=' + passRating : '') +
+				(techRating ? '&techRating=' + techRating : '') +
 				(type ? '&type=' + type : ''),
 			{credentials: 'include', method: 'POST'}
 		).then(() => {

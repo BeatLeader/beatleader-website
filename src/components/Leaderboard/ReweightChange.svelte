@@ -55,8 +55,16 @@
 			{change.oldRankability ? 'Ranked' : 'Unranked'} → {change.newRankability ? 'Ranked' : 'Unranked'}
 		{/if}
 
-		{#if change.oldStars !== change.newStars}
-			{change.oldStars} → {change.newStars} ★
+		{#if change.oldAccRating != change.accRating}
+			{change.oldAccRating} → {change.accRating} Acc ★
+		{/if}
+
+		{#if change.oldPassRating != change.passRating}
+			{change.oldPassRating} → {change.passRating} Pass ★
+		{/if}
+
+		{#if change.oldTechRating != change.techRating}
+			{change.oldTechRating} → {change.techRating} Tech ★
 		{/if}
 
 		{#if change.oldType !== change.newType}

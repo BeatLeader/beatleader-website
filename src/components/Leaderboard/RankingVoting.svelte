@@ -25,7 +25,9 @@
 	let hash = leaderboard?.song?.hash;
 	let diff = leaderboard?.diffInfo?.diff;
 	let mode = leaderboard?.diffInfo?.type;
-	let currentStars = leaderboard?.stats?.stars;
+	let currentTechRating = leaderboard?.stats?.techRating;
+	let currentAccRating = leaderboard?.stats?.predictedAcc;
+	let currentPassRating = leaderboard?.stats?.passRating;
 	let currentType = leaderboard?.stats?.type;
 	let isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	let isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
@@ -33,7 +35,9 @@
 	let qualification = leaderboard?.qualification;
 
 	let suitableForRank = rtvoting && !isRanked ? true : undefined;
-	let stars;
+	let techRating;
+	let accRating;
+	let passRating;
 	let modifiers;
 	let status = leaderboard?.stats?.status;
 
@@ -48,19 +52,32 @@
 	let selectedType = '+';
 
 	function vote() {
-		if (rtvoting) {
-			if (isRanked) {
-				votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
-			} else {
-				if (qualificationUpdate) {
-					votingStore.updateQualification(hash, diff, mode, status, stars, selectedTypes, criteriaMet, criteriaCommentary, modifiers);
-				} else {
-					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes, modifiers);
-				}
-			}
-		} else {
-			votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
-		}
+		// if (rtvoting) {
+		// if (isRanked) {
+		votingStore.updateMap(hash, diff, mode, suitableForRank, accRating, passRating, techRating, selectedTypes);
+		// } else {
+		// 	if (qualificationUpdate) {
+		// 		votingStore.updateQualification(
+		// 			hash,
+		// 			diff,
+		// 			mode,
+		// 			suitableForRank,
+		// 			accRating,
+		// 			passRating,
+		// 			techRating,
+		// 			selectedTypes,
+		// 			mapperAllowed,
+		// 			criteriaMet,
+		// 			criteriaCommentary,
+		// 			modifiers
+		// 		);
+		// 	} else {
+		// 		votingStore.qualifyMap(hash, diff, mode, suitableForRank, accRating, passRating, techRating, selectedTypes, modifiers);
+		// 	}
+		// }
+		// } else {
+		// 	votingStore.vote(hash, diff, mode, suitableForRank, accRating, passRating, techRating, selectedTypes);
+		// }
 
 		dispatch('finished');
 	}
@@ -81,8 +98,10 @@
 		mapTypes = mapTypes;
 	}
 
-	function updateStars(currentStars) {
-		stars = currentStars ?? 7.5;
+	function updateStars(currentTechRating, currentAccRating, currentPassRating) {
+		techRating = currentTechRating ?? 0.0;
+		accRating = currentAccRating ?? 0.0;
+		passRating = currentPassRating ?? 0.0;
 	}
 
 	function modifiersUpdated(modifiersUpdate) {
@@ -91,21 +110,21 @@
 
 	let dialogTitle;
 	function updateDialogTitle(rtvoting, isRanked, qualificationUpdate, isQualified) {
-		if (rtvoting) {
-			if (isRanked) {
-				dialogTitle = 'Update map ranking';
-			} else if (qualificationUpdate) {
-				if (isQualified) {
-					dialogTitle = 'Update map qualification';
-				} else {
-					dialogTitle = 'Update map nomination';
-				}
-			} else {
-				dialogTitle = 'Nominate map';
-			}
-		} else {
-			dialogTitle = 'Vote map for ranked';
-		}
+		// if (rtvoting) {
+		// 	if (isRanked) {
+		dialogTitle = 'Update map ranking';
+		// } else if (qualificationUpdate) {
+		// 	if (isQualified) {
+		// 		dialogTitle = 'Update map qualification';
+		// 	} else {
+		// 		dialogTitle = 'Update map nomination';
+		// 	}
+		// } else {
+		// 	dialogTitle = 'Nominate map';
+		// }
+		// } else {
+		// 	dialogTitle = 'Vote map for ranked';
+		// }
 	}
 
 	let actionButtonTitle;
@@ -117,57 +136,74 @@
 		status,
 		criteriaMet,
 		playerId,
-		stars,
+		techRating,
+		accRating,
+		passRating,
 		selectedTypes,
 		modifiers,
 		isQualified
 	) {
 		actionButtonType = 'primary';
-		if (rtvoting) {
-			if (isRanked) {
-				actionButtonTitle = 'Update';
-			} else if (qualificationUpdate) {
-				if (status == DifficultyStatus.qualified || status == DifficultyStatus.nominated) {
-					if (
-						status == DifficultyStatus.qualified &&
-						!isjuniorRT &&
-						qualification.rtMember != playerId &&
-						qualification.criteriaChecker != playerId &&
-						qualification.criteriaMet == 1 &&
-						qualification.criteriaMet == criteriaMet &&
-						currentStars == stars &&
-						originalTypes.length === selectedTypes.length &&
-						((qualification?.modifiers == null && shallowEqual(modifiers, leaderboard?.difficultyBl?.modifierValues, ['modifierId'])) ||
-							shallowEqual(modifiers, qualification?.modifiers, ['modifierId'])) &&
-						originalTypes.every(function (value, index) {
-							return value === selectedTypes[index];
-						})
-					) {
-						actionButtonTitle = 'Approve qualification!';
-						actionButtonType = 'purple';
-					} else {
-						actionButtonTitle = 'Update nomination';
-					}
-				} else {
-					if (!isQualified) {
-						actionButtonTitle = 'Stop nomination!';
-					} else {
-						actionButtonTitle = 'Stop qualification!';
-					}
+		// if (rtvoting) {
+		// 	if (isRanked) {
+		actionButtonTitle = 'Update';
+		// 	} else if (qualificationUpdate) {
+		// 		if (suitableForRank) {
+		// 			if (
+		// 				qualification.mapperAllowed &&
+		// 				mapperAllowed &&
+		// 				!isjuniorRT &&
+		// 				qualification.rtMember != playerId &&
+		// 				qualification.criteriaChecker != playerId &&
+		// 				qualification.criteriaMet == 1 &&
+		// 				qualification.criteriaMet == criteriaMet &&
+		// 				currentTechRating == techRating &&
+		// 				currentAccRating == accRating &&
+		// 				currentPassRating == passRating &&
+		// 				originalTypes.length === selectedTypes.length &&
+		// 				((qualification?.modifiers == null && shallowEqual(modifiers, leaderboard?.difficultyBl?.modifierValues, ['modifierId'])) ||
+		// 					shallowEqual(modifiers, qualification?.modifiers, ['modifierId'])) &&
+		// 				originalTypes.every(function (value, index) {
+		// 					return value === selectedTypes[index];
+		// 				})
+		// 			) {
+		// 				actionButtonTitle = 'Approve qualification!';
+		// 				actionButtonType = 'purple';
+		// 			} else {
+		// 				actionButtonTitle = 'Update nomination';
+		// 			}
+		// 		} else {
+		// 			if (!isQualified) {
+		// 				actionButtonTitle = 'Stop nomination!';
+		// 			} else {
+		// 				actionButtonTitle = 'Decline qualification!';
+		// 			}
 
-					actionButtonType = 'danger';
-				}
-			} else {
-				actionButtonTitle = 'Nominate';
-			}
-		} else {
-			actionButtonTitle = 'Submit';
-		}
+		// 			actionButtonType = 'danger';
+		// 		}
+		// 	} else {
+		// 		actionButtonTitle = 'Nominate';
+		// 	}
+		// } else {
+		// 	actionButtonTitle = 'Submit';
+		// }
+	}
+
+	// "none":{"AIacc":0.9636242665027256,"lack_map_calculation":{"balanced_pass_diff":5.161390220075097,"balanced_tech":1.3745481893548488}}
+
+	function fetchAI(leaderboard) {
+		fetch(`https://bs-replays-ai.azurewebsites.net/bl-reweight/${leaderboard?.song?.hash}/Standard/${leaderboard?.difficultyBl?.value}`)
+			.then(d => d.json())
+			.then(d => {
+				techRating = d.none.lack_map_calculation.balanced_tech * 10;
+				accRating = d.none.AIacc;
+				passRating = d.none.lack_map_calculation.balanced_pass_diff;
+			});
 	}
 
 	let showModifiers = false;
 
-	$: updateStars(currentStars);
+	$: updateStars(currentTechRating, currentAccRating, currentPassRating);
 	$: modifiersUpdated(deepClone(currentModifiers));
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate, isQualified);
 	$: updateActionButtonTitle(
@@ -177,11 +213,17 @@
 		status,
 		criteriaMet,
 		playerId,
-		stars,
+		techRating,
+		accRating,
+		passRating,
 		selectedTypes,
 		modifiers,
 		isQualified
 	);
+
+	$: console.log(leaderboard?.stats);
+
+	$: if (!accRating && leaderboard) fetchAI(leaderboard);
 </script>
 
 <div class="ranking-voting {insideLeaderboard || showModifiers ? 'inside-leaderboard' : ''}">
@@ -243,35 +285,102 @@
 			{#if suitableForRank}
 				{#if !hideStarSlider}
 					<div>
-						<label>{rtvoting ? 'Stars:' : 'Stars (optional):'}</label>
+						<label>{rtvoting ? 'Pass rating:' : 'Pass rating (optional):'}</label>
 						<div class="buttons-and-slider">
 							<Button
 								title="Less"
 								iconFa="fas fa-caret-left"
 								type="text"
 								on:click={() => {
-									if (stars > 0) stars -= Ranked_Const.STAR_GRANULARITY;
+									if (passRating > 0) passRating -= Ranked_Const.STAR_GRANULARITY;
 								}} />
 
 							<RangeSlider
 								min={Ranked_Const.MIN_STARS}
 								max={Ranked_Const.MAX_STARS}
 								step={Ranked_Const.STAR_GRANULARITY}
-								values={[stars]}
+								values={[passRating]}
 								float
 								hoverable
 								pips
 								pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 								all="label"
 								on:change={event => {
-									stars = event.detail.values[0];
+									passRating = event.detail.values[0];
 								}} />
 							<Button
 								title="More"
 								iconFa="fas fa-caret-right"
 								type="text"
 								on:click={() => {
-									if (stars > 0) stars += Ranked_Const.STAR_GRANULARITY;
+									if (passRating > 0) passRating += Ranked_Const.STAR_GRANULARITY;
+								}} />
+						</div>
+					</div>
+					<div>
+						<label>{rtvoting ? 'Predicted acc:' : 'Predicted acc (optional):'}</label>
+						<div class="buttons-and-slider">
+							<Button
+								title="Less"
+								iconFa="fas fa-caret-left"
+								type="text"
+								on:click={() => {
+									if (accRating > 0) accRating -= Ranked_Const.STAR_GRANULARITY;
+								}} />
+
+							<RangeSlider
+								min={90}
+								max={100}
+								step={Ranked_Const.STAR_GRANULARITY}
+								values={[accRating * 100]}
+								float
+								hoverable
+								pips
+								pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+								all="label"
+								on:change={event => {
+									accRating = event.detail.values[0] / 100;
+								}} />
+							<Button
+								title="More"
+								iconFa="fas fa-caret-right"
+								type="text"
+								on:click={() => {
+									if (accRating > 0) accRating += Ranked_Const.STAR_GRANULARITY;
+								}} />
+						</div>
+					</div>
+
+					<div>
+						<label>{rtvoting ? 'Tech rating:' : 'Tech rating (optional):'}</label>
+						<div class="buttons-and-slider">
+							<Button
+								title="Less"
+								iconFa="fas fa-caret-left"
+								type="text"
+								on:click={() => {
+									if (techRating > 0) techRating -= Ranked_Const.STAR_GRANULARITY;
+								}} />
+
+							<RangeSlider
+								min={Ranked_Const.MIN_STARS}
+								max={Ranked_Const.MAX_STARS}
+								step={Ranked_Const.STAR_GRANULARITY}
+								values={[techRating]}
+								float
+								hoverable
+								pips
+								pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+								all="label"
+								on:change={event => {
+									techRating = event.detail.values[0];
+								}} />
+							<Button
+								title="More"
+								iconFa="fas fa-caret-right"
+								type="text"
+								on:click={() => {
+									if (techRating > 0) techRating += Ranked_Const.STAR_GRANULARITY;
 								}} />
 						</div>
 					</div>
