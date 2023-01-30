@@ -600,7 +600,7 @@
 								{/if}
 
 								{#if !votingLoading}
-									{#if votingStatus == 2}
+									<!-- {#if votingStatus == 2}
 										<Button
 											cls="voteButton"
 											iconFa={'fas fa-comment-dots'}
@@ -621,21 +621,17 @@
 											iconFa="fas fa-clipboard-check"
 											title="Thank your for the vote!"
 											noMargin={true} />
-									{/if}
-									{#if separatePage && generalMapperId != 101330 && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
-										{#if !isRT && qualificationLimitError}
-											<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
-										{:else}
-											<Button
-												cls="voteButton"
-												iconFa={isRanked ? 'fas fa-star' : 'fas fa-rocket'}
-												title={isRanked ? 'Update map stars' : 'Nominate this map!'}
-												noMargin={true}
-												on:click={() => {
-													mapVoting = !mapVoting;
-													rtvoting = true;
-												}} />
-										{/if}
+									{/if} -->
+									{#if separatePage && generalMapperId != 101330 && isRT}
+										<Button
+											cls="voteButton"
+											iconFa={'fas fa-star'}
+											title={'Update map stars'}
+											noMargin={true}
+											on:click={() => {
+												mapVoting = !mapVoting;
+												rtvoting = true;
+											}} />
 									{/if}
 									{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
 										<Button

@@ -51,12 +51,16 @@
 			</span>
 		</div>
 
-		{#if change.oldStars != change.newStars}
-			{change.oldStars} → {change.newStars} ★
+		{#if change.oldAccRating != change.accRating}
+			{change.oldAccRating} → {change.accRating} Acc ★
 		{/if}
 
-		{#if change.oldType != change.newType}
-			{mapTypeFromMask(change.oldType)} → {mapTypeFromMask(change.newType)}
+		{#if change.oldPassRating != change.passRating}
+			{change.oldPassRating} → {change.passRating} Pass ★
+		{/if}
+
+		{#if change.oldTechRating != change.techRating}
+			{change.oldTechRating} → {change.techRating} Tech ★
 		{/if}
 
 		{#if change.oldCriteriaMet != change.newCriteriaMet}
