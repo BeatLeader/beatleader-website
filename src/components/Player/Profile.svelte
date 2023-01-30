@@ -152,6 +152,19 @@
 			removeAfter: 2000,
 		});
 	}
+	function copyUrl() {
+		var dummy = document.createElement('input');
+		var text = window.location.href;
+
+		document.body.appendChild(dummy);
+		dummy.value = text;
+		dummy.select();
+		document.execCommand('copy');
+		document.body.removeChild(dummy);
+
+		successToast('Link Copied to Clipboard!');
+	}
+
 	async function takeScreenshot() {
 		try {
 			const element = document.querySelector('.content-box');
@@ -271,6 +284,9 @@
 <AvatarOverlayEditor bind:editModel {roles} />
 <ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
 	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
+	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
+	</div>
 	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
 		<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
 	</div>
@@ -407,6 +423,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+	:global(.shareButton) {
+		font-size: 1.5em !important;
+		position: absolute !important;
+		right: 2em;
+		top: 0em;
 	}
 	:global(.screenshotButton) {
 		font-size: 1.5em !important;
