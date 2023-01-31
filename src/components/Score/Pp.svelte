@@ -6,6 +6,9 @@
 
 	export let pp = 0;
 	export let bonusPp = 0;
+	export let accPp = 0;
+	export let techPp = 0;
+	export let passPp = 0;
 	export let zero = '-';
 	export let withZeroSuffix = false;
 	export let weighted = null;
@@ -88,6 +91,15 @@
 
 		if (bonusPp) {
 			prevTitle += `PP bonus: ${formatNumber(bonusPp)}${suffix}\n`;
+		}
+		if (accPp) {
+			prevTitle += `Acc PP part: ${formatNumber(accPp)}${suffix}\n`;
+		}
+		if (passPp) {
+			prevTitle += `Pass PP part: ${formatNumber(passPp)}${suffix}\n`;
+		}
+		if (techPp) {
+			prevTitle += `Tech PP part: ${formatNumber(techPp)}${suffix}\n`;
 		}
 		if (fcPp) {
 			prevTitle += `Full combo PP: ${formatNumber(fcPp)}${suffix}\n`;

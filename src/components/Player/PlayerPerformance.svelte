@@ -166,6 +166,9 @@
 						<Pp
 							pp={score.pp}
 							bonusPp={score.bonusPp}
+							accPp={score.accPP}
+							techPp={score.techPP}
+							passPp={score.passPP}
 							weighted={score.ppWeighted}
 							fcPp={score.fcPp}
 							{improvements}
