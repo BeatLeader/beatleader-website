@@ -206,6 +206,7 @@
 						component: BeatLeaderSwipeCard,
 						props: {
 							playerId,
+							playerInfo,
 							scoresStats: scoresStatsFinal,
 							ssBadges,
 						},

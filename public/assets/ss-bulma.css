@@ -11710,6 +11710,14 @@ select {
 	background-image: url(./coolpepe.webp) !important;
 }
 
+.skilltriangle-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./skilltriangle.svg');
+}
+
 .dropdown-menu {
 	display: none;
 	left: 0;
