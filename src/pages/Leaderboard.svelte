@@ -404,8 +404,7 @@
 			account.refreshLastQualificationTime(hash, time => {
 				const currentSeconds = new Date().getTime() / 1000;
 				if (currentSeconds - time < 60 * 60 * 24 * timeToNomination) {
-					qualificationLimitError =
-						'You can nominate new map after ' + Math.round(timeToNomination - (currentSeconds - time) / (60 * 60 * 24)) + ' day(s)';
+					qualificationLimitError = 'You can nominate new map ' + formatDateRelative(dateFromUnix(time + 60 * 60 * 24 * timeToNomination));
 				} else {
 					qualificationLimitError = null;
 				}
