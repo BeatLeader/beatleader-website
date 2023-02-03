@@ -15,9 +15,14 @@
 	$: accPp = playerInfo.accPp;
 	$: passPp = playerInfo.passPp;
 
+	$: totalNormalizedPp = techPp * (maxAccPp / maxTechPp) + accPp + passPp * (maxAccPp / maxPassPp);
 	$: normalizedTechPp = techPp / maxTechPp;
 	$: normalizedAccPp = accPp / maxAccPp;
 	$: normalizedPassPp = passPp / maxPassPp;
+
+	$: techPpPart = (techPp * (maxAccPp / maxTechPp)) / totalNormalizedPp;
+	$: accPpPart = accPp / totalNormalizedPp;
+	$: passPpPart = (passPp * (maxAccPp / maxPassPp)) / totalNormalizedPp;
 
 	$: corner1 = {
 		x: (gypL - normalizedTechPp * gypL) * 0.866,
@@ -36,16 +41,25 @@
 			{#if passPp}
 				<div class="pass">
 					<Value value={passPp} digits={2} zero="" prefix="Pass: " suffix="pp" />
+					<div class="pp-part">
+						<Value value={passPpPart * 100} digits={2} zero="" prefix="(" suffix="%)" />
+					</div>
 				</div>
 			{/if}
 			{#if accPp}
 				<div class="acc">
 					<Value value={accPp} digits={2} zero="" prefix="Acc: " suffix="pp" />
+					<div class="pp-part">
+						<Value value={accPpPart * 100} digits={2} zero="" prefix="(" suffix="%)" />
+					</div>
 				</div>
 			{/if}
 			{#if techPp}
 				<div class="tech">
 					<Value value={techPp} digits={2} zero="" prefix="Tech: " suffix="pp" />
+					<div class="pp-part">
+						<Value value={techPpPart * 100} digits={2} zero="" prefix="(" suffix="%)" />
+					</div>
 				</div>
 			{/if}
 		{/if}
@@ -132,21 +146,32 @@
 		justify-items: center;
 	}
 	.pass {
+		display: flex;
+		grid-gap: 0.4em;
 		position: absolute;
 		color: white;
-		bottom: -1em;
+		bottom: -2em;
 	}
 	.acc {
+		display: flex;
+		flex-wrap: wrap;
+		grid-gap: 0.4em;
 		position: absolute;
 		color: white;
 
-		top: -1em;
-		margin-left: 13em;
+		top: -2.5em;
+		margin-left: 16em;
 	}
 	.tech {
+		display: flex;
+		flex-wrap: wrap;
+		grid-gap: 0.4em;
 		position: absolute;
 		color: white;
-		top: -1em;
-		margin-right: 13em;
+		top: -2.5em;
+		margin-right: 16em;
+	}
+	.pp-part {
+		color: yellow;
 	}
 </style>
