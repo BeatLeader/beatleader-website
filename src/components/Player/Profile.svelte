@@ -92,6 +92,8 @@
 				effectName: playerData?.profileSettings?.effectName ?? null,
 				hue: playerData?.profileSettings?.hue ?? 0,
 				saturation: playerData?.profileSettings?.saturation ?? 1,
+				profileCover: playerData?.profileSettings?.profileCover ?? '/assets/defaultcover.jpg',
+				profileCoverData: playerData?.profileSettings?.profileCover,
 			},
 			avatar: playerData?.playerInfo?.avatar
 				? playerData.playerInfo.avatar + (playerData.playerInfo.avatar.includes('beatleader') ? `?${avatarHash}` : '')
@@ -210,6 +212,28 @@
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 	$: updateAccSaberPlayerInfo(playerId);
 	$: isAdmin = $account?.player?.role?.includes('admin');
+	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
+	$: cover = !editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? editModel?.data.profileCover);
+
+	let fileinput;
+	const readFile = async fileInput =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = () => reject(reader.error);
+
+			reader.readAsArrayBuffer(fileInput);
+		});
+	const changeCover = async e => {
+		editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
+		playerData.profileSettings.profileCover = editModel.data.profileCover;
+		editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
+	};
+	const resetCover = async e => {
+		editModel.data.profileCover = '/assets/defaultcover.jpg';
+		editModel.data.profileCoverData = null;
+		playerData.profileSettings.profileCover = null;
+	};
 
 	$: swipeCards = [].concat(
 		playerId
@@ -282,8 +306,26 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel {roles} />
-<ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
-	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
+<ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
+	{#if cover}
+		<div class="cover-image" style="background-image: url({cover})">
+			<div class="blur-part" />
+			{#if editModel}
+				{#if editModel.data.profileCoverData}
+					<Button type="danger" cls="remove-cover-button" iconFa="far fa-xmark" label="Remove cover" on:click={() => resetCover()} />
+				{/if}
+				<Button
+					type="primary"
+					cls="edit-cover-button"
+					iconFa="far fa-image"
+					label={editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
+					on:click={() => fileinput.click()}>
+					<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
+				</Button>
+			{/if}
+		</div>
+	{/if}
+	<AvatarOverlay withCover={cover} data={editModel?.data ?? playerData?.profileSettings} />
 	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
 		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
@@ -340,13 +382,7 @@
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary
-				{playerId}
-				{scoresStats}
-				{accBadges}
-				{skeleton}
-				profileAppearance={playerData?.profileSettings?.profileAppearance}
-				bind:editModel />
+			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
 
 			{#if editModel}
 				<div class="edit-buttons">
@@ -424,6 +460,27 @@
 		flex-direction: column;
 		align-items: center;
 	}
+
+	.cover-image {
+		position: absolute;
+		display: flex;
+		background-size: cover;
+		background-position: 50%;
+		top: 0;
+		left: 0;
+		height: 12.5em;
+		z-index: -1;
+		width: 100%;
+		flex-direction: column-reverse;
+		border-radius: 6px 6px 0 0;
+	}
+
+	.blur-part {
+		height: 7em;
+		width: 100%;
+		background: linear-gradient(0deg, rgb(26 26 26), transparent);
+	}
+
 	:global(.shareButton) {
 		font-size: 1.5em !important;
 		position: absolute !important;
@@ -439,6 +496,21 @@
 	:global(.inner-modal) {
 		z-index: 10 !important;
 		position: relative !important;
+	}
+	:global(.profile-container) {
+		padding-top: 8em !important;
+	}
+	:global(.edit-cover-button) {
+		width: 10em;
+		margin-left: 1em !important;
+		margin-bottom: 2.2em !important;
+	}
+
+	:global(.remove-cover-button) {
+		width: 10em;
+		position: absolute !important;
+		left: 1em;
+		top: 4em;
 	}
 
 	@media screen and (max-width: 767px) {

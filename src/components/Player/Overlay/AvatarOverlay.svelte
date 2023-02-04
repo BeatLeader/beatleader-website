@@ -2,6 +2,7 @@
 	import {getOverlayUrlByName} from './overlay';
 
 	export let data;
+	export let withCover;
 
 	let overlayUrl = null;
 
@@ -29,7 +30,7 @@
 			--hue: ${data?.hue ?? 0}deg;
 			--saturation: ${data?.saturation ?? 1}
 			`}>
-		<img class="avatar-overlay" src={overlayUrl} />
+		<img class="avatar-overlay {withCover ? "with-cover" : ""}" src={overlayUrl} />
 	</span>
 {/if}
 
@@ -43,6 +44,10 @@
 		mix-blend-mode: screen;
 		filter: hue-rotate(var(--hue, 0deg)) saturate(var(--saturation, 1));
 		pointer-events: none;
+	}
+
+	.with-cover {
+		top: 92px !important;
 	}
 
 	@media screen and (max-width: 767px) {

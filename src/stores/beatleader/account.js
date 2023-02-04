@@ -2,6 +2,7 @@ import {writable} from 'svelte/store';
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 import userApiClient from '../../network/clients/beatleader/account/api';
 import queue from '../../network/queues/queues';
+import {isString} from '../../utils/js';
 
 let store = null;
 let storeSubCount = 0;
@@ -161,28 +162,38 @@ export default (refreshOnCreate = true) => {
 			url.searchParams.append(key, value);
 		});
 
-		return fetch(url.toString(), {
-			credentials: 'include',
-			method: 'PATCH',
-			body: avatar ?? null,
-		})
-			.then(checkResponse)
-			.then(data => {
-				if (data.length > 0) {
-					account.error = data;
+		return (
+			data.profileCover != data.profileCoverData
+				? fetch(BL_API_URL + 'user/cover', {
+						credentials: 'include',
+						method: data.profileCoverData ? 'PATCH' : 'DELETE',
+						body: data.profileCoverData,
+				  })
+				: Promise.resolve(42)
+		).then(_ =>
+			fetch(url.toString(), {
+				credentials: 'include',
+				method: 'PATCH',
+				body: avatar ?? null,
+			})
+				.then(checkResponse)
+				.then(data => {
+					if (data.length > 0) {
+						account.error = data;
 
-					throw data;
-				} else {
-					account.message = 'Data saved!';
-					account.error = null;
-					setTimeout(function () {
-						refresh(true);
-					}, 6000);
-				}
-				set(account);
+						throw data;
+					} else {
+						account.message = 'Data saved!';
+						account.error = null;
+						setTimeout(function () {
+							refresh(true);
+						}, 6000);
+					}
+					set(account);
 
-				return account;
-			});
+					return account;
+				})
+		);
 	};
 
 	const changeLogin = newLogin => {
