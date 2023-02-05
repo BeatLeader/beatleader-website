@@ -309,7 +309,6 @@
 <ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
-			<div class="blur-part" />
 			{#if editModel}
 				{#if editModel.data.profileCoverData}
 					<Button type="danger" cls="remove-cover-button" iconFa="far fa-xmark" label="Remove cover" on:click={() => resetCover()} />
@@ -473,12 +472,9 @@
 		width: 100%;
 		flex-direction: column-reverse;
 		border-radius: 6px 6px 0 0;
-	}
-
-	.blur-part {
-		height: 7em;
-		width: 100%;
-		background: linear-gradient(0deg, rgb(26 26 26), transparent);
+		mask-type: alpha;
+		-webkit-mask-image: linear-gradient(180deg, white, white 40%, transparent);
+		mask-image: linear-gradient(180deg, white, white 40%, transparent);
 	}
 
 	:global(.shareButton) {

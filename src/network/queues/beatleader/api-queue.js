@@ -77,6 +77,8 @@ export const processLeaderboardScore = s => {
 	ret.player.playerInfo.avatar = player.avatar;
 	ret.player.playerInfo.allTime = player.allTime;
 	ret.player.playerInfo.lastTwoWeekTime = player.lastTwoWeekTime;
+	ret.player.playerInfo.pp = player.pp;
+	ret.player.playerInfo.rank = player.rank;
 
 	ret.player.name = player.name;
 	ret.player.name = ret.player.name ? ret.player.name.trim().replace('&#039;', "'") : null;

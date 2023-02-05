@@ -21,6 +21,8 @@
 	export let playerId;
 	export let error = null;
 	export let editModel = null;
+	export let showRedact = true;
+
 	const dispatch = createEventDispatcher();
 
 	const account = createAccountStore();
@@ -82,7 +84,7 @@
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
-	$: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin;
+	$: canRedact = showRedact && ((isMain && loggedInPlayer === playerId) || isAdmin);
 
 	function getIndex(array) {
 		if (!array || array.length == 1) {
@@ -246,7 +248,7 @@
 				<Value value={playerInfo?.pp} suffix="pp" prevValue={prevPp} {prevLabel} inline={true} zero="0pp" />
 			</span>
 
-			{#if isAdmin && loggedInPlayer != playerId}
+			{#if showRedact && isAdmin && loggedInPlayer != playerId}
 				{#if playerInfo?.banned}
 					<Button
 						cls="banButton"
