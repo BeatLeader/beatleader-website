@@ -111,7 +111,7 @@
 			icon: 'fa fa-cubes',
 		},
 	];
-	let currentPpTypeValue = filters.ppType;
+	let currentPpTypeValue = filters.ppType ?? 'general';
 
 	let allSortValues = [
 		{
