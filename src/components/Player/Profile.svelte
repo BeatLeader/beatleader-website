@@ -499,7 +499,7 @@
 	:global(.edit-cover-button) {
 		width: 10em;
 		margin-left: 1em !important;
-		margin-bottom: 2.2em !important;
+		margin-bottom: 9em !important;
 	}
 
 	:global(.remove-cover-button) {

@@ -124,8 +124,8 @@
 		flex-direction: column-reverse;
 		border-radius: 6px 6px 0 0;
 		mask-type: alpha;
-		-webkit-mask-image: linear-gradient(180deg, white, white 40%, transparent);
-		mask-image: linear-gradient(180deg, white, white 40%, transparent);
+		-webkit-mask-image: linear-gradient(180deg, transparent, rgba(0 0 0 / 10%) 30%, rgb(0, 0, 0));
+		mask-image: linear-gradient(180deg, transparent, rgba(0 0 0 / 10%) 30%, rgb(0, 0, 0));
 	}
 
 	@media screen and (max-width: 767px) {
