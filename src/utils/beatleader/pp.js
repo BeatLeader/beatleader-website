@@ -63,6 +63,12 @@ const Curve2 = acc => {
 	return pointList[i - 1][1] + middle_dis * (pointList[i][1] - pointList[i - 1][1]);
 };
 
+function Lack(passPP, accPP, techPP) {
+	var refinedAccPP = accPP + techPP;
+	var bonusPP = (Math.sqrt(Math.pow(passPP, 2) + Math.pow(refinedAccPP, 2)) * passPP * refinedAccPP) / (passPP + refinedAccPP) / 250;
+	return (bonusPP + refinedAccPP) * 1.111;
+}
+
 export const buildCurve = (accuracy, passRating, accRating, techRating) => {
 	var reducedTechRating = techRating / 10;
 	var passPP = passRating * 15;
@@ -73,7 +79,7 @@ export const buildCurve = (accuracy, passRating, accRating, techRating) => {
 			12.5 *
 			accRating) /
 		Math.max(0.3333 * passRating, 2);
-	return passPP + accPP + techPP;
+	return Lack(passPP, accPP, techPP);
 };
 
 export const getPPFromAcc = (acc, passRating, accRating, techRating, mode) => {
