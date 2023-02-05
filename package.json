@@ -23,7 +23,7 @@
     "immer": "^9.0.5",
     "json-stable-stringify": "^1.0.1",
     "luxon": "^2.0.2",
-    "p-queue": "^7.1.0",
+    "p-queue": "=7.3.0",
     "prettier": "^2.8.1",
     "prettier-plugin-svelte": "^2.7.0",
     "rollup": "^2.3.4",
