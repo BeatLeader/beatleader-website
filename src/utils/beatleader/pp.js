@@ -63,11 +63,20 @@ const Curve2 = acc => {
 	return pointList[i - 1][1] + middle_dis * (pointList[i][1] - pointList[i - 1][1]);
 };
 
+function Inflate(peepee) {
+	return ((443.12 * Math.pow(peepee, 1.3)) / Math.pow(443.12, 1.3)) * 1.081805;
+}
+
 export const buildCurve = (accuracy, passRating, accRating, techRating) => {
-	var passPP = passRating * 14;
-	var accPP = Curve2(accuracy) * accRating * 27.5;
-	var techPP = ((1 / (1 + Math.pow(Math.E, -16 * (accuracy - 0.9)))) * techRating * accRating) / Math.max(0.3333 * passRating, 1);
-	return passPP + accPP + techPP;
+	var reducedTechRating = techRating / 10;
+	var passPP = passRating * 13.5;
+	var accPP = Curve2(accuracy) * accRating * 28.5;
+	var techPP =
+		(1 / (1 + Math.pow(Math.E, -32 * (accuracy - 0.925)))) *
+		(reducedTechRating / (1 + Math.pow(Math.E, -8 * (reducedTechRating - 0.25)))) *
+		8 *
+		accRating;
+	return Inflate(passPP + accPP + techPP);
 };
 
 export const getPPFromAcc = (acc, passRating, accRating, techRating, mode) => {
