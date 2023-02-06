@@ -1,5 +1,5 @@
 <script>
-	import processPlayerData from './utils/profile';
+	import processPlayerData from './utils/mini-profile';
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
