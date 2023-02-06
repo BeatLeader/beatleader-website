@@ -36,6 +36,16 @@ const DEFAULT_CONFIG = {
 		curveShown: true,
 		qualificationInfoShown: true,
 	},
+	chartLegend: {
+		y: true,
+		y1: true,
+		y2: true,
+		y3: false,
+		y4: false,
+		y5: false,
+		y6: true,
+		y7: true,
+	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: null,
 };

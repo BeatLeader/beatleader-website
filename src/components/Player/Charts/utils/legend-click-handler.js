@@ -1,18 +1,28 @@
-export const onLegendClick = (event, legendItem, legend) => {
-	const idx = legendItem.datasetIndex;
+export async function onLegendClick(event, legendItem, legend, justRefresh = false) {
 	const ci = legend.chart;
 
 	const scales = legend?.chart?.config?.options?.scales;
 	if (!scales) return;
 
+	const configStore = legend?.chart?.config?.options?.configStore;
+
 	const {x: xAxis, ...yAxes} = scales;
 
-	if (ci.isDatasetVisible(idx)) {
-		ci.hide(idx);
-		legendItem.hidden = true;
-	} else {
-		ci.show(idx);
-		legendItem.hidden = false;
+	if (!justRefresh) {
+		const idx = legendItem.datasetIndex;
+		if (ci.isDatasetVisible(idx)) {
+			ci.hide(idx);
+			legendItem.hidden = true;
+		} else {
+			ci.show(idx);
+			legendItem.hidden = false;
+		}
+
+		var chartLegend = configStore ? configStore.get('chartLegend') : null;
+		if (chartLegend) {
+			chartLegend['y' + (idx ? '' + idx : '')] = !legendItem.hidden;
+			await configStore.setForKey('chartLegend', chartLegend);
+		}
 	}
 
 	if (legend?.chart) {
