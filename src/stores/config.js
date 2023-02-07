@@ -37,6 +37,9 @@ const DEFAULT_CONFIG = {
 		curveShown: true,
 		qualificationInfoShown: true,
 	},
+	scorePreferences: {
+		showReplayCounter: false,
+	},
 	chartLegend: {
 		y: true,
 		y1: true,

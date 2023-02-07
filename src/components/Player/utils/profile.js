@@ -56,13 +56,20 @@ function updateScoresStats(playerData) {
 				{key: 'averageRank', label: 'Average rank', title: 'Average rank', digits: 2, prefix: '#', bgColor: 'var(--selected)'},
 				{key: 'topPlatform', label: 'Platform', title: 'Last 50 scores top platform', bgColor: 'var(--selected)'},
 				{key: 'topHMD', label: 'Headset', title: 'Last 50 scores top headset', bgColor: 'var(--selected)'},
+				{key: 'authorizedReplayWatched', label: 'Replays watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
+				{key: 'watchedReplays', label: 'I watched replays', bgColor: 'var(--selected)', digits: 0, suffix: ''},
 		  ]
 		: [];
 
 	return statsDef
 		.map(s => {
-			const value = scoreStats && scoreStats[s.key] ? scoreStats[s.key] : null;
+			var value = scoreStats && scoreStats[s.key] ? scoreStats[s.key] : null;
 			if (!value && !Number.isFinite(value)) return null;
+
+			if (s.key == 'authorizedReplayWatched') {
+				value = scoreStats['authorizedReplayWatched'] + scoreStats['anonimusReplayWatched'];
+				s.title = `Authorized players watched: ${scoreStats['authorizedReplayWatched']}, anonimus players watched: ${scoreStats['anonimusReplayWatched']}`;
+			}
 
 			let resultValue = value;
 			let type = 'string';

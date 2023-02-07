@@ -49,6 +49,17 @@
 		}
 	}
 
+	function preferencesKeyDescription(key) {
+		switch (key) {
+			case 'showReplayCounter':
+				return 'Show watch counter';
+
+			default:
+				break;
+		}
+		return key;
+	}
+
 	const account = createAccountStore();
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
@@ -58,12 +69,29 @@
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 
+	$: scorePreferences = $configStore.scorePreferences;
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
+
+	$: preferencesList = Object.keys(scorePreferences);
 	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key != 'delete');
 </script>
 
 <div class="main-container">
 	<DemoScores playerId={$account?.player?.playerId ?? '1'} />
+
+	<div class="switches-container">
+		<span>Score settings:</span>
+		<div class="switches">
+			{#each preferencesList as key}
+				<Switch
+					value={scorePreferences[key]}
+					label={preferencesKeyDescription(key)}
+					fontSize={12}
+					design="slider"
+					on:click={() => settempsetting('scorePreferences', key, !scorePreferences[key])} />
+			{/each}
+		</div>
+	</div>
 
 	<div class="switches-container">
 		<span>Buttons to show:</span>

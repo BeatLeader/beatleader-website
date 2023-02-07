@@ -24,6 +24,7 @@
 	export let showSong = true;
 	export let inList = true;
 	export let additionalStat = null;
+	export let replayCounter = true;
 
 	let showDetails = false;
 
@@ -78,6 +79,7 @@
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
 	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
+	$: showReplayCounter = replayCounter && $configStore?.scorePreferences.showReplayCounter;
 </script>
 
 {#if songScore}
@@ -86,8 +88,20 @@
 		in:fly={{x: 300, delay: idx * 30, duration: 500}}
 		out:fade={{duration: 100}}
 		class:with-details={showDetails}>
+		{#if showReplayCounter}
+			<h3 class="pin-description descktop" title="Replay watch count">
+				<i class="fas fa-eye" />
+				{score.replaysWatched}
+			</h3>
+		{/if}
 		{#if !noIcons}
 			<div class="up-to-tablet">
+				{#if showReplayCounter}
+					<h3 class="pin-description" title="Replay watch count">
+						<i class="fas fa-eye" />
+						{score.replaysWatched}
+					</h3>
+				{/if}
 				<Icons
 					layoutType="flat"
 					{hash}
@@ -285,6 +299,40 @@
 
 	.beat-savior-reveal.opened {
 		transform: rotateZ(180deg);
+	}
+
+	h3 {
+		width: fit-content;
+		border-bottom-left-radius: 0.5em;
+		border-bottom-right-radius: 0.5em;
+		background: var(--row-separator);
+		padding: 0 1em 0;
+		margin-top: -0.5em;
+		margin-right: 0.5em;
+	}
+
+	h3.editable {
+		cursor: pointer;
+	}
+
+	h3 .move i {
+		padding: 0.25em 0.125em;
+		cursor: pointer !important;
+	}
+
+	h3 i.fa-edit {
+		display: inline-block;
+		margin-left: 0.5em;
+		cursor: pointer !important;
+	}
+
+	@media screen and (max-width: 1023px) {
+		.up-to-tablet {
+			display: flex;
+		}
+		.descktop {
+			display: none;
+		}
 	}
 
 	@media screen and (max-width: 767px) {
