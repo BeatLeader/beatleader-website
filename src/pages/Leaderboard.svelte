@@ -1208,7 +1208,6 @@
 		width: 100%;
 		height: 100%;
 		opacity: 0.1;
-		background-image: var(--background-image);
 		background-repeat: no-repeat;
 		background-size: cover;
 		pointer-events: none;
