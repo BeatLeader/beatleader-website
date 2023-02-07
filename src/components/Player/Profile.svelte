@@ -511,12 +511,14 @@
 		position: absolute !important;
 		right: 2em;
 		top: 0em;
+		z-index: 5;
 	}
 	:global(.screenshotButton) {
 		font-size: 1.5em !important;
 		position: absolute !important;
 		right: 0.4em;
 		top: 0em;
+		z-index: 5;
 	}
 	:global(.inner-modal) {
 		z-index: 10 !important;
