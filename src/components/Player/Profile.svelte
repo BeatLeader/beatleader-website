@@ -34,6 +34,7 @@
 	export let twitchVideos = null;
 	export let avatarHash = null;
 	export let fixedBrowserTitle = null;
+	export let pinnedScores = true;
 
 	let editModel = null;
 
@@ -418,7 +419,9 @@
 	</div>
 </ContentBox>
 
-<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
+{#if pinnedScores}
+	<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
+{/if}
 
 <style>
 	.player-general-info {

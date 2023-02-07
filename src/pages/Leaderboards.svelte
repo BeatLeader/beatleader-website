@@ -32,7 +32,7 @@
 	import {dateFromUnix, DAY} from '../utils/date';
 	import {typesDescription, typesMap, DifficultyStatus} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
-	import RankedTimer from '../components/Others/RankedTimer.svelte';
+	import RankedTimer from '../components/Common/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
 	import {Ranked_Const} from './../utils/beatleader/consts';

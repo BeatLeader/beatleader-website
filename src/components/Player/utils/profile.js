@@ -12,7 +12,6 @@ function updateScoresStats(playerData) {
 
 	const statsDef = scoreStats
 		? [
-				{key: 'dailyImprovements', label: 'Improved scores', bgColor: 'darkgreen'},
 				{key: 'totalPlayCount', label: 'Total play count', bgColor: 'var(--selected)'},
 				{key: 'totalScore', label: 'Total score', bgColor: 'var(--selected)'},
 				{key: 'rankedPlayCount', label: 'Ranked play count', bgColor: 'var(--ppColour)'},

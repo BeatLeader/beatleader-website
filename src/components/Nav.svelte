@@ -9,7 +9,6 @@
 	import Dropdown from './Common/Dropdown.svelte';
 	import MenuLine from './Player/MenuLine.svelte';
 	import {opt} from '../utils/js';
-	import Settings from './Others/Settings.svelte';
 	import Button from './Common/Button.svelte';
 	import Avatar from './Common/Avatar.svelte';
 	import SelectedPlaylist from './Playlists/SelectedPlaylist.svelte';
@@ -85,8 +84,6 @@
 		},
 	];
 
-	let showSettings = false;
-
 	function hideAllMenus() {
 		friendsMenuShown = false;
 		playlistMenuShown = false;
@@ -102,10 +99,6 @@
 		});
 		const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => (settingsNotificationBadge = message));
 
-		const settingsOpenUnsubscribe = eventBus.on('show-settings', () => {
-			showSettings = !showSettings;
-		});
-
 		document.addEventListener('mousedown', event => {
 			if (friendsMenuShown || playlistMenuShown || accountMenuShown || mobileMenuShown) {
 				var element = event.srcElement;
@@ -119,7 +112,6 @@
 
 		return () => {
 			settingsBadgeUnsubscribe();
-			settingsOpenUnsubscribe();
 		};
 	});
 
@@ -385,13 +377,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<div
-						class="settings"
-						title={notificationBadgeTitle}
-						on:click={() => {
-							showSettings = true;
-							mobileMenuShown = false;
-						}}>
+					<a href="/settings" class="settings" title={notificationBadgeTitle}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
@@ -404,7 +390,7 @@
 						Settings
 
 						{#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge" />{/if}
-					</div>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -489,13 +475,7 @@
 			Search
 		</a>
 
-		<div
-			class="settings"
-			title={notificationBadgeTitle}
-			on:click={() => {
-				showSettings = true;
-				mobileMenuShown = false;
-			}}>
+		<a href="/settings" class="settings" title={notificationBadgeTitle}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path
 					stroke-linecap="round"
@@ -508,11 +488,9 @@
 			Settings
 
 			{#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge" />{/if}
-		</div>
+		</a>
 	</div>
 </nav>
-
-<Settings bind:show={showSettings} />
 
 <style>
 	nav {

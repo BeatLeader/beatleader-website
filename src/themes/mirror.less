@@ -10,6 +10,13 @@ body {
     padding: 0;
 }
 
+html,
+body {
+	background: var(--background-image) var(--background) !important;
+	background-size: cover !important;
+	background-attachment: fixed !important;
+}
+
 
 :root {
     --ppColour: rgb(226, 183, 255) !important;
@@ -228,6 +235,7 @@ nav.ssr-page-container {
 
 .player-page,
 .leaderboard,
+.player-performance,
 .page-content.scores {
     .compare-player-name {
         * {
@@ -396,4 +404,8 @@ input {
 select.type-select {
     padding: 0.175rem !important;
     margin-top: .9rem !important;
+}
+
+.navigation-item.selected {
+    background-color: var(--customizable-color-2) !important;
 }

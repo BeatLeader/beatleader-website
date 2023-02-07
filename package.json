@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
+    "deep-equal": "^2.2.0",
     "html2canvas": "^1.4.1",
     "sirv-cli": "^1.0.0",
     "svelte-select": "^4.4.7",

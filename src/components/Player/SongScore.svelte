@@ -11,6 +11,7 @@
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import {navigate} from 'svelte-routing';
+	import {configStore} from '../../stores/config';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -53,6 +54,18 @@
 		navigate(`/u/${playerId}`);
 	}
 
+	function visibleScoreIcons(config) {
+		var result = [];
+
+		Object.keys(config).forEach(key => {
+			if (config[key]) {
+				result.push(key);
+			}
+		});
+
+		return result;
+	}
+
 	$: leaderboard = opt(songScore, 'leaderboard', null);
 	$: score = opt(songScore, 'score', null);
 	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
@@ -64,6 +77,7 @@
 
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
+	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
 </script>
 
 {#if songScore}
@@ -80,7 +94,7 @@
 					{twitchUrl}
 					{diffInfo}
 					scoreId={score.id}
-					{icons}
+					icons={selectedIcons}
 					{serviceIcon}
 					noPin={!isPlayerScore}
 					on:score-pinned={onScorePinned} />
@@ -131,7 +145,7 @@
 							category={leaderboard?.categoryDisplayName ?? null}
 							{service}
 							{playerId}
-							{icons}
+							icons={selectedIcons}
 							on:score-pinned={onScorePinned} />
 					{/if}
 				</div>
