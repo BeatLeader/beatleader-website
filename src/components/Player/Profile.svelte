@@ -26,7 +26,8 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
 	import {configStore} from '../../stores/config';
-	import html2canvas from 'html2canvas';
+	import html2canvas from '../../utils/html2canvas';
+	import domtoimage from 'dom-to-image';
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
@@ -168,8 +169,29 @@
 		successToast('Link Copied to Clipboard!');
 	}
 
+	async function replaceOverlay(avatarOverlay) {
+		if (avatarOverlay) {
+			const overlayCanvas = document.createElement('canvas');
+			overlayCanvas.width = avatarOverlay.width;
+			overlayCanvas.height = avatarOverlay.height;
+
+			const overlayContext = overlayCanvas.getContext('2d');
+			overlayContext.filter = getComputedStyle(avatarOverlay).filter;
+
+			avatarOverlay.setAttribute('crossOrigin', 'anonymous');
+
+			overlayContext.drawImage(avatarOverlay, 0, 0, overlayCanvas.width, overlayCanvas.height);
+			avatarOverlay.src = overlayCanvas.toDataURL(`image/png`, 1);
+		}
+	}
+
 	async function takeScreenshot() {
+		const avatarOverlay = document.querySelector('.avatar-overlay');
+		const overlaySrc = avatarOverlay?.src;
+
 		try {
+			await replaceOverlay(avatarOverlay);
+
 			const element = document.querySelector('.content-box');
 			const canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
 			const blob = await new Promise(resolve => canvas.toBlob(resolve));
@@ -195,6 +217,10 @@
 				type: 'error',
 				removeAfter: 4000,
 			});
+		} finally {
+			if (avatarOverlay) {
+				avatarOverlay.src = overlaySrc;
+			}
 		}
 	}
 	function onKeyUp(event) {

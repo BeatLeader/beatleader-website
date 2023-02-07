@@ -11,6 +11,7 @@
 	export let hideFlag = false;
 	export let withCrown = false;
 	export let playerClickFilter = null;
+	export let disablePopover = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -34,11 +35,13 @@
 		>{#if withCrown}<span class="crown">👑</span>{/if}{name ?? 'Unknown'}</span>
 </a>
 
-<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
-	<div class="popover-contents" transition:fade={{duration: 250}}>
-		<MiniProfile {player} />
-	</div>
-</Popover>
+{#if !disablePopover}
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+		<div class="popover-contents" transition:fade={{duration: 250}}>
+			<MiniProfile {player} />
+		</div>
+	</Popover>
+{/if}
 
 <style>
 	a {

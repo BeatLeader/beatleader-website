@@ -296,9 +296,11 @@
 	.player-nickname.rainbow {
 		color: #00ffbc;
 		-webkit-background-clip: text;
+		background-clip: text;
 		background-image: -webkit-linear-gradient(180deg, #f35626, #feab3a);
 		-webkit-animation: rainbow 0.9s infinite linear;
 		animation: rainbow 0.9s infinite linear;
+		z-index: -1;
 	}
 
 	.clan-badges {
