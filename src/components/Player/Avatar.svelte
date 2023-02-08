@@ -29,6 +29,7 @@
 <style>
 	.avatar-container {
 		display: flex;
+		user-select: none;
 	}
 
 	:global(.edit-enabled) .avatar-container {
