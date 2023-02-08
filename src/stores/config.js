@@ -113,7 +113,7 @@ export default async () => {
 
 		if (persist) {
 			await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
-			dbConfig = newConfig;
+			dbConfig = currentConfig;
 		}
 
 		settingsChanged = !deepEqual(currentConfig, dbConfig);
