@@ -41,7 +41,7 @@ export const createBuildFiltersFromLocation = (params, afterFunc = null) => {
 		let filters = params.reduce(
 			(cum, param) => ({
 				...cum,
-				[param.key]: param.process(searchParams.get(param.key)) ?? param.default,
+				[param.key]: param.process(searchParams.get(param.key))?.length ? param.process(searchParams.get(param.key)) : param.default,
 				...(param.multi && param.withCondition
 					? {
 							[param.key + '_cond']: ['and', 'or'].includes(searchParams.get(param.key + '_cond'))

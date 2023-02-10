@@ -2,8 +2,8 @@
 	import Select from 'svelte-select';
 	import {createEventDispatcher} from 'svelte';
 	import {HMDs} from '../../utils/beatleader/format';
-	import HeadsetPickerMultiItem from '../Common/HeadsetPickerMultiItem.svelte';
-	import HeadsetPickerItem from '../Common/HeadsetPickerItem.svelte';
+	import HeadsetPickerMultiItem from '../Common/PickerMultiItem.svelte';
+	import HeadsetPickerItem from '../Common/PickerItem.svelte';
 
 	export let headsets = [];
 

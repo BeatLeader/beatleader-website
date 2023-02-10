@@ -58,6 +58,11 @@
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
 	import produce from 'immer';
 	import {configStore} from '../stores/config';
+	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
+
+	import TextFilter from '../components/Player/ScoreFilters/TextFilter.svelte';
+	import MultiSelectFilter from '../components/Player/ScoreFilters/MultiSelectFilter.svelte';
+	import ModifiersMultiItem from '../components/Leaderboard/ModifiersMultiItem.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -88,7 +93,28 @@
 	const account = createAccountStore();
 	const votingStore = createVotingStore();
 
-	const params = [{key: 'countries', default: '', process: processStringFilter}];
+	const params = [
+		{
+			key: 'countries',
+			default: '',
+			process: processStringFilter,
+		},
+		{
+			key: 'sortBy',
+			default: 'rank',
+			process: processStringFilter,
+		},
+		{
+			key: 'order',
+			default: 'desc',
+			process: processStringFilter,
+		},
+		{
+			key: 'search',
+			default: null,
+			process: processStringFilter,
+		},
+	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
 
@@ -132,6 +158,48 @@
 
 	let typeOptions = availableTypeOptions.map(to => to);
 
+	let allSortValues = [
+		{
+			id: 'rank',
+			label: 'Rank',
+			title: 'Sort by rank',
+			iconFa: 'fa fa-cubes',
+		},
+		{
+			id: 'acc',
+			label: 'Acc',
+			title: 'Sort by accuracy',
+			iconFa: 'fa fa-crosshairs',
+		},
+		{
+			id: 'date',
+			label: 'Recent',
+			title: 'Sort by the time played',
+			iconFa: 'fas fa-clock',
+		},
+		{
+			id: 'maxStreak',
+			replaceTimeset: true,
+			label: '115 Streak',
+			title: 'Sort by longest 115 streak',
+			iconFa: 'icon115s',
+		},
+		{
+			id: 'pauses',
+			replaceTimeset: true,
+			label: 'Pauses',
+			title: 'Sort by pause count',
+			iconFa: 'fas fa-pause',
+		},
+		{
+			id: 'playCount',
+			replaceTimeset: true,
+			label: 'Play count',
+			title: 'Sort by play count',
+			iconFa: 'fas fa-calculator',
+		},
+	];
+
 	const stringifyFilters = (query, keys) =>
 		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
 	const findCurrentTypeOption = (type, filters) => {
@@ -157,11 +225,7 @@
 
 	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
 
-	function changeParams(newLeaderboardId, newType, newPage, newLocation) {
-		if (newLocation === undefined) newLocation = {search: `?${buildSearchFromFilters(currentFilters)}`};
-
-		currentFilters = buildFiltersFromLocation(newLocation);
-
+	function changeParams(newLeaderboardId, newType, newPage, currentFilters) {
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
@@ -190,7 +254,7 @@
 		if (!newLeaderboardId) return;
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
-		else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
+		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	function onTypeChanged(event) {
@@ -199,7 +263,7 @@
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
 		if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`);
-		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
+		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, newFilters);
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
@@ -207,7 +271,7 @@
 	function onSelectedGroupEntryChanged(event) {
 		const newLeaderboardId = selectedGroupEntry;
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
-		else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
+		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	function processDiffs(diffArray, song) {
@@ -284,6 +348,103 @@
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
+	}
+
+	let switcherSortValues;
+	let sortValue;
+
+	function refreshSortValues(allSortValues, filterValues) {
+		switcherSortValues = allSortValues
+			.filter(v => {
+				return !v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType);
+			})
+			.map(v => ({
+				...v,
+				iconFa:
+					filterValues?.sortBy === v.id
+						? filterValues?.order === 'asc'
+							? 'fas fa-long-arrow-alt-up'
+							: 'fas fa-long-arrow-alt-down'
+						: v.iconFa,
+			}));
+
+		if (currentFilters?.sortBy?.length) {
+			sortValue = switcherSortValues.find(v => v.id === currentFilters.sortBy);
+			if (!sortValue) {
+				sortValue = switcherSortValues[0];
+				currentFilters.sortBy = sortValue.id;
+				changeParams(currentLeaderboardId, currentType, page, currentFilters);
+			}
+		} else {
+			sortValue = switcherSortValues[0];
+		}
+	}
+
+	function onSwitcherChanged(e) {
+		if (!e?.detail?.id) return;
+
+		if (sortValue?.id === e.detail.id) {
+			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+		} else {
+			currentFilters.sortBy = e.detail.id;
+			currentFilters.order = 'desc';
+		}
+
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+	}
+
+	var complexFilters = [];
+	function makeComplexFilters(currentFilters) {
+		console.log(currentFilters);
+		complexFilters = [
+			{
+				component: TextFilter,
+				props: {
+					id: 'search',
+					iconFa: 'fa fa-search',
+					title: 'Search by player name/clan',
+					placeholder: 'Enter name or tag...',
+					value: currentFilters.search,
+					open: currentFilters.search?.length,
+				},
+			},
+			// {
+			// 	component: MultiSelectFilter,
+			// 	props: {
+			// 		id: 'modifiers',
+			// 		iconFa: 'fa fa-chart-line',
+			// 		title: 'Filter by modifiers',
+			// 		placeholder: 'Choose modifiers',
+			// 		MultiSelection: ModifiersMultiItem,
+			// 		items: [
+			// 			{id: 'all', value: 'All', label: 'All selected', icon: 'disco.png'},
+			// 			{id: 'FS', value: 'FS', label: 'Faster song', icon: 'disco.png'},
+			// 			{id: 'SF', value: 'SF', label: 'Super fast', icon: 'disco.png'},
+			// 			{id: 'GN', value: 'GN', label: 'Ghost notes', icon: 'disco.png'},
+			// 			{id: 'DA', value: 'DA', label: 'Dissapearing arrows', icon: 'disco.png'},
+
+			// 			{id: 'SC', value: 'SC', label: 'Small cubes', icon: 'disco.png'},
+			// 			{id: 'PM', value: 'PM', label: 'Pro mode', icon: 'disco.png'},
+			// 			{id: 'OD', value: 'OD', label: 'Old dotes', icon: 'disco.png'},
+
+			// 			{id: 'SS', value: 'SS', label: 'Slower song', icon: 'disco.png'},
+			// 			{id: 'NA', value: 'NA', label: 'No arrows', icon: 'disco.png'},
+			// 			{id: 'NF', value: 'NF', label: 'No fail', icon: 'disco.png'},
+			// 		],
+			// 	},
+			// },
+		];
+	}
+
+	function onFiltersChanged(event) {
+		const newFilters = event?.detail ?? {};
+
+		currentFilters.search = newFilters.search;
+		currentFilters.modifiers = newFilters.modifiers?.join(',') ?? '';
+
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	let ssCoverDoesNotExists = false;
@@ -373,17 +534,27 @@
 		selectedGroupEntry = currentLeaderboardId;
 	}
 
+	const lessFunction = (a, b) => a < b;
+	const greaterFunction = (a, b) => a > b;
+
 	function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
-		scoresWithUser =
-			!userScoreOnCurrentPage && scores?.length && userScore
-				? (userScore?.score?.rank < scores?.[0]?.score?.rank ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
-						.concat(scores)
-						.concat(
-							userScore?.score?.rank > scores?.[scores.length - 1]?.score?.rank
-								? [{...userScore, isUserScore: true, userScoreTop: false}]
-								: []
-						)
-				: scores;
+		scoresWithUser = scores;
+		if (!userScoreOnCurrentPage && scores?.length && userScore) {
+			var key = currentFilters.sortBy;
+			if (key == 'date') {
+				key = 'timeset';
+			}
+			var orderingFunctions = [lessFunction, greaterFunction];
+			if ((key == 'rank' && currentFilters.order == 'asc') || (key != 'rank' && currentFilters.order == 'desc')) {
+				orderingFunctions = [greaterFunction, lessFunction];
+			}
+
+			if (orderingFunctions[0](userScore.score[key], scores[0].score[key])) {
+				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
+			} else if (orderingFunctions[1](userScore.score[key], scores[scores.length - 1]?.score[key])) {
+				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+			}
+		}
 	}
 
 	async function updateVerifiedMapperId(mapperId, hash) {
@@ -435,12 +606,15 @@
 	}
 
 	let showAverageStats = false;
+	let showSorting = false;
 
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
 	$: enhanced = leaderboardStore.enhanced;
 
-	$: changeParams(leaderboardId, type, page, location);
+	$: startFilters = buildFiltersFromLocation(location ?? {search: `?${buildSearchFromFilters(currentFilters)}`});
+	$: changeParams(leaderboardId, type, page, startFilters);
+	$: makeComplexFilters(startFilters);
 	$: scrollToTop($pending);
 	$: scores = opt($leaderboardStore, 'scores', null);
 	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
@@ -470,6 +644,7 @@
 
 	$: playerHasFriends = !!$account?.friends?.length;
 	$: updateTypeOptions(mainPlayerCountry, playerHasFriends);
+	$: refreshSortValues(allSortValues, currentFilters);
 	$: if (song?.mapperId == $account?.player?.playerInfo.mapperId) updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
 
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
@@ -744,6 +919,30 @@
 					</nav>
 				{/if}
 
+				<div class="sorting-options">
+					<span
+						class="beat-savior-reveal clickable"
+						class:opened={showSorting}
+						on:click={() => (showSorting = !showSorting)}
+						on:keydown={() => (showSorting = !showSorting)}
+						title="Show sorting and search for the leaderboard">
+						{#if showSorting}
+							Hide sorting
+						{:else}
+							Show sorting
+						{/if}
+
+						<i class="fas fa-chevron-down" />
+					</span>
+				</div>
+
+				{#if showSorting}
+					<nav class="switcher-nav">
+						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+						<ScoreServiceFilters filters={complexFilters} on:change={onFiltersChanged} />
+					</nav>
+				{/if}
+
 				{#if scoresWithUser?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
@@ -784,14 +983,30 @@
 											<ClanBadges player={score.player} />
 										</div>
 										<div class="timeset above-tablet">
-											<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
-												{opt(score, 'score.timeSetString', '-')}
-											</span>
+											{#if currentFilters.sortBy == 'pauses'}
+												{score.score.pauses}
+											{:else if currentFilters.sortBy == 'maxStreak'}
+												{score.score.maxStreak}
+											{:else if currentFilters.sortBy == 'playCount'}
+												{score.score.playCount}
+											{:else}
+												<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
+													{opt(score, 'score.timeSetString', '-')}
+												</span>
+											{/if}
 										</div>
 										<div class="timeset mobile-only">
-											<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
-												{score?.score?.timeSetStringShort ?? ''}
-											</span>
+											{#if currentFilters.sortBy == 'pauses'}
+												{score.score.pauses}
+											{:else if currentFilters.sortBy == 'maxStreak'}
+												{score.score.maxStreak}
+											{:else if currentFilters.sortBy == 'playCount'}
+												{score.score.playCount}
+											{:else}
+												<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
+													{score?.score?.timeSetStringShort ?? ''}
+												</span>
+											{/if}
 										</div>
 									</div>
 									<div class="mobile-second-line">
@@ -1537,6 +1752,18 @@
 		position: absolute;
 		left: 0.1em;
 		top: 50%;
+	}
+
+	.switcher-nav {
+		display: flex;
+		justify-content: space-evenly;
+		align-items: center;
+	}
+
+	.sorting-options {
+		display: grid;
+		justify-items: center;
+		margin-top: -0.8em;
 	}
 
 	@media screen and (max-width: 1275px) {

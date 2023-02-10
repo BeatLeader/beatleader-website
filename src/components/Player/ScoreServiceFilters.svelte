@@ -23,7 +23,7 @@
 </script>
 
 {#if filters?.length}
-	<section>
+	<section style="z-index: 5">
 		{#each filters as filter}
 			<GenericFilter {filter} on:change={onFilterChanged} />
 		{/each}
