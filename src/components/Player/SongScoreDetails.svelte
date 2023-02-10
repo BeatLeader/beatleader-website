@@ -25,13 +25,6 @@
 		inBuiltLeaderboardPage = Math.floor((rank - 1) / scoresPerPage) + 1;
 	}
 
-	function onInBuiltLeaderboardPageChanged(event) {
-		const newPage = event?.detail?.page;
-		if (!Number.isFinite(newPage)) return;
-
-		inBuiltLeaderboardPage = newPage;
-	}
-
 	$: leaderboard = songScore?.leaderboard ?? null;
 	$: score = songScore?.score ?? null;
 	$: prevScore = songScore?.prevScore ?? null;
@@ -76,7 +69,6 @@
 					dontNavigate={true}
 					withoutDiffSwitcher={true}
 					withoutHeader={true}
-					on:page-changed={onInBuiltLeaderboardPageChanged}
 					{fixedBrowserTitle}
 					higlightedScore={score} />
 			</div>
@@ -91,7 +83,6 @@
 					dontNavigate={true}
 					withoutDiffSwitcher={true}
 					withoutHeader={true}
-					on:page-changed={onInBuiltLeaderboardPageChanged}
 					{fixedBrowserTitle}
 					higlightedScore={score} />
 			</div>

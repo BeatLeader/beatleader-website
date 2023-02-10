@@ -436,38 +436,88 @@ export function diffForDiffName(diffName) {
 	return 0;
 }
 
+export const ModifiersList = [
+	{
+		id: 'NF',
+		name: 'No Fail',
+		icon: 'NoFailIcon.png',
+	},
+	{
+		id: 'OL',
+		name: '1 Life',
+		icon: 'OneLifeIcon.png',
+	},
+	{
+		id: 'BE',
+		name: '4 Lives',
+		icon: 'FourLivesIcon.png',
+	},
+	{
+		id: 'NB',
+		name: 'No Bombs',
+		icon: 'NoBombsIcon.png',
+	},
+	{
+		id: 'NO',
+		name: 'No Walls',
+		icon: 'NoObstaclesIcon.png',
+	},
+	{
+		id: 'NA',
+		name: 'No Arrows',
+		icon: 'NoArrowsIcon.png',
+	},
+	{
+		id: 'GN',
+		name: 'Ghost Notes',
+		icon: 'GhostNotes.png',
+	},
+	{
+		id: 'DA',
+		name: 'Disappearing Arrows',
+		icon: 'DisappearingArrows.png',
+	},
+	{
+		id: 'SC',
+		name: 'Small Notes',
+		icon: 'SmallNotesIcon.png',
+	},
+	{
+		id: 'PM',
+		name: 'Pro Mode',
+		icon: 'ProModeIcon.png',
+	},
+
+	{
+		id: 'SA',
+		name: 'Strict Angles',
+		icon: 'PreciseAnglesIcon.png',
+	},
+	{
+		id: 'OD',
+		name: 'Old Dots',
+		icon: 'OldDotsIcon.png',
+	},
+	{
+		id: 'SS',
+		name: 'Slower Song',
+		icon: 'SlowerSongIcon.png',
+	},
+	{
+		id: 'FS',
+		name: 'Faster Song',
+		icon: 'FasterSongIcon.png',
+	},
+
+	{
+		id: 'SF',
+		name: 'Super Fast Song',
+		icon: 'SuperFastSongIcon.png',
+	},
+];
+
 export function userDescriptionForModifier(modifier) {
-	switch (modifier) {
-		case 'DA':
-			return 'Disappearing arrows';
-		case 'FS':
-			return 'Faster song';
-		case 'SS':
-			return 'Slower song';
-		case 'SF':
-			return 'Super fast song';
-		case 'GN':
-			return 'Ghost notes';
-		case 'NA':
-			return 'No arrows';
-		case 'NB':
-			return 'No bombs';
-		case 'NF':
-			return 'No fail';
-		case 'NO':
-			return 'No obstacles';
-		case 'PM':
-			return 'Pro mode';
-		case 'SC':
-			return 'Small cubes';
-		case 'BE':
-			return 'Battery energy';
-		case 'SA':
-			return 'Strict angles';
-		case 'OD':
-			return 'Old dot note hitboxes';
-	}
-	return 'Unknown modifier';
+	return ModifiersList.find(m => m.id == modifier)?.name ?? 'Unknown modifier';
 }
 
 export const DifficultyStatus = {

@@ -28,10 +28,10 @@
 	<span
 		style={`
 			--hue: ${data?.hue ?? 0}deg;
-			--saturation: ${data?.saturation ?? 1}
+			--saturation: ${data?.saturation ?? 1};
 			user-select: none
 			`}>
-		<img class="avatar-overlay {withCover ? "with-cover" : ""}" src={overlayUrl} />
+		<img class="avatar-overlay {withCover ? 'with-cover' : ''}" src={overlayUrl} />
 	</span>
 {/if}
 

@@ -12,6 +12,7 @@
 	export let options = [];
 	export let fontSize = 16;
 	export let value = true;
+	export let title = null;
 
 	let checked = true;
 	const dispatch = createEventDispatcher();
@@ -46,7 +47,7 @@
 		</button>
 	</div>
 {:else if design == 'slider'}
-	<div class="s s--slider" style="font-size:{fontSize}px">
+	<div class="s s--slider" {title} style="font-size:{fontSize}px">
 		<span id={`switch-${uniqueID}`}>{label}</span>
 		<button role="switch" aria-checked={checked} aria-labelledby={`switch-${uniqueID}`} on:click={handleClick} />
 	</div>

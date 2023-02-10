@@ -61,8 +61,7 @@
 	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
 
 	import TextFilter from '../components/Player/ScoreFilters/TextFilter.svelte';
-	import MultiSelectFilter from '../components/Player/ScoreFilters/MultiSelectFilter.svelte';
-	import ModifiersMultiItem from '../components/Leaderboard/ModifiersMultiItem.svelte';
+	import ModifiersPicker from '../components/Leaderboard/ModifiersPicker.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -114,16 +113,51 @@
 			default: null,
 			process: processStringFilter,
 		},
+		{
+			key: 'modifiers',
+			default: null,
+			process: processStringFilter,
+		},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
 
-	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
-	if (!page || isNaN(page) || page <= 0) page = 1;
+	let currentPage = 1;
+
+	function updateFilters(newFilters) {
+		currentFilters = newFilters;
+		changeParams(currentLeaderboardId, currentType, currentPage, currentFilters);
+	}
+
+	function updateParams(leaderboardId, type, page) {
+		if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+		if (!page || isNaN(page) || page <= 0) page = 1;
+
+		var shouldRefresh = false;
+
+		if (page != currentPage) {
+			currentPage = page;
+			shouldRefresh = true;
+		}
+
+		if (type != currentType) {
+			currentType = type;
+			shouldRefresh = true;
+		}
+
+		if (leaderboardId != currentLeaderboardId) {
+			currentLeaderboardId = leaderboardId;
+			shouldRefresh = true;
+		}
+
+		if (shouldRefresh) {
+			changeParams(currentLeaderboardId, currentType, currentPage, currentFilters);
+		}
+	}
 
 	let currentLeaderboardId = leaderboardId;
 	let currentType = type;
-	let currentPage = page;
+
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 	let leaderboard = null;
@@ -229,13 +263,12 @@
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
-		newPage = parseInt(newPage, 10);
-		if (isNaN(newPage)) newPage = 1;
+		currentPage = parseInt(newPage, 10);
+		if (isNaN(currentPage)) currentPage = 1;
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 
-		currentPage = newPage;
 		leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage, {...currentFilters});
 	}
 
@@ -245,8 +278,7 @@
 		const newPage = event.detail.page + 1;
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`);
-
-		dispatch('page-changed', {leaderboardId: currentLeaderboardId, type: currentType, page: newPage, filters: currentFilters});
+		else changeParams(currentLeaderboardId, currentType, newPage, currentFilters);
 	}
 
 	function onDiffChange(event) {
@@ -396,7 +428,6 @@
 
 	var complexFilters = [];
 	function makeComplexFilters(currentFilters) {
-		console.log(currentFilters);
 		complexFilters = [
 			{
 				component: TextFilter,
@@ -409,39 +440,20 @@
 					open: currentFilters.search?.length,
 				},
 			},
-			// {
-			// 	component: MultiSelectFilter,
-			// 	props: {
-			// 		id: 'modifiers',
-			// 		iconFa: 'fa fa-chart-line',
-			// 		title: 'Filter by modifiers',
-			// 		placeholder: 'Choose modifiers',
-			// 		MultiSelection: ModifiersMultiItem,
-			// 		items: [
-			// 			{id: 'all', value: 'All', label: 'All selected', icon: 'disco.png'},
-			// 			{id: 'FS', value: 'FS', label: 'Faster song', icon: 'disco.png'},
-			// 			{id: 'SF', value: 'SF', label: 'Super fast', icon: 'disco.png'},
-			// 			{id: 'GN', value: 'GN', label: 'Ghost notes', icon: 'disco.png'},
-			// 			{id: 'DA', value: 'DA', label: 'Dissapearing arrows', icon: 'disco.png'},
-
-			// 			{id: 'SC', value: 'SC', label: 'Small cubes', icon: 'disco.png'},
-			// 			{id: 'PM', value: 'PM', label: 'Pro mode', icon: 'disco.png'},
-			// 			{id: 'OD', value: 'OD', label: 'Old dotes', icon: 'disco.png'},
-
-			// 			{id: 'SS', value: 'SS', label: 'Slower song', icon: 'disco.png'},
-			// 			{id: 'NA', value: 'NA', label: 'No arrows', icon: 'disco.png'},
-			// 			{id: 'NF', value: 'NF', label: 'No fail', icon: 'disco.png'},
-			// 		],
-			// 	},
-			// },
 		];
+	}
+
+	function onModifiersChanged(event) {
+		currentFilters.modifiers = event?.detail ?? '';
+
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	function onFiltersChanged(event) {
 		const newFilters = event?.detail ?? {};
 
 		currentFilters.search = newFilters.search;
-		currentFilters.modifiers = newFilters.modifiers?.join(',') ?? '';
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
@@ -612,10 +624,10 @@
 	$: pending = leaderboardStore.pending;
 	$: enhanced = leaderboardStore.enhanced;
 
-	$: startFilters = buildFiltersFromLocation(location ?? {search: `?${buildSearchFromFilters(currentFilters)}`});
-	$: changeParams(leaderboardId, type, page, startFilters);
-	$: makeComplexFilters(startFilters);
 	$: scrollToTop($pending);
+	$: updateParams(leaderboardId, type, page);
+	$: updateFilters(buildFiltersFromLocation(location));
+	$: makeComplexFilters(buildFiltersFromLocation(location));
 	$: scores = opt($leaderboardStore, 'scores', null);
 	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
@@ -939,7 +951,10 @@
 				{#if showSorting}
 					<nav class="switcher-nav">
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-						<ScoreServiceFilters filters={complexFilters} on:change={onFiltersChanged} />
+						<div style="display: flex;">
+							<ScoreServiceFilters filters={complexFilters} on:change={onFiltersChanged} />
+							<ModifiersPicker selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+						</div>
 					</nav>
 				{/if}
 
@@ -1758,6 +1773,7 @@
 		display: flex;
 		justify-content: space-evenly;
 		align-items: center;
+		flex-wrap: wrap;
 	}
 
 	.sorting-options {
