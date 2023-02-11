@@ -73,7 +73,7 @@
 		{/if}
 	</div>
 	{#if hiddenScoresStats?.length || hiddenAccStats?.length}
-		<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+		<div style="margin: 0; padding: 0;">
 			<span
 				class="reveal clickable"
 				class:opened={showHidden}

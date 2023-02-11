@@ -26,8 +26,7 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
 	import {configStore} from '../../stores/config';
-	import html2canvas from '../../utils/html2canvas';
-	import domtoimage from 'dom-to-image';
+	import Spinner from '../Common/Spinner.svelte';
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
@@ -169,32 +168,11 @@
 		successToast('Link Copied to Clipboard!');
 	}
 
-	async function replaceOverlay(avatarOverlay) {
-		if (avatarOverlay) {
-			const overlayCanvas = document.createElement('canvas');
-			overlayCanvas.width = avatarOverlay.width;
-			overlayCanvas.height = avatarOverlay.height;
-
-			const overlayContext = overlayCanvas.getContext('2d');
-			overlayContext.filter = getComputedStyle(avatarOverlay).filter;
-
-			avatarOverlay.setAttribute('crossOrigin', 'anonymous');
-
-			overlayContext.drawImage(avatarOverlay, 0, 0, overlayCanvas.width, overlayCanvas.height);
-			avatarOverlay.src = overlayCanvas.toDataURL(`image/png`, 1);
-		}
-	}
-
+	let screenshoting = false;
 	async function takeScreenshot() {
-		const avatarOverlay = document.querySelector('.avatar-overlay');
-		const overlaySrc = avatarOverlay?.src;
-
 		try {
-			await replaceOverlay(avatarOverlay);
-
-			const element = document.querySelector('.content-box');
-			const canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
-			const blob = await new Promise(resolve => canvas.toBlob(resolve));
+			screenshoting = true;
+			const blob = await fetch('/screenshot/u/' + playerId).then(response => response.blob());
 			try {
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 				successToast('Screenshot Copied to Clipboard');
@@ -218,9 +196,7 @@
 				removeAfter: 4000,
 			});
 		} finally {
-			if (avatarOverlay) {
-				avatarOverlay.src = overlaySrc;
-			}
+			screenshoting = false;
 		}
 	}
 	function onKeyUp(event) {
@@ -352,11 +328,15 @@
 		</div>
 	{/if}
 	<AvatarOverlay withCover={cover} data={editModel?.data ?? playerData?.profileSettings} />
-	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+	<div style="margin: 0; padding: 0;">
 		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
-	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
-		<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+	<div style="margin: 0; padding: 0;">
+		{#if screenshoting}
+			<div class="screenshotSpinner"><Spinner /></div>
+		{:else}
+			<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+		{/if}
 	</div>
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
@@ -372,7 +352,7 @@
 					}} />
 
 				{#if playerInfo && !isLoading}
-					<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+					<div style="margin: 0; padding: 0;">
 						<AvatarOverlayIcons
 							{playerData}
 							bind:editModel
@@ -518,6 +498,12 @@
 		position: absolute !important;
 		right: 0.4em;
 		top: 0em;
+		z-index: 5;
+	}
+	:global(.screenshotSpinner) {
+		position: absolute !important;
+		right: 1.2em;
+		top: 1em;
 		z-index: 5;
 	}
 	:global(.inner-modal) {

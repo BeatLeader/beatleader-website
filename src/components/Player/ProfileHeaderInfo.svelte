@@ -156,14 +156,13 @@
 				{/if}
 
 				{#if canRedact && !editModel?.data}
-					<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+					<div style="margin: 0; padding: 0;">
 						<Button
 							type="text"
 							title="Edit profile"
 							cls="editNameButton"
 							iconFa="fas fa-edit"
-							on:click={() => dispatch('edit-model-enable')}
-							data-html2canvas-ignore />
+							on:click={() => dispatch('edit-model-enable')} />
 					</div>
 				{/if}
 			{/if}
