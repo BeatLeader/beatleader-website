@@ -7,6 +7,7 @@
 	import QualificationChange from './QualificationChange.svelte';
 
 	export let qualification;
+	export let isRanked = false;
 
 	const playerService = createPlayerService();
 
@@ -126,7 +127,8 @@
 					</span>
 				{:else}
 					<span style="color: green;" title={formatDate(dateFromUnix(qualification?.approvalTimeset + WEEKSECONDS))}
-						><i class="fa fa-check" /> Ready to rank</span>
+						><i class="fa fa-check" /> {isRanked ? 'Ranked' : 'Ready to rank'}
+					</span>
 				{/if}
 			</div>
 		</div>

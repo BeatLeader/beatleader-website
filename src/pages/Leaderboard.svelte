@@ -1242,11 +1242,11 @@
 								class="beat-savior-reveal clickable"
 								class:opened={showAverageStats}
 								on:click={() => (showAverageStats = !showAverageStats)}
-								title="Show average difficulty stats">
+								title="Show average stats and ranking changes">
 								{#if showAverageStats}
-									Hide map statistic
+									Hide details
 								{:else}
-									Show map statistic
+									Show more details
 								{/if}
 
 								<i class="fas fa-chevron-down" />
@@ -1263,7 +1263,7 @@
 								</div>
 							{/await}
 							{#if !isNominated && leaderboard.qualification}
-								<QualificationStatus qualification={leaderboard.qualification} />
+								<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
 							{/if}
 							{#if leaderboard.changes}
 								<ReweightStatusRanked map={leaderboard} />
@@ -1344,7 +1344,7 @@
 							</span>
 						</div>
 						{#if isNominated && qualification}
-							<QualificationStatus {qualification} />
+							<QualificationStatus {qualification} {isRanked} />
 						{/if}
 
 						{#if leaderboard?.reweight && !leaderboard?.reweight.finished}

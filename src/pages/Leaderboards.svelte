@@ -58,8 +58,8 @@
 		{key: 'stars_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
-		{key: 'sortBy', default: 'voting', process: processStringFilter},
-		{key: 'order', default: 'asc', process: processStringFilter},
+		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
+		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
 	];
