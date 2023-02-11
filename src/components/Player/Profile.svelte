@@ -1,33 +1,16 @@
 <script>
-	import {createEventDispatcher, getContext} from 'svelte';
 	import processPlayerData from './utils/profile';
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
-	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
-	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
-	import BeatLeaderSwipeCard from './ProfileCards/BeatLeaderSwipeCard.svelte';
-	import MiniRankingSwipeCard from './ProfileCards/MiniRankingSwipeCard.svelte';
-	import TwitchVideosSwipeCard from './ProfileCards/TwitchVideosSwipeCard.svelte';
-	import AccSaberSwipeCard from './ProfileCards/AccSaberSwipeCard.svelte';
-	import BeatSaviorSwipeCard from './ProfileCards/BeatSaviorSwipeCard.svelte';
-	import Carousel from '../Common/Carousel.svelte';
 	import BeatLeaderSummary from './BeatLeaderSummary.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
-	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
-	import Rain from '../Common/Rain.svelte';
-	import PinnedScores from './PinnedScores.svelte';
-	import AvatarOverlayEditor from './Overlay/AvatarOverlayEditor.svelte';
 	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
-	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
-	import {configStore} from '../../stores/config';
-	import html2canvas from '../../utils/html2canvas';
-	import domtoimage from 'dom-to-image';
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
@@ -39,16 +22,9 @@
 
 	let editModel = null;
 
-	const {addNotification} = getNotificationsContext();
-
-	const pageContainer = getContext('pageContainer');
-	const dispatch = createEventDispatcher();
-
 	const beatSaviorService = createBeatSaviorService();
 	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
-	const pinnedScoresStore = createPinnedScoresStore();
-	const statsHistoryStore = createStatsHistoryStore();
 
 	let accSaberPlayerInfo = null;
 	let accSaberCategories = null;
@@ -59,10 +35,6 @@
 		if (!playerId) return;
 
 		isBeatSaviorAvailable = await beatSaviorService.isDataForPlayerAvailable(playerId);
-	}
-
-	function generateScoresStats(stats) {
-		return stats && stats.length ? stats : [];
 	}
 
 	async function updateAccSaberPlayerInfo(playerId) {
@@ -103,131 +75,6 @@
 			avatarOverlayEdit: false,
 			isSaving: false,
 		};
-
-		addNotification({
-			text: 'You can click on each badge to turn it on or off. Click on an avatar to change it or set an overlay.',
-			position: 'top-right',
-			type: 'success',
-			removeAfter: 4000,
-		});
-	}
-
-	function onCancelEditModel() {
-		editModel = null;
-	}
-
-	async function onSaveEditModel() {
-		if (!editModel) return;
-
-		let {profileAppearance, country, avatar, message, ...data} = editModel?.data ?? {};
-
-		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : '';
-		country =
-			country?.length && (country !== playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
-
-		data = {...data, profileAppearance};
-		if (country) data.country = country;
-		if (message?.length) data.message = message;
-		if (!data?.effectName?.length) data.effectName = '';
-
-		try {
-			editModel.isSaving = true;
-			if (isAdmin) {
-				data.id = playerData?.playerId;
-			}
-			await account.update(data, avatar);
-
-			setTimeout(() => {
-				dispatch('player-data-updated');
-			}, 1000);
-
-			editModel = null;
-		} catch (err) {
-			editError = err;
-		} finally {
-			if (editModel) editModel.isSaving = false;
-		}
-	}
-	function successToast(text) {
-		addNotification({
-			text: text,
-			position: 'top-right',
-			type: 'success',
-			removeAfter: 2000,
-		});
-	}
-	function copyUrl() {
-		var dummy = document.createElement('input');
-		var text = window.location.href;
-
-		document.body.appendChild(dummy);
-		dummy.value = text;
-		dummy.select();
-		document.execCommand('copy');
-		document.body.removeChild(dummy);
-
-		successToast('Link Copied to Clipboard!');
-	}
-
-	async function replaceOverlay(avatarOverlay) {
-		if (avatarOverlay) {
-			const overlayCanvas = document.createElement('canvas');
-			overlayCanvas.width = avatarOverlay.width;
-			overlayCanvas.height = avatarOverlay.height;
-
-			const overlayContext = overlayCanvas.getContext('2d');
-			overlayContext.filter = getComputedStyle(avatarOverlay).filter;
-
-			avatarOverlay.setAttribute('crossOrigin', 'anonymous');
-
-			overlayContext.drawImage(avatarOverlay, 0, 0, overlayCanvas.width, overlayCanvas.height);
-			avatarOverlay.src = overlayCanvas.toDataURL(`image/png`, 1);
-		}
-	}
-
-	async function takeScreenshot() {
-		const avatarOverlay = document.querySelector('.avatar-overlay');
-		const overlaySrc = avatarOverlay?.src;
-
-		try {
-			await replaceOverlay(avatarOverlay);
-
-			const element = document.querySelector('.content-box');
-			const canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
-			const blob = await new Promise(resolve => canvas.toBlob(resolve));
-			try {
-				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
-				successToast('Screenshot Copied to Clipboard');
-			} catch {
-				const anchor = document.createElement('a');
-				const objURL = URL.createObjectURL(blob);
-				anchor.href = objURL;
-				anchor.style.display = 'none';
-				anchor.download = name + '.png';
-				document.body.appendChild(anchor);
-				anchor.click();
-				document.body.removeChild(anchor);
-				URL.revokeObjectURL(objURL);
-				successToast('Screenshot Saved');
-			}
-		} catch (e) {
-			addNotification({
-				text: 'Screenshot Failed',
-				position: 'top-right',
-				type: 'error',
-				removeAfter: 4000,
-			});
-		} finally {
-			if (avatarOverlay) {
-				avatarOverlay.src = overlaySrc;
-			}
-		}
-	}
-	function onKeyUp(event) {
-		switch (event.key) {
-			case 'Escape':
-				onCancelEditModel();
-		}
 	}
 	let modalShown;
 
@@ -236,7 +83,6 @@
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
 	$: refreshBeatSaviorState(playerId);
-	$: scoresStatsFinal = generateScoresStats(scoresStats);
 	$: updateAccSaberPlayerInfo(playerId);
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
@@ -261,78 +107,8 @@
 		editModel.data.profileCoverData = null;
 		playerData.profileSettings.profileCover = null;
 	};
-
-	$: swipeCards = [].concat(
-		playerId
-			? [
-					{
-						name: `stats-${playerId}`,
-						component: BeatLeaderSwipeCard,
-						props: {
-							playerId,
-							scoresStats: scoresStatsFinal,
-							ssBadges,
-						},
-						delay: 500,
-					},
-			  ]
-					.concat(
-						$pageContainer.name !== 'xxl'
-							? [
-									{
-										name: `ranking-${playerId}`,
-										component: MiniRankingSwipeCard,
-										props: {player: playerData},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
-							? [
-									{
-										name: `accsaber-${playerId}`,
-										component: AccSaberSwipeCard,
-										props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						isBeatSaviorAvailable
-							? [
-									{
-										name: `beat-savior-${playerId}`,
-										component: BeatSaviorSwipeCard,
-										props: {playerId},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						$pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
-							? [
-									{
-										name: `twitch-${playerId}`,
-										component: TwitchVideosSwipeCard,
-										props: {videos: twitchVideos},
-									},
-							  ]
-							: []
-					)
-			: []
-	);
-
-	$: pinnedScoresStore.fetchScores(playerData?.playerId);
-	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
 
-<svelte:window on:keyup={onKeyUp} />
-{#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
-	<Rain />
-{/if}
-
-<AvatarOverlayEditor bind:editModel {roles} />
 <ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
@@ -352,12 +128,6 @@
 		</div>
 	{/if}
 	<AvatarOverlay withCover={cover} data={editModel?.data ?? playerData?.profileSettings} />
-	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
-		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
-	</div>
-	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
-		<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
-	</div>
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
 		<div class="avatar-and-roles">
@@ -395,10 +165,6 @@
 		</div>
 
 		<div class="rank-and-stats-cell">
-			{#if editError}
-				<Error error={editError} />
-			{/if}
-
 			<ProfileHeaderInfo
 				{error}
 				{name}
@@ -409,45 +175,9 @@
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
 			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
-
-			{#if editModel}
-				<div class="edit-buttons">
-					<Button
-						loading={editModel.isSaving}
-						color="white"
-						bgColor="var(--beatleader-primary)"
-						label="Save"
-						iconFa="fas fa-check"
-						noMargin={true}
-						on:click={onSaveEditModel} />
-					<Button
-						disabled={editModel.isSaving}
-						type="default"
-						label="Cancel"
-						iconFa="fas fa-times"
-						noMargin={true}
-						on:click={onCancelEditModel} />
-				</div>
-			{/if}
-
-			{#if $account.error}
-				<Error error={$account.error} />
-			{/if}
 		</div>
 	</div>
 </ContentBox>
-
-<ContentBox>
-	<div class="columns">
-		<div class="column">
-			<Carousel cards={swipeCards} />
-		</div>
-	</div>
-</ContentBox>
-
-{#if pinnedScores}
-	<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
-{/if}
 
 <style>
 	.player-general-info {

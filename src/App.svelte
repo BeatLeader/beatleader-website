@@ -50,106 +50,74 @@
 </script>
 
 <Router {url}>
-	<Nav />
-	<Notifications zIndex={10000}>
-		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
-			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
-				<div class="ssr-page-container">
-					<Route path="/" component={DashboardPage} />
-					<Route path="/u/:initialPlayerId/*initialParams" let:params>
-						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
-					</Route>
-					<Route path="/rt" let:location>
-						<RtDashboard {location} />
-					</Route>
-					<Route path="/privacy" component={PrivacyPage} />
-					<Route path="/about" component={AboutPage} />
-					<Route path="/socket" component={Socket} />
-					<Route path="/settings" component={Settings} />
-					<Route path="/friends" component={FriendsPage} />
-					<Route path="/ranking/*page" let:params let:location>
-						<RankingPage page={params.page} {location} />
-					</Route>
-					<Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
-						<LeaderboardPage
-							leaderboardId={params.leaderboardId}
-							type={params.type}
-							page={params.page}
-							{location}
-							dontChangeType={false}
-							showCurve={true}
-							separatePage={true} />
-					</Route>
-					<Route path="/leaderboard/approval/:type/:leaderboardId/*page" let:params let:location>
-						<LeaderboardPage
-							leaderboardId={params.leaderboardId}
-							type={params.type}
-							page={params.page}
-							{location}
-							dontChangeType={false}
-							showCurve={true}
-							separatePage={true}
-							showApproveRequest={true} />
-					</Route>
-					<Route path="/leaderboards/*page" let:params let:location>
-						<LeaderboardsPage page={params.page} {location} />
-					</Route>
-					<Route path="/clan/:clanId/*page" let:params>
-						<ClanPage clanId={params.clanId} page={params.page} />
-					</Route>
-					<Route path="/event/:eventId/*page" let:params let:location>
-						<EventPage eventId={params.eventId} page={params.page} {location} />
-					</Route>
-					<Route path="/events/*page" let:params let:location>
-						<EventsPage page={params.page} {location} />
-					</Route>
-					<Route path="/clans/*page" let:params let:location>
-						<ClansPage page={params.page} {location} />
-					</Route>
-					<Route path="/playlists" component={PlaylistsPage} />
-					<Route path="/playlist/:id" let:params>
-						<PlaylistPage id={params.id} />
-					</Route>
-					<Route path="/search">
-						<SearchPage changeTitle={true} />
-					</Route>
-					<Route path="/twitch" component={TwitchPage} />
-					<Route path="/support" component={SupportPage} />
-					<Route path="/dashboard" component={DashboardPage} />
-					<Route path="/signin/*action" let:params>
-						<SigninPage action={params.action} />
-					</Route>
-					<Route path="/*" component={NotFoundPage} />
-				</div>
-			</main>
-		</Modal>
-	</Notifications>
+	<Route path="/" component={DashboardPage} />
+	<Route path="/u/:initialPlayerId/*initialParams" let:params>
+		<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
+	</Route>
+	<Route path="/rt" let:location>
+		<RtDashboard {location} />
+	</Route>
+	<Route path="/privacy" component={PrivacyPage} />
+	<Route path="/about" component={AboutPage} />
+	<Route path="/socket" component={Socket} />
+	<Route path="/settings" component={Settings} />
+	<Route path="/friends" component={FriendsPage} />
+	<Route path="/ranking/*page" let:params let:location>
+		<RankingPage page={params.page} {location} />
+	</Route>
+	<Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
+		<LeaderboardPage
+			leaderboardId={params.leaderboardId}
+			type={params.type}
+			page={params.page}
+			{location}
+			dontChangeType={false}
+			showCurve={true}
+			separatePage={true} />
+	</Route>
+	<Route path="/leaderboard/approval/:type/:leaderboardId/*page" let:params let:location>
+		<LeaderboardPage
+			leaderboardId={params.leaderboardId}
+			type={params.type}
+			page={params.page}
+			{location}
+			dontChangeType={false}
+			showCurve={true}
+			separatePage={true}
+			showApproveRequest={true} />
+	</Route>
+	<Route path="/leaderboards/*page" let:params let:location>
+		<LeaderboardsPage page={params.page} {location} />
+	</Route>
+	<Route path="/clan/:clanId/*page" let:params>
+		<ClanPage clanId={params.clanId} page={params.page} />
+	</Route>
+	<Route path="/event/:eventId/*page" let:params let:location>
+		<EventPage eventId={params.eventId} page={params.page} {location} />
+	</Route>
+	<Route path="/events/*page" let:params let:location>
+		<EventsPage page={params.page} {location} />
+	</Route>
+	<Route path="/clans/*page" let:params let:location>
+		<ClansPage page={params.page} {location} />
+	</Route>
+	<Route path="/playlists" component={PlaylistsPage} />
+	<Route path="/playlist/:id" let:params>
+		<PlaylistPage id={params.id} />
+	</Route>
+	<Route path="/search">
+		<SearchPage changeTitle={true} />
+	</Route>
+	<Route path="/twitch" component={TwitchPage} />
+	<Route path="/support" component={SupportPage} />
+	<Route path="/dashboard" component={DashboardPage} />
+	<Route path="/signin/*action" let:params>
+		<SigninPage action={params.action} />
+	</Route>
+	<Route path="/*" component={NotFoundPage} />
 </Router>
 
-<link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
-
-<footer>
-	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
-	<ContentBox cls="footer-box">
-		<p>
-			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
-			|
-			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
-			|
-			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
-			|
-			<a href="/support" on:click|preventDefault={() => navigate('/support')}>Support</a>
-			|
-			<a href="/socket" on:click|preventDefault={() => navigate('/socket')}>Scores feed</a>
-			|
-			<a href="https://twitter.com/beatleader_">Twitter</a>
-			|
-			<a href="https://discord.gg/2RG5YVqtG6">Discord</a>
-			|
-			<a href="https://patreon.com/BeatLeader">Patreon</a>
-		</p>
-	</ContentBox>
-</footer>
+<link rel="stylesheet" href="/build/themes/ree-dark.css" />
 
 <style>
 	:global(.notifications) {

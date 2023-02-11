@@ -25,9 +25,7 @@ export default () => {
 
 		const player = await playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force);
 
-		const scores = await scoresFetcher.fetchLiveScores(player, service, serviceParams, {refreshInterval, priority, signal, force});
-
-		return {...player, scores, service, serviceParams};
+		return {...player, scores: [], service, serviceParams};
 	};
 	return {
 		getProcessed: fetchPlayerAndScores,

@@ -26,7 +26,7 @@ const DEFAULT_CONFIG = {
 		ppMetric: 'weighted',
 		iconsOnAvatars: 'show',
 		scoresSortOptions: 'last',
-		theme: 'default',
+		theme: 'ree-dark',
 		oneclick: 'modassistant',
 		bgimage: '/assets/background.jpeg',
 		bgColor: 'rgba(20, 45, 57, 0.5427)',

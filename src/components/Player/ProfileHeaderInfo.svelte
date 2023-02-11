@@ -59,11 +59,6 @@
 		}));
 	}
 
-	const {open} = getContext('simple-modal');
-	const showProfile = profileLink => {
-		open(Preview, {previewLink: profileLink});
-	};
-
 	function showRainbow(player) {
 		var result = false;
 		player.clans?.forEach(element => {
@@ -115,9 +110,6 @@
 	$: prevCountryRank = history?.countryRank ? history.countryRank[getIndex(history.countryRank)] : playerInfo?.countryRank;
 </script>
 
-{#if showBanForm}
-	<BanForm {playerId} accountStore={account} on:finished={() => (showBanForm = false)} />
-{/if}
 <div class="profile-header-info">
 	{#if playerInfo}
 		<div class="player-nickname {showRainbow(playerInfo) ? 'rainbow' : ''}">
@@ -125,14 +117,7 @@
 				{#if editModel?.data}
 					<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
 				{:else if playerInfo.externalProfileUrl}
-					<a
-						href={playerInfo.externalProfileUrl}
-						on:click={e => {
-							e.preventDefault();
-							showProfile(playerInfo.externalProfileCorsUrl);
-						}}
-						target="_blank"
-						rel="noreferrer">
+					<a href={playerInfo.externalProfileUrl} target="_blank" rel="noreferrer">
 						{name}
 					</a>
 				{:else}
@@ -142,53 +127,12 @@
 				{#if !editModel}
 					<span class="clan-badges"><ClanBadges player={playerInfo} /></span>
 				{/if}
-
-				{#if changes && changes.length}
-					<div class="score-options-section">
-						<span
-							class="beat-savior-reveal clickable"
-							class:opened={showChanges}
-							on:click={() => (showChanges = !showChanges)}
-							title={showChanges ? 'Hide profile changelog' : 'Show profile changelog'}>
-							<i class="fas fa-chevron-down" />
-						</span>
-					</div>
-				{/if}
-
-				{#if canRedact && !editModel?.data}
-					<div data-html2canvas-ignore style="margin: 0; padding: 0;">
-						<Button
-							type="text"
-							title="Edit profile"
-							cls="editNameButton"
-							iconFa="fas fa-edit"
-							on:click={() => dispatch('edit-model-enable')}
-							data-html2canvas-ignore />
-					</div>
-				{/if}
 			{/if}
 
 			<span class="status">
 				<Status {playerInfo} />
 			</span>
 		</div>
-
-		{#if showChanges}
-			{#each changes as change, idx}
-				<ProfileChange {change} />
-			{/each}
-		{/if}
-
-		{#if playerInfo.sponsor}
-			{#if editModel?.data}
-				<div class="sponsor-message">
-					<span
-						>This message will be shown in-game for your scores.<br />
-						You can use <a class="inlineLink" href="http://digitalnativestudios.com/textmeshpro/docs/rich-text">Unity tags</a> here.</span>
-					<input type="text" bind:value={editModel.data.message} placeholder="Promotion message" class="sponsor-input" />
-				</div>
-			{/if}
-		{/if}
 
 		<div class="player-ranking">
 			<a
@@ -209,71 +153,37 @@
 					inline={true}
 					reversePrevSign={true} />
 			</a>
+			{#each countries as country}
+				<a
+					style="flex: none"
+					href={getCountryRankingUrl(country)}
+					on:click|preventDefault={() => navigateToCountryRanking(country)}
+					title="Go to country ranking"
+					class="clickable">
+					<img
+						src={`/assets/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
+						class="countryIcon"
+						alt={country?.country} />
 
-			{#if canRedact && editModel?.data}
-				<div class="pickerContainer">
-					<CountryPicker selected={editModel.data.country} on:select={e => (editModel.data.country = e.detail.value)} />
-				</div>
-			{:else}
-				{#each countries as country}
-					<a
-						style="flex: none"
-						href={getCountryRankingUrl(country)}
-						on:click|preventDefault={() => navigateToCountryRanking(country)}
-						title="Go to country ranking"
-						class="clickable">
-						<img
-							src={`/assets/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
-							class="countryIcon"
-							alt={country?.country} />
+					<Value
+						value={country.rank}
+						prevValue={prevCountryRank}
+						{prevLabel}
+						prefix="#"
+						digits={0}
+						zero="#0"
+						inline={true}
+						reversePrevSign={true} />
 
-						<Value
-							value={country.rank}
-							prevValue={prevCountryRank}
-							{prevLabel}
-							prefix="#"
-							digits={0}
-							zero="#0"
-							inline={true}
-							reversePrevSign={true} />
-
-						{#if country.subRank && country.subRank !== country.rankValue}
-							<small>(#{country.subRank})</small>
-						{/if}
-					</a>
-				{/each}
-			{/if}
+					{#if country.subRank && country.subRank !== country.rankValue}
+						<small>(#{country.subRank})</small>
+					{/if}
+				</a>
+			{/each}
 
 			<span class="pp">
 				<Value value={playerInfo?.pp} suffix="pp" prevValue={prevPp} {prevLabel} inline={true} zero="0pp" />
 			</span>
-
-			{#if showRedact && isAdmin && loggedInPlayer != playerId}
-				{#if playerInfo?.banned}
-					<Button
-						cls="banButton"
-						title="Unban player"
-						label="Unban player"
-						type="danger"
-						on:click={async () => await account.unbanPlayer(playerId)} />
-				{:else}
-					<Button cls="banButton" title="Ban player" label="Ban player" type="danger" on:click={async () => (showBanForm = !showBanForm)} />
-				{/if}
-			{/if}
-		</div>
-
-		{#if editModel?.data && editModel?.data?.country?.toUpperCase() !== playerInfo?.countries?.[0]?.country}
-			Make sure you selected right country. You can change it only every 30 days.
-		{/if}
-
-		{#if error}
-			<div>
-				<Error {error} />
-			</div>
-		{/if}
-	{:else if error}
-		<div>
-			<Error {error} />
 		</div>
 	{/if}
 </div>

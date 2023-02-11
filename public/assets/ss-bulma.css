@@ -11337,11 +11337,11 @@ label.panel-block:hover {
 }
 
 html {
-	background-color: var(--background) !important;
+	background-color: transparent !important;
 }
 
 body {
-	background-color: var(--background);
+	background-color: transparent;
 }
 
 .title {
@@ -11449,7 +11449,7 @@ html {
 
 body {
 	color: var(--textColor);
-	background-color: var(--background);
+	background-color: transparent;
 	margin: 0 auto;
 	padding: 0 1rem;
 	min-height: 100vh;
