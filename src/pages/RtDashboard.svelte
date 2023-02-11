@@ -248,7 +248,7 @@
 		{
 			key: 'status',
 			label: 'It has a status of',
-			default: '',
+			default: [],
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			deserialize: deserializeStatus,
@@ -286,7 +286,7 @@
 		{
 			key: 'status_not',
 			label: 'It has NOT a status of',
-			default: '',
+			default: [],
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			deserialize: deserializeStatus,
@@ -339,7 +339,7 @@
 		{
 			key: 'tags',
 			label: 'Tags',
-			default: '',
+			default: [],
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			type: 'tags',
@@ -361,7 +361,7 @@
 		{
 			key: 'tags_not',
 			label: 'No tags',
-			default: '',
+			default: [],
 			defaultCondition: 'or',
 			process: processStringArrayFilter,
 			type: 'tags',
