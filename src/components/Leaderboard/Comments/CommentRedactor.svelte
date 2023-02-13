@@ -1,17 +1,22 @@
 <script>
 	import 'suneditor/dist/css/suneditor.min.css';
+	import {getContext} from 'svelte';
+	const {open, close} = getContext('simple-modal');
 	import suneditor from 'suneditor';
 	import plugins from 'suneditor/src/plugins';
 	import Button from '../../Common/Button.svelte';
+	import CommentRedactor from './CommentRedactor.svelte';
 	import {createEventDispatcher, onMount} from 'svelte';
 
 	export let initialValue = null;
 	export let buttonName = 'Post';
+	export let fullscreen = false;
+	export let fullscreenExit = null;
 
 	const dispatch = createEventDispatcher();
 
 	let textArea;
-	let value;
+	let value = initialValue;
 
 	function postComment() {
 		dispatch('post', value);
@@ -23,10 +28,38 @@
 		editor.value = '';
 	}
 
+	let modal;
+
+	var customfullscreen = {
+		name: 'customfullscreen',
+		display: 'command',
+		title: 'Full screen',
+		buttonClass: '',
+		innerHTML: '<i class="fas fa-up-right-and-down-left-from-center"></i>',
+
+		add: function (core, targetElement) {},
+		active: function (element) {
+			return fullscreen;
+		},
+		action: function () {
+			modal = open(CommentRedactor, {
+				initialValue: value,
+				fullscreen: true,
+				buttonName,
+				fullscreenExit: value => {
+					close();
+					if (value) {
+						editor.setContents(value);
+					}
+				},
+			});
+		},
+	};
+
 	$: editor =
 		textArea &&
 		suneditor.create(textArea, {
-			plugins: plugins,
+			plugins: {customfullscreen, ...plugins},
 			buttonList: [
 				['undo', 'redo'],
 				['font', 'fontSize', 'formatBlock'],
@@ -39,7 +72,7 @@
 				['align', 'horizontalRule', 'list', 'lineHeight'],
 				['table', 'link', 'image' /** 'video', 'audio' ,'math' */], // You must add the 'katex' library at options to use the 'math' plugin.
 				/** ['imageGallery'] */ // You must add the "imageGalleryUrl".
-				['showBlocks', 'codeView', 'fullScreen'],
+				fullscreen ? ['showBlocks', 'codeView'] : ['showBlocks', 'codeView', 'customfullscreen'],
 				/** ['dir', 'dir_ltr', 'dir_rtl'] */ // "dir": Toggle text direction, "dir_ltr": Right to Left, "dir_rtl": Left to Right
 			],
 		});
@@ -51,15 +84,19 @@
 
 <div class="post-area">
 	<textarea bind:this={textArea}>{initialValue}</textarea>
-	<div class="post-button">
-		<Button label="Cancel" on:click={() => onCancel()} />
-		<Button label={buttonName} type="green" iconFa="fas fa-paper-plane" on:click={() => postComment()} />
-	</div>
+	{#if fullscreen}
+		<Button label="Done" on:click={() => fullscreenExit(value)} />
+	{:else}
+		<div class="post-button">
+			<Button label="Cancel" on:click={() => onCancel()} />
+			<Button label={buttonName} type="green" iconFa="fas fa-paper-plane" on:click={() => postComment()} />
+		</div>
+	{/if}
 </div>
 
 <style>
 	:global(.sun-editor .se-toolbar) {
-		background-color: #1a1a1a;
+		background-color: #1a1a1a !important;
 	}
 	:global(.sun-editor) {
 		width: unset !important;
@@ -82,6 +119,14 @@
 
 	:global(.se-dialog-content) {
 		background-color: #5e5e5e !important;
+	}
+
+	:global(.se-toolbar-sticky) {
+		top: 0 !important;
+	}
+
+	:global(.se-toolbar-sticky-dummy) {
+		display: none !important;
 	}
 
 	.post-button {

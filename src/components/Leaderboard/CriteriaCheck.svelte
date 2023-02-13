@@ -92,8 +92,10 @@
 											<div>
 												<a
 													title="{formatSeconds(report.realTime)}m"
-													href="https://skystudioapps.com/bs-viewer/?id={songId}&t={report.realTime}&diffName={diff.diff}"
-													>Time: {report._time}</a>
+													href="https://skystudioapps.com/bs-viewer/?id={songId.replaceAll(
+														'x',
+														''
+													)}&t={report.realTime}&diffName={diff.diff}">Time: {report._time}</a>
 												X: {report._lineIndex}
 												Type: {report._type}
 												Duration: {report._duration}
@@ -102,8 +104,10 @@
 											<div>
 												<a
 													title="{formatSeconds(report.realTime)}m"
-													href="https://skystudioapps.com/bs-viewer/?id={songId}&t={report.realTime}&diffName={diff.diff}"
-													>Time: {report._time}</a>
+													href="https://skystudioapps.com/bs-viewer/?id={songId.replaceAll(
+														'x',
+														''
+													)}&t={report.realTime}&diffName={diff.diff}">Time: {report._time}</a>
 												X: {report._lineIndex}
 												Y: {report._lineLayer}
 												Type: {report._type}
