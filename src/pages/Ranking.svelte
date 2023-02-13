@@ -85,7 +85,7 @@
 		{
 			key: 'countries',
 			label: 'Countries',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'countries',
 			value: [],
@@ -103,7 +103,7 @@
 		{
 			key: 'platform',
 			label: 'Platform',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
@@ -118,7 +118,7 @@
 		{
 			key: 'hmd',
 			label: 'Headsets',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'headsets',
 			value: [],
@@ -136,7 +136,7 @@
 		{
 			key: 'role',
 			label: 'Role',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
@@ -144,10 +144,12 @@
 				{id: 'admin', label: 'Administrator'},
 				{id: 'creator', label: 'BL creator'},
 				{id: 'rankedteam', label: 'Ranking Team'},
-				{id: 'mapper', label: 'Mapper'},
-				{id: 'tipper', label: 'Tipper'},
-				{id: 'supporter', label: 'Supporter'},
+				{id: 'qualityteam', label: 'Quality Team'},
+
 				{id: 'sponsor', label: 'Sponsor'},
+				{id: 'supporter', label: 'Supporter'},
+				{id: 'tipper', label: 'Tipper'},
+				{id: 'mapper', label: 'Mapper'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'role'),
 			multi: true,

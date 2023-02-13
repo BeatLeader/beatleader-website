@@ -96,6 +96,8 @@
 		background: var(--background);
 		z-index: 2000;
 		border-radius: 0.5em;
+		max-height: 100%;
+		overflow: auto;
 
 		display: flex;
 	}

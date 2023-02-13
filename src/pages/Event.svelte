@@ -53,7 +53,7 @@
 		{
 			key: 'countries',
 			label: 'Countries',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'countries',
 			value: [],

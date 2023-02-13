@@ -9,6 +9,7 @@
 	import {deepClone, shallowEqual} from '../../utils/js';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {Ranked_Const} from '../../utils/beatleader/consts';
+	import CriteriaCheck from './CriteriaCheck.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -269,7 +270,7 @@
 								float
 								hoverable
 								pips
-								pipstep={2/Ranked_Const.STAR_GRANULARITY}
+								pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 								all="label"
 								on:change={event => {
 									stars = event.detail.values[0];
@@ -315,6 +316,7 @@
 							<ModifiersUpdate {modifiers} on:modifiersUpdated={e => modifiersUpdated(e.detail)} />
 						{/if}
 					</div>
+					<CriteriaCheck songId={leaderboard.song.id} />
 				{/if}
 			{/if}
 		</div>

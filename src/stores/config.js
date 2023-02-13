@@ -36,6 +36,8 @@ const DEFAULT_CONFIG = {
 		leaderboardStatsShown: true,
 		curveShown: true,
 		qualificationInfoShown: true,
+		commentaryShown: true,
+		criteriaInfoShown: true,
 	},
 	scorePreferences: {
 		showReplayCounter: false,

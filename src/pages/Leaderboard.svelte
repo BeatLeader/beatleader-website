@@ -27,6 +27,7 @@
 	import Icons from '../components/Song/Icons.svelte';
 	import RankingVoting from '../components/Leaderboard/RankingVoting.svelte';
 	import RankUpdate from '../components/Leaderboard/RankUpdate.svelte';
+	import Commentary from '../components/Leaderboard/Commentary.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
 	import {formatNumber} from '../utils/format';
@@ -62,6 +63,7 @@
 
 	import TextFilter from '../components/Player/ScoreFilters/TextFilter.svelte';
 	import ModifiersPicker from '../components/Leaderboard/ModifiersPicker.svelte';
+	import CriteriaCheck from '../components/Leaderboard/CriteriaCheck.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -618,6 +620,7 @@
 	}
 
 	let showAverageStats = false;
+	let showCommentary = false;
 	let showSorting = false;
 
 	$: isLoading = leaderboardStore.isLoading;
@@ -652,6 +655,7 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+	$: isNQT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam');
 	$: isjuniorRT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('juniorrankedteam');
 
 	$: playerHasFriends = !!$account?.friends?.length;
@@ -683,6 +687,8 @@
 	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
 	$: curveShown = $configStore?.preferences?.curveShown;
 	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
+	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
+	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 </script>
 
 <svelte:head>
@@ -1284,16 +1290,16 @@
 	</article>
 	{#if separatePage}
 		<aside transition:fade>
-			{#if !leaderboardStatsShown}
-				<div class="score-options-section">
-					<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
-						<i class="fas fa-magnifying-glass" />
+			<ContentBox>
+				{#if !leaderboardStatsShown}
+					<div class="score-options-section">
+						<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
+							<i class="fas fa-magnifying-glass" />
 
-						<i class="fas fa-chevron-right" />
-					</span>
-				</div>
-			{:else}
-				<ContentBox>
+							<i class="fas fa-chevron-right" />
+						</span>
+					</div>
+				{:else}
 					<div class="score-options-section to-the-left">
 						<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
 							<i class="fas fa-chevron-left" />
@@ -1318,23 +1324,23 @@
 							{/if}
 						</div>
 					{/if}
-				</ContentBox>
-			{/if}
+				{/if}
+			</ContentBox>
 
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-				{#if !qualificationInfoShown}
-					<div class="score-options-section">
-						<span
-							class="beat-savior-reveal clickable"
-							on:click={() => boolflip('qualificationInfoShown')}
-							title="Show qualification details">
-							<i class="fas fa-list-ul" />
+				<ContentBox
+					>{#if !qualificationInfoShown}
+						<div class="score-options-section">
+							<span
+								class="beat-savior-reveal clickable"
+								on:click={() => boolflip('qualificationInfoShown')}
+								title="Show qualification details">
+								<i class="fas fa-list-ul" />
 
-							<i class="fas fa-chevron-right" />
-						</span>
-					</div>
-				{:else}
-					<ContentBox>
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
 						<div class="score-options-section to-the-left">
 							<span
 								class="beat-savior-reveal clickable"
@@ -1350,19 +1356,62 @@
 						{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
 							<ReweightStatus map={leaderboard} />
 						{/if}
+					{/if}
+				</ContentBox>
+
+				{#if isRT || isNQT || generalMapperId}
+					<ContentBox>
+						{#if !commentaryShown}
+							<div class="score-options-section">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
+									<i class="fas fa-comments" />
+
+									<i class="fas fa-chevron-right" />
+								</span>
+							</div>
+						{:else}
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							<Commentary {qualification} />
+						{/if}
+					</ContentBox>
+				{/if}
+
+				{#if qualification.criteriaCheck}
+					<ContentBox>
+						{#if !criteriaInfoShown}
+							<div class="score-options-section">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Show criteria check">
+									<i class="fas fa-triangle-exclamation" />
+
+									<i class="fas fa-chevron-right" />
+								</span>
+							</div>
+						{:else}
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Hide criteria details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+
+							<CriteriaCheck criteriaCheck={JSON.parse(qualification.criteriaCheck)} />
+						{/if}
 					</ContentBox>
 				{/if}
 			{/if}
 			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
-				{#if !curveShown}
-					<div class="score-options-section">
-						<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
-							<i class="fas fa-bezier-curve" />
-							<i class="fas fa-chevron-right" />
-						</span>
-					</div>
-				{:else}
-					<ContentBox>
+				<ContentBox>
+					{#if !curveShown}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
+								<i class="fas fa-bezier-curve" />
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
 						<div class="score-options-section to-the-left">
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
 								<i class="fas fa-chevron-left" />
@@ -1376,8 +1425,8 @@
 							{modifiers}
 							mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
 							on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
-					</ContentBox>
-				{/if}
+					{/if}
+				</ContentBox>
 			{/if}
 		</aside>
 	{/if}
@@ -1780,6 +1829,10 @@
 		display: grid;
 		justify-items: center;
 		margin-top: -0.8em;
+	}
+
+	.purple-icon {
+		color: purple;
 	}
 
 	@media screen and (max-width: 1275px) {
