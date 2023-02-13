@@ -1397,7 +1397,7 @@
 								</span>
 							</div>
 
-							<CriteriaCheck criteriaCheck={JSON.parse(qualification.criteriaCheck)} />
+							<CriteriaCheck songId={song?.id} criteriaCheck={JSON.parse(qualification.criteriaCheck)} />
 						{/if}
 					</ContentBox>
 				{/if}
