@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
+	import {globalHistory} from 'svelte-routing/src/history';
 	import processPlayerData from './utils/profile';
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
@@ -114,6 +115,10 @@
 	function onCancelEditModel() {
 		editModel = null;
 	}
+
+	globalHistory.listen(({location, action}) => {
+		editModel = null;
+	});
 
 	async function onSaveEditModel() {
 		if (!editModel) return;

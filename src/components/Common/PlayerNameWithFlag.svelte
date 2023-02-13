@@ -35,7 +35,7 @@
 		>{#if withCrown}<span class="crown">👑</span>{/if}{name ?? 'Unknown'}</span>
 </a>
 
-{#if !disablePopover}
+{#if !disablePopover && player && player.playerInfo}
 	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
 		<div class="popover-contents" transition:fade={{duration: 250}}>
 			<MiniProfile {player} />
