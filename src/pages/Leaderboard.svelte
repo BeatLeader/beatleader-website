@@ -568,7 +568,6 @@
 					<Spinner />
 				</div>
 			{/if}
-
 			{#if $leaderboardStore}
 				{#if leaderboard && song && withHeader}
 					{#if !withoutHeader}
@@ -688,6 +687,13 @@
 									{/if}
 								</h2>
 								<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
+							</div>
+
+							<div class="owning-clan">
+								<p>
+									Captured by: 
+								</p>
+								<ClanBadges leaderboard={leaderboard}/>
 							</div>
 
 							{#if batleRoyaleDraft}
@@ -1493,6 +1499,18 @@
 		justify-content: center;
 		flex-wrap: wrap;
 		gap: 0.6em;
+	}
+
+	.owning-clan {
+		display: flex;
+		align-items: center;
+		margin-top: 0.5em;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.6em;
+		background: rgb(24, 24, 24);
+		border-radius: 0.4em;
+		padding: 1em;
 	}
 
 	.royale-title {

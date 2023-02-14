@@ -3,6 +3,7 @@
 	import Badge from '../Common/Badge.svelte';
 
 	export let player;
+	export let leaderboard;
 
 	function invertColor(hex) {
 		if (hex.indexOf('#') === 0) {
@@ -24,7 +25,9 @@
 	}
 
 	$: clans = player?.clans ?? null;
+	$: owningClan = leaderboard?.owningClan ?? null
 </script>
+
 
 {#if clans}
 	<span class="clan-badges">
@@ -39,6 +42,20 @@
 					title="Go to clan profile" />
 			</a>
 		{/each}
+	</span>
+{/if}
+{@debug owningClan}
+{#if owningClan}
+	<span class="clan-badges">
+		<a href={`/clan/${owningClan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${owningClan?.tag}`)}>
+			<Badge
+				label={owningClan?.tag ?? '???'}
+				onlyLabel={true}
+				fluid={true}
+				color={invertColor(owningClan?.color ?? '#000000')}
+				bgColor={owningClan?.color ?? 'var(--dimmed)'}
+				title="Go to clan profile" />
+		</a>
 	</span>
 {/if}
 
