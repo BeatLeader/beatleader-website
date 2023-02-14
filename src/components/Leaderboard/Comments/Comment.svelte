@@ -9,6 +9,7 @@
 	import CommentRedactor from './CommentRedactor.svelte';
 
 	export let comment;
+	export let currentPlayerId;
 
 	const playerService = createPlayerService();
 	const dispatch = createEventDispatcher();
@@ -53,10 +54,12 @@
 				<span title={formatDateRelative(dateFromUnix(comment.editTimeset))}>(Edited)</span>
 			{/if}
 		</div>
-		<div class="hover-buttons">
-			<Button type="danger" title="Delete comment" iconFa="fas fa-trash" on:click={deleteComment} />
-			<Button type="primary" title="Edit comment" iconFa="fas fa-edit" on:click={() => (edit = !edit)} />
-		</div>
+		{#if currentPlayerId == comment.playerId}
+			<div class="hover-buttons">
+				<Button type="danger" title="Delete comment" iconFa="fas fa-trash" on:click={deleteComment} />
+				<Button type="primary" title="Edit comment" iconFa="fas fa-edit" on:click={() => (edit = !edit)} />
+			</div>
+		{/if}
 	</div>
 
 	{#if !edit}

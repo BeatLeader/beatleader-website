@@ -6,6 +6,7 @@
 	import Button from '../Common/Button.svelte';
 
 	export let qualification;
+	export let currentPlayerId;
 
 	let comments;
 	let writing = false;
@@ -67,7 +68,7 @@
 {/if}
 
 {#each comments as comment}
-	<Comment {comment} on:edit={editComment} on:delete={deleteComment} />
+	<Comment {comment} {currentPlayerId} on:edit={editComment} on:delete={deleteComment} />
 {/each}
 
 <style>

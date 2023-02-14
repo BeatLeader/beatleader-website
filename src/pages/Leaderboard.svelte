@@ -1375,7 +1375,7 @@
 									<i class="fas fa-chevron-left" />
 								</span>
 							</div>
-							<Commentary {qualification} />
+							<Commentary {qualification} currentPlayerId={$account.id} />
 						{/if}
 					</ContentBox>
 				{/if}
