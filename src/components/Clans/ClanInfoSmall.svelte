@@ -1,7 +1,7 @@
 <script>
 	import {fade} from 'svelte/transition';
 	import Badge from '../Common/Badge.svelte';
-	import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue, ppIcon} from '../../utils/clans';
+	import {playersTitle, rankLabel, accLabel, ppLabel, capturesLabel, rankValue, accValue, ppValue, capturesValue, ppIcon} from '../../utils/clans';
 
 	export let clan;
 
@@ -28,6 +28,7 @@
 			clanAverageRank = rankValue(tag, clanAverageRank);
 			clanAverageAccuracy = accValue(tag, clanAverageAccuracy);
 			clanPp = ppValue(tag, clanPp);
+			clanCapturedMaps = capturesValue(tag, clanCapturedMaps);
 		}
 	}
 
@@ -37,6 +38,7 @@
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
 	$: clanPp = clan?.pp ?? null;
+	$: clanCapturedMaps = clan?.ownedLeaderboardsCount ?? null;
 </script>
 
 {#if clan?.id}
@@ -59,6 +61,7 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
+							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--decrease)" />
 							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
 							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
 							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />

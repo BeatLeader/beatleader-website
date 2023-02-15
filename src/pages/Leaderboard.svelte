@@ -689,12 +689,14 @@
 								<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
 							</div>
 
-							<div class="owning-clan">
-								<p>
-									Captured by: 
-								</p>
-								<ClanBadges leaderboard={leaderboard}/>
-							</div>
+							{#if isRanked}
+								<div class="owning-clan">
+									<p>
+										Captured by:
+									</p>
+									<ClanBadges leaderboard={leaderboard}/>
+								</div>
+							{/if}
 
 							{#if batleRoyaleDraft}
 								<div class="royale-title-container">

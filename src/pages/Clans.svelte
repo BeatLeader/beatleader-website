@@ -125,6 +125,7 @@
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank clans with 3 players or more', iconFa: 'fa fa-list-ol'},
 		{id: 'count', label: 'Players', title: 'Sort by player count', iconFa: 'fa fa-user'},
+		{id: 'captures', label: 'Maps Captured', title: 'Sort by maps captured', iconFa: 'fa fa-cubes'}
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];

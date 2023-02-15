@@ -44,7 +44,6 @@
 		{/each}
 	</span>
 {/if}
-{@debug owningClan}
 {#if owningClan}
 	<span class="clan-badges">
 		<a href={`/clan/${owningClan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${owningClan?.tag}`)}>

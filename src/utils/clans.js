@@ -48,6 +48,13 @@ export function ppLabel(tag) {
 	}
 }
 
+export function capturesLabel(tag) {
+	switch (tag) {
+		default:
+			return 'Maps Captured';
+	}
+}
+
 export function ppIcon(tag) {
 	switch (tag) {
 		case 'OOTK':
@@ -89,6 +96,14 @@ export function ppValue(tag, value) {
 		case 'WYSI':
 			return 727;
 
+		default:
+			return value;
+	}
+}
+
+// Lmao what is this script -- SSnowy
+export function capturesValue(tag, value) {
+	switch (tag) {
 		default:
 			return value;
 	}
