@@ -59,6 +59,14 @@
 			border: 'transparent',
 			activeBorder: 'transparent',
 		},
+		blurple: {
+			color: '#dbdbdb',
+			activeColor: '#fff',
+			bgColor: '#7289da',
+			activeBgColor: '#8333ff',
+			border: 'transparent',
+			activeBorder: 'transparent',
+		},
 		twitter: {
 			color: '#dbdbdb',
 			activeColor: '#fff',

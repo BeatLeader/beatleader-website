@@ -651,11 +651,9 @@
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
-	$: isRT =
-		$account.player &&
-		$account.player.playerInfo.role &&
-		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
-	$: isNQT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam');
+	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
+	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
+	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
 	$: isjuniorRT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('juniorrankedteam');
 
 	$: playerHasFriends = !!$account?.friends?.length;
@@ -1375,7 +1373,8 @@
 									<i class="fas fa-chevron-left" />
 								</span>
 							</div>
-							<Commentary {qualification} currentPlayerId={$account.id} />
+
+							<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
 						{/if}
 					</ContentBox>
 				{/if}

@@ -193,6 +193,21 @@
 			Link social platforms to add buttons on your profile and<br />
 			in-game if you are Patreon supporter.
 		</span>
+		{#if socials && socials.find(s => s.service == 'Discord')}
+			<form action={BL_API_URL + 'user/unlink'} method="post">
+				<input type="hidden" name="Provider" value="Discord" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button iconFa="fab fa-discord" label="Unlink Discord" type="danger" />
+			</form>
+		{:else}
+			<form class="blurple" action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="Discord" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button type="blurple" iconFa="fab fa-discord" label="Link Discord" />
+			</form>
+		{/if}
 		{#if socials && socials.find(s => s.service == 'Twitch')}
 			<form action={BL_API_URL + 'user/unlink'} method="post">
 				<input type="hidden" name="Provider" value="Twitch" />

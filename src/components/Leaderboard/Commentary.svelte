@@ -7,6 +7,8 @@
 
 	export let qualification;
 	export let currentPlayerId;
+	export let isNQT;
+	export let mapperId;
 
 	let comments;
 	let writing = false;
@@ -61,10 +63,17 @@
 	$: fetchComments(qualification);
 </script>
 
-{#if writing}
-	<CommentRedactor on:post={postComment} on:cancel={() => (writing = false)} />
-{:else}
-	<Button label="Write" iconFa="fas fa-edit" on:click={() => (writing = true)} />
+{#if mapperId || isNQT}
+	{#if writing}
+		<CommentRedactor on:post={postComment} on:cancel={() => (writing = false)} />
+	{:else}
+		<div class="button-and-link">
+			{#if isNQT}
+				<a href="https://discord.com/channels/921820046345523311/{qualification.discordChannelId}"> Discord Forum </a>
+			{/if}
+			<Button label="Write" iconFa="fas fa-edit" on:click={() => (writing = true)} />
+		</div>
+	{/if}
 {/if}
 
 {#each comments as comment}
@@ -72,4 +81,7 @@
 {/each}
 
 <style>
+	.button-and-link {
+		display: inline-grid;
+	}
 </style>

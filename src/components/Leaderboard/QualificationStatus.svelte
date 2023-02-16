@@ -70,13 +70,15 @@
 			{:else if qualification?.criteriaMet == 3}
 				<span style="color: yellow;"><i class="fa fa-circle-pause" /> Check on hold</span>
 			{/if}
-			<Avatar player={criteriaChecker} />
-			<PlayerNameWithFlag player={criteriaChecker} on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
+			<div>
+				<Avatar player={criteriaChecker} />
+				<PlayerNameWithFlag player={criteriaChecker} on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
 
-			<div class="timeset">
-				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-					{formatDateRelative(dateFromUnix(qualification?.criteriaTimeset))}
-				</span>
+				<div class="timeset">
+					<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+						{formatDateRelative(dateFromUnix(qualification?.criteriaTimeset))}
+					</span>
+				</div>
 			</div>
 
 			{#if qualification?.criteriaCommentary}

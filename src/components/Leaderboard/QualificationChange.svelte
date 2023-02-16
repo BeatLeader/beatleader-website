@@ -43,12 +43,14 @@
 
 {#if change}
 	<div class="qualification-description">
-		<Avatar {player} />
-		<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
-		<div class="timeset">
-			<span style="color: {getTimeStringColor(change?.timeset)}; ">
-				{formatDateRelative(dateFromUnix(change.timeset))}
-			</span>
+		<div>
+			<Avatar {player} />
+			<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+			<div class="timeset">
+				<span style="color: {getTimeStringColor(change?.timeset)}; ">
+					{formatDateRelative(dateFromUnix(change.timeset))}
+				</span>
+			</div>
 		</div>
 
 		{#if change.oldStars != change.newStars}
