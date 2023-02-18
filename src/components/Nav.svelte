@@ -520,11 +520,10 @@
 	}
 
 	.logo.up-to-tablet {
-		height: 3em;
-		width: 3em;
-		margin-top: -0.1em;
-		margin-left: -1em;
-		margin-right: -1em;
+		height: 100%;
+		padding: 0;
+		margin: 0;
+		aspect-ratio: 1;
 		max-width: none;
 	}
 

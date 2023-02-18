@@ -8,18 +8,21 @@
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import RankingTable from '../components/Ranking/RankingTable.svelte';
 	import Button from '../components/Common/Button.svelte';
-
+	import createAccountStore from '../stores/beatleader/account';
 	import {createBuildFiltersFromLocation, buildSearchFromFilters, processStringFilter, processStringArrayFilter} from '../utils/filters';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {debounce} from '../utils/debounce';
-	import {dateFromUnix, formatDateRelative, formatDate} from '../utils/date';
+	import {dateFromUnix, formatDateRelative, formatDate, WEEKSECONDS} from '../utils/date';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Event from '../components/Event/Event.svelte';
+	import {Confetti} from 'svelte-confetti';
 
 	export let page = 1;
 	export let location;
 	export let eventId;
+
+	const account = createAccountStore();
 
 	const FILTERS_DEBOUNCE_MS = 500;
 
@@ -159,8 +162,16 @@
 		navigate(`/event/${currentEventId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace});
 	}
 
+	let topPlayerId;
+	function onPlayersFetched(event) {
+		if (event.detail && event.detail.length) {
+			topPlayerId = event.detail[0].playerId;
+		}
+	}
+
 	$: changeParams(page, eventId, location, true);
 	$: scrollToTop(pending);
+	$: mainPlayerId = $account?.id;
 </script>
 
 <svelte:head>
@@ -231,11 +242,19 @@
 				filters={currentFilters}
 				playerClickFilter={`eventId=${currentEvent?.id ?? ''}`}
 				eventId={currentEventId}
+				on:players-fetched={onPlayersFetched}
 				on:page-changed={onPageChanged}
 				on:loading={e => (isLoading = !!e?.detail)}
 				on:pending={e => (pending = e?.detail)} />
 		</ContentBox>
 	</article>
+
+	{#if mainPlayerId == topPlayerId && currentEvent && Date.now() / 1000 < currentEvent.endDate + WEEKSECONDS}
+		<div
+			style="position: fixed; top: -50px; left: 0; height: 100vh; width: 100vw; display: flex; justify-content: center; overflow: hidden;">
+			<Confetti x={[-5, 5]} y={[0, 0.1]} delay={[500, 2000]} size="20" infinite duration="5000" amount="200" fallDistance="100vh" />
+		</div>
+	{/if}
 </section>
 
 <style>

@@ -255,6 +255,7 @@
 	$: changeParams(type, page, filters);
 	$: dispatch('loading', $isLoading);
 	$: dispatch('pending', $pending?.page);
+	$: dispatch('players-fetched', $rankingStore?.data);
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
 	$: refreshSortValues(allSortValues, currentFilters);
