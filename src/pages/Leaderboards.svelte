@@ -5,7 +5,6 @@
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -38,6 +37,7 @@
 	import {Ranked_Const} from './../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import BackToTop from '../components/Common/BackToTop.svelte';
 
 	export let page = 1;
 	export let location;
@@ -132,10 +132,6 @@
 				color: 'var(--beatleader-primary)',
 			});
 		}
-	}
-
-	function scrollToTop() {
-		if (boxEl) scrollToTargetAdjusted(boxEl, 60);
 	}
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
@@ -300,7 +296,6 @@
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
 	$: changePageAndFilters(page, location);
-	$: scrollToTop($pending);
 
 	$: leaderboardsPage = ($leaderboardsStore?.data ?? []).map(m => {
 		return {
@@ -548,6 +543,8 @@
 	</aside>
 </section>
 
+<BackToTop />
+
 <MetaTags
 	title={ssrConfig.name + ' - Maps'}
 	description={metaDescription}
@@ -726,7 +723,7 @@
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
-			flex-direction: column-reverse;
+			flex-direction: column;
 			align-items: center;
 		}
 

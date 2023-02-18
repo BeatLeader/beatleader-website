@@ -18,6 +18,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Headsets from '../components/Ranking/Headsets.svelte';
+	import BackToTop from '../components/Common/BackToTop.svelte';
 
 	export let page = 1;
 	export let location;
@@ -61,7 +62,7 @@
 		start = new Date().getTime();
 		setTimeout(() => {
 			if (new Date().getTime() - start > 499) {
-				updateCurrentFiltersFromParams(true);
+				updateCurrentFiltersFromParams();
 			}
 		}, 500);
 	};
@@ -238,9 +239,8 @@
 
 	let isLoading = false;
 	let pending = null;
-	let preventScroll = false;
 
-	function updateCurrentFiltersFromParams(noScroll) {
+	function updateCurrentFiltersFromParams() {
 		params.forEach(p => {
 			if (p.bitArray) {
 				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0);
@@ -256,14 +256,8 @@
 		params = params;
 
 		currentPage = 1;
-		preventScroll = noScroll;
 
 		navigateToCurrentPageAndFilters();
-	}
-
-	function scrollToTop() {
-		if (!preventScroll && boxEl) scrollToTargetAdjusted(boxEl, 70);
-		preventScroll = false;
 	}
 
 	function changeParams(newPage, newLocation, replace) {
@@ -321,7 +315,6 @@
 	}
 
 	$: changeParams(page, location, true);
-	$: scrollToTop(pending);
 </script>
 
 <svelte:head>
@@ -403,6 +396,8 @@
 		</ContentBox>
 	</aside>
 </section>
+
+<BackToTop />
 
 <style>
 	.align-content {
@@ -502,7 +497,7 @@
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
-			flex-direction: column-reverse;
+			flex-direction: column;
 			align-items: center;
 		}
 

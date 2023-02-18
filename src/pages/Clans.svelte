@@ -5,7 +5,6 @@
 	import createClansStore from '../stores/http/http-clans-store';
 	import createAccountStore from '../stores/beatleader/account';
 	import createClanService from '../services/beatleader/clan';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import {debounce} from '../utils/debounce';
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
@@ -350,7 +349,7 @@
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
-			flex-direction: column-reverse;
+			flex-direction: column;
 			align-items: center;
 		}
 

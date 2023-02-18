@@ -1742,7 +1742,7 @@
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
-			flex-direction: column-reverse;
+			flex-direction: column;
 			align-items: center;
 		}
 
