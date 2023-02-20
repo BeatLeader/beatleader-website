@@ -28,6 +28,7 @@
 	import RankingVoting from '../components/Leaderboard/RankingVoting.svelte';
 	import RankUpdate from '../components/Leaderboard/RankUpdate.svelte';
 	import Commentary from '../components/Leaderboard/Commentary.svelte';
+	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
 	import {formatNumber} from '../utils/format';
@@ -1357,27 +1358,28 @@
 					{/if}
 				</ContentBox>
 
-				{#if isRT || isNQT || generalMapperId}
-					<ContentBox>
-						{#if !commentaryShown}
-							<div class="score-options-section">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
-									<i class="fas fa-comments" />
+				<ContentBox>
+					{#if !commentaryShown}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
+								<i class="fas fa-comments" />
 
-									<i class="fas fa-chevron-right" />
-								</span>
-							</div>
-						{:else}
-							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="score-options-section to-the-left">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
+								<i class="fas fa-chevron-left" />
+							</span>
+						</div>
 
+						<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
+						{#if isRT || isNQT || generalMapperId}
 							<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
 						{/if}
-					</ContentBox>
-				{/if}
+					{/if}
+				</ContentBox>
 
 				{#if qualification.criteriaCheck}
 					<ContentBox>

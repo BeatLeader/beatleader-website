@@ -82,6 +82,9 @@
 
 <style>
 	.button-and-link {
-		display: inline-grid;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-top: 1em;
 	}
 </style>

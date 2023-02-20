@@ -26,15 +26,12 @@
 
 {#if qualification}
 	<div class="qualification-description">
-		{#if !qualification.approved}
-			<div class="timeset">
-				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))} by
-				</span>
-
-				<Avatar player={nominator} />
-				<PlayerNameWithFlag player={nominator} hideFlag={true} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
-			</div>
+		{#if qualification.qualityVote > 0}
+			<span style="color: green;"><i class="fa fa-check" /> Quality</span>
+		{:else if qualification.qualityVote < 0}
+			<span style="color: red;"><i class="fa fa-xmark" /> Quality</span>
+		{:else}
+			<span style="color: gray;"><i class="fa fa-question" /> Quality</span>
 		{/if}
 
 		{#if qualification.criteriaMet == 1}
@@ -71,6 +68,17 @@
 			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> RT</span>
+		{/if}
+
+		{#if !qualification.approved}
+			<div class="timeset">
+				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))} by
+				</span>
+
+				<Avatar player={nominator} />
+				<PlayerNameWithFlag player={nominator} hideFlag={true} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
+			</div>
 		{/if}
 	</div>
 {/if}
