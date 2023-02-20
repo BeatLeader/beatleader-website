@@ -83,11 +83,11 @@
 		{#if !loading}
 			<Button
 				type={currentVote?.value == QualityVoteValue.positive ? 'green' : 'default'}
-				iconFa="fas fa-arrow-up"
+				iconFa="fas fa-thumbs-up"
 				on:click={() => postVote(QualityVoteValue.positive)} />
 			<Button
 				type={currentVote?.value == QualityVoteValue.neutral ? 'primary' : 'default'}
-				iconFa="fas fa-thumbs-up"
+				iconFa="ok-icon"
 				on:click={() => postVote(QualityVoteValue.neutral)} />
 			<Button
 				type={currentVote?.value == QualityVoteValue.negative ? 'danger' : 'default'}
@@ -138,8 +138,8 @@
 {/if}
 
 <div class="triple-container">
-	<span bind:this={positiveCounter} style="color: green"><i class="fas fa-arrow-up" /> {positiveVotes?.length}</span>
-	<span bind:this={neutralCounter} style="color: white"><i class="fas fa-thumbs-up" /> {neutralVotes?.length}</span>
+	<span bind:this={positiveCounter} style="color: green"><i class="fas fa-thumbs-up" /> {positiveVotes?.length}</span>
+	<span bind:this={neutralCounter} style="color: white; margin-right: 1em; margin-left: 1em;">{neutralVotes?.length}</span>
 	<span bind:this={negativeCounter} style="color: red"><i class="fas fa-thumbs-down" /> {negativeVotes?.length}</span>
 </div>
 

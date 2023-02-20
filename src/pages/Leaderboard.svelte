@@ -1357,7 +1357,8 @@
 						{/if}
 					{/if}
 				</ContentBox>
-
+			{/if}
+			{#if qualification && !isRanked}
 				<ContentBox>
 					{#if !commentaryShown}
 						<div class="score-options-section">
@@ -1380,7 +1381,8 @@
 						{/if}
 					{/if}
 				</ContentBox>
-
+			{/if}
+			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
 				{#if qualification.criteriaCheck}
 					<ContentBox>
 						{#if !criteriaInfoShown}
@@ -1403,6 +1405,7 @@
 					</ContentBox>
 				{/if}
 			{/if}
+
 			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
 				<ContentBox>
 					{#if !curveShown}
