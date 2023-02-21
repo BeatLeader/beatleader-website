@@ -575,7 +575,7 @@
 	async function updateVerifiedMapperId(mapperId, hash) {
 		if (mapperId) {
 			let beatSaverService = createBeatSaverService();
-			const mapperInfoValue = await beatSaverService.getMapper(mapperId);
+			const mapperInfoValue = await beatSaverService.getMapper(mapperId, true);
 
 			var timeToNomination;
 			if (mapperInfoValue.verifiedMapper) {
@@ -706,7 +706,7 @@
 		{rtvoting}
 		{isjuniorRT}
 		{qualificationUpdate}
-		hideStarSlider={rtvoting && verifiedMapperId != generalMapperId}
+		hideStarSlider={rtvoting && (verifiedMapperId != generalMapperId || verifiedMapperId == 4284297)}
 		on:finished={() => {
 			mapVoting = false;
 			rtvoting = false;
