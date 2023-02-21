@@ -6,6 +6,9 @@
 	import {fade} from 'svelte/transition';
 	import ContentBox from '../../Common/ContentBox.svelte';
 	import Spinner from '../../Common/Spinner.svelte';
+	import VoteWarning from './VoteWarning.svelte';
+	import {getContext} from 'svelte';
+	const {open, close} = getContext('simple-modal');
 
 	export let qualification;
 	export let currentPlayerId;
@@ -57,7 +60,23 @@
 	}
 
 	let loading;
+	let shouldShowConfirmation = true;
 	async function postVote(value) {
+		if (value == QualityVoteValue.negative && currentVote?.value != value && negativeVotes.length == 2 && shouldShowConfirmation) {
+			open(VoteWarning, {
+				confirm: () => {
+					shouldShowConfirmation = false;
+					close();
+					postVote(value);
+				},
+				cancel: () => {
+					close();
+				},
+			});
+
+			return;
+		}
+
 		loading = true;
 		fetch(BL_API_URL + `qualification/vote/${qualification.id}?vote=${value}`, {
 			method: 'POST',
@@ -67,6 +86,7 @@
 			.then(r => r.json())
 			.then(newvotes => {
 				loading = false;
+				shouldShowConfirmation = true;
 				fetchVotes(newvotes, currentPlayerId);
 			});
 	}

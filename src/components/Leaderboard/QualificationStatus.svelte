@@ -52,12 +52,14 @@
 {#if qualification}
 	<div class="qualification-description">
 		<b><i class="fa fa-check" /> Nominated by:</b>
-		<Avatar player={nominator} />
-		<PlayerNameWithFlag player={nominator} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
-		<div class="timeset">
-			<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-				{formatDateRelative(dateFromUnix(qualification?.timeset))}
-			</span>
+		<div class="player-info">
+			<Avatar player={nominator} />
+			<PlayerNameWithFlag player={nominator} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
+			<div class="timeset">
+				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
+					{formatDateRelative(dateFromUnix(qualification?.timeset))}
+				</span>
+			</div>
 		</div>
 	</div>
 
@@ -70,7 +72,7 @@
 			{:else if qualification?.criteriaMet == 3}
 				<span style="color: yellow;"><i class="fa fa-circle-pause" /> Check on hold</span>
 			{/if}
-			<div>
+			<div class="player-info">
 				<Avatar player={criteriaChecker} />
 				<PlayerNameWithFlag player={criteriaChecker} on:click={criteriaChecker ? () => navigateToPlayer(criteriaChecker.playerId) : null} />
 
@@ -82,7 +84,7 @@
 			</div>
 
 			{#if qualification?.criteriaCommentary}
-				<span style="color: red;">({qualification?.criteriaCommentary})</span>
+				<span class="criteria-check-red">({qualification?.criteriaCommentary})</span>
 			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria not checked yet</span>
@@ -92,8 +94,10 @@
 	<div class="qualification-description">
 		{#if qualification?.mapperAllowed}
 			<b><i class="fa fa-check" /> Allowed by mapper:</b>
-			<Avatar player={mapper} />
-			<PlayerNameWithFlag player={mapper} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
+			<div class="player-info">
+				<Avatar player={mapper} />
+				<PlayerNameWithFlag player={mapper} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
+			</div>
 		{:else}
 			<span style="color: red;"><i class="fa fa-xmark" /> Mapper not allowed yet</span>
 		{/if}
@@ -111,8 +115,10 @@
 				{#await approverPromise}
 					Loading...
 				{:then approver}
-					<Avatar player={approver} />
-					<PlayerNameWithFlag player={approver} on:click={approver ? () => navigateToPlayer(approver.playerId) : null} />
+					<div class="player-info">
+						<Avatar player={approver} />
+						<PlayerNameWithFlag player={approver} on:click={approver ? () => navigateToPlayer(approver.playerId) : null} />
+					</div>
 				{/await}
 			{/each}
 		{:else}
@@ -189,6 +195,18 @@
 
 	.score-options-section {
 		margin-top: 0.5rem;
+	}
+
+	.player-info {
+		display: flex;
+		grid-gap: 0.5em;
+	}
+
+	.criteria-check-red {
+		color: white;
+		padding: 0.5em;
+		border: red solid;
+		background: #282727;
 	}
 
 	:global(.qualification-description) + .score-options-section {

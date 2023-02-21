@@ -43,7 +43,7 @@
 
 {#if change}
 	<div class="qualification-description">
-		<div>
+		<div class="player-info">
 			<Avatar {player} />
 			<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
 			<div class="timeset">
@@ -95,5 +95,10 @@
 		grid-gap: 0.4em;
 		align-items: center;
 		margin-top: 0.25em;
+	}
+
+	.player-info {
+		display: flex;
+		grid-gap: 0.8em;
 	}
 </style>
