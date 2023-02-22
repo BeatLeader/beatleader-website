@@ -1,17 +1,16 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
-	import {ModifiersList} from '../../utils/beatleader/format';
-	import {deepClone} from '../../utils/js';
-	import Button from '../Common/Button.svelte';
-	import Dialog from '../Common/Dialog.svelte';
-	import Switch from '../Common/Switch.svelte';
+	import {ModifiersList} from '../../../utils/beatleader/format';
+	import {deepClone} from '../../../utils/js';
+	import Button from '../../Common/Button.svelte';
+	import DialogContent from '../../Common/DialogContent.svelte';
+	import Switch from '../../Common/Switch.svelte';
 
 	export let selected = '';
+	export let onchange;
 
 	let any = false;
 	let none = false;
 	let modifiers = deepClone(ModifiersList);
-	let dialogOpened = false;
 
 	function selectDefault(selected) {
 		if (!selected) return;
@@ -32,7 +31,6 @@
 		});
 	}
 
-	const dispatch = createEventDispatcher();
 	function modifiersUpdated(save) {
 		if (save) {
 			var selectedModifiers = modifiers.filter(m => m.selected).map(m => m.id);
@@ -44,27 +42,12 @@
 				selectedModifiers.push('none');
 			}
 
-			dispatch('change', selectedModifiers.join(','));
+			onchange(selectedModifiers.join(','));
 		} else {
 			selectDefault(selected);
 		}
 
 		dialogOpened = false;
-	}
-
-	let colorForM = 'white';
-	function updateColor(any, none, hasState) {
-		if (none) {
-			colorForM = 'red';
-		} else if (hasState) {
-			if (any) {
-				colorForM = 'blue';
-			} else {
-				colorForM = 'purple';
-			}
-		} else {
-			colorForM = 'white';
-		}
 	}
 
 	function reset() {
@@ -74,11 +57,10 @@
 
 	$: selectDefault(selected);
 	$: hasState = modifiers.find(m => m.selected);
-	$: updateColor(any, none, hasState);
 </script>
 
-{#if dialogOpened}
-	<Dialog
+<div class="dialog-container">
+	<DialogContent
 		type="confirm"
 		title="Select modifiers to display"
 		okButton="Done"
@@ -124,69 +106,24 @@
 				{/if}
 			{/if}
 		</div>
-	</Dialog>
-{/if}
-
-<div class="filter" class:open={dialogOpened} title="Filter by modifiers">
-	<i
-		style="color: {colorForM}"
-		class={`fas filter-btn fa-m`}
-		class:fa-times={dialogOpened}
-		on:click={() => (dialogOpened = !dialogOpened)}
-		on:keypress={() => (dialogOpened = !dialogOpened)} />
+	</DialogContent>
 </div>
 
 <style>
-	.filter {
-		display: inline-block;
-		position: relative;
-		width: 1.75em;
-		height: calc(1em + 0.5em + 2px + 2px);
-		overflow: hidden;
-		transition: all 300ms ease-out;
-		margin-right: 0.25em;
+	.dialog-container {
+		margin: 1em;
 	}
 
-	.filter:not(.open) > .filter-component {
-		display: none;
+	:global(.wrap) {
+		display: contents;
 	}
-
-	.filter.open {
-		width: 11em;
-		overflow: visible;
+	:global(.wrap .window) {
+		width: auto !important;
+		height: auto !important;
+		background-color: rgb(26 26 26) !important;
 	}
-
-	.filter > .filter-component {
-		position: absolute;
-		left: 0;
-		bottom: 0;
-		width: calc(100% - 1.4em);
-		line-height: 1;
-		color: var(--textColor);
-		background-color: transparent;
-		transition: all 300ms ease-out;
-		outline: none;
-	}
-
-	.filter-btn {
-		position: absolute;
-		top: 0;
-		right: 0;
-		width: 1.75em;
-		text-align: center;
-		padding: 0.4em;
-		transition: all 300ms ease-out;
-		background-color: var(--dimmed);
-		z-index: 1;
-		cursor: pointer;
-		border-radius: 0.2em;
-	}
-
-	.filter.open .filter-btn {
-		width: auto;
-		background-color: var(--error);
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
+	:global(.dialog-container header) {
+		margin-right: 5em;
 	}
 
 	.modifiers-list {
@@ -228,7 +165,7 @@
 	.switch-container {
 		position: absolute;
 		right: 1em;
-		top: 2em;
+		top: 1.3em;
 		display: flex;
 		grid-gap: 1em;
 	}

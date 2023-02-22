@@ -63,7 +63,7 @@
 	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
 
 	import TextFilter from '../components/Player/ScoreFilters/TextFilter.svelte';
-	import ModifiersPicker from '../components/Leaderboard/ModifiersPicker.svelte';
+	import ModifiersFilter from '../components/Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import CriteriaCheck from '../components/Leaderboard/CriteriaCheck.svelte';
 
 	export let leaderboardId;
@@ -958,7 +958,7 @@
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
 							<ScoreServiceFilters filters={complexFilters} on:change={onFiltersChanged} />
-							<ModifiersPicker selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
 						</div>
 					</nav>
 				{/if}
