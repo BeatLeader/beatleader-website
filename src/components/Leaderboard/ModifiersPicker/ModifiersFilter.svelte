@@ -35,6 +35,9 @@
 				dispatch('change', newModifiers);
 				close();
 			},
+			oncancel: () => {
+				close();
+			},
 		});
 	}
 

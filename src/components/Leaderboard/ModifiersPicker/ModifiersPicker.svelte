@@ -7,6 +7,7 @@
 
 	export let selected = '';
 	export let onchange;
+	export let oncancel;
 
 	let any = false;
 	let none = false;
@@ -45,9 +46,8 @@
 			onchange(selectedModifiers.join(','));
 		} else {
 			selectDefault(selected);
+			oncancel();
 		}
-
-		dialogOpened = false;
 	}
 
 	function reset() {
