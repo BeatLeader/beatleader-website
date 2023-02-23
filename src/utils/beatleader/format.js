@@ -508,11 +508,15 @@ export const ModifiersList = [
 		name: 'Faster Song',
 		icon: 'FasterSongIcon.png',
 	},
-
 	{
 		id: 'SF',
 		name: 'Super Fast Song',
 		icon: 'SuperFastSongIcon.png',
+	},
+	{
+		id: 'OP',
+		name: 'NJS cheesing',
+		icon: 'OutsidePlatformIcon.png',
 	},
 ];
 
