@@ -175,7 +175,7 @@
 
 	{#if currentService == 'beatleader'}
 		<Button
-			cls="scores-playlist-button"
+			cls={pagerTotalScores > itemsPerPage ? 'scores-playlist-button' : 'scores-playlist-button-relative'}
 			iconFa="fas fa-list"
 			type={searchToPlaylist ? 'danger' : 'default'}
 			label={searchToPlaylist ? 'Cancel' : 'To Playlist!'}
@@ -249,11 +249,22 @@
 		margin-top: 0.6em !important;
 	}
 
+	:global(.scores-playlist-button-relative) {
+		height: 1.6em;
+		margin-top: 0.6em !important;
+	}
+
 	.duplicateDiffsContainer {
 		display: flex;
 	}
 
 	#duplicateDiffs {
 		width: auto;
+	}
+	@media screen and (max-width: 768px) {
+		:global(.scores-playlist-button) {
+			margin-top: 9em !important;
+			right: auto;
+		}
 	}
 </style>
