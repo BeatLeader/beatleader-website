@@ -1173,7 +1173,11 @@
 			return carry;
 		}, [])
 		.sort((a, b) => b.timestamp - a.timestamp);
-	$: eventsPlayers = [...new Set(events.map(e => e?.playerId).filter(playerId => playerId))];
+	$: eventsPlayers = [
+		...new Set(
+			events.reduce((acc, e) => acc.concat(e?.playerId?.split(',')?.filter(a => a?.length) ?? []), []).filter(playerId => playerId)
+		),
+	];
 	$: fetchPlayers(eventsPlayers);
 
 	$: filteredEventLog = events?.filter(
