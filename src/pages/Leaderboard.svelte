@@ -447,7 +447,7 @@
 	}
 
 	function onModifiersChanged(event) {
-		currentFilters.modifiers = event?.detail ?? '';
+		currentFilters.modifiers = event?.detail?.value ?? '';
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);

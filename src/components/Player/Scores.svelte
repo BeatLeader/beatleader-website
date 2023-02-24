@@ -2,7 +2,9 @@
 	import {createEventDispatcher} from 'svelte';
 	import createScoresStore from '../../stores/http/http-scores-store.js';
 	import createAccountStore from '../../stores/beatleader/account';
+	import createPlaylistStore from '../../stores/playlists';
 	import createFailedScoresStore from '../../stores/beatleader/failed-scores';
+	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
 	import {scrollToTargetAdjusted} from '../../utils/browser';
 	import SongScore from './SongScore.svelte';
@@ -12,6 +14,9 @@
 	import ScoresPager from './ScoresPager.svelte';
 	import stringify from 'json-stable-stringify';
 	import Pager from '../Common/Pager.svelte';
+	import Button from '../Common/Button.svelte';
+	import Spinner from '../Common/Spinner.svelte';
+	import RangeSlider from 'svelte-range-slider-pips';
 
 	const dispatch = createEventDispatcher();
 
@@ -29,6 +34,7 @@
 	let scoresStore = createScoresStore(playerId, initialService, initialServiceParams, initialState, initialStateType);
 
 	const account = createAccountStore();
+	const playlists = createPlaylistStore();
 
 	let scoresBoxEl = null;
 
@@ -97,6 +103,17 @@
 
 	const failedScores = createFailedScoresStore();
 
+	let searchToPlaylist = false;
+	let makingPlaylist = false;
+	let mapCount = 100;
+	let duplicateDiffs = false;
+	function generatePlaylist() {
+		makingPlaylist = true;
+		playlists.generatePlayerPlaylist(mapCount, playerId, {...currentServiceParams, duplicateDiffs}, () => {
+			navigate('/playlists');
+		});
+	}
+
 	$: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType);
 	$: $scoresStore, updateService(scoresStore);
 	$: $scoresStore, updateServiceParams(scoresStore);
@@ -156,6 +173,41 @@
 		<p>No scores.</p>
 	{/if}
 
+	{#if currentService == 'beatleader'}
+		<Button
+			cls="scores-playlist-button"
+			iconFa="fas fa-list"
+			type={searchToPlaylist ? 'danger' : 'default'}
+			label={searchToPlaylist ? 'Cancel' : 'To Playlist!'}
+			on:click={() => (searchToPlaylist = !searchToPlaylist)} />
+		{#if searchToPlaylist}
+			{#if makingPlaylist}
+				<Spinner />
+			{:else}
+				<span>Maps count:</span>
+				<RangeSlider
+					range
+					min={0}
+					max={1000}
+					step={1}
+					values={[mapCount]}
+					hoverable
+					float
+					pips
+					pipstep={100}
+					all="label"
+					on:change={event => {
+						mapCount = event.detail.values[0];
+					}} />
+				<div class="duplicateDiffsContainer">
+					<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
+					<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+				</div>
+				<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
+			{/if}
+		{/if}
+	{/if}
+
 	{#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
 		<ScoresPager
 			{playerId}
@@ -188,5 +240,20 @@
 <style>
 	.song-scores :global(> *:last-child) {
 		border-bottom: none !important;
+	}
+
+	:global(.scores-playlist-button) {
+		height: 1.6em;
+		position: absolute !important;
+		right: 1em;
+		margin-top: 0.6em !important;
+	}
+
+	.duplicateDiffsContainer {
+		display: flex;
+	}
+
+	#duplicateDiffs {
+		width: auto;
 	}
 </style>

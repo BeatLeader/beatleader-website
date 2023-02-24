@@ -7,6 +7,7 @@
 	import TextFilter from './ScoreFilters/TextFilter.svelte';
 	import SelectFilter from './ScoreFilters/SelectFilter.svelte';
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
+	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 
 	export let playerId = null;
 	export let player = null;
@@ -223,6 +224,14 @@
 										minValue: 0,
 										maxValue: 15,
 										step: 0.1,
+									},
+								},
+								{
+									component: ModifiersFilter,
+									asComponent: true,
+									props: {
+										id: 'modifiers',
+										selected: serviceParams?.filters?.modifiers,
 									},
 								},
 							]);

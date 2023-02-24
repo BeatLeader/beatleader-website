@@ -172,7 +172,7 @@
 
 	.reset-button {
 		position: absolute;
-		bottom: 1em;
+		margin-top: 2em;
 	}
 
 	@media screen and (max-width: 768px) {

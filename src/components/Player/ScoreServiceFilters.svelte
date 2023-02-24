@@ -25,7 +25,11 @@
 {#if filters?.length}
 	<section>
 		{#each filters as filter}
-			<GenericFilter {filter} on:change={onFilterChanged} />
+			{#if filter.asComponent}
+				<svelte:component this={filter.component} {...filter.props} on:change={onFilterChanged} />
+			{:else}
+				<GenericFilter {filter} on:change={onFilterChanged} />
+			{/if}
 		{/each}
 	</section>
 {/if}
