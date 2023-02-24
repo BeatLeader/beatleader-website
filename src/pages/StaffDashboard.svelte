@@ -19,7 +19,7 @@
 	import Error from '../components/Common/Error.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import Totals from '../components/Rt/Summary.svelte';
+	import Totals from '../components/Staff/Summary.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import Difficulty from '../components/Song/Difficulty.svelte';
@@ -31,6 +31,8 @@
 	import {DifficultyStatus, mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import {Ranked_Const} from './../utils/beatleader/consts';
+	import Reveal from '../components/Common/Reveal.svelte';
+	import QualityInfo from '../components/Leaderboard/QualityVotes/QualityInfo.svelte';
 
 	export let location;
 
@@ -504,7 +506,7 @@
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/rt?${buildSearchFromFilters(currentFilters)}`, {replace});
+		navigate(`/staff?${buildSearchFromFilters(currentFilters)}`, {replace});
 	}
 
 	let currentFilters = buildFiltersFromLocation(location);
@@ -794,11 +796,14 @@
 	$: allLabelsHash = allLabels.map(v => v?.id ?? '').join(':') ?? '';
 
 	$: playerId = $account?.id;
+	$: isAdmin = $account?.player?.playerInfo?.role?.includes('admin');
 	$: isRT = $account?.player?.playerInfo?.role
 		?.split(',')
 		?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
-	$: if (!$account?.loading && isRT) fetchMaps();
-	$: if (!$account?.loading && !isRT) navigate('/');
+	$: isNQT = isAdmin || $account?.player?.playerInfo?.role?.includes('qualityteam');
+	$: isStaff = isRT || isNQT;
+	$: if (!$account?.loading && isStaff) fetchMaps();
+	$: if (!$account?.loading && !isStaff) navigate('/');
 
 	$: currentSortValues = sortValues.map(v => {
 		return {
@@ -1168,7 +1173,11 @@
 			return carry;
 		}, [])
 		.sort((a, b) => b.timestamp - a.timestamp);
-	$: eventsPlayers = [...new Set(events.map(e => e?.playerId).filter(playerId => playerId))];
+	$: eventsPlayers = [
+		...new Set(
+			events.reduce((acc, e) => acc.concat(e?.playerId?.split(',')?.filter(a => a?.length) ?? []), []).filter(playerId => playerId)
+		),
+	];
 	$: fetchPlayers(eventsPlayers);
 
 	$: filteredEventLog = events?.filter(
@@ -1183,7 +1192,7 @@
 </script>
 
 <svelte:head>
-	<title>RT Dashboard</title>
+	<title>Staff Dashboard</title>
 </svelte:head>
 
 <section class="align-content">
@@ -1206,7 +1215,7 @@
 					title="Click to show/hide map search tool"
 					on:click={() => (showMapSearch = !showMapSearch)} />
 
-				RT Dashboard
+				Staff Dashboard
 				{#if !error && !isLoading}
 					/ {formatNumber(filteredSongs?.length, 0)} song(s) / {formatNumber(diffsCount, 0)} diff(s)
 				{/if}
@@ -1365,6 +1374,10 @@
 											<div>
 												<QualificationStatus qualification={difficulty?.qualification} />
 											</div>
+
+											<Reveal openMessage="Show NQT votes & comments" hideMessage="Hide NQT votes & comments">
+												<QualityInfo leaderboardId={difficulty?.leaderboardId} showCommentary={true} />
+											</Reveal>
 										{:else}
 											<div>Not yet nominated.</div>
 										{/if}

@@ -37,8 +37,8 @@
 			navigate(`/signin/autoban`);
 		} else if (event.srcElement.innerText === 'Log Out') {
 			account.logOut();
-		} else if (event.srcElement.innerText === 'RT Dashboard') {
-			navigate('/rt');
+		} else if (event.srcElement.innerText === 'Staff Dashboard') {
+			navigate('/staff');
 		} else if (playerId) {
 			navigateToPlayer(playerId);
 		}
@@ -98,14 +98,14 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
-		const isRT = $account?.player?.playerInfo?.role
+		const isStaff = $account?.player?.playerInfo?.role
 			?.split(',')
-			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
+			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator', 'qualityteam'].includes(role));
 
 		if (loggedInUser.player) {
 			signupOptions = [];
 
-			if (isRT) signupOptions.push('RT Dashboard');
+			if (isStaff) signupOptions.push('Staff Dashboard');
 
 			if ((loggedInUser.player.playerId < 30000000 || loggedInUser.player.playerId > 1000000000000000) && !loggedInUser.migrated) {
 				signupOptions.push('Migrate');

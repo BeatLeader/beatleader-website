@@ -76,9 +76,11 @@
 	{/if}
 {/if}
 
-{#each comments as comment}
-	<Comment {comment} {currentPlayerId} on:edit={editComment} on:delete={deleteComment} />
-{/each}
+{#if Array.isArray(comments)}
+	{#each comments as comment}
+		<Comment {comment} {currentPlayerId} on:edit={editComment} on:delete={deleteComment} />
+	{/each}
+{/if}
 
 <style>
 	.button-and-link {
