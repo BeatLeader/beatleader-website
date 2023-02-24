@@ -170,7 +170,7 @@ export default () => {
 
 		let url = substituteVars(
 			BL_API_URL +
-				'playlist/scores/generate?playerId=${playerId}&count=${count}&sortBy=${sortBy}&order=${order}&search=${search}&diff=${diff}&type=${type}&modifiers=${modifiers}&stars_from=${stars_from}&stars_to=${stars_to}&eventId=${eventId}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}',
+				'playlist/scores/generate?playerId=${playerId}&count=${count}&sortBy=${sortBy}&order=${order}&search=${search}&diff=${diff}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}',
 			{count, playerId, order: filters.order, sortBy: filters.sort, duplicateDiffs: filters.duplicateDiffs, ...filters.filters},
 			true,
 			true
