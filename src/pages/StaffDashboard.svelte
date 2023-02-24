@@ -19,7 +19,7 @@
 	import Error from '../components/Common/Error.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import Totals from '../components/Rt/Summary.svelte';
+	import Totals from '../components/Staff/Summary.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import Difficulty from '../components/Song/Difficulty.svelte';
@@ -504,7 +504,7 @@
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/rt?${buildSearchFromFilters(currentFilters)}`, {replace});
+		navigate(`/staff?${buildSearchFromFilters(currentFilters)}`, {replace});
 	}
 
 	let currentFilters = buildFiltersFromLocation(location);
@@ -1183,7 +1183,7 @@
 </script>
 
 <svelte:head>
-	<title>RT Dashboard</title>
+	<title>Staff Dashboard</title>
 </svelte:head>
 
 <section class="align-content">
@@ -1206,7 +1206,7 @@
 					title="Click to show/hide map search tool"
 					on:click={() => (showMapSearch = !showMapSearch)} />
 
-				RT Dashboard
+				Staff Dashboard
 				{#if !error && !isLoading}
 					/ {formatNumber(filteredSongs?.length, 0)} song(s) / {formatNumber(diffsCount, 0)} diff(s)
 				{/if}
