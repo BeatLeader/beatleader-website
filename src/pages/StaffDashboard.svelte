@@ -31,6 +31,8 @@
 	import {DifficultyStatus, mapTypeFromMask, typesDescription, typesMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import {Ranked_Const} from './../utils/beatleader/consts';
+	import Reveal from '../components/Common/Reveal.svelte';
+	import QualityInfo from '../components/Leaderboard/QualityVotes/QualityInfo.svelte';
 
 	export let location;
 
@@ -794,11 +796,14 @@
 	$: allLabelsHash = allLabels.map(v => v?.id ?? '').join(':') ?? '';
 
 	$: playerId = $account?.id;
+	$: isAdmin = $account?.player?.playerInfo?.role?.includes('admin');
 	$: isRT = $account?.player?.playerInfo?.role
 		?.split(',')
 		?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
-	$: if (!$account?.loading && isRT) fetchMaps();
-	$: if (!$account?.loading && !isRT) navigate('/');
+	$: isNQT = isAdmin || $account?.player?.playerInfo?.role?.includes('qualityteam');
+	$: isStaff = isRT || isNQT;
+	$: if (!$account?.loading && isStaff) fetchMaps();
+	$: if (!$account?.loading && !isStaff) navigate('/');
 
 	$: currentSortValues = sortValues.map(v => {
 		return {
@@ -1365,6 +1370,10 @@
 											<div>
 												<QualificationStatus qualification={difficulty?.qualification} />
 											</div>
+
+											<Reveal openMessage="Show NQT votes & comments" hideMessage="Hide NQT votes & comments">
+												<QualityInfo leaderboardId={difficulty?.leaderboardId} showCommentary={true} />
+											</Reveal>
 										{:else}
 											<div>Not yet nominated.</div>
 										{/if}
