@@ -19,7 +19,9 @@
 		if (modifiers.includes('none')) {
 			colorForM = 'red';
 		} else if (modifiers.length) {
-			if (modifiers.includes('any')) {
+			if (modifiers.includes('not')) {
+				colorForM = 'yellow';
+			} else if (modifiers.includes('any')) {
 				colorForM = 'blue';
 			} else {
 				colorForM = 'purple';

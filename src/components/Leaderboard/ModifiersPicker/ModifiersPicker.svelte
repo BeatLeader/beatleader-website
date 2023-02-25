@@ -11,6 +11,7 @@
 
 	let any = false;
 	let none = false;
+	let not = false;
 	let modifiers = deepClone(ModifiersList);
 
 	function selectDefault(selected) {
@@ -29,6 +30,9 @@
 			if (element == 'none') {
 				none = true;
 			}
+			if (element == 'not') {
+				not = true;
+			}
 		});
 	}
 
@@ -41,6 +45,9 @@
 
 			if (none) {
 				selectedModifiers.push('none');
+			}
+			if (not) {
+				selectedModifiers.push('not');
 			}
 
 			onchange(selectedModifiers.join(','));
@@ -72,19 +79,28 @@
 			<div class="switch-container">
 				<Switch
 					value={none}
-					label="None"
+					label="Hide all"
 					title="Hide ALL scores with modifiers"
 					fontSize={16}
 					design="slider"
 					on:click={() => (none = !none)} />
 				{#if !none}
+					{#if !not}
+						<Switch
+							value={any}
+							label="Any selected"
+							title="Show score with ANY selected modifier"
+							fontSize={16}
+							design="slider"
+							on:click={() => (any = !any)} />
+					{/if}
 					<Switch
-						value={any}
-						label="Any"
-						title="Show score with ANY selected modifier"
+						value={not}
+						label="Exclude selected"
+						title="Show score without ANY selected modifier"
 						fontSize={16}
 						design="slider"
-						on:click={() => (any = !any)} />
+						on:click={() => (not = !not)} />
 				{/if}
 			</div>
 			{#if !none}

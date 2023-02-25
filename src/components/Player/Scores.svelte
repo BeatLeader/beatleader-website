@@ -6,6 +6,7 @@
 	import createFailedScoresStore from '../../stores/beatleader/failed-scores';
 	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
+	import {getContext} from 'svelte';
 	import {scrollToTargetAdjusted} from '../../utils/browser';
 	import SongScore from './SongScore.svelte';
 	import FailedScore from './FailedScore.svelte';
@@ -17,8 +18,11 @@
 	import Button from '../Common/Button.svelte';
 	import Spinner from '../Common/Spinner.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
+	import OpDeletionDialog from './OPDeletionDialog.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue.js';
 
 	const dispatch = createEventDispatcher();
+	const {open, close} = getContext('simple-modal');
 
 	export let playerId = null;
 	export let player = null;
@@ -138,6 +142,33 @@
 		scoresStore,
 		$scoresStore
 	);
+
+	let waiting = false;
+
+	function removeOPScores() {
+		waiting = true;
+		fetch(BL_API_URL + 'user/hideopscores', {
+			credentials: 'include',
+			method: 'POST',
+		}).then(() => {
+			waiting = false;
+			document.location.reload();
+		});
+	}
+
+	function showRemoveOP() {
+		open(OpDeletionDialog, {
+			confirm: () => {
+				close();
+				removeOPScores();
+			},
+			cancel: () => {
+				close();
+			},
+		});
+	}
+
+	$: OPScores = isMain && $scoresStore?.length && $scoresStore.find(s => s.score?.mods?.includes('OP'));
 </script>
 
 <div bind:this={scoresBoxEl}>
@@ -218,6 +249,14 @@
 			fixedItemsPerPage={itemsPerPage}
 			loadingPage={$pending?.serviceParams?.page ? $pending.serviceParams.page - 1 : null}
 			on:page-changed={onPageChanged} />
+	{/if}
+
+	{#if OPScores}
+		{#if waiting}
+			<Spinner />
+		{:else}
+			<Button label="Remove OP scores" type="danger" iconFa="fas fa-trash-alt" on:click={showRemoveOP} />
+		{/if}
 	{/if}
 
 	{#if isMain && failedScoresArray && failedScoresArray.length}
