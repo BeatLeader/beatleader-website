@@ -124,8 +124,9 @@
 			{#if name}
 				{#if editModel?.data}
 					<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
-				{:else if playerInfo.externalProfileUrl}
+				{:else if playerInfo.externalProfileUrl && showRedact}
 					<a
+						class="nickname"
 						href={playerInfo.externalProfileUrl}
 						on:click={e => {
 							e.preventDefault();
@@ -136,7 +137,7 @@
 						{name}
 					</a>
 				{:else}
-					{name}
+					<span class="nickname">{name}</span>
 				{/if}
 
 				{#if !editModel}
@@ -154,23 +155,12 @@
 						</span>
 					</div>
 				{/if}
-
-				{#if canRedact && !editModel?.data}
-					<div style="margin: 0; padding: 0;">
-						<Button
-							type="text"
-							title="Edit profile"
-							cls="editNameButton"
-							iconFa="fas fa-edit"
-							on:click={() => dispatch('edit-model-enable')} />
-					</div>
-				{/if}
 			{/if}
-
-			<span class="status">
-				<Status {playerInfo} />
-			</span>
 		</div>
+
+		<span class="status">
+			<Status {playerInfo} />
+		</span>
 
 		{#if showChanges}
 			{#each changes as change, idx}
@@ -275,6 +265,12 @@
 			<Error {error} />
 		</div>
 	{/if}
+
+	{#if canRedact && !editModel?.data}
+		<div class="edit-button">
+			<Button type="text" title="Edit profile" cls="editNameButton" iconFa="fas fa-edit" on:click={() => dispatch('edit-model-enable')} />
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -284,12 +280,13 @@
 
 	.player-nickname {
 		display: flex;
-		flex-wrap: nowrap;
+		flex-wrap: wrap;
 		color: var(--alternate);
 		font-size: 2em;
 		font-weight: bold;
 		margin: -0.2em 0em;
 		align-items: baseline;
+		margin-right: 3em;
 	}
 
 	.player-nickname.rainbow {
@@ -318,6 +315,17 @@
 		font-size: 1.25em;
 		font-weight: 500;
 		align-items: center;
+	}
+
+	.nickname {
+		overflow-wrap: anywhere;
+	}
+
+	.edit-button {
+		position: absolute;
+		right: 0.2em;
+		bottom: 0.2em;
+		font-size: 2em;
 	}
 
 	:global(.edit-enabled) .player-ranking {
@@ -416,6 +424,11 @@
 		.player-nickname {
 			flex-wrap: wrap !important;
 			justify-content: center;
+			margin-right: auto;
+		}
+
+		.nickname {
+			text-align: center;
 		}
 	}
 </style>

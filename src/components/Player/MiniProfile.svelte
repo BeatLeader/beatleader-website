@@ -35,7 +35,7 @@
 	$: cover = playerData?.profileSettings?.profileCover;
 </script>
 
-<ContentBox zIndex="4">
+<ContentBox zIndex="3">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})" />
 	{/if}
@@ -122,7 +122,7 @@
 		z-index: -1;
 		width: 100%;
 		flex-direction: column-reverse;
-		border-radius: 6px 6px 0 0;
+		border-radius: 6px;
 		mask-type: alpha;
 		-webkit-mask-image: linear-gradient(180deg, transparent, rgba(0 0 0 / 10%) 30%, rgb(0, 0, 0));
 		mask-image: linear-gradient(180deg, transparent, rgba(0 0 0 / 10%) 30%, rgb(0, 0, 0));

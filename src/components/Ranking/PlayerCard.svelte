@@ -1,5 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
+	import {fade} from 'svelte/transition';
 	import {opt} from '../../utils/js';
 	import Value from '../Common/Value.svelte';
 	import Avatar from '../Common/Avatar.svelte';
@@ -11,6 +12,8 @@
 	import {rankValue, ppValue, changingValuesClan} from '../../utils/clans';
 	import {buildSearchFromFilters} from '../../utils/filters';
 	import {createEventDispatcher} from 'svelte';
+	import MiniProfile from '../Player/MiniProfile.svelte';
+	import Popover from '../Common/Popover.svelte';
 
 	export let player;
 	export let currentFilters = null;
@@ -88,10 +91,13 @@
 			countryRank = rankValue(firstSpecialClanTag, countryRank);
 		}
 	}
+
+	let referenceElement;
 </script>
 
 <div
 	class={`player-card ${playerId == player.playerId ? 'current' : ''} ${showRainbow(player) ? 'rainbow' : ''}`}
+	bind:this={referenceElement}
 	on:click={e => onPlayerClick(e, player)}
 	on:keypress={e => onPlayerClick(e, player)}
 	on:pointerover={() => hoverStats(player)}>
@@ -118,7 +124,7 @@
 		<Avatar {player} />
 	</div>
 	<div class="player-name-and-rank">
-		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} />
+		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} disablePopover={true} />
 		<span class="change">
 			<Change value={opt(player, 'others.difference')} digits={0} />
 		</span>
@@ -134,6 +140,14 @@
 		</div>
 	</div>
 </div>
+
+{#if player && player.playerInfo}
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+		<div class="popover-contents" transition:fade={{duration: 250}}>
+			<MiniProfile {player} />
+		</div>
+	</Popover>
+{/if}
 
 <style>
 	.player-card {
@@ -267,6 +281,10 @@
 
 	.details-reveal.opened {
 		transform: rotateZ(180deg);
+	}
+
+	.popover-contents {
+		width: 40em;
 	}
 
 	@media screen and (max-width: 768px) {
