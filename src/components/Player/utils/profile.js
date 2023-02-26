@@ -68,7 +68,7 @@ function updateScoresStats(playerData) {
 
 			if (s.key == 'authorizedReplayWatched') {
 				value = scoreStats['authorizedReplayWatched'] + scoreStats['anonimusReplayWatched'];
-				s.title = `Authorized players watched: ${scoreStats['authorizedReplayWatched']}, anonimus players watched: ${scoreStats['anonimusReplayWatched']}`;
+				s.title = `Authorized players watched: ${scoreStats['authorizedReplayWatched']}, anonymous players watched: ${scoreStats['anonimusReplayWatched']}`;
 			}
 
 			let resultValue = value;
