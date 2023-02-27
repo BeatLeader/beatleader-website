@@ -106,8 +106,29 @@ export const processLeaderboardScore = s => {
 
 	return ret;
 };
-
 const processLeaderboardScores = response => response?.map(processLeaderboardScore) ?? null;
+
+export const processClanRanking = cr => {
+	if (!cr) return null;
+
+	let ret = {clan: {}};
+
+	const clan = cr?.clan ?? null;
+	ret.clan.name = clan.name;
+	ret.clan.color = clan.color;
+	ret.clan.icon = clan.icon;
+	ret.clan.tag = clan.tag;
+	ret.clan.playerscount = clan.playersCount;
+
+	ret.clanpp = cr.clanPP;
+	ret.clanAverageRank = cr.clanAverageRank;
+	ret.clanAverageAccuracy = cr.clanAverageAccuracy;
+	ret.clanTotalScore = cr.clanTotalScore;
+
+	return ret;
+}
+const processClanRankings = response => response?.map(processClanRanking) ?? null;
+
 const processLeaderboard = (leaderboardId, page, respons) => {
 	let led = respons.body;
 
@@ -174,13 +195,13 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		changes: led.changes,
 		reweight: led.reweight,
 		difficultyBl: led?.difficulty ?? null,
-		owningClan: led?.owningClan ?? null,
 	};
 
 	const totalItems = led.plays;
 	const pageQty = 10;
 
 	const scores = processLeaderboardScores(led?.scores);
+	const clanRanking = processClanRankings(led?.clanRanking)
 
 	// let diffChartText = getFirstRegexpMatch(/'difficulty',\s*([0-9.,\s]+)\s*\]/, response.body.innerHTML)
 	let diffChart = null; //(diffChartText ? diffChartText : '').split(',').map(i => parseFloat(i)).filter(i => i && !isNaN(i));
@@ -193,6 +214,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		pageQty,
 		totalItems,
 		scores,
+		clanRanking
 	};
 };
 

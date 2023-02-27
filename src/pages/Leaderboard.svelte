@@ -29,6 +29,11 @@
 	import RankUpdate from '../components/Leaderboard/RankUpdate.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
+	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
+	import ClanName from '../components/Clans/ClanName.svelte';
+	import ClanAvatar from '../components/Clans/ClanAvatar.svelte';
+
+
 	import {formatNumber} from '../utils/format';
 	import {
 		getIconNameForDiff,
@@ -116,7 +121,15 @@
 			url: `/leaderboard/global/${currentLeaderboardId}/1`,
 			filters: {countries: ''},
 		},
-	].concat(
+		{
+			type: 'clanranking',
+			label: 'Clan Ranking',
+			iconFa: 'fas fa-globe-americas',
+			url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
+			filters: {countries: ''},
+		}
+	]
+	.concat(
 		type === 'accsaber'
 			? [
 					{
@@ -134,6 +147,7 @@
 
 	const stringifyFilters = (query, keys) =>
 		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
+
 	const findCurrentTypeOption = (type, filters) => {
 		const exactMatch = typeOptions.find(
 			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
@@ -149,6 +163,12 @@
 		if (!playerId) return;
 
 		navigate(`/u/${playerId}`);
+	}
+
+	function navigateToClan(clanTag) {
+		if (!clanTag) return;
+
+		navigate(`/clan/${clanTag}`);
 	}
 
 	function scrollToTop() {
@@ -444,6 +464,7 @@
 	$: changeParams(leaderboardId, type, page, location);
 	$: scrollToTop($pending);
 	$: scores = opt($leaderboardStore, 'scores', null);
+	$: clanRanking = opt($leaderboardStore, 'clanRanking', null);
 	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
 	$: leaderboardGroup = opt($leaderboardStore, 'leaderboard.leaderboardGroup', null);
@@ -689,14 +710,14 @@
 								<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
 							</div>
 
-							{#if isRanked}
+							<!--{#if isRanked}
 								<div class="owning-clan">
 									<p>
 										Captured by:
 									</p>
 									<ClanBadges leaderboard={leaderboard}/>
 								</div>
-							{/if}
+							{/if}-->
 
 							{#if batleRoyaleDraft}
 								<div class="royale-title-container">
@@ -753,7 +774,7 @@
 					</nav>
 				{/if}
 
-				{#if scoresWithUser?.length}
+				{#if scoresWithUser?.length && type !== 'clanranking'}
 					<div class="scores-grid grid-transition-helper">
 						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
 							<div
@@ -763,7 +784,7 @@
 								in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
 								out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
 								animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-								<div class={'player-score' + (score.player.playerId === higlightedPlayerId ? ' highlight' : '')}>
+								<div class={'player-score'}>
 									<div class="mobile-first-line">
 										<div class="rank with-badge">
 											<Badge
@@ -1049,6 +1070,144 @@
 							{/if}
 						{/if}
 					{/if}
+				{:else if type === 'clanranking'}
+					<!-- <p transition:fade>No clan rankings found.</p> -->
+					<div class="scores-grid grid-transition-helper">
+						{#each clanRanking as cr, idx (cr?.clan?.tag ?? '')}
+							<div
+								class={`row-${idx}`}
+								in:fly={{duration: 300}}
+								out:fade={{duration: 300}}
+								animate:flip={{duration: 300}}>
+								<div class={'player-score' + (score.player.playerId === higlightedPlayerId ? ' highlight' : '')}>
+									<div class="mobile-first-line">
+										<div class="rank with-badge">
+											<Badge
+												onlyLabel={true}
+												color="white"
+												bgColor={opt(score, 'score.rank') === 1
+													? 'darkgoldenrod'
+													: opt(score, 'score.rank') === 2
+													? '#888'
+													: opt(score, 'score.rank') === 3
+													? 'saddlebrown'
+													: opt(score, 'score.rank') >= 10000
+													? 'small'
+													: 'var(--dimmed)'}>
+												<span slot="label">
+													<!--#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />-->
+													#<Value value={cr.clanAverageRank} digits{0} zero="?" />
+												</span>
+											</Badge>
+										</div>
+										<div class="clan">
+											<ClanAvatar player={cr.clan} />
+											<ClanName
+												clan={cr.clan}
+												on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />
+										</div>
+									</div>
+									<div class="mobile-second-line">
+											<div class="pp with-badge">
+												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+													<span slot="label">
+														<Pp
+															pp={cr.clanpp}
+															inline={false}
+															color="white" />
+													</span>
+												</Badge>
+											</div>
+										<div class="percentage with-badge">
+											<ClanAccuracy clan={cr.clan} />
+										</div>
+										<div class="score with-badge">
+											<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+												<span slot="label">
+													<Value value={cr.clanTotalScore} inline={false} digits={0} />
+												</span>
+											</Badge>
+										</div>
+									</div>
+								</div>
+
+								<!--{#if openedDetails.includes(score?.score?.id)}
+									<div>
+										<SongScoreDetails
+											playerId={score?.player?.playerId}
+											songScore={score}
+											{fixedBrowserTitle}
+											noSsLeaderboard={true}
+											showAccSaberLeaderboard={false} />
+									</div>
+								{/if}-->
+
+								<!--{#if separatePage && score.score.rankVoting}
+									<div class="rank-voting">
+										<div class="voting-result">
+											<div class="score with-badge">
+												<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+													<span slot="label">
+														<small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
+													</span>
+												</Badge>
+											</div>
+											{#if score.score.rankVoting.stars}
+												<div class="score with-badge">
+													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+														<span slot="label">
+															<Value title="Stars" value={score.score.rankVoting.stars} inline={false} digits={2} />
+														</span>
+													</Badge>
+												</div>
+											{/if}
+											{#if score.score.rankVoting.type}
+												<div class="score with-badge">
+													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+														<span slot="label">
+															<small class="nowrap-label" title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
+														</span>
+													</Badge>
+												</div>
+											{/if}
+											{#if score.score.rankVoting.timeset}
+												<div class="score with-badge">
+													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+														<span slot="label">
+															<small class="nowrap-label" title="Timeset"
+																>{formatDateRelative(dateFromUnix(score.score.rankVoting.timeset))}</small>
+														</span>
+													</Badge>
+												</div>
+											{/if}
+										</div>
+										{#if opt(score, 'player.playerId') != $account?.id}
+											<div class="voter-feedback">
+												{#if score.score.rankVoting.feedbacks && score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id).length}
+													{score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id)[0].value ? 'Good voter' : 'Bad voter'}
+												{:else}
+													<Button
+														cls="voter-feedback-button"
+														type="danger"
+														label="Bad voter"
+														title="Mark this vote as of bad quality."
+														noMargin={true}
+														on:click={() => updateVoteFeedback(score.score, 0)} />
+													<Button
+														cls="voter-feedback-button"
+														type="green"
+														label="Good voter"
+														title="This vote is decently represent the map."
+														noMargin={true}
+														on:click={() => updateVoteFeedback(score.score, 1)} />
+												{/if}
+											</div>
+										{/if}
+									</div>
+								{/if}-->
+							</div>
+						{/each}
+					</div>
 				{:else}
 					<p transition:fade>No scores found.</p>
 				{/if}
@@ -1361,7 +1520,7 @@
 		flex: none;
 	}
 
-	.player-score .player {
+	.player-score .player .clan {
 		display: flex;
 		grid-gap: 0.4em;
 		flex-grow: 1;
