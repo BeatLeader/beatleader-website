@@ -604,6 +604,52 @@ export function mapTypeListFromMask(type) {
 		.filter(d => d);
 }
 
+export const requirementsMap = {
+	chroma: 1 << 1,
+	noodles: 1 << 2,
+	mappingExtensions: 1 << 3,
+	cinema: 1 << 4,
+	V3: 1 << 5,
+};
+
+export const requirementsDescription = {
+	chroma: {
+		title: 'Map uses Chroma mod (rich visual effects)',
+		name: 'chroma',
+		icon: 'fas fa-palette',
+		color: 'red',
+		textColor: 'white',
+	},
+	noodles: {
+		title: 'Map requires Noodle Extensions mod (modcharts)',
+		name: 'noodles',
+		icon: 'fas fa-mountain-sun',
+		color: 'yellow',
+		textColor: 'black',
+	},
+	mappingExtensions: {
+		title: 'Map requires Mapping Extensions mod',
+		name: 'mappingExtensions',
+		icon: 'fas fa-trowel-bricks',
+		color: 'blue',
+		textColor: 'white',
+	},
+	cinema: {
+		title: 'Map uses Cinema mod (video on background)',
+		name: 'cinema',
+		icon: 'fas fa-panorama',
+		color: 'orange',
+		textColor: 'black',
+	},
+	V3: {
+		title: 'Map with arcs and/or chains.',
+		name: 'V3 notes',
+		icon: 'v3-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+};
+
 export function votingsForTypeStats(stats) {
 	let result = '';
 	stats.forEach((element, i) => {

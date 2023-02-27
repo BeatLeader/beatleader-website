@@ -29,7 +29,7 @@
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
-	import {typesDescription, typesMap, DifficultyStatus} from '../utils/beatleader/format';
+	import {typesDescription, requirementsDescription, typesMap, DifficultyStatus, requirementsMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
@@ -62,6 +62,8 @@
 		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
+		{key: 'mapRequirements', default: null, process: processIntFilter},
+		{key: 'allRequirements', default: 0, process: processIntFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -113,6 +115,17 @@
 			icon: `<span class="${typesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
 			color: typesDescription?.[key]?.color ?? 'var(--beatleader-primary',
 			textColor: typesDescription?.[key]?.textColor ?? null,
+		};
+	});
+
+	const requirementFilterOptions = Object.entries(requirementsMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(requirementsDescription?.[key]?.name ?? key),
+			icon: `<span class="${requirementsDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: requirementsDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: requirementsDescription?.[key]?.textColor ?? null,
+			title: requirementsDescription?.[key]?.title ?? null,
 		};
 	});
 
@@ -207,6 +220,22 @@
 		else currentFilters.mapType |= event.detail.key;
 
 		if (!currentFilters.mapType) currentFilters.mapType = null;
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onRequirementsChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = 0;
+
+		if (currentFilters.mapRequirements & event.detail.key)
+			currentFilters.mapRequirements &= currentFilters.mapRequirements ^ event.detail.key;
+		else currentFilters.mapRequirements |= event.detail.key;
+
+		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = null;
 
 		currentPage = 1;
 
@@ -454,6 +483,20 @@
 					value={categoryFilterOptions.filter(c => currentFilters.mapType & c.key)}
 					multi={true}
 					on:change={onCategoryChanged} />
+			</section>
+
+			<select bind:value={currentFilters.allRequirements} on:change={onCategoryModeChanged}>
+				<option value={0}>ANY requirement</option>
+				<option value={1}>ALL requirements</option>
+				<option value={2}>NO requirements</option>
+			</select>
+
+			<section class="filter">
+				<Switcher
+					values={requirementFilterOptions}
+					value={requirementFilterOptions.filter(c => currentFilters.mapRequirements & c.key)}
+					multi={true}
+					on:change={onRequirementsChanged} />
 			</section>
 
 			<section

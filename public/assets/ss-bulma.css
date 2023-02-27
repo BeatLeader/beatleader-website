@@ -11699,6 +11699,14 @@ select {
 	background-image: url('./ok-icon.svg');
 }
 
+.v3-icon {
+	width: 100% !important;
+	height: 100% !important;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./V3Icon.png') !important;
+}
+
 /* https://www.vecteezy.com/vector-art/1268644-set-of-fresh-bread */
 .baguette-icon {
 	width: 100%;
