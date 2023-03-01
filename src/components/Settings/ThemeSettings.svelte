@@ -67,7 +67,7 @@
 		<section class="option">
 			<label title="Input url of the background image you want">Background Image</label>
 			<input type="url" bind:value={currentBGImage} />
-			<span style="cursor: pointer; font-size: x-small;" on:click={() => (currentBGImage = '/assets/background.jpeg')}
+			<span style="cursor: pointer; font-size: x-small;" on:click={() => (currentBGImage = '/assets/background.jpg')}
 				><u>Reset to default</u></span>
 		</section>
 
