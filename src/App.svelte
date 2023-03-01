@@ -49,6 +49,7 @@
 	}
 </script>
 
+<div class="main-background" />
 <Router {url}>
 	<Nav />
 	<Notifications zIndex={10000}>

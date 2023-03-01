@@ -54,6 +54,12 @@
 	}
 }
 
+.main-background {
+	display: none;
+	height: 100vh;
+	width: 100vw;
+}
+
 .tabs,
 .pagination-previous,
 .pagination-next,
