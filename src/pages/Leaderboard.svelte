@@ -1464,7 +1464,7 @@
 	}
 
 	aside {
-		max-width: 35em;
+		max-width: 27em;
 	}
 
 	.page-content {

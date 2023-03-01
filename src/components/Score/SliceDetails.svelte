@@ -173,6 +173,7 @@
 		justify-content: center;
 		align-items: center;
 		min-height: 200px;
+		flex-wrap: wrap;
 	}
 
 	.main-grid {
@@ -244,11 +245,13 @@
 		background: linear-gradient(180deg, #88888877, #5a5a5a77);
 	}
 
-	.grid-cell.left, .grid-cell.highlight-l {
+	.grid-cell.left,
+	.grid-cell.highlight-l {
 		background: linear-gradient(180deg, #ff5c5ccc, #a54949cc);
 	}
 
-	.grid-cell.right, .grid-cell.highlight-r {
+	.grid-cell.right,
+	.grid-cell.highlight-r {
 		background: linear-gradient(180deg, #5c5cffcc, #4949a5cc);
 	}
 
