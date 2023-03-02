@@ -623,7 +623,7 @@
 	$: pending = leaderboardStore.pending;
 	$: enhanced = leaderboardStore.enhanced;
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
 	$: updateParams(leaderboardId, type, page);
 	$: updateFilters(buildFiltersFromLocation(location));
 	$: makeComplexFilters(buildFiltersFromLocation(location));
