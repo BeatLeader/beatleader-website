@@ -138,7 +138,7 @@ export const HMDs = {
 	35: {
 		name: 'Vive Pro 2',
 		icon: 'vive.svg',
-		color: '',
+		color: 'invert(79%) sepia(68%) saturate(5755%) hue-rotate(232deg) brightness(90%) contrast(109%)',
 		priority: 11,
 	},
 	128: {
