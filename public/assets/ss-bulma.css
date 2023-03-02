@@ -11347,10 +11347,6 @@ html {
 	background-color: var(--background) !important;
 }
 
-body {
-	background-color: var(--background);
-}
-
 .title {
 	color: var(--textColor) !important;
 }
@@ -11456,7 +11452,6 @@ html {
 
 body {
 	color: var(--textColor);
-	background-color: var(--background);
 	margin: 0 auto;
 	padding: 0 1rem;
 	min-height: 100vh;
