@@ -8,7 +8,6 @@
 	import {capitalize, opt} from '../utils/js';
 	import ssrConfig from '../ssr-config';
 	import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
 	import eventBus from '../utils/broadcast-channel-pubsub';
 	import Profile from '../components/Player/Profile.svelte';
@@ -27,10 +26,6 @@
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
-
-	document.body.classList.remove('slim');
-
-	let playerEl = null;
 
 	let service = null;
 	let serviceParams = null;
@@ -128,10 +123,6 @@
 		}
 	}
 
-	function scrollToTop() {
-		if (playerEl) scrollToTargetAdjusted(playerEl, 55);
-	}
-
 	async function updateTwitchProfile(playerId) {
 		if (!playerId) return;
 
@@ -164,6 +155,8 @@
 	let innerWidth = 0;
 	let innerHeight = 0;
 
+	$: document.body.scrollIntoView({behavior: 'smooth'});
+
 	$: processInitialParams(initialPlayerId, initialParams);
 	$: changeParams(initialPlayerId, service, serviceParams);
 
@@ -183,12 +176,12 @@
 
 	let scoresPlayerId = null;
 	let scoresState = null;
+
 	$: if ($playerStore && !$playerIsLoading) {
 		if (scoresPlayerId && scoresPlayerId === currentPlayerId) {
 			scoresState = null;
 		} else {
 			scoresState = opt($playerStore, 'scores', null);
-			scrollToTop();
 		}
 
 		scoresPlayerId = currentPlayerId;
@@ -207,7 +200,7 @@
 <svelte:window bind:innerWidth bind:innerHeight />
 
 <section class="align-content player-page">
-	<article class="page-content" bind:this={playerEl} transition:fade>
+	<article class="page-content" transition:fade>
 		{#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
 			<ContentBox>
 				<p class="error">Player not found.</p>

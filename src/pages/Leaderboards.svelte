@@ -313,6 +313,8 @@
 		});
 	}
 
+	$: document.body.scrollIntoView({behavior: 'smooth'});
+
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
 	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;

@@ -263,6 +263,7 @@
 				options: {
 					responsive: true,
 					maintainAspectRatio: false,
+					animation: false,
 					layout: {
 						padding: {
 							right: 0,

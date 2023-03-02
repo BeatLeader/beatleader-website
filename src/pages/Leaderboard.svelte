@@ -8,7 +8,6 @@
 	import createBeatSaverService from '../services/beatmaps';
 	import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic';
 	import {opt, capitalize} from '../utils/js';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import stringify from 'json-stable-stringify';
 	import ssrConfig from '../ssr-config';
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/beatleader/consts';
@@ -254,10 +253,6 @@
 		if (!playerId) return;
 
 		navigate(`/u/${playerId}`);
-	}
-
-	function scrollToTop() {
-		if (autoScrollToTop && boxEl) scrollToTargetAdjusted(boxEl, scrollOffset);
 	}
 
 	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
@@ -628,7 +623,7 @@
 	$: pending = leaderboardStore.pending;
 	$: enhanced = leaderboardStore.enhanced;
 
-	$: scrollToTop($pending);
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: updateParams(leaderboardId, type, page);
 	$: updateFilters(buildFiltersFromLocation(location));
 	$: makeComplexFilters(buildFiltersFromLocation(location));
@@ -726,7 +721,7 @@
 {/if}
 
 <section class="align-content">
-	<article bind:this={boxEl} class="page-content" transition:fade>
+	<article class="page-content" transition:fade>
 		{#if !showApproveRequest && separatePage && qualification && !qualification.mapperAllowed && isRT}
 			<a href={window.location.href.replace('leaderboard', 'leaderboard/approval')}>Link for the mapper approval</a>
 		{/if}
@@ -763,7 +758,7 @@
 			{#if $leaderboardStore}
 				{#if leaderboard && song && withHeader}
 					{#if !withoutHeader}
-						<header class="header" transition:fade>
+						<header class="header" bind:this={boxEl} transition:fade>
 							<div class="header-container">
 								<h1 class="title is-4">
 									<span class="name" title="Song name">{song.name} {song.subName ? song.subName : ''}</span>

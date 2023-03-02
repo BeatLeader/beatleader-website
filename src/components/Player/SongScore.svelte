@@ -25,6 +25,7 @@
 	export let inList = true;
 	export let additionalStat = null;
 	export let replayCounter = true;
+	export let animationSign = 1;
 
 	let showDetails = false;
 
@@ -85,7 +86,7 @@
 {#if songScore}
 	<div
 		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
-		in:fly={{x: 300, delay: idx * 30, duration: 500}}
+		in:fly={{x: animationSign * 300, delay: idx * 30, duration: 300}}
 		out:fade={{duration: 100}}
 		class:with-details={showDetails}>
 		{#if showReplayCounter}

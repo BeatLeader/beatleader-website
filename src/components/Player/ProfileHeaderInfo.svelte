@@ -140,7 +140,7 @@
 					<span class="nickname">{name}</span>
 				{/if}
 
-				{#if !editModel}
+				{#if !editModel && playerInfo?.clans?.length}
 					<span class="clan-badges"><ClanBadges player={playerInfo} /></span>
 				{/if}
 
@@ -405,11 +405,11 @@
 	.score-options-section {
 		display: grid;
 		justify-items: center;
-		opacity: 0;
+		display: none;
 	}
 
-	.score-options-section:hover {
-		opacity: 1;
+	.player-nickname:hover .score-options-section {
+		display: block;
 	}
 
 	@media screen and (max-width: 767px) {
@@ -424,7 +424,7 @@
 		.player-nickname {
 			flex-wrap: wrap !important;
 			justify-content: center;
-			margin-right: auto;
+			margin-right: inherit;
 		}
 
 		.nickname {

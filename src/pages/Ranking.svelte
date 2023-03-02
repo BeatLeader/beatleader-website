@@ -8,7 +8,6 @@
 		processStringArrayFilter,
 		processIntArrayFilter,
 	} from '../utils/filters';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
@@ -314,6 +313,7 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, location, true);
 </script>
 

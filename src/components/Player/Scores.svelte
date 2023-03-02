@@ -50,10 +50,17 @@
 		return {playerId: newPlayerId, service: newService, serviceParams: newServiceParams};
 	}
 
+	let currentPage = 0;
+	let previousPage = 0;
+
 	function onPageChanged(event) {
 		if (!(event?.detail?.initial ?? false)) scrollToTop();
 
 		const page = (event?.detail?.page ?? 0) + 1;
+
+		previousPage = currentPage;
+		currentPage = page;
+
 		if (!(event?.detail?.initial ?? false)) {
 			dispatch('page-changed', page);
 		}
@@ -197,6 +204,7 @@
 					service={currentService}
 					{withPlayers}
 					{noIcons}
+					animationSign={currentPage >= previousPage ? 1 : -1}
 					additionalStat={currentServiceParams?.sort} />
 			{/each}
 		</div>
