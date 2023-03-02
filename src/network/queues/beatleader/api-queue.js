@@ -123,6 +123,7 @@ export const processClanRanking = cr => {
 	ret.clanpp = cr.clanPP;
 	ret.clanAverageRank = cr.clanAverageRank;
 	ret.clanAverageAccuracy = cr.clanAverageAccuracy;
+	ret.clanAverageAcc = cr.clanAverageAccuracy * 100;
 	ret.clanTotalScore = cr.clanTotalScore;
 
 	return ret;

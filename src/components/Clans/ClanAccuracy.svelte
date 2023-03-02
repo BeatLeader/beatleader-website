@@ -3,7 +3,7 @@
 	import Badge from '../Common/Badge.svelte';
 	import Value from '../Common/Value.svelte';
 
-	export let clan;
+	export let clanRanking;
 	export let showPercentageInstead = false;
 
 	const badgesDef = [
@@ -29,16 +29,15 @@
 		);
 	}
 
-	$: badge = getBadge(clan?.clanAverageAccuracy);
-	$: value = score?.acc ?? 0;
-    $: avgAcc = clan?.clanAverageAccuracy;
+	$: badge = getBadge(clanRanking?.clanAverageAcc);
+    $: avgAcc = clanRanking?.clanAverageAcc;
 </script>
 
 <Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc + avgAcc : badge} label="">
 	<span slot="label">
 		<slot name="label-before" />
 		<Value
-			{value}
+			value={avgAcc}
 			title={badge ? badge.desc + avgAcc : null}
 			inline={false}
 			suffix="%"
