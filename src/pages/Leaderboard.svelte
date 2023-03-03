@@ -299,9 +299,8 @@
 	}
 
 	function onSelectedGroupEntryChanged(event) {
-		const newLeaderboardId = selectedGroupEntry;
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
-		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	function processDiffs(diffArray, song) {
@@ -539,11 +538,6 @@
 	let generalMapperId;
 	let qualificationLimitError;
 
-	let selectedGroupEntry;
-	function updateGroupSelection(leaderboardGroup) {
-		selectedGroupEntry = currentLeaderboardId;
-	}
-
 	const lessFunction = (a, b) => a < b;
 	const greaterFunction = (a, b) => a > b;
 
@@ -660,7 +654,6 @@
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
 	$: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage);
 	$: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore);
-	$: updateGroupSelection(leaderboardGroup);
 	$: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
 	$: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
 	$: if (separatePage && isRT) votingStore.fetchResults(leaderboardId);
@@ -769,7 +762,7 @@
 
 							<div>
 								{#if leaderboardGroup && leaderboardGroup.length > 1}
-									<select class="group-select" bind:value={selectedGroupEntry} on:change={onSelectedGroupEntryChanged}>
+									<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
 										{#each leaderboardGroup as option (option.id)}
 											<option class="group-option" value={option.id}>
 												{#if option.timestamp}
