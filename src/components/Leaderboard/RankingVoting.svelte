@@ -29,13 +29,14 @@
 	let currentType = leaderboard?.stats?.type;
 	let isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	let isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
+	let isNominated = leaderboard?.stats?.status === DifficultyStatus.nominated;
 	let qualification = leaderboard?.qualification;
 
 	let suitableForRank = rtvoting && !isRanked ? true : undefined;
 	let stars;
 	let modifiers;
+	let status = leaderboard?.stats?.status;
 
-	let mapperAllowed = qualification?.mapperAllowed;
 	let criteriaMet = qualification?.criteriaMet;
 	let criteriaCommentary = qualification?.criteriaCommentary;
 	let currentModifiers = qualification?.modifiers ?? leaderboard?.difficultyBl?.modifierValues;
@@ -52,18 +53,7 @@
 				votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
 			} else {
 				if (qualificationUpdate) {
-					votingStore.updateQualification(
-						hash,
-						diff,
-						mode,
-						suitableForRank,
-						stars,
-						selectedTypes,
-						mapperAllowed,
-						criteriaMet,
-						criteriaCommentary,
-						modifiers
-					);
+					votingStore.updateQualification(hash, diff, mode, status, stars, selectedTypes, criteriaMet, criteriaCommentary, modifiers);
 				} else {
 					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes, modifiers);
 				}
@@ -121,11 +111,10 @@
 	let actionButtonTitle;
 	let actionButtonType;
 	function updateActionButtonTitle(
-		suitableForRank,
-		mapperAllowed,
 		rtvoting,
 		isRanked,
 		qualificationUpdate,
+		status,
 		criteriaMet,
 		playerId,
 		stars,
@@ -138,10 +127,9 @@
 			if (isRanked) {
 				actionButtonTitle = 'Update';
 			} else if (qualificationUpdate) {
-				if (suitableForRank) {
+				if (status == DifficultyStatus.qualified || status == DifficultyStatus.nominated) {
 					if (
-						qualification.mapperAllowed &&
-						mapperAllowed &&
+						status == DifficultyStatus.qualified &&
 						!isjuniorRT &&
 						qualification.rtMember != playerId &&
 						qualification.criteriaChecker != playerId &&
@@ -164,7 +152,7 @@
 					if (!isQualified) {
 						actionButtonTitle = 'Stop nomination!';
 					} else {
-						actionButtonTitle = 'Decline qualification!';
+						actionButtonTitle = 'Stop qualification!';
 					}
 
 					actionButtonType = 'danger';
@@ -183,11 +171,10 @@
 	$: modifiersUpdated(deepClone(currentModifiers));
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate, isQualified);
 	$: updateActionButtonTitle(
-		suitableForRank,
-		mapperAllowed,
 		rtvoting,
 		isRanked,
 		qualificationUpdate,
+		status,
 		criteriaMet,
 		playerId,
 		stars,
@@ -220,25 +207,29 @@
 					on:click={() => (suitableForRank = true)} />
 			{/if}
 			{#if qualificationUpdate}
-				<div>{isQualified ? 'Qualification status' : 'Nomination status'}</div>
+				<div>Map status</div>
+				{#if criteriaMet == 2}
+					<Button
+						label="Unrankable"
+						type={status == DifficultyStatus.unrankable ? 'danger' : 'default'}
+						on:click={() => (status = DifficultyStatus.unrankable)} />
+				{/if}
 				<Button
-					label="STOP"
-					type={suitableForRank || suitableForRank == undefined ? 'default' : 'danger'}
-					on:click={() => (suitableForRank = false)} />
+					label="Unranked"
+					type={status == DifficultyStatus.unranked ? 'danger' : 'default'}
+					on:click={() => (status = DifficultyStatus.unranked)} />
 				<Button
-					label="KEEP"
-					type={suitableForRank === false || suitableForRank == undefined ? 'default' : 'green'}
-					on:click={() => (suitableForRank = true)} />
+					label="Nominated"
+					type={status == DifficultyStatus.nominated ? 'green' : 'default'}
+					on:click={() => (status = DifficultyStatus.nominated)} />
+				{#if isNominated}
+					<Button
+						label="Qualified"
+						disabled={isjuniorRT}
+						type={status == DifficultyStatus.qualified ? 'green' : 'default'}
+						on:click={() => (status = DifficultyStatus.qualified)} />
+				{/if}
 				{#if !isQualified}
-					<div>Mapper allowed but can't/not want to use website</div>
-					<Button
-						label="NO"
-						type={mapperAllowed === true || mapperAllowed == undefined ? 'default' : 'danger'}
-						on:click={() => (mapperAllowed = false)} />
-					<Button
-						label="YES"
-						type={mapperAllowed === false || mapperAllowed == undefined ? 'default' : 'green'}
-						on:click={() => (mapperAllowed = true)} />
 					<div>Criteria check result</div>
 					<Button label="UNKNOWN" type={criteriaMet == 0 ? 'lessdanger' : 'default'} on:click={() => (criteriaMet = 0)} />
 					<Button label="UNMET" type={criteriaMet == 2 ? 'danger' : 'default'} on:click={() => (criteriaMet = 2)} />
@@ -247,7 +238,7 @@
 				{/if}
 			{/if}
 			{#if qualification && rtvoting}
-				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />
+				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Short summary..." class="input-reset" />
 			{/if}
 			{#if suitableForRank}
 				{#if !hideStarSlider}

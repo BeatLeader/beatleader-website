@@ -72,18 +72,7 @@ export default () => {
 		});
 	};
 
-	const updateQualification = async (
-		hash,
-		diff,
-		mode,
-		rankability,
-		stars,
-		types,
-		allowedByMapper,
-		criteriaMet,
-		criteriaCommentary,
-		modifiers
-	) => {
+	const updateQualification = async (hash, diff, mode, status, stars, types, criteriaMet, criteriaCommentary, modifiers) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		types.forEach(typeName => {
@@ -99,10 +88,9 @@ export default () => {
 
 		const url =
 			BL_API_URL +
-			`qualification/${hash}/${diff}/${mode}?stilQualifying=${rankability}` +
+			`qualification/${hash}/${diff}/${mode}?newStatus=${status}` +
 			(stars ? '&stars=' + stars : '') +
 			(type != null ? '&type=' + type : '') +
-			(allowedByMapper != undefined ? `&allowed=${allowedByMapper ? 'true' : 'false'}` : '') +
 			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +
 			(criteriaCommentary != null ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '') +
 			(modifiers != null ? '&modifiers=' + encodeURIComponent(JSON.stringify(modifiers)) : '');

@@ -799,7 +799,7 @@
 											noMargin={true} />
 									{/if}
 									{#if separatePage && generalMapperId != 101330 && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
-										{#if !isRT && qualificationLimitError}
+										<!-- {#if !isRT && qualificationLimitError}
 											<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
 										{:else}
 											<Button
@@ -811,7 +811,14 @@
 													mapVoting = !mapVoting;
 													rtvoting = true;
 												}} />
-										{/if}
+										{/if} -->
+
+										<Button
+											cls="voteButton"
+											disabled={true}
+											iconFa="fas fa-lock"
+											title="New map nominations were temporarely disabled"
+											noMargin={true} />
 									{/if}
 									{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
 										<Button
