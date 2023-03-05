@@ -11,7 +11,7 @@
 </script>
 
 <a
-	href={`/clan/${tag}`}
+	href={`/clan/${tag}/players/1?`}
 	class="clan-name clickable has-pointer-events"
 	title={name}
 	on:click|preventDefault>

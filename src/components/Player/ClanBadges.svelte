@@ -3,7 +3,6 @@
 	import Badge from '../Common/Badge.svelte';
 
 	export let player;
-	export let clan = null;
 
 	function invertColor(hex) {
 		if (hex.indexOf('#') === 0) {
@@ -31,7 +30,7 @@
 {#if clans}
 	<span class="clan-badges">
 		{#each clans as clan (clan.tag)}
-			<a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
+			<a href={`/clan/${clan?.tag}/players/1?`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}/players/1?`)}>
 				<Badge
 					label={clan?.tag ?? '???'}
 					onlyLabel={true}
@@ -41,19 +40,6 @@
 					title="Go to clan profile" />
 			</a>
 		{/each}
-	</span>
-{/if}
-{#if clan}
-	<span class="clan-badges">
-		<a href={`/clan/${clan.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan.tag}`)}>
-			<Badge
-				label={clan.tag ?? '???'}
-				onlyLabel={true}
-				fluid={true}
-				color={invertColor(clan.color ?? '#000000')}
-				bgColor={clan.color ?? 'var(--dimmed)'}
-				title="Go to clan profile" />
-		</a>
 	</span>
 {/if}
 

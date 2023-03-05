@@ -110,7 +110,7 @@
 	function onClanClick(clan) {
 		if (!clan?.id) return;
 
-		navigate(`/clan/${clan.tag}`);
+		navigate(`/clan/${clan.tag}/players/1?`);
 	}
 
 	async function onClanAddedOrRemoved() {
@@ -164,7 +164,7 @@
 			<ContentBox>
 				<h1 class="title is-5">My clan</h1>
 
-				<a href={`/clan/${$account.clan.tag}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}`)}>
+				<a href={`/clan/${$account.clan.tag}/players/1?`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}/players/1?`)}>
 					<ClanInfoSmall clan={$account.clan} />
 				</a>
 			</ContentBox>

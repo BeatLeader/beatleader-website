@@ -61,7 +61,7 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--decrease)" />
+							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--capturedColour)" />
 							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
 							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
 							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />

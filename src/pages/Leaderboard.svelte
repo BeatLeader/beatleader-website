@@ -32,6 +32,7 @@
 	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
 	import ClanName from '../components/Clans/ClanName.svelte';
 	import ClanAvatar from '../components/Clans/ClanAvatar.svelte';
+	import ClanBadgeBig from '../components/Clans/ClanBadgeBig.svelte';
 
 
 	import {formatNumber} from '../utils/format';
@@ -168,7 +169,7 @@
 	function navigateToClan(clanTag) {
 		if (!clanTag) return;
 
-		navigate(`/clan/${clanTag}`);
+		navigate(`/clan/${clanTag}/players/1?`);
 	}
 
 	function scrollToTop() {
@@ -216,9 +217,6 @@
 	function onTypeChanged(event) {
 		const newType = event?.detail?.type ?? null;
 		if (!newType) return;
-		//if (newType === 'clanranking') {
-		//	dontNavigate = true;
-		//}
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
 		if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`);
@@ -329,6 +327,16 @@
 	}
 
 	function toggleOpen(scoreId) {
+		if (!scoreId) return;
+
+		if (openedDetails.includes(scoreId)) {
+			openedDetails = openedDetails.filter(id => id !== scoreId);
+		} else {
+			openedDetails = [...openedDetails, scoreId];
+		}
+	}
+
+	function toggleClanRankingOpen() {
 		if (!scoreId) return;
 
 		if (openedDetails.includes(scoreId)) {
@@ -460,6 +468,7 @@
 	}
 
 	let showAverageStats = false;
+	let showClanRankingScores = false
 
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
@@ -688,6 +697,15 @@
 									<Spinner />
 								{/if}
 							</div>
+
+							{#if isRanked}
+								<div style=" --clan-color: {clanRanking?.[0].clan?.color}" class="captor-clan captor-clan-outline">
+									<p>
+										Captured by:
+									</p>
+									<ClanBadgeBig clan={clanRanking?.[0].clan ? clanRanking?.[0].clan : null }/>
+								</div>
+							{/if}
 
 							<div class="title-and-buttons">
 								<h2 class="title is-6" class:unranked={!isRanked}>
@@ -1064,34 +1082,59 @@
 						{/if}
 					{/if}
 				{:else if type === 'clanranking'}
-					<div class="scores-grid grid-transition-helper">
-						{#each clanRanking as cr, idx (cr?.clan?.tag ?? '')}
-							<div
-								class={`row-${idx}`}
-								in:fly={{x: 200, delay: idx * 20, duration: 500}}
-								out:fade={{x: 200, delay: idx * 20, duration: 500}}
-								animate:flip={{duration: 300}}>
-								<div class={'player-score'}>
-									<div class="mobile-first-line">
-										<div class="rank with-badge">
-											<Badge
-												onlyLabel={true}
-												color="white"
-												bgColor={'darkgoldenrod'}>
-												<span slot="label">
-													#<Value value={cr.clanAverageRank} digits={0} zero="?" />
+					{#if clanRanking?.length}
+						<div class="scores-grid grid-transition-helper">
+							{#each clanRanking as cr, idx (opt(cr, 'clan.tag', ''))}
+								<div
+									class={`row-${idx}`}
+									in:fly={{x: 200, delay: idx * 20, duration: 500}}
+									out:fade={{x: 200, delay: idx * 20, duration: 500}}
+									animate:flip={{duration: 300}}>
+									<div class={'player-score'}>
+										<div class="mobile-first-line">
+											<div class="rank with-badge">
+												<Badge
+													onlyLabel={true}
+													color="white"
+													bgColor={'darkgoldenrod'}>
+													<span slot="label">
+														#<Value value={cr.clanRank} digits={0} zero="?" />
+													</span>
+												</Badge>
+											</div>
+											<div class="player">
+												<ClanAvatar clan={cr.clan} />
+												<ClanName
+													clan={cr.clan}
+													on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />
+													<ClanBadgeBig clan={cr.clan}/>
+											</div>
+											<div class="timeset above-tablet">
+												<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
+													{cr.lastUpdateTime}
 												</span>
-											</Badge>
+											</div>
+											<div class="timeset mobile-only">
+												<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
+													{cr?.lastUpdateTimeShort ?? ''}
+												</span>
+											</div>
 										</div>
-										<div class="player">
-											<ClanAvatar clan={cr.clan} />
-											<ClanName
-												clan={cr.clan}
-												on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />
-												<ClanBadges clan={cr.clan}/>
-										</div>
-									</div>
-									<div class="mobile-second-line">
+										<div class="mobile-second-line">
+											<div class="score-options-section">
+												<span
+													class="beat-savior-reveal clickable"
+													class:opened={showClanRankingScores}
+													on:click={() => (showClanRankingScores = !showClanRankingScores)}
+													title="Show Scores">
+													{#if showClanRankingScores}
+														Hide Scores
+													{:else}
+														Show Scores
+													{/if}
+													<i class="fas fa-chevron-down" />
+												</span>
+											</div>
 											<div class="pp with-badge">
 												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 													<span slot="label">
@@ -1102,21 +1145,162 @@
 													</span>
 												</Badge>
 											</div>
-										<div class="percentage with-badge">
-											<ClanAccuracy clanRanking={cr} />
-										</div>
-										<div class="score with-badge">
-											<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-												<span slot="label">
-													<Value value={cr.clanTotalScore} inline={false} digits={0} />
-												</span>
-											</Badge>
+											<div class="percentage with-badge">
+												<ClanAccuracy clanRanking={cr} />
+											</div>
+											<div class="score with-badge">
+												<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+													<span slot="label">
+														<Value value={cr.clanTotalScore} inline={false} digits={0} />
+													</span>
+												</Badge>
+											</div>
 										</div>
 									</div>
+									{#if showClanRankingScores}
+										<div class="scores-subgrid grid-transition-helper">
+											{#each opt(cr, 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
+												<div
+													class={`row-${idx}`}
+													class:user-score={score?.isUserScore}
+													class:user-score-top={score?.userScoreTop}
+													in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+													out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+													animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
+													<div class={'player-score'}>
+														<div class="mobile-first-line">
+															<div class="rank with-badge">
+																<Badge
+																	onlyLabel={true}
+																	color="white"
+																	bgColor={opt(score, 'score.rank') === 1
+																		? 'darkgoldenrod'
+																		: opt(score, 'score.rank') === 2
+																		? '#888'
+																		: opt(score, 'score.rank') === 3
+																		? 'saddlebrown'
+																		: opt(score, 'score.rank') >= 10000
+																		? 'small'
+																		: 'var(--dimmed)'}>
+																	<span slot="label">
+																		#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />
+																	</span>
+																</Badge>
+															</div>
+															<div class="player">
+																<Avatar player={score.player} />
+																<PlayerNameWithFlag
+																	player={score.player}
+																	type={type === 'accsaber' ? 'accsaber/date' : null}
+																	on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
+										
+																<ClanBadges player={score.player} />
+															</div>
+															<div class="timeset above-tablet">
+																{@debug score}
+																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
+																	{opt(score, 'score.timeSetString', '-')}
+																</span>
+															</div>
+															<div class="timeset mobile-only">
+																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
+																	{score?.score?.timeSetStringShort ?? ''}
+																</span>
+															</div>
+														</div>
+														<div class="mobile-second-line">
+															{#if !noReplayInLeaderboard && type !== 'accsaber'}
+																<div class="replay">
+																	{#if batleRoyaleDraft}
+																		{#if !draftList.includes(score.player.playerId) && draftList.length < 10}
+																			<Button
+																				cls="replay-button-alt"
+																				icon="<div class='battleroyalejoin-icon'></div>"
+																				title="Join battle royal"
+																				noMargin={true}
+																				on:click={() => {
+																					draftList.push(score.player.playerId);
+																					draftList = draftList;
+																				}} />
+																		{:else if draftList.includes(score.player.playerId)}
+																			<Button
+																				cls="replay-button-alt"
+																				icon="<div class='battleroyalestop-icon'></div>"
+																				title="Remove from battle royal"
+																				noMargin={true}
+																				on:click={() => (draftList = draftList.filter(el => el != score.player.playerId))} />
+																		{/if}
+																	{:else}
+																		<Button
+																			url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
+																			on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
+																			cls="replay-button-alt"
+																			icon="<div class='replay-icon-alt'></div>"
+																			title="Replay"
+																			noMargin={true} />
+										
+																		<span
+																			class="beat-savior-reveal clickable"
+																			class:opened={openedDetails.includes(score?.score?.id)}
+																			on:click={() => toggleOpen(score?.score?.id)}
+																			title="Show details">
+																			<i class="fas fa-chevron-down" />
+																		</span>
+																	{/if}
+																</div>
+															{/if}
+															{#if type === 'accsaber' || opt(score, 'score.pp')}
+																<div class="pp with-badge">
+																	<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+																		<span slot="label">
+																			{#if type === 'accsaber'}
+																				<Pp
+																					playerId={opt(score, 'player.playerId')}
+																					pp={opt(score, 'score.ap')}
+																					weighted={opt(score, 'score.weightedAp')}
+																					zero={formatNumber(0)}
+																					withZeroSuffix={true}
+																					inline={false}
+																					suffix="AP"
+																					color="white" />
+																			{:else}
+																				<Pp
+																					playerId={opt(score, 'player.playerId')}
+																					{leaderboardId}
+																					pp={opt(score, 'score.pp')}
+																					whatIf={opt(score, 'score.whatIfPp')}
+																					inline={false}
+																					color="white" />
+																			{/if}
+																		</span>
+																	</Badge>
+																</div>
+															{/if}
+															<div class="percentage with-badge">
+																<Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false} />
+															</div>
+															<div class="score with-badge">
+																<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+																	<span slot="label">
+																		<Value value={opt(score, 'score.score')} inline={false} digits={0} />
+										
+																		<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), modifiers)}
+																			>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+																	</span>
+																</Badge>
+															</div>
+														</div>
+													</div>
+												</div>
+											{/each}
+										</div>
+									{/if}
 								</div>
-							</div>
-						{/each}
-					</div>
+							{/each}
+						</div>
+					{:else}
+						<p transition:fade>No clan ranking found.</p>
+					{/if}
 				{:else}
 					<p transition:fade>No scores found.</p>
 				{/if}
@@ -1388,6 +1572,15 @@
 		border-bottom: 1px solid var(--row-separator);
 	}
 
+	.scores-subgrid {
+		display: grid;
+		grid-template-columns: 1fr;
+		max-width: 100%;
+		position: relative;
+		border-top: 1px solid var(--row-separator);
+		padding-left: 2em;
+	}
+
 	.replay-button {
 		background-color: transparent;
 	}
@@ -1571,7 +1764,7 @@
 		gap: 0.6em;
 	}
 
-	.owning-clan {
+	.captor-clan {
 		display: flex;
 		align-items: center;
 		margin-top: 0.5em;
@@ -1581,6 +1774,9 @@
 		background: rgb(24, 24, 24);
 		border-radius: 0.4em;
 		padding: 1em;
+		color: white;
+		outline: solid;
+		outline-color: var(--clan-color);
 	}
 
 	.royale-title {

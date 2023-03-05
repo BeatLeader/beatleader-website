@@ -36,13 +36,13 @@ export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
 export const BL_API_LEADERBOARD_URL =
-	BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}';
+	BL_API_URL + 'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&clanranking=${clanranking}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
 	'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&allTypes=${allTypes}';
 export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}';
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}';
+export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}&capturedleaderboards=${capturedleaderboards}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
 export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
@@ -121,10 +121,14 @@ export const processClanRanking = cr => {
 	ret.clan.playerscount = clan.playersCount;
 
 	ret.clanpp = cr.clanPP;
+	ret.clanRank = cr.clanRank;
+	ret.lastUpdateTime = formatDateRelative(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
+	ret.lastUpdateTimeShort = formatDateRelativeShort(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
 	ret.clanAverageRank = cr.clanAverageRank;
 	ret.clanAverageAccuracy = cr.clanAverageAccuracy;
 	ret.clanAverageAcc = cr.clanAverageAccuracy * 100;
 	ret.clanTotalScore = cr.clanTotalScore;
+	ret.scores = processLeaderboardScores(cr.associatedScores);
 
 	return ret;
 }
@@ -219,6 +223,23 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 	};
 };
 
+const processClan = (clanId, page, respons) => { 
+	if (respons.body.container.capturedLeaderboards != null) {
+		respons.body.container.capturedLeaderboards.forEach(
+			led => {
+				const currentDiff = led.difficulty;
+				let diff = null;
+				let diffInfo = null;
+				if (led.difficulty) {
+					diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
+					diff = diffInfo.diff;
+				}
+			}
+		);
+	}
+	return respons.body;
+}
+
 export default (options = {}) => {
 	const queue = createQueue(options);
 
@@ -310,7 +331,15 @@ export default (options = {}) => {
 		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}), options, priority);
 
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
+	//fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}, true), options, priority)
+		fetchJson(substituteVars(
+			BL_API_CLAN_URL, {clanId, page, ...filters}, true), 
+			options, 
+			priority
+		).then(r => {
+			r.body = processClan(clanId, page, r);
+			return r;
+		});
 
 	const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchJson(

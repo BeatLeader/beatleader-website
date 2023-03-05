@@ -228,7 +228,7 @@
 
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
-	$: clanCapturedMaps = clan?.ownedLeaderboardsCount ?? null;
+	$: clanCapturedMaps = clan?.capturedLeaderboards?.length ?? null;
 	$: clanPp = clan?.pp ?? null;
 </script>
 
