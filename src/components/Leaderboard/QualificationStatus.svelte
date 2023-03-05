@@ -51,19 +51,6 @@
 
 {#if qualification}
 	<div class="qualification-description">
-		<b><i class="fa fa-check" /> Nominated by:</b>
-		<div class="player-info">
-			<Avatar player={nominator} />
-			<PlayerNameWithFlag player={nominator} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
-			<div class="timeset">
-				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-					{formatDateRelative(dateFromUnix(qualification?.timeset))}
-				</span>
-			</div>
-		</div>
-	</div>
-
-	<div class="qualification-description">
 		{#if qualification?.criteriaMet != 0}
 			{#if qualification?.criteriaMet == 1}
 				<b><i class="fa fa-check" /> Criteria checked by:</b>
@@ -88,18 +75,6 @@
 			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria not checked yet</span>
-		{/if}
-	</div>
-
-	<div class="qualification-description">
-		{#if qualification?.mapperAllowed}
-			<b><i class="fa fa-check" /> Allowed by mapper:</b>
-			<div class="player-info">
-				<Avatar player={mapper} />
-				<PlayerNameWithFlag player={mapper} on:click={mapper ? () => navigateToPlayer(mapper.playerId) : null} />
-			</div>
-		{:else}
-			<span style="color: red;"><i class="fa fa-xmark" /> Mapper not allowed yet</span>
 		{/if}
 	</div>
 

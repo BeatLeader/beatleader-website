@@ -44,12 +44,6 @@
 			<span style="color: gray;"><i class="fa fa-xmark" /> Criteria</span>
 		{/if}
 
-		{#if qualification.mapperAllowed}
-			<span style="color: green;"><i class="fa fa-check" /> Mapper</span>
-		{:else}
-			<span style="color: gray;"><i class="fa fa-xmark" /> Mapper</span>
-		{/if}
-
 		{#if qualification.approvers}
 			{#if qualification.approved}
 				<span style="color: green;"><i class="fa fa-check" /> RT</span>
@@ -68,17 +62,6 @@
 			{/if}
 		{:else}
 			<span style="color: gray;"><i class="fa fa-xmark" /> RT</span>
-		{/if}
-
-		{#if !qualification.approved}
-			<div class="timeset">
-				<span style="color: {getTimeStringColor(qualification?.timeset)}; ">
-					Nominated {formatDateRelative(dateFromUnix(qualification.timeset))} by
-				</span>
-
-				<Avatar player={nominator} />
-				<PlayerNameWithFlag player={nominator} hideFlag={true} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
-			</div>
 		{/if}
 	</div>
 {/if}

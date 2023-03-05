@@ -49,9 +49,7 @@
 	import SongScoreDetails from '../components/Player/SongScoreDetails.svelte';
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import QualificationApproval from '../components/Leaderboard/QualificationApproval.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import RankedApproval from '../components/Leaderboard/RankedApproval.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
@@ -161,7 +159,6 @@
 	let currentType = type;
 
 	let currentFilters = buildFiltersFromLocation(location);
-	let boxEl = null;
 	let leaderboard = null;
 
 	let modifiedStars = null;
@@ -536,7 +533,6 @@
 
 	let verifiedMapperId;
 	let generalMapperId;
-	let qualificationLimitError;
 
 	const lessFunction = (a, b) => a < b;
 	const greaterFunction = (a, b) => a > b;
@@ -595,22 +591,11 @@
 
 			const songInfoValue = await beatSaverService.byHash(hash, true);
 
-			latestHash = songInfoValue.versions[0].hash.toLowerCase() == hash.toLowerCase();
-		}
-	}
-
-	let isRankable;
-	function calculateIsRankable(isRT, qualification) {
-		if (isRT && qualification && qualification.criteriaMet == 1 && qualification.mapperAllowed && qualification.approved) {
-			const currentSeconds = new Date().getTime() / 1000;
-			isRankable = currentSeconds - qualification.approvalTime < 60 * 60 * 24 * 7;
-		} else {
-			isRankable = false;
+			latestHash = songInfoValue?.versions[0].hash.toLowerCase() == hash.toLowerCase();
 		}
 	}
 
 	let showAverageStats = false;
-	let showCommentary = false;
 	let showSorting = false;
 
 	$: isLoading = leaderboardStore.isLoading;
@@ -637,7 +622,6 @@
 	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
 	$: reweight = leaderboard?.reweight;
-	$: calculateIsRankable(isRT, qualification);
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
@@ -715,26 +699,6 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		{#if !showApproveRequest && separatePage && qualification && !qualification.mapperAllowed && isRT}
-			<a href={window.location.href.replace('leaderboard', 'leaderboard/approval')}>Link for the mapper approval</a>
-		{/if}
-
-		{#if (showApproveRequest || (qualification?.mapperAllowed == false && $account?.player?.playerInfo.mapperId == song?.mapperId)) && leaderboard && qualification}
-			<ContentBox>
-				<div class="qualification-container">
-					<QualificationApproval {leaderboard} {account} />
-				</div>
-			</ContentBox>
-		{/if}
-
-		{#if isRankable}
-			<ContentBox>
-				<div class="qualification-container">
-					<RankedApproval {hash} {leaderboard} {votingStore} diff={diffInfo?.diff} mode={diffInfo?.type} />
-				</div>
-			</ContentBox>
-		{/if}
-
 		<div
 			class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
 			style={opt($leaderboardStore, 'leaderboard.song.imageUrl')
@@ -751,7 +715,7 @@
 			{#if $leaderboardStore}
 				{#if leaderboard && song && withHeader}
 					{#if !withoutHeader}
-						<header class="header" bind:this={boxEl} transition:fade>
+						<header class="header" transition:fade>
 							<div class="header-container">
 								<h1 class="title is-4">
 									<span class="name" title="Song name">{song.name} {song.subName ? song.subName : ''}</span>
@@ -1388,7 +1352,7 @@
 					{/if}
 				</ContentBox>
 			{/if}
-			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
+			{#if isNominated && qualification}
 				{#if qualification.criteriaCheck}
 					<ContentBox>
 						{#if !criteriaInfoShown}
