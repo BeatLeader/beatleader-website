@@ -56,8 +56,6 @@
 	function onPlaylistClick(event) {
 		if (!event.detail) return;
 
-		playlistMenuShown = false;
-
 		playlists.select(event.detail);
 	}
 
@@ -262,11 +260,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a
-						href="/playlists"
-						on:click|preventDefault={() => {
-							navigate('/playlists');
-						}}>
+					<a href="/playlists" on:click|preventDefault={() => navigate('/playlists')}>
 						<i class="fas fa-list-ul" />
 
 						Playlists
@@ -285,7 +279,14 @@
 								{#if item.firstRow}
 									<div class="playlistButtonsContainer">
 										<Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()} />
-										<Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')} />
+										<Button
+											type="primary"
+											iconFa="fas fa-external-link-alt"
+											label="Details"
+											on:click={() => {
+												navigate('/playlists');
+												mobileMenuShown = false;
+											}} />
 									</div>
 								{:else}
 									<SelectedPlaylist playlist={item} songsCounter={true} />
@@ -360,11 +361,7 @@
 			Events
 		</a>
 
-		<div
-			class="playlists hovermenu"
-			on:mouseover={() => (playlistMenuShown = true)}
-			on:focus={() => (playlistMenuShown = true)}
-			on:mouseleave={() => (playlistMenuShown = false)}>
+		<div class="playlists nav-button" use:mobileTouch={() => (playlistMenuShown = !playlistMenuShown)}>
 			{#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
 				<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
 			{:else}
@@ -374,13 +371,20 @@
 
 			<Dropdown
 				items={[{firstRow: true}].concat($playlists.length ? $playlists : [])}
-				shown={playlistMenuShown}
+				bind:shown={playlistMenuShown}
 				on:select={onPlaylistClick}>
 				<svelte:fragment slot="row" let:item>
 					{#if item.firstRow}
 						<div class="playlistButtonsContainer">
 							<Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()} />
-							<Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')} />
+							<Button
+								type="primary"
+								iconFa="fas fa-external-link-alt"
+								label="Details"
+								on:click={() => {
+									navigate('/playlists');
+									playlistMenuShown = false;
+								}} />
 						</div>
 					{:else}
 						<SelectedPlaylist playlist={item} songsCounter={true} />
