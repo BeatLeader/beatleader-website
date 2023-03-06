@@ -1,34 +1,30 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
-	import {navigate} from 'svelte-routing';
-	import {fly} from 'svelte/transition';
+	import Button from '../components/Common/Button.svelte';
+	import ClanInfo from '../components/Clans/ClanInfo.svelte';
+	import ContentBox from '../components/Common/ContentBox.svelte';
+	import createClanService from '../services/beatleader/clan';
 	import createClanStore from '../stores/http/http-clan-store';
 	import createAccountStore from '../stores/beatleader/account';
-	import {scrollToTargetAdjusted} from '../utils/browser';
-	import ssrConfig from '../ssr-config';
-	import Pager from '../components/Common/Pager.svelte';
-	import Spinner from '../components/Common/Spinner.svelte';
-	import ContentBox from '../components/Common/ContentBox.svelte';
+	import {createEventDispatcher} from 'svelte';
 	import {debounce} from '../utils/debounce';
-	import createClanService from '../services/beatleader/clan';
-	import {SsrHttpResponseError} from '../network/errors';
-	import PlayerCard from '../components/Ranking/PlayerCard.svelte';
-	import ClanInfo from '../components/Clans/ClanInfo.svelte';
-	import Button from '../components/Common/Button.svelte';
 	import Dialog from '../components/Common/Dialog.svelte';
 	import Error from '../components/Common/Error.svelte';
-	import Rain from '../components/Common/Rain.svelte';
-	import SongCover from '../components/Player/SongCover.svelte';
-	import Switcher from '../components/Common/Switcher.svelte';
+	import {fly} from 'svelte/transition';
 	import Icons from '../components/Song/Icons.svelte';
-	import {formatNumber} from '../utils/format';
-	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
-	import SongScore from '../components/Player/SongScore.svelte';
-	import {processScore} from '../network/clients/beatleader/scores/utils/processScore';
+	import {navigate} from 'svelte-routing';
+	import Pager from '../components/Common/Pager.svelte';
+	import PlayerCard from '../components/Ranking/PlayerCard.svelte';
+	import Rain from '../components/Common/Rain.svelte';
+	import {scrollToTargetAdjusted} from '../utils/browser';
+	import SongCover from '../components/Player/SongCover.svelte';
+	import Spinner from '../components/Common/Spinner.svelte';
+	import ssrConfig from '../ssr-config';
+	import {SsrHttpResponseError} from '../network/errors';
 	import stringify from 'json-stable-stringify';
+	import Switcher from '../components/Common/Switcher.svelte';
 
 	export let clanId;
-	export let type = 'players'
+	export let type = 'players';
 	export let page = 1;
 	export let location;
 	export let dontNavigate = false;
@@ -38,49 +34,15 @@
 
 	document.body.classList.remove('slim');
 
-	const dispatch = createEventDispatcher();
-
 	const account = createAccountStore();
 
 	const clanService = createClanService();
 
-	let availableTypeOptions = []
-	let typeOptions = availableTypeOptions.map(to => to);
-
-	function updateTypeOptions(clan) {
-		if (!clan) {return;}
-
-		typeOptions = availableTypeOptions
-			.map(to => to)
-			.concat(
-				[
-					{
-						type: 'players',
-						label: 'Players',
-						iconFa: 'fas fa-user-friends',
-						url: `/clan/${clan.tag}/players`,
-						filters: {countries: ''},
-					}
-				]
-			)
-			.concat(
-				[
-					{
-						type: 'clanranking',
-						label: 'Clan Ranking',
-						iconFa: 'fas fa-globe-americas',
-						url: `/clan/${clan.tag}/capturedleaderboards`,
-						filters: {countries: ''},
-					}
-				]
-			)
-
-		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
-		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
-	}
+	const dispatch = createEventDispatcher();
 
 	let currentClanId = clanId;
-	let currentType = type;
+
+	// FILTERS ---------------------------------------------------------------------------------
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
@@ -117,16 +79,95 @@
 		if (boxEl) scrollToTargetAdjusted(boxEl, 44);
 	}
 
-	const clanStore = createClanStore(clanId, type, page, currentFilters);
+	// TYPES -----------------------------------------------------------------------------------
+
+	let currentType = type;
+
+	let availableTypeOptions = [
+		{
+			type: 'players',
+			label: 'Players',
+			iconFa: 'fas fa-user-friends',
+			url: `/clan/${currentClanId}/players`,
+			filters: {countries: ''},
+		},
+		{
+			type: 'capturedleaderboards',
+			label: 'Captured Leaderboards',
+			iconFa: 'fas fa-globe-americas',
+			url: `/clan/${currentClanId}/capturedleaderboards`,
+			filters: {countries: ''},
+		}
+	]
+	let typeOptions = availableTypeOptions.map(to => to);
+
+	const stringifyFilters = (query, keys) =>
+		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
+
+	const findCurrentTypeOption = (type, filters) => {
+		const exactMatch = typeOptions.find(
+			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
+		);
+		if (exactMatch) return exactMatch;
+
+		return typeOptions.find(to => to?.type === type) ?? null;
+	};
+
+	let currentTypeOption = findCurrentTypeOption(currentType, currentFilters) ?? typeOptions[0];
+
+	// EVENTS ----------------------------------------------------------------------------------
+
+	const clanStore = createClanStore(currentClanId, currentType, page, currentFilters)
+
+	function changeParams(newClanId, newType, newPage, newLocation) {
+		if (newLocation === undefined) newLocation = {search: `?${buildSearchFromFilters(currentFilters)}`};
+
+		currentFilters = buildFiltersFromLocation(newLocation);
+
+		currentClanId = newClanId;
+
+		currentType = newType;
+		newPage = parseInt(newPage, 10);
+		if (isNaN(newPage)) newPage = 1;
+
+		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
+		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
+
+		currentPage = newPage;
+		clanStore.fetch(currentClanId, currentType, currentPage, {...currentFilters});
+	}
+
+	function changePageAndFilters(clanId, newPage, newLocation) {
+		if (!clanId) return;
+
+		currentFilters = buildFiltersFromLocation(newLocation);
+
+		newPage = parseInt(newPage, 10);
+		if (isNaN(newPage)) newPage = 1;
+
+		currentPage = newPage;
+		clanStore.fetch(clanId, currentPage, {...currentFilters});
+	}
 
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/clan/${clanId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/clan/${currentClanId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+	}
+
+	function onTypeChanged(event) {
+		const newType = event?.detail?.type ?? null;
+		if (!newType) return;
+
+		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
+		if (!dontNavigate) navigate(`/clan/${currentClanId}/${newType}/1?${buildSearchFromFilters(newFilters)}`);
+		else if (!dontChangeType) changeParams(currentClanId, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
+
+		dispatch('type-changed', {clanId: currentClanId, type: newType, page: currentPage, filters: newFilters});
 	}
 
 	function navigateToCurrentPageAndFilters() {
-		navigate(`/clan/${clanId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/clan/${currentClanId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
 	}
 
 	function onSearchChanged(e) {
@@ -160,64 +201,21 @@
 		}
 	}
 
-	function changeParams(newClanId, newType, newPage, newLocation) {
-		if (!newClanId) return;
-		if (newLocation === undefined) newLocation = {search: `?${buildSearchFromFilters(currentFilters)}`};
+	// REACTIVES -------------------------------------------------------------------------------
 
-		currentFilters = buildFiltersFromLocation(newLocation);
-
-		currentClanId = newClanId;
-
-		currentType = newType;
-		newPage = parseInt(newPage, 10);
-		if (isNaN(newPage)) newPage = 1;
-
-		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
-		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
-
-		currentPage = newPage;
-		clanStore.fetch(currentClanId, currentType, currentPage, {...currentFilters});
-	}
-
-	function onTypeChanged(event) {
-		if(!clan) {return;}
-
-		const newType = event?.detail?.type ?? null;
-		if (!newType) return;
-
-		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
-		if (!dontNavigate) navigate(`/clan/${clan.tag}/${newType}/1?${buildSearchFromFilters(newFilters)}`);
-		else if (!dontChangeType) changeParams(currentClanId, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
-
-		dispatch('type-changed', {clanId: currentClanId, type: newType, page: currentPage, filters: newFilters});
-	}
-
-	const stringifyFilters = (query, keys) =>
-		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
-
-	const findCurrentTypeOption = (type, filters) => {
-		const exactMatch = typeOptions.find(
-			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
-		);
-		if (exactMatch) return exactMatch;
-
-		return typeOptions.find(to => to?.type === type) ?? null;
-	};
-
-	let currentTypeOption = findCurrentTypeOption(currentType, currentFilters) ?? typeOptions[0];
+	$: changeParams(clanId, type, page, location);
 
 	$: isLoading = clanStore.isLoading;
 	$: pending = clanStore.pending;
 	$: numOfItems = $clanStore ? $clanStore?.metadata?.total : null;
 	$: itemsPerPage = $clanStore ? $clanStore?.metadata?.itemsPerPage : 10;
 
-	$: changeParams(clanId, type, page, location);
+	//$: changePageAndFilters(currentClanId, page, location);
 	$: scrollToTop($pending);
-	$: updateTypeOptions(clan);
 
 	$: clan = $clanStore?.container ?? null;
-	$: capturedLeaderboards = clan?.capturedLeaderboards ?? null;
 	$: playersPage = $clanStore?.data ?? [];
+	$: capturesPage = clan?.capturedLeaderboards ?? [];
 
 	$: clanLeaderId = clan?.leaderID ?? null;
 	$: isFounder = clan?.id && clanLeaderId === $account?.player?.playerId;
@@ -242,6 +240,8 @@
 				on:accepted={() => clanStore.refresh()}
 				on:left={() => clanStore.refresh()} />
 
+			{#if $isLoading}<Spinner />{/if}
+
 			{#if kickedPlayer}
 				<Dialog
 					type="confirm"
@@ -259,9 +259,9 @@
 					</div>
 				</Dialog>
 			{/if}
-			{#if $clanStore && !$isLoading}
-				{#if playersPage?.length && type === 'players'}
-					<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} />
+			<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} />
+			{#if currentType === 'players'}
+				{#if playersPage?.length}
 					<div class="players grid-transition-helper" class:with-icons={isFounder}>
 						{#each playersPage as player, idx (player.playerId)}
 							<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
@@ -296,73 +296,69 @@
 				{:else if !$isLoading}
 					<p>No clans found.</p>
 				{/if}
-				<!--{#if type === 'clanranking'}
-					{#if capturedLeaderboards.length}
-						<div class="songs grid-transition-helper">
-							{@debug capturedLeaderboards}
-							{#each capturedLeaderboards?.map as map, idx (map.id)}
-								<div class={`song-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
-									<div class="mobile-only">
-										{#if map?.song?.hash?.length}
-											<Icons hash={map.song.hash} diffInfo={map?.diffInfo} />
-										{/if}
-									</div>
-
-									<div class="main">
-										<SongCover leaderboard={map} url={`/leaderboard/global/${map.id}/1`} />
-
-										<div class="songinfo">
-											<a href={`/leaderboard/global/${map.id}/1`} on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)}>
-												<span class="name">{map?.song?.name} {map?.song?.subName}</span>
-												<div class="author">{map?.song?.author} <small>{map?.song?.mapper}</small></div>
-											</a>
-										</div>
-
-										{#if map?.plays}
-											<div>
-												{map?.plays} plays.
-											</div>
-										{/if}
-
-										{#if currentFilters.sortBy == 'timestamp'}
-											<MapTimesetDescription {map} />
-										{/if}
-
-										{#if map?.song?.hash?.length}
-											<div class="tablet-and-up">
-												<Icons hash={map.song.hash} diffInfo={{diff: map?.difficulty?.difficultyName, type: map?.difficulty?.modeName}} />
-											</div>
-										{/if}
-									</div>
-
-									{#if map?.myScore}
-										<SongScore
-											playerId={map.myScore.playerId}
-											songScore={processScore({leaderboard: map, ...map.myScore})}
-											showSong={false}
-											noIcons={true}
-											inList={false}
-											{idx}
-											service={'beatleader'} />
+			{:else if currentType === 'capturedleaderboards'}
+				{#if capturesPage?.length}
+					<div class="songs grid-transition-helper">
+						{#each capturesPage as map, idx (map.id)}
+							<div class={`song-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
+								<div class="mobile-only">
+									{#if map?.song?.hash?.length}
+										<Icons hash={map.song.hash} diffInfo={map?.diffInfo} />
 									{/if}
 								</div>
-							{/each}
-						</div>
 
-						<Pager
-							totalItems={numOfMaps}
-							{itemsPerPage}
-							itemsPerPageValues={null}
-							currentPage={currentPage - 1}
-							loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-							mode={numOfMaps ? 'pages' : 'simple'}
-							on:page-changed={onPageChanged} />
-					{:else}
-						<p>No maps found.</p>
-					{/if}
-				{/if}-->
-			{:else}
-				<Spinner />
+								<div class="main">
+									<SongCover leaderboard={map} url={`/leaderboard/global/${map.id}/1`} />
+
+									<div class="songinfo">
+										<a href={`/leaderboard/global/${map.id}/1`} on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)}>
+											<span class="name">{map?.song?.name} {map?.song?.subName}</span>
+											<div class="author">{map?.song?.author} <small>{map?.song?.mapper}</small></div>
+										</a>
+									</div>
+
+									{#if map?.plays}
+										<div>
+											{map?.plays} plays
+										</div>
+									{/if}
+
+									<!--{#if currentFilters.sortBy == 'timestamp'}
+										<MapTimesetDescription {map} />
+									{/if}-->
+
+									{#if map?.song?.hash?.length}
+										<div class="tablet-and-up">
+											<Icons hash={map.song.hash} diffInfo={{diff: map?.difficulty?.difficultyName, type: map?.difficulty?.modeName}} />
+										</div>
+									{/if}
+								</div>
+
+								<!--{#if map?.myScore}
+									<SongScore
+										playerId={map.myScore.playerId}
+										songScore={processScore({leaderboard: map, ...map.myScore})}
+										showSong={false}
+										noIcons={true}
+										inList={false}
+										{idx}
+										service={'beatleader'} />
+								{/if}-->
+							</div>
+						{/each}
+					</div>
+
+					<Pager
+						totalItems={capturesPage.length}
+						{itemsPerPage}
+						itemsPerPageValues={null}
+						currentPage={currentPage - 1}
+						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+						mode={capturesPage.length ? 'pages' : 'simple'}
+						on:page-changed={onPageChanged} />
+				{:else}
+					<p>No captured leaderboards found.</p>
+				{/if}
 			{/if}
 		</ContentBox>
 	</article>
@@ -404,5 +400,202 @@
 
 	.players :global(> *:last-child) {
 		border-bottom: none !important;
+	}
+
+	
+
+
+
+	/* .align-content {
+		display: flex;
+		justify-content: flex-end !important;
+	} */
+
+	.page-content {
+		max-width: 65em;
+		width: 100%;
+	}
+
+	article {
+		width: calc(100% - 25em);
+		overflow-x: hidden;
+	}
+
+	aside {
+		width: 25em;
+	}
+
+	aside .filter {
+		margin-bottom: 1.5rem;
+		transition: opacity 300ms;
+	}
+
+	aside .filter.disabled {
+		opacity: 0.25;
+	}
+
+	aside label {
+		display: block;
+		font-weight: 500;
+		margin: 0.75rem 0;
+	}
+
+	aside .filter.disabled label {
+		cursor: help;
+	}
+
+	aside label span {
+		color: var(--beatleader-primary);
+	}
+
+	aside select {
+		background-color: transparent;
+		margin-bottom: 0.25em;
+	}
+
+	aside select option {
+		color: var(--textColor);
+		background-color: var(--background);
+	}
+
+	aside input {
+		width: 100%;
+		font-size: 1em;
+		color: var(--beatleader-primary);
+		background-color: var(--foreground);
+		border: none;
+		border-bottom: 1px solid var(--faded);
+		outline: none;
+	}
+
+	aside :global(.switch-types) {
+		justify-content: flex-start;
+	}
+
+	aside h2:not(:first-of-type) {
+		margin-top: 1.5em;
+	}
+
+	aside :global(.rangeSlider.pip-labels) {
+		margin-top: 1.5em;
+		margin-bottom: 4em;
+	}
+
+	input::placeholder {
+		color: var(--faded) !important;
+	}
+
+	.songs :global(> *:last-child) {
+		border-bottom: none !important;
+	}
+
+	.song-line {
+		border-bottom: 1px solid var(--row-separator);
+		padding: 0.5em 0;
+	}
+
+	.song-line .icons.up-to-tablet + .main {
+		padding-top: 0;
+	}
+
+	.song-line .main {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: center;
+		grid-column-gap: 0.75em;
+	}
+
+	.song-line .main > *:last-child {
+		margin-right: 0;
+	}
+
+	.songinfo {
+		flex-grow: 1;
+		text-align: left;
+		font-size: 0.95rem;
+		font-weight: 500;
+	}
+
+	.songinfo {
+		color: var(--alternate);
+	}
+
+	.songinfo small {
+		margin-left: 0.25em;
+		font-size: 0.75em;
+		color: var(--ppColour);
+	}
+
+	.icons {
+		width: 7em;
+		font-size: 0.75em;
+		text-align: right;
+		margin-right: 0;
+		margin-bottom: 0.5em;
+	}
+
+	.icons:empty {
+		margin-bottom: 0 !important;
+	}
+
+	.icons :global(> *) {
+		margin-bottom: 0.25em !important;
+	}
+
+	.playlist-buttons {
+		display: flex;
+		margin-top: 1em;
+		column-gap: 0.5em;
+		flex-wrap: wrap;
+	}
+
+	.duplicateDiffsContainer {
+		display: flex;
+	}
+
+	#duplicateDiffs {
+		width: auto;
+	}
+
+	:global(.playlist-button) {
+		height: 1.6em;
+	}
+
+	@media screen and (max-width: 1275px) {
+		.align-content {
+			flex-direction: column-reverse;
+			align-items: center;
+		}
+
+		aside {
+			width: 100%;
+			max-width: 65em;
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		.icons {
+			margin-bottom: 0.5em;
+			width: 100%;
+		}
+
+		.playlist-buttons {
+			flex-direction: column;
+		}
+	}
+
+	@media screen and (max-width: 520px) {
+		.song-line .main {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			grid-column-gap: 0.75em;
+		}
+
+		.songinfo {
+			text-align: center;
+		}
 	}
 </style>

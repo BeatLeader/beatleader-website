@@ -94,8 +94,12 @@
 					<Route path="/leaderboards/*page" let:params let:location>
 						<LeaderboardsPage page={params.page} {location} />
 					</Route>
-					<Route path="/clan/:clanId/:type/*page" let:params>
-						<ClanPage clanId={params.clanId} type={params.type} page={params.page} />
+					<Route path="/clan/:clanId/:type/*page" let:params let:location>
+						<ClanPage 
+							clanId={params.clanId} 
+							type={params.type} 
+							page={params.page} 
+							{location}/>
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />

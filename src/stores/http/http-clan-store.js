@@ -4,12 +4,13 @@ import stringify from 'json-stable-stringify';
 
 export default (clanId, type = 'players', page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
 	let currentClanId = clanId ? clanId : null;
-	let currentType = type ? type : 'players';
 	let currentPage = page ? page : 1;
 	let currentFilters = filters ?? {};
+	let currentType = type ? type : 'players';
 
 	const onNewData = ({fetchParams, state, set}) => {
 		currentClanId = fetchParams?.clanId ?? null;
+		currentType = fetchParams?.type ?? 'players';
 		currentPage = fetchParams?.page ?? 1;
 		currentFilters = fetchParams?.filters ?? {};
 	};
@@ -18,7 +19,7 @@ export default (clanId, type = 'players', page = 1, filters = {}, initialState =
 
 	const httpStore = createHttpStore(
 		provider,
-		{clanId, type, page},
+		{clanId, page},
 		initialState,
 		{
 			onInitialized: onNewData,
@@ -28,12 +29,9 @@ export default (clanId, type = 'players', page = 1, filters = {}, initialState =
 		initialStateType
 	);
 
-	const fetch = async (
-		clanId = currentClanId,
-		type = currentType,
-		page = currentPage, 
-		filters = currentFilters, 
-		force = false) => {
+	const fetch = async (clanId = currentClanId, type = currentType, page = currentPage, filters = currentFilters, force = false) => {
+		// Don't check for type change. We don't need another request for swapping to captured leaderboards page.
+		// We already got that data throug the first request
 		if (
 			clanId &&
 			clanId === currentClanId &&
@@ -43,16 +41,17 @@ export default (clanId, type = 'players', page = 1, filters = {}, initialState =
 		)
 			return false;
 
-		return httpStore.fetch({clanId, type, page, filters}, force, provider);
+		return httpStore.fetch({clanId, page, filters}, force, provider);
 	};
 
-	const refresh = async () => fetch(currentClanId, currentPage, currentFilters, true);
+	const refresh = async () => fetch(currentClanId, currentType, currentPage, currentFilters, true);
 
 	return {
 		...httpStore,
 		fetch,
 		refresh,
 		getClanId: () => currentClanId,
+		getType: () => currentType,
 		getPage: () => currentPage,
 		getFilters: () => currentFilters,
 	};

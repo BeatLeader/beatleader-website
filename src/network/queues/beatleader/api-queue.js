@@ -234,6 +234,7 @@ const processClan = (clanId, page, respons) => {
 					diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
 					diff = diffInfo.diff;
 				}
+				led.diffInfo = diffInfo
 			}
 		);
 	}
