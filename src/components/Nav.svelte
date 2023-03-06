@@ -7,8 +7,9 @@
 	import createPlaylistStore from '../stores/playlists';
 	import {configStore} from '../stores/config';
 	import {opt} from '../utils/js';
-	import {mobileTouch} from '../svelte-actions/mobile-touch';
-	import {clickOutside} from '../svelte-actions/click-outside';
+	import {mobileTouch} from '../svelte-utils/actions/mobile-touch';
+	import {clickOutside} from '../svelte-utils/actions/click-outside';
+	import {isTouchDevice} from '../utils/is-touch';
 	import Dropdown from './Common/Dropdown.svelte';
 	import MenuLine from './Player/MenuLine.svelte';
 	import Button from './Common/Button.svelte';
@@ -22,29 +23,6 @@
 		if (!playerId) return;
 
 		navigate(`/u/${playerId}`);
-	}
-
-	function onAccountClicked(event, playerId) {
-		if (event.srcElement.innerText === 'Migrate' || event.srcElement.innerText === 'Log In') {
-			navigate(`/signin`);
-		} else if (event.srcElement.innerText === 'Link patreon') {
-			navigate(`/signin/linkPatreon`);
-		} else if (event.srcElement.innerText === 'Link socials...') {
-			navigate(`/signin/socials`);
-		} else if (event.srcElement.innerText === 'My login') {
-			navigate(`/signin/mylogin`);
-		} else if (event.srcElement.innerText === 'Change password') {
-			navigate(`/signin/changePassword`);
-		} else if (event.srcElement.innerText === 'Suspend account' || event.srcElement.innerText === 'Activate account') {
-			navigate(`/signin/autoban`);
-		} else if (event.srcElement.innerText === 'Log Out') {
-			account.logOut();
-		} else if (event.srcElement.innerText === 'Staff Dashboard') {
-			navigate('/staff');
-		} else if (playerId) {
-			navigateToPlayer(playerId);
-		}
-		accountMenuShown = false;
 	}
 
 	function onFriendClick(event) {
@@ -78,36 +56,42 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
+		signupOptions = isTouchDevice() && player ? [{label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}] : [];
+
 		const isStaff = $account?.player?.playerInfo?.role
 			?.split(',')
 			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator', 'qualityteam'].includes(role));
 
 		if (loggedInUser.player) {
-			signupOptions = [];
-
-			if (isStaff) signupOptions.push('Staff Dashboard');
+			if (isStaff) signupOptions.push({label: 'Staff Dashboard', url: '/staff'});
 
 			if ((loggedInUser.player.playerId < 30000000 || loggedInUser.player.playerId > 1000000000000000) && !loggedInUser.migrated) {
-				signupOptions.push('Migrate');
+				signupOptions.push({label: 'Migrate', url: '/signin'});
 			}
 			if (loggedInUser.player.playerId < 70000000000000000 || loggedInUser.migrated) {
-				signupOptions.push('Change password');
-				signupOptions.push('My login');
+				signupOptions.push({label: 'Change password', url: '/signin/changePassword'});
+				signupOptions.push({label: 'My login', url: '/signin/mylogin'});
 			}
-			signupOptions.push('Link socials...');
+			signupOptions.push({label: 'Link socials...', url: '/signin/socials'});
 			if (!loggedInUser.patreoned) {
-				signupOptions.push('Link patreon');
+				signupOptions.push({label: 'Link patreon', url: '/signin/linkPatreon'});
 			}
 			if (loggedInUser.ban) {
-				if (loggedInUser.ban.reason == 'Self ban') {
-					signupOptions.push('Activate account');
+				if (loggedInUser.ban.reason === 'Self ban') {
+					signupOptions.push({label: 'Activate account', url: '/signin/autoban'});
 				}
 			} else {
-				signupOptions.push('Suspend account');
+				signupOptions.push({label: 'Suspend account', url: '/signin/autoban'});
 			}
-			signupOptions.push('Log Out');
+			signupOptions.push({
+				label: 'Log Out',
+				callback: () => {
+					account.logOut();
+					navigate('/');
+				},
+			});
 		} else {
-			signupOptions = ['Log In'];
+			signupOptions.push({label: 'Log In', url: '/signin'});
 		}
 	}
 
@@ -129,14 +113,11 @@
 	{#if player}
 		<a
 			href={`/u/${player.playerId}`}
-			class="me hovermenu"
-			on:click={e => {
-				e.preventDefault();
-				onAccountClicked(e, player.playerId);
+			class="me nav-button"
+			on:click|preventDefault={() => {
+				if (!isTouchDevice()) navigateToPlayer(player.playerId);
 			}}
-			on:mouseover={() => (accountMenuShown = true)}
-			on:focus={() => (accountMenuShown = true)}
-			on:mouseleave={() => (accountMenuShown = false)}>
+			use:mobileTouch={() => (accountMenuShown = !accountMenuShown)}>
 			{#if opt(player, 'playerInfo.avatar')}
 				<Avatar {player} />
 			{:else}
@@ -151,9 +132,12 @@
 
 			Me
 
-			<Dropdown items={signupOptions} shown={accountMenuShown} noItems="">
+			<Dropdown items={signupOptions} bind:shown={accountMenuShown} noItems="">
 				<svelte:fragment slot="row" let:item>
-					<span class="accountMenuItem">{item}</span>
+					<a
+						href={item.url}
+						on:click|preventDefault|stopPropagation={() => (item.callback ? item.callback() : navigate(item.url))}
+						class={`accountMenuItem ${item?.class ?? ''}`}>{item.label}</a>
 				</svelte:fragment>
 			</Dropdown>
 		</a>

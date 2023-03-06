@@ -10,7 +10,7 @@ export function clickOutside(node, {callback = null, parent = null} = {}) {
 	document.body.addEventListener('click', onClick);
 
 	return {
-		update({callback: newCallback = null, parent: newParent = false} = {}) {
+		update({callback: newCallback = null, parent: newParent = null} = {}) {
 			callback = newCallback;
 			parent = newParent;
 		},

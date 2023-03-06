@@ -1,3 +1,5 @@
+import {isTouchDevice} from '../../utils/is-touch';
+
 export function mobileTouch(node, callback) {
 	const onClick = event => {
 		if (!callback) return;
@@ -8,8 +10,6 @@ export function mobileTouch(node, callback) {
 			callback();
 		}
 	};
-
-	const isTouchDevice = () => !window?.matchMedia('(pointer: fine)')?.matches;
 
 	if (isTouchDevice()) node.addEventListener('click', onClick);
 

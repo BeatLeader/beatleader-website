@@ -1,6 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import {clickOutside} from '../../svelte-actions/click-outside';
+	import {clickOutside} from '../../svelte-utils/actions/click-outside';
 
 	const dispatch = createEventDispatcher();
 
