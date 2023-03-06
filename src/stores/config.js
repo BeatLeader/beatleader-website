@@ -38,6 +38,7 @@ const DEFAULT_CONFIG = {
 		qualificationInfoShown: true,
 		commentaryShown: true,
 		criteriaInfoShown: true,
+		leaderboardShowSorting: true,
 	},
 	scorePreferences: {
 		showReplayCounter: false,

@@ -56,8 +56,8 @@ function updateScoresStats(playerData) {
 				{key: 'averageRank', label: 'Average rank', title: 'Average rank', digits: 2, prefix: '#', bgColor: 'var(--selected)'},
 				{key: 'topPlatform', label: 'Platform', title: 'Last 50 scores top platform', bgColor: 'var(--selected)'},
 				{key: 'topHMD', label: 'Headset', title: 'Last 50 scores top headset', bgColor: 'var(--selected)'},
-				{key: 'authorizedReplayWatched', label: 'Replays watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
-				{key: 'watchedReplays', label: 'I watched replays', bgColor: 'var(--selected)', digits: 0, suffix: ''},
+				{key: 'authorizedReplayWatched', label: 'My replays watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
+				{key: 'watchedReplays', label: 'Replays I watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
 		  ]
 		: [];
 

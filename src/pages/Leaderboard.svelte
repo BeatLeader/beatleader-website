@@ -596,7 +596,6 @@
 	}
 
 	let showAverageStats = false;
-	let showSorting = false;
 
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
@@ -660,6 +659,7 @@
 	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
 	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
 	$: commentaryShown = $configStore?.preferences?.commentaryShown;
+	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
 </script>
 
 <svelte:head>
@@ -898,21 +898,21 @@
 				<div class="sorting-options">
 					<span
 						class="beat-savior-reveal clickable"
-						class:opened={showSorting}
-						on:click={() => (showSorting = !showSorting)}
-						on:keydown={() => (showSorting = !showSorting)}
+						class:opened={leaderboardShowSorting}
+						on:click={() => boolflip('leaderboardShowSorting')}
+						on:keydown={() => boolflip('leaderboardShowSorting')}
 						title="Show sorting and search for the leaderboard">
-						{#if showSorting}
-							Hide sorting
+						{#if leaderboardShowSorting}
+							Hide filters and sorting
 						{:else}
-							Show sorting
+							Show filters and sorting
 						{/if}
 
 						<i class="fas fa-chevron-down" />
 					</span>
 				</div>
 
-				{#if showSorting}
+				{#if leaderboardShowSorting}
 					<nav class="switcher-nav">
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">

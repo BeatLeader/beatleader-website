@@ -488,9 +488,9 @@
 			</section>
 
 			<select bind:value={currentFilters.allRequirements} on:change={onCategoryModeChanged}>
-				<option value={0}>ANY requirement</option>
-				<option value={1}>ALL requirements</option>
-				<option value={2}>NO requirements</option>
+				<option value={0}>ANY map feature</option>
+				<option value={1}>ALL map features</option>
+				<option value={2}>NO map features</option>
 			</select>
 
 			<section class="filter">
