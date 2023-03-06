@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {clickOutside} from '../../svelte-actions/click-outside';
 
 	const dispatch = createEventDispatcher();
 
@@ -8,7 +9,7 @@
 	export let noItems = null;
 </script>
 
-<div class="dropdown-menu" role="menu" class:shown>
+<div class="dropdown-menu" role="menu" class:shown use:clickOutside={{callback: () => (shown = false), includeParent: true}}>
 	<div class="dropdown-content">
 		{#if items && items.length}
 			{#each items as item}

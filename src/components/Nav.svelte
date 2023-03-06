@@ -6,9 +6,10 @@
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
 	import {configStore} from '../stores/config';
+	import {opt} from '../utils/js';
+	import {mobileTouch} from '../svelte-actions/mobile-touch';
 	import Dropdown from './Common/Dropdown.svelte';
 	import MenuLine from './Player/MenuLine.svelte';
-	import {opt} from '../utils/js';
 	import Button from './Common/Button.svelte';
 	import Avatar from './Common/Avatar.svelte';
 	import SelectedPlaylist from './Playlists/SelectedPlaylist.svelte';
@@ -48,7 +49,7 @@
 	function onFriendClick(event) {
 		if (!event.detail) return;
 
-		friendsMenuShown = false;
+		// friendsMenuShown = false;
 
 		navigateToPlayer(event.detail.playerId);
 	}
@@ -67,7 +68,7 @@
 	let mobileMenuShown = false;
 
 	function hideAllMenus() {
-		friendsMenuShown = false;
+		// friendsMenuShown = false;
 		playlistMenuShown = false;
 		accountMenuShown = false;
 		mobileMenuShown = false;
@@ -141,9 +142,9 @@
 </script>
 
 <nav class="ssr-page-container">
-	<a href="/" on:click|preventDefault={() => navigate('/')}>
-		<img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
-		<img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
+	<a href='/public' on:click|preventDefault={() => navigate('/')}>
+		<img src='/assets/logo.png' class="logo desktop-and-up" alt="" />
+		<img src='/assets/favicon-96x96.png' class="logo up-to-tablet" alt="" />
 	</a>
 
 	{#if player}
@@ -191,11 +192,7 @@
 		</a>
 	{/if}
 
-	<div
-		class="friends hovermenu"
-		on:mouseover={() => (friendsMenuShown = true)}
-		on:focus={() => (friendsMenuShown = true)}
-		on:mouseleave={() => (friendsMenuShown = false)}>
+	<div class="friends nav-button" use:mobileTouch={() => (friendsMenuShown = !friendsMenuShown)}>
 		<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 			><path
 				stroke-linecap="round"
@@ -207,7 +204,7 @@
 
 		<Dropdown
 			items={$friends}
-			shown={friendsMenuShown}
+			bind:shown={friendsMenuShown}
 			on:select={onFriendClick}
 			noItems={player ? 'No friends, add someone' : 'No friends, log in and add someone'}>
 			<svelte:fragment slot="row" let:item>
@@ -662,6 +659,12 @@
 		100% {
 			transform: scale(1.05);
 			box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+		}
+	}
+
+	@media (pointer: fine) {
+		.nav-button:hover :global(> *) {
+			display: block;
 		}
 	}
 </style>
