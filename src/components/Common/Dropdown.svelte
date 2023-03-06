@@ -9,7 +9,7 @@
 	export let noItems = null;
 </script>
 
-<div class="dropdown-menu" role="menu" class:shown use:clickOutside={{callback: () => (shown = false), includeParent: true}}>
+<div class="dropdown-menu" role="menu" class:shown use:clickOutside={{callback: () => (shown = false), parent: '.nav-button'}}>
 	<div class="dropdown-content">
 		{#if items && items.length}
 			{#each items as item}

@@ -8,6 +8,7 @@
 	import {configStore} from '../stores/config';
 	import {opt} from '../utils/js';
 	import {mobileTouch} from '../svelte-actions/mobile-touch';
+	import {clickOutside} from '../svelte-actions/click-outside';
 	import Dropdown from './Common/Dropdown.svelte';
 	import MenuLine from './Player/MenuLine.svelte';
 	import Button from './Common/Button.svelte';
@@ -49,8 +50,6 @@
 	function onFriendClick(event) {
 		if (!event.detail) return;
 
-		// friendsMenuShown = false;
-
 		navigateToPlayer(event.detail.playerId);
 	}
 
@@ -67,26 +66,8 @@
 	let accountMenuShown = false;
 	let mobileMenuShown = false;
 
-	function hideAllMenus() {
-		// friendsMenuShown = false;
-		playlistMenuShown = false;
-		accountMenuShown = false;
-		mobileMenuShown = false;
-	}
-
 	onMount(async () => {
 		const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => (settingsNotificationBadge = message));
-
-		document.addEventListener('mousedown', event => {
-			if (friendsMenuShown || playlistMenuShown || accountMenuShown || mobileMenuShown) {
-				var element = event.srcElement;
-				while (element && !element.classList.contains('hovermenu')) {
-					element = element.parentElement;
-				}
-				if (element && element.classList.contains('hovermenu')) return;
-				hideAllMenus();
-			}
-		});
 
 		return () => {
 			settingsBadgeUnsubscribe();
@@ -142,9 +123,9 @@
 </script>
 
 <nav class="ssr-page-container">
-	<a href='/public' on:click|preventDefault={() => navigate('/')}>
-		<img src='/assets/logo.png' class="logo desktop-and-up" alt="" />
-		<img src='/assets/favicon-96x96.png' class="logo up-to-tablet" alt="" />
+	<a href="/public" on:click|preventDefault={() => navigate('/')}>
+		<img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
+		<img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
 	</a>
 
 	{#if player}
@@ -231,24 +212,22 @@
 		Clans
 	</a>
 
-	<div
-		class="right mobile-menu hovermenu"
-		on:mouseover={() => (mobileMenuShown = true)}
-		on:focus={() => (mobileMenuShown = true)}
-		on:mouseleave={() => (mobileMenuShown = false)}>
+	<div class="right mobile-menu nav-button" use:mobileTouch={() => (mobileMenuShown = !mobileMenuShown)}>
 		<div class="hamburger">
 			<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
 		</div>
 
-		<div class="dropdown-menu left" class:shown={mobileMenuShown}>
+		<div
+			class="dropdown-menu left"
+			class:shown={mobileMenuShown}
+			use:clickOutside={{callback: () => (mobileMenuShown = false), parent: '.nav-button'}}>
 			<div class="dropdown-content">
 				<div class="dropdown-item">
 					<a
 						href="/leaderboards"
 						on:click|preventDefault={() => {
 							navigate('/leaderboards');
-							mobileMenuShown = false;
 						}}>
 						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 							><path
@@ -270,7 +249,6 @@
 						href="/events"
 						on:click|preventDefault={() => {
 							navigate('/events');
-							mobileMenuShown = false;
 						}}>
 						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 							><path
@@ -288,7 +266,6 @@
 						href="/playlists"
 						on:click|preventDefault={() => {
 							navigate('/playlists');
-							mobileMenuShown = false;
 						}}>
 						<i class="fas fa-list-ul" />
 
@@ -300,7 +277,10 @@
 							<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
 						{/if}
 
-						<Dropdown items={[{firstRow: true}].concat($playlists.length ? $playlists : [])} shown={true} on:select={onPlaylistClick}>
+						<Dropdown
+							items={[{firstRow: true}].concat($playlists.length ? $playlists : [])}
+							bind:shown={mobileMenuShown}
+							on:select={onPlaylistClick}>
 							<svelte:fragment slot="row" let:item>
 								{#if item.firstRow}
 									<div class="playlistButtonsContainer">
@@ -316,12 +296,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a
-						href="/search"
-						on:click|preventDefault={() => {
-							navigate('/search');
-							mobileMenuShown = false;
-						}}>
+					<a href="/search" on:click|preventDefault={() => navigate('/search')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 						</svg>
@@ -331,7 +306,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="/settings" class="settings" title={notificationBadgeTitle}>
+					<a href="/settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
@@ -355,7 +330,6 @@
 			href="/leaderboards"
 			on:click|preventDefault={() => {
 				navigate('/leaderboards');
-				mobileMenuShown = false;
 			}}>
 			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path
@@ -375,7 +349,6 @@
 			href="/events"
 			on:click|preventDefault={() => {
 				navigate('/events');
-				mobileMenuShown = false;
 			}}>
 			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path
@@ -416,12 +389,7 @@
 			</Dropdown>
 		</div>
 
-		<a
-			href="/search"
-			on:click|preventDefault={() => {
-				navigate('/search');
-				mobileMenuShown = false;
-			}}>
+		<a href="/search" on:click|preventDefault={() => navigate('/search')}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 			</svg>
@@ -429,7 +397,7 @@
 			Search
 		</a>
 
-		<a href="/settings" class="settings" title={notificationBadgeTitle}>
+		<a href="/settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path
 					stroke-linecap="round"
@@ -536,10 +504,6 @@
 		padding: 0;
 		display: flex;
 		justify-content: flex-end;
-	}
-
-	.settings {
-		position: relative;
 	}
 
 	.notification-badge {
@@ -664,6 +628,16 @@
 
 	@media (pointer: fine) {
 		.nav-button:hover :global(> *) {
+			display: block;
+		}
+	}
+
+	.touch-only {
+		display: none;
+	}
+
+	@media (pointer: coarse) {
+		.touch-only {
 			display: block;
 		}
 	}
