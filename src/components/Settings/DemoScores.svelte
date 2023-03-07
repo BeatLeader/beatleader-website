@@ -7,15 +7,13 @@
 	export let initialState = null;
 	export let initialStateType = null;
 	export let initialService = 'beatleader';
-	export let initialServiceParams = {};
+	export let initialServiceParams = {sort: 'pp', page: 1};
 	export let numOfScores = 1;
 	export let fixedBrowserTitle = null;
 	export let withPlayers = false;
 	export let noIcons = false;
 
 	let scoresStore = createScoresStore(playerId, initialService, initialServiceParams, initialState, initialStateType);
-
-	let scoresBoxEl = null;
 
 	function changeParams(newPlayerId, newService, newServiceParams) {
 		if (!newPlayerId) return null;
@@ -51,9 +49,10 @@
 	$: $scoresStore, updateServiceParams(scoresStore);
 
 	$: scoresStore && scoresStore.fetch(currentServiceParams, currentService);
+	$: if ($scoresStore && !$scoresStore.length) playerId = '76561199104169308';
 </script>
 
-<div bind:this={scoresBoxEl}>
+<div>
 	{#if $scoresStore && $scoresStore.length}
 		<div class="song-scores">
 			{#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
@@ -66,12 +65,11 @@
 						service={currentService}
 						{withPlayers}
 						{noIcons}
-						additionalStat={currentServiceParams?.sort} />
+						additionalStat={currentServiceParams?.sort}
+						animationSign={0} />
 				{/if}
 			{/each}
 		</div>
-	{:else}
-		<p>No scores.</p>
 	{/if}
 </div>
 

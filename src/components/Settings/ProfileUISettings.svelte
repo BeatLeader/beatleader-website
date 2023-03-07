@@ -5,6 +5,9 @@
 	import Profile from '../Player/Profile.svelte';
 	import createPlayerInfoWithScoresStore from '../../stores/http/http-player-with-scores-store';
 	import createAccountStore from '../../stores/beatleader/account';
+	import {fly, fade} from 'svelte/transition';
+
+	export let animationSign = 1;
 
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_SORT_VALUE = 'last';
@@ -50,8 +53,8 @@
 	}
 
 	const account = createAccountStore();
-	let playerStore = createPlayerInfoWithScoresStore($account?.player?.playerId ?? '1');
 
+	$: playerStore = createPlayerInfoWithScoresStore($account?.player?.playerId ?? '1');
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
 	$: settempsetting('iconsOnAvatars', currentAvatarIcons);
@@ -60,7 +63,7 @@
 	$: settempsetting('daysOfHistory', currentDaysOfHistory);
 </script>
 
-<div class="main-container">
+<div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<div class="profile">
 		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" pinnedScores={false} />
 	</div>
