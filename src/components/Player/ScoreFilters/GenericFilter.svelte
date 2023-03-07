@@ -49,13 +49,17 @@
 		margin-right: 0.25em;
 	}
 
+	.filter:not(.open) > .filter-component {
+		display: none;
+	}
+
 	.filter.open {
 		width: 11em;
+		overflow: visible;
 	}
 
 	.filter > .filter-component {
 		position: absolute;
-		top: 0;
 		left: 0;
 		bottom: 0;
 		width: calc(100% - 1.4em);

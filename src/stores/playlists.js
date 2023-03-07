@@ -137,8 +137,41 @@ export default () => {
 
 		let url = substituteVars(
 			BL_API_URL +
-				'playlist/generate?count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}',
+				'playlist/generate?count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}',
 			{count, ...filters},
+			true,
+			true
+		);
+
+		fetch(url, {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(async playlist => {
+				if (!playlist.playlistTitle || !playlist.songs) {
+					return;
+				}
+
+				let playlists = await get();
+				playlists.push(playlist);
+
+				await set(playlists, true);
+				await select(playlist);
+
+				callback();
+			});
+	};
+
+	const generatePlayerPlaylist = (count, playerId, filters, callback) => {
+		console.log(filters);
+		if (!filters.order) {
+			filters.order = 'desc';
+		}
+
+		let url = substituteVars(
+			BL_API_URL +
+				'playlist/scores/generate?playerId=${playerId}&count=${count}&sortBy=${sortBy}&order=${order}&search=${search}&diff=${diff}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}',
+			{count, playerId, order: filters.order, sortBy: filters.sort, duplicateDiffs: filters.duplicateDiffs, ...filters.filters},
 			true,
 			true
 		);
@@ -270,6 +303,7 @@ export default () => {
 		getShared,
 		share,
 		generatePlaylist,
+		generatePlayerPlaylist,
 	};
 
 	return playlistStore;

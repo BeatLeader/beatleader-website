@@ -8,7 +8,6 @@
 		processStringArrayFilter,
 		processIntArrayFilter,
 	} from '../utils/filters';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
@@ -18,6 +17,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Headsets from '../components/Ranking/Headsets.svelte';
+	import BackToTop from '../components/Common/BackToTop.svelte';
 
 	export let page = 1;
 	export let location;
@@ -61,7 +61,7 @@
 		start = new Date().getTime();
 		setTimeout(() => {
 			if (new Date().getTime() - start > 499) {
-				updateCurrentFiltersFromParams(true);
+				updateCurrentFiltersFromParams();
 			}
 		}, 500);
 	};
@@ -85,7 +85,7 @@
 		{
 			key: 'countries',
 			label: 'Countries',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'countries',
 			value: [],
@@ -103,7 +103,7 @@
 		{
 			key: 'platform',
 			label: 'Platform',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
@@ -118,7 +118,7 @@
 		{
 			key: 'hmd',
 			label: 'Headsets',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'headsets',
 			value: [],
@@ -136,7 +136,7 @@
 		{
 			key: 'role',
 			label: 'Role',
-			default: '',
+			default: [],
 			process: processStringArrayFilter,
 			type: 'switch',
 			value: [],
@@ -144,10 +144,12 @@
 				{id: 'admin', label: 'Administrator'},
 				{id: 'creator', label: 'BL creator'},
 				{id: 'rankedteam', label: 'Ranking Team'},
-				{id: 'mapper', label: 'Mapper'},
-				{id: 'tipper', label: 'Tipper'},
-				{id: 'supporter', label: 'Supporter'},
+				{id: 'qualityteam', label: 'Quality Team'},
+
 				{id: 'sponsor', label: 'Sponsor'},
+				{id: 'supporter', label: 'Supporter'},
+				{id: 'tipper', label: 'Tipper'},
+				{id: 'mapper', label: 'Mapper'},
 			],
 			onChange: e => onMultiSwitchChange(e, 'role'),
 			multi: true,
@@ -168,11 +170,11 @@
 		{
 			key: 'score_range',
 			label: 'Scores count',
-			default: [0, 2000],
+			default: [0, 4000],
 			min: 0,
-			max: 2000,
+			max: 4000,
 			step: 1,
-			pipstep: 250,
+			pipstep: 500,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
@@ -236,9 +238,8 @@
 
 	let isLoading = false;
 	let pending = null;
-	let preventScroll = false;
 
-	function updateCurrentFiltersFromParams(noScroll) {
+	function updateCurrentFiltersFromParams() {
 		params.forEach(p => {
 			if (p.bitArray) {
 				currentFilters[p.key] = (p?.value ?? []).map(v => v?.id).reduce((prev, i) => prev + (1 << i), 0);
@@ -254,14 +255,8 @@
 		params = params;
 
 		currentPage = 1;
-		preventScroll = noScroll;
 
 		navigateToCurrentPageAndFilters();
-	}
-
-	function scrollToTop() {
-		if (!preventScroll && boxEl) scrollToTargetAdjusted(boxEl, 70);
-		preventScroll = false;
 	}
 
 	function changeParams(newPage, newLocation, replace) {
@@ -318,8 +313,8 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, location, true);
-	$: scrollToTop(pending);
 </script>
 
 <svelte:head>
@@ -401,6 +396,8 @@
 		</ContentBox>
 	</aside>
 </section>
+
+<BackToTop />
 
 <style>
 	.align-content {
@@ -500,7 +497,7 @@
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
-			flex-direction: column-reverse;
+			flex-direction: column;
 			align-items: center;
 		}
 

@@ -8,16 +8,23 @@
 	export let skeleton = false;
 	export let profileAppearance;
 	export let editModel = null;
+	export let overrideVisibleStats = null;
 
 	const dispatch = createEventDispatcher();
 
 	let showHidden = false;
 
-	function processStats(stats, profileAppearance, editEnabled) {
-		const visible =
-			stats?.length && editEnabled
-				? stats.map(s => ({...s, title: 'Click to toggle', disabled: profileAppearance && !profileAppearance.includes(s.key)}))
-				: (stats ?? []).filter(s => !profileAppearance || profileAppearance.includes(s?.key));
+	function processStats(stats, profileAppearance, editEnabled, overrideVisibleStats) {
+		var visible;
+
+		if (!overrideVisibleStats) {
+			visible =
+				stats?.length && editEnabled
+					? stats.map(s => ({...s, title: 'Click to toggle', disabled: profileAppearance && !profileAppearance.includes(s.key)}))
+					: (stats ?? []).filter(s => !profileAppearance || profileAppearance.includes(s?.key));
+		} else {
+			visible = (stats ?? []).filter(s => overrideVisibleStats.includes(s?.key));
+		}
 
 		const hidden = (stats ?? []).filter(s => !visible.some(v => v.key === s.key));
 
@@ -41,12 +48,14 @@
 	$: ({visible: visibleScoresStats, hidden: hiddenScoresStats} = processStats(
 		scoresStats,
 		editModel?.data?.profileAppearance ?? profileAppearance,
-		!!editModel
+		!!editModel,
+		overrideVisibleStats
 	));
 	$: ({visible: visibleAccStats, hidden: hiddenAccStats} = processStats(
 		accBadges,
 		editModel?.data?.profileAppearance ?? profileAppearance,
-		!!editModel
+		!!editModel,
+		overrideVisibleStats
 	));
 </script>
 
@@ -64,7 +73,7 @@
 		{/if}
 	</div>
 	{#if hiddenScoresStats?.length || hiddenAccStats?.length}
-		<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+		<div style="margin: 0; padding: 0;">
 			<span
 				class="reveal clickable"
 				class:opened={showHidden}

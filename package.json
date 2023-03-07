@@ -23,7 +23,7 @@
     "immer": "^9.0.5",
     "json-stable-stringify": "^1.0.1",
     "luxon": "^2.0.2",
-    "p-queue": "^7.1.0",
+    "p-queue": "=7.3.0",
     "prettier": "^2.8.1",
     "prettier-plugin-svelte": "^2.7.0",
     "rollup": "^2.3.4",
@@ -45,8 +45,11 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "html2canvas": "^1.4.1",
+    "@popperjs/core": "^2.11.6",
+    "deep-equal": "^2.2.0",
     "sirv-cli": "^1.0.0",
+    "suneditor": "^2.44.3",
+    "svelte-confetti": "^1.2.2",
     "svelte-select": "^4.4.7",
     "svelte-simple-modal": "^1.1.1"
   }

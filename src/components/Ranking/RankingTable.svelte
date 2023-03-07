@@ -52,9 +52,12 @@
 
 	const statKeys = {
 		acc: {
-			ranked: 'scoreStats.averageWeightedRankedAccuracy',
+			ranked: 'scoreStats.averageRankedAccuracy',
 			unranked: 'scoreStats.averageUnrankedAccuracy',
 			all: 'scoreStats.averageAccuracy',
+		},
+		weightedAcc: {
+			ranked: 'scoreStats.averageWeightedRankedAccuracy',
 		},
 		topAcc: {
 			ranked: 'scoreStats.topRankedAccuracy',
@@ -98,9 +101,9 @@
 			label: 'Weighted Acc',
 			title: 'Sort by weighted accuracy from top 100 plays',
 			iconFa: 'fa fa-crosshairs',
-			value: data => getAcc(data, statKeys['acc'][currentTypeValue]),
+			value: data => getAcc(data, statKeys['weightedAcc'][currentTypeValue]),
 			props: {prefix: '', suffix: '%', zero: '-', digits: 2},
-			hideForTypes: ['unranked'],
+			hideForTypes: ['unranked', 'all'],
 		},
 
 		{
@@ -255,6 +258,7 @@
 	$: changeParams(type, page, filters);
 	$: dispatch('loading', $isLoading);
 	$: dispatch('pending', $pending?.page);
+	$: dispatch('players-fetched', $rankingStore?.data);
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
 	$: refreshSortValues(allSortValues, currentFilters);

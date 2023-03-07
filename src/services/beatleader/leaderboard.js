@@ -7,6 +7,7 @@ import {PRIORITY} from '../../network/queues/http-queue';
 import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
 import {MINUTE, HOUR} from '../../utils/date';
+import stringify from 'json-stable-stringify';
 
 const ACCSABER_LEADERBOARD_NETWORK_TTL = MINUTE * 5;
 
@@ -22,7 +23,7 @@ export default () => {
 		);
 
 	const fetchLeaderboardPage = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
-		resolvePromiseOrWaitForPending(`apiClient/leaderboard/${leaderboardId}/${page}`, () =>
+		resolvePromiseOrWaitForPending(`apiClient/leaderboard/${leaderboardId}/${page}/${stringify(filters)}`, () =>
 			leaderboardApiClient.getProcessed({leaderboardId, page, filters, signal, priority, cacheTtl: force ? null : MINUTE})
 		);
 

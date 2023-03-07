@@ -38,12 +38,16 @@
 
 	let songKey;
 	let songInfo;
-	let shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'oneclick', 'twitch', 'delete', 'pin'];
-	if (mapCheck) {
-		shownIcons.push('mapcheck');
-	}
-	if (batleRoyale) {
-		shownIcons.push('batleRoyale');
+	let shownIcons;
+
+	function updateIcons(icons) {
+		shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'oneclick', 'twitch', 'delete', 'pin'];
+		if (mapCheck) {
+			shownIcons.push('mapcheck');
+		}
+		if (batleRoyale) {
+			shownIcons.push('batleRoyale');
+		}
 	}
 
 	let beatSaverService = createBeatSaverService();
@@ -72,6 +76,7 @@
 		}
 	}
 
+	$: updateIcons(icons);
 	$: updateSongKey(hash);
 	$: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null;
 	$: charName = diffInfo && diffInfo.type ? diffInfo.type : null;
@@ -82,7 +87,7 @@
 	$: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
 	$: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
 
-	$: oneclickToPlaylist = opt($configStore, 'preferences')?.oneclick == 'playlist';
+	$: oneclickToPlaylist = $configStore?.preferences?.oneclick == 'playlist';
 	$: ocPlaylistIndex = oneclickToPlaylist ? $playlists.findIndex(p => p.oneclick) : null;
 	$: ocPlaylist = ocPlaylistIndex != null ? $playlists[ocPlaylistIndex] : null;
 	$: ocplaylistSongs = ocPlaylist?.songs?.filter(el => el.hash == hash);

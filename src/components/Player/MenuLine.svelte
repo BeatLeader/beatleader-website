@@ -14,7 +14,7 @@
 		{#if withRank}
 			<span class="rank">#{rank}</span>
 		{/if}
-		<PlayerNameWithFlag {player} />
+		<PlayerNameWithFlag {player} disablePopover={true} />
 	</div>
 {/if}
 

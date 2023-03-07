@@ -177,6 +177,12 @@
 						{songScore.score?.metadata?.description ?? (editable ? 'Click to edit description...' : '')}
 					</h3>
 				{/if}
+				{#if songScore.score?.replaysWatched}
+					<h3 class="pin-description" title="Replay watch count">
+						<i class="fas fa-eye" />
+						{songScore.score?.replaysWatched}
+					</h3>
+				{/if}
 
 				{#if editable}
 					<i class="fas fa-edit" on:click={enableEdit} title="Click to edit" />
@@ -184,7 +190,13 @@
 			{/if}
 		</header>
 
-		<SongScore {playerId} {songScore} service="beatleader" icons={['bs', 'replay', 'pin', 'pin-service']} {fixedBrowserTitle} />
+		<SongScore
+			{playerId}
+			{songScore}
+			service="beatleader"
+			icons={['bs', 'replay', 'pin', 'pin-service']}
+			{fixedBrowserTitle}
+			replayCounter={false} />
 	</div>
 {/if}
 

@@ -9,6 +9,7 @@
 	import {debounce} from '../../../utils/debounce';
 	import {onLegendClick} from './utils/legend-click-handler';
 	import stringify from 'json-stable-stringify';
+	import {configStore} from '../../../stores/config';
 
 	export let playerId = null;
 	export let height = '350px';
@@ -66,6 +67,7 @@
 				tension: 0.4,
 				round: 0,
 				type: 'line',
+				hidden: !$configStore.chartLegend.y,
 			},
 		];
 
@@ -130,7 +132,7 @@
 		const skipped = (ctx, value) => (ctx.p0.skip || ctx.p1.skip ? value : undefined);
 
 		[
-			{key: 'pp', name: 'PP', borderColor: ppColor, round: 2, axisDisplay: true, precision: 0},
+			{key: 'pp', name: 'PP', borderColor: ppColor, round: 2, precision: 0},
 			{
 				key: 'countryRank',
 				name: 'Country rank',
@@ -147,7 +149,6 @@
 				round: 0,
 				axisDisplay: false,
 				precision: 0,
-				hidden: true,
 			},
 			{
 				key: 'totalPlayCount',
@@ -156,10 +157,9 @@
 				round: 0,
 				axisDisplay: false,
 				precision: 0,
-				hidden: true,
 			},
 		].forEach(obj => {
-			const {key, name, axisDisplay, usePrevAxis, precision, reverse, ...options} = obj;
+			const {key, name, usePrevAxis, precision, reverse, ...options} = obj;
 
 			if (!statsHistory?.[key]) return;
 
@@ -168,7 +168,6 @@
 			if (!usePrevAxis) lastYIdx++;
 			const axisKey = `y${lastYIdx}`;
 			yAxes[axisKey] = {
-				display: axisDisplay,
 				position: 'right',
 				title: {
 					display: $pageContainer.name !== 'phone',
@@ -186,6 +185,7 @@
 
 			datasets.push({
 				...options,
+				hidden: !$configStore.chartLegend[axisKey],
 				yAxisID: axisKey,
 				label: name,
 				data: fieldData,
@@ -236,6 +236,7 @@
 					maxBarThickness: 25,
 					stack: 'daily-scores',
 					order: 0,
+					hidden: !$configStore.chartLegend[scoresAxisKey],
 				});
 
 			if (statsHistory?.unrankedPlayCountDaily?.length)
@@ -251,6 +252,7 @@
 					maxBarThickness: 25,
 					stack: 'daily-scores',
 					order: 1,
+					hidden: !$configStore.chartLegend[scoresAxisKey],
 				});
 		}
 
@@ -261,6 +263,7 @@
 				options: {
 					responsive: true,
 					maintainAspectRatio: false,
+					animation: false,
 					layout: {
 						padding: {
 							right: 0,
@@ -302,6 +305,7 @@
 						x: xAxis,
 						...yAxes,
 					},
+					configStore,
 				},
 			});
 		} else {
@@ -311,6 +315,22 @@
 		}
 
 		dispatch('height-changed');
+
+		canvas.addEventListener('mousemove', function (e) {
+			var rect = e.target.getBoundingClientRect();
+			var y = e.clientY - rect.top; //y position within the element.
+			if (y < 30) {
+				document.body.style.cursor = 'pointer';
+			} else {
+				document.body.style.cursor = 'default';
+			}
+		});
+
+		canvas.addEventListener('mouseout', function (e) {
+			document.body.style.cursor = 'default';
+		});
+
+		onLegendClick(null, null, chart.legend, true);
 	}
 
 	let debouncedChartHash = null;

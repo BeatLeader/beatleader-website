@@ -6,10 +6,12 @@
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
 	import {configStore} from '../stores/config';
+	import {opt} from '../utils/js';
+	import {mobileTouch} from '../svelte-utils/actions/mobile-touch';
+	import {clickOutside} from '../svelte-utils/actions/click-outside';
+	import {isTouchDevice} from '../utils/is-touch';
 	import Dropdown from './Common/Dropdown.svelte';
 	import MenuLine from './Player/MenuLine.svelte';
-	import {opt} from '../utils/js';
-	import Settings from './Others/Settings.svelte';
 	import Button from './Common/Button.svelte';
 	import Avatar from './Common/Avatar.svelte';
 	import SelectedPlaylist from './Playlists/SelectedPlaylist.svelte';
@@ -23,41 +25,14 @@
 		navigate(`/u/${playerId}`);
 	}
 
-	function onAccountClicked(event, playerId) {
-		if (event.srcElement.innerText === 'Migrate' || event.srcElement.innerText === 'Log In') {
-			navigate(`/signin`);
-		} else if (event.srcElement.innerText === 'Link patreon') {
-			navigate(`/signin/linkPatreon`);
-		} else if (event.srcElement.innerText === 'Link socials...') {
-			navigate(`/signin/socials`);
-		} else if (event.srcElement.innerText === 'My login') {
-			navigate(`/signin/mylogin`);
-		} else if (event.srcElement.innerText === 'Change password') {
-			navigate(`/signin/changePassword`);
-		} else if (event.srcElement.innerText === 'Suspend account' || event.srcElement.innerText === 'Activate account') {
-			navigate(`/signin/autoban`);
-		} else if (event.srcElement.innerText === 'Log Out') {
-			account.logOut();
-		} else if (event.srcElement.innerText === 'RT Dashboard') {
-			navigate('/rt');
-		} else if (playerId) {
-			navigateToPlayer(playerId);
-		}
-		accountMenuShown = false;
-	}
-
 	function onFriendClick(event) {
 		if (!event.detail) return;
-
-		friendsMenuShown = false;
 
 		navigateToPlayer(event.detail.playerId);
 	}
 
 	function onPlaylistClick(event) {
 		if (!event.detail) return;
-
-		playlistMenuShown = false;
 
 		playlists.select(event.detail);
 	}
@@ -67,36 +42,11 @@
 	let accountMenuShown = false;
 	let mobileMenuShown = false;
 
-	let showSettings = false;
-
-	function hideAllMenus() {
-		friendsMenuShown = false;
-		playlistMenuShown = false;
-		accountMenuShown = false;
-		mobileMenuShown = false;
-	}
-
 	onMount(async () => {
 		const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => (settingsNotificationBadge = message));
 
-		const settingsOpenUnsubscribe = eventBus.on('show-settings', () => {
-			showSettings = !showSettings;
-		});
-
-		document.addEventListener('mousedown', event => {
-			if (friendsMenuShown || playlistMenuShown || accountMenuShown || mobileMenuShown) {
-				var element = event.srcElement;
-				while (element && !element.classList.contains('hovermenu')) {
-					element = element.parentElement;
-				}
-				if (element && element.classList.contains('hovermenu')) return;
-				hideAllMenus();
-			}
-		});
-
 		return () => {
 			settingsBadgeUnsubscribe();
-			settingsOpenUnsubscribe();
 		};
 	});
 
@@ -106,36 +56,42 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
-		const isRT = $account?.player?.playerInfo?.role
+		signupOptions = isTouchDevice() && player ? [{label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}] : [];
+
+		const isStaff = $account?.player?.playerInfo?.role
 			?.split(',')
-			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
+			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator', 'qualityteam'].includes(role));
 
 		if (loggedInUser.player) {
-			signupOptions = [];
-
-			if (isRT) signupOptions.push('RT Dashboard');
+			if (isStaff) signupOptions.push({label: 'Staff Dashboard', url: '/staff'});
 
 			if ((loggedInUser.player.playerId < 30000000 || loggedInUser.player.playerId > 1000000000000000) && !loggedInUser.migrated) {
-				signupOptions.push('Migrate');
+				signupOptions.push({label: 'Migrate', url: '/signin'});
 			}
 			if (loggedInUser.player.playerId < 70000000000000000 || loggedInUser.migrated) {
-				signupOptions.push('Change password');
-				signupOptions.push('My login');
+				signupOptions.push({label: 'Change password', url: '/signin/changePassword'});
+				signupOptions.push({label: 'My login', url: '/signin/mylogin'});
 			}
-			signupOptions.push('Link socials...');
+			signupOptions.push({label: 'Link socials...', url: '/signin/socials'});
 			if (!loggedInUser.patreoned) {
-				signupOptions.push('Link patreon');
+				signupOptions.push({label: 'Link patreon', url: '/signin/linkPatreon'});
 			}
 			if (loggedInUser.ban) {
-				if (loggedInUser.ban.reason == 'Self ban') {
-					signupOptions.push('Activate account');
+				if (loggedInUser.ban.reason === 'Self ban') {
+					signupOptions.push({label: 'Activate account', url: '/signin/autoban'});
 				}
 			} else {
-				signupOptions.push('Suspend account');
+				signupOptions.push({label: 'Suspend account', url: '/signin/autoban'});
 			}
-			signupOptions.push('Log Out');
+			signupOptions.push({
+				label: 'Log Out',
+				callback: () => {
+					account.logOut();
+					navigate('/');
+				},
+			});
 		} else {
-			signupOptions = ['Log In'];
+			signupOptions.push({label: 'Log In', url: '/signin'});
 		}
 	}
 
@@ -149,7 +105,7 @@
 </script>
 
 <nav class="ssr-page-container">
-	<a href="/" on:click|preventDefault={() => navigate('/')}>
+	<a href="/public" on:click|preventDefault={() => navigate('/')}>
 		<img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
 		<img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
 	</a>
@@ -157,14 +113,11 @@
 	{#if player}
 		<a
 			href={`/u/${player.playerId}`}
-			class="me hovermenu"
-			on:click={e => {
-				e.preventDefault();
-				onAccountClicked(e, player.playerId);
+			class="me nav-button"
+			on:click|preventDefault={() => {
+				if (!isTouchDevice()) navigateToPlayer(player.playerId);
 			}}
-			on:mouseover={() => (accountMenuShown = true)}
-			on:focus={() => (accountMenuShown = true)}
-			on:mouseleave={() => (accountMenuShown = false)}>
+			use:mobileTouch={() => (accountMenuShown = !accountMenuShown)}>
 			{#if opt(player, 'playerInfo.avatar')}
 				<Avatar {player} />
 			{:else}
@@ -179,9 +132,12 @@
 
 			Me
 
-			<Dropdown items={signupOptions} shown={accountMenuShown} noItems="">
+			<Dropdown items={signupOptions} bind:shown={accountMenuShown} noItems="">
 				<svelte:fragment slot="row" let:item>
-					<span class="accountMenuItem">{item}</span>
+					<a
+						href={item.url}
+						on:click|preventDefault|stopPropagation={() => (item.callback ? item.callback() : navigate(item.url))}
+						class={`accountMenuItem ${item?.class ?? ''}`}>{item.label}</a>
 				</svelte:fragment>
 			</Dropdown>
 		</a>
@@ -199,11 +155,7 @@
 		</a>
 	{/if}
 
-	<div
-		class="friends hovermenu"
-		on:mouseover={() => (friendsMenuShown = true)}
-		on:focus={() => (friendsMenuShown = true)}
-		on:mouseleave={() => (friendsMenuShown = false)}>
+	<div class="friends nav-button" use:mobileTouch={() => (friendsMenuShown = !friendsMenuShown)}>
 		<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 			><path
 				stroke-linecap="round"
@@ -215,7 +167,7 @@
 
 		<Dropdown
 			items={$friends}
-			shown={friendsMenuShown}
+			bind:shown={friendsMenuShown}
 			on:select={onFriendClick}
 			noItems={player ? 'No friends, add someone' : 'No friends, log in and add someone'}>
 			<svelte:fragment slot="row" let:item>
@@ -242,24 +194,22 @@
 		Clans
 	</a>
 
-	<div
-		class="right mobile-menu hovermenu"
-		on:mouseover={() => (mobileMenuShown = true)}
-		on:focus={() => (mobileMenuShown = true)}
-		on:mouseleave={() => (mobileMenuShown = false)}>
+	<div class="right mobile-menu nav-button" use:mobileTouch={() => (mobileMenuShown = !mobileMenuShown)}>
 		<div class="hamburger">
 			<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
 		</div>
 
-		<div class="dropdown-menu left" class:shown={mobileMenuShown}>
+		<div
+			class="dropdown-menu left"
+			class:shown={mobileMenuShown}
+			use:clickOutside={{callback: () => (mobileMenuShown = false), parent: '.nav-button'}}>
 			<div class="dropdown-content">
 				<div class="dropdown-item">
 					<a
 						href="/leaderboards"
 						on:click|preventDefault={() => {
 							navigate('/leaderboards');
-							mobileMenuShown = false;
 						}}>
 						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 							><path
@@ -281,7 +231,6 @@
 						href="/events"
 						on:click|preventDefault={() => {
 							navigate('/events');
-							mobileMenuShown = false;
 						}}>
 						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 							><path
@@ -295,12 +244,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a
-						href="/playlists"
-						on:click|preventDefault={() => {
-							navigate('/playlists');
-							mobileMenuShown = false;
-						}}>
+					<a href="/playlists" on:click|preventDefault={() => navigate('/playlists')}>
 						<i class="fas fa-list-ul" />
 
 						Playlists
@@ -311,12 +255,22 @@
 							<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
 						{/if}
 
-						<Dropdown items={[{firstRow: true}].concat($playlists.length ? $playlists : [])} shown={true} on:select={onPlaylistClick}>
+						<Dropdown
+							items={[{firstRow: true}].concat($playlists.length ? $playlists : [])}
+							bind:shown={mobileMenuShown}
+							on:select={onPlaylistClick}>
 							<svelte:fragment slot="row" let:item>
 								{#if item.firstRow}
 									<div class="playlistButtonsContainer">
 										<Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()} />
-										<Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')} />
+										<Button
+											type="primary"
+											iconFa="fas fa-external-link-alt"
+											label="Details"
+											on:click={() => {
+												navigate('/playlists');
+												mobileMenuShown = false;
+											}} />
 									</div>
 								{:else}
 									<SelectedPlaylist playlist={item} songsCounter={true} />
@@ -327,12 +281,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a
-						href="/search"
-						on:click|preventDefault={() => {
-							navigate('/search');
-							mobileMenuShown = false;
-						}}>
+					<a href="/search" on:click|preventDefault={() => navigate('/search')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 						</svg>
@@ -342,13 +291,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<div
-						class="settings"
-						title={notificationBadgeTitle}
-						on:click={() => {
-							showSettings = true;
-							mobileMenuShown = false;
-						}}>
+					<a href="/settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
@@ -361,7 +304,7 @@
 						Settings
 
 						{#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge" />{/if}
-					</div>
+					</a>
 				</div>
 			</div>
 		</div>
@@ -372,7 +315,6 @@
 			href="/leaderboards"
 			on:click|preventDefault={() => {
 				navigate('/leaderboards');
-				mobileMenuShown = false;
 			}}>
 			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path
@@ -392,7 +334,6 @@
 			href="/events"
 			on:click|preventDefault={() => {
 				navigate('/events');
-				mobileMenuShown = false;
 			}}>
 			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path
@@ -404,11 +345,7 @@
 			Events
 		</a>
 
-		<div
-			class="playlists hovermenu"
-			on:mouseover={() => (playlistMenuShown = true)}
-			on:focus={() => (playlistMenuShown = true)}
-			on:mouseleave={() => (playlistMenuShown = false)}>
+		<div class="playlists nav-button" use:mobileTouch={() => (playlistMenuShown = !playlistMenuShown)}>
 			{#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
 				<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
 			{:else}
@@ -418,13 +355,20 @@
 
 			<Dropdown
 				items={[{firstRow: true}].concat($playlists.length ? $playlists : [])}
-				shown={playlistMenuShown}
+				bind:shown={playlistMenuShown}
 				on:select={onPlaylistClick}>
 				<svelte:fragment slot="row" let:item>
 					{#if item.firstRow}
 						<div class="playlistButtonsContainer">
 							<Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()} />
-							<Button type="primary" iconFa="fas fa-external-link-alt" label="Details" on:click={() => navigate('/playlists')} />
+							<Button
+								type="primary"
+								iconFa="fas fa-external-link-alt"
+								label="Details"
+								on:click={() => {
+									navigate('/playlists');
+									playlistMenuShown = false;
+								}} />
 						</div>
 					{:else}
 						<SelectedPlaylist playlist={item} songsCounter={true} />
@@ -433,12 +377,7 @@
 			</Dropdown>
 		</div>
 
-		<a
-			href="/search"
-			on:click|preventDefault={() => {
-				navigate('/search');
-				mobileMenuShown = false;
-			}}>
+		<a href="/search" on:click|preventDefault={() => navigate('/search')}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 			</svg>
@@ -446,13 +385,7 @@
 			Search
 		</a>
 
-		<div
-			class="settings"
-			title={notificationBadgeTitle}
-			on:click={() => {
-				showSettings = true;
-				mobileMenuShown = false;
-			}}>
+		<a href="/settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path
 					stroke-linecap="round"
@@ -465,11 +398,9 @@
 			Settings
 
 			{#if settingsNotificationBadge || newSettingsAvailable}<div class="notification-badge" />{/if}
-		</div>
+		</a>
 	</div>
 </nav>
-
-<Settings bind:show={showSettings} />
 
 <style>
 	nav {
@@ -542,11 +473,10 @@
 	}
 
 	.logo.up-to-tablet {
-		height: 3em;
-		width: 3em;
-		margin-top: -0.1em;
-		margin-left: -1em;
-		margin-right: -1em;
+		height: 100%;
+		padding: 0;
+		margin: 0;
+		aspect-ratio: 1;
 		max-width: none;
 	}
 
@@ -562,10 +492,6 @@
 		padding: 0;
 		display: flex;
 		justify-content: flex-end;
-	}
-
-	.settings {
-		position: relative;
 	}
 
 	.notification-badge {
@@ -685,6 +611,22 @@
 		100% {
 			transform: scale(1.05);
 			box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+		}
+	}
+
+	@media (pointer: fine) {
+		.nav-button:hover :global(> *) {
+			display: block;
+		}
+	}
+
+	.touch-only {
+		display: none;
+	}
+
+	@media (pointer: coarse) {
+		.touch-only {
+			display: block;
 		}
 	}
 </style>

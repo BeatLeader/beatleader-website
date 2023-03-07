@@ -57,7 +57,9 @@
 	.hands-and-grid {
 		display: flex;
 		justify-items: center;
+		justify-content: center;
 		grid-gap: 0.6em;
+		flex-wrap: wrap;
 	}
 
 	header {

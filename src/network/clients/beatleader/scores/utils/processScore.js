@@ -19,7 +19,7 @@ export const processScore = s => {
 		stars: s?.leaderboard?.difficulty?.stars ?? null,
 	};
 
-	let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, pp, weight, rank, accuracy: acc, ...score} = s;
+	let {baseScore: unmodifiedScore, modifiers: mods, modifiedScore, replaysWatched, pp, weight, rank, accuracy: acc, ...score} = s;
 
 	acc *= 100;
 
@@ -49,6 +49,7 @@ export const processScore = s => {
 			unmodifiedAcc: modifiedScore && unmodifiedScore && acc ? (unmodifiedScore / modifiedScore) * acc : acc,
 			ppWeighted,
 			rank,
+			replaysWatched,
 			myScore: s?.myScore ? processScore(s.myScore) : null,
 			scoreImprovement: s?.scoreImprovement
 				? {

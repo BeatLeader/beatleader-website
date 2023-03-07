@@ -53,6 +53,8 @@
 		serviceParams = serviceParamsManager.getParams();
 	}
 
+	$: document.body.scrollIntoView({behavior: 'smooth'});
+
 	$: friends = $account?.friends ?? null;
 	$: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`;
 	$: metaDescription =

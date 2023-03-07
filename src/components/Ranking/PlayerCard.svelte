@@ -1,18 +1,19 @@
 <script>
 	import {navigate} from 'svelte-routing';
+	import {fade} from 'svelte/transition';
 	import {opt} from '../../utils/js';
 	import Value from '../Common/Value.svelte';
 	import Avatar from '../Common/Avatar.svelte';
 	import Change from '../Common/Change.svelte';
 	import Flag from '../Common/Flag.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
-	import SteamStats from '../Common/SteamStats.svelte';
 	import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts';
-	import {HSVtoRGB} from '../../utils/color';
 	import ClanBadges from '../Player/ClanBadges.svelte';
-	import {rankValue, accValue, ppValue, changingValuesClan} from '../../utils/clans';
+	import {rankValue, ppValue, changingValuesClan} from '../../utils/clans';
 	import {buildSearchFromFilters} from '../../utils/filters';
 	import {createEventDispatcher} from 'svelte';
+	import MiniProfile from '../Player/MiniProfile.svelte';
+	import Popover from '../Common/Popover.svelte';
 
 	export let player;
 	export let currentFilters = null;
@@ -90,17 +91,22 @@
 			countryRank = rankValue(firstSpecialClanTag, countryRank);
 		}
 	}
+
+	let referenceElement;
 </script>
 
 <div
 	class={`player-card ${playerId == player.playerId ? 'current' : ''} ${showRainbow(player) ? 'rainbow' : ''}`}
+	bind:this={referenceElement}
 	on:click={e => onPlayerClick(e, player)}
+	on:keypress={e => onPlayerClick(e, player)}
 	on:pointerover={() => hoverStats(player)}>
 	<div class="player-rank">
 		<div
 			class={`rank ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'brown' : rank >= 10000 ? 'small' : ''}`}
 			title="Go to global ranking"
-			on:click={e => onGlobalClick(player)}>
+			on:click={e => onGlobalClick(player)}
+			on:keypress={e => onGlobalClick(e, player)}>
 			#<Value value={rank} digits={0} zero="?" />
 		</div>
 		<div
@@ -108,7 +114,8 @@
 				countryRank === 1 ? 'gold' : countryRank === 2 ? 'silver' : countryRank === 3 ? 'brown' : countryRank >= 10000 ? 'small' : ''
 			}`}
 			title="Go to country ranking"
-			on:click={e => onCountryClick(player)}>
+			on:click={e => onCountryClick(player)}
+			on:keypress={e => onGlobalClick(e, player)}>
 			#<Value value={countryRank} digits={0} zero="?" />
 			<Flag country={opt(player, 'playerInfo.countries.0.country')} />
 		</div>
@@ -117,32 +124,30 @@
 		<Avatar {player} />
 	</div>
 	<div class="player-name-and-rank">
-		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} />
+		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} disablePopover={true} />
 		<span class="change">
-			{#if opt(player, 'others.difference') > 900000}
-				<span style="margin-left: 0.5em" class="inc" title="This player appeared after a long break.">resurrected</span>
-			{:else}
-				<Change value={opt(player, 'others.difference')} digits={0} />
-			{/if}
+			<Change value={opt(player, 'others.difference')} digits={0} />
 		</span>
 		<ClanBadges {player} />
 	</div>
 	<div class="steam-and-pp">
-		{#if currentFilters?.sortBy === 'dailyImprovements'}
-			<div style="color:{HSVtoRGB(player.others.improvement / 85, 1.0, 1.0)}">
-				<Value value={player?.others?.improvement} zero="-" suffix={player?.others?.improvement === 1 ? ' score' : ' scores'} digits="0" />
-			</div>
-		{:else}
-			<div style="color: {currentFilters?.sortBy === 'pp' ? HSVtoRGB(Math.max(0, pp - 1000) / 18000, 1.0, 1.0) : ''}">
-				{#if valueProps.isText}
-					{value}
-				{:else}
-					<Value {value} {...valueProps} />
-				{/if}
-			</div>
-		{/if}
+		<div>
+			{#if valueProps.isText}
+				{value}
+			{:else}
+				<Value {value} {...valueProps} />
+			{/if}
+		</div>
 	</div>
 </div>
+
+{#if player && player.playerInfo}
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+		<div class="popover-contents" transition:fade={{duration: 250}}>
+			<MiniProfile {player} />
+		</div>
+	</Popover>
+{/if}
 
 <style>
 	.player-card {
@@ -170,6 +175,7 @@
 	.player-card.rainbow:hover {
 		color: #00ffbc;
 		-webkit-background-clip: text;
+		background-clip: text;
 		background-image: -webkit-linear-gradient(180deg, #f35626, #feab3a);
 		-webkit-animation: rainbow 0.9s infinite linear;
 		animation: rainbow 0.9s infinite linear;
@@ -277,6 +283,10 @@
 		transform: rotateZ(180deg);
 	}
 
+	.popover-contents {
+		width: 40em;
+	}
+
 	@media screen and (max-width: 768px) {
 		.player-card {
 			grid-template-columns: 50% 50%;
@@ -321,6 +331,7 @@
 		.player-card.rainbow {
 			color: #00ffbc;
 			-webkit-background-clip: text;
+			background-clip: text;
 			background-image: -webkit-linear-gradient(180deg, #f35626, #feab3a);
 			-webkit-animation: rainbow 0.9s infinite linear;
 			animation: rainbow 0.9s infinite linear;

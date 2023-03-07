@@ -1,20 +1,15 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import ssrConfig from '../ssr-config';
-	import {createEventDispatcher} from 'svelte';
 	import {fade, fly} from 'svelte/transition';
 	import createEventsStore from '../stores/http/http-events-store';
-	import createAccountStore from '../stores/beatleader/account';
 	import Pager from '../components/Common/Pager.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Event from '../components/Event/Event.svelte';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 
 	export let page = 1;
 	export let location;
-
-	const dispatch = createEventDispatcher();
 
 	let shouldBeForceRefreshed = new URLSearchParams(location?.search ?? '')?.get('refresh') ?? false;
 
@@ -45,7 +40,6 @@
 
 	let currentPage = page;
 	let currentFilters = buildFiltersFromLocation(location);
-	let boxEl = null;
 
 	const eventsStore = createEventsStore(page, currentFilters);
 
@@ -67,11 +61,7 @@
 		navigate(`/events/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
 	}
 
-	function scrollToTop() {
-		if (boxEl) scrollToTargetAdjusted(boxEl, 60);
-	}
-
-	const account = createAccountStore();
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = eventsStore.isLoading;
 	$: pending = eventsStore.pending;
@@ -81,8 +71,6 @@
 	$: changePageAndFilters(page, location, shouldBeForceRefreshed);
 
 	$: eventsPage = $eventsStore?.data ?? [];
-
-	$: scrollToTop($pending);
 </script>
 
 <svelte:head>
@@ -91,7 +79,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox bind:box={boxEl}>
+		<ContentBox>
 			<h1 class="title is-5">
 				Events
 

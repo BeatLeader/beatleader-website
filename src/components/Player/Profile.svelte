@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
+	import {globalHistory} from 'svelte-routing/src/history';
 	import processPlayerData from './utils/profile';
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
@@ -26,7 +27,7 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
 	import {configStore} from '../../stores/config';
-	import html2canvas from 'html2canvas';
+	import Spinner from '../Common/Spinner.svelte';
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
@@ -34,6 +35,7 @@
 	export let twitchVideos = null;
 	export let avatarHash = null;
 	export let fixedBrowserTitle = null;
+	export let pinnedScores = true;
 
 	let editModel = null;
 
@@ -92,6 +94,8 @@
 				effectName: playerData?.profileSettings?.effectName ?? null,
 				hue: playerData?.profileSettings?.hue ?? 0,
 				saturation: playerData?.profileSettings?.saturation ?? 1,
+				profileCover: playerData?.profileSettings?.profileCover ?? '/assets/defaultcover.jpg',
+				profileCoverData: playerData?.profileSettings?.profileCover,
 			},
 			avatar: playerData?.playerInfo?.avatar
 				? playerData.playerInfo.avatar + (playerData.playerInfo.avatar.includes('beatleader') ? `?${avatarHash}` : '')
@@ -111,6 +115,10 @@
 	function onCancelEditModel() {
 		editModel = null;
 	}
+
+	globalHistory.listen(({location, action}) => {
+		editModel = null;
+	});
 
 	async function onSaveEditModel() {
 		if (!editModel) return;
@@ -165,11 +173,11 @@
 		successToast('Link Copied to Clipboard!');
 	}
 
+	let screenshoting = false;
 	async function takeScreenshot() {
 		try {
-			const element = document.querySelector('.content-box');
-			const canvas = await html2canvas(element, {useCORS: true, backgroundColor: '#252525'});
-			const blob = await new Promise(resolve => canvas.toBlob(resolve));
+			screenshoting = true;
+			const blob = await fetch('/screenshot/u/' + playerId).then(response => response.blob());
 			try {
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 				successToast('Screenshot Copied to Clipboard');
@@ -192,6 +200,8 @@
 				type: 'error',
 				removeAfter: 4000,
 			});
+		} finally {
+			screenshoting = false;
 		}
 	}
 	function onKeyUp(event) {
@@ -210,6 +220,28 @@
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 	$: updateAccSaberPlayerInfo(playerId);
 	$: isAdmin = $account?.player?.role?.includes('admin');
+	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
+	$: cover = !editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? editModel?.data.profileCover);
+
+	let fileinput;
+	const readFile = async fileInput =>
+		new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = () => reject(reader.error);
+
+			reader.readAsArrayBuffer(fileInput);
+		});
+	const changeCover = async e => {
+		editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
+		playerData.profileSettings.profileCover = editModel.data.profileCover;
+		editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
+	};
+	const resetCover = async e => {
+		editModel.data.profileCover = '/assets/defaultcover.jpg';
+		editModel.data.profileCoverData = null;
+		playerData.profileSettings.profileCover = null;
+	};
 
 	$: swipeCards = [].concat(
 		playerId
@@ -282,13 +314,34 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel {roles} />
-<ContentBox cls={modalShown ? 'inner-modal' : ''} zIndex="4">
-	<AvatarOverlay data={editModel?.data ?? playerData?.profileSettings} />
-	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+<ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
+	{#if cover}
+		<div class="cover-image" style="background-image: url({cover})">
+			{#if editModel}
+				{#if editModel.data.profileCoverData}
+					<Button type="danger" cls="remove-cover-button" iconFa="far fa-xmark" label="Remove cover" on:click={() => resetCover()} />
+				{/if}
+				<Button
+					type="primary"
+					cls="edit-cover-button"
+					iconFa="far fa-image"
+					label={editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
+					on:click={() => fileinput.click()}>
+					<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
+				</Button>
+			{/if}
+		</div>
+	{/if}
+	<AvatarOverlay withCover={cover} data={editModel?.data ?? playerData?.profileSettings} />
+	<div style="margin: 0; padding: 0;">
 		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
-	<div data-html2canvas-ignore style="margin: 0; padding: 0;">
-		<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+	<div style="margin: 0; padding: 0;">
+		{#if screenshoting}
+			<div class="screenshotSpinner"><Spinner /></div>
+		{:else}
+			<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+		{/if}
 	</div>
 
 	<div class="player-general-info" class:edit-enabled={!!editModel}>
@@ -304,7 +357,7 @@
 					}} />
 
 				{#if playerInfo && !isLoading}
-					<div data-html2canvas-ignore style="margin: 0; padding: 0;">
+					<div style="margin: 0; padding: 0;">
 						<AvatarOverlayIcons
 							{playerData}
 							bind:editModel
@@ -340,13 +393,7 @@
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary
-				{playerId}
-				{scoresStats}
-				{accBadges}
-				{skeleton}
-				profileAppearance={playerData?.profileSettings?.profileAppearance}
-				bind:editModel />
+			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
 
 			{#if editModel}
 				<div class="edit-buttons">
@@ -383,7 +430,9 @@
 	</div>
 </ContentBox>
 
-<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
+{#if pinnedScores}
+	<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
+{/if}
 
 <style>
 	.player-general-info {
@@ -424,21 +473,62 @@
 		flex-direction: column;
 		align-items: center;
 	}
+
+	.cover-image {
+		position: absolute;
+		display: flex;
+		background-size: cover;
+		background-position: 50%;
+		top: 0;
+		left: 0;
+		height: 12.5em;
+		z-index: -1;
+		width: 100%;
+		flex-direction: column-reverse;
+		border-radius: 6px 6px 0 0;
+		mask-type: alpha;
+		-webkit-mask-image: linear-gradient(180deg, white, white 40%, transparent);
+		mask-image: linear-gradient(180deg, white, white 40%, transparent);
+	}
+
 	:global(.shareButton) {
 		font-size: 1.5em !important;
 		position: absolute !important;
 		right: 2em;
 		top: 0em;
+		z-index: 5;
 	}
 	:global(.screenshotButton) {
 		font-size: 1.5em !important;
 		position: absolute !important;
 		right: 0.4em;
 		top: 0em;
+		z-index: 5;
+	}
+	:global(.screenshotSpinner) {
+		position: absolute !important;
+		right: 1.2em;
+		top: 1em;
+		z-index: 5;
 	}
 	:global(.inner-modal) {
 		z-index: 10 !important;
 		position: relative !important;
+	}
+	:global(.profile-container) {
+		padding-top: 8em !important;
+	}
+	:global(.edit-cover-button) {
+		width: 10em;
+		margin-left: 1em !important;
+		margin-bottom: 9em !important;
+	}
+
+	:global(.remove-cover-button) {
+		width: 10em;
+		position: absolute !important;
+		left: 1em;
+		top: 4em;
 	}
 
 	@media screen and (max-width: 767px) {

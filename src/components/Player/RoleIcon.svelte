@@ -45,6 +45,11 @@
 				roleIconClass = 'fas fa-balance-scale-right';
 				roleDescription = 'Ranking team member';
 				break;
+			case 'qualityteam':
+				show = !profileAppearance || profileAppearance.includes('qualityteam');
+				roleIconClass = 'fas fa-microscope';
+				roleDescription = 'Nomination Quality Team member';
+				break;
 			case 'juniorrankedteam':
 				show = !profileAppearance || profileAppearance.includes('juniorrankedteam');
 				roleIconClass = 'fas fa-balance-scale';

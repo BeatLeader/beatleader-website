@@ -55,6 +55,13 @@
 	}
 }
 
+.main-background {
+	display: none;
+	height: 100vh;
+	width: 100vw;
+	z-index: -1;
+}
+
 .tabs,
 .pagination-previous,
 .pagination-next,
@@ -11341,10 +11348,6 @@ html {
 	background-color: var(--background) !important;
 }
 
-body {
-	background-color: var(--background);
-}
-
 .title {
 	color: var(--textColor) !important;
 }
@@ -11450,7 +11453,6 @@ html {
 
 body {
 	color: var(--textColor);
-	background-color: var(--background);
 	margin: 0 auto;
 	padding: 0 1rem;
 	min-height: 100vh;
@@ -11690,6 +11692,22 @@ select {
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
 	background-image: url('./speed.svg') !important;
+}
+
+.ok-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./ok-icon.svg');
+}
+
+.v3-icon {
+	width: 100% !important;
+	height: 100% !important;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	background-image: url('./V3Icon.png') !important;
 }
 
 /* https://www.vecteezy.com/vector-art/1268644-set-of-fresh-bread */

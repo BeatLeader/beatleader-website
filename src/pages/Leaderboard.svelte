@@ -8,7 +8,6 @@
 	import createBeatSaverService from '../services/beatmaps';
 	import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic';
 	import {opt, capitalize} from '../utils/js';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import stringify from 'json-stable-stringify';
 	import ssrConfig from '../ssr-config';
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/beatleader/consts';
@@ -27,6 +26,8 @@
 	import Icons from '../components/Song/Icons.svelte';
 	import RankingVoting from '../components/Leaderboard/RankingVoting.svelte';
 	import RankUpdate from '../components/Leaderboard/RankUpdate.svelte';
+	import Commentary from '../components/Leaderboard/Commentary.svelte';
+	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
 	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
@@ -54,9 +55,7 @@
 	import SongScoreDetails from '../components/Player/SongScoreDetails.svelte';
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import QualificationApproval from '../components/Leaderboard/QualificationApproval.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import RankedApproval from '../components/Leaderboard/RankedApproval.svelte';
 	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
@@ -64,6 +63,11 @@
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
 	import produce from 'immer';
 	import {configStore} from '../stores/config';
+	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
+
+	import TextFilter from '../components/Player/ScoreFilters/TextFilter.svelte';
+	import ModifiersFilter from '../components/Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
+	import CriteriaCheck from '../components/Leaderboard/CriteriaCheck.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -94,18 +98,73 @@
 	const account = createAccountStore();
 	const votingStore = createVotingStore();
 
-	const params = [{key: 'countries', default: '', process: processStringFilter}];
+	const params = [
+		{
+			key: 'countries',
+			default: '',
+			process: processStringFilter,
+		},
+		{
+			key: 'sortBy',
+			default: 'rank',
+			process: processStringFilter,
+		},
+		{
+			key: 'order',
+			default: 'desc',
+			process: processStringFilter,
+		},
+		{
+			key: 'search',
+			default: null,
+			process: processStringFilter,
+		},
+		{
+			key: 'modifiers',
+			default: null,
+			process: processStringFilter,
+		},
+	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
 
-	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
-	if (!page || isNaN(page) || page <= 0) page = 1;
+	let currentPage = 1;
+
+	function updateFilters(newFilters) {
+		currentFilters = newFilters;
+		changeParams(currentLeaderboardId, currentType, currentPage, currentFilters);
+	}
+
+	function updateParams(leaderboardId, type, page) {
+		if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+		if (!page || isNaN(page) || page <= 0) page = 1;
+
+		var shouldRefresh = false;
+
+		if (page != currentPage) {
+			currentPage = page;
+			shouldRefresh = true;
+		}
+
+		if (type != currentType) {
+			currentType = type;
+			shouldRefresh = true;
+		}
+
+		if (leaderboardId != currentLeaderboardId) {
+			currentLeaderboardId = leaderboardId;
+			shouldRefresh = true;
+		}
+
+		if (shouldRefresh) {
+			changeParams(currentLeaderboardId, currentType, currentPage, currentFilters);
+		}
+	}
 
 	let currentLeaderboardId = leaderboardId;
 	let currentType = type;
-	let currentPage = page;
+
 	let currentFilters = buildFiltersFromLocation(location);
-	let boxEl = null;
 	let leaderboard = null;
 
 	let modifiedStars = null;
@@ -146,6 +205,48 @@
 
 	let typeOptions = availableTypeOptions.map(to => to);
 
+	let allSortValues = [
+		{
+			id: 'rank',
+			label: 'Rank',
+			title: 'Sort by rank',
+			iconFa: 'fa fa-cubes',
+		},
+		{
+			id: 'acc',
+			label: 'Acc',
+			title: 'Sort by accuracy',
+			iconFa: 'fa fa-crosshairs',
+		},
+		{
+			id: 'date',
+			label: 'Recent',
+			title: 'Sort by the time played',
+			iconFa: 'fas fa-clock',
+		},
+		{
+			id: 'maxStreak',
+			replaceTimeset: true,
+			label: '115 Streak',
+			title: 'Sort by longest 115 streak',
+			iconFa: 'icon115s',
+		},
+		{
+			id: 'pauses',
+			replaceTimeset: true,
+			label: 'Pauses',
+			title: 'Sort by pause count',
+			iconFa: 'fas fa-pause',
+		},
+		{
+			id: 'playCount',
+			replaceTimeset: true,
+			label: 'Play count',
+			title: 'Sort by play count',
+			iconFa: 'fas fa-calculator',
+		},
+	];
+
 	const stringifyFilters = (query, keys) =>
 		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
 
@@ -178,21 +279,16 @@
 
 	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
 
-	function changeParams(newLeaderboardId, newType, newPage, newLocation) {
-		if (newLocation === undefined) newLocation = {search: `?${buildSearchFromFilters(currentFilters)}`};
-
-		currentFilters = buildFiltersFromLocation(newLocation);
-
+	function changeParams(newLeaderboardId, newType, newPage, currentFilters) {
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
-		newPage = parseInt(newPage, 10);
-		if (isNaN(newPage)) newPage = 1;
+		currentPage = parseInt(newPage, 10);
+		if (isNaN(currentPage)) currentPage = 1;
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 
-		currentPage = newPage;
 		leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage, {...currentFilters});
 	}
 
@@ -202,8 +298,7 @@
 		const newPage = event.detail.page + 1;
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`);
-
-		dispatch('page-changed', {leaderboardId: currentLeaderboardId, type: currentType, page: newPage, filters: currentFilters});
+		else changeParams(currentLeaderboardId, currentType, newPage, currentFilters);
 	}
 
 	function onDiffChange(event) {
@@ -211,7 +306,7 @@
 		if (!newLeaderboardId) return;
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
-		else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
+		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	function onTypeChanged(event) {
@@ -220,15 +315,14 @@
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
 		if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`);
-		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
+		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, newFilters);
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
 
 	function onSelectedGroupEntryChanged(event) {
-		const newLeaderboardId = selectedGroupEntry;
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
-		else changeParams(newLeaderboardId, currentType, 1, {search: `?${buildSearchFromFilters(currentFilters)}`});
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	function processDiffs(diffArray, song) {
@@ -305,6 +399,83 @@
 
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
+	}
+
+	let switcherSortValues;
+	let sortValue;
+
+	function refreshSortValues(allSortValues, filterValues) {
+		switcherSortValues = allSortValues
+			.filter(v => {
+				return !v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType);
+			})
+			.map(v => ({
+				...v,
+				iconFa:
+					filterValues?.sortBy === v.id
+						? filterValues?.order === 'asc'
+							? 'fas fa-long-arrow-alt-up'
+							: 'fas fa-long-arrow-alt-down'
+						: v.iconFa,
+			}));
+
+		if (currentFilters?.sortBy?.length) {
+			sortValue = switcherSortValues.find(v => v.id === currentFilters.sortBy);
+			if (!sortValue) {
+				sortValue = switcherSortValues[0];
+				currentFilters.sortBy = sortValue.id;
+				changeParams(currentLeaderboardId, currentType, page, currentFilters);
+			}
+		} else {
+			sortValue = switcherSortValues[0];
+		}
+	}
+
+	function onSwitcherChanged(e) {
+		if (!e?.detail?.id) return;
+
+		if (sortValue?.id === e.detail.id) {
+			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+		} else {
+			currentFilters.sortBy = e.detail.id;
+			currentFilters.order = 'desc';
+		}
+
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+	}
+
+	var complexFilters = [];
+	function makeComplexFilters(currentFilters) {
+		complexFilters = [
+			{
+				component: TextFilter,
+				props: {
+					id: 'search',
+					iconFa: 'fa fa-search',
+					title: 'Search by player name/clan',
+					placeholder: 'Enter name or tag...',
+					value: currentFilters.search,
+					open: currentFilters.search?.length,
+				},
+			},
+		];
+	}
+
+	function onModifiersChanged(event) {
+		currentFilters.modifiers = event?.detail?.value ?? '';
+
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+	}
+
+	function onFiltersChanged(event) {
+		const newFilters = event?.detail ?? {};
+
+		currentFilters.search = newFilters.search;
+
+		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
 	let ssCoverDoesNotExists = false;
@@ -398,30 +569,34 @@
 
 	let verifiedMapperId;
 	let generalMapperId;
-	let qualificationLimitError;
 
-	let selectedGroupEntry;
-	function updateGroupSelection(leaderboardGroup) {
-		selectedGroupEntry = currentLeaderboardId;
-	}
+	const lessFunction = (a, b) => a < b;
+	const greaterFunction = (a, b) => a > b;
 
 	function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
-		scoresWithUser =
-			!userScoreOnCurrentPage && scores?.length && userScore
-				? (userScore?.score?.rank < scores?.[0]?.score?.rank ? [{...userScore, isUserScore: true, userScoreTop: true}] : [])
-						.concat(scores)
-						.concat(
-							userScore?.score?.rank > scores?.[scores.length - 1]?.score?.rank
-								? [{...userScore, isUserScore: true, userScoreTop: false}]
-								: []
-						)
-				: scores;
+		scoresWithUser = scores;
+		if (!userScoreOnCurrentPage && scores?.length && userScore) {
+			var key = currentFilters.sortBy;
+			if (key == 'date') {
+				key = 'timeset';
+			}
+			var orderingFunctions = [lessFunction, greaterFunction];
+			if ((key == 'rank' && currentFilters.order == 'asc') || (key != 'rank' && currentFilters.order == 'desc')) {
+				orderingFunctions = [greaterFunction, lessFunction];
+			}
+
+			if (orderingFunctions[0](userScore.score[key], scores[0].score[key])) {
+				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
+			} else if (orderingFunctions[1](userScore.score[key], scores[scores.length - 1]?.score[key])) {
+				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+			}
+		}
 	}
 
 	async function updateVerifiedMapperId(mapperId, hash) {
 		if (mapperId) {
 			let beatSaverService = createBeatSaverService();
-			const mapperInfoValue = await beatSaverService.getMapper(mapperId);
+			const mapperInfoValue = await beatSaverService.getMapper(mapperId, true);
 
 			var timeToNomination;
 			if (mapperInfoValue.verifiedMapper) {
@@ -436,8 +611,7 @@
 			account.refreshLastQualificationTime(hash, time => {
 				const currentSeconds = new Date().getTime() / 1000;
 				if (currentSeconds - time < 60 * 60 * 24 * timeToNomination) {
-					qualificationLimitError =
-						'You can nominate new map after ' + Math.round(timeToNomination - (currentSeconds - time) / (60 * 60 * 24)) + ' day(s)';
+					qualificationLimitError = 'You can nominate new map ' + formatDateRelative(dateFromUnix(time + 60 * 60 * 24 * timeToNomination));
 				} else {
 					qualificationLimitError = null;
 				}
@@ -453,17 +627,7 @@
 
 			const songInfoValue = await beatSaverService.byHash(hash, true);
 
-			latestHash = songInfoValue.versions[0].hash.toLowerCase() == hash.toLowerCase();
-		}
-	}
-
-	let isRankable;
-	function calculateIsRankable(isRT, qualification) {
-		if (isRT && qualification && qualification.criteriaMet == 1 && qualification.mapperAllowed && qualification.approved) {
-			const currentSeconds = new Date().getTime() / 1000;
-			isRankable = currentSeconds - qualification.approvalTime < 60 * 60 * 24 * 7;
-		} else {
-			isRankable = false;
+			latestHash = songInfoValue?.versions[0].hash.toLowerCase() == hash.toLowerCase();
 		}
 	}
 
@@ -474,8 +638,10 @@
 	$: pending = leaderboardStore.pending;
 	$: enhanced = leaderboardStore.enhanced;
 
-	$: changeParams(leaderboardId, type, page, location);
-	$: scrollToTop($pending);
+	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
+	$: updateParams(leaderboardId, type, page);
+	$: updateFilters(buildFiltersFromLocation(location));
+	$: makeComplexFilters(buildFiltersFromLocation(location));
 	$: scores = opt($leaderboardStore, 'scores', null);
 	$: clanRanking = opt($leaderboardStore, 'clanRanking', null);
 	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
@@ -493,24 +659,22 @@
 	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
 	$: reweight = leaderboard?.reweight;
-	$: calculateIsRankable(isRT, qualification);
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
-	$: isRT =
-		$account.player &&
-		$account.player.playerInfo.role &&
-		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
+	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
+	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
 	$: isjuniorRT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('juniorrankedteam');
 
 	$: playerHasFriends = !!$account?.friends?.length;
 	$: updateTypeOptions(mainPlayerCountry, playerHasFriends);
+	$: refreshSortValues(allSortValues, currentFilters);
 	$: if (song?.mapperId == $account?.player?.playerInfo.mapperId) updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
 
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
 	$: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage);
 	$: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore);
-	$: updateGroupSelection(leaderboardGroup);
 	$: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
 	$: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
 	$: if (separatePage && isRT) votingStore.fetchResults(leaderboardId);
@@ -531,6 +695,9 @@
 	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
 	$: curveShown = $configStore?.preferences?.curveShown;
 	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
+	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
+	$: commentaryShown = $configStore?.preferences?.commentaryShown;
+	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
 </script>
 
 <svelte:head>
@@ -549,7 +716,7 @@
 		{rtvoting}
 		{isjuniorRT}
 		{qualificationUpdate}
-		hideStarSlider={rtvoting && verifiedMapperId != generalMapperId}
+		hideStarSlider={rtvoting && (verifiedMapperId != generalMapperId || verifiedMapperId == 4284297)}
 		on:finished={() => {
 			mapVoting = false;
 			rtvoting = false;
@@ -569,27 +736,7 @@
 {/if}
 
 <section class="align-content">
-	<article bind:this={boxEl} class="page-content" transition:fade>
-		{#if !showApproveRequest && separatePage && qualification && !qualification.mapperAllowed && isRT}
-			<a href={window.location.href.replace('leaderboard', 'leaderboard/approval')}>Link for the mapper approval</a>
-		{/if}
-
-		{#if (showApproveRequest || (qualification?.mapperAllowed == false && $account?.player?.playerInfo.mapperId == song?.mapperId)) && leaderboard && qualification}
-			<ContentBox>
-				<div class="qualification-container">
-					<QualificationApproval {leaderboard} {account} />
-				</div>
-			</ContentBox>
-		{/if}
-
-		{#if isRankable}
-			<ContentBox>
-				<div class="qualification-container">
-					<RankedApproval {hash} {leaderboard} {votingStore} diff={diffInfo?.diff} mode={diffInfo?.type} />
-				</div>
-			</ContentBox>
-		{/if}
-
+	<article class="page-content" transition:fade>
 		<div
 			class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
 			style={opt($leaderboardStore, 'leaderboard.song.imageUrl')
@@ -616,7 +763,7 @@
 
 							<div>
 								{#if leaderboardGroup && leaderboardGroup.length > 1}
-									<select class="group-select" bind:value={selectedGroupEntry} on:change={onSelectedGroupEntryChanged}>
+									<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
 										{#each leaderboardGroup as option (option.id)}
 											<option class="group-option" value={option.id}>
 												{#if option.timestamp}
@@ -653,7 +800,7 @@
 											noMargin={true} />
 									{/if}
 									{#if separatePage && generalMapperId != 101330 && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
-										{#if !isRT && qualificationLimitError}
+										<!-- {#if !isRT && qualificationLimitError}
 											<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
 										{:else}
 											<Button
@@ -665,7 +812,14 @@
 													mapVoting = !mapVoting;
 													rtvoting = true;
 												}} />
-										{/if}
+										{/if} -->
+
+										<Button
+											cls="voteButton"
+											disabled={true}
+											iconFa="fas fa-lock"
+											title="New map nominations were temporarely disabled"
+											noMargin={true} />
 									{/if}
 									{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
 										<Button
@@ -785,6 +939,34 @@
 						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
 					</nav>
 				{/if}
+
+				<div class="sorting-options">
+					<span
+						class="beat-savior-reveal clickable"
+						class:opened={leaderboardShowSorting}
+						on:click={() => boolflip('leaderboardShowSorting')}
+						on:keydown={() => boolflip('leaderboardShowSorting')}
+						title="Show sorting and search for the leaderboard">
+						{#if leaderboardShowSorting}
+							Hide filters and sorting
+						{:else}
+							Show filters and sorting
+						{/if}
+
+						<i class="fas fa-chevron-down" />
+					</span>
+				</div>
+
+				{#if leaderboardShowSorting}
+					<nav class="switcher-nav">
+						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+						<div style="display: flex;">
+							<ScoreServiceFilters filters={complexFilters} on:change={onFiltersChanged} />
+							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+						</div>
+					</nav>
+				{/if}
+
 				{#if scoresWithUser?.length && type !== 'clanranking'}
 					<div class="scores-grid grid-transition-helper">
 						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
@@ -825,14 +1007,30 @@
 											<ClanBadges player={score.player} />
 										</div>
 										<div class="timeset above-tablet">
-											<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
-												{opt(score, 'score.timeSetString', '-')}
-											</span>
+											{#if currentFilters.sortBy == 'pauses'}
+												{score.score.pauses}
+											{:else if currentFilters.sortBy == 'maxStreak'}
+												{score.score.maxStreak}
+											{:else if currentFilters.sortBy == 'playCount'}
+												{score.score.playCount}
+											{:else}
+												<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
+													{opt(score, 'score.timeSetString', '-')}
+												</span>
+											{/if}
 										</div>
 										<div class="timeset mobile-only">
-											<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
-												{score?.score?.timeSetStringShort ?? ''}
-											</span>
+											{#if currentFilters.sortBy == 'pauses'}
+												{score.score.pauses}
+											{:else if currentFilters.sortBy == 'maxStreak'}
+												{score.score.maxStreak}
+											{:else if currentFilters.sortBy == 'playCount'}
+												{score.score.playCount}
+											{:else}
+												<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
+													{score?.score?.timeSetStringShort ?? ''}
+												</span>
+											{/if}
 										</div>
 									</div>
 									<div class="mobile-second-line">
@@ -1053,11 +1251,11 @@
 								class="beat-savior-reveal clickable"
 								class:opened={showAverageStats}
 								on:click={() => (showAverageStats = !showAverageStats)}
-								title="Show average difficulty stats">
+								title="Show average stats and ranking changes">
 								{#if showAverageStats}
-									Hide map statistic
+									Hide details
 								{:else}
-									Show map statistic
+									Show more details
 								{/if}
 
 								<i class="fas fa-chevron-down" />
@@ -1074,7 +1272,7 @@
 								</div>
 							{/await}
 							{#if !isNominated && leaderboard.qualification}
-								<QualificationStatus qualification={leaderboard.qualification} />
+								<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
 							{/if}
 							{#if leaderboard.changes}
 								<ReweightStatusRanked map={leaderboard} />
@@ -1315,37 +1513,41 @@
 	</article>
 	{#if separatePage}
 		<aside transition:fade>
-			{#if !leaderboardStatsShown}
-				<div class="score-options-section">
-					<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
-						<i class="fas fa-magnifying-glass" />
-
-						<i class="fas fa-chevron-right" />
-					</span>
-				</div>
-			{:else}
+			{#if showStats}
 				<ContentBox>
-					<div class="score-options-section to-the-left">
-						<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
-							<i class="fas fa-chevron-left" />
-						</span>
-					</div>
-					{#if showStats && leaderboard?.stats}
-						<div class="stats-with-icons">
-							<LeaderboardStats {leaderboard} curve={true} />
-							<div>
-								<small class="level-author">{song.hash}</small>
-								{#if latestHash}
-									<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-								{:else if latestHash == undefined}
-									<Spinner />
-								{:else}
-									<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-								{/if}
-							</div>
+					{#if !leaderboardStatsShown}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
+								<i class="fas fa-magnifying-glass" />
 
-							{#if iconsInInfo}
-								<Icons {hash} {diffInfo} mapCheck={true} />
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							{#if leaderboard?.stats}
+								<div class="stats-with-icons">
+									<LeaderboardStats {leaderboard} curve={true} />
+									<div>
+										<small class="level-author">{song.hash}</small>
+										{#if latestHash}
+											<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+										{:else if latestHash == undefined}
+											<Spinner />
+										{:else}
+											<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+										{/if}
+									</div>
+
+									{#if iconsInInfo}
+										<Icons {hash} {diffInfo} mapCheck={true} />
+									{/if}
+								</div>
 							{/if}
 						</div>
 					{/if}
@@ -1353,62 +1555,123 @@
 			{/if}
 
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-				{#if !qualificationInfoShown}
-					<div class="score-options-section">
-						<span
-							class="beat-savior-reveal clickable"
-							on:click={() => boolflip('qualificationInfoShown')}
-							title="Show qualification details">
-							<i class="fas fa-list-ul" />
-
-							<i class="fas fa-chevron-right" />
-						</span>
-					</div>
-				{:else}
-					<ContentBox>
-						<div class="score-options-section to-the-left">
+				<ContentBox
+					>{#if !qualificationInfoShown}
+						<div class="score-options-section">
 							<span
 								class="beat-savior-reveal clickable"
 								on:click={() => boolflip('qualificationInfoShown')}
-								title="Hide qualification details">
-								<i class="fas fa-chevron-left" />
+								title="Show qualification details">
+								<i class="fas fa-list-ul" />
+
+								<i class="fas fa-chevron-right" />
 							</span>
 						</div>
-						{#if isNominated && qualification}
-							<QualificationStatus {qualification} />
-						{/if}
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span
+									class="beat-savior-reveal clickable"
+									on:click={() => boolflip('qualificationInfoShown')}
+									title="Hide qualification details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							<div>
+								{#if isNominated && qualification}
+									<QualificationStatus {qualification} {isRanked} />
+								{/if}
 
-						{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
-							<ReweightStatus map={leaderboard} />
+								{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
+									<ReweightStatus map={leaderboard} />
+								{/if}
+							</div>
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
+			{#if qualification && !isRanked}
+				<ContentBox>
+					{#if !commentaryShown}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
+								<i class="fas fa-comments" />
+
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							<div>
+								<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
+								{#if isRT || isNQT || generalMapperId}
+									<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
+								{/if}
+							</div>
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
+			{#if isNominated && qualification}
+				{#if qualification.criteriaCheck}
+					<ContentBox>
+						{#if !criteriaInfoShown}
+							<div class="score-options-section">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Show criteria check">
+									<i class="fas fa-triangle-exclamation" />
+
+									<i class="fas fa-chevron-right" />
+								</span>
+							</div>
+						{:else}
+							<div class="box-with-left-arrow">
+								<div class="score-options-section to-the-left">
+									<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Hide criteria details">
+										<i class="fas fa-chevron-left" />
+									</span>
+								</div>
+
+								<CriteriaCheck songId={song?.id} criteriaCheck={JSON.parse(qualification.criteriaCheck)} />
+							</div>
 						{/if}
 					</ContentBox>
 				{/if}
 			{/if}
+
 			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
-				{#if !curveShown}
-					<div class="score-options-section">
-						<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
-							<i class="fas fa-bezier-curve" />
-							<i class="fas fa-chevron-right" />
-						</span>
-					</div>
-				{:else}
-					<ContentBox>
-						<div class="score-options-section to-the-left">
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
-								<i class="fas fa-chevron-left" />
+				<ContentBox>
+					{#if !curveShown}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
+								<i class="fas fa-bezier-curve" />
+								<i class="fas fa-chevron-right" />
 							</span>
 						</div>
-						<h2 class="title is-5">
-							PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
-						</h2>
-						<PpCurve
-							stars={leaderboard?.stats?.stars}
-							{modifiers}
-							mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
-							on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
-					</ContentBox>
-				{/if}
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							<div>
+								<h2 class="title is-5">
+									PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
+								</h2>
+								<PpCurve
+									stars={leaderboard?.stats?.stars}
+									{modifiers}
+									mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
+									on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
+							</div>
+						</div>
+					{/if}
+				</ContentBox>
 			{/if}
 		</aside>
 	{/if}
@@ -1425,7 +1688,7 @@
 	}
 
 	aside {
-		max-width: 35em;
+		max-width: 27em;
 	}
 
 	.page-content {
@@ -1469,7 +1732,6 @@
 		width: 100%;
 		height: 100%;
 		opacity: 0.1;
-		background-image: var(--background-image);
 		background-repeat: no-repeat;
 		background-size: cover;
 		pointer-events: none;
@@ -1820,9 +2082,30 @@
 	}
 
 	.to-the-left {
-		position: absolute;
-		left: 0.1em;
-		top: 50%;
+		margin-left: -0.5em !important;
+	}
+
+	.box-with-left-arrow {
+		display: grid;
+		align-items: center;
+		grid-template-columns: 1em auto;
+	}
+
+	.switcher-nav {
+		display: flex;
+		justify-content: space-evenly;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	.sorting-options {
+		display: grid;
+		justify-items: center;
+		margin-top: -0.8em;
+	}
+
+	.purple-icon {
+		color: purple;
 	}
 
 	@media screen and (max-width: 1275px) {

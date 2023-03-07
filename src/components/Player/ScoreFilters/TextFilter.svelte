@@ -3,6 +3,7 @@
 
 	export let open = false;
 	export let placeholder = null;
+	export let value = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -35,7 +36,7 @@
 </script>
 
 <form on:submit={onSubmit}>
-	<input type="text" {placeholder} class:open bind:this={filterEl} on:keyup={onKeyUp} />
+	<input type="text" {placeholder} {value} class:open bind:this={filterEl} on:keyup={onKeyUp} />
 </form>
 
 <style>

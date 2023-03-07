@@ -138,7 +138,7 @@ export const HMDs = {
 	35: {
 		name: 'Vive Pro 2',
 		icon: 'vive.svg',
-		color: '',
+		color: 'invert(79%) sepia(68%) saturate(5755%) hue-rotate(232deg) brightness(90%) contrast(109%)',
 		priority: 11,
 	},
 	128: {
@@ -436,38 +436,92 @@ export function diffForDiffName(diffName) {
 	return 0;
 }
 
+export const ModifiersList = [
+	{
+		id: 'NF',
+		name: 'No Fail',
+		icon: 'NoFailIcon.png',
+	},
+	{
+		id: 'OL',
+		name: '1 Life',
+		icon: 'OneLifeIcon.png',
+	},
+	{
+		id: 'BE',
+		name: '4 Lives',
+		icon: 'FourLivesIcon.png',
+	},
+	{
+		id: 'NB',
+		name: 'No Bombs',
+		icon: 'NoBombsIcon.png',
+	},
+	{
+		id: 'NO',
+		name: 'No Walls',
+		icon: 'NoObstaclesIcon.png',
+	},
+	{
+		id: 'NA',
+		name: 'No Arrows',
+		icon: 'NoArrowsIcon.png',
+	},
+	{
+		id: 'GN',
+		name: 'Ghost Notes',
+		icon: 'GhostNotes.png',
+	},
+	{
+		id: 'DA',
+		name: 'Disappearing Arrows',
+		icon: 'DisappearingArrows.png',
+	},
+	{
+		id: 'SC',
+		name: 'Small Notes',
+		icon: 'SmallNotesIcon.png',
+	},
+	{
+		id: 'PM',
+		name: 'Pro Mode',
+		icon: 'ProModeIcon.png',
+	},
+
+	{
+		id: 'SA',
+		name: 'Strict Angles',
+		icon: 'PreciseAnglesIcon.png',
+	},
+	{
+		id: 'OD',
+		name: 'Old Dots',
+		icon: 'OldDotsIcon.png',
+	},
+	{
+		id: 'SS',
+		name: 'Slower Song',
+		icon: 'SlowerSongIcon.png',
+	},
+	{
+		id: 'FS',
+		name: 'Faster Song',
+		icon: 'FasterSongIcon.png',
+	},
+	{
+		id: 'SF',
+		name: 'Super Fast Song',
+		icon: 'SuperFastSongIcon.png',
+	},
+	{
+		id: 'OP',
+		name: 'NJS cheesing',
+		icon: 'OutsidePlatformIcon.png',
+	},
+];
+
 export function userDescriptionForModifier(modifier) {
-	switch (modifier) {
-		case 'DA':
-			return 'Disappearing arrows';
-		case 'FS':
-			return 'Faster song';
-		case 'SS':
-			return 'Slower song';
-		case 'SF':
-			return 'Super fast song';
-		case 'GN':
-			return 'Ghost notes';
-		case 'NA':
-			return 'No arrows';
-		case 'NB':
-			return 'No bombs';
-		case 'NF':
-			return 'No fail';
-		case 'NO':
-			return 'No obstacles';
-		case 'PM':
-			return 'Pro mode';
-		case 'SC':
-			return 'Small cubes';
-		case 'BE':
-			return 'Battery energy';
-		case 'SA':
-			return 'Strict angles';
-		case 'OD':
-			return 'Old dot note hitboxes';
-	}
-	return 'Unknown modifier';
+	return ModifiersList.find(m => m.id == modifier)?.name ?? 'Unknown modifier';
 }
 
 export const DifficultyStatus = {
@@ -549,6 +603,52 @@ export function mapTypeListFromMask(type) {
 		.map(key => typesDescription[key])
 		.filter(d => d);
 }
+
+export const requirementsMap = {
+	chroma: 1 << 1,
+	noodles: 1 << 2,
+	mappingExtensions: 1 << 3,
+	cinema: 1 << 4,
+	V3: 1 << 5,
+};
+
+export const requirementsDescription = {
+	chroma: {
+		title: 'Map uses Chroma mod (rich visual effects)',
+		name: 'chroma',
+		icon: 'fas fa-palette',
+		color: 'red',
+		textColor: 'white',
+	},
+	noodles: {
+		title: 'Map requires Noodle Extensions mod (modcharts)',
+		name: 'noodles',
+		icon: 'fas fa-mountain-sun',
+		color: 'yellow',
+		textColor: 'black',
+	},
+	mappingExtensions: {
+		title: 'Map requires Mapping Extensions mod',
+		name: 'mappingExtensions',
+		icon: 'fas fa-trowel-bricks',
+		color: 'blue',
+		textColor: 'white',
+	},
+	cinema: {
+		title: 'Map uses Cinema mod (video on background)',
+		name: 'cinema',
+		icon: 'fas fa-panorama',
+		color: 'orange',
+		textColor: 'black',
+	},
+	V3: {
+		title: 'Map with arcs and/or chains.',
+		name: 'V3 notes',
+		icon: 'v3-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+};
 
 export function votingsForTypeStats(stats) {
 	let result = '';

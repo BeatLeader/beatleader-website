@@ -25,9 +25,10 @@
 	import SupportPage from './pages/Support.svelte';
 	import Nav from './components/Nav.svelte';
 	import Modal from 'svelte-simple-modal';
-	import RtDashboard from './pages/RtDashboard.svelte';
+	import StaffDashboard from './pages/StaffDashboard.svelte';
 	import EventsPage from './pages/Events.svelte';
 	import Socket from './pages/Socket.svelte';
+	import Settings from './pages/Settings.svelte';
 	import {setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 
@@ -42,14 +43,13 @@
 	$: if (mainEl) containerStore.observe(mainEl);
 
 	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'mirror-low') {
-		let dom = document.createElement('style');
-		dom.innerHTML = `html,body{background:url(${$configStore.preferences.bgimage}) var(--background) !important;background-size:cover !important;background-attachment: fixed !important;}`;
+		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
-		document.head.appendChild(dom);
 	}
 </script>
 
+<div class="main-background" />
 <Router {url}>
 	<Nav />
 	<Notifications zIndex={10000}>
@@ -60,12 +60,13 @@
 					<Route path="/u/:initialPlayerId/*initialParams" let:params>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 					</Route>
-					<Route path="/rt" let:location>
-						<RtDashboard {location} />
+					<Route path="/staff" let:location>
+						<StaffDashboard {location} />
 					</Route>
 					<Route path="/privacy" component={PrivacyPage} />
 					<Route path="/about" component={AboutPage} />
 					<Route path="/socket" component={Socket} />
+					<Route path="/settings" component={Settings} />
 					<Route path="/friends" component={FriendsPage} />
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />

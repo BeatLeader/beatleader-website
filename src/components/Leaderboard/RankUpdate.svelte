@@ -9,6 +9,7 @@
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {deepClone, shallowEqual} from '../../utils/js';
 	import {Ranked_Const} from '../../utils/beatleader/consts';
+	import CriteriaCheck from './CriteriaCheck.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -231,6 +232,7 @@
 						<ModifiersUpdate {modifiers} on:modifiersUpdated={e => modifiersUpdated(e.detail)} />
 					{/if}
 				</div>
+				<CriteriaCheck songId={leaderboard.song.id} />
 			{/if}
 		</div>
 	</Dialog>
@@ -288,4 +290,3 @@
 		margin-right: -1em;
 	}
 </style>
-

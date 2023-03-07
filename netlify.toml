@@ -43,6 +43,11 @@
     status = 200
 
 [[redirects]]
+    from = '/screenshot/*'
+    to = 'https://voluble-kringle-cf6063.netlify.app/screenshot/:splat'
+    status = 200
+
+[[redirects]]
     from = '/robots.txt'
     to = '/robots.txt'
     status = 200

@@ -11,6 +11,7 @@
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import {navigate} from 'svelte-routing';
+	import {configStore} from '../../stores/config';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -23,6 +24,8 @@
 	export let showSong = true;
 	export let inList = true;
 	export let additionalStat = null;
+	export let replayCounter = true;
+	export let animationSign = 1;
 
 	let showDetails = false;
 
@@ -53,6 +56,18 @@
 		navigate(`/u/${playerId}`);
 	}
 
+	function visibleScoreIcons(config) {
+		var result = [];
+
+		Object.keys(config).forEach(key => {
+			if (config[key]) {
+				result.push(key);
+			}
+		});
+
+		return result;
+	}
+
 	$: leaderboard = opt(songScore, 'leaderboard', null);
 	$: score = opt(songScore, 'score', null);
 	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
@@ -64,23 +79,37 @@
 
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
+	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
+	$: showReplayCounter = replayCounter && $configStore?.scorePreferences.showReplayCounter;
 </script>
 
 {#if songScore}
 	<div
 		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
-		in:fly={{x: 300, delay: idx * 30, duration: 500}}
+		in:fly={{x: animationSign * 300, delay: idx * 30, duration: 300}}
 		out:fade={{duration: 100}}
 		class:with-details={showDetails}>
+		{#if showReplayCounter}
+			<h3 class="pin-description descktop" title="Replay watch count">
+				<i class="fas fa-eye" />
+				{score.replaysWatched}
+			</h3>
+		{/if}
 		{#if !noIcons}
 			<div class="up-to-tablet">
+				{#if showReplayCounter}
+					<h3 class="pin-description" title="Replay watch count">
+						<i class="fas fa-eye" />
+						{score.replaysWatched}
+					</h3>
+				{/if}
 				<Icons
 					layoutType="flat"
 					{hash}
 					{twitchUrl}
 					{diffInfo}
 					scoreId={score.id}
-					{icons}
+					icons={selectedIcons}
 					{serviceIcon}
 					noPin={!isPlayerScore}
 					on:score-pinned={onScorePinned} />
@@ -131,7 +160,7 @@
 							category={leaderboard?.categoryDisplayName ?? null}
 							{service}
 							{playerId}
-							{icons}
+							icons={selectedIcons}
 							on:score-pinned={onScorePinned} />
 					{/if}
 				</div>
@@ -271,6 +300,40 @@
 
 	.beat-savior-reveal.opened {
 		transform: rotateZ(180deg);
+	}
+
+	h3 {
+		width: fit-content;
+		border-bottom-left-radius: 0.5em;
+		border-bottom-right-radius: 0.5em;
+		background: var(--row-separator);
+		padding: 0 1em 0;
+		margin-top: -0.5em;
+		margin-right: 0.5em;
+	}
+
+	h3.editable {
+		cursor: pointer;
+	}
+
+	h3 .move i {
+		padding: 0.25em 0.125em;
+		cursor: pointer !important;
+	}
+
+	h3 i.fa-edit {
+		display: inline-block;
+		margin-left: 0.5em;
+		cursor: pointer !important;
+	}
+
+	@media screen and (max-width: 1023px) {
+		.up-to-tablet {
+			display: flex;
+		}
+		.descktop {
+			display: none;
+		}
 	}
 
 	@media screen and (max-width: 767px) {

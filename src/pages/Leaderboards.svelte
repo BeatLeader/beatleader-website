@@ -5,7 +5,6 @@
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -30,14 +29,15 @@
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
-	import {typesDescription, typesMap, DifficultyStatus} from '../utils/beatleader/format';
+	import {typesDescription, requirementsDescription, typesMap, DifficultyStatus, requirementsMap} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
-	import RankedTimer from '../components/Others/RankedTimer.svelte';
+	import RankedTimer from '../components/Common/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
 	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
 	import {Ranked_Const} from './../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import BackToTop from '../components/Common/BackToTop.svelte';
 
 	export let page = 1;
 	export let location;
@@ -58,10 +58,12 @@
 		{key: 'stars_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
-		{key: 'sortBy', default: 'voting', process: processStringFilter},
-		{key: 'order', default: 'asc', process: processStringFilter},
+		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
+		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
+		{key: 'mapRequirements', default: null, process: processIntFilter},
+		{key: 'allRequirements', default: 0, process: processIntFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -116,6 +118,17 @@
 		};
 	});
 
+	const requirementFilterOptions = Object.entries(requirementsMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(requirementsDescription?.[key]?.name ?? key),
+			icon: `<span class="${requirementsDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: requirementsDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: requirementsDescription?.[key]?.textColor ?? null,
+			title: requirementsDescription?.[key]?.title ?? null,
+		};
+	});
+
 	function addAdditionalFilters(mapper, rt) {
 		mytypeFilterOptions = [...baseMytypeFilterOptions];
 		if (mapper) {
@@ -132,10 +145,6 @@
 				color: 'var(--beatleader-primary)',
 			});
 		}
-	}
-
-	function scrollToTop() {
-		if (boxEl) scrollToTargetAdjusted(boxEl, 60);
 	}
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
@@ -217,6 +226,22 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onRequirementsChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = 0;
+
+		if (currentFilters.mapRequirements & event.detail.key)
+			currentFilters.mapRequirements &= currentFilters.mapRequirements ^ event.detail.key;
+		else currentFilters.mapRequirements |= event.detail.key;
+
+		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = null;
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onMyTypeChanged(event) {
 		if (!event?.detail) return;
 
@@ -288,6 +313,8 @@
 		});
 	}
 
+	$: document.body.scrollIntoView({behavior: 'smooth'});
+
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
 	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
@@ -300,7 +327,6 @@
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
 	$: changePageAndFilters(page, location);
-	$: scrollToTop($pending);
 
 	$: leaderboardsPage = ($leaderboardsStore?.data ?? []).map(m => {
 		return {
@@ -461,6 +487,20 @@
 					on:change={onCategoryChanged} />
 			</section>
 
+			<select bind:value={currentFilters.allRequirements} on:change={onCategoryModeChanged}>
+				<option value={0}>ANY map feature</option>
+				<option value={1}>ALL map features</option>
+				<option value={2}>NO map features</option>
+			</select>
+
+			<section class="filter">
+				<Switcher
+					values={requirementFilterOptions}
+					value={requirementFilterOptions.filter(c => currentFilters.mapRequirements & c.key)}
+					multi={true}
+					on:change={onRequirementsChanged} />
+			</section>
+
 			<section
 				class="filter"
 				class:disabled={currentFilters.type !== 'ranked'}
@@ -547,6 +587,8 @@
 		</ContentBox>
 	</aside>
 </section>
+
+<BackToTop />
 
 <MetaTags
 	title={ssrConfig.name + ' - Maps'}
@@ -726,7 +768,7 @@
 
 	@media screen and (max-width: 1275px) {
 		.align-content {
-			flex-direction: column-reverse;
+			flex-direction: column;
 			align-items: center;
 		}
 

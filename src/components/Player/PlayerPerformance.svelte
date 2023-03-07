@@ -96,7 +96,7 @@
 	$: prevMissedNotes = (beatSavior?.stats?.missedNotes ?? 0) - (improvements?.missedNotes ?? 0);
 	$: prevBadCuts = (beatSavior?.stats?.badCuts ?? 0) - (improvements?.badCuts ?? 0);
 	$: prevWallsHit = (beatSavior?.stats?.wallHit ?? 0) - (improvements?.wallHit ?? 0);
-	$: prevBombHit = (beatSavior?.stats?.bombHit ?? 0) - (improvements?.bombHit ?? 0);
+	$: prevBombHit = (beatSavior?.stats?.bombHit ?? 0) - (improvements?.bombCuts ?? 0);
 
 	$: additionalStatKey = getAdditionalStatKey(additionalStat);
 	$: additionalStatSuffix = getAdditionalStatSuffix(additionalStat);

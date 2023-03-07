@@ -81,6 +81,14 @@
 		}
 	}
 
+	function setIndexes(twitchSocial, twitterSocial, discordSocial, beatsaverSocial, youtubeSocial) {
+		[youtubeSocial, twitchSocial, discordSocial, twitterSocial, beatsaverSocial]
+			.filter(s => s)
+			.forEach((s, index) => {
+				s.index = index;
+			});
+	}
+
 	$: isMain = playerId && $account?.id === playerId;
 	$: loggedInPlayer = $account?.id;
 	$: isFriend = playerId && !!$friends?.find(f => f?.playerId === playerId);
@@ -88,8 +96,10 @@
 
 	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
 	$: twitterSocial = playerInfo.socials?.find(s => s?.service === 'Twitter');
+	$: discordSocial = playerInfo.socials?.find(s => s?.service === 'Discord');
 	$: beatsaverSocial = playerInfo.socials?.find(s => s?.service === 'BeatSaver');
 	$: youtubeSocial = playerInfo.socials?.find(s => s?.service === 'YouTube');
+	$: setIndexes(twitchSocial, twitterSocial, discordSocial, beatsaverSocial, youtubeSocial);
 
 	$: isUserFounderOfTheClan = !!$account?.clan;
 	$: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
@@ -149,9 +159,19 @@
 			{/if}
 		{/if}
 
+		{#if discordSocial}
+			<Button
+				cls="button-n-{discordSocial.index}"
+				url={discordSocial.link}
+				onlyurl={true}
+				type="blurple"
+				iconFa="fab fa-discord"
+				title="{discordSocial.user} friend" />
+		{/if}
+
 		{#if twitchSocial}
 			<Button
-				cls="twitch"
+				cls="button-n-{twitchSocial.index}"
 				url={twitchSocial.link}
 				onlyurl={true}
 				type="twitch"
@@ -161,7 +181,7 @@
 
 		{#if twitterSocial}
 			<Button
-				cls="twitter"
+				cls="button-n-{twitterSocial.index}"
 				url={twitterSocial.link}
 				onlyurl={true}
 				type="twitter"
@@ -171,7 +191,7 @@
 
 		{#if youtubeSocial}
 			<Button
-				cls="youtube"
+				cls="button-n-{youtubeSocial.index}"
 				url={youtubeSocial.link}
 				onlyurl={true}
 				type="danger"
@@ -181,7 +201,7 @@
 
 		{#if beatsaverSocial}
 			<Button
-				cls="beat-saver"
+				cls="button-n-{beatsaverSocial.index}"
 				url={beatsaverSocial.link}
 				onlyurl={true}
 				type="purple"
@@ -252,39 +272,48 @@
 		transition: all 200ms !important;
 	}
 
-	nav :global(.beat-saver) {
-		left: 8.5em;
-		top: 5.8em;
+	nav :global(.button-n-0) {
+		left: 7.3em;
+		top: -2.5em;
 	}
 
-	nav :global(.beat-saver):hover {
+	nav :global(.button-n-0):hover {
 		transform: scale(1.2);
 	}
 
-	nav :global(.twitter) {
+	nav :global(.button-n-1) {
+		left: 8.9em;
+		top: -0.2em;
+	}
+
+	nav :global(.button-n-1):hover {
+		transform: scale(1.2);
+	}
+
+	nav :global(.button-n-2) {
 		left: 9.5em;
 		top: 2.6em;
 	}
 
-	nav :global(.twitter):hover {
+	nav :global(.button-n-2):hover {
 		transform: scale(1.2);
 	}
 
-	nav :global(.youtube) {
-		left: 6.3em;
-		top: -3.1em;
+	nav :global(.button-n-3) {
+		left: 8.9em;
+		top: 5.4em;
 	}
 
-	nav :global(.youtube):hover {
+	nav :global(.button-n-3):hover {
 		transform: scale(1.2);
 	}
 
-	nav :global(.twitch) {
-		left: 8.5em;
-		top: -0.6em;
+	nav :global(.button-n-4) {
+		left: 7.2em;
+		top: 7.6em;
 	}
 
-	nav :global(.twitch):hover {
+	nav :global(.button-n-4):hover {
 		transform: scale(1.2);
 	}
 
