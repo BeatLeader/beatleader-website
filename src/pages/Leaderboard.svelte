@@ -27,6 +27,7 @@
 	import RankingVoting from '../components/Leaderboard/RankingVoting.svelte';
 	import RankUpdate from '../components/Leaderboard/RankUpdate.svelte';
 	import Commentary from '../components/Leaderboard/Commentary.svelte';
+	import CriteriaCommentary from '../components/Leaderboard/CriteriaCommentary.svelte';
 	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
@@ -1248,6 +1249,72 @@
 	</article>
 	{#if separatePage}
 		<aside transition:fade>
+			{#if qualification && !isRanked}
+				<ContentBox>
+					{#if !commentaryShown}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
+								<i class="fas fa-comments" />
+
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							<div>
+								<h1 class="status-header">Quality</h1>
+								<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
+								{#if isRT || isNQT || generalMapperId}
+									<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
+								{/if}
+							</div>
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
+			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
+				<ContentBox
+					>{#if !qualificationInfoShown}
+						<div class="score-options-section">
+							<span
+								class="beat-savior-reveal clickable"
+								on:click={() => boolflip('qualificationInfoShown')}
+								title="Show qualification details">
+								<i class="fas fa-list-ul" />
+
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span
+									class="beat-savior-reveal clickable"
+									on:click={() => boolflip('qualificationInfoShown')}
+									title="Hide qualification details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							<div>
+								{#if isNominated && qualification}
+									<h1 class="status-header">Criteria</h1>
+									<QualificationStatus {qualification} {isRanked} />
+									<CriteriaCommentary {isRT} {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
+								{/if}
+
+								{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
+									<ReweightStatus map={leaderboard} />
+								{/if}
+							</div>
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
 			{#if showStats}
 				<ContentBox>
 					{#if !leaderboardStatsShown}
@@ -1284,70 +1351,6 @@
 									{/if}
 								</div>
 							{/if}
-						</div>
-					{/if}
-				</ContentBox>
-			{/if}
-
-			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-				<ContentBox
-					>{#if !qualificationInfoShown}
-						<div class="score-options-section">
-							<span
-								class="beat-savior-reveal clickable"
-								on:click={() => boolflip('qualificationInfoShown')}
-								title="Show qualification details">
-								<i class="fas fa-list-ul" />
-
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow">
-							<div class="score-options-section to-the-left">
-								<span
-									class="beat-savior-reveal clickable"
-									on:click={() => boolflip('qualificationInfoShown')}
-									title="Hide qualification details">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
-							<div>
-								{#if isNominated && qualification}
-									<QualificationStatus {qualification} {isRanked} />
-								{/if}
-
-								{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
-									<ReweightStatus map={leaderboard} />
-								{/if}
-							</div>
-						</div>
-					{/if}
-				</ContentBox>
-			{/if}
-			{#if qualification && !isRanked}
-				<ContentBox>
-					{#if !commentaryShown}
-						<div class="score-options-section">
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
-								<i class="fas fa-comments" />
-
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow">
-							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
-							<div>
-								<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
-								{#if isRT || isNQT || generalMapperId}
-									<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
-								{/if}
-							</div>
 						</div>
 					{/if}
 				</ContentBox>
@@ -1817,6 +1820,13 @@
 
 	.purple-icon {
 		color: purple;
+	}
+
+	.status-header {
+		text-align: center;
+		font-size: 120%;
+		font-weight: bolder;
+		padding-bottom: 0.4em;
 	}
 
 	@media screen and (max-width: 1275px) {
