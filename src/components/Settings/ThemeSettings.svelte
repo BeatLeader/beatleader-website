@@ -3,6 +3,9 @@
 	import Select from '../Settings/Select.svelte';
 	import {setGlobalCSSValue} from '../../utils/color';
 	import ColorPicker from '../Common/ColorPicker.svelte';
+	import {fly, fade} from 'svelte/transition';
+
+	export let animationSign = 1;
 
 	const DEFAULT_THEME = 'mirror';
 
@@ -54,7 +57,7 @@
 	$: settempsetting('theme', currentTheme);
 </script>
 
-<div class="options">
+<div class="options" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<section class="option">
 		<label title="Choose the theme you want">Theme</label>
 		<Select bind:value={currentTheme}>

@@ -68,6 +68,14 @@
 		return result;
 	}
 
+	function maybe(node, options) {
+		if (animationSign) {
+			return options.fn(node, options);
+		} else {
+			return options.fn(node, {duration: 0, delay: 0, easing: () => 0});
+		}
+	}
+
 	$: leaderboard = opt(songScore, 'leaderboard', null);
 	$: score = opt(songScore, 'score', null);
 	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
@@ -86,8 +94,8 @@
 {#if songScore}
 	<div
 		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
-		in:fly={{x: animationSign * 300, delay: idx * 30, duration: 300}}
-		out:fade={{duration: 100}}
+		in:maybe={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
+		out:maybe={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
 		{#if showReplayCounter}
 			<h3 class="pin-description descktop" title="Replay watch count">

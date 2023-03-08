@@ -4,6 +4,9 @@
 	import DemoScores from './DemoScores.svelte';
 	import Select from './Select.svelte';
 	import createAccountStore from '../../stores/beatleader/account';
+	import {fly, fade} from 'svelte/transition';
+
+	export let animationSign = 1;
 
 	const DEFAULT_PP_METRIC = 'weighted';
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
@@ -76,8 +79,8 @@
 	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key != 'delete');
 </script>
 
-<div class="main-container">
-	<DemoScores playerId={$account?.player?.playerId ?? '1'} />
+<div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
+	<DemoScores playerId={$account?.player?.playerId ?? '76561199104169308'} />
 
 	<div class="switches-container">
 		<span>Score settings:</span>

@@ -30,7 +30,10 @@
 		selectedNavigationIndex = 0;
 	}
 
+	let previousIndex = undefined;
+
 	function selectNavigation(item, index) {
+		previousIndex = selectedNavigationIndex;
 		selectedNavigationIndex = index;
 		window.location.hash = item.link;
 	}
@@ -48,6 +51,7 @@
 	}
 
 	$: settingsChanged = $configStore ? configStore.getSettingsChanged() : undefined;
+	$: animationSign = previousIndex == undefined ? 0 : selectedNavigationIndex >= previousIndex ? 1 : -1;
 </script>
 
 <svelte:head>
@@ -71,14 +75,15 @@
 							</div>
 						{/each}
 					</div>
-
-					{#if selectedNavigationIndex == 0}
-						<ThemeSettings />
-					{:else if selectedNavigationIndex == 1}
-						<ProfileUiSettings />
-					{:else if selectedNavigationIndex == 2}
-						<ScoreSettings />
-					{/if}
+					<div class="tabs-container">
+						{#if selectedNavigationIndex == 0}
+							<ThemeSettings {animationSign} />
+						{:else if selectedNavigationIndex == 1}
+							<ProfileUiSettings {animationSign} />
+						{:else if selectedNavigationIndex == 2}
+							<ScoreSettings {animationSign} />
+						{/if}
+					</div>
 				</div>
 			</ContentBox>
 		{:else}
@@ -95,6 +100,11 @@
 <style>
 	.settings-container {
 		display: flex;
+	}
+
+	.tabs-container {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.navigation {
