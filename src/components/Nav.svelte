@@ -155,7 +155,7 @@
 		</a>
 	{/if}
 
-	<div class="friends nav-button" use:mobileTouch={() => (friendsMenuShown = !friendsMenuShown)}>
+	<div class="friends nav-button" style="user-select:none" use:mobileTouch={() => (friendsMenuShown = !friendsMenuShown)}>
 		<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 			><path
 				stroke-linecap="round"
@@ -345,7 +345,7 @@
 			Events
 		</a>
 
-		<div class="playlists nav-button" use:mobileTouch={() => (playlistMenuShown = !playlistMenuShown)}>
+		<div class="playlists nav-button" style="user-select: none" use:mobileTouch={() => (playlistMenuShown = !playlistMenuShown)}>
 			{#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
 				<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
 			{:else}
@@ -437,6 +437,10 @@
 		color: inherit !important;
 	}
 
+	.ssr-page-container > a {
+		user-select: none;
+	}
+
 	.friends {
 		position: relative;
 	}
@@ -523,6 +527,10 @@
 
 	.right.mobile-menu {
 		display: none;
+	}
+
+	.right > a {
+		user-select: none;
 	}
 
 	@media screen and (max-width: 900px) {

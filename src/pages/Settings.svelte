@@ -70,7 +70,7 @@
 								on:click={() => selectNavigation(item, idx)}
 								on:keydown={() => selectNavigation(item, idx)}
 								class="navigation-item {idx == selectedNavigationIndex ? 'selected' : ''}">
-								<i class={item.icon} />
+								<i class={item.icon}/>
 								<span class="navigation-item-title">{item.name}</span>
 							</div>
 						{/each}
@@ -113,6 +113,10 @@
 		margin-left: 0;
 	}
 
+	.navigation-item-title {
+		user-select: none;
+	}
+
 	.navigation-item {
 		padding: 0.4em 1.2em;
 		margin: 0.5em;
@@ -120,6 +124,7 @@
 		cursor: pointer;
 		min-width: 7em;
 		margin-left: 0;
+		user-select: none;
 	}
 
 	.navigation-item.selected {
