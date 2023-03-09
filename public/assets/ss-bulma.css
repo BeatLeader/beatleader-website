@@ -11887,6 +11887,10 @@ body::-webkit-scrollbar-track {
 	display: none;
 }
 
+input:focus {
+	outline: none;
+}
+
 @-webkit-keyframes rainbow {
 	from {
 		-webkit-filter: hue-rotate(0deg);
