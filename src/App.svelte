@@ -1,10 +1,11 @@
 <script>
-	import {setContext} from 'svelte';
+	import {onMount, setContext} from 'svelte';
 	import {Router, Route, navigate} from 'svelte-routing';
 	import Notifications from 'svelte-notifications';
 	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
 	import createContainerStore from './stores/container';
+	import {isTouchDevice} from './utils/is-touch';
 	import SearchPage from './pages/Search.svelte';
 	import RankingPage from './pages/Ranking.svelte';
 	import EventPage from './pages/Event.svelte';
@@ -40,6 +41,46 @@
 
 	setContext('pageContainer', containerStore);
 
+	let mobileTooltip = null;
+	onMount(() => {
+		const hideTooltip = () => (mobileTooltip ? (mobileTooltip.style.display = 'none') : null);
+		const showTooltip = (contents, x, y) => {
+			if (!mobileTooltip) return;
+
+			mobileTooltip.innerHTML = contents;
+			mobileTooltip.style.display = 'inline-block';
+
+			const windowWidth = window.innerWidth;
+			const windowHeight = window.innerHeight;
+			const rect = mobileTooltip.getBoundingClientRect();
+
+			const posX = x + rect.width > windowWidth ? x - (x + rect.width - windowWidth) : x;
+			const posY = y + rect.height > windowHeight ? y - (y + rect.height - windowHeight) : y;
+
+			mobileTooltip.style.left = `${posX}px`;
+			mobileTooltip.style.top = `${posY}px`;
+		};
+
+		const mobileTooltipHandler = e => {
+			hideTooltip();
+
+			const closestTitle = e?.target?.title?.length ? e.target : e?.target?.closest("[title]:not([title=''])");
+			if (closestTitle) {
+				showTooltip(closestTitle.title.split('\n').join('<br />'), e.clientX, e.clientY);
+			}
+		};
+
+		if (isTouchDevice()) {
+			document.body.addEventListener('click', mobileTooltipHandler, {passive: true});
+			document.addEventListener('scroll', hideTooltip, {passive: true});
+
+			return () => {
+				document.body.removeEventListener('click', mobileTooltipHandler);
+				document.removeEventListener('scroll', hideTooltip);
+			};
+		}
+	});
+
 	$: if (mainEl) containerStore.observe(mainEl);
 
 	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'mirror-low') {
@@ -49,6 +90,7 @@
 	}
 </script>
 
+<div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
 <Router {url}>
 	<Nav />
@@ -199,5 +241,21 @@
 	footer {
 		font-size: 0.75em;
 		text-align: center;
+	}
+
+	.mobile-tooltip {
+		position: fixed;
+		z-index: 1000;
+		top: 0;
+		left: 0;
+		min-width: 5rem;
+		max-width: 10rem;
+		max-height: 5rem;
+		overflow: hidden;
+		display: none;
+		background-color: lightyellow;
+		color: gray;
+		font-size: 0.75rem;
+		padding: 0.125rem;
 	}
 </style>
