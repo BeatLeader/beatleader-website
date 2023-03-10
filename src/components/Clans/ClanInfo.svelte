@@ -439,6 +439,7 @@
 
 	.clanImage {
 		width: 10em;
+		border-radius: 0.25em;
 	}
 
 	.clanTag {

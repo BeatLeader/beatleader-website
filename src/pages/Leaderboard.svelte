@@ -507,16 +507,6 @@
 		}
 	}
 
-	function toggleClanRankingOpen() {
-		if (!scoreId) return;
-
-		if (openedDetails.includes(scoreId)) {
-			openedDetails = openedDetails.filter(id => id !== scoreId);
-		} else {
-			openedDetails = [...openedDetails, scoreId];
-		}
-	}
-
 	let userScore = null;
 	let userScoreHash = null;
 	async function fetchUserScore(playerId, hash, diff, type, userScoreOnCurrentPage = null) {
@@ -1344,7 +1334,7 @@
 												</Badge>
 											</div>
 											<div class="percentage with-badge">
-												<ClanAccuracy clanRanking={cr} />
+												<ClanAccuracy accuracy={cr.clanAverageAcc} />
 											</div>
 											<div class="score with-badge">
 												<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">

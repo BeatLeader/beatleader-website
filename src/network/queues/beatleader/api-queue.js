@@ -117,11 +117,11 @@ export const processClanRanking = cr => {
 	let ret = {clan: {}};
 
 	const clan = cr?.clan ?? null;
-	ret.clan.name = clan.name;
-	ret.clan.color = clan.color;
-	ret.clan.icon = clan.icon;
-	ret.clan.tag = clan.tag;
-	ret.clan.playerscount = clan.playersCount;
+	ret.clan.name = clan?.name ?? null;
+	ret.clan.color = clan?.color ?? null;
+	ret.clan.icon = clan?.icon ?? null;
+	ret.clan.tag = clan?.tag ?? null;
+	ret.clan.playerscount = clan?.playersCount ?? null;
 
 	ret.clanpp = cr.clanPP;
 	ret.clanRank = cr.clanRank;
@@ -155,7 +155,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 	if (currentDiff) {
 		diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
 		diff = diffInfo.diff;
-	}
+	} 
 
 	const songInfo = [
 		{id: 'hash', value: led?.song?.hash},
@@ -190,7 +190,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{imageUrl: led?.song?.coverImage, stats: {}}
 	);
 
-	const leaderboardGroup = led.leaderboardGroup.sort((a, b) => b.timestamp - a.timestamp);
+	const leaderboardGroup = led?.leaderboardGroup?.sort((a, b) => b.timestamp - a.timestamp) ?? null;
 
 	const {stats, ...song} = songInfo;
 	const leaderboard = {
@@ -228,18 +228,44 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 
 const processClan = (clanId, page, respons) => { 
 	if (respons.body.container.capturedLeaderboards != null) {
-		respons.body.container.capturedLeaderboards.forEach(
-			led => {
-				const currentDiff = led.difficulty;
-				let diff = null;
-				let diffInfo = null;
-				if (led.difficulty) {
-					diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
-					diff = diffInfo.diff;
-				}
-				led.diffInfo = diffInfo
-			}
-		);
+		for (let i = 0; i < respons.body.container.capturedLeaderboards.length; i++) {
+			let bodyInput = {body: respons.body.container.capturedLeaderboards[i]}
+			let output = processLeaderboard(
+				respons.body.container.capturedLeaderboards[i].id,
+				1,
+				bodyInput)
+				respons.body.container.capturedLeaderboards[i] = output;
+				
+		}
+		// respons.body.container.capturedLeaderboards.forEach(
+		// 	led => {
+		// 		// Fill in diffInfo/Difficulty (Used by Clan.svelte)
+		// 		const currentDiff = led.difficulty;
+		// 		let diff = null;
+		// 		let diffInfo = null;
+		// 		if (currentDiff) {
+		// 			diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
+		// 			diff = diffInfo.diff;
+		// 		}
+		// 		led.diffInfo = diffInfo;
+
+		// 		// Fill out the clanRanking without the clan because we already have that data here.
+		// 		for (let i = 0; i < led.clanRanking.length; i++) {
+		// 			let ret = {};
+		// 			let cr = led.clanRanking[i];
+		// 			ret.clanpp = cr.clanPP;
+		// 			ret.clanRank = cr.clanRank;
+		// 			ret.lastUpdateTime = formatDateRelative(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
+		// 			ret.lastUpdateTimeShort = formatDateRelativeShort(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
+		// 			ret.clanAverageRank = cr.clanAverageRank;
+		// 			ret.clanAverageAccuracy = cr.clanAverageAccuracy;
+		// 			ret.clanAverageAcc = cr.clanAverageAccuracy * 100;
+		// 			ret.clanTotalScore = cr.clanTotalScore;
+		// 			ret.scores = processLeaderboardScores(cr.associatedScores);
+		// 			led.clanRanking[i] = ret;
+		// 		}
+		// 	}
+		//);
 	}
 	return respons.body;
 }

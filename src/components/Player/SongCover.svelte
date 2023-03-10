@@ -5,6 +5,7 @@
 	import MapTypeDescription from '../Leaderboard/MapTypeDescription.svelte';
 
 	export let leaderboard = null;
+	export let capturedLeaderboard = null;
 	export let url = null;
 	export let notClickable = false;
 
@@ -35,16 +36,54 @@
 	$: ssCoverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null);
 	$: beatSaverCoverUrl = leaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
 
-	$: preloadImages([
-		{url: ssCoverUrl, priority: 10},
-		{url: beatSaverCoverUrl, priority: 5},
-	]);
+	$: clHash = capturedLeaderboard?.song?.hash ?? null;
+	$: clSSCoverUrl = capturedLeaderboard?.song?.imageUrl ?? (clHash ? `${BS_CDN}/${encodeURIComponent(clHash)}.jpg` : null);
+	$: clBeatSaverCoverUrl = capturedLeaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
+
+	$: preloadImages(leaderboard ? 
+		[{url: ssCoverUrl, priority: 10}, {url: beatSaverCoverUrl, priority: 5}] : 
+		[{url: clSSCoverUrl, priority: 10}, {url: clBeatSaverCoverUrl, priority: 5}]);
 
 	$: coverUrl = loadedImages.length ? loadedImages.sort((a, b) => a?.priority - b?.priority)[0].url : DEFAULT_IMG;
 </script>
 
-<div class="cover-difficulty">
-	{#if leaderboard}
+{#if !capturedLeaderboard}
+	<div class="cover-difficulty">
+		{#if leaderboard}
+			{#if notClickable}
+				<img src={coverUrl} alt="" />
+			{:else}
+				<a href={url} on:click|preventDefault={() => navigate(url)}>
+					<img src={coverUrl} alt="" />
+				</a>
+			{/if}
+
+			{#if leaderboard.diffInfo.type != 'Standard'}
+				<div class="mode">
+					<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
+				</div>
+			{/if}
+
+			{#if leaderboard?.difficulty?.type}
+				<div class="type">
+					<MapTypeDescription cram={true} type={leaderboard.difficulty.type} />
+				</div>
+			{/if}
+
+			<div class="difficulty">
+				<Difficulty
+					diff={leaderboard.diffInfo}
+					useShortName={true}
+					reverseColors={true}
+					stars={leaderboard.complexity ?? leaderboard.stars}
+					starsSuffix={leaderboard.complexity ? '' : '★'} />
+			</div>
+		{:else}
+			<img src={DEFAULT_IMG} alt="" />
+		{/if}
+		</div>
+{:else if !leaderboard}
+	<div class="cover-difficulty">
 		{#if notClickable}
 			<img src={coverUrl} alt="" />
 		{:else}
@@ -53,30 +92,28 @@
 			</a>
 		{/if}
 
-		{#if leaderboard.diffInfo.type != 'Standard'}
+		{#if capturedLeaderboard.diffInfo.type != 'Standard'}
 			<div class="mode">
-				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
+				<Difficulty diff={capturedLeaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
 			</div>
 		{/if}
 
-		{#if leaderboard?.difficulty?.type}
+		{#if capturedLeaderboard?.difficultyBl?.type}
 			<div class="type">
-				<MapTypeDescription cram={true} type={leaderboard.difficulty.type} />
+				<MapTypeDescription cram={true} type={capturedLeaderboard.difficultyBl.type} />
 			</div>
 		{/if}
 
 		<div class="difficulty">
 			<Difficulty
-				diff={leaderboard.diffInfo}
+				diff={capturedLeaderboard.diffInfo}
 				useShortName={true}
 				reverseColors={true}
-				stars={leaderboard.complexity ?? leaderboard.stars}
-				starsSuffix={leaderboard.complexity ? '' : '★'} />
+				stars={capturedLeaderboard.complexity ?? capturedLeaderboard.difficultyBl.stars}
+				starsSuffix={capturedLeaderboard.complexity ? '' : '★'} />
 		</div>
-	{:else}
-		<img src={DEFAULT_IMG} alt="" />
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.cover-difficulty {

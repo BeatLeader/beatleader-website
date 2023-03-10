@@ -1,19 +1,21 @@
 <script>
+	import Badge from '../components/Common/Badge.svelte';
 	import Button from '../components/Common/Button.svelte';
+	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
 	import ClanInfo from '../components/Clans/ClanInfo.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import createClanService from '../services/beatleader/clan';
 	import createClanStore from '../stores/http/http-clan-store';
 	import createAccountStore from '../stores/beatleader/account';
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {debounce} from '../utils/debounce';
 	import Dialog from '../components/Common/Dialog.svelte';
 	import Error from '../components/Common/Error.svelte';
-	import {fly} from 'svelte/transition';
 	import Icons from '../components/Song/Icons.svelte';
 	import {navigate} from 'svelte-routing';
 	import Pager from '../components/Common/Pager.svelte';
 	import PlayerCard from '../components/Ranking/PlayerCard.svelte';
+	import Pp from '../components/Score/Pp.svelte';
 	import Rain from '../components/Common/Rain.svelte';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import SongCover from '../components/Player/SongCover.svelte';
@@ -22,6 +24,27 @@
 	import {SsrHttpResponseError} from '../network/errors';
 	import stringify from 'json-stable-stringify';
 	import Switcher from '../components/Common/Switcher.svelte';
+	import Value from '../components/Common/Value.svelte';
+	
+
+	import {fade, fly} from 'svelte/transition';
+	import {flip} from 'svelte/animate';
+	import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte';
+	import {opt, capitalize} from '../utils/js';
+	import Avatar from '../components/Common/Avatar.svelte';
+	import ClanBadges from '../components/Player/ClanBadges.svelte';
+	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../utils/date';
+	import Accuracy from '../components/Common/Accuracy.svelte';
+	import {
+		getIconNameForDiff,
+		describeModifiersAndMultipliers,
+		getDescriptionForDiff,
+		mapTypeFromMask,
+		votingsForTypeStats,
+		formatDiffStatus,
+		DifficultyStatus,
+	} from '../utils/beatleader/format';
+	import {formatNumber} from '../utils/format';
 
 	export let clanId;
 	export let type = 'players';
@@ -40,6 +63,8 @@
 
 	const dispatch = createEventDispatcher();
 
+	let openedDetails = [];
+	let showClanRankingScores = false;
 	let currentClanId = clanId;
 
 	// FILTERS ---------------------------------------------------------------------------------
@@ -92,10 +117,10 @@
 			filters: {countries: ''},
 		},
 		{
-			type: 'capturedleaderboards',
+			type: 'capturedLeaderboards',
 			label: 'Captured Leaderboards',
 			iconFa: 'fas fa-globe-americas',
-			url: `/clan/${currentClanId}/capturedleaderboards`,
+			url: `/clan/${currentClanId}/capturedLeaderboards`,
 			filters: {countries: ''},
 		}
 	]
@@ -118,6 +143,12 @@
 	// EVENTS ----------------------------------------------------------------------------------
 
 	const clanStore = createClanStore(currentClanId, currentType, page, currentFilters)
+
+	function navigateToPlayer(playerId) {
+		if (!playerId) return;
+
+		navigate(`/u/${playerId}`);
+	}
 
 	function changeParams(newClanId, newType, newPage, newLocation) {
 		if (newLocation === undefined) newLocation = {search: `?${buildSearchFromFilters(currentFilters)}`};
@@ -174,6 +205,26 @@
 		currentFilters.search = e.target.value ?? '';
 		navigateToCurrentPageAndFilters();
 	}
+
+	const {open} = getContext('simple-modal');
+	const showPreview = previewLink => {
+		if (document.body.clientWidth < 800) {
+			window.open(previewLink, '_blank');
+		} else {
+			open(Preview, {previewLink: previewLink});
+		}
+	};
+
+	function toggleOpen(scoreId) {
+		if (!scoreId) return;
+
+		if (openedDetails.includes(scoreId)) {
+			openedDetails = openedDetails.filter(id => id !== scoreId);
+		} else {
+			openedDetails = [...openedDetails, scoreId];
+		}
+	}
+
 	const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
 
 	const canBeKicked = (clan, player) => clan?.leaderID && clan.leaderID !== player?.playerId;
@@ -196,7 +247,7 @@
 				const htmlError = await err.getResponse().text();
 				kickingError = htmlError?.length ? htmlError : err;
 			} else {
-				kickingError = err;
+				kickingError = err;capturesPage
 			}
 		}
 	}
@@ -215,7 +266,7 @@
 
 	$: clan = $clanStore?.container ?? null;
 	$: playersPage = $clanStore?.data ?? [];
-	$: capturesPage = clan?.capturedLeaderboards ?? [];
+	$: capturedLeaderboards = clan?.capturedLeaderboards ?? [];
 
 	$: clanLeaderId = clan?.leaderID ?? null;
 	$: isFounder = clan?.id && clanLeaderId === $account?.player?.playerId;
@@ -296,65 +347,200 @@
 				{:else if !$isLoading}
 					<p>No clans found.</p>
 				{/if}
-			{:else if currentType === 'capturedleaderboards'}
-				{#if capturesPage?.length}
+			{:else if currentType === 'capturedLeaderboards'}
+				{#if capturedLeaderboards?.length}
 					<div class="songs grid-transition-helper">
-						{#each capturesPage as map, idx (map.id)}
+						{#each capturedLeaderboards as leaderboard, idx (opt(leaderboard, 'leaderboard.leaderboardId'))}
 							<div class={`song-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
 								<div class="mobile-only">
-									{#if map?.song?.hash?.length}
-										<Icons hash={map.song.hash} diffInfo={map?.diffInfo} />
+									{#if opt(leaderboard, 'leaderboard.song.hash').length}
+										<Icons hash={opt(leaderboard, 'leaderboard.song.hash')} diffInfo={opt(leaderboard, 'leaderboard.diffInfo')} />
 									{/if}
 								</div>
 
 								<div class="main">
-									<SongCover leaderboard={map} url={`/leaderboard/global/${map.id}/1`} />
+									<div class="mobile-first-line">
+										<SongCover capturedLeaderboard={opt(leaderboard, 'leaderboard')} url={`/leaderboard/global/${opt(leaderboard, 'leaderboard.leaderboardId')}/1`} />
 
-									<div class="songinfo">
-										<a href={`/leaderboard/global/${map.id}/1`} on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)}>
-											<span class="name">{map?.song?.name} {map?.song?.subName}</span>
-											<div class="author">{map?.song?.author} <small>{map?.song?.mapper}</small></div>
-										</a>
-									</div>
-
-									{#if map?.plays}
-										<div>
-											{map?.plays} plays
+										<div class="songinfo">
+											<a href={`/leaderboard/global/${opt(leaderboard, 'leaderboard.leaderboardId')}/1`} on:click|preventDefault={() => navigate(`/leaderboard/global/${opt(leaderboard, 'leaderboard.leaderboardId')}/1`)}>
+												<span class="name">{opt(leaderboard, 'leaderboard.song.name')}</span>
+												<div class="author">{opt(leaderboard, 'leaderboard.song.authorName')} <small>{opt(leaderboard, 'leaderboard.song.levelAuthorName')}</small></div>
+											</a>
 										</div>
-									{/if}
-
-									<!--{#if currentFilters.sortBy == 'timestamp'}
-										<MapTimesetDescription {map} />
-									{/if}-->
-
-									{#if map?.song?.hash?.length}
-										<div class="tablet-and-up">
-											<Icons hash={map.song.hash} diffInfo={{diff: map?.difficulty?.difficultyName, type: map?.difficulty?.modeName}} />
+									</div>
+									<div class="mobile-second-line">
+										<div class="score-options-section">
+											<!-- svelte-ignore a11y-click-events-have-key-events -->
+											<span
+												class="beat-savior-reveal clickable"
+												class:opened={showClanRankingScores}
+												on:click={() => (showClanRankingScores = !showClanRankingScores)}
+												title="Show Scores">
+												{#if showClanRankingScores}
+													Hide Scores
+												{:else}
+													Show Scores
+												{/if}
+												<i class="fas fa-chevron-down" />
+											</span>
+										</div>
+										<div class="pp with-badge">
+											<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+												<span slot="label">
+													<Pp
+														pp={leaderboard.clanRanking[0].clanpp}
+														inline={false}
+														color="white" />
+												</span>
+											</Badge>
+										</div>
+										<div class="percentage with-badge">
+											<ClanAccuracy accuracy={leaderboard.clanRanking[0].clanAverageAccuracy * 100} />
+										</div>
+										<div class="score with-badge">
+											<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+												<span slot="label">
+													<Value value={leaderboard.clanRanking[0].clanTotalScore} inline={false} digits={0} />
+												</span>
+											</Badge>
+										</div>
+	
+										{#if opt(leaderboard, 'leaderboard.song.hash').length}
+											<div class="tablet-and-up">
+												<Icons hash={opt(leaderboard, 'leaderboard.song.hash')} diffInfo={{diff: opt(leaderboard, 'leaderboard.difficultyBl.difficultyName'), type: opt(leaderboard, 'leaderboard.difficultyBl.modeName')}} />
+											</div>
+										{/if}
+									</div>
+								</div>
+								<div class="main">
+									{#if showClanRankingScores}
+										<div class="scores-subgrid grid-transition-helper">
+											{#each opt(leaderboard.clanRanking[0], 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
+												<div
+													class={`row-${idx}`}
+													class:user-score={score?.isUserScore}
+													class:user-score-top={score?.userScoreTop}
+													in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+													out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+													animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
+													<div class={'player-score'}>
+														<div class="mobile-first-line">
+															<div class="rank with-badge">
+																<Badge
+																	onlyLabel={true}
+																	color="white"
+																	bgColor={opt(score, 'score.rank') === 1
+																		? 'darkgoldenrod'
+																		: opt(score, 'score.rank') === 2
+																		? '#888'
+																		: opt(score, 'score.rank') === 3
+																		? 'saddlebrown'
+																		: opt(score, 'score.rank') >= 10000
+																		? 'small'
+																		: 'var(--dimmed)'}>
+																	<span slot="label">
+																		#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />
+																	</span>
+																</Badge>
+															</div>
+															<div class="player">
+																<Avatar player={score.player} />
+																<PlayerNameWithFlag
+																	player={score.player}
+																	type={type === 'accsaber' ? 'accsaber/date' : null}
+																	on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
+										
+																<!--<ClanBadges player={score.player} />-->
+															</div>
+															<div class="timeset above-tablet">
+																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
+																	{opt(score, 'score.timeSetString', '-')}
+																</span>
+															</div>
+															<div class="timeset mobile-only">
+																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
+																	{score?.score?.timeSetStringShort ?? ''}
+																</span>
+															</div>
+														</div>
+														<div class="mobile-second-line">
+															<div class="replay">
+																<Button
+																	url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
+																	on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
+																	cls="replay-button-alt"
+																	icon="<div class='replay-icon-alt'></div>"
+																	title="Replay"
+																	noMargin={true} />
+								
+																<!-- svelte-ignore a11y-click-events-have-key-events -->
+																<span
+																	class="beat-savior-reveal clickable"
+																	class:opened={openedDetails.includes(score?.score?.id)}
+																	on:click={() => toggleOpen(score?.score?.id)}
+																	title="Show details">
+																	<i class="fas fa-chevron-down" />
+																</span>
+															</div>
+															{#if type === 'accsaber' || opt(score, 'score.pp')}
+																<div class="pp with-badge">
+																	<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+																		<span slot="label">
+																			{#if type === 'accsaber'}
+																				<Pp
+																					playerId={opt(score, 'player.playerId')}
+																					pp={opt(score, 'score.ap')}
+																					weighted={opt(score, 'score.weightedAp')}
+																					zero={formatNumber(0)}
+																					withZeroSuffix={true}
+																					inline={false}
+																					suffix="AP"
+																					color="white" />
+																			{:else}
+																				<Pp
+																					playerId={opt(score, 'player.playerId')}
+																					{leaderboard}
+																					pp={opt(score, 'score.pp')}
+																					whatIf={opt(score, 'score.whatIfPp')}
+																					inline={false}
+																					color="white" />
+																			{/if}
+																		</span>
+																	</Badge>
+																</div>
+															{/if}
+															<div class="percentage with-badge">
+																<Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false} />
+															</div>
+															<div class="score with-badge">
+																<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+																	<span slot="label">
+																		<Value value={opt(score, 'score.score')} inline={false} digits={0} />
+										
+																		<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), opt(leaderboard, 'leaderboard.difficultyBl.modifierValues'))}
+																			>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+																	</span>
+																</Badge>
+															</div>
+														</div>
+													</div>
+												</div>
+											{/each}
 										</div>
 									{/if}
 								</div>
-
-								<!--{#if map?.myScore}
-									<SongScore
-										playerId={map.myScore.playerId}
-										songScore={processScore({leaderboard: map, ...map.myScore})}
-										showSong={false}
-										noIcons={true}
-										inList={false}
-										{idx}
-										service={'beatleader'} />
-								{/if}-->
 							</div>
 						{/each}
 					</div>
 
 					<Pager
-						totalItems={capturesPage.length}
+						totalItems={capturedLeaderboards.length}
 						{itemsPerPage}
 						itemsPerPageValues={null}
 						currentPage={currentPage - 1}
 						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-						mode={capturesPage.length ? 'pages' : 'simple'}
+						mode={capturedLeaderboards.length ? 'pages' : 'simple'}
 						on:page-changed={onPageChanged} />
 				{:else}
 					<p>No captured leaderboards found.</p>
@@ -389,6 +575,19 @@
 		justify-items: center;
 	}
 
+	.mobile-first-line {
+		display: flex;
+		grid-gap: 0.4em;
+		align-items: center;
+		flex-grow: 1;
+	}
+
+	.mobile-second-line {
+		display: flex;
+		grid-gap: 0.4em;
+		align-items: center;
+	}
+
 	.players {
 		margin-top: 1rem;
 		grid-gap: 0.5em;
@@ -402,14 +601,24 @@
 		border-bottom: none !important;
 	}
 
-	
+	.scores-subgrid {
+		display: grid;
+		grid-template-columns: 1fr;
+		max-width: 100%;
+		position: relative;
+		border-top: 1px solid var(--row-separator);
+		padding-left: 2em;
+	}
 
-
-
-	/* .align-content {
+	.player-score {
 		display: flex;
-		justify-content: flex-end !important;
-	} */
+		flex-direction: row;
+		grid-gap: 0.4em;
+		overflow: hidden;
+		padding: 0.2em 0;
+		min-width: 19em;
+		justify-content: center;
+	}
 
 	.page-content {
 		max-width: 65em;
@@ -419,70 +628,6 @@
 	article {
 		width: calc(100% - 25em);
 		overflow-x: hidden;
-	}
-
-	aside {
-		width: 25em;
-	}
-
-	aside .filter {
-		margin-bottom: 1.5rem;
-		transition: opacity 300ms;
-	}
-
-	aside .filter.disabled {
-		opacity: 0.25;
-	}
-
-	aside label {
-		display: block;
-		font-weight: 500;
-		margin: 0.75rem 0;
-	}
-
-	aside .filter.disabled label {
-		cursor: help;
-	}
-
-	aside label span {
-		color: var(--beatleader-primary);
-	}
-
-	aside select {
-		background-color: transparent;
-		margin-bottom: 0.25em;
-	}
-
-	aside select option {
-		color: var(--textColor);
-		background-color: var(--background);
-	}
-
-	aside input {
-		width: 100%;
-		font-size: 1em;
-		color: var(--beatleader-primary);
-		background-color: var(--foreground);
-		border: none;
-		border-bottom: 1px solid var(--faded);
-		outline: none;
-	}
-
-	aside :global(.switch-types) {
-		justify-content: flex-start;
-	}
-
-	aside h2:not(:first-of-type) {
-		margin-top: 1.5em;
-	}
-
-	aside :global(.rangeSlider.pip-labels) {
-		margin-top: 1.5em;
-		margin-bottom: 4em;
-	}
-
-	input::placeholder {
-		color: var(--faded) !important;
 	}
 
 	.songs :global(> *:last-child) {
@@ -554,10 +699,6 @@
 		display: flex;
 	}
 
-	#duplicateDiffs {
-		width: auto;
-	}
-
 	:global(.playlist-button) {
 		height: 1.6em;
 	}
@@ -566,11 +707,6 @@
 		.align-content {
 			flex-direction: column-reverse;
 			align-items: center;
-		}
-
-		aside {
-			width: 100%;
-			max-width: 65em;
 		}
 	}
 
@@ -597,5 +733,25 @@
 		.songinfo {
 			text-align: center;
 		}
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
+	}
+
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		margin: 0.3em;
 	}
 </style>
