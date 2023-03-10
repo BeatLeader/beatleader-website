@@ -256,10 +256,10 @@ export const HMDs = {
 		priority: 30,
 	},
 	53: {
-		name: 'hedy',
-		icon: 'unknown.svg',
-		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
-		priority: 31,
+		name: 'Varjo XR-3',
+		icon: 'varjo.svg',
+		color: '',
+		priority: 14,
 	},
 	54: {
 		name: 'Vaporeon',
