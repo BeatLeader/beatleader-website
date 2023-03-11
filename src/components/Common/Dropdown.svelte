@@ -13,11 +13,15 @@
 	<div class="dropdown-content">
 		{#if items && items.length}
 			{#each items as item}
-				<div class="dropdown-item" on:click={() => dispatch('select', item)}>
-					<slot name="row" {item}>
-						{item}
-					</slot>
-				</div>
+				{#if item?.class === 'dropdown-divider'}
+					<hr class="dropdown-divider" />
+				{:else}
+					<div class="dropdown-item" on:click={() => dispatch('select', item)}>
+						<slot name="row" {item}>
+							{item}
+						</slot>
+					</div>
+				{/if}
 			{/each}
 		{:else if noItems}
 			<div class="menu-label">{noItems}</div>

@@ -87,7 +87,11 @@ export default response => {
 			clans,
 		},
 		profileSettings: profileSettings
-			? {...profileSettings, profileAppearance: profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : null}
+			? {
+					...profileSettings,
+					profileAppearance: profileSettings?.profileAppearance?.split(',') ?? null,
+					starredFriends: profileSettings?.starredFriends?.split(',') ?? null,
+			  }
 			: null,
 		scoreStats: scoreStats ? scoreStats : null,
 		eventsParticipating: processedEventsParticipating,

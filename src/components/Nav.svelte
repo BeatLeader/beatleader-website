@@ -3,6 +3,7 @@
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
+	import followed from '../stores/beatleader/followed';
 	import createPlaylistStore from '../stores/playlists';
 	import {configStore} from '../stores/config';
 	import {opt} from '../utils/js';
@@ -13,6 +14,7 @@
 	import Button from './Common/Button.svelte';
 	import Avatar from './Common/Avatar.svelte';
 	import SelectedPlaylist from './Playlists/SelectedPlaylist.svelte';
+	import MenuLine from './Player/MenuLine.svelte';
 
 	let player = null;
 	let settingsNotificationBadge = null;
@@ -47,9 +49,7 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
-		signupOptions = isTouchDevice() && player ? [{label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}, ,] : [];
-
-		signupOptions.push({label: 'Followed', url: `/followed`});
+		signupOptions = isTouchDevice() && player ? [{label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}] : [];
 
 		const isStaff = $account?.player?.playerInfo?.role
 			?.split(',')
@@ -83,12 +83,32 @@
 					navigate('/');
 				},
 			});
+
+			if ($followed?.length) {
+				if (signupOptions.length) signupOptions.push({class: 'dropdown-divider'});
+				signupOptions = [
+					...signupOptions,
+					...starredFollowed.map(player => ({
+						component: MenuLine,
+						props: {player, withRank: false},
+						onClick: e => {
+							e.preventDefault();
+							e.stopPropagation();
+							accountMenuShown = false;
+							navigateToPlayer(player.playerId);
+						},
+					})),
+				];
+				signupOptions.push({label: 'All Followed', url: `/followed`});
+			}
 		} else {
 			signupOptions.push({label: 'Log In', url: '/signin'});
 		}
 	}
 
 	$: player = $account?.player;
+	$: starredFollowedIds = player?.profileSettings?.starredFriends ?? [];
+	$: starredFollowed = $followed?.filter(f => starredFollowedIds.includes(f?.playerId)) ?? [];
 	$: selectedPlaylist = opt($configStore, 'selectedPlaylist');
 	$: calculateSignUpOptions($account);
 	$: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
@@ -127,13 +147,26 @@
 
 			<Dropdown items={signupOptions} bind:shown={accountMenuShown} noItems="">
 				<svelte:fragment slot="row" let:item>
-					<a
-						href={item.url}
-						on:click|preventDefault|stopPropagation={() => {
-							item.callback ? item.callback() : navigate(item.url);
-							accountMenuShown = false;
-						}}
-						class={`accountMenuItem ${item?.class ?? ''}`}>{item.label}</a>
+					{#if item.component}
+						<svelte:component
+							this={item.component}
+							{...item.props ?? {}}
+							on:click={item.onClick
+								? item.onClick
+								: () => {
+										accountMenuShown = false;
+								  }} />
+					{:else}
+						<a
+							href={item.url}
+							on:click|preventDefault|stopPropagation={() => {
+								if (!item.callback && !item.url) return;
+
+								item.callback ? item.callback() : navigate(item.url);
+								accountMenuShown = false;
+							}}
+							class={`accountMenuItem ${item?.class ?? ''}`}>{item.label}</a>
+					{/if}
 				</svelte:fragment>
 			</Dropdown>
 		</a>
