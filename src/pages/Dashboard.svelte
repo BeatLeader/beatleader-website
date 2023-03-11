@@ -55,8 +55,8 @@
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
-	$: friends = $account?.friends ?? null;
-	$: browserTitle = friends?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`;
+	$: followed = $account?.followed ?? null;
+	$: browserTitle = followed?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`;
 	$: metaDescription =
 		ssrConfig.name +
 		" is Beat Saber's leaderboard with open code and community. Start posting your scores to compete with others on more than 100,000 different maps.";
@@ -67,7 +67,7 @@
 </svelte:head>
 
 <article class="page-content" transition:fade>
-	{#if !friends?.length}
+	{#if !followed?.length}
 		<div class="sspl-page-container">
 			<ContentBox>
 				<div class="is-multiline">
@@ -117,7 +117,7 @@
 							<Button iconFa="fas fa-download" label="Download Quest mod" />
 						</a>
 					</div>
-					<SearchPage focusField={false} title="Find your profile or friends" />
+					<SearchPage focusField={false} title="Find your profile or followed" />
 					<div class="global-ranking-call">
 						<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
 					</div>
@@ -131,7 +131,7 @@
 					<div class="ranking">
 						<header>
 							<h2 class="title is-5">
-								Friends ranking
+								Ranking of Followed
 								{#if isLoading}
 									<Spinner />
 								{/if}
@@ -139,7 +139,7 @@
 						</header>
 
 						<RankingTable
-							type="friends"
+							type="followed"
 							{page}
 							{filters}
 							noIcons={true}
@@ -167,7 +167,7 @@
 				<ContentBox>
 					<header>
 						<h2>
-							<div class="title is-5">Friends scores</div>
+							<div class="title is-5">Scores of Followed</div>
 						</h2>
 					</header>
 

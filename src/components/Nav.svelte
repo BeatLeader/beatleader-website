@@ -2,7 +2,7 @@
 	import eventBus from '../utils/broadcast-channel-pubsub';
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
-	import friends from '../stores/beatleader/friends';
+	import followed from '../stores/beatleader/followed';
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
 	import {configStore} from '../stores/config';
@@ -37,7 +37,7 @@
 		playlists.select(event.detail);
 	}
 
-	let friendsMenuShown = false;
+	let followedMenuShown = false;
 	let playlistMenuShown = false;
 	let accountMenuShown = false;
 	let mobileMenuShown = false;
@@ -158,7 +158,7 @@
 		</a>
 	{/if}
 
-	<div class="friends nav-button" style="user-select:none" use:mobileTouch={() => (friendsMenuShown = !friendsMenuShown)}>
+	<div class="followed nav-button" style="user-select:none" use:mobileTouch={() => (followedMenuShown = !followedMenuShown)}>
 		<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 			><path
 				stroke-linecap="round"
@@ -166,13 +166,13 @@
 				stroke-width="2"
 				d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
 
-		Friends
+		Followed
 
 		<Dropdown
-			items={$friends}
-			bind:shown={friendsMenuShown}
+			items={$followed}
+			bind:shown={followedMenuShown}
 			on:select={onFriendClick}
-			noItems={player ? 'No friends, add someone' : 'No friends, log in and add someone'}>
+			noItems={player ? 'None followed, add someone' : 'None followed, log in and add someone'}>
 			<svelte:fragment slot="row" let:item>
 				<MenuLine player={item} withRank={false} />
 			</svelte:fragment>
@@ -444,11 +444,11 @@
 		user-select: none;
 	}
 
-	.friends {
+	.followed {
 		position: relative;
 	}
 
-	.friends :global(.dropdown-menu),
+	.followed :global(.dropdown-menu),
 	.me :global(.dropdown-menu) {
 		width: 15rem !important;
 		max-width: 60vw;

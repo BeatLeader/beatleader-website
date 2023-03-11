@@ -20,14 +20,14 @@ export default () => {
 	if (service) return service;
 
 	let mainPlayerId = null;
-	let playerAndFriends = [];
+	let playerAndFollowed = [];
 
 	let accountStoreUnsubscriber = null;
 	if (!accountStore) {
 		accountStore = createAccountStore();
 
 		accountStoreUnsubscriber = accountStore.subscribe(account => {
-			playerAndFriends = account?.id ? [account].concat(account?.friends?.length ? account?.friends : []) : [];
+			playerAndFollowed = account?.id ? [account].concat(account?.followed?.length ? account?.followed : []) : [];
 
 			mainPlayerId = account?.id ?? null;
 		});
@@ -37,7 +37,7 @@ export default () => {
 
 	const isMainPlayer = playerId => mainPlayerId && playerId === mainPlayerId;
 
-	const getAll = async () => Promise.resolve(playerAndFriends);
+	const getAll = async () => Promise.resolve(playerAndFollowed);
 
 	const getAllActive = async () => {
 		const players = await getAll();

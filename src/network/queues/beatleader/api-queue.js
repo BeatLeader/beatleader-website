@@ -247,7 +247,7 @@ export default (options = {}) => {
 	const rankingCountry = async (countries, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
 		rankingGlobal(page, {...filters, countries}, priority, options);
 
-	const rankingFriends = async (page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
+	const rankingFollowed = async (page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
 		rankingGlobal(page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
 	const rankingEventGlobal = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) => {
@@ -263,7 +263,7 @@ export default (options = {}) => {
 		options = {}
 	) => rankingEventGlobal(page, eventId, {...filters, countries}, priority, options);
 
-	const rankingEventFriends = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
+	const rankingEventFollowed = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
 		rankingEventGlobal(page, eventId, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
 	const minirankings = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, options = {}) =>
@@ -383,14 +383,14 @@ export default (options = {}) => {
 			return r;
 		});
 
-	const addFriend = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
+	const addFollowed = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
 			substituteVars(BL_API_FRIEND_ADD_URL, {playerId}, true, true, encodeURIComponent),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
-	const removeFriend = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
+	const removeFollowed = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
 			substituteVars(BL_API_FRIEND_REMOVE_URL, {playerId}, true, true, encodeURIComponent),
 			{...options, retries: 0, method: 'DELETE', credentials: 'include', maxAge: 1, cacheTtl: null},
@@ -438,10 +438,10 @@ export default (options = {}) => {
 		findPlayer,
 		rankingGlobal,
 		rankingCountry,
-		rankingFriends,
+		rankingFollowed,
 		rankingEventGlobal,
 		rankingEventCountry,
-		rankingEventFriends,
+		rankingEventFollowed,
 		scores,
 		scoreStats,
 		leaderboardStats,
@@ -463,8 +463,8 @@ export default (options = {}) => {
 		clanInvite,
 		clanCancelInvite,
 		accGraph,
-		addFriend,
-		removeFriend,
+		addFollowed,
+		removeFollowed,
 		minirankings,
 		pinScore,
 		events,

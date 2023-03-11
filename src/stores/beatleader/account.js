@@ -352,9 +352,9 @@ export default (refreshOnCreate = true) => {
 		set(account);
 	};
 
-	const addFriend = async playerId => queue.BEATLEADER_API.addFriend(playerId).finally(refresh);
+	const addFollowed = async playerId => queue.BEATLEADER_API.addFollowed(playerId).finally(refresh);
 
-	const removeFriend = async playerId => queue.BEATLEADER_API.removeFriend(playerId).finally(refresh);
+	const removeFollowed = async playerId => queue.BEATLEADER_API.removeFollowed(playerId).finally(refresh);
 
 	const refreshLastQualificationTime = (hash, completion) => {
 		fetch(BL_API_URL + 'prevQualTime/' + hash, {credentials: 'include'})
@@ -385,8 +385,8 @@ export default (refreshOnCreate = true) => {
 		addClanInvitation,
 		removeClanInvitation,
 		changeLogin,
-		addFriend,
-		removeFriend,
+		addFollowed,
+		removeFollowed,
 		refreshLastQualificationTime,
 	};
 

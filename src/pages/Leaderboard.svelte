@@ -328,19 +328,19 @@
 		}));
 	}
 
-	function updateTypeOptions(country, playerHasFriends) {
-		if (!country?.length && !playerHasFriends) return;
+	function updateTypeOptions(country, playerIsFollowingSomeone) {
+		if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
 			.map(to => to)
 			.concat(
-				playerHasFriends
+				playerIsFollowingSomeone
 					? [
 							{
-								type: 'friends',
-								label: 'Friends',
+								type: 'followed',
+								label: 'Followed',
 								iconFa: 'fas fa-user-friends',
-								url: `/leaderboard/friends/${currentLeaderboardId}/1`,
+								url: `/leaderboard/followed/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
 					  ]
@@ -630,8 +630,8 @@
 	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
 	$: isjuniorRT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('juniorrankedteam');
 
-	$: playerHasFriends = !!$account?.friends?.length;
-	$: updateTypeOptions(mainPlayerCountry, playerHasFriends);
+	$: playerIsFollowingSomeone = !!$account?.followed?.length;
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone);
 	$: refreshSortValues(allSortValues, currentFilters);
 	$: if (song?.mapperId == $account?.player?.playerInfo.mapperId) updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
 
