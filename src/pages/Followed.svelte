@@ -2,15 +2,47 @@
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import ssrConfig from '../ssr-config';
+	import {PLAYERS_PER_PAGE} from '../utils/beatleader/consts';
 	import createAccountStore from '../stores/beatleader/account';
 	import followed from '../stores/beatleader/followed';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte';
 	import Avatar from '../components/Common/Avatar.svelte';
+	import Value from '../components/Common/Value.svelte';
 
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
+
+	function getCountryRankingUrl(countryObj) {
+		const rank = countryObj?.rankValue ?? countryObj?.rank ?? null;
+		if (!rank) return null;
+
+		const country = countryObj?.country ?? null;
+		if (!country) return null;
+
+		return `/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}?countries=${country.toLowerCase()}`;
+	}
+	function navigateToCountryRanking(countryObj) {
+		const url = getCountryRankingUrl(countryObj);
+
+		if (url && url.length) navigate(url);
+	}
+
+	function navigateToGlobalRanking(rank) {
+		if (!rank) return;
+
+		navigate(`/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`);
+	}
+
+	function getPlayerCountries(playerInfo) {
+		if (!playerInfo?.countries) return [];
+
+		return playerInfo.countries.map(c => ({
+			...c,
+			prevRank: playerInfo?.lastWeekCountryRank,
+		}));
+	}
 
 	$: followedSorted = ($followed ?? []).sort((a, b) => a?.name.localeCompare(b?.name));
 </script>
@@ -37,7 +69,43 @@
 							<div class="avatar-cell">
 								<Avatar player={f} />
 							</div>
-							<PlayerNameWithFlag player={f} disablePopover={true} />
+
+							<PlayerNameWithFlag player={f} disablePopover={true} hideFlag={true} />
+
+							<section class="stats">
+								<a
+									style="flex: none"
+									href={`/ranking/${Math.floor(((f?.playerInfo?.rank ?? 1) - 1) / PLAYERS_PER_PAGE) + 1}`}
+									on:click|preventDefault={() => navigateToGlobalRanking(f?.playerInfo?.rank ?? 1)}
+									title="Go to global ranking"
+									class="clickable">
+									<i class="fas fa-globe-americas" />
+
+									<Value value={f?.playerInfo?.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
+								</a>
+
+								{#each getPlayerCountries(f?.playerInfo) as country}
+									<a
+										style="flex: none"
+										href={getCountryRankingUrl(country)}
+										on:click|preventDefault={() => navigateToCountryRanking(country)}
+										title="Go to country ranking"
+										class="clickable">
+										<img
+											src={`/assets/flags/${
+												country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''
+											}.png`}
+											class="countryIcon"
+											alt={country?.country} />
+
+										<Value value={country.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
+									</a>
+								{/each}
+
+								<span class="pp">
+									<Value value={f?.playerInfo?.pp} suffix="pp" inline={true} zero="0pp" />
+								</span>
+							</section>
 						</ContentBox>
 					</a>
 				{/each}
@@ -92,5 +160,14 @@
 	.avatar-cell :global(.image) {
 		width: 100%;
 		height: 100%;
+	}
+
+	.stats {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.countryIcon {
+		width: 1.2em;
 	}
 </style>
