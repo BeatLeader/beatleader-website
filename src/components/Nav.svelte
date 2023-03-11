@@ -2,7 +2,6 @@
 	import eventBus from '../utils/broadcast-channel-pubsub';
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
-	import followed from '../stores/beatleader/followed';
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
 	import {configStore} from '../stores/config';
@@ -11,7 +10,6 @@
 	import {clickOutside} from '../svelte-utils/actions/click-outside';
 	import {isTouchDevice} from '../utils/is-touch';
 	import Dropdown from './Common/Dropdown.svelte';
-	import MenuLine from './Player/MenuLine.svelte';
 	import Button from './Common/Button.svelte';
 	import Avatar from './Common/Avatar.svelte';
 	import SelectedPlaylist from './Playlists/SelectedPlaylist.svelte';
@@ -25,19 +23,12 @@
 		navigate(`/u/${playerId}`);
 	}
 
-	function onFriendClick(event) {
-		if (!event.detail) return;
-
-		navigateToPlayer(event.detail.playerId);
-	}
-
 	function onPlaylistClick(event) {
 		if (!event.detail) return;
 
 		playlists.select(event.detail);
 	}
 
-	let followedMenuShown = false;
 	let playlistMenuShown = false;
 	let accountMenuShown = false;
 	let mobileMenuShown = false;
@@ -56,7 +47,9 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
-		signupOptions = isTouchDevice() && player ? [{label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}] : [];
+		signupOptions = isTouchDevice() && player ? [{label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}, ,] : [];
+
+		signupOptions.push({label: 'Followed', url: `/followed`});
 
 		const isStaff = $account?.player?.playerInfo?.role
 			?.split(',')
@@ -157,27 +150,6 @@
 			Account
 		</a>
 	{/if}
-
-	<div class="followed nav-button" style="user-select:none" use:mobileTouch={() => (followedMenuShown = !followedMenuShown)}>
-		<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-			><path
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				stroke-width="2"
-				d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-
-		Followed
-
-		<Dropdown
-			items={$followed}
-			bind:shown={followedMenuShown}
-			on:select={onFriendClick}
-			noItems={player ? 'None followed, add someone' : 'None followed, log in and add someone'}>
-			<svelte:fragment slot="row" let:item>
-				<MenuLine player={item} withRank={false} />
-			</svelte:fragment>
-		</Dropdown>
-	</div>
 
 	<a href="/ranking/1" on:click|preventDefault={() => navigate('/ranking/1')}>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -446,12 +418,6 @@
 
 	.followed {
 		position: relative;
-	}
-
-	.followed :global(.dropdown-menu),
-	.me :global(.dropdown-menu) {
-		width: 15rem !important;
-		max-width: 60vw;
 	}
 
 	.playlists {
