@@ -136,7 +136,10 @@
 				<svelte:fragment slot="row" let:item>
 					<a
 						href={item.url}
-						on:click|preventDefault|stopPropagation={() => (item.callback ? item.callback() : navigate(item.url))}
+						on:click|preventDefault|stopPropagation={() => {
+							item.callback ? item.callback() : navigate(item.url);
+							accountMenuShown = false;
+						}}
 						class={`accountMenuItem ${item?.class ?? ''}`}>{item.label}</a>
 				</svelte:fragment>
 			</Dropdown>
