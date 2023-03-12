@@ -16,7 +16,7 @@
 				{#if item?.class === 'dropdown-divider'}
 					<hr class="dropdown-divider" />
 				{:else}
-					<div class="dropdown-item" on:click={() => dispatch('select', item)}>
+					<div class={`dropdown-item ${item.class ?? ''}`} on:click={() => dispatch('select', item)}>
 						<slot name="row" {item}>
 							{item}
 						</slot>

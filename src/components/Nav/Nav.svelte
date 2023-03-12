@@ -11,11 +11,11 @@
 	import {clickOutside} from '../../svelte-utils/actions/click-outside';
 	import {isTouchDevice} from '../../utils/is-touch';
 	import Dropdown from '../Common/Dropdown.svelte';
-	import Button from '../Common/Button.svelte';
 	import Avatar from '../Common/Avatar.svelte';
-	import SelectedPlaylist from '../Playlists/SelectedPlaylist.svelte';
+	import SelectedPlaylist from './PlaylistMenuItem.svelte';
 	import MenuLine from '../Player/MenuLine.svelte';
 	import LinkMenuItem from './LinkMenuItem.svelte';
+	import PlaylistHeaderMenuItem from './PlaylistHeaderMenuItem.svelte';
 
 	let player = null;
 	let settingsNotificationBadge = null;
@@ -26,13 +26,6 @@
 		navigate(`/u/${playerId}`);
 	}
 
-	function onPlaylistClick(event) {
-		if (!event.detail) return;
-
-		playlists.select(event.detail);
-	}
-
-	let playlistMenuShown = false;
 	let accountMenuShown = false;
 	let mobileMenuShown = false;
 
@@ -73,8 +66,10 @@
 				},
 			});
 
+			// followed
 			if ($followed?.length) {
-				if (signupOptions.length) signupOptions.push({class: 'dropdown-divider'});
+				signupOptions.push({class: 'dropdown-divider'});
+
 				signupOptions = [
 					...signupOptions,
 					...starredFollowed.map(player => ({
@@ -90,6 +85,37 @@
 				];
 				signupOptions.push({component: LinkMenuItem, props: {label: 'More Followed...', url: `/followed`}});
 			}
+
+			// playlists
+			if (signupOptions.length) signupOptions.push({class: 'dropdown-divider'});
+
+			signupOptions.push({
+				component: PlaylistHeaderMenuItem,
+			});
+
+			signupOptions.push({
+				component: LinkMenuItem,
+				props: {
+					label: 'Add new...',
+					callback: async () => {
+						playlists.create();
+						navigate('/playlists');
+					},
+				},
+			});
+
+			($playlists ?? []).map((playlist, idx) => {
+				signupOptions.push({
+					component: SelectedPlaylist,
+					props: {
+						playlist,
+					},
+					class: idx === selectedPlaylist ? 'selected' : '',
+					onClick: () => {
+						playlists.select(playlist);
+					},
+				});
+			});
 		} else {
 			signupOptions.push({component: LinkMenuItem, props: {label: 'Log In', url: '/signin'}});
 		}
@@ -99,8 +125,8 @@
 	$: starredFollowedIds = player?.profileSettings?.starredFriends ?? [];
 	$: starredFollowed =
 		$followed?.filter(f => starredFollowedIds.includes(f?.playerId))?.sort((a, b) => a?.name?.localeCompare(b?.name)) ?? [];
-	$: selectedPlaylist = opt($configStore, 'selectedPlaylist');
-	$: calculateSignUpOptions($account);
+	$: selectedPlaylist = $configStore?.selectedPlaylist;
+	$: calculateSignUpOptions($account, $playlists, selectedPlaylist);
 	$: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
 	$: notificationBadgeTitle = (settingsNotificationBadge ? [settingsNotificationBadge + '\n'] : [])
 		.concat(newSettingsAvailable ? ['New settings are available:'].concat(newSettingsAvailable) : [])
@@ -114,26 +140,27 @@
 	</a>
 
 	{#if player}
-		<a
-			href={`/u/${player.playerId}`}
-			class="me nav-button"
-			on:click|preventDefault={() => {
-				if (!isTouchDevice()) navigateToPlayer(player.playerId);
-			}}
-			use:mobileTouch={() => (accountMenuShown = !accountMenuShown)}>
-			{#if opt(player, 'playerInfo.avatar')}
-				<Avatar {player} />
-			{:else}
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-				</svg>
-			{/if}
+		<div class="me nav-button">
+			<a
+				href={`/u/${player.playerId}`}
+				on:click|preventDefault={() => {
+					if (!isTouchDevice()) navigateToPlayer(player.playerId);
+				}}
+				use:mobileTouch={() => (accountMenuShown = !accountMenuShown)}>
+				{#if opt(player, 'playerInfo.avatar')}
+					<Avatar {player} />
+				{:else}
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+				{/if}
 
-			Me
+				Me
+			</a>
 
 			<Dropdown items={signupOptions} bind:shown={accountMenuShown} noItems="">
 				<svelte:fragment slot="row" let:item>
@@ -147,7 +174,7 @@
 							  }} />
 				</svelte:fragment>
 			</Dropdown>
-		</a>
+		</div>
 	{:else}
 		<a href={`/signin`}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -230,43 +257,6 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="/playlists" on:click|preventDefault={() => navigate('/playlists')}>
-						<i class="fas fa-list-ul" />
-
-						Playlists
-					</a>
-
-					<div>
-						{#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
-							<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
-						{/if}
-
-						<Dropdown
-							items={[{firstRow: true}].concat($playlists.length ? $playlists : [])}
-							bind:shown={mobileMenuShown}
-							on:select={onPlaylistClick}>
-							<svelte:fragment slot="row" let:item>
-								{#if item.firstRow}
-									<div class="playlistButtonsContainer">
-										<Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()} />
-										<Button
-											type="primary"
-											iconFa="fas fa-external-link-alt"
-											label="Details"
-											on:click={() => {
-												navigate('/playlists');
-												mobileMenuShown = false;
-											}} />
-									</div>
-								{:else}
-									<SelectedPlaylist playlist={item} songsCounter={true} />
-								{/if}
-							</svelte:fragment>
-						</Dropdown>
-					</div>
-				</div>
-
-				<div class="dropdown-item">
 					<a href="/search" on:click|preventDefault={() => navigate('/search')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -331,38 +321,6 @@
 			Events
 		</a>
 
-		<div class="playlists nav-button" style="user-select: none" use:mobileTouch={() => (playlistMenuShown = !playlistMenuShown)}>
-			{#if selectedPlaylist !== null && $playlists[selectedPlaylist]}
-				<SelectedPlaylist playlist={$playlists[selectedPlaylist]} />
-			{:else}
-				<i class="fas fa-list-ul" />
-				Playlists
-			{/if}
-
-			<Dropdown
-				items={[{firstRow: true}].concat($playlists.length ? $playlists : [])}
-				bind:shown={playlistMenuShown}
-				on:select={onPlaylistClick}>
-				<svelte:fragment slot="row" let:item>
-					{#if item.firstRow}
-						<div class="playlistButtonsContainer">
-							<Button type="primary" iconFa="fas fa-plus-square" label="New" on:click={() => playlists.create()} />
-							<Button
-								type="primary"
-								iconFa="fas fa-external-link-alt"
-								label="Details"
-								on:click={() => {
-									navigate('/playlists');
-									playlistMenuShown = false;
-								}} />
-						</div>
-					{:else}
-						<SelectedPlaylist playlist={item} songsCounter={true} />
-					{/if}
-				</svelte:fragment>
-			</Dropdown>
-		</div>
-
 		<a href="/search" on:click|preventDefault={() => navigate('/search')}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -403,7 +361,8 @@
 	}
 
 	nav > *:not(.right),
-	nav > .right > *:not(.dropdown-menu) {
+	nav > .right > *:not(.dropdown-menu),
+	.me > a {
 		display: inline-flex;
 		justify-content: flex-start;
 		align-items: center;
@@ -412,6 +371,10 @@
 		padding: 0.25rem 0.5rem;
 		cursor: pointer;
 		position: relative;
+	}
+
+	.me :global(.dropdown-item.selected) {
+		background-color: var(--beatleader-primary);
 	}
 
 	nav > *:not(.right):hover,
@@ -513,14 +476,18 @@
 		}
 
 		nav > *:not(.right),
-		nav > .right > * {
+		nav > .right > *,
+		.me > a {
 			flex: 1;
 			border-right: 1px solid var(--dimmed);
 			flex-direction: column;
 			font-size: 0.75rem;
 		}
 		nav > *:last-child,
-		nav > .right > *:last-child {
+		nav > .right > *:last-child,
+		nav > .right.mobile-menu,
+		nav .hamburger,
+		.me > a {
 			border-right: none;
 		}
 
