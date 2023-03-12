@@ -767,7 +767,7 @@
 											noMargin={true} />
 									{/if}
 									{#if separatePage && generalMapperId != 101330 && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
-										<!-- {#if !isRT && qualificationLimitError}
+										{#if !isRT && qualificationLimitError}
 											<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
 										{:else}
 											<Button
@@ -779,7 +779,7 @@
 													mapVoting = !mapVoting;
 													rtvoting = true;
 												}} />
-										{/if} -->
+										{/if}
 
 										<Button
 											cls="voteButton"
@@ -831,8 +831,9 @@
 									{/if}
 
 									{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-
-									<MapTriangle mapRating={leaderboard.stats} showRatings={true} />
+									{#if leaderboard.stats && leaderboard.stats.passRating}
+										<MapTriangle mapRating={leaderboard.stats} showRatings={true} />
+									{/if}
 									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
 											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span
 										>{/if}
