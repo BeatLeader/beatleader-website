@@ -10,6 +10,7 @@
 	import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte';
 	import Avatar from '../components/Common/Avatar.svelte';
 	import Value from '../components/Common/Value.svelte';
+	import Spinner from '../components/Common/Spinner.svelte';
 
 	document.body.classList.add('slim');
 
@@ -21,6 +22,9 @@
 		{key: 'playerInfo.countries.0.rank', label: 'Sort by Country Rank'},
 	];
 	let sortBy = sortOptions[0];
+
+	let isUpdating = null;
+	let starredFollowedIds = [];
 
 	function getCountryRankingUrl(countryObj) {
 		const rank = countryObj?.rankValue ?? countryObj?.rank ?? null;
@@ -52,15 +56,40 @@
 		}));
 	}
 
+	async function toggleStar(player) {
+		if (isUpdating || !player?.playerId) return;
+
+		try {
+			isUpdating = player.playerId;
+
+			let starredFriends = [];
+			if (starredFollowedIds.includes(player.playerId)) starredFriends = starredFollowedIds.filter(id => id !== player.playerId);
+			else starredFriends = [...starredFollowedIds, player.playerId];
+
+			await account.update({starredFriends: starredFriends.join(',')});
+
+			starredFollowedIds = starredFriends;
+		} finally {
+			isUpdating = null;
+		}
+	}
+
+	$: $account?.player?.profileSettings?.starredFriends, (starredFollowedIds = $account?.player?.profileSettings?.starredFriends ?? []);
 	$: followedSorted =
 		(sortBy,
-		($followed ?? []).sort((a, b) => {
-			let [first, second] = sortBy.reverse === true ? [b, a] : [a, b];
+		($followed ?? [])
+			.map(f => ({...f, starred: starredFollowedIds.includes(f?.playerId)}))
+			.sort((a, b) => {
+				let [first, second] = sortBy.reverse === true ? [b, a] : [a, b];
 
-			return sortBy.type === 'string'
-				? opt(first, sortBy.key, '').localeCompare(opt(second, sortBy.key, ''))
-				: opt(first, sortBy.key, 0) - opt(second, sortBy.key, 0);
-		}));
+				if (a.starred !== b.starred) {
+					return (b.starred ? 1 : 0) - (a.starred ? 1 : 0);
+				}
+
+				return sortBy.type === 'string'
+					? opt(first, sortBy.key, '').localeCompare(opt(second, sortBy.key, ''))
+					: opt(first, sortBy.key, 0) - opt(second, sortBy.key, 0);
+			}));
 </script>
 
 <svelte:head>
@@ -90,6 +119,23 @@
 							in:fade={{delay: idx * 20, duration: 200}}
 							out:fade={{duration: 50}}>
 							<ContentBox>
+								<span
+									class="star"
+									class:starred={f.starred}
+									class:is-updating={isUpdating === f?.playerId}
+									title={isUpdating === f?.playerId
+										? 'Please wait for the update to complete'
+										: f.starred
+										? 'Click to remove from starred'
+										: 'Click to add starred'}
+									on:click|preventDefault|stopPropagation={() => toggleStar(f)}>
+									{#if isUpdating === f?.playerId}
+										<Spinner />
+									{:else}
+										<i class="fa-star" class:fa-regular={!f.starred} class:fa-solid={f.starred} />
+									{/if}
+								</span>
+
 								{#if f?.profileSettings?.profileCover}
 									<div class="profile-background" style:background-image={`url(${f.profileSettings.profileCover})`} />
 								{/if}
@@ -178,6 +224,24 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.75rem;
+	}
+
+	.star {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		transition: color, opacity 200ms;
+		cursor: pointer !important;
+	}
+
+	.star.starred {
+		color: yellow;
+	}
+
+	.star:hover:not(.is-updating),
+	.star.starred:hover:not(.is-updating) {
+		color: yellow;
+		opacity: 0.6;
 	}
 
 	.profile-background {

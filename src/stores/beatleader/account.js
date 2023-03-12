@@ -2,7 +2,6 @@ import {writable} from 'svelte/store';
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 import userApiClient from '../../network/clients/beatleader/account/api';
 import queue from '../../network/queues/queues';
-import {isString} from '../../utils/js';
 
 let store = null;
 let storeSubCount = 0;

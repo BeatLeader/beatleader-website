@@ -99,7 +99,7 @@
 						},
 					})),
 				];
-				signupOptions.push({label: 'All Followed', url: `/followed`});
+				signupOptions.push({label: 'More Followed...', url: `/followed`});
 			}
 		} else {
 			signupOptions.push({label: 'Log In', url: '/signin'});
@@ -108,7 +108,8 @@
 
 	$: player = $account?.player;
 	$: starredFollowedIds = player?.profileSettings?.starredFriends ?? [];
-	$: starredFollowed = $followed?.filter(f => starredFollowedIds.includes(f?.playerId)) ?? [];
+	$: starredFollowed =
+		$followed?.filter(f => starredFollowedIds.includes(f?.playerId))?.sort((a, b) => a?.name?.localeCompare(b?.name)) ?? [];
 	$: selectedPlaylist = opt($configStore, 'selectedPlaylist');
 	$: calculateSignUpOptions($account);
 	$: newSettingsAvailable = $configStore ? configStore.getNewSettingsAvailable() : undefined;
@@ -449,10 +450,6 @@
 		user-select: none;
 	}
 
-	.followed {
-		position: relative;
-	}
-
 	.playlists {
 		position: relative;
 	}
@@ -491,6 +488,11 @@
 		width: 1.25rem;
 		height: 1.25rem;
 		margin-right: 0.5rem;
+	}
+
+	nav .me :global(.dropdown-menu) {
+		width: 15rem !important;
+		max-width: 60vw;
 	}
 
 	nav .right {
