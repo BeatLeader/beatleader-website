@@ -58,24 +58,6 @@
 		if (loggedInUser.player) {
 			if (isStaff) signupOptions.push({label: 'Staff Dashboard', url: '/staff'});
 
-			if ((loggedInUser.player.playerId < 30000000 || loggedInUser.player.playerId > 1000000000000000) && !loggedInUser.migrated) {
-				signupOptions.push({label: 'Migrate', url: '/signin'});
-			}
-			if (loggedInUser.player.playerId < 70000000000000000 || loggedInUser.migrated) {
-				signupOptions.push({label: 'Change password', url: '/signin/changePassword'});
-				signupOptions.push({label: 'My login', url: '/signin/mylogin'});
-			}
-			signupOptions.push({label: 'Link socials...', url: '/signin/socials'});
-			if (!loggedInUser.patreoned) {
-				signupOptions.push({label: 'Link patreon', url: '/signin/linkPatreon'});
-			}
-			if (loggedInUser.ban) {
-				if (loggedInUser.ban.reason === 'Self ban') {
-					signupOptions.push({label: 'Activate account', url: '/signin/autoban'});
-				}
-			} else {
-				signupOptions.push({label: 'Suspend account', url: '/signin/autoban'});
-			}
 			signupOptions.push({
 				label: 'Log Out',
 				callback: () => {
