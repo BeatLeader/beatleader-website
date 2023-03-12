@@ -24,7 +24,7 @@
 	import PlaylistPage from './pages/Playlist.svelte';
 	import SigninPage from './pages/SignIn.svelte';
 	import SupportPage from './pages/Support.svelte';
-	import Nav from './components/Nav.svelte';
+	import Nav from './components/Nav/Nav.svelte';
 	import Modal from 'svelte-simple-modal';
 	import StaffDashboard from './pages/StaffDashboard.svelte';
 	import EventsPage from './pages/Events.svelte';

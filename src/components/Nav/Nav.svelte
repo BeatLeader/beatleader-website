@@ -1,20 +1,21 @@
 <script>
-	import eventBus from '../utils/broadcast-channel-pubsub';
+	import eventBus from '../../utils/broadcast-channel-pubsub';
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
-	import createAccountStore from '../stores/beatleader/account';
-	import followed from '../stores/beatleader/followed';
-	import createPlaylistStore from '../stores/playlists';
-	import {configStore} from '../stores/config';
-	import {opt} from '../utils/js';
-	import {mobileTouch} from '../svelte-utils/actions/mobile-touch';
-	import {clickOutside} from '../svelte-utils/actions/click-outside';
-	import {isTouchDevice} from '../utils/is-touch';
-	import Dropdown from './Common/Dropdown.svelte';
-	import Button from './Common/Button.svelte';
-	import Avatar from './Common/Avatar.svelte';
-	import SelectedPlaylist from './Playlists/SelectedPlaylist.svelte';
-	import MenuLine from './Player/MenuLine.svelte';
+	import createAccountStore from '../../stores/beatleader/account';
+	import followed from '../../stores/beatleader/followed';
+	import createPlaylistStore from '../../stores/playlists';
+	import {configStore} from '../../stores/config';
+	import {opt} from '../../utils/js';
+	import {mobileTouch} from '../../svelte-utils/actions/mobile-touch';
+	import {clickOutside} from '../../svelte-utils/actions/click-outside';
+	import {isTouchDevice} from '../../utils/is-touch';
+	import Dropdown from '../Common/Dropdown.svelte';
+	import Button from '../Common/Button.svelte';
+	import Avatar from '../Common/Avatar.svelte';
+	import SelectedPlaylist from '../Playlists/SelectedPlaylist.svelte';
+	import MenuLine from '../Player/MenuLine.svelte';
+	import LinkMenuItem from './LinkMenuItem.svelte';
 
 	let player = null;
 	let settingsNotificationBadge = null;
@@ -49,20 +50,26 @@
 	let signupOptions = [];
 
 	function calculateSignUpOptions(loggedInUser) {
-		signupOptions = isTouchDevice() && player ? [{label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}] : [];
+		signupOptions =
+			isTouchDevice() && player
+				? [{component: LinkMenuItem, props: {label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}}]
+				: [];
 
 		const isStaff = $account?.player?.playerInfo?.role
 			?.split(',')
 			?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator', 'qualityteam'].includes(role));
 
 		if (loggedInUser.player) {
-			if (isStaff) signupOptions.push({label: 'Staff Dashboard', url: '/staff'});
+			if (isStaff) signupOptions.push({component: LinkMenuItem, props: {label: 'Staff Dashboard', url: '/staff'}});
 
 			signupOptions.push({
-				label: 'Log Out',
-				callback: () => {
-					account.logOut();
-					navigate('/');
+				component: LinkMenuItem,
+				props: {
+					label: 'Log Out',
+					callback: () => {
+						account.logOut();
+						navigate('/');
+					},
 				},
 			});
 
@@ -81,10 +88,10 @@
 						},
 					})),
 				];
-				signupOptions.push({label: 'More Followed...', url: `/followed`});
+				signupOptions.push({component: LinkMenuItem, props: {label: 'More Followed...', url: `/followed`}});
 			}
 		} else {
-			signupOptions.push({label: 'Log In', url: '/signin'});
+			signupOptions.push({component: LinkMenuItem, props: {label: 'Log In', url: '/signin'}});
 		}
 	}
 
@@ -130,26 +137,14 @@
 
 			<Dropdown items={signupOptions} bind:shown={accountMenuShown} noItems="">
 				<svelte:fragment slot="row" let:item>
-					{#if item.component}
-						<svelte:component
-							this={item.component}
-							{...item.props ?? {}}
-							on:click={item.onClick
-								? item.onClick
-								: () => {
-										accountMenuShown = false;
-								  }} />
-					{:else}
-						<a
-							href={item.url}
-							on:click|preventDefault|stopPropagation={() => {
-								if (!item.callback && !item.url) return;
-
-								item.callback ? item.callback() : navigate(item.url);
-								accountMenuShown = false;
-							}}
-							class={`accountMenuItem ${item?.class ?? ''}`}>{item.label}</a>
-					{/if}
+					<svelte:component
+						this={item.component}
+						{...item.props ?? {}}
+						on:click={item.onClick
+							? item.onClick
+							: () => {
+									accountMenuShown = false;
+							  }} />
 				</svelte:fragment>
 			</Dropdown>
 		</a>
@@ -502,13 +497,6 @@
 		margin-top: 0.15rem;
 		margin-left: 0.25em;
 		padding-right: 1.5em;
-	}
-
-	.accountMenuItem {
-		display: flex;
-		justify-content: flex-start;
-		align-items: center;
-		width: 100%;
 	}
 
 	.right.mobile-menu {
