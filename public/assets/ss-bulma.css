@@ -5,7 +5,8 @@
 	--foreground: #252525;
 	--textColor: #eee;
 	--ppColour: #8992e8;
-	--capturedColour: #b49600;
+	--capturedColor: #b49600;
+	--rankedPoolColor: #3EB489;
 	--alternate: #72a8ff;
 	--selected: #3273dc;
 	--hover: #333;
@@ -740,7 +741,7 @@ pre {
 body {
 	color: #4a4a4a;
 	font-size: 1rem;
-	font-weight: 400;
+	/* font-weight: 400; */
 	line-height: 1.5;
 }
 
@@ -11825,7 +11826,7 @@ body::-webkit-scrollbar-track {
 }
 
 .grid-transition-helper > .row-0 {
-	grid-row: 1/1;
+	/* grid-row: 1/1; */
 }
 
 .grid-transition-helper > .row-1 {

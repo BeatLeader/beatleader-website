@@ -55,6 +55,13 @@ export function capturesLabel(tag) {
 	}
 }
 
+export function rankedPoolPercentLabel(tag) {
+	switch (tag) {
+		default:
+			return 'Ranked % Captured';
+	}
+}
+
 export function ppIcon(tag) {
 	switch (tag) {
 		case 'OOTK':
@@ -101,8 +108,14 @@ export function ppValue(tag, value) {
 	}
 }
 
-// Lmao what is this script -- SSnowy
 export function capturesValue(tag, value) {
+	switch (tag) {
+		default:
+			return value;
+	}
+}
+
+export function rankedPoolPercentValue(tag, value) {
 	switch (tag) {
 		default:
 			return value;

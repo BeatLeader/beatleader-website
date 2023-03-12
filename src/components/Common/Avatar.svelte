@@ -1,9 +1,11 @@
 <script>
 	import {getOverlayUrlByName} from '../Player/Overlay/overlay';
 
-	export let player;
+	export let player = null;
+	export let clan = null;
 
 	$: avatar = player?.playerInfo?.avatar;
+	$: clanAvatar = clan?.icon ?? null;
 	$: profileSettings = player?.profileSettings;
 	$: overlayUrl = profileSettings?.effectName?.length ? getOverlayUrlByName(profileSettings.effectName, 'small') : null;
 	$: hue = profileSettings?.hue ?? 0;
@@ -23,6 +25,10 @@
 			--saturation: ${saturation}
 			`} />
 		{/if}
+	</figure>
+{:else if clan}
+	<figure class="image is-24x24" on:click>
+		<img src={clanAvatar} alt="" />
 	</figure>
 {/if}
 

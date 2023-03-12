@@ -124,7 +124,7 @@
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank clans with 3 players or more', iconFa: 'fa fa-list-ol'},
 		{id: 'count', label: 'Players', title: 'Sort by player count', iconFa: 'fa fa-user'},
-		{id: 'captures', label: 'Maps Captured', title: 'Sort by maps captured', iconFa: 'fa fa-cubes'}
+		{id: 'captures', label: 'Maps Captured', title: 'Sort by maps captured', iconFa: 'fa fa-flag'}
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -151,6 +151,7 @@
 	$: clanRequests = $account?.clanRequest ?? [];
 
 	$: clansPage = $clansStore?.data ?? [];
+	$: rankedMapCount = $clansStore?.container ?? null;
 </script>
 
 <svelte:head>
@@ -164,7 +165,7 @@
 				<h1 class="title is-5">My clan</h1>
 
 				<a href={`/clan/${$account.clan.tag}/players/1?`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}/players/1?`)}>
-					<ClanInfoSmall clan={$account.clan} />
+					<ClanInfoSmall clan={$account.clan} rankedMapCount={rankedMapCount} />
 				</a>
 			</ContentBox>
 		{/if}
@@ -219,7 +220,7 @@
 					{#each clansPage as clan, idx (clan.id)}
 						<div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
 							<div class="main" on:click={() => onClanClick(clan)}>
-								<ClanInfoSmall {clan} />
+								<ClanInfoSmall {clan} rankedMapCount={rankedMapCount} />
 							</div>
 						</div>
 					{/each}

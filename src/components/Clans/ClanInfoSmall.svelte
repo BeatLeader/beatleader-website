@@ -1,9 +1,10 @@
 <script>
 	import {fade} from 'svelte/transition';
 	import Badge from '../Common/Badge.svelte';
-	import {playersTitle, rankLabel, accLabel, ppLabel, capturesLabel, rankValue, accValue, ppValue, capturesValue, ppIcon} from '../../utils/clans';
+	import {playersTitle, rankLabel, accLabel, ppLabel, capturesLabel, rankedPoolPercentLabel, rankValue, accValue, ppValue, capturesValue, rankedPoolPercentValue, ppIcon} from '../../utils/clans';
 
 	export let clan;
+	export let rankedMapCount = null;
 
 	document.body.classList.remove('slim');
 
@@ -29,6 +30,7 @@
 			clanAverageAccuracy = accValue(tag, clanAverageAccuracy);
 			clanPp = ppValue(tag, clanPp);
 			clanCapturedMaps = capturesValue(tag, clanCapturedMaps);
+			rankedPoolPercent = rankedPoolPercentLabel(tag, rankedPoolPercent);
 		}
 	}
 
@@ -38,7 +40,8 @@
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
 	$: clanPp = clan?.pp ?? null;
-	$: clanCapturedMaps = clan?.ownedLeaderboardsCount ?? null;
+	$: clanCapturedMaps = clan?.capturedLeaderboards?.length ?? null;
+	$: rankedPoolPercent = rankedMapCount && clanCapturedMaps ? (clanCapturedMaps / rankedMapCount) * 100 : 0;
 </script>
 
 {#if clan?.id}
@@ -61,7 +64,8 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--capturedColour)" />
+							<Badge label={rankedPoolPercentLabel(tag)} value={rankedPoolPercent} suffix="%" withZeroSuffix={true} digits={1} fluid={true} bgColor="var(--rankedPoolColor)" />
+							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--capturedColor)" />
 							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
 							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
 							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />

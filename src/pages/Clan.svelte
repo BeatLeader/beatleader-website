@@ -119,7 +119,7 @@
 		{
 			type: 'capturedLeaderboards',
 			label: 'Captured Leaderboards',
-			iconFa: 'fas fa-globe-americas',
+			iconFa: 'fas fa-flag',
 			url: `/clan/${currentClanId}/capturedLeaderboards`,
 			filters: {countries: ''},
 		}
@@ -368,6 +368,12 @@
 												<div class="author">{opt(leaderboard, 'leaderboard.song.authorName')} <small>{opt(leaderboard, 'leaderboard.song.levelAuthorName')}</small></div>
 											</a>
 										</div>
+
+										{#if opt(leaderboard, 'leaderboard.song.hash').length}
+											<div class="tablet-and-up">
+												<Icons hash={opt(leaderboard, 'leaderboard.song.hash')} diffInfo={{diff: opt(leaderboard, 'leaderboard.difficultyBl.difficultyName'), type: opt(leaderboard, 'leaderboard.difficultyBl.modeName')}} />
+											</div>
+										{/if}
 									</div>
 									<div class="mobile-second-line">
 										<div class="score-options-section">
@@ -385,151 +391,146 @@
 												<i class="fas fa-chevron-down" />
 											</span>
 										</div>
-										<div class="pp with-badge">
-											<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-												<span slot="label">
-													<Pp
-														pp={leaderboard.clanRanking[0].clanpp}
-														inline={false}
-														color="white" />
-												</span>
-											</Badge>
-										</div>
-										<div class="percentage with-badge">
-											<ClanAccuracy accuracy={leaderboard.clanRanking[0].clanAverageAccuracy * 100} />
-										</div>
-										<div class="score with-badge">
-											<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-												<span slot="label">
-													<Value value={leaderboard.clanRanking[0].clanTotalScore} inline={false} digits={0} />
-												</span>
-											</Badge>
-										</div>
-	
-										{#if opt(leaderboard, 'leaderboard.song.hash').length}
-											<div class="tablet-and-up">
-												<Icons hash={opt(leaderboard, 'leaderboard.song.hash')} diffInfo={{diff: opt(leaderboard, 'leaderboard.difficultyBl.difficultyName'), type: opt(leaderboard, 'leaderboard.difficultyBl.modeName')}} />
+										<div class="{'player-score'}">
+											<div class="pp with-badge">
+												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+													<span slot="label">
+														<Pp
+															pp={leaderboard.clanRanking[0].clanpp}
+															inline={false}
+															color="white" />
+													</span>
+												</Badge>
 											</div>
-										{/if}
+											<div class="percentage with-badge">
+												<ClanAccuracy accuracy={leaderboard.clanRanking[0].clanAverageAccuracy * 100} />
+											</div>
+											<div class="score with-badge">
+												<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+													<span slot="label">
+														<Value value={leaderboard.clanRanking[0].clanTotalScore} inline={false} digits={0} />
+													</span>
+												</Badge>
+											</div>
+										</div>
 									</div>
 								</div>
-								<div class="main">
-									{#if showClanRankingScores}
-										<div class="scores-subgrid grid-transition-helper">
-											{#each opt(leaderboard.clanRanking[0], 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
-												<div
-													class={`row-${idx}`}
-													class:user-score={score?.isUserScore}
-													class:user-score-top={score?.userScoreTop}
-													in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-													out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-													animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-													<div class={'player-score'}>
-														<div class="mobile-first-line">
-															<div class="rank with-badge">
-																<Badge
-																	onlyLabel={true}
-																	color="white"
-																	bgColor={opt(score, 'score.rank') === 1
-																		? 'darkgoldenrod'
-																		: opt(score, 'score.rank') === 2
-																		? '#888'
-																		: opt(score, 'score.rank') === 3
-																		? 'saddlebrown'
-																		: opt(score, 'score.rank') >= 10000
-																		? 'small'
-																		: 'var(--dimmed)'}>
-																	<span slot="label">
-																		#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />
-																	</span>
-																</Badge>
-															</div>
-															<div class="player">
-																<Avatar player={score.player} />
-																<PlayerNameWithFlag
-																	player={score.player}
-																	type={type === 'accsaber' ? 'accsaber/date' : null}
-																	on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
-										
-																<!--<ClanBadges player={score.player} />-->
-															</div>
-															<div class="timeset above-tablet">
-																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
-																	{opt(score, 'score.timeSetString', '-')}
+								{#if showClanRankingScores}
+									<div class="scores-subgrid grid-transition-helper">
+										{#each opt(leaderboard.clanRanking[0], 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
+											<div
+												class={`row-${idx}`}
+												class:user-score={score?.isUserScore}
+												class:user-score-top={score?.userScoreTop}
+												in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+												out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+												animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
+												<div class={'player-score'}>
+													<div class="mobile-first-line">
+														<i class="fa-solid fa-arrow-right"></i>
+														<div class="rank with-badge">
+															<Badge
+																onlyLabel={true}
+																color="white"
+																bgColor={opt(score, 'score.rank') === 1
+																	? 'darkgoldenrod'
+																	: opt(score, 'score.rank') === 2
+																	? '#888'
+																	: opt(score, 'score.rank') === 3
+																	? 'saddlebrown'
+																	: opt(score, 'score.rank') >= 10000
+																	? 'small'
+																	: 'var(--dimmed)'}>
+																<span slot="label">
+																	#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />
 																</span>
-															</div>
-															<div class="timeset mobile-only">
-																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
-																	{score?.score?.timeSetStringShort ?? ''}
-																</span>
-															</div>
+															</Badge>
 														</div>
-														<div class="mobile-second-line">
-															<div class="replay">
-																<Button
-																	url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
-																	on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
-																	cls="replay-button-alt"
-																	icon="<div class='replay-icon-alt'></div>"
-																	title="Replay"
-																	noMargin={true} />
-								
-																<!-- svelte-ignore a11y-click-events-have-key-events -->
-																<span
-																	class="beat-savior-reveal clickable"
-																	class:opened={openedDetails.includes(score?.score?.id)}
-																	on:click={() => toggleOpen(score?.score?.id)}
-																	title="Show details">
-																	<i class="fas fa-chevron-down" />
-																</span>
-															</div>
-															{#if type === 'accsaber' || opt(score, 'score.pp')}
-																<div class="pp with-badge">
-																	<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-																		<span slot="label">
-																			{#if type === 'accsaber'}
-																				<Pp
-																					playerId={opt(score, 'player.playerId')}
-																					pp={opt(score, 'score.ap')}
-																					weighted={opt(score, 'score.weightedAp')}
-																					zero={formatNumber(0)}
-																					withZeroSuffix={true}
-																					inline={false}
-																					suffix="AP"
-																					color="white" />
-																			{:else}
-																				<Pp
-																					playerId={opt(score, 'player.playerId')}
-																					{leaderboard}
-																					pp={opt(score, 'score.pp')}
-																					whatIf={opt(score, 'score.whatIfPp')}
-																					inline={false}
-																					color="white" />
-																			{/if}
-																		</span>
-																	</Badge>
-																</div>
-															{/if}
-															<div class="percentage with-badge">
-																<Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false} />
-															</div>
-															<div class="score with-badge">
-																<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+														<div class="player">
+															<Avatar player={score.player} />
+															<PlayerNameWithFlag
+																player={score.player}
+																type={type === 'accsaber' ? 'accsaber/date' : null}
+																on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
+									
+															<!--<ClanBadges player={score.player} />-->
+														</div>
+														<div class="timeset above-tablet">
+															<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
+																{opt(score, 'score.timeSetString', '-')}
+															</span>
+														</div>
+														<div class="timeset mobile-only">
+															<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
+																{score?.score?.timeSetStringShort ?? ''}
+															</span>
+														</div>
+													</div>
+													<div class="mobile-second-line">
+														<div class="replay">
+															<Button
+																url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
+																on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
+																cls="replay-button-alt"
+																icon="<div class='replay-icon-alt'></div>"
+																title="Replay"
+																noMargin={true} />
+							
+															<!-- svelte-ignore a11y-click-events-have-key-events -->
+															<span
+																class="beat-savior-reveal clickable"
+																class:opened={openedDetails.includes(score?.score?.id)}
+																on:click={() => toggleOpen(score?.score?.id)}
+																title="Show details">
+																<i class="fas fa-chevron-down" />
+															</span>
+														</div>
+														{#if type === 'accsaber' || opt(score, 'score.pp')}
+															<div class="pp with-badge">
+																<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 																	<span slot="label">
-																		<Value value={opt(score, 'score.score')} inline={false} digits={0} />
-										
-																		<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), opt(leaderboard, 'leaderboard.difficultyBl.modifierValues'))}
-																			>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+																		{#if type === 'accsaber'}
+																			<Pp
+																				playerId={opt(score, 'player.playerId')}
+																				pp={opt(score, 'score.ap')}
+																				weighted={opt(score, 'score.weightedAp')}
+																				zero={formatNumber(0)}
+																				withZeroSuffix={true}
+																				inline={false}
+																				suffix="AP"
+																				color="white" />
+																		{:else}
+																			<Pp
+																				playerId={opt(score, 'player.playerId')}
+																				{leaderboard}
+																				pp={opt(score, 'score.pp')}
+																				whatIf={opt(score, 'score.whatIfPp')}
+																				inline={false}
+																				color="white" />
+																		{/if}
 																	</span>
 																</Badge>
 															</div>
+														{/if}
+														<div class="percentage with-badge">
+															<Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false} />
+														</div>
+														<div class="score with-badge">
+															<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+																<span slot="label">
+																	<Value value={opt(score, 'score.score')} inline={false} digits={0} />
+									
+																	<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), opt(leaderboard, 'leaderboard.difficultyBl.modifierValues'))}
+																		>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
+																</span>
+															</Badge>
 														</div>
 													</div>
 												</div>
-											{/each}
-										</div>
-									{/if}
-								</div>
+											</div>
+										{/each}
+									</div>
+								{/if}
 							</div>
 						{/each}
 					</div>
@@ -557,22 +558,51 @@
 		justify-content: center !important;
 	}
 
-	.page-content {
-		max-width: 65em;
-		width: 100%;
-	}
-
 	article {
 		width: calc(100% - 25em);
 		overflow-x: hidden;
 	}
 
-	.ranking-grid-row {
-		display: grid;
-		grid-template-columns: auto 2.4em;
-		grid-gap: 0.4em;
-		align-items: center;
-		justify-items: center;
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
+	}
+
+	.duplicateDiffsContainer {
+		display: flex;
+	}
+
+	.fa-arrow-right {
+		position: relative;
+		line-height: inherit;
+		vertical-align: middle;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+	}
+
+	.icons {
+		width: 7em;
+		font-size: 0.75em;
+		text-align: right;
+		margin-right: 0;
+		margin-bottom: 0.5em;
+	}
+
+	.icons:empty {
+		margin-bottom: 0 !important;
+	}
+
+	.icons :global(> *) {
+		margin-bottom: 0.25em !important;
 	}
 
 	.mobile-first-line {
@@ -588,6 +618,11 @@
 		align-items: center;
 	}
 
+	.page-content {
+		max-width: 65em;
+		width: 100%;
+	}
+
 	.players {
 		margin-top: 1rem;
 		grid-gap: 0.5em;
@@ -601,15 +636,6 @@
 		border-bottom: none !important;
 	}
 
-	.scores-subgrid {
-		display: grid;
-		grid-template-columns: 1fr;
-		max-width: 100%;
-		position: relative;
-		border-top: 1px solid var(--row-separator);
-		padding-left: 2em;
-	}
-
 	.player-score {
 		display: flex;
 		flex-direction: row;
@@ -620,18 +646,147 @@
 		justify-content: center;
 	}
 
-	.page-content {
-		max-width: 65em;
+	
+	.player-score.highlight {
+		background: linear-gradient(45deg, #defb6996, transparent, transparent);
+		border-radius: 4px;
+		padding: 0.2em;
+		margin: 0 -0.2em;
+		max-width: 130%;
+	}
+
+	.player-score .rank {
+		font-size: 0.875em;
+		min-width: 2em;
+		flex: none;
+	}
+
+	.player-score .player .clan {
+		display: flex;
+		grid-gap: 0.4em;
+		flex-grow: 1;
+	}
+
+	.player-score .timeset {
+		text-align: center;
+		min-width: 6.9em;
+		flex: none;
+	}
+
+	.player-score .replay {
+		height: 1.8em;
+		min-width: 1.8em;
+		flex: none;
+	}
+
+	.player-score .pp {
+		min-width: 5.5em;
+		flex: none;
+	}
+
+	.player-score .percentage {
+		min-width: 4.5em;
+		flex: none;
+	}
+
+	.player-score .score {
+		min-width: 6em;
+		flex: none;
+	}
+
+	.player-score :global(.badge) {
+		margin: 0 !important;
+		padding: 0.125em 0.25em !important;
+		width: 100%;
+		height: 100%;
+	}
+
+	.player-score :global(.clan-badges .badge) {
+		margin-right: 0.15em !important;
+		padding: 0 !important;
+		font-size: 0.8em !important;
+	}
+
+	.player-score :global(.clan-badges) {
+		height: 1.2em !important;
+	}
+
+	.player-score :global(.badge span) {
 		width: 100%;
 	}
 
-	article {
-		width: calc(100% - 25em);
-		overflow-x: hidden;
+	.player-score :global(.badge small) {
+		display: block;
+		font-size: 0.7em;
+		font-weight: normal;
+		margin-top: -2px;
 	}
 
-	.songs :global(> *:last-child) {
-		border-bottom: none !important;
+	.player-score :global(.inc),
+	.song-score :global(.dec) {
+		color: inherit;
+	}
+
+	.player-score .player :global(.player-name) {
+		cursor: pointer;
+	}
+
+	.player-score .player :global(figure) {
+		width: 1.5em;
+		height: 1.5em;
+		min-width: 1.5em;
+	}
+
+	.player-score .player :global(.player-name) {
+		overflow-x: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.playlist-buttons {
+		display: flex;
+		margin-top: 1em;
+		column-gap: 0.5em;
+		flex-wrap: wrap;
+	}
+
+	.ranking-grid-row {
+		display: grid;
+		grid-template-columns: auto 2.4em;
+		grid-gap: 0.4em;
+		align-items: center;
+		justify-items: center;
+	}
+
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		margin: 0.3em;
+	}
+
+	.scores-subgrid {
+		display: grid;
+		grid-template-columns: 1fr;
+		max-width: 100%;
+		position: relative;
+		border-top: 1px solid var(--row-separator);
+		padding-top: 0.5em;
+	}
+
+	.songinfo {
+		flex-grow: 1;
+		text-align: left;
+		font-size: 0.95rem;
+		font-weight: 500;
+	}
+
+	.songinfo {
+		color: var(--alternate);
+	}
+
+	.songinfo small {
+		margin-left: 0.25em;
+		font-size: 0.75em;
+		color: var(--ppColour);
 	}
 
 	.song-line {
@@ -655,48 +810,13 @@
 		margin-right: 0;
 	}
 
-	.songinfo {
-		flex-grow: 1;
-		text-align: left;
-		font-size: 0.95rem;
-		font-weight: 500;
+	.songs :global(> *:last-child) {
+		border-bottom: none !important;
 	}
 
-	.songinfo {
-		color: var(--alternate);
-	}
-
-	.songinfo small {
-		margin-left: 0.25em;
-		font-size: 0.75em;
-		color: var(--ppColour);
-	}
-
-	.icons {
-		width: 7em;
-		font-size: 0.75em;
-		text-align: right;
-		margin-right: 0;
-		margin-bottom: 0.5em;
-	}
-
-	.icons:empty {
-		margin-bottom: 0 !important;
-	}
-
-	.icons :global(> *) {
-		margin-bottom: 0.25em !important;
-	}
-
-	.playlist-buttons {
-		display: flex;
-		margin-top: 1em;
-		column-gap: 0.5em;
-		flex-wrap: wrap;
-	}
-
-	.duplicateDiffsContainer {
-		display: flex;
+	.with-badge {
+		height: 100%;
+		text-align: center;
 	}
 
 	:global(.playlist-button) {
@@ -733,25 +853,5 @@
 		.songinfo {
 			text-align: center;
 		}
-	}
-
-	.beat-savior-reveal {
-		align-self: end;
-		cursor: pointer;
-	}
-
-	.beat-savior-reveal > i {
-		transition: transform 500ms;
-		transform-origin: 0.42em 0.5em;
-	}
-
-	.beat-savior-reveal.opened > i {
-		transform: rotateZ(180deg);
-	}
-
-	.score-options-section {
-		display: grid;
-		justify-items: center;
-		margin: 0.3em;
 	}
 </style>

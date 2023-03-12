@@ -2,7 +2,8 @@
 	import {navigate} from 'svelte-routing';
 	import Badge from '../Common/Badge.svelte';
 
-	export let player;
+	export let player = null;
+	export let clanInput = null;
 
 	function invertColor(hex) {
 		if (hex.indexOf('#') === 0) {
@@ -41,7 +42,38 @@
 			</a>
 		{/each}
 	</span>
+{:else if clanInput}
+	<span class="clan-badges">
+		{#if clanInput === 'UNCAPTURED'}
+			<Badge
+				label="UNCAPTURED"
+				onlyLabel={true}
+				fluid={true}
+				color={invertColor('#000000')}
+				bgColor={'var(--dimmed)'}
+				title="Set a score on this map to capture it for your clan!" />
+		{:else if clanInput === 'CONTESTED'}
+			<Badge
+				label="&#9876 CONTESTED &#9876"
+				onlyLabel={true}
+				fluid={true}
+				color={invertColor('#000000')}
+				bgColor={'var(--dimmed)'}
+				title="Set a score on this map to break the tie and capture it for your clan!" />
+		{:else}
+				<a href={`/clan/${clanInput.tag}/players/1?`} on:click|stopPropagation={() => navigate(`/clan/${clanInput.tag}/players/1?`)}>
+					<Badge
+						label={clanInput.tag ?? '???'}
+						onlyLabel={true}
+						fluid={true}
+						color={invertColor(clanInput.color ?? '#000000')}
+						bgColor={clanInput?.color ?? 'var(--dimmed)'}
+						title="Set a score on this map to capture it for your clan!" />
+				</a>
+		{/if}
+	</span>
 {/if}
+
 
 <style>
 	.clan-badges {

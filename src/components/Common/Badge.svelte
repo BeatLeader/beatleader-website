@@ -11,7 +11,9 @@
 	export let digits = 2;
 	export let type = 'number';
 	export let prefix = '';
+	export let withZeroPrefix = false;
 	export let suffix = '';
+	export let withZeroSuffix = false;
 	export let onlyLabel = false;
 	export let clickable = false;
 	export let notSelected = false;
@@ -51,7 +53,9 @@
 						{zero}
 						{digits}
 						{prefix}
+						{withZeroPrefix}
 						{suffix}
+						{withZeroSuffix}
 						{prevValue}
 						{prevLabel}
 						suffixPrev={prevSuffix}
@@ -71,7 +75,7 @@
 		align-items: center;
 		color: var(--color, #eee);
 		background-color: var(--background-color, #222);
-		margin: 0 0.5em 0.5em 0;
+		margin: 0.5em 0.5em 0.5em 0;
 		padding: 0.125em;
 		border-radius: 0.25em;
 		transition: opacity 0.25s;

@@ -32,9 +32,6 @@
 
 	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
 	import ClanName from '../components/Clans/ClanName.svelte';
-	import ClanAvatar from '../components/Clans/ClanAvatar.svelte';
-	import ClanBadgeBig from '../components/Clans/ClanBadgeBig.svelte';
-
 
 	import {formatNumber} from '../utils/format';
 	import {
@@ -184,7 +181,7 @@
 		{
 			type: 'clanranking',
 			label: 'Clan Ranking',
-			iconFa: 'fas fa-globe-americas',
+			iconFa: 'fas fa-flag',
 			url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
 			filters: {countries: ''},
 		}
@@ -555,7 +552,7 @@
 	let qualificationUpdate = false;
 	let rankUpdate = false;
 	let scoresWithUser;
-	let clanRanking;
+	let clanRankingList;
 
 	let verifiedMapperId;
 	let generalMapperId;
@@ -633,7 +630,7 @@
 	$: updateFilters(buildFiltersFromLocation(location));
 	$: makeComplexFilters(buildFiltersFromLocation(location));
 	$: scores = opt($leaderboardStore, 'scores', null);
-	$: clanRanking = opt($leaderboardStore, 'clanRanking', null);
+	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
 	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
 	$: leaderboardGroup = opt($leaderboardStore, 'leaderboard.leaderboardGroup', null);
@@ -842,13 +839,29 @@
 								{/if}
 							</div>
 
-							{#if isRanked}
-								<div style=" --clan-color: {clanRanking?.[0].clan?.color}" class="captor-clan captor-clan-outline">
-									<p>
-										Captured by:
-									</p>
-									<ClanBadgeBig clan={clanRanking?.[0].clan ? clanRanking?.[0].clan : null }/>
-								</div>
+							{#if isRanked && type == 'clanranking'}
+								{#if leaderboard?.clanRankingContested}
+									<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
+										<p>
+											Captured by:
+										</p>
+										<ClanBadges clanInput={'CONTESTED'}/>
+									</div>
+								{:else if (clanRankingList?.[0]?.clan ?? null) === null}
+									<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
+										<p>
+											Captured by:
+										</p>
+										<ClanBadges clanInput={'UNCAPTURED'}/>
+									</div>
+								{:else}
+									<div style=" --clan-color: {clanRankingList?.[0].clan?.color ?? '#000000'}" class="captor-clan captor-clan-outline">
+										<p>
+											Captured by:
+										</p>
+										<ClanBadges clanInput={clanRankingList[0].clan}/>
+									</div>
+								{/if}
 							{/if}
 
 							<div class="title-and-buttons">
@@ -1270,9 +1283,9 @@
 						{/if}
 					{/if}
 				{:else if type === 'clanranking'}
-					{#if clanRanking?.length}
+					{#if clanRankingList?.length}
 						<div class="scores-grid grid-transition-helper">
-							{#each clanRanking as cr, idx (opt(cr, 'clan.tag', ''))}
+							{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
 								<div
 									class={`row-${idx}`}
 									in:fly={{x: 200, delay: idx * 20, duration: 500}}
@@ -1291,11 +1304,11 @@
 												</Badge>
 											</div>
 											<div class="player">
-												<ClanAvatar clan={cr.clan} />
+												<Avatar clan={cr.clan} />
 												<ClanName
 													clan={cr.clan}
 													on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />
-													<ClanBadgeBig clan={cr.clan}/>
+													<ClanBadges clanInput={cr.clan}/>
 											</div>
 											<div class="timeset above-tablet">
 												<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
@@ -1357,6 +1370,7 @@
 													animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
 													<div class={'player-score'}>
 														<div class="mobile-first-line">
+															<i class="fa-solid fa-arrow-right"></i>
 															<div class="rank with-badge">
 																<Badge
 																	onlyLabel={true}
@@ -1385,7 +1399,6 @@
 																<ClanBadges player={score.player} />
 															</div>
 															<div class="timeset above-tablet">
-																{@debug score}
 																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
 																	{opt(score, 'score.timeSetString', '-')}
 																</span>
@@ -1681,6 +1694,14 @@
 		max-width: 27em;
 	}
 
+	.fa-arrow-right {
+		position: relative;
+		line-height: inherit;
+		vertical-align: middle;
+		padding-left: 0.5em;
+		padding-right: 0.5em;
+	}
+
 	.page-content {
 		max-width: 65em;
 		width: 100%;
@@ -1830,7 +1851,6 @@
 		max-width: 100%;
 		position: relative;
 		border-top: 1px solid var(--row-separator);
-		padding-left: 2em;
 	}
 
 	.replay-button {

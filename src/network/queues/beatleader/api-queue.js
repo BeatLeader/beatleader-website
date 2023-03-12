@@ -203,6 +203,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		changes: led.changes,
 		reweight: led.reweight,
 		difficultyBl: led?.difficulty ?? null,
+		clanRankingContested: led?.clanRankingContested ?? false
 	};
 
 	const totalItems = led.plays;
