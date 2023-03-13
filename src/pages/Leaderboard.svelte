@@ -252,7 +252,7 @@
 			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
 		);
 		if (exactMatch) return exactMatch;
-
+changeParams
 		return typeOptions.find(to => to?.type === type) ?? null;
 	};
 
@@ -839,7 +839,7 @@
 								{/if}
 							</div>
 
-							{#if isRanked && type == 'clanranking'}
+							{#if isRanked && currentType == 'clanranking'}
 								{#if leaderboard?.clanRankingContested}
 									<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
 										<p>
@@ -970,7 +970,7 @@
 					</nav>
 				{/if}
 
-				{#if scoresWithUser?.length && type !== 'clanranking'}
+				{#if scoresWithUser?.length && currentType !== 'clanranking'}
 					<div class="scores-grid grid-transition-helper">
 						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
 							<div
@@ -1282,7 +1282,7 @@
 							{/if}
 						{/if}
 					{/if}
-				{:else if type === 'clanranking'}
+				{:else if currentType === 'clanranking'}
 					{#if clanRankingList?.length}
 						<div class="scores-grid grid-transition-helper">
 							{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}

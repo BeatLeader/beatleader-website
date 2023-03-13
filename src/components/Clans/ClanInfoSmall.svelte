@@ -4,7 +4,6 @@
 	import {playersTitle, rankLabel, accLabel, ppLabel, capturesLabel, rankedPoolPercentLabel, rankValue, accValue, ppValue, capturesValue, rankedPoolPercentValue, ppIcon} from '../../utils/clans';
 
 	export let clan;
-	export let rankedMapCount = null;
 
 	document.body.classList.remove('slim');
 
@@ -30,7 +29,7 @@
 			clanAverageAccuracy = accValue(tag, clanAverageAccuracy);
 			clanPp = ppValue(tag, clanPp);
 			clanCapturedMaps = capturesValue(tag, clanCapturedMaps);
-			rankedPoolPercent = rankedPoolPercentLabel(tag, rankedPoolPercent);
+			rankedPoolPercent = rankedPoolPercentValue(tag, rankedPoolPercent);
 		}
 	}
 
@@ -41,7 +40,7 @@
 	$: clanAverageRank = clan?.averageRank ?? null;
 	$: clanPp = clan?.pp ?? null;
 	$: clanCapturedMaps = clan?.capturedLeaderboards?.length ?? null;
-	$: rankedPoolPercent = rankedMapCount && clanCapturedMaps ? (clanCapturedMaps / rankedMapCount) * 100 : 0;
+	$: rankedPoolPercent = clan.rankedPoolPercentCaptured && clanCapturedMaps ? (clanCapturedMaps / clan.rankedPoolPercentCaptured) * 100 : 0;
 </script>
 
 {#if clan?.id}

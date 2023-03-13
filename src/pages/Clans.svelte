@@ -151,7 +151,6 @@
 	$: clanRequests = $account?.clanRequest ?? [];
 
 	$: clansPage = $clansStore?.data ?? [];
-	$: rankedMapCount = $clansStore?.container ?? null;
 </script>
 
 <svelte:head>
@@ -165,7 +164,7 @@
 				<h1 class="title is-5">My clan</h1>
 
 				<a href={`/clan/${$account.clan.tag}/players/1?`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}/players/1?`)}>
-					<ClanInfoSmall clan={$account.clan} rankedMapCount={rankedMapCount} />
+					<ClanInfoSmall clan={$account.clan}/>
 				</a>
 			</ContentBox>
 		{/if}
@@ -220,7 +219,7 @@
 					{#each clansPage as clan, idx (clan.id)}
 						<div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
 							<div class="main" on:click={() => onClanClick(clan)}>
-								<ClanInfoSmall {clan} rankedMapCount={rankedMapCount} />
+								<ClanInfoSmall {clan} />
 							</div>
 						</div>
 					{/each}

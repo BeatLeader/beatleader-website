@@ -15,7 +15,6 @@
 	export let enableCreateMode = false;
 	export let noButtons = false;
 	export let noBio = false;
-	export let rankedMapCount = null;
 
 	document.body.classList.remove('slim');
 
@@ -214,7 +213,7 @@
 			clanAverageAccuracy = accValue(tag, clanAverageAccuracy);
 			clanPp = ppValue(tag, clanPp);
 			clanCapturedMaps = capturesValue(tag, clanCapturedMaps);
-			clanCapturedMapsPercentage = rankedPoolPercentValue(tag, clanCapturedMapsPercentage);
+			rankedPoolPercent = rankedPoolPercentValue(tag, rankedPoolPercent);
 		}
 	}
 
@@ -231,7 +230,7 @@
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
 	$: clanCapturedMaps = clan?.capturedLeaderboards?.length ?? null;
-	$: rankedPoolPercent = rankedMapCount && clanCapturedMaps ? (clanCapturedMaps / rankedMapCount) * 100 : 0;
+	$: rankedPoolPercent = clan?.rankedPoolPercentCaptured && clanCapturedMaps ? (clanCapturedMaps / clan?.rankedPoolPercentCaptured) * 100 : 0;
 	$: clanPp = clan?.pp ?? null;
 </script>
 
