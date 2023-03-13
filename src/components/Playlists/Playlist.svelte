@@ -36,9 +36,13 @@
 		};
 	};
 
-	let detailsOpened = expanded;
+	let detailsOpened;
 	function onDetailsButtonClick() {
 		detailsOpened = !detailsOpened;
+	}
+
+	function updateExpanded(expanded) {
+		detailsOpened = expanded;
 	}
 
 	let titleInput;
@@ -100,6 +104,7 @@
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
+	$: updateExpanded(expanded);
 	$: description = `
 		Beat Saber playlist
 		${totalItems} songs
@@ -112,14 +117,14 @@
 		in:fly={{x: 300, delay: idx * 30, duration: 500}}
 		out:fade={{duration: 100}}
 		class:with-details={detailsOpened}>
-		<div class="playlistInfo">
+		<div class="playlistInfo" on:click={() => onDetailsButtonClick()}>
 			<td class="col--details-btn">
 				<Button
 					type="text"
 					iconFa={detailsOpened ? 'fas fa-chevron-down' : 'fas fa-chevron-right'}
 					on:click={() => onDetailsButtonClick()} />
 			</td>
-			<div class="imageInput" on:click={() => fileinput.click()}>
+			<div class="imageInput" on:click|stopPropagation={() => fileinput.click()}>
 				<img
 					class="playlistImage"
 					src={playlist.image
@@ -174,13 +179,23 @@
 				<div>
 					{#if !playlist.oneclick}
 						{#if canModify}
-							<Button iconFa="fas fa-trash-alt" title="Delete playlist" noMargin={true} type="danger" on:click={store.deleteList(idx)} />
+							<Button
+								iconFa="fas fa-trash-alt"
+								title="Delete playlist"
+								noMargin={true}
+								type="danger"
+								on:click={() => store.deleteList(idx)} />
 						{/if}
 						{#if canShare}
-							<Button iconFa="fas fa-upload" title="Share playlist" noMargin={true} type="primary" on:click={sharePlaylist(idx)} />
+							<Button iconFa="fas fa-upload" title="Share playlist" noMargin={true} type="primary" on:click={() => sharePlaylist(idx)} />
 						{/if}
 					{/if}
-					<Button iconFa="fas fa-download" title="Download playlist" noMargin={true} type="primary" on:click={store.download(playlist)} />
+					<Button
+						iconFa="fas fa-download"
+						title="Download playlist"
+						noMargin={true}
+						type="primary"
+						on:click={() => store.download(playlist)} />
 				</div>
 			</div>
 		</div>
@@ -231,6 +246,7 @@
 
 	.playlistInfo {
 		display: flex;
+		cursor: pointer;
 	}
 
 	.playlistTitle {

@@ -32,6 +32,7 @@
 	import Settings from './pages/Settings.svelte';
 	import {setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
+	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 
 	export let url = '';
 
@@ -149,7 +150,9 @@
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
 					</Route>
-					<Route path="/playlists" component={PlaylistsPage} />
+					<Route path="/playlists/*id" let:params>
+						<PlaylistsPage index={params.id} />
+					</Route>
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
@@ -168,6 +171,8 @@
 		</Modal>
 	</Notifications>
 </Router>
+
+<PlaylistCart />
 
 <link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
 

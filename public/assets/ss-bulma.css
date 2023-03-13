@@ -11813,6 +11813,10 @@ body::-webkit-scrollbar-track {
 	background-image: url(./battleRoyale.png);
 }
 
+.selected-playlist-box {
+	background: rgb(36 74 74 / 81%) !important;
+}
+
 .grid-transition-helper {
 	display: grid;
 	grid-template-columns: 1fr;

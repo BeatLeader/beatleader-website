@@ -1,9 +1,8 @@
 <script>
 	export let playlist;
-	export let songsCounter = true;
 </script>
 
-<section on:click title={`${playlist?.playlistTitle} - ${playlist?.songs?.length} song(s)`}>
+<section on:click title="Select active playlist to modify">
 	<img
 		class="playlistImage"
 		src={playlist.image
@@ -12,11 +11,7 @@
 				: 'data:image/png;base64,' + playlist.image
 			: '/assets/song-default.png'}
 		alt="PlaylistImage" />
-	{#if songsCounter}
-		<span class="playlistTitle">{playlist?.playlistTitle} - {playlist?.songs?.length} song(s)</span>
-	{:else}
-		<span class="playlistTitle">{playlist?.playlistTitle}</span>
-	{/if}
+	<span class="playlistTitle">{playlist?.playlistTitle} - {playlist?.songs?.length} song(s)</span>
 </section>
 
 <style>

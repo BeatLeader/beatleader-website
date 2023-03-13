@@ -12,7 +12,7 @@
 	import {isTouchDevice} from '../../utils/is-touch';
 	import Dropdown from '../Common/Dropdown.svelte';
 	import Avatar from '../Common/Avatar.svelte';
-	import SelectedPlaylist from './PlaylistMenuItem.svelte';
+	import PlaylistMenuItem from './PlaylistMenuItem.svelte';
 	import MenuLine from '../Player/MenuLine.svelte';
 	import LinkMenuItem from './LinkMenuItem.svelte';
 	import PlaylistHeaderMenuItem from './PlaylistHeaderMenuItem.svelte';
@@ -105,16 +105,18 @@
 			});
 
 			($playlists ?? []).map((playlist, idx) => {
-				signupOptions.push({
-					component: SelectedPlaylist,
-					props: {
-						playlist,
-					},
-					class: idx === selectedPlaylist ? 'selected' : '',
-					onClick: () => {
-						playlists.select(playlist);
-					},
-				});
+				if (!playlist.oneclick) {
+					signupOptions.push({
+						component: PlaylistMenuItem,
+						props: {
+							playlist,
+						},
+						class: idx === selectedPlaylist ? 'selected' : '',
+						onClick: () => {
+							playlists.select(idx === selectedPlaylist ? null : playlist);
+						},
+					});
+				}
 			});
 		} else {
 			signupOptions.push({component: LinkMenuItem, props: {label: 'Log In', url: '/signin'}});
@@ -162,7 +164,11 @@
 				Me
 			</a>
 
-			<Dropdown items={signupOptions} bind:shown={accountMenuShown} noItems="">
+			<Dropdown
+				items={signupOptions}
+				bind:shown={accountMenuShown}
+				on:select={e => (e.detail.onClick ? e.detail.onClick() : (accountMenuShown = false))}
+				noItems="">
 				<svelte:fragment slot="row" let:item>
 					<svelte:component
 						this={item.component}
