@@ -2,7 +2,7 @@
 	export let playlist;
 </script>
 
-<section on:click on:keypress title="Select active playlist to modify">
+<section on:click title="Select active playlist to modify">
 	<img
 		class="playlistImage"
 		src={playlist.image
