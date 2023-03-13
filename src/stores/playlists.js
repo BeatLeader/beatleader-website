@@ -163,7 +163,6 @@ export default () => {
 	};
 
 	const generatePlayerPlaylist = (count, playerId, filters, callback) => {
-		console.log(filters);
 		if (!filters.order) {
 			filters.order = 'desc';
 		}
