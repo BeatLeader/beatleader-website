@@ -1,10 +1,10 @@
 <script>
+	import ssrConfig from '../ssr-config';
 	import createPlaylistStore from '../stores/playlists';
 	import createAccountStore from '../stores/beatleader/account';
 	import Playlist from '../components/Playlists/Playlist.svelte';
 	import Pager from '../components/Common/Pager.svelte';
 	import Button from '../components/Common/Button.svelte';
-	import ssrConfig from '../ssr-config';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 
 	export let index;
@@ -15,7 +15,7 @@
 	let itemsPerPage = 5;
 	let page = 0;
 	let itemsPerPageValues = [5, 10, 15];
-	let selectedIndex = -1;
+	let selectedIndex = null;
 
 	function onPageChanged(event) {
 		page = event.detail.page;
@@ -35,18 +35,16 @@
 	};
 
 	function updatePage(index) {
-		if (index !== undefined) {
+		if (Number.isFinite(index)) {
 			page = Math.floor(index / itemsPerPage);
 			selectedIndex = index;
-		} else {
-			if (totalItems <= itemsPerPage) {
-				page = 0;
-			}
+		} else if (totalItems <= itemsPerPage) {
+			page = 0;
 		}
 	}
 
 	$: totalItems = $playlists.length;
-	$: updatePage(index, $playlists.length);
+	$: updatePage(parseInt(index, 10), $playlists.length);
 </script>
 
 <svelte:head>
@@ -63,7 +61,7 @@
 		<div class="song-scores grid-transition-helper">
 			{#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, idx}
 				<Playlist
-					expanded={selectedIndex == page * itemsPerPage + idx}
+					expanded={selectedIndex === page * itemsPerPage + idx}
 					accountStore={account}
 					{playlist}
 					idx={page * itemsPerPage + idx}
