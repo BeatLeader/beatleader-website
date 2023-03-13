@@ -1,5 +1,6 @@
 <script>
 	import ssrConfig from '../ssr-config';
+	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createPlaylistStore from '../stores/playlists';
 	import createAccountStore from '../stores/beatleader/account';
 	import Playlist from '../components/Playlists/Playlist.svelte';
@@ -16,6 +17,8 @@
 	let page = 0;
 	let itemsPerPageValues = [5, 10, 15];
 	let selectedIndex = null;
+
+	let playlistsEl = null;
 
 	function onPageChanged(event) {
 		page = event.detail.page;
@@ -38,6 +41,8 @@
 		if (Number.isFinite(index)) {
 			page = Math.floor(index / itemsPerPage);
 			selectedIndex = index;
+
+			if (playlistsEl) setTimeout(() => scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60), 500);
 		} else if (totalItems <= itemsPerPage) {
 			page = 0;
 		}
@@ -58,14 +63,10 @@
 		<input style="display:none" type="file" accept=".bplist, .json" on:change={e => uploadPlaylist(e)} bind:this={fileinput} />
 	</div>
 	{#if $playlists && $playlists.length}
-		<div class="song-scores grid-transition-helper">
-			{#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, idx}
-				<Playlist
-					expanded={selectedIndex === page * itemsPerPage + idx}
-					accountStore={account}
-					{playlist}
-					idx={page * itemsPerPage + idx}
-					store={playlists} />
+		<div bind:this={playlistsEl} class="song-scores grid-transition-helper">
+			{#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, pageIdx}
+				{@const idx = page * itemsPerPage + pageIdx}
+				<Playlist expanded={selectedIndex === idx} accountStore={account} {playlist} {idx} store={playlists} />
 			{/each}
 		</div>
 	{:else}
