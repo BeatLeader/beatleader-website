@@ -8,6 +8,9 @@
 	import ProfileUiSettings from '../components/Settings/ProfileUISettings.svelte';
 	import ScoreSettings from '../components/Settings/ScoreSettings.svelte';
 	import AccountSettings from '../components/Settings/AccountSettings.svelte';
+	import createAccountStore from '../stores/beatleader/account';
+
+	const account = createAccountStore();
 
 	var navigationItems = [
 		{
@@ -24,11 +27,6 @@
 			name: 'Scores',
 			link: '#scores',
 			icon: 'fas fa-list',
-		},
-		{
-			name: 'Account',
-			link: '#account',
-			icon: 'fas fa-user',
 		},
 	];
 	var selectedNavigationIndex = navigationItems.findIndex(el => el.link == window.location.hash);
@@ -58,6 +56,16 @@
 
 	$: settingsChanged = $configStore ? configStore.getSettingsChanged() : undefined;
 	$: animationSign = previousIndex == undefined ? 0 : selectedNavigationIndex >= previousIndex ? 1 : -1;
+	$: if ($account?.player && !navigationItems.find(i => i.link === '#account')) {
+		navigationItems = [
+			...navigationItems,
+			{
+				name: 'Account',
+				link: '#account',
+				icon: 'fas fa-user',
+			},
+		];
+	}
 </script>
 
 <svelte:head>
