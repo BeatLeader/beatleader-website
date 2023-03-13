@@ -42,7 +42,9 @@
 			page = Math.floor(index / itemsPerPage);
 			selectedIndex = index;
 
-			if (playlistsEl) setTimeout(() => scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60), 500);
+			setTimeout(() => {
+				if (playlistsEl) scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60);
+			}, 500);
 		} else if (totalItems <= itemsPerPage) {
 			page = 0;
 		}
