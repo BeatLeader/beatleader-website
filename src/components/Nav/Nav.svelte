@@ -13,7 +13,6 @@
 	import Dropdown from '../Common/Dropdown.svelte';
 	import Avatar from '../Common/Avatar.svelte';
 	import PlaylistMenuItem from './PlaylistMenuItem.svelte';
-	import SelectedPlaylist from './SelectedPlaylist.svelte';
 	import MenuLine from '../Player/MenuLine.svelte';
 	import LinkMenuItem from './LinkMenuItem.svelte';
 	import PlaylistHeaderMenuItem from './PlaylistHeaderMenuItem.svelte';
@@ -353,10 +352,6 @@
 	</div>
 </nav>
 
-{#if selectedPlaylist?.toFixed}
-	<div class="selected-playlist"><SelectedPlaylist {playlists} {selectedPlaylist} /></div>
-{/if}
-
 <style>
 	nav {
 		position: sticky;
@@ -479,14 +474,6 @@
 
 	.right > a {
 		user-select: none;
-	}
-
-	.selected-playlist {
-		position: fixed;
-		bottom: 2em;
-		left: 2em;
-		display: flex;
-		z-index: 10;
 	}
 
 	@media screen and (max-width: 900px) {

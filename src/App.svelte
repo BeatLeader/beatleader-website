@@ -32,6 +32,7 @@
 	import Settings from './pages/Settings.svelte';
 	import {setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
+	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 
 	export let url = '';
 
@@ -170,6 +171,8 @@
 		</Modal>
 	</Notifications>
 </Router>
+
+<PlaylistCart />
 
 <link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
 
