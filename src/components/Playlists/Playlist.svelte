@@ -36,9 +36,13 @@
 		};
 	};
 
-	let detailsOpened = expanded;
+	let detailsOpened;
 	function onDetailsButtonClick() {
 		detailsOpened = !detailsOpened;
+	}
+
+	function updateExpanded(expanded) {
+		detailsOpened = expanded;
 	}
 
 	let titleInput;
@@ -100,6 +104,7 @@
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
+	$: updateExpanded(expanded);
 	$: description = `
 		Beat Saber playlist
 		${totalItems} songs

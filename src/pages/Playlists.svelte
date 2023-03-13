@@ -7,11 +7,15 @@
 	import ssrConfig from '../ssr-config';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 
+	export let index;
+
 	const playlists = createPlaylistStore();
 	const account = createAccountStore();
-	let page = 0;
+
 	let itemsPerPage = 5;
+	let page = 0;
 	let itemsPerPageValues = [5, 10, 15];
+	let selectedIndex = -1;
 
 	function onPageChanged(event) {
 		page = event.detail.page;
@@ -30,14 +34,19 @@
 		};
 	};
 
-	function updatePage() {
-		if (totalItems <= itemsPerPage) {
-			page = 0;
+	function updatePage(index) {
+		if (index !== undefined) {
+			page = Math.floor(index / itemsPerPage);
+			selectedIndex = index;
+		} else {
+			if (totalItems <= itemsPerPage) {
+				page = 0;
+			}
 		}
 	}
 
 	$: totalItems = $playlists.length;
-	$: updatePage($playlists.length);
+	$: updatePage(index, $playlists.length);
 </script>
 
 <svelte:head>
@@ -53,7 +62,12 @@
 	{#if $playlists && $playlists.length}
 		<div class="song-scores grid-transition-helper">
 			{#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, idx}
-				<Playlist accountStore={account} {playlist} idx={page * itemsPerPage + idx} store={playlists} />
+				<Playlist
+					expanded={selectedIndex == page * itemsPerPage + idx}
+					accountStore={account}
+					{playlist}
+					idx={page * itemsPerPage + idx}
+					store={playlists} />
 			{/each}
 		</div>
 	{:else}

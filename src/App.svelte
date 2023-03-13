@@ -149,7 +149,9 @@
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
 					</Route>
-					<Route path="/playlists" component={PlaylistsPage} />
+					<Route path="/playlists/*id" let:params>
+						<PlaylistsPage index={params.id} />
+					</Route>
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
