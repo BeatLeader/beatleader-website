@@ -3,11 +3,11 @@ import createClient from '../../generic';
 import processPlayer from '../player/process';
 
 const process = response => {
-	const friends = response?.friends?.map(f => processPlayer(f)) ?? [];
+	const followed = response?.friends?.map(f => processPlayer(f)) ?? [];
 
 	return {
 		...response,
-		friends,
+		followed,
 		player: processPlayer(response?.player),
 	};
 };

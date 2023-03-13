@@ -14,7 +14,7 @@
 		{#if withRank}
 			<span class="rank">#{rank}</span>
 		{/if}
-		<PlayerNameWithFlag {player} disablePopover={true} />
+		<PlayerNameWithFlag {player} disablePopover={true} on:click />
 	</div>
 {/if}
 
@@ -33,5 +33,9 @@
 		flex-basis: 4rem;
 		flex-shrink: 0;
 		flex-grow: 0;
+	}
+
+	.player :global(a) {
+		width: 100%;
 	}
 </style>

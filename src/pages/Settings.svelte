@@ -1,12 +1,16 @@
 <script>
+	import {fade} from 'svelte/transition';
+	import ssrConfig from '../ssr-config';
 	import {configStore} from '../stores/config';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import {fade} from 'svelte/transition';
 	import ThemeSettings from '../components/Settings/ThemeSettings.svelte';
 	import ProfileUiSettings from '../components/Settings/ProfileUISettings.svelte';
 	import ScoreSettings from '../components/Settings/ScoreSettings.svelte';
-	import ssrConfig from '../ssr-config';
+	import AccountSettings from '../components/Settings/AccountSettings.svelte';
+	import createAccountStore from '../stores/beatleader/account';
+
+	const account = createAccountStore();
 
 	var navigationItems = [
 		{
@@ -52,6 +56,16 @@
 
 	$: settingsChanged = $configStore ? configStore.getSettingsChanged() : undefined;
 	$: animationSign = previousIndex == undefined ? 0 : selectedNavigationIndex >= previousIndex ? 1 : -1;
+	$: if ($account?.player && !navigationItems.find(i => i.link === '#account')) {
+		navigationItems = [
+			...navigationItems,
+			{
+				name: 'Account',
+				link: '#account',
+				icon: 'fas fa-user',
+			},
+		];
+	}
 </script>
 
 <svelte:head>
@@ -70,7 +84,7 @@
 								on:click={() => selectNavigation(item, idx)}
 								on:keydown={() => selectNavigation(item, idx)}
 								class="navigation-item {idx == selectedNavigationIndex ? 'selected' : ''}">
-								<i class={item.icon}/>
+								<i class={item.icon} />
 								<span class="navigation-item-title">{item.name}</span>
 							</div>
 						{/each}
@@ -82,6 +96,8 @@
 							<ProfileUiSettings {animationSign} />
 						{:else if selectedNavigationIndex == 2}
 							<ScoreSettings {animationSign} />
+						{:else if selectedNavigationIndex == 3}
+							<AccountSettings {animationSign} />
 						{/if}
 					</div>
 				</div>

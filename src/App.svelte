@@ -13,7 +13,7 @@
 	import LeaderboardsPage from './pages/Leaderboards.svelte';
 	import ClanPage from './pages/Clan.svelte';
 	import ClansPage from './pages/Clans.svelte';
-	import FriendsPage from './pages/Friends.svelte';
+	import FollowedPage from './pages/Followed.svelte';
 	import PlayerPage from './pages/Player.svelte';
 	import TwitchPage from './pages/Twitch.svelte';
 	import NotFoundPage from './pages/NotFound.svelte';
@@ -24,7 +24,7 @@
 	import PlaylistPage from './pages/Playlist.svelte';
 	import SigninPage from './pages/SignIn.svelte';
 	import SupportPage from './pages/Support.svelte';
-	import Nav from './components/Nav.svelte';
+	import Nav from './components/Nav/Nav.svelte';
 	import Modal from 'svelte-simple-modal';
 	import StaffDashboard from './pages/StaffDashboard.svelte';
 	import EventsPage from './pages/Events.svelte';
@@ -109,7 +109,7 @@
 					<Route path="/about" component={AboutPage} />
 					<Route path="/socket" component={Socket} />
 					<Route path="/settings" component={Settings} />
-					<Route path="/friends" component={FriendsPage} />
+					<Route path="/followed" component={FollowedPage} />
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />
 					</Route>

@@ -1,6 +1,6 @@
 <script>
 	import createAccountStore from '../../stores/beatleader/account';
-	import friends from '../../stores/beatleader/friends';
+	import followed from '../../stores/beatleader/followed';
 	import Spinner from '../Common/Spinner.svelte';
 
 	export let playerId = null;
@@ -16,10 +16,10 @@
 
 			switch (op) {
 				case 'add':
-					await account.addFriend(playerId);
+					await account.addFollowed(playerId);
 					break;
 				case 'remove':
-					await account.removeFriend(playerId);
+					await account.removeFollowed(playerId);
 					break;
 			}
 		} catch (err) {
@@ -29,7 +29,7 @@
 	}
 
 	$: isMain = playerId && $account?.id === playerId;
-	$: isFriend = playerId && !!$friends?.find(f => f?.playerId === playerId);
+	$: isFollowed = playerId && !!$followed?.find(f => f?.playerId === playerId);
 </script>
 
 {#if isMain}
@@ -38,9 +38,9 @@
 	<Spinner />
 {:else}
 	<div
-		class={isFriend ? 'fas fa-user-minus icon remove-friend' : 'fas fa-user-plus icon add-friend'}
-		on:click={() => onClick(isFriend ? 'remove' : 'add')}
-		title={isFriend ? 'Remove from Friends' : 'Add to Friends'} />
+		class={isFollowed ? 'fas fa-user-minus icon remove-followed' : 'fas fa-user-plus icon add-followed'}
+		on:click={() => onClick(isFollowed ? 'remove' : 'add')}
+		title={isFollowed ? 'Remove from Followed' : 'Add to Followed'} />
 {/if}
 
 <style>
@@ -56,21 +56,21 @@
 		background: var(--faded);
 	}
 
-	.icon.remove-friend {
+	.icon.remove-followed {
 		background: var(--decrease);
 		cursor: pointer;
 	}
 
-	.icon.remove-friend:hover {
+	.icon.remove-followed:hover {
 		background: var(--decrease) linear-gradient(0deg, transparent, #ffffff66);
 	}
 
-	.icon.add-friend {
+	.icon.add-followed {
 		background: var(--alternate);
 		cursor: pointer;
 	}
 
-	.icon.add-friend:hover {
+	.icon.add-followed:hover {
 		background: var(--alternate) linear-gradient(0deg, transparent, #ffffff66);
 	}
 </style>
