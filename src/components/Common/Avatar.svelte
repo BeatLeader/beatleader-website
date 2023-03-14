@@ -7,6 +7,8 @@
 	$: avatar = player?.playerInfo?.avatar;
 	$: profileSettings = player?.profileSettings;
 	$: overlayUrl = profileSettings?.effectName?.length ? getOverlayUrlByName(profileSettings.effectName, overlaySuffix) : null;
+	$: overlaySize = overlaySuffix === 'small' ? '200%' : '150%';
+	$: overlayOffset = overlaySuffix === 'small' ? '-50%' : '-25%';
 	$: hue = profileSettings?.hue ?? 0;
 	$: saturation = profileSettings?.saturation ?? 1;
 </script>
@@ -19,10 +21,10 @@
 				alt="Avatar overlay effect"
 				class="overlay"
 				src={overlayUrl}
-				style={`
-			--hue: ${hue}deg;
-			--saturation: ${saturation}
-			`} />
+				style:--hue={`${hue}deg`}
+				style:--saturation={saturation}
+				style:--size={overlaySize}
+				style:--offset={overlayOffset} />
 		{/if}
 	</figure>
 {/if}
@@ -40,10 +42,10 @@
 
 	img.overlay {
 		position: absolute;
-		top: -50%;
-		left: -50%;
-		width: 200%;
-		height: 200%;
+		top: var(--offset, -50%);
+		left: var(--offset, -50%);
+		width: var(--size, 200%);
+		height: var(--size, 200%);
 		aspect-ratio: auto;
 		max-width: none;
 		mix-blend-mode: screen;

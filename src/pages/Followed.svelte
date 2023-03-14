@@ -141,7 +141,7 @@
 								{/if}
 
 								<div class="avatar-cell">
-									<Avatar player={f} overlaySuffix="" />
+									<Avatar player={f} overlaySuffix="preview" />
 								</div>
 
 								<PlayerNameWithFlag player={f} disablePopover={true} hideFlag={true} />
@@ -224,7 +224,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.75rem;
-		padding-top: 2rem;
+		padding-top: 1.5rem;
 	}
 
 	.star {
