@@ -64,18 +64,13 @@ const Curve2 = acc => {
 };
 
 function Inflate(peepee) {
-	return ((443.12 * Math.pow(peepee, 1.3)) / Math.pow(443.12, 1.3)) * 1.081805;
+	return (650 * Math.pow(peepee, 1.3)) / Math.pow(650, 1.3);
 }
 
 export const buildCurve = (accuracy, passRating, accRating, techRating) => {
-	var reducedTechRating = techRating / 10;
-	var passPP = passRating * 13.5;
-	var accPP = Curve2(accuracy) * accRating * 28.5;
-	var techPP =
-		(1 / (1 + Math.pow(Math.E, -32 * (accuracy - 0.925)))) *
-		(reducedTechRating / (1 + Math.pow(Math.E, -8 * (reducedTechRating - 0.25)))) *
-		8 *
-		accRating;
+	var passPP = 15.2 * Math.exp(Math.pow(passRating, 1 / 2.62)) - 15.2;
+	var accPP = Curve2(accuracy) * accRating * 34;
+	var techPP = Math.exp(1.9 * accuracy) * techRating;
 	return Inflate(passPP + accPP + techPP);
 };
 

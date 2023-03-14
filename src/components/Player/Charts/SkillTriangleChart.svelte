@@ -6,8 +6,8 @@
 	export let height = '10em';
 	export let showRatings = true;
 
-	const maxTechPp = 2000;
-	const maxAccPp = 12000;
+	const maxTechPp = 1300;
+	const maxAccPp = 15000;
 	const maxPassPp = 6000;
 	const gypL = 57.74;
 
