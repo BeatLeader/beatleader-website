@@ -141,7 +141,7 @@
 								{/if}
 
 								<div class="avatar-cell">
-									<Avatar player={f} />
+									<Avatar player={f} overlaySuffix="" />
 								</div>
 
 								<PlayerNameWithFlag player={f} disablePopover={true} hideFlag={true} />
@@ -224,6 +224,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.75rem;
+		padding-top: 2rem;
 	}
 
 	.star {
@@ -257,6 +258,7 @@
 		position: relative;
 		width: 4.5rem;
 		height: 4.5rem;
+		margin-bottom: 0.5rem;
 	}
 
 	.avatar-cell :global(.image) {
