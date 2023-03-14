@@ -2,10 +2,11 @@
 	import {getOverlayUrlByName} from '../Player/Overlay/overlay';
 
 	export let player;
+	export let overlaySuffix = 'small';
 
 	$: avatar = player?.playerInfo?.avatar;
 	$: profileSettings = player?.profileSettings;
-	$: overlayUrl = profileSettings?.effectName?.length ? getOverlayUrlByName(profileSettings.effectName, 'small') : null;
+	$: overlayUrl = profileSettings?.effectName?.length ? getOverlayUrlByName(profileSettings.effectName, overlaySuffix) : null;
 	$: hue = profileSettings?.hue ?? 0;
 	$: saturation = profileSettings?.saturation ?? 1;
 </script>
