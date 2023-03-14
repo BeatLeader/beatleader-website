@@ -236,37 +236,7 @@ const processClan = (clanId, page, respons) => {
 				1,
 				bodyInput)
 				respons.body.container.capturedLeaderboards[i] = output;
-				
 		}
-		// respons.body.container.capturedLeaderboards.forEach(
-		// 	led => {
-		// 		// Fill in diffInfo/Difficulty (Used by Clan.svelte)
-		// 		const currentDiff = led.difficulty;
-		// 		let diff = null;
-		// 		let diffInfo = null;
-		// 		if (currentDiff) {
-		// 			diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
-		// 			diff = diffInfo.diff;
-		// 		}
-		// 		led.diffInfo = diffInfo;
-
-		// 		// Fill out the clanRanking without the clan because we already have that data here.
-		// 		for (let i = 0; i < led.clanRanking.length; i++) {
-		// 			let ret = {};
-		// 			let cr = led.clanRanking[i];
-		// 			ret.clanpp = cr.clanPP;
-		// 			ret.clanRank = cr.clanRank;
-		// 			ret.lastUpdateTime = formatDateRelative(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
-		// 			ret.lastUpdateTimeShort = formatDateRelativeShort(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
-		// 			ret.clanAverageRank = cr.clanAverageRank;
-		// 			ret.clanAverageAccuracy = cr.clanAverageAccuracy;
-		// 			ret.clanAverageAcc = cr.clanAverageAccuracy * 100;
-		// 			ret.clanTotalScore = cr.clanTotalScore;
-		// 			ret.scores = processLeaderboardScores(cr.associatedScores);
-		// 			led.clanRanking[i] = ret;
-		// 		}
-		// 	}
-		//);
 	}
 	return respons.body;
 }

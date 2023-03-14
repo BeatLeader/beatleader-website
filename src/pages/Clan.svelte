@@ -191,7 +191,7 @@
 		if (!newType) return;
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
-		if (!dontNavigate) navigate(`/clan/${currentClanId}/${newType}/1?${buildSearchFromFilters(newFilters)}`);
+		if (!dontNavigate) navigate(`/clan/${currentClanId}/${newType}/1?`);
 		else if (!dontChangeType) changeParams(currentClanId, newType, 1, {search: `?${buildSearchFromFilters(newFilters)}`});
 
 		dispatch('type-changed', {clanId: currentClanId, type: newType, page: currentPage, filters: newFilters});
@@ -368,12 +368,6 @@
 												<div class="author">{opt(leaderboard, 'leaderboard.song.authorName')} <small>{opt(leaderboard, 'leaderboard.song.levelAuthorName')}</small></div>
 											</a>
 										</div>
-
-										{#if opt(leaderboard, 'leaderboard.song.hash').length}
-											<div class="tablet-and-up">
-												<Icons hash={opt(leaderboard, 'leaderboard.song.hash')} diffInfo={{diff: opt(leaderboard, 'leaderboard.difficultyBl.difficultyName'), type: opt(leaderboard, 'leaderboard.difficultyBl.modeName')}} />
-											</div>
-										{/if}
 									</div>
 									<div class="mobile-second-line">
 										<div class="score-options-section">
@@ -391,6 +385,11 @@
 												<i class="fas fa-chevron-down" />
 											</span>
 										</div>
+										{#if opt(leaderboard, 'leaderboard.song.hash').length}
+										<div class="tablet-and-up">
+											<Icons hash={opt(leaderboard, 'leaderboard.song.hash')} diffInfo={{diff: opt(leaderboard, 'leaderboard.difficultyBl.difficultyName'), type: opt(leaderboard, 'leaderboard.difficultyBl.modeName')}} />
+										</div>
+										{/if}
 										<div class="{'player-score'}">
 											<div class="pp with-badge">
 												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
