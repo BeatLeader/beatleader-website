@@ -256,7 +256,7 @@ export const HMDs = {
 		priority: 30,
 	},
 	53: {
-		name: 'Varjo XR-3',
+		name: 'Varjo',
 		icon: 'varjo.svg',
 		color: '',
 		priority: 14,

@@ -39,6 +39,8 @@
 
 	function updatePage(index) {
 		if (Number.isFinite(index)) {
+			if (selectedIndex == index) return;
+
 			page = Math.floor(index / itemsPerPage);
 			selectedIndex = index;
 
