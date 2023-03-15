@@ -226,6 +226,11 @@
 	main {
 		margin-top: 1em;
 	}
+	@media (max-width: 600px) {
+		main {
+			margin-top: 0;
+		}
+	}
 
 	.ssr-page-container {
 		display: grid;

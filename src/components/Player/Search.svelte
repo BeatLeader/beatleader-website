@@ -2,7 +2,7 @@
 	import {createEventDispatcher, onMount} from 'svelte';
 	import createPlayerService from '../../services/beatleader/player';
 	import {SsrHttpNotFoundError} from '../../network/errors';
-	import Autocomplete from '../Common/Autocomplete.svelte';
+	import Autocomplete from '../Search/Search.svelte';
 	import MenuLine from './MenuLine.svelte';
 	import queues from '../../network/queues/queues';
 	import {MINUTE} from '../../utils/date';
