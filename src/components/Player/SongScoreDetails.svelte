@@ -13,6 +13,11 @@
 	export let fixedBrowserTitle = null;
 	export let noSsLeaderboard = false;
 	export let showAccSaberLeaderboard = false;
+	export let replayAccGraphs;
+
+	function handleReplayWasProcessed(e) {
+		replayAccGraphs = e.detail.accGraphsData;
+	}
 
 	let inBuiltLeaderboardPage = null;
 
@@ -48,13 +53,13 @@
 			</div>
 		{:then beatSavior}
 			<div class="tab">
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} />
 			</div>
 		{/await}
 
 		{#if score?.replay}
 			<div class="tab">
-				<ReplayDetails {score} />
+				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed}/>
 			</div>
 		{/if}
 

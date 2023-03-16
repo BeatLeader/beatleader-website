@@ -1,5 +1,76 @@
-import {NoteEventType, useReplayOrNull} from './open-replay-decoder';
-import {ColorType, NoteCutDirection, NoteLineLayer, NoteScoringType} from './note-constants';
+import {NoteEventType} from './open-replay-decoder';
+import {NoteCutDirection, NoteLineLayer, NoteScoringType} from './note-constants';
+
+//region AccGraphs
+
+const accGraphResolution = 100;
+const weightedPeriodSeconds = 5.0;
+const weightFunctionSteepness = 3.0;
+
+export function processAccGraphs(replay) {
+	if (replay == null) return null;
+
+	let result = {
+		times: [],
+		fullSwing: [],
+		realScore: []
+	};
+
+	if (replay.notes.length === 0) return result;
+
+	const lastNoteTime = replay.notes[replay.notes.length - 1].eventTime;
+	const distanceWeightFunction = createDistanceWeightFunction(weightedPeriodSeconds, weightFunctionSteepness);
+
+	for (let i = 0.0; i < accGraphResolution; i += 1.0) {
+		const time = lastNoteTime * (i / (accGraphResolution - 1));
+
+		let sums = [0.0, 0.0, 0.0];
+		let divider = 0.0;
+
+		for (let j = 0; j < replay.notes.length; j++) {
+			const note = replay.notes[j];
+			if (note.eventType !== NoteEventType.good) continue;
+			const noteData = decodeNoteData(note.noteID);
+			if (noteData.scoringType !== NoteScoringType.Normal) continue;
+
+			const weight = distanceWeightFunction.getWeight(note.eventTime - time);
+
+			const acc = getAccForDistance(note.noteCutInfo.cutDistanceToCenter);
+			const pre = getPreSwingScore(note.noteCutInfo.beforeCutRating);
+			const post = getPostSwingScore(note.noteCutInfo.afterCutRating);
+
+			const fullSwing = acc + 100;
+			const realScore = acc + pre + post;
+
+			sums[0] += fullSwing * weight;
+			sums[1] += realScore * weight;
+			divider += weight;
+		}
+
+		const fullSwing = divider === 0 ? 0.0 : sums[0] / divider;
+		const realScore = divider === 0 ? 0.0 : sums[1] / divider;
+
+		result.times.push(time);
+		result.fullSwing.push(fullSwing);
+		result.realScore.push(realScore);
+	}
+
+	return result;
+}
+
+function createDistanceWeightFunction(bellWidth, steepnessPower) {
+	return {
+		divider: -(2 * Math.pow(bellWidth, steepnessPower)),
+		halfPower: steepnessPower / 2,
+		getWeight: function (distance) {
+			const sqr = distance * distance;
+			const expPower = Math.pow(sqr, this.halfPower) / this.divider;
+			return Math.exp(expPower);
+		},
+	};
+}
+
+//endregion
 
 //region SliceSummary
 
