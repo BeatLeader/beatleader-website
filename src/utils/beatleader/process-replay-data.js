@@ -269,9 +269,11 @@ export function processAccuracySpread(replay) {
 	if (replay == null) return null;
 
 	let result = {
+		totalLeftCount: 0.0,
 		leftCount: [],
 		leftTD: [],
 
+		totalRightCount: 0.0,
 		rightCount: [],
 		rightTD: [],
 
@@ -285,9 +287,9 @@ export function processAccuracySpread(replay) {
 	const timings = [];
 
 	for (let i = 0; i <= 15; i++) {
-		result.leftCount.push(0);
+		result.leftCount.push(0.0);
 		result.leftTD.push(0.0);
-		result.rightCount.push(0);
+		result.rightCount.push(0.0);
 		result.rightTD.push(0.0);
 		result.timeDeviation.push(0.0);
 		timings.push([]);
@@ -302,10 +304,12 @@ export function processAccuracySpread(replay) {
 		const td = Math.abs(note.noteCutInfo.cutNormal.z);
 
 		if (note.noteCutInfo.saberType === 0) {
-			result.leftCount[acc] += 1;
+			result.totalLeftCount += 1.0;
+			result.leftCount[acc] += 1.0;
 			result.leftTD[acc] += td;
 		} else {
-			result.rightCount[acc] += 1;
+			result.totalRightCount += 1.0;
+			result.rightCount[acc] += 1.0;
 			result.rightTD[acc] += td;
 		}
 
@@ -319,6 +323,9 @@ export function processAccuracySpread(replay) {
 		result.leftTD[i] = result.leftCount[i] > 0 ? result.leftTD[i] / result.leftCount[i] : null;
 		result.rightTD[i] = result.rightCount[i] > 0 ? result.rightTD[i] / result.rightCount[i] : null;
 		result.timeDeviation[i] = totalCount > 0 ? result.timeDeviation[i] / totalCount : null;
+
+		result.leftCount[i] /= result.totalLeftCount;
+		result.rightCount[i] /= result.totalRightCount;
 
 		//<-- TimeDeviation ---
 		result.timeDeviation[i] = getStandardDeviation(timings[i], result.timeDeviation[i]);

@@ -54,6 +54,9 @@
 				max: maxCount,
 				position: 'right',
 				ticks: {
+					callback: function (val) {
+						return `${formatNumber(val * 100, 1)}%`;
+					},
 					autoSkipPadding: 12,
 				},
 			},
@@ -82,7 +85,7 @@
 				yAxisID: 'count',
 				label: 'Left count',
 				data: chartData.leftCount,
-				round: 0,
+				round: 2,
 				type: 'bar',
 				backgroundColor: '#ee5555',
 				order: 4,
@@ -91,7 +94,7 @@
 				yAxisID: 'count',
 				label: 'Right count',
 				data: chartData.rightCount,
-				round: 0,
+				round: 2,
 				type: 'bar',
 				backgroundColor: '#5555ee',
 				order: 5,
@@ -160,11 +163,18 @@
 						tooltip: {
 							callbacks: {
 								label(ctx) {
+									let count;
 									switch (ctx.dataset.label) {
 										case 'Timing':
-											return `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y * 1000, ctx.dataset.round)} ms`;
+											return `${ctx.dataset.label}: ${formatNumber(ctx.raw * 1000, ctx.dataset.round)} ms`;
+										case 'Left count':
+											count = Math.round(chartData.totalLeftCount * ctx.raw);
+											return `${ctx.dataset.label}: ${count} (${formatNumber(ctx.raw * 100, ctx.dataset.round)}%)`;
+										case 'Right count':
+											count = Math.round(chartData.totalRightCount * ctx.raw);
+											return `${ctx.dataset.label}: ${count} (${formatNumber(ctx.raw * 100, ctx.dataset.round)}%)`;
 										default:
-											return `${ctx.dataset.label}: ${formatNumber(ctx.parsed.y, ctx.dataset.round)}`;
+											return `${ctx.dataset.label}: ${formatNumber(ctx.raw, ctx.dataset.round)}`;
 									}
 								},
 							},
