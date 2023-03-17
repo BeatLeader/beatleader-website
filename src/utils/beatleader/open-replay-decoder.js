@@ -54,14 +54,17 @@ function decode(arrayBuffer, onlyNotes, completion) {
 	const dataView = new DataView(arrayBuffer);
 	dataView.pointer = 0;
 
+	var replay = {};
+
 	if (onlyNotes) {
 		try {
-			var replay = {};
 			replay.notes = DecodeNotes(dataView);
-			completion(replay);
 		} catch {
 			completion(null);
+			return;
 		}
+
+		completion(replay);
 		return;
 	}
 
@@ -69,8 +72,6 @@ function decode(arrayBuffer, onlyNotes, completion) {
 	const version = DecodeUint8(dataView);
 
 	if (version == 1 && magic == 0x442d3d69) {
-		var replay = {};
-
 		for (var a = 0; a < StructType.pauses + 1; a++) {
 			const type = DecodeUint8(dataView);
 			switch (type) {

@@ -1,6 +1,7 @@
 <script>
 	import {formatNumber} from '../../utils/format';
 	import {createEventDispatcher} from 'svelte';
+	import CompactPagination from "./CompactPagination.svelte";
 
 	const dispatch = createEventDispatcher();
 
@@ -20,8 +21,8 @@
 		dispatch('groupLeave', {groupIndex});
 	}
 
-	function onPaginationClick(page) {
-		pageIndex = page;
+	function onPageChanged(event) {
+		pageIndex = event.detail.page
 	}
 
 	function getPaginationClass(groupIndex, pageIndex) {
@@ -54,10 +55,7 @@
 			</div>
 		{/each}
 	</div>
-	<div class="slice-summary-pagination">
-		<div class="pagination-button {pageIndex === 0 ? 'selected' : ''}" on:click={_ => onPaginationClick(0)} />
-		<div class="pagination-button {pageIndex === 1 ? 'selected' : ''}" on:click={_ => onPaginationClick(1)} />
-	</div>
+	<CompactPagination pagesCount="2" on:change={onPageChanged}/>
 </div>
 
 <style>
@@ -75,26 +73,6 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-	}
-
-	.slice-summary-pagination {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		grid-gap: 5px;
-	}
-
-	.pagination-button {
-		width: 16px;
-		height: 24px;
-		background: #66666666;
-		border-radius: 5px;
-		box-shadow: 0 0 4px #00000033;
-	}
-
-	.pagination-button.selected {
-		background: #aaaaaaff;
 	}
 
 	.summary-group {

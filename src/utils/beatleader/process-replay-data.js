@@ -1,5 +1,76 @@
-import {NoteEventType, useReplayOrNull} from './open-replay-decoder';
-import {ColorType, NoteCutDirection, NoteLineLayer, NoteScoringType} from './note-constants';
+import {NoteEventType} from './open-replay-decoder';
+import {NoteCutDirection, NoteLineLayer, NoteScoringType} from './note-constants';
+
+//region AccGraphs
+
+const accGraphResolution = 100;
+const weightedPeriodSeconds = 5.0;
+const weightFunctionSteepness = 3.0;
+
+export function processAccGraphs(replay) {
+	if (replay == null) return null;
+
+	let result = {
+		times: [],
+		fullSwing: [],
+		realScore: []
+	};
+
+	if (replay.notes.length === 0) return result;
+
+	const lastNoteTime = replay.notes[replay.notes.length - 1].eventTime;
+	const distanceWeightFunction = createDistanceWeightFunction(weightedPeriodSeconds, weightFunctionSteepness);
+
+	for (let i = 0.0; i < accGraphResolution; i += 1.0) {
+		const time = lastNoteTime * (i / (accGraphResolution - 1));
+
+		let sums = [0.0, 0.0, 0.0];
+		let divider = 0.0;
+
+		for (let j = 0; j < replay.notes.length; j++) {
+			const note = replay.notes[j];
+			if (note.eventType !== NoteEventType.good) continue;
+			const noteData = decodeNoteData(note.noteID);
+			if (noteData.scoringType !== NoteScoringType.Normal) continue;
+
+			const weight = distanceWeightFunction.getWeight(note.eventTime - time);
+
+			const acc = getAccForDistance(note.noteCutInfo.cutDistanceToCenter);
+			const pre = getPreSwingScore(note.noteCutInfo.beforeCutRating);
+			const post = getPostSwingScore(note.noteCutInfo.afterCutRating);
+
+			const fullSwing = acc + 100;
+			const realScore = acc + pre + post;
+
+			sums[0] += fullSwing * weight;
+			sums[1] += realScore * weight;
+			divider += weight;
+		}
+
+		const fullSwing = divider === 0 ? 0.0 : sums[0] / divider;
+		const realScore = divider === 0 ? 0.0 : sums[1] / divider;
+
+		result.times.push(time);
+		result.fullSwing.push(fullSwing);
+		result.realScore.push(realScore);
+	}
+
+	return result;
+}
+
+function createDistanceWeightFunction(bellWidth, steepnessPower) {
+	return {
+		divider: -(2 * Math.pow(bellWidth, steepnessPower)),
+		halfPower: steepnessPower / 2,
+		getWeight: function (distance) {
+			const sqr = distance * distance;
+			const expPower = Math.pow(sqr, this.halfPower) / this.divider;
+			return Math.exp(expPower);
+		},
+	};
+}
+
+//endregion
 
 //region SliceSummary
 
@@ -198,9 +269,11 @@ export function processAccuracySpread(replay) {
 	if (replay == null) return null;
 
 	let result = {
+		totalLeftCount: 0.0,
 		leftCount: [],
 		leftTD: [],
 
+		totalRightCount: 0.0,
 		rightCount: [],
 		rightTD: [],
 
@@ -214,9 +287,9 @@ export function processAccuracySpread(replay) {
 	const timings = [];
 
 	for (let i = 0; i <= 15; i++) {
-		result.leftCount.push(0);
+		result.leftCount.push(0.0);
 		result.leftTD.push(0.0);
-		result.rightCount.push(0);
+		result.rightCount.push(0.0);
 		result.rightTD.push(0.0);
 		result.timeDeviation.push(0.0);
 		timings.push([]);
@@ -231,10 +304,12 @@ export function processAccuracySpread(replay) {
 		const td = Math.abs(note.noteCutInfo.cutNormal.z);
 
 		if (note.noteCutInfo.saberType === 0) {
-			result.leftCount[acc] += 1;
+			result.totalLeftCount += 1.0;
+			result.leftCount[acc] += 1.0;
 			result.leftTD[acc] += td;
 		} else {
-			result.rightCount[acc] += 1;
+			result.totalRightCount += 1.0;
+			result.rightCount[acc] += 1.0;
 			result.rightTD[acc] += td;
 		}
 
@@ -248,6 +323,9 @@ export function processAccuracySpread(replay) {
 		result.leftTD[i] = result.leftCount[i] > 0 ? result.leftTD[i] / result.leftCount[i] : null;
 		result.rightTD[i] = result.rightCount[i] > 0 ? result.rightTD[i] / result.rightCount[i] : null;
 		result.timeDeviation[i] = totalCount > 0 ? result.timeDeviation[i] / totalCount : null;
+
+		result.leftCount[i] /= result.totalLeftCount;
+		result.rightCount[i] /= result.totalRightCount;
 
 		//<-- TimeDeviation ---
 		result.timeDeviation[i] = getStandardDeviation(timings[i], result.timeDeviation[i]);

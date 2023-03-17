@@ -21,20 +21,22 @@
 		const accColor = theme && theme.alternate ? theme.alternate : '#72a8ff';
 		const compareColor = theme && theme.dimmed ? theme.alternate : '#3e3e3e';
 
-		const data = Object.values(chartData).map(v => v * 100);
-		const mainMinValue = Math.floor(Math.max(Math.floor(data.reduce((min, cur) => (cur < min ? cur : min), 100)), 0) * 0.99);
-		const mainMaxValue = Math.ceil(Math.min(Math.ceil(data.reduce((max, cur) => (cur > max ? cur : max), 0)), 100));
+		let minValue = 100;
+		let maxValue = 0;
+
+		function updateMinMax(values) {
+			if (!values) return;
+			const minV = Math.floor(Math.max(Math.floor(values.reduce((min, cur) => (cur < min ? cur : min), 100)), 0) * 0.99);
+			const maxV = Math.ceil(Math.min(Math.ceil(values.reduce((max, cur) => (cur > max ? cur : max), 0)), 100));
+			if (minV < minValue) minValue = minV;
+			if (maxV > maxValue) maxValue = maxV;
+		}
+
+		let data = Object.values(chartData).map(v => v * 100);
+		updateMinMax(data)
 
 		const compareData = compareChartData ? Object.values(compareChartData).map(v => v * 100) : null;
-		const compareMinValue = compareChartData
-			? Math.floor(Math.max(Math.floor(compareData.reduce((min, cur) => (cur < min ? cur : min), 100)), 0) * 0.99)
-			: 100;
-		const compareMaxValue = compareChartData
-			? Math.ceil(Math.min(Math.ceil(compareData.reduce((max, cur) => (cur > max ? cur : max), 0)), 100))
-			: 0;
-
-		const minValue = Math.min(mainMinValue, compareMinValue);
-		const maxValue = Math.max(mainMaxValue, compareMaxValue);
+		updateMinMax(compareData)
 
 		const datasets = [
 			{
@@ -135,6 +137,7 @@
 <style>
 	.accuracy-chart {
 		height: 100%;
+		width: 100%;
 	}
 
 	canvas {

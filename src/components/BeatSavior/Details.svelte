@@ -5,9 +5,18 @@
 	import Grid from './Stats/Grid.svelte';
 	import Chart from './Stats/Chart.svelte';
 	import DetailsBox from '../Common/DetailsBox.svelte';
+	import ExtendedAccGraphs from '../Score/ExtendedAccGraphs.svelte';
+	import CompactPagination from "../Score/CompactPagination.svelte";
 
 	export let beatSavior;
 	export let showGrid = true;
+	export let replayAccGraphs;
+
+	let graphPageIndex = 0;
+
+	function onGraphPaginationChange(event) {
+		graphPageIndex = event.detail.page
+	}
 
 	function extractGridAcc(beatSavior) {
 		const gridAcc = beatSavior?.trackers?.accuracyTracker?.gridAcc;
@@ -34,7 +43,14 @@
 		</DetailsBox>
 
 		<DetailsBox cls="chart">
-			<Chart {beatSavior} />
+			{#if graphPageIndex === 0}
+				<Chart {beatSavior} />
+			{:else}
+				<ExtendedAccGraphs {replayAccGraphs} />
+			{/if}
+			{#if replayAccGraphs}
+				<CompactPagination pagesCount="2" on:change={onGraphPaginationChange}/>
+			{/if}
 		</DetailsBox>
 	</section>
 {/if}
@@ -44,6 +60,12 @@
 		display: grid;
 		grid-template-columns: 49.9% 49.9%;
 		grid-gap: 0.2%;
+	}
+
+	.beat-savior > :global(.chart) {
+		display: flex;
+		flex-direction: row;
+		grid-gap: 0.5em;
 	}
 
 	.beat-savior > :global(.details-and-hands) {
