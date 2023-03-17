@@ -65,6 +65,9 @@ export default [
 				output: (css, id) => {
 					const parts = id.replace(/\\/g, '.').replace(/\//g, '.').split('.');
 					const filename = parts[parts.length - 2];
+					fs.rmSync(`public/build/themes/${filename}.css`, {
+						force: true,
+					});
 					return `public/build/themes/${filename}.css`;
 				},
 			}),

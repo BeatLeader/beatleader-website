@@ -84,7 +84,7 @@
 
 	$: if (mainEl) containerStore.observe(mainEl);
 
-	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'mirror-low') {
+	if ($configStore.preferences.theme != 'default') {
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
