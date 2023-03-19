@@ -1,5 +1,7 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import leaderboardsApiClient from '../../network/clients/beatleader/leaderboard/api-leaderboards';
+	import {MINUTE} from '../../utils/date';
 	import GenericSearch from './GenericSearch.svelte';
 	import MapsHeader from './MapsHeader.svelte';
 	import MapsItem from './MapsItem.svelte';
@@ -40,35 +42,11 @@
 		}
 	}
 
-	// TEST ONLY: replace it with actual fetching from the API
-	let total = 23;
-	const allItems = () =>
-		Array(total)
-			.fill(null)
-			.map((_, idx) => ({
-				leaderboardId: idx + 1,
-				name: `Map ${idx + 1} (${value})`,
-				ranked: idx % 3 === 0,
-			}));
-
-	async function fetchPage(filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) {
-		console.log(`maps/fetchPage(), page=${page}, itemsPerPage=${itemsPerPage}, filters=`, filters);
-		return new Promise((resolve, reject) => {
-			if (Math.random() < 0.0) {
-				reject('Test error ');
-				return;
-			}
-
-			setTimeout(() => {
-				const filteredItems = allItems().filter(i => filters?.type !== 'ranked' || i.ranked);
-
-				resolve({
-					data: filteredItems.slice(itemsPerPage * (page - 1), itemsPerPage * page),
-					metadata: {page, itemsPerPage, total: filteredItems.length},
-				});
-			}, Math.random() * 1000 + 500);
-		});
-	}
+	const fetchPage = async (filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) =>
+		leaderboardsApiClient.getProcessed(
+			{page, filters: {...filters, sortBy: 'name', order: 'asc', count: itemsPerPage}},
+			{cacheTtl: MINUTE}
+		);
 
 	$: if (value?.length) filters.search = value;
 </script>

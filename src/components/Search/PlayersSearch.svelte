@@ -1,7 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import createPlayerService from '../../services/beatleader/player';
-	import queues from '../../network/queues/queues';
+	import playerFindApiClient from '../../network/clients/beatleader/players/api-player-find';
 	import {MINUTE} from '../../utils/date';
 	import PlayersHeader from './PlayersHeader.svelte';
 	import PlayersItem from './PlayersItem.svelte';
@@ -10,7 +9,6 @@
 	export let value = '';
 
 	const dispatch = createEventDispatcher();
-	const playerService = createPlayerService();
 
 	const key = Symbol('players');
 
@@ -37,15 +35,15 @@
 		}
 	}
 
-	async function fetchPage(filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) {
-		return playerService.findPlayer(filters.search, queues.PRIORITY.FG_HIGH, {
+	const fetchPage = async (filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) =>
+		playerFindApiClient.getProcessed({
+			query: filters?.search ?? '',
 			cacheTtl: MINUTE,
 			page,
 			count: itemsPerPage,
 			sortBy: 'name',
 			order: 'asc',
 		});
-	}
 
 	$: if (value?.length) filters.search = value;
 </script>
