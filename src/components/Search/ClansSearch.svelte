@@ -1,5 +1,7 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import clansApiClient from '../../network/clients/beatleader/clans/api-clans';
+	import {MINUTE} from '../../utils/date';
 	import GenericSearch from './GenericSearch.svelte';
 	import ClansHeader from './ClansHeader.svelte';
 	import ClansItem from './ClansItem.svelte';
@@ -10,7 +12,7 @@
 
 	const key = Symbol('players');
 
-	const ITEMS_PER_PAGE = 5;
+	const ITEMS_PER_PAGE = 10;
 
 	let filters = {
 		search: '',
@@ -31,29 +33,8 @@
 		}
 	}
 
-	// TEST ONLY: replace it with actual fetching from the API
-	let total = 50;
-	const allItems = () =>
-		Array(total)
-			.fill(null)
-			.map((_, idx) => ({
-				clanId: idx + 1,
-				name: `Clan ${idx + 1} (${value})`,
-			}));
-
-	async function fetchPage(filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) {
-		console.log(`players/fetchPage(), page=${page}, itemsPerPage=${itemsPerPage}, filters=`, filters);
-		return new Promise((resolve, reject) => {
-			if (Math.random() < 0.2) {
-				reject('Test error ');
-				return;
-			}
-
-			setTimeout(() => {
-				resolve({data: allItems().slice(itemsPerPage * (page - 1), itemsPerPage * page), metadata: {page, itemsPerPage, total}});
-			}, Math.random() * 1000 + 500);
-		});
-	}
+	const fetchPage = async (filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) =>
+		clansApiClient.getProcessed({page, filters: {...filters, sort: 'name', order: 'asc', count: itemsPerPage, cacheTtl: MINUTE}});
 
 	$: if (value?.length) filters.search = value;
 </script>

@@ -12,7 +12,7 @@
 
 	const key = Symbol('maps');
 
-	const ITEMS_PER_PAGE = 15;
+	const ITEMS_PER_PAGE = 10;
 
 	let filters = {
 		search: '',
@@ -43,10 +43,7 @@
 	}
 
 	const fetchPage = async (filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) =>
-		leaderboardsApiClient.getProcessed(
-			{page, filters: {...filters, sortBy: 'name', order: 'asc', count: itemsPerPage}},
-			{cacheTtl: MINUTE}
-		);
+		leaderboardsApiClient.getProcessed({page, filters: {...filters, sortBy: 'name', order: 'asc', count: itemsPerPage, cacheTtl: MINUTE}});
 
 	$: if (value?.length) filters.search = value;
 </script>
