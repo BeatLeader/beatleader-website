@@ -2,10 +2,14 @@
 	import Spinner from '../Common/Spinner.svelte';
 	export let isLoading = false;
 	export let selected = false;
+	export let total = null;
 </script>
 
 <header>
-	<span><slot /></span>
+	<span>
+		<slot />
+		{#if Number.isFinite(total)} ({total}){/if}
+	</span>
 	{#if isLoading}<Spinner />
 	{:else}
 		<slot name="right" />

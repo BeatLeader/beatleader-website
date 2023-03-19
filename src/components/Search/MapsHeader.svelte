@@ -4,18 +4,18 @@
 	import Switcher from '../Common/Switcher.svelte';
 	import {createEventDispatcher} from 'svelte';
 
-	export let type = 'all';
+	export let filters = {type: 'all'};
 	export let isLoading = false;
 	export let selected = false;
 
 	const dispatch = createEventDispatcher();
 
-	const filters = [
+	const options = [
 		{label: 'All', value: 'all'},
 		{label: 'Ranked', value: 'ranked'},
 	];
 
-	$: selectedFilter = filters.find(f => f.value === type) ?? filters[0];
+	$: selectedFilter = options.find(f => f.value === filters?.type) ?? options[0];
 </script>
 
 <GenericHeader {...$$props}>
@@ -23,7 +23,7 @@
 	<span slot="right">
 		{#if isLoading}<Spinner />{:else}
 			<Switcher
-				values={filters}
+				values={options}
 				value={selectedFilter}
 				on:change={e => dispatch('message', {source: 'header', type: 'filter-map-type', value: e?.detail ?? null})} />
 		{/if}

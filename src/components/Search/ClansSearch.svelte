@@ -1,8 +1,8 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import PlayersHeader from './PlayersHeader.svelte';
-	import PlayersItem from './PlayersItem.svelte';
 	import GenericSearch from './GenericSearch.svelte';
+	import ClansHeader from './ClansHeader.svelte';
+	import ClansItem from './ClansItem.svelte';
 
 	export let value = '';
 
@@ -10,7 +10,7 @@
 
 	const key = Symbol('players');
 
-	const ITEMS_PER_PAGE = 10;
+	const ITEMS_PER_PAGE = 5;
 
 	let filters = {
 		search: '',
@@ -20,13 +20,11 @@
 		const message = event?.detail;
 		if (!message) return;
 
-		// TODO: remove it
-		// console.log('players/onMessage()', message);
 		switch (message?.type) {
 			case 'select':
 				if (message?.value) {
 					// TODO: navigate
-					console.warn('PlayersSearch/onMessage(SELECT):', message.value);
+					console.warn('ClansSearch/onMessage(SELECT):', message.value);
 					dispatch('close');
 				}
 				break;
@@ -34,13 +32,13 @@
 	}
 
 	// TEST ONLY: replace it with actual fetching from the API
-	let total = 14;
+	let total = 50;
 	const allItems = () =>
 		Array(total)
 			.fill(null)
 			.map((_, idx) => ({
-				playerId: idx + 1,
-				name: `Player ${idx + 1} (${value})`,
+				clanId: idx + 1,
+				name: `Clan ${idx + 1} (${value})`,
 			}));
 
 	async function fetchPage(filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) {
@@ -65,7 +63,7 @@
 	{filters}
 	{fetchPage}
 	itemsPerPage={ITEMS_PER_PAGE}
-	header={PlayersHeader}
-	item={PlayersItem}
-	noItems="No players found."
+	header={ClansHeader}
+	item={ClansItem}
+	noItems="No clans found."
 	on:message={onMessage} />

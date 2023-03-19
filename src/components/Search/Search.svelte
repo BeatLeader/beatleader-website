@@ -11,8 +11,8 @@
 	let handleMouseOver = false;
 
 	let value = '';
-	let searchValue = 'test';
-	let placeholder = 'Search...';
+	let searchValue = '';
+	let placeholder = 'Enter at least 3 characters...';
 
 	let groups = [];
 	let selected = null;
@@ -276,7 +276,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 
-				if (value !== searchValue && !isAnyLoading) {
+				if (searchValue.length >= 3 && value !== searchValue && !isAnyLoading) {
 					value = searchValue;
 				} else if (selected?.item && selected?.group?.onMessage) {
 					onItemSelected(selected.group, selected.item);

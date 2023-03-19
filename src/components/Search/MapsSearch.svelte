@@ -1,5 +1,6 @@
 <script>
-	import {createEventDispatcher, getContext} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
+	import GenericSearch from './GenericSearch.svelte';
 	import MapsHeader from './MapsHeader.svelte';
 	import MapsItem from './MapsItem.svelte';
 
@@ -7,68 +8,77 @@
 
 	const dispatch = createEventDispatcher();
 
-	let isLoading = false;
+	const key = Symbol('maps');
+
+	const ITEMS_PER_PAGE = 15;
+
 	let filters = {
-		type: 'ranked',
 		search: '',
+		type: 'ranked',
 	};
 
-	const {register, updateLoading, updateItems, updateHeaderProps, updateItemProps} = getContext('search');
+	function onMessage(event) {
+		const message = event?.detail;
+		if (!message) return;
 
-	function onMessage(message) {
-		console.log('MapsSearch::onMessage', message);
 		switch (message?.source) {
 			case 'header':
 				switch (message?.type) {
 					case 'filter-map-type':
-						if (!message?.value?.value?.length) return;
+						if (!message?.value?.value) return;
 						filters.type = message.value.value;
-						page = 1;
 						break;
 				}
 
 			case 'item':
 				if (message?.type === 'select' && message?.value) {
-					console.warn('SELECT:', message.value);
+					// TODO: navigate
+					console.warn('MapsSearch/onMessage(SELECT):', message.value);
 					dispatch('close');
 				}
 				break;
 		}
 	}
 
-	const key = Symbol('maps');
-	register({key, header: MapsHeader, headerProps: {isLoading, type: filters.type}, item: MapsItem, onMessage, noItems: 'No maps found.'});
+	// TEST ONLY: replace it with actual fetching from the API
+	let total = 23;
+	const allItems = () =>
+		Array(total)
+			.fill(null)
+			.map((_, idx) => ({
+				leaderboardId: idx + 1,
+				name: `Map ${idx + 1} (${value})`,
+				ranked: idx % 3 === 0,
+			}));
 
-	// TEST
-	let page = 1;
-	let total = 25;
-	let itemsPerPage = 20;
+	async function fetchPage(filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) {
+		console.log(`maps/fetchPage(), page=${page}, itemsPerPage=${itemsPerPage}, filters=`, filters);
+		return new Promise((resolve, reject) => {
+			if (Math.random() < 0.0) {
+				reject('Test error ');
+				return;
+			}
 
-	const allItems = Array(total)
-		.fill(null)
-		.map((_, idx) => ({
-			leaderboardId: idx + 1,
-			name: `Map ${idx + 1}`,
-			ranked: Math.random() > 0.5,
-		}));
+			setTimeout(() => {
+				const filteredItems = allItems().filter(i => filters?.type !== 'ranked' || i.ranked);
 
-	const getFiltered = filters => allItems.filter(i => filters.type !== 'ranked' || i.ranked);
-	const getPage = (filters, page = 1) => getFiltered(filters).slice(itemsPerPage * (page - 1), itemsPerPage * page);
-
-	$: updateHeaderProps(key, {isLoading, type: filters.type});
-
-	$: if (value?.length && (filters || value !== filters.search)) {
-		filters.search = value;
-		isLoading = true;
-		page = 1;
-
-		updateLoading(key, true);
-
-		setTimeout(() => {
-			updateItems(key, getPage(filters, page));
-
-			isLoading = false;
-			updateLoading(key, false);
-		}, Math.random() * 1500 + 500);
+				resolve({
+					data: filteredItems.slice(itemsPerPage * (page - 1), itemsPerPage * page),
+					metadata: {page, itemsPerPage, total: filteredItems.length},
+				});
+			}, Math.random() * 1000 + 500);
+		});
 	}
+
+	$: if (value?.length) filters.search = value;
 </script>
+
+<GenericSearch
+	{key}
+	{filters}
+	{fetchPage}
+	itemsPerPage={ITEMS_PER_PAGE}
+	header={MapsHeader}
+	item={MapsItem}
+	noItems="No maps found."
+	on:message={onMessage} />
