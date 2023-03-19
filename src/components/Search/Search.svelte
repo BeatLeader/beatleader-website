@@ -309,7 +309,7 @@
 
 <svelte:body on:keydown={e => onKeyDown(e)} on:keyup={() => (handleKeyDown = true)} />
 
-<article>
+<article class="search-box">
 	<slot {value} />
 
 	<ContentBox>
@@ -529,6 +529,7 @@
 	.groups :global(header) {
 		position: sticky;
 		top: 0;
+		z-index: 1;
 	}
 
 	.group {

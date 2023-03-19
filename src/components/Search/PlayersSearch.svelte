@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import playerFindApiClient from '../../network/clients/beatleader/players/api-player-find';
 	import {MINUTE} from '../../utils/date';
 	import PlayersHeader from './PlayersHeader.svelte';
@@ -22,13 +23,10 @@
 		const message = event?.detail;
 		if (!message) return;
 
-		// TODO: remove it
-		// console.log('players/onMessage()', message);
 		switch (message?.type) {
 			case 'select':
-				if (message?.value) {
-					// TODO: navigate
-					console.warn('PlayersSearch/onMessage(SELECT):', message.value);
+				if (message?.value?.playerId) {
+					navigate(`/u/${message.value.playerId}`);
 					dispatch('close');
 				}
 				break;
