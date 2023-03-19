@@ -53,7 +53,7 @@
 			</a>
 		{/if}
 
-		{#if leaderboard.diffInfo.type != 'Standard'}
+		{#if leaderboard?.diffInfo?.type != 'Standard'}
 			<div class="mode">
 				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
 			</div>

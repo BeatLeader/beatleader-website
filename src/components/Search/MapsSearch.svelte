@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import leaderboardsApiClient from '../../network/clients/beatleader/leaderboard/api-leaderboards';
 	import {MINUTE} from '../../utils/date';
 	import GenericSearch from './GenericSearch.svelte';
@@ -33,9 +34,8 @@
 				}
 
 			case 'item':
-				if (message?.type === 'select' && message?.value) {
-					// TODO: navigate
-					console.warn('MapsSearch/onMessage(SELECT):', message.value);
+				if (message?.type === 'select' && message?.value?.id) {
+					navigate(`/leaderboard/global/${message.value.id}/1`);
 					dispatch('close');
 				}
 				break;
