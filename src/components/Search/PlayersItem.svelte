@@ -24,7 +24,7 @@
 			<Avatar player={item} />
 		</div>
 		<div class="player-name-and-rank">
-			<PlayerNameWithFlag player={item} hideFlag={true} disablePopover={true} />
+			<PlayerNameWithFlag player={item} disablePopover={true} />
 		</div>
 		<div class="steam-and-pp">
 			<div>
