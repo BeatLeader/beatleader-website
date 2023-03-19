@@ -1,5 +1,8 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import createPlayerService from '../../services/beatleader/player';
+	import queues from '../../network/queues/queues';
+	import {MINUTE} from '../../utils/date';
 	import PlayersHeader from './PlayersHeader.svelte';
 	import PlayersItem from './PlayersItem.svelte';
 	import GenericSearch from './GenericSearch.svelte';
@@ -7,6 +10,7 @@
 	export let value = '';
 
 	const dispatch = createEventDispatcher();
+	const playerService = createPlayerService();
 
 	const key = Symbol('players');
 
@@ -33,27 +37,13 @@
 		}
 	}
 
-	// TEST ONLY: replace it with actual fetching from the API
-	let total = 14;
-	const allItems = () =>
-		Array(total)
-			.fill(null)
-			.map((_, idx) => ({
-				playerId: idx + 1,
-				name: `Player ${idx + 1} (${value})`,
-			}));
-
 	async function fetchPage(filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) {
-		console.log(`players/fetchPage(), page=${page}, itemsPerPage=${itemsPerPage}, filters=`, filters);
-		return new Promise((resolve, reject) => {
-			if (Math.random() < 0.2) {
-				reject('Test error ');
-				return;
-			}
-
-			setTimeout(() => {
-				resolve({data: allItems().slice(itemsPerPage * (page - 1), itemsPerPage * page), metadata: {page, itemsPerPage, total}});
-			}, Math.random() * 1000 + 500);
+		return playerService.findPlayer(filters.search, queues.PRIORITY.FG_HIGH, {
+			cacheTtl: MINUTE,
+			page,
+			count: itemsPerPage,
+			sortBy: 'name',
+			order: 'asc',
 		});
 	}
 

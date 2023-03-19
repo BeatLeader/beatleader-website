@@ -28,7 +28,7 @@ export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/$
 export const BL_API_SCORES_HISTOGRAM_URL =
 	BL_API_URL +
 	'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}&eventId=${eventId}';
-export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}';
+export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
 	'players?page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
@@ -238,7 +238,17 @@ export default (options = {}) => {
 		fetchJson(substituteVars(BL_API_PLAYER_SCORE_URL, {playerId, hash, diff, type}), options, priority);
 
 	const findPlayer = async (query, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_FIND_PLAYER_URL, {query: encodeURIComponent(query)}), options, priority);
+		fetchJson(
+			substituteVars(BL_API_FIND_PLAYER_URL, {
+				query: encodeURIComponent(query),
+				page: options?.page ?? 1,
+				count: options?.count ?? '',
+				sortBy: options?.sortBy ?? 'pp',
+				order: options?.order ?? 'desc',
+			}),
+			options,
+			priority
+		);
 
 	const rankingGlobal = async (page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), options, priority);
