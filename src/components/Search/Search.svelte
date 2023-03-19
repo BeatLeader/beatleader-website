@@ -253,12 +253,18 @@
 
 				handleMouseOver = false;
 
-				if (!handleKeyDown) return;
+				if (!handleKeyDown && !e.shiftKey) return;
 
-				groupIdx++;
-				itemIdx = 0;
-				if (groupIdx > groups.length - 1) {
-					groupIdx = 0;
+				if (e.shiftKey) {
+					groupIdx--;
+					itemIdx = 0;
+					if (groupIdx < 0) groupIdx = groups.length ? groups.length - 1 : 0;
+				} else {
+					groupIdx++;
+					itemIdx = 0;
+					if (groupIdx > groups.length - 1) {
+						groupIdx = 0;
+					}
 				}
 
 				selected = {group: groups[groupIdx], item: groups[groupIdx].items[itemIdx] ?? null};
