@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import eventsApiClient from '../../network/clients/beatleader/events/api-events';
 	import {MINUTE} from '../../utils/date';
 	import GenericSearch from './GenericSearch.svelte';
@@ -24,9 +25,8 @@
 
 		switch (message?.type) {
 			case 'select':
-				if (message?.value) {
-					// TODO: navigate
-					console.warn('EventssSearch/onMessage(SELECT):', message.value);
+				if (message?.value?.id) {
+					navigate(`/event/${message.value.id}`);
 					dispatch('close');
 				}
 				break;

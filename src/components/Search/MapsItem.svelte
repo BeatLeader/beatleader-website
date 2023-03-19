@@ -14,7 +14,6 @@
 		: null;
 	$: leaderboardId = leaderboard?.id ?? '';
 	$: leaderboardUrl = `/leaderboard/global/${leaderboardId}/1`;
-	$: console.log(leaderboard);
 </script>
 
 {#if item}
