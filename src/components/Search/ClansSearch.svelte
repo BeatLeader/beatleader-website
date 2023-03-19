@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import clansApiClient from '../../network/clients/beatleader/clans/api-clans';
 	import {MINUTE} from '../../utils/date';
 	import GenericSearch from './GenericSearch.svelte';
@@ -24,9 +25,8 @@
 
 		switch (message?.type) {
 			case 'select':
-				if (message?.value) {
-					// TODO: navigate
-					console.warn('ClansSearch/onMessage(SELECT):', message.value);
+				if (message?.value?.tag) {
+					navigate(`/clans/${message.value.tag}`);
 					dispatch('close');
 				}
 				break;
