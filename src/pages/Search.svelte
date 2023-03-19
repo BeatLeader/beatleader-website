@@ -3,6 +3,7 @@
 	import PlayersSearch from '../components/Search/PlayersSearch.svelte';
 	import MapsSearch from '../components/Search/MapsSearch.svelte';
 	import ClansSearch from '../components/Search/ClansSearch.svelte';
+	import EventsSearch from '../components/Search/EventsSearch.svelte';
 
 	export let title = 'Find a player profile';
 	export let changeTitle = false;
@@ -18,6 +19,7 @@
 		<PlayersSearch {value} on:close={onClose} />
 		<MapsSearch {value} on:close={onClose} />
 		<ClansSearch {value} on:close={onClose} />
+		<EventsSearch {value} on:close={onClose} />
 	</Search>
 </article>
 

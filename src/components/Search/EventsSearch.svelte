@@ -1,16 +1,16 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import clansApiClient from '../../network/clients/beatleader/clans/api-clans';
+	import eventsApiClient from '../../network/clients/beatleader/events/api-events';
 	import {MINUTE} from '../../utils/date';
 	import GenericSearch from './GenericSearch.svelte';
-	import ClansHeader from './ClansHeader.svelte';
-	import ClansItem from './ClansItem.svelte';
+	import EventsHeader from './EventsHeader.svelte';
+	import EventsItem from './EventsItem.svelte';
 
 	export let value = '';
 
 	const dispatch = createEventDispatcher();
 
-	const key = Symbol('clans');
+	const key = Symbol('events');
 
 	const ITEMS_PER_PAGE = 10;
 
@@ -26,7 +26,7 @@
 			case 'select':
 				if (message?.value) {
 					// TODO: navigate
-					console.warn('ClansSearch/onMessage(SELECT):', message.value);
+					console.warn('EventssSearch/onMessage(SELECT):', message.value);
 					dispatch('close');
 				}
 				break;
@@ -34,7 +34,7 @@
 	}
 
 	const fetchPage = async (filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) =>
-		clansApiClient.getProcessed({page, filters: {...filters, sort: 'name', order: 'asc', count: itemsPerPage, cacheTtl: MINUTE}});
+		eventsApiClient.getProcessed({page, filters: {...filters, sortBy: 'name', order: 'asc', count: itemsPerPage, cacheTtl: MINUTE}});
 
 	$: if (value?.length) filters.search = value;
 </script>
@@ -44,7 +44,7 @@
 	{filters}
 	{fetchPage}
 	itemsPerPage={ITEMS_PER_PAGE}
-	header={ClansHeader}
-	item={ClansItem}
-	noItems="No clans found."
+	header={EventsHeader}
+	item={EventsItem}
+	noItems="No events found."
 	on:message={onMessage} />
