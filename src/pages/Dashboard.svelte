@@ -4,7 +4,6 @@
 	import createAccountStore from '../stores/beatleader/account';
 	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
 	import Button from '../components/Common/Button.svelte';
-	import SearchPage from './Search.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import RankingTable from '../components/Ranking/RankingTable.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -117,7 +116,6 @@
 							<Button iconFa="fas fa-download" label="Download Quest mod" />
 						</a>
 					</div>
-					<SearchPage focusField={false} title="Find your profile or followed" />
 					<div class="global-ranking-call">
 						<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
 					</div>

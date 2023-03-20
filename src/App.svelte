@@ -4,9 +4,9 @@
 	import Notifications from 'svelte-notifications';
 	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
+	import {search} from './stores/search';
 	import createContainerStore from './stores/container';
 	import {isTouchDevice} from './utils/is-touch';
-	import SearchPage from './pages/Search.svelte';
 	import RankingPage from './pages/Ranking.svelte';
 	import EventPage from './pages/Event.svelte';
 	import LeaderboardPage from './pages/Leaderboard.svelte';
@@ -33,6 +33,7 @@
 	import {setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
+	import Search from './components/Search/Search.svelte';
 
 	export let url = '';
 
@@ -156,9 +157,6 @@
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
-					<Route path="/search">
-						<SearchPage changeTitle={true} />
-					</Route>
 					<Route path="/twitch" component={TwitchPage} />
 					<Route path="/support" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
@@ -173,6 +171,10 @@
 </Router>
 
 <PlaylistCart />
+
+{#if $search}
+	<Search />
+{/if}
 
 <link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
 

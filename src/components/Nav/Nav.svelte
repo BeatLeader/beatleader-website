@@ -1,15 +1,17 @@
 <script>
-	import eventBus from '../../utils/broadcast-channel-pubsub';
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
+	import {globalHistory} from 'svelte-routing/src/history';
+	import eventBus from '../../utils/broadcast-channel-pubsub';
 	import createAccountStore from '../../stores/beatleader/account';
-	import followed from '../../stores/beatleader/followed';
 	import createPlaylistStore from '../../stores/playlists';
+	import followed from '../../stores/beatleader/followed';
 	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
 	import {mobileTouch} from '../../svelte-utils/actions/mobile-touch';
 	import {clickOutside} from '../../svelte-utils/actions/click-outside';
 	import {isTouchDevice} from '../../utils/is-touch';
+	import {search} from '../../stores/search';
 	import Dropdown from '../Common/Dropdown.svelte';
 	import Avatar from '../Common/Avatar.svelte';
 	import PlaylistMenuItem from './PlaylistMenuItem.svelte';
@@ -32,8 +34,19 @@
 	onMount(async () => {
 		const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => (settingsNotificationBadge = message));
 
+		const keyDownHandler = e => {
+			if (e.ctrlKey === true && e.key === '/') {
+				e.preventDefault();
+
+				$search = true;
+			}
+		};
+
+		document.addEventListener('keydown', keyDownHandler);
+
 		return () => {
 			settingsBadgeUnsubscribe();
+			document.removeEventListener('keydown', keyDownHandler);
 		};
 	});
 
@@ -263,7 +276,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="/search" on:click|preventDefault={() => navigate('/search')}>
+					<a href="#" on:click|preventDefault={() => ($search = true)}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 						</svg>
@@ -327,7 +340,7 @@
 			Events
 		</a>
 
-		<a href="/search" on:click|preventDefault={() => navigate('/search')}>
+		<a href="#" on:click|preventDefault={() => ($search = true)}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 			</svg>
