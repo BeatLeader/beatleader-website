@@ -32,7 +32,6 @@
 
 	$: leaderboard = songScore?.leaderboard ?? null;
 	$: score = songScore?.score ?? null;
-	$: prevScore = songScore?.prevScore ?? null;
 	$: beatSaviorPromise = scoreStatisticEnhancer(songScore);
 
 	$: updateInBuiltLeaderboardPage(
@@ -59,7 +58,7 @@
 
 		{#if score?.replay}
 			<div class="tab">
-				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed}/>
+				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
 			</div>
 		{/if}
 
@@ -101,10 +100,6 @@
 		flex-direction: column;
 		grid-row-gap: 0.2em;
 		padding-top: 0.4em;
-	}
-
-	nav {
-		margin-bottom: 1rem;
 	}
 
 	.tab {

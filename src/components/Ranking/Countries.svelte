@@ -30,7 +30,7 @@
 <section
 	style=" --clearSelectTop: 8px; --multiItemBG: var(--selected); --multiClearBG: var(--selected); --listBackground:
 var(--background); --inputColor: var(--textColor); --multiSelectPadding: 2px 35px 2px 4px">
-	<CountryPicker {value} {items} on:select={onSelect} />
+	<CountryPicker {value} {items} on:select={onSelect} on:open />
 </section>
 
 <style>

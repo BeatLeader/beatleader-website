@@ -169,6 +169,8 @@
 		}
 	}
 
+	let modalShown;
+
 	$: changeParams(page, eventId, location, true);
 	$: scrollToTop(pending);
 	$: mainPlayerId = $account?.id;
@@ -187,7 +189,7 @@
 
 	<article class="page-content" transition:fade>
 		{#if eventId == 23}
-			<ContentBox cls="inner-modal">
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>
 					Have you ever wondered how Beat Saber would feel with timing based scoring instead of accuracy based? Wonder no more!<br />
 					Limited time offer from BeatLeader. Install the mods and play custom mode to try our attempt at reimagining the game.<br />
@@ -209,7 +211,7 @@
 				</span>
 			</ContentBox>
 		{/if}
-		<ContentBox cls="inner-modal">
+		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
 					<section class="filter">
@@ -222,7 +224,7 @@
 								value={param.value}
 								on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
 						{:else if param?.type === 'countries'}
-							<Countries countries={param.value} on:change={param.onChange} />
+							<Countries countries={param.value} on:change={param.onChange} on:open={e => (modalShown = e.detail)} />
 						{/if}
 					</section>
 				{/if}

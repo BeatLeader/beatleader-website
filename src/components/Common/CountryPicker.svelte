@@ -2,11 +2,22 @@
 	import Select from 'svelte-select';
 	import Item from './CountryPickerItem.svelte';
 	import CountryPickerMultiItem from './CountryPickerMultiItem.svelte';
+	import {createEventDispatcher} from 'svelte';
 
 	export let value;
 	export let items;
 
+	const dispatch = createEventDispatcher();
+
+	let opened;
+
+	function openedChanged(opened) {
+		dispatch('open', opened);
+	}
+
 	const itemFilter = (label, filterText) => label.toLowerCase().includes(filterText.toLowerCase());
+
+	$: openedChanged(opened);
 </script>
 
 <Select
@@ -19,6 +30,7 @@
 	isSearchable={true}
 	isMulti={true}
 	placeholderAlwaysShow={true}
+	bind:listOpen={opened}
 	on:select
 	on:clear />
 
