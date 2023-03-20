@@ -37,7 +37,8 @@
 	.bg {
 		position: absolute;
 		inset: 0;
-		background-color: rgba(30, 30, 30, 0.95);
+		background-color: var(--customizable-color-1, var(--foreground)) !important;
+		opacity: 0.99;
 		backdrop-filter: blur(10px);
 		pointer-events: none;
 	}
