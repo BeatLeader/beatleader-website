@@ -38,6 +38,7 @@
 		position: absolute;
 		inset: 0;
 		background-color: rgba(30, 30, 30, 0.95);
+		backdrop-filter: blur(10px);
 		pointer-events: none;
 	}
 </style>
