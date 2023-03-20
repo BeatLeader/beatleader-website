@@ -43,7 +43,7 @@
 	}
 
 	const fetchPage = async (filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) =>
-		leaderboardsApiClient.getProcessed({page, filters: {...filters, sortBy: 'name', order: 'asc', count: itemsPerPage, cacheTtl: MINUTE}});
+		leaderboardsApiClient.getProcessed({page, filters: {...filters, sortBy: 'name', order: 'desc', count: itemsPerPage, cacheTtl: MINUTE}});
 
 	$: if (value?.length) filters.search = value;
 </script>

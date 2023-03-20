@@ -40,7 +40,7 @@
 			page,
 			count: itemsPerPage,
 			sortBy: 'name',
-			order: 'asc',
+			order: 'desc',
 		});
 
 	$: if (value?.length) filters.search = value;
