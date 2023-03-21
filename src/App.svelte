@@ -95,7 +95,7 @@
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
 <Router {url}>
-	<Nav />
+	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>

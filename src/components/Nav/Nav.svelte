@@ -19,6 +19,9 @@
 	import LinkMenuItem from './LinkMenuItem.svelte';
 	import PlaylistHeaderMenuItem from './PlaylistHeaderMenuItem.svelte';
 
+	let className = null;
+	export {className as class};
+
 	let player = null;
 	let settingsNotificationBadge = null;
 
@@ -148,7 +151,7 @@
 		.join('\n');
 </script>
 
-<nav class="ssr-page-container">
+<nav class={`ssr-page-container ${className ?? ''}`}>
 	<a href="/public" on:click|preventDefault={() => navigate('/')}>
 		<img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
 		<img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
@@ -522,6 +525,11 @@
 			padding-inline: 0.5rem !important;
 			font-size: 0.875em !important;
 			overflow: hidden;
+		}
+		:global(.mirror) .search-box,
+		:global(.mirror-low) .search-box {
+			border-color: var(--textColor);
+			background-color: transparent;
 		}
 		.search-box > *:first-child {
 			margin-right: 0.5rem;
