@@ -529,7 +529,8 @@
 		:global(.mirror) .search-box,
 		:global(.mirror-low) .search-box {
 			border-color: var(--textColor);
-			background-color: transparent;
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 0.4em;
 		}
 		.search-box > *:first-child {
 			margin-right: 0.5rem;

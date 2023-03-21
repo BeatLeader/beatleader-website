@@ -201,6 +201,14 @@
 		font-size: 0.875rem;
 	}
 
+	:global(.mirror) select,
+	:global(.mirror-low) select {
+		border-radius: 0.4em;
+		background-color: rgba(0, 0, 0, 0.2);
+		padding-inline: 0.25em;
+		border-color: var(--textColor);
+	}
+
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(23rem, 1fr));
