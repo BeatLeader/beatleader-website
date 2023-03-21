@@ -19,7 +19,7 @@
 </script>
 
 <main>
-	<div class="bg" />
+	<div class="bg" on:click={onClose} />
 	<SearchBox let:value on:close={onClose}>
 		<PlayersSearch {value} on:close={onClose} />
 		<MapsSearch {value} on:close={onClose} />
@@ -40,6 +40,5 @@
 		background-color: var(--customizable-color-1, var(--foreground)) !important;
 		opacity: 0.99;
 		backdrop-filter: blur(10px);
-		pointer-events: none;
 	}
 </style>
