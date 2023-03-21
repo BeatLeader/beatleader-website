@@ -2,4 +2,4 @@
 	import GenericHeader from './GenericHeader.svelte';
 </script>
 
-<GenericHeader {...$$props}>Players</GenericHeader>
+<GenericHeader {...$$props} on:message>Players</GenericHeader>

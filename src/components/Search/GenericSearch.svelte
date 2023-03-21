@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import stringify from 'json-stable-stringify';
 	import LoadMore, {getProps as LoadMoreGetProps} from './LoadMore.svelte';
 	import Retry, {getProps as RetryGetProps} from './Retry.svelte';
@@ -16,6 +17,7 @@
 	export let header = GenericHeader;
 	export let item = null;
 	export let noItems = 'No items found.';
+	export let url = null;
 
 	const dispatch = createEventDispatcher();
 
@@ -42,7 +44,14 @@
 			if (!Number.isFinite(itemsPerPage)) itemsPerPage = response?.metadata?.itemsPerPage ?? DEFAULT_ITEMS_PER_PAGE;
 			totalPages = Number.isFinite(total) ? Math.floor(total / itemsPerPage) + (total % itemsPerPage ? 1 : 0) : null;
 
-			updateHeaderProps(key, {isLoading, filters, page, total, totalPages});
+			updateHeaderProps(key, {
+				isLoading,
+				filters,
+				page,
+				total,
+				totalPages,
+				url,
+			});
 
 			return Array.isArray(response?.data) ? response.data : [];
 		} catch (err) {
@@ -103,26 +112,42 @@
 	}
 
 	function onMessage(message) {
-		switch (message?.type) {
-			case 'load-more':
-				if (isLoading || !Number.isFinite(message?.value?.page)) return;
-
-				getNextPage(filters, message.value.page);
-				break;
-
-			case 'retry':
-				if (isLoading || !Number.isFinite(message?.value?.page)) return;
-
-				if (message.value.page === 1) newSearch(filters);
-				else getNextPage(filters, message.value.page);
-				break;
-
-			default:
+		if (message?.source === 'header') {
+			if (message?.type === 'navigate' && message?.value?.length) {
+				navigate(message.value);
+				dispatch('close');
+			} else {
 				dispatch('message', message);
+			}
+		} else {
+			switch (message?.type) {
+				case 'load-more':
+					if (isLoading || !Number.isFinite(message?.value?.page)) return;
+
+					getNextPage(filters, message.value.page);
+					break;
+
+				case 'retry':
+					if (isLoading || !Number.isFinite(message?.value?.page)) return;
+
+					if (message.value.page === 1) newSearch(filters);
+					else getNextPage(filters, message.value.page);
+					break;
+
+				default:
+					dispatch('message', message);
+			}
 		}
 	}
 
-	register({key, header, headerProps: {isLoading, filters}, item, onMessage, noItems});
+	register({
+		key,
+		header,
+		headerProps: {isLoading, filters, url},
+		item,
+		onMessage,
+		noItems,
+	});
 
 	$: if (stringify(filters) !== lastFilters) {
 		lastFilters = stringify(filters);

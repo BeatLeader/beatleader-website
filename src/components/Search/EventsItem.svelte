@@ -1,15 +1,23 @@
 <script>
-	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import {createEventDispatcher} from 'svelte';
 	import {navigate} from 'svelte-routing';
+	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 
 	export let item = null;
 	export let selected = false;
+
+	const dispatch = createEventDispatcher();
 
 	$: url = `/event/${item?.id}` ?? '';
 </script>
 
 {#if item}
-	<a href={url} on:click|preventDefault|stopPropagation={() => navigate(url)}>
+	<a
+		href={url}
+		on:click|preventDefault|stopPropagation={() => {
+			navigate(url);
+			dispatch('close');
+		}}>
 		<img class="image" src={item?.image} alt="Event icon" />
 		<div class="name">{item?.name}</div>
 		<div class="leader">

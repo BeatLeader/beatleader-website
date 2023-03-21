@@ -26,7 +26,7 @@
 		switch (message?.type) {
 			case 'select':
 				if (message?.value?.tag) {
-					navigate(`/clans/${message.value.tag}`);
+					navigate(`/clan/${message.value.tag}`);
 					dispatch('close');
 				}
 				break;
@@ -47,4 +47,6 @@
 	header={ClansHeader}
 	item={ClansItem}
 	noItems="No clans found."
-	on:message={onMessage} />
+	url={`/clans?search=${filters.search}`}
+	on:message={onMessage}
+	on:close />

@@ -54,4 +54,6 @@
 	header={PlayersHeader}
 	item={PlayersItem}
 	noItems="No players found."
-	on:message={onMessage} />
+	url={`ranking?search=${filters.search}`}
+	on:message={onMessage}
+	on:close />

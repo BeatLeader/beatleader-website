@@ -47,4 +47,6 @@
 	header={EventsHeader}
 	item={EventsItem}
 	noItems="No events found."
-	on:message={onMessage} />
+	url={`/events?search=${filters.search}`}
+	on:message={onMessage}
+	on:close />

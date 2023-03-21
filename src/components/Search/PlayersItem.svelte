@@ -1,4 +1,5 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import Avatar from '../Common/Avatar.svelte';
@@ -7,6 +8,8 @@
 	export let item = null;
 	export let selected = false;
 
+	const dispatch = createEventDispatcher();
+
 	$: rank = item?.playerInfo?.rank ?? null;
 	$: country = item?.playerInfo?.countries?.[0]?.country ?? null;
 	$: countryRank = item?.playerInfo?.countries?.[0]?.rank ?? null;
@@ -14,7 +17,13 @@
 </script>
 
 {#if item}
-	<a href={`/u/${item?.playerId}`} class="player-card" on:click|preventDefault|stopPropagation={() => navigate(`/u/${item?.playerId}`)}>
+	<a
+		href={`/u/${item?.playerId}`}
+		class="player-card"
+		on:click|preventDefault|stopPropagation={() => {
+			navigate(`/u/${item?.playerId}`);
+			dispatch('close');
+		}}>
 		<div class="player-rank">
 			<div class={`rank ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'brown' : rank >= 10000 ? 'small' : ''}`}>
 				#<Value value={rank} digits={0} zero="?" />

@@ -1,9 +1,12 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import SongCover from '../Player/SongCover.svelte';
 
 	export let item = null;
 	export let selected = false;
+
+	const dispatch = createEventDispatcher();
 
 	$: leaderboard = item
 		? {
@@ -17,7 +20,12 @@
 </script>
 
 {#if item}
-	<a href={leaderboardUrl} on:click|preventDefault|stopPropagation={() => navigate(leaderboardUrl)}>
+	<a
+		href={leaderboardUrl}
+		on:click|preventDefault|stopPropagation={() => {
+			navigate(leaderboardUrl);
+			dispatch('close');
+		}}>
 		<SongCover {leaderboard} notClickable={true} url={leaderboardUrl} />
 
 		<span class="name">{leaderboard?.song?.name} {leaderboard?.song?.subName}</span>

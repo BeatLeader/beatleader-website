@@ -342,7 +342,8 @@
 							<svelte:component
 								this={group.header}
 								{...{...(group.headerProps ?? {}), selected: group === selected?.group, isLoading: group.isLoading}}
-								on:message={e => (group?.onMessage ? group.onMessage(e?.detail) : null)} />
+								on:message={e => (group?.onMessage ? group.onMessage(e?.detail) : null)}
+								on:close />
 							{#if group?.items?.length}
 								<section class="items">
 									{#each group?.items ?? [] as item}
@@ -361,7 +362,8 @@
 													...(item.componentProps ?? {}),
 													selected: item === selected?.item,
 													isLoading: group.isLoading,
-												}} />
+												}}
+												on:close />
 										</div>
 									{/each}
 								</section>

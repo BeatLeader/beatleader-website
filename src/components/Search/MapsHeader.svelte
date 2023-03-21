@@ -18,7 +18,7 @@
 	$: selectedFilter = options.find(f => f.value === filters?.type) ?? options[0];
 </script>
 
-<GenericHeader {...$$props}>
+<GenericHeader {...$$props} on:message on:close>
 	<span>Maps</span>
 	<span slot="right">
 		{#if isLoading}<Spinner />{:else}

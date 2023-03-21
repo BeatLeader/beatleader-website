@@ -1,19 +1,27 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
 	import {navigate} from 'svelte-routing';
 
 	export let item = null;
 	export let selected = false;
+
+	const dispatch = createEventDispatcher();
 
 	$: iconUrl = item?.icon ?? 'https://cdn.assets.beatleader.xyz/NTG.png';
 	$: name = item?.name ?? '';
 	$: description = item?.description ?? '';
 	$: tag = item?.tag ?? '';
 	$: color = item?.color ?? '#ff0000';
-	$: url = `/clans/${tag}` ?? '';
+	$: url = `/clan/${tag}` ?? '';
 </script>
 
 {#if item}
-	<a href={url} on:click|preventDefault|stopPropagation={() => navigate(url)}>
+	<a
+		href={url}
+		on:click|preventDefault|stopPropagation={() => {
+			navigate(url);
+			dispatch('close');
+		}}>
 		<img class="image" src={iconUrl} alt="ClanIcon" />
 		<div class="name-and-tag">
 			<span style:--clan-color={color} class="clanTag">{tag}</span>
