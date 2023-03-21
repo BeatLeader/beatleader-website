@@ -225,13 +225,6 @@
 			title: 'Sort by pause count',
 			iconFa: 'fas fa-pause',
 		},
-		{
-			id: 'playCount',
-			replaceTimeset: true,
-			label: 'Play count',
-			title: 'Sort by play count',
-			iconFa: 'fas fa-calculator',
-		},
 	];
 
 	const stringifyFilters = (query, keys) =>
@@ -967,8 +960,6 @@
 												{score.score.pauses}
 											{:else if currentFilters.sortBy == 'maxStreak'}
 												{score.score.maxStreak}
-											{:else if currentFilters.sortBy == 'playCount'}
-												{score.score.playCount}
 											{:else}
 												<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
 													{opt(score, 'score.timeSetString', '-')}
@@ -980,8 +971,6 @@
 												{score.score.pauses}
 											{:else if currentFilters.sortBy == 'maxStreak'}
 												{score.score.maxStreak}
-											{:else if currentFilters.sortBy == 'playCount'}
-												{score.score.playCount}
 											{:else}
 												<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
 													{score?.score?.timeSetStringShort ?? ''}
