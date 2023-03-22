@@ -29,7 +29,14 @@
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
-	import {typesDescription, requirementsDescription, typesMap, DifficultyStatus, requirementsMap} from '../utils/beatleader/format';
+	import {
+		typesDescription,
+		requirementsDescription,
+		typesMap,
+		DifficultyStatus,
+		requirementsMap,
+		modeDescriptions,
+	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
 	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
@@ -60,6 +67,7 @@
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
 		{key: 'order', default: 'desc', process: processStringFilter},
+		{key: 'mode', default: null, process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
 		{key: 'mapRequirements', default: null, process: processIntFilter},
@@ -128,6 +136,23 @@
 			title: requirementsDescription?.[key]?.title ?? null,
 		};
 	});
+
+	const modeFilterOptions = [
+		{
+			key: null,
+			label: 'Any mode',
+		},
+	].concat(
+		Object.entries(modeDescriptions).map(([key, type]) => {
+			return {
+				key,
+				label: capitalize(modeDescriptions?.[key]?.name ?? key),
+				icon: `<span class="${modeDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
+				color: modeDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
+				textColor: modeDescriptions?.[key]?.textColor ?? null,
+			};
+		})
+	);
 
 	function addAdditionalFilters(mapper, rt) {
 		mytypeFilterOptions = [...baseMytypeFilterOptions];
@@ -246,6 +271,14 @@
 		if (!event?.detail) return;
 
 		currentFilters.mytype = event.detail.key ?? '';
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	async function onModeChanged(event) {
+		await tick();
+
 		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
@@ -453,7 +486,7 @@
 			<h2 class="title is-5">Filters</h2>
 
 			<section class="filter">
-				<label>Song/Author/Mapper Name</label>
+				<label>Song/Author/Mapper/Hash</label>
 
 				<form on:submit={onSearchSubmit}>
 					<input bind:this={searchInputEl} type="text" class="search" placeholder="Search for a map..." value={currentFilters.search} />
@@ -533,6 +566,15 @@
 					dateFrom={dateFromUnix(currentFilters.date_from)}
 					dateTo={dateFromUnix(currentFilters.date_to)}
 					on:change={debouncedOnDateRangeChanged} />
+			</section>
+
+			<section class="filter">
+				<label>Has mode</label>
+				<select bind:value={currentFilters.mode} on:change={onModeChanged}>
+					{#each modeFilterOptions as option}
+						<option value={option.key}>{option.label}</option>
+					{/each}
+				</select>
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>

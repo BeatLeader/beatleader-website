@@ -393,6 +393,51 @@ export function describePlatform(platform) {
 	return result;
 }
 
+export const modeDescriptions = {
+	Standard: {
+		name: 'Standard',
+		icon: 'standard-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	OneSaber: {
+		title: 'OneSaber',
+		icon: 'onesaber-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	NoArrows: {
+		title: 'NoArrows',
+		icon: 'noarrows-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	'90Degree': {
+		title: '90 Degree',
+		icon: 'degree90-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	'360Degree': {
+		title: '360 Degree',
+		icon: 'degree360-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Lightshow: {
+		title: 'Lightshow',
+		icon: 'lightshow-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Lawless: {
+		title: 'Lawless',
+		icon: 'lawless-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+};
+
 export function modeForModeName(modeName) {
 	switch (modeName) {
 		case 'Standard':
