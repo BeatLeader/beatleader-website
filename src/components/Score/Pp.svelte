@@ -106,7 +106,7 @@
 			</span>
 		</span>{/if}
 
-	<span class="value">
+	<span class="value" title={prevTitle}>
 		<Value value={pp} {zero} {withZeroSuffix} {prevValue} {prevWithSign} {prevTitle} {prevAbsolute} {suffix} {...$$restProps} {forcePrev}>
 			<span
 				slot="value"
