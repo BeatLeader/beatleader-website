@@ -5,6 +5,7 @@
 	import MapsSearch from './MapsSearch.svelte';
 	import ClansSearch from './ClansSearch.svelte';
 	import EventsSearch from './EventsSearch.svelte';
+	import WikiSearch from './WikiSearch.svelte';
 	import {onMount} from 'svelte';
 
 	function onClose() {
@@ -25,6 +26,7 @@
 		<MapsSearch {value} on:close={onClose} />
 		<ClansSearch {value} on:close={onClose} />
 		<EventsSearch {value} on:close={onClose} />
+		<WikiSearch {value} on:close={onClose} />
 	</SearchBox>
 </main>
 

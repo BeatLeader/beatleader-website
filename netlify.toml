@@ -33,6 +33,13 @@
     headers = {X-From = "Netlify"}
 
 [[redirects]]
+    from = "/cors/blwiki/*"
+    to = "https://beatleader.wiki/graphql"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}
+
+[[redirects]]
     from = '/build/*'
     to = '/build/:splat'
     status = 200
