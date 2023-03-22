@@ -4,9 +4,9 @@
 	import Notifications from 'svelte-notifications';
 	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
+	import {search} from './stores/search';
 	import createContainerStore from './stores/container';
 	import {isTouchDevice} from './utils/is-touch';
-	import SearchPage from './pages/Search.svelte';
 	import RankingPage from './pages/Ranking.svelte';
 	import EventPage from './pages/Event.svelte';
 	import LeaderboardPage from './pages/Leaderboard.svelte';
@@ -33,6 +33,7 @@
 	import {setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
+	import Search from './components/Search/Search.svelte';
 
 	export let url = '';
 
@@ -94,7 +95,7 @@
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
 <Router {url}>
-	<Nav />
+	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
@@ -156,9 +157,6 @@
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
-					<Route path="/search">
-						<SearchPage changeTitle={true} />
-					</Route>
 					<Route path="/twitch" component={TwitchPage} />
 					<Route path="/support" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
@@ -173,6 +171,10 @@
 </Router>
 
 <PlaylistCart />
+
+{#if $search}
+	<Search />
+{/if}
 
 <link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
 
@@ -225,6 +227,11 @@
 
 	main {
 		margin-top: 1em;
+	}
+	@media (max-width: 600px) {
+		main {
+			margin-top: 0;
+		}
 	}
 
 	.ssr-page-container {

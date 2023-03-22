@@ -54,6 +54,13 @@
 	}
 }
 
+.fadable {
+	transition: opacity var(--fade-time, 250ms);
+}
+.fadable.faded {
+	opacity: 0;
+}
+
 .main-background {
 	display: none;
 	height: 100vh;
