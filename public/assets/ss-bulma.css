@@ -11460,7 +11460,7 @@ html {
 body {
 	color: var(--textColor);
 	margin: 0 auto;
-	padding: 0 1rem;
+	padding: 0;
 	min-height: 100vh;
 	min-height: -webkit-fill-available;
 }
