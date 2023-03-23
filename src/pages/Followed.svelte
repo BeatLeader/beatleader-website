@@ -118,68 +118,72 @@
 							on:click|preventDefault={() => navigate(`/u/${f.playerId}`)}
 							in:fade={{delay: idx * 20, duration: 200}}
 							out:fade={{duration: 50}}>
-							<ContentBox>
-								<span
-									class="star"
-									class:starred={f.starred}
-									class:is-updating={isUpdating === f?.playerId}
-									title={isUpdating === f?.playerId
-										? 'Please wait for the update to complete'
-										: f.starred
-										? 'Click to remove from starred'
-										: 'Click to add starred'}
-									on:click|preventDefault|stopPropagation={() => toggleStar(f)}>
-									{#if isUpdating === f?.playerId}
-										<Spinner />
-									{:else}
-										<i class="fa-star" class:fa-regular={!f.starred} class:fa-solid={f.starred} />
-									{/if}
-								</span>
-
-								{#if f?.profileSettings?.profileCover}
-									<div class="profile-background" style:background-image={`url(${f.profileSettings.profileCover})`} />
-								{/if}
-
-								<div class="avatar-cell">
-									<Avatar player={f} overlaySuffix="preview" />
-								</div>
-
-								<PlayerNameWithFlag player={f} disablePopover={true} hideFlag={true} />
-
-								<section class="stats">
-									<a
-										style="flex: none"
-										href={`/ranking/${Math.floor(((f?.playerInfo?.rank ?? 1) - 1) / PLAYERS_PER_PAGE) + 1}`}
-										on:click|preventDefault={() => navigateToGlobalRanking(f?.playerInfo?.rank ?? 1)}
-										title="Go to global ranking"
-										class="clickable">
-										<i class="fas fa-globe-americas" />
-
-										<Value value={f?.playerInfo?.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
-									</a>
-
-									{#each getPlayerCountries(f?.playerInfo) as country}
-										<a
-											style="flex: none"
-											href={getCountryRankingUrl(country)}
-											on:click|preventDefault={() => navigateToCountryRanking(country)}
-											title="Go to country ranking"
-											class="clickable">
-											<img
-												src={`/assets/flags/${
-													country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''
-												}.png`}
-												class="countryIcon"
-												alt={country?.country} />
-
-											<Value value={country.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
-										</a>
-									{/each}
-
-									<span class="pp">
-										<Value value={f?.playerInfo?.pp} suffix="pp" inline={true} zero="0pp" />
+							<ContentBox cls="friend-box">
+								<div class="friend-container">
+									<span
+										class="star"
+										class:starred={f.starred}
+										class:is-updating={isUpdating === f?.playerId}
+										title={isUpdating === f?.playerId
+											? 'Please wait for the update to complete'
+											: f.starred
+											? 'Click to remove from starred'
+											: 'Click to add starred'}
+										on:click|preventDefault|stopPropagation={() => toggleStar(f)}>
+										{#if isUpdating === f?.playerId}
+											<Spinner />
+										{:else}
+											<i class="fa-star" class:fa-regular={!f.starred} class:fa-solid={f.starred} />
+										{/if}
 									</span>
-								</section>
+
+									{#if f?.profileSettings?.profileCover}
+										<div class="profile-background" style:background-image={`url(${f.profileSettings.profileCover})`} />
+									{/if}
+
+									<div class="avatar-cell">
+										<Avatar player={f} overlaySuffix="preview" />
+									</div>
+
+									<div class="friend-details">
+										<PlayerNameWithFlag player={f} disablePopover={true} hideFlag={true} />
+
+										<section class="stats">
+											<a
+												style="flex: none"
+												href={`/ranking/${Math.floor(((f?.playerInfo?.rank ?? 1) - 1) / PLAYERS_PER_PAGE) + 1}`}
+												on:click|preventDefault={() => navigateToGlobalRanking(f?.playerInfo?.rank ?? 1)}
+												title="Go to global ranking"
+												class="clickable">
+												<i class="fas fa-globe-americas" />
+
+												<Value value={f?.playerInfo?.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
+											</a>
+
+											{#each getPlayerCountries(f?.playerInfo) as country}
+												<a
+													style="flex: none"
+													href={getCountryRankingUrl(country)}
+													on:click|preventDefault={() => navigateToCountryRanking(country)}
+													title="Go to country ranking"
+													class="clickable">
+													<img
+														src={`/assets/flags/${
+															country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''
+														}.png`}
+														class="countryIcon"
+														alt={country?.country} />
+
+													<Value value={country.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
+												</a>
+											{/each}
+
+											<span class="pp">
+												<Value value={f?.playerInfo?.pp} suffix="pp" inline={true} zero="0pp" />
+											</span>
+										</section>
+									</div>
+								</div>
 							</ContentBox>
 						</a>
 					{/each}
@@ -281,5 +285,35 @@
 
 	.countryIcon {
 		width: 1.2em;
+	}
+
+	.friend-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.friend-details {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	@media screen and (max-width: 600px) {
+		.friend-container {
+			flex-direction: row;
+			width: 100%;
+			margin-left: 2em;
+		}
+
+		.friend-details {
+			margin-left: 2em;
+			align-items: baseline;
+			grid-gap: 0.5em;
+		}
+
+		:global(.friend-box) {
+			padding: 0.3em !important;
+		}
 	}
 </style>
