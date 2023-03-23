@@ -1557,6 +1557,10 @@
 		position: relative;
 	}
 
+	.scores-grid > * {
+		min-width: 0;
+	}
+
 	.scores-grid > *:not(:last-child) {
 		border-bottom: 1px solid var(--row-separator);
 	}
@@ -1572,7 +1576,6 @@
 		overflow: hidden;
 		padding: 0.2em 0;
 		min-width: 19em;
-		justify-content: center;
 	}
 
 	.mobile-first-line {
@@ -1580,12 +1583,14 @@
 		grid-gap: 0.4em;
 		align-items: center;
 		flex-grow: 1;
+		min-width: 0;
 	}
 
 	.mobile-second-line {
 		display: flex;
 		grid-gap: 0.4em;
 		align-items: center;
+		min-width: max-content;
 	}
 
 	.player-score.highlight {
@@ -1605,13 +1610,14 @@
 	.player-score .player {
 		display: flex;
 		grid-gap: 0.4em;
-		flex-grow: 1;
+		flex: 1;
+		overflow: hidden;
 	}
 
 	.player-score .timeset {
 		text-align: center;
 		min-width: 6.9em;
-		flex: none;
+		flex-basis: fit-content;
 	}
 
 	.player-score .replay {
@@ -1631,7 +1637,7 @@
 	}
 
 	.player-score .score {
-		min-width: 6em;
+		min-width: 5em;
 		flex: none;
 	}
 
@@ -1830,7 +1836,18 @@
 		}
 	}
 
+	@media screen and (max-width: 1024px) {
+		.leaderboard {
+			margin-inline: 0;
+		}
+	}
+
 	@media screen and (max-width: 767px) {
+		.leaderboard {
+			margin-inline: 0;
+			max-width: 100vw;
+		}
+
 		.diff-switch :global(> *:not(:last-child)) {
 			margin-right: 0;
 			margin-bottom: 0.5em;
@@ -1896,6 +1913,15 @@
 
 	.player-score .timeset {
 		text-align: right;
-		min-width: auto;
+		min-width: fit-content;
+	}
+
+	.box-with-left-arrow {
+		grid-template-columns: 1fr;
+	}
+
+	aside :global(.content-box) {
+		margin-inline: 0;
+		padding: 0.5rem;
 	}
 </style>
