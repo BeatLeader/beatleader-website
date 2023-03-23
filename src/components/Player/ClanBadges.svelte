@@ -48,6 +48,7 @@
 		font-size: 1rem;
 		padding: 0 !important;
 		font-weight: bold;
+		min-width: fit-content;
 	}
 
 	:global(.clan-badges span.label) {
