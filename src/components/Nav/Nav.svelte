@@ -625,6 +625,12 @@
 		}
 	}
 
+	@media screen and (max-width: 1023px) {
+		.search-box {
+			margin-inline: 0.5rem;
+		}
+	}
+
 	@keyframes pulse {
 		0% {
 			transform: scale(1.05);
