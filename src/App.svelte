@@ -4,6 +4,7 @@
 	import Notifications from 'svelte-notifications';
 	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
+	import createAccountStore from './stores/beatleader/account';
 	import {search} from './stores/search';
 	import createContainerStore from './stores/container';
 	import {isTouchDevice} from './utils/is-touch';
@@ -34,12 +35,14 @@
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
+	import LandingPage from './pages/LandingPage.svelte';
 
 	export let url = '';
 
 	let mainEl = null;
 
 	const containerStore = createContainerStore();
+	const account = createAccountStore();
 
 	setContext('pageContainer', containerStore);
 
@@ -100,7 +103,13 @@
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
-					<Route path="/" component={DashboardPage} />
+					<Route path="/">
+						{#if $account?.player}
+							<DashboardPage />
+						{:else}
+							<LandingPage />
+						{/if}
+					</Route>
 					<Route path="/u/:initialPlayerId/*initialParams" let:params>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 					</Route>

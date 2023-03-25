@@ -54,8 +54,7 @@
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
-	$: followed = $account?.followed ?? null;
-	$: browserTitle = followed?.length ? $account?.player?.name : `Dashboard - ${ssrConfig.name}`;
+	$: browserTitle = `${ssrConfig.name} Dashboard`;
 	$: metaDescription =
 		ssrConfig.name +
 		" is Beat Saber's leaderboard with open code and community. Start posting your scores to compete with others on more than 100,000 different maps.";
@@ -66,127 +65,69 @@
 </svelte:head>
 
 <article class="page-content" transition:fade>
-	{#if !followed?.length}
-		<div class="sspl-page-container">
+	<div class="columns is-multiline">
+		<div class="leaderboard content column is-full is-two-fifths-fullhd">
 			<ContentBox>
-				<div class="is-multiline">
-					<h1 class="title is-4">Hello, future BeatLeader!</h1>
-					<h3 class="description">This is an open source Beat Saber leaderboard!</h3>
-					<h3 class="description"><b>Start posting your scores to compete with others on more than 100,000 different maps.</b></h3>
-					<h3 class="description">It aggregates data from other cool projects to help you play better:</h3>
-					<div class="sources">
-						<div>
-							<h3 class="title is-6">
-								<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
-									<span class="icon beatsavior-icon" title="BeatSavior" />
-								</a>
-							</h3>
-							<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
-						</div>
-						<div>
-							<h3 class="title is-6">
-								<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-									<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
-								</a>
-							</h3>
-							<a class="imageLink" href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
-						</div>
-						<div>
-							<h3 class="title is-6">
-								<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-									<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaberLogo" />
-								</a>
-							</h3>
-							<a class="imageLink" href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
-						</div>
-						<div>
-							<h3 class="title is-6">
-								<a class="imageLink replays" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer">
-									<img src="/assets/replays.svg" title="Replays" class="icon" alt="Replays" />
-								</a>
-							</h3>
-							<a class="imageLink" href="https://replay.beatleader.xyz/" target="_blank" rel="noreferrer"> Replays </a>
-						</div>
-					</div>
-					<div class="downloadButtons">
-						<a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
-							<Button iconFa="fas fa-download" label="Download PC mod" />
-						</a>
-						<a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
-							<Button iconFa="fas fa-download" label="Download Quest mod" />
-						</a>
-					</div>
-					<div class="global-ranking-call">
-						<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
-					</div>
-				</div>
-			</ContentBox>
-		</div>
-	{:else}
-		<div class="columns is-multiline">
-			<div class="leaderboard content column is-full is-two-fifths-fullhd">
-				<ContentBox>
-					<div class="ranking">
-						<header>
-							<h2 class="title is-5">
-								Ranking of Followed
-								{#if isLoading}
-									<Spinner />
-								{/if}
-							</h2>
-						</header>
-
-						<RankingTable
-							type="followed"
-							{page}
-							{filters}
-							noIcons={true}
-							useInternalFilters={true}
-							on:page-changed={onRankingPageChanged}
-							on:loading={e => (isLoading = !!e?.detail)}
-							on:pending={e => (pending = e?.detail)} />
-					</div>
-				</ContentBox>
-				<div class="twitterEmbed">
-					<ContentBox>
-						<Timeline href="https://twitter.com/beatleader_" />
-					</ContentBox>
-				</div>
-				<div class="downloadButtons">
-					<a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" label="Download PC mod" color="#2d4150" />
-					</a>
-					<a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" label="Download Quest mod" color="#2d4150" />
-					</a>
-				</div>
-			</div>
-			<div class="scores content column is-full is-three-fifths-fullhd page-content">
-				<ContentBox>
+				<div class="ranking">
 					<header>
-						<h2>
-							<div class="title is-5">Scores of Followed</div>
+						<h2 class="title is-5">
+							Ranking of Followed
+							{#if isLoading}
+								<Spinner />
+							{/if}
 						</h2>
 					</header>
 
-					<Scores
-						playerId={SPECIAL_PLAYER_ID}
-						initialService="beatleader"
-						initialServiceParams={serviceParams}
-						on:page-changed={onScoresPageChanged}
-						on:service-params-changed={onScoresParamsChanged}
-						fixedBrowserTitle={browserTitle}
-						withPlayers={true}
-						noIcons={true} />
-				</ContentBox>
-			</div>
-			<div class="twitterEmbedMobile">
-				<ContentBox cls="twitterBox">
+					<RankingTable
+						type="followed"
+						{page}
+						{filters}
+						noIcons={true}
+						useInternalFilters={true}
+						on:page-changed={onRankingPageChanged}
+						on:loading={e => (isLoading = !!e?.detail)}
+						on:pending={e => (pending = e?.detail)} />
+				</div>
+			</ContentBox>
+			<div class="twitterEmbed">
+				<ContentBox>
 					<Timeline href="https://twitter.com/beatleader_" />
 				</ContentBox>
 			</div>
+			<div class="downloadButtons">
+				<a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
+					<Button iconFa="fas fa-download" label="Download PC mod" color="#2d4150" />
+				</a>
+				<a href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
+					<Button iconFa="fas fa-download" label="Download Quest mod" color="#2d4150" />
+				</a>
+			</div>
 		</div>
-	{/if}
+		<div class="scores content column is-full is-three-fifths-fullhd page-content">
+			<ContentBox>
+				<header>
+					<h2>
+						<div class="title is-5">Scores of Followed</div>
+					</h2>
+				</header>
+
+				<Scores
+					playerId={SPECIAL_PLAYER_ID}
+					initialService="beatleader"
+					initialServiceParams={serviceParams}
+					on:page-changed={onScoresPageChanged}
+					on:service-params-changed={onScoresParamsChanged}
+					fixedBrowserTitle={browserTitle}
+					withPlayers={true}
+					noIcons={true} />
+			</ContentBox>
+		</div>
+		<div class="twitterEmbedMobile">
+			<ContentBox cls="twitterBox">
+				<Timeline href="https://twitter.com/beatleader_" />
+			</ContentBox>
+		</div>
+	</div>
 </article>
 
 <MetaTags
