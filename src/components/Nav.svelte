@@ -50,6 +50,10 @@
 			name: 'Main',
 			baseLink: 'https://www.beatleader.xyz',
 		},
+		{
+			name: 'Stage 5',
+			baseLink: 'https://stage5.beatleader.net',
+		},
 	];
 
 	var currenturl;
@@ -227,7 +231,7 @@
 
 		<Dropdown items={testOptions} shown={testMenuShown}>
 			<svelte:fragment slot="row" let:item>
-				<a style="display: block; width: 100%" href={currenturl.replace('https://stage.beatleader.net', item.baseLink)}> {item.name} </a>
+				<a style="display: block; width: 100%" href={currenturl.replace('https://stage4.beatleader.net', item.baseLink)}> {item.name} </a>
 			</svelte:fragment>
 		</Dropdown>
 	</div>
