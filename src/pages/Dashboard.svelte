@@ -1,56 +1,13 @@
 <script>
 	import ssrConfig from '../ssr-config';
 	import {fade} from 'svelte/transition';
-	import createAccountStore from '../stores/beatleader/account';
-	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import RankingTable from '../components/Ranking/RankingTable.svelte';
-	import Spinner from '../components/Common/Spinner.svelte';
-	import Scores from '../components/Player/Scores.svelte';
 	import Timeline from '../components/Twitter/Timeline.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
-
-	const SPECIAL_PLAYER_ID = 'user-friends';
-
-	let page = 1;
-	let filters = {sortBy: 'pp'};
-
-	let isLoading = false;
-	let pending = null;
-
-	const account = createAccountStore();
-
-	const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
-
-	let serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {count: 5}};
-	serviceParamsManager.update(serviceParams, 'beatleader', true);
-
-	function onRankingPageChanged(e) {
-		if (e.detail.initial || !Number.isFinite(e.detail.page)) return;
-
-		page = e.detail.page + 1;
-	}
-
-	function onScoresPageChanged(e) {
-		let newPage = e?.detail ?? null;
-		if (!newPage) return;
-
-		if (!Number.isFinite(newPage)) newPage = 1;
-
-		serviceParamsManager.update({page: newPage});
-
-		serviceParams = serviceParamsManager.getParams();
-	}
-
-	function onScoresParamsChanged(e) {
-		const newServiceParams = e?.detail ?? null;
-		if (!newServiceParams) return;
-
-		serviceParamsManager.update(newServiceParams);
-		serviceParams = serviceParamsManager.getParams();
-	}
+	import FollowedRanking from '../components/Dashboard/FollowedRanking.svelte';
+	import FollowedScores from '../components/Dashboard/FollowedScores.svelte';
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
@@ -66,29 +23,8 @@
 
 <article class="page-content" transition:fade>
 	<div class="columns is-multiline">
-		<div class="leaderboard content column is-full is-two-fifths-fullhd">
-			<ContentBox>
-				<div class="ranking">
-					<header>
-						<h2 class="title is-5">
-							Ranking of Followed
-							{#if isLoading}
-								<Spinner />
-							{/if}
-						</h2>
-					</header>
-
-					<RankingTable
-						type="followed"
-						{page}
-						{filters}
-						noIcons={true}
-						useInternalFilters={true}
-						on:page-changed={onRankingPageChanged}
-						on:loading={e => (isLoading = !!e?.detail)}
-						on:pending={e => (pending = e?.detail)} />
-				</div>
-			</ContentBox>
+		<div class="content column is-full is-two-fifths-fullhd">
+			<FollowedRanking />
 			<div class="twitterEmbed">
 				<ContentBox>
 					<Timeline href="https://twitter.com/beatleader_" />
@@ -104,23 +40,7 @@
 			</div>
 		</div>
 		<div class="scores content column is-full is-three-fifths-fullhd page-content">
-			<ContentBox>
-				<header>
-					<h2>
-						<div class="title is-5">Scores of Followed</div>
-					</h2>
-				</header>
-
-				<Scores
-					playerId={SPECIAL_PLAYER_ID}
-					initialService="beatleader"
-					initialServiceParams={serviceParams}
-					on:page-changed={onScoresPageChanged}
-					on:service-params-changed={onScoresParamsChanged}
-					fixedBrowserTitle={browserTitle}
-					withPlayers={true}
-					noIcons={true} />
-			</ContentBox>
+			<FollowedScores {browserTitle} />
 		</div>
 		<div class="twitterEmbedMobile">
 			<ContentBox cls="twitterBox">
@@ -156,93 +76,6 @@
 
 	.is-multiline {
 		margin-left: 1.5em;
-	}
-
-	.sources {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.title.is-4 {
-		margin-top: 1.2em;
-	}
-
-	.global-ranking-call {
-		margin-top: 2em;
-	}
-
-	h3 {
-		padding: 0.25em 0;
-		margin-bottom: 0.75em !important;
-		font-size: 1.25em;
-	}
-
-	h3 > a {
-		display: inline-flex;
-		align-items: center;
-	}
-
-	h3 .icon {
-		display: inline-block;
-		width: 4em;
-		height: 4em;
-		margin-right: 0.5em;
-	}
-
-	.box h2 {
-		margin-bottom: 0;
-	}
-
-	.box h2 {
-		display: flex;
-		align-items: center;
-	}
-
-	.box h2 .title {
-		margin-bottom: 0;
-	}
-
-	.box h2 .refresh {
-		margin-left: 1rem;
-		margin-top: -0.25em;
-		font-size: 1rem;
-	}
-
-	header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 0.5rem;
-	}
-
-	header nav {
-		max-width: 15rem;
-	}
-
-	.ranking {
-		overflow: hidden;
-		font-size: 0.85rem;
-	}
-
-	.ranking header nav {
-		font-size: 0.8em !important;
-	}
-
-	.ranking :global(.ranking-grid-row) {
-		grid-template-columns: auto;
-	}
-
-	.ranking :global(.clan-badges) {
-		font-size: 0.8rem;
-	}
-
-	.ranking :global(.steam-stats) {
-		display: none;
-	}
-
-	.imageLink {
-		width: 4em;
-		height: 4em;
 	}
 
 	.downloadButtons {
