@@ -84,7 +84,37 @@
 			unranked: 'scoreStats.unrankedMaxStreak',
 			all: 'scoreStats.maxStreak',
 		},
+		pp: {
+			general: 'playerInfo.pp',
+			acc: 'playerInfo.accPp',
+			pass: 'playerInfo.passPp',
+			tech: 'playerInfo.techPp',
+		},
 	};
+
+	let allPpTypeValues = [
+		{
+			label: 'General',
+			value: 'general',
+			icon: 'fa fa-cubes',
+		},
+		{
+			label: 'Accuracy',
+			value: 'acc',
+			icon: 'fa fa-cubes',
+		},
+		{
+			label: 'Pass',
+			value: 'pass',
+			icon: 'fa fa-cubes',
+		},
+		{
+			label: 'Tech',
+			value: 'tech',
+			icon: 'fa fa-cubes',
+		},
+	];
+	let currentPpTypeValue = filters.ppType ?? 'general';
 
 	let allSortValues = [
 		{
@@ -92,7 +122,7 @@
 			label: 'PP',
 			title: 'Sort by PP',
 			iconFa: 'fa fa-cubes',
-			value: data => getStat(data, 'playerInfo.pp'),
+			value: data => getStat(data, statKeys['pp'][currentPpTypeValue]),
 			props: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
@@ -213,6 +243,16 @@
 		refreshSortValues(allSortValues, filters);
 	}
 
+	function onPPTypeChanged(e) {
+		if (!useInternalFilters) {
+			dispatch('pp-type-changed', currentPpTypeValue);
+			return;
+		}
+
+		filters.ppType = currentPpTypeValue;
+		refreshSortValues(allSortValues, filters);
+	}
+
 	onMount(() => {
 		dispatch('loading', true);
 	});
@@ -267,7 +307,15 @@
 {#if $rankingStore?.data?.length}
 	{#if !eventId}
 		<nav class="switcher-nav">
+			{#if sortValue?.id == 'pp'}
+				<select class="type-select" bind:value={currentPpTypeValue} on:change={onPPTypeChanged}>
+					{#each allPpTypeValues as option (option.value)}
+						<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
+					{/each}
+				</select>
+			{/if}
 			<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+
 			<select class="type-select" bind:value={currentTypeValue} on:change={onTypeChanged}>
 				{#each allTypeValues as option (option.value)}
 					<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>

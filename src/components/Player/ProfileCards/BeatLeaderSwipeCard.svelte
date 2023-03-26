@@ -4,15 +4,18 @@
 	import AccHistoryChart from '../Charts/AccHistoryChart.svelte';
 	import AccMapsChart from '../Charts/AccMapsChart.svelte';
 	import Switcher from '../../Common/Switcher.svelte';
+	import SkillTriangleChart from '../Charts/SkillTriangleChart.svelte';
 
 	export let playerId = null;
 	export let scoresStats = null;
 	export let ssBadges = null;
+	export let playerInfo = null;
 
 	const allSwitcherOptions = [
 		{id: 'rank', label: 'Rank & PP', iconFa: 'fas fa-chart-line'},
 		{id: 'accmaps', label: 'Maps Acc', iconFa: 'fas fa-music'},
 		{id: 'acchistory', label: 'Acc history', iconFa: 'fas fa-crosshairs'},
+		{id: 'triangle', label: 'Skill triangle', iconFa: 'skilltriangle-icon'},
 	];
 
 	let switcherOptions = allSwitcherOptions;
@@ -36,6 +39,10 @@
 			case 'acchistory':
 				chartComponent = AccHistoryChart;
 				chartComponentProps = {playerId};
+				break;
+			case 'triangle':
+				chartComponent = SkillTriangleChart;
+				chartComponentProps = {playerInfo};
 				break;
 
 			default:

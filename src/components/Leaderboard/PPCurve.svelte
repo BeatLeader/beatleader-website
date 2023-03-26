@@ -5,10 +5,13 @@
 	import regionsPlugin from './utils/regions-plugin';
 	import {formatNumber} from '../../utils/format';
 	import {userDescriptionForModifier} from '../../utils/beatleader/format';
-	import {getPPFromAcc, computeModifierStars} from '../../utils/beatleader/pp';
+	import {getPPFromAcc, computeModifiedRating} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
 
-	export let stars = 5;
+	export let passRating = 5;
+	export let accRating = 5;
+	export let techRating = 5;
+	export let modifiersRating = null;
 	export let height = '200px';
 	export let logarithmic = false;
 	export let modifiers = {};
@@ -35,7 +38,7 @@
 	};
 	let selectedModifiers = [];
 
-	async function setupChart(canvas, stars, logarithmic, startAcc, endAcc) {
+	async function setupChart(canvas, passRating, accRating, techRating, logarithmic, startAcc, endAcc) {
 		if (!canvas) return;
 
 		const gridColor = '#2a2a2a';
@@ -46,7 +49,7 @@
 		let annotations = [];
 		const data = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
-			const pp = getPPFromAcc(acc, stars, mode);
+			const pp = getPPFromAcc(acc, passRating, accRating, techRating, mode);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
 			if (!minPp) minPp = pp;
@@ -173,7 +176,7 @@
 	}
 
 	onMount(() => {
-		dispatch('modified-stars', stars);
+		dispatch('modified-stars', [passRating, accRating, techRating]);
 	});
 
 	$: modifiersArr = Object.entries(modifiers ?? {})
@@ -188,10 +191,13 @@
 		(all, mod) => (mutuallyExclusive[mod?.name] ? all.concat(mutuallyExclusive[mod.name]) : all),
 		[]
 	);
-	$: modifiedStars = computeModifierStars(stars, selectedModifiers);
-	$: setupChart(canvas, modifiedStars, logarithmic, startAcc, endAcc);
+	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, selectedModifiers);
+	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, selectedModifiers);
+	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, selectedModifiers);
+	// passRating, accRating, techRating
+	$: setupChart(canvas, modifiedPassRating, modifiedAccRating, modifiedTechRating, logarithmic, startAcc, endAcc);
 
-	$: dispatch('modified-stars', modifiedStars);
+	$: dispatch('modified-stars', [modifiedPassRating, modifiedAccRating, modifiedTechRating]);
 </script>
 
 <section class="chart" style="--height: {height}">

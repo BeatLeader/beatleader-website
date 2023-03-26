@@ -11735,6 +11735,14 @@ select {
 	background-image: url(./coolpepe.webp) !important;
 }
 
+.skilltriangle-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./skilltriangle.svg');
+}
+
 .dropdown-menu {
 	display: none;
 	left: 0;
@@ -11924,7 +11932,8 @@ input:focus {
 
 @media screen and (max-width: 767px) {
 	.mobile-only {
-		display: block;
+		display: flex;
+		justify-content: end;
 	}
 
 	.tablet-and-up {

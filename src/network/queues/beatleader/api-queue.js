@@ -31,7 +31,7 @@ export const BL_API_SCORES_HISTOGRAM_URL =
 export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'players?page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
+	'players?page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
 export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
@@ -140,6 +140,10 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'notes', value: currentDiff?.notes ?? null},
 		{id: 'bpm', value: led?.song?.bpm ?? null},
 		{id: 'stars', value: currentDiff?.stars ?? null},
+		{id: 'accRating', value: currentDiff?.accRating ?? null},
+		{id: 'passRating', value: currentDiff?.passRating ?? null},
+		{id: 'techRating', value: currentDiff?.techRating ?? null},
+		{id: 'predictedAcc', value: currentDiff?.predictedAcc ?? null},
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
 		{id: 'authorName', value: led?.song?.author},
@@ -150,12 +154,10 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		(cum, sid) => {
 			let value = sid.value;
 
-			if (value !== null && ['scores', 'totalScores', 'notes', 'stars', 'status', 'type'].includes(sid.id)) {
+			if (value !== null) {
 				if (value !== null) {
 					cum.stats[sid.id] = value;
 				}
-
-				return cum;
 			}
 			if (value !== null) cum[sid.id] = value;
 

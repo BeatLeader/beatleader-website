@@ -41,20 +41,6 @@
 <article transition:fade>
 	{#if diff}
 		<div class="stats">
-			{#if exmachinastats}
-				<div transition:fade>
-					<i class="fas fa-robot" /> EX MACHINA:
-					<strong>
-						<Value value={exmachinastats.balanced} digits={2} />
-					</strong>
-				</div>
-				<div transition:fade>
-					<i class="fas fa-face-dizzy" /> Techiness:
-					<strong>
-						<Value value={exmachinastats.tech} digits={2} />
-					</strong>
-				</div>
-			{/if}
 			{#if leaderboard?.song?.duration}
 				<div transition:fade>
 					<span class="time" transition:fade={{duration: 500}}>
