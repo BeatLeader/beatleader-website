@@ -26,7 +26,7 @@
 	let diff = leaderboard?.diffInfo?.diff;
 	let mode = leaderboard?.diffInfo?.type;
 	let currentTechRating = leaderboard?.stats?.techRating;
-	let currentAccRating = leaderboard?.stats?.predictedAcc;
+	let currentAccRating = leaderboard?.stats?.accRating;
 	let currentPassRating = leaderboard?.stats?.passRating;
 	let currentType = leaderboard?.stats?.type;
 	let isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
@@ -276,7 +276,40 @@
 			{/if}
 			{#if rtvoting && suitableForRank}
 				<div>
-					<label>{rtvoting ? 'Pass rating:' : 'Pass rating (optional):'}</label>
+					<label>Acc rating:</label>
+					<div class="buttons-and-slider">
+						<Button
+							title="Less"
+							iconFa="fas fa-caret-left"
+							type="text"
+							on:click={() => {
+								if (accRating > 0) accRating -= Ranked_Const.STAR_GRANULARITY;
+							}} />
+
+						<RangeSlider
+							min={Ranked_Const.MIN_STARS}
+							max={Ranked_Const.MAX_STARS}
+							step={Ranked_Const.STAR_GRANULARITY}
+							values={[accRating]}
+							float
+							hoverable
+							pips
+							pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+							all="label"
+							on:change={event => {
+								accRating = event.detail.values[0];
+							}} />
+						<Button
+							title="More"
+							iconFa="fas fa-caret-right"
+							type="text"
+							on:click={() => {
+								if (accRating > 0) accRating += Ranked_Const.STAR_GRANULARITY;
+							}} />
+					</div>
+				</div>
+				<div>
+					<label>Pass rating:</label>
 					<div class="buttons-and-slider">
 						<Button
 							title="Less"
@@ -308,42 +341,9 @@
 							}} />
 					</div>
 				</div>
-				<div>
-					<label>'Acc rating:'</label>
-					<div class="buttons-and-slider">
-						<Button
-							title="Less"
-							iconFa="fas fa-caret-left"
-							type="text"
-							on:click={() => {
-								if (accRating > 0) accRating -= Ranked_Const.STAR_GRANULARITY;
-							}} />
-
-						<RangeSlider
-							min={90}
-							max={100}
-							step={Ranked_Const.STAR_GRANULARITY}
-							values={[accRating * 100]}
-							float
-							hoverable
-							pips
-							pipstep={2 / Ranked_Const.STAR_GRANULARITY}
-							all="label"
-							on:change={event => {
-								accRating = event.detail.values[0] / 100;
-							}} />
-						<Button
-							title="More"
-							iconFa="fas fa-caret-right"
-							type="text"
-							on:click={() => {
-								if (accRating > 0) accRating += Ranked_Const.STAR_GRANULARITY;
-							}} />
-					</div>
-				</div>
 
 				<div>
-					<label>'Tech rating:'</label>
+					<label>Tech rating:</label>
 					<div class="buttons-and-slider">
 						<Button
 							title="Less"
