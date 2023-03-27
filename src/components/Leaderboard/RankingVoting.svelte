@@ -54,14 +54,14 @@
 	function vote() {
 		if (rtvoting) {
 			if (isRanked) {
-				votingStore.updateMap(hash, diff, mode, suitableForRank, accRating, passRating, techRating, selectedTypes);
+				votingStore.updateMap(hash, diff, mode, status, accRating, passRating, techRating, selectedTypes);
 			} else {
 				if (qualificationUpdate) {
 					votingStore.updateQualification(
 						hash,
 						diff,
 						mode,
-						suitableForRank,
+						status,
 						accRating,
 						passRating,
 						techRating,
@@ -146,8 +146,9 @@
 			if (isRanked) {
 				actionButtonTitle = 'Update';
 			} else if (qualificationUpdate) {
-				if (suitableForRank) {
+				if (status == DifficultyStatus.qualified || status == DifficultyStatus.nominated) {
 					if (
+						status == DifficultyStatus.qualified &&
 						!isjuniorRT &&
 						qualification.rtMember != playerId &&
 						qualification.criteriaChecker != playerId &&
