@@ -23,9 +23,9 @@
 {#if mapRating}
 	<div class="triangle-container">
 		{#if showRatings}
-			<div class="pass-and-acc">
-				{#if mapRating.passRating}
-					<Value value={mapRating.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
+			<div class="tech-and-acc">
+				{#if mapRating.techRating}
+					<Value value={mapRating.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
 				{/if}
 				{#if mapRating.accRating}
 					<Value value={mapRating.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
@@ -102,9 +102,9 @@
 			</g>
 		</svg>
 		{#if showRatings}
-			{#if mapRating.techRating}
-				<div class="tech">
-					<Value value={mapRating.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
+			{#if mapRating.passRating}
+				<div class="pass">
+					<Value value={mapRating.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
 				</div>
 			{/if}
 		{/if}
@@ -123,12 +123,12 @@
 		width: var(--width);
 		height: var(--height);
 	}
-	.pass-and-acc {
+	.tech-and-acc {
 		color: white;
 		display: flex;
 		grid-gap: 0.4em;
 	}
-	.tech {
+	.pass {
 		color: white;
 	}
 </style>
