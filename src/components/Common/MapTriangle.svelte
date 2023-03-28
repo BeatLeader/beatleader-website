@@ -21,23 +21,16 @@
 </script>
 
 {#if mapRating}
-	<div style="position: relative; margin-bottom: 1em;">
+	<div class="triangle-container">
 		{#if showRatings}
-			{#if mapRating.passRating}
-				<div class="pass">
+			<div class="pass-and-acc">
+				{#if mapRating.passRating}
 					<Value value={mapRating.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
-				</div>
-			{/if}
-			{#if mapRating.accRating}
-				<div class="acc">
+				{/if}
+				{#if mapRating.accRating}
 					<Value value={mapRating.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
-				</div>
-			{/if}
-			{#if mapRating.techRating}
-				<div class="tech">
-					<Value value={mapRating.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
-				</div>
-			{/if}
+				{/if}
+			</div>
 		{/if}
 
 		<svg
@@ -108,30 +101,34 @@
 				</g>
 			</g>
 		</svg>
+		{#if showRatings}
+			{#if mapRating.techRating}
+				<div class="tech">
+					<Value value={mapRating.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
+				</div>
+			{/if}
+		{/if}
 	</div>
 {/if}
 
 <style>
+	.triangle-container {
+		position: relative;
+		margin-bottom: 1em;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
 	svg {
 		width: var(--width);
 		height: var(--height);
 	}
-	.pass {
-		position: absolute;
+	.pass-and-acc {
 		color: white;
-		bottom: -1em;
-	}
-	.acc {
-		position: absolute;
-		color: white;
-
-		top: -1em;
-		right: -3em;
+		display: flex;
+		grid-gap: 0.4em;
 	}
 	.tech {
-		position: absolute;
 		color: white;
-		top: -1em;
-		left: -4em;
 	}
 </style>

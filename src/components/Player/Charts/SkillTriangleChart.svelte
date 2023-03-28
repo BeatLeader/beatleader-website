@@ -114,7 +114,7 @@
 						<feComposite in="temp" in2="SourceGraphic" operator="arithmetic" k1="0" k2="1.0" k3="1.0" k4="0" />
 					</filter> -->
 				</defs>
-				<g stroke="#FFF" stroke-width="1" shape-rendering="crispEdges">
+				<g stroke="#FFF" stroke-width="0.5">
 					{#if showRatings}
 						<path d="M {corner3.x},{corner3.y} L {corner1.x},{corner1.y} {corner2.x},{corner2.y} Z" fill="url(#fadeA-1)" />
 						<path d="M {corner3.x},{corner3.y} L {corner1.x},{corner1.y} {corner2.x},{corner2.y} Z" fill="url(#fadeB-1)" />

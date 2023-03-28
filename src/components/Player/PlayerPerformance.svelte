@@ -121,6 +121,11 @@
 			// if the score is ranked, we should show how much pp this score would
 			// have been worth if the player had not made any mistakes
 
+			if (!fcAccuracy || !fcAccuracy <= 0) {
+				// Not enough data to compute
+				return title;
+			}
+
 			let modArr = [];
 			if (score.mods) {
 				for (const mod of score.mods) {
@@ -142,11 +147,6 @@
 			const roundedPP = Math.round(pp * 100) / 100;
 			const fcPpTitle = getFCPPTitle(roundedPP, 'pp');
 			title += `\n${fcPpTitle}`;
-
-			if (!fcAccuracy || !fcAccuracy <= 0) {
-				// Not enough data to compute
-				return title;
-			}
 		}
 
 		return title;

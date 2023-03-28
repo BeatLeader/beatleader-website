@@ -32,7 +32,7 @@
 
 {#if leaderboard}
 	<header
-		class="header leaderboard"
+		class="header"
 		style={coverUrl
 			? `background: linear-gradient(#303030a2, #303030a2), url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
 			: ''}
@@ -94,7 +94,7 @@
 		color: var(--alternate);
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
+		justify-content: space-between !important;
 		margin-bottom: 1.2em;
 	}
 
@@ -198,10 +198,9 @@
 		display: flex;
 		align-items: center;
 		margin: 0.4em;
-		margin-right: 1em;
 		justify-content: center;
 		flex-wrap: wrap;
-		gap: 2em;
+		gap: 1em;
 		flex-direction: column;
 	}
 
@@ -211,13 +210,13 @@
 	}
 
 	@media screen and (max-width: 1024px) {
-		.leaderboard {
+		header {
 			margin-inline: 0;
 		}
 	}
 
 	@media screen and (max-width: 767px) {
-		.leaderboard {
+		header {
 			margin-inline: 0;
 			max-width: 100vw;
 		}

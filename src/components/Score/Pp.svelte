@@ -101,7 +101,7 @@
 		if (techPp) {
 			prevTitle += `Tech PP part: ${formatNumber(techPp)}${suffix}\n`;
 		}
-		if (fcPp) {
+		if (fcPp && fcPp > pp) {
 			prevTitle += `Full combo PP: ${formatNumber(fcPp)}${suffix}\n`;
 		}
 	}
