@@ -89,9 +89,11 @@
 			{#if voters?.length}
 				<div class="dots">
 					{#each voters as vote}
-						<img
-							class="voter {vote.value == 1 ? 'positive-vote' : vote.value == 3 ? 'negative-vote' : 'neutral-vote'}"
-							src={$playersCache[vote.playerId].avatar} />
+						{#if $playersCache[vote.playerId]}
+							<img
+								class="voter {vote.value == 1 ? 'positive-vote' : vote.value == 3 ? 'negative-vote' : 'neutral-vote'}"
+								src={$playersCache[vote.playerId].avatar} />
+						{/if}
 					{/each}
 				</div>
 			{/if}
