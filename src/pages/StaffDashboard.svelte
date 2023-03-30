@@ -250,8 +250,8 @@
 		},
 		{
 			key: 'status',
-			label: 'It has a status of',
-			default: '',
+			label: 'Has the following status',
+			default: [],
 			defaultCondition: 'and',
 			process: processStringArrayFilter,
 			deserialize: deserializeStatus,
@@ -286,14 +286,14 @@
 		},
 		{
 			key: 'status_not',
-			label: 'It has NOT a status of',
+			label: "Doesn't have these status",
 			default: [],
-			defaultCondition: 'or',
+			defaultCondition: 'and',
 			process: processStringArrayFilter,
 			deserialize: deserializeStatus,
 			type: 'switch',
 			value: [],
-			valueCondition: 'or',
+			valueCondition: 'and',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
 				{
