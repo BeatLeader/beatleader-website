@@ -251,13 +251,13 @@
 		{
 			key: 'status',
 			label: 'It has a status of',
-			default: [],
-			defaultCondition: 'or',
+			default: '',
+			defaultCondition: 'and',
 			process: processStringArrayFilter,
 			deserialize: deserializeStatus,
 			type: 'switch',
 			value: [],
-			valueCondition: 'or',
+			valueCondition: 'and',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
 				{
@@ -1409,7 +1409,7 @@
 
 								{#if param?.multi && param?.withCondition}
 									<select value={param.valueCondition} on:change={param.onConditionChange}>
-										<option value="or">ANY </option><option value="and">ALL </option>
+										<option value="and">ALL </option><option value="or">ANY </option>
 									</select>
 								{/if}
 							</label>
