@@ -179,10 +179,8 @@
 			// makes sense. If you click it while it's opening, it won't close it immediately.
 			if (isPopoverVisible) {
 				visibleTimer = setTimeout(() => (visibleTimerCompleted = true), ignoreClickWhileOpeningBuffer);
-				setGlobalCSSValue('z-index', 51);
 			} else {
 				clearTimeout(visibleTimer);
-				setGlobalCSSValue('z-index', 1);
 				visibleTimerCompleted = false;
 			}
 

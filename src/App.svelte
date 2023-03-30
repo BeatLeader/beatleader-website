@@ -193,6 +193,8 @@
 		<p>
 			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
 			|
+			<a href="http://api.beatleader.xyz/swagger/index.html">API</a>
+			|
 			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
 			|
 			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>

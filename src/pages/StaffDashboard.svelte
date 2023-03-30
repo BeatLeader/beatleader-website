@@ -3,7 +3,7 @@
 	import {navigate} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLocalStorageStore from '../stores/localstorage';
-	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
+	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards-groupped';
 	import leaderboardByHashApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards-hash';
 	import playersApiClient from '../network/clients/beatleader/player/api';
 	import {copyToClipboard} from '../utils/clipboard';
@@ -33,6 +33,7 @@
 	import {Ranked_Const} from './../utils/beatleader/consts';
 	import Reveal from '../components/Common/Reveal.svelte';
 	import QualityInfo from '../components/Leaderboard/QualityVotes/QualityInfo.svelte';
+	import Pager from '../components/Common/Pager.svelte';
 
 	export let location;
 
@@ -259,8 +260,6 @@
 			valueCondition: 'or',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
-				{id: 'nominated', label: 'Nominated'},
-				{id: 'allowed', label: 'Mapper allowed'},
 				{
 					id: 'criteria',
 					label: 'Any Criteria',
@@ -297,8 +296,6 @@
 			valueCondition: 'or',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
-				{id: 'nominated', label: 'Nominated'},
-				{id: 'allowed', label: 'Mapper allowed'},
 				{
 					id: 'criteria',
 					label: 'Any Criteria',
@@ -517,45 +514,26 @@
 	let songs = [];
 	let detailsOpened = [];
 
-	async function fetchMapsWithType(type, sortBy = 'stars', maxNum = null) {
-		let data = [];
-		let page = 1;
-		let count = ITEMS_PER_PAGE;
-		let pageCount = null;
+	let page = 0;
+	let itemsPerPage = 10;
+	let itemsPerPageValues = [5, 10, 20];
 
-		while (!pageCount || page <= pageCount) {
-			const pageData = await leaderboardsApiClient.getProcessed({page, filters: {type, sortBy, order: 'desc', count}});
+	let totalItems = 10;
 
-			if (!pageData?.data?.length) return data;
-
-			data = [...data, ...pageData.data.map(map => ({...map, type}))];
-
-			if (maxNum && data.length >= maxNum) return data;
-
-			if (!pageCount) {
-				count = pageData?.metadata?.itemsPerPage ?? ITEMS_PER_PAGE;
-				pageCount = pageData?.metadata?.total ? Math.ceil(pageData.metadata.total / count) : null;
-			}
-
-			page++;
-		}
-
-		return data;
-	}
-
-	async function fetchMaps() {
+	async function fetchMaps(page, itemsPerPage) {
 		try {
 			isLoading = true;
 			error = null;
 
+			const leaderboards = await leaderboardsApiClient.getProcessed({
+				page: page + 1,
+				filters: {type: 'staff', sortBy: 'voting', order: 'desc', count: itemsPerPage},
+			});
+			totalItems = leaderboards.metadata.total;
+
 			songs = Object.values(
-				(
-					await Promise.all([fetchMapsWithType('nominated', 'votecount'), fetchMapsWithType('qualified', 'votecount')]).then(async data => [
-						...data,
-						await fetchMapsWithType('unranked', 'votecount', VOTED),
-					])
-				)
-					.reduce((carry, maps) => [...carry, ...maps], [])
+				leaderboards.data
+					.map(map => ({...map, type: 'nominated'}))
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, positiveVotes, negativeVotes, ...rest} = map;
 
@@ -678,6 +656,7 @@
 											? 'On hold'
 											: 'No',
 									approved: diff?.qualification?.approved ? 'Yes' : 'No',
+									votes: diff?.qualification?.votes,
 								};
 							}),
 						}
@@ -703,8 +682,8 @@
 		if (playersToFetch.length) {
 			playersToFetch.map(async playerId =>
 				playersApiClient.getProcessed({playerId}).then(player => {
-					const {playerId, name} = player ?? {};
-					$playersCache[playerId] = {playerId, name, updated: Date.now()};
+					const {playerId, name, playerInfo} = player ?? {};
+					$playersCache[playerId] = {playerId, name, avatar: playerInfo.avatar, updated: Date.now()};
 				})
 			);
 		}
@@ -766,6 +745,26 @@
 			: [...logTypeFilter, event?.detail];
 	}
 
+	function greeting() {
+		switch (Math.round(Math.random() * 5)) {
+			case 1:
+				return 'Good morning!';
+			case 2:
+				return 'Good morning!';
+			case 3:
+				return 'Good morning!';
+			case 4:
+				return 'Good morning!';
+			case 5:
+				return 'Good morning!';
+
+			default:
+				break;
+		}
+
+		return 'Staff dashboard';
+	}
+
 	const getMinQualificationTime = (song, key) =>
 		song?.difficulties?.reduce((min, d) => (min < d?.qualification?.[key] ? d.qualification[key] : min), 0) ?? 0;
 
@@ -802,7 +801,8 @@
 		?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
 	$: isNQT = isAdmin || $account?.player?.playerInfo?.role?.includes('qualityteam');
 	$: isStaff = isRT || isNQT;
-	$: if (!$account?.loading && isStaff) fetchMaps();
+
+	$: if (!$account?.loading && isStaff) fetchMaps(page, itemsPerPage);
 	$: if (!$account?.loading && !isStaff) navigate('/');
 
 	$: currentSortValues = sortValues.map(v => {
@@ -817,6 +817,10 @@
 		};
 	});
 	$: sortValue = currentSortValues.find(v => v.id === currentFilters.sortBy);
+
+	function onPageChanged(event) {
+		page = event.detail.page;
+	}
 
 	$: filteredSongs =
 		songs
@@ -846,16 +850,6 @@
 							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
 
 							switch (key) {
-								case 'nominated':
-									if (statusCond === 'or') result ||= s?.totals?.nominated > 0;
-									else result &&= s?.totals?.nominated > 0;
-									break;
-
-								case 'allowed':
-									if (statusCond === 'or') result ||= s?.totals?.mapperAllowed > 0;
-									else result &&= s?.totals?.mapperAllowed > 0;
-									break;
-
 								case 'criteria':
 									switch (statusCond) {
 										case 'or':
@@ -907,16 +901,6 @@
 							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
 
 							switch (key) {
-								case 'nominated':
-									if (statusNotCond === 'or') result ||= s?.totals?.nominated < s?.difficulties?.length;
-									else result &&= s?.totals?.nominated < s?.difficulties?.length;
-									break;
-
-								case 'allowed':
-									if (statusNotCond === 'or') result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
-									else result &&= s?.totals?.mapperAllowed < s?.difficulties?.length;
-									break;
-
 								case 'criteria':
 									switch (statusNotCond) {
 										case 'or':
@@ -1063,8 +1047,6 @@
 						return 0;
 				}
 			}) ?? [];
-
-	$: diffsCount = filteredSongs?.reduce((cnt, s) => cnt + (s?.difficulties?.length ?? 0), 0) ?? 0;
 
 	$: events = filteredSongs
 		.reduce((carry, song) => {
@@ -1215,10 +1197,7 @@
 					title="Click to show/hide map search tool"
 					on:click={() => (showMapSearch = !showMapSearch)} />
 
-				Staff Dashboard
-				{#if !error && !isLoading}
-					/ {formatNumber(filteredSongs?.length, 0)} song(s) / {formatNumber(diffsCount, 0)} diff(s)
-				{/if}
+				{greeting()}
 			</h1>
 
 			{#if showMapSearch}
@@ -1336,7 +1315,7 @@
 									</a>
 								</div>
 
-								<div>
+								<div class="totals-and-reveal">
 									<Totals totals={song.totals} count={song?.difficulties?.length} />
 
 									<span
@@ -1405,6 +1384,10 @@
 					{/each}
 				{:else}
 					No songs found.
+				{/if}
+
+				{#if filteredSongs && totalItems > itemsPerPage}
+					<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} />
 				{/if}
 			</section>
 		</ContentBox>
@@ -1656,8 +1639,10 @@
 	}
 
 	.row {
-		border-bottom: 1px solid gray;
-		padding: 0.5rem 0;
+		background-color: #0000009c;
+		border-radius: 0.6em;
+		padding: 0.6em;
+		margin-bottom: 0.6em;
 	}
 
 	.map-search .row {
@@ -1692,6 +1677,8 @@
 	.song img {
 		width: 3rem;
 		height: 3rem;
+		border-radius: 0.4em;
+		margin-left: 0.4em;
 	}
 
 	.reveal {
@@ -1751,6 +1738,13 @@
 
 	.tags :global(.listContainer) {
 		background-color: var(--background) !important;
+	}
+
+	.totals-and-reveal {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		flex-grow: 1;
 	}
 
 	@media screen and (max-width: 1275px) {
