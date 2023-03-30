@@ -98,13 +98,13 @@
 		out:maybe={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
 		{#if showReplayCounter}
-			<h3 class="pin-description descktop" title="Replay watch count">
+			<h3 class="pin-description desktop-and-up" title="Replay watch count">
 				<i class="fas fa-eye" />
 				{score.replaysWatched}
 			</h3>
 		{/if}
 		{#if !noIcons}
-			<div class="up-to-tablet">
+			<div class="up-to-tablet icons">
 				{#if showReplayCounter}
 					<h3 class="pin-description" title="Replay watch count">
 						<i class="fas fa-eye" />
@@ -316,7 +316,6 @@
 		border-bottom-right-radius: 0.5em;
 		background: var(--row-separator);
 		padding: 0 1em 0;
-		margin-top: -0.5em;
 		margin-right: 0.5em;
 	}
 
@@ -335,12 +334,18 @@
 		cursor: pointer !important;
 	}
 
+	.icons h3 {
+		border-radius: 5px;
+	}
+
 	@media screen and (max-width: 1023px) {
+		.icons {
+			display: flex;
+			align-items: center;
+			margin-bottom: 0.5em;
+		}
 		.up-to-tablet {
 			display: flex;
-		}
-		.descktop {
-			display: none;
 		}
 	}
 
