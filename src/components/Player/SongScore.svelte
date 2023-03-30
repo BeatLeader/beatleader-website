@@ -263,6 +263,12 @@
 		text-align: center;
 	}
 
+	.timeset.mobile-only {
+		align-items: baseline;
+		gap: 0.5em;
+		min-width: fit-content;
+	}
+
 	.player {
 		text-align: left;
 		padding-bottom: 0.5rem;
@@ -360,7 +366,7 @@
 
 		.rank,
 		.timeset {
-			padding-bottom: 0.5em !important;
+			padding-bottom: 0 !important;
 		}
 
 		.song {
@@ -369,6 +375,7 @@
 			align-items: center;
 			width: 100%;
 			margin-right: 0;
+			padding-top: 1em;
 			padding-bottom: 0.75em;
 		}
 
