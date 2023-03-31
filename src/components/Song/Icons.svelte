@@ -99,8 +99,8 @@
 		: scoreId
 		? `https://replay.beatleader.xyz/?scoreId=${scoreId}`
 		: null;
-	$: previewUrl = `https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${
-		charName ? `&charName=${charName}` : ''
+	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
+		charName ? `&mode=${charName}` : ''
 	}`;
 </script>
 
