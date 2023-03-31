@@ -47,7 +47,7 @@ const pointList = [
 	[0.0, 0.0],
 ];
 
-const Curve2 = acc => {
+const Curve = acc => {
 	var i = 0;
 	for (; i < pointList.length; i++) {
 		if (pointList[i][0] <= acc) {
@@ -72,13 +72,27 @@ export const buildCurve = (accuracy, passRating, accRating, techRating) => {
 	if (!isFinite(passPP) || isNaN(passPP)) {
 		passPP = 0;
 	}
-	var accPP = Curve2(accuracy) * accRating * 34;
+	var accPP = Curve(accuracy) * accRating * 34;
 	var techPP = Math.exp(1.9 * accuracy) * techRating;
 	return Inflate(passPP + accPP + techPP);
 };
 
 export const getPPFromAcc = (acc, passRating, accRating, techRating, mode) => {
 	return mode == 'rhythmgamestandard' ? acc * passRating * 55 : buildCurve(acc, passRating, accRating, techRating);
+};
+
+export const AccRatingFromAIAcc = (predictedAcc, passRating, techRating) => {
+	var difficulty_to_acc;
+	if (predictedAcc > 0) {
+		difficulty_to_acc = 15 / Curve((predictedAcc ?? 0) + 0.0022);
+	} else {
+		var tiny_tech = 0.0208 * (techRating ?? 0) + 1.1284;
+		difficulty_to_acc = (-MathF.Pow(tiny_tech, -(passRating ?? 0)) + 1) * 8 + 2 + 0.01 * (techRating ?? 0) * (passRating ?? 0);
+	}
+	if (!isFinite(difficulty_to_acc) || isNaN(difficulty_to_acc)) {
+		difficulty_to_acc = 0;
+	}
+	return difficulty_to_acc;
 };
 
 export const computeModifiedRating = (rating, ratingName, modifiersRating, mods) => {

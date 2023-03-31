@@ -10,6 +10,7 @@
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {Ranked_Const} from '../../utils/beatleader/consts';
 	import CriteriaCheck from './CriteriaCheck.svelte';
+	import {AccRatingFromAIAcc} from '../../utils/beatleader/pp';
 
 	const dispatch = createEventDispatcher();
 
@@ -191,7 +192,11 @@
 			.then(d => d.json())
 			.then(d => {
 				techRating = d.none.lack_map_calculation.balanced_tech * 10;
-				accRating = d.none.AIacc;
+				accRating = AccRatingFromAIAcc(
+					d.none.AIacc,
+					d.none.lack_map_calculation.balanced_pass_diff,
+					d.none.lack_map_calculation.balanced_tech * 10
+				);
 				passRating = d.none.lack_map_calculation.balanced_pass_diff;
 			});
 	}
@@ -216,7 +221,7 @@
 		isQualified
 	);
 
-	$: if (!accRating && leaderboard) fetchAI(leaderboard);
+	$: if (leaderboard) fetchAI(leaderboard);
 </script>
 
 <div class="ranking-voting {insideLeaderboard || showModifiers ? 'inside-leaderboard' : ''}">
