@@ -23,14 +23,14 @@
 
 				if (this.minValue < this.clampMin) this.minValue = this.clampMin;
 				if (this.maxValue > this.clampMax) this.maxValue = this.clampMax;
-			}
-		}
+			},
+		};
 	}
 
 	function timeToLabel(time) {
 		const minutes = Math.floor(time / 60);
 		const seconds = Math.floor(time % 60);
-		return minutes + ':' + seconds.toString().padStart(2, '0')
+		return minutes + ':' + seconds.toString().padStart(2, '0');
 	}
 
 	async function setupChart(canvas, chartData) {
@@ -41,8 +41,10 @@
 		const minMaxCounter = createMinMaxCounter(0, 115, 1.0);
 
 		for (let i = 0; i < chartData.times.length; i++) {
-			minMaxCounter.update(chartData.realScore[i]);
-			minMaxCounter.update(chartData.fullSwing[i]);
+			['red', 'blue', 'total'].forEach(saberType => {
+				minMaxCounter.update(chartData.realScoreBySaber[saberType][i]);
+				minMaxCounter.update(chartData.fullSwingBySaber[saberType][i]);
+			});
 		}
 
 		const xAxis = {
@@ -68,33 +70,76 @@
 				ticks: {
 					autoSkipPadding: 12,
 				},
-			}
+			},
 		};
 
 		const datasets = [
 			{
 				yAxisID: 'score',
-				label: 'Accuracy',
-				data: chartData.fullSwing,
+				label: 'Accuracy (left)',
+				data: chartData.fullSwingBySaber.red,
 				type: 'line',
-				borderColor: '#72a8ff',
-				backgroundColor: '#72a8ff',
+				borderColor: '#ee5555',
+				backgroundColor: '#ee5555',
 				borderWidth: 2,
 				pointRadius: 0,
 				cubicInterpolationMode: 'monotone',
 				tension: 0.4,
 				spanGaps: true,
-				order: 0,
+				order: 3,
 			},
 			{
 				yAxisID: 'score',
-				label: 'Underswing',
-				data: chartData.realScore,
+				label: 'Underswing (left)',
+				data: chartData.realScoreBySaber.red,
 				type: 'line',
 				fill: '-1',
-				borderColor: '#ff000055',
-				backgroundColor: '#ff000055',
+				borderColor: '#ee555555',
+				backgroundColor: '#ee555555',
 				borderWidth: 0,
+				pointRadius: 0,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4,
+				spanGaps: true,
+				order: 4,
+			},
+			{
+				yAxisID: 'score',
+				label: 'Accuracy (right)',
+				data: chartData.fullSwingBySaber.blue,
+				type: 'line',
+				borderColor: '#5555ee',
+				backgroundColor: '#5555ee',
+				borderWidth: 2,
+				pointRadius: 0,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4,
+				spanGaps: true,
+				order: 5,
+			},
+			{
+				yAxisID: 'score',
+				label: 'Underswing (right)',
+				data: chartData.realScoreBySaber.blue,
+				type: 'line',
+				fill: '-1',
+				borderColor: '#5555ee55',
+				backgroundColor: '#5555ee55',
+				borderWidth: 0,
+				pointRadius: 0,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4,
+				spanGaps: true,
+				order: 6,
+			},
+			{
+				yAxisID: 'score',
+				label: 'Accuracy',
+				data: chartData.fullSwingBySaber.total,
+				type: 'line',
+				borderColor: 'white',
+				backgroundColor: 'white',
+				borderWidth: 2,
 				pointRadius: 0,
 				cubicInterpolationMode: 'monotone',
 				tension: 0.4,
@@ -103,19 +148,33 @@
 			},
 			{
 				yAxisID: 'score',
-				label: 'Total',
-				data: chartData.realScore,
+				label: 'Underswing',
+				data: chartData.realScoreBySaber.total,
 				type: 'line',
-				fill: 'origin',
-				borderColor: '#00000000',
-				backgroundColor: '#00000000',
+				fill: '-1',
+				borderColor: '#aaaaaa55',
+				backgroundColor: '#aaaaaa55',
 				borderWidth: 0,
 				pointRadius: 0,
 				cubicInterpolationMode: 'monotone',
 				tension: 0.4,
 				spanGaps: true,
 				order: 2,
-			}
+			},
+			{
+				yAxisID: 'score',
+				label: 'Score',
+				data: chartData.realScoreBySaber.total,
+				type: 'line',
+				borderColor: '#aaaaaa',
+				backgroundColor: '#aaaaaa',
+				borderWidth: 1,
+				pointRadius: 0,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4,
+				spanGaps: true,
+				order: 0,
+			},
 		];
 
 		if (!chart) {
@@ -137,7 +196,7 @@
 								title(tooltipItems) {
 									const item = tooltipItems[0];
 									const labels = item.chart.data.labels;
-									return labels[item.dataIndex] + " (10 seconds average)";
+									return labels[item.dataIndex] + ' (10 seconds average)';
 								},
 								label(ctx) {
 									const datasetLabel = ctx.dataset.label;
@@ -146,19 +205,26 @@
 									let value;
 
 									switch (datasetLabel) {
-										case 'Accuracy':
-											value = ctx.raw;
+										case 'Underswing (left)':
+											value = ctx.raw - chartData.fullSwingBySaber.red[ctx.dataIndex];
 											percentage = value / 115.0;
-											return `${datasetLabel}: ${formatNumber(value - 100.0, 1)} (${formatNumber(percentage * 100, 2)}%)`;
+											return `${datasetLabel}: ${formatNumber(value, 1)} (${formatNumber(percentage * 100, 2)}%)`;
+										case 'Underswing (right)':
+											value = ctx.raw - chartData.fullSwingBySaber.blue[ctx.dataIndex];
+											percentage = value / 115.0;
+											return `${datasetLabel}: ${formatNumber(value, 1)} (${formatNumber(percentage * 100, 2)}%)`;
 										case 'Underswing':
-											value = chartData.fullSwing[ctx.dataIndex] - ctx.raw;
+											value = ctx.raw - chartData.fullSwingBySaber.total[ctx.dataIndex];
 											percentage = value / 115.0;
-											return `${datasetLabel}: ${formatNumber(value, 1)} (-${formatNumber(percentage * 100, 2)}%)`;
-										case 'Total':
+											return `${datasetLabel}: ${formatNumber(value, 1)} (${formatNumber(percentage * 100, 2)}%)`;
+										case 'Score':
 											value = ctx.raw;
 											percentage = value / 115.0;
 											return `${datasetLabel}: ${formatNumber(value, 1)} (${formatNumber(percentage * 100, 2)}%)`;
-										default: return '-';
+										default:
+											value = ctx.raw;
+											percentage = value / 115.0;
+											return `${datasetLabel}: ${formatNumber(value - 100.0, 1)} (${formatNumber(percentage * 100, 2)}%)`;
 									}
 								},
 							},

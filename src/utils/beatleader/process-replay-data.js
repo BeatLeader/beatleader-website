@@ -12,8 +12,8 @@ export function processAccGraphs(replay) {
 
 	let result = {
 		times: [],
-		fullSwing: [],
-		realScore: []
+		fullSwingBySaber: {red: [], blue: [], total: []},
+		realScoreBySaber: {red: [], blue: [], total: []},
 	};
 
 	if (replay.notes.length === 0) return result;
@@ -24,8 +24,8 @@ export function processAccGraphs(replay) {
 	for (let i = 0.0; i < accGraphResolution; i += 1.0) {
 		const time = lastNoteTime * (i / (accGraphResolution - 1));
 
-		let sums = [0.0, 0.0, 0.0];
-		let divider = 0.0;
+		let sumsBySaber = {red: [0.0, 0.0], blue: [0.0, 0.0], total: [0.0, 0.0]};
+		let dividerBySaber = {red: 0.0, blue: 0.0, total: 0.0};
 
 		for (let j = 0; j < replay.notes.length; j++) {
 			const note = replay.notes[j];
@@ -42,17 +42,26 @@ export function processAccGraphs(replay) {
 			const fullSwing = acc + 100;
 			const realScore = acc + pre + post;
 
-			sums[0] += fullSwing * weight;
-			sums[1] += realScore * weight;
-			divider += weight;
+			sumsBySaber.total[0] += fullSwing * weight;
+			sumsBySaber.total[1] += realScore * weight;
+			dividerBySaber.total += weight;
+
+			const saberType = note.noteCutInfo.saberType === 0 ? 'red' : 'blue';
+			sumsBySaber[saberType][0] += fullSwing * weight;
+			sumsBySaber[saberType][1] += realScore * weight;
+			dividerBySaber[saberType] += weight;
 		}
 
-		const fullSwing = divider === 0 ? 0.0 : sums[0] / divider;
-		const realScore = divider === 0 ? 0.0 : sums[1] / divider;
-
 		result.times.push(time);
-		result.fullSwing.push(fullSwing);
-		result.realScore.push(realScore);
+
+		['red', 'blue', 'total'].forEach(saberType => {
+			result.fullSwingBySaber[saberType].push(
+				dividerBySaber[saberType] === 0 ? 0.0 : sumsBySaber[saberType][0] / dividerBySaber[saberType]
+			);
+			result.realScoreBySaber[saberType].push(
+				dividerBySaber[saberType] === 0 ? 0.0 : sumsBySaber[saberType][1] / dividerBySaber[saberType]
+			);
+		});
 	}
 
 	return result;
