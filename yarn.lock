@@ -196,6 +196,11 @@ anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
+atropos@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/atropos/-/atropos-1.0.2.tgz#161093152a56787ea8431487196838a854000167"
+  integrity sha512-0RqyHfMyIhRXgnHuSQz2LVOE81jtAQ7EZTrF75ngiipklIsxajZ2vD042EXdiIEDs6eEAzfE10k+YhIbNl4/eg==
+
 available-typed-arrays@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz#92f95616501069d07d10edb2fc37d3e1c65123b7"

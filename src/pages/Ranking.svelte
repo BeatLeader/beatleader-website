@@ -337,15 +337,15 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<!-- <ContentBox cls="event-banner festive" on:click={() => navigate('/event/23')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/playlist/ranked')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://api.beatleader.xyz/playlist/image/1248.png" />
+				<img alt="Event banner" class="event-image" src="/assets/favicon-128.png" />
 				<div class="event-text-container">
-					<span class="event-title">Happy holidays, gamers!</span>
-					<span class="event-text">Check out special event with custom scoring rules.<br />Only timing matters!</span>
+					<span class="event-title">Ranked pool and rools were changed!</span>
+					<span class="event-text">Check out the new ranked maps.<br />Poodles!</span>
 				</div>
 			</div>
-		</ContentBox> -->
+		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -476,7 +476,7 @@
 		border-radius: 0.5em;
 		height: 8em;
 		cursor: pointer;
-		background-image: url(/assets/lights2.gif) !important;
+		background-color: black;
 	}
 
 	.event-container {

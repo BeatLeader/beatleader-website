@@ -10,6 +10,7 @@ import createPlayerService from './services/beatleader/player';
 import createBeatSaviorService from './services/beatsavior';
 import {enablePatches, setAutoFreeze} from 'immer';
 import ErrorComponent from './components/Common/Error.svelte';
+import 'atropos/css';
 import './themes/mirror.less';
 import './themes/mirror-low.less';
 import './themes/ree-dark.less';
