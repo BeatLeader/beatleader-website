@@ -4,16 +4,14 @@
 	import SongScore from '../Player/SongScore.svelte';
 
 	export let playerId = null;
-	export let initialState = null;
-	export let initialStateType = null;
 	export let initialService = 'beatleader';
-	export let initialServiceParams = {sort: 'pp', page: 1};
+	export let initialServiceParams = {sort: 'pp', page: 1, count: 1};
 	export let numOfScores = 1;
 	export let fixedBrowserTitle = null;
 	export let withPlayers = false;
 	export let noIcons = false;
 
-	let scoresStore = createScoresStore(playerId, initialService, initialServiceParams, initialState, initialStateType);
+	let scoresStore = createScoresStore(playerId, initialService, initialServiceParams);
 
 	function changeParams(newPlayerId, newService, newServiceParams) {
 		if (!newPlayerId) return null;
@@ -44,7 +42,7 @@
 
 		lastServiceParams = newServiceParams;
 	}
-	$: changeParams(playerId, initialService, initialServiceParams, initialState, initialStateType);
+	$: changeParams(playerId, initialService, initialServiceParams);
 	$: $scoresStore, updateService(scoresStore);
 	$: $scoresStore, updateServiceParams(scoresStore);
 
@@ -56,18 +54,16 @@
 	{#if $scoresStore && $scoresStore.length}
 		<div class="song-scores">
 			{#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
-				{#if idx < numOfScores}
-					<SongScore
-						{playerId}
-						{songScore}
-						{fixedBrowserTitle}
-						{idx}
-						service={currentService}
-						{withPlayers}
-						{noIcons}
-						additionalStat={currentServiceParams?.sort}
-						animationSign={0} />
-				{/if}
+				<SongScore
+					{playerId}
+					{songScore}
+					{fixedBrowserTitle}
+					{idx}
+					service={currentService}
+					{withPlayers}
+					{noIcons}
+					additionalStat={currentServiceParams?.sort}
+					animationSign={0} />
 			{/each}
 		</div>
 	{/if}
