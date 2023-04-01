@@ -82,35 +82,35 @@
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<DemoScores playerId={$account?.player?.playerId ?? '76561199104169308'} />
 
-	<div class="switches-container">
-		<span>Score settings:</span>
-		<div class="switches">
-			{#each preferencesList as key}
-				<Switch
-					value={scorePreferences[key]}
-					label={preferencesKeyDescription(key)}
-					fontSize={12}
-					design="slider"
-					on:click={() => settempsetting('scorePreferences', key, !scorePreferences[key])} />
-			{/each}
-		</div>
-	</div>
-
-	<div class="switches-container">
-		<span>Buttons to show:</span>
-		<div class="switches">
-			{#each scoreIcons as key}
-				<Switch
-					value={visibleScoreIcons[key]}
-					label={key}
-					fontSize={12}
-					design="slider"
-					on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
-			{/each}
-		</div>
-	</div>
-
 	<div class="options">
+		<div class="option full">
+			<label>Score settings:</label>
+			<div class="switches start">
+				{#each preferencesList as key}
+					<Switch
+						value={scorePreferences[key]}
+						label={preferencesKeyDescription(key)}
+						fontSize={12}
+						design="slider"
+						on:click={() => settempsetting('scorePreferences', key, !scorePreferences[key])} />
+				{/each}
+			</div>
+		</div>
+
+		<section class="option full">
+			<label>Buttons to show:</label>
+			<div class="switches">
+				{#each scoreIcons as key}
+					<Switch
+						value={visibleScoreIcons[key]}
+						label={key}
+						fontSize={12}
+						design="slider"
+						on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
+				{/each}
+			</div>
+		</section>
+
 		<section class="option">
 			<label
 				title="Determines which metric will be displayed at the score under PP, if available. The others will be displayed in the tooltip."
@@ -158,17 +158,24 @@
 		display: flex;
 		flex-direction: column;
 	}
+
 	.options {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		grid-gap: 1em;
 		align-items: start;
 		justify-items: start;
+		margin-top: 1rem;
 	}
+
 	.option {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+	}
+
+	.option.full {
+		grid-column: span 2;
 	}
 
 	label {
@@ -186,6 +193,10 @@
 		flex-wrap: wrap;
 		justify-content: space-evenly;
 		padding: 0.5em;
+	}
+
+	.switches.start {
+		justify-content: flex-start;
 	}
 
 	@media screen and (max-width: 600px) {
