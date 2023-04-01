@@ -423,7 +423,7 @@
 	</div>
 </ContentBox>
 
-<ContentBox>
+<ContentBox no3d={true}>
 	<div class="columns">
 		<div class="column">
 			<Carousel cards={swipeCards} />
