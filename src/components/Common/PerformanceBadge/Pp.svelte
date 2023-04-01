@@ -1,8 +1,8 @@
 <script>
-	import {configStore} from '../../stores/config';
-	import {formatNumber, substituteVars} from '../../utils/format';
-	import {hoverable} from '../../svelte-utils/actions/hoverable';
-	import Value from '../Common/Value.svelte';
+	import {configStore} from '../../../stores/config';
+	import {formatNumber, substituteVars} from '../../../utils/format';
+	import {hoverable} from '../../../svelte-utils/actions/hoverable';
+	import Value from '../Value.svelte';
 
 	export let pp = 0;
 	export let bonusPp = 0;
@@ -38,6 +38,10 @@
 
 	function onUpdate(type, pp, weighted, improvements) {
 		switch (type) {
+			case 'empty':
+				prevValue = null;
+				break;
+
 			case 'improvement':
 				prevValue = improvements?.pp ?? null;
 				if (!prevValue) {
@@ -66,10 +70,10 @@
 			case 'full-combo':
 				prevValue = fcPp;
 
-				prevWithSign = true;
+				prevWithSign = false;
 				prevAbsolute = true;
 				forcePrev = true;
-				prevTemplate = prevValue ? '[ ${formatted} ]' : '';
+				prevTemplate = prevValue ? '{ ${formatted} }' : '';
 				break;
 
 			case 'weighted':
@@ -87,7 +91,7 @@
 				? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}\n` : ''}${
 						improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}\n` : ''
 				  }${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}\n` : ''}`
-				: null;
+				: '';
 
 		if (bonusPp) {
 			prevTitle += `PP bonus: ${formatNumber(bonusPp)}${suffix}\n`;

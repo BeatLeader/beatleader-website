@@ -88,7 +88,6 @@
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
 	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
-	$: showReplayCounter = replayCounter && $configStore?.scorePreferences.showReplayCounter;
 </script>
 
 {#if songScore}
@@ -97,20 +96,8 @@
 		in:maybe={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
 		out:maybe={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
-		{#if showReplayCounter}
-			<h3 class="pin-description desktop-and-up" title="Replay watch count">
-				<i class="fas fa-eye" />
-				{score.replaysWatched}
-			</h3>
-		{/if}
 		{#if !noIcons}
 			<div class="up-to-tablet icons">
-				{#if showReplayCounter}
-					<h3 class="pin-description" title="Replay watch count">
-						<i class="fas fa-eye" />
-						{score.replaysWatched}
-					</h3>
-				{/if}
 				<Icons
 					layoutType="flat"
 					{hash}

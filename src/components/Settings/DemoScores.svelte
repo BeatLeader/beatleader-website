@@ -83,7 +83,6 @@
 				service={currentService}
 				{withPlayers}
 				{noIcons}
-				additionalStat={currentServiceParams?.sort}
 				animationSign={0}
 				on:badge-click={onBadgeClick} />
 		</div>

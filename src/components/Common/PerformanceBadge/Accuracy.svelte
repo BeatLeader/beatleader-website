@@ -1,15 +1,16 @@
 <script>
 	import {getContext} from 'svelte';
-	import {diffColors, describeModifiersAndMultipliers} from '../../utils/beatleader/format';
-	import {formatNumber} from '../../utils/format';
-	import Badge from './Badge.svelte';
-	import Value from './Value.svelte';
+	import {diffColors, describeModifiersAndMultipliers} from '../../../utils/beatleader/format';
+	import {formatNumber} from '../../../utils/format';
+	import Badge from '../Badge.svelte';
+	import Value from '../Value.svelte';
 
 	export let score;
 	export let prevScore = null;
 	export let showPercentageInstead = false;
 	export let showMods = true;
 	export let modifiers = null;
+	export let showImprovements = true;
 
 	const isDemo = getContext('isDemo') ?? false;
 
@@ -38,13 +39,13 @@
 
 	$: badge = getBadge(score?.acc);
 	$: fcacc =
-		score.fcAccuracy && score.acc && Math.abs(score.fcAccuracy * 100 - score.acc) > 0.01
-			? '\nFC acc: ' + formatNumber(score.fcAccuracy * 100) + '%'
+		score?.fcAccuracy && score?.acc && Math.abs(score?.fcAccuracy * 100 - score?.acc) > 0.01
+			? '\nFC acc: ' + formatNumber(score?.fcAccuracy * 100) + '%'
 			: '';
 	$: mods = score?.mods;
 
 	$: value = score?.acc ?? 0;
-	$: prevValue = value - (score?.scoreImprovement?.accuracy ?? 0);
+	$: prevValue = showImprovements ? value - (score?.scoreImprovement?.accuracy ?? 0) : null;
 </script>
 
 <Badge

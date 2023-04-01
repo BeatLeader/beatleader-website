@@ -24,6 +24,7 @@
 	];
 
 	const ppMetrics = [
+		{name: 'Empty', value: 'empty'},
 		{name: 'Weighted PP', value: DEFAULT_PP_METRIC},
 		{name: 'PP improvement', value: 'improvement'},
 		{name: 'Total PP gain', value: 'total-gain'},
@@ -61,10 +62,6 @@
 		}
 	}
 
-	const preferencesKeyDescription = {
-		showReplayCounter: 'Show watch counter',
-	};
-
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
 		showScoreMetrics: 'Score metrics',
@@ -85,32 +82,16 @@
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 
-	$: scorePreferences = $configStore.scorePreferences;
 	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
 
-	$: preferencesList = Object.keys(scorePreferences);
-	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key != 'delete');
+	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key !== 'delete');
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<DemoScores playerId={$account?.player?.playerId} />
 
 	<div class="options">
-		<section class="option full">
-			<label title="Determines which additional metrics should be displayed at score">Score settings:</label>
-			<div class="switches start">
-				{#each preferencesList as key}
-					<Switch
-						value={scorePreferences[key]}
-						label={preferencesKeyDescription[key]}
-						fontSize={12}
-						design="slider"
-						on:click={() => settempsetting('scorePreferences', key, !scorePreferences[key])} />
-				{/each}
-			</div>
-		</section>
-
 		<section class="option full">
 			<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
 			<div class="switches">
@@ -151,7 +132,7 @@
 		<section class="option">
 			<label
 				title="Determines which metric will be displayed at the score under PP, if available. The others will be displayed in the tooltip."
-				>PP metric</label>
+				>PP secondary metric</label>
 			<Select bind:value={currentPpMetric}>
 				{#each ppMetrics as option (option.value)}
 					<option value={option.value}>{option.name}</option>

@@ -41,8 +41,17 @@ const DEFAULT_CONFIG = {
 		leaderboardShowSorting: true,
 	},
 	scorePreferences: {
-		showReplayCounter: false,
+		badgeRows: 2,
 	},
+	scoreBadges: [
+		[{metric: 'pp'}, {metric: 'acc', withMods: true, withImprovements: true}, {metric: 'score', withImprovements: true}],
+		[
+			{metric: 'accLeft', withImprovements: true},
+			{metric: 'accRight', withImprovements: true},
+			{metric: 'mistakes', withImprovements: true},
+		],
+		[null, null, null],
+	],
 	scoreDetailsPreferences: {
 		showMapInfo: true,
 		showScoreMetrics: true,
