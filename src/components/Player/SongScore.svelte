@@ -184,7 +184,7 @@
 				</span>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} on:badge-click />
 		</div>
 
 		{#if showDetails}

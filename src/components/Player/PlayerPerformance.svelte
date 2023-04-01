@@ -1,4 +1,5 @@
 <script>
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {computeModifiedRating, getFCPPTitle, getPPFromAcc} from '../../utils/beatleader/pp.js';
 	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
@@ -8,6 +9,10 @@
 	import Pp from '../Score/Pp.svelte';
 	import {formatNumber, padNumber} from '../../utils/format';
 	import FormattedDate from '../Common/FormattedDate.svelte';
+
+	const dispatch = createEventDispatcher();
+
+	const isDemo = getContext('isDemo') ?? false;
 
 	function formatFailedAt(beatSavior) {
 		const endTime = opt(beatSavior, 'trackers.winTracker.endTime');
@@ -162,7 +167,10 @@
 					color="white"
 					styling={score.ppWeighted ? '' : 'nominated-pp'}
 					bgColor={score.ppWeighted ? 'var(--ppColour)' : 'transparent'}>
-					<span slot="label" title={score.ppWeighted ? '' : getNominatedPPHoverTitle()}>
+					<span
+						slot="label"
+						title={isDemo ? 'Click to setup' : score.ppWeighted ? '' : getNominatedPPHoverTitle()}
+						on:click={() => dispatch('badge-click', {row: 0, col: 0})}>
 						<Pp
 							pp={score.pp}
 							bonusPp={score.bonusPp}
@@ -207,7 +215,7 @@
 
 		{#if score.acc}
 			<span class="acc with-badge">
-				<Accuracy {score} {modifiers} />
+				<Accuracy {score} {modifiers} on:click={() => dispatch('badge-click', {row: 0, col: 1})} />
 			</span>
 		{:else}
 			<span class="acc with-badge" />
@@ -215,7 +223,12 @@
 
 		{#if score.score}
 			<span class="score with-badge">
-				<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+				<Badge
+					onlyLabel={true}
+					title={isDemo ? 'Click to setup' : null}
+					color="white"
+					bgColor="var(--dimmed)"
+					on:click={() => dispatch('badge-click', {row: 0, col: 2})}>
 					<span slot="label">
 						<Value
 							value={unmodifiedScore ? score.unmodifiedScore : modifiedScore}
@@ -230,7 +243,12 @@
 		{#if accLeft || accRight || Number.isFinite(beatSavior.stats.miss)}
 			{#if accLeft}
 				<span class="beatSavior with-badge">
-					<Badge onlyLabel={true} color="white" bgColor="rgba(168,32,32,1)" inline={true}>
+					<Badge
+						onlyLabel={true}
+						color="white"
+						bgColor="rgba(168,32,32,1)"
+						inline={true}
+						on:click={() => dispatch('badge-click', {row: 1, col: 0})}>
 						<span slot="label">
 							<Value
 								title={beatSavior?.stats?.leftAverageCut
@@ -253,7 +271,12 @@
 
 			{#if accRight}
 				<span class="beatSavior with-badge">
-					<Badge onlyLabel={true} color="white" bgColor="rgba(32,100,168,1)" inline={true}>
+					<Badge
+						onlyLabel={true}
+						color="white"
+						bgColor="rgba(32,100,168,1)"
+						inline={true}
+						on:click={() => dispatch('badge-click', {row: 1, col: 1})}>
 						<span slot="label">
 							<Value
 								title={beatSavior?.stats?.rightAverageCut
@@ -276,7 +299,7 @@
 
 			{#if Number.isFinite(beatSavior.stats.miss)}
 				<span class="beatSavior with-badge">
-					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" on:click={() => dispatch('badge-click', {row: 1, col: 2})}>
 						<span
 							slot="label"
 							title={`Missed notes: ${beatSavior.stats.missedNotes}, Bad cuts: ${beatSavior.stats.badCuts}, Bomb hit: ${beatSavior.stats.bombHit}, Wall hit: ${beatSavior.stats.wallHit}`}>
@@ -323,12 +346,12 @@
 					</Badge>
 				</span>
 			{:else}
-				<span class="beatSavior with-badge" />
+				<span class="beatSavior with-badge" on:click={() => dispatch('badge-click', {row: 1, col: 2})} />
 			{/if}
 
 			{#if additionalStatKey}
 				<span class="score with-badge">
-					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" on:click={() => dispatch('badge-click', {row: 2, col: 0})}>
 						<span slot="label">
 							<Value value={score[additionalStatKey]} inline={false} digits={0} suffix={additionalStatSuffix} />
 						</span>

@@ -94,7 +94,7 @@
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
-	<DemoScores playerId={$account?.player?.playerId ?? '76561199104169308'} />
+	<DemoScores playerId={$account?.player?.playerId} />
 
 	<div class="options">
 		<section class="option full">

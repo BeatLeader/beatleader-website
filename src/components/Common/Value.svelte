@@ -1,5 +1,5 @@
 <script>
-	import {onMount} from 'svelte';
+	import {getContext, onMount} from 'svelte';
 	import {configStore} from '../../stores/config';
 	import {round, formatNumber, substituteVars} from '../../utils/format';
 
@@ -22,6 +22,9 @@
 	export let prevAbsolute = false;
 	export let forcePrev = false;
 	export let prevWithSign = true;
+	export let canBeSetup = true;
+
+	const isDemo = getContext('isDemo') ?? false;
 
 	let resolvedValue = value;
 	let unsubscribe = null;
@@ -87,8 +90,10 @@
 	$: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : '${value}', {value: prevLabelFormatted});
 </script>
 
-<span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue}
-	<small class={`has-pointer-events ${prevClass}`} title={prevTitleFormatted}
+<span class={mainClass} title={isDemo && canBeSetup ? 'Click to setup' : title}
+	><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span
+>{#if showPrevValue}
+	<small class={`has-pointer-events ${prevClass}`} title={isDemo && canBeSetup ? 'Click to setup' : prevTitleFormatted}
 		><slot name="prev" value={prevValue} formatted={prevFormatted} diff={prevDiff} diffFormatted={prevDiffFormatted}
 			>{prevDiffFormatted}</slot
 		></small

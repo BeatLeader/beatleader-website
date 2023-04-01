@@ -1,4 +1,5 @@
 <script>
+	import {getContext} from 'svelte';
 	import {diffColors, describeModifiersAndMultipliers} from '../../utils/beatleader/format';
 	import {formatNumber} from '../../utils/format';
 	import Badge from './Badge.svelte';
@@ -9,6 +10,8 @@
 	export let showPercentageInstead = false;
 	export let showMods = true;
 	export let modifiers = null;
+
+	const isDemo = getContext('isDemo') ?? false;
 
 	const badgesDef = [
 		{name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -44,7 +47,13 @@
 	$: prevValue = value - (score?.scoreImprovement?.accuracy ?? 0);
 </script>
 
-<Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc + fcacc : badge} label="">
+<Badge
+	onlyLabel={true}
+	color="white"
+	bgColor={badge ? badge.color : 'var(--dimmed)'}
+	title={isDemo ? 'Click to setup' : badge ? badge.desc + fcacc : badge}
+	label=""
+	on:click>
 	<span slot="label">
 		<slot name="label-before" />
 		<Value
@@ -58,7 +67,10 @@
 			withZeroSuffix={false} />
 		<slot name="label-after" />
 	</span>
-	<small class="mods" slot="additional" title={showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
+	<small
+		class="mods"
+		slot="additional"
+		title={isDemo ? 'Click to setup' : showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
 		>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
 
