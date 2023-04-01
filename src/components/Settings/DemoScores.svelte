@@ -70,6 +70,11 @@
 </div>
 
 <style>
+	.song-scores {
+		border: 3px dashed var(--textColor);
+		padding: 0.5rem;
+	}
+
 	.song-scores :global(> *:last-child) {
 		border-bottom: none !important;
 	}
