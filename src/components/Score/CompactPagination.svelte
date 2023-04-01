@@ -4,9 +4,9 @@
 	const dispatch = createEventDispatcher();
 
 	export let pagesCount = 1;
+	export let pageIndex = 0;
 
 	let pages = [];
-	let pageIndex = 0;
 
 	function onPaginationClick(page) {
 		pageIndex = page;
@@ -27,7 +27,7 @@
 
 <div class="compact-pagination">
 	{#each pages as page, i}
-		<div class="pagination-button {pageIndex === i ? 'selected' : ''}" on:click={_ => onPaginationClick(i)}/>
+		<div class="pagination-button {pageIndex === i ? 'selected' : ''}" on:click={_ => onPaginationClick(i)} />
 	{/each}
 </div>
 

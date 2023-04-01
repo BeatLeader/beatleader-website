@@ -43,6 +43,16 @@ const DEFAULT_CONFIG = {
 	scorePreferences: {
 		showReplayCounter: false,
 	},
+	scoreDetailsPreferences: {
+		showMapInfo: true,
+		showScoreMetrics: true,
+		showHandsAcc: true,
+		showAccChart: true,
+		showSliceDetails: true,
+		showAccSpreadChart: true,
+		showLeaderboard: true,
+		defaultAccChartIndex: 1,
+	},
 	chartLegend: {
 		y: true,
 		y1: true,

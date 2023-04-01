@@ -8,6 +8,7 @@
 
 	export let animationSign = 1;
 
+	const DEFAULT_ACC_CHART = 1;
 	const DEFAULT_PP_METRIC = 'weighted';
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
@@ -15,6 +16,11 @@
 	const scoreComparisonMethods = [
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
 		{name: 'In details', value: 'in-details'},
+	];
+
+	const accCharts = [
+		{name: 'Map acc', value: 0},
+		{name: 'Underswings', value: 1},
 	];
 
 	const ppMetrics = [
@@ -30,12 +36,15 @@
 	];
 
 	let currentLocale = DEFAULT_LOCALE;
+	let currentAccChartIndex = DEFAULT_ACC_CHART;
 	let currentPpMetric = DEFAULT_PP_METRIC;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
 
 	function onConfigUpdated(config) {
 		if (config?.locale != currentLocale) currentLocale = config.locale;
+		if (config?.scoreDetailsPreferences?.defaultAccChartIndex != currentAccChartIndex)
+			currentAccChartIndex = config?.scoreDetailsPreferences?.defaultAccChartIndex ?? DEFAULT_ACC_CHART;
 		if (config?.preferences?.ppMetric != currentPpMetric) currentPpMetric = config?.preferences?.ppMetric ?? DEFAULT_PP_METRIC;
 		if (config?.scoreComparison != currentScoreComparisonMethod)
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
@@ -52,16 +61,19 @@
 		}
 	}
 
-	function preferencesKeyDescription(key) {
-		switch (key) {
-			case 'showReplayCounter':
-				return 'Show watch counter';
+	const preferencesKeyDescription = {
+		showReplayCounter: 'Show watch counter',
+	};
 
-			default:
-				break;
-		}
-		return key;
-	}
+	const scoreDetailsKeyDescription = {
+		showMapInfo: 'Map info',
+		showScoreMetrics: 'Score metrics',
+		showHandsAcc: 'Hands acc',
+		showAccChart: 'Acc chart',
+		showSliceDetails: 'Slice details',
+		showAccSpreadChart: 'Acc spread chart',
+		showLeaderboard: 'Map leaderboard',
+	};
 
 	const account = createAccountStore();
 
@@ -69,10 +81,12 @@
 
 	$: settempsetting('locale', null, currentLocale);
 	$: settempsetting('preferences', 'ppMetric', currentPpMetric);
+	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 
 	$: scorePreferences = $configStore.scorePreferences;
+	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
 
 	$: preferencesList = Object.keys(scorePreferences);
@@ -83,22 +97,22 @@
 	<DemoScores playerId={$account?.player?.playerId ?? '76561199104169308'} />
 
 	<div class="options">
-		<div class="option full">
-			<label>Score settings:</label>
+		<section class="option full">
+			<label title="Determines which additional metrics should be displayed at score">Score settings:</label>
 			<div class="switches start">
 				{#each preferencesList as key}
 					<Switch
 						value={scorePreferences[key]}
-						label={preferencesKeyDescription(key)}
+						label={preferencesKeyDescription[key]}
 						fontSize={12}
 						design="slider"
 						on:click={() => settempsetting('scorePreferences', key, !scorePreferences[key])} />
 				{/each}
 			</div>
-		</div>
+		</section>
 
 		<section class="option full">
-			<label>Buttons to show:</label>
+			<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
 			<div class="switches">
 				{#each scoreIcons as key}
 					<Switch
@@ -109,6 +123,29 @@
 						on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
 				{/each}
 			</div>
+		</section>
+
+		<section class="option full">
+			<label title="Determines which data should be displayed in score details">Score details settings:</label>
+			<div class="switches">
+				{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex'].includes(k)) as key}
+					<Switch
+						value={scoreDetailsPreferences[key]}
+						label={scoreDetailsKeyDescription[key]}
+						fontSize={12}
+						design="slider"
+						on:click={() => settempsetting('scoreDetailsPreferences', key, !scoreDetailsPreferences[key])} />
+				{/each}
+			</div>
+		</section>
+
+		<section class="option">
+			<label title="Determines which acc chart displays by default.">Default acc chart in details</label>
+			<Select bind:value={currentAccChartIndex}>
+				{#each accCharts as option (option.value)}
+					<option value={option.value}>{option.name}</option>
+				{/each}
+			</Select>
 		</section>
 
 		<section class="option">

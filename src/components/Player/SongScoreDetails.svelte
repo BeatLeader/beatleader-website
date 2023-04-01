@@ -1,6 +1,7 @@
 <script>
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
+	import {configStore} from '../../stores/config';
 	import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic';
 	import BeatSaviorDetails from '../BeatSavior/Details.svelte';
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
@@ -42,9 +43,11 @@
 
 <section class="details">
 	{#if songScore}
-		<div class="tab">
-			<LeaderboardStats {leaderboard} />
-		</div>
+		{#if $configStore?.scoreDetailsPreferences?.showMapInfo}
+			<div class="tab">
+				<LeaderboardStats {leaderboard} />
+			</div>
+		{/if}
 
 		<div class="stats-grid">
 			{#await beatSaviorPromise}
@@ -53,7 +56,7 @@
 				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} />
 			{/await}
 
-			{#if score?.replay}
+			{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}
 				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
 			{/if}
 		</div>
@@ -72,7 +75,7 @@
 					{fixedBrowserTitle}
 					higlightedScore={score} />
 			</div>
-		{:else if !noSsLeaderboard}
+		{:else if !noSsLeaderboard && $configStore?.scoreDetailsPreferences?.showLeaderboard}
 			<div class="tab">
 				<LeaderboardPage
 					leaderboardId={leaderboard.leaderboardId}
