@@ -4,9 +4,12 @@
 	export let background = 'var(--foreground)';
 	export let cls = null;
 	export let zIndex = 1;
+	export let no3d = false;
 </script>
 
-{#if 'ontouchstart' in window || navigator.MaxTouchPoints > 0 || navigator.msMaxTouchPoints > 0}
+{#if navigator.userAgent
+	.toLowerCase()
+	.indexOf('firefox') > -1 || no3d || 'ontouchstart' in window || navigator.MaxTouchPoints > 0 || navigator.msMaxTouchPoints > 0}
 	<div
 		class="content-box {cls ?? ''}"
 		bind:this={box}
@@ -15,7 +18,7 @@
 		<slot />
 	</div>
 {:else}
-	<Atropos class="my-atropos">
+	<Atropos activeOffset={10} rotateXMax={2} rotateYMax={2} class="my-atropos">
 		<div
 			class="content-box {cls ?? ''}"
 			bind:this={box}

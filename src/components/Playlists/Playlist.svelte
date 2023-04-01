@@ -112,6 +112,18 @@
 </script>
 
 {#if playlist}
+	{#if playlistId == 'ranked'}
+		<span class="ranked-title"
+			>This is now a PoodLeader! Ranking criteria changed to a single rule - the map should contain poodles! And to make sure we don't
+			overweight or underweight some maps - they are weighted equally - 10 stars of poodle rating. The curve is linear because the acc is
+			boring. Also, all the modifiers are now prohibited as well as pauses</span>
+		<div>
+			For these maps to work you need Noodle extenstions mod. It's available for both PC and Quest on 1.28:
+			<a href="https://github.com/Aeroluna/Heck/releases">PC</a>
+			<a href="https://computerelite.github.io/tools/Beat_Saber/questmods.html">Quest</a>
+		</div>
+		<span style="color: gray; font-size:smaller">the website will go to a normal tomorrow</span>
+	{/if}
 	<div
 		class={`song-score row-${idx}`}
 		in:fly={{x: 300, delay: idx * 30, duration: 500}}
@@ -348,5 +360,10 @@
 	.oneclick-title {
 		font-size: 0.8em;
 		color: blueviolet;
+	}
+
+	.ranked-title {
+		font-size: 1.2em;
+		color: white;
 	}
 </style>
