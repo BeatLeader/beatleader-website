@@ -12,6 +12,7 @@
 	export let noIcons = false;
 
 	let scoresStore = createScoresStore(playerId, initialService, initialServiceParams);
+	let scoreIsLoading = scoresStore.isLoading;
 
 	function changeParams(newPlayerId, newService, newServiceParams) {
 		if (!newPlayerId) return null;
@@ -47,7 +48,8 @@
 	$: $scoresStore, updateServiceParams(scoresStore);
 
 	$: scoresStore && scoresStore.fetch(currentServiceParams, currentService);
-	$: if ($scoresStore && !$scoresStore.length) playerId = '76561199104169308';
+	$: if (playerId?.length && !$scoreIsLoading && scoresStore?.getPlayerId() === playerId && !$scoresStore?.length)
+		playerId = '76561199104169308';
 </script>
 
 <div>
