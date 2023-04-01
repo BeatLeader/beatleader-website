@@ -46,21 +46,17 @@
 			<LeaderboardStats {leaderboard} />
 		</div>
 
-		{#await beatSaviorPromise}
-			<div class="tab">
+		<div class="stats-grid">
+			{#await beatSaviorPromise}
 				<Spinner />
-			</div>
-		{:then beatSavior}
-			<div class="tab">
+			{:then beatSavior}
 				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} />
-			</div>
-		{/await}
+			{/await}
 
-		{#if score?.replay}
-			<div class="tab">
+			{#if score?.replay}
 				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
-			</div>
-		{/if}
+			{/if}
+		</div>
 
 		{#if showAccSaberLeaderboard}
 			<div class="tab">
@@ -110,5 +106,21 @@
 
 	.tab > :global(*) {
 		grid-area: 1 / 1 / 1 / 1;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: center;
+	}
+
+	.stats-grid :global(> *) {
+		display: contents !important;
+	}
+
+	@media screen and (max-width: 767px) {
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
