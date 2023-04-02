@@ -18,7 +18,7 @@ export const availableMetrics = [
 				label: 'Secondary metric',
 				name: 'secondary',
 				values: [
-					{name: 'Empty', value: 'empty'},
+					{name: 'None', value: 'none'},
 					{name: 'Weighted PP', value: 'weighted'},
 					{name: 'PP improvement', value: 'improvement'},
 					{name: 'Total PP gain', value: 'total-gain'},
@@ -39,6 +39,7 @@ export const availableMetrics = [
 				label: 'Secondary metric',
 				name: 'secondary',
 				values: [
+					{name: 'None', value: 'none'},
 					{name: 'Improvement', value: 'improvement'},
 					{name: 'FC Accuracy', value: 'fcAccuracy'},
 				],

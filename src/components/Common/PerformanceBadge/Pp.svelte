@@ -42,7 +42,7 @@
 		prevIcon = null;
 
 		switch (type) {
-			case 'empty':
+			case 'none':
 				prevValue = null;
 				prevTemplate = '';
 				break;
