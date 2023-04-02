@@ -210,6 +210,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				prevValue: def?.withImprovements ? modifiedScore - (improvements?.score ?? 0) : null,
 				inline: false,
 				digits: 0,
+				suffix: ``,
 			};
 			break;
 
@@ -237,6 +238,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				prevValue: prevAccLeft,
 				inline: true,
 				digits: 2,
+				suffix: ``,
 			};
 			break;
 
@@ -266,6 +268,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				prevValue: prevAccRight,
 				inline: true,
 				digits: 2,
+				suffix: ``,
 			};
 			break;
 
@@ -301,6 +304,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				prevValue: def?.withImprovements ? improvements?.[score?.[metric]] : null,
 				inline: true,
 				digits: 0,
+				suffix: ``,
 			};
 			break;
 
@@ -320,6 +324,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				value: score?.[metric],
 				inline: true,
 				digits: 0,
+				suffix: ``,
 			};
 			break;
 
@@ -339,6 +344,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				value: score?.[metric],
 				inline: true,
 				digits: 0,
+				suffix: ``,
 			};
 			break;
 
@@ -421,6 +427,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				value: score?.[metric],
 				inline: true,
 				digits: 0,
+				suffix: ``,
 			};
 			break;
 
