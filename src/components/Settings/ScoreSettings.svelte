@@ -22,8 +22,8 @@
 
 	const badgeLayouts = [
 		{name: 'One row layout', value: 1},
-		{name: 'Two row layout', value: 2},
-		{name: 'Three row layout', value: 3},
+		{name: 'Two rows layout', value: 2},
+		{name: 'Three rows layout', value: 3},
 	];
 
 	const accCharts = [
