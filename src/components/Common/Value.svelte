@@ -69,19 +69,19 @@
 		(configStore,
 		$configStore,
 		prevValue && Number.isFinite(prevValue)
-			? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, prevWithSign) + suffix
+			? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, prevWithSign) + (suffix ?? '')
 			: '');
 	$: prevLabelFormatted =
 		(configStore,
 		$configStore,
-		prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits) + suffix : '');
+		prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits) + (suffix ?? '') : '');
 	$: prevDiff = Number.isFinite(prevValue) ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;
 	$: prevDiffFormatted = Number.isFinite(prevDiff)
 		? (configStore,
 		  $configStore,
 		  resolvedValue,
 		  Number.isFinite(prevDiff)
-				? (prefixPrev ?? '') + formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix)
+				? (prefixPrev ?? '') + formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix ?? '')
 				: '')
 		: null;
 	$: prevClass =
