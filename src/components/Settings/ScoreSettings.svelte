@@ -21,6 +21,7 @@
 	];
 
 	const badgeLayouts = [
+		{name: 'One row layout', value: 1},
 		{name: 'Two row layout', value: 2},
 		{name: 'Three row layout', value: 3},
 	];
