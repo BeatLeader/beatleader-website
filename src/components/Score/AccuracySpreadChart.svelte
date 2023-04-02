@@ -76,7 +76,7 @@
 				display: false,
 				min: minTimeDeviation,
 				max: maxTimeDeviation,
-				position: 'left'
+				position: 'left',
 			},
 		};
 
@@ -135,15 +135,15 @@
 				data: chartData.timeDeviation,
 				round: 1,
 				type: 'line',
-				borderColor: '#ffff6688',
-				backgroundColor: '#ffff6688',
+				borderColor: '#ffffff88',
+				backgroundColor: '#ffffff88',
 				borderWidth: 2,
 				pointRadius: 2,
 				cubicInterpolationMode: 'monotone',
 				tension: 0.4,
 				spanGaps: true,
 				order: 2,
-			}
+			},
 		];
 
 		if (!chart) {
