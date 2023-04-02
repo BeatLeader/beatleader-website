@@ -14,6 +14,7 @@
 		processStringArrayFilter,
 		processStringFilter,
 	} from '../utils/filters';
+	import {formatNumber} from '../utils/format';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Error from '../components/Common/Error.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -41,6 +42,9 @@
 	const account = createAccountStore();
 	const labelsStore = createLocalStorageStore('rt-maps-labels');
 	const playersCache = createLocalStorageStore('rt-players');
+
+	const ITEMS_PER_PAGE = 50;
+	const VOTED = 100;
 
 	let showEventLog = false;
 	let allLabels = [];
@@ -1175,7 +1179,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox no3d={true}>
+		<ContentBox>
 			<h1 class="title is-3">
 				{#if !error && !isLoading}
 					<i

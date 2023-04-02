@@ -4,12 +4,9 @@
 	export let background = 'var(--foreground)';
 	export let cls = null;
 	export let zIndex = 1;
-	export let no3d = false;
 </script>
 
-{#if navigator.userAgent
-	.toLowerCase()
-	.indexOf('firefox') > -1 || no3d || 'ontouchstart' in window || navigator.MaxTouchPoints > 0 || navigator.msMaxTouchPoints > 0}
+<Atropos class="my-atropos">
 	<div
 		class="content-box {cls ?? ''}"
 		bind:this={box}
@@ -17,17 +14,7 @@
 		on:click>
 		<slot />
 	</div>
-{:else}
-	<Atropos activeOffset={10} rotateXMax={2} rotateYMax={2} class="my-atropos">
-		<div
-			class="content-box {cls ?? ''}"
-			bind:this={box}
-			style="--box-background: {background}; {zIndex != 1 ? 'z-index: ' + zIndex : ''}"
-			on:click>
-			<slot />
-		</div>
-	</Atropos>
-{/if}
+</Atropos>
 
 <style>
 	.content-box {
