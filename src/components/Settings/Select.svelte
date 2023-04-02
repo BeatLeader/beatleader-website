@@ -3,7 +3,7 @@
 </script>
 
 <div class="select-wrapper">
-	<select bind:value class="select-element">
+	<select bind:value class="select-element" on:change>
 		<slot />
 	</select>
 	<i class="fa fa-chevron-down select-arrow" />

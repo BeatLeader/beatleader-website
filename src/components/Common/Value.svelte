@@ -13,6 +13,7 @@
 	export let withZeroPrefix = false;
 	export let suffix = '';
 	export let suffixPrev = null;
+	export let prefixPrev = null;
 	export let withZeroSuffix = false;
 	export let inline = false;
 	export let useColorsForValue = false;
@@ -38,8 +39,8 @@
 
 	function getFormattedValue(value, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix) {
 		return Number.isFinite(value) && Math.abs(value) > minValue
-			? prefix + formatNumber(value, digits, withSign) + suffix
-			: (withZeroPrefix ? prefix : '') + zero + (withZeroSuffix ? suffix : '');
+			? (prefix ?? '') + formatNumber(value, digits, withSign) + (suffix ?? '')
+			: (withZeroPrefix ? prefix ?? '' : '') + zero + (withZeroSuffix ? suffix ?? '' : '');
 	}
 
 	onMount(() => {
@@ -79,7 +80,9 @@
 		? (configStore,
 		  $configStore,
 		  resolvedValue,
-		  Number.isFinite(prevDiff) ? formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix) : '')
+		  Number.isFinite(prevDiff)
+				? (prefixPrev ?? '') + formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix)
+				: '')
 		: null;
 	$: prevClass =
 		(prevDiff !== null ? (prevDiff > minValue ? 'inc' : prevDiff < -minValue ? 'dec' : 'zero') : '') +

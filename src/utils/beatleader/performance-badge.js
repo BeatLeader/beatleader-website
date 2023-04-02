@@ -4,10 +4,128 @@ import Badge from '../../components/Common/Badge.svelte';
 import Value from '../../components/Common/Value.svelte';
 import Pp from '../../components/Common/PerformanceBadge/Pp.svelte';
 import Accuracy from '../../components/Common/PerformanceBadge/Accuracy.svelte';
-import {configStore} from '../../stores/config';
 import Mistakes from '../../components/Common/PerformanceBadge/Mistakes.svelte';
 import Label from '../../components/Common/PerformanceBadge/Label.svelte';
 import {describeModifiersAndMultipliers} from './format';
+
+export const availableMetrics = [
+	{metric: '__not-set', name: 'Not set'},
+	{
+		metric: 'pp',
+		name: 'PP',
+		options: [
+			{
+				label: 'Secondary metric',
+				name: 'secondary',
+				values: [
+					{name: 'Empty', value: 'empty'},
+					{name: 'Weighted PP', value: 'weighted'},
+					{name: 'PP improvement', value: 'improvement'},
+					{name: 'Total PP gain', value: 'total-gain'},
+					{name: 'PP on full combo', value: 'full-combo'},
+					{name: 'Pass PP', value: 'passPP'},
+					{name: 'Acc PP', value: 'accPP'},
+					{name: 'Tech PP', value: 'techPP'},
+				],
+			},
+		],
+		default: {secondary: 'weighted'},
+	},
+	{
+		metric: 'acc',
+		name: 'Accuracy',
+		options: [
+			{
+				label: 'Secondary metric',
+				name: 'secondary',
+				values: [
+					{name: 'Improvement', value: 'improvement'},
+					{name: 'FC Accuracy', value: 'fcAccuracy'},
+				],
+			},
+			{
+				label: 'Show modifiers',
+				name: 'withMods',
+				values: [
+					{name: 'Yes', value: true},
+					{name: 'No', value: false},
+				],
+			},
+		],
+		default: {secondary: 'improvement', withMods: true},
+	},
+	{
+		metric: 'score',
+		name: 'Score',
+		options: [
+			{
+				label: 'Show improvement',
+				name: 'withImprovements',
+				values: [
+					{name: 'Yes', value: true},
+					{name: 'No', value: false},
+				],
+			},
+		],
+		default: {withImprovements: true},
+	},
+	{
+		metric: 'accLeft',
+		name: 'Left hand accuracy',
+		options: [
+			{
+				label: 'Show improvement',
+				name: 'withImprovements',
+				values: [
+					{name: 'Yes', value: true},
+					{name: 'No', value: false},
+				],
+			},
+		],
+		default: {withImprovements: true},
+	},
+	{
+		metric: 'accRight',
+		name: 'Right hand accuracy',
+		options: [
+			{
+				label: 'Show improvement',
+				name: 'withImprovements',
+				values: [
+					{name: 'Yes', value: true},
+					{name: 'No', value: false},
+				],
+			},
+		],
+		default: {withImprovements: true},
+	},
+	{metric: 'fcAccuracy', name: 'FC accuracy'},
+	{
+		metric: 'mistakes',
+		name: 'Total mistakes/FC',
+		options: [
+			{
+				label: 'Show improvement',
+				name: 'withImprovements',
+				values: [
+					{name: 'Yes', value: true},
+					{name: 'No', value: false},
+				],
+			},
+		],
+		default: {withImprovements: true},
+	},
+	{metric: 'pauses', name: 'Pauses'},
+	{metric: 'maxStreak', name: 'Max 115 streak'},
+	{metric: 'maxCombo', name: 'Max combo'},
+	{metric: 'passPP', name: 'Pass PP'},
+	{metric: 'accPP', name: 'Accuracy PP'},
+	{metric: 'techPP', name: 'Tech PP'},
+	{metric: 'replaysWatched', name: 'Replays watched'},
+	{metric: 'mods', name: 'Modifiers'},
+];
+
+export const getDefaultMetricWithOptions = metric => ({metric, ...(availableMetrics?.find(m => m.metric === metric)?.default ?? {})});
 
 export const getPerformanceBadge = (def, score, improvements, beatSavior, modifiers = {}, isDemo = false) => {
 	let component = Badge;
@@ -17,6 +135,8 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 	let slotComponentProps = {};
 	let className = '';
 	let icon = null;
+
+	if (def === null && isDemo) def = {metric: '__not-set'};
 
 	const metric = def?.metric ?? null;
 
@@ -53,6 +173,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 					withZeroSuffix: true,
 					inline: false,
 					color: 'white',
+					secondaryMetric: def?.secondary ?? null,
 				};
 			} else {
 				component = null;
@@ -68,7 +189,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				score,
 				modifiers,
 				showMods: !!def?.withMods,
-				showImprovements: !!def?.withImprovements,
+				secondary: def?.secondary ?? null,
 			};
 			break;
 
@@ -348,20 +469,24 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			break;
 
 		case '__not-set':
-			title = isDemo ? 'Click to setup' : null;
-			className = 'beatSavior';
+			if (isDemo) {
+				title = isDemo ? 'Click to setup' : null;
+				className = 'beatSavior';
 
-			componentProps = {
-				onlyLabel: true,
-				color: 'white',
-				bgColor: 'var(--dimmed)',
-				title,
-			};
+				componentProps = {
+					onlyLabel: true,
+					color: 'white',
+					bgColor: 'var(--dimmed)',
+					title,
+				};
 
-			slotComponent = Label;
-			slotComponentProps = {
-				label: 'Click me',
-			};
+				slotComponent = Label;
+				slotComponentProps = {
+					label: 'Click me',
+				};
+			} else {
+				component = null;
+			}
 			break;
 
 		default:

@@ -3,6 +3,7 @@
 
 	export let badges = null;
 	export let additionalClass = null;
+	export let selected = null;
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -13,6 +14,7 @@
 			{#each row as badge, colIdx}
 				<span
 					class={`with-badge ${badge?.className ?? ''} ${additionalClass ?? ''}`}
+					class:selected={rowIdx === selected?.row && colIdx === selected?.col}
 					title={badge.title}
 					on:click={() => dispatch('badge-click', {row: rowIdx, col: colIdx})}>
 					{#if badge}
@@ -68,6 +70,10 @@
 		min-width: 4em;
 	}
 
+	.acc :global(.badge .label) {
+		min-width: fit-content;
+	}
+
 	.score {
 		min-width: 5.25em;
 	}
@@ -89,6 +95,10 @@
 
 	.with-badge :global(.badge > .label small) {
 		font-size: 0.875em !important;
+	}
+
+	.with-badge.selected {
+		outline: 2px dashed var(--textColor);
 	}
 
 	:global(*:not(.compare) > .badge.nominated-pp) {

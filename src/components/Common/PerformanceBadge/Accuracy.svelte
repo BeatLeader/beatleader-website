@@ -10,7 +10,7 @@
 	export let showPercentageInstead = false;
 	export let showMods = true;
 	export let modifiers = null;
-	export let showImprovements = true;
+	export let secondary = 'improvement';
 
 	const isDemo = getContext('isDemo') ?? false;
 
@@ -45,7 +45,15 @@
 	$: mods = score?.mods;
 
 	$: value = score?.acc ?? 0;
-	$: prevValue = showImprovements ? value - (score?.scoreImprovement?.accuracy ?? 0) : null;
+	$: prevValue =
+		secondary === 'improvement'
+			? value - (score?.scoreImprovement?.accuracy ?? 0)
+			: secondary === 'fcAccuracy' && score?.fcAccuracy
+			? score.fcAccuracy * 100
+			: null;
+	$: prevAbsolute = secondary === 'fcAccuracy';
+	$: prevPrefix = secondary === 'fcAccuracy' ? '{ ' : null;
+	$: prevSuffix = secondary === 'fcAccuracy' ? '% }' : '%';
 </script>
 
 <Badge
@@ -60,10 +68,12 @@
 		<Value
 			{value}
 			{prevValue}
+			{prevAbsolute}
+			prefixPrev={prevPrefix}
 			title={badge ? badge.desc + fcacc : null}
 			inline={false}
 			suffix="%"
-			suffixPrev="%"
+			suffixPrev={prevSuffix}
 			zero="-"
 			withZeroSuffix={false} />
 		<slot name="label-after" />

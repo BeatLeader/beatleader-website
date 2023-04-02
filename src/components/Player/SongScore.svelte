@@ -26,6 +26,7 @@
 	export let additionalStat = null;
 	export let replayCounter = true;
 	export let animationSign = 1;
+	export let selectedMetric = null;
 
 	let showDetails = false;
 
@@ -171,7 +172,7 @@
 				</span>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} on:badge-click />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} {selectedMetric} on:badge-click />
 		</div>
 
 		{#if showDetails}

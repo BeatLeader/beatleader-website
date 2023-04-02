@@ -12,6 +12,7 @@
 	export let fixedBrowserTitle = null;
 	export let withPlayers = false;
 	export let noIcons = false;
+	export let selectedMetric = null;
 
 	setContext('isDemo', true);
 
@@ -48,10 +49,6 @@
 		lastServiceParams = newServiceParams;
 	}
 
-	function onBadgeClick(e) {
-		console.error('badge-click', e?.detail);
-	}
-
 	$: changeParams(playerId, initialService, initialServiceParams);
 	$: $scoresStore, updateService(scoresStore);
 	$: $scoresStore, updateServiceParams(scoresStore);
@@ -68,6 +65,7 @@
 			['accuracy', 'accLeft', 'accRight', 'pp', 'totalPp'].forEach(k => (s.score.scoreImprovement[k] = 1.23));
 			['badCuts', 'bombCuts', 'missedNotes', 'pauses', 'rank', 'totalRank', 'wallsHit'].forEach(k => (s.score.scoreImprovement[k] = -1));
 			s.score.scoreImprovement.score = 123;
+			s.score.mods = ['TE', 'ST'];
 
 			return s;
 		}, null) ?? null;
@@ -84,7 +82,8 @@
 				{withPlayers}
 				{noIcons}
 				animationSign={0}
-				on:badge-click={onBadgeClick} />
+				{selectedMetric}
+				on:badge-click />
 		</div>
 	{:else}
 		<Spinner />

@@ -18,7 +18,7 @@ const locales = {
 export const getCurrentLocale = () => configStore?.getLocale();
 export const getSupportedLocales = () => Object.values(locales);
 
-const DEFAULT_CONFIG = {
+export const DEFAULT_CONFIG = {
 	scoreComparison: {
 		method: 'in-place',
 	},
@@ -44,7 +44,11 @@ const DEFAULT_CONFIG = {
 		badgeRows: 2,
 	},
 	scoreBadges: [
-		[{metric: 'pp'}, {metric: 'acc', withMods: true, withImprovements: true}, {metric: 'score', withImprovements: true}],
+		[
+			{metric: 'pp', secondary: 'weighted'},
+			{metric: 'acc', secondary: 'improvement', withMods: true},
+			{metric: 'score', withImprovements: true},
+		],
 		[
 			{metric: 'accLeft', withImprovements: true},
 			{metric: 'accRight', withImprovements: true},
@@ -166,6 +170,20 @@ export default async () => {
 
 	const savedConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
 	const newSettings = determineNewSettingsAvailable(savedConfig);
+
+	// upgrade secondary pp metric if needed
+	if (savedConfig?.scoreBadges && savedConfig?.preferences?.ppMetric) {
+		const badges = [...Object.values(savedConfig.scoreBadges)];
+		for (const idx in badges) {
+			const ppMetric = badges[idx]?.find(col => col?.metric === 'pp');
+			if (ppMetric && !ppMetric?.secondary) {
+				ppMetric.secondary = savedConfig.preferences.ppMetric;
+				await set(savedConfig, true);
+				break;
+			}
+		}
+	}
+
 	if (savedConfig) {
 		dbConfig = savedConfig;
 		await set(savedConfig, false);

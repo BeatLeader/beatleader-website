@@ -17,6 +17,7 @@
 	export let color = 'var(--ppColour)';
 	export let whatIf = null;
 	export let suffix = 'pp';
+	export let secondaryMetric = 'weighted';
 
 	let tooltipOpacity = 0;
 	let tooltipX = null;
@@ -35,11 +36,15 @@
 	let forcePrev = false;
 	let prevTemplate = '( ${formatted} )';
 	let prevTitle = null;
+	let prevIcon = null;
 
 	function onUpdate(type, pp, weighted, improvements) {
+		prevIcon = null;
+
 		switch (type) {
 			case 'empty':
 				prevValue = null;
+				prevTemplate = '';
 				break;
 
 			case 'improvement':
@@ -67,6 +72,7 @@
 				forcePrev = false;
 				prevTemplate = prevValue ? '[ ${formatted} ]' : '';
 				break;
+
 			case 'full-combo':
 				prevValue = fcPp;
 
@@ -74,6 +80,36 @@
 				prevAbsolute = true;
 				forcePrev = true;
 				prevTemplate = prevValue ? '{ ${formatted} }' : '';
+				break;
+
+			case 'accPP':
+				prevValue = accPp;
+
+				prevWithSign = false;
+				prevAbsolute = true;
+				forcePrev = true;
+				prevTemplate = prevValue ? '${formatted}' : '';
+				prevIcon = 'fa-solid fa-crosshairs';
+				break;
+
+			case 'passPP':
+				prevValue = passPp;
+
+				prevWithSign = false;
+				prevAbsolute = true;
+				forcePrev = true;
+				prevTemplate = prevValue ? '${formatted}' : '';
+				prevIcon = 'fa-solid fa-unlock';
+				break;
+
+			case 'techPP':
+				prevValue = techPp;
+
+				prevWithSign = false;
+				prevAbsolute = true;
+				forcePrev = true;
+				prevTemplate = prevValue ? '${formatted}' : '';
+				prevIcon = 'fa-solid fa-wrench';
 				break;
 
 			case 'weighted':
@@ -110,7 +146,7 @@
 		}
 	}
 
-	$: onUpdate($configStore?.preferences?.ppMetric ?? 'weighted', pp, weighted, improvements);
+	$: onUpdate(secondaryMetric ?? 'weighted', pp, weighted, improvements);
 </script>
 
 <span class="pp" style="--color: {color}">
@@ -135,6 +171,9 @@
 				{formatted} <i class="fas fa-question" />
 			</span>
 			<svelte:fragment slot="prev" let:formatted let:value>
+				{#if prevIcon && formatted?.length}
+					<i class={prevIcon} />
+				{/if}
 				{substituteVars(prevTemplate, {formatted})}
 			</svelte:fragment>
 		</Value>

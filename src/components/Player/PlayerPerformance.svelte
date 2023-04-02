@@ -13,6 +13,7 @@
 	export let showDetails = false;
 	export let modifiers = null;
 	export let additionalStat = null;
+	export let selectedMetric = null;
 
 	const ACC_SABER_BADGES = [[{metric: 'ap'}, {metric: 'acc', withImprovements: true}, {metric: 'score', withImprovements: true}]];
 	const BEAT_SAVIOR_BADGES = [
@@ -87,7 +88,7 @@
 	$: updateBadges(
 		service,
 		[...(Object.values($configStore?.scoreBadges) ?? [])],
-		$configStore.scorePreferences?.badgeRows,
+		$configStore?.scorePreferences?.badgeRows,
 		score,
 		improvements,
 		beatSavior,
@@ -104,7 +105,7 @@
 </script>
 
 <div class="player-performance">
-	<ScoreBadges {badges} on:badge-click />
+	<ScoreBadges {badges} selected={selectedMetric} on:badge-click />
 
 	{#if (showDetails || (configStore && opt($configStore, 'scoreComparison.method') === 'in-place')) && score?.myScore && myScoreBadges}
 		<span class="compare-player-name">
