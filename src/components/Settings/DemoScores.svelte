@@ -1,6 +1,7 @@
 <script>
 	import {setContext} from 'svelte';
 	import createScoresStore from '../../stores/http/http-scores-store.js';
+	import createAccountStore from '../../stores/beatleader/account';
 	import stringify from 'json-stable-stringify';
 	import SongScore from '../Player/SongScore.svelte';
 	import Spinner from '../Common/Spinner.svelte';
@@ -15,6 +16,8 @@
 	export let selectedMetric = null;
 
 	setContext('isDemo', true);
+
+	const account = createAccountStore();
 
 	let scoresStore = createScoresStore(playerId, initialService, initialServiceParams);
 	let scoreIsLoading = scoresStore.isLoading;
@@ -54,7 +57,10 @@
 	$: $scoresStore, updateServiceParams(scoresStore);
 
 	$: scoresStore && scoresStore.fetch(currentServiceParams, currentService);
-	$: if (playerId?.length && !$scoreIsLoading && scoresStore?.getPlayerId() === playerId && !$scoresStore?.length)
+	$: if (
+		(!$account.loading && !$account?.id) ||
+		(playerId?.length && !$scoreIsLoading && scoresStore?.getPlayerId() === playerId && !$scoresStore?.length)
+	)
 		playerId = '76561199104169308';
 
 	$: songScore =
