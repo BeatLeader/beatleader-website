@@ -90,16 +90,8 @@
 
 	if ($configStore.preferences.theme != 'default') {
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
-		var color = $configStore.preferences.bgColor;
-		if (color == 'rgba(29, 7, 34, 0.6282)') {
-			color = 'rgba(33, 7, 39, 0.7041)';
-		}
-		setGlobalCSSValue('customizable-color-1', color);
-		color = $configStore.preferences.headerColor;
-		if (color == 'rgba(53, 0, 70, 0.2)') {
-			color = 'rgba(0, 0, 0, 0.7418)';
-		}
-		setGlobalCSSValue('customizable-color-2', color);
+		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
+		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
 	}
 </script>
 

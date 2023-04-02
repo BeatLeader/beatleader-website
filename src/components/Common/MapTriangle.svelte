@@ -5,7 +5,6 @@
 	export let height = '6em';
 	export let mapRating = {};
 	export let showRatings = false;
-	export let poodles = false;
 
 	const maxRating = showRatings ? 15 : 12;
 	const gypL = 57.74;
@@ -26,10 +25,10 @@
 		{#if showRatings}
 			<div class="tech-and-acc">
 				{#if mapRating.techRating}
-					<Value value={mapRating.techRating} digits={2} zero="" prefix={poodles ? 'Poodles: ' : 'Tech: '} suffix="★" />
+					<Value value={mapRating.techRating} digits={2} zero="" prefix="Tech: " suffix="★" />
 				{/if}
 				{#if mapRating.accRating}
-					<Value value={mapRating.accRating} digits={2} zero="" prefix={poodles ? 'Poodles: ' : 'Acc: '} suffix="★" />
+					<Value value={mapRating.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
 				{/if}
 			</div>
 		{/if}
@@ -105,7 +104,7 @@
 		{#if showRatings}
 			{#if mapRating.passRating}
 				<div class="pass">
-					<Value value={mapRating.passRating} digits={2} zero="" prefix={poodles ? 'Poodles: ' : 'Pass: '} suffix="★" />
+					<Value value={mapRating.passRating} digits={2} zero="" prefix="Pass: " suffix="★" />
 				</div>
 			{/if}
 		{/if}

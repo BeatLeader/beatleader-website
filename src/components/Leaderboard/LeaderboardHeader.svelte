@@ -60,14 +60,14 @@
 					</Badge>
 				{/if}
 
-				{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard?.difficultyBl?.poodles ? 3 : leaderboard.stats.status)}</span>{/if}
+				{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
 				{#if leaderboard?.stats?.type}
 					<MapTypeDescription type={leaderboard?.stats.type} />
 				{/if}
 			</div>
 			<h2 class="title is-6" style="display: contents;">
 				{#if leaderboard.stats && leaderboard.stats.passRating}
-					<MapTriangle mapRating={leaderboard.stats} showRatings={true} poodles={leaderboard?.difficultyBl?.poodles} />
+					<MapTriangle mapRating={leaderboard.stats} showRatings={true} />
 				{/if}
 			</h2>
 			{#if leaderboardGroup && leaderboardGroup.length > 1}
@@ -77,7 +77,7 @@
 							{#if option.timestamp}
 								{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
 							{:else}
-								{formatDiffStatus(leaderboard?.difficultyBl?.poodles ? 3 : option.status)}
+								{formatDiffStatus(option.status)}
 							{/if}
 						</option>
 					{/each}

@@ -46,7 +46,6 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
-    "atropos": "^1.0.2",
     "deep-equal": "^2.2.0",
     "sirv-cli": "^1.0.0",
     "suneditor": "^2.44.3",
