@@ -99,7 +99,10 @@
 						},
 					})),
 				];
-				signupOptions.push({component: LinkMenuItem, props: {label: 'More Followed...', url: `/followed`}});
+				signupOptions.push({
+					component: LinkMenuItem,
+					props: {label: starredFollowed?.length ? 'More Followed...' : 'All Followed...', url: `/followed`},
+				});
 			}
 
 			// playlists
