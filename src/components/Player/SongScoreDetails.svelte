@@ -121,6 +121,10 @@
 		display: contents !important;
 	}
 
+	.stats-grid :global(> * > *) {
+		align-self: stretch;
+	}
+
 	@media screen and (max-width: 767px) {
 		.stats-grid {
 			grid-template-columns: 1fr;

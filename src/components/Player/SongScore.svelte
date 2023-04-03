@@ -1,7 +1,9 @@
 <script>
 	import {fade, fly, slide} from 'svelte/transition';
+	import {navigate} from 'svelte-routing';
 	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
+	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
 	import SongInfo from './SongInfo.svelte';
 	import ScoreRank from './ScoreRank.svelte';
@@ -10,8 +12,6 @@
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
-	import {navigate} from 'svelte-routing';
-	import {configStore} from '../../stores/config';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -89,6 +89,10 @@
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
 	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
+
+	$: scoreBadgesHaveImprovements = [...(Object.values($configStore?.scoreBadges) ?? [])].some(row =>
+		row.some(col => !!col?.withImprovements || col?.secondary === 'improvement')
+	);
 </script>
 
 {#if songScore}
@@ -125,12 +129,20 @@
 				{/if}
 
 				<div class="timeset tablet-and-up">
-					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore?.timeSet ?? null} absolute={service === 'beatsavior'} />
+					<FormattedDate
+						date={score.timeSet}
+						prevPrefix="vs "
+						prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null}
+						absolute={service === 'beatsavior'} />
 				</div>
 			</span>
 
 			<span class="timeset mobile-only">
-				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore?.timeSet ?? null} absolute={service === 'beatsavior'} />
+				<FormattedDate
+					date={score.timeSet}
+					prevPrefix="vs "
+					prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null}
+					absolute={service === 'beatsavior'} />
 			</span>
 
 			<span class="song">
