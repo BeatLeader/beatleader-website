@@ -77,6 +77,22 @@
 		}
 	}
 
+	let showAnyDetails = true;
+
+	function checkShowAnyDetails(detailsPreferences) {
+		if (!detailsPreferences) return;
+
+		console.log(detailsPreferences);
+
+		showAnyDetails = false;
+		Object.keys(detailsPreferences).forEach(key => {
+			if (detailsPreferences[key] === true) {
+				showAnyDetails = true;
+				return;
+			}
+		});
+	}
+
 	$: leaderboard = opt(songScore, 'leaderboard', null);
 	$: score = opt(songScore, 'score', null);
 	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
@@ -93,6 +109,7 @@
 	$: scoreBadgesHaveImprovements = [...(Object.values($configStore?.scoreBadges) ?? [])].some(row =>
 		row.some(col => !!col?.withImprovements || col?.secondary === 'improvement')
 	);
+	$: checkShowAnyDetails($configStore?.scoreDetailsPreferences);
 </script>
 
 {#if songScore}
@@ -174,15 +191,17 @@
 				</div>
 			</span>
 
-			<div class="score-options-section">
-				<span
-					class="beat-savior-reveal clickable"
-					class:opened={showDetails}
-					on:click={() => (showDetails = !showDetails)}
-					title="Show details">
-					<i class="fas fa-chevron-down" />
-				</span>
-			</div>
+			{#if showAnyDetails}
+				<div class="score-options-section">
+					<span
+						class="beat-savior-reveal clickable"
+						class:opened={showDetails}
+						on:click={() => (showDetails = !showDetails)}
+						title="Show details">
+						<i class="fas fa-chevron-down" />
+					</span>
+				</div>
+			{/if}
 
 			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} {selectedMetric} on:badge-click />
 		</div>

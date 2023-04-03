@@ -1098,7 +1098,7 @@
 								<div class="stats-with-icons">
 									<LeaderboardStats {leaderboard} curve={true} />
 									<div>
-										<small class="level-author">{song.hash}</small>
+										<small class="level-author">{song.hash.toUpperCase()}</small>
 										{#if latestHash}
 											<i class="fa fa-check" style="color: lime;" title="Latest map version" />
 										{:else if latestHash == undefined}
