@@ -1,4 +1,5 @@
 <script>
+	import {onMount} from 'svelte';
 	import {fade} from 'svelte/transition';
 	import ssrConfig from '../ssr-config';
 	import {configStore} from '../stores/config';
@@ -53,6 +54,8 @@
 			await configStore.reset();
 		}
 	}
+
+	onMount(() => setTimeout(() => window.scrollTo(0, 0), 300));
 
 	$: settingsChanged = $configStore ? configStore.getSettingsChanged() : undefined;
 	$: animationSign = previousIndex == undefined ? 0 : selectedNavigationIndex >= previousIndex ? 1 : -1;
