@@ -6,11 +6,25 @@
 	export let selected = null;
 
 	const dispatch = createEventDispatcher();
+
+	let cols = 0;
+	let filteredBadges = badges;
+
+	$: if (Array.isArray(badges) && badges?.length) {
+		const emptyColIndexes = badges[0]
+			.map((_, idx) => (badges.every(row => !row?.[idx]?.component) ? idx : null))
+			.filter(idx => idx !== null);
+
+		cols = badges[0].length - emptyColIndexes.length;
+
+		filteredBadges = badges.map(row => row.filter((_, idx) => !emptyColIndexes.includes(idx)));
+	}
+	$: minWidth = cols ? 6.4 * cols + (cols - 1) * 0.4 : 0;
 </script>
 
-<div class="player-performance-badges">
-	{#if badges?.length}
-		{#each badges as row, rowIdx}
+<div class="player-performance-badges" style:--min-width={`${minWidth}em`} style:--cols={cols}>
+	{#if filteredBadges?.length}
+		{#each filteredBadges as row, rowIdx}
 			{#each row as badge, colIdx}
 				<span
 					class={`with-badge ${badge?.className ?? ''} ${additionalClass ?? ''}`}
@@ -36,10 +50,10 @@
 <style>
 	.player-performance-badges {
 		display: grid;
-		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
 		grid-column-gap: 0.4em;
 		grid-row-gap: 0.25em;
-		min-width: 20rem;
+		min-width: var(--min-width, 20rem);
 	}
 
 	.player-performance-badges :global(.compare) {
