@@ -17,9 +17,9 @@
 	import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte';
 	import Pager from '../components/Common/Pager.svelte';
 
-	import Pp from '../components/Score/Pp.svelte';
+	import Pp from '../components/Common/PerformanceBadge/Pp.svelte';
 	import Badge from '../components/Common/Badge.svelte';
-	import Accuracy from '../components/Common/Accuracy.svelte';
+	import Accuracy from '../components/Common/PerformanceBadge/Accuracy.svelte';
 
 	import Spinner from '../components/Common/Spinner.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';

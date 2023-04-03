@@ -1,8 +1,8 @@
 <script>
-	import {configStore} from '../../stores/config';
-	import {formatNumber, substituteVars} from '../../utils/format';
-	import {hoverable} from '../../svelte-utils/actions/hoverable';
-	import Value from '../Common/Value.svelte';
+	import {configStore} from '../../../stores/config';
+	import {formatNumber, substituteVars} from '../../../utils/format';
+	import {hoverable} from '../../../svelte-utils/actions/hoverable';
+	import Value from '../Value.svelte';
 
 	export let pp = 0;
 	export let bonusPp = 0;
@@ -17,6 +17,7 @@
 	export let color = 'var(--ppColour)';
 	export let whatIf = null;
 	export let suffix = 'pp';
+	export let secondaryMetric = 'weighted';
 
 	let tooltipOpacity = 0;
 	let tooltipX = null;
@@ -35,9 +36,17 @@
 	let forcePrev = false;
 	let prevTemplate = '( ${formatted} )';
 	let prevTitle = null;
+	let prevIcon = null;
 
 	function onUpdate(type, pp, weighted, improvements) {
+		prevIcon = null;
+
 		switch (type) {
+			case 'none':
+				prevValue = null;
+				prevTemplate = '';
+				break;
+
 			case 'improvement':
 				prevValue = improvements?.pp ?? null;
 				if (!prevValue) {
@@ -63,13 +72,44 @@
 				forcePrev = false;
 				prevTemplate = prevValue ? '[ ${formatted} ]' : '';
 				break;
+
 			case 'full-combo':
 				prevValue = fcPp;
 
-				prevWithSign = true;
+				prevWithSign = false;
 				prevAbsolute = true;
 				forcePrev = true;
-				prevTemplate = prevValue ? '[ ${formatted} ]' : '';
+				prevTemplate = prevValue ? '{ ${formatted} }' : '';
+				break;
+
+			case 'accPP':
+				prevValue = accPp;
+
+				prevWithSign = false;
+				prevAbsolute = true;
+				forcePrev = true;
+				prevTemplate = prevValue ? '${formatted}' : '';
+				prevIcon = 'fa-solid fa-crosshairs';
+				break;
+
+			case 'passPP':
+				prevValue = passPp;
+
+				prevWithSign = false;
+				prevAbsolute = true;
+				forcePrev = true;
+				prevTemplate = prevValue ? '${formatted}' : '';
+				prevIcon = 'fa-solid fa-unlock';
+				break;
+
+			case 'techPP':
+				prevValue = techPp;
+
+				prevWithSign = false;
+				prevAbsolute = true;
+				forcePrev = true;
+				prevTemplate = prevValue ? '${formatted}' : '';
+				prevIcon = 'fa-solid fa-wrench';
 				break;
 
 			case 'weighted':
@@ -87,7 +127,7 @@
 				? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}\n` : ''}${
 						improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}\n` : ''
 				  }${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}\n` : ''}`
-				: null;
+				: '';
 
 		if (bonusPp) {
 			prevTitle += `PP bonus: ${formatNumber(bonusPp)}${suffix}\n`;
@@ -106,7 +146,7 @@
 		}
 	}
 
-	$: onUpdate($configStore?.preferences?.ppMetric ?? 'weighted', pp, weighted, improvements);
+	$: onUpdate(secondaryMetric ?? 'weighted', pp, weighted, improvements);
 </script>
 
 <span class="pp" style="--color: {color}">
@@ -131,6 +171,9 @@
 				{formatted} <i class="fas fa-question" />
 			</span>
 			<svelte:fragment slot="prev" let:formatted let:value>
+				{#if prevIcon && formatted?.length}
+					<i class={prevIcon} />
+				{/if}
 				{substituteVars(prevTemplate, {formatted})}
 			</svelte:fragment>
 		</Value>

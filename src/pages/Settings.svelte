@@ -138,7 +138,7 @@
 		margin: 0.5em;
 		border-radius: 0.4em;
 		cursor: pointer;
-		min-width: 7em;
+		min-width: 7.5em;
 		margin-left: 0;
 		user-select: none;
 	}

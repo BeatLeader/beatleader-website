@@ -97,7 +97,7 @@
 				</span>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} unmodifiedScore={true} />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} />
 		</div>
 		<PlayerNameWithFlag player={score.player} on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 

@@ -1,5 +1,5 @@
 <script>
-	import {onMount} from 'svelte';
+	import {getContext, onMount} from 'svelte';
 	import {configStore} from '../../stores/config';
 	import {round, formatNumber, substituteVars} from '../../utils/format';
 
@@ -13,6 +13,7 @@
 	export let withZeroPrefix = false;
 	export let suffix = '';
 	export let suffixPrev = null;
+	export let prefixPrev = null;
 	export let withZeroSuffix = false;
 	export let inline = false;
 	export let useColorsForValue = false;
@@ -22,6 +23,9 @@
 	export let prevAbsolute = false;
 	export let forcePrev = false;
 	export let prevWithSign = true;
+	export let canBeSetup = true;
+
+	const isDemo = getContext('isDemo') ?? false;
 
 	let resolvedValue = value;
 	let unsubscribe = null;
@@ -35,8 +39,8 @@
 
 	function getFormattedValue(value, digits, withSign, minValue, prefix, suffix, withZeroPrefix, withZeroSuffix) {
 		return Number.isFinite(value) && Math.abs(value) > minValue
-			? prefix + formatNumber(value, digits, withSign) + suffix
-			: (withZeroPrefix ? prefix : '') + zero + (withZeroSuffix ? suffix : '');
+			? (prefix ?? '') + formatNumber(value, digits, withSign) + (suffix ?? '')
+			: (withZeroPrefix ? prefix ?? '' : '') + zero + (withZeroSuffix ? suffix ?? '' : '');
 	}
 
 	onMount(() => {
@@ -65,18 +69,20 @@
 		(configStore,
 		$configStore,
 		prevValue && Number.isFinite(prevValue)
-			? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, prevWithSign) + suffix
+			? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits, prevWithSign) + (suffix ?? '')
 			: '');
 	$: prevLabelFormatted =
 		(configStore,
 		$configStore,
-		prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits) + suffix : '');
+		prevValue && Number.isFinite(prevValue) ? (prevLabel ? prevLabel + ': ' : '') + formatNumber(prevValue, digits) + (suffix ?? '') : '');
 	$: prevDiff = Number.isFinite(prevValue) ? (prevAbsolute ? prevValue : resolvedValue - prevValue) * (reversePrevSign ? -1 : 1) : null;
 	$: prevDiffFormatted = Number.isFinite(prevDiff)
 		? (configStore,
 		  $configStore,
 		  resolvedValue,
-		  Number.isFinite(prevDiff) ? formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix) : '')
+		  Number.isFinite(prevDiff)
+				? (prefixPrev ?? '') + formatNumber(prevDiff, digits, !prevAbsolute) + (suffixPrev ? suffixPrev : suffix ?? '')
+				: '')
 		: null;
 	$: prevClass =
 		(prevDiff !== null ? (prevDiff > minValue ? 'inc' : prevDiff < -minValue ? 'dec' : 'zero') : '') +
@@ -87,8 +93,10 @@
 	$: prevTitleFormatted = substituteVars(prevTitle ? prevTitle : '${value}', {value: prevLabelFormatted});
 </script>
 
-<span class={mainClass} {title}><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span>{#if showPrevValue}
-	<small class={`has-pointer-events ${prevClass}`} title={prevTitleFormatted}
+<span class={mainClass} title={isDemo && canBeSetup ? 'Click to setup' : title}
+	><slot name="value" value={resolvedValue} {formatted}>{formatted}</slot></span
+>{#if showPrevValue}
+	<small class={`has-pointer-events ${prevClass}`} title={isDemo && canBeSetup ? 'Click to setup' : prevTitleFormatted}
 		><slot name="prev" value={prevValue} formatted={prevFormatted} diff={prevDiff} diffFormatted={prevDiffFormatted}
 			>{prevDiffFormatted}</slot
 		></small

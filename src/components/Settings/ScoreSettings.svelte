@@ -1,14 +1,17 @@
 <script>
-	import {configStore, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config';
+	import {fly, fade} from 'svelte/transition';
+	import stringify from 'json-stable-stringify';
+	import {configStore, DEFAULT_CONFIG, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config';
+	import createAccountStore from '../../stores/beatleader/account';
+	import {availableMetrics, getDefaultMetricWithOptions} from '../../utils/beatleader/performance-badge';
+	import {deepClone} from '../../utils/js';
 	import Switch from '../Common/Switch.svelte';
 	import DemoScores from './DemoScores.svelte';
 	import Select from './Select.svelte';
-	import createAccountStore from '../../stores/beatleader/account';
-	import {fly, fade} from 'svelte/transition';
 
 	export let animationSign = 1;
 
-	const DEFAULT_PP_METRIC = 'weighted';
+	const DEFAULT_ACC_CHART = 1;
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 
@@ -17,11 +20,15 @@
 		{name: 'In details', value: 'in-details'},
 	];
 
-	const ppMetrics = [
-		{name: 'Weighted PP', value: DEFAULT_PP_METRIC},
-		{name: 'PP improvement', value: 'improvement'},
-		{name: 'Total PP gain', value: 'total-gain'},
-		{name: 'PP on full combo', value: 'full-combo'},
+	const badgeLayouts = [
+		{name: 'One row layout', value: 1},
+		{name: 'Two rows layout', value: 2},
+		{name: 'Three rows layout', value: 3},
+	];
+
+	const accCharts = [
+		{name: 'Map acc', value: 0},
+		{name: 'Underswings', value: 1},
 	];
 
 	const oneclickOptions = [
@@ -30,16 +37,40 @@
 	];
 
 	let currentLocale = DEFAULT_LOCALE;
-	let currentPpMetric = DEFAULT_PP_METRIC;
+	let currentScoreBadges = null;
+	let currentScoreBadgeSelected = null;
+	let currentScoreMetric = null;
+	let currentBadgeLayout = badgeLayouts[0].value;
+	let currentAccChartIndex = DEFAULT_ACC_CHART;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
 
+	const scoreDetailsKeyDescription = {
+		showMapInfo: 'Map info',
+		showScoreMetrics: 'Score metrics',
+		showHandsAcc: 'Hands acc',
+		showAccChart: 'Acc chart',
+		showSliceDetails: 'Slice details',
+		showAccSpreadChart: 'Acc spread chart',
+		showLeaderboard: 'Map leaderboard',
+	};
+
+	const account = createAccountStore();
+
 	function onConfigUpdated(config) {
 		if (config?.locale != currentLocale) currentLocale = config.locale;
-		if (config?.preferences?.ppMetric != currentPpMetric) currentPpMetric = config?.preferences?.ppMetric ?? DEFAULT_PP_METRIC;
+		if (config?.scoreDetailsPreferences?.defaultAccChartIndex != currentAccChartIndex)
+			currentAccChartIndex = config?.scoreDetailsPreferences?.defaultAccChartIndex ?? DEFAULT_ACC_CHART;
 		if (config?.scoreComparison != currentScoreComparisonMethod)
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
 		if (config?.preferences?.oneclick != currentOneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
+		if (stringify(config?.scoreBadges) !== stringify(currentScoreBadges)) {
+			currentScoreBadges = deepClone(Object.values(config?.scoreBadges) ?? DEFAULT_CONFIG.scoreBadges);
+			currentScoreBadgeSelected = null;
+			currentScoreMetric = null;
+		}
+		if (config?.scorePreferences?.badgeRows !== currentBadgeLayout)
+			currentBadgeLayout = badgeLayouts.find(b => b.value === config?.scorePreferences?.badgeRows ?? 2)?.value ?? badgeLayouts[0].value;
 	}
 
 	async function settempsetting(key, subkey, value) {
@@ -52,71 +83,132 @@
 		}
 	}
 
-	function preferencesKeyDescription(key) {
-		switch (key) {
-			case 'showReplayCounter':
-				return 'Show watch counter';
+	function onBadgeClick(e) {
+		if (!Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
 
-			default:
-				break;
+		currentScoreBadgeSelected = e.detail;
+		if (!currentScoreBadges?.[e.detail.row]?.[e.detail.col]) {
+			currentScoreBadges[e.detail.row][e.detail.col] = {metric: '__not-set'};
 		}
-		return key;
+		currentScoreMetric = currentScoreBadges?.[e.detail.row]?.[e.detail.col];
 	}
 
-	const account = createAccountStore();
+	function updateSelectedBadge(newValue) {
+		if (!Number.isFinite(currentScoreBadgeSelected?.row) || !Number.isFinite(currentScoreBadgeSelected?.col)) return;
+
+		currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col] = newValue;
+		currentScoreMetric = currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col];
+	}
+
+	function onMetricChanged() {
+		updateSelectedBadge(getDefaultMetricWithOptions(currentScoreMetric.metric));
+	}
+
+	function onMetricOptionChanged() {
+		const metric = availableMetrics.find(m => m.metric === currentScoreMetric?.metric);
+		if (!metric) return;
+
+		const options = (metric?.options ?? []).reduce(
+			(acc, o) => ({...acc, [o.name]: currentScoreMetric?.[o.name] ?? metric?.default?.[o.name] ?? null}),
+			{}
+		);
+		updateSelectedBadge({metric: currentScoreMetric.metric, ...options});
+	}
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
 	$: settempsetting('locale', null, currentLocale);
-	$: settempsetting('preferences', 'ppMetric', currentPpMetric);
+	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
+	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
+	$: settempsetting('scoreBadges', null, currentScoreBadges);
 
-	$: scorePreferences = $configStore.scorePreferences;
+	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
 
-	$: preferencesList = Object.keys(scorePreferences);
-	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key != 'delete');
+	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key !== 'delete');
+
+	$: currentScoreMetricOptions = availableMetrics.find(m => m.metric === currentScoreMetric?.metric)?.options ?? null;
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
-	<DemoScores playerId={$account?.player?.playerId ?? '76561199104169308'} />
-
-	<div class="switches-container">
-		<span>Score settings:</span>
-		<div class="switches">
-			{#each preferencesList as key}
-				<Switch
-					value={scorePreferences[key]}
-					label={preferencesKeyDescription(key)}
-					fontSize={12}
-					design="slider"
-					on:click={() => settempsetting('scorePreferences', key, !scorePreferences[key])} />
-			{/each}
-		</div>
-	</div>
-
-	<div class="switches-container">
-		<span>Buttons to show:</span>
-		<div class="switches">
-			{#each scoreIcons as key}
-				<Switch
-					value={visibleScoreIcons[key]}
-					label={key}
-					fontSize={12}
-					design="slider"
-					on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
-			{/each}
-		</div>
-	</div>
+	<DemoScores playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 
 	<div class="options">
+		<section class="option full">
+			<label title="Determines which metrics are shown at score">Score metrics settings:</label>
+			<div class="single">
+				<Select bind:value={currentBadgeLayout}>
+					{#each badgeLayouts as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
+			</div>
+		</section>
+
+		{#if currentScoreMetric}
+			<section class="option">
+				<label>Metric</label>
+
+				<Select bind:value={currentScoreMetric.metric} on:change={onMetricChanged}>
+					{#each availableMetrics as option (option.metric)}
+						<option value={option.metric}>{option.name}</option>
+					{/each}
+				</Select>
+			</section>
+
+			{#if currentScoreMetricOptions?.length}
+				{#each currentScoreMetricOptions as option}
+					<section class="option">
+						<label>{option?.label ?? option?.name}</label>
+						<Select bind:value={currentScoreMetric[option.name]} on:change={onMetricOptionChanged}>
+							{#each option.values as option (option.value)}
+								<option value={option.value}>{option.name}</option>
+							{/each}
+						</Select>
+					</section>
+				{/each}
+			{/if}
+		{:else}
+			<section class="option">
+				<label>Metric</label>
+				<div>Click first on the score metric badge you want to set.</div>
+			</section>
+		{/if}
+
+		<section class="option full">
+			<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
+			<div class="switches">
+				{#each scoreIcons as key}
+					<Switch
+						value={visibleScoreIcons[key]}
+						label={key}
+						fontSize={12}
+						design="slider"
+						on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
+				{/each}
+			</div>
+		</section>
+
+		<section class="option full">
+			<label title="Determines which data should be displayed in score details">Score details settings:</label>
+			<div class="switches">
+				{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex'].includes(k)) as key}
+					<Switch
+						value={scoreDetailsPreferences[key]}
+						label={scoreDetailsKeyDescription[key]}
+						fontSize={12}
+						design="slider"
+						on:click={() => settempsetting('scoreDetailsPreferences', key, !scoreDetailsPreferences[key])} />
+				{/each}
+			</div>
+		</section>
+
 		<section class="option">
-			<label
-				title="Determines which metric will be displayed at the score under PP, if available. The others will be displayed in the tooltip."
-				>PP metric</label>
-			<Select bind:value={currentPpMetric}>
-				{#each ppMetrics as option (option.value)}
+			<label title="Determines which acc chart displays by default.">Default acc chart in details</label>
+			<Select bind:value={currentAccChartIndex}>
+				{#each accCharts as option (option.value)}
 					<option value={option.value}>{option.name}</option>
 				{/each}
 			</Select>
@@ -158,17 +250,24 @@
 		display: flex;
 		flex-direction: column;
 	}
+
 	.options {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		grid-gap: 1em;
 		align-items: start;
 		justify-items: start;
+		margin-top: 1rem;
 	}
+
 	.option {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+	}
+
+	.option.full {
+		grid-column: span 2;
 	}
 
 	label {
@@ -186,6 +285,14 @@
 		flex-wrap: wrap;
 		justify-content: space-evenly;
 		padding: 0.5em;
+	}
+
+	.switches.start {
+		justify-content: flex-start;
+	}
+
+	.single {
+		width: calc(50% - 1rem);
 	}
 
 	@media screen and (max-width: 600px) {

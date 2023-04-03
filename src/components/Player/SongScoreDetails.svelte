@@ -1,6 +1,7 @@
 <script>
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
+	import {configStore} from '../../stores/config';
 	import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic';
 	import BeatSaviorDetails from '../BeatSavior/Details.svelte';
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
@@ -42,25 +43,23 @@
 
 <section class="details">
 	{#if songScore}
-		<div class="tab">
-			<LeaderboardStats {leaderboard} />
-		</div>
-
-		{#await beatSaviorPromise}
+		{#if $configStore?.scoreDetailsPreferences?.showMapInfo}
 			<div class="tab">
-				<Spinner />
-			</div>
-		{:then beatSavior}
-			<div class="tab">
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} />
-			</div>
-		{/await}
-
-		{#if score?.replay}
-			<div class="tab">
-				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
+				<LeaderboardStats {leaderboard} />
 			</div>
 		{/if}
+
+		<div class="stats-grid">
+			{#await beatSaviorPromise}
+				<Spinner />
+			{:then beatSavior}
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} />
+			{/await}
+
+			{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}
+				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
+			{/if}
+		</div>
 
 		{#if showAccSaberLeaderboard}
 			<div class="tab">
@@ -76,7 +75,7 @@
 					{fixedBrowserTitle}
 					higlightedScore={score} />
 			</div>
-		{:else if !noSsLeaderboard}
+		{:else if !noSsLeaderboard && $configStore?.scoreDetailsPreferences?.showLeaderboard}
 			<div class="tab">
 				<LeaderboardPage
 					leaderboardId={leaderboard.leaderboardId}
@@ -110,5 +109,21 @@
 
 	.tab > :global(*) {
 		grid-area: 1 / 1 / 1 / 1;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		align-items: center;
+	}
+
+	.stats-grid :global(> *) {
+		display: contents !important;
+	}
+
+	@media screen and (max-width: 767px) {
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>
