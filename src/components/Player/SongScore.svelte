@@ -82,8 +82,6 @@
 	function checkShowAnyDetails(detailsPreferences) {
 		if (!detailsPreferences) return;
 
-		console.log(detailsPreferences);
-
 		showAnyDetails = false;
 		Object.keys(detailsPreferences).forEach(key => {
 			if (detailsPreferences[key] === true) {
