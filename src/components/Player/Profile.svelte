@@ -36,6 +36,7 @@
 	export let avatarHash = null;
 	export let fixedBrowserTitle = null;
 	export let pinnedScores = true;
+	export let clanEffects = true;
 
 	let editModel = null;
 
@@ -310,7 +311,7 @@
 </script>
 
 <svelte:window on:keyup={onKeyUp} />
-{#if playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
+{#if clanEffects && playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
 	<Rain />
 {/if}
 

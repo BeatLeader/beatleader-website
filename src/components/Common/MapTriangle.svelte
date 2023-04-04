@@ -22,9 +22,9 @@
 
 {#if mapRating}
 	<a
-		href="/leaderboards/1?type=ranked&accrating_from={mapRating.accRating - 0.5}&accrating_to={mapRating.accRating +
-			0.5}&passrating_from={mapRating.passRating - 1}&passrating_to={mapRating.passRating + 1}&techrating_from={mapRating.techRating -
-			2}&techrating_to={mapRating.techRating + 2}"
+		href="/leaderboards/1?type=ranked&accrating_from={mapRating.accRating - 0.3}&accrating_to={mapRating.accRating +
+			0.3}&passrating_from={mapRating.passRating - 0.7}&passrating_to={mapRating.passRating + 0.7}&techrating_from={mapRating.techRating -
+			1.5}&techrating_to={mapRating.techRating + 1.5}"
 		title={showRatings ? 'Show similar maps' : null}
 		class="triangle-container">
 		{#if showRatings}
