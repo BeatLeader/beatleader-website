@@ -40,7 +40,7 @@ export const BL_API_LEADERBOARD_URL =
 	'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
-	'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
+	'leaderboards?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
@@ -285,11 +285,6 @@ export default (options = {}) => {
 		fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);
 
 	const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
-		if (filters && filters?.type !== 'ranked') {
-			delete filters.stars_from;
-			delete filters.stars_to;
-		}
-
 		return fetchJson(
 			substituteVars(BL_API_LEADERBOARDS_URL, {page, ...filters}, true, true),
 			{...options, credentials: 'include'},
@@ -298,11 +293,6 @@ export default (options = {}) => {
 	};
 
 	const leaderboardsGrouped = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
-		if (filters && filters?.type !== 'ranked') {
-			delete filters.stars_from;
-			delete filters.stars_to;
-		}
-
 		return fetchJson(
 			substituteVars(BL_API_LEADERBOARDS_GROUPPED_URL, {page, ...filters}, true, true),
 			{...options, credentials: 'include'},

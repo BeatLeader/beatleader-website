@@ -21,7 +21,12 @@
 </script>
 
 {#if mapRating}
-	<div class="triangle-container">
+	<a
+		href="/leaderboards/1?type=ranked&accrating_from={mapRating.accRating - 0.5}&accrating_to={mapRating.accRating +
+			0.5}&passrating_from={mapRating.passRating - 1}&passrating_to={mapRating.passRating + 1}&techrating_from={mapRating.techRating -
+			2}&techrating_to={mapRating.techRating + 2}"
+		title={showRatings ? 'Show similar maps' : null}
+		class="triangle-container">
 		{#if showRatings}
 			<div class="tech-and-acc">
 				{#if mapRating.techRating}
@@ -108,7 +113,7 @@
 				</div>
 			{/if}
 		{/if}
-	</div>
+	</a>
 {/if}
 
 <style>

@@ -63,6 +63,12 @@
 		{key: 'mytype', default: '', process: processStringFilter},
 		{key: 'stars_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
 		{key: 'stars_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
+		{key: 'accrating_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
+		{key: 'accrating_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
+		{key: 'passrating_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
+		{key: 'passrating_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
+		{key: 'techrating_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
+		{key: 'techrating_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
@@ -284,11 +290,11 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	function onStarsChanged(event) {
+	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
-		currentFilters.stars_from = event.detail.values[0];
-		currentFilters.stars_to = event.detail.values[1];
+		currentFilters[ratingType + '_from'] = event.detail.values[0];
+		currentFilters[ratingType + '_to'] = event.detail.values[1];
 		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
@@ -542,10 +548,7 @@
 					on:change={onRequirementsChanged} />
 			</section>
 
-			<section
-				class="filter"
-				class:disabled={currentFilters.type !== 'ranked'}
-				title={currentFilters.type !== 'ranked' ? 'Filter only available for ranked maps' : null}>
+			<section class="filter">
 				<label>
 					Stars
 					<span>{formatNumber(currentFilters.stars_from)}<sup>★</sup></span> to
@@ -562,8 +565,67 @@
 					pips
 					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 					all="label"
-					on:change={debouncedOnStarsChanged}
-					disabled={currentFilters.type !== 'ranked'} />
+					on:change={e => debouncedOnStarsChanged(e, 'stars')} />
+			</section>
+
+			<section class="filter">
+				<label>
+					Acc rating
+					<span>{formatNumber(currentFilters.accrating_from)}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.accrating_to)}<sup>★</sup></span>
+				</label>
+				<RangeSlider
+					range
+					min={Ranked_Const.MIN_STARS}
+					max={Ranked_Const.MAX_STARS}
+					step={Ranked_Const.STAR_GRANULARITY}
+					values={[currentFilters.accrating_from, currentFilters.accrating_to]}
+					float
+					hoverable
+					pips
+					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+					all="label"
+					on:change={e => debouncedOnStarsChanged(e, 'accrating')} />
+			</section>
+
+			<section class="filter">
+				<label>
+					Pass rating
+					<span>{formatNumber(currentFilters.passrating_from)}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.passrating_to)}<sup>★</sup></span>
+				</label>
+				<RangeSlider
+					range
+					min={Ranked_Const.MIN_STARS}
+					max={Ranked_Const.MAX_STARS}
+					step={Ranked_Const.STAR_GRANULARITY}
+					values={[currentFilters.passrating_from, currentFilters.passrating_to]}
+					float
+					hoverable
+					pips
+					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+					all="label"
+					on:change={e => debouncedOnStarsChanged(e, 'passrating')} />
+			</section>
+
+			<section class="filter">
+				<label>
+					Tech rating
+					<span>{formatNumber(currentFilters.techrating_from)}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.techrating_to)}<sup>★</sup></span>
+				</label>
+				<RangeSlider
+					range
+					min={Ranked_Const.MIN_STARS}
+					max={Ranked_Const.MAX_STARS}
+					step={Ranked_Const.STAR_GRANULARITY}
+					values={[currentFilters.techrating_from, currentFilters.techrating_to]}
+					float
+					hoverable
+					pips
+					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+					all="label"
+					on:change={e => debouncedOnStarsChanged(e, 'techrating')} />
 			</section>
 
 			<section class="filter">
