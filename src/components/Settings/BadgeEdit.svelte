@@ -4,13 +4,16 @@
 	import Select from './Select.svelte';
 
 	export let badge = null;
+	export let level = 1;
+	export let idx = 0;
 
 	const dispatch = createEventDispatcher();
 
 	function onMetricChanged() {
 		if (!badge?.metric) return;
 
-		dispatch('change', getDefaultMetricWithOptions(badge.metric));
+		const alternatives = level === 0 ? {alternatives: badge?.alternatives ?? []} : {};
+		dispatch('change', {...getDefaultMetricWithOptions(badge.metric), ...alternatives});
 	}
 
 	function onMetricOptionChanged() {
@@ -25,12 +28,28 @@
 		dispatch('change', {metric: badge.metric, ...options});
 	}
 
+	function onAdd() {
+		if (!Array.isArray(badge?.alternatives)) badge.alternatives = [];
+
+		badge.alternatives = [...badge.alternatives, {metric: '__not-set'}];
+
+		dispatch('change', badge);
+	}
+
 	$: badgeOptions = availableMetrics.find(m => m.metric === badge?.metric)?.options ?? null;
 </script>
 
 {#if badge}
+	{#if level > 1}
+		<section class="option full alternative">
+			<label
+				>Metric {idx + 1}
+				<i class="fas fa-times remove" title="Remove metric" on:click={() => dispatch('remove', idx)} /></label>
+		</section>
+	{/if}
+
 	<section class="option">
-		<label>Metric</label>
+		<label> Primary metric </label>
 
 		<Select bind:value={badge.metric} on:change={onMetricChanged}>
 			{#each availableMetrics as option (option.metric)}
@@ -51,4 +70,48 @@
 			</section>
 		{/each}
 	{/if}
+
+	{#if level === 1}
+		<section class="option full">
+			<label>Alternative metrics <i class="fa-solid fa-circle-plus add" title="Add metric" on:click={onAdd} /></label>
+			<small
+				>They will be shown if the primary metric does not exist, such as PP for unrankeds, and rotated when clicked if more are selected.</small>
+		</section>
+
+		{#each badge?.alternatives ?? [] as alternative, idx}
+			<svelte:self
+				badge={alternative}
+				level={level + 1}
+				{idx}
+				on:change={e => {
+					badge.alternatives[idx] = e.detail;
+					dispatch('change', badge);
+				}}
+				on:remove={() => {
+					badge.alternatives = badge.alternatives.filter((_, bidx) => bidx !== idx);
+					dispatch('change', badge);
+				}} />
+		{/each}
+	{/if}
 {/if}
+
+<style>
+	.option.full label {
+		margin-top: 0.25rem;
+		font-weight: bold;
+	}
+
+	.option.alternative label {
+		font-size: 0.85em;
+	}
+
+	i {
+		cursor: pointer !important;
+	}
+	i.add {
+		color: var(--increase);
+	}
+	i.remove {
+		color: var(--decrease);
+	}
+</style>
