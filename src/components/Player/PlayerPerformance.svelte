@@ -76,8 +76,17 @@
 		}
 
 		return config
-			.map(row => row.map(col => getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo)))
-			.filter(row => row.some(col => col?.component))
+			.map(row =>
+				row.map(col => {
+					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo);
+					const alternativeBadges = (col?.alternatives ?? []).map(a =>
+						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo)
+					);
+
+					return [mainBadge, ...alternativeBadges].filter(b => b?.component);
+				})
+			)
+			.filter(row => row.some(col => col?.length))
 			.slice(0, rows);
 	}
 

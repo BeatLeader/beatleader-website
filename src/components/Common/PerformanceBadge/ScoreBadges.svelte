@@ -1,23 +1,30 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 
 	export let badges = null;
 	export let additionalClass = null;
 	export let selected = null;
+
+	const isDemo = getContext('isDemo') ?? false;
 
 	const dispatch = createEventDispatcher();
 
 	let cols = 0;
 	let filteredBadges = badges;
 
+	function rotateBadge(col, rowIdx, colIdx) {
+		if (!filteredBadges?.[rowIdx]?.[colIdx]?.badges) return;
+
+		filteredBadges[rowIdx][colIdx].idx++;
+		if (filteredBadges[rowIdx][colIdx].idx > col.badges.length - 1) filteredBadges[rowIdx][colIdx].idx = 0;
+	}
+
 	$: if (Array.isArray(badges) && badges?.length) {
-		const emptyColIndexes = badges[0]
-			.map((_, idx) => (badges.every(row => !row?.[idx]?.component) ? idx : null))
-			.filter(idx => idx !== null);
+		const emptyColIndexes = badges[0].map((_, idx) => (badges.every(row => !row?.[idx]?.length) ? idx : null)).filter(idx => idx !== null);
 
 		cols = badges[0].length - emptyColIndexes.length;
 
-		filteredBadges = badges.map(row => row.filter((_, idx) => !emptyColIndexes.includes(idx)));
+		filteredBadges = badges.map(row => row.filter((_, idx) => !emptyColIndexes.includes(idx)).map(col => ({idx: 0, badges: col})));
 	}
 	$: minWidth = cols ? 6.4 * cols + (cols - 1) * 0.4 : 0;
 </script>
@@ -25,19 +32,23 @@
 <div class="player-performance-badges" style:--min-width={`${minWidth}em`} style:--cols={cols}>
 	{#if filteredBadges?.length}
 		{#each filteredBadges as row, rowIdx}
-			{#each row as badge, colIdx}
+			{#each row as col, colIdx}
 				<span
-					class={`with-badge ${badge?.className ?? ''} ${additionalClass ?? ''}`}
+					class={`with-badge ${col?.badges?.[col?.idx ?? 0]?.className ?? ''} ${additionalClass ?? ''}`}
+					class:multi={!isDemo && col?.badges?.length > 1}
 					class:selected={rowIdx === selected?.row && colIdx === selected?.col}
-					title={badge.title}
-					on:click={() => dispatch('badge-click', {row: rowIdx, col: colIdx})}>
-					{#if badge}
-						<svelte:component this={badge.component} {...badge.componentProps}>
+					title={col.title}
+					on:click={() => {
+						if (!isDemo && col?.badges?.length > 1) rotateBadge(col, rowIdx, colIdx);
+						dispatch('badge-click', {row: rowIdx, col: colIdx});
+					}}>
+					{#if col?.badges?.length}
+						<svelte:component this={col?.badges?.[col?.idx ?? 0].component} {...col?.badges?.[col?.idx ?? 0].componentProps}>
 							<span slot="label">
-								{#if badge.icon}
-									<i class={badge.icon} />
+								{#if col?.badges?.[col?.idx ?? 0].icon}
+									<i class={col.badges[col?.idx ?? 0].icon} />
 								{/if}
-								<svelte:component this={badge.slotComponent} {...badge.slotComponentProps} />
+								<svelte:component this={col?.badges?.[col?.idx ?? 0].slotComponent} {...col?.badges?.[col?.idx ?? 0].slotComponentProps} />
 							</span>
 						</svelte:component>
 					{/if}
@@ -58,6 +69,11 @@
 
 	.player-performance-badges :global(.compare) {
 		opacity: 0.7;
+	}
+
+	.with-badge.multi,
+	.with-badge.multi :global(*[title]) {
+		cursor: pointer !important;
 	}
 
 	.beatSavior {
