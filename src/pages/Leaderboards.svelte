@@ -383,6 +383,7 @@
 		};
 	});
 	$: metaDescription = 'Search for ranked maps, playlists and leaderboards for Beat Saber';
+	$: starFiltersDisabled = currentFilters.type !== 'ranked' && currentFilters.type !== 'nominated' && currentFilters.type !== 'qualified';
 </script>
 
 <svelte:head>
@@ -548,7 +549,10 @@
 					on:change={onRequirementsChanged} />
 			</section>
 
-			<section class="filter">
+			<section
+				class="filter"
+				class:disabled={starFiltersDisabled}
+				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Stars
 					<span>{formatNumber(currentFilters.stars_from)}<sup>★</sup></span> to
@@ -565,10 +569,14 @@
 					pips
 					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'stars')} />
+					on:change={e => debouncedOnStarsChanged(e, 'stars')}
+					disabled={starFiltersDisabled} />
 			</section>
 
-			<section class="filter">
+			<section
+				class="filter"
+				class:disabled={starFiltersDisabled}
+				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Acc rating
 					<span>{formatNumber(currentFilters.accrating_from)}<sup>★</sup></span> to
@@ -585,10 +593,14 @@
 					pips
 					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'accrating')} />
+					on:change={e => debouncedOnStarsChanged(e, 'accrating')}
+					disabled={starFiltersDisabled} />
 			</section>
 
-			<section class="filter">
+			<section
+				class="filter"
+				class:disabled={starFiltersDisabled}
+				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Pass rating
 					<span>{formatNumber(currentFilters.passrating_from)}<sup>★</sup></span> to
@@ -605,10 +617,14 @@
 					pips
 					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'passrating')} />
+					on:change={e => debouncedOnStarsChanged(e, 'passrating')}
+					disabled={starFiltersDisabled} />
 			</section>
 
-			<section class="filter">
+			<section
+				class="filter"
+				class:disabled={starFiltersDisabled}
+				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Tech rating
 					<span>{formatNumber(currentFilters.techrating_from)}<sup>★</sup></span> to
@@ -625,7 +641,8 @@
 					pips
 					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
 					all="label"
-					on:change={e => debouncedOnStarsChanged(e, 'techrating')} />
+					on:change={e => debouncedOnStarsChanged(e, 'techrating')}
+					disabled={starFiltersDisabled} />
 			</section>
 
 			<section class="filter">

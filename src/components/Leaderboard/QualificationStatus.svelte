@@ -143,7 +143,9 @@
 
 <style>
 	.qualification-description {
-		flex-wrap: wrap;
+		display: flex;
+		gap: 0.5em;
+		flex-direction: column;
 		margin-top: 0.25em;
 	}
 
