@@ -8,6 +8,7 @@
 	import Switch from '../Common/Switch.svelte';
 	import DemoScores from './DemoScores.svelte';
 	import Select from './Select.svelte';
+	import BadgeEdit from './BadgeEdit.svelte';
 
 	export let animationSign = 1;
 
@@ -93,26 +94,11 @@
 		currentScoreMetric = currentScoreBadges?.[e.detail.row]?.[e.detail.col];
 	}
 
-	function updateSelectedBadge(newValue) {
-		if (!Number.isFinite(currentScoreBadgeSelected?.row) || !Number.isFinite(currentScoreBadgeSelected?.col)) return;
+	function updateSelectedBadge(e) {
+		if (!e?.detail || !Number.isFinite(currentScoreBadgeSelected?.row) || !Number.isFinite(currentScoreBadgeSelected?.col)) return;
 
-		currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col] = newValue;
+		currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col] = e.detail;
 		currentScoreMetric = currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col];
-	}
-
-	function onMetricChanged() {
-		updateSelectedBadge(getDefaultMetricWithOptions(currentScoreMetric.metric));
-	}
-
-	function onMetricOptionChanged() {
-		const metric = availableMetrics.find(m => m.metric === currentScoreMetric?.metric);
-		if (!metric) return;
-
-		const options = (metric?.options ?? []).reduce(
-			(acc, o) => ({...acc, [o.name]: currentScoreMetric?.[o.name] ?? metric?.default?.[o.name] ?? null}),
-			{}
-		);
-		updateSelectedBadge({metric: currentScoreMetric.metric, ...options});
 	}
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
@@ -128,8 +114,6 @@
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
 
 	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key !== 'delete');
-
-	$: currentScoreMetricOptions = availableMetrics.find(m => m.metric === currentScoreMetric?.metric)?.options ?? null;
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
@@ -148,28 +132,7 @@
 		</section>
 
 		{#if currentScoreMetric}
-			<section class="option">
-				<label>Metric</label>
-
-				<Select bind:value={currentScoreMetric.metric} on:change={onMetricChanged}>
-					{#each availableMetrics as option (option.metric)}
-						<option value={option.metric}>{option.name}</option>
-					{/each}
-				</Select>
-			</section>
-
-			{#if currentScoreMetricOptions?.length}
-				{#each currentScoreMetricOptions as option}
-					<section class="option">
-						<label>{option?.label ?? option?.name}</label>
-						<Select bind:value={currentScoreMetric[option.name]} on:change={onMetricOptionChanged}>
-							{#each option.values as option (option.value)}
-								<option value={option.value}>{option.name}</option>
-							{/each}
-						</Select>
-					</section>
-				{/each}
-			{/if}
+			<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
 		{:else}
 			<section class="option">
 				<label>Metric</label>
@@ -260,17 +223,17 @@
 		margin-top: 1rem;
 	}
 
-	.option {
+	* :global(.option) {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 	}
 
-	.option.full {
+	* :global(.option.full) {
 		grid-column: span 2;
 	}
 
-	label {
+	* :global(label) {
 		display: block;
 		font-size: 0.75em;
 		letter-spacing: 0.1em;

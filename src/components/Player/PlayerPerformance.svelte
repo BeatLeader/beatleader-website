@@ -2,7 +2,7 @@
 	import {getContext} from 'svelte';
 	import {configStore} from '../../stores/config';
 	import {getPerformanceBadge} from '../../utils/beatleader/performance-badge';
-	import {opt} from '../../utils/js';
+	import {deepClone, opt} from '../../utils/js';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import ScoreBadges from '../Common/PerformanceBadge/ScoreBadges.svelte';
 
@@ -44,8 +44,8 @@
 		};
 	}
 
-	function updateBadges(service, config, rows, score, improvements, beatSavior) {
-		if (!service?.length || !config?.length) return;
+	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat) {
+		if (!service?.length || !Array.isArray(config) || !config?.length) return;
 
 		if (!rows) rows = 2;
 
@@ -59,6 +59,9 @@
 				config = ACC_SABER_BADGES;
 				rows = 1;
 				break;
+
+			default:
+				config = deepClone(config);
 		}
 
 		if (
@@ -72,9 +75,18 @@
 			rows = config.length;
 		}
 
-		badges = config
-			.map(row => row.map(col => getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo)))
-			.filter(row => row.some(col => col?.component))
+		return config
+			.map(row =>
+				row.map(col => {
+					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo);
+					const alternativeBadges = (col?.alternatives ?? []).map(a =>
+						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo)
+					);
+
+					return [mainBadge, ...alternativeBadges].filter(b => b?.component);
+				})
+			)
+			.filter(row => row.some(col => col?.length))
 			.slice(0, rows);
 	}
 
@@ -85,10 +97,12 @@
 
 	$: beatSavior = songScore?.beatSavior ?? getBeatSaviorCompatibleStats(score);
 
-	$: updateBadges(
+	$: badgesDefinition = [...(Object.values($configStore?.scoreBadges) ?? [])];
+
+	$: badges = getBadges(
 		service,
-		[...(Object.values($configStore?.scoreBadges) ?? [])],
-		$configStore?.scorePreferences?.badgeRows,
+		badgesDefinition,
+		$configStore?.scorePreferences?.badgeRows ?? 2,
 		score,
 		improvements,
 		beatSavior,
@@ -96,12 +110,16 @@
 		modifiers
 	);
 
-	$: myScoreBadges = [...(Object.values($configStore?.scoreBadges) ?? [])]
-		.map(row =>
-			row.map(col => getPerformanceBadge(col, score?.myScore?.score, null, getBeatSaviorCompatibleStats(score?.myScore?.score), modifiers))
-		)
-		.filter(row => row.some(col => col?.component))
-		.slice(0, 1);
+	$: myScoreBadges = getBadges(
+		service,
+		badgesDefinition,
+		1,
+		score?.myScore?.score,
+		null,
+		getBeatSaviorCompatibleStats(score?.myScore?.score),
+		additionalStat,
+		modifiers
+	);
 </script>
 
 <div class="player-performance">
