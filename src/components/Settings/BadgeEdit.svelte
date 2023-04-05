@@ -12,7 +12,7 @@
 	function onMetricChanged() {
 		if (!badge?.metric) return;
 
-		const alternatives = level === 0 ? {alternatives: badge?.alternatives ?? []} : {};
+		const alternatives = level === 1 ? {alternatives: badge?.alternatives ?? []} : {};
 		dispatch('change', {...getDefaultMetricWithOptions(badge.metric), ...alternatives});
 	}
 
