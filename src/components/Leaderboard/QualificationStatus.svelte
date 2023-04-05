@@ -143,9 +143,6 @@
 
 <style>
 	.qualification-description {
-		display: flex;
-		grid-gap: 0.4em;
-		align-items: center;
 		flex-wrap: wrap;
 		margin-top: 0.25em;
 	}

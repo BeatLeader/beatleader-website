@@ -155,9 +155,9 @@
 						qualification.criteriaChecker != playerId &&
 						qualification.criteriaMet == 1 &&
 						qualification.criteriaMet == criteriaMet &&
-						currentTechRating == techRating &&
-						currentAccRating == accRating &&
-						currentPassRating == passRating &&
+						currentTechRating.toFixed(2) == techRating.toFixed(2) &&
+						currentAccRating.toFixed(2) == accRating.toFixed(2) &&
+						currentPassRating.toFixed(2) == passRating.toFixed(2) &&
 						originalTypes.length === selectedTypes.length &&
 						((qualification?.modifiers == null && shallowEqual(modifiers, leaderboard?.difficultyBl?.modifierValues, ['modifierId'])) ||
 							shallowEqual(modifiers, qualification?.modifiers, ['modifierId'])) &&
@@ -221,7 +221,7 @@
 		isQualified
 	);
 
-	$: if (leaderboard) fetchAI(leaderboard);
+	$: if (!accRating && leaderboard) fetchAI(leaderboard);
 </script>
 
 <div class="ranking-voting {insideLeaderboard || showModifiers ? 'inside-leaderboard' : ''}">
