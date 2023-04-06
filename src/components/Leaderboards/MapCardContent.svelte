@@ -43,11 +43,6 @@
 	in:fly={{delay: 250 + idx * 50, duration: 400, y: 100}}
 	out:fade={{delay: 0, duration: 150}}
 	style="background-image:  url({map?.song?.coverImage});">
-	<a
-		class="map-link"
-		href="/leaderboard/global/${map.id}/1"
-		on:keypress|preventDefault
-		on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)} />
 	<div class="map-card-header">
 		<div class="difficulty">
 			<MapTimesetDescription
@@ -114,11 +109,17 @@
 			{/if}
 		</div>
 	</div>
+	<a
+		class="map-link"
+		href="/leaderboard/global/${map.id}/1"
+		on:keypress|preventDefault
+		on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)} />
 </div>
 
 <style>
 	.map-card {
 		display: flex;
+		position: relative;
 		flex-direction: column;
 		justify-content: space-between;
 		width: 18em;
@@ -131,21 +132,27 @@
 	}
 
 	.map-link {
-		position: fixed;
+		position: absolute;
 		width: 100%;
 		height: 100%;
 		pointer-events: all;
+
+		z-index: 1;
 	}
 
 	.map-card-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: start;
+
+		z-index: 2;
 	}
 
 	.song-info {
 		display: flex;
 		flex-direction: column;
+
+		z-index: 2;
 	}
 
 	.name-and-author {
@@ -176,6 +183,11 @@
 		background-color: #0a0a0a;
 		flex-grow: 1;
 		border-radius: 0 0 0.3em 0.3em;
+		margin: -0.03em;
+	}
+
+	.difficulty {
+		margin: -0.03em;
 	}
 
 	.map-details {
