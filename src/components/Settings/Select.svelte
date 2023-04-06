@@ -17,14 +17,10 @@
 	}
 	.select-element {
 		width: 100%;
+		border-radius: 0.4em;
 		font-size: 1em;
 		padding: 0.5em 2em 0.5em 1em;
 		text-overflow: ellipsis;
-		border: 0px;
-		border-radius: 0.4em;
-		box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.51);
-		-moz-appearance: none;
-		-webkit-appearance: none;
 	}
 	.select-element::-ms-expand {
 		display: none;

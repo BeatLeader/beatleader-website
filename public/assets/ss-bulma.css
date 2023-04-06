@@ -11480,6 +11480,11 @@ select {
 	color: var(--textColor);
 	background-color: var(--foreground);
 	outline: none;
+	border: none;
+	background-color: rgba(255, 255, 255, 0.13);
+	padding: 0.3em;
+	-moz-appearance: none;
+	-webkit-appearance: none;
 }
 
 .ssr-page-container {

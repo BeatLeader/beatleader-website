@@ -722,8 +722,10 @@
 	}
 
 	aside select {
-		background-color: transparent;
+		border-radius: 0.2em;
+		padding: 0.4em 0.2em 0.4em 0.6em;
 		margin-bottom: 0.25em;
+		appearance: menulist-button;
 	}
 
 	aside select option {
