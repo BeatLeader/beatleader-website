@@ -36,6 +36,11 @@
 					<Value value={mapRating.accRating} digits={2} zero="" prefix="Acc: " suffix="★" />
 				{/if}
 			</div>
+			<div class="stars">
+				{#if mapRating.stars}
+					<Value value={mapRating.stars} digits={1} zero="" prefix="" suffix="★" />
+				{/if}
+			</div>
 		{/if}
 
 		<svg
@@ -119,7 +124,6 @@
 <style>
 	.triangle-container {
 		position: relative;
-		margin-bottom: 1em;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -135,5 +139,11 @@
 	}
 	.pass {
 		color: white;
+	}
+	.stars {
+		position: absolute;
+		top: 33%;
+		color: yellow;
+		font-size: small;
 	}
 </style>

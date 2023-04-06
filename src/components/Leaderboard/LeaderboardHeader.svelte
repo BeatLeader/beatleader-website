@@ -10,6 +10,7 @@
 	import Icons from '../Song/Icons.svelte';
 	import {formatDiffStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
+	import MapRequirementDescription from './MapRequirementDescription.svelte';
 
 	export let leaderboard;
 
@@ -67,9 +68,14 @@
 			</div>
 			<h2 class="title is-6" style="display: contents;">
 				{#if leaderboard.stats && leaderboard.stats.passRating}
-					<MapTriangle mapRating={leaderboard.stats} showRatings={true} />
+					<MapTriangle width="8em" height="8em" mapRating={leaderboard.stats} showRatings={true} />
 				{/if}
 			</h2>
+			{#if leaderboard?.stats?.requirements}
+				<div class="requirements">
+					<MapRequirementDescription type={leaderboard?.stats.requirements} />
+				</div>
+			{/if}
 			{#if leaderboardGroup && leaderboardGroup.length > 1}
 				<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
 					{#each leaderboardGroup as option (option.id)}
@@ -172,6 +178,10 @@
 		font-family: inherit;
 	}
 
+	.requirements {
+		display: flex;
+	}
+
 	header small {
 		font-size: 0.75em;
 		color: var(--ppColour);
@@ -200,7 +210,7 @@
 		margin: 0.4em;
 		justify-content: center;
 		flex-wrap: wrap;
-		gap: 1em;
+		gap: 0.5em;
 		flex-direction: column;
 	}
 

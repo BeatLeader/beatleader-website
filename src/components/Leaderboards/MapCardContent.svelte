@@ -40,8 +40,8 @@
 
 <div
 	class={`map-card row-${idx}`}
-	in:fly={{delay: idx * 50, duration: 500, y: 100}}
-	out:fade={{delay: 0, duration: 100}}
+	in:fly={{delay: 250 + idx * 50, duration: 400, y: 100}}
+	out:fade={{delay: 0, duration: 150}}
 	style="background-image:  url({map?.song?.coverImage});">
 	<a
 		class="map-link"

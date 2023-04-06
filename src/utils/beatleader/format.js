@@ -695,6 +695,13 @@ export const requirementsDescription = {
 	},
 };
 
+export function mapRequirementsListFromMask(type) {
+	return Object.keys(requirementsMap)
+		.filter(key => requirementsMap[key] & type)
+		.map(key => requirementsDescription[key])
+		.filter(d => d);
+}
+
 export function votingsForTypeStats(stats) {
 	let result = '';
 	stats.forEach((element, i) => {
