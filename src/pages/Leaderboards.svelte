@@ -9,8 +9,6 @@
 	import Pager from '../components/Common/Pager.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import Icons from '../components/Song/Icons.svelte';
-	import SongCover from '../components/Player/SongCover.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {debounce} from '../utils/debounce';
 	import {formatNumber} from '../utils/format';
@@ -23,9 +21,6 @@
 		processIntFilter,
 		processBoolFilter,
 	} from '../utils/filters';
-	import SongScore from '../components/Player/SongScore.svelte';
-	import {processScore} from '../network/clients/beatleader/scores/utils/processScore';
-	import QualificationStatusSmall from '../components/Leaderboard/QualificationStatusSmall.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import DateRange from '../components/Common/DateRange.svelte';
 	import {dateFromUnix, DAY} from '../utils/date';
@@ -39,12 +34,14 @@
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
-	import ReweightStatusSmall from '../components/Leaderboard/ReweightStatusSmall.svelte';
-	import MapTimesetDescription from '../components/Leaderboard/MapTimesetDescription.svelte';
 	import {Ranked_Const} from './../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BackToTop from '../components/Common/BackToTop.svelte';
+	import MapCard from '../components/Leaderboards/MapCard.svelte';
+	import {configStore} from '../stores/config';
+	import produce from 'immer';
+	import Switch from '../components/Common/Switch.svelte';
 
 	export let page = 1;
 	export let location;
@@ -204,6 +201,8 @@
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
 		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+
+		document.body.scrollIntoView({behavior: 'smooth'});
 	}
 
 	function navigateToCurrentPageAndFilters() {
@@ -360,7 +359,7 @@
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
 	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
-	$: itemsPerPage = $leaderboardsStore ? $leaderboardsStore?.metadata?.itemsPerPage : 10;
+	$: itemsPerPage = $leaderboardsStore ? $leaderboardsStore?.metadata?.itemsPerPage : 12;
 	$: isRT =
 		$account.player &&
 		$account.player.playerInfo.role &&
@@ -384,6 +383,14 @@
 	});
 	$: metaDescription = 'Search for ranked maps, playlists and leaderboards for Beat Saber';
 	$: starFiltersDisabled = currentFilters.type !== 'ranked' && currentFilters.type !== 'nominated' && currentFilters.type !== 'qualified';
+
+	function boolflip(name) {
+		$configStore = produce($configStore, draft => {
+			draft.preferences[name] = !draft.preferences[name];
+		});
+	}
+
+	$: maps3D = $configStore?.preferences?.maps3D;
 </script>
 
 <svelte:head>
@@ -392,7 +399,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox bind:box={boxEl}>
+		<ContentBox cls="maps-box" bind:box={boxEl}>
 			<h1 class="title is-5">
 				Maps
 
@@ -402,90 +409,23 @@
 			<RankedTimer />
 
 			{#if leaderboardsPage?.length}
-				<div class="songs grid-transition-helper">
+				<div class="songs">
 					{#each leaderboardsPage as map, idx (map.id)}
-						<div class={`song-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
-							<div class="mobile-only">
-								{#if map?.song?.hash?.length}
-									<Icons hash={map.song.hash} diffInfo={map?.diffInfo} />
-								{/if}
-							</div>
-
-							<div class="main">
-								<SongCover leaderboard={map} {starsKey} url={`/leaderboard/global/${map.id}/1`} />
-
-								<div class="songinfo">
-									<a href={`/leaderboard/global/${map.id}/1`} on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)}>
-										<span class="name">{map?.song?.name} {map?.song?.subName}</span>
-										<div class="author">{map?.song?.author} <small>{map?.song?.mapper}</small></div>
-									</a>
-								</div>
-
-								{#if Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
-									<div>
-										{#if isRT && map?.voteStars}
-											{formatNumber(map?.voteStars ?? 0)}★
-										{/if}
-										<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
-											{#if currentFilters.sortBy === 'voting'}
-												Rating: {map.positiveVotes - map.negativeVotes}
-											{:else if currentFilters.sortBy === 'voteratio'}
-												Ratio:
-												{formatNumber((map.positiveVotes / (map.positiveVotes + map.negativeVotes)) * 100)}%
-											{:else}
-												{map.positiveVotes + map.negativeVotes} vote{map.positiveVotes + map.negativeVotes > 1 ? 's' : ''}
-											{/if}
-										</span>
-									</div>
-								{/if}
-
-								{#if map?.plays}
-									<div>
-										{map?.plays} plays.
-									</div>
-								{/if}
-
-								{#if currentFilters.sortBy == 'timestamp'}
-									<MapTimesetDescription {map} />
-								{/if}
-
-								{#if map?.song?.hash?.length}
-									<div class="tablet-and-up">
-										<Icons hash={map.song.hash} diffInfo={{diff: map?.difficulty?.difficultyName, type: map?.difficulty?.modeName}} />
-									</div>
-								{/if}
-							</div>
-
-							{#if map?.difficulty?.status == DifficultyStatus.nominated || map?.difficulty?.status == DifficultyStatus.qualified}
-								<QualificationStatusSmall qualification={map.qualification} />
-							{/if}
-
-							{#if map?.reweight && !map.reweight.finished}
-								<ReweightStatusSmall {map} />
-							{/if}
-
-							{#if map?.myScore}
-								<SongScore
-									playerId={map.myScore.playerId}
-									songScore={processScore({leaderboard: map, ...map.myScore})}
-									showSong={false}
-									noIcons={true}
-									inList={false}
-									{idx}
-									service={'beatleader'} />
-							{/if}
-						</div>
+						<MapCard {map} {idx} {currentFilters} {starsKey} {maps3D} />
 					{/each}
 				</div>
 
-				<Pager
-					totalItems={numOfMaps}
-					{itemsPerPage}
-					itemsPerPageValues={null}
-					currentPage={currentPage - 1}
-					loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-					mode={numOfMaps ? 'pages' : 'simple'}
-					on:page-changed={onPageChanged} />
+				<div class="pager-and-switch">
+					<Pager
+						totalItems={numOfMaps}
+						{itemsPerPage}
+						itemsPerPageValues={null}
+						currentPage={currentPage - 1}
+						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+						mode={numOfMaps ? 'pages' : 'simple'}
+						on:page-changed={onPageChanged} />
+					<Switch value={maps3D} label="3D" fontSize={12} design="slider" on:click={() => boolflip('maps3D')} />
+				</div>
 			{:else if !$isLoading}
 				<p>No maps found.</p>
 			{/if}
@@ -818,62 +758,26 @@
 		color: var(--faded) !important;
 	}
 
-	.songs :global(> *:last-child) {
-		border-bottom: none !important;
-	}
-
-	.song-line {
-		border-bottom: 1px solid var(--row-separator);
-		padding: 0.5em 0;
-	}
-
-	.song-line .icons.up-to-tablet + .main {
-		padding-top: 0;
-	}
-
-	.song-line .main {
+	.songs {
 		display: flex;
-		flex-wrap: nowrap;
-		align-items: center;
+		flex-wrap: wrap;
+		column-gap: 2em;
+		row-gap: 0.8em;
 		justify-content: center;
-		grid-column-gap: 0.75em;
+		overflow: visible;
 	}
 
-	.song-line .main > *:last-child {
-		margin-right: 0;
+	.pager-and-switch {
+		display: flex;
+		align-items: baseline;
 	}
 
-	.songinfo {
+	:global(.pager-and-switch .pagination) {
 		flex-grow: 1;
-		text-align: left;
-		font-size: 0.95rem;
-		font-weight: 500;
 	}
 
-	.songinfo {
-		color: var(--alternate);
-	}
-
-	.songinfo small {
-		margin-left: 0.25em;
-		font-size: 0.75em;
-		color: var(--ppColour);
-	}
-
-	.icons {
-		width: 7em;
-		font-size: 0.75em;
-		text-align: right;
-		margin-right: 0;
-		margin-bottom: 0.5em;
-	}
-
-	.icons:empty {
-		margin-bottom: 0 !important;
-	}
-
-	.icons :global(> *) {
-		margin-bottom: 0.25em !important;
+	:global(.maps-box) {
+		overflow: hidden;
 	}
 
 	.playlist-buttons {

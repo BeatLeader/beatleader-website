@@ -297,7 +297,7 @@ export default (options = {}) => {
 		}
 
 		return fetchJson(
-			substituteVars(BL_API_LEADERBOARDS_URL, {page, ...filters}, true, true),
+			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		);
