@@ -139,6 +139,10 @@
 		scrollbar-width: none;
 	}
 
+	.profile::-webkit-scrollbar {
+		display: none;
+	}
+
 	.options {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
