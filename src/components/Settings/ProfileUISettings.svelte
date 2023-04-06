@@ -132,6 +132,11 @@
 		max-width: 67em;
 		max-height: 23em;
 		overflow: auto;
+		max-height: 22.3em;
+		border: 3px dashed var(--textColor);
+		padding-top: 0.3em;
+		border-radius: 1em;
+		scrollbar-width: none;
 	}
 
 	.options {
@@ -140,6 +145,7 @@
 		grid-gap: 1em;
 		align-items: start;
 		justify-items: start;
+		margin-top: 1rem;
 	}
 
 	.option {
