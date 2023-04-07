@@ -111,7 +111,7 @@
 	</div>
 	<a
 		class="map-link"
-		href="/leaderboard/global/${map.id}/1"
+		href="/leaderboard/global/{map.id}/1"
 		on:keypress|preventDefault
 		on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)} />
 </div>
