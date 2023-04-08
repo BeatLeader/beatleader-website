@@ -90,6 +90,12 @@
 			pass: 'playerInfo.passPp',
 			tech: 'playerInfo.techPp',
 		},
+		topPp: {
+			general: 'scoreStats.topPp',
+			acc: 'scoreStats.topAccPP',
+			pass: 'scoreStats.topPassPP',
+			tech: 'scoreStats.topTechPP',
+		}
 	};
 
 	let allPpTypeValues = [
@@ -150,7 +156,7 @@
 			label: 'Top PP',
 			title: 'Sort by top PP',
 			iconFa: 'fa fa-cubes',
-			value: data => getStat(data, 'scoreStats.topPp'),
+			value: data => getStat(data, statKeys["topPp"][currentPpTypeValue]),
 			props: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
@@ -307,7 +313,7 @@
 {#if $rankingStore?.data?.length}
 	{#if !eventId}
 		<nav class="switcher-nav">
-			{#if sortValue?.id == 'pp'}
+			{#if sortValue?.id == 'pp' || sortValue?.id == 'topPp'}
 				<select class="type-select" bind:value={currentPpTypeValue} on:change={onPPTypeChanged}>
 					{#each allPpTypeValues as option (option.value)}
 						<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
