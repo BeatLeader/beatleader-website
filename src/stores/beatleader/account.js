@@ -56,11 +56,14 @@ export default (refreshOnCreate = true) => {
 		};
 	};
 
-	const logIn = (login, password) => {
+	const logIn = (login, password, oauthState) => {
 		let data = new FormData();
 		data.append('action', 'login');
 		data.append('login', login);
 		data.append('password', password);
+		if (oauthState) {
+			data.append('oauthState', oauthState);
+		}
 
 		fetch(BL_API_URL + 'signinoculus', {
 			credentials: 'include',

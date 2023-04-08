@@ -24,6 +24,7 @@
 	import PlaylistsPage from './pages/Playlists.svelte';
 	import PlaylistPage from './pages/Playlist.svelte';
 	import SigninPage from './pages/SignIn.svelte';
+	import OauthSignInPage from './pages/OauthSignIn.svelte';
 	import SupportPage from './pages/Support.svelte';
 	import Nav from './components/Nav/Nav.svelte';
 	import Modal from 'svelte-simple-modal';
@@ -171,6 +172,9 @@
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>
 						<SigninPage action={params.action} />
+					</Route>
+					<Route path="/signin/oauth2" let:location>
+						<OauthSignInPage {location} />
 					</Route>
 					<Route path="/*" component={NotFoundPage} />
 				</div>
