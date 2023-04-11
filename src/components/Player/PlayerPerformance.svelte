@@ -5,8 +5,9 @@
 	import {deepClone, opt} from '../../utils/js';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import ScoreBadges from '../Common/PerformanceBadge/ScoreBadges.svelte';
+	import {writable} from 'svelte/store';
 
-	const isDemo = getContext('isDemo') ?? false;
+	const isDemo = getContext('isDemo') ?? writable(false);
 
 	export let service = null;
 	export let songScore = null;
@@ -78,9 +79,9 @@
 		return config
 			.map(row =>
 				row.map(col => {
-					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo);
+					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, $isDemo);
 					const alternativeBadges = (col?.alternatives ?? []).map(a =>
-						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo)
+						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, $isDemo)
 					);
 
 					return [mainBadge, ...alternativeBadges].filter(b => b?.component);
@@ -107,6 +108,7 @@
 		improvements,
 		beatSavior,
 		additionalStat,
+		$isDemo,
 		modifiers
 	);
 
@@ -118,6 +120,7 @@
 		null,
 		getBeatSaviorCompatibleStats(score?.myScore?.score),
 		additionalStat,
+		$isDemo,
 		modifiers
 	);
 </script>

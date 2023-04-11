@@ -1,11 +1,12 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
+	import {writable} from 'svelte/store';
 
 	export let badges = null;
 	export let additionalClass = null;
 	export let selected = null;
 
-	const isDemo = getContext('isDemo') ?? false;
+	const isDemo = getContext('isDemo') ?? writable(false);
 
 	const dispatch = createEventDispatcher();
 
@@ -35,11 +36,11 @@
 			{#each row as col, colIdx}
 				<span
 					class={`with-badge ${col?.badges?.[col?.idx ?? 0]?.className ?? ''} ${additionalClass ?? ''}`}
-					class:multi={!isDemo && col?.badges?.length > 1}
+					class:multi={!$isDemo && col?.badges?.length > 1}
 					class:selected={rowIdx === selected?.row && colIdx === selected?.col}
 					title={col.title}
 					on:click={() => {
-						if (!isDemo && col?.badges?.length > 1) rotateBadge(col, rowIdx, colIdx);
+						if (!$isDemo && col?.badges?.length > 1) rotateBadge(col, rowIdx, colIdx);
 						dispatch('badge-click', {row: rowIdx, col: colIdx});
 					}}>
 					{#if col?.badges?.length}

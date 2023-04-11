@@ -1,10 +1,11 @@
 <script>
-	import {setContext} from 'svelte';
 	import createScoresStore from '../../stores/http/http-scores-store.js';
 	import createAccountStore from '../../stores/beatleader/account';
 	import stringify from 'json-stable-stringify';
 	import SongScore from '../Player/SongScore.svelte';
 	import Spinner from '../Common/Spinner.svelte';
+	import {getContext} from 'svelte';
+	import {writable} from 'svelte/store';
 
 	export let playerId = null;
 	export let initialService = 'beatleader';
@@ -15,7 +16,7 @@
 	export let noIcons = false;
 	export let selectedMetric = null;
 
-	setContext('isDemo', true);
+	const isDemo = getContext('isDemo') ?? writable(false);
 
 	const account = createAccountStore();
 
@@ -79,7 +80,7 @@
 
 <div>
 	{#if songScore}
-		<div class="song-scores">
+		<div class="song-scores" class:demo={$isDemo}>
 			<SongScore
 				{playerId}
 				{songScore}
@@ -106,15 +107,15 @@
 		border-bottom: none !important;
 	}
 
-	.song-scores :global(.player-performance-badges *) {
+	.song-scores.demo :global(.player-performance-badges *) {
 		cursor: pointer !important;
 	}
 
-	.song-scores :global(.player-performance-badges .badge) {
+	.song-scores.dmeo :global(.player-performance-badges .badge) {
 		transition: opacity 200ms;
 	}
 
-	.song-scores :global(.player-performance-badges .badge:hover) {
+	.song-scores.demo :global(.player-performance-badges .badge:hover) {
 		opacity: 0.85;
 		outline: 2px dashed var(--textColor);
 	}

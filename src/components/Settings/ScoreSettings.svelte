@@ -1,5 +1,7 @@
 <script>
+	import {setContext} from 'svelte';
 	import {fly, fade} from 'svelte/transition';
+	import {writable} from 'svelte/store';
 	import stringify from 'json-stable-stringify';
 	import {configStore, DEFAULT_CONFIG, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config';
 	import createAccountStore from '../../stores/beatleader/account';
@@ -12,6 +14,9 @@
 
 	export let animationSign = 1;
 
+	const isDemo = writable(true);
+	setContext('isDemo', isDemo);
+
 	const DEFAULT_ACC_CHART = 1;
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
@@ -20,6 +25,54 @@
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
 		{name: 'In details', value: 'in-details'},
 	];
+
+	const badgePresets = [
+		{
+			key: 'basic',
+			name: 'Basic',
+			customizable: false,
+			settings: {
+				scorePreferences: {
+					badgeRows: 1,
+				},
+				scoreBadges: [
+					[
+						{metric: 'pp', secondary: 'weighted'},
+						{metric: 'acc', secondary: 'improvement', withMods: true},
+						{metric: 'score', withImprovements: true},
+					],
+					[null, null, null],
+					[null, null, null],
+				],
+			},
+		},
+		{
+			key: 'default',
+			name: 'Default',
+			customizable: false,
+			settings: {
+				scorePreferences: deepClone(DEFAULT_CONFIG.scorePreferences),
+				scoreBadges: deepClone(DEFAULT_CONFIG.scoreBadges),
+			},
+		},
+		{
+			key: 'custom',
+			name: 'Custom',
+			customizable: true,
+			settings: {
+				scorePreferences: deepClone($configStore?.scorePreferences ?? 3),
+				scoreBadges: deepClone(Object.values($configStore?.scoreBadges ?? DEFAULT_CONFIG.scoreBadges)),
+			},
+		},
+	];
+
+	const currentBadgesConfig = {
+		scorePreferences: deepClone($configStore?.scorePreferences ?? DEFAULT_CONFIG.scorePreferences),
+		scoreBadges: deepClone(Object.values($configStore?.scoreBadges ?? DEFAULT_CONFIG.scoreBadges)),
+	};
+
+	const stringifiedBadgesConfig = stringify(currentBadgesConfig);
+	let currentBadgePreset = badgePresets.find(p => stringifiedBadgesConfig === stringify(p.settings)) ?? badgePresets[2];
 
 	const badgeLayouts = [
 		{name: 'One row layout', value: 1},
@@ -85,7 +138,7 @@
 	}
 
 	function onBadgeClick(e) {
-		if (!Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
+		if (!$isDemo || !Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
 
 		currentScoreBadgeSelected = e.detail;
 		if (!currentScoreBadges?.[e.detail.row]?.[e.detail.col]) {
@@ -101,7 +154,18 @@
 		currentScoreMetric = currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col];
 	}
 
+	function onBadgePresetChange(preset) {
+		settempsetting('scorePreferences', 'badgeRows', deepClone(preset.settings.scorePreferences.badgeRows));
+		settempsetting('scoreBadges', null, deepClone(preset.settings.scoreBadges));
+		$isDemo = preset.customizable;
+
+		currentScoreBadgeSelected = null;
+		currentScoreMetric = null;
+		currentBadgeLayout = preset.settings.scorePreferences.badgeRows;
+	}
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
+	$: onBadgePresetChange(currentBadgePreset);
 
 	$: settempsetting('locale', null, currentLocale);
 	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
@@ -121,23 +185,36 @@
 
 	<div class="options">
 		<section class="option full">
-			<label title="Determines which metrics are shown at score">Score metrics settings:</label>
+			<label title="Determines which metrics are shown at score">Preset:</label>
 			<div class="single">
-				<Select bind:value={currentBadgeLayout}>
-					{#each badgeLayouts as option (option.value)}
-						<option value={option.value}>{option.name}</option>
+				<Select bind:value={currentBadgePreset}>
+					{#each badgePresets as option (option.name)}
+						<option value={option}>{option.name}</option>
 					{/each}
 				</Select>
 			</div>
 		</section>
 
-		{#if currentScoreMetric}
-			<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
-		{:else}
-			<section class="option">
-				<label>Metric</label>
-				<div>Click first on the score metric badge you want to set.</div>
+		{#if currentBadgePreset?.key === 'custom'}
+			<section class="option full">
+				<label title="Determines which metrics are shown at score">Score metrics settings:</label>
+				<div class="single">
+					<Select bind:value={currentBadgeLayout}>
+						{#each badgeLayouts as option (option.value)}
+							<option value={option.value}>{option.name}</option>
+						{/each}
+					</Select>
+				</div>
 			</section>
+
+			{#if currentScoreMetric}
+				<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
+			{:else}
+				<section class="option">
+					<label>Metric</label>
+					<div>Click first on the score metric badge you want to set.</div>
+				</section>
+			{/if}
 		{/if}
 
 		<section class="option full">
