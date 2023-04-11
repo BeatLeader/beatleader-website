@@ -2,76 +2,40 @@
 	import {createEventDispatcher, getContext} from 'svelte';
 	import {globalHistory} from 'svelte-routing/src/history';
 	import processPlayerData from './utils/profile';
-	import createBeatSaviorService from '../../services/beatsavior';
-	import createAccSaberService from '../../services/accsaber';
+
 	import createAccountStore from '../../stores/beatleader/account';
-	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
-	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
+
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
-	import BeatLeaderSwipeCard from './ProfileCards/BeatLeaderSwipeCard.svelte';
-	import MiniRankingSwipeCard from './ProfileCards/MiniRankingSwipeCard.svelte';
-	import TwitchVideosSwipeCard from './ProfileCards/TwitchVideosSwipeCard.svelte';
-	import AccSaberSwipeCard from './ProfileCards/AccSaberSwipeCard.svelte';
-	import BeatSaviorSwipeCard from './ProfileCards/BeatSaviorSwipeCard.svelte';
-	import Carousel from '../Common/Carousel.svelte';
+
 	import BeatLeaderSummary from './BeatLeaderSummary.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
 	import Rain from '../Common/Rain.svelte';
-	import PinnedScores from './PinnedScores.svelte';
+
 	import AvatarOverlayEditor from './Overlay/AvatarOverlayEditor.svelte';
 	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
-	import {configStore} from '../../stores/config';
+
 	import Spinner from '../Common/Spinner.svelte';
+
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
 	export let skeleton = false;
-	export let twitchVideos = null;
 	export let avatarHash = null;
-	export let fixedBrowserTitle = null;
-	export let pinnedScores = true;
 	export let clanEffects = true;
 
 	let editModel = null;
 
 	const {addNotification} = getNotificationsContext();
 
-	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
 
-	const beatSaviorService = createBeatSaviorService();
-	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
-	const pinnedScoresStore = createPinnedScoresStore();
-	const statsHistoryStore = createStatsHistoryStore();
-
-	let accSaberPlayerInfo = null;
-	let accSaberCategories = null;
-
-	let isBeatSaviorAvailable = false;
-
-	async function refreshBeatSaviorState(playerId) {
-		if (!playerId) return;
-
-		isBeatSaviorAvailable = await beatSaviorService.isDataForPlayerAvailable(playerId);
-	}
-
-	function generateScoresStats(stats) {
-		return stats && stats.length ? stats : [];
-	}
-
-	async function updateAccSaberPlayerInfo(playerId) {
-		if (!playerId) return;
-
-		accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
-		accSaberCategories = await accSaberService.getCategories();
-	}
 
 	let editError = null;
 
@@ -217,9 +181,7 @@
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
-	$: refreshBeatSaviorState(playerId);
-	$: scoresStatsFinal = generateScoresStats(scoresStats);
-	$: updateAccSaberPlayerInfo(playerId);
+
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = !editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? editModel?.data.profileCover);
@@ -243,71 +205,6 @@
 		editModel.data.profileCoverData = null;
 		playerData.profileSettings.profileCover = null;
 	};
-
-	$: swipeCards = [].concat(
-		playerId
-			? [
-					{
-						name: `stats-${playerId}`,
-						component: BeatLeaderSwipeCard,
-						props: {
-							playerId,
-							playerInfo,
-							scoresStats: scoresStatsFinal,
-							ssBadges,
-						},
-						delay: 500,
-					},
-			  ]
-					.concat(
-						$pageContainer.name !== 'xxl'
-							? [
-									{
-										name: `ranking-${playerId}`,
-										component: MiniRankingSwipeCard,
-										props: {player: playerData},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
-							? [
-									{
-										name: `accsaber-${playerId}`,
-										component: AccSaberSwipeCard,
-										props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						isBeatSaviorAvailable
-							? [
-									{
-										name: `beat-savior-${playerId}`,
-										component: BeatSaviorSwipeCard,
-										props: {playerId},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						$pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
-							? [
-									{
-										name: `twitch-${playerId}`,
-										component: TwitchVideosSwipeCard,
-										props: {videos: twitchVideos},
-									},
-							  ]
-							: []
-					)
-			: []
-	);
-
-	$: pinnedScoresStore.fetchScores(playerData?.playerId);
-	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
 
 <svelte:window on:keyup={onKeyUp} />
@@ -423,18 +320,6 @@
 		</div>
 	</div>
 </ContentBox>
-
-<ContentBox>
-	<div class="columns">
-		<div class="column">
-			<Carousel cards={swipeCards} />
-		</div>
-	</div>
-</ContentBox>
-
-{#if pinnedScores}
-	<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
-{/if}
 
 <style>
 	.player-general-info {
