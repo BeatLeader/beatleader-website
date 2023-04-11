@@ -5,7 +5,6 @@
 	import stringify from 'json-stable-stringify';
 	import {configStore, DEFAULT_CONFIG, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config';
 	import createAccountStore from '../../stores/beatleader/account';
-	import {availableMetrics, getDefaultMetricWithOptions} from '../../utils/beatleader/performance-badge';
 	import {deepClone} from '../../utils/js';
 	import Switch from '../Common/Switch.svelte';
 	import DemoScores from './DemoScores.svelte';
@@ -22,6 +21,7 @@
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 
 	const scoreComparisonMethods = [
+		{name: 'None', value: 'none'},
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
 		{name: 'In details', value: 'in-details'},
 	];
@@ -32,6 +32,9 @@
 			name: 'Basic',
 			customizable: false,
 			settings: {
+				scoreComparison: {
+					method: 'none',
+				},
 				scorePreferences: {
 					badgeRows: 1,
 				},
@@ -71,6 +74,7 @@
 			name: 'Default',
 			customizable: false,
 			settings: {
+				scoreComparison: deepClone(DEFAULT_CONFIG.scoreComparison),
 				scorePreferences: deepClone(DEFAULT_CONFIG.scorePreferences),
 				scoreBadges: deepClone(DEFAULT_CONFIG.scoreBadges),
 				scoreDetailsPreferences: deepClone(DEFAULT_CONFIG.scoreDetailsPreferences),
@@ -82,6 +86,9 @@
 			name: 'Advanced',
 			customizable: false,
 			settings: {
+				scoreComparison: {
+					method: 'in-place',
+				},
 				scorePreferences: {
 					badgeRows: 3,
 				},
@@ -125,6 +132,7 @@
 			name: 'Custom',
 			customizable: true,
 			settings: {
+				scoreComparison: deepClone($configStore?.scoreComparison ?? DEFAULT_CONFIG.scoreComparison),
 				scorePreferences: deepClone($configStore?.scorePreferences ?? DEFAULT_CONFIG.scorePreferences.badgeRows),
 				scoreBadges: deepClone(Object.values($configStore?.scoreBadges ?? DEFAULT_CONFIG.scoreBadges)),
 				scoreDetailsPreferences: deepClone($configStore?.scoreDetailsPreferences ?? DEFAULT_CONFIG.scoreDetailsPreferences),
@@ -134,6 +142,7 @@
 	];
 
 	const currentBadgesConfig = {
+		scoreComparison: deepClone($configStore?.scoreComparison ?? DEFAULT_CONFIG.scoreComparison),
 		scorePreferences: deepClone($configStore?.scorePreferences ?? DEFAULT_CONFIG.scorePreferences),
 		scoreBadges: deepClone(Object.values($configStore?.scoreBadges ?? DEFAULT_CONFIG.scoreBadges)),
 		scoreDetailsPreferences: deepClone($configStore?.scoreDetailsPreferences ?? DEFAULT_CONFIG.scoreDetailsPreferences),
@@ -224,6 +233,7 @@
 	}
 
 	function onBadgePresetChange(preset) {
+		settempsetting('scoreComparison', null, deepClone(preset.settings.scoreComparison));
 		settempsetting('scorePreferences', 'badgeRows', deepClone(preset.settings.scorePreferences.badgeRows));
 		settempsetting('scoreBadges', null, deepClone(preset.settings.scoreBadges));
 		settempsetting('scoreDetailsPreferences', null, deepClone(preset.settings.scoreDetailsPreferences));
@@ -233,6 +243,7 @@
 		currentScoreBadgeSelected = null;
 		currentScoreMetric = null;
 		currentBadgeLayout = preset.settings.scorePreferences.badgeRows;
+		currentScoreComparisonMethod = preset.settings.scoreComparison.method;
 	}
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
@@ -323,18 +334,18 @@
 					{/each}
 				</Select>
 			</section>
-		{/if}
 
-		<section class="option">
-			<label
-				title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
-				>Score comparison</label>
-			<Select bind:value={currentScoreComparisonMethod}>
-				{#each scoreComparisonMethods as option (option.value)}
-					<option value={option.value}>{option.name}</option>
-				{/each}
-			</Select>
-		</section>
+			<section class="option">
+				<label
+					title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
+					>Score comparison</label>
+				<Select bind:value={currentScoreComparisonMethod}>
+					{#each scoreComparisonMethods as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
+			</section>
+		{/if}
 
 		<section class="option">
 			<label title="All numbers and dates will be formatted according to the rules of the selected locale">Locale</label>

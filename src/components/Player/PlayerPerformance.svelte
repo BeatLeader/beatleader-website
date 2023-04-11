@@ -115,7 +115,7 @@
 	$: myScoreBadges = getBadges(
 		service,
 		badgesDefinition,
-		1,
+		Math.min($configStore?.scorePreferences?.badgeRows ?? 2, 2),
 		score?.myScore?.score,
 		null,
 		getBeatSaviorCompatibleStats(score?.myScore?.score),
