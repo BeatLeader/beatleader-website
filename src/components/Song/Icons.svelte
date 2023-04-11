@@ -23,6 +23,7 @@
 	export let mapCheck = false;
 	export let serviceIcon = null;
 	export let noPin = false;
+	export let altReplay = false;
 
 	export let batleRoyaleDraft = false;
 	export let batleRoyale = false;
@@ -238,9 +239,9 @@
 			{#if shownIcons.includes('replay') && replayUrl?.length}
 				<Button
 					url={replayUrl}
-					on:click={showPreview(replayUrl)}
-					cls={shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}
-					icon="<img src='/assets/{shownIcons.length == 1 ? `replays.svg` : `bs-pepe.gif`}'>"
+					on:click={() => showPreview(replayUrl)}
+					cls={altReplay ? 'replay-button-alt' : 'replay-button'}
+					icon="<img src='/assets/{altReplay ? `replays.svg` : `bs-pepe.gif`}'>"
 					title="Replay"
 					noMargin={true} />
 			{/if}
