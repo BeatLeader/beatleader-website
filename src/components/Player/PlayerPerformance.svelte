@@ -45,7 +45,7 @@
 		};
 	}
 
-	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat) {
+	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat, isDemo) {
 		if (!service?.length || !Array.isArray(config) || !config?.length) return;
 
 		if (!rows) rows = 2;
@@ -79,9 +79,9 @@
 		return config
 			.map(row =>
 				row.map(col => {
-					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, $isDemo);
+					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo);
 					const alternativeBadges = (col?.alternatives ?? []).map(a =>
-						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, $isDemo)
+						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo)
 					);
 
 					return [mainBadge, ...alternativeBadges].filter(b => b?.component);
@@ -115,12 +115,12 @@
 	$: myScoreBadges = getBadges(
 		service,
 		badgesDefinition,
-		Math.min($configStore?.scorePreferences?.badgeRows ?? 2, 2),
+		$configStore?.scoreComparison?.badgeRows ?? $configStore?.scorePreferences?.badgeRows ?? 1,
 		score?.myScore?.score,
 		null,
 		getBeatSaviorCompatibleStats(score?.myScore?.score),
 		additionalStat,
-		$isDemo,
+		false,
 		modifiers
 	);
 </script>
@@ -135,7 +135,7 @@
 			</span>
 		</span>
 
-		<ScoreBadges badges={myScoreBadges} additionalClass="compare" />
+		<ScoreBadges badges={myScoreBadges} forceNotDemo={true} additionalClass="compare" />
 	{/if}
 </div>
 

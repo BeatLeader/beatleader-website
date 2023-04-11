@@ -21,6 +21,7 @@ export const getSupportedLocales = () => Object.values(locales);
 export const DEFAULT_CONFIG = {
 	scoreComparison: {
 		method: 'in-place',
+		badgeRows: 1,
 	},
 	preferences: {
 		ppMetric: 'weighted',

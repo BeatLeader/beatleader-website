@@ -66,6 +66,41 @@
 
 	$: songScore =
 		$scoresStore?.reduce((acc, s) => {
+			if (s?.score) {
+				s.score.myScore = {score: {}};
+				[
+					'acc',
+					'accLeft',
+					'accRight',
+					'pp',
+					'ppWeighted',
+					'badCuts',
+					'bombCuts',
+					'missedNotes',
+					'pauses',
+					'rank',
+					'totalRank',
+					'wallsHit',
+					'score',
+					'mods',
+					'accPP',
+					'passPP',
+					'techPP',
+					'badCuts',
+					'fcAccuracy',
+					'fcPp',
+					'fullCombo',
+					'maxCombo',
+					'maxStreak',
+					'missedNotes',
+					'percentage',
+					'replaysWatched',
+					'timeSet',
+					'timeset',
+					'wallsHit',
+				].forEach(k => (s.score.myScore.score[k] = s.score[k]));
+			}
+
 			if (!s?.score?.scoreImprovement) return s;
 
 			// demo score improvements
@@ -107,15 +142,15 @@
 		border-bottom: none !important;
 	}
 
-	.song-scores.demo :global(.player-performance-badges *) {
+	.song-scores.demo :global(.player-performance-badges:not(.not-demo) *) {
 		cursor: pointer !important;
 	}
 
-	.song-scores.dmeo :global(.player-performance-badges .badge) {
+	.song-scores.dmeo :global(.player-performance-badges:not(.not-demo) .badge) {
 		transition: opacity 200ms;
 	}
 
-	.song-scores.demo :global(.player-performance-badges .badge:hover) {
+	.song-scores.demo :global(.player-performance-badges:not(.not-demo) .badge:hover) {
 		opacity: 0.85;
 		outline: 2px dashed var(--textColor);
 	}

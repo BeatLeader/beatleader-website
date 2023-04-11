@@ -5,6 +5,7 @@
 	export let badges = null;
 	export let additionalClass = null;
 	export let selected = null;
+	export let forceNotDemo = false;
 
 	const isDemo = getContext('isDemo') ?? writable(false);
 
@@ -30,13 +31,13 @@
 	$: minWidth = cols ? 6.4 * cols + (cols - 1) * 0.4 : 0;
 </script>
 
-<div class="player-performance-badges" style:--min-width={`${minWidth}em`} style:--cols={cols}>
+<div class="player-performance-badges" class:not-demo={forceNotDemo} style:--min-width={`${minWidth}em`} style:--cols={cols}>
 	{#if filteredBadges?.length}
 		{#each filteredBadges as row, rowIdx}
 			{#each row as col, colIdx}
 				<span
 					class={`with-badge ${col?.badges?.[col?.idx ?? 0]?.className ?? ''} ${additionalClass ?? ''}`}
-					class:multi={!$isDemo && col?.badges?.length > 1}
+					class:multi={!forceNotDemo && !$isDemo && col?.badges?.length > 1}
 					class:selected={rowIdx === selected?.row && colIdx === selected?.col}
 					title={col.title}
 					on:click={() => {

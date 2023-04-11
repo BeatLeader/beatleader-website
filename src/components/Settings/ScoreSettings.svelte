@@ -21,9 +21,8 @@
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 
 	const scoreComparisonMethods = [
-		{name: 'None', value: 'none'},
-		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
-		{name: 'In details', value: 'in-details'},
+		{name: 'Yes', value: DEFAULT_SCORE_COMPARISON_METHOD},
+		{name: 'No', value: 'in-details'},
 	];
 
 	const configPresets = [
@@ -33,7 +32,8 @@
 			customizable: false,
 			settings: {
 				scoreComparison: {
-					method: 'none',
+					method: 'in-details',
+					badgeRows: 1,
 				},
 				scorePreferences: {
 					badgeRows: 1,
@@ -88,6 +88,7 @@
 			settings: {
 				scoreComparison: {
 					method: 'in-place',
+					badgeRows: 2,
 				},
 				scorePreferences: {
 					badgeRows: 3,
@@ -173,6 +174,7 @@
 	let currentScoreBadgeSelected = null;
 	let currentScoreMetric = null;
 	let currentBadgeLayout = badgeLayouts[0].value;
+	let currentComparisonBadgeLayout = badgeLayouts[0].value;
 	let currentAccChartIndex = DEFAULT_ACC_CHART;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
@@ -203,6 +205,10 @@
 		}
 		if (config?.scorePreferences?.badgeRows !== currentBadgeLayout)
 			currentBadgeLayout = badgeLayouts.find(b => b.value === config?.scorePreferences?.badgeRows ?? 2)?.value ?? badgeLayouts[0].value;
+
+		if (config?.scoreComparison?.badgeRows !== currentComparisonBadgeLayout)
+			currentComparisonBadgeLayout =
+				badgeLayouts.find(b => b.value === config?.scoreComparison?.badgeRows ?? 1)?.value ?? badgeLayouts[0].value;
 	}
 
 	async function settempsetting(key, subkey, value) {
@@ -243,6 +249,7 @@
 		currentScoreBadgeSelected = null;
 		currentScoreMetric = null;
 		currentBadgeLayout = preset.settings.scorePreferences.badgeRows;
+		currentComparisonBadgeLayout = preset.settings.scoreComparison.badgeRows;
 		currentScoreComparisonMethod = preset.settings.scoreComparison.method;
 	}
 
@@ -254,6 +261,7 @@
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
+	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: settempsetting('scoreBadges', null, currentScoreBadges);
 
 	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
@@ -278,15 +286,22 @@
 		</section>
 
 		{#if currentBadgePreset?.key === 'custom'}
-			<section class="option full">
+			<section class="option">
 				<label title="Determines which metrics are shown at score">Score metrics settings:</label>
-				<div class="single">
-					<Select bind:value={currentBadgeLayout}>
-						{#each badgeLayouts as option (option.value)}
-							<option value={option.value}>{option.name}</option>
-						{/each}
-					</Select>
-				</div>
+				<Select bind:value={currentBadgeLayout}>
+					{#each badgeLayouts as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
+			</section>
+
+			<section class="option">
+				<label title="Determines which metrics are shown when comparing scores">Score comparison settings:</label>
+				<Select bind:value={currentComparisonBadgeLayout}>
+					{#each badgeLayouts as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
 			</section>
 
 			{#if currentScoreMetric}
