@@ -66,7 +66,7 @@
 					oneclick: false,
 					preview: false,
 					replay: true,
-					delete: false,
+					delete: true,
 				},
 			},
 		},
