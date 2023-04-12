@@ -85,7 +85,7 @@ export const DEFAULT_CONFIG = {
 		oneclick: true,
 		preview: false,
 		replay: true,
-		delete: false,
+		delete: true,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},
