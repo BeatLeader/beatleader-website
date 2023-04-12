@@ -1,9 +1,10 @@
 <script>
+	import {setContext} from 'svelte';
 	import {fly, fade} from 'svelte/transition';
+	import {writable} from 'svelte/store';
 	import stringify from 'json-stable-stringify';
 	import {configStore, DEFAULT_CONFIG, DEFAULT_LOCALE, getSupportedLocales} from '../../stores/config';
 	import createAccountStore from '../../stores/beatleader/account';
-	import {availableMetrics, getDefaultMetricWithOptions} from '../../utils/beatleader/performance-badge';
 	import {deepClone} from '../../utils/js';
 	import Switch from '../Common/Switch.svelte';
 	import DemoScores from './DemoScores.svelte';
@@ -12,14 +13,146 @@
 
 	export let animationSign = 1;
 
+	const isDemo = writable(true);
+	setContext('isDemo', isDemo);
+
 	const DEFAULT_ACC_CHART = 1;
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 
 	const scoreComparisonMethods = [
+		{name: 'No comparison', value: 'none'},
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
 		{name: 'In details', value: 'in-details'},
 	];
+
+	const configPresets = [
+		{
+			key: 'basic',
+			name: 'Basic',
+			customizable: false,
+			settings: {
+				scoreComparison: {
+					method: 'none',
+					badgeRows: 1,
+				},
+				scorePreferences: {
+					badgeRows: 1,
+				},
+				scoreBadges: [
+					[
+						{metric: 'pp', secondary: 'weighted'},
+						{metric: 'acc', secondary: 'improvement', withMods: true},
+						{metric: 'score', withImprovements: true},
+					],
+					[null, null, null],
+					[null, null, null],
+				],
+				scoreDetailsPreferences: {
+					showMapInfo: false,
+					showScoreMetrics: false,
+					showHandsAcc: false,
+					showAccChart: false,
+					showSliceDetails: false,
+					showAccSpreadChart: false,
+					showLeaderboard: true,
+					defaultAccChartIndex: 0,
+				},
+				visibleScoreIcons: {
+					pin: false,
+					playlist: false,
+					bsr: false,
+					bs: false,
+					oneclick: false,
+					preview: false,
+					replay: true,
+					delete: true,
+				},
+			},
+		},
+		{
+			key: 'default',
+			name: 'Default',
+			customizable: false,
+			settings: {
+				scoreComparison: deepClone(DEFAULT_CONFIG.scoreComparison),
+				scorePreferences: deepClone(DEFAULT_CONFIG.scorePreferences),
+				scoreBadges: deepClone(DEFAULT_CONFIG.scoreBadges),
+				scoreDetailsPreferences: deepClone(DEFAULT_CONFIG.scoreDetailsPreferences),
+				visibleScoreIcons: deepClone(DEFAULT_CONFIG.visibleScoreIcons),
+			},
+		},
+		{
+			key: 'advanced',
+			name: 'Advanced',
+			customizable: false,
+			settings: {
+				scoreComparison: {
+					method: 'in-place',
+					badgeRows: 2,
+				},
+				scorePreferences: {
+					badgeRows: 3,
+				},
+				scoreBadges: [
+					[
+						{metric: 'pp', secondary: 'weighted'},
+						{metric: 'acc', secondary: 'improvement', withMods: true},
+						{metric: 'score', withImprovements: true},
+					],
+					[
+						{metric: 'accLeft', withImprovements: true},
+						{metric: 'accRight', withImprovements: true},
+						{metric: 'mistakes', withImprovements: true},
+					],
+					[{metric: 'replaysWatched'}, {metric: 'pauses', alternatives: [{metric: 'maxStreak'}]}, {metric: 'fcAccuracy'}],
+				],
+				scoreDetailsPreferences: {
+					showMapInfo: true,
+					showScoreMetrics: true,
+					showHandsAcc: true,
+					showAccChart: true,
+					showSliceDetails: true,
+					showAccSpreadChart: true,
+					showLeaderboard: true,
+					defaultAccChartIndex: 1,
+				},
+				visibleScoreIcons: {
+					pin: true,
+					playlist: true,
+					bsr: true,
+					bs: true,
+					oneclick: true,
+					preview: true,
+					replay: true,
+					delete: true,
+				},
+			},
+		},
+		{
+			key: 'custom',
+			name: 'Custom',
+			customizable: true,
+			settings: {
+				scoreComparison: deepClone($configStore?.scoreComparison ?? DEFAULT_CONFIG.scoreComparison),
+				scorePreferences: deepClone($configStore?.scorePreferences ?? DEFAULT_CONFIG.scorePreferences.badgeRows),
+				scoreBadges: deepClone(Object.values($configStore?.scoreBadges ?? DEFAULT_CONFIG.scoreBadges)),
+				scoreDetailsPreferences: deepClone($configStore?.scoreDetailsPreferences ?? DEFAULT_CONFIG.scoreDetailsPreferences),
+				visibleScoreIcons: deepClone($configStore?.visibleScoreIcons ?? DEFAULT_CONFIG.visibleScoreIcons),
+			},
+		},
+	];
+
+	const currentBadgesConfig = {
+		scoreComparison: deepClone($configStore?.scoreComparison ?? DEFAULT_CONFIG.scoreComparison),
+		scorePreferences: deepClone($configStore?.scorePreferences ?? DEFAULT_CONFIG.scorePreferences),
+		scoreBadges: deepClone(Object.values($configStore?.scoreBadges ?? DEFAULT_CONFIG.scoreBadges)),
+		scoreDetailsPreferences: deepClone($configStore?.scoreDetailsPreferences ?? DEFAULT_CONFIG.scoreDetailsPreferences),
+		visibleScoreIcons: deepClone($configStore?.visibleScoreIcons ?? DEFAULT_CONFIG.visibleScoreIcons),
+	};
+
+	const stringifiedBadgesConfig = stringify(currentBadgesConfig);
+	let currentBadgePreset = configPresets.find(p => stringifiedBadgesConfig === stringify(p.settings)) ?? configPresets[2];
 
 	const badgeLayouts = [
 		{name: 'One row layout', value: 1},
@@ -42,6 +175,7 @@
 	let currentScoreBadgeSelected = null;
 	let currentScoreMetric = null;
 	let currentBadgeLayout = badgeLayouts[0].value;
+	let currentComparisonBadgeLayout = badgeLayouts[0].value;
 	let currentAccChartIndex = DEFAULT_ACC_CHART;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
@@ -72,6 +206,10 @@
 		}
 		if (config?.scorePreferences?.badgeRows !== currentBadgeLayout)
 			currentBadgeLayout = badgeLayouts.find(b => b.value === config?.scorePreferences?.badgeRows ?? 2)?.value ?? badgeLayouts[0].value;
+
+		if (config?.scoreComparison?.badgeRows !== currentComparisonBadgeLayout)
+			currentComparisonBadgeLayout =
+				badgeLayouts.find(b => b.value === config?.scoreComparison?.badgeRows ?? 1)?.value ?? badgeLayouts[0].value;
 	}
 
 	async function settempsetting(key, subkey, value) {
@@ -85,7 +223,7 @@
 	}
 
 	function onBadgeClick(e) {
-		if (!Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
+		if (!$isDemo || !Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
 
 		currentScoreBadgeSelected = e.detail;
 		if (!currentScoreBadges?.[e.detail.row]?.[e.detail.col]) {
@@ -101,13 +239,30 @@
 		currentScoreMetric = currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col];
 	}
 
+	function onBadgePresetChange(preset) {
+		settempsetting('scoreComparison', null, deepClone(preset.settings.scoreComparison));
+		settempsetting('scorePreferences', 'badgeRows', deepClone(preset.settings.scorePreferences.badgeRows));
+		settempsetting('scoreBadges', null, deepClone(preset.settings.scoreBadges));
+		settempsetting('scoreDetailsPreferences', null, deepClone(preset.settings.scoreDetailsPreferences));
+		settempsetting('visibleScoreIcons', null, deepClone(preset.settings.visibleScoreIcons));
+		$isDemo = preset.customizable;
+
+		currentScoreBadgeSelected = null;
+		currentScoreMetric = null;
+		currentBadgeLayout = preset.settings.scorePreferences.badgeRows;
+		currentComparisonBadgeLayout = preset.settings.scoreComparison.badgeRows;
+		currentScoreComparisonMethod = preset.settings.scoreComparison.method;
+	}
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
+	$: onBadgePresetChange(currentBadgePreset);
 
 	$: settempsetting('locale', null, currentLocale);
 	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
+	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: settempsetting('scoreBadges', null, currentScoreBadges);
 
 	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
@@ -121,72 +276,92 @@
 
 	<div class="options">
 		<section class="option full">
-			<label title="Determines which metrics are shown at score">Score metrics settings:</label>
+			<label title="Determines which metrics are shown at score">Preset:</label>
 			<div class="single">
-				<Select bind:value={currentBadgeLayout}>
-					{#each badgeLayouts as option (option.value)}
-						<option value={option.value}>{option.name}</option>
+				<Select bind:value={currentBadgePreset}>
+					{#each configPresets as option (option.name)}
+						<option value={option}>{option.name}</option>
 					{/each}
 				</Select>
 			</div>
 		</section>
 
-		{#if currentScoreMetric}
-			<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
-		{:else}
+		{#if currentBadgePreset?.key === 'custom'}
 			<section class="option">
-				<label>Metric</label>
-				<div>Click first on the score metric badge you want to set.</div>
+				<label title="Determines which metrics are shown at score">Score metrics settings:</label>
+				<Select bind:value={currentBadgeLayout}>
+					{#each badgeLayouts as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
+			</section>
+
+			<section class="option">
+				<label title="Determines which metrics are shown when comparing scores">Score comparison settings:</label>
+				<Select bind:value={currentComparisonBadgeLayout}>
+					{#each badgeLayouts as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
+			</section>
+
+			{#if currentScoreMetric}
+				<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
+			{:else}
+				<section class="option">
+					<label>Metric</label>
+					<div>Click first on the score metric badge you want to set.</div>
+				</section>
+			{/if}
+
+			<section class="option full">
+				<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
+				<div class="switches">
+					{#each scoreIcons as key}
+						<Switch
+							value={visibleScoreIcons[key]}
+							label={key}
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
+					{/each}
+				</div>
+			</section>
+
+			<section class="option full">
+				<label title="Determines which data should be displayed in score details">Score details settings:</label>
+				<div class="switches">
+					{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex'].includes(k)) as key}
+						<Switch
+							value={scoreDetailsPreferences[key]}
+							label={scoreDetailsKeyDescription[key]}
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('scoreDetailsPreferences', key, !scoreDetailsPreferences[key])} />
+					{/each}
+				</div>
+			</section>
+
+			<section class="option">
+				<label title="Determines which acc chart displays by default.">Default acc chart in details</label>
+				<Select bind:value={currentAccChartIndex}>
+					{#each accCharts as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
+			</section>
+
+			<section class="option">
+				<label
+					title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
+					>Score comparison</label>
+				<Select bind:value={currentScoreComparisonMethod}>
+					{#each scoreComparisonMethods as option (option.value)}
+						<option value={option.value}>{option.name}</option>
+					{/each}
+				</Select>
 			</section>
 		{/if}
-
-		<section class="option full">
-			<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
-			<div class="switches">
-				{#each scoreIcons as key}
-					<Switch
-						value={visibleScoreIcons[key]}
-						label={key}
-						fontSize={12}
-						design="slider"
-						on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
-				{/each}
-			</div>
-		</section>
-
-		<section class="option full">
-			<label title="Determines which data should be displayed in score details">Score details settings:</label>
-			<div class="switches">
-				{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex'].includes(k)) as key}
-					<Switch
-						value={scoreDetailsPreferences[key]}
-						label={scoreDetailsKeyDescription[key]}
-						fontSize={12}
-						design="slider"
-						on:click={() => settempsetting('scoreDetailsPreferences', key, !scoreDetailsPreferences[key])} />
-				{/each}
-			</div>
-		</section>
-
-		<section class="option">
-			<label title="Determines which acc chart displays by default.">Default acc chart in details</label>
-			<Select bind:value={currentAccChartIndex}>
-				{#each accCharts as option (option.value)}
-					<option value={option.value}>{option.name}</option>
-				{/each}
-			</Select>
-		</section>
-
-		<section class="option">
-			<label
-				title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
-				>Score comparison</label>
-			<Select bind:value={currentScoreComparisonMethod}>
-				{#each scoreComparisonMethods as option (option.value)}
-					<option value={option.value}>{option.name}</option>
-				{/each}
-			</Select>
-		</section>
 
 		<section class="option">
 			<label title="All numbers and dates will be formatted according to the rules of the selected locale">Locale</label>

@@ -5,8 +5,9 @@
 	import {deepClone, opt} from '../../utils/js';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import ScoreBadges from '../Common/PerformanceBadge/ScoreBadges.svelte';
+	import {writable} from 'svelte/store';
 
-	const isDemo = getContext('isDemo') ?? false;
+	const isDemo = getContext('isDemo') ?? writable(false);
 
 	export let service = null;
 	export let songScore = null;
@@ -44,7 +45,7 @@
 		};
 	}
 
-	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat) {
+	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat, isDemo) {
 		if (!service?.length || !Array.isArray(config) || !config?.length) return;
 
 		if (!rows) rows = 2;
@@ -107,32 +108,36 @@
 		improvements,
 		beatSavior,
 		additionalStat,
+		$isDemo,
 		modifiers
 	);
 
 	$: myScoreBadges = getBadges(
 		service,
 		badgesDefinition,
-		1,
+		$configStore?.scoreComparison?.badgeRows ?? $configStore?.scorePreferences?.badgeRows ?? 1,
 		score?.myScore?.score,
 		null,
 		getBeatSaviorCompatibleStats(score?.myScore?.score),
 		additionalStat,
+		false,
 		modifiers
 	);
+
+	$: scoreComparisonMethod = $configStore?.scoreComparison?.method ?? 'none';
 </script>
 
 <div class="player-performance">
 	<ScoreBadges {badges} selected={selectedMetric} on:badge-click />
 
-	{#if (showDetails || (configStore && opt($configStore, 'scoreComparison.method') === 'in-place')) && score?.myScore && myScoreBadges}
+	{#if ((showDetails && scoreComparisonMethod === 'in-details') || scoreComparisonMethod === 'in-place') && score?.myScore && myScoreBadges}
 		<span class="compare-player-name">
 			<span>
 				vs me (<FormattedDate date={score?.myScore?.score?.timeSet} />)
 			</span>
 		</span>
 
-		<ScoreBadges badges={myScoreBadges} additionalClass="compare" />
+		<ScoreBadges badges={myScoreBadges} forceNotDemo={true} additionalClass="compare" />
 	{/if}
 </div>
 

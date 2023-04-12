@@ -21,6 +21,7 @@ export const getSupportedLocales = () => Object.values(locales);
 export const DEFAULT_CONFIG = {
 	scoreComparison: {
 		method: 'in-place',
+		badgeRows: 1,
 	},
 	preferences: {
 		ppMetric: 'weighted',
@@ -62,10 +63,10 @@ export const DEFAULT_CONFIG = {
 		showScoreMetrics: true,
 		showHandsAcc: true,
 		showAccChart: true,
-		showSliceDetails: true,
-		showAccSpreadChart: true,
+		showSliceDetails: false,
+		showAccSpreadChart: false,
 		showLeaderboard: true,
-		defaultAccChartIndex: 1,
+		defaultAccChartIndex: 0,
 	},
 	chartLegend: {
 		y: true,
@@ -77,12 +78,12 @@ export const DEFAULT_CONFIG = {
 		y6: true,
 	},
 	visibleScoreIcons: {
-		pin: true,
-		playlist: true,
+		pin: false,
+		playlist: false,
 		bsr: true,
 		bs: true,
 		oneclick: true,
-		preview: true,
+		preview: false,
 		replay: true,
 		delete: true,
 	},
