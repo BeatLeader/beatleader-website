@@ -21,8 +21,9 @@
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 
 	const scoreComparisonMethods = [
-		{name: 'Yes', value: DEFAULT_SCORE_COMPARISON_METHOD},
-		{name: 'No', value: 'in-details'},
+		{name: 'No comparison', value: 'none'},
+		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
+		{name: 'In details', value: 'in-details'},
 	];
 
 	const configPresets = [
@@ -32,7 +33,7 @@
 			customizable: false,
 			settings: {
 				scoreComparison: {
-					method: 'in-details',
+					method: 'none',
 					badgeRows: 1,
 				},
 				scorePreferences: {

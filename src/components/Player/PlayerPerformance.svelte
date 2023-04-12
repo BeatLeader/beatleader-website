@@ -123,12 +123,14 @@
 		false,
 		modifiers
 	);
+
+	$: scoreComparisonMethod = $configStore?.scoreComparison?.method ?? 'none';
 </script>
 
 <div class="player-performance">
 	<ScoreBadges {badges} selected={selectedMetric} on:badge-click />
 
-	{#if (showDetails || (configStore && opt($configStore, 'scoreComparison.method') === 'in-place')) && score?.myScore && myScoreBadges}
+	{#if ((showDetails && scoreComparisonMethod === 'in-details') || scoreComparisonMethod === 'in-place') && score?.myScore && myScoreBadges}
 		<span class="compare-player-name">
 			<span>
 				vs me (<FormattedDate date={score?.myScore?.score?.timeSet} />)
