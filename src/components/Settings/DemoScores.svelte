@@ -146,7 +146,7 @@
 		cursor: pointer !important;
 	}
 
-	.song-scores.dmeo :global(.player-performance-badges:not(.not-demo) .badge) {
+	.song-scores.demo :global(.player-performance-badges:not(.not-demo) .badge) {
 		transition: opacity 200ms;
 	}
 
