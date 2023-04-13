@@ -390,6 +390,29 @@
 		});
 	}
 
+	let viewTypeOptions = [
+		{
+			type: 'maps-cards',
+			title: 'Cards view',
+			iconFa: 'fas fa-table-columns',
+		},
+		{
+			type: 'maps-table',
+			title: 'Table view',
+			iconFa: 'fas fa-table',
+		},
+	];
+
+	function onViewTypeChanged(event) {
+		const newType = event?.detail?.type ?? null;
+		if (!newType) return;
+
+		$configStore = produce($configStore, draft => {
+			draft.preferences.mapsViewType = newType;
+		});
+	}
+
+	$: viewType = viewTypeOptions.find(vt => vt.type == $configStore?.preferences?.mapsViewType) ?? viewTypeOptions[0];
 	$: maps3D = $configStore?.preferences?.maps3D;
 </script>
 
@@ -411,7 +434,7 @@
 			{#if leaderboardsPage?.length}
 				<div class="songs">
 					{#each leaderboardsPage as map, idx (map.id)}
-						<MapCard {map} {idx} {currentFilters} {starsKey} {maps3D} />
+						<MapCard {map} {idx} {currentFilters} {starsKey} {maps3D} viewType={viewType.type} />
 					{/each}
 				</div>
 
@@ -424,7 +447,10 @@
 						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
 						mode={numOfMaps ? 'pages' : 'simple'}
 						on:page-changed={onPageChanged} />
-					<Switch value={maps3D} label="3D" fontSize={12} design="slider" on:click={() => boolflip('maps3D')} />
+					<div class="table-switches">
+						<Switcher values={viewTypeOptions} value={viewType} on:change={onViewTypeChanged} />
+						<Switch value={maps3D} label="3D" fontSize={12} design="slider" on:click={() => boolflip('maps3D')} />
+					</div>
 				</div>
 			{:else if !$isLoading}
 				<p>No maps found.</p>
@@ -772,6 +798,11 @@
 		align-items: baseline;
 	}
 
+	.table-switches {
+		display: flex;
+		gap: 0.5em;
+	}
+
 	:global(.pager-and-switch .pagination) {
 		flex-grow: 1;
 	}
@@ -819,6 +850,10 @@
 
 		.playlist-buttons {
 			flex-direction: column;
+		}
+
+		.table-switches {
+			flex-direction: column-reverse;
 		}
 	}
 

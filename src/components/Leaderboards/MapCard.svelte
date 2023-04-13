@@ -7,14 +7,19 @@
 	export let currentFilters;
 	export let idx;
 	export let maps3D;
+	export let viewType;
 </script>
 
 {#if maps3D}
-	<Atropos class="map-card-atropos" rotateXMax={5} rotateYMax={5} rotateTouch="scroll-y">
-		<MapCardContent {map} {idx} {currentFilters} {starsKey} />
+	<Atropos
+		class="map-card-atropos"
+		rotateXMax={5}
+		rotateYMax={5}
+		rotateTouch="scroll-y">
+		<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} />
 	</Atropos>
 {:else}
-	<MapCardContent {map} {idx} {currentFilters} {starsKey} />
+	<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} />
 {/if}
 
 <style>

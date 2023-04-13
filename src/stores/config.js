@@ -40,7 +40,9 @@ export const DEFAULT_CONFIG = {
 		commentaryShown: true,
 		criteriaInfoShown: true,
 		leaderboardShowSorting: true,
+
 		maps3D: true,
+		mapsViewType: 'maps-cards',
 	},
 	scorePreferences: {
 		badgeRows: 2,
