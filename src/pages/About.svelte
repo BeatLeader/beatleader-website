@@ -107,10 +107,6 @@
 					href="https://www.beatleader.xyz/u/76561198072855418">LackWiz</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198143307741.png" alt="shrado" /><a
-					href="https://www.beatleader.xyz/u/76561198143307741">shrado</a>
-			</div>
-			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198960449289.png" alt="Aquaflee" /><a
 					href="https://www.beatleader.xyz/u/76561198960449289">Aquaflee</a>
 			</div>
@@ -142,19 +138,12 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561199257569878.gif" alt="Uragirimono" /><a
 					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
 			</div>
-			
-
-
 		</section>
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198965889412.gif" alt="Emy" /><a
 					href="https://www.beatleader.xyz/u/76561198965889412">Emy</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9f79be6c488ebc966eabc82bbdca1287499d551a_full.jpg" alt="FentonVR" /><a
-					href="https://www.beatleader.xyz/u/76561198105616734">FentonVR</a>
 			</div>
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561199032148036.png" alt="Gabriel" /><a
@@ -184,7 +173,6 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561198989311828.png" alt="Rise" /><a
 					href="https://www.beatleader.xyz/u/76561198989311828">Rise</a>
 			</div>
-
 		</section>
 
 		<h1 class="title is-4">Nomination Quality Team</h1>
@@ -209,10 +197,6 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198965889412.gif" alt="Emy" /><a
 					href="https://www.beatleader.xyz/u/76561198965889412">Emy</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9f79be6c488ebc966eabc82bbdca1287499d551a_full.jpg" alt="FentonVR" /><a
-					href="https://www.beatleader.xyz/u/76561198105616734">FentonVR</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
@@ -333,6 +317,19 @@
 				<a href="/u/76561198023909718" on:click|preventDefault={() => navigate('/u/76561198023909718')}>DanielDuel</a>
 				for making the default song icon.
 			</p>
+		</section>
+
+		<h1 class="title is-5">Retired RT</h1>
+
+		<section class="content center">
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198143307741.png" alt="shrado" /><a
+					href="https://www.beatleader.xyz/u/76561198143307741">shrado</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/9f79be6c488ebc966eabc82bbdca1287499d551a_full.jpg" alt="FentonVR" /><a
+					href="https://www.beatleader.xyz/u/76561198105616734">FentonVR</a>
+			</div>
 		</section>
 
 		<p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>

@@ -21,15 +21,16 @@ export const getSupportedLocales = () => Object.values(locales);
 export const DEFAULT_CONFIG = {
 	scoreComparison: {
 		method: 'in-place',
+		badgeRows: 1,
 	},
 	preferences: {
 		ppMetric: 'weighted',
 		iconsOnAvatars: 'show',
 		scoresSortOptions: 'last',
-		theme: 'mirror',
+		theme: 'ree-dark',
 		oneclick: 'modassistant',
 		bgimage: '/assets/background.jpg',
-		bgColor: 'rgba(29, 7, 34, 0.6282)',
+		bgColor: 'rgba(29, 7, 34, 0.6284)',
 		headerColor: 'rgba(53, 0, 70, 0.2)',
 		daysToCompare: 1,
 		daysOfHistory: 30,
@@ -39,7 +40,9 @@ export const DEFAULT_CONFIG = {
 		commentaryShown: true,
 		criteriaInfoShown: true,
 		leaderboardShowSorting: true,
+
 		maps3D: true,
+		mapsViewType: 'maps-cards',
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -62,10 +65,10 @@ export const DEFAULT_CONFIG = {
 		showScoreMetrics: true,
 		showHandsAcc: true,
 		showAccChart: true,
-		showSliceDetails: true,
-		showAccSpreadChart: true,
+		showSliceDetails: false,
+		showAccSpreadChart: false,
 		showLeaderboard: true,
-		defaultAccChartIndex: 1,
+		defaultAccChartIndex: 0,
 	},
 	chartLegend: {
 		y: true,
@@ -77,15 +80,14 @@ export const DEFAULT_CONFIG = {
 		y6: true,
 	},
 	visibleScoreIcons: {
-		playlist: true,
+		pin: false,
+		playlist: false,
 		bsr: true,
 		bs: true,
-		preview: true,
-		replay: true,
 		oneclick: true,
-		twitch: true,
+		preview: false,
+		replay: true,
 		delete: true,
-		pin: true,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},
@@ -187,6 +189,15 @@ export default async () => {
 
 	if (savedConfig) {
 		dbConfig = savedConfig;
+		if (
+			dbConfig.preferences.theme == 'mirror' &&
+			dbConfig.preferences.bgColor == 'rgba(29, 7, 34, 0.6282)' &&
+			dbConfig.preferences.headerColor == 'rgba(53, 0, 70, 0.2)'
+		) {
+			dbConfig.preferences.theme = 'ree-dark';
+			dbConfig.preferences.bgColor = 'rgba(29, 7, 34, 0.6284)';
+			await keyValueRepository().set(dbConfig, STORE_CONFIG_KEY);
+		}
 		await set(savedConfig, false);
 	}
 	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;

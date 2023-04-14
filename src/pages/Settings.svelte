@@ -124,6 +124,7 @@
 	.tabs-container {
 		display: flex;
 		flex-direction: column;
+		width: clamp(20rem, calc(63rem - 20px), 100%);
 	}
 
 	.navigation {

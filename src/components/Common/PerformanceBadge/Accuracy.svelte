@@ -1,5 +1,6 @@
 <script>
 	import {getContext} from 'svelte';
+	import {writable} from 'svelte/store';
 	import {diffColors, describeModifiersAndMultipliers} from '../../../utils/beatleader/format';
 	import {formatNumber} from '../../../utils/format';
 	import Badge from '../Badge.svelte';
@@ -12,7 +13,7 @@
 	export let modifiers = null;
 	export let secondary = 'improvement';
 
-	const isDemo = getContext('isDemo') ?? false;
+	const isDemo = getContext('isDemo') ?? writable(false);
 
 	const badgesDef = [
 		{name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -60,7 +61,7 @@
 	onlyLabel={true}
 	color="white"
 	bgColor={badge ? badge.color : 'var(--dimmed)'}
-	title={isDemo ? 'Click to setup' : badge ? badge.desc + fcacc : badge}
+	title={$isDemo ? 'Click to setup' : badge ? badge.desc + fcacc : badge}
 	label=""
 	on:click>
 	<span slot="label">
@@ -81,7 +82,7 @@
 	<small
 		class="mods"
 		slot="additional"
-		title={isDemo ? 'Click to setup' : showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
+		title={$isDemo ? 'Click to setup' : showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
 		>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
 

@@ -3,9 +3,12 @@
 	import Select from './Select.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import Profile from '../Player/Profile.svelte';
+	import processPlayerData from '../Player/utils/profile';
+	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
 	import createPlayerInfoWithScoresStore from '../../stores/http/http-player-with-scores-store';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {fly, fade} from 'svelte/transition';
+	import CardsCarousel from '../Player/CardsCarousel.svelte';
 
 	export let animationSign = 1;
 
@@ -53,6 +56,7 @@
 	}
 
 	const account = createAccountStore();
+	const statsHistoryStore = createStatsHistoryStore();
 
 	$: playerStore = createPlayerInfoWithScoresStore($account?.player?.playerId ?? '1');
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
@@ -61,12 +65,19 @@
 	$: settempsetting('scoresSortOptions', currentSortOption);
 	$: settempsetting('daysToCompare', currentDaysToCompare);
 	$: settempsetting('daysOfHistory', currentDaysOfHistory);
+
+	$: playerData = $playerStore;
+	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
+	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
+	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<div class="profile">
-		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" pinnedScores={false} clanEffects={false} />
+		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" clanEffects={false} />
+		<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {playerData} />
 	</div>
+
 	<div class="options">
 		<section class="option">
 			<label title="Determines when to show icons on player avatars">Icons on avatars</label>
