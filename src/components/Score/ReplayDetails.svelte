@@ -1,16 +1,18 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
+	import stringify from 'json-stable-stringify';
 	import {downloadReplay} from '../../utils/beatleader/open-replay-decoder';
 	import {
 		processAccGraphs,
 		processAccuracySpread,
 		processSliceDetails,
 		processSliceSummary,
+		processUnderswings,
 	} from '../../utils/beatleader/process-replay-data';
 	import {configStore} from '../../stores/config';
 	import SliceDetails from './SliceDetails.svelte';
 	import AccuracySpreadChart from './AccuracySpreadChart.svelte';
 	import DetailsBox from '../Common/DetailsBox.svelte';
-	import {createEventDispatcher} from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -19,17 +21,26 @@
 	let accSpreadData;
 	let sliceDetailsData;
 	let sliceSummaryData;
-	let accGraphsData;
 
+	let lastProcessedReplay = null;
 	function processReplay(score) {
+		const {replay, offsets} = score;
+		const replayObj = stringify({replay, offsets});
+
+		if (lastProcessedReplay === replayObj) return;
+
+		lastProcessedReplay = replayObj;
+
 		downloadReplay(score, replay => {
 			accSpreadData = processAccuracySpread(replay);
 			sliceDetailsData = processSliceDetails(replay);
 			sliceSummaryData = processSliceSummary(replay);
-			accGraphsData = processAccGraphs(replay);
+			const accGraphsData = processAccGraphs(replay);
+			const underswingsData = processUnderswings(replay);
 
 			dispatch('replay-was-processed', {
-				accGraphsData: accGraphsData,
+				accGraphsData,
+				underswingsData,
 			});
 		});
 	}

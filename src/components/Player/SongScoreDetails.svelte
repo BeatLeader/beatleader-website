@@ -14,10 +14,13 @@
 	export let fixedBrowserTitle = null;
 	export let noSsLeaderboard = false;
 	export let showAccSaberLeaderboard = false;
-	export let replayAccGraphs;
+
+	let replayAccGraphs = null;
+	let underswingsData = null;
 
 	function handleReplayWasProcessed(e) {
-		replayAccGraphs = e.detail.accGraphsData;
+		replayAccGraphs = e?.detail?.accGraphsData ?? null;
+		underswingsData = e?.detail?.underswingsData ?? null;
 	}
 
 	let inBuiltLeaderboardPage = null;
@@ -53,7 +56,7 @@
 			{#await beatSaviorPromise}
 				<Spinner />
 			{:then beatSavior}
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} />
 			{/await}
 
 			{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}

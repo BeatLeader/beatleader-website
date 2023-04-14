@@ -13,7 +13,7 @@ function checkBSOR(link, offsets, completion) {
 	xhr.open('GET', link, true);
 	xhr.responseType = 'blob';
 	if (offsets) {
-		xhr.setRequestHeader('Range', `bytes=${offsets.notes}-${offsets.walls}`);
+		xhr.setRequestHeader('Range', `bytes=${offsets.notes}-${offsets.heights}`);
 	}
 
 	xhr.onload = function () {
@@ -22,10 +22,10 @@ function checkBSOR(link, offsets, completion) {
 	xhr.send();
 }
 
-function checkBSORFile(file, onlyNotes, completion) {
+function checkBSORFile(file, onlyNotesAndWalls, completion) {
 	var reader = new FileReader();
 	reader.onload = function (e) {
-		decode(e.target.result, onlyNotes, completion);
+		decode(e.target.result, onlyNotesAndWalls, completion);
 	};
 	reader.onerror = function (e) {
 		// error occurred
@@ -50,15 +50,18 @@ const NoteEventType = {
 	bomb: 3,
 };
 
-function decode(arrayBuffer, onlyNotes, completion) {
+function decode(arrayBuffer, onlyNotesAndWalls, completion) {
 	const dataView = new DataView(arrayBuffer);
 	dataView.pointer = 0;
 
 	var replay = {};
 
-	if (onlyNotes) {
+	if (onlyNotesAndWalls) {
 		try {
 			replay.notes = DecodeNotes(dataView);
+
+			DecodeUint8(dataView);
+			replay.walls = DecodeWalls(dataView);
 		} catch {
 			completion(null);
 			return;

@@ -1,5 +1,6 @@
 import {NoteEventType} from './open-replay-decoder';
 import {NoteCutDirection, NoteLineLayer, NoteScoringType} from './note-constants';
+import {getMaxScore} from './song';
 
 //region AccGraphs
 
@@ -16,7 +17,7 @@ export function processAccGraphs(replay) {
 		realScoreBySaber: {red: [], blue: [], total: []},
 	};
 
-	if (replay.notes.length === 0) return result;
+	if (!replay?.notes?.length) return result;
 
 	const lastNoteTime = replay.notes[replay.notes.length - 1].eventTime;
 	const distanceWeightFunction = createDistanceWeightFunction(weightedPeriodSeconds, weightFunctionSteepness);
@@ -102,6 +103,8 @@ export function processSliceSummary(replay) {
 		createEmptySummary('Backhands'),
 	];
 
+	if (!replay?.notes?.length) return result;
+
 	function getLaneSummaryEntry(noteLineIndex, saberType) {
 		let summaryGroup = getLaneSummaryGroup(noteLineIndex, saberType);
 		return saberType === 0 ? result[summaryGroup].left : result[summaryGroup].right;
@@ -175,6 +178,8 @@ export function processSliceDetails(replay) {
 		}
 		result.summaryGrids.push(summaryGrid);
 	}
+
+	if (!replay?.notes?.length) return result;
 
 	function addScore(cell, score) {
 		cell.count += 1;
@@ -292,6 +297,8 @@ export function processAccuracySpread(replay) {
 		maxTD: 0.0,
 		maxTimeDeviation: 0.0,
 	};
+
+	if (!replay?.notes?.length) return result;
 
 	const timings = [];
 
@@ -436,3 +443,115 @@ function decodeNoteData(noteId) {
 }
 
 //endregion
+
+const createMultiplierCounter = () => {
+	const MAX_MULTIPLIER = 8;
+
+	let value = 1;
+	let progress = 1;
+
+	const inc = () => {
+		if (value >= MAX_MULTIPLIER) return MAX_MULTIPLIER;
+
+		if (progress + 1 >= value * 2) {
+			value *= 2;
+			progress = 0;
+		} else {
+			progress++;
+		}
+
+		return value;
+	};
+	const dec = () => {
+		if (value > 1) {
+			value /= 2;
+		}
+
+		progress = 1;
+
+		return value;
+	};
+
+	return {
+		get: () => value,
+		inc,
+		dec,
+	};
+};
+
+export function processUnderswings(replay) {
+	if (!replay) return null;
+
+	if (!replay?.notes?.length)
+		return {
+			count: 0,
+			acc: 0,
+			fcAcc: 0,
+			noUnderswingsAcc: 0,
+			noUnderswingsFcAcc: 0,
+			score: 0,
+			fcScore: 0,
+			noUnderswingsScore: 0,
+			noUnderswingsFcScore: 0,
+			maxScore: 0,
+			maxFcScore: 0,
+		};
+
+	const multiplier = createMultiplierCounter();
+	const fcMultiplier = createMultiplierCounter();
+
+	const result = [...replay.notes, ...(replay.walls ?? [])]
+		.map((e, idx) => ({...e, idx, eventTime: e?.eventTime ?? e?.time}))
+		.sort((a, b) => (a.eventTime === b.eventTime ? a.idx - b.idx : a.eventTime - b.eventTime))
+		.reduce(
+			(acc, event) => {
+				if (!Number.isFinite(event?.eventType) || NoteEventType.bomb === event.eventType) {
+					acc.multiplier.dec();
+					return acc;
+				}
+
+				switch (event.eventType) {
+					case NoteEventType.good:
+						const accuracy = getAccForDistance(event.noteCutInfo.cutDistanceToCenter);
+						const pre = getPreSwingScore(event.noteCutInfo.beforeCutRating);
+						const post = getPostSwingScore(event.noteCutInfo.afterCutRating);
+
+						const fullSwing = accuracy + 100;
+						const realScore = accuracy + pre + post;
+
+						acc.count++;
+						acc.score += realScore * multiplier.get();
+						acc.noUnderswingsScore += fullSwing * multiplier.get();
+						acc.fcScore += realScore * fcMultiplier.get();
+						acc.noUnderswingsFcScore += fullSwing * fcMultiplier.get();
+						acc.multiplier.inc();
+						break;
+
+					case NoteEventType.bad:
+					case NoteEventType.miss:
+						acc.multiplier.dec();
+						break;
+				}
+
+				acc.fcMultiplier.inc();
+
+				return acc;
+			},
+			{count: 0, score: 0, fcScore: 0, noUnderswingsScore: 0, noUnderswingsFcScore: 0, multiplier, fcMultiplier}
+		);
+
+	const maxScore = getMaxScore(replay.notes.length);
+	const maxFcScore = getMaxScore(result.count);
+
+	const {multiplier: foo, fcMultiplier: bar, ...rest} = result;
+
+	return {
+		...rest,
+		maxScore,
+		maxFcScore,
+		acc: maxScore ? (result.score / maxScore) * 100 : 0,
+		fcAcc: maxFcScore ? (result.fcScore / maxFcScore) * 100 : 0,
+		noUnderswingsAcc: maxScore ? (result.noUnderswingsScore / maxScore) * 100 : 0,
+		noUnderswingsFcAcc: maxFcScore ? (result.noUnderswingsFcScore / maxFcScore) * 100 : 0,
+	};
+}
