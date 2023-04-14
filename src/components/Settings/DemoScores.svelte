@@ -99,7 +99,6 @@
 <style>
 	.song-scores {
 		border: 3px dashed var(--textColor);
-		border-radius: 1em;
 		padding: 0.5rem;
 	}
 

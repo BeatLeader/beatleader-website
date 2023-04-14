@@ -42,6 +42,7 @@
 	import {configStore} from '../stores/config';
 	import produce from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
+	import Select from '../components/Settings/Select.svelte';
 
 	export let page = 1;
 	export let location;
@@ -235,7 +236,6 @@
 
 	async function onCategoryModeChanged() {
 		await tick();
-
 		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
@@ -461,11 +461,17 @@
 				</section>
 			{/if}
 
-			<select bind:value={currentFilters.allTypes} on:change={onCategoryModeChanged}>
-				<option value={0}>ANY category</option>
-				<option value={1}>ALL categories</option>
-				<option value={2}>NO categories</option>
-			</select>
+			<div style="margin-bottom: 0.1em">
+				<Select
+					bind:value={currentFilters.allTypes}
+					on:change={() => onCategoryModeChanged()}
+					fontSize="0.8"
+					options={[
+						{name: 'ANY category', value: 0},
+						{name: 'ALL categories', value: 1},
+						{name: 'NO categories', value: 2},
+					]} />
+			</div>
 
 			<section class="filter">
 				<Switcher
@@ -475,11 +481,17 @@
 					on:change={onCategoryChanged} />
 			</section>
 
-			<select bind:value={currentFilters.allRequirements} on:change={onCategoryModeChanged}>
-				<option value={0}>ANY map feature</option>
-				<option value={1}>ALL map features</option>
-				<option value={2}>NO map features</option>
-			</select>
+			<div style="margin-bottom: 0.1em">
+				<Select
+					bind:value={currentFilters.allRequirements}
+					on:change={() => onCategoryModeChanged()}
+					fontSize="0.8"
+					options={[
+						{name: 'ANY map feature', value: 0},
+						{name: 'ALL map features', value: 1},
+						{name: 'NO map features', value: 2},
+					]} />
+			</div>
 
 			<section class="filter">
 				<Switcher
@@ -597,11 +609,12 @@
 
 			<section class="filter">
 				<label>Has mode</label>
-				<select bind:value={currentFilters.mode} on:change={onModeChanged}>
-					{#each modeFilterOptions as option}
-						<option value={option.key}>{option.label}</option>
-					{/each}
-				</select>
+				<Select
+					bind:value={currentFilters.mode}
+					on:change={onModeChanged}
+					options={modeFilterOptions}
+					nameSelector={x => x.label}
+					valueSelector={x => x.key} />
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>
