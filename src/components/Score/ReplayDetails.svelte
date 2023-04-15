@@ -9,6 +9,7 @@
 		processSliceSummary,
 		processUnderswings,
 	} from '../../utils/beatleader/process-replay-data';
+	import {mapRequirementsListFromMask} from '../../utils/beatleader/format';
 	import {configStore} from '../../stores/config';
 	import SliceDetails from './SliceDetails.svelte';
 	import AccuracySpreadChart from './AccuracySpreadChart.svelte';
@@ -36,7 +37,10 @@
 			sliceDetailsData = processSliceDetails(replay);
 			sliceSummaryData = processSliceSummary(replay);
 			const accGraphsData = processAccGraphs(replay);
-			const underswingsData = processUnderswings(replay);
+
+			const isV3Map = !!mapRequirementsListFromMask(score?.leaderboard?.difficulty?.requirements ?? {}).find(r => r?.name === 'V3 notes');
+
+			const underswingsData = !isV3Map ? processUnderswings(replay) : null;
 
 			dispatch('replay-was-processed', {
 				accGraphsData,
