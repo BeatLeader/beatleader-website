@@ -1,4 +1,4 @@
-function downloadReplay(score, completion) {
+export function downloadReplay(score, completion) {
 	checkBSOR(score.replay, score.offsets, function (result) {
 		if (!result || !result.notes) {
 			completion(null);
@@ -43,7 +43,7 @@ const StructType = {
 	pauses: 5,
 };
 
-const NoteEventType = {
+export const NoteEventType = {
 	good: 0,
 	bad: 1,
 	miss: 2,
@@ -351,7 +351,3 @@ function DecodeBool(dataView) {
 	dataView.pointer++;
 	return result;
 }
-
-module.exports.downloadReplay = downloadReplay;
-module.exports.checkBSOR = checkBSOR;
-module.exports.NoteEventType = NoteEventType;
