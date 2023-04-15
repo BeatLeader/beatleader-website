@@ -210,6 +210,7 @@
 							color: 'white',
 							font: {weight: 'normal'},
 							position: 'bottom',
+							padding: {top: 5, bottom: 0},
 						},
 						tooltip: {
 							callbacks: {
