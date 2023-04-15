@@ -81,20 +81,12 @@
 	<div class="options">
 		<section class="option">
 			<label title="Determines when to show icons on player avatars">Icons on avatars</label>
-			<Select bind:value={currentAvatarIcons}>
-				{#each avatarIcons as option (option.value)}
-					<option value={option.value}>{option.name}</option>
-				{/each}
-			</Select>
+			<Select bind:value={currentAvatarIcons} options={avatarIcons}/>
 		</section>
 
 		<section class="option">
 			<label title="How to sort scores by defauls">Sort scores by</label>
-			<Select bind:value={currentSortOption}>
-				{#each sortOptions as option (option.value)}
-					<option value={option.value}>{option.name}</option>
-				{/each}
-			</Select>
+			<Select bind:value={currentSortOption} options={sortOptions}/>
 		</section>
 
 		<section class="option">
@@ -141,8 +133,15 @@
 
 	.profile {
 		max-width: 67em;
-		max-height: 23em;
 		overflow: auto;
+		max-height: 22.3em;
+		border: 3px dashed var(--textColor);
+		padding-top: 0.3em;
+		scrollbar-width: none;
+	}
+
+	.profile::-webkit-scrollbar {
+		display: none;
 	}
 
 	.options {
@@ -151,6 +150,7 @@
 		grid-gap: 1em;
 		align-items: start;
 		justify-items: start;
+		margin-top: 1rem;
 	}
 
 	.option {

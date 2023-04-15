@@ -273,38 +273,22 @@
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<DemoScores playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
-
 	<div class="options">
 		<section class="option full">
 			<label title="Determines which metrics are shown at score">Preset:</label>
 			<div class="single">
-				<Select bind:value={currentBadgePreset}>
-					{#each configPresets as option (option.name)}
-						<option value={option}>{option.name}</option>
-					{/each}
-				</Select>
+				<Select bind:value={currentBadgePreset} options={configPresets} valueSelector={x => x} />
 			</div>
 		</section>
-
 		{#if currentBadgePreset?.key === 'custom'}
 			<section class="option">
 				<label title="Determines which metrics are shown at score">Score metrics settings:</label>
-				<Select bind:value={currentBadgeLayout}>
-					{#each badgeLayouts as option (option.value)}
-						<option value={option.value}>{option.name}</option>
-					{/each}
-				</Select>
+				<Select bind:value={currentBadgeLayout} options={badgeLayouts} />
 			</section>
-
 			<section class="option">
 				<label title="Determines which metrics are shown when comparing scores">Score comparison settings:</label>
-				<Select bind:value={currentComparisonBadgeLayout}>
-					{#each badgeLayouts as option (option.value)}
-						<option value={option.value}>{option.name}</option>
-					{/each}
-				</Select>
+				<Select bind:value={currentComparisonBadgeLayout} options={badgeLayouts} />
 			</section>
-
 			{#if currentScoreMetric}
 				<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
 			{:else}
@@ -313,7 +297,6 @@
 					<div>Click first on the score metric badge you want to set.</div>
 				</section>
 			{/if}
-
 			<section class="option full">
 				<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
 				<div class="switches">
@@ -327,7 +310,6 @@
 					{/each}
 				</div>
 			</section>
-
 			<section class="option full">
 				<label title="Determines which data should be displayed in score details">Score details settings:</label>
 				<div class="switches">
@@ -341,44 +323,24 @@
 					{/each}
 				</div>
 			</section>
-
 			<section class="option">
 				<label title="Determines which acc chart displays by default.">Default acc chart in details</label>
-				<Select bind:value={currentAccChartIndex}>
-					{#each accCharts as option (option.value)}
-						<option value={option.value}>{option.name}</option>
-					{/each}
-				</Select>
+				<Select bind:value={currentAccChartIndex} options={accCharts} />
 			</section>
-
 			<section class="option">
 				<label
 					title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
 					>Score comparison</label>
-				<Select bind:value={currentScoreComparisonMethod}>
-					{#each scoreComparisonMethods as option (option.value)}
-						<option value={option.value}>{option.name}</option>
-					{/each}
-				</Select>
+				<Select bind:value={currentScoreComparisonMethod} options={scoreComparisonMethods} />
 			</section>
 		{/if}
-
 		<section class="option">
 			<label title="All numbers and dates will be formatted according to the rules of the selected locale">Locale</label>
-			<Select bind:value={currentLocale}>
-				{#each getSupportedLocales() as option (option.id)}
-					<option value={option.id}>{option.name}</option>
-				{/each}
-			</Select>
+			<Select bind:value={currentLocale} options={getSupportedLocales()} valueSelector={x => x.id} />
 		</section>
-
 		<section class="option">
 			<label title="How One-Click button will work">One-click installs</label>
-			<Select bind:value={currentOneclick}>
-				{#each oneclickOptions as option (option.value)}
-					<option value={option.value}>{option.name}</option>
-				{/each}
-			</Select>
+			<Select bind:value={currentOneclick} options={oneclickOptions} />
 		</section>
 	</div>
 </div>
@@ -388,7 +350,6 @@
 		display: flex;
 		flex-direction: column;
 	}
-
 	.options {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
@@ -397,17 +358,14 @@
 		justify-items: start;
 		margin-top: 1rem;
 	}
-
 	* :global(.option) {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 	}
-
 	* :global(.option.full) {
 		grid-column: span 2;
 	}
-
 	* :global(label) {
 		display: block;
 		font-size: 0.75em;
@@ -416,7 +374,6 @@
 		color: #afafaf !important;
 		margin-bottom: 0.25em;
 	}
-
 	.switches {
 		display: flex;
 		grid-gap: 1em;
@@ -424,15 +381,12 @@
 		justify-content: space-evenly;
 		padding: 0.5em;
 	}
-
 	.switches.start {
 		justify-content: flex-start;
 	}
-
 	.single {
 		width: calc(50% - 1rem);
 	}
-
 	@media screen and (max-width: 600px) {
 		.options {
 			grid-template-columns: 1fr;

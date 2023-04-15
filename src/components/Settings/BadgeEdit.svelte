@@ -51,22 +51,14 @@
 	<section class="option">
 		<label> Primary metric </label>
 
-		<Select bind:value={badge.metric} on:change={onMetricChanged}>
-			{#each availableMetrics as option (option.metric)}
-				<option value={option.metric}>{option.name}</option>
-			{/each}
-		</Select>
+		<Select bind:value={badge.metric} on:change={onMetricChanged} options={availableMetrics} valueSelector={x => x.metric}/>
 	</section>
 
 	{#if badgeOptions?.length}
 		{#each badgeOptions as option}
 			<section class="option">
 				<label>{option?.label ?? option?.name}</label>
-				<Select bind:value={badge[option.name]} on:change={onMetricOptionChanged}>
-					{#each option.values as option (option.value)}
-						<option value={option.value}>{option.name}</option>
-					{/each}
-				</Select>
+				<Select bind:value={badge[option.name]} on:change={onMetricOptionChanged} options={option.values}/>
 			</section>
 		{/each}
 	{/if}
