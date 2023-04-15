@@ -28,6 +28,7 @@
 
 	import keyValueRepository from '../db/repository/key-value';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
+	import Achievements from '../components/Player/Achievements.svelte';
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
@@ -232,6 +233,7 @@
 
 			<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
 			<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
+			<Achievements {playerId} {playerData} />
 
 			{#if scoresPlayerId}
 				<ContentBox>

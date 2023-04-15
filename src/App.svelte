@@ -37,6 +37,7 @@
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
 	import LandingPage from './pages/LandingPage.svelte';
+	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 
 	export let url = '';
 
@@ -122,6 +123,7 @@
 					<Route path="/socket" component={Socket} />
 					<Route path="/settings" component={Settings} />
 					<Route path="/followed" component={FollowedPage} />
+					<Route path="/survey/achievement" component={SurveyAchievementPage} />
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />
 					</Route>
