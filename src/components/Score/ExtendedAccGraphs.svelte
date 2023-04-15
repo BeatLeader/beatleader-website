@@ -38,11 +38,14 @@
 		if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
 		const title =
-			underswingsData.noUnderswingsScore > underswingsData.score
+			underswingsData?.noUnderswingsScore > underswingsData?.score
 				? `Lost by underswings: ${formatNumber(underswingsData.noUnderswingsScore - underswingsData.score, 0)}pts, ${formatNumber(
 						underswingsData.noUnderswingsAcc - underswingsData.acc,
 						2
-				  )}% acc`
+				  )}% acc` +
+				  (underswingsData?.noUnderswingsPp && underswingsData?.noUnderswingsPp > underswingsData?.pp
+						? `, ${formatNumber(underswingsData.noUnderswingsPp - underswingsData.pp, 2)}pp`
+						: '')
 				: null;
 
 		let labels = chartData.times.map(timeToLabel);
