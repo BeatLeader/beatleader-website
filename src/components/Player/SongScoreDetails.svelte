@@ -3,6 +3,7 @@
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
 	import {configStore} from '../../stores/config';
 	import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic';
+	import {computeModifiedRating, getPPFromAcc} from '../../utils/beatleader/pp';
 	import BeatSaviorDetails from '../BeatSavior/Details.svelte';
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
 	import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte';
@@ -14,10 +15,46 @@
 	export let fixedBrowserTitle = null;
 	export let noSsLeaderboard = false;
 	export let showAccSaberLeaderboard = false;
-	export let replayAccGraphs;
+
+	let replayAccGraphs = null;
+	let underswingsData = null;
 
 	function handleReplayWasProcessed(e) {
-		replayAccGraphs = e.detail.accGraphsData;
+		replayAccGraphs = e?.detail?.accGraphsData ?? null;
+
+		let ppUnderswings = {pp: null, fcPp: null, noUnderswingsPp: null, noUnderswingsFcPp: null};
+		if (
+			e?.detail?.underswingsData?.noUnderswingsAcc &&
+			songScore?.score?.pp &&
+			songScore?.score?.acc &&
+			(!songScore?.score?.mods?.length || songScore?.leaderboard?.difficultyBl?.modifiersRating)
+		) {
+			const passRating = songScore?.leaderboard?.difficultyBl?.passRating;
+			const accRating = songScore?.leaderboard?.difficultyBl?.accRating;
+			const techRating = songScore?.leaderboard?.difficultyBl?.techRating;
+
+			const modifiersRating = songScore?.leaderboard?.difficultyBl?.modifiersRating;
+			const actualModifiers = songScore?.score?.mods?.map(m => ({name: m, value: 0}));
+			const mode = songScore?.leaderboard?.difficultyBl?.modeName?.toLowerCase();
+
+			const acc = songScore?.score?.acc / 100;
+			const fcAcc = e.detail.underswingsData.fcAcc / 100;
+			const noUnderswingsAcc = e.detail.underswingsData.noUnderswingsAcc / 100;
+			const noUnderswingsFcAcc = e.detail.underswingsData.noUnderswingsFcAcc / 100;
+
+			const modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
+			const modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
+			const modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
+
+			const pp = getPPFromAcc(acc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode);
+			const fcPp = getPPFromAcc(fcAcc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode);
+			const noUnderswingsPp = getPPFromAcc(noUnderswingsAcc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode);
+			const noUnderswingsFcPp = getPPFromAcc(noUnderswingsFcAcc, modifiedPassRating, modifiedAccRating, modifiedTechRating, mode);
+
+			ppUnderswings = {pp, fcPp, noUnderswingsPp, noUnderswingsFcPp};
+		}
+
+		underswingsData = e?.detail?.underswingsData ? {...e?.detail?.underswingsData, ...ppUnderswings} : null;
 	}
 
 	let inBuiltLeaderboardPage = null;
@@ -53,7 +90,7 @@
 			{#await beatSaviorPromise}
 				<Spinner />
 			{:then beatSavior}
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} />
 			{/await}
 
 			{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}

@@ -1,16 +1,19 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
+	import stringify from 'json-stable-stringify';
 	import {downloadReplay} from '../../utils/beatleader/open-replay-decoder';
 	import {
 		processAccGraphs,
 		processAccuracySpread,
 		processSliceDetails,
 		processSliceSummary,
+		processUnderswings,
 	} from '../../utils/beatleader/process-replay-data';
+	import {mapRequirementsListFromMask} from '../../utils/beatleader/format';
 	import {configStore} from '../../stores/config';
 	import SliceDetails from './SliceDetails.svelte';
 	import AccuracySpreadChart from './AccuracySpreadChart.svelte';
 	import DetailsBox from '../Common/DetailsBox.svelte';
-	import {createEventDispatcher} from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -19,17 +22,29 @@
 	let accSpreadData;
 	let sliceDetailsData;
 	let sliceSummaryData;
-	let accGraphsData;
 
+	let lastProcessedReplay = null;
 	function processReplay(score) {
+		const {replay, offsets} = score;
+		const replayObj = stringify({replay, offsets});
+
+		if (lastProcessedReplay === replayObj) return;
+
+		lastProcessedReplay = replayObj;
+
 		downloadReplay(score, replay => {
 			accSpreadData = processAccuracySpread(replay);
 			sliceDetailsData = processSliceDetails(replay);
 			sliceSummaryData = processSliceSummary(replay);
-			accGraphsData = processAccGraphs(replay);
+			const accGraphsData = processAccGraphs(replay);
+
+			const isV3Map = !!mapRequirementsListFromMask(score?.leaderboard?.difficulty?.requirements ?? {}).find(r => r?.name === 'V3 notes');
+
+			const underswingsData = !isV3Map ? processUnderswings(replay) : null;
 
 			dispatch('replay-was-processed', {
-				accGraphsData: accGraphsData,
+				accGraphsData,
+				underswingsData,
 			});
 		});
 	}

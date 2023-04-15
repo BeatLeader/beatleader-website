@@ -105,8 +105,8 @@ export const computeModifiedRating = (rating, ratingName, modifiersRating, mods)
 	if (modifiersRating) {
 		for (let index = 0; index < mods.length; index++) {
 			const mod = mods[index];
-			if (modifiersRating[mod.name.toLowerCase() + ratingName]) {
-				rating = modifiersRating[mod.name.toLowerCase() + ratingName];
+			if (modifiersRating[mod.name?.toLowerCase() + ratingName]) {
+				rating = modifiersRating[mod.name?.toLowerCase() + ratingName];
 				mods = mods.filter(m => m != mod);
 				break;
 			}

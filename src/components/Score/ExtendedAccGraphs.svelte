@@ -2,7 +2,8 @@
 	import Chart from 'chart.js/auto';
 	import {formatNumber} from '../../utils/format';
 
-	export let replayAccGraphs;
+	export let replayAccGraphs = null;
+	export let underswingsData = null;
 	export let height = '12em';
 
 	let canvas = null;
@@ -35,6 +36,17 @@
 
 	async function setupChart(canvas, chartData) {
 		if (!canvas || !chartData || !Object.keys(chartData).length) return;
+
+		const title =
+			underswingsData?.noUnderswingsScore > underswingsData?.score
+				? `Lost by underswings: ${formatNumber(underswingsData.noUnderswingsScore - underswingsData.score, 0)}pts, ${formatNumber(
+						underswingsData.noUnderswingsAcc - underswingsData.acc,
+						2
+				  )}% acc` +
+				  (underswingsData?.noUnderswingsPp && underswingsData?.noUnderswingsPp > underswingsData?.pp
+						? `, ${formatNumber(underswingsData.noUnderswingsPp - underswingsData.pp, 2)}pp`
+						: '')
+				: null;
 
 		let labels = chartData.times.map(timeToLabel);
 
@@ -69,6 +81,7 @@
 				position: 'left',
 				ticks: {
 					autoSkipPadding: 12,
+					color: 'white',
 				},
 			},
 		};
@@ -191,6 +204,14 @@
 						legend: {
 							display: false,
 						},
+						title: {
+							display: !!title?.length,
+							text: title,
+							color: 'white',
+							font: {weight: 'normal'},
+							position: 'bottom',
+							padding: {top: 5, bottom: 0},
+						},
 						tooltip: {
 							callbacks: {
 								title(tooltipItems) {
@@ -241,11 +262,12 @@
 			chart.options.plugins.legend.display = true;
 			chart.options.scales.y.min = minMaxCounter.minValue;
 			chart.options.scales.y.max = minMaxCounter.maxValue;
+			chart.plugins.title.text = title;
 			chart.update();
 		}
 	}
 
-	$: setupChart(canvas, replayAccGraphs);
+	$: setupChart(canvas, replayAccGraphs, underswingsData);
 </script>
 
 {#if replayAccGraphs}
