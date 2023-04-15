@@ -1,7 +1,7 @@
 <script>
 	import {fly} from 'svelte/transition';
 	import {clickOutside} from '../../svelte-utils/actions/click-outside';
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, onDestroy} from 'svelte';
 	import {pxToEm} from '../../utils/conversions.js';
 	import {clamp} from '../../utils/math.js';
 	import PageOverlay from '../Common/PageOverlay.svelte';
@@ -23,6 +23,8 @@
 	let focusableItems = null;
 	let focusedItemIndex = 0;
 
+	window.addEventListener('resize', onResize);
+
 	function toggleDropdown() {
 		if (options?.length == 0 ?? true) return;
 		isOpened = !isOpened;
@@ -43,7 +45,12 @@
 		focusedItem.focus();
 	}
 
-	function onClick() {
+	function onResize() {
+		if (!isOpened) return;
+		menu.style.minWidth = header.clientWidth + 'px';
+	}
+
+	function onClickHeader() {
 		toggleDropdown();
 	}
 
@@ -71,6 +78,10 @@
 				break;
 		}
 	}
+
+	onDestroy(() => {
+		window.removeEventListener('resize', onResize);
+	});
 </script>
 
 <div class="dropdown" use:clickOutside={{callback: () => (isOpened = false)}}>
@@ -80,7 +91,7 @@
 		class="dropdown-header"
 		style="font-size: {fontSize}em; padding: {fontPadding}em"
 		tabindex="0"
-		on:click={onClick}
+		on:click={onClickHeader}
 		on:keydown={onKeyDownHeader}>
 		<div class="dropdown-header-text" style="padding-left: {fontPadding}em">
 			{options?.length > 0
@@ -107,6 +118,7 @@
 				{#each options as item}
 					{#if valueSelector(item) != value}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
+						<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 						<div tabindex="0" class="dropdown-item" style="font-size: {menuFontSize}em" on:click={selectOption(item)}>
 							{nameSelector(item).trim()}
 						</div>
@@ -131,13 +143,8 @@
 		display: block;
 		min-width: fit-content;
 		margin-top: 0.4em;
-		scrollbar-width: none;
 		width: min-content;
 		top: auto;
-	}
-
-	.dropdown-menu::-webkit-scrollbar {
-		display: none;
 	}
 
 	.dropdown-item {

@@ -1,17 +1,20 @@
 <script>
-	import Spawnable from './Spawnable.svelte';
+	import {onDestroy, onMount} from 'svelte';
 
 	export let target = null;
+	export let adjustSize = true;
 	let node = null;
-	let update = false;
 
-	window.addEventListener('resize', () => onResize());
+	window.addEventListener('resize', onResize);
 
 	function refresh() {
 		const targetRect = target.getBoundingClientRect();
 		node.style.transform = 'translate(' + targetRect.left + 'px, ' + (window.scrollY + targetRect.top) + 'px)';
-		if (!update || !refreshEveryTick) return;
-		window.requestAnimationFrame(refresh);
+		if (!adjustSize) return;
+		const child = node.firstChild;
+		const childRect = child.getBoundingClientRect();
+		const availableSpace = document.body.scrollHeight - (window.scrollY + childRect.top);
+		child.style.height = availableSpace > childRect.height ? 'auto' : availableSpace - 10 + 'px';
 	}
 
 	function onResize() {
@@ -19,22 +22,18 @@
 		refresh();
 	}
 
-	function onSpawn() {
+	onMount(() => {
 		if (target == null) return;
 		node ??= document.getElementById('overlay-wrapper');
 		document.documentElement.appendChild(node);
-		//root.children.insert(overlayWrapper);
 		refresh();
-	}
+	});
 
-	function onDestroy() {
-		update = false;
-		//document.documentElement.removeChild(node);
-	}
+	onDestroy(() => {
+		window.removeEventListener('resize', onResize);
+	});
 </script>
 
 <div id="overlay-wrapper" style="position:absolute; top: 0; left: 0; z-index: 49">
-	<Spawnable on:spawn={() => onSpawn()} on:destroy={() => onDestroy()}>
-		<slot />
-	</Spawnable>
+	<slot />
 </div>

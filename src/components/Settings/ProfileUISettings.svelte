@@ -133,7 +133,6 @@
 
 	.profile {
 		max-width: 67em;
-		max-height: 23em;
 		overflow: auto;
 		max-height: 22.3em;
 		border: 3px dashed var(--textColor);

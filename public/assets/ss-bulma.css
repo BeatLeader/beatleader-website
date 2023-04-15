@@ -11481,7 +11481,6 @@ select {
 	background-color: var(--foreground);
 	outline: none;
 	border: none;
-	background-color: rgba(255, 255, 255, 0.13);
 	padding: 0.3em;
 	-moz-appearance: none;
 	-webkit-appearance: none;
@@ -11777,6 +11776,8 @@ select {
 	border: 1px solid var(--dimmed);
 	border-radius: 0.25rem;
 	padding: 0;
+	scrollbar-width: thin;
+	scrollbar-color: var(--selected) transparent;
 }
 
 .dropdown-menu.left {
@@ -11791,8 +11792,8 @@ select {
 	width: 0.25rem;
 }
 
-body::-webkit-scrollbar-track {
-	background: var(--foreground, #fff);
+.dropdown-menu::-webkit-scrollbar-track {
+	background: none;
 }
 
 .dropdown-menu::-webkit-scrollbar-thumb {
@@ -11825,6 +11826,10 @@ body::-webkit-scrollbar-track {
 .dropdown-content .menu-label {
 	padding: 0.5em;
 	font-size: 1em;
+}
+
+body::-webkit-scrollbar-track {
+	background: var(--foreground, #fff);
 }
 
 .battleroyale-icon {

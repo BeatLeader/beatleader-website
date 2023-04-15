@@ -10,17 +10,22 @@
 	import DemoScores from './DemoScores.svelte';
 	import Select from './Select.svelte';
 	import BadgeEdit from './BadgeEdit.svelte';
+
 	export let animationSign = 1;
+
 	const isDemo = writable(true);
 	setContext('isDemo', isDemo);
+
 	const DEFAULT_ACC_CHART = 1;
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
+
 	const scoreComparisonMethods = [
 		{name: 'No comparison', value: 'none'},
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
 		{name: 'In details', value: 'in-details'},
 	];
+
 	const configPresets = [
 		{
 			key: 'basic',
@@ -137,6 +142,7 @@
 			},
 		},
 	];
+
 	const currentBadgesConfig = {
 		scoreComparison: deepClone($configStore?.scoreComparison ?? DEFAULT_CONFIG.scoreComparison),
 		scorePreferences: deepClone($configStore?.scorePreferences ?? DEFAULT_CONFIG.scorePreferences),
@@ -144,21 +150,26 @@
 		scoreDetailsPreferences: deepClone($configStore?.scoreDetailsPreferences ?? DEFAULT_CONFIG.scoreDetailsPreferences),
 		visibleScoreIcons: deepClone($configStore?.visibleScoreIcons ?? DEFAULT_CONFIG.visibleScoreIcons),
 	};
+
 	const stringifiedBadgesConfig = stringify(currentBadgesConfig);
 	let currentBadgePreset = configPresets.find(p => stringifiedBadgesConfig === stringify(p.settings)) ?? configPresets[2];
+
 	const badgeLayouts = [
 		{name: 'One row layout', value: 1},
 		{name: 'Two rows layout', value: 2},
 		{name: 'Three rows layout', value: 3},
 	];
+
 	const accCharts = [
 		{name: 'Map acc', value: 0},
 		{name: 'Underswings', value: 1},
 	];
+
 	const oneclickOptions = [
 		{name: 'Mod Assistant', value: DEFAULT_ONECLICK_VALUE},
 		{name: 'Playlist sync', value: 'playlist'},
 	];
+
 	let currentLocale = DEFAULT_LOCALE;
 	let currentScoreBadges = null;
 	let currentScoreBadgeSelected = null;
@@ -168,6 +179,7 @@
 	let currentAccChartIndex = DEFAULT_ACC_CHART;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
+
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
 		showScoreMetrics: 'Score metrics',
@@ -177,7 +189,9 @@
 		showAccSpreadChart: 'Acc spread chart',
 		showLeaderboard: 'Map leaderboard',
 	};
+
 	const account = createAccountStore();
+
 	function onConfigUpdated(config) {
 		if (config?.locale != currentLocale) currentLocale = config.locale;
 		if (config?.scoreDetailsPreferences?.defaultAccChartIndex != currentAccChartIndex)
@@ -192,10 +206,12 @@
 		}
 		if (config?.scorePreferences?.badgeRows !== currentBadgeLayout)
 			currentBadgeLayout = badgeLayouts.find(b => b.value === config?.scorePreferences?.badgeRows ?? 2)?.value ?? badgeLayouts[0].value;
+
 		if (config?.scoreComparison?.badgeRows !== currentComparisonBadgeLayout)
 			currentComparisonBadgeLayout =
 				badgeLayouts.find(b => b.value === config?.scoreComparison?.badgeRows ?? 1)?.value ?? badgeLayouts[0].value;
 	}
+
 	async function settempsetting(key, subkey, value) {
 		if (subkey) {
 			var preferences = configStore.get(key);
@@ -205,19 +221,24 @@
 			await configStore.setForKey(key, value, false);
 		}
 	}
+
 	function onBadgeClick(e) {
 		if (!$isDemo || !Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
+
 		currentScoreBadgeSelected = e.detail;
 		if (!currentScoreBadges?.[e.detail.row]?.[e.detail.col]) {
 			currentScoreBadges[e.detail.row][e.detail.col] = {metric: '__not-set'};
 		}
 		currentScoreMetric = currentScoreBadges?.[e.detail.row]?.[e.detail.col];
 	}
+
 	function updateSelectedBadge(e) {
 		if (!e?.detail || !Number.isFinite(currentScoreBadgeSelected?.row) || !Number.isFinite(currentScoreBadgeSelected?.col)) return;
+
 		currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col] = e.detail;
 		currentScoreMetric = currentScoreBadges[currentScoreBadgeSelected.row][currentScoreBadgeSelected.col];
 	}
+
 	function onBadgePresetChange(preset) {
 		settempsetting('scoreComparison', null, deepClone(preset.settings.scoreComparison));
 		settempsetting('scorePreferences', 'badgeRows', deepClone(preset.settings.scorePreferences.badgeRows));
@@ -225,14 +246,17 @@
 		settempsetting('scoreDetailsPreferences', null, deepClone(preset.settings.scoreDetailsPreferences));
 		settempsetting('visibleScoreIcons', null, deepClone(preset.settings.visibleScoreIcons));
 		$isDemo = preset.customizable;
+
 		currentScoreBadgeSelected = null;
 		currentScoreMetric = null;
 		currentBadgeLayout = preset.settings.scorePreferences.badgeRows;
 		currentComparisonBadgeLayout = preset.settings.scoreComparison.badgeRows;
 		currentScoreComparisonMethod = preset.settings.scoreComparison.method;
 	}
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
+
 	$: settempsetting('locale', null, currentLocale);
 	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
@@ -240,27 +264,30 @@
 	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
 	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: settempsetting('scoreBadges', null, currentScoreBadges);
+
 	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
+
 	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key !== 'delete');
 </script>
+
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<DemoScores playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
 		<section class="option full">
 			<label title="Determines which metrics are shown at score">Preset:</label>
 			<div class="single">
-				<Select bind:value={currentBadgePreset} options={configPresets} valueSelector={x => x}/>
+				<Select bind:value={currentBadgePreset} options={configPresets} valueSelector={x => x} />
 			</div>
 		</section>
 		{#if currentBadgePreset?.key === 'custom'}
 			<section class="option">
 				<label title="Determines which metrics are shown at score">Score metrics settings:</label>
-				<Select bind:value={currentBadgeLayout} options={badgeLayouts}/>
+				<Select bind:value={currentBadgeLayout} options={badgeLayouts} />
 			</section>
 			<section class="option">
 				<label title="Determines which metrics are shown when comparing scores">Score comparison settings:</label>
-				<Select bind:value={currentComparisonBadgeLayout} options={badgeLayouts}/>
+				<Select bind:value={currentComparisonBadgeLayout} options={badgeLayouts} />
 			</section>
 			{#if currentScoreMetric}
 				<BadgeEdit badge={currentScoreMetric} on:change={updateSelectedBadge} />
@@ -298,25 +325,26 @@
 			</section>
 			<section class="option">
 				<label title="Determines which acc chart displays by default.">Default acc chart in details</label>
-				<Select bind:value={currentAccChartIndex} options={accCharts}/>
+				<Select bind:value={currentAccChartIndex} options={accCharts} />
 			</section>
 			<section class="option">
 				<label
 					title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
 					>Score comparison</label>
-				<Select bind:value={currentScoreComparisonMethod} options={scoreComparisonMethods}/>
+				<Select bind:value={currentScoreComparisonMethod} options={scoreComparisonMethods} />
 			</section>
 		{/if}
 		<section class="option">
 			<label title="All numbers and dates will be formatted according to the rules of the selected locale">Locale</label>
-			<Select bind:value={currentLocale} options={getSupportedLocales()} valueSelector={x => x.id}/>
+			<Select bind:value={currentLocale} options={getSupportedLocales()} valueSelector={x => x.id} />
 		</section>
 		<section class="option">
 			<label title="How One-Click button will work">One-click installs</label>
-			<Select bind:value={currentOneclick} options={oneclickOptions}/>
+			<Select bind:value={currentOneclick} options={oneclickOptions} />
 		</section>
 	</div>
 </div>
+
 <style>
 	.main-container {
 		display: flex;
