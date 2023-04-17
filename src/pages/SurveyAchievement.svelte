@@ -85,14 +85,14 @@
 			<form action={BL_API_URL + 'signin'} method="post">
 				<input type="hidden" name="Provider" value="Steam" />
 				<input type="hidden" name="oauthState" value={window.location.search} />
-				<input type="hidden" name="ReturnUrl" value={CURRENT_URL} />
+				<input type="hidden" name="ReturnUrl" value={window.location.href} />
 
 				<Button icon={steamSvg} label="Login with Steam" type="submit" />
 			</form>
 			<form action={BL_API_URL + 'signin'} method="post">
 				<input type="hidden" name="Provider" value="BeatSaver" />
 				<input type="hidden" name="oauthState" value={window.location.search} />
-				<input type="hidden" name="ReturnUrl" value={CURRENT_URL} />
+				<input type="hidden" name="ReturnUrl" value={window.location.href} />
 
 				<Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit" />
 			</form>
