@@ -113,6 +113,15 @@ export default () => {
 				prefixLong = '#';
 				break;
 			case 'pauses':
+				valFunc = s => parseInt(s, 10);
+				type = 'linear';
+				bucketSize = 1;
+				minBucketSize = 1;
+				maxBucketSize = 100;
+				bucketSizeStep = 0.1;
+				round = 0;
+				suffixLong = ' pause';
+				break;
 			case 'maxStreak':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
@@ -120,7 +129,8 @@ export default () => {
 				minBucketSize = 1;
 				maxBucketSize = 100;
 				bucketSizeStep = 0.1;
-				round = 1;
+				round = 0;
+				suffixLong = ` note`;
 				break;
 
 			case 'acc':
