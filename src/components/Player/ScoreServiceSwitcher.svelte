@@ -8,7 +8,7 @@
 	import SelectFilter from './ScoreFilters/SelectFilter.svelte';
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
-	import {requirementsMap} from '../../utils/beatleader/format';
+	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
 
 	export let playerId = null;
 	export let player = null;
@@ -185,21 +185,14 @@
 					id: 'mode',
 					iconFa: 'fa fa-compass',
 					title: 'Filter by map mode',
-					values: [
-						{id: null, name: 'All'},
-						{id: 'standard', name: 'Standard'},
-						{id: 'onesaber', name: 'One Saber'},
-						{id: '90degree', name: '90 Degree'},
-						{id: '360degree', name: '360 Degree'},
-						{id: 'noarrows', name: 'No arrows'},
-						{id: 'lightshow', name: 'Lightshow'},
-						{id: 'lawless', name: 'Lawless'},
-						{id: 'horizontalstandard', name: 'Horizontal Mirror'},
-						{id: 'verticalstandard', name: 'Vertical Mirror'},
-						{id: 'inversestandard', name: 'Inverse'},
-						{id: 'invertedstandard', name: 'Inverted'},
-						{id: 'rhythmgamestandard', name: 'Rhythm Game!'},
-					],
+					values: [{id: null, name: 'All'}].concat(
+						Object.entries(modeDescriptions).map(([key, type]) => {
+							return {
+								id: key.toLowerCase(),
+								name: modeDescriptions?.[key]?.title ?? 'Standard',
+							};
+						})
+					),
 				},
 			},
 			{

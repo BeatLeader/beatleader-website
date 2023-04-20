@@ -10,36 +10,6 @@ export const diffColors = {
 	expertplus: '#8f48db',
 };
 
-const diffTypes = [
-	'horizontalstandard',
-	'inversestandard',
-	'invertedstandard',
-	'verticalstandard',
-	'rhythmgamestandard',
-	'standard',
-	'90degree',
-	'360degree',
-	'noarrows',
-	'onesaber',
-	'lightshow',
-	'lawless',
-];
-
-const diffDescriptions = {
-	horizontalstandard: 'Horisontal Standard (Chirality mod)',
-	inversestandard: 'Inverse Standard (Chirality mod)',
-	invertedstandard: 'Inverted Standard (Chirality mod)',
-	verticalstandard: 'Vertical Standard (Chirality mod)',
-	rhythmgamestandard: "It's a rhythm game!",
-	standard: 'Standard',
-	'90degree': '90 Degree',
-	'360degree': '360 Degree',
-	noarrows: 'No Arrows',
-	onesaber: 'One Saber',
-	lightshow: 'Light Show',
-	lawless: 'Lawless',
-};
-
 export function getDiffColor(diffInfo) {
 	return diffColors[diffInfo.diff.toLowerCase()] ? diffColors[diffInfo.diff.toLowerCase()] : null;
 }
@@ -55,23 +25,12 @@ export function extractDiffAndType(ssDiff) {
 }
 
 export function getIconNameForDiff(diffInfo) {
-	for (var i = 0; i < diffTypes.length; i++) {
-		const diffType = diffTypes[i];
-		if (diffInfo.type.toLowerCase().includes(diffType)) {
-			if (diffType == '360degree') {
-				return 'degree360-icon';
-			} else if (diffType == '90degree') {
-				return 'degree90-icon';
-			} else {
-				return diffType + '-icon';
-			}
-		}
-	}
-	return 'standard-icon';
+	return modeDescriptions[diffInfo.type]?.icon ?? 'standard-icon';
 }
 
 export function getDescriptionForDiff(diffInfo) {
-	return diffDescriptions[diffInfo.type.toLowerCase()] ?? 'Standard';
+	console.log(diffInfo.type);
+	return modeDescriptions[diffInfo.type]?.title ?? 'Standard';
 }
 
 export const HMDs = {
@@ -121,6 +80,12 @@ export const HMDs = {
 		name: 'Rift S',
 		icon: 'oculus.svg',
 		color: 'invert(96%) sepia(9%) saturate(5456%) hue-rotate(170deg) brightness(100%) contrast(107%)',
+		priority: 8,
+	},
+	65: {
+		name: 'Controllable',
+		icon: 'controllable.svg',
+		color: '',
 		priority: 8,
 	},
 	32: {
@@ -358,6 +323,12 @@ export function getControllerForEnum(controller) {
 			return 'Hands 🙌';
 		case 68:
 			return 'VIVE tracker 3';
+		case 75:
+			return 'Gamepad 🎮';
+		case 76:
+			return 'Joy-Con';
+		case 77:
+			return 'Steam Deck';
 	}
 
 	return '';
@@ -401,13 +372,13 @@ export const modeDescriptions = {
 		textColor: 'white',
 	},
 	OneSaber: {
-		title: 'OneSaber',
+		title: 'One Saber',
 		icon: 'onesaber-icon',
 		color: 'purple',
 		textColor: 'white',
 	},
 	NoArrows: {
-		title: 'NoArrows',
+		title: 'No Arrows',
 		icon: 'noarrows-icon',
 		color: 'purple',
 		textColor: 'white',
@@ -433,6 +404,54 @@ export const modeDescriptions = {
 	Lawless: {
 		title: 'Lawless',
 		icon: 'lawless-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	HorizontalStandard: {
+		title: 'Horisontal Standard (Chirality mod)',
+		icon: 'horizontalstandard-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	InverseStandard: {
+		title: 'Inverse Standard (Chirality mod)',
+		icon: 'inversestandard-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	InvertedStandard: {
+		title: 'Inverted Standard (Chirality mod)',
+		icon: 'invertedstandard-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	VerticalStandard: {
+		title: 'Vertical Standard (Chirality mod)',
+		icon: 'verticalstandard-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	'Standard-PinkPlay_Controllable': {
+		title: 'Standard (Controllable mod)',
+		icon: 'standard-controllable-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	'OneSaber-PinkPlay_Controllable': {
+		title: 'OneSaber (Controllable mod)',
+		icon: 'onesaber-controllable-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	'Lawless-PinkPlay_Controllable': {
+		title: 'Lawless (Controllable mod)',
+		icon: 'lawless-controllable-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	RhythmGameStandard: {
+		title: "It's a rhythm game!",
+		icon: 'rhythmgamestandard-icon',
 		color: 'purple',
 		textColor: 'white',
 	},

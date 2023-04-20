@@ -11644,6 +11644,30 @@ select {
 	background-image: url('./115s.png');
 }
 
+.lawless-controllable-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./lawless-controllable-icon.png');
+}
+
+.standard-controllable-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./standard-controllable-icon.png');
+}
+
+.onesaber-controllable-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./onesaber-controllable-icon.png');
+}
+
 .content-box.festive {
 	background-image: url(/assets/lights2.gif) !important;
 	background-size: cover !important;

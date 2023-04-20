@@ -150,7 +150,7 @@
 		Object.entries(modeDescriptions).map(([key, type]) => {
 			return {
 				key,
-				label: capitalize(modeDescriptions?.[key]?.name ?? key),
+				label: capitalize(modeDescriptions?.[key]?.title ?? key),
 				icon: `<span class="${modeDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
 				color: modeDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
 				textColor: modeDescriptions?.[key]?.textColor ?? null,
