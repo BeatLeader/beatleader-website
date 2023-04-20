@@ -43,7 +43,7 @@
 	const labelsStore = createLocalStorageStore('rt-maps-labels');
 	const playersCache = createLocalStorageStore('rt-players');
 
-	const ITEMS_PER_PAGE = 50;
+	const FETCH_ITEMS_PER_PAGE = 50;
 	const VOTED = 100;
 
 	let showEventLog = false;
@@ -86,6 +86,9 @@
 	];
 
 	let sortValue;
+
+	let itemsPerPage = 10;
+	let page = 0;
 
 	const categoryFilterOptions = Object.entries(typesMap).map(([key, type]) => {
 		return {
@@ -519,7 +522,7 @@
 	async function fetchMapsWithType(type, sortBy = 'stars', maxNum = null) {
 		let data = [];
 		let page = 1;
-		let count = ITEMS_PER_PAGE;
+		let count = FETCH_ITEMS_PER_PAGE;
 		let pageCount = null;
 
 		while (!pageCount || page <= pageCount) {
@@ -532,7 +535,7 @@
 			if (maxNum && data.length >= maxNum) return data;
 
 			if (!pageCount) {
-				count = pageData?.metadata?.itemsPerPage ?? ITEMS_PER_PAGE;
+				count = pageData?.metadata?.itemsPerPage ?? FETCH_ITEMS_PER_PAGE;
 				pageCount = pageData?.metadata?.total ? Math.ceil(pageData.metadata.total / count) : null;
 			}
 
@@ -835,6 +838,7 @@
 
 	function onPageChanged(event) {
 		page = event.detail.page;
+		itemsPerPage = event.detail.itemsPerPage;
 	}
 
 	$: filteredSongs =
@@ -1198,6 +1202,10 @@
 					.filter(lt => lt)
 					.includes(e.type))
 	);
+
+	$: totalItems = filteredSongs?.length ?? 0;
+	$: pages = Math.ceil(totalItems / itemsPerPage);
+	$: songsPage = filteredSongs.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 </script>
 
 <svelte:head>
@@ -1271,7 +1279,7 @@
 					<Error {error} />
 				{:else if isLoading}
 					<Spinner /> Loading...
-				{:else if filteredSongs?.length}
+				{:else if songsPage?.length}
 					{#if showEventLog}
 						<section class="event-log">
 							<div class="log-filter">
@@ -1326,7 +1334,7 @@
 						</section>
 					{/if}
 
-					{#each filteredSongs as song (song.hash)}
+					{#each songsPage as song (song.hash)}
 						<div class="row">
 							<div class="song">
 								<img
@@ -1413,6 +1421,8 @@
 					No songs found.
 				{/if}
 			</section>
+
+			<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} on:page-changed={onPageChanged} />
 		</ContentBox>
 	</article>
 
