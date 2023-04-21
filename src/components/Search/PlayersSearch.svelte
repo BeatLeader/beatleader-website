@@ -8,6 +8,7 @@
 	import GenericSearch from './GenericSearch.svelte';
 
 	export let value = '';
+	export let priority = 1;
 
 	const dispatch = createEventDispatcher();
 
@@ -55,5 +56,6 @@
 	item={PlayersItem}
 	noItems="No players found."
 	url={`ranking?search=${filters.search}`}
+	{priority}
 	on:message={onMessage}
 	on:close />

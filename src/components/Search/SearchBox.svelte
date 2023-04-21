@@ -114,6 +114,19 @@
 			if (!group) return false;
 
 			group.items = items;
+
+			// Move empty groups to the end keeping priority
+			groups.sort((a, b) => {
+				if (!a.items?.length && !b.items?.length) {
+					return a.priority - b.priority;
+				} else if (!a.items?.length) {
+					return 1;
+				} else if (!b.items?.length) {
+					return -1;
+				} else {
+					return a.priority - b.priority;
+				}
+			});
 			groups = groups;
 
 			if (selected?.group === group) {
@@ -287,13 +300,6 @@
 					onItemSelected(selected.group, selected.item);
 				}
 				break;
-
-			default:
-				if (isAnyLoading) {
-					e.preventDefault();
-					e.stopPropagation();
-					return;
-				}
 		}
 
 		handleKeyDown = false;
@@ -302,12 +308,10 @@
 	function onSearchChanged(e) {
 		var search = e.target.value ?? '';
 
-		if (search.length >= 2 && value !== search && !isAnyLoading) {
+		if (search.length >= 2 && value !== search) {
 			value = search;
 		}
 	}
-
-	$: isAnyLoading = (groups ?? []).some(g => g.isLoading);
 
 	$: if (selected?.group?.onMessage && selected?.item) {
 		selected?.group.onMessage({source: 'item', type: 'hover', value: selected.item});
@@ -330,7 +334,6 @@
 			<section class="search">
 				<input
 					type="search"
-					class:loading={isAnyLoading}
 					bind:this={inputEl}
 					bind:value={searchValue}
 					on:input={debounce(onSearchChanged, 400)}
@@ -382,12 +385,7 @@
 					{/each}
 				</section>
 			{:else}
-				<section class="info">
-					Type something to search for and press <span class="key">
-						<i class="fas fa-level-down-alt fa-rotate-90 hide-touch" />
-						<i class="fas fa-search hide-pointer" />
-					</span>
-				</section>
+				<section class="info">Type something to search for! 🔍</section>
 			{/if}
 		</main>
 

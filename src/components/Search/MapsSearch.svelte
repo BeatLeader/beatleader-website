@@ -8,6 +8,7 @@
 	import MapsItem from './MapsItem.svelte';
 
 	export let value = '';
+	export let priority = 2;
 
 	const dispatch = createEventDispatcher();
 
@@ -57,5 +58,6 @@
 	item={MapsItem}
 	noItems="No maps found."
 	url={`/leaderboards?search=${filters.search}&type=${filters.type}`}
+	{priority}
 	on:message={onMessage}
 	on:close />
