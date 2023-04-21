@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher, setContext, tick} from 'svelte';
+	import {debounce} from '../../utils/debounce';
 	import Button from '../Common/Button.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 
@@ -12,7 +13,7 @@
 
 	let value = '';
 	let searchValue = '';
-	let placeholder = 'Enter at least 3 characters...';
+	let placeholder = 'Enter at least 2 characters...';
 
 	let groups = [];
 	let selected = null;
@@ -282,9 +283,7 @@
 				e.preventDefault();
 				e.stopPropagation();
 
-				if (searchValue.length >= 3 && value !== searchValue && !isAnyLoading) {
-					value = searchValue;
-				} else if (selected?.item && selected?.group?.onMessage) {
+				if (selected?.item && selected?.group?.onMessage) {
 					onItemSelected(selected.group, selected.item);
 				}
 				break;
@@ -298,6 +297,14 @@
 		}
 
 		handleKeyDown = false;
+	}
+
+	function onSearchChanged(e) {
+		var search = e.target.value ?? '';
+
+		if (search.length >= 2 && value !== search && !isAnyLoading) {
+			value = search;
+		}
 	}
 
 	$: isAnyLoading = (groups ?? []).some(g => g.isLoading);
@@ -326,6 +333,7 @@
 					class:loading={isAnyLoading}
 					bind:this={inputEl}
 					bind:value={searchValue}
+					on:input={debounce(onSearchChanged, 400)}
 					{placeholder}
 					autofocus="true"
 					autocomplete="off" />

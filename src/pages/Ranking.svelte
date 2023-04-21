@@ -77,7 +77,7 @@
 			placeholder: 'Search for a player',
 			onChange: e => {
 				const length = e?.target?.value?.length;
-				if (length > 0 && length < 3) return;
+				if (length > 0 && length < 2) return;
 
 				onInputChange(e, 'search');
 			},

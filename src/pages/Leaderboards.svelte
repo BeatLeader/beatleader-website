@@ -100,7 +100,6 @@
 	let currentPage = page;
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
-	let searchInputEl = null;
 
 	const typeFilterOptions = [
 		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
@@ -210,19 +209,14 @@
 		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
 	}
 
-	function onSearchChanged(value) {
-		currentFilters.search = value ?? '';
+	function onSearchChanged(e) {
+		var search = e.target.value ?? '';
+
+		if (search.length > 0 && search.length < 2) return;
+
+		currentFilters.search = search;
 		currentPage = 1;
 		navigateToCurrentPageAndFilters();
-	}
-
-	function onSearchSubmit(e) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		if (searchInputEl) onSearchChanged(searchInputEl.value);
-
-		return false;
 	}
 
 	function onTypeChanged(event) {
@@ -469,9 +463,12 @@
 			<section class="filter">
 				<label>Song/Author/Mapper/Hash</label>
 
-				<form on:submit={onSearchSubmit}>
-					<input bind:this={searchInputEl} type="text" class="search" placeholder="Search for a map..." value={currentFilters.search} />
-				</form>
+				<input
+					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
+					type="text"
+					class="search"
+					placeholder="Search for a map..."
+					value={currentFilters.search} />
 			</section>
 
 			<section class="filter">

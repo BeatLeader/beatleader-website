@@ -86,6 +86,14 @@
 				document.removeEventListener('scroll', hideTooltip);
 			};
 		}
+
+		window.addEventListener('keydown', event => {
+			if (event.altKey && event.code === 'KeyF') {
+				$search = true;
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
 	});
 
 	$: if (mainEl) containerStore.observe(mainEl);
