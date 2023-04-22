@@ -18,6 +18,7 @@
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import BackToTop from '../components/Common/BackToTop.svelte';
+	import {dateFromUnix, formatDate, formatDateRelative} from '../utils/date';
 
 	export let page = 1;
 	export let location;
@@ -182,7 +183,7 @@
 		},
 		{
 			key: 'sortBy',
-			default: 'pp',
+			default: 'dailyImprovements',
 			process: processStringFilter,
 			type: null,
 		},
@@ -327,6 +328,8 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	let showDetails = false;
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, location, true);
 </script>
@@ -347,10 +350,40 @@
 			</div>
 		</ContentBox> -->
 
+		<div class="banner">
+			<img src="/assets/EarthDay.png" class="banner-image" alt="Earth day banner" />
+
+			<div class="show-details" on:click={() => (showDetails = !showDetails)}>
+				{showDetails ? 'Hide details' : 'Show details'}
+				<span class="details-reveal" class:opened={showDetails}>
+					<i class="fas fa-chevron-down" />
+				</span>
+			</div>
+
+			{#if showDetails}
+				<div class="event-details">
+					<span>
+						<b>We in BeatLeader believe that PP growth should be sustainable.</b><br />
+						And to cut machine time and space on cloud and database we endorse you to recycle the scores. Improve your old (one week or older)
+						scores and climb this leaderboard. Top 1
+						<span style="color: yellow;" title={formatDate(dateFromUnix(1682251199))}>
+							{formatDateRelative(dateFromUnix(1682251199))}
+						</span>
+						will get the "Earth's bff" badge!
+						<br /><br /> Jokes aside, today is Earth Day and it's important. We kinda don't have another place to live for now and it also
+						means the place to play Beat Saber. It's just a reminder for us that we are very fragile and our current problems can be
+						meaningless in face of climate changes (how much pp will you need if the wildfire will burn your house)
+
+						<br />
+						<br />Check the <a href="https://github.com/zeph-yr/OurFuture">amazing article from @zeph-yr</a> to learn more and help make
+						<b>our home better.</b></span>
+				</div>
+			{/if}
+		</div>
+
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
 				Ranking
-
 				{#if isLoading}
 					<Spinner />
 				{/if}
@@ -510,6 +543,47 @@
 		font-weight: 600;
 	}
 
+	.banner {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		flex-wrap: wrap;
+		align-content: center;
+		align-items: center;
+	}
+
+	.show-details {
+		display: flex;
+		justify-content: center;
+		margin-top: -1.62em;
+		gap: 0.4em;
+		cursor: pointer;
+	}
+
+	.event-details {
+		background: #097549;
+		border-radius: 0 0 0.6em 0.6em;
+		padding: 0.5em;
+		max-width: 75%;
+	}
+
+	.banner-image {
+		width: 80%;
+	}
+
+	.details-reveal.opened {
+		transform: rotateZ(180deg);
+	}
+
+	.icon.dailyImprovements {
+		background: green;
+		cursor: pointer;
+	}
+
+	.icon.dailyImprovements:hover {
+		background: green linear-gradient(0deg, transparent, #ffffff66);
+	}
+
 	@media screen and (max-width: 1275px) {
 		.align-content {
 			flex-direction: column;
@@ -519,6 +593,22 @@
 		aside {
 			width: 100%;
 			max-width: 65em;
+		}
+
+		.banner-image {
+			width: 100%;
+		}
+
+		.event-details {
+			max-width: 95%;
+		}
+
+		.banner {
+			margin-top: 1em;
+		}
+
+		.show-details {
+			margin-top: -0.2em;
 		}
 	}
 </style>

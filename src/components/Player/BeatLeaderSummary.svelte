@@ -1,6 +1,7 @@
 <script>
 	import ScoresStats from './ScoresStats.svelte';
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 
 	export let playerId = null;
 	export let scoresStats = null;
@@ -16,6 +17,8 @@
 
 	function processStats(stats, profileAppearance, editEnabled, overrideVisibleStats) {
 		var visible;
+
+		profileAppearance = ['dailyImprovements'].concat(profileAppearance);
 
 		if (!overrideVisibleStats) {
 			visible =
@@ -35,6 +38,11 @@
 	}
 
 	function onToggleStat(key) {
+		if (key == 'dailyImprovements' && !editModel?.data) {
+			navigate('/ranking');
+			return;
+		}
+
 		if (!key?.length || !editModel?.data) return;
 
 		if (!editModel.data?.profileAppearance) editModel.data.profileAppearance = [];
