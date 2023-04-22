@@ -318,6 +318,7 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 				</svg>
 
+				<span class="search-hint">Ctrl + /</span>
 				<span>Search...</span>
 			</div>
 		</a>
@@ -506,6 +507,25 @@
 
 	.mobile-only {
 		display: none !important;
+	}
+
+	.search-hint {
+		display: none !important;
+	}
+
+	@media (hover: hover) and (pointer: fine) and (min-width: 835px) {
+		.search-hint {
+			display: inline-block !important;
+			opacity: 0.6;
+			justify-content: center;
+			align-items: center;
+			padding: 0.125em 0.25em;
+			margin: 0 0.5rem 0 0;
+			border: 1px solid var(--textColor);
+			border-radius: 2px;
+			font-size: 0.875em;
+			color: var(--textColor);
+		}
 	}
 
 	@media screen and (min-width: 768px) {
