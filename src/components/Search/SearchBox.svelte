@@ -13,7 +13,7 @@
 
 	let value = '';
 	let searchValue = '';
-	let placeholder = 'Enter at least 2 characters...';
+	let placeholder = 'Enter at least 3 characters...';
 
 	let groups = [];
 	let selected = null;
@@ -308,7 +308,7 @@
 	function onSearchChanged(e) {
 		var search = e.target.value ?? '';
 
-		if (search.length >= 2 && value !== search) {
+		if (search.length >= 3 && value !== search) {
 			value = search;
 		}
 	}
