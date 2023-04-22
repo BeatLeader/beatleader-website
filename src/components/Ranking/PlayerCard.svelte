@@ -132,7 +132,7 @@
 	</div>
 	<div class="steam-and-pp">
 		<div>
-			{#if currentFilters.sortBy == 'dailyImprovements'}
+			{#if currentFilters?.sortBy == 'dailyImprovements'}
 				<span style="color: {!value ? 'red' : 'green'}">{value ? value + ' improved' : 'Carbon positive'}</span>
 			{:else if valueProps.isText}
 				{value}
