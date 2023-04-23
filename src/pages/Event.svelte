@@ -211,6 +211,14 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 32}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<b>Score Recycling Initiative<br /></b>
+				<span>
+					Players were improving their scores to cut down wasted space and make PP growth sustainable<br />
+				</span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}

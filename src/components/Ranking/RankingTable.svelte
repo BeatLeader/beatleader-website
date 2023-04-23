@@ -359,7 +359,7 @@
 					{playerClickFilter}
 					{currentFilters}
 					value={sortValue?.value(player)}
-					valueProps={sortValue?.props ?? {}}
+					valueProps={eventId == 32 ? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0} : sortValue?.props ?? {}}
 					on:filters-updated />
 				{#if !noIcons}
 					<AddFriendButton playerId={player.playerId} />
