@@ -13,7 +13,6 @@ function updateScoresStats(playerData) {
 	const statsDef = scoreStats
 		? [
 				{key: 'totalPlayCount', label: 'Total play count', bgColor: 'var(--selected)'},
-				{key: 'dailyImprovements', label: 'Improved scores', bgColor: 'darkgreen'},
 				{key: 'totalScore', label: 'Total score', bgColor: 'var(--selected)'},
 				{key: 'rankedPlayCount', label: 'Ranked play count', bgColor: 'var(--ppColour)'},
 				{key: 'totalRankedScore', label: 'Total ranked score', bgColor: 'var(--ppColour)'},
@@ -65,7 +64,7 @@ function updateScoresStats(playerData) {
 	return statsDef
 		.map(s => {
 			var value = scoreStats && scoreStats[s.key] ? scoreStats[s.key] : null;
-			if (s.key != 'dailyImprovements' && !value && !Number.isFinite(value)) return null;
+			if (!value && !Number.isFinite(value)) return null;
 
 			if (s.key == 'authorizedReplayWatched') {
 				value = scoreStats['authorizedReplayWatched'] + scoreStats['anonimusReplayWatched'];

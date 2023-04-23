@@ -95,12 +95,7 @@
 			acc: 'scoreStats.topAccPP',
 			pass: 'scoreStats.topPassPP',
 			tech: 'scoreStats.topTechPP',
-		},
-		dailyImprovements: {
-			ranked: 'scoreStats.dailyImprovements',
-			unranked: 'scoreStats.dailyImprovements',
-			all: 'scoreStats.dailyImprovements',
-		},
+		}
 	};
 
 	let allPpTypeValues = [
@@ -127,22 +122,7 @@
 	];
 	let currentPpTypeValue = filters.ppType ?? 'general';
 
-	// <div
-	// 			class={currentFilters.sortBy == 'dailyImprovements' ? 'fas fa-lightbulb icon dailyImprovements' : 'far fa-lightbulb icon off pp'}
-	// 			on:click={() => toggleSortBy()}
-	// 			title={'Sort by amount of recycled scores'}>
-	// 			<span class="sortBy">Sort by {currentFilters.sortBy == 'dailyImprovements' ? 'savings' : 'pp'}</span>
-	// 		</div>
-
 	let allSortValues = [
-		{
-			id: 'dailyImprovements',
-			label: 'Savings',
-			title: 'Sort by Improved scores',
-			iconFa: 'fa fa-lightbulb',
-			value: data => getStat(data, statKeys['dailyImprovements'][currentTypeValue]),
-			props: {prefix: '', suffix: '', zero: 'Carbon positive', digits: 0},
-		},
 		{
 			id: 'pp',
 			label: 'PP',
@@ -176,7 +156,7 @@
 			label: 'Top PP',
 			title: 'Sort by top PP',
 			iconFa: 'fa fa-cubes',
-			value: data => getStat(data, statKeys['topPp'][currentPpTypeValue]),
+			value: data => getStat(data, statKeys["topPp"][currentPpTypeValue]),
 			props: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
@@ -207,24 +187,24 @@
 			},
 			props: {isText: true},
 		},
-		// {
-		// 	id: 'weightedRank',
-		// 	label: 'Weighted Rank',
-		// 	title: 'Sort by weighted average leaderboard rank from top 100 plays',
-		// 	iconFa: 'fa fa-chart-line',
-		// 	value: data => getStat(data, statKeys['rank'][currentTypeValue]),
-		// 	props: {digits: 0, prefix: '#', suffix: '', digits: 2},
-		// 	hideForTypes: ['unranked'],
-		// },
-		// {
-		// 	id: 'rank',
-		// 	label: 'Rank',
-		// 	title: 'Sort by average leaderboard rank',
-		// 	iconFa: 'fa fa-chart-line',
-		// 	value: data => getStat(data, statKeys['rank'][currentTypeValue]),
-		// 	props: {digits: 0, prefix: '#', suffix: ''},
-		// 	hideForTypes: ['ranked'],
-		// },
+		{
+			id: 'weightedRank',
+			label: 'Weighted Rank',
+			title: 'Sort by weighted average leaderboard rank from top 100 plays',
+			iconFa: 'fa fa-chart-line',
+			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
+			props: {digits: 0, prefix: '#', suffix: '', digits: 2},
+			hideForTypes: ['unranked'],
+		},
+		{
+			id: 'rank',
+			label: 'Rank',
+			title: 'Sort by average leaderboard rank',
+			iconFa: 'fa fa-chart-line',
+			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
+			props: {digits: 0, prefix: '#', suffix: ''},
+			hideForTypes: ['ranked'],
+		},
 	];
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
