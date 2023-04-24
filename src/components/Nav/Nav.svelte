@@ -314,11 +314,15 @@
 	<div class="right">
 		<a href="#" on:click|preventDefault={() => ($search = true)} class="search-button">
 			<div class="search-box">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-				</svg>
+				<div>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
 
-				<span>Search...</span>
+					<span>Search...</span>
+				</div>
+
+				<span class="search-hint">Ctrl + /</span>
 			</div>
 		</a>
 
@@ -508,6 +512,25 @@
 		display: none !important;
 	}
 
+	.search-hint {
+		display: none !important;
+	}
+
+	@media (hover: hover) and (pointer: fine) and (min-width: 835px) {
+		.search-hint {
+			display: inline-block !important;
+			opacity: 0.6;
+			justify-content: center;
+			align-items: center;
+			padding: 0.125em 0.25em;
+			margin: 0 0 0 0.5rem;
+			border: 1px solid var(--textColor);
+			border-radius: 2px;
+			font-size: 0.875em;
+			color: var(--textColor);
+		}
+	}
+
 	@media screen and (min-width: 768px) {
 		.search-button {
 			flex: 1;
@@ -520,6 +543,7 @@
 		.search-box {
 			display: flex;
 			align-items: center;
+			justify-content: space-between;
 			width: 100%;
 			height: 100%;
 			margin-inline: 1rem;
@@ -537,7 +561,11 @@
 			border-bottom: 2px solid white;
 			border-radius: 0.4em;
 		}
-		.search-box > *:first-child {
+		.search-box > :first-child {
+			display: inline-flex;
+			align-items: center;
+		}
+		.search-box > svg {
 			margin-right: 0.5rem;
 			min-width: 1.25rem;
 		}
