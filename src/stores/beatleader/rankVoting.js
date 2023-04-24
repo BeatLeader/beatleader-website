@@ -46,26 +46,12 @@ export default () => {
 			});
 	};
 
-	const qualifyMap = async (hash, diff, mode, rankability, accRating, passRating, techRating, types, modifiers) => {
+	const qualifyMap = async (hash, diff, mode) => {
 		if (!hash || !diff || !mode) return;
-		let type = 0;
-		types.forEach(typeName => {
-			type += typesMap[typeName];
-		});
 
 		votingStatuses.loading = true;
 		set(votingStatuses);
-		if (modifiers != null) {
-			modifiers.modifierId = 0;
-		}
-		const url =
-			BL_API_URL +
-			`qualify/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` +
-			(accRating ? '&accRating=' + accRating : '') +
-			(passRating ? '&passRating=' + passRating : '') +
-			(techRating ? '&techRating=' + techRating : '') +
-			(type ? '&type=' + type : '') +
-			(modifiers != null ? '&modifiers=' + encodeURIComponent(JSON.stringify(modifiers)) : '');
+		const url = BL_API_URL + `nominate/${hash}/${diff}/${mode}`;
 
 		fetch(url, {credentials: 'include', method: 'POST'}).then(() => {
 			votingStatuses.loading = false;
