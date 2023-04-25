@@ -296,6 +296,9 @@
 				label="Yes, suspend my account"
 				on:click={() => (suspendingDialogShown = !suspendingDialogShown)} />
 		{/if}
+		<div style="display: flex; grid-gap: 0.25em;">
+			<a href="mailto:golova@golova.dev">Contact me </a>if you need to delete your data immediately.
+		</div>
 	{:else if action == 'oculuspc'}
 		{#if $oculus.name}
 			{#if !$oculus.migrated}

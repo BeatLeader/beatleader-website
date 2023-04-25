@@ -24,30 +24,83 @@
 	<ContentBox>
 		<h1 class="title is-3">Privacy policy</h1>
 
-		<p><strong>The BeatLeader Oculus Store application does not store any data locally and does not connect to the internet.</strong></p>
+		By using BeatLeader you agree to the following privacy policy.<br /> This policy may change at any time, so please check it regularly.<br />
+		<a href="https://github.com/BeatLeader/beatleader-website/commits/master/src/pages/Privacy.svelte">Click here</a> to see the changes in
+		history of terms of service.<br /><br />
+
+		<br /><b>BeatLeader general data policy</b><br />
+		BeatLeader is a service that collects data about Beat Saber players and their plays.<br /> The main purpose of this service is to
+		provide a leaderboard for Beat Saber players.<br /> The service is free to use.<br /> The service is not affiliated with Beat Games,
+		Oculus or Steam.
+
+		<br /><b>All the data collected by BeatLeader is public.</b><br />
+		With an exception for sensitive data like your auth info, ip address or private data by desing(for example friends).
+
+		<br /><br /><b>How your data is protected?</b><br />
+		Your data is stored in a secure database with limited access.<br />
+		Public access for your data through API may be limited in case of any security conserns.<br />
+		Also there is no perfect way of protecting your data, so it may be leaked.<br />
+		Please keep this always in mind, change password regularly and use 2FA(link your profile to Steam).<br />
+
+		<br /><b>How your data is used?</b><br />
+		Your data is used to provide you with a leaderboard and other features of BeatLeader.<br />
+		Being publicly available it can also be used for any purposes by anyone.<br />
+		The main reason for it to be public is a mod nature of BeatLeader service and decentrilized development.<br />
+		This way we hope it will be used for the benefits of the whole community without any gatekeeping.<br />
 
 		<br />What data BeatLeader mods collect?<br />
+
 		<br /><b>1. Platform specific ID</b><br />
-		In order to identify you as a Beat Saber player, we collect your personal ID from the platform on which you own the game. For example: Steam ID, Oculus
-		ID. This ID is then used as ID in BeatLeader system. (Not changeable)
+		In order to identify you as a Beat Saber player, we collect your personal ID from the platform on which you own the game. For example: Steam
+		ID, Oculus ID. This ID is then used as ID in BeatLeader system.
 		<br /><b>2. Profile picture</b><br />
-		Your Oculus or Steam profile picture will be used as BeatLeader profile picture. (Changeable)
+		Your Oculus or Steam profile picture will be used as BeatLeader profile picture.
 		<br /><b>3. Profile name</b><br />
-		Your Oculus or Steam profile name will be used as BeatLeader profile name. (Changeable)
-		<br /><b>IP address</b><br />
+		Your Oculus or Steam profile name will be used as BeatLeader profile name.
+		<br /><b>4. IP address</b><br />
 		Some requests will use your IP address to set a country for profile or to protect sensitive endpoints (for example "log in").
-		<br /><b>Replays</b><br />
-		The main purpose of this service is to collect your Beat Saber plays, so yes, we collect them. 
+
+		<br /><b>5. Replays</b><br />
+		The main purpose of this service is to collect your Beat Saber plays, so yes, we collect them.<br /> Replays may contain personally
+		identifiable information. Example being your movements, height or even your body shape. Your data, including associated personally
+		identifiable information, will be broadly publicly available to anyone with an internet connection via the BeatLeader website. It will
+		also be accessible to academic researchers, who may use it to conduct research topics such as VR security, privacy, and usability.
+		<br /><br />
+
+		On top of being publicly available using BeatLeader API your data will be available to anyone who has a direct link to your replay.<br />
+		Also BeatLeader API is used by other services, so your data may be available to them as well.<br /> And BeatLeader database dump is
+		publicly available in BeatLeader discord for any purposes with stripped sensitive data as: login, password, ips and social account
+		tokens (data which is not otherwise available via API).
+
 		<br /><br /><b>Steam specific</b><br />
-		BS played hours amount and country. This data is used on the website. (Country is changeable)
+		Your Steam country will be used if it's public. This data is used on the website. (Country is changeable)
 		<br /><br /><b>Patreon specific</b><br />
-		Server will use your Patreon profile id to ensure your pledge to grant the "Patron" role.
+		The server will use your Patreon profile id to ensure your pledge to grant the "Patron" role.
+		<br /><br /><b>Third-party social applications</b><br />
+		BeatLeader uses third-party social applications to provide additional features. These applications may collect additional data about you.
+		BeatLeader will collect your social account id and access token to use it with third-party social applications. You may delete this info
+		by unlinking your social account from BeatLeader.
 
-		<br /><br /><b>Can I delete my data from BeatLeader?</b><br />
-		No. Work in progress, you will be able as soon as I finish implenting it.
+		<br /><br /><b>Can I delete all my data from BeatLeader?</b><br />
+		Yes! <a href="/signin/autoban">Click here</a>
 
-		<br /><br /><br />What data does BeatLeader website/"electron app" collect?<br />
+		<br /><br />What data does this website collect?<br />
 		<b>No data is collected.</b>
+
+		<br /><br />Does this website use cookies?<br />
+		<b>Yes! This website uses a single authentication cookie to store your login session.</b>
+		No cookies were used for tracking or any other purposes.
+
+		<br /><br />Does this website use third-party services?<br />
+		<b
+			>Yes! This website uses other awesome Beat Saber projects like BeatSaver, AccSaber, BeatSavior and ArcViewer. No data is sent there,
+			but they may collect it on opening dedicated service website</b>
+
+		<br /><br />What data does web replay player website collect?<br />
+		<b>No data is collected.</b>
+
+		<br /><br />What data does web BeatLeader discord bots collect?<br />
+		<b>Your Discord user id and data from the BeatLeader API</b>
 
 		<p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>
 	</ContentBox>
