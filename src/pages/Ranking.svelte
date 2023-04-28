@@ -337,15 +337,15 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<!-- <ContentBox cls="event-banner festive" on:click={() => navigate('/event/23')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/33')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://api.beatleader.xyz/playlist/image/1248.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/11507-event.png" />
 				<div class="event-text-container">
-					<span class="event-title">Happy holidays, gamers!</span>
-					<span class="event-text">Check out special event with custom scoring rules.<br />Only timing matters!</span>
+					<span class="event-title">Month worth of ranked maps!</span>
+					<span class="event-text">Check out and compete on maps ranked in April.</span>
 				</div>
 			</div>
-		</ContentBox> -->
+		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -474,13 +474,10 @@
 		margin: 0.6em;
 		padding: 0.3em;
 		border-radius: 0.5em;
-		height: 8em;
 		cursor: pointer;
-		background-image: url(/assets/lights2.gif) !important;
 	}
 
 	.event-container {
-		backdrop-filter: blur(10px) brightness(0.9);
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -494,20 +491,24 @@
 	}
 
 	.event-image {
-		width: 8em;
-		height: 8em;
+		width: 6em;
+		height: 6em;
+		margin-right: 1em;
+		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
 	.event-title {
 		color: white;
 		font-size: x-large;
 		font-weight: 800;
+		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
 	.event-text {
 		color: white;
 		font-size: larger;
 		font-weight: 600;
+		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
 	@media screen and (max-width: 1275px) {
