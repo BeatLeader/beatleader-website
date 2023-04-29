@@ -67,6 +67,7 @@
 		grid-column-gap: 0.4em;
 		grid-row-gap: 0.25em;
 		min-width: var(--min-width, 20rem);
+		height: 100%;
 	}
 
 	.player-performance-badges :global(.compare) {

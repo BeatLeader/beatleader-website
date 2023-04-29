@@ -15,6 +15,7 @@
 	export let modifiers = null;
 	export let additionalStat = null;
 	export let selectedMetric = null;
+	export let type = 'profile-score';
 
 	const ACC_SABER_BADGES = [[{metric: 'ap'}, {metric: 'acc', withImprovements: true}, {metric: 'score', withImprovements: true}]];
 	const BEAT_SAVIOR_BADGES = [
@@ -98,19 +99,12 @@
 
 	$: beatSavior = songScore?.beatSavior ?? getBeatSaviorCompatibleStats(score);
 
-	$: badgesDefinition = [...(Object.values($configStore?.scoreBadges) ?? [])];
+	$: configBadges = type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badges : $configStore?.scoreBadges;
+	$: configBadgeRows =
+		type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badgeRows : $configStore?.scorePreferences?.badgeRows ?? 2;
+	$: badgesDefinition = [...(Object.values(configBadges) ?? [])];
 
-	$: badges = getBadges(
-		service,
-		badgesDefinition,
-		$configStore?.scorePreferences?.badgeRows ?? 2,
-		score,
-		improvements,
-		beatSavior,
-		additionalStat,
-		$isDemo,
-		modifiers
-	);
+	$: badges = getBadges(service, badgesDefinition, configBadgeRows, score, improvements, beatSavior, additionalStat, $isDemo, modifiers);
 
 	$: myScoreBadges = getBadges(
 		service,
@@ -142,6 +136,10 @@
 </div>
 
 <style>
+	.player-performance {
+		height: 100%;
+	}
+
 	.compare-player-name {
 		display: block;
 		color: var(--faded);

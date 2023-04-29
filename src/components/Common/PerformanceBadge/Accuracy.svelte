@@ -77,6 +77,10 @@
 			suffixPrev={prevSuffix}
 			zero="-"
 			withZeroSuffix={false} />
+		{#if secondary === 'mods'}
+			<small title={$isDemo ? 'Click to setup' : mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
+				>{#if mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
+		{/if}
 		<slot name="label-after" />
 	</span>
 	<small

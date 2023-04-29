@@ -29,7 +29,6 @@ export function getIconNameForDiff(diffInfo) {
 }
 
 export function getDescriptionForDiff(diffInfo) {
-	console.log(diffInfo.type);
 	return modeDescriptions[diffInfo.type]?.title ?? 'Standard';
 }
 

@@ -70,6 +70,19 @@ export const DEFAULT_CONFIG = {
 		showLeaderboard: true,
 		defaultAccChartIndex: 0,
 	},
+	leaderboardPreferences: {
+		badges: [
+			[{metric: 'pp', secondary: 'none'}, {metric: 'acc', secondary: 'mods', withMods: false}, {metric: 'score'}],
+			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'mistakes'}],
+		],
+		badgeRows: 1,
+		show: {
+			avatar: true,
+			country: false,
+			clans: true,
+			date: true,
+		},
+	},
 	chartLegend: {
 		y: true,
 		y1: true,
