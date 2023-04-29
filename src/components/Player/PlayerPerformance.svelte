@@ -46,7 +46,7 @@
 		};
 	}
 
-	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat, isDemo) {
+	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat, isDemo, status) {
 		if (!service?.length || !Array.isArray(config) || !config?.length) return;
 
 		if (!rows) rows = 2;
@@ -80,9 +80,9 @@
 		return config
 			.map(row =>
 				row.map(col => {
-					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo);
+					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo, status);
 					const alternativeBadges = (col?.alternatives ?? []).map(a =>
-						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo)
+						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo, status)
 					);
 
 					return [mainBadge, ...alternativeBadges].filter(b => b?.component);
@@ -104,7 +104,18 @@
 		type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badgeRows : $configStore?.scorePreferences?.badgeRows ?? 2;
 	$: badgesDefinition = [...(Object.values(configBadges) ?? [])];
 
-	$: badges = getBadges(service, badgesDefinition, configBadgeRows, score, improvements, beatSavior, additionalStat, $isDemo, modifiers);
+	$: badges = getBadges(
+		service,
+		badgesDefinition,
+		configBadgeRows,
+		score,
+		improvements,
+		beatSavior,
+		additionalStat,
+		$isDemo,
+		songScore?.leaderboard?.difficultyBl?.status ?? 0,
+		modifiers
+	);
 
 	$: myScoreBadges = getBadges(
 		service,
@@ -115,6 +126,7 @@
 		getBeatSaviorCompatibleStats(score?.myScore?.score),
 		additionalStat,
 		false,
+		songScore?.leaderboard?.difficultyBl?.status ?? 0,
 		modifiers
 	);
 

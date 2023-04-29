@@ -544,7 +544,7 @@
 	$: updateFilters(buildFiltersFromLocation(location));
 	$: makeComplexFilters(buildFiltersFromLocation(location));
 
-	$: scores = opt($leaderboardStore, 'scores', null);
+	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
 

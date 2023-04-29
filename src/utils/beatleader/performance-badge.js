@@ -128,7 +128,7 @@ export const availableMetrics = [
 
 export const getDefaultMetricWithOptions = metric => ({metric, ...(availableMetrics?.find(m => m.metric === metric)?.default ?? {})});
 
-export const getPerformanceBadge = (def, score, improvements, beatSavior, modifiers = {}, isDemo = false) => {
+export const getPerformanceBadge = (def, score, improvements, beatSavior, modifiers = {}, isDemo = false, status = 0) => {
 	let component = Badge;
 	let componentProps = {onlyLabel: true, color: 'white'};
 	let title = isDemo ? 'Click to setup' : null;
@@ -143,20 +143,15 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 
 	switch (metric) {
 		case 'pp':
-			title = isDemo
-				? 'Click to setup'
-				: score?.ppWeighted || isNaN(score?.ppWeighted)
-				? ''
-				: getNominatedPPHoverTitle(score, beatSavior, modifiers);
+			title = isDemo ? 'Click to setup' : status === 2 ? getNominatedPPHoverTitle(score, beatSavior, modifiers) : '';
 			className = 'pp';
 
 			if (score?.pp) {
 				componentProps = {
 					onlyLabel: true,
 					color: 'white',
-					styling: score?.ppWeighted ? '' : 'nominated-pp',
-					bgColor: score?.ppWeighted ? 'var(--ppColour)' : 'transparent',
-					title,
+					styling: status === 3 ? '' : 'nominated-pp',
+					bgColor: status === 3 ? 'var(--ppColour)' : 'transparent',
 				};
 
 				slotComponent = Pp;
@@ -175,6 +170,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 					inline: false,
 					color: 'white',
 					secondaryMetric: def?.secondary ?? null,
+					title,
 				};
 			} else {
 				component = null;
@@ -520,8 +516,7 @@ function getNominatedPPHoverTitle(score, beatSavior, modifiers) {
 		return title;
 	}
 
-	let fcPp = score?.fcPp;
-	if (!fcPp || fcPp <= 0) {
+	if (!Number.isFinite(score?.fcAccuracy)) {
 		// we need to compute it using fcAccuracy.
 		const fcAccuracy = score?.fcAccuracy;
 
