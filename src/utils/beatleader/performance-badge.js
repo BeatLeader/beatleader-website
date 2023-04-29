@@ -42,6 +42,7 @@ export const availableMetrics = [
 					{name: 'None', value: 'none'},
 					{name: 'Improvement', value: 'improvement'},
 					{name: 'FC Accuracy', value: 'fcAccuracy'},
+					{name: 'Modifiers', value: 'mods'},
 				],
 			},
 			{
