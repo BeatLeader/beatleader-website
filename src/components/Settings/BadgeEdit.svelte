@@ -1,11 +1,12 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import {availableMetrics, getDefaultMetricWithOptions} from '../../utils/beatleader/performance-badge';
+	import {getAvailableMetrics, getDefaultMetricWithOptions} from '../../utils/beatleader/performance-badge';
 	import Select from './Select.svelte';
 
 	export let badge = null;
 	export let level = 1;
 	export let idx = 0;
+	export let type = 'profile-score';
 
 	const dispatch = createEventDispatcher();
 
@@ -13,11 +14,11 @@
 		if (!badge?.metric) return;
 
 		const alternatives = level === 1 ? {alternatives: badge?.alternatives ?? []} : {};
-		dispatch('change', {...getDefaultMetricWithOptions(badge.metric), ...alternatives});
+		dispatch('change', {...getDefaultMetricWithOptions(badge.metric, type), ...alternatives});
 	}
 
 	function onMetricOptionChanged() {
-		const metric = availableMetrics.find(m => m.metric === badge?.metric);
+		const metric = availableMetricsForType.find(m => m.metric === badge?.metric);
 		if (!metric) return;
 
 		const options = (metric?.options ?? []).reduce(
@@ -36,7 +37,8 @@
 		dispatch('change', badge);
 	}
 
-	$: badgeOptions = availableMetrics.find(m => m.metric === badge?.metric)?.options ?? null;
+	$: availableMetricsForType = getAvailableMetrics(type);
+	$: badgeOptions = availableMetricsForType.find(m => m.metric === badge?.metric)?.options ?? null;
 </script>
 
 {#if badge}
@@ -51,14 +53,14 @@
 	<section class="option">
 		<label> Primary metric </label>
 
-		<Select bind:value={badge.metric} on:change={onMetricChanged} options={availableMetrics} valueSelector={x => x.metric}/>
+		<Select bind:value={badge.metric} on:change={onMetricChanged} options={availableMetricsForType} valueSelector={x => x.metric} />
 	</section>
 
 	{#if badgeOptions?.length}
-		{#each badgeOptions as option}
+		{#each badgeOptions as option ((badge?.metric ?? '') + ':' + (option?.name ?? ''))}
 			<section class="option">
 				<label>{option?.label ?? option?.name}</label>
-				<Select bind:value={badge[option.name]} on:change={onMetricOptionChanged} options={option.values}/>
+				<Select bind:value={badge[option.name]} on:change={onMetricOptionChanged} options={option.values} />
 			</section>
 		{/each}
 	{/if}
@@ -75,6 +77,7 @@
 				badge={alternative}
 				level={level + 1}
 				{idx}
+				{type}
 				on:change={e => {
 					badge.alternatives[idx] = e.detail;
 					dispatch('change', badge);

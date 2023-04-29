@@ -23,6 +23,8 @@
 	export let noReplayInLeaderboard = false;
 	export let battleRoyaleDraft = false;
 	export let battleRoyaleDraftList = [];
+	export let selectedMetric = null;
+	export let additionalStat = null;
 
 	const MAX_ROYALE_LIST_LENGTH = 10;
 
@@ -85,7 +87,7 @@
 				{:else if sortBy == 'maxStreak'}
 					<i class="fa-solid fa-crosshairs" />
 					{score.score.maxStreak}
-				{:else}
+				{:else if $configStore?.leaderboardPreferences?.show?.date !== false}
 					<span style="color: {getTimeStringColor(score?.score?.timeSet ?? null)}; ">
 						{score?.score.timeSetString ?? '-'}
 					</span>
@@ -96,7 +98,7 @@
 					{score.score.pauses}
 				{:else if sortBy == 'maxStreak'}
 					{score.score.maxStreak}
-				{:else}
+				{:else if $configStore?.leaderboardPreferences?.show?.date !== false}
 					<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
 						{score?.score?.timeSetStringShort ?? ''}
 					</span>
@@ -106,7 +108,7 @@
 		<div class="mobile-second-line">
 			{#if !noReplayInLeaderboard && type !== 'accsaber'}
 				<div class="replay">
-					{#if battleRoyaleDraft}
+					{#if battleRoyaleDraft && $configStore?.leaderboardPreferences?.show?.replay !== false}
 						{#if !battleRoyaleDraftList.includes(score?.player?.playerId) && battleRoyaleDraftList.length < MAX_ROYALE_LIST_LENGTH}
 							<Button
 								cls="replay-button-alt"
@@ -123,13 +125,15 @@
 								on:click={() => dispatch('royale-remove', score?.player?.playerId)} />
 						{/if}
 					{:else}
-						<Button
-							url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
-							on:click={() => showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
-							cls="replay-button-alt"
-							icon="<div class='replay-icon-alt'></div>"
-							title="Replay"
-							noMargin={true} />
+						{#if $configStore?.leaderboardPreferences?.show?.replay !== false}
+							<Button
+								url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
+								on:click={() => showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
+								cls="replay-button-alt"
+								icon="<div class='replay-icon-alt'></div>"
+								title="Replay"
+								noMargin={true} />
+						{/if}
 
 						<span class="beat-savior-reveal clickable" class:opened on:click={() => dispatch('toggle-details')} title="Show details">
 							<i class="fas fa-chevron-down" />
@@ -138,7 +142,14 @@
 				</div>
 			{/if}
 
-			<PlayerPerformance type="leaderboard-score" service={type} songScore={score} {modifiers} />
+			<PlayerPerformance
+				type="leaderboard-score"
+				service={type}
+				songScore={score}
+				{modifiers}
+				{selectedMetric}
+				{additionalStat}
+				on:badge-click />
 		</div>
 	</div>
 
@@ -206,7 +217,8 @@
 
 	.player-score .replay {
 		height: 1.8em;
-		min-width: 1.8em;
+		min-width: fit-content;
+		margin-right: 0.25em;
 		flex: none;
 	}
 

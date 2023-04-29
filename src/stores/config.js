@@ -73,14 +73,15 @@ export const DEFAULT_CONFIG = {
 	leaderboardPreferences: {
 		badges: [
 			[{metric: 'pp', secondary: 'none'}, {metric: 'acc', secondary: 'mods', withMods: false}, {metric: 'score'}],
-			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'mistakes'}],
+			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'mistakes', withImprovements: false}],
 		],
 		badgeRows: 1,
 		show: {
 			avatar: true,
-			country: false,
+			country: true,
 			clans: true,
 			date: true,
+			replay: true,
 		},
 	},
 	chartLegend: {

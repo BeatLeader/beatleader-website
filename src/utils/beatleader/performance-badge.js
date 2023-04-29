@@ -8,7 +8,7 @@ import Mistakes from '../../components/Common/PerformanceBadge/Mistakes.svelte';
 import Label from '../../components/Common/PerformanceBadge/Label.svelte';
 import {describeModifiersAndMultipliers} from './format';
 
-export const availableMetrics = [
+const availableMetrics = [
 	{metric: '__not-set', name: 'Not set'},
 	{
 		metric: 'pp',
@@ -27,9 +27,13 @@ export const availableMetrics = [
 					{name: 'Acc PP', value: 'accPP'},
 					{name: 'Tech PP', value: 'techPP'},
 				],
+				available: ['profile-score'],
 			},
 		],
-		default: {secondary: 'weighted'},
+		default: {
+			'profile-score': {secondary: 'weighted'},
+			'leaderboard-score': {},
+		},
 	},
 	{
 		metric: 'acc',
@@ -40,13 +44,13 @@ export const availableMetrics = [
 				name: 'secondary',
 				values: [
 					{name: 'None', value: 'none'},
-					{name: 'Improvement', value: 'improvement'},
-					{name: 'FC Accuracy', value: 'fcAccuracy'},
+					{name: 'Improvement', value: 'improvement', available: ['profile-score']},
+					{name: 'FC Accuracy', value: 'fcAccuracy', available: ['profile-score']},
 					{name: 'Modifiers', value: 'mods'},
 				],
 			},
 			{
-				label: 'Show modifiers',
+				label: 'Show side modifiers',
 				name: 'withMods',
 				values: [
 					{name: 'Yes', value: true},
@@ -54,7 +58,10 @@ export const availableMetrics = [
 				],
 			},
 		],
-		default: {secondary: 'improvement', withMods: true},
+		default: {
+			'profile-score': {secondary: 'improvement', withMods: true},
+			'leaderboard-score': {secondary: 'mods', withMods: false},
+		},
 	},
 	{
 		metric: 'score',
@@ -67,9 +74,13 @@ export const availableMetrics = [
 					{name: 'Yes', value: true},
 					{name: 'No', value: false},
 				],
+				available: ['profile-score'],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
 	},
 	{
 		metric: 'accLeft',
@@ -84,7 +95,11 @@ export const availableMetrics = [
 				],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
+		available: ['profile-score'],
 	},
 	{
 		metric: 'accRight',
@@ -99,9 +114,13 @@ export const availableMetrics = [
 				],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
+		available: ['profile-score'],
 	},
-	{metric: 'fcAccuracy', name: 'FC accuracy'},
+	{metric: 'fcAccuracy', name: 'FC accuracy', available: ['profile-score']},
 	{
 		metric: 'mistakes',
 		name: 'Total mistakes/FC',
@@ -113,21 +132,41 @@ export const availableMetrics = [
 					{name: 'Yes', value: true},
 					{name: 'No', value: false},
 				],
+				available: ['profile-score'],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
 	},
 	{metric: 'pauses', name: 'Pauses'},
 	{metric: 'maxStreak', name: 'Max 115 streak'},
 	{metric: 'maxCombo', name: 'Max combo'},
-	{metric: 'passPP', name: 'Pass PP'},
-	{metric: 'accPP', name: 'Accuracy PP'},
-	{metric: 'techPP', name: 'Tech PP'},
-	{metric: 'replaysWatched', name: 'Replays watched'},
+	{metric: 'passPP', name: 'Pass PP', available: ['profile-score']},
+	{metric: 'accPP', name: 'Accuracy PP', available: ['profile-score']},
+	{metric: 'techPP', name: 'Tech PP', available: ['profile-score']},
+	{metric: 'replaysWatched', name: 'Replays watched', available: ['profile-score']},
 	{metric: 'mods', name: 'Modifiers'},
 ];
 
-export const getDefaultMetricWithOptions = metric => ({metric, ...(availableMetrics?.find(m => m.metric === metric)?.default ?? {})});
+export const getAvailableMetrics = (type = 'profile-score') =>
+	availableMetrics
+		.filter(m => !m?.available || m.available.includes(type))
+		.map(m => ({
+			...m,
+			options: m?.options
+				?.filter(o => !o?.available || o.available.includes(type))
+				?.map(o => ({
+					...o,
+					values: o?.values?.filter(f => !f?.available || f.available.includes(type)) ?? null,
+				})),
+		}));
+
+export const getDefaultMetricWithOptions = (metric, type = 'profile-score') => ({
+	metric,
+	...(availableMetrics.find(m => m.metric === metric)?.default?.[type] ?? {}),
+});
 
 export const getPerformanceBadge = (def, score, improvements, beatSavior, modifiers = {}, isDemo = false, status = 0) => {
 	let component = Badge;
