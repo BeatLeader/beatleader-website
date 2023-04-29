@@ -478,6 +478,7 @@
 
 			if (userScore && !userScore?.player?.clans?.length) {
 				userScore.player.clans = $account?.player?.playerInfo?.clans ?? [];
+				userScore.leaderboard = $leaderboardStore?.leaderboard;
 			}
 		} catch (err) {
 			userScore = null;
