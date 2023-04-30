@@ -7,7 +7,7 @@
 	import createAccountStore from '../../stores/beatleader/account';
 	import {deepClone} from '../../utils/js';
 	import Switch from '../Common/Switch.svelte';
-	import DemoScores from './DemoScores.svelte';
+	import DemoProfileScore from './DemoProfileScore.svelte';
 	import Select from './Select.svelte';
 	import BadgeEdit from './BadgeEdit.svelte';
 
@@ -272,7 +272,7 @@
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
-	<DemoScores playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
+	<DemoProfileScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
 		<section class="option full">
 			<label title="Determines which metrics are shown at score">Preset:</label>

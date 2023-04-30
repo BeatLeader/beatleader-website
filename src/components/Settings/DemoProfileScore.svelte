@@ -10,7 +10,6 @@
 	export let playerId = null;
 	export let initialService = 'beatleader';
 	export let initialServiceParams = {sort: 'pp', page: 1, count: 1};
-	export let numOfScores = 1;
 	export let fixedBrowserTitle = null;
 	export let withPlayers = false;
 	export let noIcons = false;

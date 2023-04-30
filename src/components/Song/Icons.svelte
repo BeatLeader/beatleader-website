@@ -25,7 +25,7 @@
 	export let noPin = false;
 	export let altReplay = false;
 
-	export let batleRoyaleDraft = false;
+	export let battleRoyaleDraft = false;
 	export let batleRoyale = false;
 
 	const {open} = getContext('simple-modal');
@@ -249,10 +249,10 @@
 
 			{#if shownIcons.includes('batleRoyale')}
 				<Button
-					icon="<div class='battleroyale{batleRoyaleDraft ? 'stop' : ''}-icon'></div>"
-					title="{batleRoyaleDraft ? 'Stop' : 'Start'} drafting battle royal"
+					icon="<div class='battleroyale{battleRoyaleDraft ? 'stop' : ''}-icon'></div>"
+					title="{battleRoyaleDraft ? 'Stop' : 'Start'} drafting battle royal"
 					noMargin={true}
-					on:click={() => (batleRoyaleDraft = !batleRoyaleDraft)} />
+					on:click={() => (battleRoyaleDraft = !battleRoyaleDraft)} />
 			{/if}
 		{/if}
 	</span>
