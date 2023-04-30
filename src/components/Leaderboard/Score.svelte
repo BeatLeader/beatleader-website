@@ -303,8 +303,8 @@
 		transform: rotateZ(180deg);
 	}
 
-	.player-score :global(.player-performance-badges) {
-		min-width: fit-content !important;
+	.player-score :global(.player-performance-badges .with-badge) {
+		min-width: 5.5em;
 	}
 
 	@media screen and (max-width: 767px) {
