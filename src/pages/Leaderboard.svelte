@@ -227,12 +227,6 @@
 
 	let currentTypeOption = findCurrentTypeOption(currentType, currentFilters) ?? typeOptions[0];
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
-
-		navigate(`/u/${playerId}`);
-	}
-
 	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
 
 	function changeParams(newLeaderboardId, newType, newPage, currentFilters) {

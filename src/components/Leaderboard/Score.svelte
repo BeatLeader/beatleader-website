@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import {getTimeStringColor} from '../../utils/date';
 	import {configStore} from '../../stores/config';
 	import Button from '../Common/Button.svelte';
@@ -37,6 +38,12 @@
 			open(Preview, {previewLink});
 		}
 	};
+
+	function navigateToPlayer(playerId) {
+		if (!playerId) return;
+
+		navigate(`/u/${playerId}`);
+	}
 
 	$: priorityModifiers = Object.keys(modifiers ?? {})
 		.filter(m => m !== 'modifierId' && (modifiers?.[m] ?? 0) !== 0)
