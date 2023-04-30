@@ -15,6 +15,7 @@
 	export let leaderboard;
 
 	export let currentLeaderboardId;
+	export let batleRoyale = true;
 	export let battleRoyaleDraft;
 
 	const dispatch = createEventDispatcher();
@@ -47,7 +48,7 @@
 				<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
 			</div>
 
-			<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:battleRoyaleDraft />
+			<Icons {hash} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
 		</div>
 
 		<div class="title-and-buttons">

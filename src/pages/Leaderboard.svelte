@@ -598,6 +598,8 @@
 	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
 	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
+
+	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
 </script>
 
 <svelte:head>
@@ -611,7 +613,12 @@
 	<article class="page-content" transition:fade>
 		{#if leaderboard && song && !withoutHeader}
 			<ContentBox cls="leaderboard-header-box">
-				<LeaderboardHeader bind:currentLeaderboardId bind:battleRoyaleDraft {leaderboard} on:group-changed={onSelectedGroupEntryChanged} />
+				<LeaderboardHeader
+					bind:currentLeaderboardId
+					bind:battleRoyaleDraft
+					{leaderboard}
+					batleRoyale={replayEnabled}
+					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
 		{/if}
 		<div class="leaderboard content-box">
