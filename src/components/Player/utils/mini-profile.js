@@ -84,7 +84,7 @@ function updateScoresStats(playerData) {
 				digits: s?.digits ?? 0,
 				prefix: s?.prefix ?? '',
 				suffix: s?.suffix ?? '',
-				fluid: true,
+				fluid: false,
 				bgColor: s?.bgColor ?? 'var(--dimmed)',
 				key: s.key,
 				inline: true,
@@ -113,7 +113,7 @@ function updateAccBadges(playerData) {
 			...badge,
 			value: scoresStatsTweened[badge.label],
 			title: (!badge.min ? `< ${badge.max}%` : !badge.max ? `> ${badge.min}%` : `${badge.min}% - ${badge.max}%`) + ' (On ranked maps)',
-			fluid: true,
+			fluid: false,
 			digits: 0,
 		};
 	});
