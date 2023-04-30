@@ -185,7 +185,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : status === 2 ? getNominatedPPHoverTitle(score, beatSavior, modifiers) : '';
 			className = 'pp';
 
-			if (score?.pp || status >= 2) {
+			if (score?.pp || [2, 3].includes(status)) {
 				componentProps = {
 					onlyLabel: true,
 					color: 'white',
