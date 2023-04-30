@@ -20,14 +20,13 @@ const availableMetrics = [
 				values: [
 					{name: 'None', value: 'none'},
 					{name: 'Weighted PP', value: 'weighted'},
-					{name: 'PP improvement', value: 'improvement'},
-					{name: 'Total PP gain', value: 'total-gain'},
+					{name: 'PP improvement', value: 'improvement', available: ['profile-score']},
+					{name: 'Total PP gain', value: 'total-gain', available: ['profile-score']},
 					{name: 'PP on full combo', value: 'full-combo'},
 					{name: 'Pass PP', value: 'passPP'},
 					{name: 'Acc PP', value: 'accPP'},
 					{name: 'Tech PP', value: 'techPP'},
 				],
-				available: ['profile-score'],
 			},
 		],
 		default: {
@@ -45,7 +44,7 @@ const availableMetrics = [
 				values: [
 					{name: 'None', value: 'none'},
 					{name: 'Improvement', value: 'improvement', available: ['profile-score']},
-					{name: 'FC Accuracy', value: 'fcAccuracy', available: ['profile-score']},
+					{name: 'FC Accuracy', value: 'fcAccuracy'},
 					{name: 'Modifiers', value: 'mods'},
 				],
 			},
@@ -120,7 +119,7 @@ const availableMetrics = [
 		},
 		available: ['profile-score'],
 	},
-	{metric: 'fcAccuracy', name: 'FC accuracy', available: ['profile-score']},
+	{metric: 'fcAccuracy', name: 'FC accuracy'},
 	{
 		metric: 'mistakes',
 		name: 'Total mistakes/FC',
@@ -143,9 +142,9 @@ const availableMetrics = [
 	{metric: 'pauses', name: 'Pauses'},
 	{metric: 'maxStreak', name: 'Max 115 streak'},
 	{metric: 'maxCombo', name: 'Max combo'},
-	{metric: 'passPP', name: 'Pass PP', available: ['profile-score']},
-	{metric: 'accPP', name: 'Accuracy PP', available: ['profile-score']},
-	{metric: 'techPP', name: 'Tech PP', available: ['profile-score']},
+	{metric: 'passPP', name: 'Pass PP'},
+	{metric: 'accPP', name: 'Accuracy PP'},
+	{metric: 'techPP', name: 'Tech PP'},
 	{metric: 'replaysWatched', name: 'Replays watched', available: ['profile-score']},
 	{metric: 'mods', name: 'Modifiers'},
 ];
