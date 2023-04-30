@@ -71,7 +71,8 @@
 	$: leaderboardId = $scoresStore?.[0]?.leaderboard?.leaderboardId;
 	$: if (leaderboardId) {
 		let rank = $scoresStore?.[0]?.score?.rank ?? 1;
-		const page = Math.ceil((rank - 1) / 5);
+		let page = Math.ceil((rank - 1) / 5);
+		if (page < 1) page = 1;
 		leaderboardStore = createLeaderboardStore(leaderboardId, 'global', page, {count: 5});
 	}
 	$: modifiers = leaderboardStore && $leaderboardStore ? $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null : null;
