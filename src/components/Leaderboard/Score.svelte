@@ -24,7 +24,6 @@
 	export let battleRoyaleDraft = false;
 	export let battleRoyaleDraftList = [];
 	export let selectedMetric = null;
-	export let additionalStat = null;
 
 	const MAX_ROYALE_LIST_LENGTH = 10;
 
@@ -43,6 +42,14 @@
 		.filter(m => m !== 'modifierId' && (modifiers?.[m] ?? 0) !== 0)
 		.map(m => m?.toUpperCase());
 	$: mods = score?.score?.mods?.sort((a, b) => (priorityModifiers.includes(a) ? -1 : priorityModifiers.includes(b) ? 1 : 0));
+	$: additionalStat = ['pauses', 'maxStreak', 'acc'].includes(sortBy) ? sortBy : null;
+	$: showAdditionalStat =
+		(additionalStat &&
+			$configStore?.leaderboardPreferences?.badges
+				?.slice(0, $configStore?.leaderboardPreferences?.badgeRows ?? 1)
+				?.some(row => row.some(col => col?.metric === additionalStat)) === false) ||
+		$configStore?.leaderboardPreferences?.show?.date === true ||
+		(sortBy === 'date' && $configStore?.leaderboardPreferences?.show?.date === false);
 </script>
 
 {#if score}
@@ -80,28 +87,22 @@
 					<ClanBadges player={score.player} />
 				{/if}
 			</div>
-			<div class="timeset above-tablet">
-				{#if sortBy == 'pauses'}
-					<i class="fa-solid fa-pause" />
-					{score.score.pauses}
-				{:else if sortBy == 'maxStreak'}
-					<i class="fa-solid fa-crosshairs" />
-					{score.score.maxStreak}
-				{:else if $configStore?.leaderboardPreferences?.show?.date !== false}
-					<span style="color: {getTimeStringColor(score?.score?.timeSet ?? null)}; ">
-						{score?.score.timeSetString ?? '-'}
-					</span>
-				{/if}
-			</div>
-			<div class="timeset mobile-only">
-				{#if sortBy == 'pauses'}
-					{score.score.pauses}
-				{:else if sortBy == 'maxStreak'}
-					{score.score.maxStreak}
-				{:else if $configStore?.leaderboardPreferences?.show?.date !== false}
-					<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
-						{score?.score?.timeSetStringShort ?? ''}
-					</span>
+			<div class="timeset">
+				{#if showAdditionalStat}
+					{#if sortBy == 'pauses'}
+						<i class="fa-solid fa-pause" />
+						<Value value={score.score.pauses} digits={0} />
+					{:else if sortBy == 'maxStreak'}
+						<i class="fa-solid fa-crosshairs" />
+						<Value value={score.score.maxStreak} digits={0} />
+					{:else if sortBy === 'acc'}
+						<Value value={score?.score?.acc} suffix="%" />
+					{:else if sortBy === 'date' || $configStore?.leaderboardPreferences?.show?.date === true}
+						<span style="color: {getTimeStringColor(score?.score?.timeSet ?? null)}; ">
+							<span class="above-tablet">{score?.score.timeSetString ?? '-'}</span>
+							<span class="mobile-only">{score?.score.timeSetStringShort ?? '-'}</span>
+						</span>
+					{/if}
 				{/if}
 			</div>
 		</div>
@@ -142,14 +143,7 @@
 				</div>
 			{/if}
 
-			<PlayerPerformance
-				type="leaderboard-score"
-				service={type}
-				songScore={score}
-				{modifiers}
-				{selectedMetric}
-				{additionalStat}
-				on:badge-click />
+			<PlayerPerformance type="leaderboard-score" service={type} songScore={score} {modifiers} {selectedMetric} on:badge-click />
 		</div>
 	</div>
 
