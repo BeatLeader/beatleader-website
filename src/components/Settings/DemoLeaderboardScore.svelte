@@ -70,27 +70,39 @@
 
 	$: leaderboardId = $scoresStore?.[0]?.leaderboard?.leaderboardId;
 	$: if (leaderboardId) {
-		leaderboardStore = createLeaderboardStore(leaderboardId, 'global', $scoresStore?.[0]?.score?.rank ?? 1, {count: 1});
+		let rank = $scoresStore?.[0]?.score?.rank ?? 1;
+		const page = Math.ceil((rank - 1) / 5);
+		leaderboardStore = createLeaderboardStore(leaderboardId, 'global', page, {count: 5});
 	}
 	$: modifiers = leaderboardStore && $leaderboardStore ? $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null : null;
-	$: score =
-		leaderboardStore && $leaderboardStore?.scores?.[0]
-			? {
-					...$leaderboardStore.scores[0],
+	$: scores =
+		leaderboardStore && $leaderboardStore?.scores?.length
+			? $leaderboardStore.scores.map(s => ({
+					...s,
 					score: {
-						...$leaderboardStore.scores[0].score,
+						...s?.score,
 						mods: ['TE', 'ST'],
 					},
 					leaderboard: $leaderboardStore.leaderboard,
-			  }
+			  }))
 			: null;
 </script>
 
 <div class="leaderboard">
 	<div class="scores-grid">
-		{#if score}
+		{#if scores}
 			<div class="song-scores" class:demo={$isDemo}>
-				<Score {leaderboardId} {score} type="global" {modifiers} opened={false} {selectedMetric} on:badge-click />
+				{#each scores as score}
+					<Score
+						{leaderboardId}
+						{score}
+						type="global"
+						{modifiers}
+						highlight={score?.player?.playerId === $account?.id}
+						opened={false}
+						{selectedMetric}
+						on:badge-click />
+				{/each}
 			</div>
 		{:else}
 			<Spinner />

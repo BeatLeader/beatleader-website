@@ -304,7 +304,7 @@
 	}
 
 	.player-score :global(.player-performance-badges .with-badge) {
-		min-width: 5.5em;
+		min-width: 6em;
 	}
 
 	@media screen and (max-width: 767px) {
