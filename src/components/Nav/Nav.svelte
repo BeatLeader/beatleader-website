@@ -516,6 +516,13 @@
 		display: none !important;
 	}
 
+	@media (pointer: coarse) {
+		nav :global(.dropdown-item) {
+			min-height: 2rem;
+			line-height: 2rem;
+		}
+	}
+
 	@media (hover: hover) and (pointer: fine) and (min-width: 835px) {
 		.search-hint {
 			display: inline-block !important;
