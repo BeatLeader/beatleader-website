@@ -303,6 +303,10 @@
 		transform: rotateZ(180deg);
 	}
 
+	.player-score :global(.player-performance-badges) {
+		min-width: fit-content !important;
+	}
+
 	@media screen and (max-width: 767px) {
 		.player-score {
 			flex-direction: column;
