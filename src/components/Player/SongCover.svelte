@@ -5,6 +5,7 @@
 	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
 
 	export let leaderboard = null;
+	export let mods = null;
 	export let url = null;
 	export let notClickable = false;
 	export let starsKey = 'stars';
@@ -62,7 +63,7 @@
 
 		{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
 			<div class="type">
-				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} />
+				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} {mods} />
 			</div>
 		{/if}
 
