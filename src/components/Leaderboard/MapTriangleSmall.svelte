@@ -17,11 +17,11 @@
 	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
 
 	$: title = `Pass: ${formatNumber(modifiedPassRating)}★${
-		modifiedPassRating > passRating ? ' (+' + formatNumber(modifiedPassRating - passRating) + '★)' : ''
+		modifiedPassRating !== passRating ? ' (' + formatNumber(modifiedPassRating - passRating, 2, true) + '★)' : ''
 	}\nAcc: ${formatNumber(modifiedAccRating)}★${
-		modifiedAccRating > accRating ? ' (+' + formatNumber(modifiedAccRating - accRating) + '★)' : ''
+		modifiedAccRating !== accRating ? ' (' + formatNumber(modifiedAccRating - accRating, 2, true) + '★)' : ''
 	}\nTech: ${formatNumber(modifiedTechRating)}★${
-		modifiedTechRating > techRating ? ' (+' + formatNumber(modifiedTechRating - techRating) + '★)' : ''
+		modifiedTechRating !== techRating ? ' (' + formatNumber(modifiedTechRating - techRating, 2, true) + '★)' : ''
 	}`;
 </script>
 

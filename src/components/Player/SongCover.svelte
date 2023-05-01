@@ -54,7 +54,10 @@
 	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
 	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
 	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
-	$: modifiedStars = mods?.length ? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating) : null;
+	$: modifiedStars =
+		mods?.length && (passRating !== modifiedPassRating || accRating !== modifiedAccRating || techRating !== modifiedTechRating)
+			? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating)
+			: null;
 </script>
 
 <div class="cover-difficulty">
