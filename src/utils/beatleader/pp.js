@@ -6,7 +6,7 @@ export const getTotalPpFromSortedPps = (ppArray, startIdx = 0) =>
 	ppArray.reduce((cum, pp, idx) => cum + Math.pow(WEIGHT_COEFFICIENT, idx + startIdx) * pp, 0);
 
 export const getFCPPTitle = (fcPp, suffix) => {
-	if (!fcPp | (fcPp <= 0)) {
+	if (!fcPp || fcPp <= 0) {
 		return '';
 	}
 	return `Full combo PP: ${formatNumber(fcPp)}${suffix}`;
