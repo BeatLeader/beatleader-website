@@ -243,20 +243,20 @@
 		min-width: fit-content;
 	}
 
-	.player-score :global(.badge) {
+	.player-score :global(.with-badge .badge) {
 		margin: 0 !important;
 		padding: 0.125em 0.25em !important;
 		width: 100%;
 		height: 100%;
 	}
 
-	.player-score :global(.clan-badges .badge) {
+	.player-score .player > :global(.clan-badges .badge) {
 		margin-right: 0.15em !important;
 		padding: 0 !important;
 		font-size: 0.8em !important;
 	}
 
-	.player-score :global(.clan-badges) {
+	.player-score .player > :global(.clan-badges) {
 		height: 1.2em !important;
 	}
 
