@@ -3,6 +3,7 @@
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
 	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
+	import {computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 
 	export let leaderboard = null;
 	export let mods = null;
@@ -43,6 +44,17 @@
 	]);
 
 	$: coverUrl = loadedImages.length ? loadedImages.sort((a, b) => a?.priority - b?.priority)[0].url : DEFAULT_IMG;
+
+	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: modifiersRating = leaderboard?.difficultyBl?.modifiersRating ?? null;
+	$: passRating = leaderboard?.difficultyBl?.passRating ?? null;
+	$: accRating = leaderboard?.difficultyBl?.accRating ?? null;
+	$: techRating = leaderboard?.difficultyBl?.techRating ?? null;
+	$: actualModifiers = mods?.map(m => ({name: m, value: 0})) ?? null;
+	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
+	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
+	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
+	$: modifiedStars = mods?.length ? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating) : null;
 </script>
 
 <div class="cover-difficulty">
@@ -74,6 +86,7 @@
 				reverseColors={true}
 				stars={(leaderboard?.difficulty && leaderboard?.difficulty[starsKey]) ??
 					(leaderboard?.difficultyBl && leaderboard?.difficultyBl[starsKey])}
+				{modifiedStars}
 				starsSuffix={leaderboard.complexity ? '' : '★'} />
 		</div>
 	{:else}

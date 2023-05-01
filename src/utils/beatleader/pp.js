@@ -168,3 +168,8 @@ export const computeModifiedRating = (rating, ratingName, modifiersRating, mods)
 	const negativeModifiersSum = mods?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
 	return rating * (1 + positiveModifiersSum + negativeModifiersSum);
 };
+
+export const computeStarRating = (passRating, accRating, techRating) =>
+	Number.isFinite(passRating) && Number.isFinite(accRating) && Number.isFinite(techRating)
+		? buildCurve(0.96, passRating, accRating, techRating) / 52
+		: null;
