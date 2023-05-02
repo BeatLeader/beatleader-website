@@ -6,7 +6,7 @@ export const getTotalPpFromSortedPps = (ppArray, startIdx = 0) =>
 	ppArray.reduce((cum, pp, idx) => cum + Math.pow(WEIGHT_COEFFICIENT, idx + startIdx) * pp, 0);
 
 export const getFCPPTitle = (fcPp, suffix) => {
-	if (!fcPp | (fcPp <= 0)) {
+	if (!fcPp || fcPp <= 0) {
 		return '';
 	}
 	return `Full combo PP: ${formatNumber(fcPp)}${suffix}`;
@@ -168,3 +168,8 @@ export const computeModifiedRating = (rating, ratingName, modifiersRating, mods)
 	const negativeModifiersSum = mods?.reduce((sum, mod) => sum + (mod.value < 0 ? mod.value : 0), 0) ?? 0;
 	return rating * (1 + positiveModifiersSum + negativeModifiersSum);
 };
+
+export const computeStarRating = (passRating, accRating, techRating) =>
+	Number.isFinite(passRating) && Number.isFinite(accRating) && Number.isFinite(techRating)
+		? buildCurve(0.96, passRating, accRating, techRating) / 52
+		: null;

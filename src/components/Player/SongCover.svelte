@@ -3,8 +3,10 @@
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
 	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
+	import {computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 
 	export let leaderboard = null;
+	export let mods = null;
 	export let url = null;
 	export let notClickable = false;
 	export let starsKey = 'stars';
@@ -42,6 +44,20 @@
 	]);
 
 	$: coverUrl = loadedImages.length ? loadedImages.sort((a, b) => a?.priority - b?.priority)[0].url : DEFAULT_IMG;
+
+	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: modifiersRating = leaderboard?.difficultyBl?.modifiersRating ?? null;
+	$: passRating = leaderboard?.difficultyBl?.passRating ?? null;
+	$: accRating = leaderboard?.difficultyBl?.accRating ?? null;
+	$: techRating = leaderboard?.difficultyBl?.techRating ?? null;
+	$: actualModifiers = mods?.map(m => ({name: m, value: 0})) ?? null;
+	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
+	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
+	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
+	$: modifiedStars =
+		mods?.length && (passRating !== modifiedPassRating || accRating !== modifiedAccRating || techRating !== modifiedTechRating)
+			? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating)
+			: null;
 </script>
 
 <div class="cover-difficulty">
@@ -62,7 +78,7 @@
 
 		{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
 			<div class="type">
-				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} />
+				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} {mods} />
 			</div>
 		{/if}
 
@@ -73,6 +89,7 @@
 				reverseColors={true}
 				stars={(leaderboard?.difficulty && leaderboard?.difficulty[starsKey]) ??
 					(leaderboard?.difficultyBl && leaderboard?.difficultyBl[starsKey])}
+				{modifiedStars}
 				starsSuffix={leaderboard.complexity ? '' : '★'} />
 		</div>
 	{:else}
