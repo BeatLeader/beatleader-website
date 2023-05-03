@@ -594,6 +594,8 @@
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
 
 	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
+
+	$: ratings = {passRating: modifiedPass, accRating: modifiedAcc, techRating: modifiedTech};
 </script>
 
 <svelte:head>
@@ -611,6 +613,7 @@
 					bind:currentLeaderboardId
 					bind:battleRoyaleDraft
 					{leaderboard}
+					{ratings}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
