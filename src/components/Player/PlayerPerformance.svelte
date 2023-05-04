@@ -117,18 +117,21 @@
 		modifiers
 	);
 
-	$: myScoreBadges = getBadges(
-		service,
-		badgesDefinition,
-		$configStore?.scoreComparison?.badgeRows ?? $configStore?.scorePreferences?.badgeRows ?? 1,
-		score?.myScore?.score,
-		null,
-		getBeatSaviorCompatibleStats(score?.myScore?.score),
-		additionalStat,
-		false,
-		songScore?.leaderboard?.difficultyBl?.status ?? 0,
-		modifiers
-	);
+	$: myScoreBadges =
+		score?.myScore && score?.myScore?.player?.playerId !== score?.playerId
+			? getBadges(
+					service,
+					badgesDefinition,
+					$configStore?.scoreComparison?.badgeRows ?? $configStore?.scorePreferences?.badgeRows ?? 1,
+					score?.myScore?.score,
+					null,
+					getBeatSaviorCompatibleStats(score?.myScore?.score),
+					additionalStat,
+					false,
+					songScore?.leaderboard?.difficultyBl?.status ?? 0,
+					modifiers
+			  )
+			: null;
 
 	$: scoreComparisonMethod = $configStore?.scoreComparison?.method ?? 'none';
 </script>
