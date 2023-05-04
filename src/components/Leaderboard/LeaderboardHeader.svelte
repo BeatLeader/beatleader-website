@@ -13,6 +13,7 @@
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
 
 	export let leaderboard;
+	export let ratings = null;
 
 	export let currentLeaderboardId;
 	export let batleRoyale = true;
@@ -69,7 +70,7 @@
 			</div>
 			<h2 class="title is-6" style="display: contents;">
 				{#if leaderboard.stats && leaderboard.stats.passRating}
-					<MapTriangle width="8em" height="8em" mapRating={leaderboard.stats} showRatings={true} />
+					<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
 				{/if}
 			</h2>
 			{#if leaderboard?.stats?.requirements}
@@ -213,6 +214,7 @@
 		flex-wrap: wrap;
 		gap: 0.5em;
 		flex-direction: column;
+		min-width: fit-content;
 	}
 
 	:global(.voteButton) {
