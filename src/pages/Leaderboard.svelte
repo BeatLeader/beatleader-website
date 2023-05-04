@@ -595,7 +595,7 @@
 
 	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
 
-	$: ratings = {passRating: modifiedPass, accRating: modifiedAcc, techRating: modifiedTech};
+	$: ratings = {passRating: modifiedPass, accRating: modifiedAcc, techRating: modifiedTech, stars: leaderboard?.stats?.stars};
 </script>
 
 <svelte:head>
