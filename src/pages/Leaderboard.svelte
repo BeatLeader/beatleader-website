@@ -150,6 +150,7 @@
 	let modifiedPass = null;
 	let modifiedAcc = null;
 	let modifiedTech = null;
+	let modifiedStars = null;
 
 	let openedDetails = [];
 
@@ -595,7 +596,12 @@
 
 	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
 
-	$: ratings = {passRating: modifiedPass, accRating: modifiedAcc, techRating: modifiedTech, stars: leaderboard?.stats?.stars};
+	$: ratings = {
+		passRating: modifiedPass,
+		accRating: modifiedAcc,
+		techRating: modifiedTech,
+		stars: modifiedStars ?? leaderboard?.stats?.stars,
+	};
 </script>
 
 <svelte:head>
@@ -1030,9 +1036,10 @@
 									modifiersRating={leaderboard?.difficultyBl?.modifiersRating}
 									mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
 									on:modified-stars={e => {
-										modifiedPass = e?.detail[0] ?? 0;
-										modifiedAcc = e?.detail[1] ?? 0;
-										modifiedTech = e?.detail[2] ?? 0;
+										modifiedPass = e?.detail?.passRating ?? 0;
+										modifiedAcc = e?.detail?.accRating ?? 0;
+										modifiedTech = e?.detail?.techRating ?? 0;
+										modifiedStars = e?.detail?.stars ?? null;
 									}} />
 							</div>
 						</div>

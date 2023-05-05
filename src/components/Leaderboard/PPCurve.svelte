@@ -5,7 +5,7 @@
 	import regionsPlugin from './utils/regions-plugin';
 	import {formatNumber} from '../../utils/format';
 	import {userDescriptionForModifier} from '../../utils/beatleader/format';
-	import {getPPFromAcc, computeModifiedRating} from '../../utils/beatleader/pp';
+	import {getPPFromAcc, computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
 
 	export let passRating = 5;
@@ -176,7 +176,7 @@
 	}
 
 	onMount(() => {
-		dispatch('modified-stars', [passRating, accRating, techRating]);
+		dispatch('modified-stars', {passRating, accRating, techRating, stars: null});
 	});
 
 	$: modifiersArr = Object.entries(modifiers ?? {})
@@ -194,10 +194,18 @@
 	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, selectedModifiers);
 	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, selectedModifiers);
 	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, selectedModifiers);
-	// passRating, accRating, techRating
+	$: modifiedStars =
+		selectedModifiers?.length && (passRating !== modifiedPassRating || accRating !== modifiedAccRating || techRating !== modifiedTechRating)
+			? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating)
+			: null;
 	$: setupChart(canvas, modifiedPassRating, modifiedAccRating, modifiedTechRating, logarithmic, startAcc, endAcc);
 
-	$: dispatch('modified-stars', [modifiedPassRating, modifiedAccRating, modifiedTechRating]);
+	$: dispatch('modified-stars', {
+		passRating: modifiedPassRating,
+		accRating: modifiedAccRating,
+		techRating: modifiedTechRating,
+		stars: modifiedStars,
+	});
 </script>
 
 <section class="chart" style="--height: {height}">
