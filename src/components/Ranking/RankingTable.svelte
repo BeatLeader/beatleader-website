@@ -12,6 +12,7 @@
 	import {deepClone, opt} from '../../utils/js';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import RankingMeta from './RankingMeta.svelte';
+	import Select from '../Settings/Select.svelte';
 
 	export let type = 'global';
 	export let page = 1;
@@ -33,19 +34,19 @@
 
 	let allTypeValues = [
 		{
-			label: 'Ranked',
+			name: 'Ranked',
 			value: 'ranked',
-			icon: 'fa fa-cubes',
+			icon: 'fa fa-star',
 		},
 		{
-			label: 'Unranked',
+			name: 'Unranked',
 			value: 'unranked',
-			icon: 'fa fa-cubes',
+			icon: 'fa fa-shapes',
 		},
 		{
-			label: 'All',
+			name: 'All',
 			value: 'all',
-			icon: 'fa fa-cubes',
+			icon: 'fa fa-cubes-stacked',
 		},
 	];
 	let currentTypeValue = filters.mapsType;
@@ -95,29 +96,29 @@
 			acc: 'scoreStats.topAccPP',
 			pass: 'scoreStats.topPassPP',
 			tech: 'scoreStats.topTechPP',
-		}
+		},
 	};
 
 	let allPpTypeValues = [
 		{
-			label: 'General',
+			name: 'Total',
 			value: 'general',
-			icon: 'fa fa-cubes',
+			icon: 'fa fa-up-down-left-right',
 		},
 		{
-			label: 'Accuracy',
+			name: 'Accuracy',
 			value: 'acc',
-			icon: 'fa fa-cubes',
+			icon: 'fa fa-arrows-to-dot',
 		},
 		{
-			label: 'Pass',
+			name: 'Pass',
 			value: 'pass',
-			icon: 'fa fa-cubes',
+			icon: 'fa fa-person-walking-dashed-line-arrow-right',
 		},
 		{
-			label: 'Tech',
+			name: 'Tech',
 			value: 'tech',
-			icon: 'fa fa-cubes',
+			icon: 'fa fa-arrows-split-up-and-left',
 		},
 	];
 	let currentPpTypeValue = filters.ppType ?? 'general';
@@ -156,7 +157,7 @@
 			label: 'Top PP',
 			title: 'Sort by top PP',
 			iconFa: 'fa fa-cubes',
-			value: data => getStat(data, statKeys["topPp"][currentPpTypeValue]),
+			value: data => getStat(data, statKeys['topPp'][currentPpTypeValue]),
 			props: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
 			hideForTypes: ['unranked'],
 		},
@@ -313,20 +314,14 @@
 {#if $rankingStore?.data?.length}
 	{#if !eventId}
 		<nav class="switcher-nav">
-			{#if sortValue?.id == 'pp' || sortValue?.id == 'topPp'}
-				<select class="type-select" bind:value={currentPpTypeValue} on:change={onPPTypeChanged}>
-					{#each allPpTypeValues as option (option.value)}
-						<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
-					{/each}
-				</select>
-			{/if}
 			<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+			<div class="type-switcher">
+				<Select bind:value={currentTypeValue} options={allTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onTypeChanged} />
 
-			<select class="type-select" bind:value={currentTypeValue} on:change={onTypeChanged}>
-				{#each allTypeValues as option (option.value)}
-					<option class="type-option" value={option.value}><i class={option.icon} />{option.label}</option>
-				{/each}
-			</select>
+				{#if sortValue?.id == 'pp' || sortValue?.id == 'topPp'}
+					<Select bind:value={currentPpTypeValue} options={allPpTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onPPTypeChanged} />
+				{/if}
+			</div>
 		</nav>
 	{/if}
 
@@ -399,11 +394,16 @@
 		font-family: inherit;
 		font-size: 0.875rem;
 		font-weight: 500;
+		margin-left: 0.4em;
 	}
 
 	.type-option {
 		color: black;
 		font-family: inherit;
+	}
+
+	.type-switcher {
+		margin-left: 0.4em;
 	}
 
 	nav > :global(*) {
@@ -418,6 +418,15 @@
 
 		:global(.player-name-and-rank .clan-badges) {
 			display: none;
+		}
+
+		.switcher-nav {
+			flex-direction: column-reverse;
+		}
+
+		.type-switcher {
+			margin-top: 0;
+			margin-bottom: 1rem;
 		}
 	}
 </style>

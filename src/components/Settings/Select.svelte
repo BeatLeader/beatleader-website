@@ -94,6 +94,9 @@
 		on:click={onClickHeader}
 		on:keydown={onKeyDownHeader}>
 		<div class="dropdown-header-text" style="padding-left: {fontPadding}em">
+			{#if options?.length > 0 && value != null && options.find(x => valueSelector(x) == value)?.icon}
+				<i class="fa {options.find(x => valueSelector(x) == value).icon}" style="margin-right: {fontPadding}em" />
+			{/if}
 			{options?.length > 0
 				? value != null
 					? nameSelector(options.find(x => valueSelector(x) == value))
@@ -120,6 +123,9 @@
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
 						<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 						<div tabindex="0" class="dropdown-item" style="font-size: {menuFontSize}em" on:click={selectOption(item)}>
+							{#if item.icon}
+								<i class="fa {item.icon}" style="margin-right: {fontPadding}em" />
+							{/if}
 							{nameSelector(item).trim()}
 						</div>
 					{/if}
