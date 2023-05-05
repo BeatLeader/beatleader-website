@@ -18,6 +18,7 @@
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import BackToTop from '../components/Common/BackToTop.svelte';
+	import Button from '../components/Common/Button.svelte';
 
 	export let page = 1;
 	export let location;
@@ -337,13 +338,14 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/33')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/34')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/11507-event.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/Anniversary-Icon-R452.png" />
 				<div class="event-text-container">
-					<span class="event-title">Month worth of ranked maps!</span>
-					<span class="event-text">Check out and compete on maps ranked in April.</span>
+					<span class="event-title">Happy Birthday Beat Saber and Modding!</span>
+					<span class="event-text">Compete on the awesome maps from the community to win <s>programming socks</s> BSMG merch!</span>
 				</div>
+				<Button label="Event" iconFa="fas fa-cake-candles" on:click={() => navigate('/event/34')} />
 			</div>
 		</ContentBox>
 
@@ -494,18 +496,17 @@
 		width: 6em;
 		height: 6em;
 		margin-right: 1em;
-		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
 	.event-title {
-		color: white;
+		color: var(--text-color);
 		font-size: x-large;
 		font-weight: 800;
 		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
 	.event-text {
-		color: white;
+		color: var(--text-color);
 		font-size: larger;
 		font-weight: 600;
 		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;

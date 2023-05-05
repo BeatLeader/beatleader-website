@@ -1,0 +1,448 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&display=swap');
+
+* {
+    font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
+}
+
+body {
+    padding: 0;
+}
+
+.main-background {
+    position: fixed;
+    display: block;
+	background: url(/assets/festive-background.png) var(--background) !important;
+	background-size: cover !important;
+}
+
+
+:root {
+    --textColor: #e18da9 !important;
+    --ppColour: rgb(226, 183, 255) !important;
+    --row-separator: #00000059 !important;
+}
+
+// Navigator
+nav.ssr-page-container {
+    padding: .5rem;
+    height: 4rem !important;
+    box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.11) !important;
+    border-bottom: none !important;
+    background: #122975 !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    max-width: none !important;
+
+    a,
+    div {
+        transition: all 0.1s;
+        border-radius: 4px;
+        // margin: 5px;
+    }
+}
+
+
+// Main page
+.sspl-page-container {
+    display: flex;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    text-align: center;
+
+    .is-multiline {
+
+        // Title
+        .title.is-4:nth-child(1) {
+            font-size: 50px;
+            position: relative;
+
+            &::after {
+                position: absolute;
+                bottom: -1rem;
+                left: 0px;
+                width: 100%;
+                background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
+                height: 0.4rem;
+                content: "";
+            }
+        }
+    }
+
+
+    // Icons
+    .sources {
+        justify-content: center;
+
+        * {
+            cursor: pointer !important;
+        }
+
+        .title.is-6 {
+            filter: grayscale(1);
+            box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.048);
+            background: rgb(37, 37, 37);
+            padding: 1rem;
+            border-radius: .3rem;
+            margin: .5rem;
+            transition: filter 0.1s;
+
+            .icon {
+                margin: 0 !important;
+            }
+
+            &:hover {
+                filter: none;
+            }
+        }
+    }
+
+}
+
+.is-multiline {
+    margin-left: 0 !important;
+}
+
+// All Player grids
+.ranking-grid,
+.leaderboard,
+.players {
+
+    grid-gap: 0rem !important;
+
+    .ranking-grid-row {
+        padding: .2rem 0;
+        border-bottom: 1px rgba(189, 189, 189, 0.164) solid;
+        transition: all .2s;
+
+
+        &:hover {
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.158);
+        }
+
+        .player-card {
+            padding: 0.4rem .8rem;
+            margin: 0 !important;
+            background: rgba(50, 50, 50, 0) !important;
+            border-radius: 0;
+            font-size: .8rem;
+            border: none !important;
+
+            .rank {
+                background: none;
+                font-weight: 600;
+            }
+
+            .player-avatar {
+                .image {
+                    overflow: hidden;
+                    border-radius: 3rem;
+                    background: rgb(70, 70, 70);
+                }
+            }
+
+            .clan-badges .badge {
+                background: rgba(255, 255, 255, 0.123);
+                border-bottom: 2px solid var(--background-color);
+                border-radius: .1rem;
+                padding: .2rem !important;
+                cursor: pointer;
+                filter: saturate(.5) brightness(1.4);
+                transform: scale(0.8);
+                font-weight: 400 !important;
+                color: white !important;
+                margin: 0 0;
+                // opacity: 0.8;
+            }
+
+            .steam-and-pp {
+                * {
+                    font-size: .86rem;
+                    color: rgb(175, 203, 255) !important;
+                }
+            }
+
+            &.current {
+                position: relative;
+
+                &::after {
+                    position: absolute;
+                    bottom: -0.4rem;
+                    left: 0px;
+                    width: calc(100% + 45px);
+                    background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
+                    height: 0.4rem;
+                    content: "";
+                }
+            }
+        }
+
+        .fa-user-plus {
+            background: transparent !important;
+            transition: all 0.1s;
+            border-radius: .2rem !important;
+            color: rgba(255, 255, 255, 0.425);
+
+            &:hover {
+                color: rgb(255, 255, 255);
+            }
+        }
+
+        .fa-user-minus {
+            background: none !important;
+            transition: all 0.1s;
+            border-radius: .2rem !important;
+            color: rgb(255, 255, 255);
+
+            &:hover {
+                color: rgb(255, 255, 255);
+            }
+        }
+    }
+
+}
+
+
+
+// Content Box
+.content-box {
+    background: #122975b8 !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: none !important;
+}
+
+.content-box.festive {
+    background-image: url(/assets/lights2.gif) !important;
+    background-size: cover !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+// User profile page
+.leaderboard .player-score.highlight {
+    min-height: 3rem;
+    height: auto !important;
+}
+
+.song-score .leaderboard {
+    padding: 0 !important;
+    background: none !important;
+    backdrop-filter: none !important;
+}
+
+.player-page,
+.leaderboard,
+.player-performance,
+.player-general-info,
+.page-content.scores {
+    .compare-player-name {
+        * {
+            background: transparent !important;
+            color: white !important;
+            border: none !important;
+        }
+    }
+
+
+    .hands-and-grid>*:nth-child(2)>span {
+        padding: 1.7rem !important;
+        background: rgba(255, 255, 255, 0.171) !important;
+    }
+
+    .badge {
+        font-size: 0.8rem !important;
+        color: white !important;
+        --badge-color: rgba(255, 255, 255, 0.13);
+        border-bottom: 2px solid var(--background-color);
+        background: var(--badge-color) !important;
+        border-radius: 0.25rem;
+        padding: 0.4rem 0.3rem;
+    }
+
+    .rank {
+        .badge {
+            border-radius: 0;
+            background: none !important;
+            border: none;
+        }
+    }
+
+    .player-score {
+        min-height: 3rem;
+        border: none !important;
+
+        &.highlight {
+            background: #ffffff33;
+            margin: .4rem 0;
+            padding: 0;
+
+            &.mobile-second-line {
+                .badge {
+                    border: none;
+                    background: none !important;
+                }
+            }
+        }
+
+        @media screen and (max-width: 767px) {
+            & {
+                height: unset !important;
+
+                .clan-badges {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    .scores-grid {
+        * {
+            color: white !important;
+        }
+    }
+
+    .badge.nominated-pp {
+        --background-color: var(--ppColour) !important;
+    }
+}
+
+// Remove some strange backgrounds&shadows
+.chart,
+.details-box {
+    background: none !important;
+    box-shadow: none !important;
+}
+
+// Clan Tag Color limit
+.clanTag {
+    filter: saturate(0.5) brightness(1.1);
+    font-size: .5rem;
+    font-weight: 500 !important;
+    border-bottom: 2px rgba(255, 255, 255, 0.315) solid;
+    padding: 0 .3rem;
+}
+
+
+.ranking.global.sspl {
+    * {
+        background: transparent;
+    }
+}
+
+.selectContainer {
+    background-color: transparent;
+
+    input {
+        border: none !important;
+    }
+
+    .listContainer {
+        background-color: var(--selected);
+    }
+}
+
+button.pagination-link {
+    font-size: smaller !important;
+    padding: 13px 15px !important;
+    background: rgba(199, 199, 199, 0.363) !important;
+
+    &.is-current {
+        background: rgba(0, 112, 240, 0.521) !important;
+    }
+}
+
+input {
+    background: transparent !important;
+    color: white !important;
+    border: none;
+    opacity: 0.95;
+    border-bottom: 1px solid white !important;
+}
+
+// Login Page
+.login-page {
+    .title {
+        position: relative;
+
+        &::after {
+            position: absolute;
+            bottom: -1rem;
+            left: 0px;
+            width: 100%;
+            background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
+            height: 0.4rem;
+            content: "";
+        }
+    }
+
+    .input-container {
+        justify-items: center;
+
+        .cat {
+            font-size: 1.4rem;
+        }
+
+        input {
+            font-size: 1.2rem;
+            text-align: center;
+            color: rgba(243, 243, 243, 0.63) !important;
+        }
+    }
+}
+
+.blur-part {
+    background: linear-gradient(0deg, rgb(27 36 42), transparent) !important;
+}
+
+.pagination {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 5px;
+}
+
+select.type-select {
+    padding: 0.175rem !important;
+    margin-top: .9rem !important;
+}
+
+.navigation-item.selected {
+    background-color: #e18da9 !important;
+    -webkit-filter: invert(100%);
+    filter: invert(100%);
+}
+
+.selected-playlist-box {
+    background: rgba(0, 112, 240, 0.521) !important;
+}
+
+select {
+    color: white;
+    box-shadow: none;
+    border: none;
+}
+
+.dropdown-header {
+    background-color: rgba(255, 255, 255, 0.13);
+    border-radius: 0.4em;
+}
+
+.dropdown-menu {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 0.4em;
+}
+
+.dropdown-menu .dropdown-item:hover {
+	background-color: rgba(200, 200, 200, 0.3);
+}
+
+.dropdown-menu .dropdown-item:focus {
+	background-color: rgba(200, 200, 200, 0.3);
+	outline: none;
+}
