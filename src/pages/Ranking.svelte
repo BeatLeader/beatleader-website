@@ -522,5 +522,13 @@
 			width: 100%;
 			max-width: 65em;
 		}
+
+		.event-container {
+			flex-direction: column;
+		}
+
+		.event-text-container {
+			margin-bottom: 1em;
+		}
 	}
 </style>
