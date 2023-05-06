@@ -16,9 +16,15 @@
 	$: accPp = playerInfo.accPp;
 	$: passPp = playerInfo.passPp;
 
-	$: maxTechPp = techPp > DEFAULT_MAX_TECH_PP ? Math.ceil(techPp) : DEFAULT_MAX_TECH_PP;
-	$: maxAccPp = accPp > DEFAULT_MAX_ACC_PP ? Math.ceil(accPp) : DEFAULT_MAX_ACC_PP;
-	$: maxPassPp = passPp > DEFAULT_MAX_PASS_PP ? Math.ceil(passPp) : DEFAULT_MAX_PASS_PP;
+	$: techScale = techPp > DEFAULT_MAX_TECH_PP ? techPp / DEFAULT_MAX_TECH_PP : 1;
+	$: accScale = accPp > DEFAULT_MAX_ACC_PP ? accPp / DEFAULT_MAX_ACC_PP : 1;
+	$: passScale = passPp > DEFAULT_MAX_PASS_PP ? passPp / DEFAULT_MAX_PASS_PP : 1;
+
+	$: triangleScale = Math.max(techScale, Math.max(accScale, passScale));
+
+	$: maxTechPp = DEFAULT_MAX_TECH_PP * triangleScale;
+	$: maxAccPp = DEFAULT_MAX_ACC_PP * triangleScale;
+	$: maxPassPp = DEFAULT_MAX_PASS_PP * triangleScale;
 
 	$: totalNormalizedPp = techPp * (maxAccPp / maxTechPp) + accPp + passPp * (maxAccPp / maxPassPp);
 	$: normalizedTechPp = techPp / maxTechPp;
