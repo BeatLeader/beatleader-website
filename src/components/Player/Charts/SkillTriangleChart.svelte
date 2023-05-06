@@ -6,14 +6,19 @@
 	export let height = '10em';
 	export let showRatings = true;
 
-	const maxTechPp = 1300;
-	const maxAccPp = 15000;
-	const maxPassPp = 6000;
+	const DEFAULT_MAX_TECH_PP = 1300;
+	const DEFAULT_MAX_ACC_PP = 15000;
+	const DEFAULT_MAX_PASS_PP = 6000;
+
 	const gypL = 57.74;
 
 	$: techPp = playerInfo.techPp;
 	$: accPp = playerInfo.accPp;
 	$: passPp = playerInfo.passPp;
+
+	$: maxTechPp = techPp > DEFAULT_MAX_TECH_PP ? Math.ceil(techPp) : DEFAULT_MAX_TECH_PP;
+	$: maxAccPp = accPp > DEFAULT_MAX_ACC_PP ? Math.ceil(accPp) : DEFAULT_MAX_ACC_PP;
+	$: maxPassPp = passPp > DEFAULT_MAX_PASS_PP ? Math.ceil(passPp) : DEFAULT_MAX_PASS_PP;
 
 	$: totalNormalizedPp = techPp * (maxAccPp / maxTechPp) + accPp + passPp * (maxAccPp / maxPassPp);
 	$: normalizedTechPp = techPp / maxTechPp;
