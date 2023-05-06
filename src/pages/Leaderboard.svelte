@@ -52,6 +52,7 @@
 	import LeaderboardActionButtons from '../components/Leaderboard/LeaderboardActionButtons.svelte';
 	import LeaderboardHeader from '../components/Leaderboard/LeaderboardHeader.svelte';
 	import Score from '../components/Leaderboard/Score.svelte';
+	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -397,7 +398,7 @@
 	}
 
 	var complexFilters = [];
-	function makeComplexFilters(currentFilters) {
+	function makeComplexFilters(currentFilters, mainPlayerCountry) {
 		complexFilters = [
 			{
 				component: TextFilter,
@@ -408,6 +409,17 @@
 					placeholder: 'Enter name or tag...',
 					value: currentFilters.search,
 					open: currentFilters.search?.length,
+				},
+			},
+			{
+				component: CountryFilter,
+				props: {
+					id: 'countries',
+					iconFa: 'fa fa-globe',
+					title: 'Search by country',
+					placeholder: 'Select or enter country...',
+					value: currentFilters.countries,
+					open: currentFilters.countries?.length && currentFilters.countries?.toLowerCase() != mainPlayerCountry?.toLowerCase(),
 				},
 			},
 		];
@@ -424,6 +436,7 @@
 		const newFilters = event?.detail ?? {};
 
 		currentFilters.search = newFilters.search;
+		currentFilters.countries = newFilters.countries;
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
@@ -538,7 +551,6 @@
 
 	$: updateParams(leaderboardId, type, page);
 	$: updateFilters(buildFiltersFromLocation(location));
-	$: makeComplexFilters(buildFiltersFromLocation(location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: leaderboard = $leaderboardStore?.leaderboard;
@@ -558,6 +570,8 @@
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
+
+	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
@@ -665,7 +679,7 @@
 					<nav class="switcher-nav">
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
-							<ScoreServiceFilters filters={complexFilters} on:change={onFiltersChanged} />
+							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
 							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
 						</div>
 					</nav>

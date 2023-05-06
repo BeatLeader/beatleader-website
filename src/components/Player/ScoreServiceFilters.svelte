@@ -4,10 +4,10 @@
 	import GenericFilter from './ScoreFilters/GenericFilter.svelte';
 
 	export let filters = null;
+	export let currentFilterValues = {};
 
 	const dispatch = createEventDispatcher();
 
-	let currentFilterValues = {};
 	let lastFilterValues = {};
 
 	function onFilterChanged(event) {
