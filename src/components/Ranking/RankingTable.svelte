@@ -21,6 +21,7 @@
 	export let eventId = null;
 	export let useInternalFilters = false;
 	export let playerClickFilter = null;
+	export let showTypeSwitcher = true;
 	export let meta = false;
 
 	let currentFilters = filters;
@@ -315,13 +316,20 @@
 	{#if !eventId}
 		<nav class="switcher-nav">
 			<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-			<div class="type-switcher">
-				<Select bind:value={currentTypeValue} options={allTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onTypeChanged} />
+			{#if showTypeSwitcher}
+				<div class="type-switcher">
+					<Select bind:value={currentTypeValue} options={allTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onTypeChanged} />
 
-				{#if sortValue?.id == 'pp' || sortValue?.id == 'topPp'}
-					<Select bind:value={currentPpTypeValue} options={allPpTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onPPTypeChanged} />
-				{/if}
-			</div>
+					{#if sortValue?.id == 'pp' || sortValue?.id == 'topPp'}
+						<Select
+							bind:value={currentPpTypeValue}
+							options={allPpTypeValues}
+							fontSize={0.8}
+							fontPadding={0.2}
+							on:change={onPPTypeChanged} />
+					{/if}
+				</div>
+			{/if}
 		</nav>
 	{/if}
 
