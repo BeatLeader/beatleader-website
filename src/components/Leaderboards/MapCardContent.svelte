@@ -36,11 +36,12 @@
 	export let idx;
 	export let viewType;
 
-	$: map?.song?.coverImage && retrieveBackgroundColor(map?.song?.coverImage);
+	$: coverImage = map?.song?.fullCoverImage ?? map?.song?.coverImage;
+	$: coverImage && retrieveBackgroundColor(coverImage);
 </script>
 
 <div class={`map-card row-${idx} ${viewType}`} in:fly={{delay: 250 + idx * 50, duration: 400, y: 100}} out:fade={{delay: 0, duration: 150}}>
-	<div class="card-background" style="background-image:  url({map?.song?.coverImage});" data-atropos-offset="-1" />
+	<div class="card-background" style="background-image:  url({coverImage});" data-atropos-offset="-1" />
 	<div class="map-card-header">
 		<div class="difficulty">
 			<MapTimesetDescription

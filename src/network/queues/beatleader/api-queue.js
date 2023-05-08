@@ -167,7 +167,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 
 			return cum;
 		},
-		{imageUrl: led?.song?.coverImage, stats: {}}
+		{imageUrl: led?.song?.coverImage, fullImageUrl: led?.song?.fullCoverImage, stats: {}}
 	);
 
 	const leaderboardGroup = led.leaderboardGroup.sort((a, b) => b.timestamp - a.timestamp);

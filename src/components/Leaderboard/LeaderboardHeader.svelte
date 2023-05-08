@@ -27,7 +27,7 @@
 
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
-	$: coverUrl = song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
+	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
 
 	$: hash = song?.hash;
 	$: diffInfo = leaderboard?.diffInfo;
