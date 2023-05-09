@@ -1,80 +1,132 @@
 <script>
 	import {onMount, afterUpdate} from 'svelte';
+	import Select from '../Settings/Select.svelte';
 
-	export let height = 200;
-	export let armsLength = 50;
-	export let handsLength = 30;
+	export let censusData;
 
-	let canvas;
+	let ipdData = censusData.find(x => x.name == 'Health').categories.find(x => x.name == 'IPD').values;
+	let ipd = ipdData[0];
 
-	function drawEllipse(ctx, x, y, width, height) {
-		ctx.beginPath();
-		ctx.moveTo(x, y - height / 2);
+	let basePp = 10000;
+	let modelPp = basePp;
 
-		ctx.bezierCurveTo(x + width / 2, y - height / 2, x + width / 2, y + height / 2, x, y + height / 2);
-
-		ctx.bezierCurveTo(x - width / 2, y + height / 2, x - width / 2, y - height / 2, x, y - height / 2);
-
-		ctx.stroke();
+	function recalculatePp(ipd) {
+		var multiplier = 1;
+		multiplier += ipd.effect / 100;
+		modelPp = basePp * multiplier;
 	}
 
-	function drawFigure() {
-		const ctx = canvas.getContext('2d');
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.lineWidth = 2;
-
-		const headRadius = height * 0.1;
-		const neckHeight = height * 0.05;
-		const bodyHeight = height * 0.45;
-		const legsHeight = height * 0.4;
-
-		// Draw head
-		ctx.beginPath();
-		ctx.arc(canvas.width / 2, headRadius, headRadius, 0, Math.PI * 2, false);
-		ctx.stroke();
-
-		// Draw neck
-		ctx.beginPath();
-		ctx.moveTo(canvas.width / 2, headRadius * 2);
-		ctx.lineTo(canvas.width / 2, headRadius * 2 + neckHeight);
-		ctx.stroke();
-
-		// Draw body
-		const bodyTop = headRadius * 2 + neckHeight;
-		drawEllipse(ctx, canvas.width / 2, bodyTop + bodyHeight / 2, headRadius * 1.5, bodyHeight);
-
-		// Draw legs
-		const hipX = canvas.width / 2;
-		const hipY = bodyTop + bodyHeight;
-		const footY = hipY + legsHeight;
-		ctx.beginPath();
-		ctx.lineWidth = 5;
-		ctx.moveTo(hipX, hipY);
-		ctx.lineTo(hipX - armsLength / 2, footY);
-		ctx.moveTo(hipX, hipY);
-		ctx.lineTo(hipX + armsLength / 2, footY);
-		ctx.stroke();
-
-		// Draw arms
-		const shoulderY = bodyTop + bodyHeight * 0.25;
-		ctx.beginPath();
-		ctx.moveTo(canvas.width / 2, shoulderY);
-		ctx.lineTo(canvas.width / 2 - armsLength, shoulderY);
-		ctx.lineTo(canvas.width / 2 - armsLength - handsLength, shoulderY - handsLength);
-		ctx.moveTo(canvas.width / 2, shoulderY);
-		ctx.lineTo(canvas.width / 2 + armsLength, shoulderY);
-		ctx.lineTo(canvas.width / 2 + armsLength + handsLength, shoulderY - handsLength);
-		ctx.stroke();
-	}
-
-	onMount(drawFigure);
-	afterUpdate(drawFigure);
+	$: recalculatePp(ipd);
 </script>
 
-<canvas bind:this={canvas} width={height * 1.5} height={height * 1.5} />
+<div class="top-container">
+	<span>Model player: {modelPp.toFixed(2)}PP</span>
+	<div class="body-container">
+		<div
+			class="eye"
+			style="
+                top: 1.6em; 
+                left: {9.4 - (ipdData.indexOf(ipd) + 2) * 0.2}em" />
+		<div
+			class="eye"
+			style="
+                top: 1.6em; 
+                left: {9.4 + (ipdData.indexOf(ipd) + 2) * 0.2}em" />
+		<div
+			style="
+            top: 0.6em;
+            right: -1em;
+            position: absolute;">
+			<Select bind:value={ipd} options={ipdData} valueSelector={x => x} />
+		</div>
+
+		<img
+			class="body-part"
+			style="
+                width: 4em;
+                left: 7.8em;"
+			src="/assets/body/head.svg"
+			alt="" />
+		<img
+			class="body-part"
+			style="width: 
+                10em;
+                left: 5em;
+                top: 4em;"
+			src="/assets/body/torso.svg"
+			alt="" />
+		<img
+			class="body-part"
+			style="
+                top: 0.7em;
+                width: 3em;
+                right: 4em;
+                transform: rotate(90deg) rotateX(180deg);"
+			src="/assets/body/hand.svg"
+			alt="" />
+		<img
+			class="body-part"
+			style="
+                top: 0.7em;
+                width: 3em;
+                left: -1em;
+                transform: rotate(90deg);"
+			src="/assets/body/hand.svg"
+			alt="" />
+		<img
+			class="body-part"
+			style="
+                width: 2em;
+                top: 3.2em;
+                right: -3.2em;
+                transform: rotateZ(270deg);"
+			src="/assets/body/wrist.svg"
+			alt="" />
+		<img
+			class="body-part"
+			style="
+                width: 2em;
+                top: 3.2em;
+                left: -8.2em;
+                transform: rotateZ(90deg) rotateY(180deg);"
+			src="/assets/body/wrist.svg"
+			alt="" />
+		<img
+			class="body-part"
+			style="
+                width: 8em;
+                top: 17em;
+                left: 5.7em;"
+			src="/assets/body/legs.svg"
+			alt="" />
+	</div>
+</div>
 
 <style>
-	canvas {
-		border: 1px solid #000;
+	.top-container {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.body-container {
+		width: 25em;
+		height: 30em;
+		position: relative;
+	}
+
+	.eye {
+		background-color: black;
+		position: absolute;
+		width: 0.5em;
+		height: 0.5em;
+		border-radius: 0.25em;
+		z-index: 1;
+	}
+
+	.body-part {
+		position: absolute;
+		filter: invert(0.5) sepia(1) saturate(5) hue-rotate(175deg);
 	}
 </style>

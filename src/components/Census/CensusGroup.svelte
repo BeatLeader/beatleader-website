@@ -50,20 +50,25 @@
 	<div class="chart-container">
 		<Bar options={{responsive: true, maintainAspectRatio: false}} data={getCategoryData(selectedCategory)} />
 	</div>
-	<div class="chart-container">
-		<Bar
-			options={{
-				responsive: true,
-				maintainAspectRatio: false,
-				indexAxis: 'y',
-				scales: {
-					x: {
-						beginAtZero: true,
-					},
-				},
-			}}
-			data={getEffectData(selectedCategory)} />
-	</div>
+	{#if selectedCategory.effects}
+		<div class="effects-container">
+			<span>How it correlates with performance?</span>
+			<div class="chart-container">
+				<Bar
+					options={{
+						responsive: true,
+						maintainAspectRatio: false,
+						indexAxis: 'y',
+						scales: {
+							x: {
+								beginAtZero: true,
+							},
+						},
+					}}
+					data={getEffectData(selectedCategory)} />
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -84,5 +89,10 @@
 		width: 100%;
 		max-width: 400px;
 		margin: 0 auto;
+	}
+	.effects-container {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 </style>
