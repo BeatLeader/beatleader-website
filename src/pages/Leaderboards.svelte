@@ -341,9 +341,10 @@
 	let makingPlaylist = false;
 	let mapCount = 100;
 	let duplicateDiffs = false;
+	let playlistTitle = 'Search result';
 	function generatePlaylist() {
 		makingPlaylist = true;
-		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs}, () => {
+		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
 			navigate('/playlists');
 		});
 	}
@@ -686,6 +687,10 @@
 						<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
 						<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
 					</div>
+					<div class="playlistTitleContainer">
+						<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
+						<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
+					</div>
 					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
 				{/if}
 			{/if}
@@ -832,6 +837,10 @@
 
 	.duplicateDiffsContainer {
 		display: flex;
+	}
+
+	.playlistTitleContainer {
+		margin-bottom: 1em;
 	}
 
 	#duplicateDiffs {
