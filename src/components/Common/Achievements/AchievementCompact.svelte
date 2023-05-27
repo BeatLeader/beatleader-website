@@ -8,9 +8,25 @@
 	let referenceElement;
 
 	let level = achievement.level;
+
+	let grade = 2;
+
+	if (achievement.achievementDescription.levels.length > 1) {
+		achievement.achievementDescription.levels
+			.sort((a, b) => b.level - a.level)
+			.forEach((element, index) => {
+				console.log(element);
+				if (element.level == level.level) {
+					grade = index;
+				}
+			});
+	}
 </script>
 
-<div class="achievement" style="background-color: {level.color}" bind:this={referenceElement}>
+<div
+	class="achievement {grade == 0 ? 'gold' : grade == 1 ? 'silver' : ''}"
+	style="background-color: {level.color}"
+	bind:this={referenceElement}>
 	<img src={level.image} title={level.name} alt={level.name} />
 </div>
 
@@ -32,5 +48,13 @@
 		width: 4em;
 		height: 4em;
 		border-radius: 50%;
+	}
+
+	.gold {
+		box-shadow: 1px 1px 0px 1px #ffd700, -1px -1px 0px 1px #ffcc00, 2px 1px 0px 2px #ffac00, -1px -1px 0px 2px #ff8c00;
+	}
+
+	.silver {
+		box-shadow: 1px 1px 0px 1px #eeeeee, -1px -1px 0px 1px #dcdcdc, 2px 1px 0px 2px #c0c0c0, -2px -1px 0px 2px #a9a9a9;
 	}
 </style>

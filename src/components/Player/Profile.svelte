@@ -266,7 +266,7 @@
 				{/if}
 			</div>
 			{#if roles}
-				<div class="role-icons">
+				<div class="role-icons {editModel ? 'editing' : ''}">
 					{#each roles as role, idx}
 						<RoleIcon
 							{role}
@@ -353,6 +353,9 @@
 		margin-top: 0.5rem;
 		width: 100%;
 		min-height: 1.5rem;
+	}
+
+	.role-icons.editing {
 	}
 
 	.avatar-and-roles {
