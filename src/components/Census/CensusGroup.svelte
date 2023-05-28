@@ -96,6 +96,20 @@
 									},
 								},
 							},
+							scales: {
+								x: {
+									ticks: {
+										color: 'white',
+										fontSize: 14,
+									},
+								},
+								y: {
+									ticks: {
+										color: 'white',
+										fontSize: 14,
+									},
+								},
+							},
 						}}
 						data={getCategoryData(category)} />
 				{/if}

@@ -81,9 +81,11 @@
 		padding: 0.2em;
 	}
 
-	.group.selected,
-	.category.selected {
+	.group.selected {
 		background-color: #804f59;
+	}
+	.category.selected {
+		background-color: #b26f7d;
 	}
 	.categories {
 		padding-left: 20px;

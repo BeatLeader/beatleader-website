@@ -199,6 +199,13 @@
 			margin-top: {8 * widthUnit}px;
 			left: {left}px">
 		<div
+			style="
+                top: {0.6 * widthUnit}px;
+                left: {-4 * widthUnit}px;
+                position: absolute;">
+			<Select bind:value={ipd} options={ipdData} valueSelector={x => x} {fontSize} />
+		</div>
+		<div
 			class="eye"
 			style="
 				background-color: rgb({cofeeIndex * (255 / (coffeeData.length - 1))}, 0, 0);
@@ -216,13 +223,17 @@
 				width: {0.5 * widthUnit}px;
 				height: {0.5 * widthUnit}px;
 				border-radius: {0.25 * widthUnit}px;" />
-		<div
-			style="
-                top: {0.6 * widthUnit}px;
-                left: {-4 * widthUnit}px;
-                position: absolute;">
-			<Select bind:value={ipd} options={ipdData} valueSelector={x => x} {fontSize} />
-		</div>
+		{#if fullSuite}
+			<span
+				style="
+			color: black;
+			font-size: {2 * widthUnit}px;
+			left: {9.3 * widthUnit}px;
+			top: {1.7 * widthUnit}px;
+			position: absolute;
+			transform: rotate(90deg);
+			z-index: 3;">3</span>
+		{/if}
 		<div
 			style="
             top: {1.7 * widthUnit}px;
@@ -513,7 +524,27 @@
 		</div>
 		<span><b>Model player: </b><b style="color: var(--ppColour)">{modelPp.toFixed(2)}PP</b></span>
 		<div class="chart-container">
-			<Bar options={{responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}}} data={graphData} />
+			<Bar
+				options={{
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+						x: {
+							ticks: {
+								color: 'white',
+								fontSize: 14,
+							},
+						},
+						y: {
+							ticks: {
+								color: 'white',
+								fontSize: 14,
+							},
+						},
+					},
+					plugins: {legend: {display: false}},
+				}}
+				data={graphData} />
 		</div>
 	</div>
 </div>
