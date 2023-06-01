@@ -10,7 +10,6 @@
 	const DEFAULT_THEME = 'mirror';
 
 	const themes = [
-		{name: 'Festive', value: 'festive'},
 		{name: 'Classic - Motzel', value: 'default'},
 		{name: 'Mirror - MicroBlock', value: 'mirror'},
 		{name: 'Mirror(Low) - MicroBlock', value: 'mirror-low'},
@@ -61,9 +60,9 @@
 <div class="options" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<section class="option">
 		<label title="Choose the theme you want">Theme</label>
-		<Select bind:value={currentTheme} options={themes} />
+		<Select bind:value={currentTheme} options={themes}/>
 	</section>
-	{#if currentTheme != 'default' && currentTheme != 'ree-dark' && currentTheme != 'festive'}
+	{#if currentTheme != 'default' && currentTheme != 'ree-dark'}
 		<section class="option">
 			<label title="Input url of the background image you want">Background Image</label>
 			<input type="url" bind:value={currentBGImage} />
