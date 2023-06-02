@@ -197,6 +197,29 @@
 		currentBadgeLayout = preset.settings.leaderboardPreferences.badgeRows;
 	}
 
+	let isUpdating = false;
+	let showBots = false;
+
+	async function toggleBots() {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+
+			await account.update({showBots: !showBots});
+
+			showBots = !showBots;
+		} finally {
+			isUpdating = null;
+		}
+	}
+
+	function updateShowBots(account) {
+		if (account?.player?.profileSettings) {
+			showBots = account.player.profileSettings.showBots;
+		}
+	}
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
 
@@ -204,6 +227,7 @@
 	$: settempsetting('leaderboardPreferences', 'badges', currentScoreBadges);
 
 	$: scoreDetailsPreferences = $configStore?.leaderboardPreferences?.show ?? {};
+	$: updateShowBots($account);
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
@@ -241,6 +265,14 @@
 							design="slider"
 							on:click={() => settempsetting('leaderboardPreferences', 'show.' + key, !scoreDetailsPreferences[key])} />
 					{/each}
+				</div>
+			</section>
+		{/if}
+		{#if $account}
+			<section class="option full">
+				<label>Other (saved automatically, account synced):</label>
+				<div class="single" title="Display scores from AI on leaderboards">
+					<Switch value={showBots} label="Show bots" fontSize={12} design="slider" on:click={() => toggleBots()} />
 				</div>
 			</section>
 		{/if}

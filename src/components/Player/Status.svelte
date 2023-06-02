@@ -12,7 +12,9 @@
 </script>
 
 {#if playerInfo.banned}
-	{#if banDescription && banDescription.playerId == banDescription.bannedBy}
+	{#if playerInfo.bot}
+		<span class="status bot" {title}>BOT</span>
+	{:else if banDescription && banDescription.playerId == banDescription.bannedBy}
 		<span
 			class="status self-banned"
 			title="Player suspended this account themself. It can be unblocked until {formatDate(
@@ -41,5 +43,9 @@
 
 	.inactive {
 		color: var(--faded);
+	}
+
+	.bot {
+		color: blue;
 	}
 </style>

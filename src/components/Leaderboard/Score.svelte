@@ -57,10 +57,11 @@
 				?.some(row => row.some(col => col?.metric === additionalStat)) === false) ||
 		$configStore?.leaderboardPreferences?.show?.date === true ||
 		(sortBy === 'date' && $configStore?.leaderboardPreferences?.show?.date === false);
+	$: isBot = score?.player?.playerInfo?.bot;
 </script>
 
 {#if score}
-	<div class="player-score" class:highlight>
+	<div class="player-score {isBot ? 'bot' : ''}" class:highlight>
 		<div class="mobile-first-line">
 			<div class="rank with-badge">
 				<Badge
@@ -84,34 +85,47 @@
 				{#if $configStore?.leaderboardPreferences?.show?.avatar !== false}
 					<Avatar player={score.player} />
 				{/if}
+				{#if isBot}
+					<div class="bot-badge">
+						<Badge
+							label="BOT"
+							onlyLabel={true}
+							fluid={true}
+							color="white"
+							bgColor="blue"
+							title="0100100100100111011011010010000001101110011011110111010000100000011010000111010101101101011000010110111000100000011100000110110001100001011110010110010101110010" />
+					</div>
+				{/if}
 				<PlayerNameWithFlag
 					player={score.player}
 					type={type === 'accsaber' ? 'accsaber/date' : null}
-					hideFlag={$configStore?.leaderboardPreferences?.show?.country === false}
+					hideFlag={$configStore?.leaderboardPreferences?.show?.country === false || isBot}
 					on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
 				{#if $configStore?.leaderboardPreferences?.show?.clans !== false}
 					<ClanBadges player={score.player} />
 				{/if}
 			</div>
-			<div class="timeset">
-				{#if showAdditionalStat}
-					{#if sortBy == 'pauses'}
-						<i class="fa-solid fa-pause" />
-						<Value value={score.score.pauses} digits={0} />
-					{:else if sortBy == 'maxStreak'}
-						<i class="fa-solid fa-crosshairs" />
-						<Value value={score.score.maxStreak} digits={0} />
-					{:else if sortBy === 'acc'}
-						<Value value={score?.score?.acc} suffix="%" />
-					{:else if sortBy === 'date' || $configStore?.leaderboardPreferences?.show?.date === true}
-						<span style="color: {getTimeStringColor(score?.score?.timeSet ?? null)}; ">
-							<span class="above-tablet">{score?.score.timeSetString ?? '-'}</span>
-							<span class="mobile-only">{score?.score.timeSetStringShort ?? '-'}</span>
-						</span>
+			{#if !isBot}
+				<div class="timeset">
+					{#if showAdditionalStat}
+						{#if sortBy == 'pauses'}
+							<i class="fa-solid fa-pause" />
+							<Value value={score.score.pauses} digits={0} />
+						{:else if sortBy == 'maxStreak'}
+							<i class="fa-solid fa-crosshairs" />
+							<Value value={score.score.maxStreak} digits={0} />
+						{:else if sortBy === 'acc'}
+							<Value value={score?.score?.acc} suffix="%" />
+						{:else if sortBy === 'date' || $configStore?.leaderboardPreferences?.show?.date === true}
+							<span style="color: {getTimeStringColor(score?.score?.timeSet ?? null)}; ">
+								<span class="above-tablet">{score?.score.timeSetString ?? '-'}</span>
+								<span class="mobile-only">{score?.score.timeSetStringShort ?? '-'}</span>
+							</span>
+						{/if}
 					{/if}
-				{/if}
-			</div>
+				</div>
+			{/if}
 		</div>
 		<div class="mobile-second-line">
 			{#if !noReplayInLeaderboard && type !== 'accsaber'}
@@ -312,6 +326,16 @@
 
 	.player-score :global(.player-performance-badges .with-badge) {
 		min-width: 6em;
+	}
+
+	.bot {
+		background-color: #8080804d;
+	}
+
+	:global(.bot-badge .badge) {
+		margin: 0 !important;
+		height: 1.2em;
+		font-size: 0.9em !important;
 	}
 
 	@media screen and (max-width: 767px) {

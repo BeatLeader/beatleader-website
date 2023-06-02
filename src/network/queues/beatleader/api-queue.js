@@ -79,7 +79,7 @@ export const processLeaderboardScore = s => {
 	ret.player.playerInfo.country = country;
 	ret.player.playerInfo.countries.push({country, rank: player.countryRank});
 	ret.player.playerInfo.avatar = player.avatar;
-	ret.player.playerInfo.allTime = player.allTime;
+	ret.player.playerInfo.bot = player.bot;
 	ret.player.playerInfo.lastTwoWeekTime = player.lastTwoWeekTime;
 	ret.player.playerInfo.pp = player.pp;
 	ret.player.playerInfo.rank = player.rank;
