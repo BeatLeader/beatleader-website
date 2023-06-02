@@ -4,7 +4,6 @@
 	import createPlaylistStore from '../../stores/playlists';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {configStore} from '../../stores/config';
-	import {copyToClipboard} from '../../utils/clipboard';
 	import beatSaverSvg from '../../resources/beatsaver.svg';
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
@@ -12,6 +11,7 @@
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
+	import {getNotificationsContext} from 'svelte-notifications';
 
 	export let layoutType = 'flat';
 	export let hash;
@@ -36,6 +36,7 @@
 			open(Preview, {previewLink: previewLink});
 		}
 	};
+	const {addNotification} = getNotificationsContext();
 
 	let songKey;
 	let songInfo;
@@ -75,6 +76,27 @@
 				levelAuthorName: songInfoValue.uploader.name,
 			};
 		}
+	}
+
+	function successToast(text) {
+		addNotification({
+			text: text,
+			position: 'top-right',
+			type: 'success',
+			removeAfter: 2000,
+		});
+	}
+	function copyBsr() {
+		var dummy = document.createElement('input');
+		var text = '!bsr ' + songKey;
+
+		document.body.appendChild(dummy);
+		dummy.value = text;
+		dummy.select();
+		document.execCommand('copy');
+		document.body.removeChild(dummy);
+
+		successToast(text + ' Copied to Clipboard!');
 	}
 
 	$: updateIcons(icons);
@@ -179,7 +201,7 @@
 			{/if}
 
 			{#if shownIcons.includes('bsr')}
-				<Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={() => copyToClipboard('!bsr ' + songKey)} />
+				<Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={() => copyBsr()} />
 			{/if}
 
 			{#if shownIcons.includes('bs')}
