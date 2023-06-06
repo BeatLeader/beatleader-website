@@ -40,7 +40,7 @@
 	$: onParamsChanged(players);
 </script>
 
-{#if miniRanking}
+{#if miniRanking && miniRanking[0]}
 	<section transition:fade>
 		<h3 class="title is-6">
 			{#if country}
