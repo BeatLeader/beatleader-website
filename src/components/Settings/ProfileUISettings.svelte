@@ -31,6 +31,7 @@
 		{name: 'Rank', value: 'rank'},
 		{name: 'Stars', value: 'stars'},
 		{name: 'Pauses', value: 'pauses'},
+		{name: 'Mistakes', value: 'mistakes'},
 	];
 
 	let currentAvatarIcons = DEFAULT_AVATAR_ICONS;

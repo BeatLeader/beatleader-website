@@ -13,6 +13,7 @@ const HISTOGRAM_PP_PRECISION = 5;
 const HISTOGRAM_RANK_PRECISION = 5;
 const HISTOGRAM_ACC_PRECISION = 0.25;
 const HISTOGRAM_STARS_PRECISION = 0.1;
+const HISTOGRAM_MISTAKES_PRECISION = 1;
 
 let service = null;
 let serviceCreationCount = 0;
@@ -160,7 +161,7 @@ export default () => {
 			case 'mistakes':
 				valFunc = s => parseInt(s, 10);
 				type = 'linear';
-				bucketSize = 1;
+				bucketSize = HISTOGRAM_MISTAKES_PRECISION;
 				minBucketSize = 1;
 				maxBucketSize = 10;
 				bucketSizeStep = 1;
