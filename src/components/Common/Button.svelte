@@ -23,6 +23,7 @@
 	export let square = false,
 		squareSize = '0';
 	export let preventDefault = false;
+	export let animated = false;
 
 	if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -117,6 +118,33 @@
 		},
 	};
 
+	let pressed = false;
+
+	function HandleMouseDown(e) {
+		let boundingRect = e.target.getBoundingClientRect();
+
+		// calculate the width and height of the 90% box inside the element
+		let innerWidth = boundingRect.width * 0.8;
+		let innerHeight = boundingRect.height * 0.8;
+
+		// calculate the position of the 90% box
+		let innerX = boundingRect.x + boundingRect.width * 0.1;
+		let innerY = boundingRect.y + boundingRect.height * 0.1;
+
+		// check if the mouse down event is within the 90% box
+		if (e.clientX >= innerX && e.clientX <= innerX + innerWidth && e.clientY >= innerY && e.clientY <= innerY + innerHeight) {
+			pressed = true;
+		} else {
+			pressed = false;
+		}
+	}
+
+	function HandleMouseUp() {
+		pressed = false;
+	}
+
+	$: hoveredScale = animated ? (pressed ? '90%' : '110%') : '100%';
+
 	$: selectedType = types[type] ? types[type] : types.default;
 	$: margin = label && label.length ? '.45em' : '1px';
 	$: btnPadding = type === 'text' ? 0 : label && label.length ? 'calc(.45em - 1px) 1em' : 'calc(.45em - 1px) .25em';
@@ -130,7 +158,11 @@
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}; {square
 			? `width:${squareSize};height:${squareSize};`
-			: ''}"
+			: ''};
+			--hovered-scale:{hoveredScale};"
+		on:mousedown={HandleMouseDown}
+		on:mouseup={HandleMouseUp}
+		on:mouseleave={HandleMouseUp}
 		on:click={e => {
 			if (!onlyurl) {
 				e.preventDefault();
@@ -155,7 +187,11 @@
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
-			: ''}"
+			: ''};
+			--hovered-scale:{hoveredScale};"
+		on:mousedown={HandleMouseDown}
+		on:mouseup={HandleMouseUp}
+		on:mouseleave={HandleMouseUp}
 		on:click|stopPropagation={e => {
 			dispatch('click', selectedOption);
 			if (preventDefault) e.preventDefault();
@@ -201,6 +237,7 @@
 	.button:hover {
 		color: var(--active-color, #fff);
 		border-color: var(--active-border, #b5b5b5);
+		transform: scale(var(--hovered-scale));
 	}
 
 	.button:active {

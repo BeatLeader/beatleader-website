@@ -135,6 +135,7 @@
 				title="Delete score"
 				noMargin={true}
 				type="danger"
+				animated={true}
 				on:click={() =>
 					fetch(BL_API_URL + `score/${scoreId}`, {
 						method: 'DELETE',
@@ -149,13 +150,13 @@
 	<span slot="default_buttons">
 		{#if shownIcons.includes('pin-service') && serviceIcon?.link?.length && serviceIcon?.linkServiceIcon?.length}
 			<a href={serviceIcon.link} target="_blank" rel="noreferrer">
-				<Button icon={`<i class="service-icon"><img src="${serviceIcon.linkServiceIcon}" /></i>`} noMargin={true} />
+				<Button icon={`<i class="service-icon"><img src="${serviceIcon.linkServiceIcon}" /></i>`} animated={true} noMargin={true} />
 			</a>
 		{/if}
 
 		{#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
 			<a class="video" href={twitchUrl} target="_blank" rel="noreferrer">
-				<Button iconFa="fab fa-twitch" type="twitch" title="Twitch VOD preview" noMargin={true} />
+				<Button iconFa="fab fa-twitch" type="twitch" title="Twitch VOD preview" animated={true} noMargin={true} />
 			</a>
 		{/if}
 
@@ -167,6 +168,7 @@
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Remove from the {selectedPlaylist.playlistTitle}"
+								animated={true}
 								noMargin={true}
 								type="danger"
 								on:click={() => playlists.remove(hash)} />
@@ -174,12 +176,14 @@
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Add this diff to the {selectedPlaylist.playlistTitle}"
+								animated={true}
 								noMargin={true}
 								on:click={() => playlists.addDiff(hash, diffInfo)} />
 						{:else}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Remove this diff from the {selectedPlaylist.playlistTitle}"
+								animated={true}
 								noMargin={true}
 								type="lessdanger"
 								on:click={() => playlists.removeDiff(hash, diffInfo)} />
@@ -188,6 +192,7 @@
 						<Button
 							iconFa="fas fa-list-ul"
 							title="Add to the {selectedPlaylist.playlistTitle}"
+							animated={true}
 							noMargin={true}
 							on:click={() => playlists.add(songInfo)} />
 					{/if}
@@ -195,24 +200,25 @@
 					<Button
 						iconFa="fas fa-list-ul"
 						title="Create new playlist with this song"
+						animated={true}
 						noMargin={true}
 						on:click={() => playlists.create(songInfo)} />
 				{/if}
 			{/if}
 
 			{#if shownIcons.includes('bsr')}
-				<Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={() => copyBsr()} />
+				<Button iconFa="fas fa-exclamation" title="Copy !bsr" animated={true} noMargin={true} on:click={() => copyBsr()} />
 			{/if}
 
 			{#if shownIcons.includes('bs')}
 				<a href="https://beatsaver.com/maps/{songKey}" target="_blank" rel="noreferrer">
-					<Button icon={beatSaverSvg} title="Go to Beat Saver" noMargin={true} />
+					<Button icon={beatSaverSvg} title="Go to Beat Saver" animated={true} noMargin={true} />
 				</a>
 			{/if}
 
 			{#if shownIcons.includes('mapcheck')}
 				<a href="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}" target="_blank" rel="noreferrer">
-					<Button iconFa="fas fa-magnifying-glass-location" title="Check the map" noMargin={true} />
+					<Button iconFa="fas fa-magnifying-glass-location" title="Check the map" animated={true} noMargin={true} />
 				</a>
 			{/if}
 
@@ -223,6 +229,7 @@
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Remove from the One-Click playlist"
+								animated={true}
 								noMargin={true}
 								type="danger"
 								on:click={() => playlists.remove(hash, ocPlaylistIndex)} />
@@ -230,12 +237,14 @@
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Add this diff to the One-Click playlist"
+								animated={true}
 								noMargin={true}
 								on:click={() => playlists.addDiff(hash, diffInfo, ocPlaylistIndex)} />
 						{:else}
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Remove this diff from the One-Click playlist"
+								animated={true}
 								noMargin={true}
 								type="lessdanger"
 								on:click={() => playlists.removeDiff(hash, diffInfo, ocPlaylistIndex)} />
@@ -245,18 +254,25 @@
 							iconFa="fas fa-hand-pointer"
 							title="Add to the One-Click playlist"
 							type="purple"
+							animated={true}
 							noMargin={true}
 							on:click={() => playlists.add(songInfo, ocPlaylistIndex)} />
 					{/if}
 				{:else}
 					<a href="beatsaver://{songKey}">
-						<Button iconFa="far fa-hand-pointer" title="One click install" noMargin={true} />
+						<Button iconFa="far fa-hand-pointer" title="One click install" animated={true} noMargin={true} />
 					</a>
 				{/if}
 			{/if}
 
 			{#if shownIcons.includes('preview')}
-				<Button url={previewUrl} on:click={() => showPreview(previewUrl)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true} />
+				<Button
+					url={previewUrl}
+					on:click={() => showPreview(previewUrl)}
+					iconFa="fa fa-play-circle"
+					title="Map preview"
+					animated={true}
+					noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('replay') && replayUrl?.length}
@@ -266,6 +282,7 @@
 					cls={altReplay ? 'replay-button-alt' : 'replay-button'}
 					icon="<img src='/assets/{altReplay ? `replays.svg` : `bs-pepe.gif`}'>"
 					title="Replay"
+					animated={true}
 					noMargin={true} />
 			{/if}
 
@@ -274,6 +291,7 @@
 					icon="<div class='battleroyale{battleRoyaleDraft ? 'stop' : ''}-icon'></div>"
 					title="{battleRoyaleDraft ? 'Stop' : 'Start'} drafting battle royal"
 					noMargin={true}
+					animated={true}
 					on:click={() => (battleRoyaleDraft = !battleRoyaleDraft)} />
 			{/if}
 		{/if}
