@@ -311,6 +311,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 		case 'mistakes':
 			title = isDemo ? 'Click to setup' : null;
 			className = 'beatSavior';
+			icon = 'icon-mistakes';
 
 			if (Number.isFinite(beatSavior?.stats?.miss)) {
 				component = Mistakes;

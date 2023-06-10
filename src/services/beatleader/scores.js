@@ -157,6 +157,16 @@ export default () => {
 				suffix = '★';
 				suffixLong = '★';
 				break;
+			case 'mistakes':
+				valFunc = s => parseInt(s, 10);
+				type = 'linear';
+				bucketSize = 1;
+				minBucketSize = 1;
+				maxBucketSize = 10;
+				bucketSizeStep = 1;
+				round = 0;
+				suffixLong = ` mistakes`;
+				break;
 		}
 
 		return {

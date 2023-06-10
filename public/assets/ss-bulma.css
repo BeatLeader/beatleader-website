@@ -11644,6 +11644,14 @@ select {
 	background-image: url('./115s.png');
 }
 
+.icon-mistakes {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./mistakes.png');
+}
+
 .lawless-controllable-icon {
 	width: 100%;
 	height: 100%;

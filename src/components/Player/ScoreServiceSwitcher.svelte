@@ -41,7 +41,7 @@
 							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/acc/1`},
 							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
 							{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/beatleader/stars/1`},
-							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/beatleader/pauses/1`},
+							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/beatleader/pauses/1`},							
 							{
 								id: 'maxStreak',
 								label: 'Streak',
@@ -49,6 +49,7 @@
 								iconFa: 'icon115s',
 								url: `/u/${playerId}/beatleader/maxStreak/1`,
 							},
+							{id: 'mistakes', label: 'Mistakes', title: 'Sort by mistakes', iconFa: 'icon-mistakes', url: `/u/${playerId}/beatleader/mistakes/1`},
 						],
 					},
 					key: 'sort',
