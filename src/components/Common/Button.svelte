@@ -172,7 +172,7 @@
 		}}
 		{disabled}
 		{title}
-		class={'button clickable ' + (type ? type : 'default') + ' ' + cls}
+		class={'button clickable ' + (type ? type : 'default') + (animated ? ' animated' : '') + ' ' + cls}
 		class:not-selected={notSelected}
 		class:disabled>
 		{#if icon && !loading}<span class="icon">{@html icon}</span>{/if}
@@ -198,7 +198,7 @@
 		}}
 		{disabled}
 		{title}
-		class={'button clickable ' + (type ? type : 'default') + ' ' + cls}
+		class={'button clickable ' + (type ? type : 'default') + (animated ? ' animated' : '') + ' ' + cls}
 		class:not-selected={notSelected}>
 		{#if icon}<span class="icon">{@html icon}</span>{/if}
 		{#if iconFa && !loading}<i class={iconFa} />{/if}
@@ -237,6 +237,9 @@
 	.button:hover {
 		color: var(--active-color, #fff);
 		border-color: var(--active-border, #b5b5b5);
+	}
+
+	.button.animated:hover {
 		transform: scale(var(--hovered-scale));
 	}
 
