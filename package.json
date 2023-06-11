@@ -19,6 +19,7 @@
     "chartjs-plugin-zoom": "^1.1.1",
     "comlink": "^4.3.1",
     "eventemitter3": "^4.0.7",
+    "fake-indexeddb": "^4.0.1",
     "idb": "^6.1.2",
     "immer": "^9.0.5",
     "json-stable-stringify": "^1.0.1",

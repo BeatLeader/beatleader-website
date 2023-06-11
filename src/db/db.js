@@ -1,4 +1,5 @@
 import {openDB} from 'idb';
+import {fakeIDB} from './fake-db';
 import log from '../utils/logger';
 import {isDateObject} from '../utils/js';
 import eventBus from '../utils/broadcast-channel-pubsub';
@@ -19,7 +20,7 @@ export default async () => {
 	return await openDatabase();
 };
 
-async function openDatabase() {
+async function openDatabase(recursive) {
 	try {
 		let dbNewVersion = 0,
 			dbOldVersion = 0;
@@ -152,8 +153,13 @@ async function openDatabase() {
 
 		return db;
 	} catch (e) {
-		log.error('Can not open DB.');
+		if (recursive) {
+			log.error('Can not open DB.');
 
-		throw e;
+			throw e;
+		} else {
+			fakeIDB();
+			await openDatabase(true);
+		}
 	}
 }
