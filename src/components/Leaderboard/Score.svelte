@@ -115,6 +115,9 @@
 						{:else if sortBy == 'maxStreak'}
 							<i class="fa-solid fa-crosshairs" />
 							<Value value={score.score.maxStreak} digits={0} />
+						{:else if sortBy == 'mistakes'}
+							<i class="icon-mistakes icon-mistakes-mini" />
+							<Value value={(score.score.badCuts ?? 0) + (score.score.missedNotes ?? 0) + (score.score.wallsHit ?? 0) + (score.score.bombCuts ?? 0) } digits={0} />
 						{:else if sortBy === 'acc'}
 							<Value value={score?.score?.acc} suffix="%" />
 						{:else if sortBy === 'date' || $configStore?.leaderboardPreferences?.show?.date === true}

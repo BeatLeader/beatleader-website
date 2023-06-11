@@ -214,6 +214,13 @@
 			title: 'Sort by pause count',
 			iconFa: 'fas fa-pause',
 		},
+		{
+			id: 'mistakes',
+			replaceTimeset: true,
+			label: 'Mistakes',
+			title: 'Sort by amount of mistakes',
+			iconFa: 'icon-mistakes',
+		},
 	];
 
 	const stringifyFilters = (query, keys) =>
