@@ -76,6 +76,14 @@
 			border: 'transparent',
 			activeBorder: 'transparent',
 		},
+		patreon: {
+			color: 'black',
+			activeColor: '#fff',
+			bgColor: '#ff424d',
+			activeBgColor: '#1DA1F2',
+			border: 'transparent',
+			activeBorder: 'transparent',
+		},
 		gray: {
 			color: '#dbdbdb',
 			activeColor: '#fff',

@@ -32,6 +32,7 @@
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
+	export let location = null;
 
 	let service = null;
 	let serviceParams = null;
@@ -206,6 +207,8 @@
 
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
+
+	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 </script>
 
 <svelte:head>
@@ -229,7 +232,8 @@
 				{twitchVideos}
 				on:player-data-updated={onPlayerDataUpdated}
 				{avatarHash}
-				fixedBrowserTitle={browserTitle} />
+				fixedBrowserTitle={browserTitle}
+				startEditing={editing} />
 
 			<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
 			<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />

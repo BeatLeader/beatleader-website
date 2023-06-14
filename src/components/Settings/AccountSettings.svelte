@@ -22,9 +22,7 @@
 
 		<a href="/signin/socials" on:click|preventDefault|stopPropagation={() => navigate('/signin/socials')}>Link socials</a>
 
-		{#if !$account?.patreoned}
-			<a href="/signin/linkPatreon" on:click|preventDefault|stopPropagation={() => navigate('/signin/linkPatreon')}>Link patreon</a>
-		{/if}
+		<a href="/supporting-project/link" on:click|preventDefault|stopPropagation={() => navigate('/supporting-project/link')}>Link Patreon</a>
 
 		{#if $account?.ban}
 			{#if $account?.ban?.reason === 'Self ban'}

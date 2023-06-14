@@ -28,6 +28,7 @@
 	export let skeleton = false;
 	export let avatarHash = null;
 	export let clanEffects = true;
+	export let startEditing = false;
 
 	let editModel = null;
 
@@ -185,6 +186,8 @@
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = !editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? editModel?.data.profileCover);
+
+	$: if (startEditing) onEnableEditModel();
 
 	let fileinput;
 	const readFile = async fileInput =>

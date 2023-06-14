@@ -156,3 +156,15 @@ export const getAllOverlays = roles => {
 		}),
 	}));
 };
+
+export function isPatron(roles) {
+	var result = false;
+	if (roles) {
+		TIPPER.forEach(role => {
+			if (roles.includes(role)) {
+				result = true;
+			}
+		});
+	}
+	return result;
+}

@@ -235,6 +235,22 @@ export default (refreshOnCreate = true) => {
 		});
 	};
 
+	const refreshPatreon = () => {
+		fetch(BL_API_URL + 'refreshmypatreon', {
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					account.error = null;
+					refresh(true);
+				}
+				set(account);
+			});
+	};
+
 	const banPlayer = (playerId, reason, duration) => {
 		account.loading = true;
 		set(account);
@@ -395,6 +411,7 @@ export default (refreshOnCreate = true) => {
 		addFollowed,
 		removeFollowed,
 		refreshLastQualificationTime,
+		refreshPatreon,
 	};
 
 	return store;
