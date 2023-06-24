@@ -1022,7 +1022,7 @@
 				{/if}
 			{/if}
 
-			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
+			{#if showCurve && leaderboard?.stats?.stars}
 				<ContentBox>
 					{#if !curveShown}
 						<div class="score-options-section">

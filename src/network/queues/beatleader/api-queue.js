@@ -286,17 +286,6 @@ export default (options = {}) => {
 		fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);
 
 	const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
-		if (filters && filters?.type !== 'ranked' && filters?.type !== 'qualified' && filters?.type !== 'nominated') {
-			delete filters.stars_from;
-			delete filters.stars_to;
-			delete filters.accrating_from;
-			delete filters.accrating_to;
-			delete filters.passrating_from;
-			delete filters.passrating_to;
-			delete filters.techrating_from;
-			delete filters.techrating_to;
-		}
-
 		return fetchJson(
 			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true),
 			{...options, credentials: 'include'},
@@ -305,17 +294,6 @@ export default (options = {}) => {
 	};
 
 	const leaderboardsGrouped = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
-		if (filters && filters?.type !== 'ranked' && filters?.type !== 'qualified' && filters?.type !== 'nominated') {
-			delete filters.stars_from;
-			delete filters.stars_to;
-			delete filters.accrating_from;
-			delete filters.accrating_to;
-			delete filters.passrating_from;
-			delete filters.passrating_to;
-			delete filters.techrating_from;
-			delete filters.techrating_to;
-		}
-
 		return fetchJson(
 			substituteVars(BL_API_LEADERBOARDS_GROUPPED_URL, {page, ...filters}, true, true),
 			{...options, credentials: 'include'},
@@ -411,7 +389,7 @@ export default (options = {}) => {
 		);
 
 	const accGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId}), options, priority);
+		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(

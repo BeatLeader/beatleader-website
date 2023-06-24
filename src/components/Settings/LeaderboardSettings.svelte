@@ -10,6 +10,8 @@
 	import DemoLeaderboardScore from './DemoLeaderboardScore.svelte';
 	import Select from './Select.svelte';
 	import BadgeEdit from './BadgeEdit.svelte';
+	import {isAnySupporter} from '../Player/Overlay/overlay';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let animationSign = 1;
 
@@ -219,7 +221,10 @@
 	}
 
 	let isUpdating = false;
+
 	let showBots = false;
+	let showAllRatings = false;
+	let anySupporter = false;
 
 	async function toggleBots() {
 		if (isUpdating) return;
@@ -228,17 +233,30 @@
 			isUpdating = true;
 
 			await account.update({showBots: !showBots});
-
-			showBots = !showBots;
 		} finally {
 			isUpdating = null;
 		}
 	}
 
-	function updateShowBots(account) {
+	async function toggleAllRatings() {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+
+			await account.update({showAllRatings: !showAllRatings});
+		} finally {
+			isUpdating = null;
+		}
+	}
+
+	function updateProfileSettings(account) {
 		if (account?.player?.profileSettings) {
 			showBots = account.player.profileSettings.showBots;
+			showAllRatings = account.player.profileSettings.showAllRatings;
 		}
+
+		anySupporter = isAnySupporter(account?.player?.playerInfo?.role);
 	}
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
@@ -248,7 +266,7 @@
 	$: settempsetting('leaderboardPreferences', 'badges', currentScoreBadges);
 
 	$: scoreDetailsPreferences = $configStore?.leaderboardPreferences?.show ?? {};
-	$: updateShowBots($account);
+	$: updateProfileSettings($account);
 </script>
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
@@ -289,11 +307,26 @@
 				</div>
 			</section>
 		{/if}
-		{#if $account}
+		{#if $account?.player}
 			<section class="option full">
 				<label>Other (saved automatically, account synced):</label>
+				{#if isUpdating}
+					<Spinner />
+				{/if}
 				<div class="single" title="Display scores from AI on leaderboards">
-					<Switch value={showBots} label="Show bots" fontSize={12} design="slider" on:click={() => toggleBots()} />
+					<Switch disabled={isUpdating} value={showBots} label="Show bots" fontSize={12} design="slider" on:click={() => toggleBots()} />
+				</div>
+				{#if !anySupporter}
+					<span><br />To enable this feature please support us on <a href="https://patreon.com/beatleader">Patreon</a></span>
+				{/if}
+				<div class="single" title="Display approximate ratings for all standard leaderboards">
+					<Switch
+						disabled={!anySupporter || isUpdating}
+						value={showAllRatings}
+						label="Show rating for all maps"
+						fontSize={12}
+						design="slider"
+						on:click={() => toggleAllRatings()} />
 				</div>
 			</section>
 		{/if}
