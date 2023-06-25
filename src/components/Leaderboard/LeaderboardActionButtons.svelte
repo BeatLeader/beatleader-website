@@ -101,7 +101,7 @@
 	{:else if votingStatus == 3}
 		<Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true} />
 	{/if}
-	{#if (isRT || isNQT) && !isjuniorRT && !isNominated}
+	{#if ((isRT && !isjuniorRT) || isNQT) && !isNominated}
 		<Button
 			cls="voteButton"
 			iconFa={isRanked ? 'fas fa-star' : 'fas fa-rocket'}
