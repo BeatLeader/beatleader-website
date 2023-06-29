@@ -273,6 +273,7 @@
 					{#each roles as role, idx}
 						<RoleIcon
 							{role}
+							allRoles={roles}
 							mapperId={playerInfo?.mapperId}
 							profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
 							bind:editModel />
