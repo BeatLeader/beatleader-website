@@ -214,7 +214,9 @@
 		<p>
 			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
 			|
-			<a href="http://api.beatleader.xyz/swagger/index.html">API</a>
+			<a href="https://api.beatleader.xyz/swagger/index.html">API</a>
+			|
+			<a href="https://beatleader.wiki/">Wiki</a>
 			|
 			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
 			|
