@@ -96,6 +96,12 @@
 				<p class="memberTitle">distracted from the master's thesis</p>
 				<p class="memberDescription">Quest mod and server contributor</p>
 			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
+				<p class="memberTitle">not to be confused with notes</p>
+				<p class="memberDescription">Map rating and review specialist</p>
+			</div>
 		</section>
 
 		<h1 class="title is-4">Ranking Team</h1>
@@ -168,6 +174,14 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198989311828.png" alt="Rise" /><a
 					href="https://www.beatleader.xyz/u/76561198989311828">Rise</a>
+			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
+					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 			</div>
 		</section>
 
