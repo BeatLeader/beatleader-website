@@ -70,7 +70,7 @@
 		};
 
 		addNotification({
-			text: 'You can click on each badge to turn it on or off. Click on an avatar to change it or set an overlay. Scroll down to set filter scores.',
+			text: 'You can click on each badge to turn it on or off. Click on an avatar to change it or set an overlay. Scroll down to set scores sorting and filtering visibility.',
 			position: 'top-right',
 			type: 'success',
 			removeAfter: 4000,

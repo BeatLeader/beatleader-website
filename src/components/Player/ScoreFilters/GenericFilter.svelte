@@ -33,7 +33,7 @@
 </script>
 
 {#if filter?.component && filter?.props}
-	<div class="filter" class:open={filterOpen} title={filter?.props?.title}>
+	<div class="filter" class:hidden={filter?.props?.hidden} class:open={filterOpen} title={filter?.props?.title}>
 		<span class="filter-component">
 			<svelte:component this={filter.component} {...filter.props} open={filterOpen} on:change={onFilterChanged} />
 		</span>
@@ -41,7 +41,7 @@
 		<i
 			class={`fa filter-btn ${!filterOpen ? filter?.props?.iconFa ?? '' : ''}`}
 			class:fa-times={filterOpen}
-			title={filterOpen ? 'Click to close and clear filter' : filter?.props?.title}
+			title={filterOpen ? 'Click to close and clear filter' : $editModel ? 'Click to toggle' : filter?.props?.title}
 			on:click={onButtonClick} />
 	</div>
 {/if}

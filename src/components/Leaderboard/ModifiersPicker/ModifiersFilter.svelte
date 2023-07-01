@@ -8,6 +8,7 @@
 
 	export let selected = '';
 	export let id = '';
+	export let hidden = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -53,7 +54,7 @@
 	$: updateColor(selected);
 </script>
 
-<div class="filter" title="Filter by modifiers">
+<div class="filter" class:hidden title={$editModel ? 'Click to toggle' : 'Filter by modifiers'}>
 	<i style="color: {colorForM}" class={`fas filter-btn fa-m`} on:click={onOpen} on:keypress={onOpen} />
 </div>
 
