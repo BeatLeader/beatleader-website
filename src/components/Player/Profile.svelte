@@ -4,6 +4,7 @@
 	import processPlayerData from './utils/profile';
 
 	import createAccountStore from '../../stores/beatleader/account';
+	import editModel from '../../stores/beatleader/profile-edit-model';
 
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
@@ -30,8 +31,6 @@
 	export let clanEffects = true;
 	export let startEditing = false;
 
-	let editModel = null;
-
 	const {addNotification} = getNotificationsContext();
 
 	const dispatch = createEventDispatcher();
@@ -50,7 +49,7 @@
 	}
 
 	function onEnableEditModel() {
-		editModel = {
+		$editModel = {
 			data: {
 				name: playerData?.name ?? '',
 				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
@@ -79,17 +78,17 @@
 	}
 
 	function onCancelEditModel() {
-		editModel = null;
+		$editModel = null;
 	}
 
 	globalHistory.listen(({location, action}) => {
-		editModel = null;
+		$editModel = null;
 	});
 
 	async function onSaveEditModel() {
-		if (!editModel) return;
+		if (!$editModel) return;
 
-		let {profileAppearance, country, avatar, message, ...data} = editModel?.data ?? {};
+		let {profileAppearance, country, avatar, message, ...data} = $editModel?.data ?? {};
 
 		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : '';
 		country =
@@ -101,7 +100,7 @@
 		if (!data?.effectName?.length) data.effectName = '';
 
 		try {
-			editModel.isSaving = true;
+			$editModel.isSaving = true;
 			if (isAdmin) {
 				data.id = playerData?.playerId;
 			}
@@ -111,11 +110,11 @@
 				dispatch('player-data-updated');
 			}, 1000);
 
-			editModel = null;
+			$editModel = null;
 		} catch (err) {
 			editError = err;
 		} finally {
-			if (editModel) editModel.isSaving = false;
+			if ($editModel) $editModel.isSaving = false;
 		}
 	}
 	function successToast(text) {
@@ -185,7 +184,7 @@
 
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
-	$: cover = !editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? editModel?.data.profileCover);
+	$: cover = !$editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? $editModel?.data?.profileCover);
 
 	$: if (startEditing) onEnableEditModel();
 
@@ -199,13 +198,13 @@
 			reader.readAsArrayBuffer(fileInput);
 		});
 	const changeCover = async e => {
-		editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
-		playerData.profileSettings.profileCover = editModel.data.profileCover;
-		editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
+		$editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
+		playerData.profileSettings.profileCover = $editModel.data.profileCover;
+		$editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
 	};
 	const resetCover = async e => {
-		editModel.data.profileCover = '/assets/defaultcover.jpg';
-		editModel.data.profileCoverData = null;
+		$editModel.data.profileCover = '/assets/defaultcover.jpg';
+		$editModel.data.profileCoverData = null;
 		playerData.profileSettings.profileCover = null;
 	};
 </script>
@@ -215,26 +214,26 @@
 	<Rain />
 {/if}
 
-<AvatarOverlayEditor bind:editModel {roles} />
+<AvatarOverlayEditor bind:editModel={$editModel} {roles} />
 <ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
-			{#if editModel}
-				{#if editModel.data.profileCoverData}
+			{#if $editModel}
+				{#if $editModel.data.profileCoverData}
 					<Button type="danger" cls="remove-cover-button" iconFa="far fa-xmark" label="Remove cover" on:click={() => resetCover()} />
 				{/if}
 				<Button
 					type="primary"
 					cls="edit-cover-button"
 					iconFa="far fa-image"
-					label={editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
+					label={$editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
 					on:click={() => fileinput.click()}>
 					<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
 				</Button>
 			{/if}
 		</div>
 	{/if}
-	<AvatarOverlay withCover={cover} data={editModel?.data ?? playerData?.profileSettings} />
+	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
 	<div style="margin: 0; padding: 0;">
 		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
@@ -246,37 +245,37 @@
 		{/if}
 	</div>
 
-	<div class="player-general-info" class:edit-enabled={!!editModel}>
+	<div class="player-general-info" class:edit-enabled={!!$editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
 				<Avatar
 					{isLoading}
 					{playerInfo}
 					hash={avatarHash}
-					{editModel}
+					editModel={$editModel}
 					on:click={() => {
-						if (editModel) editModel.avatarOverlayEdit = true;
+						if ($editModel) $editModel.avatarOverlayEdit = true;
 					}} />
 
 				{#if playerInfo && !isLoading}
 					<div style="margin: 0; padding: 0;">
 						<AvatarOverlayIcons
 							{playerData}
-							bind:editModel
+							bind:editModel={$editModel}
 							on:modal-shown={() => (modalShown = true)}
 							on:modal-hidden={() => (modalShown = false)} />
 					</div>
 				{/if}
 			</div>
 			{#if roles}
-				<div class="role-icons {editModel ? 'editing' : ''}">
+				<div class="role-icons {$editModel ? 'editing' : ''}">
 					{#each roles as role, idx}
 						<RoleIcon
 							{role}
 							allRoles={roles}
 							mapperId={playerInfo?.mapperId}
 							profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
-							bind:editModel />
+							bind:editModel={$editModel} />
 					{/each}
 				</div>
 			{/if}
@@ -292,16 +291,16 @@
 				{name}
 				{playerInfo}
 				{playerId}
-				bind:editModel
+				bind:editModel={$editModel}
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
+			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel={$editModel} />
 
-			{#if editModel}
+			{#if $editModel}
 				<div class="edit-buttons">
 					<Button
-						loading={editModel.isSaving}
+						loading={$editModel.isSaving}
 						color="white"
 						bgColor="var(--beatleader-primary)"
 						label="Save"
@@ -309,7 +308,7 @@
 						noMargin={true}
 						on:click={onSaveEditModel} />
 					<Button
-						disabled={editModel.isSaving}
+						disabled={$editModel.isSaving}
 						type="default"
 						label="Cancel"
 						iconFa="fas fa-times"
