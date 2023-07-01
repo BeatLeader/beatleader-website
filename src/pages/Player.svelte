@@ -7,6 +7,7 @@
 	import createAccSaberService from '../services/accsaber';
 	import createPinnedScoresStore from '../stores/beatleader/pinned-scores';
 	import createStatsHistoryStore from '../stores/beatleader/stats-history';
+	import editModel from '../stores/beatleader/profile-edit-model';
 	import {configStore} from '../stores/config';
 	import {capitalize, opt} from '../utils/js';
 	import ssrConfig from '../ssr-config';
@@ -235,9 +236,11 @@
 				fixedBrowserTitle={browserTitle}
 				startEditing={editing} />
 
-			<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
-			<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
-			<Achievements {playerId} {playerData} />
+			{#if !$editModel}
+				<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
+				<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
+				<Achievements {playerId} {playerData} />
+			{/if}
 
 			{#if scoresPlayerId}
 				<ContentBox>
