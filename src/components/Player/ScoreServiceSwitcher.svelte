@@ -2,6 +2,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
+	import createAccountStore from '../../stores/beatleader/account';
 	import Switcher from '../Common/Switcher.svelte';
 	import ScoreServiceFilters from './ScoreServiceFilters.svelte';
 	import TextFilter from './ScoreFilters/TextFilter.svelte';
@@ -22,6 +23,7 @@
 
 	const beatSaviorService = createBeatSaviorService();
 	const accSaberService = createAccSaberService();
+	const account = createAccountStore();
 
 	let availableServiceNames = ['beatleader'];
 	let accSaberCategories = null;
@@ -251,7 +253,7 @@
 						...(c?.props?.values
 							? {
 									values: c.props.values
-										.filter(v => $editModel || sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`))
+										.filter(v => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`))
 										.map(v => ({
 											...v,
 											title: $editModel ? 'Click to toggle' : v.title,
@@ -273,63 +275,67 @@
 					case 'beatleader':
 						if (availableServiceNames.includes('beatleader')) {
 							serviceDef.filters = commonFilters
-								.map(f => ({...f, props: {...f.props, hidden: !sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`)}}))
-								.filter(f => $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`))
-								.concat(
-									[
-										{
-											component: SelectFilter,
-											props: {
-												id: 'songType',
-												iconFa: 'fa fa-cubes',
-												title: 'Filter by map type',
-												hidden: !sortingOrFilteringAppearance.includes(`sf-songType`),
-												values: [
-													{id: null, name: 'All'},
-													{id: 'ranked', name: 'Ranked only'},
-													{id: 'unranked', name: 'Unranked only'},
-												],
-											},
-										},
-										{
-											component: RangeFilter,
-											props: {
-												id: 'stars',
-												iconFa: 'fa fa-star',
-												title: 'Filter by map stars',
-												hidden: !sortingOrFilteringAppearance.includes(`sf-stars`),
-												minValue: 0,
-												maxValue: 15,
-												step: 0.1,
-											},
-										},
-										{
-											component: ModifiersFilter,
-											asComponent: true,
-											props: {
-												id: 'modifiers',
-												hidden: !sortingOrFilteringAppearance.includes(`sf-modifiers`),
-												selected: serviceParams?.filters?.modifiers,
-											},
-										},
-									].filter(f => $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`))
-								);
+								.map(f => ({
+									...f,
+									props: {...f.props, hidden: !sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`)},
+								}))
 
-							if (eventsParticipating?.length)
-								serviceDef.filters = [...serviceDef.filters].concat([
+								.concat([
 									{
 										component: SelectFilter,
 										props: {
-											id: 'eventId',
-											iconFa: 'fa fa-calendar',
-											title: 'Filter by event',
-											hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`),
-											values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
-											open: !!serviceParams?.filters?.eventId,
-											defaultValue: serviceParams?.filters?.eventId ?? null,
+											id: 'songType',
+											iconFa: 'fa fa-cubes',
+											title: 'Filter by map type',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-songType`),
+											values: [
+												{id: null, name: 'All'},
+												{id: 'ranked', name: 'Ranked only'},
+												{id: 'unranked', name: 'Unranked only'},
+											],
 										},
 									},
-								]);
+									{
+										component: RangeFilter,
+										props: {
+											id: 'stars',
+											iconFa: 'fa fa-star',
+											title: 'Filter by map stars',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-stars`),
+											minValue: 0,
+											maxValue: 15,
+											step: 0.1,
+										},
+									},
+									{
+										component: ModifiersFilter,
+										asComponent: true,
+										props: {
+											id: 'modifiers',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-modifiers`),
+											selected: serviceParams?.filters?.modifiers,
+										},
+									},
+								])
+								.filter(f => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`));
+
+							if (eventsParticipating?.length)
+								serviceDef.filters = [...serviceDef.filters]
+									.concat([
+										{
+											component: SelectFilter,
+											props: {
+												id: 'eventId',
+												iconFa: 'fa fa-calendar',
+												title: 'Filter by event',
+												hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`),
+												values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
+												open: !!serviceParams?.filters?.eventId,
+												defaultValue: serviceParams?.filters?.eventId ?? null,
+											},
+										},
+									])
+									.filter(f => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`));
 						}
 						break;
 
@@ -407,7 +413,7 @@
 
 	$: eventsParticipating = player?.eventsParticipating ?? null;
 
-	$: profileAppearance = $editModel?.data?.profileAppearance ?? player?.profileSettings?.profileAppearance ?? null;
+	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
 	$: updateAvailableServiceNames(playerId);
 	$: availableServices = updateAvailableServices(
