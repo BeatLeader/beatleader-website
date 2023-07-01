@@ -9,6 +9,7 @@
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
+	import editModel from '../../stores/beatleader/profile-edit-model';
 
 	export let playerId = null;
 	export let player = null;
@@ -35,13 +36,14 @@
 				{
 					component: Switcher,
 					props: {
+						class: 'score-sorting',
 						values: [
 							{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/pp/1`},
 							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/date/1`},
 							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/acc/1`},
 							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
 							{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/beatleader/stars/1`},
-							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/beatleader/pauses/1`},							
+							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/beatleader/pauses/1`},
 							{
 								id: 'maxStreak',
 								label: 'Streak',
@@ -49,12 +51,18 @@
 								iconFa: 'icon115s',
 								url: `/u/${playerId}/beatleader/maxStreak/1`,
 							},
-							{id: 'mistakes', label: 'Mistakes', title: 'Sort by mistakes', iconFa: 'icon-mistakes', url: `/u/${playerId}/beatleader/mistakes/1`},
+							{
+								id: 'mistakes',
+								label: 'Mistakes',
+								title: 'Sort by mistakes',
+								iconFa: 'icon-mistakes',
+								url: `/u/${playerId}/beatleader/mistakes/1`,
+							},
 						],
 					},
 					key: 'sort',
 					onChange: event => {
-						if (!event?.detail?.id) return null;
+						if (!event?.detail?.id || $editModel) return null;
 
 						dispatch('service-params-change', {
 							sort: event.detail.id,
@@ -329,7 +337,7 @@
 	}
 
 	function onServiceChanged(event) {
-		if (!event?.detail?.id) return;
+		if (!event?.detail?.id || $editModel) return;
 
 		dispatch('service-change', event.detail.id);
 	}
@@ -358,15 +366,16 @@
 		serviceParams,
 		loadingServiceParams,
 		accSaberCategories,
-		eventsParticipating
+		eventsParticipating,
+		!!$editModel
 	);
 
 	$: serviceObj = availableServices.find(s => s.id === service);
 	$: loadingServiceObj = availableServices.find(s => s.id === loadingService);
 </script>
 
-<nav>
-	<Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged} loadingValue={loadingServiceObj} />
+<nav class:edit-enabled={!!$editModel}>
+	<Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged} loadingValue={loadingServiceObj} class="service" />
 
 	{#if serviceObj?.switcherComponents?.length}
 		{#each serviceObj.switcherComponents as component (`${serviceObj?.id ?? ''}${component.key ?? 'sort'}`)}
@@ -396,5 +405,38 @@
 
 	nav :global(> *:last-child) {
 		margin-right: 0;
+	}
+
+	.edit-enabled :global(.service) {
+		opacity: 0.2 !important;
+	}
+
+	.edit-enabled :global(.score-sorting .button),
+	.edit-enabled :global(.score-filters .filter-btn),
+	.edit-enabled :global(.score-filters .filter),
+	.edit-enabled :global(.score-filters .filter select),
+	.edit-enabled :global(.score-filters .filter input) {
+		cursor: cell !important;
+		opacity: 1 !important;
+		color: var(--textColor, white) !important;
+	}
+
+	.edit-enabled :global(.score-sorting .button:not(.disabled)),
+	.edit-enabled :global(.score-filters .filter:not(.disabled)) {
+		background: transparent !important;
+		border: 1px dotted var(--textColor, white);
+	}
+
+	.edit-enabled :global(.score-sorting .button.disabled),
+	.edit-enabled :global(.score-filters .filter.disabled) {
+		filter: grayscale(1);
+		opacity: 0.25 !important;
+		transition: all 200ms;
+	}
+
+	.edit-enabled :global(.score-sorting .button.disabled:hover),
+	.edit-enabled :global(.score-filters .filter.disabled:hover) {
+		filter: none;
+		opacity: 0.5 !important;
 	}
 </style>

@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import editModel from '../../../stores/beatleader/profile-edit-model';
 
 	export let filter;
 
@@ -18,10 +19,17 @@
 	}
 
 	function onButtonClick() {
+		if ($editModel) {
+			dispatch('click', {id: filter?.props?.id});
+			return;
+		}
+
 		filterOpen = !filterOpen;
 
 		if (!filterOpen) dispatchValue(null);
 	}
+
+	$: if (!!$editModel) filterOpen = false;
 </script>
 
 {#if filter?.component && filter?.props}
@@ -63,6 +71,7 @@
 		left: 0;
 		bottom: 0;
 		width: calc(100% - 1.4em);
+		height: 100%;
 		line-height: 1;
 		color: var(--textColor);
 		background-color: transparent;

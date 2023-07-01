@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import editModel from '../../../stores/beatleader/profile-edit-model';
 	import ModifiersPicker from './ModifiersPicker.svelte';
 
 	import {getContext} from 'svelte';
@@ -32,6 +33,11 @@
 	}
 
 	function onOpen() {
+		if ($editModel) {
+			dispatch('click', {id});
+			return;
+		}
+
 		open(ModifiersPicker, {
 			selected,
 			onchange: newModifiers => {

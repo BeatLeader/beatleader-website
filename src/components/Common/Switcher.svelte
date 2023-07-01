@@ -9,6 +9,8 @@
 	export let multi = false;
 	export let value = values && values.length ? values[0] : null;
 	export let loadingValue = null;
+	let className = null;
+	export {className as class};
 
 	async function onChange(newValue) {
 		dispatch('change', newValue);
@@ -16,7 +18,7 @@
 </script>
 
 {#if values && (values.length > 1 || (values.length === 1 && values[0] !== value))}
-	<div class="switch-types">
+	<div class={`switch-types ${className ?? ''}`}>
 		{#if values && values.length}
 			{#each values as currentValue}
 				{#if !currentValue?.component}
