@@ -64,7 +64,7 @@ export default response => {
 
 	let processedEventsParticipating = eventsParticipating?.map(e => ({id: e?.eventId, name: e?.name}));
 
-	let profileAppearance = profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : null;
+	let profileAppearance = profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : [];
 	if (profileAppearance) {
 		const hasAnyScoreSortingOrFilteringSettings = profileAppearance.some(a => a.startsWith('ss-') || a.startsWith('sf-'));
 		if (!hasAnyScoreSortingOrFilteringSettings) {
@@ -128,7 +128,9 @@ export default response => {
 					profileAppearance,
 					starredFriends: profileSettings?.starredFriends?.split(',') ?? null,
 			  }
-			: null,
+			: {
+					profileAppearance,
+			  },
 		scoreStats: scoreStats ? scoreStats : null,
 		eventsParticipating: processedEventsParticipating,
 	};
