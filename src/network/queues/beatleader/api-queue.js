@@ -13,7 +13,7 @@ export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
-export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}';
+export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?keepOriginalId=true';
 export const BL_API_SCORES_URL =
 	BL_API_URL +
 	'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
