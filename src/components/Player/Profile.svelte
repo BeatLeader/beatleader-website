@@ -272,6 +272,7 @@
 					{#each roles as role, idx}
 						<RoleIcon
 							{role}
+							index={idx}
 							allRoles={roles}
 							mapperId={playerInfo?.mapperId}
 							profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
