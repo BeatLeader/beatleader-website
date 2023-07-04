@@ -18,6 +18,8 @@
 	let login;
 	let password;
 
+	let showBeatSaverLogin = false;
+
 	$: loggedInPlayer = opt($account, 'id');
 	$: error = opt($account, 'error');
 	$: message = opt($account, 'message');
@@ -55,15 +57,23 @@
 	{:else if action == 'linkPatreon'}
 		<ContentBox>
 			{#if !patreoned}
-				<span>
-					Link your account to receive Patreon features for your tier.<br /><br />
-				</span>
+				<div class="sorting-options">
+					<span> Link your account to receive Patreon features for your tier. </span>
+				</div>
 			{/if}
 			{#if !loggedInPlayer}
 				<div class="login-form">
 					<div class="title">Please log in first to link Patreon</div>
+					<form action={BL_API_URL + 'signin'} method="post">
+						<input type="hidden" name="Provider" value="Steam" />
+						<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
+
+						<Button icon={steamSvg} label="Log In with Steam" type="green" />
+					</form>
+					<br />
+					<span>Quest Log In (no ReeSabers)</span>
 					<div class="input-container">
-						<div class="cat">Login (may differ from username)</div>
+						<div class="cat">Login</div>
 						<input bind:value={login} placeholder="Login" />
 					</div>
 					<div class="input-container">
@@ -71,19 +81,36 @@
 						<input type="password" bind:value={password} placeholder="Password" />
 					</div>
 
-					<Button iconFa="fas fa-plus-square" label="Log In" on:click={() => account.logIn(login, password)} />
-					<form action={BL_API_URL + 'signin'} method="post">
-						<input type="hidden" name="Provider" value="Steam" />
-						<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
+					<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
 
-						<Button icon={steamSvg} label="Log In with Steam" type="submit" />
-					</form>
-					<form action={BL_API_URL + 'signin'} method="post">
-						<input type="hidden" name="Provider" value="BeatSaver" />
-						<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
+					<div class="sorting-options">
+						<span
+							class="beat-savior-reveal clickable"
+							class:opened={showBeatSaverLogin}
+							on:click={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+							on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+							title="Show login with BeatSaver">
+							{#if showBeatSaverLogin}
+								I'm not a mapper
+							{:else}
+								Are you a mapper?
+							{/if}
 
-						<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
-					</form>
+							<i class="fas fa-chevron-down" />
+						</span>
+					</div>
+
+					{#if showBeatSaverLogin}
+						<span class="beat-saver-description"
+							>By using BeatSaver login you are linking Patreon to the account not usable in-game. <br />Make sure you understand what you
+							are doing</span>
+						<form action={BL_API_URL + 'signin'} method="post">
+							<input type="hidden" name="Provider" value="BeatSaver" />
+							<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
+
+							<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
+						</form>
+					{/if}
 				</div>
 			{:else if patreoned}
 				<span>
@@ -337,6 +364,30 @@
 
 	li {
 		line-height: 1.6;
+	}
+
+	.sorting-options {
+		display: grid;
+		justify-items: center;
+		margin: 0.4em;
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
+	}
+
+	.beat-saver-description {
+		margin-bottom: 1em;
 	}
 
 	@media screen and (max-width: 760px) {
