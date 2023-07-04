@@ -1,20 +1,62 @@
 <script>
+	import {DAY} from '../../utils/date';
 	import {formatNumber} from '../../utils/format';
+	import playersApiClient from '../../network/clients/beatleader/player/api';
+	import createLocalStorageStore from '../../stores/localstorage';
+
+	const playersCache = createLocalStorageStore('rt-players');
 
 	export let totals;
 	export let count;
 
 	const keys = {
-		nominated: 'Nominated',
 		criteriaMet: 'Criteria checked',
-		mapperAllowed: 'Mapper allowed',
 		approved: 'RT approved',
 	};
 
-	$: diffsReversed = (totals?.byDiff ?? []).reverse();
+	let diffsReversed = null;
+	let voters = null;
+
+	async function fetchPlayers(diffs) {
+		var reversed = diffs.reverse();
+
+		var players = [];
+		var votes = [];
+		reversed.forEach(element => {
+			if (element.votes) {
+				element.votes.forEach(element => {
+					if (!players.includes(element.playerId)) {
+						players.push(element.playerId);
+						votes.push(element);
+					}
+				});
+			}
+		});
+
+		const cachedPlayerIds = Object.keys($playersCache);
+		const playersToFetch = players.filter(
+			playerId =>
+				!cachedPlayerIds.includes(playerId) || !$playersCache[playerId]?.avatar || $playersCache[playerId]?.updated + DAY < Date.now()
+		);
+
+		if (playersToFetch.length) {
+			playersToFetch.map(
+				async playerId =>
+					await playersApiClient.getProcessed({playerId}).then(player => {
+						const {playerId, name, playerInfo} = player ?? {};
+						$playersCache[playerId] = {playerId, name, avatar: playerInfo.avatar, updated: Date.now()};
+					})
+			);
+		}
+
+		diffsReversed = reversed;
+		voters = votes;
+	}
+
+	$: fetchPlayers(totals?.byDiff ?? []);
 </script>
 
-{#if totals}
+{#if totals && diffsReversed}
 	<div class="totals" class:with-count={!!count}>
 		<div
 			class="ratio"
@@ -44,6 +86,17 @@
 				{/if}
 				<span>{formatNumber(totals.votesRating)}</span>
 			</div>
+			{#if voters?.length}
+				<div class="dots">
+					{#each voters as vote}
+						{#if $playersCache[vote.playerId]}
+							<img
+								class="voter {vote.value == 1 ? 'positive-vote' : vote.value == 3 ? 'negative-vote' : 'neutral-vote'}"
+								src={$playersCache[vote.playerId].avatar} />
+						{/if}
+					{/each}
+				</div>
+			{/if}
 		</div>
 
 		{#if count}
@@ -87,9 +140,11 @@
 	}
 
 	.totals {
-		display: inline-flex;
+		display: grid;
 		align-items: flex-start;
-		gap: 1.25rem;
+		grid-template-columns: 50% 25% 25%;
+		gap: 0.7rem;
+		margin-right: 1.4em;
 	}
 
 	.totals .ratio {
@@ -146,5 +201,21 @@
 
 	.dots > div.error {
 		background-color: red;
+	}
+
+	.voter {
+		width: 2.3em;
+		height: 2.3em;
+		border-radius: 1em;
+	}
+
+	.positive-vote {
+		border: green 3px solid;
+	}
+	.neutral-vote {
+		border: white 3px solid;
+	}
+	.negative-vote {
+		border: red 3px solid;
 	}
 </style>

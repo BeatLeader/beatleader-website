@@ -10,6 +10,7 @@
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {Ranked_Const} from '../../utils/beatleader/consts';
 	import CriteriaCheck from './CriteriaCheck.svelte';
+	import {AccRatingFromAIAcc} from '../../utils/beatleader/pp';
 
 	const dispatch = createEventDispatcher();
 
@@ -25,7 +26,9 @@
 	let hash = leaderboard?.song?.hash;
 	let diff = leaderboard?.diffInfo?.diff;
 	let mode = leaderboard?.diffInfo?.type;
-	let currentStars = leaderboard?.stats?.stars;
+	let currentTechRating = leaderboard?.stats?.techRating;
+	let currentAccRating = leaderboard?.stats?.accRating;
+	let currentPassRating = leaderboard?.stats?.passRating;
 	let currentType = leaderboard?.stats?.type;
 	let isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	let isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
@@ -33,7 +36,9 @@
 	let qualification = leaderboard?.qualification;
 
 	let suitableForRank = rtvoting && !isRanked ? true : undefined;
-	let stars;
+	let techRating;
+	let accRating;
+	let passRating;
 	let modifiers;
 	let status = leaderboard?.stats?.status;
 
@@ -50,16 +55,28 @@
 	function vote() {
 		if (rtvoting) {
 			if (isRanked) {
-				votingStore.updateMap(hash, diff, mode, suitableForRank, stars, selectedTypes);
+				votingStore.updateMap(hash, diff, mode, status, accRating, passRating, techRating, selectedTypes);
 			} else {
 				if (qualificationUpdate) {
-					votingStore.updateQualification(hash, diff, mode, status, stars, selectedTypes, criteriaMet, criteriaCommentary, modifiers);
+					votingStore.updateQualification(
+						hash,
+						diff,
+						mode,
+						status,
+						accRating,
+						passRating,
+						techRating,
+						selectedTypes,
+						criteriaMet,
+						criteriaCommentary,
+						modifiers
+					);
 				} else {
-					votingStore.qualifyMap(hash, diff, mode, suitableForRank, stars, selectedTypes, modifiers);
+					votingStore.qualifyMap(hash, diff, mode, suitableForRank, accRating, passRating, techRating, selectedTypes, modifiers);
 				}
 			}
 		} else {
-			votingStore.vote(hash, diff, mode, suitableForRank, stars, selectedTypes);
+			votingStore.vote(hash, diff, mode, suitableForRank);
 		}
 
 		dispatch('finished');
@@ -81,8 +98,10 @@
 		mapTypes = mapTypes;
 	}
 
-	function updateStars(currentStars) {
-		stars = currentStars ?? 7.5;
+	function updateStars(currentTechRating, currentAccRating, currentPassRating) {
+		techRating = currentTechRating ?? 0.0;
+		accRating = currentAccRating ?? 0.0;
+		passRating = currentPassRating ?? 0.0;
 	}
 
 	function modifiersUpdated(modifiersUpdate) {
@@ -117,12 +136,13 @@
 		status,
 		criteriaMet,
 		playerId,
-		stars,
+		techRating,
+		accRating,
+		passRating,
 		selectedTypes,
 		modifiers,
 		isQualified
 	) {
-		actionButtonType = 'primary';
 		if (rtvoting) {
 			if (isRanked) {
 				actionButtonTitle = 'Update';
@@ -135,7 +155,9 @@
 						qualification.criteriaChecker != playerId &&
 						qualification.criteriaMet == 1 &&
 						qualification.criteriaMet == criteriaMet &&
-						currentStars == stars &&
+						currentTechRating.toFixed(2) == techRating.toFixed(2) &&
+						currentAccRating.toFixed(2) == accRating.toFixed(2) &&
+						currentPassRating.toFixed(2) == passRating.toFixed(2) &&
 						originalTypes.length === selectedTypes.length &&
 						((qualification?.modifiers == null && shallowEqual(modifiers, leaderboard?.difficultyBl?.modifierValues, ['modifierId'])) ||
 							shallowEqual(modifiers, qualification?.modifiers, ['modifierId'])) &&
@@ -152,7 +174,7 @@
 					if (!isQualified) {
 						actionButtonTitle = 'Stop nomination!';
 					} else {
-						actionButtonTitle = 'Stop qualification!';
+						actionButtonTitle = 'Decline qualification!';
 					}
 
 					actionButtonType = 'danger';
@@ -165,9 +187,23 @@
 		}
 	}
 
+	function fetchAI(leaderboard) {
+		fetch(`https://bs-replays-ai.azurewebsites.net/bl-reweight/${leaderboard?.song?.hash}/Standard/${leaderboard?.difficultyBl?.value}`)
+			.then(d => d.json())
+			.then(d => {
+				techRating = d.none.lack_map_calculation.balanced_tech * 10;
+				accRating = AccRatingFromAIAcc(
+					d.none.AIacc,
+					d.none.lack_map_calculation.balanced_pass_diff,
+					d.none.lack_map_calculation.balanced_tech * 10
+				);
+				passRating = d.none.lack_map_calculation.balanced_pass_diff;
+			});
+	}
+
 	let showModifiers = false;
 
-	$: updateStars(currentStars);
+	$: updateStars(currentTechRating, currentAccRating, currentPassRating);
 	$: modifiersUpdated(deepClone(currentModifiers));
 	$: updateDialogTitle(rtvoting, isRanked, qualificationUpdate, isQualified);
 	$: updateActionButtonTitle(
@@ -177,11 +213,15 @@
 		status,
 		criteriaMet,
 		playerId,
-		stars,
+		techRating,
+		accRating,
+		passRating,
 		selectedTypes,
 		modifiers,
 		isQualified
 	);
+
+	$: if (!accRating && leaderboard) fetchAI(leaderboard);
 </script>
 
 <div class="ranking-voting {insideLeaderboard || showModifiers ? 'inside-leaderboard' : ''}">
@@ -240,42 +280,107 @@
 			{#if qualification && rtvoting}
 				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Short summary..." class="input-reset" />
 			{/if}
-			{#if suitableForRank}
-				{#if !hideStarSlider}
-					<div>
-						<label>{rtvoting ? 'Stars:' : 'Stars (optional):'}</label>
-						<div class="buttons-and-slider">
-							<Button
-								title="Less"
-								iconFa="fas fa-caret-left"
-								type="text"
-								on:click={() => {
-									if (stars > 0) stars -= Ranked_Const.STAR_GRANULARITY;
-								}} />
+			{#if rtvoting && suitableForRank}
+				<div>
+					<label>Acc rating:</label>
+					<div class="buttons-and-slider">
+						<Button
+							title="Less"
+							iconFa="fas fa-caret-left"
+							type="text"
+							on:click={() => {
+								if (accRating > 0) accRating -= Ranked_Const.STAR_GRANULARITY;
+							}} />
 
-							<RangeSlider
-								min={Ranked_Const.MIN_STARS}
-								max={Ranked_Const.MAX_STARS}
-								step={Ranked_Const.STAR_GRANULARITY}
-								values={[stars]}
-								float
-								hoverable
-								pips
-								pipstep={2 / Ranked_Const.STAR_GRANULARITY}
-								all="label"
-								on:change={event => {
-									stars = event.detail.values[0];
-								}} />
-							<Button
-								title="More"
-								iconFa="fas fa-caret-right"
-								type="text"
-								on:click={() => {
-									if (stars > 0) stars += Ranked_Const.STAR_GRANULARITY;
-								}} />
-						</div>
+						<RangeSlider
+							min={Ranked_Const.MIN_STARS}
+							max={Ranked_Const.MAX_STARS}
+							step={Ranked_Const.STAR_GRANULARITY}
+							values={[accRating]}
+							float
+							hoverable
+							pips
+							pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+							all="label"
+							on:change={event => {
+								accRating = event.detail.values[0];
+							}} />
+						<Button
+							title="More"
+							iconFa="fas fa-caret-right"
+							type="text"
+							on:click={() => {
+								if (accRating > 0) accRating += Ranked_Const.STAR_GRANULARITY;
+							}} />
 					</div>
-				{/if}
+				</div>
+				<div>
+					<label>Pass rating:</label>
+					<div class="buttons-and-slider">
+						<Button
+							title="Less"
+							iconFa="fas fa-caret-left"
+							type="text"
+							on:click={() => {
+								if (passRating > 0) passRating -= Ranked_Const.STAR_GRANULARITY;
+							}} />
+
+						<RangeSlider
+							min={Ranked_Const.MIN_STARS}
+							max={Ranked_Const.MAX_STARS}
+							step={Ranked_Const.STAR_GRANULARITY}
+							values={[passRating]}
+							float
+							hoverable
+							pips
+							pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+							all="label"
+							on:change={event => {
+								passRating = event.detail.values[0];
+							}} />
+						<Button
+							title="More"
+							iconFa="fas fa-caret-right"
+							type="text"
+							on:click={() => {
+								if (passRating > 0) passRating += Ranked_Const.STAR_GRANULARITY;
+							}} />
+					</div>
+				</div>
+
+				<div>
+					<label>Tech rating:</label>
+					<div class="buttons-and-slider">
+						<Button
+							title="Less"
+							iconFa="fas fa-caret-left"
+							type="text"
+							on:click={() => {
+								if (techRating > 0) techRating -= Ranked_Const.STAR_GRANULARITY;
+							}} />
+
+						<RangeSlider
+							min={Ranked_Const.MIN_STARS}
+							max={Ranked_Const.MAX_STARS}
+							step={Ranked_Const.STAR_GRANULARITY}
+							values={[techRating]}
+							float
+							hoverable
+							pips
+							pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+							all="label"
+							on:change={event => {
+								techRating = event.detail.values[0];
+							}} />
+						<Button
+							title="More"
+							iconFa="fas fa-caret-right"
+							type="text"
+							on:click={() => {
+								if (techRating > 0) techRating += Ranked_Const.STAR_GRANULARITY;
+							}} />
+					</div>
+				</div>
 				<div>
 					<label>{rtvoting ? 'Type:' : 'Type (optional):'}</label>
 					{#each selectedTypes as type, idx}

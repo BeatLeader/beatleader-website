@@ -256,10 +256,10 @@ export const HMDs = {
 		priority: 30,
 	},
 	53: {
-		name: 'hedy',
-		icon: 'unknown.svg',
-		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
-		priority: 31,
+		name: 'Varjo',
+		icon: 'varjo.svg',
+		color: '',
+		priority: 14,
 	},
 	54: {
 		name: 'Vaporeon',
@@ -392,6 +392,51 @@ export function describePlatform(platform) {
 
 	return result;
 }
+
+export const modeDescriptions = {
+	Standard: {
+		name: 'Standard',
+		icon: 'standard-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	OneSaber: {
+		title: 'OneSaber',
+		icon: 'onesaber-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	NoArrows: {
+		title: 'NoArrows',
+		icon: 'noarrows-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	'90Degree': {
+		title: '90 Degree',
+		icon: 'degree90-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	'360Degree': {
+		title: '360 Degree',
+		icon: 'degree360-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Lightshow: {
+		title: 'Lightshow',
+		icon: 'lightshow-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Lawless: {
+		title: 'Lawless',
+		icon: 'lawless-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+};
 
 export function modeForModeName(modeName) {
 	switch (modeName) {
@@ -649,6 +694,13 @@ export const requirementsDescription = {
 		textColor: 'white',
 	},
 };
+
+export function mapRequirementsListFromMask(type) {
+	return Object.keys(requirementsMap)
+		.filter(key => requirementsMap[key] & type)
+		.map(key => requirementsDescription[key])
+		.filter(d => d);
+}
 
 export function votingsForTypeStats(stats) {
 	let result = '';

@@ -53,12 +53,16 @@
 			</div>
 		</div>
 
-		{#if change.oldStars != change.newStars}
-			{change.oldStars} → {change.newStars} ★
+		{#if change.oldAccRating.toFixed(2) != change.newAccRating.toFixed(2)}
+			{change.oldAccRating.toFixed(2)} → {change.newAccRating.toFixed(2)} Acc ★
 		{/if}
 
-		{#if change.oldType != change.newType}
-			{mapTypeFromMask(change.oldType)} → {mapTypeFromMask(change.newType)}
+		{#if change.oldPassRating.toFixed(2) != change.newPassRating.toFixed(2)}
+			{change.oldPassRating.toFixed(2)} → {change.newPassRating.toFixed(2)} Pass ★
+		{/if}
+
+		{#if change.oldTechRating.toFixed(2) != change.newTechRating.toFixed(2)}
+			{change.oldTechRating.toFixed(2)} → {change.newTechRating.toFixed(2)} Tech ★
 		{/if}
 
 		{#if change.oldCriteriaMet != change.newCriteriaMet}
@@ -91,9 +95,6 @@
 
 <style>
 	.qualification-description {
-		display: flex;
-		grid-gap: 0.4em;
-		align-items: center;
 		margin-top: 0.25em;
 	}
 

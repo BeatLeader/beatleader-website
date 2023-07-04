@@ -1,17 +1,24 @@
 <script>
+	import ssrConfig from '../ssr-config';
+	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createPlaylistStore from '../stores/playlists';
 	import createAccountStore from '../stores/beatleader/account';
 	import Playlist from '../components/Playlists/Playlist.svelte';
 	import Pager from '../components/Common/Pager.svelte';
 	import Button from '../components/Common/Button.svelte';
-	import ssrConfig from '../ssr-config';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+
+	export let index;
 
 	const playlists = createPlaylistStore();
 	const account = createAccountStore();
-	let page = 0;
+
 	let itemsPerPage = 5;
+	let page = 0;
 	let itemsPerPageValues = [5, 10, 15];
+	let selectedIndex = null;
+
+	let playlistsEl = null;
 
 	function onPageChanged(event) {
 		page = event.detail.page;
@@ -30,14 +37,23 @@
 		};
 	};
 
-	function updatePage() {
-		if (totalItems <= itemsPerPage) {
+	function updatePage(index) {
+		if (Number.isFinite(index)) {
+			if (selectedIndex == index) return;
+
+			page = Math.floor(index / itemsPerPage);
+			selectedIndex = index;
+
+			setTimeout(() => {
+				if (playlistsEl) scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60);
+			}, 500);
+		} else if (totalItems <= itemsPerPage) {
 			page = 0;
 		}
 	}
 
 	$: totalItems = $playlists.length;
-	$: updatePage($playlists.length);
+	$: updatePage(parseInt(index, 10), $playlists.length);
 </script>
 
 <svelte:head>
@@ -51,9 +67,10 @@
 		<input style="display:none" type="file" accept=".bplist, .json" on:change={e => uploadPlaylist(e)} bind:this={fileinput} />
 	</div>
 	{#if $playlists && $playlists.length}
-		<div class="song-scores grid-transition-helper">
-			{#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, idx}
-				<Playlist accountStore={account} {playlist} idx={page * itemsPerPage + idx} store={playlists} />
+		<div bind:this={playlistsEl} class="song-scores grid-transition-helper">
+			{#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, pageIdx}
+				{@const idx = page * itemsPerPage + pageIdx}
+				<Playlist expanded={selectedIndex === idx} accountStore={account} {playlist} {idx} store={playlists} />
 			{/each}
 		</div>
 	{:else}

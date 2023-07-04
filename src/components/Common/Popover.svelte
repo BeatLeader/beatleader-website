@@ -31,6 +31,7 @@
 	// unnecessary to handle: https://github.com/popperjs/popper-core/issues/933
 	import {createPopper} from '@popperjs/core/dist/esm/popper';
 	import {createEventDispatcher, onDestroy} from 'svelte';
+	import {setGlobalCSSValue} from '../../utils/color';
 
 	/**
 	 * This gives you the ability to manually control when to open and close the popover.

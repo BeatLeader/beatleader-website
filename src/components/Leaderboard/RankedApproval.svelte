@@ -11,7 +11,16 @@
 	let ranked;
 
 	function approve() {
-		votingStore.updateMap(hash, diff, mode, true, leaderboard?.stats?.stars, leaderboard?.stats?.type);
+		votingStore.updateMap(
+			hash,
+			diff,
+			mode,
+			true,
+			leaderboard?.stats?.accRating,
+			leaderboard?.stats?.passRating,
+			leaderboard?.stats?.techRating,
+			leaderboard?.stats?.type
+		);
 
 		ranked = true;
 	}

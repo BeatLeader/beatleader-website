@@ -65,7 +65,7 @@
 
 <div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<div class="profile">
-		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" pinnedScores={false} />
+		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" pinnedScores={false} clanEffects={false} />
 	</div>
 	<div class="options">
 		<section class="option">

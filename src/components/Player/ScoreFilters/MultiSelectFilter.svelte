@@ -22,8 +22,6 @@
 		dispatch('change', e?.detail?.map(i => i.value)?.filter(v => v?.length) ?? []);
 	}
 	const itemFilter = (label, filterText) => label.toLowerCase().includes(filterText.toLowerCase());
-
-	$: console.log(items);
 </script>
 
 {#if items?.length}

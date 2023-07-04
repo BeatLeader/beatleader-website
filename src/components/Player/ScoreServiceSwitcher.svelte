@@ -8,6 +8,7 @@
 	import SelectFilter from './ScoreFilters/SelectFilter.svelte';
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
+	import {requirementsMap} from '../../utils/beatleader/format';
 
 	export let playerId = null;
 	export let player = null;
@@ -158,7 +159,7 @@
 				props: {
 					id: 'search',
 					iconFa: 'fa fa-search',
-					title: 'Search by song/artist/mapper name',
+					title: 'Search by song/artist/mapper/hash',
 					placeholder: 'Enter song name...',
 				},
 			},
@@ -175,6 +176,45 @@
 						{id: 'hard', name: 'Hard'},
 						{id: 'expert', name: 'Expert'},
 						{id: 'expertplus', name: 'Expert+'},
+					],
+				},
+			},
+			{
+				component: SelectFilter,
+				props: {
+					id: 'mode',
+					iconFa: 'fa fa-compass',
+					title: 'Filter by map mode',
+					values: [
+						{id: null, name: 'All'},
+						{id: 'standard', name: 'Standard'},
+						{id: 'onesaber', name: 'One Saber'},
+						{id: '90degree', name: '90 Degree'},
+						{id: '360degree', name: '360 Degree'},
+						{id: 'noarrows', name: 'No arrows'},
+						{id: 'lightshow', name: 'Lightshow'},
+						{id: 'lawless', name: 'Lawless'},
+						{id: 'horizontalstandard', name: 'Horizontal Mirror'},
+						{id: 'verticalstandard', name: 'Vertical Mirror'},
+						{id: 'inversestandard', name: 'Inverse'},
+						{id: 'invertedstandard', name: 'Inverted'},
+						{id: 'rhythmgamestandard', name: 'Rhythm Game!'},
+					],
+				},
+			},
+			{
+				component: SelectFilter,
+				props: {
+					id: 'requirements',
+					iconFa: 'fa fa-mountain-sun',
+					title: 'Filter by map feature',
+					values: [
+						{id: null, name: 'All'},
+						{id: requirementsMap.noodles, name: 'Noodle Extensions'},
+						{id: requirementsMap.chroma, name: 'Chroma'},
+						{id: requirementsMap.V3, name: 'V3'},
+						{id: requirementsMap.cinema, name: 'Cinema'},
+						{id: requirementsMap.mappingExtensions, name: 'Mapping Extensions'},
 					],
 				},
 			},

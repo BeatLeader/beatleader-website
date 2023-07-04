@@ -43,7 +43,7 @@
 		out:fade={{duration: 100}}
 		class:with-details={showDetails}>
 		<div class="icons up-to-tablet">
-			<Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay} />
+			<Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay} altReplay={true} />
 		</div>
 
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
@@ -97,7 +97,7 @@
 				</span>
 			</div>
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} unmodifiedScore={true} />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} />
 		</div>
 		<PlayerNameWithFlag player={score.player} on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 

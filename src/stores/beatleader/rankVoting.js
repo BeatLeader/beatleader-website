@@ -46,7 +46,7 @@ export default () => {
 			});
 	};
 
-	const qualifyMap = async (hash, diff, mode, rankability, stars, types, modifiers) => {
+	const qualifyMap = async (hash, diff, mode, rankability, accRating, passRating, techRating, types, modifiers) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		types.forEach(typeName => {
@@ -61,7 +61,9 @@ export default () => {
 		const url =
 			BL_API_URL +
 			`qualify/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` +
-			(stars ? '&stars=' + stars : '') +
+			(accRating ? '&accRating=' + accRating : '') +
+			(passRating ? '&passRating=' + passRating : '') +
+			(techRating ? '&techRating=' + techRating : '') +
 			(type ? '&type=' + type : '') +
 			(modifiers != null ? '&modifiers=' + encodeURIComponent(JSON.stringify(modifiers)) : '');
 
@@ -72,7 +74,19 @@ export default () => {
 		});
 	};
 
-	const updateQualification = async (hash, diff, mode, status, stars, types, criteriaMet, criteriaCommentary, modifiers) => {
+	const updateQualification = async (
+		hash,
+		diff,
+		mode,
+		status,
+		accRating,
+		passRating,
+		techRating,
+		types,
+		criteriaMet,
+		criteriaCommentary,
+		modifiers
+	) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		types.forEach(typeName => {
@@ -89,7 +103,9 @@ export default () => {
 		const url =
 			BL_API_URL +
 			`qualification/${hash}/${diff}/${mode}?newStatus=${status}` +
-			(stars ? '&stars=' + stars : '') +
+			(accRating ? '&accRating=' + accRating : '') +
+			(passRating ? '&passRating=' + passRating : '') +
+			(techRating ? '&techRating=' + techRating : '') +
 			(type != null ? '&type=' + type : '') +
 			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +
 			(criteriaCommentary != null ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '') +
@@ -108,7 +124,7 @@ export default () => {
 		});
 	};
 
-	const updateMap = async (hash, diff, mode, rankability, stars, types) => {
+	const updateMap = async (hash, diff, mode, rankability, accRating, passRating, techRating, types) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		if (Array.isArray(types)) {
@@ -125,7 +141,9 @@ export default () => {
 		fetch(
 			BL_API_URL +
 				`rank/${hash}/${diff}/${mode}?rankability=${rankability ? 1 : 0}` +
-				(stars ? '&stars=' + stars : '') +
+				(accRating ? '&accRating=' + accRating : '') +
+				(passRating ? '&passRating=' + passRating : '') +
+				(techRating ? '&techRating=' + techRating : '') +
 				(type ? '&type=' + type : ''),
 			{credentials: 'include', method: 'POST'}
 		).then(() => {

@@ -43,7 +43,7 @@
 <span class="val">
 	<i class="fas fa-globe-americas" />
 	<strong class="value">
-		<Value value={$currentRank} prefix="#" zero="-" digits={0} />
+		<Value value={$currentRank} prefix="#" zero="-" digits={0} canBeSetup={false} />
 	</strong>
 
 	{#if headset}
@@ -59,8 +59,8 @@
 			title={!showCountryTotal && country && $currentCountryRank && countryRankTotal
 				? `#${$currentCountryRank} / ${countryRankTotal}`
 				: ''}>
-			<Value value={$currentCountryRank} prefix="#" zero="-" digits={0} />
-			{#if showCountryTotal}<Value value={countryRankTotal} prefix="/" zero="-" digits={0} />{/if}
+			<Value value={$currentCountryRank} prefix="#" zero="-" digits={0} canBeSetup={false} />
+			{#if showCountryTotal}<Value value={countryRankTotal} prefix="/" zero="-" digits={0} canBeSetup={false} />{/if}
 		</strong>
 	</span>
 {/if}

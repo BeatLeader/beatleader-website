@@ -1,12 +1,17 @@
 <script>
+	import {onMount} from 'svelte';
+	import {fade} from 'svelte/transition';
+	import ssrConfig from '../ssr-config';
 	import {configStore} from '../stores/config';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import {fade} from 'svelte/transition';
 	import ThemeSettings from '../components/Settings/ThemeSettings.svelte';
 	import ProfileUiSettings from '../components/Settings/ProfileUISettings.svelte';
 	import ScoreSettings from '../components/Settings/ScoreSettings.svelte';
-	import ssrConfig from '../ssr-config';
+	import AccountSettings from '../components/Settings/AccountSettings.svelte';
+	import createAccountStore from '../stores/beatleader/account';
+
+	const account = createAccountStore();
 
 	var navigationItems = [
 		{
@@ -50,8 +55,20 @@
 		}
 	}
 
+	onMount(() => setTimeout(() => window.scrollTo(0, 0), 300));
+
 	$: settingsChanged = $configStore ? configStore.getSettingsChanged() : undefined;
 	$: animationSign = previousIndex == undefined ? 0 : selectedNavigationIndex >= previousIndex ? 1 : -1;
+	$: if ($account?.player && !navigationItems.find(i => i.link === '#account')) {
+		navigationItems = [
+			...navigationItems,
+			{
+				name: 'Account',
+				link: '#account',
+				icon: 'fas fa-user',
+			},
+		];
+	}
 </script>
 
 <svelte:head>
@@ -82,6 +99,8 @@
 							<ProfileUiSettings {animationSign} />
 						{:else if selectedNavigationIndex == 2}
 							<ScoreSettings {animationSign} />
+						{:else if selectedNavigationIndex == 3}
+							<AccountSettings {animationSign} />
 						{/if}
 					</div>
 				</div>
@@ -105,6 +124,7 @@
 	.tabs-container {
 		display: flex;
 		flex-direction: column;
+		width: clamp(20rem, calc(63rem - 20px), 100%);
 	}
 
 	.navigation {
@@ -113,13 +133,18 @@
 		margin-left: 0;
 	}
 
+	.navigation-item-title {
+		user-select: none;
+	}
+
 	.navigation-item {
 		padding: 0.4em 1.2em;
 		margin: 0.5em;
 		border-radius: 0.4em;
 		cursor: pointer;
-		min-width: 7em;
+		min-width: 7.5em;
 		margin-left: 0;
+		user-select: none;
 	}
 
 	.navigation-item.selected {

@@ -66,7 +66,7 @@
 			{/each}
 		</Select>
 	</section>
-	{#if currentTheme == 'mirror'}
+	{#if currentTheme != 'default' && currentTheme != 'ree-dark'}
 		<section class="option">
 			<label title="Input url of the background image you want">Background Image</label>
 			<input type="url" bind:value={currentBGImage} />

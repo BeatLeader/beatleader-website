@@ -18,9 +18,10 @@ const locales = {
 export const getCurrentLocale = () => configStore?.getLocale();
 export const getSupportedLocales = () => Object.values(locales);
 
-const DEFAULT_CONFIG = {
+export const DEFAULT_CONFIG = {
 	scoreComparison: {
 		method: 'in-place',
+		badgeRows: 1,
 	},
 	preferences: {
 		ppMetric: 'weighted',
@@ -39,9 +40,33 @@ const DEFAULT_CONFIG = {
 		commentaryShown: true,
 		criteriaInfoShown: true,
 		leaderboardShowSorting: true,
+		maps3D: true,
 	},
 	scorePreferences: {
-		showReplayCounter: false,
+		badgeRows: 2,
+	},
+	scoreBadges: [
+		[
+			{metric: 'pp', secondary: 'weighted'},
+			{metric: 'acc', secondary: 'improvement', withMods: true},
+			{metric: 'score', withImprovements: true},
+		],
+		[
+			{metric: 'accLeft', withImprovements: true},
+			{metric: 'accRight', withImprovements: true},
+			{metric: 'mistakes', withImprovements: true},
+		],
+		[null, null, null],
+	],
+	scoreDetailsPreferences: {
+		showMapInfo: true,
+		showScoreMetrics: true,
+		showHandsAcc: true,
+		showAccChart: true,
+		showSliceDetails: false,
+		showAccSpreadChart: false,
+		showLeaderboard: true,
+		defaultAccChartIndex: 0,
 	},
 	chartLegend: {
 		y: true,
@@ -53,15 +78,14 @@ const DEFAULT_CONFIG = {
 		y6: true,
 	},
 	visibleScoreIcons: {
-		playlist: true,
+		pin: false,
+		playlist: false,
 		bsr: true,
 		bs: true,
-		preview: true,
-		replay: true,
 		oneclick: true,
-		twitch: true,
+		preview: false,
+		replay: true,
 		delete: true,
-		pin: true,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},
@@ -147,6 +171,20 @@ export default async () => {
 
 	const savedConfig = await keyValueRepository().get(STORE_CONFIG_KEY);
 	const newSettings = determineNewSettingsAvailable(savedConfig);
+
+	// upgrade secondary pp metric if needed
+	if (savedConfig?.scoreBadges && savedConfig?.preferences?.ppMetric) {
+		const badges = [...Object.values(savedConfig.scoreBadges)];
+		for (const idx in badges) {
+			const ppMetric = badges[idx]?.find(col => col?.metric === 'pp');
+			if (ppMetric && !ppMetric?.secondary) {
+				ppMetric.secondary = savedConfig.preferences.ppMetric;
+				await set(savedConfig, true);
+				break;
+			}
+		}
+	}
+
 	if (savedConfig) {
 		dbConfig = savedConfig;
 		await set(savedConfig, false);

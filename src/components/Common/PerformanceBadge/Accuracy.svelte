@@ -1,14 +1,19 @@
 <script>
-	import {diffColors, describeModifiersAndMultipliers} from '../../utils/beatleader/format';
-	import {formatNumber} from '../../utils/format';
-	import Badge from './Badge.svelte';
-	import Value from './Value.svelte';
+	import {getContext} from 'svelte';
+	import {writable} from 'svelte/store';
+	import {diffColors, describeModifiersAndMultipliers} from '../../../utils/beatleader/format';
+	import {formatNumber} from '../../../utils/format';
+	import Badge from '../Badge.svelte';
+	import Value from '../Value.svelte';
 
 	export let score;
 	export let prevScore = null;
 	export let showPercentageInstead = false;
 	export let showMods = true;
 	export let modifiers = null;
+	export let secondary = 'improvement';
+
+	const isDemo = getContext('isDemo') ?? writable(false);
 
 	const badgesDef = [
 		{name: 'SS+', min: 95, max: null, color: diffColors.expertPlus},
@@ -35,30 +40,49 @@
 
 	$: badge = getBadge(score?.acc);
 	$: fcacc =
-		score.fcAccuracy && score.acc && Math.abs(score.fcAccuracy * 100 - score.acc) > 0.01
-			? '\nFC acc: ' + formatNumber(score.fcAccuracy * 100) + '%'
+		score?.fcAccuracy && score?.acc && Math.abs(score?.fcAccuracy * 100 - score?.acc) > 0.01
+			? '\nFC acc: ' + formatNumber(score?.fcAccuracy * 100) + '%'
 			: '';
 	$: mods = score?.mods;
 
 	$: value = score?.acc ?? 0;
-	$: prevValue = value - (score?.scoreImprovement?.accuracy ?? 0);
+	$: prevValue =
+		secondary === 'improvement'
+			? value - (score?.scoreImprovement?.accuracy ?? 0)
+			: secondary === 'fcAccuracy' && score?.fcAccuracy
+			? score.fcAccuracy * 100
+			: null;
+	$: prevAbsolute = secondary === 'fcAccuracy';
+	$: prevPrefix = secondary === 'fcAccuracy' ? '{ ' : null;
+	$: prevSuffix = secondary === 'fcAccuracy' ? '% }' : '%';
 </script>
 
-<Badge onlyLabel={true} color="white" bgColor={badge ? badge.color : 'var(--dimmed)'} title={badge ? badge.desc + fcacc : badge} label="">
+<Badge
+	onlyLabel={true}
+	color="white"
+	bgColor={badge ? badge.color : 'var(--dimmed)'}
+	title={$isDemo ? 'Click to setup' : badge ? badge.desc + fcacc : badge}
+	label=""
+	on:click>
 	<span slot="label">
 		<slot name="label-before" />
 		<Value
 			{value}
 			{prevValue}
+			{prevAbsolute}
+			prefixPrev={prevPrefix}
 			title={badge ? badge.desc + fcacc : null}
 			inline={false}
 			suffix="%"
-			suffixPrev="%"
+			suffixPrev={prevSuffix}
 			zero="-"
 			withZeroSuffix={false} />
 		<slot name="label-after" />
 	</span>
-	<small class="mods" slot="additional" title={showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
+	<small
+		class="mods"
+		slot="additional"
+		title={$isDemo ? 'Click to setup' : showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
 		>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
 </Badge>
 

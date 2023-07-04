@@ -1,7 +1,7 @@
 <script>
 	import {configStore} from '../../stores/config';
 	import createAccountStore from '../../stores/beatleader/account';
-	import friends from '../../stores/beatleader/friends';
+	import followed from '../../stores/beatleader/followed';
 	import {SsrHttpResponseError} from '../../network/errors';
 	import {createEventDispatcher} from 'svelte';
 	import createClanService from '../../services/beatleader/clan';
@@ -21,7 +21,7 @@
 	const clanService = createClanService();
 
 	let operationInProgress = false;
-	async function onFriendsChange(op) {
+	async function onFollowedChange(op) {
 		if (!playerId || !op) return;
 
 		try {
@@ -29,10 +29,10 @@
 
 			switch (op) {
 				case 'add':
-					await account.addFriend(playerId);
+					await account.addFollowed(playerId);
 					break;
 				case 'remove':
-					await account.removeFriend(playerId);
+					await account.removeFollowed(playerId);
 					break;
 			}
 		} catch (err) {
@@ -91,7 +91,7 @@
 
 	$: isMain = playerId && $account?.id === playerId;
 	$: loggedInPlayer = $account?.id;
-	$: isFriend = playerId && !!$friends?.find(f => f?.playerId === playerId);
+	$: isFollowed = playerId && !!$followed?.find(f => f?.playerId === playerId);
 	$: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
 
 	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
@@ -131,16 +131,16 @@
 	{/if}
 
 	<nav class:main={isMain}>
-		{#if loggedInPlayer && !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFriend))}
+		{#if loggedInPlayer && !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFollowed))}
 			<Button
 				square={true}
 				squareSize="1.7rem"
-				title={isFriend ? 'Remove from Friends' : 'Add to Friends'}
-				iconFa={isFriend ? 'fas fa-user-minus' : 'fas fa-user-plus'}
-				type={isFriend ? 'danger' : 'primary'}
+				title={isFollowed ? 'Remove from Followed' : 'Add to Followed'}
+				iconFa={isFollowed ? 'fas fa-user-minus' : 'fas fa-user-plus'}
+				type={isFollowed ? 'danger' : 'primary'}
 				loading={operationInProgress}
 				disabled={operationInProgress}
-				on:click={() => onFriendsChange(isFriend ? 'remove' : 'add')} />
+				on:click={() => onFollowedChange(isFollowed ? 'remove' : 'add')} />
 		{/if}
 
 		{#if isUserFounderOfTheClan}

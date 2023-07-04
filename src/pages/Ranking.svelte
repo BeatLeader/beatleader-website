@@ -198,6 +198,12 @@
 			process: processStringFilter,
 			type: null,
 		},
+		{
+			key: 'ppType',
+			default: 'general',
+			process: processStringFilter,
+			type: null,
+		},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -303,6 +309,14 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onPpTypeChanged(event) {
+		currentFilters.ppType = event.detail;
+
+		findParam('ppType').value = currentFilters.ppType;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onFiltersUpdated(e) {
 		if (!e?.detail?.currentFilters) return;
 
@@ -350,6 +364,7 @@
 				on:page-changed={onPageChanged}
 				on:sort-changed={onSortChanged}
 				on:maps-type-changed={onMapsTypeChanged}
+				on:pp-type-changed={onPpTypeChanged}
 				on:loading={e => (isLoading = !!e?.detail)}
 				on:pending={e => (pending = e?.detail)} />
 		</ContentBox>

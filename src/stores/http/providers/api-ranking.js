@@ -19,8 +19,8 @@ export default () => {
 
 		let data = null;
 		switch (type) {
-			case 'friends':
-				data = await rankingService.getFriends(page, filters, priority, signal, force);
+			case 'followed':
+				data = await rankingService.getFollowed(page, filters, priority, signal, force);
 				break;
 
 			default:

@@ -23,6 +23,7 @@
 	export let mapCheck = false;
 	export let serviceIcon = null;
 	export let noPin = false;
+	export let altReplay = false;
 
 	export let batleRoyaleDraft = false;
 	export let batleRoyale = false;
@@ -99,8 +100,8 @@
 		: scoreId
 		? `https://replay.beatleader.xyz/?scoreId=${scoreId}`
 		: null;
-	$: previewUrl = `https://skystudioapps.com/bs-viewer/?id=${songKey}${diffName ? `&diffName=${diffName}` : ''}${
-		charName ? `&charName=${charName}` : ''
+	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
+		charName ? `&mode=${charName}` : ''
 	}`;
 </script>
 
@@ -112,10 +113,11 @@
 				title="Delete score"
 				noMargin={true}
 				type="danger"
-				on:click={fetch(BL_API_URL + `score/${scoreId}`, {
-					method: 'DELETE',
-					credentials: 'include',
-				})} />
+				on:click={() =>
+					fetch(BL_API_URL + `score/${scoreId}`, {
+						method: 'DELETE',
+						credentials: 'include',
+					})} />
 		{/if}
 		{#if !noPin && shownIcons.includes('pin')}
 			<PinIcon {scoreId} on:score-pinned />
@@ -145,39 +147,39 @@
 								title="Remove from the {selectedPlaylist.playlistTitle}"
 								noMargin={true}
 								type="danger"
-								on:click={playlists.remove(hash)} />
+								on:click={() => playlists.remove(hash)} />
 						{:else if difficulties.length == 1 || !difficulties.includes(diffName)}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Add this diff to the {selectedPlaylist.playlistTitle}"
 								noMargin={true}
-								on:click={playlists.addDiff(hash, diffInfo)} />
+								on:click={() => playlists.addDiff(hash, diffInfo)} />
 						{:else}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Remove this diff from the {selectedPlaylist.playlistTitle}"
 								noMargin={true}
 								type="lessdanger"
-								on:click={playlists.removeDiff(hash, diffInfo)} />
+								on:click={() => playlists.removeDiff(hash, diffInfo)} />
 						{/if}
 					{:else}
 						<Button
 							iconFa="fas fa-list-ul"
 							title="Add to the {selectedPlaylist.playlistTitle}"
 							noMargin={true}
-							on:click={playlists.add(songInfo)} />
+							on:click={() => playlists.add(songInfo)} />
 					{/if}
 				{:else}
 					<Button
 						iconFa="fas fa-list-ul"
 						title="Create new playlist with this song"
 						noMargin={true}
-						on:click={playlists.create(songInfo)} />
+						on:click={() => playlists.create(songInfo)} />
 				{/if}
 			{/if}
 
 			{#if shownIcons.includes('bsr')}
-				<Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={copyToClipboard('!bsr ' + songKey)} />
+				<Button iconFa="fas fa-exclamation" title="Copy !bsr" noMargin={true} on:click={() => copyToClipboard('!bsr ' + songKey)} />
 			{/if}
 
 			{#if shownIcons.includes('bs')}
@@ -201,20 +203,20 @@
 								title="Remove from the One-Click playlist"
 								noMargin={true}
 								type="danger"
-								on:click={playlists.remove(hash, ocPlaylistIndex)} />
+								on:click={() => playlists.remove(hash, ocPlaylistIndex)} />
 						{:else if ocdifficulties.length == 1 || !ocdifficulties.includes(diffName)}
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Add this diff to the One-Click playlist"
 								noMargin={true}
-								on:click={playlists.addDiff(hash, diffInfo, ocPlaylistIndex)} />
+								on:click={() => playlists.addDiff(hash, diffInfo, ocPlaylistIndex)} />
 						{:else}
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Remove this diff from the One-Click playlist"
 								noMargin={true}
 								type="lessdanger"
-								on:click={playlists.removeDiff(hash, diffInfo, ocPlaylistIndex)} />
+								on:click={() => playlists.removeDiff(hash, diffInfo, ocPlaylistIndex)} />
 						{/if}
 					{:else}
 						<Button
@@ -222,7 +224,7 @@
 							title="Add to the One-Click playlist"
 							type="purple"
 							noMargin={true}
-							on:click={playlists.add(songInfo, ocPlaylistIndex)} />
+							on:click={() => playlists.add(songInfo, ocPlaylistIndex)} />
 					{/if}
 				{:else}
 					<a href="beatsaver://{songKey}">
@@ -232,15 +234,15 @@
 			{/if}
 
 			{#if shownIcons.includes('preview')}
-				<Button url={previewUrl} on:click={showPreview(previewUrl)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true} />
+				<Button url={previewUrl} on:click={() => showPreview(previewUrl)} iconFa="fa fa-play-circle" title="Map preview" noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('replay') && replayUrl?.length}
 				<Button
 					url={replayUrl}
-					on:click={showPreview(replayUrl)}
-					cls={shownIcons.length == 1 ? 'replay-button-alt' : 'replay-button'}
-					icon="<img src='/assets/{shownIcons.length == 1 ? `replays.svg` : `bs-pepe.gif`}'>"
+					on:click={() => showPreview(replayUrl)}
+					cls={altReplay ? 'replay-button-alt' : 'replay-button'}
+					icon="<img src='/assets/{altReplay ? `replays.svg` : `bs-pepe.gif`}'>"
 					title="Replay"
 					noMargin={true} />
 			{/if}

@@ -1,13 +1,23 @@
 <script>
 	import {fade} from 'svelte/transition';
+	import {configStore} from '../../stores/config';
 	import Hands from './Stats/Hands.svelte';
 	import OtherStats from './Stats/OtherStats.svelte';
 	import Grid from './Stats/Grid.svelte';
 	import Chart from './Stats/Chart.svelte';
 	import DetailsBox from '../Common/DetailsBox.svelte';
+	import ExtendedAccGraphs from '../Score/ExtendedAccGraphs.svelte';
+	import CompactPagination from '../Score/CompactPagination.svelte';
 
 	export let beatSavior;
 	export let showGrid = true;
+	export let replayAccGraphs;
+
+	let graphPageIndex = $configStore?.scoreDetailsPreferences?.defaultAccChartIndex ?? 1;
+
+	function onGraphPaginationChange(event) {
+		graphPageIndex = event.detail.page;
+	}
 
 	function extractGridAcc(beatSavior) {
 		const gridAcc = beatSavior?.trackers?.accuracyTracker?.gridAcc;
@@ -19,23 +29,42 @@
 	}
 
 	$: accGrid = extractGridAcc(beatSavior);
+	$: $configStore?.scoreDetailsPreferences?.defaultAccChartIndex,
+		(graphPageIndex = Number.isFinite($configStore?.scoreDetailsPreferences?.defaultAccChartIndex)
+			? $configStore.scoreDetailsPreferences.defaultAccChartIndex
+			: 1);
 </script>
 
 {#if beatSavior}
 	<section class="beat-savior" transition:fade>
-		<DetailsBox cls="details-and-hands">
-			<OtherStats {beatSavior} />
-			<div class="hands-and-grid">
-				<Hands stats={beatSavior.stats} />
-				{#if showGrid}
-					<Grid {accGrid} />
+		{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails)}
+			<DetailsBox cls="details-and-hands">
+				{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics}
+					<OtherStats {beatSavior} />
 				{/if}
-			</div>
-		</DetailsBox>
+				<div class="hands-and-grid">
+					{#if $configStore?.scoreDetailsPreferences?.showHandsAcc}
+						<Hands stats={beatSavior.stats} />
+					{/if}
+					{#if showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails}
+						<Grid {accGrid} />
+					{/if}
+				</div>
+			</DetailsBox>
+		{/if}
 
-		<DetailsBox cls="chart">
-			<Chart {beatSavior} />
-		</DetailsBox>
+		{#if $configStore?.scoreDetailsPreferences?.showAccChart}
+			<DetailsBox cls="chart">
+				{#if graphPageIndex === 0 || !replayAccGraphs}
+					<Chart {beatSavior} />
+				{:else}
+					<ExtendedAccGraphs {replayAccGraphs} />
+				{/if}
+				{#if replayAccGraphs}
+					<CompactPagination pageIndex={graphPageIndex} pagesCount={2} on:change={onGraphPaginationChange} />
+				{/if}
+			</DetailsBox>
+		{/if}
 	</section>
 {/if}
 
@@ -44,6 +73,12 @@
 		display: grid;
 		grid-template-columns: 49.9% 49.9%;
 		grid-gap: 0.2%;
+	}
+
+	.beat-savior > :global(.chart) {
+		display: flex;
+		flex-direction: row;
+		grid-gap: 0.5em;
 	}
 
 	.beat-savior > :global(.details-and-hands) {

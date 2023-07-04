@@ -11,8 +11,10 @@ import createBeatSaviorService from './services/beatsavior';
 import {enablePatches, setAutoFreeze} from 'immer';
 import ErrorComponent from './components/Common/Error.svelte';
 import './themes/mirror.less';
+import './themes/mirror-low.less';
 import './themes/ree-dark.less';
 import './themes/unbounded.less';
+import 'atropos/css';
 
 let app = null;
 

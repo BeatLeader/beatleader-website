@@ -56,6 +56,13 @@
 	}
 }
 
+.fadable {
+	transition: opacity var(--fade-time, 250ms);
+}
+.fadable.faded {
+	opacity: 0;
+}
+
 .main-background {
 	display: none;
 	height: 100vh;
@@ -11455,7 +11462,7 @@ html {
 body {
 	color: var(--textColor);
 	margin: 0 auto;
-	padding: 0 1rem;
+	padding: 0;
 	min-height: 100vh;
 	min-height: -webkit-fill-available;
 }
@@ -11708,7 +11715,7 @@ select {
 	height: 100% !important;
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
-	background-image: url('./V3Icon.png') !important;
+	background-image: url('./v3.svg') !important;
 }
 
 /* https://www.vecteezy.com/vector-art/1268644-set-of-fresh-bread */
@@ -11728,6 +11735,14 @@ select {
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
 	background-image: url(./coolpepe.webp) !important;
+}
+
+.skilltriangle-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./skilltriangle.svg');
 }
 
 .dropdown-menu {
@@ -11815,6 +11830,10 @@ body::-webkit-scrollbar-track {
 	background-image: url(./battleRoyale.png);
 }
 
+.selected-playlist-box {
+	background: rgb(36 74 74 / 81%) !important;
+}
+
 .grid-transition-helper {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -11889,6 +11908,10 @@ body::-webkit-scrollbar-track {
 	display: none;
 }
 
+input:focus {
+	outline: none;
+}
+
 @-webkit-keyframes rainbow {
 	from {
 		-webkit-filter: hue-rotate(0deg);
@@ -11911,7 +11934,8 @@ body::-webkit-scrollbar-track {
 
 @media screen and (max-width: 767px) {
 	.mobile-only {
-		display: block;
+		display: flex;
+		justify-content: end;
 	}
 
 	.tablet-and-up {

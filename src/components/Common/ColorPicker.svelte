@@ -380,7 +380,7 @@
 
 {#if !expanded}
 	<div
-		style={`background-color: ${startColor}; height: 2.5em; cursor: pointer`}
+		style={`background-color: ${startColor}; height: 2.5em; cursor: pointer; border-radius:0.4em`}
 		on:click={() => {
 			expanded = true;
 			setTimeout(() => {
@@ -444,7 +444,7 @@
 		width: 240px;
 		height: 265px;
 		background: #f2f2f2;
-		border-radius: 1px;
+		border-radius: 0.4em;
 		-webkit-box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.51);
 		-moz-box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.51);
 		box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.51);

@@ -41,7 +41,7 @@ export default () => {
 
 		switch (service) {
 			case 'user-friends':
-				return blScoresService.fetchFriendsScores(
+				return blScoresService.fetchFollowedScores(
 					processedServiceParams,
 					otherParams?.refreshInterval,
 					otherParams?.priority,

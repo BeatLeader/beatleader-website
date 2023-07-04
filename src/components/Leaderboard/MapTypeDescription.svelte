@@ -22,7 +22,7 @@
 
 <style>
 	.type {
-		display: inline-block;
+		display: flex;
 		font-weight: 600;
 		padding: 1px 2px;
 		min-width: 1.5em;
@@ -30,6 +30,7 @@
 		border-radius: 4px;
 		margin-right: 0.5em;
 		height: 2em;
+		align-items: center;
 	}
 
 	.cram {

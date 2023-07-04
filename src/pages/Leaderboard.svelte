@@ -16,17 +16,18 @@
 	import Avatar from '../components/Common/Avatar.svelte';
 	import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte';
 	import Pager from '../components/Common/Pager.svelte';
-	import Spinner from '../components/Common/Spinner.svelte';
-	import Pp from '../components/Score/Pp.svelte';
+
+	import Pp from '../components/Common/PerformanceBadge/Pp.svelte';
 	import Badge from '../components/Common/Badge.svelte';
-	import Accuracy from '../components/Common/Accuracy.svelte';
-	import Difficulty from '../components/Song/Difficulty.svelte';
+	import Accuracy from '../components/Common/PerformanceBadge/Accuracy.svelte';
+
+	import Spinner from '../components/Common/Spinner.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import Icons from '../components/Song/Icons.svelte';
-	import RankingVoting from '../components/Leaderboard/RankingVoting.svelte';
-	import RankUpdate from '../components/Leaderboard/RankUpdate.svelte';
+
 	import Commentary from '../components/Leaderboard/Commentary.svelte';
+	import CriteriaCommentary from '../components/Leaderboard/CriteriaCommentary.svelte';
 	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
@@ -53,7 +54,7 @@
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
-	import MapTypeDescription from '../components/Leaderboard/MapTypeDescription.svelte';
+
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 	import Preview from '../components/Common/Preview.svelte';
@@ -65,17 +66,17 @@
 	import TextFilter from '../components/Player/ScoreFilters/TextFilter.svelte';
 	import ModifiersFilter from '../components/Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import CriteriaCheck from '../components/Leaderboard/CriteriaCheck.svelte';
+	import LeaderboardActionButtons from '../components/Leaderboard/LeaderboardActionButtons.svelte';
+	import LeaderboardHeader from '../components/Leaderboard/LeaderboardHeader.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
 	export let page = 1;
 	export let location;
-	export let withHeader = true;
 	export let dontNavigate = false;
 	export let withoutDiffSwitcher = false;
 	export let withoutHeader = false;
 	export let dontChangeType = false;
-	export let scrollOffset = 45;
 	export let fixedBrowserTitle = null;
 	export let higlightedScore = null;
 	export let iconsInInfo = false;
@@ -85,8 +86,6 @@
 
 	export let autoScrollToTop = true;
 	export let showStats = true;
-
-	export let showApproveRequest = false;
 
 	if (!dontNavigate) document.body.classList.add('slim');
 
@@ -164,7 +163,9 @@
 	let currentFilters = buildFiltersFromLocation(location);
 	let leaderboard = null;
 
-	let modifiedStars = null;
+	let modifiedPass = null;
+	let modifiedAcc = null;
+	let modifiedTech = null;
 
 	let openedDetails = [];
 
@@ -234,13 +235,6 @@
 			label: 'Pauses',
 			title: 'Sort by pause count',
 			iconFa: 'fas fa-pause',
-		},
-		{
-			id: 'playCount',
-			replaceTimeset: true,
-			label: 'Play count',
-			title: 'Sort by play count',
-			iconFa: 'fas fa-calculator',
 		},
 	];
 
@@ -349,19 +343,19 @@ changeParams
 		}));
 	}
 
-	function updateTypeOptions(country, playerHasFriends) {
-		if (!country?.length && !playerHasFriends) return;
+	function updateTypeOptions(country, playerIsFollowingSomeone) {
+		if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
 			.map(to => to)
 			.concat(
-				playerHasFriends
+				playerIsFollowingSomeone
 					? [
 							{
-								type: 'friends',
-								label: 'Friends',
+								type: 'followed',
+								label: 'Followed',
 								iconFa: 'fas fa-user-friends',
-								url: `/leaderboard/friends/${currentLeaderboardId}/1`,
+								url: `/leaderboard/followed/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
 					  ]
@@ -475,8 +469,6 @@ changeParams
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
-	let ssCoverDoesNotExists = false;
-
 	let batleRoyaleDraft = false;
 	let draftList = [];
 
@@ -547,15 +539,8 @@ changeParams
 		});
 	}
 
-	let mapVoting = false;
-	let rtvoting = false;
-	let qualificationUpdate = false;
-	let rankUpdate = false;
 	let scoresWithUser;
 	let clanRankingList;
-
-	let verifiedMapperId;
-	let generalMapperId;
 
 	const lessFunction = (a, b) => a < b;
 	const greaterFunction = (a, b) => a > b;
@@ -580,32 +565,6 @@ changeParams
 		}
 	}
 
-	async function updateVerifiedMapperId(mapperId, hash) {
-		if (mapperId) {
-			let beatSaverService = createBeatSaverService();
-			const mapperInfoValue = await beatSaverService.getMapper(mapperId, true);
-
-			var timeToNomination;
-			if (mapperInfoValue.verifiedMapper) {
-				timeToNomination = 7;
-				verifiedMapperId = mapperId;
-			} else {
-				timeToNomination = 30;
-				verifiedMapperId = 0;
-			}
-			generalMapperId = mapperId;
-
-			account.refreshLastQualificationTime(hash, time => {
-				const currentSeconds = new Date().getTime() / 1000;
-				if (currentSeconds - time < 60 * 60 * 24 * timeToNomination) {
-					qualificationLimitError = 'You can nominate new map ' + formatDateRelative(dateFromUnix(time + 60 * 60 * 24 * timeToNomination));
-				} else {
-					qualificationLimitError = null;
-				}
-			});
-		}
-	}
-
 	let latestHash;
 
 	async function checkMapHash(hash) {
@@ -623,50 +582,49 @@ changeParams
 
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
-	$: enhanced = leaderboardStore.enhanced;
 
 	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
+
 	$: updateParams(leaderboardId, type, page);
 	$: updateFilters(buildFiltersFromLocation(location));
 	$: makeComplexFilters(buildFiltersFromLocation(location));
+
 	$: scores = opt($leaderboardStore, 'scores', null);
 	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
-	$: if ($leaderboardStore || $enhanced) leaderboard = opt($leaderboardStore, 'leaderboard', null);
+	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
-	$: leaderboardGroup = opt($leaderboardStore, 'leaderboard.leaderboardGroup', null);
+
 	$: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song);
 	$: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null;
 	$: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
 	$: hash = opt($leaderboardStore, 'leaderboard.song.hash');
 	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
-	$: beatSaverCoverUrl = opt($leaderboardStore, 'leaderboard.beatMaps.versions.0.coverURL');
+
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
 	$: isNominated = isQualified || leaderboard?.stats?.status === DifficultyStatus.nominated;
 	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
-	$: reweight = leaderboard?.reweight;
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
+
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
 	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
-	$: isjuniorRT = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('juniorrankedteam');
 
-	$: playerHasFriends = !!$account?.friends?.length;
-	$: updateTypeOptions(mainPlayerCountry, playerHasFriends);
+	$: playerIsFollowingSomeone = !!$account?.followed?.length;
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone);
 	$: refreshSortValues(allSortValues, currentFilters);
-	$: if (song?.mapperId == $account?.player?.playerInfo.mapperId) updateVerifiedMapperId($account?.player?.playerInfo.mapperId, hash);
+	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
 	$: fetchUserScore(higlightedPlayerId, song?.hash, leaderboard?.diffInfo?.diff, leaderboard?.diffInfo?.type, userScoreOnCurrentPage);
 	$: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore);
+
 	$: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
-	$: votingStatus = $votingStore[hash + diffInfo?.diff + diffInfo?.type];
 	$: if (separatePage && isRT) votingStore.fetchResults(leaderboardId);
 	$: votingStats = $votingStore[leaderboardId];
-	$: votingLoading = $votingStore.loading;
 
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
 	$: if (song) checkMapHash(song.hash);
@@ -694,247 +652,24 @@ changeParams
 			: `${opt(song, 'name', 'Leaderboard')} / ${currentDiff ? currentDiff.name + ' / ' : ''} ${page} - ${ssrConfig.name}`}</title>
 </svelte:head>
 
-{#if mapVoting}
-	<RankingVoting
-		{votingStore}
-		{leaderboard}
-		insideLeaderboard={!separatePage}
-		playerId={$account.id}
-		{rtvoting}
-		{isjuniorRT}
-		{qualificationUpdate}
-		hideStarSlider={rtvoting && (verifiedMapperId != generalMapperId || verifiedMapperId == 4284297)}
-		on:finished={() => {
-			mapVoting = false;
-			rtvoting = false;
-			qualificationUpdate = false;
-		}} />
-{/if}
-
-{#if rankUpdate}
-	<RankUpdate
-		{votingStore}
-		{leaderboard}
-		playerId={$account.id}
-		reweight={reweight && !reweight.finished ? reweight : null}
-		on:finished={() => {
-			rankUpdate = false;
-		}} />
-{/if}
-
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<div
-			class="leaderboard content-box {type === 'accsaber' ? 'no-cover-image' : ''}"
-			style={opt($leaderboardStore, 'leaderboard.song.imageUrl')
-				? `background: linear-gradient(#303030e2, #101010e5, #101010e5, #101010e5, #303030e2), url(${
-						ssCoverDoesNotExists && beatSaverCoverUrl ? beatSaverCoverUrl : $leaderboardStore.leaderboard.song.imageUrl
-				  }); background-repeat: no-repeat; background-size: cover; background-position: center;`
-				: ''}>
+		{#if leaderboard && song && !withoutHeader}
+			<ContentBox cls="leaderboard-header-box">
+				<LeaderboardHeader bind:currentLeaderboardId bind:batleRoyaleDraft {leaderboard} on:group-changed={onSelectedGroupEntryChanged} />
+			</ContentBox>
+		{/if}
+		<div class="leaderboard content-box">
 			{#if !$leaderboardStore && $isLoading}
 				<div class="align-spinner">
 					<Spinner />
 				</div>
 			{/if}
 			{#if $leaderboardStore}
-				{#if leaderboard && song && withHeader}
-					{#if !withoutHeader}
-						<header class="header" transition:fade>
-							<div class="header-container">
-								<h1 class="title is-4">
-									<span class="name" title="Song name">{song.name} {song.subName ? song.subName : ''}</span>
-									<span class="author" title="Song author name">{song.authorName}</span>
-									<small class="level-author" title="Mapper">{song.levelAuthorName}</small>
-								</h1>
-							</div>
-
-							<div>
-								{#if leaderboardGroup && leaderboardGroup.length > 1}
-									<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
-										{#each leaderboardGroup as option (option.id)}
-											<option class="group-option" value={option.id}>
-												{#if option.timestamp}
-													{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
-												{:else}
-													{formatDiffStatus(option.status)}
-												{/if}
-											</option>
-										{/each}
-									</select>
-								{/if}
-
-								{#if !votingLoading}
-									{#if votingStatus == 2}
-										<Button
-											cls="voteButton"
-											iconFa={'fas fa-comment-dots'}
-											title={'Vote this map for ranking!'}
-											noMargin={true}
-											on:click={() => (mapVoting = !mapVoting)} />
-									{:else if votingStatus == 1}
-										<Button
-											cls="voteButton"
-											disabled={true}
-											iconFa="fas fa-lock"
-											title="Pass this diff to vote on the map"
-											noMargin={true} />
-									{:else if votingStatus == 3}
-										<Button
-											cls="voteButton"
-											type="green"
-											iconFa="fas fa-clipboard-check"
-											title="Thank your for the vote!"
-											noMargin={true} />
-									{/if}
-									{#if separatePage && generalMapperId != 101330 && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
-										<!-- {#if !isRT && qualificationLimitError}
-											<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title={qualificationLimitError} noMargin={true} />
-										{:else}
-											<Button
-												cls="voteButton"
-												iconFa={isRanked ? 'fas fa-star' : 'fas fa-rocket'}
-												title={isRanked ? 'Update map stars' : 'Nominate this map!'}
-												noMargin={true}
-												on:click={() => {
-													mapVoting = !mapVoting;
-													rtvoting = true;
-												}} />
-										{/if} -->
-
-										<Button
-											cls="voteButton"
-											disabled={true}
-											iconFa="fas fa-lock"
-											title="New map nominations were temporarely disabled"
-											noMargin={true} />
-									{/if}
-									{#if separatePage && isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
-										<Button
-											cls="voteButton"
-											iconFa="fa fa-scale-balanced"
-											title={reweight && !reweight.finished
-												? reweight.rtMember == $account?.id
-													? 'Update'
-													: 'Approve reweight'
-												: 'Start map reweight!'}
-											noMargin={true}
-											on:click={() => {
-												rankUpdate = !rankUpdate;
-											}} />
-									{/if}
-									{#if separatePage && isRT && (leaderboard?.stats?.status === DifficultyStatus.nominated || (!isjuniorRT && isQualified))}
-										<Button
-											cls="voteButton"
-											iconFa="fas fa-list-check"
-											title="Update qualification details"
-											noMargin={true}
-											on:click={() => {
-												mapVoting = !mapVoting;
-												rtvoting = true;
-												qualificationUpdate = true;
-											}} />
-									{/if}
-								{:else}
-									<Spinner />
-								{/if}
-							</div>
-
-							{#if isRanked && currentType == 'clanranking'}
-								{#if leaderboard?.clanRankingContested}
-									<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
-										<p>
-											Captured by:
-										</p>
-										<ClanBadges clanInput={'CONTESTED'}/>
-									</div>
-								{:else if (clanRankingList?.[0]?.clan ?? null) === null}
-									<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
-										<p>
-											Captured by:
-										</p>
-										<ClanBadges clanInput={'UNCAPTURED'}/>
-									</div>
-								{:else}
-									<div style=" --clan-color: {clanRankingList?.[0].clan?.color ?? '#000000'}" class="captor-clan captor-clan-outline">
-										<p>
-											Captured by:
-										</p>
-										<ClanBadges clanInput={clanRankingList[0].clan}/>
-									</div>
-								{/if}
-							{/if}
-
-							<div class="title-and-buttons">
-								<h2 class="title is-6" class:unranked={!isRanked}>
-									{#if leaderboard.categoryDisplayName}
-										<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
-											<span slot="label">
-												{leaderboard.categoryDisplayName}
-												{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
-											</span>
-										</Badge>
-									{/if}
-
-									{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-									{#if leaderboard.stats && leaderboard.stats.stars}
-										<Value value={leaderboard.stats.stars} digits={2} zero="" suffix="★" />
-									{/if}
-									{#if diffs?.length == 1 && leaderboard.diffInfo}<span class="diff"
-											><Difficulty diff={leaderboard.diffInfo} reverseColors={true} /></span
-										>{/if}
-									{#if leaderboard?.stats?.type}
-										<MapTypeDescription type={leaderboard?.stats.type} />
-									{/if}
-								</h2>
-								<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
-							</div>
-							{#if batleRoyaleDraft}
-								<div class="royale-title-container">
-									<span class="royale-title">Select players from the leaderboard to join</span>
-									<Button
-										type="purple"
-										label="Let the battle begin!"
-										title="Use the button to the right of timeset for every score to toggle player"
-										disabled={!draftList || draftList.length == 0}
-										on:click={() => startBattleRoyale()} />
-								</div>
-							{/if}
-						</header>
-					{/if}
-				{/if}
-
 				{#if type !== 'accsaber'}
 					<nav class="diff-switch">
-						{#if !separatePage}
-							{#if !votingLoading}
-								<div class="embeded-voting">
-									{#if votingStatus == 2}
-										<Button
-											cls="voteButton"
-											iconFa={'fas fa-comment-dots'}
-											title={'Vote this map for ranking!'}
-											noMargin={true}
-											on:click={() => (mapVoting = !mapVoting)} />
-									{:else if votingStatus == 1}
-										<Button
-											cls="voteButton"
-											disabled={true}
-											iconFa="fas fa-lock"
-											title="Pass this diff to vote on the map"
-											noMargin={true} />
-									{:else if votingStatus == 3}
-										<Button
-											cls="voteButton"
-											type="green"
-											iconFa="fas fa-clipboard-check"
-											title="Thank your for the vote!"
-											noMargin={true} />
-									{/if}
-								</div>
-							{:else}
-								<Spinner />
-							{/if}
-						{/if}
+						<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
+
 						{#if !withoutDiffSwitcher && diffs && diffs.length}
 							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
 						{/if}
@@ -970,7 +705,19 @@ changeParams
 					</nav>
 				{/if}
 
-				{#if scoresWithUser?.length && currentType !== 'clanranking'}
+				{#if batleRoyaleDraft}
+					<div class="royale-title-container">
+						<span class="royale-title">Select players from the leaderboard to join</span>
+						<Button
+							type="purple"
+							label="Let the battle begin!"
+							title="Use the button to the right of timeset for every score to toggle player"
+							disabled={!draftList || draftList.length == 0}
+							on:click={() => startBattleRoyale()} />
+					</div>
+				{/if}
+
+				{#if scoresWithUser?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
 							<div
@@ -1014,8 +761,6 @@ changeParams
 												{score.score.pauses}
 											{:else if currentFilters.sortBy == 'maxStreak'}
 												{score.score.maxStreak}
-											{:else if currentFilters.sortBy == 'playCount'}
-												{score.score.playCount}
 											{:else}
 												<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
 													{opt(score, 'score.timeSetString', '-')}
@@ -1027,8 +772,6 @@ changeParams
 												{score.score.pauses}
 											{:else if currentFilters.sortBy == 'maxStreak'}
 												{score.score.maxStreak}
-											{:else if currentFilters.sortBy == 'playCount'}
-												{score.score.playCount}
 											{:else}
 												<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
 													{score?.score?.timeSetStringShort ?? ''}
@@ -1509,19 +1252,15 @@ changeParams
 				<p>Leaderboard not found.</p>
 			{/if}
 		</div>
-
-		{#if opt($leaderboardStore, 'leaderboard.song.imageUrl')}
-			<img class="dummy" src={$leaderboardStore.leaderboard.song.imageUrl} alt="dummy" on:error={() => (ssCoverDoesNotExists = true)} />
-		{/if}
 	</article>
 	{#if separatePage}
 		<aside transition:fade>
-			{#if showStats}
+			{#if qualification && !isRanked}
 				<ContentBox>
-					{#if !leaderboardStatsShown}
+					{#if !commentaryShown}
 						<div class="score-options-section">
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
-								<i class="fas fa-magnifying-glass" />
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
+								<i class="fas fa-comments" />
 
 								<i class="fas fa-chevron-right" />
 							</span>
@@ -1529,34 +1268,21 @@ changeParams
 					{:else}
 						<div class="box-with-left-arrow">
 							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
 									<i class="fas fa-chevron-left" />
 								</span>
 							</div>
-							{#if leaderboard?.stats}
-								<div class="stats-with-icons">
-									<LeaderboardStats {leaderboard} curve={true} />
-									<div>
-										<small class="level-author">{song.hash}</small>
-										{#if latestHash}
-											<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-										{:else if latestHash == undefined}
-											<Spinner />
-										{:else}
-											<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-										{/if}
-									</div>
-
-									{#if iconsInInfo}
-										<Icons {hash} {diffInfo} mapCheck={true} />
-									{/if}
-								</div>
-							{/if}
+							<div>
+								<h1 class="status-header">Quality</h1>
+								<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
+								{#if isRT || isNQT || generalMapperId}
+									<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
+								{/if}
+							</div>
 						</div>
 					{/if}
 				</ContentBox>
 			{/if}
-
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
 				<ContentBox
 					>{#if !qualificationInfoShown}
@@ -1582,7 +1308,9 @@ changeParams
 							</div>
 							<div>
 								{#if isNominated && qualification}
+									<h1 class="status-header">Criteria</h1>
 									<QualificationStatus {qualification} {isRanked} />
+									<CriteriaCommentary {isRT} {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
 								{/if}
 
 								{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
@@ -1593,12 +1321,12 @@ changeParams
 					{/if}
 				</ContentBox>
 			{/if}
-			{#if qualification && !isRanked}
+			{#if showStats}
 				<ContentBox>
-					{#if !commentaryShown}
+					{#if !leaderboardStatsShown}
 						<div class="score-options-section">
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
-								<i class="fas fa-comments" />
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
+								<i class="fas fa-magnifying-glass" />
 
 								<i class="fas fa-chevron-right" />
 							</span>
@@ -1606,16 +1334,29 @@ changeParams
 					{:else}
 						<div class="box-with-left-arrow">
 							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
 									<i class="fas fa-chevron-left" />
 								</span>
 							</div>
-							<div>
-								<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
-								{#if isRT || isNQT || generalMapperId}
-									<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
-								{/if}
-							</div>
+							{#if leaderboard?.stats}
+								<div class="stats-with-icons">
+									<LeaderboardStats {leaderboard} curve={true} />
+									<div>
+										<small class="level-author">{song.hash.toUpperCase()}</small>
+										{#if latestHash}
+											<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+										{:else if latestHash == undefined}
+											<Spinner />
+										{:else}
+											<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+										{/if}
+									</div>
+
+									{#if iconsInInfo}
+										<Icons {hash} {diffInfo} mapCheck={true} />
+									{/if}
+								</div>
+							{/if}
 						</div>
 					{/if}
 				</ContentBox>
@@ -1664,13 +1405,27 @@ changeParams
 							</div>
 							<div>
 								<h2 class="title is-5">
-									PP curve (<Value value={modifiedStars} prevValue={leaderboard?.stats?.stars ?? 0} inline="true" suffix="*" />)
+									PP curve (<Value
+										value={modifiedPass}
+										prevValue={leaderboard?.stats?.passRating ?? 0}
+										inline="true"
+										prefix="Pass "
+										suffix="*" />,
+									<Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="*" />,
+									<Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="*" />)
 								</h2>
 								<PpCurve
-									stars={leaderboard?.stats?.stars}
+									passRating={leaderboard?.stats?.passRating}
+									accRating={leaderboard?.stats?.accRating}
+									techRating={leaderboard?.stats?.techRating}
 									{modifiers}
+									modifiersRating={leaderboard?.difficultyBl?.modifiersRating}
 									mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
-									on:modified-stars={e => (modifiedStars = e?.detail ?? 0)} />
+									on:modified-stars={e => {
+										modifiedPass = e?.detail[0] ?? 0;
+										modifiedAcc = e?.detail[1] ?? 0;
+										modifiedTech = e?.detail[2] ?? 0;
+									}} />
 							</div>
 						</div>
 					{/if}
@@ -1729,10 +1484,6 @@ changeParams
 		margin: 6px 10px 16px;
 		border-radius: 0.4em;
 		box-shadow: 0 2px 10px rgb(0 0 0 / 33%);
-	}
-
-	.leaderboard.no-cover-image {
-		background: var(--graph-gradient);
 	}
 
 	.leaderboard:before {
@@ -1841,6 +1592,10 @@ changeParams
 		position: relative;
 	}
 
+	.scores-grid > * {
+		min-width: 0;
+	}
+
 	.scores-grid > *:not(:last-child) {
 		border-bottom: 1px solid var(--row-separator);
 	}
@@ -1861,10 +1616,8 @@ changeParams
 		display: flex;
 		flex-direction: row;
 		grid-gap: 0.4em;
-		overflow: hidden;
 		padding: 0.2em 0;
 		min-width: 19em;
-		justify-content: center;
 	}
 
 	.mobile-first-line {
@@ -1872,12 +1625,14 @@ changeParams
 		grid-gap: 0.4em;
 		align-items: center;
 		flex-grow: 1;
+		min-width: 0;
 	}
 
 	.mobile-second-line {
 		display: flex;
 		grid-gap: 0.4em;
 		align-items: center;
+		min-width: max-content;
 	}
 
 	.player-score.highlight {
@@ -1897,13 +1652,13 @@ changeParams
 	.player-score .player .clan {
 		display: flex;
 		grid-gap: 0.4em;
-		flex-grow: 1;
+		flex: 1;
 	}
 
 	.player-score .timeset {
 		text-align: center;
 		min-width: 6.9em;
-		flex: none;
+		flex-basis: fit-content;
 	}
 
 	.player-score .replay {
@@ -1923,7 +1678,7 @@ changeParams
 	}
 
 	.player-score .score {
-		min-width: 6em;
+		min-width: 5em;
 		flex: none;
 	}
 
@@ -2030,7 +1785,8 @@ changeParams
 	.title-and-buttons {
 		display: flex;
 		align-items: center;
-		margin-top: 0.5em;
+		margin: 1.4em;
+		margin-right: 5.3em;
 		justify-content: center;
 		flex-wrap: wrap;
 		gap: 0.6em;
@@ -2098,7 +1854,7 @@ changeParams
 	.box-with-left-arrow {
 		display: grid;
 		align-items: center;
-		grid-template-columns: 1em auto;
+		grid-template-columns: 1em auto !important;
 	}
 
 	.switcher-nav {
@@ -2118,6 +1874,18 @@ changeParams
 		color: purple;
 	}
 
+	.status-header {
+		text-align: center;
+		font-size: 120%;
+		font-weight: bolder;
+		padding-bottom: 0.4em;
+	}
+
+	.map-rating {
+		padding: 0.5em;
+		color: white;
+	}
+
 	@media screen and (max-width: 1275px) {
 		.align-content {
 			flex-direction: column;
@@ -2130,7 +1898,18 @@ changeParams
 		}
 	}
 
+	@media screen and (max-width: 1024px) {
+		.leaderboard {
+			margin-inline: 0;
+		}
+	}
+
 	@media screen and (max-width: 767px) {
+		.leaderboard {
+			margin-inline: 0;
+			max-width: 100vw;
+		}
+
 		.diff-switch :global(> *:not(:last-child)) {
 			margin-right: 0;
 			margin-bottom: 0.5em;
@@ -2170,8 +1949,8 @@ changeParams
 		}
 	}
 
-	img.dummy {
-		display: none;
+	:global(.leaderboard-header-box) {
+		padding: 0 !important;
 	}
 
 	.beat-savior-reveal {
@@ -2196,6 +1975,15 @@ changeParams
 
 	.player-score .timeset {
 		text-align: right;
-		min-width: auto;
+		min-width: fit-content;
+	}
+
+	.box-with-left-arrow {
+		grid-template-columns: 1fr;
+	}
+
+	aside :global(.content-box) {
+		margin-inline: 0;
+		padding: 0.5rem;
 	}
 </style>

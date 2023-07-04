@@ -38,7 +38,7 @@
 
 		const params = [
 			{key: 'search', default: '', process: processString},
-			{key: 'sort', default: 'pp', process: processString},
+			{key: 'sortBy', default: 'pp', process: processString},
 			{key: 'order', default: 'desc', process: processString},
 		];
 
@@ -74,7 +74,7 @@
 
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
-			if (result.id == currentFilters.sort) {
+			if (result.id == currentFilters.sortBy) {
 				result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
 				sortValue = result;
 			}
@@ -132,10 +132,10 @@
 	function onSortChange(event) {
 		if (!event?.detail?.id) return null;
 
-		if (currentFilters.sort == event.detail.id) {
+		if (currentFilters.sortBy == event.detail.id) {
 			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
 		} else {
-			currentFilters.sort = event.detail.id;
+			currentFilters.sortBy = event.detail.id;
 		}
 
 		navigateToCurrentPageAndFilters();

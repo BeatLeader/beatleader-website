@@ -84,7 +84,7 @@
 	var countryRank = player?.playerInfo?.countries[0].rank;
 
 	function hoverStats() {
-		if (player && player.playerInfo) {
+		if (player && player.playerInfo && (selectedClanTag || player.clans)) {
 			const firstSpecialClanTag = selectedClanTag ?? changingValuesClan(player.clans);
 			pp = ppValue(firstSpecialClanTag, player.playerInfo.pp);
 			rank = rankValue(firstSpecialClanTag, rank);

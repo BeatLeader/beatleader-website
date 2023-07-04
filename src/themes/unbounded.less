@@ -8,15 +8,30 @@ body {
     padding: 0;
 }
 
-body{
-    background: transparent !important;
-    backdrop-filter: blur(10px);
-}
-
 
 :root {
     --ppColour: rgb(226, 183, 255) !important;
+    --foreground: var(--customizable-color-2);
+    --faded: var(--customizable-color-2) !important;
+    --dimmed: var(--customizable-color-2) !important;
 }
+
+.main-background {
+    position: fixed;
+    display: block;
+	background: var(--background-image)  !important;
+    backdrop-filter: blur(10px);
+	background-size: cover !important;
+}
+
+.main-background::before{
+    background-color: var(--customizable-color-1);
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    width: 100%;
+  }
 
 // Navigator
 .ssr-page-container.svelte-y3wm0x {
@@ -38,7 +53,6 @@ body{
 
 // Main page
 .sspl-page-container {
-    display: flex;
     display: flex;
     flex-direction: row;
     justify-content: center;

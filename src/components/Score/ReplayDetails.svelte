@@ -1,21 +1,36 @@
 <script>
 	import {downloadReplay} from '../../utils/beatleader/open-replay-decoder';
-	import {processAccuracySpread, processSliceDetails, processSliceSummary} from '../../utils/beatleader/process-replay-data';
+	import {
+		processAccGraphs,
+		processAccuracySpread,
+		processSliceDetails,
+		processSliceSummary,
+	} from '../../utils/beatleader/process-replay-data';
+	import {configStore} from '../../stores/config';
 	import SliceDetails from './SliceDetails.svelte';
 	import AccuracySpreadChart from './AccuracySpreadChart.svelte';
 	import DetailsBox from '../Common/DetailsBox.svelte';
+	import {createEventDispatcher} from 'svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let score;
 
 	let accSpreadData;
 	let sliceDetailsData;
 	let sliceSummaryData;
+	let accGraphsData;
 
 	function processReplay(score) {
 		downloadReplay(score, replay => {
 			accSpreadData = processAccuracySpread(replay);
 			sliceDetailsData = processSliceDetails(replay);
 			sliceSummaryData = processSliceSummary(replay);
+			accGraphsData = processAccGraphs(replay);
+
+			dispatch('replay-was-processed', {
+				accGraphsData: accGraphsData,
+			});
 		});
 	}
 
@@ -23,12 +38,17 @@
 </script>
 
 <div class="replay-details">
-	<DetailsBox cls="slice-details-container">
-		<SliceDetails {sliceDetailsData} {sliceSummaryData} />
-	</DetailsBox>
-	<DetailsBox cls="accuracy-spread-container">
-		<AccuracySpreadChart {accSpreadData} />
-	</DetailsBox>
+	{#if $configStore?.scoreDetailsPreferences?.showSliceDetails}
+		<DetailsBox cls="slice-details-container">
+			<SliceDetails {sliceDetailsData} {sliceSummaryData} />
+		</DetailsBox>
+	{/if}
+
+	{#if $configStore?.scoreDetailsPreferences?.showAccSpreadChart}
+		<DetailsBox cls="accuracy-spread-container">
+			<AccuracySpreadChart {accSpreadData} />
+		</DetailsBox>
+	{/if}
 </div>
 
 <style>

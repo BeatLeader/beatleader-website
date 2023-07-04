@@ -1,7 +1,9 @@
 <script>
 	import {fade, fly, slide} from 'svelte/transition';
+	import {navigate} from 'svelte-routing';
 	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
+	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
 	import SongInfo from './SongInfo.svelte';
 	import ScoreRank from './ScoreRank.svelte';
@@ -10,8 +12,6 @@
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
-	import {navigate} from 'svelte-routing';
-	import {configStore} from '../../stores/config';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -26,6 +26,7 @@
 	export let additionalStat = null;
 	export let replayCounter = true;
 	export let animationSign = 1;
+	export let selectedMetric = null;
 
 	let showDetails = false;
 
@@ -76,6 +77,20 @@
 		}
 	}
 
+	let showAnyDetails = true;
+
+	function checkShowAnyDetails(detailsPreferences) {
+		if (!detailsPreferences) return;
+
+		showAnyDetails = false;
+		Object.keys(detailsPreferences).forEach(key => {
+			if (detailsPreferences[key] === true) {
+				showAnyDetails = true;
+				return;
+			}
+		});
+	}
+
 	$: leaderboard = opt(songScore, 'leaderboard', null);
 	$: score = opt(songScore, 'score', null);
 	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
@@ -88,7 +103,11 @@
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
 	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
-	$: showReplayCounter = replayCounter && $configStore?.scorePreferences.showReplayCounter;
+
+	$: scoreBadgesHaveImprovements = [...(Object.values($configStore?.scoreBadges) ?? [])].some(row =>
+		row.some(col => !!col?.withImprovements || col?.secondary === 'improvement')
+	);
+	$: checkShowAnyDetails($configStore?.scoreDetailsPreferences);
 </script>
 
 {#if songScore}
@@ -97,20 +116,8 @@
 		in:maybe={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
 		out:maybe={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
-		{#if showReplayCounter}
-			<h3 class="pin-description descktop" title="Replay watch count">
-				<i class="fas fa-eye" />
-				{score.replaysWatched}
-			</h3>
-		{/if}
 		{#if !noIcons}
-			<div class="up-to-tablet">
-				{#if showReplayCounter}
-					<h3 class="pin-description" title="Replay watch count">
-						<i class="fas fa-eye" />
-						{score.replaysWatched}
-					</h3>
-				{/if}
+			<div class="up-to-tablet icons">
 				<Icons
 					layoutType="flat"
 					{hash}
@@ -137,12 +144,20 @@
 				{/if}
 
 				<div class="timeset tablet-and-up">
-					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore?.timeSet ?? null} absolute={service === 'beatsavior'} />
+					<FormattedDate
+						date={score.timeSet}
+						prevPrefix="vs "
+						prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null}
+						absolute={service === 'beatsavior'} />
 				</div>
 			</span>
 
 			<span class="timeset mobile-only">
-				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore?.timeSet ?? null} absolute={service === 'beatsavior'} />
+				<FormattedDate
+					date={score.timeSet}
+					prevPrefix="vs "
+					prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null}
+					absolute={service === 'beatsavior'} />
 			</span>
 
 			<span class="song">
@@ -174,17 +189,19 @@
 				</div>
 			</span>
 
-			<div class="score-options-section">
-				<span
-					class="beat-savior-reveal clickable"
-					class:opened={showDetails}
-					on:click={() => (showDetails = !showDetails)}
-					title="Show details">
-					<i class="fas fa-chevron-down" />
-				</span>
-			</div>
+			{#if showAnyDetails}
+				<div class="score-options-section">
+					<span
+						class="beat-savior-reveal clickable"
+						class:opened={showDetails}
+						on:click={() => (showDetails = !showDetails)}
+						title="Show details">
+						<i class="fas fa-chevron-down" />
+					</span>
+				</div>
+			{/if}
 
-			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} />
+			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} {selectedMetric} on:badge-click />
 		</div>
 
 		{#if showDetails}
@@ -263,6 +280,12 @@
 		text-align: center;
 	}
 
+	.timeset.mobile-only {
+		align-items: baseline;
+		gap: 0.5em;
+		min-width: fit-content;
+	}
+
 	.player {
 		text-align: left;
 		padding-bottom: 0.5rem;
@@ -316,7 +339,6 @@
 		border-bottom-right-radius: 0.5em;
 		background: var(--row-separator);
 		padding: 0 1em 0;
-		margin-top: -0.5em;
 		margin-right: 0.5em;
 	}
 
@@ -335,12 +357,18 @@
 		cursor: pointer !important;
 	}
 
+	.icons h3 {
+		border-radius: 5px;
+	}
+
 	@media screen and (max-width: 1023px) {
+		.icons {
+			display: flex;
+			align-items: center;
+			margin-bottom: 0.5em;
+		}
 		.up-to-tablet {
 			display: flex;
-		}
-		.descktop {
-			display: none;
 		}
 	}
 
@@ -355,7 +383,7 @@
 
 		.rank,
 		.timeset {
-			padding-bottom: 0.5em !important;
+			padding-bottom: 0 !important;
 		}
 
 		.song {
@@ -364,6 +392,7 @@
 			align-items: center;
 			width: 100%;
 			margin-right: 0;
+			padding-top: 1em;
 			padding-bottom: 0.75em;
 		}
 

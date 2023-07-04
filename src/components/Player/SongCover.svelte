@@ -2,12 +2,13 @@
 	import {BS_CDN} from '../../network/queues/beatleader/page-queue';
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
-	import MapTypeDescription from '../Leaderboard/MapTypeDescription.svelte';
+	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
 
 	export let leaderboard = null;
 	export let capturedLeaderboard = null;
 	export let url = null;
 	export let notClickable = false;
+	export let starsKey = 'stars';
 
 	const DEFAULT_IMG = '/assets/song-default.png';
 
@@ -57,31 +58,29 @@
 					<img src={coverUrl} alt="" />
 				</a>
 			{/if}
-
-			{#if leaderboard.diffInfo.type != 'Standard'}
+			{#if leaderboard?.diffInfo?.type != 'Standard'}
 				<div class="mode">
 					<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
 				</div>
 			{/if}
-
-			{#if leaderboard?.difficulty?.type}
+			{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
 				<div class="type">
-					<MapTypeDescription cram={true} type={leaderboard.difficulty.type} />
+					<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} />
 				</div>
 			{/if}
-
 			<div class="difficulty">
 				<Difficulty
 					diff={leaderboard.diffInfo}
 					useShortName={true}
 					reverseColors={true}
-					stars={leaderboard.complexity ?? leaderboard.stars}
+					stars={(leaderboard?.difficulty && leaderboard?.difficulty[starsKey]) ??
+						(leaderboard?.difficultyBl && leaderboard?.difficultyBl[starsKey])}
 					starsSuffix={leaderboard.complexity ? '' : '★'} />
 			</div>
 		{:else}
 			<img src={DEFAULT_IMG} alt="" />
 		{/if}
-		</div>
+	</div>
 {:else if !leaderboard}
 	<div class="cover-difficulty">
 		{#if notClickable}
@@ -98,9 +97,9 @@
 			</div>
 		{/if}
 
-		{#if capturedLeaderboard?.difficultyBl?.type}
+		{#if capturedLeaderboard?.difficulty?.accRating || capturedLeaderboard?.difficultyBl?.accRating}
 			<div class="type">
-				<MapTypeDescription cram={true} type={capturedLeaderboard.difficultyBl.type} />
+				<MapTriangleSmall leaderboard={capturedLeaderboard?.difficulty?.accRating ? capturedLeaderboard?.difficulty : capturedLeaderboard?.difficultyBl} />
 			</div>
 		{/if}
 
@@ -109,7 +108,8 @@
 				diff={capturedLeaderboard.diffInfo}
 				useShortName={true}
 				reverseColors={true}
-				stars={capturedLeaderboard.complexity ?? capturedLeaderboard.difficultyBl.stars}
+				stars={(capturedLeaderboard?.difficulty && capturedLeaderboard?.difficulty[starsKey]) ??
+					(capturedLeaderboard?.difficultyBl && capturedLeaderboard?.difficultyBl[starsKey])}
 				starsSuffix={capturedLeaderboard.complexity ? '' : '★'} />
 		</div>
 	</div>
@@ -127,7 +127,7 @@
 		align-items: center;
 		position: absolute;
 		bottom: 0.8em;
-		right: 0;
+		right: -0.5em;
 		font-size: 0.75em;
 	}
 
@@ -144,8 +144,8 @@
 		display: flex;
 		align-items: center;
 		position: absolute;
-		top: 0.8em;
-		right: 0;
+		top: -0.5em;
+		right: -0.5em;
 		font-size: 0.75em;
 	}
 
