@@ -1,11 +1,23 @@
 import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 
+const BOOSTER = ['booster'];
 const CREATOR = ['rankedteam', 'qualityteam', 'juniorrankedteam', 'creator', 'admin'];
 const SPONSOR = ['sponsor', ...CREATOR];
 const SUPPORTER = ['supporter', ...SPONSOR];
 const TIPPER = ['tipper', ...SUPPORTER];
 
 const allOverlays = [
+	{
+		title: 'Booster',
+		items: [
+			{
+				title: 'Discord Booster',
+				name: 'Booster_Tier1',
+				neededRoles: BOOSTER,
+				tooltip: 'You must boost our Discord server to use this overlay',
+			},
+		],
+	},
 	{
 		title: 'The Sun',
 		items: [
@@ -156,3 +168,27 @@ export const getAllOverlays = roles => {
 		}),
 	}));
 };
+
+export function isPatron(roles) {
+	var result = false;
+	if (roles) {
+		TIPPER.forEach(role => {
+			if (roles.includes(role)) {
+				result = true;
+			}
+		});
+	}
+	return result;
+}
+
+export function isAnySupporter(roles) {
+	var result = isPatron(roles);
+	if (!result && roles) {
+		BOOSTER.forEach(role => {
+			if (roles.includes(role)) {
+				result = true;
+			}
+		});
+	}
+	return result;
+}

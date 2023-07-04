@@ -28,7 +28,7 @@
 
 		<a href="https://discord.gg/2RG5YVqtG6">Join our Discord server</a> and ask in
 		<a href="https://discord.com/channels/921820046345523311/951919251227295844">#help</a>, write a report in
-		<a href="https://discord.com/channels/921820046345523311/921826851528245318">#bugreports</a>
+		<a href="https://discord.com/channels/921820046345523311/1019636282856575137">#bugreports</a>
 		or ping <a href="https://discord.com/users/698212038106677259">NSGolova#3325.</a><br /><br />
 
 		or<br /><br />

@@ -164,9 +164,14 @@ export default (refreshOnCreate = true) => {
 			url.searchParams.append(key, value);
 		});
 
+		var coverUrl = new URL(BL_API_URL + 'user/cover');
+		if (data.id) {
+			coverUrl.searchParams.append('id', data.id);
+		}
+
 		return (
 			data.profileCover != data.profileCoverData
-				? fetch(BL_API_URL + 'user/cover', {
+				? fetch(coverUrl.toString(), {
 						credentials: 'include',
 						method: data.profileCoverData ? 'PATCH' : 'DELETE',
 						body: data.profileCoverData,
@@ -228,6 +233,22 @@ export default (refreshOnCreate = true) => {
 		}).then(_ => {
 			refresh(true);
 		});
+	};
+
+	const refreshPatreon = () => {
+		fetch(BL_API_URL + 'refreshmypatreon', {
+			credentials: 'include',
+		})
+			.then(checkResponse)
+			.then(data => {
+				if (data.length > 0) {
+					account.error = data;
+				} else {
+					account.error = null;
+					refresh(true);
+				}
+				set(account);
+			});
 	};
 
 	const banPlayer = (playerId, reason, duration) => {
@@ -390,6 +411,7 @@ export default (refreshOnCreate = true) => {
 		addFollowed,
 		removeFollowed,
 		refreshLastQualificationTime,
+		refreshPatreon,
 	};
 
 	return store;

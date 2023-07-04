@@ -81,5 +81,6 @@
 		noMargin={true}
 		loading={isLoading}
 		disabled={isLoading}
+		animated={true}
 		on:click={onClick} />
 {/if}

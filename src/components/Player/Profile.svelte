@@ -2,76 +2,40 @@
 	import {createEventDispatcher, getContext} from 'svelte';
 	import {globalHistory} from 'svelte-routing/src/history';
 	import processPlayerData from './utils/profile';
-	import createBeatSaviorService from '../../services/beatsavior';
-	import createAccSaberService from '../../services/accsaber';
+
 	import createAccountStore from '../../stores/beatleader/account';
-	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
-	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
+	import editModel from '../../stores/beatleader/profile-edit-model';
+
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
-	import BeatLeaderSwipeCard from './ProfileCards/BeatLeaderSwipeCard.svelte';
-	import MiniRankingSwipeCard from './ProfileCards/MiniRankingSwipeCard.svelte';
-	import TwitchVideosSwipeCard from './ProfileCards/TwitchVideosSwipeCard.svelte';
-	import AccSaberSwipeCard from './ProfileCards/AccSaberSwipeCard.svelte';
-	import BeatSaviorSwipeCard from './ProfileCards/BeatSaviorSwipeCard.svelte';
-	import Carousel from '../Common/Carousel.svelte';
+
 	import BeatLeaderSummary from './BeatLeaderSummary.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
 	import Rain from '../Common/Rain.svelte';
-	import PinnedScores from './PinnedScores.svelte';
+
 	import AvatarOverlayEditor from './Overlay/AvatarOverlayEditor.svelte';
 	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Button from '../Common/Button.svelte';
-	import {configStore} from '../../stores/config';
+
 	import Spinner from '../Common/Spinner.svelte';
+
 	export let playerData;
 	export let isLoading = false;
 	export let error = null;
 	export let skeleton = false;
-	export let twitchVideos = null;
 	export let avatarHash = null;
-	export let fixedBrowserTitle = null;
-	export let pinnedScores = true;
 	export let clanEffects = true;
-
-	let editModel = null;
+	export let startEditing = false;
 
 	const {addNotification} = getNotificationsContext();
 
-	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
 
-	const beatSaviorService = createBeatSaviorService();
-	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
-	const pinnedScoresStore = createPinnedScoresStore();
-	const statsHistoryStore = createStatsHistoryStore();
-
-	let accSaberPlayerInfo = null;
-	let accSaberCategories = null;
-
-	let isBeatSaviorAvailable = false;
-
-	async function refreshBeatSaviorState(playerId) {
-		if (!playerId) return;
-
-		isBeatSaviorAvailable = await beatSaviorService.isDataForPlayerAvailable(playerId);
-	}
-
-	function generateScoresStats(stats) {
-		return stats && stats.length ? stats : [];
-	}
-
-	async function updateAccSaberPlayerInfo(playerId) {
-		if (!playerId) return;
-
-		accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
-		accSaberCategories = await accSaberService.getCategories();
-	}
 
 	let editError = null;
 
@@ -85,7 +49,7 @@
 	}
 
 	function onEnableEditModel() {
-		editModel = {
+		$editModel = {
 			data: {
 				name: playerData?.name ?? '',
 				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
@@ -106,7 +70,7 @@
 		};
 
 		addNotification({
-			text: 'You can click on each badge to turn it on or off. Click on an avatar to change it or set an overlay.',
+			text: 'You can click on each badge to turn it on or off. Click on an avatar to change it or set an overlay. Scroll down to set scores sorting and filtering visibility.',
 			position: 'top-right',
 			type: 'success',
 			removeAfter: 4000,
@@ -114,17 +78,17 @@
 	}
 
 	function onCancelEditModel() {
-		editModel = null;
+		$editModel = null;
 	}
 
 	globalHistory.listen(({location, action}) => {
-		editModel = null;
+		$editModel = null;
 	});
 
 	async function onSaveEditModel() {
-		if (!editModel) return;
+		if (!$editModel) return;
 
-		let {profileAppearance, country, avatar, message, ...data} = editModel?.data ?? {};
+		let {profileAppearance, country, avatar, message, ...data} = $editModel?.data ?? {};
 
 		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : '';
 		country =
@@ -136,7 +100,7 @@
 		if (!data?.effectName?.length) data.effectName = '';
 
 		try {
-			editModel.isSaving = true;
+			$editModel.isSaving = true;
 			if (isAdmin) {
 				data.id = playerData?.playerId;
 			}
@@ -146,11 +110,11 @@
 				dispatch('player-data-updated');
 			}, 1000);
 
-			editModel = null;
+			$editModel = null;
 		} catch (err) {
 			editError = err;
 		} finally {
-			if (editModel) editModel.isSaving = false;
+			if ($editModel) $editModel.isSaving = false;
 		}
 	}
 	function successToast(text) {
@@ -217,12 +181,12 @@
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
-	$: refreshBeatSaviorState(playerId);
-	$: scoresStatsFinal = generateScoresStats(scoresStats);
-	$: updateAccSaberPlayerInfo(playerId);
+
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
-	$: cover = !editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? editModel?.data.profileCover);
+	$: cover = !$editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? $editModel?.data?.profileCover);
+
+	$: if (startEditing) onEnableEditModel();
 
 	let fileinput;
 	const readFile = async fileInput =>
@@ -234,80 +198,15 @@
 			reader.readAsArrayBuffer(fileInput);
 		});
 	const changeCover = async e => {
-		editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
-		playerData.profileSettings.profileCover = editModel.data.profileCover;
-		editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
+		$editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
+		playerData.profileSettings.profileCover = $editModel.data.profileCover;
+		$editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
 	};
 	const resetCover = async e => {
-		editModel.data.profileCover = '/assets/defaultcover.jpg';
-		editModel.data.profileCoverData = null;
+		$editModel.data.profileCover = '/assets/defaultcover.jpg';
+		$editModel.data.profileCoverData = null;
 		playerData.profileSettings.profileCover = null;
 	};
-
-	$: swipeCards = [].concat(
-		playerId
-			? [
-					{
-						name: `stats-${playerId}`,
-						component: BeatLeaderSwipeCard,
-						props: {
-							playerId,
-							playerInfo,
-							scoresStats: scoresStatsFinal,
-							ssBadges,
-						},
-						delay: 500,
-					},
-			  ]
-					.concat(
-						$pageContainer.name !== 'xxl'
-							? [
-									{
-										name: `ranking-${playerId}`,
-										component: MiniRankingSwipeCard,
-										props: {player: playerData},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
-							? [
-									{
-										name: `accsaber-${playerId}`,
-										component: AccSaberSwipeCard,
-										props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						isBeatSaviorAvailable
-							? [
-									{
-										name: `beat-savior-${playerId}`,
-										component: BeatSaviorSwipeCard,
-										props: {playerId},
-									},
-							  ]
-							: []
-					)
-					.concat(
-						$pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
-							? [
-									{
-										name: `twitch-${playerId}`,
-										component: TwitchVideosSwipeCard,
-										props: {videos: twitchVideos},
-									},
-							  ]
-							: []
-					)
-			: []
-	);
-
-	$: pinnedScoresStore.fetchScores(playerData?.playerId);
-	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 </script>
 
 <svelte:window on:keyup={onKeyUp} />
@@ -315,26 +214,26 @@
 	<Rain />
 {/if}
 
-<AvatarOverlayEditor bind:editModel {roles} />
+<AvatarOverlayEditor bind:editModel={$editModel} {roles} />
 <ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
-			{#if editModel}
-				{#if editModel.data.profileCoverData}
+			{#if $editModel}
+				{#if $editModel.data.profileCoverData}
 					<Button type="danger" cls="remove-cover-button" iconFa="far fa-xmark" label="Remove cover" on:click={() => resetCover()} />
 				{/if}
 				<Button
 					type="primary"
 					cls="edit-cover-button"
 					iconFa="far fa-image"
-					label={editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
+					label={$editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
 					on:click={() => fileinput.click()}>
 					<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
 				</Button>
 			{/if}
 		</div>
 	{/if}
-	<AvatarOverlay withCover={cover} data={editModel?.data ?? playerData?.profileSettings} />
+	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
 	<div style="margin: 0; padding: 0;">
 		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
@@ -346,36 +245,38 @@
 		{/if}
 	</div>
 
-	<div class="player-general-info" class:edit-enabled={!!editModel}>
+	<div class="player-general-info" class:edit-enabled={!!$editModel}>
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
 				<Avatar
 					{isLoading}
 					{playerInfo}
 					hash={avatarHash}
-					{editModel}
+					editModel={$editModel}
 					on:click={() => {
-						if (editModel) editModel.avatarOverlayEdit = true;
+						if ($editModel) $editModel.avatarOverlayEdit = true;
 					}} />
 
 				{#if playerInfo && !isLoading}
 					<div style="margin: 0; padding: 0;">
 						<AvatarOverlayIcons
 							{playerData}
-							bind:editModel
+							bind:editModel={$editModel}
 							on:modal-shown={() => (modalShown = true)}
 							on:modal-hidden={() => (modalShown = false)} />
 					</div>
 				{/if}
 			</div>
 			{#if roles}
-				<div class="role-icons">
+				<div class="role-icons {$editModel ? 'editing' : ''}">
 					{#each roles as role, idx}
 						<RoleIcon
 							{role}
+							index={idx}
+							allRoles={roles}
 							mapperId={playerInfo?.mapperId}
 							profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
-							bind:editModel />
+							bind:editModel={$editModel} />
 					{/each}
 				</div>
 			{/if}
@@ -391,16 +292,16 @@
 				{name}
 				{playerInfo}
 				{playerId}
-				bind:editModel
+				bind:editModel={$editModel}
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
+			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel={$editModel} />
 
-			{#if editModel}
+			{#if $editModel}
 				<div class="edit-buttons">
 					<Button
-						loading={editModel.isSaving}
+						loading={$editModel.isSaving}
 						color="white"
 						bgColor="var(--beatleader-primary)"
 						label="Save"
@@ -408,7 +309,7 @@
 						noMargin={true}
 						on:click={onSaveEditModel} />
 					<Button
-						disabled={editModel.isSaving}
+						disabled={$editModel.isSaving}
 						type="default"
 						label="Cancel"
 						iconFa="fas fa-times"
@@ -423,18 +324,6 @@
 		</div>
 	</div>
 </ContentBox>
-
-<ContentBox>
-	<div class="columns">
-		<div class="column">
-			<Carousel cards={swipeCards} />
-		</div>
-	</div>
-</ContentBox>
-
-{#if pinnedScores}
-	<PinnedScores {pinnedScoresStore} playerId={playerData?.playerId} {fixedBrowserTitle} />
-{/if}
 
 <style>
 	.player-general-info {
@@ -468,6 +357,9 @@
 		margin-top: 0.5rem;
 		width: 100%;
 		min-height: 1.5rem;
+	}
+
+	.role-icons.editing {
 	}
 
 	.avatar-and-roles {

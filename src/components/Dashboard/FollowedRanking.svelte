@@ -42,6 +42,7 @@
 			{filters}
 			noIcons={true}
 			useInternalFilters={true}
+			showTypeSwitcher={false}
 			on:page-changed={onRankingPageChanged}
 			on:loading={e => (isLoading = !!e?.detail)}
 			on:pending={e => (pending = e?.detail)} />

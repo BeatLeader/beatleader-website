@@ -18,6 +18,7 @@
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import BackToTop from '../components/Common/BackToTop.svelte';
+	import Button from '../components/Common/Button.svelte';
 
 	export let page = 1;
 	export let location;
@@ -77,7 +78,7 @@
 			placeholder: 'Search for a player',
 			onChange: e => {
 				const length = e?.target?.value?.length;
-				if (length > 0 && length < 3) return;
+				if (length > 0 && length < 2) return;
 
 				onInputChange(e, 'search');
 			},
@@ -170,11 +171,11 @@
 		{
 			key: 'score_range',
 			label: 'Scores count',
-			default: [0, 4000],
+			default: [0, 10000],
 			min: 0,
-			max: 4000,
+			max: 10000,
 			step: 1,
-			pipstep: 500,
+			pipstep: 2000,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
@@ -337,13 +338,14 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<!-- <ContentBox cls="event-banner festive" on:click={() => navigate('/event/23')}>
+		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/34')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://api.beatleader.xyz/playlist/image/1248.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/Anniversary-Icon-R452.png" />
 				<div class="event-text-container">
-					<span class="event-title">Happy holidays, gamers!</span>
-					<span class="event-text">Check out special event with custom scoring rules.<br />Only timing matters!</span>
+					<span class="event-title">Happy Birthday Beat Saber and Modding!</span>
+					<span class="event-text">Compete on the awesome maps from the community to win <s>programming socks</s> BSMG merch!</span>
 				</div>
+				<Button label="Event" iconFa="fas fa-cake-candles" on:click={() => navigate('/event/34')} />
 			</div>
 		</ContentBox> -->
 
@@ -474,13 +476,10 @@
 		margin: 0.6em;
 		padding: 0.3em;
 		border-radius: 0.5em;
-		height: 8em;
 		cursor: pointer;
-		background-image: url(/assets/lights2.gif) !important;
 	}
 
 	.event-container {
-		backdrop-filter: blur(10px) brightness(0.9);
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -494,20 +493,23 @@
 	}
 
 	.event-image {
-		width: 8em;
-		height: 8em;
+		width: 6em;
+		height: 6em;
+		margin-right: 1em;
 	}
 
 	.event-title {
-		color: white;
+		color: var(--text-color);
 		font-size: x-large;
 		font-weight: 800;
+		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
 	.event-text {
-		color: white;
+		color: var(--text-color);
 		font-size: larger;
 		font-weight: 600;
+		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
 	@media screen and (max-width: 1275px) {
@@ -519,6 +521,14 @@
 		aside {
 			width: 100%;
 			max-width: 65em;
+		}
+
+		.event-container {
+			flex-direction: column;
+		}
+
+		.event-text-container {
+			margin-bottom: 1em;
 		}
 	}
 </style>

@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import editModel from '../../../stores/beatleader/profile-edit-model';
 
 	export let filter;
 
@@ -18,14 +19,21 @@
 	}
 
 	function onButtonClick() {
+		if ($editModel) {
+			dispatch('click', {id: filter?.props?.id});
+			return;
+		}
+
 		filterOpen = !filterOpen;
 
 		if (!filterOpen) dispatchValue(null);
 	}
+
+	$: if (!!$editModel) filterOpen = false;
 </script>
 
 {#if filter?.component && filter?.props}
-	<div class="filter" class:open={filterOpen} title={filter?.props?.title}>
+	<div class="filter" class:hidden={filter?.props?.hidden} class:open={filterOpen} title={filter?.props?.title}>
 		<span class="filter-component">
 			<svelte:component this={filter.component} {...filter.props} open={filterOpen} on:change={onFilterChanged} />
 		</span>
@@ -33,7 +41,7 @@
 		<i
 			class={`fa filter-btn ${!filterOpen ? filter?.props?.iconFa ?? '' : ''}`}
 			class:fa-times={filterOpen}
-			title={filterOpen ? 'Click to close and clear filter' : filter?.props?.title}
+			title={filterOpen ? 'Click to close and clear filter' : $editModel ? 'Click to toggle' : filter?.props?.title}
 			on:click={onButtonClick} />
 	</div>
 {/if}
@@ -63,6 +71,7 @@
 		left: 0;
 		bottom: 0;
 		width: calc(100% - 1.4em);
+		height: 100%;
 		line-height: 1;
 		color: var(--textColor);
 		background-color: transparent;

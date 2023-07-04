@@ -27,10 +27,10 @@ export const DEFAULT_CONFIG = {
 		ppMetric: 'weighted',
 		iconsOnAvatars: 'show',
 		scoresSortOptions: 'last',
-		theme: 'mirror',
+		theme: 'ree-dark',
 		oneclick: 'modassistant',
 		bgimage: '/assets/background.jpg',
-		bgColor: 'rgba(29, 7, 34, 0.6282)',
+		bgColor: 'rgba(29, 7, 34, 0.6284)',
 		headerColor: 'rgba(53, 0, 70, 0.2)',
 		daysToCompare: 1,
 		daysOfHistory: 30,
@@ -40,7 +40,9 @@ export const DEFAULT_CONFIG = {
 		commentaryShown: true,
 		criteriaInfoShown: true,
 		leaderboardShowSorting: true,
+
 		maps3D: true,
+		mapsViewType: 'maps-cards',
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -67,6 +69,20 @@ export const DEFAULT_CONFIG = {
 		showAccSpreadChart: false,
 		showLeaderboard: true,
 		defaultAccChartIndex: 0,
+	},
+	leaderboardPreferences: {
+		badges: [
+			[{metric: 'pp', secondary: 'none'}, {metric: 'acc', secondary: 'mods', withMods: false}, {metric: 'score'}],
+			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'mistakes', withImprovements: false}],
+		],
+		badgeRows: 1,
+		show: {
+			avatar: true,
+			country: true,
+			clans: true,
+			date: true,
+			replay: true,
+		},
 	},
 	chartLegend: {
 		y: true,
@@ -187,6 +203,15 @@ export default async () => {
 
 	if (savedConfig) {
 		dbConfig = savedConfig;
+		if (
+			dbConfig.preferences.theme == 'mirror' &&
+			dbConfig.preferences.bgColor == 'rgba(29, 7, 34, 0.6282)' &&
+			dbConfig.preferences.headerColor == 'rgba(53, 0, 70, 0.2)'
+		) {
+			dbConfig.preferences.theme = 'ree-dark';
+			dbConfig.preferences.bgColor = 'rgba(29, 7, 34, 0.6284)';
+			await keyValueRepository().set(dbConfig, STORE_CONFIG_KEY);
+		}
 		await set(savedConfig, false);
 	}
 	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;

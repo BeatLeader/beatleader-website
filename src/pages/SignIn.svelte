@@ -39,7 +39,6 @@
 	$: socials = opt($account, 'player.playerInfo.socials');
 	$: error = opt($account, 'error') ?? $oculus?.error;
 	$: message = opt($account, 'message');
-	$: patreoned = opt($account, 'patreoned');
 	$: loading = opt($account, 'loading');
 	$: performAction();
 </script>
@@ -151,20 +150,6 @@
 
 			<Button iconFa="fas fa-plus-square" label="Change password" on:click={() => account.changePasswordMigrated(login, newPassword)} />
 		{/if}
-	{:else if action == 'linkPatreon'}
-		<span>
-			Link your account to receive patreon features for your tier.<br /><br />
-
-			If you are not yet a patron, you can become one
-			<strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</a></strong>
-		</span>
-
-		<form action={BL_API_URL + 'signin'} method="post">
-			<input type="hidden" name="Provider" value="Patreon" />
-			<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/patreon'} />
-
-			<Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit" />
-		</form>
 	{:else if action == 'socials'}
 		{#if socials && socials.find(s => s.service == 'BeatSaver')}
 			{#if loggedInPlayer > 1000000000000000}
@@ -253,14 +238,6 @@
 				<Button type="twitter" iconFa="fab fa-twitter" label="Link Twitter" />
 			</form>
 		{/if}
-	{:else if action == 'patreon'}
-		{#if patreoned}
-			Yay!<br />
-			Thank you for supporting BeatLeader!
-		{:else}
-			Something went wrong while linking your account.<br />
-			If you used this account before, try unlink it first.
-		{/if}
 	{:else if action == 'mylogin'}
 		<span>
 			Your current login is: <b>{$account.login}</b><br />
@@ -296,6 +273,9 @@
 				label="Yes, suspend my account"
 				on:click={() => (suspendingDialogShown = !suspendingDialogShown)} />
 		{/if}
+		<div style="display: flex; grid-gap: 0.25em;">
+			<a href="mailto:golova@golova.dev">Contact me </a>if you need to delete your data immediately.
+		</div>
 	{:else if action == 'oculuspc'}
 		{#if $oculus.name}
 			{#if !$oculus.migrated}

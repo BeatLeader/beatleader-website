@@ -43,6 +43,7 @@
 
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: isQualified = leaderboard?.stats?.status === DifficultyStatus.qualified;
+	$: isNominated = leaderboard?.stats?.status === DifficultyStatus.nominated;
 
 	$: reweight = leaderboard?.reweight;
 
@@ -99,6 +100,17 @@
 		<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title="Pass this diff to vote on the map" noMargin={true} />
 	{:else if votingStatus == 3}
 		<Button cls="voteButton" type="green" iconFa="fas fa-clipboard-check" title="Thank your for the vote!" noMargin={true} />
+	{/if}
+	{#if ((isRT && !isjuniorRT) || isNQT) && !isNominated}
+		<Button
+			cls="voteButton"
+			iconFa={isRanked ? 'fas fa-star' : 'fas fa-rocket'}
+			title={isRanked ? 'Update map stars' : 'Nominate this map!'}
+			noMargin={true}
+			on:click={() => {
+				mapVoting = !mapVoting;
+				rtvoting = true;
+			}} />
 	{/if}
 	<!-- {#if generalMapperId != 101330 && (isRT || (generalMapperId == leaderboard?.song.mapperId && !isRanked)) && !isNominated}
 		{#if !isRT && qualificationLimitError}

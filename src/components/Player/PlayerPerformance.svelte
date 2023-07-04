@@ -15,6 +15,7 @@
 	export let modifiers = null;
 	export let additionalStat = null;
 	export let selectedMetric = null;
+	export let type = 'profile-score';
 
 	const ACC_SABER_BADGES = [[{metric: 'ap'}, {metric: 'acc', withImprovements: true}, {metric: 'score', withImprovements: true}]];
 	const BEAT_SAVIOR_BADGES = [
@@ -45,7 +46,7 @@
 		};
 	}
 
-	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat, isDemo) {
+	function getBadges(service, config, rows, score, improvements, beatSavior, additionalStat, isDemo, status) {
 		if (!service?.length || !Array.isArray(config) || !config?.length) return;
 
 		if (!rows) rows = 2;
@@ -79,9 +80,9 @@
 		return config
 			.map(row =>
 				row.map(col => {
-					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo);
+					const mainBadge = getPerformanceBadge(col, score, improvements, beatSavior, modifiers, isDemo, status);
 					const alternativeBadges = (col?.alternatives ?? []).map(a =>
-						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo)
+						getPerformanceBadge(a, score, improvements, beatSavior, modifiers, isDemo, status)
 					);
 
 					return [mainBadge, ...alternativeBadges].filter(b => b?.component);
@@ -98,31 +99,39 @@
 
 	$: beatSavior = songScore?.beatSavior ?? getBeatSaviorCompatibleStats(score);
 
-	$: badgesDefinition = [...(Object.values($configStore?.scoreBadges) ?? [])];
+	$: configBadges = type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badges : $configStore?.scoreBadges;
+	$: configBadgeRows =
+		type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badgeRows : $configStore?.scorePreferences?.badgeRows ?? 2;
+	$: badgesDefinition = [...(Object.values(configBadges) ?? [])];
 
 	$: badges = getBadges(
 		service,
 		badgesDefinition,
-		$configStore?.scorePreferences?.badgeRows ?? 2,
+		configBadgeRows,
 		score,
 		improvements,
 		beatSavior,
 		additionalStat,
 		$isDemo,
+		songScore?.leaderboard?.difficultyBl?.status ?? 0,
 		modifiers
 	);
 
-	$: myScoreBadges = getBadges(
-		service,
-		badgesDefinition,
-		$configStore?.scoreComparison?.badgeRows ?? $configStore?.scorePreferences?.badgeRows ?? 1,
-		score?.myScore?.score,
-		null,
-		getBeatSaviorCompatibleStats(score?.myScore?.score),
-		additionalStat,
-		false,
-		modifiers
-	);
+	$: myScoreBadges =
+		score?.myScore && score?.myScore?.player?.playerId !== score?.playerId
+			? getBadges(
+					service,
+					badgesDefinition,
+					$configStore?.scoreComparison?.badgeRows ?? $configStore?.scorePreferences?.badgeRows ?? 1,
+					score?.myScore?.score,
+					null,
+					getBeatSaviorCompatibleStats(score?.myScore?.score),
+					additionalStat,
+					false,
+					songScore?.leaderboard?.difficultyBl?.status ?? 0,
+					modifiers
+			  )
+			: null;
 
 	$: scoreComparisonMethod = $configStore?.scoreComparison?.method ?? 'none';
 </script>
@@ -142,6 +151,10 @@
 </div>
 
 <style>
+	.player-performance {
+		height: 100%;
+	}
+
 	.compare-player-name {
 		display: block;
 		color: var(--faded);

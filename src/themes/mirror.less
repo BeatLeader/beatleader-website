@@ -271,7 +271,7 @@ nav.ssr-page-container {
     }
 
     .player-score {
-        height: 3rem;
+        min-height: 3rem;
         border: none !important;
 
         &.highlight {
@@ -396,6 +396,7 @@ input {
 .blur-part {
     background: linear-gradient(0deg, rgb(27 36 42), transparent) !important;
 }
+
 .pagination {
     background: transparent !important;
     box-shadow: none !important;
@@ -415,4 +416,32 @@ select.type-select {
 
 .selected-playlist-box {
     background: rgba(0, 112, 240, 0.521) !important;
+}
+
+select {
+    color: white;
+    box-shadow: none;
+    border: none;
+}
+
+.dropdown-header {
+    background-color: rgba(255, 255, 255, 0.13);
+    border-radius: 0.4em;
+}
+
+.dropdown-menu {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 0.4em;
+}
+
+.dropdown-menu .dropdown-item:hover {
+	background-color: rgba(200, 200, 200, 0.3);
+}
+
+.dropdown-menu .dropdown-item:focus {
+	background-color: rgba(200, 200, 200, 0.3);
+	outline: none;
 }

@@ -34,7 +34,7 @@
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
-	import {Ranked_Const} from './../utils/beatleader/consts';
+	import {Ranked_Const, Unranked_Const} from './../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BackToTop from '../components/Common/BackToTop.svelte';
@@ -42,6 +42,7 @@
 	import {configStore} from '../stores/config';
 	import produce from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
+	import Select from '../components/Settings/Select.svelte';
 
 	export let page = 1;
 	export let location;
@@ -58,14 +59,14 @@
 		{key: 'search', default: '', process: processStringFilter},
 		{key: 'type', default: '', process: processStringFilter},
 		{key: 'mytype', default: '', process: processStringFilter},
-		{key: 'stars_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
-		{key: 'stars_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
-		{key: 'accrating_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
-		{key: 'accrating_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
-		{key: 'passrating_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
-		{key: 'passrating_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
-		{key: 'techrating_from', default: Ranked_Const.MIN_STARS, process: processFloatFilter},
-		{key: 'techrating_to', default: Ranked_Const.MAX_STARS, process: processFloatFilter},
+		{key: 'stars_from', default: undefined, process: processFloatFilter},
+		{key: 'stars_to', default: undefined, process: processFloatFilter},
+		{key: 'accrating_from', default: undefined, process: processFloatFilter},
+		{key: 'accrating_to', default: undefined, process: processFloatFilter},
+		{key: 'passrating_from', default: undefined, process: processFloatFilter},
+		{key: 'passrating_to', default: undefined, process: processFloatFilter},
+		{key: 'techrating_from', default: undefined, process: processFloatFilter},
+		{key: 'techrating_to', default: undefined, process: processFloatFilter},
 		{key: 'date_from', default: null, process: processIntFilter},
 		{key: 'date_to', default: null, process: processIntFilter},
 		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
@@ -99,7 +100,6 @@
 	let currentPage = page;
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
-	let searchInputEl = null;
 
 	const typeFilterOptions = [
 		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
@@ -149,7 +149,7 @@
 		Object.entries(modeDescriptions).map(([key, type]) => {
 			return {
 				key,
-				label: capitalize(modeDescriptions?.[key]?.name ?? key),
+				label: capitalize(modeDescriptions?.[key]?.title ?? key),
 				icon: `<span class="${modeDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
 				color: modeDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
 				textColor: modeDescriptions?.[key]?.textColor ?? null,
@@ -209,19 +209,14 @@
 		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
 	}
 
-	function onSearchChanged(value) {
-		currentFilters.search = value ?? '';
+	function onSearchChanged(e) {
+		var search = e.target.value ?? '';
+
+		if (search.length > 0 && search.length < 2) return;
+
+		currentFilters.search = search;
 		currentPage = 1;
 		navigateToCurrentPageAndFilters();
-	}
-
-	function onSearchSubmit(e) {
-		e.preventDefault();
-		e.stopPropagation();
-
-		if (searchInputEl) onSearchChanged(searchInputEl.value);
-
-		return false;
 	}
 
 	function onTypeChanged(event) {
@@ -235,7 +230,6 @@
 
 	async function onCategoryModeChanged() {
 		await tick();
-
 		currentPage = 1;
 
 		navigateToCurrentPageAndFilters();
@@ -289,14 +283,18 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function starsChanged() {
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
 		currentFilters[ratingType + '_from'] = event.detail.values[0];
 		currentFilters[ratingType + '_to'] = event.detail.values[1];
-		currentPage = 1;
-
-		navigateToCurrentPageAndFilters();
+		starsChanged();
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
 
@@ -341,15 +339,24 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	var showAllRatings = false;
+
+	function updateProfileSettings(account) {
+		if (account?.player?.profileSettings) {
+			showAllRatings = account.player.profileSettings.showAllRatings;
+		}
+	}
+
 	const debouncedOnDateRangeChanged = debounce(onDateRangeChange, FILTERS_DEBOUNCE_MS);
 
 	let searchToPlaylist = false;
 	let makingPlaylist = false;
 	let mapCount = 100;
 	let duplicateDiffs = false;
+	let playlistTitle = 'Search result';
 	function generatePlaylist() {
 		makingPlaylist = true;
-		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs}, () => {
+		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
 			navigate('/playlists');
 		});
 	}
@@ -364,6 +371,8 @@
 		$account.player &&
 		$account.player.playerInfo.role &&
 		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+
+	$: updateProfileSettings($account);
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
@@ -382,7 +391,9 @@
 		};
 	});
 	$: metaDescription = 'Search for ranked maps, playlists and leaderboards for Beat Saber';
-	$: starFiltersDisabled = currentFilters.type !== 'ranked' && currentFilters.type !== 'nominated' && currentFilters.type !== 'qualified';
+	$: hasRatingsByDefault = currentFilters.type === 'ranked' || currentFilters.type === 'nominated' || currentFilters.type === 'qualified';
+	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
+	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
 
 	function boolflip(name) {
 		$configStore = produce($configStore, draft => {
@@ -390,6 +401,29 @@
 		});
 	}
 
+	let viewTypeOptions = [
+		{
+			type: 'maps-cards',
+			title: 'Cards view',
+			iconFa: 'fas fa-table-columns',
+		},
+		{
+			type: 'maps-table',
+			title: 'Table view',
+			iconFa: 'fas fa-table',
+		},
+	];
+
+	function onViewTypeChanged(event) {
+		const newType = event?.detail?.type ?? null;
+		if (!newType) return;
+
+		$configStore = produce($configStore, draft => {
+			draft.preferences.mapsViewType = newType;
+		});
+	}
+
+	$: viewType = viewTypeOptions.find(vt => vt.type == $configStore?.preferences?.mapsViewType) ?? viewTypeOptions[0];
 	$: maps3D = $configStore?.preferences?.maps3D;
 </script>
 
@@ -411,7 +445,7 @@
 			{#if leaderboardsPage?.length}
 				<div class="songs">
 					{#each leaderboardsPage as map, idx (map.id)}
-						<MapCard {map} {idx} {currentFilters} {starsKey} {maps3D} />
+						<MapCard {map} {idx} {currentFilters} {starsKey} {maps3D} viewType={viewType.type} />
 					{/each}
 				</div>
 
@@ -424,7 +458,10 @@
 						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
 						mode={numOfMaps ? 'pages' : 'simple'}
 						on:page-changed={onPageChanged} />
-					<Switch value={maps3D} label="3D" fontSize={12} design="slider" on:click={() => boolflip('maps3D')} />
+					<div class="table-switches">
+						<Switcher values={viewTypeOptions} value={viewType} on:change={onViewTypeChanged} />
+						<Switch value={maps3D} label="3D" fontSize={12} design="slider" on:click={() => boolflip('maps3D')} />
+					</div>
 				</div>
 			{:else if !$isLoading}
 				<p>No maps found.</p>
@@ -443,9 +480,12 @@
 			<section class="filter">
 				<label>Song/Author/Mapper/Hash</label>
 
-				<form on:submit={onSearchSubmit}>
-					<input bind:this={searchInputEl} type="text" class="search" placeholder="Search for a map..." value={currentFilters.search} />
-				</form>
+				<input
+					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
+					type="text"
+					class="search"
+					placeholder="Search for a map..."
+					value={currentFilters.search} />
 			</section>
 
 			<section class="filter">
@@ -461,11 +501,17 @@
 				</section>
 			{/if}
 
-			<select bind:value={currentFilters.allTypes} on:change={onCategoryModeChanged}>
-				<option value={0}>ANY category</option>
-				<option value={1}>ALL categories</option>
-				<option value={2}>NO categories</option>
-			</select>
+			<div style="margin-bottom: 0.1em">
+				<Select
+					bind:value={currentFilters.allTypes}
+					on:change={() => onCategoryModeChanged()}
+					fontSize="0.8"
+					options={[
+						{name: 'ANY category', value: 0},
+						{name: 'ALL categories', value: 1},
+						{name: 'NO categories', value: 2},
+					]} />
+			</div>
 
 			<section class="filter">
 				<Switcher
@@ -475,11 +521,17 @@
 					on:change={onCategoryChanged} />
 			</section>
 
-			<select bind:value={currentFilters.allRequirements} on:change={onCategoryModeChanged}>
-				<option value={0}>ANY map feature</option>
-				<option value={1}>ALL map features</option>
-				<option value={2}>NO map features</option>
-			</select>
+			<div style="margin-bottom: 0.1em">
+				<Select
+					bind:value={currentFilters.allRequirements}
+					on:change={() => onCategoryModeChanged()}
+					fontSize="0.8"
+					options={[
+						{name: 'ANY map feature', value: 0},
+						{name: 'ALL map features', value: 1},
+						{name: 'NO map features', value: 2},
+					]} />
+			</div>
 
 			<section class="filter">
 				<Switcher
@@ -495,19 +547,29 @@
 				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Stars
-					<span>{formatNumber(currentFilters.stars_from)}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.stars_to)}<sup>★</sup></span>
+					<span>{formatNumber(currentFilters.stars_from, 2, false, 'Any')}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.stars_to, 2, false, 'Any')}<sup>★</sup></span>
+					{#if currentFilters.stars_from || currentFilters.stars_to}
+						<button
+							class="remove-type"
+							title="Remove"
+							on:click={() => {
+								currentFilters.stars_from = null;
+								currentFilters.stars_to = null;
+								starsChanged();
+							}}><i class="fas fa-xmark" /></button>
+					{/if}
 				</label>
 				<RangeSlider
 					range
-					min={Ranked_Const.MIN_STARS}
-					max={Ranked_Const.MAX_STARS}
-					step={Ranked_Const.STAR_GRANULARITY}
+					min={sliderLimits.MIN_STARS}
+					max={sliderLimits.MAX_STARS}
+					step={sliderLimits.STAR_GRANULARITY}
 					values={[currentFilters.stars_from, currentFilters.stars_to]}
 					float
 					hoverable
 					pips
-					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+					pipstep={sliderLimits.STAR_STEP}
 					all="label"
 					on:change={e => debouncedOnStarsChanged(e, 'stars')}
 					disabled={starFiltersDisabled} />
@@ -519,19 +581,29 @@
 				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Acc rating
-					<span>{formatNumber(currentFilters.accrating_from)}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.accrating_to)}<sup>★</sup></span>
+					<span>{formatNumber(currentFilters.accrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.accrating_to, 2, false, 'Any')}<sup>★</sup></span>
+					{#if currentFilters.accrating_from || currentFilters.accrating_to}
+						<button
+							class="remove-type"
+							title="Remove"
+							on:click={() => {
+								currentFilters.accrating_from = null;
+								currentFilters.accrating_to = null;
+								starsChanged();
+							}}><i class="fas fa-xmark" /></button>
+					{/if}
 				</label>
 				<RangeSlider
 					range
-					min={Ranked_Const.MIN_STARS}
-					max={Ranked_Const.MAX_STARS}
-					step={Ranked_Const.STAR_GRANULARITY}
+					min={sliderLimits.MIN_STARS}
+					max={sliderLimits.MAX_STARS}
+					step={sliderLimits.STAR_GRANULARITY}
 					values={[currentFilters.accrating_from, currentFilters.accrating_to]}
 					float
 					hoverable
 					pips
-					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+					pipstep={sliderLimits.STAR_STEP}
 					all="label"
 					on:change={e => debouncedOnStarsChanged(e, 'accrating')}
 					disabled={starFiltersDisabled} />
@@ -543,19 +615,29 @@
 				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Pass rating
-					<span>{formatNumber(currentFilters.passrating_from)}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.passrating_to)}<sup>★</sup></span>
+					<span>{formatNumber(currentFilters.passrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.passrating_to, 2, false, 'Any')}<sup>★</sup></span>
+					{#if currentFilters.passrating_from || currentFilters.passrating_to}
+						<button
+							class="remove-type"
+							title="Remove"
+							on:click={() => {
+								currentFilters.passrating_from = null;
+								currentFilters.passrating_to = null;
+								starsChanged();
+							}}><i class="fas fa-xmark" /></button>
+					{/if}
 				</label>
 				<RangeSlider
 					range
-					min={Ranked_Const.MIN_STARS}
-					max={Ranked_Const.MAX_STARS}
-					step={Ranked_Const.STAR_GRANULARITY}
+					min={sliderLimits.MIN_STARS}
+					max={sliderLimits.MAX_STARS}
+					step={sliderLimits.STAR_GRANULARITY}
 					values={[currentFilters.passrating_from, currentFilters.passrating_to]}
 					float
 					hoverable
 					pips
-					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+					pipstep={sliderLimits.STAR_STEP}
 					all="label"
 					on:change={e => debouncedOnStarsChanged(e, 'passrating')}
 					disabled={starFiltersDisabled} />
@@ -567,19 +649,29 @@
 				title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
 				<label>
 					Tech rating
-					<span>{formatNumber(currentFilters.techrating_from)}<sup>★</sup></span> to
-					<span>{formatNumber(currentFilters.techrating_to)}<sup>★</sup></span>
+					<span>{formatNumber(currentFilters.techrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+					<span>{formatNumber(currentFilters.techrating_to, 2, false, 'Any')}<sup>★</sup></span>
+					{#if currentFilters.techrating_from || currentFilters.techrating_to}
+						<button
+							class="remove-type"
+							title="Remove"
+							on:click={() => {
+								currentFilters.techrating_from = null;
+								currentFilters.techrating_to = null;
+								starsChanged();
+							}}><i class="fas fa-xmark" /></button>
+					{/if}
 				</label>
 				<RangeSlider
 					range
-					min={Ranked_Const.MIN_STARS}
-					max={Ranked_Const.MAX_STARS}
-					step={Ranked_Const.STAR_GRANULARITY}
+					min={sliderLimits.MIN_STARS}
+					max={sliderLimits.MAX_STARS}
+					step={sliderLimits.STAR_GRANULARITY}
 					values={[currentFilters.techrating_from, currentFilters.techrating_to]}
 					float
 					hoverable
 					pips
-					pipstep={2 / Ranked_Const.STAR_GRANULARITY}
+					pipstep={sliderLimits.STAR_STEP}
 					all="label"
 					on:change={e => debouncedOnStarsChanged(e, 'techrating')}
 					disabled={starFiltersDisabled} />
@@ -597,11 +689,12 @@
 
 			<section class="filter">
 				<label>Has mode</label>
-				<select bind:value={currentFilters.mode} on:change={onModeChanged}>
-					{#each modeFilterOptions as option}
-						<option value={option.key}>{option.label}</option>
-					{/each}
-				</select>
+				<Select
+					bind:value={currentFilters.mode}
+					on:change={onModeChanged}
+					options={modeFilterOptions}
+					nameSelector={x => x.label}
+					valueSelector={x => x.key} />
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>
@@ -649,6 +742,10 @@
 					<div class="duplicateDiffsContainer">
 						<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
 						<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+					</div>
+					<div class="playlistTitleContainer">
+						<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
+						<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
 					</div>
 					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
 				{/if}
@@ -722,8 +819,10 @@
 	}
 
 	aside select {
-		background-color: transparent;
+		border-radius: 0.2em;
+		padding: 0.4em 0.2em 0.4em 0.6em;
 		margin-bottom: 0.25em;
+		appearance: menulist-button;
 	}
 
 	aside select option {
@@ -772,6 +871,11 @@
 		align-items: baseline;
 	}
 
+	.table-switches {
+		display: flex;
+		gap: 0.5em;
+	}
+
 	:global(.pager-and-switch .pagination) {
 		flex-grow: 1;
 	}
@@ -791,12 +895,24 @@
 		display: flex;
 	}
 
+	.playlistTitleContainer {
+		margin-bottom: 1em;
+	}
+
 	#duplicateDiffs {
 		width: auto;
 	}
 
 	:global(.playlist-button) {
 		height: 1.6em;
+	}
+
+	.remove-type {
+		border: none;
+		color: rgb(255, 0, 0);
+		background-color: transparent;
+		cursor: pointer;
+		transform: translate(-7px, -2px);
 	}
 
 	@media screen and (max-width: 1275px) {
@@ -819,6 +935,10 @@
 
 		.playlist-buttons {
 			flex-direction: column;
+		}
+
+		.table-switches {
+			flex-direction: column-reverse;
 		}
 	}
 

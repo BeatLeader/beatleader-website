@@ -5,8 +5,13 @@
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
 	import createTwitchService from '../services/twitch';
 	import createAccSaberService from '../services/accsaber';
+	import createPinnedScoresStore from '../stores/beatleader/pinned-scores';
+	import createStatsHistoryStore from '../stores/beatleader/stats-history';
+	import editModel from '../stores/beatleader/profile-edit-model';
+	import {configStore} from '../stores/config';
 	import {capitalize, opt} from '../utils/js';
 	import ssrConfig from '../ssr-config';
+	import processPlayerData from '../components/Player/utils/profile';
 	import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors';
 	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
 	import eventBus from '../utils/broadcast-channel-pubsub';
@@ -16,21 +21,26 @@
 	import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte';
 	import TwitchVideos from '../components/Player/TwitchVideos.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+	import CardsCarousel from '../components/Player/CardsCarousel.svelte';
+	import PinnedScores from '../components/Player/PinnedScores.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
 
 	import keyValueRepository from '../db/repository/key-value';
-	import {configStore} from '../stores/config';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
+	import Achievements from '../components/Player/Achievements.svelte';
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
+	export let location = null;
 
 	let service = null;
 	let serviceParams = null;
 
 	const serviceParamsManager = createServiceParamsManager(initialPlayerId);
+	const pinnedScoresStore = createPinnedScoresStore();
+	const statsHistoryStore = createStatsHistoryStore();
 
 	processInitialParams(initialPlayerId, initialParams);
 
@@ -174,6 +184,10 @@
 		.join(' / ')} - ${ssrConfig.name}`;
 	$: updateTwitchProfile(currentPlayerId);
 
+	$: playerData = $playerStore;
+	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
+	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
+
 	let scoresPlayerId = null;
 	let scoresState = null;
 
@@ -191,6 +205,11 @@
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.countries[0].country;
 	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
+
+	$: pinnedScoresStore.fetchScores(playerData?.playerId);
+	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
+
+	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 </script>
 
 <svelte:head>
@@ -214,7 +233,14 @@
 				{twitchVideos}
 				on:player-data-updated={onPlayerDataUpdated}
 				{avatarHash}
-				fixedBrowserTitle={browserTitle} />
+				fixedBrowserTitle={browserTitle}
+				startEditing={editing} />
+
+			{#if !$editModel}
+				<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
+				<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
+				<Achievements {playerId} {playerData} />
+			{/if}
 
 			{#if scoresPlayerId}
 				<ContentBox>

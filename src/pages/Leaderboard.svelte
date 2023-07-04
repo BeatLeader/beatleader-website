@@ -13,51 +13,38 @@
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../utils/accsaber/consts';
 	import Value from '../components/Common/Value.svelte';
-	import Avatar from '../components/Common/Avatar.svelte';
-	import PlayerNameWithFlag from '../components/Common/PlayerNameWithFlag.svelte';
 	import Pager from '../components/Common/Pager.svelte';
-
-	import Pp from '../components/Common/PerformanceBadge/Pp.svelte';
 	import Badge from '../components/Common/Badge.svelte';
-	import Accuracy from '../components/Common/PerformanceBadge/Accuracy.svelte';
-
 	import Spinner from '../components/Common/Spinner.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import Icons from '../components/Song/Icons.svelte';
-
 	import Commentary from '../components/Leaderboard/Commentary.svelte';
 	import CriteriaCommentary from '../components/Leaderboard/CriteriaCommentary.svelte';
 	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
-
 	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
 	import ClanName from '../components/Clans/ClanName.svelte';
 
 	import {formatNumber} from '../utils/format';
 	import {
 		getIconNameForDiff,
-		describeModifiersAndMultipliers,
 		getDescriptionForDiff,
 		mapTypeFromMask,
 		votingsForTypeStats,
-		formatDiffStatus,
 		DifficultyStatus,
 	} from '../utils/beatleader/format';
-	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../utils/date';
+	import {dateFromUnix, formatDateRelative} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
 	import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters';
-	import ClanBadges from '../components/Player/ClanBadges.svelte';
 	import {flip} from 'svelte/animate';
 	import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score';
-	import SongScoreDetails from '../components/Player/SongScoreDetails.svelte';
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
 
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
-	import Preview from '../components/Common/Preview.svelte';
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
 	import produce from 'immer';
 	import {configStore} from '../stores/config';
@@ -68,6 +55,8 @@
 	import CriteriaCheck from '../components/Leaderboard/CriteriaCheck.svelte';
 	import LeaderboardActionButtons from '../components/Leaderboard/LeaderboardActionButtons.svelte';
 	import LeaderboardHeader from '../components/Leaderboard/LeaderboardHeader.svelte';
+	import Score from '../components/Leaderboard/Score.svelte';
+	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -166,6 +155,7 @@
 	let modifiedPass = null;
 	let modifiedAcc = null;
 	let modifiedTech = null;
+	let modifiedStars = null;
 
 	let openedDetails = [];
 
@@ -236,6 +226,13 @@
 			title: 'Sort by pause count',
 			iconFa: 'fas fa-pause',
 		},
+		{
+			id: 'mistakes',
+			replaceTimeset: true,
+			label: 'Mistakes',
+			title: 'Sort by amount of mistakes',
+			iconFa: 'icon-mistakes',
+		},
 	];
 
 	const stringifyFilters = (query, keys) =>
@@ -251,22 +248,6 @@ changeParams
 	};
 
 	let currentTypeOption = findCurrentTypeOption(currentType, currentFilters) ?? typeOptions[0];
-
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
-
-		navigate(`/u/${playerId}`);
-	}
-
-	function navigateToClan(clanTag) {
-		if (!clanTag) return;
-
-		navigate(`/clan/${clanTag}/players/1?`);
-	}
-
-	function scrollToTop() {
-		if (autoScrollToTop && boxEl) scrollToTargetAdjusted(boxEl, scrollOffset);
-	}
 
 	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
 
@@ -437,7 +418,7 @@ changeParams
 	}
 
 	var complexFilters = [];
-	function makeComplexFilters(currentFilters) {
+	function makeComplexFilters(currentFilters, mainPlayerCountry) {
 		complexFilters = [
 			{
 				component: TextFilter,
@@ -448,6 +429,17 @@ changeParams
 					placeholder: 'Enter name or tag...',
 					value: currentFilters.search,
 					open: currentFilters.search?.length,
+				},
+			},
+			{
+				component: CountryFilter,
+				props: {
+					id: 'countries',
+					iconFa: 'fa fa-globe',
+					title: 'Search by country',
+					placeholder: 'Select or enter country...',
+					value: currentFilters.countries,
+					open: currentFilters.countries?.length && currentFilters.countries?.toLowerCase() != mainPlayerCountry?.toLowerCase(),
 				},
 			},
 		];
@@ -464,25 +456,21 @@ changeParams
 		const newFilters = event?.detail ?? {};
 
 		currentFilters.search = newFilters.search;
+		currentFilters.countries = newFilters.countries;
 
 		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
-	let batleRoyaleDraft = false;
-	let draftList = [];
+	let battleRoyaleDraft = false;
+	let battleRoyaleDraftList = [];
 
 	const {open} = getContext('simple-modal');
-	const showPreview = previewLink => {
-		if (document.body.clientWidth < 800) {
-			window.open(previewLink, '_blank');
-		} else {
-			open(Preview, {previewLink: previewLink});
-		}
-	};
 
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${draftList.join(',')}`;
+		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList.join(
+			','
+		)}`;
 		window.open(link, '_blank');
 	}
 
@@ -518,6 +506,7 @@ changeParams
 
 			if (userScore && !userScore?.player?.clans?.length) {
 				userScore.player.clans = $account?.player?.playerInfo?.clans ?? [];
+				userScore.leaderboard = $leaderboardStore?.leaderboard;
 			}
 		} catch (err) {
 			userScore = null;
@@ -548,14 +537,11 @@ changeParams
 	function updateScoresWithUser(userScoreOnCurrentPage, scores, userScore) {
 		scoresWithUser = scores;
 		if (!userScoreOnCurrentPage && scores?.length && userScore) {
-			var key = currentFilters.sortBy;
-			if (key == 'date') {
-				key = 'timeset';
-			}
-			var orderingFunctions = [lessFunction, greaterFunction];
-			if ((key == 'rank' && currentFilters.order == 'asc') || (key != 'rank' && currentFilters.order == 'desc')) {
-				orderingFunctions = [greaterFunction, lessFunction];
-			}
+			const key = currentFilters.sortBy === 'date' ? 'timeset' : currentFilters.sortBy;
+			const orderingFunctions =
+				(key === 'rank' && currentFilters.order === 'asc') || (key !== 'rank' && currentFilters.order === 'desc')
+					? [greaterFunction, lessFunction]
+					: [lessFunction, greaterFunction];
 
 			if (orderingFunctions[0](userScore.score[key], scores[0].score[key])) {
 				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
@@ -587,9 +573,8 @@ changeParams
 
 	$: updateParams(leaderboardId, type, page);
 	$: updateFilters(buildFiltersFromLocation(location));
-	$: makeComplexFilters(buildFiltersFromLocation(location));
 
-	$: scores = opt($leaderboardStore, 'scores', null);
+	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
@@ -608,6 +593,8 @@ changeParams
 
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
+
+	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
@@ -643,6 +630,15 @@ changeParams
 	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
 	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
+
+	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
+
+	$: ratings = {
+		passRating: modifiedPass,
+		accRating: modifiedAcc,
+		techRating: modifiedTech,
+		stars: modifiedStars ?? leaderboard?.stats?.stars,
+	};
 </script>
 
 <svelte:head>
@@ -656,7 +652,13 @@ changeParams
 	<article class="page-content" transition:fade>
 		{#if leaderboard && song && !withoutHeader}
 			<ContentBox cls="leaderboard-header-box">
-				<LeaderboardHeader bind:currentLeaderboardId bind:batleRoyaleDraft {leaderboard} on:group-changed={onSelectedGroupEntryChanged} />
+				<LeaderboardHeader
+					bind:currentLeaderboardId
+					bind:battleRoyaleDraft
+					{leaderboard}
+					{ratings}
+					batleRoyale={replayEnabled}
+					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
 		{/if}
 		<div class="leaderboard content-box">
@@ -699,20 +701,20 @@ changeParams
 					<nav class="switcher-nav">
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
-							<ScoreServiceFilters filters={complexFilters} on:change={onFiltersChanged} />
+							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
 							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
 						</div>
 					</nav>
 				{/if}
 
-				{#if batleRoyaleDraft}
+				{#if battleRoyaleDraft}
 					<div class="royale-title-container">
 						<span class="royale-title">Select players from the leaderboard to join</span>
 						<Button
 							type="purple"
 							label="Let the battle begin!"
 							title="Use the button to the right of timeset for every score to toggle player"
-							disabled={!draftList || draftList.length == 0}
+							disabled={!battleRoyaleDraftList?.length}
 							on:click={() => startBattleRoyale()} />
 					</div>
 				{/if}
@@ -727,152 +729,20 @@ changeParams
 								in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
 								out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
 								animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-								<div class={'player-score'}>
-									<div class="mobile-first-line">
-										<div class="rank with-badge">
-											<Badge
-												onlyLabel={true}
-												color="white"
-												bgColor={opt(score, 'score.rank') === 1
-													? 'darkgoldenrod'
-													: opt(score, 'score.rank') === 2
-													? '#888'
-													: opt(score, 'score.rank') === 3
-													? 'saddlebrown'
-													: opt(score, 'score.rank') >= 10000
-													? 'small'
-													: 'var(--dimmed)'}>
-												<span slot="label">
-													#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />
-												</span>
-											</Badge>
-										</div>
-										<div class="player">
-											<Avatar player={score.player} />
-											<PlayerNameWithFlag
-												player={score.player}
-												type={type === 'accsaber' ? 'accsaber/date' : null}
-												on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
-
-											<ClanBadges player={score.player} />
-										</div>
-										<div class="timeset above-tablet">
-											{#if currentFilters.sortBy == 'pauses'}
-												{score.score.pauses}
-											{:else if currentFilters.sortBy == 'maxStreak'}
-												{score.score.maxStreak}
-											{:else}
-												<span style="color: {getTimeStringColor(opt(score, 'score.timeSet', 'null'))}; ">
-													{opt(score, 'score.timeSetString', '-')}
-												</span>
-											{/if}
-										</div>
-										<div class="timeset mobile-only">
-											{#if currentFilters.sortBy == 'pauses'}
-												{score.score.pauses}
-											{:else if currentFilters.sortBy == 'maxStreak'}
-												{score.score.maxStreak}
-											{:else}
-												<span style="color: {getTimeStringColor(score?.score.timeSet ?? '')}; ">
-													{score?.score?.timeSetStringShort ?? ''}
-												</span>
-											{/if}
-										</div>
-									</div>
-									<div class="mobile-second-line">
-										{#if !noReplayInLeaderboard && type !== 'accsaber'}
-											<div class="replay">
-												{#if batleRoyaleDraft}
-													{#if !draftList.includes(score.player.playerId) && draftList.length < 10}
-														<Button
-															cls="replay-button-alt"
-															icon="<div class='battleroyalejoin-icon'></div>"
-															title="Join battle royal"
-															noMargin={true}
-															on:click={() => {
-																draftList.push(score.player.playerId);
-																draftList = draftList;
-															}} />
-													{:else if draftList.includes(score.player.playerId)}
-														<Button
-															cls="replay-button-alt"
-															icon="<div class='battleroyalestop-icon'></div>"
-															title="Remove from battle royal"
-															noMargin={true}
-															on:click={() => (draftList = draftList.filter(el => el != score.player.playerId))} />
-													{/if}
-												{:else}
-													<Button
-														url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
-														on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
-														cls="replay-button-alt"
-														icon="<div class='replay-icon-alt'></div>"
-														title="Replay"
-														noMargin={true} />
-
-													<span
-														class="beat-savior-reveal clickable"
-														class:opened={openedDetails.includes(score?.score?.id)}
-														on:click={() => toggleOpen(score?.score?.id)}
-														title="Show details">
-														<i class="fas fa-chevron-down" />
-													</span>
-												{/if}
-											</div>
-										{/if}
-										{#if type === 'accsaber' || opt(score, 'score.pp')}
-											<div class="pp with-badge">
-												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-													<span slot="label">
-														{#if type === 'accsaber'}
-															<Pp
-																playerId={opt(score, 'player.playerId')}
-																pp={opt(score, 'score.ap')}
-																weighted={opt(score, 'score.weightedAp')}
-																zero={formatNumber(0)}
-																withZeroSuffix={true}
-																inline={false}
-																suffix="AP"
-																color="white" />
-														{:else}
-															<Pp
-																playerId={opt(score, 'player.playerId')}
-																{leaderboardId}
-																pp={opt(score, 'score.pp')}
-																whatIf={opt(score, 'score.whatIfPp')}
-																inline={false}
-																color="white" />
-														{/if}
-													</span>
-												</Badge>
-											</div>
-										{/if}
-										<div class="percentage with-badge">
-											<Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false} />
-										</div>
-										<div class="score with-badge">
-											<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-												<span slot="label">
-													<Value value={opt(score, 'score.score')} inline={false} digits={0} />
-
-													<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), modifiers)}
-														>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
-												</span>
-											</Badge>
-										</div>
-									</div>
-								</div>
-
-								{#if openedDetails.includes(score?.score?.id)}
-									<div>
-										<SongScoreDetails
-											playerId={score?.player?.playerId}
-											songScore={score}
-											{fixedBrowserTitle}
-											noSsLeaderboard={true}
-											showAccSaberLeaderboard={false} />
-									</div>
-								{/if}
+								<Score
+									{leaderboardId}
+									{score}
+									{type}
+									highlight={score?.player?.playerId === higlightedPlayerId}
+									{modifiers}
+									{fixedBrowserTitle}
+									{battleRoyaleDraft}
+									{battleRoyaleDraftList}
+									sortBy={currentFilters.sortBy}
+									opened={openedDetails.includes(score?.score?.id)}
+									on:toggle-details={() => toggleOpen(score?.score?.id)}
+									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 
 								{#if separatePage && score.score.rankVoting}
 									<div class="rank-voting">
@@ -1253,7 +1123,7 @@ changeParams
 			{/if}
 		</div>
 	</article>
-	{#if separatePage}
+	{#if separatePage && type !== 'accsaber'}
 		<aside transition:fade>
 			{#if qualification && !isRanked}
 				<ContentBox>
@@ -1387,7 +1257,7 @@ changeParams
 				{/if}
 			{/if}
 
-			{#if showCurve && (isRanked || isNominated || isInEvent) && leaderboard?.stats?.stars}
+			{#if showCurve && leaderboard?.stats?.stars}
 				<ContentBox>
 					{#if !curveShown}
 						<div class="score-options-section">
@@ -1422,9 +1292,10 @@ changeParams
 									modifiersRating={leaderboard?.difficultyBl?.modifiersRating}
 									mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
 									on:modified-stars={e => {
-										modifiedPass = e?.detail[0] ?? 0;
-										modifiedAcc = e?.detail[1] ?? 0;
-										modifiedTech = e?.detail[2] ?? 0;
+										modifiedPass = e?.detail?.passRating ?? 0;
+										modifiedAcc = e?.detail?.accRating ?? 0;
+										modifiedTech = e?.detail?.techRating ?? 0;
+										modifiedStars = e?.detail?.stars ?? null;
 									}} />
 							</div>
 						</div>
@@ -1536,34 +1407,6 @@ changeParams
 		font-size: 0.65em;
 	}
 
-	.header-container {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.group-select {
-		height: fit-content;
-		padding: 0.175rem;
-		text-align: center;
-		white-space: nowrap;
-		border: 0;
-		border-radius: 0.2em;
-		cursor: pointer;
-		color: var(--color, #363636);
-		background-color: #dbdbdb;
-		box-shadow: none;
-		opacity: 0.35;
-		font-family: inherit;
-		font-size: 0.875rem;
-		font-weight: 500;
-		margin: 0.4em;
-	}
-
-	.group-option {
-		color: black;
-		font-family: inherit;
-	}
-
 	.stats-with-icons {
 		display: flex;
 		align-content: center;
@@ -1600,156 +1443,6 @@ changeParams
 		border-bottom: 1px solid var(--row-separator);
 	}
 
-	.scores-subgrid {
-		display: grid;
-		grid-template-columns: 1fr;
-		max-width: 100%;
-		position: relative;
-		border-top: 1px solid var(--row-separator);
-	}
-
-	.replay-button {
-		background-color: transparent;
-	}
-
-	.player-score {
-		display: flex;
-		flex-direction: row;
-		grid-gap: 0.4em;
-		padding: 0.2em 0;
-		min-width: 19em;
-	}
-
-	.mobile-first-line {
-		display: flex;
-		grid-gap: 0.4em;
-		align-items: center;
-		flex-grow: 1;
-		min-width: 0;
-	}
-
-	.mobile-second-line {
-		display: flex;
-		grid-gap: 0.4em;
-		align-items: center;
-		min-width: max-content;
-	}
-
-	.player-score.highlight {
-		background: linear-gradient(45deg, #defb6996, transparent, transparent);
-		border-radius: 4px;
-		padding: 0.2em;
-		margin: 0 -0.2em;
-		max-width: 130%;
-	}
-
-	.player-score .rank {
-		font-size: 0.875em;
-		min-width: 2em;
-		flex: none;
-	}
-
-	.player-score .player .clan {
-		display: flex;
-		grid-gap: 0.4em;
-		flex: 1;
-	}
-
-	.player-score .timeset {
-		text-align: center;
-		min-width: 6.9em;
-		flex-basis: fit-content;
-	}
-
-	.player-score .replay {
-		height: 1.8em;
-		min-width: 1.8em;
-		flex: none;
-	}
-
-	.player-score .pp {
-		min-width: 5.5em;
-		flex: none;
-	}
-
-	.player-score .percentage {
-		min-width: 4.5em;
-		flex: none;
-	}
-
-	.player-score .score {
-		min-width: 5em;
-		flex: none;
-	}
-
-	.player-score :global(.badge) {
-		margin: 0 !important;
-		padding: 0.125em 0.25em !important;
-		width: 100%;
-		height: 100%;
-	}
-
-	.player-score :global(.clan-badges .badge) {
-		margin-right: 0.15em !important;
-		padding: 0 !important;
-		font-size: 0.8em !important;
-	}
-
-	.player-score :global(.clan-badges) {
-		height: 1.2em !important;
-	}
-
-	.player-score :global(.badge span) {
-		width: 100%;
-	}
-
-	.player-score :global(.badge small) {
-		display: block;
-		font-size: 0.7em;
-		font-weight: normal;
-		margin-top: -2px;
-	}
-
-	.player-score :global(.inc),
-	.song-score :global(.dec) {
-		color: inherit;
-	}
-
-	.player-score .player :global(.player-name) {
-		cursor: pointer;
-	}
-
-	.player-score .player :global(figure) {
-		width: 1.5em;
-		height: 1.5em;
-		min-width: 1.5em;
-	}
-
-	.player-score .player :global(.player-name) {
-		overflow-x: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.with-badge {
-		height: 100%;
-		text-align: center;
-	}
-
-	.pp.with-badge {
-		position: relative;
-	}
-
-	.switch-and-button {
-		margin-top: -1.5em;
-	}
-
-	.mobile-container {
-		display: flex;
-		flex-direction: row;
-		overflow: hidden;
-		min-width: 19em;
-	}
-
 	.rank-voting {
 		display: flex;
 		grid-gap: 0.4em;
@@ -1780,16 +1473,6 @@ changeParams
 	:global(.battleroyalebtn) {
 		margin-left: 1em;
 		margin-bottom: 0.5em;
-	}
-
-	.title-and-buttons {
-		display: flex;
-		align-items: center;
-		margin: 1.4em;
-		margin-right: 5.3em;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 0.6em;
 	}
 
 	.captor-clan {
@@ -1831,20 +1514,9 @@ changeParams
 		padding-bottom: 2rem;
 	}
 
-	.qualification-container {
-		display: flex;
-		justify-content: center;
-	}
-
 	:global(.voteButton) {
 		margin-top: 0.25em !important;
 		height: 1.8em;
-	}
-
-	.embeded-voting {
-		position: fixed;
-		left: 1.5em;
-		transform: translateY(-0.28em);
 	}
 
 	.to-the-left {
@@ -1870,20 +1542,11 @@ changeParams
 		margin-top: -0.8em;
 	}
 
-	.purple-icon {
-		color: purple;
-	}
-
 	.status-header {
 		text-align: center;
 		font-size: 120%;
 		font-weight: bolder;
 		padding-bottom: 0.4em;
-	}
-
-	.map-rating {
-		padding: 0.5em;
-		color: white;
 	}
 
 	@media screen and (max-width: 1275px) {
@@ -1914,39 +1577,6 @@ changeParams
 			margin-right: 0;
 			margin-bottom: 0.5em;
 		}
-
-		.player-score {
-			flex-direction: column;
-		}
-
-		.mobile-container {
-			flex-direction: column;
-		}
-
-		.player-score .replay {
-			order: 1;
-		}
-
-		.player-score .pp {
-			flex-grow: 1;
-		}
-
-		.player-score .percentage {
-			flex-grow: 1;
-		}
-
-		.player-score .score {
-			flex-grow: 1;
-		}
-
-		.switch-and-button {
-			display: inline-flex;
-			margin-top: 0.5em;
-		}
-
-		:global(.player .clan-badges) {
-			display: none;
-		}
 	}
 
 	:global(.leaderboard-header-box) {
@@ -1971,11 +1601,6 @@ changeParams
 		display: grid;
 		justify-items: center;
 		margin: 0.3em;
-	}
-
-	.player-score .timeset {
-		text-align: right;
-		min-width: fit-content;
 	}
 
 	.box-with-left-arrow {

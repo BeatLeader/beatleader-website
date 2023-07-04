@@ -33,7 +33,7 @@
 
 {#if song}
 	<section>
-		<SongCover {leaderboard} {notClickable} url={leaderboardUrl} />
+		<SongCover mods={score?.mods} {leaderboard} {notClickable} url={leaderboardUrl} />
 
 		<div class="songinfo">
 			{#if notClickable}
@@ -55,16 +55,17 @@
 
 		{#if !noIcons && hash && hash.length}
 			<div class="desktop-and-up">
-				<Icons layoutType="large"
-					   {hash}
-					   {twitchUrl}
-					   {diffInfo}
-					   scoreId={score.id}
-					   {replayLink}
-					   {icons}
-					   {serviceIcon}
-					   noPin={!isPlayerScore}
-					   on:score-pinned/>
+				<Icons
+					layoutType="large"
+					{hash}
+					{twitchUrl}
+					{diffInfo}
+					scoreId={score.id}
+					{replayLink}
+					{icons}
+					{serviceIcon}
+					noPin={!isPlayerScore}
+					on:score-pinned />
 			</div>
 		{/if}
 	</section>

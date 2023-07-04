@@ -1,11 +1,13 @@
 <script>
 	import {getHumanDiffInfo, getIconNameForDiff, getDescriptionForDiff} from '../../utils/beatleader/format';
 	import Value from '../Common/Value.svelte';
+	import {formatNumber} from '../../utils/format';
 
 	export let diff;
 	export let useShortName = false;
 	export let reverseColors = false;
 	export let stars = null;
+	export let modifiedStars = null;
 	export let starsSuffix = '*';
 	export let enabled = true;
 	export let pointer = false;
@@ -15,7 +17,10 @@
 
 	$: diffColor = enabled ? diffInfo?.color : 'gray';
 	$: diffInfo = diff ? getHumanDiffInfo(diff) : null;
-	$: title = useShortName && diffInfo?.type !== 'Standard' ? diffInfo?.name : diffInfo?.fullName;
+	$: areStarsModified = stars && modifiedStars && formatNumber(stars) !== formatNumber(modifiedStars);
+	$: title =
+		(useShortName && diffInfo?.type !== 'Standard' ? diffInfo?.name : diffInfo?.fullName) +
+		(areStarsModified ? ', No mods: ' + formatNumber(stars) + '★' : '');
 </script>
 
 {#if diffInfo}
@@ -37,7 +42,11 @@
 		{/if}
 
 		{#if stars}
-			<Value value={stars} suffix={starsSuffix} zero="" title={!nameAndStars ? title : null} />
+			<Value
+				value={modifiedStars ?? stars}
+				suffix={starsSuffix + (areStarsModified ? ' (M)' : '')}
+				zero=""
+				title={!nameAndStars ? title : null} />
 		{/if}
 	</span>
 {/if}

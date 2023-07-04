@@ -4,6 +4,8 @@
 	import {createEventDispatcher} from 'svelte';
 
 	export let role;
+	export let allRoles;
+	export let index = 0;
 	export let mapperId = null;
 	export let profileAppearance;
 	export let editModel = null;
@@ -29,7 +31,7 @@
 		}
 	}
 
-	function updateRoleIcon(role, mapperId, profileAppearance) {
+	function updateRoleIcon(role, mapperId, profileAppearance, edit) {
 		cls = null;
 		roleIcon = null;
 		roleIconClass = null;
@@ -65,20 +67,36 @@
 				roleIconClass = 'fas fa-user-shield';
 				roleDescription = 'Administrator';
 				break;
+			case 'booster':
+				show = profileAppearance && profileAppearance.includes('booster');
+				roleIcon = BL_ASSETS_CDN + '/boostericon.png';
+				roleDescription = 'Discord Server Booster';
+				if (profileAppearance.includes('tipper') && allRoles.includes('tipper')) {
+					roleIcon = BL_ASSETS_CDN + '/boosterpatreon1.png';
+					roleDescription = 'Tier 1 Patreon supporter and Discord Server Booster ❤️';
+				} else if (profileAppearance.includes('supporter') && allRoles.includes('supporter')) {
+					roleIcon = BL_ASSETS_CDN + '/boosterpatreon2.png';
+					roleDescription = 'Tier 2 Patreon supporter and Discord Server Booster ❤️';
+				} else if (profileAppearance.includes('sponsor') && allRoles.includes('sponsor')) {
+					roleIcon = BL_ASSETS_CDN + '/boosterpatreon3.png';
+					roleDescription = 'Highest tier Patreon supporter. Crypto godge, Discord Server Booster and awesome person owerall 😎';
+				}
+				cls = 'player-role';
+				break;
 			case 'tipper':
-				show = !profileAppearance || profileAppearance.includes('tipper');
+				show = !profileAppearance || (profileAppearance.includes('tipper') && (!profileAppearance.includes('booster') || edit));
 				roleIcon = BL_ASSETS_CDN + '/patreon1.png';
 				roleDescription = 'Tier 1 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'supporter':
-				show = !profileAppearance || profileAppearance.includes('supporter');
+				show = !profileAppearance || (profileAppearance.includes('supporter') && (!profileAppearance.includes('booster') || edit));
 				roleIcon = BL_ASSETS_CDN + '/patreon2.png';
 				roleDescription = 'Tier 2 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'sponsor':
-				show = !profileAppearance || profileAppearance.includes('sponsor');
+				show = !profileAppearance || (profileAppearance.includes('sponsor') && (!profileAppearance.includes('booster') || edit));
 				roleIcon = BL_ASSETS_CDN + '/patreon3.png';
 				roleDescription = 'Highest tier Patreon supporter. Crypto godge';
 				cls = 'player-role';
@@ -89,6 +107,10 @@
 				roleIconClass = 'fas fa-plane';
 				roleDescription = 'Warplane';
 				break;
+		}
+
+		if (edit && cls && index > 0) {
+			cls += ' edit';
 		}
 	}
 
@@ -106,7 +128,7 @@
 		} else editModel.data.profileAppearance = [...editModel.data.profileAppearance, role];
 	}
 
-	$: updateRoleIcon(role, mapperId, editModel?.data?.profileAppearance ?? profileAppearance);
+	$: updateRoleIcon(role, mapperId, editModel?.data?.profileAppearance ?? profileAppearance, !!editModel);
 </script>
 
 {#if (show || !!editModel) && (roleIcon || roleIconClass)}
@@ -136,6 +158,11 @@
 		left: 2em;
 		width: 6em;
 		display: block;
+	}
+
+	.player-role.edit {
+		top: 2em;
+		height: 6em;
 	}
 
 	.role-icon {

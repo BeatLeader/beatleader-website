@@ -13,6 +13,7 @@
 	export let fontSize = 16;
 	export let value = true;
 	export let title = null;
+	export let disabled = false;
 
 	let checked = true;
 	const dispatch = createEventDispatcher();
@@ -39,20 +40,20 @@
 </script>
 
 {#if design == 'inner'}
-	<div class="s s--inner">
+	<div class="s s--inner" class:disabled>
 		<span id={`switch-${uniqueID}`}>{label}</span>
-		<button role="switch" aria-checked={checked} aria-labelledby={`switch-${uniqueID}`} on:click={handleClick}>
+		<button role="switch" aria-checked={checked} {disabled} aria-labelledby={`switch-${uniqueID}`} on:click={handleClick}>
 			<span>on</span>
 			<span>off</span>
 		</button>
 	</div>
 {:else if design == 'slider'}
-	<div class="s s--slider" {title} style="font-size:{fontSize}px">
+	<div class="s s--slider" class:disabled {title} style="font-size:{fontSize}px">
 		<span id={`switch-${uniqueID}`}>{label}</span>
-		<button role="switch" aria-checked={checked} aria-labelledby={`switch-${uniqueID}`} on:click={handleClick} />
+		<button role="switch" aria-checked={checked} {disabled} aria-labelledby={`switch-${uniqueID}`} on:click={handleClick} />
 	</div>
 {:else}
-	<div class="s s--multi">
+	<div class="s s--multi" class:disabled>
 		<div
 			role="radiogroup"
 			class="group-container"
@@ -61,7 +62,7 @@
 			id={`group-${uniqueID}`}>
 			<div class="legend" id={`label-${uniqueID}`}>{label}</div>
 			{#each options as option}
-				<input type="radio" id={`${option}-${uniqueID}`} value={option} bind:group={value} />
+				<input type="radio" id={`${option}-${uniqueID}`} {disabled} value={option} bind:group={value} />
 				<label for={`${option}-${uniqueID}`}>
 					{option}
 				</label>
@@ -256,5 +257,10 @@
 	.s--slider button:focus {
 		box-shadow: 0 0px 8px var(--accent-color);
 		border-radius: 1.5em;
+	}
+
+	.disabled {
+		cursor: not-allowed;
+		opacity: 0.35;
 	}
 </style>

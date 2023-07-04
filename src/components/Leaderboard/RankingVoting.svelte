@@ -293,6 +293,7 @@
 							}} />
 
 						<RangeSlider
+							disabled={true}
 							min={Ranked_Const.MIN_STARS}
 							max={Ranked_Const.MAX_STARS}
 							step={Ranked_Const.STAR_GRANULARITY}
@@ -326,6 +327,7 @@
 							}} />
 
 						<RangeSlider
+							disabled={true}
 							min={Ranked_Const.MIN_STARS}
 							max={Ranked_Const.MAX_STARS}
 							step={Ranked_Const.STAR_GRANULARITY}
@@ -360,6 +362,7 @@
 							}} />
 
 						<RangeSlider
+							disabled={true}
 							min={Ranked_Const.MIN_STARS}
 							max={Ranked_Const.MAX_STARS}
 							step={Ranked_Const.STAR_GRANULARITY}

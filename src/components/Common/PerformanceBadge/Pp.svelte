@@ -18,6 +18,7 @@
 	export let whatIf = null;
 	export let suffix = 'pp';
 	export let secondaryMetric = 'weighted';
+	export let title = null;
 
 	let tooltipOpacity = 0;
 	let tooltipX = null;
@@ -38,7 +39,7 @@
 	let prevTitle = null;
 	let prevIcon = null;
 
-	function onUpdate(type, pp, weighted, improvements) {
+	function onUpdate(type, pp, weighted, improvements, title) {
 		prevIcon = null;
 
 		switch (type) {
@@ -122,31 +123,35 @@
 				break;
 		}
 
-		prevTitle =
-			weighted || improvements
-				? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}\n` : ''}${
-						improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}\n` : ''
-				  }${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}\n` : ''}`
-				: '';
+		if (title?.length) {
+			prevTitle = title;
+		} else {
+			prevTitle =
+				weighted || improvements
+					? `${weighted ? `Weighted: ${formatNumber(weighted)}${suffix}\n` : ''}${
+							improvements?.pp ? `PP improvement: ${formatNumber(improvements.pp, 2, true)}${suffix}\n` : ''
+					  }${improvements?.totalPp ? `Total PP gain: ${formatNumber(improvements.totalPp, 2, true)}${suffix}\n` : ''}`
+					: '';
 
-		if (bonusPp) {
-			prevTitle += `PP bonus: ${formatNumber(bonusPp)}${suffix}\n`;
-		}
-		if (accPp) {
-			prevTitle += `Acc PP part: ${formatNumber(accPp)}${suffix}\n`;
-		}
-		if (passPp) {
-			prevTitle += `Pass PP part: ${formatNumber(passPp)}${suffix}\n`;
-		}
-		if (techPp) {
-			prevTitle += `Tech PP part: ${formatNumber(techPp)}${suffix}\n`;
-		}
-		if (fcPp && fcPp > pp) {
-			prevTitle += `Full combo PP: ${formatNumber(fcPp)}${suffix}\n`;
+			if (bonusPp) {
+				prevTitle += `PP bonus: ${formatNumber(bonusPp)}${suffix}\n`;
+			}
+			if (accPp) {
+				prevTitle += `Acc PP part: ${formatNumber(accPp)}${suffix}\n`;
+			}
+			if (passPp) {
+				prevTitle += `Pass PP part: ${formatNumber(passPp)}${suffix}\n`;
+			}
+			if (techPp) {
+				prevTitle += `Tech PP part: ${formatNumber(techPp)}${suffix}\n`;
+			}
+			if (fcPp && fcPp > pp) {
+				prevTitle += `Full combo PP: ${formatNumber(fcPp)}${suffix}\n`;
+			}
 		}
 	}
 
-	$: onUpdate(secondaryMetric ?? 'weighted', pp, weighted, improvements);
+	$: onUpdate(secondaryMetric ?? 'weighted', pp, weighted, improvements, title);
 </script>
 
 <span class="pp" style="--color: {color}">

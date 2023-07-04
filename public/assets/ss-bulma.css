@@ -11482,6 +11482,10 @@ select {
 	color: var(--textColor);
 	background-color: var(--foreground);
 	outline: none;
+	border: none;
+	padding: 0.3em;
+	-moz-appearance: none;
+	-webkit-appearance: none;
 }
 
 .ssr-page-container {
@@ -11642,6 +11646,47 @@ select {
 	background-image: url('./115s.png');
 }
 
+.icon-mistakes {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./mistakes.png');
+}
+
+.icon-mistakes-mini{
+	width: 12px;
+	height: 12px;
+	content: url('./mistakes.png'); 
+	-webkit-filter: grayscale(100%);
+  	filter: grayscale(100%);
+	filter: invert(0.6);
+}
+
+.lawless-controllable-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./lawless-controllable-icon.png');
+}
+
+.standard-controllable-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./standard-controllable-icon.png');
+}
+
+.onesaber-controllable-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./onesaber-controllable-icon.png');
+}
+
 .content-box.festive {
 	background-image: url(/assets/lights2.gif) !important;
 	background-size: cover !important;
@@ -11745,17 +11790,37 @@ select {
 	background-image: url('./skilltriangle.svg');
 }
 
+.dropdown-header {
+	width: 100%;
+	color: white;
+	background-color: var(--dimmed);
+	border-radius: 0.25rem;
+	user-select: none;
+	cursor: pointer;
+	display: flex;
+}
+
+.dropdown-header-text {
+	font-style: normal;
+	display: inline;
+	white-space: nowrap;
+	width: 100%;
+}
+
 .dropdown-menu {
 	display: none;
 	left: 0;
 	right: 0;
 	width: 100%;
+	min-height: auto;
 	max-height: 20rem;
 	overflow-y: auto;
 	background-color: var(--background);
 	border: 1px solid var(--dimmed);
 	border-radius: 0.25rem;
 	padding: 0;
+	scrollbar-width: thin;
+	scrollbar-color: var(--selected) transparent;
 }
 
 .dropdown-menu.left {
@@ -11770,8 +11835,8 @@ select {
 	width: 0.25rem;
 }
 
-body::-webkit-scrollbar-track {
-	background: var(--foreground, #fff);
+.dropdown-menu::-webkit-scrollbar-track {
+	background: none;
 }
 
 .dropdown-menu::-webkit-scrollbar-thumb {
@@ -11796,9 +11861,18 @@ body::-webkit-scrollbar-track {
 	background-color: var(--selected);
 }
 
+.dropdown-menu .dropdown-item:focus {
+	background-color: var(--selected);
+	outline: none;
+}
+
 .dropdown-content .menu-label {
 	padding: 0.5em;
 	font-size: 1em;
+}
+
+body::-webkit-scrollbar-track {
+	background: var(--foreground, #fff);
 }
 
 .battleroyale-icon {

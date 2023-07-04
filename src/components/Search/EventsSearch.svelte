@@ -8,6 +8,7 @@
 	import EventsItem from './EventsItem.svelte';
 
 	export let value = '';
+	export let priority = 4;
 
 	const dispatch = createEventDispatcher();
 
@@ -48,5 +49,6 @@
 	item={EventsItem}
 	noItems="No events found."
 	url={`/events?search=${filters.search}`}
+	{priority}
 	on:message={onMessage}
 	on:close />

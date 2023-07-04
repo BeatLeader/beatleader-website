@@ -16,7 +16,7 @@ export function processAccGraphs(replay) {
 		realScoreBySaber: {red: [], blue: [], total: []},
 	};
 
-	if (replay.notes.length === 0) return result;
+	if (!replay?.notes?.length) return result;
 
 	const lastNoteTime = replay.notes[replay.notes.length - 1].eventTime;
 	const distanceWeightFunction = createDistanceWeightFunction(weightedPeriodSeconds, weightFunctionSteepness);
@@ -102,6 +102,8 @@ export function processSliceSummary(replay) {
 		createEmptySummary('Backhands'),
 	];
 
+	if (!replay?.notes?.length) return result;
+
 	function getLaneSummaryEntry(noteLineIndex, saberType) {
 		let summaryGroup = getLaneSummaryGroup(noteLineIndex, saberType);
 		return saberType === 0 ? result[summaryGroup].left : result[summaryGroup].right;
@@ -175,6 +177,8 @@ export function processSliceDetails(replay) {
 		}
 		result.summaryGrids.push(summaryGrid);
 	}
+
+	if (!replay?.notes?.length) return result;
 
 	function addScore(cell, score) {
 		cell.count += 1;
@@ -292,6 +296,8 @@ export function processAccuracySpread(replay) {
 		maxTD: 0.0,
 		maxTimeDeviation: 0.0,
 	};
+
+	if (!replay?.notes?.length) return result;
 
 	const timings = [];
 
@@ -436,3 +442,163 @@ function decodeNoteData(noteId) {
 }
 
 //endregion
+
+const createMultiplierCounter = () => {
+	const MAX_MULTIPLIER = 8;
+
+	let value = 1;
+	let progress = 1;
+
+	const inc = () => {
+		if (value >= MAX_MULTIPLIER) return MAX_MULTIPLIER;
+
+		if (progress + 1 >= value * 2) {
+			value *= 2;
+			progress = 0;
+		} else {
+			progress++;
+		}
+
+		return value;
+	};
+	const dec = () => {
+		if (value > 1) {
+			value /= 2;
+		}
+
+		progress = 1;
+
+		return value;
+	};
+
+	return {
+		get: () => value,
+		inc,
+		dec,
+	};
+};
+
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+const getNoteType = noteId => {
+	if (!Number.isFinite(noteId) || noteId >= 80000) return null;
+
+	return Math.floor(noteId / 10000);
+};
+
+const getNoteScore = (noteData, noteCutInfo) => {
+	let beforeCut = 0,
+		accuracy = 0,
+		afterCut = 0;
+
+	if (noteData.scoringType === NoteScoringType.SliderTail) {
+		beforeCut = 70;
+	} else if (noteData.scoringType !== NoteScoringType.BurstSliderElement) {
+		beforeCut = Math.round(clamp(noteCutInfo.beforeCutRating * 70, 0, 70));
+	}
+
+	if (noteData.scoringType === NoteScoringType.SliderHead) {
+		afterCut = 30;
+	} else if (![NoteScoringType.BurstSliderElement, NoteScoringType.BurstSliderHead].includes(noteData.scoringType)) {
+		afterCut = Math.round(clamp(noteCutInfo.afterCutRating * 30, 0, 30));
+	}
+
+	if (noteData.scoringType === NoteScoringType.BurstSliderElement) {
+		accuracy = 20;
+	} else {
+		accuracy = Math.round(15 * (1 - clamp(noteCutInfo.cutDistanceToCenter / 0.3, 0, 1)));
+	}
+
+	return beforeCut + accuracy + afterCut;
+};
+
+export function processUnderswings(replay) {
+	if (!replay) return null;
+
+	if (!replay?.notes?.length)
+		return {
+			count: 0,
+			acc: 0,
+			fcAcc: 0,
+			noUnderswingsAcc: 0,
+			noUnderswingsFcAcc: 0,
+			score: 0,
+			fcScore: 0,
+			noUnderswingsScore: 0,
+			noUnderswingsFcScore: 0,
+			maxCutScore: 0,
+			maxSongScore: 0,
+		};
+
+	const multiplier = createMultiplierCounter();
+	const fcMultiplier = createMultiplierCounter();
+
+	const result = [...replay.notes, ...(replay.walls ?? [])]
+		.map((e, idx) => ({...e, idx, eventTime: e?.eventTime ?? e?.time}))
+		.sort((a, b) => (a.eventTime === b.eventTime ? a.idx - b.idx : a.eventTime - b.eventTime))
+		.reduce(
+			(acc, event) => {
+				if (!Number.isFinite(event?.eventType) || NoteEventType.bomb === event.eventType) {
+					acc.multiplier.dec();
+					return acc;
+				}
+
+				const noteData = decodeNoteData(event.noteID);
+				if (noteData < NoteScoringType.Normal) return acc;
+
+				const maxNoteScore = getNoteScore(noteData, {cutDistanceToCenter: 0, beforeCutRating: 1, afterCutRating: 1});
+
+				switch (event.eventType) {
+					case NoteEventType.good:
+						const realScore = getNoteScore(noteData, event.noteCutInfo);
+						const fullSwing = getNoteScore(noteData, {
+							cutDistanceToCenter: event.noteCutInfo.cutDistanceToCenter,
+							beforeCutRating: 1,
+							afterCutRating: 1,
+						});
+
+						acc.count++;
+						acc.score += realScore * multiplier.get();
+						acc.noUnderswingsScore += fullSwing * multiplier.get();
+						acc.fcScore += realScore * fcMultiplier.get();
+						acc.noUnderswingsFcScore += fullSwing * fcMultiplier.get();
+						acc.maxCutScore += maxNoteScore * fcMultiplier.get();
+						acc.multiplier.inc();
+						break;
+
+					case NoteEventType.bad:
+					case NoteEventType.miss:
+						acc.multiplier.dec();
+						break;
+				}
+
+				acc.maxSongScore += maxNoteScore * fcMultiplier.get();
+				acc.fcMultiplier.inc();
+
+				return acc;
+			},
+			{
+				count: 0,
+				maxCutScore: 0,
+				maxSongScore: 0,
+				score: 0,
+				fcScore: 0,
+				noUnderswingsScore: 0,
+				noUnderswingsFcScore: 0,
+				multiplier,
+				fcMultiplier,
+			}
+		);
+
+	const {multiplier: foo, fcMultiplier: bar, ...rest} = result;
+
+	return {
+		...rest,
+		maxCutScore: result.maxCutScore,
+		maxSongScore: result.maxSongScore,
+		acc: result.maxSongScore ? (result.score / result.maxSongScore) * 100 : 0,
+		fcAcc: result.maxCutScore ? (result.fcScore / result.maxCutScore) * 100 : 0,
+		noUnderswingsAcc: result.maxSongScore ? (result.noUnderswingsScore / result.maxSongScore) * 100 : 0,
+		noUnderswingsFcAcc: result.maxCutScore ? (result.noUnderswingsFcScore / result.maxCutScore) * 100 : 0,
+	};
+}

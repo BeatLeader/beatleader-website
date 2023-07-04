@@ -6,9 +6,13 @@
 	export let mapRating = {};
 	export let showRatings = false;
 
-	const maxRating = showRatings ? 15 : 12;
+	const DEFAULT_MAX_RATING = 15;
 	const gypL = 57.74;
 
+	$: maxRating =
+		Number.isFinite(mapRating?.passRating) && mapRating?.passRating > DEFAULT_MAX_RATING
+			? Math.ceil(mapRating?.passRating)
+			: DEFAULT_MAX_RATING;
 	$: corner1 = {
 		x: (gypL - (mapRating.techRating / maxRating) * gypL) * 0.866,
 		y: 86.6 - (gypL - (mapRating.techRating / maxRating) * gypL) / 2,

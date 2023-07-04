@@ -2,13 +2,15 @@
 	import {createEventDispatcher} from 'svelte';
 	import createBeatSaviorService from '../../services/beatsavior';
 	import createAccSaberService from '../../services/accsaber';
+	import createAccountStore from '../../stores/beatleader/account';
 	import Switcher from '../Common/Switcher.svelte';
 	import ScoreServiceFilters from './ScoreServiceFilters.svelte';
 	import TextFilter from './ScoreFilters/TextFilter.svelte';
 	import SelectFilter from './ScoreFilters/SelectFilter.svelte';
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
-	import {requirementsMap} from '../../utils/beatleader/format';
+	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
+	import editModel from '../../stores/beatleader/profile-edit-model';
 
 	export let playerId = null;
 	export let player = null;
@@ -21,6 +23,7 @@
 
 	const beatSaviorService = createBeatSaviorService();
 	const accSaberService = createAccSaberService();
+	const account = createAccountStore();
 
 	let availableServiceNames = ['beatleader'];
 	let accSaberCategories = null;
@@ -35,6 +38,7 @@
 				{
 					component: Switcher,
 					props: {
+						class: 'score-sorting',
 						values: [
 							{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/pp/1`},
 							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/date/1`},
@@ -49,11 +53,29 @@
 								iconFa: 'icon115s',
 								url: `/u/${playerId}/beatleader/maxStreak/1`,
 							},
+							{
+								id: 'mistakes',
+								label: 'Mistakes',
+								title: 'Sort by mistakes',
+								iconFa: 'icon-mistakes',
+								url: `/u/${playerId}/beatleader/mistakes/1`,
+							},
 						],
 					},
 					key: 'sort',
 					onChange: event => {
 						if (!event?.detail?.id) return null;
+
+						if ($editModel) {
+							if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
+
+							const filterName = `ss-${event.detail.id}`;
+							if ($editModel.data.profileAppearance.includes(filterName)) {
+								$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
+							} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
+
+							return null;
+						}
 
 						dispatch('service-params-change', {
 							sort: event.detail.id,
@@ -151,8 +173,11 @@
 		serviceParams,
 		loadingServiceParams,
 		accSaberCategories,
-		eventsParticipating
+		eventsParticipating,
+		profileAppearance
 	) {
+		const sortingOrFilteringAppearance = (profileAppearance ?? []).filter(a => a.startsWith('ss-') || a.startsWith('sf-'));
+
 		const commonFilters = [
 			{
 				component: TextFilter,
@@ -185,21 +210,14 @@
 					id: 'mode',
 					iconFa: 'fa fa-compass',
 					title: 'Filter by map mode',
-					values: [
-						{id: null, name: 'All'},
-						{id: 'standard', name: 'Standard'},
-						{id: 'onesaber', name: 'One Saber'},
-						{id: '90degree', name: '90 Degree'},
-						{id: '360degree', name: '360 Degree'},
-						{id: 'noarrows', name: 'No arrows'},
-						{id: 'lightshow', name: 'Lightshow'},
-						{id: 'lawless', name: 'Lawless'},
-						{id: 'horizontalstandard', name: 'Horizontal Mirror'},
-						{id: 'verticalstandard', name: 'Vertical Mirror'},
-						{id: 'inversestandard', name: 'Inverse'},
-						{id: 'invertedstandard', name: 'Inverted'},
-						{id: 'rhythmgamestandard', name: 'Rhythm Game!'},
-					],
+					values: [{id: null, name: 'All'}].concat(
+						Object.entries(modeDescriptions).map(([key, type]) => {
+							return {
+								id: key.toLowerCase(),
+								name: modeDescriptions?.[key]?.title ?? 'Standard',
+							};
+						})
+					),
 				},
 			},
 			{
@@ -220,6 +238,8 @@
 			},
 		];
 
+		service = $editModel ? 'beatleader' : service;
+
 		return allServices
 			.filter(s => availableServiceNames.includes(s?.id))
 			.map(s => {
@@ -228,68 +248,94 @@
 				const serviceDef = {...s};
 				serviceDef.switcherComponents = serviceDef.switcherComponents.map(c => ({
 					...c,
-					props: {...c?.props, ...(c?.props?.values ? {values: c.props.values.map(v => ({...v}))} : null)},
+					props: {
+						...c?.props,
+						...(c?.props?.values
+							? {
+									values: c.props.values
+										.filter(v => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`))
+										.map(v => ({
+											...v,
+											title: $editModel ? 'Click to toggle' : v.title,
+											cls: !sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`) ? 'hidden' : '',
+										})),
+							  }
+							: null),
+					},
 				}));
 
 				const currentSortButton = serviceDef.switcherComponents
 					.find(c => c.key === 'sort')
 					?.props?.values?.find(b => b?.id === serviceParams?.sort);
-				if (currentSortButton?.iconFa) {
+				if (!$editModel && currentSortButton?.iconFa) {
 					currentSortButton.iconFa = `fa fa-long-arrow-alt-${serviceParams?.order === 'asc' ? 'up' : 'down'}`;
 				}
 
 				switch (service) {
 					case 'beatleader':
 						if (availableServiceNames.includes('beatleader')) {
-							serviceDef.filters = [...commonFilters].concat([
-								{
-									component: SelectFilter,
-									props: {
-										id: 'songType',
-										iconFa: 'fa fa-cubes',
-										title: 'Filter by map type',
-										values: [
-											{id: null, name: 'All'},
-											{id: 'ranked', name: 'Ranked only'},
-											{id: 'unranked', name: 'Unranked only'},
-										],
-									},
-								},
-								{
-									component: RangeFilter,
-									props: {
-										id: 'stars',
-										iconFa: 'fa fa-star',
-										title: 'Filter by map stars',
-										minValue: 0,
-										maxValue: 15,
-										step: 0.1,
-									},
-								},
-								{
-									component: ModifiersFilter,
-									asComponent: true,
-									props: {
-										id: 'modifiers',
-										selected: serviceParams?.filters?.modifiers,
-									},
-								},
-							]);
+							serviceDef.filters = commonFilters
+								.map(f => ({
+									...f,
+									props: {...f.props, hidden: !sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`)},
+								}))
 
-							if (eventsParticipating?.length)
-								serviceDef.filters = [...serviceDef.filters].concat([
+								.concat([
 									{
 										component: SelectFilter,
 										props: {
-											id: 'eventId',
-											iconFa: 'fa fa-calendar',
-											title: 'Filter by event',
-											values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
-											open: !!serviceParams?.filters?.eventId,
-											defaultValue: serviceParams?.filters?.eventId ?? null,
+											id: 'songType',
+											iconFa: 'fa fa-cubes',
+											title: 'Filter by map type',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-songType`),
+											values: [
+												{id: null, name: 'All'},
+												{id: 'ranked', name: 'Ranked only'},
+												{id: 'unranked', name: 'Unranked only'},
+											],
 										},
 									},
-								]);
+									{
+										component: RangeFilter,
+										props: {
+											id: 'stars',
+											iconFa: 'fa fa-star',
+											title: 'Filter by map stars',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-stars`),
+											minValue: 0,
+											maxValue: 15,
+											step: 0.1,
+										},
+									},
+									{
+										component: ModifiersFilter,
+										asComponent: true,
+										props: {
+											id: 'modifiers',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-modifiers`),
+											selected: serviceParams?.filters?.modifiers,
+										},
+									},
+								])
+								.filter(f => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`));
+
+							if (eventsParticipating?.length)
+								serviceDef.filters = [...serviceDef.filters]
+									.concat([
+										{
+											component: SelectFilter,
+											props: {
+												id: 'eventId',
+												iconFa: 'fa fa-calendar',
+												title: 'Filter by event',
+												hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`),
+												values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
+												open: !!serviceParams?.filters?.eventId,
+												defaultValue: serviceParams?.filters?.eventId ?? null,
+											},
+										},
+									])
+									.filter(f => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`));
 						}
 						break;
 
@@ -335,7 +381,7 @@
 	}
 
 	function onServiceChanged(event) {
-		if (!event?.detail?.id) return;
+		if (!event?.detail?.id || $editModel) return;
 
 		dispatch('service-change', event.detail.id);
 	}
@@ -354,7 +400,20 @@
 		dispatch('service-params-change', changesToPush);
 	}
 
+	function onFilterClick(event) {
+		if (!$editModel || !event?.detail?.id) return;
+
+		if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
+
+		const filterName = `sf-${event.detail.id}`;
+		if ($editModel.data.profileAppearance.includes(filterName)) {
+			$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
+		} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
+	}
+
 	$: eventsParticipating = player?.eventsParticipating ?? null;
+
+	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
 	$: updateAvailableServiceNames(playerId);
 	$: availableServices = updateAvailableServices(
@@ -364,15 +423,16 @@
 		serviceParams,
 		loadingServiceParams,
 		accSaberCategories,
-		eventsParticipating
+		eventsParticipating,
+		profileAppearance
 	);
 
-	$: serviceObj = availableServices.find(s => s.id === service);
+	$: serviceObj = availableServices.find(s => ($editModel && s.id === 'beatleader') || s.id === service);
 	$: loadingServiceObj = availableServices.find(s => s.id === loadingService);
 </script>
 
-<nav>
-	<Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged} loadingValue={loadingServiceObj} />
+<nav class:edit-enabled={!!$editModel}>
+	<Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged} loadingValue={loadingServiceObj} class="service" />
 
 	{#if serviceObj?.switcherComponents?.length}
 		{#each serviceObj.switcherComponents as component (`${serviceObj?.id ?? ''}${component.key ?? 'sort'}`)}
@@ -382,7 +442,7 @@
 
 	{#if serviceObj?.filters}
 		{#key `${playerId}${service}`}
-			<ScoreServiceFilters filters={serviceObj.filters} on:change={onFiltersChanged} />
+			<ScoreServiceFilters filters={serviceObj.filters} on:change={onFiltersChanged} on:click={onFilterClick} />
 		{/key}
 	{/if}
 </nav>
@@ -402,5 +462,38 @@
 
 	nav :global(> *:last-child) {
 		margin-right: 0;
+	}
+
+	.edit-enabled :global(.service) {
+		opacity: 0.2 !important;
+	}
+
+	.edit-enabled :global(.score-sorting .button),
+	.edit-enabled :global(.score-filters .filter-btn),
+	.edit-enabled :global(.score-filters .filter),
+	.edit-enabled :global(.score-filters .filter select),
+	.edit-enabled :global(.score-filters .filter input) {
+		cursor: cell !important;
+		opacity: 1 !important;
+		color: var(--textColor, white) !important;
+		background: transparent !important;
+	}
+
+	.edit-enabled :global(.score-sorting .button:not(.hidden)),
+	.edit-enabled :global(.score-filters .filter:not(.hidden)) {
+		border: 1px dotted var(--textColor, white);
+	}
+
+	.edit-enabled :global(.score-sorting .button.hidden),
+	.edit-enabled :global(.score-filters .filter.hidden) {
+		filter: grayscale(1);
+		opacity: 0.25 !important;
+		transition: all 200ms;
+	}
+
+	.edit-enabled :global(.score-sorting .button.hidden:hover),
+	.edit-enabled :global(.score-filters .filter.hidden:hover) {
+		filter: none;
+		opacity: 0.5 !important;
 	}
 </style>

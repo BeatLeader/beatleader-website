@@ -47,7 +47,14 @@
 			</Button>
 
 			<div class="range">
-				<input type="range" min="0" max="359" step="1" bind:value={editModel.data.hue} class="hue" disabled={!editModel.data.effectName} />
+				<input
+					type="range"
+					min="0"
+					max="359"
+					step="1"
+					bind:value={editModel.data.hue}
+					class="hue"
+					disabled={!editModel.data.effectName || editModel.data.effectName.includes('Booster')} />
 				<span title="Hue" on:click={() => (editModel.data.hue = 0)}>Hue</span>
 			</div>
 
@@ -59,7 +66,7 @@
 					step="0.01"
 					bind:value={editModel.data.saturation}
 					class="saturation"
-					disabled={!editModel.data.effectName} />
+					disabled={!editModel.data.effectName || editModel.data.effectName.includes('Booster')} />
 				<span title="Saturation" on:click={() => (editModel.data.saturation = 1)}>Sat</span>
 			</div>
 

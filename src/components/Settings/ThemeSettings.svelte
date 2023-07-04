@@ -14,7 +14,7 @@
 		{name: 'Mirror - MicroBlock', value: 'mirror'},
 		{name: 'Mirror(Low) - MicroBlock', value: 'mirror-low'},
 		{name: 'Unbounded - MicroBlock', value: 'unbounded'},
-		{name: 'ReeDark (WIP)', value: 'ree-dark'},
+		{name: 'ReeDark', value: 'ree-dark'},
 	];
 
 	let currentTheme = DEFAULT_THEME;
@@ -60,11 +60,7 @@
 <div class="options" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
 	<section class="option">
 		<label title="Choose the theme you want">Theme</label>
-		<Select bind:value={currentTheme}>
-			{#each themes as option (option.value)}
-				<option value={option.value}>{option.name}</option>
-			{/each}
-		</Select>
+		<Select bind:value={currentTheme} options={themes}/>
 	</section>
 	{#if currentTheme != 'default' && currentTheme != 'ree-dark'}
 		<section class="option">

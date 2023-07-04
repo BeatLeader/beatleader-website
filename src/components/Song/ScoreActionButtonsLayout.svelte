@@ -1,26 +1,9 @@
 <script>
 	export let type;
-
-	let pressed = false;
-
-	function HandleMouseDown() {
-		pressed = true;
-	}
-
-	function HandleMouseUp() {
-		pressed = false;
-	}
-
-	$: hoveredScale = pressed ? '90%' : '110%';
 </script>
 
 {#if type === 'large'}
-	<div
-		class="score-action-buttons-layout large"
-		on:mousedown={HandleMouseDown}
-		on:mouseup={HandleMouseUp}
-		on:mouseleave={HandleMouseUp}
-		style="--hovered-scale:{hoveredScale}">
+	<div class="score-action-buttons-layout large">
 		<div class="side-row buttons-container">
 			<slot name="special_buttons" />
 		</div>
@@ -29,12 +12,7 @@
 		</div>
 	</div>
 {:else}
-	<div
-		class="score-action-icons-layout buttons-container flat"
-		on:mousedown={HandleMouseDown}
-		on:mouseup={HandleMouseUp}
-		on:mouseleave={HandleMouseUp}
-		style="--hovered-scale:{hoveredScale}">
+	<div class="score-action-icons-layout buttons-container flat">
 		<slot name="special_buttons" />
 		<slot name="default_buttons" />
 	</div>
@@ -102,6 +80,5 @@
 
 	:global(.buttons-container > span > *):hover {
 		opacity: 1 !important;
-		transform: scale(var(--hovered-scale));
 	}
 </style>

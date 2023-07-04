@@ -9,6 +9,9 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import ssrConfig from '../../ssr-config';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import customProtocolCheck from 'custom-protocol-check';
+	import {getNotificationsContext} from 'svelte-notifications';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let playlist;
 	export let idx;
@@ -16,6 +19,8 @@
 	export let expanded = false;
 	export let accountStore;
 	export let playlistId;
+
+	const {addNotification} = getNotificationsContext();
 
 	let page = 0;
 	let itemsPerPage = 5;
@@ -98,6 +103,34 @@
 		if (totalItems <= itemsPerPage) {
 			page = 0;
 		}
+	}
+
+	let thinking = false;
+
+	function installOneClick() {
+		thinking = true;
+		customProtocolCheck(
+			'bsplaylist://playlist/https://api.beatleader.xyz/playlist/' + playlistId,
+			() => {
+				thinking = false;
+				addNotification({
+					text: 'Nothing happened? Check this instruction: https://beatleader.wiki/en/website/one-click-install',
+					position: 'top-right',
+					type: 'error',
+					removeAfter: 4000,
+				});
+			},
+			() => {
+				thinking = false;
+				addNotification({
+					text: 'Playlist install started!',
+					position: 'top-right',
+					type: 'success',
+					removeAfter: 2000,
+				});
+			},
+			3000
+		);
 	}
 
 	$: songs = playlist.songs;
@@ -188,6 +221,19 @@
 						{/if}
 						{#if canShare}
 							<Button iconFa="fas fa-upload" title="Share playlist" noMargin={true} type="primary" on:click={() => sharePlaylist(idx)} />
+						{/if}
+					{/if}
+					{#if playlistId}
+						{#if thinking}
+							<Spinner />
+						{:else}
+							<Button
+								url="bsplaylist://playlist/https://api.beatleader.xyz/playlist/{playlistId}"
+								noMargin={true}
+								type="green"
+								iconFa="far fa-hand-pointer"
+								title="One click install"
+								on:click={() => installOneClick()} />
 						{/if}
 					{/if}
 					<Button

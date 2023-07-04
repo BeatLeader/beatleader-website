@@ -211,6 +211,44 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 32}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<b>Score Recycling Initiative<br /></b>
+				<span>
+					Players were improving their scores to cut down wasted space and make PP growth sustainable<br />
+				</span>
+			</ContentBox>
+		{/if}
+		{#if eventId == 34}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span>
+					<b>Beat Saber turned 5! Happy Birthday and thank you for megaton of Dopamine generated!</b><br />
+					Check out and compete on maps made by awesome mappers for
+					<a href="https://beatsaver.com/playlists/84243" target="_blank" rel="noreferrer">[2018 THROWBACK]</a>
+					and <a href="https://beatsaver.com/playlists/89418" target="_blank" rel="noreferrer">BSMG anniversary</a>. <br />
+					Top 5 will receive merch from BSMG store as a prize!. <br />
+					Skill issue? Don't worry, you can buy it yourself <a href="https://bsmgstore.com/" target="_blank" rel="noreferrer">here</a>
+					<br />
+					Support modders who are providing you with an exceptional experience for 5 years <br /><br />
+				</span>
+				Check out also festive sabers and mod in the mod assistant
+				<div class="downloadButtons">
+					<a href="https://modelsaber.com/Sabers/?id=1682920308" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download PC sabers" color="red" />
+					</a>
+					<a href="https://bsmg.dev/5thAnniWhacker" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download Quest sabers" color="blue" />
+					</a>
+				</div>
+				<span>
+					Or try our small "festive" theme <a href="/settings#theme" target="_blank" rel="noreferrer"> in settings</a>. <br />
+				</span>
+				<span>
+					<br />
+					<b>Happy weekends and have fun!</b>
+				</span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
@@ -251,9 +289,8 @@
 		</ContentBox>
 	</article>
 
-	{#if mainPlayerId == topPlayerId && currentEvent && Date.now() / 1000 < currentEvent.endDate + WEEKSECONDS}
-		<div
-			style="position: fixed; top: -50px; left: 0; height: 100vh; width: 100vw; display: flex; justify-content: center; overflow: hidden;">
+	{#if mainPlayerId && topPlayerId && mainPlayerId == topPlayerId && currentEvent && Date.now() / 1000 < currentEvent.endDate + WEEKSECONDS}
+		<div class="confetti">
 			<Confetti x={[-5, 5]} y={[0, 0.1]} delay={[500, 2000]} size="20" infinite duration="5000" amount="200" fallDistance="100vh" />
 		</div>
 	{/if}
@@ -276,6 +313,18 @@
 
 	aside :global(.switch-types) {
 		justify-content: flex-start;
+	}
+
+	.confetti {
+		position: fixed;
+		top: -50px;
+		left: 0;
+		height: 100vh;
+		width: 100vw;
+		display: flex;
+		justify-content: center;
+		overflow: hidden;
+		pointer-events: none;
 	}
 
 	:global(.inner-modal) {

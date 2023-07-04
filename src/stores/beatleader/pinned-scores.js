@@ -16,7 +16,9 @@ export default () => {
 
 	const fetchScores = async id => {
 		if (!id) return;
-		fetch(BL_API_URL + `player/${id}/pinnedScores`)
+		fetch(BL_API_URL + `player/${id}/pinnedScores`, {
+			credentials: 'include',
+		})
 			.then(response => response.json())
 			.then(data => {
 				votingStatuses[id] = data?.map(s => processScore(s)) ?? [];

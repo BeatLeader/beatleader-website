@@ -8,7 +8,7 @@ import Mistakes from '../../components/Common/PerformanceBadge/Mistakes.svelte';
 import Label from '../../components/Common/PerformanceBadge/Label.svelte';
 import {describeModifiersAndMultipliers} from './format';
 
-export const availableMetrics = [
+const availableMetrics = [
 	{metric: '__not-set', name: 'Not set'},
 	{
 		metric: 'pp',
@@ -20,8 +20,8 @@ export const availableMetrics = [
 				values: [
 					{name: 'None', value: 'none'},
 					{name: 'Weighted PP', value: 'weighted'},
-					{name: 'PP improvement', value: 'improvement'},
-					{name: 'Total PP gain', value: 'total-gain'},
+					{name: 'PP improvement', value: 'improvement', available: ['profile-score']},
+					{name: 'Total PP gain', value: 'total-gain', available: ['profile-score']},
 					{name: 'PP on full combo', value: 'full-combo'},
 					{name: 'Pass PP', value: 'passPP'},
 					{name: 'Acc PP', value: 'accPP'},
@@ -29,7 +29,10 @@ export const availableMetrics = [
 				],
 			},
 		],
-		default: {secondary: 'weighted'},
+		default: {
+			'profile-score': {secondary: 'weighted'},
+			'leaderboard-score': {},
+		},
 	},
 	{
 		metric: 'acc',
@@ -40,12 +43,13 @@ export const availableMetrics = [
 				name: 'secondary',
 				values: [
 					{name: 'None', value: 'none'},
-					{name: 'Improvement', value: 'improvement'},
+					{name: 'Improvement', value: 'improvement', available: ['profile-score']},
 					{name: 'FC Accuracy', value: 'fcAccuracy'},
+					{name: 'Modifiers', value: 'mods'},
 				],
 			},
 			{
-				label: 'Show modifiers',
+				label: 'Show side modifiers',
 				name: 'withMods',
 				values: [
 					{name: 'Yes', value: true},
@@ -53,7 +57,10 @@ export const availableMetrics = [
 				],
 			},
 		],
-		default: {secondary: 'improvement', withMods: true},
+		default: {
+			'profile-score': {secondary: 'improvement', withMods: true},
+			'leaderboard-score': {secondary: 'mods', withMods: false},
+		},
 	},
 	{
 		metric: 'score',
@@ -66,9 +73,13 @@ export const availableMetrics = [
 					{name: 'Yes', value: true},
 					{name: 'No', value: false},
 				],
+				available: ['profile-score'],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
 	},
 	{
 		metric: 'accLeft',
@@ -83,7 +94,11 @@ export const availableMetrics = [
 				],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
+		available: ['profile-score'],
 	},
 	{
 		metric: 'accRight',
@@ -98,7 +113,11 @@ export const availableMetrics = [
 				],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
+		available: ['profile-score'],
 	},
 	{metric: 'fcAccuracy', name: 'FC accuracy'},
 	{
@@ -112,9 +131,13 @@ export const availableMetrics = [
 					{name: 'Yes', value: true},
 					{name: 'No', value: false},
 				],
+				available: ['profile-score'],
 			},
 		],
-		default: {withImprovements: true},
+		default: {
+			'profile-score': {withImprovements: true},
+			'leaderboard-score': {},
+		},
 	},
 	{metric: 'pauses', name: 'Pauses'},
 	{metric: 'maxStreak', name: 'Max 115 streak'},
@@ -122,13 +145,29 @@ export const availableMetrics = [
 	{metric: 'passPP', name: 'Pass PP'},
 	{metric: 'accPP', name: 'Accuracy PP'},
 	{metric: 'techPP', name: 'Tech PP'},
-	{metric: 'replaysWatched', name: 'Replays watched'},
+	{metric: 'replaysWatched', name: 'Replays watched', available: ['profile-score']},
 	{metric: 'mods', name: 'Modifiers'},
 ];
 
-export const getDefaultMetricWithOptions = metric => ({metric, ...(availableMetrics?.find(m => m.metric === metric)?.default ?? {})});
+export const getAvailableMetrics = (type = 'profile-score') =>
+	availableMetrics
+		.filter(m => !m?.available || m.available.includes(type))
+		.map(m => ({
+			...m,
+			options: m?.options
+				?.filter(o => !o?.available || o.available.includes(type))
+				?.map(o => ({
+					...o,
+					values: o?.values?.filter(f => !f?.available || f.available.includes(type)) ?? null,
+				})),
+		}));
 
-export const getPerformanceBadge = (def, score, improvements, beatSavior, modifiers = {}, isDemo = false) => {
+export const getDefaultMetricWithOptions = (metric, type = 'profile-score') => ({
+	metric,
+	...(availableMetrics.find(m => m.metric === metric)?.default?.[type] ?? {}),
+});
+
+export const getPerformanceBadge = (def, score, improvements, beatSavior, modifiers = {}, isDemo = false, status = 0) => {
 	let component = Badge;
 	let componentProps = {onlyLabel: true, color: 'white'};
 	let title = isDemo ? 'Click to setup' : null;
@@ -143,20 +182,15 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 
 	switch (metric) {
 		case 'pp':
-			title = isDemo
-				? 'Click to setup'
-				: score?.ppWeighted || isNaN(score?.ppWeighted)
-				? ''
-				: getNominatedPPHoverTitle(score, beatSavior, modifiers);
+			title = isDemo ? 'Click to setup' : status === 2 ? getNominatedPPHoverTitle(score, beatSavior, modifiers) : '';
 			className = 'pp';
 
-			if (score?.pp) {
+			if (score?.pp || [2, 3].includes(status)) {
 				componentProps = {
 					onlyLabel: true,
 					color: 'white',
-					styling: score?.ppWeighted ? '' : 'nominated-pp',
-					bgColor: score?.ppWeighted ? 'var(--ppColour)' : 'transparent',
-					title,
+					styling: status === 3 ? '' : 'nominated-pp',
+					bgColor: status === 3 ? 'var(--ppColour)' : 'transparent',
 				};
 
 				slotComponent = Pp;
@@ -175,6 +209,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 					inline: false,
 					color: 'white',
 					secondaryMetric: def?.secondary ?? null,
+					title,
 				};
 			} else {
 				component = null;
@@ -276,6 +311,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 		case 'mistakes':
 			title = isDemo ? 'Click to setup' : null;
 			className = 'beatSavior';
+			icon = 'icon-mistakes';
 
 			if (Number.isFinite(beatSavior?.stats?.miss)) {
 				component = Mistakes;
@@ -520,8 +556,7 @@ function getNominatedPPHoverTitle(score, beatSavior, modifiers) {
 		return title;
 	}
 
-	let fcPp = score?.fcPp;
-	if (!fcPp || fcPp <= 0) {
+	if (!Number.isFinite(score?.fcAccuracy)) {
 		// we need to compute it using fcAccuracy.
 		const fcAccuracy = score?.fcAccuracy;
 

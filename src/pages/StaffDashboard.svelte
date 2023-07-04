@@ -3,7 +3,7 @@
 	import {navigate} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLocalStorageStore from '../stores/localstorage';
-	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards-groupped';
+	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
 	import leaderboardByHashApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards-hash';
 	import playersApiClient from '../network/clients/beatleader/player/api';
 	import {copyToClipboard} from '../utils/clipboard';
@@ -260,6 +260,7 @@
 			valueCondition: 'and',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
+				{id: 'allowed', label: 'Mapper allowed'},
 				{
 					id: 'criteria',
 					label: 'Any Criteria',
@@ -296,6 +297,7 @@
 			valueCondition: 'and',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
+				{id: 'allowed', label: 'Mapper allowed'},
 				{
 					id: 'criteria',
 					label: 'Any Criteria',
@@ -514,26 +516,40 @@
 	let songs = [];
 	let detailsOpened = [];
 
-	let page = 0;
-	let itemsPerPage = 10;
-	let itemsPerPageValues = [5, 10, 20];
+	async function fetchMapsWithType(type, sortBy = 'stars', maxNum = null) {
+		let data = [];
+		let page = 1;
+		let count = ITEMS_PER_PAGE;
+		let pageCount = null;
 
-	let totalItems = 10;
+		while (!pageCount || page <= pageCount) {
+			const pageData = await leaderboardsApiClient.getProcessed({page, filters: {type, sortBy, order: 'desc', count}});
 
-	async function fetchMaps(page, itemsPerPage) {
+			if (!pageData?.data?.length) return data;
+
+			data = [...data, ...pageData.data.map(map => ({...map, type}))];
+
+			if (maxNum && data.length >= maxNum) return data;
+
+			if (!pageCount) {
+				count = pageData?.metadata?.itemsPerPage ?? ITEMS_PER_PAGE;
+				pageCount = pageData?.metadata?.total ? Math.ceil(pageData.metadata.total / count) : null;
+			}
+
+			page++;
+		}
+
+		return data;
+	}
+
+	async function fetchMaps() {
 		try {
 			isLoading = true;
 			error = null;
 
-			const leaderboards = await leaderboardsApiClient.getProcessed({
-				page: page + 1,
-				filters: {type: 'staff', sortBy: 'voting', order: 'desc', count: itemsPerPage},
-			});
-			totalItems = leaderboards.metadata.total;
-
 			songs = Object.values(
-				leaderboards.data
-					.map(map => ({...map, type: 'nominated'}))
+				(await Promise.all([fetchMapsWithType('staff', 'votecount')]))
+					.reduce((carry, maps) => [...carry, ...maps], [])
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, positiveVotes, negativeVotes, ...rest} = map;
 
@@ -801,8 +817,7 @@
 		?.some(role => ['admin', 'rankedteam', 'juniorrankedteam', 'creator'].includes(role));
 	$: isNQT = isAdmin || $account?.player?.playerInfo?.role?.includes('qualityteam');
 	$: isStaff = isRT || isNQT;
-
-	$: if (!$account?.loading && isStaff) fetchMaps(page, itemsPerPage);
+	$: if (!$account?.loading && isStaff) fetchMaps();
 	$: if (!$account?.loading && !isStaff) navigate('/');
 
 	$: currentSortValues = sortValues.map(v => {
@@ -850,6 +865,11 @@
 							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
 
 							switch (key) {
+								case 'allowed':
+									if (statusCond === 'or') result ||= s?.totals?.mapperAllowed > 0;
+									else result &&= s?.totals?.mapperAllowed > 0;
+									break;
+
 								case 'criteria':
 									switch (statusCond) {
 										case 'or':
@@ -901,6 +921,11 @@
 							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
 
 							switch (key) {
+								case 'allowed':
+									if (statusNotCond === 'or') result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
+									else result &&= s?.totals?.mapperAllowed < s?.difficulties?.length;
+									break;
+
 								case 'criteria':
 									switch (statusNotCond) {
 										case 'or':
@@ -1047,6 +1072,8 @@
 						return 0;
 				}
 			}) ?? [];
+
+	$: diffsCount = filteredSongs?.reduce((cnt, s) => cnt + (s?.difficulties?.length ?? 0), 0) ?? 0;
 
 	$: events = filteredSongs
 		.reduce((carry, song) => {
@@ -1384,10 +1411,6 @@
 					{/each}
 				{:else}
 					No songs found.
-				{/if}
-
-				{#if filteredSongs && totalItems > itemsPerPage}
-					<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} />
 				{/if}
 			</section>
 		</ContentBox>

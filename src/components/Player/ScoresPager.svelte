@@ -176,28 +176,47 @@
 
 	const debouncedRefreshGroupedScores = debounce(() => refreshGroupedScores(), DEBOUNCE_THRESHOLD);
 
-	const chartBrowserTooltipTitle = ctx =>
-		playerScoresHistogram?.type === 'time'
-			? formatDate(new Date(ctx?.raw?.x), 'long', ['hour', 'minute'].includes(playerScoresHistogramBucketSize) ? 'short' : null)
-			: `${playerScoresHistogram.prefixLong ?? playerScoresHistogram.prefix}${formatNumber(
-					ctx?.raw?.x,
-					playerScoresHistogram.round
-			  )}${` - ${formatNumber(ctx?.raw?.x + playerScoresHistogramBucketSize, playerScoresHistogram.round)}`}${
-					playerScoresHistogram.suffixLong ?? playerScoresHistogram.suffix
-			  }`;
+	function chartBrowserTooltipTitle(ctx) {
+		if (playerScoresHistogram?.type === 'time') {
+			return formatDate(new Date(ctx?.raw?.x), 'long', ['hour', 'minute'].includes(playerScoresHistogramBucketSize) ? 'short' : null);
+		} else {
+			var result = `${playerScoresHistogram.prefixLong ?? playerScoresHistogram.prefix}${formatNumber(
+				ctx?.raw?.x,
+				playerScoresHistogram.round
+			)}`;
+
+			if (playerScoresHistogramBucketSize != 1) {
+				result += `${` - ${formatNumber(ctx?.raw?.x + playerScoresHistogramBucketSize, playerScoresHistogram.round)}`}`;
+			}
+
+			result += playerScoresHistogram.suffixLong ?? playerScoresHistogram.suffix;
+
+			if (playerScoresHistogramBucketSize == 1 && ctx?.raw?.x > 1) {
+				result += 's';
+			}
+
+			return result;
+		}
+	}
 
 	const chartBrowserTooltipLabel = ctx =>
 		(ctx?.raw?.page ?? null) !== null ? [`${formatNumber(ctx?.raw?.y, 0)} score(s)`, '', `Go to page ${ctx.raw.page + 1}`] : null;
 
-	const chartBrowserTickFormat = (val, idx, ticks) =>
-		playerScoresHistogram?.type === 'time'
-			? formatDateWithOptions(new Date(ticks?.[idx]?.value), {
-					localeMatcher: 'best fit',
-					year: ['year'].includes(playerScoresHistogramBucketSize) ? 'numeric' : '2-digit',
-					month: ['month', 'day', 'hour', 'minute'].includes(playerScoresHistogramBucketSize) ? 'short' : undefined,
-					day: ['hour', 'minute'].includes(playerScoresHistogramBucketSize) ? 'numeric' : undefined,
-			  })
-			: `${playerScoresHistogram.prefix}${formatNumber(ticks?.[idx]?.value, playerScoresHistogram.round)}${playerScoresHistogram.suffix}`;
+	function chartBrowserTickFormat(val, idx, ticks) {
+		if (playerScoresHistogram?.type === 'time') {
+			return formatDateWithOptions(new Date(ticks?.[idx]?.value), {
+				localeMatcher: 'best fit',
+				year: ['year'].includes(playerScoresHistogramBucketSize) ? 'numeric' : '2-digit',
+				month: ['month', 'day', 'hour', 'minute'].includes(playerScoresHistogramBucketSize) ? 'short' : undefined,
+				day: ['hour', 'minute'].includes(playerScoresHistogramBucketSize) ? 'numeric' : undefined,
+			});
+		} else {
+			if (playerScoresHistogram.round == 0 && !Number.isInteger(ticks?.[idx]?.value)) return null;
+			return `${playerScoresHistogram.prefix}${formatNumber(ticks?.[idx]?.value, playerScoresHistogram.round)}${
+				playerScoresHistogram.suffix
+			}`;
+		}
+	}
 
 	$: playerId, service, serviceParams, resetCurrentValues();
 	$: refreshAllPlayerServiceScores(playerId, service, serviceParams);

@@ -8,6 +8,7 @@
 	import ClansItem from './ClansItem.svelte';
 
 	export let value = '';
+	export let priority = 3;
 
 	const dispatch = createEventDispatcher();
 
@@ -48,5 +49,6 @@
 	item={ClansItem}
 	noItems="No clans found."
 	url={`/clans?search=${filters.search}`}
+	{priority}
 	on:message={onMessage}
 	on:close />

@@ -3,9 +3,11 @@
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
 	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
+	import {computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 
 	export let leaderboard = null;
 	export let capturedLeaderboard = null;
+	export let mods = null;
 	export let url = null;
 	export let notClickable = false;
 	export let starsKey = 'stars';
@@ -46,6 +48,20 @@
 		[{url: clSSCoverUrl, priority: 10}, {url: clBeatSaverCoverUrl, priority: 5}]);
 
 	$: coverUrl = loadedImages.length ? loadedImages.sort((a, b) => a?.priority - b?.priority)[0].url : DEFAULT_IMG;
+
+	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: modifiersRating = leaderboard?.difficultyBl?.modifiersRating ?? null;
+	$: passRating = leaderboard?.difficultyBl?.passRating ?? null;
+	$: accRating = leaderboard?.difficultyBl?.accRating ?? null;
+	$: techRating = leaderboard?.difficultyBl?.techRating ?? null;
+	$: actualModifiers = mods?.map(m => ({name: m, value: 0})) ?? null;
+	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
+	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
+	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
+	$: modifiedStars =
+		mods?.length && (passRating !== modifiedPassRating || accRating !== modifiedAccRating || techRating !== modifiedTechRating)
+			? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating)
+			: null;
 </script>
 
 {#if !capturedLeaderboard}

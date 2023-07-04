@@ -34,24 +34,24 @@
 	export let starsKey;
 	export let currentFilters;
 	export let idx;
+	export let viewType;
 
-	$: map?.song?.coverImage && retrieveBackgroundColor(map?.song?.coverImage);
+	$: coverImage = map?.song?.fullCoverImage ?? map?.song?.coverImage;
+	$: coverImage && retrieveBackgroundColor(coverImage);
 </script>
 
-<div
-	class={`map-card row-${idx}`}
-	in:fly={{delay: 250 + idx * 50, duration: 400, y: 100}}
-	out:fade={{delay: 0, duration: 150}}
-	style="background-image:  url({map?.song?.coverImage});">
+<div class={`map-card row-${idx} ${viewType}`} in:fly={{delay: 250 + idx * 50, duration: 400, y: 100}} out:fade={{delay: 0, duration: 150}}>
+	<div class="card-background" style="background-image:  url({coverImage});" data-atropos-offset="-1" />
 	<div class="map-card-header">
 		<div class="difficulty">
 			<MapTimesetDescription
 				{map}
+				{viewType}
 				stars={(map?.difficulty && map?.difficulty[starsKey]) ?? (map?.difficultyBl && map?.difficultyBl[starsKey])} />
 		</div>
 
 		{#if map?.difficulty?.accRating || map?.difficultyBl?.accRating}
-			<div class="type" data-atropos-offset="6">
+			<div class="type" data-atropos-offset="4">
 				<MapTriangleSmall leaderboard={map?.difficulty?.accRating ? map?.difficulty : map?.difficultyBl} />
 			</div>
 		{/if}
@@ -61,9 +61,13 @@
 		<div class="song-title" style="background-color: {backgroundColor};">
 			<div class="name-and-author">
 				<span class="name" data-atropos-offset="3">{map?.song?.name}</span>
-				<span class="author" data-atropos-offset="2">{map?.song?.author}</span>
+
+				{#if viewType == 'maps-table'}
+					<span class="subname" data-atropos-offset="1">{map?.song?.subName}</span>
+				{/if}
+				<span class="author" data-atropos-offset="1">{map?.song?.author}</span>
 			</div>
-			<div class="mapper" data-atropos-offset="2">Mapper: {map?.song?.mapper}</div>
+			<div class="mapper" data-atropos-offset="0.2">Mapper: {map?.song?.mapper}</div>
 		</div>
 		<div class="other-details">
 			<div class="details-and-icons">
@@ -124,11 +128,27 @@
 		justify-content: space-between;
 		width: 18em;
 		min-height: 20em;
-		background-size: cover;
-		background-position: 50%;
 		border-radius: 0.4em;
 		pointer-events: none;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+		overflow: hidden;
+	}
+
+	.card-background {
+		position: absolute;
+		width: 120%;
+		height: 120%;
+		left: -10%;
+		top: -10%;
+		pointer-events: none;
+		background-size: cover;
+		background-position: 50%;
+	}
+
+	.map-card.maps-table {
+		width: 26em;
+		flex-direction: row;
+		min-height: 8em;
 	}
 
 	.map-link {
@@ -148,6 +168,11 @@
 		z-index: 2;
 	}
 
+	.maps-table .map-card-header {
+		flex-direction: column;
+		flex: none;
+	}
+
 	.song-info {
 		display: flex;
 		flex-direction: column;
@@ -155,11 +180,20 @@
 		z-index: 2;
 	}
 
+	.maps-table .song-info {
+		width: 18em;
+	}
+
 	.name-and-author {
 		display: flex;
 		flex-wrap: wrap;
 		align-items: baseline;
 		column-gap: 0.5em;
+	}
+
+	.maps-table .name-and-author {
+		display: inline;
+		line-height: 1em;
 	}
 
 	.author {
@@ -186,6 +220,12 @@
 		margin: -0.03em;
 	}
 
+	.maps-table .other-details {
+		border-radius: 0 0 0.3em 0;
+		min-height: 0;
+		flex-grow: 0;
+	}
+
 	.difficulty {
 		margin: -0.03em;
 	}
@@ -206,9 +246,44 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		min-width: 0;
+	}
+
+	.maps-table .name {
+		white-space: normal;
+		font-size: inherit;
+	}
+
+	.maps-table .author {
+		white-space: normal;
+		font-size: x-small;
+	}
+	.maps-table .mapper {
+		white-space: normal;
+		font-size: x-small;
+	}
+
+	.maps-table .song-title {
+		padding: 0.3em;
+		border-radius: 0 0.3em 0 0;
+		flex-grow: 2;
+		height: auto;
+	}
+
+	.subname {
+		font-size: x-small;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		min-width: 0;
 	}
 
 	.status {
 		padding-left: 0.3em;
+	}
+
+	@media screen and (max-width: 767px) {
+		.map-card.maps-table {
+			width: 20em;
+		}
 	}
 </style>

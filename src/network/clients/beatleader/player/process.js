@@ -19,6 +19,7 @@ export default response => {
 		lastWeekRank,
 		lastWeekCountryRank,
 		banned,
+		bot,
 		banDescription,
 		inactive,
 		mapperId,
@@ -63,6 +64,34 @@ export default response => {
 
 	let processedEventsParticipating = eventsParticipating?.map(e => ({id: e?.eventId, name: e?.name}));
 
+	let profileAppearance = profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : [];
+	if (profileAppearance) {
+		const hasAnyScoreSortingOrFilteringSettings = profileAppearance.some(a => a.startsWith('ss-') || a.startsWith('sf-'));
+		if (!hasAnyScoreSortingOrFilteringSettings) {
+			// set default score sorting and filtering appearance if none are set
+			profileAppearance = [
+				...profileAppearance,
+				'ss-already-set',
+				'ss-pp',
+				'ss-date',
+				'ss-acc',
+				'ss-rank',
+				'ss-stars',
+				'ss-pauses',
+				'ss-maxStreak',
+				'ss-mistakes',
+				'sf-search',
+				'sf-diff',
+				'sf-mode',
+				'sf-requirements',
+				'sf-songType',
+				'sf-stars',
+				'sf-modifiers',
+				'sf-eventId',
+			];
+		}
+	}
+
 	return {
 		playerId,
 		name,
@@ -77,6 +106,7 @@ export default response => {
 			techPp,
 			passPp,
 			banned,
+			bot,
 			banDescription,
 			inactive,
 			rank,
@@ -95,10 +125,12 @@ export default response => {
 		profileSettings: profileSettings
 			? {
 					...profileSettings,
-					profileAppearance: profileSettings?.profileAppearance?.split(',') ?? null,
+					profileAppearance,
 					starredFriends: profileSettings?.starredFriends?.split(',') ?? null,
 			  }
-			: null,
+			: {
+					profileAppearance,
+			  },
 		scoreStats: scoreStats ? scoreStats : null,
 		eventsParticipating: processedEventsParticipating,
 	};

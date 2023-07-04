@@ -13,9 +13,11 @@
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
 
 	export let leaderboard;
+	export let ratings = null;
 
 	export let currentLeaderboardId;
-	export let batleRoyaleDraft;
+	export let batleRoyale = true;
+	export let battleRoyaleDraft;
 
 	const dispatch = createEventDispatcher();
 
@@ -25,7 +27,7 @@
 
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
-	$: coverUrl = song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
+	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
 
 	$: hash = song?.hash;
 	$: diffInfo = leaderboard?.diffInfo;
@@ -47,7 +49,7 @@
 				<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
 			</div>
 
-			<Icons {hash} {diffInfo} mapCheck={true} batleRoyale={true} bind:batleRoyaleDraft />
+			<Icons {hash} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
 		</div>
 
 		<!-- We have to move this code pepelaugh -->
@@ -95,7 +97,7 @@
 			</div>
 			<h2 class="title is-6" style="display: contents;">
 				{#if leaderboard.stats && leaderboard.stats.passRating}
-					<MapTriangle width="8em" height="8em" mapRating={leaderboard.stats} showRatings={true} />
+					<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
 				{/if}
 			</h2>
 			{#if leaderboard?.stats?.requirements}
@@ -239,6 +241,7 @@
 		flex-wrap: wrap;
 		gap: 0.5em;
 		flex-direction: column;
+		min-width: fit-content;
 	}
 
 	:global(.voteButton) {

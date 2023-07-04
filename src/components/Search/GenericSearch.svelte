@@ -16,6 +16,7 @@
 	export let itemsPerPage = DEFAULT_ITEMS_PER_PAGE;
 	export let header = GenericHeader;
 	export let item = null;
+	export let priority = 0;
 	export let noItems = 'No items found.';
 	export let url = null;
 
@@ -147,6 +148,7 @@
 		item,
 		onMessage,
 		noItems,
+		priority,
 	});
 
 	$: if (stringify(filters) !== lastFilters) {

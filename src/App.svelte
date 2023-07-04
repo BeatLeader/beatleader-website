@@ -37,6 +37,9 @@
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
 	import LandingPage from './pages/LandingPage.svelte';
+	import CensusPage from './pages/Census.svelte';
+	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
+	import PatreonPage from './pages/Patreon.svelte';
 
 	export let url = '';
 
@@ -85,6 +88,14 @@
 				document.removeEventListener('scroll', hideTooltip);
 			};
 		}
+
+		window.addEventListener('keydown', event => {
+			if (event.altKey && event.code === 'KeyF') {
+				$search = true;
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		});
 	});
 
 	$: if (mainEl) containerStore.observe(mainEl);
@@ -111,8 +122,8 @@
 							<LandingPage />
 						{/if}
 					</Route>
-					<Route path="/u/:initialPlayerId/*initialParams" let:params>
-						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
+					<Route path="/u/:initialPlayerId/*initialParams" let:params let:location>
+						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
 					</Route>
 					<Route path="/staff" let:location>
 						<StaffDashboard {location} />
@@ -122,6 +133,12 @@
 					<Route path="/socket" component={Socket} />
 					<Route path="/settings" component={Settings} />
 					<Route path="/followed" component={FollowedPage} />
+					<Route path="/census2023" component={CensusPage} />
+					<Route path="/survey/achievement" component={SurveyAchievementPage} />
+					<Route path="/supporting-project/link">
+						<PatreonPage action="linkPatreon" />
+					</Route>
+					<Route path="/supporting-project" component={PatreonPage} />
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />
 					</Route>
@@ -201,7 +218,9 @@
 		<p>
 			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
 			|
-			<a href="http://api.beatleader.xyz/swagger/index.html">API</a>
+			<a href="https://api.beatleader.xyz/swagger/index.html">API</a>
+			|
+			<a href="https://beatleader.wiki/">Wiki</a>
 			|
 			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
 			|

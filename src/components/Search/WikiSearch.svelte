@@ -6,6 +6,7 @@
 	import WikiItem from './WikiItem.svelte';
 
 	export let value = '';
+	export let priority = 6;
 
 	const dispatch = createEventDispatcher();
 
@@ -65,5 +66,6 @@
 	item={WikiItem}
 	noItems="No events found."
 	url="https://beatleader.wiki"
+	{priority}
 	on:message={onMessage}
 	on:close />

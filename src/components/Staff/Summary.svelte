@@ -10,6 +10,7 @@
 	export let count;
 
 	const keys = {
+		mapperAllowed: 'Mapper allowed',
 		criteriaMet: 'Criteria checked',
 		approved: 'RT approved',
 	};
@@ -57,48 +58,47 @@
 </script>
 
 {#if totals && diffsReversed}
-	<div class="totals" class:with-count={!!count}>
-		<div
-			class="ratio"
-			class:neutral={totals.votesTotal === 0}
-			class:ok={totals.votesRating >= 0.666}
-			class:warning={totals.votesRating < 0.666 && totals.votesRating > 0.5}
-			class:error={totals.votesRating <= 0.5}
-			title={`${totals?.byDiff?.length > 1 ? 'Total / ' : ''}Positive: ${totals.votesPositive}, Negative: ${totals.votesNegative}, Total: ${
-				totals.votesTotal
-			}\n${
-				totals?.byDiff?.length > 1
-					? totals.byDiff
-							.map(
-								d =>
-									`${d.name} / Rating: ${formatNumber(d.votesRating)}, Positive: ${d.votesPositive}, Negative: ${d.votesNegative}, Total: ${
-										d.votesTotal
-									}`
-							)
-							.join('\n')
-					: ''
-			}`}>
-			<div class="value">
-				{#if totals.votesRating >= 0.7}
-					<i class="fa fa-check" />
-				{:else}
-					<i class="fa fa-xmark" />
-				{/if}
-				<span>{formatNumber(totals.votesRating)}</span>
-			</div>
-			{#if voters?.length}
-				<div class="dots">
-					{#each voters as vote}
-						{#if $playersCache[vote.playerId]}
-							<img
-								class="voter {vote.value == 1 ? 'positive-vote' : vote.value == 3 ? 'negative-vote' : 'neutral-vote'}"
-								src={$playersCache[vote.playerId].avatar} />
-						{/if}
-					{/each}
-				</div>
+	<div
+		class="ratio"
+		class:neutral={totals.votesTotal === 0}
+		class:ok={totals.votesRating >= 0.666}
+		class:warning={totals.votesRating < 0.666 && totals.votesRating > 0.5}
+		class:error={totals.votesRating <= 0.5}
+		title={`${totals?.byDiff?.length > 1 ? 'Total / ' : ''}Positive: ${totals.votesPositive}, Negative: ${totals.votesNegative}, Total: ${
+			totals.votesTotal
+		}\n${
+			totals?.byDiff?.length > 1
+				? totals.byDiff
+						.map(
+							d =>
+								`${d.name} / Rating: ${formatNumber(d.votesRating)}, Positive: ${d.votesPositive}, Negative: ${d.votesNegative}, Total: ${
+									d.votesTotal
+								}`
+						)
+						.join('\n')
+				: ''
+		}`}>
+		<div class="value">
+			{#if totals.votesRating >= 0.7}
+				<i class="fa fa-check" />
+			{:else}
+				<i class="fa fa-xmark" />
 			{/if}
+			<span>{formatNumber(totals.votesRating)}</span>
 		</div>
-
+		{#if voters?.length}
+			<div class="dots">
+				{#each voters as vote}
+					{#if $playersCache[vote.playerId]}
+						<img
+							class="voter {vote.value == 1 ? 'positive-vote' : vote.value == 3 ? 'negative-vote' : 'neutral-vote'}"
+							src={$playersCache[vote.playerId].avatar} />
+					{/if}
+				{/each}
+			</div>
+		{/if}
+	</div>
+	<div class="totals" class:with-count={!!count}>
 		{#if count}
 			{#each Object.keys(keys) as key (key)}
 				<div
@@ -133,8 +133,7 @@
 {/if}
 
 <style>
-	.totals,
-	.totals .ratio {
+	.totals {
 		gap: 0.25rem;
 		align-items: center;
 	}
@@ -147,13 +146,15 @@
 		margin-right: 1.4em;
 	}
 
-	.totals .ratio {
+	.ratio {
 		display: flex;
 		flex-direction: column;
 		min-width: 3rem;
+		gap: 0.25rem;
+		align-items: center;
 	}
 
-	.totals .ratio .value {
+	.ratio .value {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -163,19 +164,19 @@
 		min-width: 18rem;
 	}
 
-	.totals .ratio.ok {
+	.ratio.ok {
 		color: green;
 	}
 
-	.totals .ratio.warning {
+	.ratio.warning {
 		color: orange;
 	}
 
-	.totals .ratio.error {
+	.ratio.error {
 		color: red;
 	}
 
-	.totals .ratio.neutral {
+	.ratio.neutral {
 		color: var(--faded);
 	}
 

@@ -3,13 +3,14 @@
 	import {fade} from 'svelte/transition';
 	import ssrConfig from '../ssr-config';
 	import {configStore} from '../stores/config';
+	import createAccountStore from '../stores/beatleader/account';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import ThemeSettings from '../components/Settings/ThemeSettings.svelte';
 	import ProfileUiSettings from '../components/Settings/ProfileUISettings.svelte';
 	import ScoreSettings from '../components/Settings/ScoreSettings.svelte';
+	import LeaderboardSettings from '../components/Settings/LeaderboardSettings.svelte';
 	import AccountSettings from '../components/Settings/AccountSettings.svelte';
-	import createAccountStore from '../stores/beatleader/account';
 
 	const account = createAccountStore();
 
@@ -27,6 +28,11 @@
 		{
 			name: 'Scores',
 			link: '#scores',
+			icon: 'fas fa-list',
+		},
+		{
+			name: 'Leaderboard',
+			link: '#leaderboard',
 			icon: 'fas fa-list',
 		},
 	];
@@ -100,6 +106,8 @@
 						{:else if selectedNavigationIndex == 2}
 							<ScoreSettings {animationSign} />
 						{:else if selectedNavigationIndex == 3}
+							<LeaderboardSettings {animationSign} />
+						{:else if selectedNavigationIndex == 4}
 							<AccountSettings {animationSign} />
 						{/if}
 					</div>
@@ -131,6 +139,7 @@
 		border-right: 1px solid #ccc;
 		margin: 0.5em;
 		margin-left: 0;
+		min-width: 11rem;
 	}
 
 	.navigation-item-title {
