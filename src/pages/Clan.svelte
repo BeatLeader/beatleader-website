@@ -15,7 +15,7 @@
 	import {navigate} from 'svelte-routing';
 	import Pager from '../components/Common/Pager.svelte';
 	import PlayerCard from '../components/Ranking/PlayerCard.svelte';
-	import Pp from '../components/Score/Pp.svelte';
+	import Pp from '../components/Common/PerformanceBadge/Pp.svelte';
 	import Rain from '../components/Common/Rain.svelte';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import SongCover from '../components/Player/SongCover.svelte';
@@ -34,7 +34,7 @@
 	import Avatar from '../components/Common/Avatar.svelte';
 	import ClanBadges from '../components/Player/ClanBadges.svelte';
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../utils/date';
-	import Accuracy from '../components/Common/Accuracy.svelte';
+	import Accuracy from '../components/Common/PerformanceBadge/Accuracy.svelte';
 	import {
 		getIconNameForDiff,
 		describeModifiersAndMultipliers,
