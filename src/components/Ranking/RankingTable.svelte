@@ -50,7 +50,7 @@
 			icon: 'fa fa-cubes-stacked',
 		},
 	];
-	let currentTypeValue = filters.mapsType;
+	let currentTypeValue = filters.mapsType ?? 'ranked';
 
 	const statKeys = {
 		acc: {
