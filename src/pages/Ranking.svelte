@@ -338,16 +338,16 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/34')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/37')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/Anniversary-Icon-R452.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/23594-event.png" />
 				<div class="event-text-container">
-					<span class="event-title">Happy Birthday Beat Saber and Modding!</span>
-					<span class="event-text">Compete on the awesome maps from the community to win <s>programming socks</s> BSMG merch!</span>
+					<span class="event-title">Biggest ranked batch in a while!</span>
+					<span class="event-text">Ranked week competition is back, compete on 29 maps to win a badge.</span>
 				</div>
-				<Button label="Event" iconFa="fas fa-cake-candles" on:click={() => navigate('/event/34')} />
+				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/37')} />
 			</div>
-		</ContentBox> -->
+		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -483,7 +483,7 @@
 		width: 100%;
 		height: 100%;
 		display: flex;
-		justify-content: center;
+		justify-content: space-around;
 		align-items: center;
 	}
 
@@ -529,6 +529,12 @@
 
 		.event-text-container {
 			margin-bottom: 1em;
+		}
+
+		.event-image {
+			width: 10em;
+			height: 10em;
+			margin-right: 1em;
 		}
 	}
 </style>
