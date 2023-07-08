@@ -53,7 +53,11 @@
 			{#if roles}
 				<div class="role-icons">
 					{#each roles as role, idx}
-						<RoleIcon {role} mapperId={playerInfo?.mapperId} profileAppearance={playerData?.profileSettings?.profileAppearance ?? null} />
+						<RoleIcon
+							{role}
+							allRoles={roles}
+							mapperId={playerInfo?.mapperId}
+							profileAppearance={playerData?.profileSettings?.profileAppearance ?? null} />
 					{/each}
 				</div>
 			{/if}
