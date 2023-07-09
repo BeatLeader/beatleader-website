@@ -23,8 +23,6 @@
 	import CriteriaCommentary from '../components/Leaderboard/CriteriaCommentary.svelte';
 	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
-	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
-	import ClanName from '../components/Clans/ClanName.svelte';
 
 	import {formatNumber} from '../utils/format';
 	import {
@@ -56,6 +54,7 @@
 	import LeaderboardActionButtons from '../components/Leaderboard/LeaderboardActionButtons.svelte';
 	import LeaderboardHeader from '../components/Leaderboard/LeaderboardHeader.svelte';
 	import Score from '../components/Leaderboard/Score.svelte';
+	import ClanRankingScore from '../components/Leaderboard/ClanRankingScore.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 
 	export let leaderboardId;
@@ -564,7 +563,6 @@ changeParams
 	}
 
 	let showAverageStats = false;
-	let showClanRankingScores = false
 
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
@@ -656,6 +654,7 @@ changeParams
 					bind:currentLeaderboardId
 					bind:battleRoyaleDraft
 					{leaderboard}
+					{leaderboardStore}
 					{ratings}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
@@ -719,183 +718,102 @@ changeParams
 					</div>
 				{/if}
 
-				{#if scoresWithUser?.length}
-					<div class="scores-grid grid-transition-helper">
-						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
-							<div
-								class={`row-${idx}`}
-								class:user-score={score?.isUserScore}
-								class:user-score-top={score?.userScoreTop}
-								in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-								out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-								animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-								<Score
-									{leaderboardId}
-									{score}
-									{type}
-									highlight={score?.player?.playerId === higlightedPlayerId}
-									{modifiers}
-									{fixedBrowserTitle}
-									{battleRoyaleDraft}
-									{battleRoyaleDraftList}
-									sortBy={currentFilters.sortBy}
-									opened={openedDetails.includes(score?.score?.id)}
-									on:toggle-details={() => toggleOpen(score?.score?.id)}
-									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+				{#if currentType != 'clanranking'}
+					{#if scoresWithUser?.length}
+						<div class="scores-grid grid-transition-helper">
+							{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
+								<div
+									class={`row-${idx}`}
+									class:user-score={score?.isUserScore}
+									class:user-score-top={score?.userScoreTop}
+									in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+									out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+									animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
+									<Score
+										{leaderboardId}
+										{score}
+										{type}
+										highlight={score?.player?.playerId === higlightedPlayerId}
+										{modifiers}
+										{fixedBrowserTitle}
+										{battleRoyaleDraft}
+										{battleRoyaleDraftList}
+										sortBy={currentFilters.sortBy}
+										opened={openedDetails.includes(score?.score?.id)}
+										on:toggle-details={() => toggleOpen(score?.score?.id)}
+										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 
-								{#if separatePage && score.score.rankVoting}
-									<div class="rank-voting">
-										<div class="voting-result">
-											<div class="score with-badge">
-												<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-													<span slot="label">
-														<small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
-													</span>
-												</Badge>
+									{#if separatePage && score.score.rankVoting}
+										<div class="rank-voting">
+											<div class="voting-result">
+												<div class="score with-badge">
+													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+														<span slot="label">
+															<small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
+														</span>
+													</Badge>
+												</div>
+												{#if score.score.rankVoting.stars}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<Value title="Stars" value={score.score.rankVoting.stars} inline={false} digits={2} />
+															</span>
+														</Badge>
+													</div>
+												{/if}
+												{#if score.score.rankVoting.type}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<small class="nowrap-label" title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
+															</span>
+														</Badge>
+													</div>
+												{/if}
+												{#if score.score.rankVoting.timeset}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<small class="nowrap-label" title="Timeset"
+																	>{formatDateRelative(dateFromUnix(score.score.rankVoting.timeset))}</small>
+															</span>
+														</Badge>
+													</div>
+												{/if}
 											</div>
-											{#if score.score.rankVoting.stars}
-												<div class="score with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-														<span slot="label">
-															<Value title="Stars" value={score.score.rankVoting.stars} inline={false} digits={2} />
-														</span>
-													</Badge>
-												</div>
-											{/if}
-											{#if score.score.rankVoting.type}
-												<div class="score with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-														<span slot="label">
-															<small class="nowrap-label" title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
-														</span>
-													</Badge>
-												</div>
-											{/if}
-											{#if score.score.rankVoting.timeset}
-												<div class="score with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-														<span slot="label">
-															<small class="nowrap-label" title="Timeset"
-																>{formatDateRelative(dateFromUnix(score.score.rankVoting.timeset))}</small>
-														</span>
-													</Badge>
+											{#if opt(score, 'player.playerId') != $account?.id}
+												<div class="voter-feedback">
+													{#if score.score.rankVoting.feedbacks && score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id).length}
+														{score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id)[0].value ? 'Good voter' : 'Bad voter'}
+													{:else}
+														<Button
+															cls="voter-feedback-button"
+															type="danger"
+															label="Bad voter"
+															title="Mark this vote as of bad quality."
+															noMargin={true}
+															on:click={() => updateVoteFeedback(score.score, 0)} />
+														<Button
+															cls="voter-feedback-button"
+															type="green"
+															label="Good voter"
+															title="This vote is decently represent the map."
+															noMargin={true}
+															on:click={() => updateVoteFeedback(score.score, 1)} />
+													{/if}
 												</div>
 											{/if}
 										</div>
-										{#if opt(score, 'player.playerId') != $account?.id}
-											<div class="voter-feedback">
-												{#if score.score.rankVoting.feedbacks && score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id).length}
-													{score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id)[0].value ? 'Good voter' : 'Bad voter'}
-												{:else}
-													<Button
-														cls="voter-feedback-button"
-														type="danger"
-														label="Bad voter"
-														title="Mark this vote as of bad quality."
-														noMargin={true}
-														on:click={() => updateVoteFeedback(score.score, 0)} />
-													<Button
-														cls="voter-feedback-button"
-														type="green"
-														label="Good voter"
-														title="This vote is decently represent the map."
-														noMargin={true}
-														on:click={() => updateVoteFeedback(score.score, 1)} />
-												{/if}
-											</div>
-										{/if}
-									</div>
-								{/if}
-							</div>
-						{/each}
-					</div>
-
-					{#if votingStats}
-						<div class="voting-result">
-							<span>Average: </span>
-							<div class="score with-badge">
-								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-									<span slot="label">
-										<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
-									</span>
-								</Badge>
-							</div>
-							<div class="score with-badge">
-								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-									<span slot="label">
-										<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
-									</span>
-								</Badge>
-							</div>
-							{#if votingsForTypeStats(votingStats.type)}
-								<div class="score with-badge">
-									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-										<span slot="label">
-											<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
-										</span>
-									</Badge>
+									{/if}
 								</div>
-							{/if}
+							{/each}
 						</div>
+					{:else}
+						<p transition:fade>No scores found.</p>
 					{/if}
-
-					<Pager
-						totalItems={$leaderboardStore.totalItems}
-						{itemsPerPage}
-						itemsPerPageValues={null}
-						currentPage={currentPage - 1}
-						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-						mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
-						on:page-changed={onPageChanged} />
-
-					{#if !separatePage}
-						{#if showStats && leaderboard?.stats}
-							<div class="stats-with-icons">
-								<LeaderboardStats {leaderboard} />
-
-								{#if iconsInInfo}
-									<Icons {hash} {diffInfo} mapCheck={true} />
-								{/if}
-							</div>
-						{/if}
-					{/if}
-
-					{#if separatePage && type !== 'accsaber'}
-						<div class="score-options-section">
-							<span
-								class="beat-savior-reveal clickable"
-								class:opened={showAverageStats}
-								on:click={() => (showAverageStats = !showAverageStats)}
-								title="Show average stats and ranking changes">
-								{#if showAverageStats}
-									Hide details
-								{:else}
-									Show more details
-								{/if}
-
-								<i class="fas fa-chevron-down" />
-							</span>
-						</div>
-						{#if showAverageStats}
-							{#await beatSaviorPromise}
-								<div class="tab">
-									<Spinner />
-								</div>
-							{:then beatSavior}
-								<div transition:slide class="tab">
-									<BeatSaviorDetails {beatSavior} />
-								</div>
-							{/await}
-							{#if !isNominated && leaderboard.qualification}
-								<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
-							{/if}
-							{#if leaderboard.changes}
-								<ReweightStatusRanked map={leaderboard} />
-							{/if}
-						{/if}
-					{/if}
-				{:else if currentType === 'clanranking'}
+				{:else}
 					{#if clanRankingList?.length}
 						<div class="scores-grid grid-transition-helper">
 							{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
@@ -904,219 +822,110 @@ changeParams
 									in:fly={{x: 200, delay: idx * 20, duration: 500}}
 									out:fade={{x: 200, delay: idx * 20, duration: 500}}
 									animate:flip={{duration: 300}}>
-									<div class={'player-score'}>
-										<div class="mobile-first-line">
-											<div class="rank with-badge">
-												<Badge
-													onlyLabel={true}
-													color="white"
-													bgColor={'darkgoldenrod'}>
-													<span slot="label">
-														#<Value value={cr.clanRank} digits={0} zero="?" />
-													</span>
-												</Badge>
-											</div>
-											<div class="player">
-												<Avatar clan={cr.clan} />
-												<ClanName
-													clan={cr.clan}
-													on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />
-													<ClanBadges clanInput={cr.clan}/>
-											</div>
-											<div class="timeset above-tablet">
-												<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
-													{cr.lastUpdateTime}
-												</span>
-											</div>
-											<div class="timeset mobile-only">
-												<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
-													{cr?.lastUpdateTimeShort ?? ''}
-												</span>
-											</div>
-										</div>
-										<div class="mobile-second-line">
-											<div class="score-options-section">
-												<span
-													class="beat-savior-reveal clickable"
-													class:opened={showClanRankingScores}
-													on:click={() => (showClanRankingScores = !showClanRankingScores)}
-													title="Show Scores">
-													{#if showClanRankingScores}
-														Hide Scores
-													{:else}
-														Show Scores
-													{/if}
-													<i class="fas fa-chevron-down" />
-												</span>
-											</div>
-											<div class="pp with-badge">
-												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-													<span slot="label">
-														<Pp
-															pp={cr.clanpp}
-															inline={false}
-															color="white" />
-													</span>
-												</Badge>
-											</div>
-											<div class="percentage with-badge">
-												<ClanAccuracy accuracy={cr.clanAverageAcc} />
-											</div>
-											<div class="score with-badge">
-												<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-													<span slot="label">
-														<Value value={cr.clanTotalScore} inline={false} digits={0} />
-													</span>
-												</Badge>
-											</div>
-										</div>
-									</div>
-									{#if showClanRankingScores}
-										<div class="scores-subgrid grid-transition-helper">
-											{#each opt(cr, 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
-												<div
-													class={`row-${idx}`}
-													class:user-score={score?.isUserScore}
-													class:user-score-top={score?.userScoreTop}
-													in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-													out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-													animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-													<div class={'player-score'}>
-														<div class="mobile-first-line">
-															<i class="fa-solid fa-arrow-right"></i>
-															<div class="rank with-badge">
-																<Badge
-																	onlyLabel={true}
-																	color="white"
-																	bgColor={opt(score, 'score.rank') === 1
-																		? 'darkgoldenrod'
-																		: opt(score, 'score.rank') === 2
-																		? '#888'
-																		: opt(score, 'score.rank') === 3
-																		? 'saddlebrown'
-																		: opt(score, 'score.rank') >= 10000
-																		? 'small'
-																		: 'var(--dimmed)'}>
-																	<span slot="label">
-																		#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />
-																	</span>
-																</Badge>
-															</div>
-															<div class="player">
-																<Avatar player={score.player} />
-																<PlayerNameWithFlag
-																	player={score.player}
-																	type={type === 'accsaber' ? 'accsaber/date' : null}
-																	on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
-										
-																<ClanBadges player={score.player} />
-															</div>
-															<div class="timeset above-tablet">
-																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
-																	{opt(score, 'score.timeSetString', '-')}
-																</span>
-															</div>
-															<div class="timeset mobile-only">
-																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
-																	{score?.score?.timeSetStringShort ?? ''}
-																</span>
-															</div>
-														</div>
-														<div class="mobile-second-line">
-															{#if !noReplayInLeaderboard && type !== 'accsaber'}
-																<div class="replay">
-																	{#if batleRoyaleDraft}
-																		{#if !draftList.includes(score.player.playerId) && draftList.length < 10}
-																			<Button
-																				cls="replay-button-alt"
-																				icon="<div class='battleroyalejoin-icon'></div>"
-																				title="Join battle royal"
-																				noMargin={true}
-																				on:click={() => {
-																					draftList.push(score.player.playerId);
-																					draftList = draftList;
-																				}} />
-																		{:else if draftList.includes(score.player.playerId)}
-																			<Button
-																				cls="replay-button-alt"
-																				icon="<div class='battleroyalestop-icon'></div>"
-																				title="Remove from battle royal"
-																				noMargin={true}
-																				on:click={() => (draftList = draftList.filter(el => el != score.player.playerId))} />
-																		{/if}
-																	{:else}
-																		<Button
-																			url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
-																			on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
-																			cls="replay-button-alt"
-																			icon="<div class='replay-icon-alt'></div>"
-																			title="Replay"
-																			noMargin={true} />
-										
-																		<span
-																			class="beat-savior-reveal clickable"
-																			class:opened={openedDetails.includes(score?.score?.id)}
-																			on:click={() => toggleOpen(score?.score?.id)}
-																			title="Show details">
-																			<i class="fas fa-chevron-down" />
-																		</span>
-																	{/if}
-																</div>
-															{/if}
-															{#if type === 'accsaber' || opt(score, 'score.pp')}
-																<div class="pp with-badge">
-																	<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-																		<span slot="label">
-																			{#if type === 'accsaber'}
-																				<Pp
-																					playerId={opt(score, 'player.playerId')}
-																					pp={opt(score, 'score.ap')}
-																					weighted={opt(score, 'score.weightedAp')}
-																					zero={formatNumber(0)}
-																					withZeroSuffix={true}
-																					inline={false}
-																					suffix="AP"
-																					color="white" />
-																			{:else}
-																				<Pp
-																					playerId={opt(score, 'player.playerId')}
-																					{leaderboardId}
-																					pp={opt(score, 'score.pp')}
-																					whatIf={opt(score, 'score.whatIfPp')}
-																					inline={false}
-																					color="white" />
-																			{/if}
-																		</span>
-																	</Badge>
-																</div>
-															{/if}
-															<div class="percentage with-badge">
-																<Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false} />
-															</div>
-															<div class="score with-badge">
-																<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-																	<span slot="label">
-																		<Value value={opt(score, 'score.score')} inline={false} digits={0} />
-										
-																		<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), modifiers)}
-																			>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
-																	</span>
-																</Badge>
-															</div>
-														</div>
-													</div>
-												</div>
-											{/each}
-										</div>
-									{/if}
+									<ClanRankingScore
+										{leaderboardId}
+										{cr}
+										{type}
+										highlight={score?.player?.playerId === higlightedPlayerId}
+										{modifiers}
+										{fixedBrowserTitle}
+										{battleRoyaleDraft}
+										{battleRoyaleDraftList}
+										sortBy={currentFilters.sortBy}
+										opened={openedDetails.includes(score?.score?.id)}
+										on:toggle-details={() => toggleOpen(score?.score?.id)}
+										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 								</div>
 							{/each}
 						</div>
 					{:else}
 						<p transition:fade>No clan ranking found.</p>
 					{/if}
-				{:else}
-					<p transition:fade>No scores found.</p>
+				{/if}
+
+				{#if votingStats}
+					<div class="voting-result">
+						<span>Average: </span>
+						<div class="score with-badge">
+							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								<span slot="label">
+									<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
+								</span>
+							</Badge>
+						</div>
+						<div class="score with-badge">
+							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								<span slot="label">
+									<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
+								</span>
+							</Badge>
+						</div>
+						{#if votingsForTypeStats(votingStats.type)}
+							<div class="score with-badge">
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+									<span slot="label">
+										<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
+									</span>
+								</Badge>
+							</div>
+						{/if}
+					</div>
+				{/if}
+				<Pager
+					totalItems={$leaderboardStore.totalItems}
+					{itemsPerPage}
+					itemsPerPageValues={null}
+					currentPage={currentPage - 1}
+					loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+					mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+					on:page-changed={onPageChanged} />
+
+				{#if !separatePage}
+					{#if showStats && leaderboard?.stats}
+						<div class="stats-with-icons">
+							<LeaderboardStats {leaderboard} />
+
+							{#if iconsInInfo}
+								<Icons {hash} {diffInfo} mapCheck={true} />
+							{/if}
+						</div>
+					{/if}
+				{/if}
+
+				{#if separatePage && type !== 'accsaber'}
+					<div class="score-options-section">
+						<span
+							class="beat-savior-reveal clickable"
+							class:opened={showAverageStats}
+							on:click={() => (showAverageStats = !showAverageStats)}
+							title="Show average stats and ranking changes">
+							{#if showAverageStats}
+								Hide details
+							{:else}
+								Show more details
+							{/if}
+
+							<i class="fas fa-chevron-down" />
+						</span>
+					</div>
+					{#if showAverageStats}
+						{#await beatSaviorPromise}
+							<div class="tab">
+								<Spinner />
+							</div>
+						{:then beatSavior}
+							<div transition:slide class="tab">
+								<BeatSaviorDetails {beatSavior} />
+							</div>
+						{/await}
+						{#if !isNominated && leaderboard.qualification}
+							<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
+						{/if}
+						{#if leaderboard.changes}
+							<ReweightStatusRanked map={leaderboard} />
+						{/if}
+					{/if}
 				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>

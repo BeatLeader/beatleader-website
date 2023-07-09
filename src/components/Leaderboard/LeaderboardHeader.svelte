@@ -1,18 +1,20 @@
 <script>
 	import MapTypeDescription from './MapTypeDescription.svelte';
 	import MapTriangle from '../Common/MapTriangle.svelte';
-
+	import {opt} from '../../utils/js';
 	import {createEventDispatcher} from 'svelte';
 	import {fade} from 'svelte/transition';
 
 	import Value from '../Common/Value.svelte';
 	import Badge from '../Common/Badge.svelte';
+	import ClanBadges from '../Player/ClanBadges.svelte';
 	import Icons from '../Song/Icons.svelte';
-	import {formatDiffStatus} from '../../utils/beatleader/format';
+	import {formatDiffStatus, DifficultyStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
 
 	export let leaderboard;
+	export let leaderboardStore;
 	export let ratings = null;
 
 	export let currentLeaderboardId;
@@ -25,6 +27,8 @@
 		dispatch('group-changed');
 	}
 
+	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
+	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
 	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
@@ -52,32 +56,6 @@
 			<Icons {hash} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
 		</div>
 
-		<!-- We have to move this code pepelaugh -->
-		{#if isRanked && currentType == 'clanranking'}
-			{#if leaderboard?.clanRankingContested}
-				<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
-					<p>
-						Captured by:
-					</p>
-					<ClanBadges clanInput={'CONTESTED'}/>
-				</div>
-			{:else if (clanRankingList?.[0]?.clan ?? null) === null}
-				<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
-					<p>
-						Captured by:
-					</p>
-					<ClanBadges clanInput={'UNCAPTURED'}/>
-				</div>
-			{:else}
-				<div style=" --clan-color: {clanRankingList?.[0].clan?.color ?? '#000000'}" class="captor-clan captor-clan-outline">
-					<p>
-						Captured by:
-					</p>
-					<ClanBadges clanInput={clanRankingList[0].clan}/>
-				</div>
-			{/if}
-		{/if}
-
 
 		<div class="title-and-buttons">
 			<div class="status-and-type">
@@ -93,6 +71,32 @@
 				{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
 				{#if leaderboard?.stats?.type}
 					<MapTypeDescription type={leaderboard?.stats.type} />
+				{/if}
+			</div>
+			<div class="status-and-type">
+				{#if leaderboard.stats}
+					{#if leaderboard?.clanRankingContested}
+						<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
+							<p class="captured-by">
+								Captured by:
+							</p>
+							<ClanBadges clanInput={'CONTESTED'}/>
+						</div>
+					{:else if (clanRankingList?.[0]?.clan ?? null) === null}
+						<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
+							<p class="captured-by">
+								Captured by:
+							</p>
+							<ClanBadges clanInput={'UNCAPTURED'}/>
+						</div>
+					{:else}
+						<div style=" --clan-color: {clanRankingList?.[0].clan?.color ?? '#000000'}" class="captor-clan captor-clan-outline">
+							<p class="captured-by">
+								Captured by:
+							</p>
+							<ClanBadges clanInput={clanRankingList[0].clan}/>
+						</div>
+					{/if}
 				{/if}
 			</div>
 			<h2 class="title is-6" style="display: contents;">
@@ -182,6 +186,10 @@
 	.status-and-type {
 		display: flex;
 		gap: 0.6em;
+	}
+
+	.captured-by {
+		text-align: center;
 	}
 
 	.group-select {
