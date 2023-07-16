@@ -7,25 +7,30 @@
 	import ClanName from '../Clans/ClanName.svelte';
 	import {configStore} from '../../stores/config';
 	import {createEventDispatcher, getContext} from 'svelte';
+	import {fade, fly} from 'svelte/transition';
+	import {flip} from 'svelte/animate';
 	import {getTimeStringColor} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
+	import {opt} from '../../utils/js';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
 	import Score from '../Leaderboard/Score.svelte';
 	import Value from '../Common/Value.svelte';
-
+	import ClanPerformance from '../Clans/ClanPerformance.svelte';
 
 	export let leaderboardId = null;
+	export let battleRoyaleDraft = false;
+	export let battleRoyaleDraftList = [];
 	export let cr = null
-	export let type = 'beatleader';
-	export let opened = false;
-	export let sortBy = 'rank';
 	export let fixedBrowserTitle = null;
 	export let modifiers = null;
 	export let noReplayInLeaderboard = false;
 	export let selectedMetric = null;
+	export let sortBy = 'rank';
+	export let type = 'beatleader';
+
 
 	const MAX_ROYALE_LIST_LENGTH = 10;
 
@@ -57,7 +62,7 @@
 	$: priorityModifiers = Object.keys(modifiers ?? {})
 		.filter(m => m !== 'modifierId' && (modifiers?.[m] ?? 0) !== 0)
 		.map(m => m?.toUpperCase());
-	$: mods = score?.score?.mods?.sort((a, b) => (priorityModifiers.includes(a) ? -1 : priorityModifiers.includes(b) ? 1 : 0));
+	// $: mods = score?.score?.mods?.sort((a, b) => (priorityModifiers.includes(a) ? -1 : priorityModifiers.includes(b) ? 1 : 0));
 	$: additionalStat = ['pauses', 'maxStreak', 'acc'].includes(sortBy) ? sortBy : null;
 	$: showAdditionalStat =
 		(additionalStat &&
@@ -75,12 +80,21 @@
 				<Badge
 					onlyLabel={true}
 					color="white"
-					bgColor={'darkgoldenrod'}>
+					bgColor={cr?.clanRank === 1
+						? 'darkgoldenrod'
+						: cr?.clanRank === 2
+						? '#888'
+						: cr?.clanRank === 3
+						? 'saddlebrown'
+						: cr?.clanRank >= 10000
+						? 'small'
+						: 'var(--dimmed)'}>
 					<span slot="label">
-						#<Value value={cr.clanRank} digits={0} zero="?" />
+						#<Value value={cr?.clanRank} digits={0} zero="?" />
 					</span>
 				</Badge>
 			</div>
+
 			<div class="player">
 				<Avatar clan={cr.clan} />
 				<ClanName
@@ -114,8 +128,11 @@
 					<i class="fas fa-chevron-down" />
 				</span>
 			</div>
+
+
 			<!-- TODO: LINE THIS UP WITH CLAN PERFORMANCE OR SOMETHING -->
-			<PlayerPerformance type="leaderboard-score" service={type} songScore={score} {modifiers} {selectedMetric} on:badge-click />
+			<ClanPerformance type="leaderboard-score" service={type} songScore={score} {modifiers} {selectedMetric} on:badge-click />
+
 			<!-- <div class="pp with-badge">
 				<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 					<span slot="label">
@@ -152,14 +169,11 @@
 					{leaderboardId}
 					{score}
 					{type}
-					highlight={score?.player?.playerId === higlightedPlayerId}
 					{modifiers}
 					{fixedBrowserTitle}
 					{battleRoyaleDraft}
 					{battleRoyaleDraftList}
-					sortBy={currentFilters.sortBy}
-					opened={openedDetails.includes(score?.score?.id)}
-					on:toggle-details={() => toggleOpen(score?.score?.id)}
+					sortBy={sortBy}
 					on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 					on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 			</div>
@@ -175,6 +189,18 @@
 		grid-gap: 0.4em;
 		padding: 0.2em 0;
 		min-width: 19em;
+	}
+
+	.scores-subgrid {
+		display: grid;
+		grid-template-columns: 1fr;
+		max-width: 100%;
+		position: relative;
+		padding-left: 2em;
+	}
+
+	.scores-subgrid > *:not(:last-child) {
+		border-bottom: 1px solid var(--row-separator);
 	}
 
 	.mobile-first-line {

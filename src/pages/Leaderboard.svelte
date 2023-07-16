@@ -826,14 +826,11 @@ changeParams
 										{leaderboardId}
 										{cr}
 										{type}
-										highlight={score?.player?.playerId === higlightedPlayerId}
 										{modifiers}
 										{fixedBrowserTitle}
 										{battleRoyaleDraft}
 										{battleRoyaleDraftList}
 										sortBy={currentFilters.sortBy}
-										opened={openedDetails.includes(score?.score?.id)}
-										on:toggle-details={() => toggleOpen(score?.score?.id)}
 										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 								</div>
