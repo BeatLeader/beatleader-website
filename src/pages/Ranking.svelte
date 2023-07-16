@@ -338,7 +338,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/37')}>
+		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/37')}>
 			<div class="event-container">
 				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/23594-event.png" />
 				<div class="event-text-container">
@@ -347,7 +347,7 @@
 				</div>
 				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/37')} />
 			</div>
-		</ContentBox>
+		</ContentBox> -->
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">

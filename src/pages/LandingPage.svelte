@@ -145,7 +145,7 @@
 
 <style>
 	.big-landing-box {
-		background: url('/assets/landing-big.png') !important;
+		background: url('/assets/landing-big.jpg') !important;
 		background-position-y: 50em !important;
 		background-position-x: 80% !important;
 		display: flex;

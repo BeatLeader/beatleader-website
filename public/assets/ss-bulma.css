@@ -1,4 +1,5 @@
 @charset "UTF-8";
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 
 :root {
 	--background: #222;
@@ -43,8 +44,6 @@
 	--range-pip-hover-text: var(--beatleader-primary);
 	--range-float-text: white;
 }
-
-@import url('https://fonts.googleapis.com/css2?family=Audiowide:wght@400;500;600;700;800&display=swap');
 
 @keyframes spinAround {
 	from {
