@@ -145,6 +145,8 @@ const availableMetrics = [
 	{metric: 'passPP', name: 'Pass PP'},
 	{metric: 'accPP', name: 'Accuracy PP'},
 	{metric: 'techPP', name: 'Tech PP'},
+	{metric: 'improvedRank', name: 'Rank improved'},
+	{metric: 'improvedTotalRank', name: 'Total rank improved'},
 	{metric: 'replaysWatched', name: 'Replays watched', available: ['profile-score']},
 	{metric: 'mods', name: 'Modifiers'},
 ];
@@ -379,6 +381,26 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 
 			slotComponentProps = {
 				value: score?.[metric],
+				inline: true,
+				digits: 0,
+				suffix: ``,
+			};
+			break;
+		case 'improvedRank':
+		case 'improvedTotalRank':
+			title = isDemo ? 'Click to setup' : `${metric == 'improvedRank' ? 'Leaderboard ranks' : 'Total ranks'}: ${-score?.[metric] ?? 0}`;
+			className = 'beatSavior';
+			icon = 'fa-solid fa-arrow-up-right-dots';
+
+			componentProps = {
+				onlyLabel: true,
+				color: 'white',
+				bgColor: 'var(--dimmed)',
+				title,
+			};
+
+			slotComponentProps = {
+				value: -score?.[metric],
 				inline: true,
 				digits: 0,
 				suffix: ``,
