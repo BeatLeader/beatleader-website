@@ -54,6 +54,13 @@
 								url: `/u/${playerId}/beatleader/maxStreak/1`,
 							},
 							{
+								id: 'replaysWatched',
+								label: 'Watched',
+								title: 'Sort by replay watched',
+								iconFa: 'fa fa-eye',
+								url: `/u/${playerId}/beatleader/replaysWatched/1`,
+							},
+							{
 								id: 'mistakes',
 								label: 'Mistakes',
 								title: 'Sort by mistakes',
