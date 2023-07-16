@@ -25,10 +25,6 @@
 		z-index: var(--z-index);
 	}
 
-	.content-box:hover {
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
-	}
-
 	@media screen and (max-width: 767px) {
 		.content-box {
 			margin: 4px 0 18px;

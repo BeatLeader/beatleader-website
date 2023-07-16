@@ -50,59 +50,6 @@ body {
     }
 }
 
-
-// Main page
-.sspl-page-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    text-align: center;
-
-    // Title
-    .title.is-4.svelte-ic5bju {
-        font-size: 50px;
-        position: relative;
-
-        &::after {
-            position: absolute;
-            bottom: -1rem;
-            left: 0px;
-            width: 100%;
-            background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
-            height: 0.4rem;
-            content: "";
-        }
-    }
-
-    // Icons
-    .sources {
-        justify-content: center;
-
-        * {
-            cursor: pointer !important;
-        }
-
-        .title.is-6 {
-            filter: grayscale(1);
-            box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.048);
-            background: rgb(37, 37, 37);
-            padding: 1rem;
-            border-radius: .3rem;
-            margin: .5rem;
-            transition: filter 0.1s;
-
-            .icon {
-                margin: 0 !important;
-            }
-
-            &:hover {
-                filter: none;
-            }
-        }
-    }
-
-}
-
 // All Player grids
 .ranking-grid,
 .players {

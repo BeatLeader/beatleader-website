@@ -44,6 +44,8 @@
 	--range-float-text: white;
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Audiowide:wght@400;500;600;700;800&display=swap');
+
 @keyframes spinAround {
 	from {
 		transform: rotate(0deg);
@@ -11652,12 +11654,12 @@ select {
 	background-image: url('./mistakes.png');
 }
 
-.icon-mistakes-mini{
+.icon-mistakes-mini {
 	width: 12px;
 	height: 12px;
-	content: url('./mistakes.png'); 
+	content: url('./mistakes.png');
 	-webkit-filter: grayscale(100%);
-  	filter: grayscale(100%);
+	filter: grayscale(100%);
 	filter: invert(0.6);
 }
 
