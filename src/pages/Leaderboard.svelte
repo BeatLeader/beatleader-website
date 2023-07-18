@@ -154,6 +154,12 @@
 	let modifiedTech = null;
 	let modifiedStars = null;
 
+	function initRatings(leaderboard) {
+		modifiedPass = leaderboard?.stats?.passRating;
+		modifiedAcc = leaderboard?.stats?.accRating;
+		modifiedTech = leaderboard?.stats?.techRating;
+	}
+
 	let openedDetails = [];
 
 	let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
@@ -579,6 +585,7 @@
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
+	$: initRatings(leaderboard);
 
 	$: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song);
 	$: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null;

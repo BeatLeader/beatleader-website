@@ -213,7 +213,6 @@
 	}
 
 	.other-details {
-		min-height: 4em;
 		background-color: #0a0a0a;
 		flex-grow: 1;
 		border-radius: 0 0 0.3em 0.3em;
