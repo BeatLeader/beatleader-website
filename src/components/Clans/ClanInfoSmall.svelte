@@ -40,7 +40,7 @@
 	$: clanAverageRank = clan?.averageRank ?? null;
 	$: clanPp = clan?.pp ?? null;
 	$: clanCapturedMaps = clan?.capturedLeaderboards?.length ?? null;
-	$: rankedPoolPercent = clan.rankedPoolPercentCaptured && clanCapturedMaps ? (clanCapturedMaps / clan.rankedPoolPercentCaptured) * 100 : 0;
+	$: rankedPoolPercent = clan.rankedPoolPercentCaptured && clanCapturedMaps ? clan.rankedPoolPercentCaptured * 100 : 0;
 </script>
 
 {#if clan?.id}

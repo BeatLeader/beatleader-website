@@ -45,7 +45,7 @@ export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
-export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sort=${sort}&order=${order}';
+export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}&capturedleaderboards=${capturedleaderboards}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
@@ -351,7 +351,6 @@ export default (options = {}) => {
 		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), options, priority);
 
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-	//fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}, true), options, priority)
 		fetchJson(substituteVars(
 			BL_API_CLAN_URL, {clanId, page, ...filters}, true), 
 			options, 

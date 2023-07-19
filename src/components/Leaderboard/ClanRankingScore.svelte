@@ -1,24 +1,20 @@
 <script>
 	import Avatar from '../Common/Avatar.svelte';
 	import Badge from '../Common/Badge.svelte';
-	import Button from '../Common/Button.svelte';
-	import ClanAccuracy from '../Clans/ClanAccuracy.svelte';
 	import ClanBadges from '../Player/ClanBadges.svelte';
 	import ClanName from '../Clans/ClanName.svelte';
-	import {configStore} from '../../stores/config';
-	import {createEventDispatcher, getContext} from 'svelte';
+	import {getContext} from 'svelte';
 	import {fade, fly} from 'svelte/transition';
 	import {flip} from 'svelte/animate';
 	import {getTimeStringColor} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
-	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
-	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
-	import Preview from '../Common/Preview.svelte';
-	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
+
 	import Score from '../Leaderboard/Score.svelte';
 	import Value from '../Common/Value.svelte';
-	import ClanPerformance from '../Clans/ClanPerformance.svelte';
+
+	// Badges
+	import Pp from '../Common/PerformanceBadge/Pp.svelte'
 
 	export let leaderboardId = null;
 	export let battleRoyaleDraft = false;
@@ -34,16 +30,7 @@
 
 	const MAX_ROYALE_LIST_LENGTH = 10;
 
-	const dispatch = createEventDispatcher();
-
 	const {open} = getContext('simple-modal');
-	const showPreview = previewLink => {
-		if (document.body.clientWidth < 800) {
-			window.open(previewLink, '_blank');
-		} else {
-			open(Preview, {previewLink});
-		}
-	};
 
 	function navigateToClan(clanTag) {
 		if (!clanTag) return;
@@ -51,26 +38,7 @@
 		navigate(`/clan/${clanTag}/players/1?`);
 	}
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
-
-		navigate(`/u/${playerId}`);
-	}
-
 	let showClanRankingScores = false
-
-	$: priorityModifiers = Object.keys(modifiers ?? {})
-		.filter(m => m !== 'modifierId' && (modifiers?.[m] ?? 0) !== 0)
-		.map(m => m?.toUpperCase());
-	// $: mods = score?.score?.mods?.sort((a, b) => (priorityModifiers.includes(a) ? -1 : priorityModifiers.includes(b) ? 1 : 0));
-	$: additionalStat = ['pauses', 'maxStreak', 'acc'].includes(sortBy) ? sortBy : null;
-	$: showAdditionalStat =
-		(additionalStat &&
-			$configStore?.leaderboardPreferences?.badges
-				?.slice(0, $configStore?.leaderboardPreferences?.badgeRows ?? 1)
-				?.some(row => row.some(col => col?.metric === additionalStat)) === false) ||
-		$configStore?.leaderboardPreferences?.show?.date === true ||
-		(sortBy === 'date' && $configStore?.leaderboardPreferences?.show?.date === false);
 </script>
 
 {#if cr}
@@ -128,31 +96,38 @@
 					<i class="fas fa-chevron-down" />
 				</span>
 			</div>
-
-
-			<!-- TODO: LINE THIS UP WITH CLAN PERFORMANCE OR SOMETHING -->
-			<ClanPerformance type="leaderboard-score" service={type} songScore={score} {modifiers} {selectedMetric} on:badge-click />
-
-			<!-- <div class="pp with-badge">
-				<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
+			
+			<!-- TODO: cr.clanpp is an aggregate of pp from all the scores set from this clan on this leaderboard
+			<div class='badge'>
+				<Badge 
+					onlyLabel={true} 
+					color="white" 
+					bgColor={'#888'}>
 					<span slot="label">
-						<Pp
-							pp={cr.clanpp}
-							inline={false}
-							color="white" />
-					</span>
-				</Badge>
-			</div>
-			<div class="percentage with-badge">
-				<ClanAccuracy accuracy={cr.clanAverageAcc} />
-			</div>
-			<div class="score with-badge">
-				<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-					<span slot="label">
-						<Value value={cr.clanTotalScore} inline={false} digits={0} />
+						<Pp pp={cr.clanpp}/>
 					</span>
 				</Badge>
 			</div> -->
+
+			<!-- TODO: cr.clanAverageAcc is the average accuracy value of all scores set from this clan on this leaderboard
+			<Badge
+				onlyLabel={true}
+				color="white"
+				bgColor={'#888'}>
+				<span slot="label">
+					<Value value={cr?.clanAverageAcc} digits={0} zero="?" suffix='%' />
+				</span>
+			</Badge> -->
+
+			<!-- TODO: cr.clanTotalScore is the aggregate of score from all the scores set from this clan on this leaderboard
+			<Badge 
+				onlyLabel={true} 
+				color="white" 
+				bgColor={'#888'}>
+				<span slot="label">
+					<Value value={cr?.clanTotalScore} digits={0} zero="?" />
+				</span>
+			</Badge> -->
 		</div>
 	</div>
 	{#if showClanRankingScores}
@@ -183,6 +158,19 @@
 {/if}
 
 <style>
+	.badge {
+		position: relative;
+		display: inline-flex;
+		justify-content: space-around;
+		align-items: center;
+		color: var(--color, #eee);
+		background-color: var(--background-color, #222);
+		margin: 0 0.5em 0.5em 0;
+		padding: 0.125em;
+		border-radius: 0.25em;
+		transition: opacity 0.25s;
+	}
+
 	.player-score {
 		display: flex;
 		flex-direction: row;

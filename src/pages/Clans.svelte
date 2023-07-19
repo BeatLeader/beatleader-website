@@ -38,7 +38,7 @@
 
 		const params = [
 			{key: 'search', default: '', process: processString},
-			{key: 'sortBy', default: 'pp', process: processString},
+			{key: 'sortBy', default: 'captures', process: processString},
 			{key: 'order', default: 'desc', process: processString},
 		];
 
