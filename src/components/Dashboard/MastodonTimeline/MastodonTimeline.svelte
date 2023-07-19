@@ -6,6 +6,7 @@
 	// Timeline settings
 
 	import {onMount} from 'svelte';
+	import './mastodon-timeline.css';
 
 	let MastodonApi = function (params_) {
 		// Endpoint access settings / default values
