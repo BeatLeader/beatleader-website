@@ -26,7 +26,7 @@
 		}
 	}
 
-	$: drawCinematics(cinematicsCanvas, '/assets/landing-big.png');
+	$: drawCinematics(cinematicsCanvas, '/assets/landing-big.jpg');
 </script>
 
 <svelte:head>

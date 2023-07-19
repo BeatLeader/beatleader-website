@@ -3,11 +3,11 @@
 	import {fade} from 'svelte/transition';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import Timeline from '../components/Twitter/Timeline.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import FollowedRanking from '../components/Dashboard/FollowedRanking.svelte';
 	import FollowedScores from '../components/Dashboard/FollowedScores.svelte';
+	import MastodonTimeline from '../components/Dashboard/MastodonTimeline/MastodonTimeline.svelte';
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
@@ -27,7 +27,7 @@
 			<FollowedRanking />
 			<div class="twitterEmbed">
 				<ContentBox>
-					<Timeline href="https://twitter.com/beatleader_" />
+					<MastodonTimeline />
 				</ContentBox>
 			</div>
 			<div class="downloadButtons">
@@ -44,7 +44,7 @@
 		</div>
 		<div class="twitterEmbedMobile">
 			<ContentBox cls="twitterBox">
-				<Timeline href="https://twitter.com/beatleader_" />
+				<MastodonTimeline />
 			</ContentBox>
 		</div>
 	</div>
