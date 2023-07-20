@@ -398,7 +398,6 @@
 
 	onMount(() => {
 		if (mapi) return;
-		console.log('HEEERE');
 		mapi = new MastodonApi({
 			// Id of the <div> containing the timeline
 			container_body_id,

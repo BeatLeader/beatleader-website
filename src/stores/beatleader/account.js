@@ -25,7 +25,7 @@ export default (refreshOnCreate = true) => {
 
 			account = {...user, id: user.player?.playerId ?? null};
 		} catch (err) {
-			account = {};
+			account = {refreshError: true};
 		}
 
 		set(account);
