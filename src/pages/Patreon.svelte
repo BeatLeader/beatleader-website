@@ -179,6 +179,18 @@
 						onlyurl={true}
 						type="green" />
 				</div>
+			{:else}
+				<div class="benefit-button-container">
+					<span>Sorry but account you linked can't be used in the PC game.<br /></span>
+					<span>Migrate to Steam in settings or feel free to ask us on Discord.<br /></span>
+					<Button
+						iconFa="fas fa-tower-cell"
+						title="Contact on Discord"
+						label="Ask devs!"
+						url={'https://discord.com/channels/921820046345523311/951919251227295844'}
+						onlyurl={true}
+						type="blurple" />
+				</div>
 			{/if}
 		</ContentBox>
 
