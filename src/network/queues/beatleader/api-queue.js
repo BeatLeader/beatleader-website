@@ -130,6 +130,7 @@ export const processClanRanking = cr => {
 	ret.clanRank = cr.clanRank;
 	ret.lastUpdateTime = formatDateRelative(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
 	ret.lastUpdateTimeShort = formatDateRelativeShort(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
+	ret.lastUpdateTimeNumber = cr.lastUpdateTime;
 	ret.clanAverageRank = cr.clanAverageRank;
 	ret.clanAverageAccuracy = cr.clanAverageAccuracy;
 	ret.clanAverageAcc = cr.clanAverageAccuracy * 100;

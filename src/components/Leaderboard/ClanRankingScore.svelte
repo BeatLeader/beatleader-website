@@ -1,20 +1,18 @@
 <script>
+	import Accuracy from '../Common/PerformanceBadge/Accuracy.svelte';
 	import Avatar from '../Common/Avatar.svelte';
 	import Badge from '../Common/Badge.svelte';
 	import ClanBadges from '../Player/ClanBadges.svelte';
 	import ClanName from '../Clans/ClanName.svelte';
-	import {getContext} from 'svelte';
 	import {fade, fly} from 'svelte/transition';
 	import {flip} from 'svelte/animate';
+	import {getContext} from 'svelte';
 	import {getTimeStringColor} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
-
+	import Pp from '../Common/PerformanceBadge/Pp.svelte'
 	import Score from '../Leaderboard/Score.svelte';
 	import Value from '../Common/Value.svelte';
-
-	// Badges
-	import Pp from '../Common/PerformanceBadge/Pp.svelte'
 
 	export let leaderboardId = null;
 	export let battleRoyaleDraft = false;
@@ -22,15 +20,8 @@
 	export let cr = null
 	export let fixedBrowserTitle = null;
 	export let modifiers = null;
-	export let noReplayInLeaderboard = false;
-	export let selectedMetric = null;
 	export let sortBy = 'rank';
 	export let type = 'beatleader';
-
-
-	const MAX_ROYALE_LIST_LENGTH = 10;
-
-	const {open} = getContext('simple-modal');
 
 	function navigateToClan(clanTag) {
 		if (!clanTag) return;
@@ -71,12 +62,12 @@
 					<ClanBadges clanInput={cr.clan}/>
 			</div>
 			<div class="timeset above-tablet">
-				<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
-					{cr.lastUpdateTime}
+				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber ?? '')}; ">
+					{cr?.lastUpdateTime}
 				</span>
 			</div>
 			<div class="timeset mobile-only">
-				<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
+				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber ?? '')}; ">
 					{cr?.lastUpdateTimeShort ?? ''}
 				</span>
 			</div>
@@ -88,46 +79,35 @@
 					class:opened={showClanRankingScores}
 					on:click={() => (showClanRankingScores = !showClanRankingScores)}
 					title="Show Scores">
-					{#if showClanRankingScores}
-						Hide Scores
-					{:else}
-						Show Scores
-					{/if}
 					<i class="fas fa-chevron-down" />
 				</span>
 			</div>
-			
-			<!-- TODO: cr.clanpp is an aggregate of pp from all the scores set from this clan on this leaderboard
-			<div class='badge'>
-				<Badge 
-					onlyLabel={true} 
-					color="white" 
-					bgColor={'#888'}>
+
+			<span class="with-badge pp">
+				<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 					<span slot="label">
-						<Pp pp={cr.clanpp}/>
+						<Pp
+							pp={cr.clanpp}
+							inline={false}
+							color="white" />
 					</span>
 				</Badge>
-			</div> -->
+			</span>
 
-			<!-- TODO: cr.clanAverageAcc is the average accuracy value of all scores set from this clan on this leaderboard
-			<Badge
-				onlyLabel={true}
-				color="white"
-				bgColor={'#888'}>
-				<span slot="label">
-					<Value value={cr?.clanAverageAcc} digits={0} zero="?" suffix='%' />
-				</span>
-			</Badge> -->
+			<span class="with-badge acc">
+				<Accuracy accuracyValue={cr?.clanAverageAcc} showMods={false}/>
+			</span>
 
-			<!-- TODO: cr.clanTotalScore is the aggregate of score from all the scores set from this clan on this leaderboard
-			<Badge 
-				onlyLabel={true} 
-				color="white" 
-				bgColor={'#888'}>
-				<span slot="label">
-					<Value value={cr?.clanTotalScore} digits={0} zero="?" />
-				</span>
-			</Badge> -->
+			<span class="with-badge score">
+				<Badge
+					onlyLabel={true} 
+					color="white" 
+					bgColor={'var(--dimmed)'}>
+					<span slot="label">
+						<Value value={cr?.clanTotalScore} inline={false} digits={0} suffix=''/>
+					</span>
+				</Badge>
+			</span>
 		</div>
 	</div>
 	{#if showClanRankingScores}
@@ -158,17 +138,37 @@
 {/if}
 
 <style>
-	.badge {
-		position: relative;
-		display: inline-flex;
-		justify-content: space-around;
-		align-items: center;
-		color: var(--color, #eee);
-		background-color: var(--background-color, #222);
-		margin: 0 0.5em 0.5em 0;
-		padding: 0.125em;
-		border-radius: 0.25em;
-		transition: opacity 0.25s;
+	.pp {
+		min-width: 5em;
+	}
+
+	.acc {
+		min-width: 4em;
+	}
+
+	.acc :global(.badge .label) {
+		min-width: fit-content;
+	}
+
+	.score {
+		min-width: 5.25em;
+	}
+
+	.with-badge {
+		text-align: center;
+	}
+
+	.with-badge :global(.badge) {
+		height: 100%;
+	}
+
+	.with-badge :global(.badge > .label small) {
+		font-size: 0.875em !important;
+	}
+
+	:global(*:not(.compare) > .badge.nominated-pp) {
+		border: 2px dashed #ffffffb3;
+		--badge-color: transparent !important;
 	}
 
 	.player-score {
@@ -206,14 +206,6 @@
 		min-width: max-content;
 	}
 
-	.player-score.highlight {
-		background: linear-gradient(45deg, #defb6996, transparent, transparent);
-		border-radius: 4px;
-		padding: 0.2em;
-		margin: 0 -0.2em;
-		max-width: 130%;
-	}
-
 	.player-score .rank {
 		font-size: 0.875em;
 		min-width: 2em;
@@ -232,20 +224,8 @@
 		flex-basis: fit-content;
 	}
 
-	.player-score .replay {
-		height: 1.8em;
-		min-width: fit-content;
-		margin-right: 0.25em;
-		flex: none;
-	}
-
 	.player-score .pp {
 		min-width: 5.5em;
-		flex: none;
-	}
-
-	.player-score .percentage {
-		min-width: 4.5em;
 		flex: none;
 	}
 
@@ -308,10 +288,6 @@
 		text-align: center;
 	}
 
-	.pp.with-badge {
-		position: relative;
-	}
-
 	.beat-savior-reveal {
 		align-self: end;
 		cursor: pointer;
@@ -370,213 +346,3 @@
 		}
 	}
 </style>
-
-<!--  OLD CODE THAT WOULD DISPLAY RANKING OF CLANS
-										<div class={'player-score'}>
-											<div class="mobile-first-line">
-												<div class="rank with-badge">
-													<Badge
-														onlyLabel={true}
-														color="white"
-														bgColor={'darkgoldenrod'}>
-														<span slot="label">
-															#<Value value={cr.clanRank} digits={0} zero="?" />
-														</span>
-													</Badge>
-												</div>
-												<div class="player">
-													<Avatar clan={cr.clan} />
-													<ClanName
-														clan={cr.clan}
-														on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />
-														<ClanBadges clanInput={cr.clan}/>
-												</div>
-												<div class="timeset above-tablet">
-													<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
-														{cr.lastUpdateTime}
-													</span>
-												</div>
-												<div class="timeset mobile-only">
-													<span style="color: {getTimeStringColor(cr?.lastUpdateTime ?? '')}; ">
-														{cr?.lastUpdateTimeShort ?? ''}
-													</span>
-												</div>
-											</div>
-											<div class="mobile-second-line">
-												<div class="score-options-section">
-													<span
-														class="beat-savior-reveal clickable"
-														class:opened={showClanRankingScores}
-														on:click={() => (showClanRankingScores = !showClanRankingScores)}
-														title="Show Scores">
-														{#if showClanRankingScores}
-															Hide Scores
-														{:else}
-															Show Scores
-														{/if}
-														<i class="fas fa-chevron-down" />
-													</span>
-												</div>
-												<div class="pp with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-														<span slot="label">
-															<Pp
-																pp={cr.clanpp}
-																inline={false}
-																color="white" />
-														</span>
-													</Badge>
-												</div>
-												<div class="percentage with-badge">
-													<ClanAccuracy accuracy={cr.clanAverageAcc} />
-												</div>
-												<div class="score with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-														<span slot="label">
-															<Value value={cr.clanTotalScore} inline={false} digits={0} />
-														</span>
-													</Badge>
-												</div>
-											</div>
-										</div>
--->
-
-
-<!-- OLD CODE THAT WOULD SHOW WHEN YOU EXPANDED CLAN RANKING SCORE
-											<div class="scores-subgrid grid-transition-helper">
-											{#each opt(cr, 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
-												<div
-													class={`row-${idx}`}
-													class:user-score={score?.isUserScore}
-													class:user-score-top={score?.userScoreTop}
-													in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-													out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-													animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-													<div class={'player-score'}>
-														<div class="mobile-first-line">
-															<i class="fa-solid fa-arrow-right"></i>
-															<div class="rank with-badge">
-																<Badge
-																	onlyLabel={true}
-																	color="white"
-																	bgColor={opt(score, 'score.rank') === 1
-																		? 'darkgoldenrod'
-																		: opt(score, 'score.rank') === 2
-																		? '#888'
-																		: opt(score, 'score.rank') === 3
-																		? 'saddlebrown'
-																		: opt(score, 'score.rank') >= 10000
-																		? 'small'
-																		: 'var(--dimmed)'}>
-																	<span slot="label">
-																		#<Value value={opt(score, 'score.rank')} digits={0} zero="?" />
-																	</span>
-																</Badge>
-															</div>
-															<div class="player">
-																<Avatar player={score.player} />
-																<PlayerNameWithFlag
-																	player={score.player}
-																	type={type === 'accsaber' ? 'accsaber/date' : null}
-																	on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
-										
-																<ClanBadges player={score.player} />
-															</div>
-															<div class="timeset above-tablet">
-																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
-																	{opt(score, 'score.timeSetString', '-')}
-																</span>
-															</div>
-															<div class="timeset mobile-only">
-																<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
-																	{score?.score?.timeSetStringShort ?? ''}
-																</span>
-															</div>
-														</div>
-														<div class="mobile-second-line">
-															{#if !noReplayInLeaderboard && type !== 'accsaber'}
-																<div class="replay">
-																	{#if batleRoyaleDraft}
-																		{#if !draftList.includes(score.player.playerId) && draftList.length < 10}
-																			<Button
-																				cls="replay-button-alt"
-																				icon="<div class='battleroyalejoin-icon'></div>"
-																				title="Join battle royal"
-																				noMargin={true}
-																				on:click={() => {
-																					draftList.push(score.player.playerId);
-																					draftList = draftList;
-																				}} />
-																		{:else if draftList.includes(score.player.playerId)}
-																			<Button
-																				cls="replay-button-alt"
-																				icon="<div class='battleroyalestop-icon'></div>"
-																				title="Remove from battle royal"
-																				noMargin={true}
-																				on:click={() => (draftList = draftList.filter(el => el != score.player.playerId))} />
-																		{/if}
-																	{:else}
-																		<Button
-																			url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
-																			on:click={showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
-																			cls="replay-button-alt"
-																			icon="<div class='replay-icon-alt'></div>"
-																			title="Replay"
-																			noMargin={true} />
-										
-																		<span
-																			class="beat-savior-reveal clickable"
-																			class:opened={openedDetails.includes(score?.score?.id)}
-																			on:click={() => toggleOpen(score?.score?.id)}
-																			title="Show details">
-																			<i class="fas fa-chevron-down" />
-																		</span>
-																	{/if}
-																</div>
-															{/if}
-															{#if type === 'accsaber' || opt(score, 'score.pp')}
-																<div class="pp with-badge">
-																	<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
-																		<span slot="label">
-																			{#if type === 'accsaber'}
-																				<Pp
-																					playerId={opt(score, 'player.playerId')}
-																					pp={opt(score, 'score.ap')}
-																					weighted={opt(score, 'score.weightedAp')}
-																					zero={formatNumber(0)}
-																					withZeroSuffix={true}
-																					inline={false}
-																					suffix="AP"
-																					color="white" />
-																			{:else}
-																				<Pp
-																					playerId={opt(score, 'player.playerId')}
-																					{leaderboardId}
-																					pp={opt(score, 'score.pp')}
-																					whatIf={opt(score, 'score.whatIfPp')}
-																					inline={false}
-																					color="white" />
-																			{/if}
-																		</span>
-																	</Badge>
-																</div>
-															{/if}
-															<div class="percentage with-badge">
-																<Accuracy score={score.score} showPercentageInstead={type !== 'accsaber'} showMods={false} />
-															</div>
-															<div class="score with-badge">
-																<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-																	<span slot="label">
-																		<Value value={opt(score, 'score.score')} inline={false} digits={0} />
-										
-																		<small title={describeModifiersAndMultipliers(opt(score, 'score.mods'), modifiers)}
-																			>{opt(score, 'score.mods') ? score.score.mods.join(', ') : ''}</small>
-																	</span>
-																</Badge>
-															</div>
-														</div>
-													</div>
-												</div>
-											{/each}
-										</div>
--->

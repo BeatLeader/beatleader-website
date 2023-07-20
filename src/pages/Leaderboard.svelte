@@ -679,44 +679,46 @@ changeParams
 					</nav>
 				{/if}
 
-				<div class="sorting-options">
-					<span
-						class="beat-savior-reveal clickable"
-						class:opened={leaderboardShowSorting}
-						on:click={() => boolflip('leaderboardShowSorting')}
-						on:keydown={() => boolflip('leaderboardShowSorting')}
-						title="Show sorting and search for the leaderboard">
-						{#if leaderboardShowSorting}
-							Hide filters and sorting
-						{:else}
-							Show filters and sorting
-						{/if}
+				{#if currentType != 'clanranking'}
+					<div class="sorting-options">
+						<span
+							class="beat-savior-reveal clickable"
+							class:opened={leaderboardShowSorting}
+							on:click={() => boolflip('leaderboardShowSorting')}
+							on:keydown={() => boolflip('leaderboardShowSorting')}
+							title="Show sorting and search for the leaderboard">
+							{#if leaderboardShowSorting}
+								Hide filters and sorting
+							{:else}
+								Show filters and sorting
+							{/if}
 
-						<i class="fas fa-chevron-down" />
-					</span>
-				</div>
-
-				{#if leaderboardShowSorting}
-					<nav class="switcher-nav">
-						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-						<div style="display: flex;">
-							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
-							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
-						</div>
-					</nav>
-				{/if}
-
-				{#if battleRoyaleDraft}
-					<div class="royale-title-container">
-						<span class="royale-title">Select players from the leaderboard to join</span>
-						<Button
-							type="purple"
-							label="Let the battle begin!"
-							title="Use the button to the right of timeset for every score to toggle player"
-							disabled={!battleRoyaleDraftList?.length}
-							on:click={() => startBattleRoyale()} />
+							<i class="fas fa-chevron-down" />
+						</span>
 					</div>
+
+					{#if leaderboardShowSorting}
+						<nav class="switcher-nav">
+							<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+							<div style="display: flex;">
+								<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
+								<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+							</div>
+						</nav>
+					{/if}
 				{/if}
+
+					{#if battleRoyaleDraft}
+						<div class="royale-title-container">
+							<span class="royale-title">Select players from the leaderboard to join</span>
+							<Button
+								type="purple"
+								label="Let the battle begin!"
+								title="Use the button to the right of timeset for every score to toggle player"
+								disabled={!battleRoyaleDraftList?.length}
+								on:click={() => startBattleRoyale()} />
+						</div>
+					{/if}
 
 				{#if currentType != 'clanranking'}
 					{#if scoresWithUser?.length}

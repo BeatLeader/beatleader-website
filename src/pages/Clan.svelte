@@ -1,7 +1,7 @@
 <script>
 	import Badge from '../components/Common/Badge.svelte';
 	import Button from '../components/Common/Button.svelte';
-	import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
+	// import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
 	import ClanInfo from '../components/Clans/ClanInfo.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import createClanService from '../services/beatleader/clan';
@@ -390,7 +390,7 @@
 											<Icons hash={opt(leaderboard, 'leaderboard.song.hash')} diffInfo={{diff: opt(leaderboard, 'leaderboard.difficultyBl.difficultyName'), type: opt(leaderboard, 'leaderboard.difficultyBl.modeName')}} />
 										</div>
 										{/if}
-										<div class="{'player-score'}">
+										<!-- <div class="{'player-score'}">
 											<div class="pp with-badge">
 												<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 													<span slot="label">
@@ -411,7 +411,7 @@
 													</span>
 												</Badge>
 											</div>
-										</div>
+										</div> -->
 									</div>
 								</div>
 								{#if showClanRankingScores}
