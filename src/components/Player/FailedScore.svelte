@@ -17,6 +17,7 @@
 	export let idx = 0;
 	export let service = null;
 	export let store = null;
+	export let isAdmin = false;
 
 	let showDetails = false;
 
@@ -103,12 +104,27 @@
 
 		<div class="lowerContainer">
 			Fail reason: {score.error}
-			<div>
-				<Button title="Delete failed score upload" label="Delete" noMargin={true} type="danger" on:click={store.deleteScore(score.id)} />
-				{#if score.replay.length}
-					<Button title="Retry posting score" label="Retry" noMargin={true} type="primary" on:click={store.retryScore(score.id)} />
-				{/if}
-			</div>
+			{#if isAdmin || !score.falsePositive}
+				<div class="action-buttons">
+					<Button title="Delete failed score upload" label="Delete" noMargin={true} type="danger" on:click={store.deleteScore(score.id)} />
+					{#if score.replay.length}
+						<Button title="Retry posting score" label="Retry" noMargin={true} type="primary" on:click={store.retryScore(score.id)} />
+
+						{#if isAdmin}
+							<Button title="Retry posting score" label="Allow" noMargin={true} type="danger" on:click={store.retryScore(score.id, true)} />
+						{:else}
+							<Button
+								title="Send this score for developer review"
+								label="False positive"
+								noMargin={true}
+								type="green"
+								on:click={store.markScore(score.id, true)} />
+						{/if}
+					{/if}
+				</div>
+			{:else}
+				<span style="color: green; margin-left: 2em">Marked as false positive, please wait for devs to check.</span>
+			{/if}
 		</div>
 
 		{#if showDetails}
@@ -128,6 +144,11 @@
 	.song-score {
 		border-bottom: 1px solid var(--row-separator);
 		padding: 0.5em 0;
+	}
+
+	.action-buttons {
+		display: flex;
+		gap: 0.6em;
 	}
 
 	.song-score .icons.up-to-tablet + .main {

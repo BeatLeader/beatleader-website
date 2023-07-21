@@ -35,11 +35,17 @@ export default (refreshOnCreate = true) => {
 		});
 	};
 
-	const retryScore = async id => {
+	const retryScore = async (id, allow = false) => {
 		totalScores.scores = totalScores.scores.filter(s => s.score.id != id);
 		set(totalScores);
 
-		fetch(BL_API_URL + 'user/failedscore/retry?id=' + id, {credentials: 'include', method: 'POST'}).then(() => {
+		fetch(BL_API_URL + `user/failedscore/retry?id=${id}&allow=${allow}`, {credentials: 'include', method: 'POST'}).then(() => {
+			fetchScores(currentPage);
+		});
+	};
+
+	const markScore = async id => {
+		fetch(BL_API_URL + `user/failedscore/falsepositive?id=${id}`, {credentials: 'include', method: 'POST'}).then(() => {
 			fetchScores(currentPage);
 		});
 	};
@@ -66,6 +72,7 @@ export default (refreshOnCreate = true) => {
 		refresh,
 		deleteScore,
 		retryScore,
+		markScore,
 		fetchScores,
 	};
 };

@@ -137,6 +137,7 @@
 	$: error = scoresStore ? scoresStore.error : null;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isMain ? failedScores.refresh() : null;
+	$: isAdmin = $account?.player?.playerInfo?.role?.includes('admin');
 
 	$: failedScoresPage = opt($failedScores, 'metadata.page');
 	$: totalFailedScores = opt($failedScores, 'metadata.total');
@@ -270,7 +271,7 @@
 	{#if isMain && failedScoresArray && failedScoresArray.length}
 		<div class="song-scores failed-scores grid-transition-helper">
 			{#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
-				<FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} />
+				<FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} {isAdmin} />
 			{/each}
 		</div>
 		{#if Number.isFinite(failedScoresPage) && (!Number.isFinite(totalFailedScores) || totalFailedScores > 0)}
