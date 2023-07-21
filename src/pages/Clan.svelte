@@ -414,7 +414,7 @@
 										</div> -->
 									</div>
 								</div>
-								{#if showClanRankingScores}
+								<!-- {#if showClanRankingScores}
 									<div class="scores-subgrid grid-transition-helper">
 										{#each opt(leaderboard.clanRanking[0], 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
 											<div
@@ -452,7 +452,7 @@
 																type={type === 'accsaber' ? 'accsaber/date' : null}
 																on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 									
-															<!--<ClanBadges player={score.player} />-->
+															<ClanBadges player={score.player} />
 														</div>
 														<div class="timeset above-tablet">
 															<span style="color: {getTimeStringColor(opt(score, 'score.timeSetString', ''))}; ">
@@ -475,7 +475,6 @@
 																title="Replay"
 																noMargin={true} />
 							
-															<!-- svelte-ignore a11y-click-events-have-key-events -->
 															<span
 																class="beat-savior-reveal clickable"
 																class:opened={openedDetails.includes(score?.score?.id)}
@@ -529,7 +528,7 @@
 											</div>
 										{/each}
 									</div>
-								{/if}
+								{/if} -->
 							</div>
 						{/each}
 					</div>

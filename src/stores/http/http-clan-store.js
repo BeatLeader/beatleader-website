@@ -30,8 +30,6 @@ export default (clanId, type = 'players', page = 1, filters = {}, initialState =
 	);
 
 	const fetch = async (clanId = currentClanId, type = currentType, page = currentPage, filters = currentFilters, force = false) => {
-		// Don't check for type change. We don't need another request for swapping to captured leaderboards page.
-		// We already got that data throug the first request
 		if (
 			clanId &&
 			clanId === currentClanId &&
@@ -41,7 +39,7 @@ export default (clanId, type = 'players', page = 1, filters = {}, initialState =
 		)
 			return false;
 
-		return httpStore.fetch({clanId, page, filters}, force, provider);
+		return httpStore.fetch({clanId, type, page, filters}, force, provider);
 	};
 
 	const refresh = async () => fetch(currentClanId, currentType, currentPage, currentFilters, true);

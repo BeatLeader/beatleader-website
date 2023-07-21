@@ -15,12 +15,12 @@ export default () => {
 		signal = null,
 		force = false,
 	} = {}) => {
-		//switch (type) {
-			//case 'players':
+		switch (type) {
+			case 'players':
 				return await clanService.fetchClanPage(clanId, type, page, filters, priority, signal, force);
-			//case 'capturedleaderboards':
-			//	return await clanService.fetchClanPage(clanId, type, page, {capturedleaderboards: true}, priority, signal, force);
-		//}
+			case 'capturedLeaderboards':
+				return await clanService.fetchClanPage(clanId, type, page, {capturedleaderboards: true}, priority, signal, force);
+		}
 	};
 
 	return {

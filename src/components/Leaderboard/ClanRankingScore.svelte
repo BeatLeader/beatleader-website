@@ -95,7 +95,7 @@
 			</span>
 
 			<span class="with-badge acc">
-				<Accuracy accuracyValue={cr?.clanAverageAcc} showMods={false}/>
+				<Accuracy accuracyOverride={cr?.clanAverageAcc} showMods={false}/>
 			</span>
 
 			<span class="with-badge score">
