@@ -29,9 +29,26 @@
 
 	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
+	let cinematicsCanvas;
+
+	function drawCinematics(cinematicsCanvas, coverUrl) {
+		if (coverUrl && cinematicsCanvas) {
+			cinematicsCanvas.style.opacity = 1;
+			const context = cinematicsCanvas.getContext('2d');
+
+			const cover = new Image();
+			cover.onload = function () {
+				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
+			};
+			cover.src = coverUrl;
+		}
+	}
+
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
 	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
+
+	$: drawCinematics(cinematicsCanvas, coverUrl);
 
 	$: hash = song?.hash;
 	$: diffInfo = leaderboard?.diffInfo;
@@ -44,6 +61,12 @@
 			? `background: linear-gradient(#303030a2, #303030a2), url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
 			: ''}
 		transition:fade>
+		<div class="cinematics">
+			<div class="cinematics-canvas">
+				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+			</div>
+		</div>
+
 		<div class="header-container">
 			<div class="title-container">
 				<h1 class="title is-4">
@@ -181,6 +204,27 @@
 		justify-content: space-between;
 		flex-direction: column;
 		grid-gap: 0.2em;
+	}
+
+	.cinematics {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	.cinematics-canvas {
+		filter: blur(5em) opacity(0.5) saturate(250%);
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: scale(1.1) translateZ(0);
+		width: 100%;
+		z-index: -1;
+		height: 100%;
 	}
 
 	.status-and-type {

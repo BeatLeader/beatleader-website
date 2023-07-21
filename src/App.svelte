@@ -118,7 +118,7 @@
 					<Route path="/">
 						{#if $account?.player}
 							<DashboardPage />
-						{:else}
+						{:else if $account?.refreshError}
 							<LandingPage />
 						{/if}
 					</Route>

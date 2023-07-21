@@ -42,64 +42,6 @@ nav.ssr-page-container {
     }
 }
 
-
-// Main page
-.sspl-page-container {
-    display: flex;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    text-align: center;
-
-    .is-multiline {
-
-        // Title
-        .title.is-4:nth-child(1) {
-            font-size: 50px;
-            position: relative;
-
-            &::after {
-                position: absolute;
-                bottom: -1rem;
-                left: 0px;
-                width: 100%;
-                background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
-                height: 0.4rem;
-                content: "";
-            }
-        }
-    }
-
-
-    // Icons
-    .sources {
-        justify-content: center;
-
-        * {
-            cursor: pointer !important;
-        }
-
-        .title.is-6 {
-            filter: grayscale(1);
-            box-shadow: 2px 3px 9px rgba(0, 0, 0, 0.048);
-            background: rgb(37, 37, 37);
-            padding: 1rem;
-            border-radius: .3rem;
-            margin: .5rem;
-            transition: filter 0.1s;
-
-            .icon {
-                margin: 0 !important;
-            }
-
-            &:hover {
-                filter: none;
-            }
-        }
-    }
-
-}
-
 .is-multiline {
     margin-left: 0 !important;
 }
@@ -362,37 +304,6 @@ input {
     border-bottom: 1px solid white !important;
 }
 
-// Login Page
-.login-page {
-    .title {
-        position: relative;
-
-        &::after {
-            position: absolute;
-            bottom: -1rem;
-            left: 0px;
-            width: 100%;
-            background: linear-gradient(90deg, rgb(50, 115, 219), rgb(200, 28, 159));
-            height: 0.4rem;
-            content: "";
-        }
-    }
-
-    .input-container {
-        justify-items: center;
-
-        .cat {
-            font-size: 1.4rem;
-        }
-
-        input {
-            font-size: 1.2rem;
-            text-align: center;
-            color: rgba(243, 243, 243, 0.63) !important;
-        }
-    }
-}
-
 .blur-part {
     background: linear-gradient(0deg, rgb(27 36 42), transparent) !important;
 }
@@ -444,4 +355,8 @@ select {
 .dropdown-menu .dropdown-item:focus {
 	background-color: rgba(200, 200, 200, 0.3);
 	outline: none;
+}
+
+.cinematics {
+    display: none;
 }

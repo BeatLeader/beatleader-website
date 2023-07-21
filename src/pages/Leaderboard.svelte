@@ -31,6 +31,7 @@
 		mapTypeFromMask,
 		votingsForTypeStats,
 		DifficultyStatus,
+		formatDiffStatus,
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
@@ -156,6 +157,12 @@
 	let modifiedTech = null;
 	let modifiedStars = null;
 
+	function initRatings(leaderboard) {
+		modifiedPass = leaderboard?.stats?.passRating;
+		modifiedAcc = leaderboard?.stats?.accRating;
+		modifiedTech = leaderboard?.stats?.techRating;
+	}
+
 	let openedDetails = [];
 
 	let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
@@ -231,6 +238,22 @@
 			label: 'Mistakes',
 			title: 'Sort by amount of mistakes',
 			iconFa: 'icon-mistakes',
+		},
+		{
+			id: 'weight',
+			replaceTimeset: true,
+			label: 'Weight',
+			title: 'Sort by placement of the score on top pages',
+			iconFa: 'fas fa-weight-hanging',
+			showForStatus: ['Ranked'],
+		},
+		{
+			id: 'weightedPp',
+			replaceTimeset: true,
+			label: 'Weighted PP',
+			title: 'Sort by weighted PP',
+			iconFa: 'fas fa-cubes',
+			showForStatus: ['Ranked'],
 		},
 	];
 
@@ -375,10 +398,10 @@ changeParams
 	let switcherSortValues;
 	let sortValue;
 
-	function refreshSortValues(allSortValues, filterValues) {
+	function refreshSortValues(allSortValues, filterValues, leaderboardStatus) {
 		switcherSortValues = allSortValues
 			.filter(v => {
-				return !v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType);
+				return !v.showForStatus || v.showForStatus.includes(leaderboardStatus);
 			})
 			.map(v => ({
 				...v,
@@ -576,6 +599,7 @@ changeParams
 	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
+	$: initRatings(leaderboard);
 
 	$: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song);
 	$: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null;
@@ -600,7 +624,7 @@ changeParams
 
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
 	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone);
-	$: refreshSortValues(allSortValues, currentFilters);
+	$: refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);

@@ -49,7 +49,7 @@
 		.filter(m => m !== 'modifierId' && (modifiers?.[m] ?? 0) !== 0)
 		.map(m => m?.toUpperCase());
 	$: mods = score?.score?.mods?.sort((a, b) => (priorityModifiers.includes(a) ? -1 : priorityModifiers.includes(b) ? 1 : 0));
-	$: additionalStat = ['pauses', 'maxStreak', 'acc'].includes(sortBy) ? sortBy : null;
+	$: additionalStat = ['pauses', 'maxStreak', 'acc', 'weight', 'weightedPp'].includes(sortBy) ? sortBy : null;
 	$: showAdditionalStat =
 		(additionalStat &&
 			$configStore?.leaderboardPreferences?.badges
@@ -115,6 +115,12 @@
 						{:else if sortBy == 'maxStreak'}
 							<i class="fa-solid fa-crosshairs" />
 							<Value value={score.score.maxStreak} digits={0} />
+						{:else if sortBy == 'weight'}
+							<i class="fa-solid fa-weight-hanging" />
+							<Value value={score.score.weight} digits={2} />
+						{:else if sortBy == 'weightedPp'}
+							<i class="fa-solid fa-cubes" />
+							<Value value={score.score.weight * score.score.pp} digits={2} />
 						{:else if sortBy == 'mistakes'}
 							<i class="icon-mistakes icon-mistakes-mini" />
 							<Value value={(score.score.badCuts ?? 0) + (score.score.missedNotes ?? 0) + (score.score.wallsHit ?? 0) + (score.score.bombCuts ?? 0) } digits={0} />

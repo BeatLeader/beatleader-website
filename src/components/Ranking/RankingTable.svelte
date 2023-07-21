@@ -178,17 +178,17 @@
 			value: data => getStat(data, statKeys['playCount'][currentTypeValue]),
 			props: {digits: 0, prefix: '', suffix: ''},
 		},
-		{
-			id: 'lastplay',
-			label: 'Recent',
-			title: 'Sort by the most recent score',
-			iconFa: 'fas fa-clock',
-			value: data => {
-				let timeset = getStat(data, statKeys['lastplay'][currentTypeValue]);
-				return timeset == 0 ? timeset : formatDateRelative(dateFromUnix(timeset));
-			},
-			props: {isText: true},
-		},
+		// {
+		// 	id: 'lastplay',
+		// 	label: 'Recent',
+		// 	title: 'Sort by the most recent score',
+		// 	iconFa: 'fas fa-clock',
+		// 	value: data => {
+		// 		let timeset = getStat(data, statKeys['lastplay'][currentTypeValue]);
+		// 		return timeset == 0 ? timeset : formatDateRelative(dateFromUnix(timeset));
+		// 	},
+		// 	props: {isText: true},
+		// },
 		{
 			id: 'weightedRank',
 			label: 'Weighted Rank',
@@ -206,6 +206,17 @@
 			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
 			props: {digits: 0, prefix: '#', suffix: ''},
 			hideForTypes: ['ranked'],
+		},
+		{
+			id: 'replaysWatched',
+			label: 'Watched',
+			title: 'Sort by replay watch count',
+			iconFa: 'fa fa-eye',
+			value: data => {
+				console.log(data);
+				return (data?.scoreStats?.anonimusReplayWatched ?? 0) + (data?.scoreStats?.authorizedReplayWatched ?? 0);
+			},
+			props: {digits: 0, prefix: '', suffix: ''},
 		},
 	];
 

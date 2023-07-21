@@ -31,7 +31,13 @@ export const processScore = s => {
 
 	const ppWeighted = pp * weight;
 
-	const {accuracy: improvedAcc, timepost: improvedTimepost, timeset: improvedTimeset} = s?.scoreImprovement ?? {};
+	const {
+		accuracy: improvedAcc,
+		timepost: improvedTimepost,
+		timeset: improvedTimeset,
+		rank: improvedRank,
+		totalRank: improvedTotalRank,
+	} = s?.scoreImprovement ?? {};
 	const improvedTime = improvedTimepost && improvedTimepost > 0 ? improvedTimepost : improvedTimeset;
 
 	return {
@@ -49,6 +55,8 @@ export const processScore = s => {
 			ppWeighted,
 			rank,
 			replaysWatched,
+			improvedRank,
+			improvedTotalRank,
 			myScore: s?.myScore ? processScore(s.myScore) : null,
 			scoreImprovement: s?.scoreImprovement
 				? {
