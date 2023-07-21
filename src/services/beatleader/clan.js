@@ -19,11 +19,16 @@ export default () => {
 			clansApiClient.getProcessed({page, filters, signal, priority, cacheTtl: force ? null : MINUTE, maxAge: force ? SECOND : MINUTE})
 		);
 
+
+
+	// TODO: REVERT BEFORE PROD
+	// const fetchClanPage = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
+	// resolvePromiseOrWaitForPending(`apiClient/clan/${clanId}/${page}`, () =>
 	const fetchClanPage = async (clanId, type = 'players', page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
 		resolvePromiseOrWaitForPending(`apiClient/clan/${clanId}/${type}/${page}`, () =>
 			clanApiClient.getProcessed({
 				clanId,
-				type,
+				type, // TODO: REVERT BEFORE PROD
 				page,
 				filters,
 				signal,

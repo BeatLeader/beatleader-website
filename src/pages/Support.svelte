@@ -33,6 +33,8 @@
 
 		or<br /><br />
 
+		<!-- TODO: REVERT BEFORE PROD -->
+		<!-- <a href="mailto:golova@golova.dev">Write me an email</a>. And I'll know a <a href="/clan/GENX/players/1?">clan for you</a> ¯\_(ツ)_/¯<br /><br /> -->
 		<a href="mailto:golova@golova.dev">Write me an email</a>. And I'll know a <a href="/clan/GENX/players/1?">clan for you</a> ¯\_(ツ)_/¯<br /><br />
 
 		<p class="back"><a href="/" on:click|preventDefault={() => navigate('/')}>Back to Home</a></p>

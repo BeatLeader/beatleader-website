@@ -75,7 +75,7 @@
 		align-items: center;
 		color: var(--color, #eee);
 		background-color: var(--background-color, #222);
-		margin: 0.5em 0.5em 0.5em 0;
+		margin: 0 0.5em 0.5em 0;
 		padding: 0.125em;
 		border-radius: 0.25em;
 		transition: opacity 0.25s;

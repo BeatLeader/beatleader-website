@@ -56,6 +56,7 @@
 
 			<div class="player">
 				<Avatar clan={cr.clan} />
+				<!-- TODO: REVERT BEFORE PROD -->
 				<ClanName
 					clan={cr.clan}
 					on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />

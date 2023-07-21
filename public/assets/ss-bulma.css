@@ -749,7 +749,7 @@ pre {
 body {
 	color: #4a4a4a;
 	font-size: 1rem;
-	/* font-weight: 400; */
+	font-weight: 400;
 	line-height: 1.5;
 }
 
@@ -11920,7 +11920,7 @@ body::-webkit-scrollbar-track {
 }
 
 .grid-transition-helper > .row-0 {
-	/* grid-row: 1/1; */
+	grid-row: 1/1;
 }
 
 .grid-transition-helper > .row-1 {

@@ -166,13 +166,16 @@
 					<Route path="/leaderboards/*page" let:params let:location>
 						<LeaderboardsPage page={params.page} {location} />
 					</Route>
-					<Route path="/clan/:clanId/:type/*page" let:params let:location>
+					<Route path="/clan/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} />
+					<!-- TODO: REVERT BEFORE PROD -->
+					<!-- <Route path="/clan/:clanId/:type/*page" let:params let:location>
 						<ClanPage 
 							clanId={params.clanId} 
 							type={params.type} 
 							page={params.page} 
 							{location}/>
-					</Route>
+					</Route> -->
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
 					</Route>

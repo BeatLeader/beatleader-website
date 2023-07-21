@@ -31,6 +31,7 @@
 {#if clans}
 	<span class="clan-badges">
 		{#each clans as clan (clan.tag)}
+			<!-- TODO: REVERT BEFORE PROD -->
 			<a href={`/clan/${clan?.tag}/players/1?`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}/players/1?`)}>
 				<Badge
 					label={clan?.tag ?? '???'}

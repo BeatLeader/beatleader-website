@@ -1,7 +1,6 @@
 <script>
-	import Badge from '../components/Common/Badge.svelte';
+	// TODO: REVERT BEFORE PROD
 	import Button from '../components/Common/Button.svelte';
-	// import ClanAccuracy from '../components/Clans/ClanAccuracy.svelte'
 	import ClanInfo from '../components/Clans/ClanInfo.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import createClanService from '../services/beatleader/clan';

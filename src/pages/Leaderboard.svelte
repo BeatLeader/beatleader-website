@@ -24,7 +24,6 @@
 	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
-	import {formatNumber} from '../utils/format';
 	import {
 		getIconNameForDiff,
 		getDescriptionForDiff,
@@ -265,7 +264,8 @@
 			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
 		);
 		if (exactMatch) return exactMatch;
-changeParams
+		// TODO: REVERT BEFORE PROD
+		// changeParams
 		return typeOptions.find(to => to?.type === type) ?? null;
 	};
 
@@ -1152,14 +1152,6 @@ changeParams
 		max-width: 27em;
 	}
 
-	.fa-arrow-right {
-		position: relative;
-		line-height: inherit;
-		vertical-align: middle;
-		padding-left: 0.5em;
-		padding-right: 0.5em;
-	}
-
 	.page-content {
 		max-width: 65em;
 		width: 100%;
@@ -1305,21 +1297,6 @@ changeParams
 	:global(.battleroyalebtn) {
 		margin-left: 1em;
 		margin-bottom: 0.5em;
-	}
-
-	.captor-clan {
-		display: flex;
-		align-items: center;
-		margin-top: 0.5em;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 0.6em;
-		background: rgb(24, 24, 24);
-		border-radius: 0.4em;
-		padding: 1em;
-		color: white;
-		outline: solid;
-		outline-color: var(--clan-color);
 	}
 
 	.royale-title {
