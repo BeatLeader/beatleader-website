@@ -264,8 +264,7 @@
 			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
 		);
 		if (exactMatch) return exactMatch;
-		// TODO: REVERT BEFORE PROD
-		// changeParams
+
 		return typeOptions.find(to => to?.type === type) ?? null;
 	};
 

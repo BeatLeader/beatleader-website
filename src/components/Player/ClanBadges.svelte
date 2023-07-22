@@ -32,7 +32,7 @@
 	<span class="clan-badges">
 		{#each clans as clan (clan.tag)}
 			<!-- TODO: REVERT BEFORE PROD -->
-			<a href={`/clan/${clan?.tag}/players/1?`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}/players/1?`)}>
+			<a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
 				<Badge
 					label={clan?.tag ?? '???'}
 					onlyLabel={true}
@@ -62,14 +62,14 @@
 				bgColor={'var(--dimmed)'}
 				title="Set a score on this map to break the tie and capture it for your clan!" />
 		{:else}
-				<a href={`/clan/${clanInput.tag}/players/1?`} on:click|stopPropagation={() => navigate(`/clan/${clanInput.tag}/players/1?`)}>
+				<a href={`/clan/${clanInput?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clanInput?.tag}`)}>
 					<Badge
 						label={clanInput.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
 						color={invertColor(clanInput.color ?? '#000000')}
 						bgColor={clanInput?.color ?? 'var(--dimmed)'}
-						title="Set a score on this map to capture it for your clan!" />
+						title="Set a score on this map to help capture it for your clan!" />
 				</a>
 		{/if}
 	</span>

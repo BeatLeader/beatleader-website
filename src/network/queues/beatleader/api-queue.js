@@ -8,8 +8,8 @@ import {fetchUrl} from '../../fetch';
 export const CURRENT_URL = location.protocol + '//' + location.host;
 // TODO: REVERT BEFORE PROD
 export const BL_API_URL =
-	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? `https://localhost:44313/` : `/cors/blapi/`;
-export const BL_SOCKET_URL = 'wss://localhost:44313/';
+	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? 'https://api.beatleader.xyz/' : `/cors/blapi/`;a
+export const BL_SOCKET_URL = 'wss://api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
@@ -47,8 +47,7 @@ export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
-// TODO: REVERT BEFORE PROD
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}&capturedleaderboards=${capturedleaderboards}';
+export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
 export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
@@ -353,18 +352,8 @@ export default (options = {}) => {
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), options, priority);
 
-	// TODO: REVERT BEFORE PROD
-	// const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-	// 	fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
-	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(
-			BL_API_CLAN_URL, {clanId, page, ...filters}, true), 
-			options, 
-			priority
-		).then(r => {
-			r.body = processClan(clanId, page, r);
-			return r;
-		});
+	 const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
 
 	const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchJson(
