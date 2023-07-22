@@ -1,5 +1,6 @@
 .idea
 .vscode
+.vs
 node_modules
 public/build
 build-info.js

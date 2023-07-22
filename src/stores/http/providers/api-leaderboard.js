@@ -18,6 +18,8 @@ export default () => {
 		switch (type) {
 			case 'global':
 				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, filters, priority, signal, force);
+			case 'clanranking':
+				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, {clanranking: true}, priority, signal, force);
 			case 'followed':
 				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, {friends: true, ...filters}, priority, signal, force);
 			case 'voters':

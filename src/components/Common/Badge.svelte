@@ -11,7 +11,9 @@
 	export let digits = 2;
 	export let type = 'number';
 	export let prefix = '';
+	export let withZeroPrefix = false;
 	export let suffix = '';
+	export let withZeroSuffix = false;
 	export let onlyLabel = false;
 	export let clickable = false;
 	export let notSelected = false;
@@ -51,7 +53,9 @@
 						{zero}
 						{digits}
 						{prefix}
+						{withZeroPrefix}
 						{suffix}
+						{withZeroSuffix}
 						{prevValue}
 						{prevLabel}
 						suffixPrev={prevSuffix}

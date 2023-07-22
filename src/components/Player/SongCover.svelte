@@ -1,4 +1,5 @@
 <script>
+	// TODO: REVERT BEFORE PROD
 	import {BS_CDN} from '../../network/queues/beatleader/page-queue';
 	import {navigate} from 'svelte-routing';
 	import Difficulty from '../Song/Difficulty.svelte';
@@ -6,6 +7,7 @@
 	import {computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 
 	export let leaderboard = null;
+	export let capturedLeaderboard = null;
 	export let mods = null;
 	export let url = null;
 	export let notClickable = false;
@@ -38,10 +40,13 @@
 	$: ssCoverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null);
 	$: beatSaverCoverUrl = leaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
 
-	$: preloadImages([
-		{url: ssCoverUrl, priority: 10},
-		{url: beatSaverCoverUrl, priority: 5},
-	]);
+	$: clHash = capturedLeaderboard?.song?.hash ?? null;
+	$: clSSCoverUrl = capturedLeaderboard?.song?.imageUrl ?? (clHash ? `${BS_CDN}/${encodeURIComponent(clHash)}.jpg` : null);
+	$: clBeatSaverCoverUrl = capturedLeaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
+
+	$: preloadImages(leaderboard ? 
+		[{url: ssCoverUrl, priority: 10}, {url: beatSaverCoverUrl, priority: 5}] : 
+		[{url: clSSCoverUrl, priority: 10}, {url: clBeatSaverCoverUrl, priority: 5}]);
 
 	$: coverUrl = loadedImages.length ? loadedImages.sort((a, b) => a?.priority - b?.priority)[0].url : DEFAULT_IMG;
 
@@ -60,8 +65,41 @@
 			: null;
 </script>
 
-<div class="cover-difficulty">
-	{#if leaderboard}
+{#if !capturedLeaderboard}
+	<div class="cover-difficulty">
+		{#if leaderboard}
+			{#if notClickable}
+				<img src={coverUrl} alt="" />
+			{:else}
+				<a href={url} on:click|preventDefault={() => navigate(url)}>
+					<img src={coverUrl} alt="" />
+				</a>
+			{/if}
+			{#if leaderboard?.diffInfo?.type != 'Standard'}
+				<div class="mode">
+					<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
+				</div>
+			{/if}
+			{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
+				<div class="type">
+					<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} />
+				</div>
+			{/if}
+			<div class="difficulty">
+				<Difficulty
+					diff={leaderboard.diffInfo}
+					useShortName={true}
+					reverseColors={true}
+					stars={(leaderboard?.difficulty && leaderboard?.difficulty[starsKey]) ??
+						(leaderboard?.difficultyBl && leaderboard?.difficultyBl[starsKey])}
+					starsSuffix={leaderboard.complexity ? '' : '★'} />
+			</div>
+		{:else}
+			<img src={DEFAULT_IMG} alt="" />
+		{/if}
+	</div>
+{:else if !leaderboard}
+	<div class="cover-difficulty">
 		{#if notClickable}
 			<img src={coverUrl} alt="" />
 		{:else}
@@ -70,32 +108,29 @@
 			</a>
 		{/if}
 
-		{#if leaderboard?.diffInfo?.type != 'Standard'}
+		{#if capturedLeaderboard.diffInfo.type != 'Standard'}
 			<div class="mode">
-				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
+				<Difficulty diff={capturedLeaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
 			</div>
 		{/if}
 
-		{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
+		{#if capturedLeaderboard?.difficulty?.accRating || capturedLeaderboard?.difficultyBl?.accRating}
 			<div class="type">
-				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} {mods} />
+				<MapTriangleSmall leaderboard={capturedLeaderboard?.difficulty?.accRating ? capturedLeaderboard?.difficulty : capturedLeaderboard?.difficultyBl} />
 			</div>
 		{/if}
 
 		<div class="difficulty">
 			<Difficulty
-				diff={leaderboard.diffInfo}
+				diff={capturedLeaderboard.diffInfo}
 				useShortName={true}
 				reverseColors={true}
-				stars={(leaderboard?.difficulty && leaderboard?.difficulty[starsKey]) ??
-					(leaderboard?.difficultyBl && leaderboard?.difficultyBl[starsKey])}
-				{modifiedStars}
-				starsSuffix={leaderboard.complexity ? '' : '★'} />
+				stars={(capturedLeaderboard?.difficulty && capturedLeaderboard?.difficulty[starsKey]) ??
+					(capturedLeaderboard?.difficultyBl && capturedLeaderboard?.difficultyBl[starsKey])}
+				starsSuffix={capturedLeaderboard.complexity ? '' : '★'} />
 		</div>
-	{:else}
-		<img src={DEFAULT_IMG} alt="" />
-	{/if}
-</div>
+	</div>
+{/if}
 
 <style>
 	.cover-difficulty {

@@ -6,9 +6,10 @@ import {getDiffColor} from '../../../utils/beatleader/format';
 import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
+// TODO: REVERT BEFORE PROD
 export const BL_API_URL =
-	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? `https://api.beatleader.xyz/` : `/cors/blapi/`;
-export const BL_SOCKET_URL = 'wss://api.beatleader.xyz/';
+	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? `https://localhost:44313/` : `/cors/blapi/`;
+export const BL_SOCKET_URL = 'wss://localhost:44313/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
@@ -37,7 +38,7 @@ export const BL_API_EVENT_RANKING_URL =
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
 export const BL_API_LEADERBOARD_URL =
 	BL_API_URL +
-	'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
+	'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}&clanranking=${clanranking}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
 	'leaderboards?page=${page}&count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
@@ -46,7 +47,8 @@ export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
 export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}';
+// TODO: REVERT BEFORE PROD
+export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}&capturedleaderboards=${capturedleaderboards}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
 export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
@@ -112,8 +114,35 @@ export const processLeaderboardScore = s => {
 
 	return ret;
 };
-
 const processLeaderboardScores = response => response?.map(processLeaderboardScore) ?? null;
+
+export const processClanRanking = cr => {
+	if (!cr) return null;
+
+	let ret = {clan: {}};
+
+	const clan = cr?.clan ?? null;
+	ret.clan.name = clan?.name ?? null;
+	ret.clan.color = clan?.color ?? null;
+	ret.clan.icon = clan?.icon ?? null;
+	ret.clan.tag = clan?.tag ?? null;
+	ret.clan.playerscount = clan?.playersCount ?? null;
+
+	ret.clanpp = cr.clanPP;
+	ret.clanRank = cr.clanRank;
+	ret.lastUpdateTime = formatDateRelative(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
+	ret.lastUpdateTimeShort = formatDateRelativeShort(dateFromUnix(cr.lastUpdateTime > 0 ? cr.lastUpdateTime : cr.lastUpdateTime));
+	ret.lastUpdateTimeNumber = cr.lastUpdateTime;
+	ret.clanAverageRank = cr.clanAverageRank;
+	ret.clanAverageAccuracy = cr.clanAverageAccuracy;
+	ret.clanAverageAcc = cr.clanAverageAccuracy * 100;
+	ret.clanTotalScore = cr.clanTotalScore;
+	ret.scores = processLeaderboardScores(cr.associatedScores);
+
+	return ret;
+}
+const processClanRankings = response => response?.map(processClanRanking) ?? null;
+
 const processLeaderboard = (leaderboardId, page, respons) => {
 	let led = respons.body;
 
@@ -132,7 +161,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 	if (currentDiff) {
 		diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
 		diff = diffInfo.diff;
-	}
+	} 
 
 	const songInfo = [
 		{id: 'hash', value: led?.song?.hash},
@@ -170,7 +199,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{imageUrl: led?.song?.coverImage, fullImageUrl: led?.song?.fullCoverImage, stats: {}}
 	);
 
-	const leaderboardGroup = led.leaderboardGroup.sort((a, b) => b.timestamp - a.timestamp);
+	const leaderboardGroup = led?.leaderboardGroup?.sort((a, b) => b.timestamp - a.timestamp) ?? null;
 
 	const {stats, ...song} = songInfo;
 	const leaderboard = {
@@ -183,12 +212,14 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		changes: led.changes,
 		reweight: led.reweight,
 		difficultyBl: led?.difficulty ?? null,
+		clanRankingContested: led?.clanRankingContested ?? false
 	};
 
 	const totalItems = led.plays;
 	const pageQty = 10;
 
 	const scores = processLeaderboardScores(led?.scores);
+	const clanRanking = processClanRankings(led?.clanRanking)
 
 	// let diffChartText = getFirstRegexpMatch(/'difficulty',\s*([0-9.,\s]+)\s*\]/, response.body.innerHTML)
 	let diffChart = null; //(diffChartText ? diffChartText : '').split(',').map(i => parseFloat(i)).filter(i => i && !isNaN(i));
@@ -201,8 +232,23 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		pageQty,
 		totalItems,
 		scores,
+		clanRanking
 	};
 };
+
+const processClan = (clanId, page, respons) => { 
+	if (respons.body.container.capturedLeaderboards != null) {
+		for (let i = 0; i < respons.body.container.capturedLeaderboards.length; i++) {
+			let bodyInput = {body: respons.body.container.capturedLeaderboards[i]}
+			let output = processLeaderboard(
+				respons.body.container.capturedLeaderboards[i].id,
+				1,
+				bodyInput)
+				respons.body.container.capturedLeaderboards[i] = output;
+		}
+	}
+	return respons.body;
+}
 
 export default (options = {}) => {
 	const queue = createQueue(options);
@@ -307,8 +353,18 @@ export default (options = {}) => {
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), options, priority);
 
+	// TODO: REVERT BEFORE PROD
+	// const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
+	// 	fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
+		fetchJson(substituteVars(
+			BL_API_CLAN_URL, {clanId, page, ...filters}, true), 
+			options, 
+			priority
+		).then(r => {
+			r.body = processClan(clanId, page, r);
+			return r;
+		});
 
 	const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchJson(

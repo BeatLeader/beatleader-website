@@ -38,7 +38,7 @@
 
 		const params = [
 			{key: 'search', default: '', process: processString},
-			{key: 'sortBy', default: 'pp', process: processString},
+			{key: 'sortBy', default: 'captures', process: processString},
 			{key: 'order', default: 'desc', process: processString},
 		];
 
@@ -109,7 +109,9 @@
 	function onClanClick(clan) {
 		if (!clan?.id) return;
 
-		navigate(`/clan/${clan.tag}`);
+		// TODO: REVERT BEFORE PROD
+		//navigate(`/clan/${clan.tag}`);
+		navigate(`/clan/${clan.tag}/players/1?`);
 	}
 
 	async function onClanAddedOrRemoved() {
@@ -124,6 +126,7 @@
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank clans with 3 players or more', iconFa: 'fa fa-list-ol'},
 		{id: 'count', label: 'Players', title: 'Sort by player count', iconFa: 'fa fa-user'},
+		{id: 'captures', label: 'Maps Captured', title: 'Sort by maps captured', iconFa: 'fa fa-flag'}
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -162,8 +165,11 @@
 			<ContentBox>
 				<h1 class="title is-5">My clan</h1>
 
-				<a href={`/clan/${$account.clan.tag}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}`)}>
-					<ClanInfoSmall clan={$account.clan} />
+				<!-- TODO: REVERT BEFORE PROD -->
+				<!-- <a href={`/clan/${$account.clan.tag}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}`)}>
+					<ClanInfoSmall clan={$account.clan} /> -->
+				<a href={`/clan/${$account.clan.tag}/players/1?`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}/players/1?`)}>
+					<ClanInfoSmall clan={$account.clan}/>
 				</a>
 			</ContentBox>
 		{/if}
