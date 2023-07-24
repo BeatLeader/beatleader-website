@@ -13,6 +13,7 @@
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import RankingMeta from './RankingMeta.svelte';
 	import Select from '../Settings/Select.svelte';
+	import {configStore} from '../../stores/config';
 
 	export let type = 'global';
 	export let page = 1;
@@ -23,6 +24,7 @@
 	export let playerClickFilter = null;
 	export let showTypeSwitcher = true;
 	export let meta = false;
+	export let editing = false;
 
 	let currentFilters = filters;
 
@@ -236,8 +238,19 @@
 		}
 	}
 
+	async function settempsetting(key, value) {
+		var preferences = configStore.get('rankingPreferences');
+		preferences[key] = value;
+		await configStore.setForKey('rankingPreferences', preferences, false);
+	}
+
 	function onSwitcherChanged(e) {
 		if (!e?.detail?.id) return;
+
+		if (editing) {
+			settempsetting(e.detail.id, !$configStore.rankingPreferences[e.detail.id]);
+			return;
+		}
 
 		if (!useInternalFilters) {
 			dispatch('sort-changed', e?.detail);
@@ -279,10 +292,10 @@
 	let switcherSortValues;
 	let sortValue;
 
-	function refreshSortValues(allSortValues, filterValues) {
+	function refreshSortValues(allSortValues, filterValues, rankingPreferences) {
 		switcherSortValues = allSortValues
 			.filter(v => {
-				return !v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType);
+				return editing || ((!v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType)) && rankingPreferences[v.id]);
 			})
 			.map(v => ({
 				...v,
@@ -292,6 +305,7 @@
 							? 'fas fa-long-arrow-alt-up'
 							: 'fas fa-long-arrow-alt-down'
 						: v.iconFa,
+				cls: editing && !rankingPreferences[v.id] ? 'hidden' : '',
 			}));
 
 		if (filters?.sortBy?.length) {
@@ -320,12 +334,12 @@
 	$: dispatch('players-fetched', $rankingStore?.data);
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
-	$: refreshSortValues(allSortValues, currentFilters);
+	$: refreshSortValues(allSortValues, currentFilters, $configStore.rankingPreferences);
 </script>
 
 {#if $rankingStore?.data?.length}
 	{#if !eventId}
-		<nav class="switcher-nav">
+		<nav class="switcher-nav {editing ? 'edit-enabled' : ''}">
 			<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 			{#if showTypeSwitcher}
 				<div class="type-switcher">
@@ -346,7 +360,9 @@
 
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
-			<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
+			<div
+				class="ranking-grid-row {!noIcons && $configStore.preferences.showFriendsButtonOnRanking ? 'with-friends-button' : ''}"
+				in:fly={{delay: idx * 10, x: 100}}>
 				<PlayerCard
 					{player}
 					playerId={mainPlayerId}
@@ -355,7 +371,7 @@
 					value={sortValue?.value(player)}
 					valueProps={eventId == 32 ? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0} : sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if !noIcons}
+				{#if !noIcons && $configStore.preferences.showFriendsButtonOnRanking}
 					<AddFriendButton playerId={player.playerId} />
 				{/if}
 			</div>
@@ -387,15 +403,18 @@
 
 	.ranking-grid {
 		display: grid;
-		grid-gap: 0.75em;
+		grid-gap: 0.5em;
 	}
 
 	.ranking-grid-row {
 		display: grid;
-		grid-template-columns: auto 2.4em;
 		grid-gap: 0.4em;
 		align-items: center;
 		justify-items: center;
+	}
+
+	.ranking-grid-row.with-friends-button {
+		grid-template-columns: auto 2.4em;
 	}
 
 	.type-select {
@@ -428,6 +447,35 @@
 	nav > :global(*) {
 		margin-top: 1rem;
 		margin-bottom: 2rem;
+	}
+
+	.edit-enabled :global(.switch-types .button),
+	.edit-enabled :global(.score-filters .filter-btn),
+	.edit-enabled :global(.score-filters .filter),
+	.edit-enabled :global(.score-filters .filter select),
+	.edit-enabled :global(.score-filters .filter input) {
+		cursor: cell !important;
+		opacity: 1 !important;
+		color: var(--textColor, white) !important;
+		background: transparent !important;
+	}
+
+	.edit-enabled :global(.switch-types .button:not(.hidden)),
+	.edit-enabled :global(.score-filters .filter:not(.hidden)) {
+		border: 1px dotted var(--textColor, white);
+	}
+
+	.edit-enabled :global(.switch-types .button.hidden),
+	.edit-enabled :global(.score-filters .filter.hidden) {
+		filter: grayscale(1);
+		opacity: 0.25 !important;
+		transition: all 200ms;
+	}
+
+	.edit-enabled :global(.switch-types .button.hidden:hover),
+	.edit-enabled :global(.score-filters .filter.hidden:hover) {
+		filter: none;
+		opacity: 0.5 !important;
 	}
 
 	@media screen and (max-width: 500px) {

@@ -154,7 +154,7 @@
 		display: inline-grid;
 		grid-template-columns: 7.5em 4em auto 1fr;
 		grid-template-rows: 1fr;
-		padding: 0.2em;
+		padding: 0 0.2em 0 0.2em;
 		border: 2px solid var(--dimmed);
 		border-radius: 8px;
 		background-color: var(--background);

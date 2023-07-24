@@ -41,6 +41,9 @@ export const DEFAULT_CONFIG = {
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
 
+		showFriendsButtonOnRanking: true,
+		showFiltersOnRanking: true,
+
 		maps3D: true,
 		mapsViewType: 'maps-cards',
 	},
@@ -83,6 +86,18 @@ export const DEFAULT_CONFIG = {
 			date: true,
 			replay: true,
 		},
+	},
+	rankingPreferences: {
+		pp: true,
+		weightedAcc: true,
+		acc: true,
+		topPp: true,
+		maxStreak: true,
+		playCount: true,
+		lastplay: false,
+		weightedRank: true,
+		rank: true,
+		replaysWatched: true,
 	},
 	chartLegend: {
 		y: true,
