@@ -98,6 +98,8 @@ export const DEFAULT_CONFIG = {
 		weightedRank: true,
 		rank: true,
 		replaysWatched: true,
+		top1Score: false,
+		top1Count: false,
 	},
 	chartLegend: {
 		y: true,
@@ -146,6 +148,10 @@ export default async () => {
 		Object.keys(config).forEach(key => {
 			if (key === 'locale') {
 				newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
+				return;
+			}
+			if (key === 'selectedPlaylist') {
+				newConfig[key] = config?.[key] ?? newConfig?.[key] ?? {};
 				return;
 			}
 

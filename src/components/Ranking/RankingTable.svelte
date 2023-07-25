@@ -100,6 +100,16 @@
 			pass: 'scoreStats.topPassPP',
 			tech: 'scoreStats.topTechPP',
 		},
+		top1Count: {
+			ranked: 'scoreStats.rankedTop1Count',
+			unranked: 'scoreStats.unrankedTop1Count',
+			all: 'scoreStats.top1Count',
+		},
+		top1Score: {
+			ranked: 'scoreStats.rankedTop1Score',
+			unranked: 'scoreStats.unrankedTop1Score',
+			all: 'scoreStats.top1Score',
+		},
 	};
 
 	let allPpTypeValues = [
@@ -208,6 +218,22 @@
 			value: data => getStat(data, statKeys['rank'][currentTypeValue]),
 			props: {digits: 0, prefix: '#', suffix: ''},
 			hideForTypes: ['ranked'],
+		},
+		{
+			id: 'top1Count',
+			label: '#1 Count',
+			title: 'Sort by number of top scores',
+			iconFa: 'fa fa-medal',
+			value: data => getStat(data, statKeys['top1Count'][currentTypeValue]),
+			props: {digits: 0, prefix: '', suffix: ''},
+		},
+		{
+			id: 'top1Score',
+			label: 'Podium Score',
+			title: 'Sort by score sum from podium scores(#1 - 5, #2 - 3, #3 - 1)',
+			iconFa: 'fa fa-ranking-star',
+			value: data => getStat(data, statKeys['top1Score'][currentTypeValue]),
+			props: {digits: 0, prefix: '', suffix: ''},
 		},
 		{
 			id: 'replaysWatched',

@@ -58,6 +58,13 @@ function updateScoresStats(playerData) {
 				{key: 'topHMD', label: 'Headset', title: 'Last 50 scores top headset', bgColor: 'var(--selected)'},
 				{key: 'authorizedReplayWatched', label: 'My replays watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
 				{key: 'watchedReplays', label: 'Replays I watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
+				{
+					key: 'rankedTop1Score',
+					title: 'Score sum from ranked podium scores(#1 - 5, #2 - 3, #3 - 1)',
+					label: 'Podium score',
+					bgColor: 'var(--ppColour)',
+				},
+				{key: 'rankedTop1Count', title: 'Top 1 ranked plays count', label: '#1 count', bgColor: 'var(--ppColour)'},
 		  ]
 		: [];
 
