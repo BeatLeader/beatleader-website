@@ -64,7 +64,8 @@ function updateScoresStats(playerData) {
 					label: 'Podium score',
 					bgColor: 'var(--ppColour)',
 				},
-				{key: 'rankedTop1Count', title: 'Top 1 ranked plays count', label: '#1 count', bgColor: 'var(--ppColour)'},
+				{key: 'rankedTop1Count', title: 'Top 1 ranked plays count', label: "Ranked #1's", bgColor: 'var(--ppColour)'},
+				{key: 'top1Count', title: 'Top 1 plays count', label: "#1's", bgColor: 'var(--ppColour)'},
 		  ]
 		: [];
 
