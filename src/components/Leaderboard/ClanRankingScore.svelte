@@ -15,6 +15,7 @@
 	import Value from '../Common/Value.svelte';
 
 	export let leaderboardId = null;
+	export let idx = null;
 	export let battleRoyaleDraft = false;
 	export let battleRoyaleDraftList = [];
 	export let cr = null
@@ -30,6 +31,7 @@
 	}
 
 	let showClanRankingScores = false
+	let clanRank = idx + 1;
 </script>
 
 {#if cr}
@@ -39,37 +41,36 @@
 				<Badge
 					onlyLabel={true}
 					color="white"
-					bgColor={cr?.clanRank === 1
+					bgColor={clanRank === 1
 						? 'darkgoldenrod'
-						: cr?.clanRank === 2
+						: clanRank === 2
 						? '#888'
-						: cr?.clanRank === 3
+						: clanRank === 3
 						? 'saddlebrown'
-						: cr?.clanRank >= 10000
+						: clanRank >= 10000
 						? 'small'
 						: 'var(--dimmed)'}>
 					<span slot="label">
-						#<Value value={cr?.clanRank} digits={0} zero="?" />
+						#<Value value={clanRank} digits={0} zero="?" />
 					</span>
 				</Badge>
 			</div>
 
 			<div class="player">
-				<Avatar clan={cr.clan} />
-				<!-- TODO: REVERT BEFORE PROD -->
+				<Avatar clan={cr?.clan} />
 				<ClanName
-					clan={cr.clan}
-					on:click={cr.clan ? () => navigateToClan(cr.clan.tag) : null} />
-					<ClanBadges clanInput={cr.clan}/>
+					clan={cr?.clan}
+					on:click={cr?.clan ? () => navigateToClan(cr.clan?.tag) : null} />
+				<ClanBadges clan={cr?.clan}/>
 			</div>
 			<div class="timeset above-tablet">
-				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber ?? '')}; ">
+				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber)}; ">
 					{cr?.lastUpdateTime}
 				</span>
 			</div>
 			<div class="timeset mobile-only">
-				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber ?? '')}; ">
-					{cr?.lastUpdateTimeShort ?? ''}
+				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber)}; ">
+					{cr?.lastUpdateTimeShort}
 				</span>
 			</div>
 		</div>
@@ -88,7 +89,7 @@
 				<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 					<span slot="label">
 						<Pp
-							pp={cr.clanpp}
+							pp={cr?.pp}
 							inline={false}
 							color="white" />
 					</span>
@@ -96,7 +97,7 @@
 			</span>
 
 			<span class="with-badge acc">
-				<Accuracy accuracyOverride={cr?.clanAverageAcc} showMods={false}/>
+				<Accuracy accuracyOverride={cr?.averageAcc} showMods={false}/>
 			</span>
 
 			<span class="with-badge score">
@@ -105,7 +106,7 @@
 					color="white" 
 					bgColor={'var(--dimmed)'}>
 					<span slot="label">
-						<Value value={cr?.clanTotalScore} inline={false} digits={0} suffix=''/>
+						<Value value={cr?.totalScore} inline={false} digits={0} suffix=''/>
 					</span>
 				</Badge>
 			</span>

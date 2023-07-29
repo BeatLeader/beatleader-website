@@ -106,6 +106,10 @@
 		border-left: 1px solid var(--color, #eee);
 	}
 
+	.clanInfo {
+		margin: 0.25em 0.5em 0.5em 0 !important;
+	}
+
 	.badge span.label {
 		font-weight: 500;
 		font-size: 1em;

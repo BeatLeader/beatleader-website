@@ -12,6 +12,7 @@
 	import {formatDiffStatus, DifficultyStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
+	import LeaderboardDisplayCaptureStatus from './LeaderboardDisplayCaptureStatus.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -96,32 +97,9 @@
 					<MapTypeDescription type={leaderboard?.stats.type} />
 				{/if}
 			</div>
-			<div class="status-and-type">
-				{#if leaderboard.stats}
-					{#if leaderboard?.clanRankingContested}
-						<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
-							<p class="captured-by">
-								Captured by:
-							</p>
-							<ClanBadges clanInput={'CONTESTED'}/>
-						</div>
-					{:else if (clanRankingList?.[0]?.clan ?? null) === null}
-						<div style=" --clan-color: {'#000000'}" class="captor-clan captor-clan-outline">
-							<p class="captured-by">
-								Captured by:
-							</p>
-							<ClanBadges clanInput={'UNCAPTURED'}/>
-						</div>
-					{:else}
-						<div style=" --clan-color: {clanRankingList?.[0].clan?.color ?? '#000000'}" class="captor-clan captor-clan-outline">
-							<p class="captured-by">
-								Captured by:
-							</p>
-							<ClanBadges clanInput={clanRankingList[0].clan}/>
-						</div>
-					{/if}
-				{/if}
-			</div>
+			{#if isRanked}
+				<LeaderboardDisplayCaptureStatus clan={clanRankingList?.[0]?.clan ?? null} clanRankingContested={leaderboard?.clanRankingContested} />
+			{/if}
 			<h2 class="title is-6" style="display: contents;">
 				{#if leaderboard.stats && leaderboard.stats.passRating}
 					<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />

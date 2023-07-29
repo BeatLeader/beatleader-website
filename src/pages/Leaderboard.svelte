@@ -173,13 +173,6 @@
 			iconFa: 'fas fa-globe-americas',
 			url: `/leaderboard/global/${currentLeaderboardId}/1`,
 			filters: {countries: ''},
-		},
-		{
-			type: 'clanranking',
-			label: 'Clan Ranking',
-			iconFa: 'fas fa-flag',
-			url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
-			filters: {countries: ''},
 		}
 	]
 	.concat(
@@ -345,11 +338,24 @@
 		}));
 	}
 
-	function updateTypeOptions(country, playerIsFollowingSomeone) {
+	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked) {
 		if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
 			.map(to => to)
+			.concat(
+				isRanked
+				? [
+					{
+						type: 'clanranking',
+						label: 'Clan Ranking',
+						iconFa: 'fas fa-flag',
+						url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
+						filters: {countries: ''},
+					}
+				]
+				: []
+			)
 			.concat(
 				playerIsFollowingSomeone
 					? [
@@ -622,7 +628,7 @@
 	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
 
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
-	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone);
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked);
 	$: refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
@@ -849,6 +855,7 @@
 									animate:flip={{duration: 300}}>
 									<ClanRankingScore
 										{leaderboardId}
+										{idx}
 										{cr}
 										{type}
 										{modifiers}

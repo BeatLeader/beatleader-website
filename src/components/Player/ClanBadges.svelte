@@ -1,77 +1,41 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import Badge from '../Common/Badge.svelte';
+	import createBadgeUtils from '../Common/utils/badge';
 
 	export let player = null;
-	export let clanInput = null;
+	export let clan = null;
 
-	function invertColor(hex) {
-		if (hex.indexOf('#') === 0) {
-			hex = hex.slice(1);
-		}
-		// convert 3-digit hex to 6-digits.
-		if (hex.length === 3) {
-			hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-		}
-		if (hex.length === 6) {
-			hex = hex + 'FF';
-		}
-		var r = parseInt(hex.slice(0, 2), 16),
-			g = parseInt(hex.slice(2, 4), 16),
-			b = parseInt(hex.slice(4, 6), 16),
-			a = parseInt(hex.slice(6, 8), 16);
-		// https://stackoverflow.com/a/3943023/112731
-		return r * 0.299 + g * 0.687 + b * 0.114 > 186 && a > 128 ? '#000000' : '#FFFFFF';
-	}
+	const badgeUtils = createBadgeUtils();
 
-	$: clans = player?.clans ?? null;
+	$: playerClans = player?.clans ?? null;
 </script>
 
-
-{#if clans}
+{#if playerClans}
 	<span class="clan-badges">
-		{#each clans as clan (clan.tag)}
-			<!-- TODO: REVERT BEFORE PROD -->
-			<a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
+		{#each playerClans as playerClan (playerClan.tag)}
+			<a href={`/clan/${playerClan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${playerClan?.tag}`)}>
 				<Badge
-					label={clan?.tag ?? '???'}
+					label={playerClan?.tag ?? '???'}
 					onlyLabel={true}
 					fluid={true}
-					color={invertColor(clan?.color ?? '#000000')}
-					bgColor={clan?.color ?? 'var(--dimmed)'}
+					color={badgeUtils.invertColor(playerClan?.color ?? '#000000')}
+					bgColor={playerClan?.color ?? 'var(--dimmed)'}
 					title="Go to clan profile" />
 			</a>
 		{/each}
 	</span>
-{:else if clanInput}
+{:else if clan}
 	<span class="clan-badges">
-		{#if clanInput === 'UNCAPTURED'}
+		<a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
 			<Badge
-				label="UNCAPTURED"
+				label={clan.tag ?? '???'}
 				onlyLabel={true}
 				fluid={true}
-				color={invertColor('#000000')}
-				bgColor={'var(--dimmed)'}
-				title="Set a score on this map to capture it for your clan!" />
-		{:else if clanInput === 'CONTESTED'}
-			<Badge
-				label="&#9876 CONTESTED &#9876"
-				onlyLabel={true}
-				fluid={true}
-				color={invertColor('#000000')}
-				bgColor={'var(--dimmed)'}
-				title="Set a score on this map to break the tie and capture it for your clan!" />
-		{:else}
-				<a href={`/clan/${clanInput?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clanInput?.tag}`)}>
-					<Badge
-						label={clanInput.tag ?? '???'}
-						onlyLabel={true}
-						fluid={true}
-						color={invertColor(clanInput.color ?? '#000000')}
-						bgColor={clanInput?.color ?? 'var(--dimmed)'}
-						title="Set a score on this map to help capture it for your clan!" />
-				</a>
-		{/if}
+				color={badgeUtils.invertColor(clan.color ?? '#000000')}
+				bgColor={clan?.color ?? 'var(--dimmed)'}
+				title="Set a score on this map to help capture it for your clan!" />
+		</a>
 	</span>
 {/if}
 

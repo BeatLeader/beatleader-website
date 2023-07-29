@@ -285,11 +285,11 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge label={rankedPoolPercentLabel(tag)} value={rankedPoolPercent} suffix="%" withZeroSuffix={true} digits={1} fluid={true} bgColor="var(--rankedPoolColor)" />
-							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--capturedColor)" />
-							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
-							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
-							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />
+							<Badge label={rankedPoolPercentLabel(tag)} value={rankedPoolPercent} suffix="%" withZeroSuffix={true} digits={1} fluid={true} bgColor="var(--rankedPoolColor)" styling="clanInfo"/>
+							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--capturedColor)" styling="clanInfo"/>
+							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" styling="clanInfo"/>
+							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" styling="clanInfo"/>
+							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" styling="clanInfo"/>
 						</section>
 					{/if}
 
