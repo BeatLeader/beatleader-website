@@ -699,7 +699,7 @@
 								on:keydown={() => boolflip('leaderboardShowSorting')}
 								title="Show sorting and search for the leaderboard">
 								{#if leaderboardShowSorting}
-									<i class="fa-solid fa-filter-circle-xmark" />
+									<i class="fa-solid invert-xmart fa-filter-circle-xmark" />
 								{:else}
 									<i class="fa-solid fa-filter" />
 								{/if}
@@ -711,7 +711,7 @@
 				{/if}
 
 				{#if leaderboardShowSorting}
-					<nav class="switcher-nav">
+					<nav class="switcher-nav" transition:fade>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
 							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
@@ -1259,6 +1259,10 @@
 
 	.nowrap-label {
 		white-space: nowrap;
+	}
+
+	.invert-xmart {
+		transform: none !important;
 	}
 
 	:global(.battleroyalebtn) {

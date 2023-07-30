@@ -22,25 +22,23 @@
 		}
 	}
 
-	$: metadata = leaderboard?.beatMaps?.metadata;
 	$: findDiff(leaderboard);
 </script>
 
-<article transition:fade>
-	{#if diff}
+{#if diff}
+	<div>
 		<div class="stats">
 			{#if leaderboard?.song?.duration}
-				<div transition:fade>
-					<span class="time" transition:fade={{duration: 500}}>
-						<i class="fas fa-clock" /> Duration:
-						<strong>
-							<Duration value={leaderboard.song.duration} />
-						</strong></span>
+				<div>
+					<i class="fas fa-clock" /> Duration:
+					<strong>
+						<Duration value={leaderboard.song.duration} />
+					</strong>
 				</div>
 			{/if}
 
 			{#if diff.notes}
-				<div transition:fade>
+				<div>
 					<i class="fas fa-music" /> Notes:
 					<strong>
 						<Value value={diff.notes} digits={0} />
@@ -49,7 +47,7 @@
 			{/if}
 
 			{#if leaderboard?.song?.bpm}
-				<div transition:fade>
+				<div>
 					<i class="fas fa-drum" /> BPM:
 					<strong>
 						<Value value={leaderboard.song.bpm} digits={0} />
@@ -58,7 +56,7 @@
 			{/if}
 
 			{#if diff.njs}
-				<div transition:fade>
+				<div>
 					<i class="fas fa-tachometer-alt" /> NJS:
 					<strong>
 						<Value value={diff.njs} digits={0} />
@@ -67,7 +65,7 @@
 			{/if}
 
 			{#if Number.isFinite(diff.offset)}
-				<div transition:fade>
+				<div>
 					<i class="fas fa-ruler-horizontal" /> Offset:
 					<strong>
 						<Value value={diff.offset} digits={2} />
@@ -76,7 +74,7 @@
 			{/if}
 
 			{#if diff.nps}
-				<div transition:fade>
+				<div>
 					<i class="fas fa-fire" /> NPS:
 					<strong>
 						<Value value={diff.nps} digits={2} />
@@ -85,7 +83,7 @@
 			{/if}
 
 			{#if diff.bombs}
-				<div transition:fade>
+				<div>
 					<i class="fas fa-bomb" /> Bombs:
 					<strong>
 						<Value value={diff.bombs} digits={0} zero="0" />
@@ -94,7 +92,7 @@
 			{/if}
 
 			{#if diff.obstacles}
-				<div transition:fade>
+				<div>
 					<i class="fas fa-skull" /> Obstacles:
 					<strong>
 						<Value value={diff.obstacles} digits={0} zero="0" />
@@ -102,8 +100,8 @@
 				</div>
 			{/if}
 		</div>
-	{/if}
-</article>
+	</div>
+{/if}
 
 <style>
 	.stats {
