@@ -24,12 +24,13 @@
 	.type {
 		display: flex;
 		font-weight: 600;
+		font-size: 0.8em;
 		padding: 1px 2px;
 		min-width: 1.5em;
 		max-height: 1.5em;
 		border-radius: 4px;
-		margin-right: 0.5em;
 		height: 2em;
+		margin-top: 0.2em;
 		align-items: center;
 	}
 

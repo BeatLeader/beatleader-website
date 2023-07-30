@@ -153,7 +153,8 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},
-		{id: 'name', value: `${led?.song?.name ?? ''} ${led?.song?.subName ?? ''}`},
+		{id: 'name', value: led?.song?.name ?? ''},
+		{id: 'subName', value: led?.song?.subName},
 	].reduce(
 		(cum, sid) => {
 			let value = sid.value;

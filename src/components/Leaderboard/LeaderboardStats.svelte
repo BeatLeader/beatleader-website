@@ -3,16 +3,11 @@
 	import Value from '../Common/Value.svelte';
 	import Duration from '../Song/Duration.svelte';
 	import createBeatSaverService from '../../services/beatmaps';
-	import createStarGeneratorStore from '../../stores/beatleader/star-generator';
-	import ExmachinaCurve from './ExmachinaCurve.svelte';
 
 	export let leaderboard;
-	export let curve = false;
 
 	let diff;
 	let beatSaverService;
-
-	const starGeneratorStore = createStarGeneratorStore();
 
 	async function findDiff(leaderboard) {
 		if (leaderboard?.beatMaps) {
@@ -29,13 +24,6 @@
 
 	$: metadata = leaderboard?.beatMaps?.metadata;
 	$: findDiff(leaderboard);
-
-	$: hash = leaderboard?.song?.hash;
-	$: diffInfo = leaderboard?.diffInfo;
-	$: exmachinadata = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type];
-	$: exmachinastats = exmachinadata?.stats;
-	$: notes = exmachinadata?.notes;
-	$: !exmachinadata && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type);
 </script>
 
 <article transition:fade>
@@ -114,10 +102,6 @@
 				</div>
 			{/if}
 		</div>
-	{/if}
-
-	{#if curve && notes}
-		<ExmachinaCurve {notes} on:speed-changed={e => starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, e.detail)} />
 	{/if}
 </article>
 

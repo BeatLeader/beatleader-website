@@ -52,7 +52,7 @@
 	function selectNavigation(item, index) {
 		previousIndex = selectedNavigationIndex;
 		selectedNavigationIndex = index;
-		window.location.hash = item.link;
+		history.replaceState(undefined, undefined, item.link);
 	}
 
 	async function onSave() {

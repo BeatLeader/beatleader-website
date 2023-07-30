@@ -11,9 +11,13 @@
 	import {formatDiffStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
+	import LeaderboardStats from './LeaderboardStats.svelte';
+	import {configStore} from '../../stores/config';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let leaderboard;
 	export let ratings = null;
+	export let latestHash = null;
 
 	export let currentLeaderboardId;
 	export let batleRoyale = true;
@@ -47,6 +51,7 @@
 	$: drawCinematics(cinematicsCanvas, coverUrl);
 
 	$: hash = song?.hash;
+	$: name = song?.name;
 	$: diffInfo = leaderboard?.diffInfo;
 </script>
 
@@ -64,33 +69,52 @@
 		</div>
 
 		<div class="header-container">
+			<h1 class="title is-4">
+				<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
+				{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+					<span class="subname">{song.subName}</span>
+				{/if}
+			</h1>
+
 			<div class="title-container">
-				<h1 class="title is-4">
-					<span class="name" title="Song name">{song.name} {song.subName ? song.subName : ''}</span>
-				</h1>
 				<span class="author" title="Song author name">{song.authorName}</span>
 				<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
+				<div class="status-and-type">
+					{#if leaderboard.categoryDisplayName}
+						<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+							<span slot="label">
+								{leaderboard.categoryDisplayName}
+								{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
+							</span>
+						</Badge>
+					{/if}
+
+					{#if leaderboard.stats}<span class="diff-status">{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
+					{#if leaderboard?.stats?.type}
+						<MapTypeDescription type={leaderboard?.stats.type} />
+					{/if}
+				</div>
+				{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
+					<LeaderboardStats {leaderboard} />
+				{/if}
+				{#if $configStore?.leaderboardPreferences?.showHashInHeader}
+					<div>
+						<small class="level-author">{song.hash.toUpperCase()}</small>
+						{#if latestHash}
+							<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+						{:else if latestHash == undefined}
+							<Spinner />
+						{:else}
+							<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+						{/if}
+					</div>
+				{/if}
 			</div>
 
 			<Icons {hash} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
 		</div>
 
 		<div class="title-and-buttons">
-			<div class="status-and-type">
-				{#if leaderboard.categoryDisplayName}
-					<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
-						<span slot="label">
-							{leaderboard.categoryDisplayName}
-							{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
-						</span>
-					</Badge>
-				{/if}
-
-				{#if leaderboard.stats}<span>{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-				{#if leaderboard?.stats?.type}
-					<MapTypeDescription type={leaderboard?.stats.type} />
-				{/if}
-			</div>
 			<h2 class="title is-6" style="display: contents;">
 				{#if leaderboard.stats && leaderboard.stats.passRating}
 					<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
@@ -120,7 +144,7 @@
 
 <style>
 	header {
-		padding: 0.4em 0.6em;
+		padding: 0.6em;
 		border-radius: 0.4em;
 		color: var(--alternate);
 		display: flex;
@@ -144,15 +168,40 @@
 
 	header .title {
 		color: inherit !important;
+		margin-left: -0.15em;
 	}
 
 	header h1 {
-		font-size: 1em !important;
-		margin-bottom: 0.5em;
+		margin-bottom: 0.2em;
 	}
 
 	header h1 span.name {
-		font-size: 1.8em;
+		color: #ffffffab !important;
+	}
+
+	.name-long {
+		font-size: 1.5em;
+	}
+
+	.name-short {
+		font-size: 2.5em;
+	}
+
+	.subname {
+		color: #ffffff93;
+		font-size: 1em;
+	}
+
+	.author {
+		color: #ffffffa3;
+	}
+
+	.level-author {
+		color: var(--alternate);
+	}
+
+	.diff-status {
+		color: white;
 	}
 
 	header h2.title {
@@ -166,6 +215,7 @@
 		display: flex;
 		justify-content: space-between;
 		flex-direction: column;
+		min-height: 14em;
 	}
 
 	.title-container {
@@ -201,6 +251,12 @@
 		gap: 0.6em;
 	}
 
+	:global(.title-container .stats) {
+		justify-content: start !important;
+		color: #ffffffa3;
+		max-width: 35em;
+	}
+
 	.group-select {
 		height: fit-content;
 		padding: 0.175rem;
@@ -216,7 +272,7 @@
 		font-family: inherit;
 		font-size: 0.875rem;
 		font-weight: 500;
-		margin: 0.4em;
+		width: 100%;
 	}
 
 	.group-option {
@@ -253,16 +309,16 @@
 	.title-and-buttons {
 		display: flex;
 		align-items: center;
-		margin: 0.4em;
-		justify-content: center;
+		margin-top: 0.8em;
+		align-self: stretch;
+		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 0.5em;
 		flex-direction: column;
 		min-width: fit-content;
 	}
 
 	:global(.voteButton) {
-		margin-top: 0.25em !important;
+		margin-top: 0 !important;
 		height: 1.8em;
 	}
 
@@ -280,6 +336,22 @@
 
 		:global(.player .clan-badges) {
 			display: none;
+		}
+
+		.title-container {
+			text-align: center;
+		}
+
+		.header-container {
+			align-items: center;
+			min-height: 10em;
+		}
+
+		.status-and-type {
+			justify-content: center;
+		}
+		:global(.title-container .stats) {
+			justify-content: center !important;
 		}
 	}
 

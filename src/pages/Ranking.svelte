@@ -383,7 +383,7 @@
 	</article>
 
 	<aside>
-		<ContentBox>
+		<ContentBox cls={!showFilters ? 'show-filters-box' : ''}>
 			{#if !showFilters}
 				<div class="score-options-section">
 					<span class="beat-savior-reveal clickable" on:click={() => boolflip('showFiltersOnRanking')} title="Show filters">
@@ -451,7 +451,7 @@
 	}
 
 	.page-content {
-		max-width: 65em;
+		max-width: 58em;
 		width: 100%;
 	}
 
@@ -503,6 +503,11 @@
 		cursor: pointer;
 	}
 
+	:global(.show-filters-box) {
+		margin-inline: 0;
+		padding: 0.5rem !important;
+	}
+
 	.event-container {
 		width: 100%;
 		height: 100%;
@@ -550,7 +555,7 @@
 		display: grid;
 		align-items: center;
 		grid-template-columns: 1em auto !important;
-		max-width: 30em;
+		max-width: 20em;
 	}
 
 	.clickable {

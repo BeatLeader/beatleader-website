@@ -292,7 +292,7 @@
 	}
 
 	.page-content {
-		max-width: 65em;
+		max-width: 58em;
 		width: 100%;
 		overflow: inherit;
 	}

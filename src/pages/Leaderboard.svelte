@@ -54,6 +54,7 @@
 	import LeaderboardHeader from '../components/Leaderboard/LeaderboardHeader.svelte';
 	import Score from '../components/Leaderboard/Score.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
+	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -665,6 +666,7 @@
 					bind:battleRoyaleDraft
 					{leaderboard}
 					{ratings}
+					{latestHash}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
@@ -679,32 +681,34 @@
 			{#if $leaderboardStore}
 				{#if type !== 'accsaber'}
 					<nav class="diff-switch">
-						<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
+						<div>
+							<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
+						</div>
 
 						{#if !withoutDiffSwitcher && diffs && diffs.length}
 							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
 						{/if}
 
 						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
+
+						<div class="sorting-options">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={leaderboardShowSorting}
+								on:click={() => boolflip('leaderboardShowSorting')}
+								on:keydown={() => boolflip('leaderboardShowSorting')}
+								title="Show sorting and search for the leaderboard">
+								{#if leaderboardShowSorting}
+									<i class="fa-solid fa-filter-circle-xmark" />
+								{:else}
+									<i class="fa-solid fa-filter" />
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+						</div>
 					</nav>
 				{/if}
-
-				<div class="sorting-options">
-					<span
-						class="beat-savior-reveal clickable"
-						class:opened={leaderboardShowSorting}
-						on:click={() => boolflip('leaderboardShowSorting')}
-						on:keydown={() => boolflip('leaderboardShowSorting')}
-						title="Show sorting and search for the leaderboard">
-						{#if leaderboardShowSorting}
-							Hide filters and sorting
-						{:else}
-							Show filters and sorting
-						{/if}
-
-						<i class="fas fa-chevron-down" />
-					</span>
-				</div>
 
 				{#if leaderboardShowSorting}
 					<nav class="switcher-nav">
@@ -999,17 +1003,22 @@
 							</div>
 							{#if leaderboard?.stats}
 								<div class="stats-with-icons">
-									<LeaderboardStats {leaderboard} curve={true} />
-									<div>
-										<small class="level-author">{song.hash.toUpperCase()}</small>
-										{#if latestHash}
-											<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-										{:else if latestHash == undefined}
-											<Spinner />
-										{:else}
-											<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-										{/if}
-									</div>
+									{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
+										<LeaderboardStats {leaderboard} />
+									{/if}
+									<PredictedAccGraph {leaderboard} />
+									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
+										<div>
+											<small class="level-author">{song.hash.toUpperCase()}</small>
+											{#if latestHash}
+												<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+											{:else if latestHash == undefined}
+												<Spinner />
+											{:else}
+												<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+											{/if}
+										</div>
+									{/if}
 
 									{#if iconsInInfo}
 										<Icons {hash} {diffInfo} mapCheck={true} />
@@ -1110,14 +1119,15 @@
 	}
 
 	.page-content {
-		max-width: 65em;
+		max-width: 58em;
 		width: 100%;
 	}
 
 	.diff-switch {
 		display: flex;
-		justify-content: center;
-		margin-bottom: 1em;
+		justify-content: space-between;
+		margin-bottom: 0.3em;
+		margin-top: 0.2em;
 		gap: 0.6em;
 		flex-wrap: wrap;
 	}
@@ -1281,7 +1291,7 @@
 	}
 
 	:global(.voteButton) {
-		margin-top: 0.25em !important;
+		margin-top: 0 !important;
 		height: 1.8em;
 	}
 
@@ -1303,9 +1313,7 @@
 	}
 
 	.sorting-options {
-		display: grid;
-		justify-items: center;
-		margin-top: -0.8em;
+		margin-top: 0.2em;
 	}
 
 	.status-header {
@@ -1342,6 +1350,10 @@
 		.diff-switch :global(> *:not(:last-child)) {
 			margin-right: 0;
 			margin-bottom: 0.5em;
+		}
+
+		.diff-switch {
+			gap: 0.1em;
 		}
 	}
 

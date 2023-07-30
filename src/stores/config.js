@@ -79,6 +79,10 @@ export const DEFAULT_CONFIG = {
 			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'mistakes', withImprovements: false}],
 		],
 		badgeRows: 1,
+
+		showStatsInHeader: false,
+		showHashInHeader: false,
+
 		show: {
 			avatar: true,
 			country: true,
@@ -95,7 +99,7 @@ export const DEFAULT_CONFIG = {
 		maxStreak: true,
 		playCount: true,
 		lastplay: false,
-		weightedRank: true,
+		weightedRank: false,
 		rank: true,
 		replaysWatched: true,
 		top1Score: false,

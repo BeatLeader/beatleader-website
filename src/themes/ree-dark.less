@@ -100,6 +100,72 @@ nav.ssr-page-container {
   }
 }
 
+
+.player-performance,
+.page-content.scores {
+    .compare-player-name {
+        * {
+            background: transparent !important;
+            color: white !important;
+            border: none !important;
+        }
+    }
+
+
+    .hands-and-grid>*:nth-child(2)>span {
+        padding: 1.7rem !important;
+        background: rgba(255, 255, 255, 0.171) !important;
+    }
+
+    .badge {
+        font-size: 1em !important;
+        color: white !important;
+        background-color: 
+color-mix(in srgb, var(--background-color) 40%, transparent) !important;
+border-radius: 0.15em !important;
+    }
+
+    .rank {
+        .badge {
+            border-radius: 0;
+            background: none !important;
+            border: none;
+        }
+    }
+
+    .player-performance-badges {
+      grid-column-gap: 0.2em
+    }
+
+    .player-score {
+        min-height: 3rem;
+        border: none !important;
+
+        &.highlight {
+            background: #ffffff33;
+            margin: .4rem 0;
+            padding: 0;
+
+            &.mobile-second-line {
+                .badge {
+                    border: none;
+                    background: none !important;
+                }
+            }
+        }
+
+        @media screen and (max-width: 767px) {
+            & {
+                height: unset !important;
+
+                .clan-badges {
+                    display: none;
+                }
+            }
+        }
+    }
+}
+
 //endregion
 
 //region Profile chart
