@@ -19,8 +19,13 @@
 	function preloadImages(images) {
 		if (!images.some(img => img?.url?.length)) return;
 
+		loadedImages = [];
 		images.forEach(imgObj => {
-			if (!imgObj?.url?.length || preloadCache[imgObj?.url]) return;
+			if (!imgObj?.url?.length) return;
+			if (preloadCache[imgObj?.url]) {
+				loadedImages = [...loadedImages, imgObj];
+				return;
+			}
 
 			const url = imgObj.url;
 

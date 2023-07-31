@@ -169,20 +169,22 @@
 			</ul>
 			<span style="color: red">ONLY FOR PC BEAT SABER</span>
 
-			{#if isSupporter && loggedInPlayer > 1000000000000000}
-				<div class="benefit-button-container">
-					<Button
-						iconFa="fas fa-download"
-						title="Download Reesabers"
-						label="Download"
-						url={BL_API_URL + 'reesabers'}
-						onlyurl={true}
-						type="green" />
-				</div>
-			{:else}
+			<div class="benefit-button-container">
+				<Button
+					iconFa="fas fa-download"
+					title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
+						? 'Log in on the top of the Page with Steam and Link Patreon'
+						: 'Download Reesabers'}
+					label="Download"
+					url={BL_API_URL + 'reesabers'}
+					onlyurl={true}
+					disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
+					type="green" />
+			</div>
+			{#if isSupporter && loggedInPlayer < 1000000000000000}
 				<div class="benefit-button-container">
 					<span>Sorry but account you linked can't be used in the PC game.<br /></span>
-					<span>Migrate to Steam in settings or feel free to ask us on Discord.<br /></span>
+					<span>Feel free to ask help on Discord.<br /></span>
 					<Button
 						iconFa="fas fa-tower-cell"
 						title="Contact on Discord"

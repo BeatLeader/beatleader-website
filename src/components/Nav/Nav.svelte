@@ -118,7 +118,6 @@
 					label: 'Add new...',
 					callback: async () => {
 						playlists.create();
-						navigate('/playlists');
 					},
 				},
 			});

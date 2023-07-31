@@ -5,9 +5,15 @@
 	import {formatDateRelative} from '../../../utils/date';
 	import {debounce} from '../../../utils/debounce';
 	import regionsPlugin from './utils/regions-plugin';
-	import {capitalize} from '../../../utils/js';
+	import {deepClone, capitalize} from '../../../utils/js';
 	import createPlayerService from '../../../services/beatleader/player';
 	import Spinner from '../../Common/Spinner.svelte';
+
+	import createPlaylistStore from '../../../stores/playlists';
+	import {configStore} from '../../../stores/config';
+	import deepEqual from 'deep-equal';
+	import Button from '../../Common/Button.svelte';
+	import {getNotificationsContext} from 'svelte-notifications';
 
 	export let playerId = null;
 	export let averageAcc = null;
@@ -18,6 +24,8 @@
 	Chart.register(zoomPlugin);
 
 	const playerService = createPlayerService();
+	const playlists = createPlaylistStore();
+	const {addNotification} = getNotificationsContext();
 
 	const CHART_DEBOUNCE = 300;
 
@@ -25,14 +33,18 @@
 	let chart = null;
 
 	let lastHistoryHash = null;
+	let lastPlaylist = null;
 	let playerScores = null;
 
 	let isLoading = false;
 
 	const calcPlayerScoresHash = playerScores => (playerScores?.length ?? 0) + averageAcc + medianAcc;
+	function decapitalizeFirstLetter(string) {
+		return string.charAt(0).toLowerCase() + string.slice(1);
+	}
 
-	async function setupChart(hash, canvas) {
-		if (!hash || !canvas || !playerScores?.length || chartHash === lastHistoryHash) return;
+	async function setupChart(hash, canvas, selectedPlaylist) {
+		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
 
 		const mapColor = '#ffffff';
 		const mapBorderColor = '#003e54';
@@ -44,6 +56,8 @@
 		const averageLinesColor = 'rgba(255,255,255,.35)';
 
 		lastHistoryHash = chartHash;
+		const refreshOptions = (!selectedPlaylist && lastPlaylist) || (selectedPlaylist && !lastPlaylist);
+		lastPlaylist = selectedPlaylist ? deepClone(selectedPlaylist) : null;
 
 		const skipped = (ctx, value) => (ctx.p0.skip || ctx.p1.skip ? value : undefined);
 
@@ -57,7 +71,7 @@
 				if (s.stars > maxStars) maxStars = s.stars;
 				if (acc < minAcc) minAcc = acc;
 
-				return {
+				var result = {
 					x: s.stars,
 					y: acc,
 					leaderboardId: s?.leaderboardId ?? null,
@@ -67,7 +81,28 @@
 					diff: `${s?.diff ?? ''}${s?.mode?.length && s.mode !== 'Standard' ? ' ' + s.mode : ''}`,
 					timeSet: s.timeset,
 					mods: s?.modifiers?.length ? s.modifiers.split(',') : null,
+					hash: s?.hash,
 				};
+
+				if (selectedPlaylist) {
+					const playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == s?.hash);
+					const playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
+					const difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
+					const diffInfo = {
+						diff: s?.diff ?? '',
+						type: s.mode,
+					};
+					const songInfo = {
+						hash: s?.hash,
+						songName: s?.songName ?? '',
+						difficulties: [{name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type}],
+						levelAuthorName: s?.mapper ?? '',
+					};
+
+					result = {...result, playlistSongs, playlistSong, difficulties, songInfo, diffInfo};
+				}
+
+				return result;
 			});
 
 		const avgData = Object.entries(
@@ -125,7 +160,22 @@
 			{
 				label: 'Maps',
 				borderColor: mapBorderColor,
-				backgroundColor: mapColor,
+				backgroundColor: selectedPlaylist
+					? element => {
+							const item = element.raw;
+							if (item.playlistSong) {
+								if (item.difficulties.length == 1 && item.difficulties[0] == item.diff) {
+									return 'red';
+								} else if (item.difficulties.length == 1 || !item.difficulties.includes(item.diff)) {
+									return 'blue';
+								} else {
+									return 'yellow';
+								}
+							} else {
+								return 'grey';
+							}
+					  }
+					: mapColor,
 				fill: false,
 				pointRadius: 3,
 				pointHoverRadius: 4,
@@ -191,149 +241,197 @@
 			},
 		];
 
+		const options = {
+			responsive: true,
+			maintainAspectRatio: false,
+			layout: {
+				padding: {
+					right: 0,
+				},
+			},
+			interaction: {
+				mode: 'nearest',
+				intersect: true,
+			},
+			plugins: {
+				legend: {
+					display: true,
+				},
+				tooltip: {
+					displayColors: false,
+					position: 'nearest',
+					title: {
+						display: true,
+					},
+					callbacks: {
+						label: function (ctx) {
+							if (!ctx || !ctx?.dataset?.data[ctx?.dataIndex]) return '';
+
+							const ret = [];
+
+							switch (ctx?.dataset?.label) {
+								case 'Maps':
+									const song = ctx.dataset.data[ctx.dataIndex];
+									if (song) {
+										ret.push(formatDateRelative(song.timeSet));
+										ret.push(`${song.name} (${capitalize(song?.diff?.replace('Plus', '+' ?? ''))})`);
+										ret.push(`${song.levelAuthor}`);
+									}
+									break;
+							}
+
+							if (selectedPlaylist) {
+								const item = ctx.raw;
+								if (item.playlistSong) {
+									if (item.difficulties.length == 1 && item.difficulties[0] == item.diff) {
+										ret.push(`Click to remove from the ${selectedPlaylist.playlistTitle}`);
+									} else if (item.difficulties.length == 1 || !item.difficulties.includes(item.diff)) {
+										ret.push(`Click to add this diff to the ${selectedPlaylist.playlistTitle}`);
+									} else {
+										ret.push(`Click to remove this diff from the ${selectedPlaylist.playlistTitle}`);
+									}
+								} else {
+									ret.push(`Click to add to the ${selectedPlaylist.playlistTitle}`);
+								}
+							}
+
+							return ret;
+						},
+						title: function (ctx) {
+							if (!ctx?.[0]?.raw) return '';
+
+							switch (ctx?.[0].dataset?.label) {
+								case 'Maps':
+									const mods = ctx[0].raw?.mods ?? null;
+									const stars = formatNumber(ctx[0].raw?.x ?? 0, 2);
+									const acc = formatNumber(ctx[0].raw?.y ?? 0, 2);
+
+									return type === 'percentage'
+										? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`
+										: `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`;
+
+								default:
+									if (ctx && Array.isArray(ctx))
+										return [`Stars: ${ctx?.[0]?.raw?.x}★`].concat(
+											ctx.map(d => `${d?.dataset?.label ?? ''}: ${formatNumber(d?.raw?.y ?? 0)}%`)
+										);
+							}
+
+							return '';
+						},
+					},
+				},
+				zoom: {
+					pan: {
+						enabled: true,
+						mode: 'xy',
+					},
+					zoom: {
+						wheel: {
+							enabled: true,
+						},
+						pinch: {
+							enabled: true,
+						},
+						mode: 'xy',
+					},
+					limits: {
+						x: {min: 0, max: maxStars},
+						y: {min: minAcc, max: 100},
+					},
+				},
+				regions: {
+					regions: [
+						{min: 95, max: 100, color: ssPlusColor},
+						{min: 90, max: 95, color: ssColor},
+						{min: 85, max: 90, color: sPlusColor},
+						{min: 80, max: 85, color: sColor},
+						{min: 0, max: 80, color: aColor},
+					].concat(averageLines),
+				},
+			},
+			scales: {
+				x: {
+					type: 'linear',
+					scaleLabel: {
+						display: false,
+						labelString: 'Stars',
+					},
+					ticks: {
+						min: 0,
+						stepSize: 0.5,
+						callback: val => formatNumber(val, 1) + '★',
+					},
+					max: maxStars,
+				},
+				y: {
+					type: 'linear',
+					scaleLabel: {
+						display: true,
+						labelString: 'Acc',
+					},
+					ticks: {
+						max: 100,
+						callback: val => formatNumber(val, 2) + '%',
+					},
+					grid: {
+						color: 'rgba(0,0,0,0.1)',
+						display: true,
+						drawBorder: true,
+						drawOnChartArea: true,
+					},
+					min: minAcc,
+				},
+			},
+			onHover(e, item, chart) {
+				const element = item?.[0]?.element?.$context?.raw;
+				if (!element?.leaderboardId) {
+					e.native.target.style.cursor = 'default';
+				} else {
+					e.native.target.style.cursor = 'pointer';
+				}
+			},
+			onClick(e, item, chart) {
+				const element = item?.[0]?.element?.$context?.raw;
+				if (!element?.leaderboardId) return;
+
+				if (selectedPlaylist != null) {
+					if (element?.playlistSong) {
+						if (element.difficulties.length == 1 && element.difficulties[0] == element.diff) {
+							playlists.remove(element.hash);
+						} else if (element.difficulties.length == 1 || !element.difficulties.includes(element.diff)) {
+							playlists.addDiff(element.hash, element.diffInfo);
+						} else {
+							playlists.removeDiff(element.hash, element.diffInfo);
+						}
+					} else {
+						playlists.add(element.songInfo);
+					}
+				} else {
+					window.open(`/leaderboard/global/${element.leaderboardId}`, '_blank');
+				}
+			},
+		};
+		if (selectedPlaylist) {
+			options.animation = {
+				duration: 0, // general animation time
+			};
+		}
+
 		if (!chart) {
 			chart = new Chart(canvas, {
 				type: 'scatter',
 				data: {
 					datasets,
 				},
-				options: {
-					responsive: true,
-					maintainAspectRatio: false,
-					layout: {
-						padding: {
-							right: 0,
-						},
-					},
-					interaction: {
-						mode: 'nearest',
-						intersect: true,
-					},
-					plugins: {
-						legend: {
-							display: true,
-						},
-						tooltip: {
-							displayColors: false,
-							position: 'nearest',
-							title: {
-								display: true,
-							},
-							callbacks: {
-								label: function (ctx) {
-									if (!ctx || !ctx?.dataset?.data[ctx?.dataIndex]) return '';
-
-									const ret = [];
-
-									switch (ctx?.dataset?.label) {
-										case 'Maps':
-											const song = ctx.dataset.data[ctx.dataIndex];
-											if (song) {
-												ret.push(formatDateRelative(song.timeSet));
-												ret.push(`${song.name} (${capitalize(song?.diff?.replace('Plus', '+' ?? ''))})`);
-												ret.push(`${song.levelAuthor}`);
-											}
-											break;
-									}
-
-									return ret;
-								},
-								title: function (ctx) {
-									if (!ctx?.[0]?.raw) return '';
-
-									switch (ctx?.[0].dataset?.label) {
-										case 'Maps':
-											const mods = ctx[0].raw?.mods ?? null;
-											const stars = formatNumber(ctx[0].raw?.x ?? 0, 2);
-											const acc = formatNumber(ctx[0].raw?.y ?? 0, 2);
-
-											return type === 'percentage'
-												? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`
-												: `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`;
-
-										default:
-											if (ctx && Array.isArray(ctx))
-												return [`Stars: ${ctx?.[0]?.raw?.x}★`].concat(
-													ctx.map(d => `${d?.dataset?.label ?? ''}: ${formatNumber(d?.raw?.y ?? 0)}%`)
-												);
-									}
-
-									return '';
-								},
-							},
-						},
-						zoom: {
-							pan: {
-								enabled: true,
-								mode: 'xy',
-							},
-							zoom: {
-								wheel: {
-									enabled: true,
-								},
-								pinch: {
-									enabled: true,
-								},
-								mode: 'xy',
-							},
-							limits: {
-								x: {min: 0, max: maxStars},
-								y: {min: minAcc, max: 100},
-							},
-						},
-						regions: {
-							regions: [
-								{min: 95, max: 100, color: ssPlusColor},
-								{min: 90, max: 95, color: ssColor},
-								{min: 85, max: 90, color: sPlusColor},
-								{min: 80, max: 85, color: sColor},
-								{min: 0, max: 80, color: aColor},
-							].concat(averageLines),
-						},
-					},
-					scales: {
-						x: {
-							type: 'linear',
-							scaleLabel: {
-								display: false,
-								labelString: 'Stars',
-							},
-							ticks: {
-								min: 0,
-								stepSize: 0.5,
-								callback: val => formatNumber(val, 1) + '★',
-							},
-							max: maxStars,
-						},
-						y: {
-							type: 'linear',
-							scaleLabel: {
-								display: true,
-								labelString: 'Acc',
-							},
-							ticks: {
-								max: 100,
-								callback: val => formatNumber(val, 2) + '%',
-							},
-							grid: {
-								color: 'rgba(0,0,0,0.1)',
-								display: true,
-								drawBorder: true,
-								drawOnChartArea: true,
-							},
-							min: minAcc,
-						},
-					},
-					onClick(e, item, chart) {
-						if (!item?.[0]?.element?.$context?.raw?.leaderboardId) return;
-
-						window.open(`/leaderboard/global/${item[0].element.$context.raw.leaderboardId}`, '_blank');
-					},
-				},
+				options,
 				plugins: [regionsPlugin],
 			});
 		} else {
 			chart.data = {datasets};
+			if (refreshOptions) {
+				chart.options = options;
+			}
 			chart.update();
 		}
 	}
@@ -356,13 +454,29 @@
 
 	$: chartHash = calcPlayerScoresHash(playerScores);
 	$: debounceChartHash(chartHash);
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas);
+	$: selectedPlaylistIndex = $configStore?.selectedPlaylist;
+	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
+	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, selectedPlaylist);
 </script>
 
 <section class="chart" style="--height: {height}">
 	<canvas class="chartjs" bind:this={canvas} height={parseInt(height, 10)} />
 	{#if isLoading}
 		<Spinner width="10em" height="10em" />
+	{:else if !selectedPlaylist}
+		<Button
+			cls="chart-new-playlist"
+			iconFa="fas fa-plus-square"
+			label="Playlist"
+			on:click={() => {
+				playlists.create();
+				addNotification({
+					text: 'Click on dots to add maps to the playlist!',
+					position: 'top-right',
+					type: 'success',
+					removeAfter: 3000,
+				});
+			}} />
 	{/if}
 </section>
 
@@ -381,5 +495,19 @@
 
 	canvas {
 		width: 100% !important;
+	}
+
+	:global(.chart-new-playlist) {
+		top: 0.4em;
+		right: 2%;
+		position: absolute !important;
+		font-size: 0.8em !important;
+		height: 1.5em;
+	}
+
+	@media screen and (max-width: 650px) {
+		:global(.chart-new-playlist) {
+			display: none !important;
+		}
 	}
 </style>

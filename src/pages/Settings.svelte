@@ -11,6 +11,7 @@
 	import ScoreSettings from '../components/Settings/ScoreSettings.svelte';
 	import LeaderboardSettings from '../components/Settings/LeaderboardSettings.svelte';
 	import AccountSettings from '../components/Settings/AccountSettings.svelte';
+	import RankingSettings from '../components/Settings/RankingSettings.svelte';
 
 	const account = createAccountStore();
 
@@ -24,6 +25,11 @@
 			name: 'Profile',
 			link: '#profile',
 			icon: 'fas fa-address-card',
+		},
+		{
+			name: 'Ranking',
+			link: '#ranking',
+			icon: 'fas fa-list',
 		},
 		{
 			name: 'Scores',
@@ -46,7 +52,7 @@
 	function selectNavigation(item, index) {
 		previousIndex = selectedNavigationIndex;
 		selectedNavigationIndex = index;
-		window.location.hash = item.link;
+		history.replaceState(undefined, undefined, item.link);
 	}
 
 	async function onSave() {
@@ -104,10 +110,12 @@
 						{:else if selectedNavigationIndex == 1}
 							<ProfileUiSettings {animationSign} />
 						{:else if selectedNavigationIndex == 2}
-							<ScoreSettings {animationSign} />
+							<RankingSettings {animationSign} />
 						{:else if selectedNavigationIndex == 3}
-							<LeaderboardSettings {animationSign} />
+							<ScoreSettings {animationSign} />
 						{:else if selectedNavigationIndex == 4}
+							<LeaderboardSettings {animationSign} />
+						{:else if selectedNavigationIndex == 5}
 							<AccountSettings {animationSign} />
 						{/if}
 					</div>

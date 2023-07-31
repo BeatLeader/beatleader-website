@@ -138,7 +138,7 @@ export const processClanRanking = cr => {
 	ret.scores = processLeaderboardScores(cr.associatedScores);
 
 	return ret;
-}
+};
 const processClanRankings = response => response?.map(processClanRanking) ?? null;
 
 const processLeaderboard = (leaderboardId, page, respons) => {
@@ -159,7 +159,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 	if (currentDiff) {
 		diffInfo = {diff: currentDiff.difficultyName, type: currentDiff.modeName};
 		diff = diffInfo.diff;
-	} 
+	}
 
 	const songInfo = [
 		{id: 'hash', value: led?.song?.hash},
@@ -180,7 +180,8 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},
-		{id: 'name', value: `${led?.song?.name ?? ''} ${led?.song?.subName ?? ''}`},
+		{id: 'name', value: led?.song?.name ?? ''},
+		{id: 'subName', value: led?.song?.subName},
 	].reduce(
 		(cum, sid) => {
 			let value = sid.value;
@@ -210,14 +211,14 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		changes: led.changes,
 		reweight: led.reweight,
 		difficultyBl: led?.difficulty ?? null,
-		clanRankingContested: led?.clanRankingContested ?? false
+		clanRankingContested: led?.clanRankingContested ?? false,
 	};
 
 	const totalItems = led.plays;
 	const pageQty = 10;
 
 	const scores = processLeaderboardScores(led?.scores);
-	const clanRanking = processClanRankings(led?.clanRanking)
+	const clanRanking = processClanRankings(led?.clanRanking);
 
 	// let diffChartText = getFirstRegexpMatch(/'difficulty',\s*([0-9.,\s]+)\s*\]/, response.body.innerHTML)
 	let diffChart = null; //(diffChartText ? diffChartText : '').split(',').map(i => parseFloat(i)).filter(i => i && !isNaN(i));
@@ -230,23 +231,20 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		pageQty,
 		totalItems,
 		scores,
-		clanRanking
+		clanRanking,
 	};
 };
 
-const processClan = (clanId, page, respons) => { 
+const processClan = (clanId, page, respons) => {
 	if (respons.body.container.capturedLeaderboards != null) {
 		for (let i = 0; i < respons.body.container.capturedLeaderboards.length; i++) {
-			let bodyInput = {body: respons.body.container.capturedLeaderboards[i]}
-			let output = processLeaderboard(
-				respons.body.container.capturedLeaderboards[i].id,
-				1,
-				bodyInput)
-				respons.body.container.capturedLeaderboards[i] = output;
+			let bodyInput = {body: respons.body.container.capturedLeaderboards[i]};
+			let output = processLeaderboard(respons.body.container.capturedLeaderboards[i].id, 1, bodyInput);
+			respons.body.container.capturedLeaderboards[i] = output;
 		}
 	}
 	return respons.body;
-}
+};
 
 export default (options = {}) => {
 	const queue = createQueue(options);
@@ -351,7 +349,7 @@ export default (options = {}) => {
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), options, priority);
 
-	 const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
+	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
 
 	const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) =>

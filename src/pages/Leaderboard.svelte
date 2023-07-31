@@ -56,6 +56,7 @@
 	import Score from '../components/Leaderboard/Score.svelte';
 	import ClanRankingScore from '../components/Leaderboard/ClanRankingScore.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
+	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -173,9 +174,8 @@
 			iconFa: 'fas fa-globe-americas',
 			url: `/leaderboard/global/${currentLeaderboardId}/1`,
 			filters: {countries: ''},
-		}
-	]
-	.concat(
+		},
+	].concat(
 		type === 'accsaber'
 			? [
 					{
@@ -345,16 +345,16 @@
 			.map(to => to)
 			.concat(
 				isRanked
-				? [
-					{
-						type: 'clanranking',
-						label: 'Clan Ranking',
-						iconFa: 'fas fa-flag',
-						url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
-						filters: {countries: ''},
-					}
-				]
-				: []
+					? [
+							{
+								type: 'clanranking',
+								label: 'Clan Ranking',
+								iconFa: 'fas fa-flag',
+								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
 			)
 			.concat(
 				playerIsFollowingSomeone
@@ -685,6 +685,7 @@
 					{leaderboard}
 					{leaderboardStore}
 					{ratings}
+					{latestHash}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
@@ -698,32 +699,56 @@
 			{#if $leaderboardStore}
 				{#if type !== 'accsaber'}
 					<nav class="diff-switch">
-						<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
+						<div>
+							<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
+						</div>
 
 						{#if !withoutDiffSwitcher && diffs && diffs.length}
 							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
 						{/if}
 
 						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
+
+						{#if currentType != 'clanranking'}
+							<div class="sorting-options">
+								<span
+									class="beat-savior-reveal clickable"
+									class:opened={leaderboardShowSorting}
+									on:click={() => boolflip('leaderboardShowSorting')}
+									on:keydown={() => boolflip('leaderboardShowSorting')}
+									title="Show sorting and search for the leaderboard">
+									{#if leaderboardShowSorting}
+										<i class="fa-solid invert-xmart fa-filter-circle-xmark" />
+									{:else}
+										<i class="fa-solid fa-filter" />
+									{/if}
+
+									<i class="fas fa-chevron-down" />
+								</span>
+							</div>
+						{/if}
 					</nav>
 				{/if}
 
-				{#if currentType != 'clanranking'}
-					<div class="sorting-options">
-						<span
-							class="beat-savior-reveal clickable"
-							class:opened={leaderboardShowSorting}
-							on:click={() => boolflip('leaderboardShowSorting')}
-							on:keydown={() => boolflip('leaderboardShowSorting')}
-							title="Show sorting and search for the leaderboard">
-							{#if leaderboardShowSorting}
-								Hide filters and sorting
-							{:else}
-								Show filters and sorting
-							{/if}
+				{#if leaderboardShowSorting}
+					<nav class="switcher-nav" transition:fade>
+						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+						<div style="display: flex;">
+							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
+							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+						</div>
+					</nav>
+				{/if}
 
-							<i class="fas fa-chevron-down" />
-						</span>
+				{#if battleRoyaleDraft}
+					<div class="royale-title-container">
+						<span class="royale-title">Select players from the leaderboard to join</span>
+						<Button
+							type="purple"
+							label="Let the battle begin!"
+							title="Use the button to the right of timeset for every score to toggle player"
+							disabled={!battleRoyaleDraftList?.length}
+							on:click={() => startBattleRoyale()} />
 					</div>
 
 					{#if leaderboardShowSorting}
@@ -737,17 +762,17 @@
 					{/if}
 				{/if}
 
-					{#if battleRoyaleDraft}
-						<div class="royale-title-container">
-							<span class="royale-title">Select players from the leaderboard to join</span>
-							<Button
-								type="purple"
-								label="Let the battle begin!"
-								title="Use the button to the right of timeset for every score to toggle player"
-								disabled={!battleRoyaleDraftList?.length}
-								on:click={() => startBattleRoyale()} />
-						</div>
-					{/if}
+				{#if battleRoyaleDraft}
+					<div class="royale-title-container">
+						<span class="royale-title">Select players from the leaderboard to join</span>
+						<Button
+							type="purple"
+							label="Let the battle begin!"
+							title="Use the button to the right of timeset for every score to toggle player"
+							disabled={!battleRoyaleDraftList?.length}
+							on:click={() => startBattleRoyale()} />
+					</div>
+				{/if}
 
 				{#if currentType != 'clanranking'}
 					{#if scoresWithUser?.length}
@@ -844,33 +869,31 @@
 					{:else}
 						<p transition:fade>No scores found.</p>
 					{/if}
+				{:else if clanRankingList?.length}
+					<div class="scores-grid grid-transition-helper">
+						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
+							<div
+								class={`row-${idx}`}
+								in:fly={{x: 200, delay: idx * 20, duration: 500}}
+								out:fade={{x: 200, delay: idx * 20, duration: 500}}
+								animate:flip={{duration: 300}}>
+								<ClanRankingScore
+									{leaderboardId}
+									{idx}
+									{cr}
+									{type}
+									{modifiers}
+									{fixedBrowserTitle}
+									{battleRoyaleDraft}
+									{battleRoyaleDraftList}
+									sortBy={currentFilters.sortBy}
+									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+							</div>
+						{/each}
+					</div>
 				{:else}
-					{#if clanRankingList?.length}
-						<div class="scores-grid grid-transition-helper">
-							{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
-								<div
-									class={`row-${idx}`}
-									in:fly={{x: 200, delay: idx * 20, duration: 500}}
-									out:fade={{x: 200, delay: idx * 20, duration: 500}}
-									animate:flip={{duration: 300}}>
-									<ClanRankingScore
-										{leaderboardId}
-										{idx}
-										{cr}
-										{type}
-										{modifiers}
-										{fixedBrowserTitle}
-										{battleRoyaleDraft}
-										{battleRoyaleDraftList}
-										sortBy={currentFilters.sortBy}
-										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
-								</div>
-							{/each}
-						</div>
-					{:else}
-						<p transition:fade>No clan ranking found.</p>
-					{/if}
+					<p transition:fade>No clan ranking found.</p>
 				{/if}
 
 				{#if votingStats}
@@ -1048,17 +1071,22 @@
 							</div>
 							{#if leaderboard?.stats}
 								<div class="stats-with-icons">
-									<LeaderboardStats {leaderboard} curve={true} />
-									<div>
-										<small class="level-author">{song.hash.toUpperCase()}</small>
-										{#if latestHash}
-											<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-										{:else if latestHash == undefined}
-											<Spinner />
-										{:else}
-											<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-										{/if}
-									</div>
+									{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
+										<LeaderboardStats {leaderboard} />
+									{/if}
+									<PredictedAccGraph {leaderboard} />
+									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
+										<div>
+											<small class="level-author">{song.hash.toUpperCase()}</small>
+											{#if latestHash}
+												<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+											{:else if latestHash == undefined}
+												<Spinner />
+											{:else}
+												<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+											{/if}
+										</div>
+									{/if}
 
 									{#if iconsInInfo}
 										<Icons {hash} {diffInfo} mapCheck={true} />
@@ -1159,14 +1187,15 @@
 	}
 
 	.page-content {
-		max-width: 65em;
+		max-width: 58em;
 		width: 100%;
 	}
 
 	.diff-switch {
 		display: flex;
-		justify-content: center;
-		margin-bottom: 1em;
+		justify-content: space-between;
+		margin-bottom: 0.3em;
+		margin-top: 0.2em;
 		gap: 0.6em;
 		flex-wrap: wrap;
 	}
@@ -1300,6 +1329,10 @@
 		white-space: nowrap;
 	}
 
+	.invert-xmart {
+		transform: none !important;
+	}
+
 	:global(.battleroyalebtn) {
 		margin-left: 1em;
 		margin-bottom: 0.5em;
@@ -1330,7 +1363,7 @@
 	}
 
 	:global(.voteButton) {
-		margin-top: 0.25em !important;
+		margin-top: 0 !important;
 		height: 1.8em;
 	}
 
@@ -1352,9 +1385,7 @@
 	}
 
 	.sorting-options {
-		display: grid;
-		justify-items: center;
-		margin-top: -0.8em;
+		margin-top: 0.2em;
 	}
 
 	.status-header {
@@ -1391,6 +1422,10 @@
 		.diff-switch :global(> *:not(:last-child)) {
 			margin-right: 0;
 			margin-bottom: 0.5em;
+		}
+
+		.diff-switch {
+			gap: 0.1em;
 		}
 	}
 
