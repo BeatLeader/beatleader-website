@@ -50,7 +50,7 @@ export default () => {
 					processedStatsHistory['countryRank'].push(playerData.playerInfo.countries[0].rank);
 				}
 
-				['totalPlayCount', 'rankedPlayCount'].forEach(key => {
+				['totalPlayCount', 'rankedPlayCount', 'unrankedPlayCount', 'unrankedImprovementsCount', 'rankedImprovementsCount'].forEach(key => {
 					if (!processedStatsHistory || !processedStatsHistory[key]) return;
 
 					processedStatsHistory[`${key}Daily`] = processedStatsHistory[key].reduce((cum, item) => {
@@ -64,17 +64,6 @@ export default () => {
 						return cum;
 					}, []);
 				});
-
-				if (processedStatsHistory && processedStatsHistory.totalPlayCountDaily && processedStatsHistory.rankedPlayCountDaily) {
-					processedStatsHistory.unrankedPlayCountDaily = processedStatsHistory.totalPlayCountDaily.map((value, idx) => {
-						if (value === null) return null;
-
-						let unranked = value - (processedStatsHistory.rankedPlayCountDaily[idx] ?? 0);
-						if (unranked < 0) unranked = 0;
-
-						return unranked;
-					});
-				}
 
 				votingStatuses[playerData.playerId] = processedStatsHistory;
 				set(votingStatuses);

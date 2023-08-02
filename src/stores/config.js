@@ -108,11 +108,13 @@ export const DEFAULT_CONFIG = {
 	chartLegend: {
 		y: true,
 		y1: true,
-		y2: true,
+		y2: false,
 		y3: false,
 		y4: false,
 		y5: true,
 		y6: true,
+		y7: true,
+		y8: true,
 	},
 	visibleScoreIcons: {
 		pin: false,

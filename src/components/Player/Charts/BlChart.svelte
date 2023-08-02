@@ -43,8 +43,11 @@
 		const ppColor = '#007100';
 		const rankedPlayCountColor = '#3e3e3e';
 		const totalPlayCountColor = '#fff';
+
 		const activityColor = '#333';
 		const rankedActivityColor = '#eb008c';
+		const improvementsColor = '#aaa';
+		const rankedImprovementsColor = '#f48cff';
 
 		const dayTimestamps = statsHistory.timestamp.map(unix => dateFromUnix(unix).getTime());
 
@@ -203,7 +206,12 @@
 			});
 		});
 
-		if (statsHistory?.rankedPlayCountDaily?.length || statsHistory?.unrankedPlayCountDaily?.length) {
+		if (
+			statsHistory?.rankedPlayCountDaily?.length ||
+			statsHistory?.unrankedPlayCountDaily?.length ||
+			statsHistory?.rankedImprovementsCountDaily?.length ||
+			statsHistory?.unrankedImprovementsCountDaily?.length
+		) {
 			lastYIdx++;
 			const scoresAxisKey = `y${lastYIdx}`;
 
@@ -223,7 +231,7 @@
 				},
 			};
 
-			if (statsHistory?.rankedPlayCountDaily?.length)
+			if (statsHistory?.rankedPlayCountDaily?.length) {
 				datasets.push({
 					yAxisID: scoresAxisKey,
 					label: 'Ranked scores',
@@ -238,8 +246,9 @@
 					order: 0,
 					hidden: !$configStore.chartLegend[scoresAxisKey],
 				});
+			}
 
-			if (statsHistory?.unrankedPlayCountDaily?.length)
+			if (statsHistory?.unrankedPlayCountDaily?.length) {
 				datasets.push({
 					yAxisID: scoresAxisKey,
 					label: 'Unranked scores',
@@ -254,6 +263,41 @@
 					order: 1,
 					hidden: !$configStore.chartLegend[scoresAxisKey],
 				});
+			}
+
+			if (statsHistory?.rankedImprovementsCountDaily?.length) {
+				datasets.push({
+					yAxisID: scoresAxisKey,
+					label: 'Ranked improved',
+					data: dayTimestamps.map((x, idx) => ({x, y: statsHistory.rankedImprovementsCountDaily?.[idx] ?? null})),
+					fill: false,
+					borderColor: rankedImprovementsColor,
+					backgroundColor: rankedImprovementsColor,
+					round: 0,
+					type: 'bar',
+					maxBarThickness: 25,
+					stack: 'daily-scores',
+					order: 0,
+					hidden: !$configStore.chartLegend[scoresAxisKey],
+				});
+			}
+
+			if (statsHistory?.unrankedImprovementsCountDaily?.length) {
+				datasets.push({
+					yAxisID: scoresAxisKey,
+					label: 'Unranked improved',
+					data: dayTimestamps.map((x, idx) => ({x, y: statsHistory.unrankedImprovementsCountDaily?.[idx] ?? null})),
+					fill: false,
+					borderColor: improvementsColor,
+					backgroundColor: improvementsColor,
+					round: 0,
+					type: 'bar',
+					maxBarThickness: 25,
+					stack: 'daily-scores',
+					order: 1,
+					hidden: !$configStore.chartLegend[scoresAxisKey],
+				});
+			}
 		}
 
 		if (!chart) {
