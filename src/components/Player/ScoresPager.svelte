@@ -6,7 +6,7 @@
 	import blApiScoresHistogramClient from '../../network/clients/beatleader/scores/api-histogram';
 	import createScoresService from '../../services/beatleader/scores';
 	import createBeatSaviorService from '../../services/beatsavior';
-	import createAccSaberService from '../../services/accsaber';
+	// import createAccSaberService from '../../services/accsaber';
 	import ChartBrowser from '../Common/ChartBrowser.svelte';
 	import Pager from '../Common/Pager.svelte';
 	import {debounce} from '../../utils/debounce';
@@ -24,7 +24,7 @@
 
 	const scoresService = createScoresService();
 	const beatSaviorService = createBeatSaviorService();
-	const accSaberService = createAccSaberService();
+	// const accSaberService = createAccSaberService();
 
 	let playerScores = null;
 	let groupedPlayerScores = null;
@@ -84,9 +84,9 @@
 				serviceObj = beatSaviorService;
 				break;
 
-			case 'accsaber':
-				serviceObj = accSaberService;
-				break;
+			// case 'accsaber':
+			// 	serviceObj = accSaberService;
+			// 	break;
 		}
 
 		if (!serviceObj) return;

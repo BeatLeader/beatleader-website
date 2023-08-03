@@ -1,19 +1,19 @@
 import createScoresService from '../../../../services/beatleader/scores';
-import createAccSaberService from '../../../../services/accsaber';
+// import createAccSaberService from '../../../../services/accsaber';
 import createBeatSaviorService from '../../../../services/beatsavior';
 import {capitalize} from '../../../../utils/js';
 
 let scoreFetcher = null;
 
 let blScoresService = null;
-let accSaberService = null;
+// let accSaberService = null;
 let beatSaviorService = null;
 
 export default () => {
 	if (scoreFetcher) return scoreFetcher;
 
 	blScoresService = createScoresService();
-	accSaberService = createAccSaberService();
+	// accSaberService = createAccSaberService();
 	beatSaviorService = createBeatSaviorService();
 
 	const processServiceParamsFilters = serviceParams => {
@@ -50,8 +50,8 @@ export default () => {
 				);
 			case 'beatsavior':
 				return beatSaviorService.getPlayerScoresPage(player?.playerId, processedServiceParams);
-			case 'accsaber':
-				return accSaberService.getPlayerScoresPage(player?.playerId, processedServiceParams);
+			// case 'accsaber':
+			// 	return accSaberService.getPlayerScoresPage(player?.playerId, processedServiceParams);
 			case 'beatleader':
 			default:
 				return blScoresService.fetchScoresPageOrGetFromCache(

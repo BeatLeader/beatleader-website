@@ -1,7 +1,7 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
 	import createBeatSaviorService from '../../services/beatsavior';
-	import createAccSaberService from '../../services/accsaber';
+	// import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
 	import Switcher from '../Common/Switcher.svelte';
 	import ScoreServiceFilters from './ScoreServiceFilters.svelte';
@@ -22,7 +22,7 @@
 	const dispatch = createEventDispatcher();
 
 	const beatSaviorService = createBeatSaviorService();
-	const accSaberService = createAccSaberService();
+	// const accSaberService = createAccSaberService();
 	const account = createAccountStore();
 
 	let availableServiceNames = ['beatleader'];
@@ -158,20 +158,20 @@
 		},
 	];
 
-	async function updateAvailableServiceNames(playerId) {
-		accSaberCategories = null;
+	// async function updateAvailableServiceNames(playerId) {
+	// 	accSaberCategories = null;
 
-		const additionalServices = (
-			await Promise.all([
-				beatSaviorService.isDataForPlayerAvailable(playerId).then(r => (r ? 'beatsavior' : null)),
-				accSaberService.isDataForPlayerAvailable(playerId).then(r => (r ? 'accsaber' : null)),
-			])
-		).filter(s => s);
+	// 	const additionalServices = (
+	// 		await Promise.all([
+	// 			beatSaviorService.isDataForPlayerAvailable(playerId).then(r => (r ? 'beatsavior' : null)),
+	// 			accSaberService.isDataForPlayerAvailable(playerId).then(r => (r ? 'accsaber' : null)),
+	// 		])
+	// 	).filter(s => s);
 
-		if (additionalServices?.length) availableServiceNames = ['beatleader'].concat(additionalServices);
+	// 	if (additionalServices?.length) availableServiceNames = ['beatleader'].concat(additionalServices);
 
-		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
-	}
+	// 	if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
+	// }
 
 	function updateAvailableServices(
 		avaiableServiceNames,
@@ -422,7 +422,7 @@
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
-	$: updateAvailableServiceNames(playerId);
+	// $: updateAvailableServiceNames(playerId);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
 		service,
