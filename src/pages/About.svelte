@@ -144,6 +144,10 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561199257569878.gif" alt="Uragirimono" /><a
 					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
 			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
+			</div>
 		</section>
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
@@ -178,10 +182,6 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
 					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
-					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 			</div>
 		</section>
 

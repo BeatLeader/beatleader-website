@@ -17,12 +17,12 @@
 </script>
 
 <svelte:head>
-	<title>Support - {ssrConfig.name}</title>
+	<title>Help - {ssrConfig.name}</title>
 </svelte:head>
 
 <article bind:this={articleEl} transition:fade>
 	<ContentBox>
-		<h1 class="title is-3">Support</h1>
+		<h1 class="title is-3">Help</h1>
 
 		If you have any issues with mods, websites or the app -<br />
 

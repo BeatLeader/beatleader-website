@@ -185,7 +185,7 @@
 						<PlaylistPage id={params.id} />
 					</Route>
 					<Route path="/twitch" component={TwitchPage} />
-					<Route path="/support" component={SupportPage} />
+					<Route path="/help" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>
 						<SigninPage action={params.action} />
@@ -212,17 +212,17 @@
 	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
 	<ContentBox cls="footer-box">
 		<p>
-			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
+			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
 			|
 			<a href="https://api.beatleader.xyz/swagger/index.html">API</a>
 			|
 			<a href="https://beatleader.wiki/">Wiki</a>
 			|
-			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
+			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
 			|
 			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
 			|
-			<a href="/support" on:click|preventDefault={() => navigate('/support')}>Support</a>
+			<a href="/help" on:click|preventDefault={() => navigate('/help')}>Help</a>
 			|
 			<a href="/socket" on:click|preventDefault={() => navigate('/socket')}>Scores feed</a>
 			|
