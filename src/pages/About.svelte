@@ -97,7 +97,7 @@
 				<p class="memberDescription">Quest mod and server contributor</p>
 			</div>
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
 					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 				<p class="memberTitle">not to be confused with notes</p>
 				<p class="memberDescription">Map rating and review specialist</p>
@@ -145,7 +145,7 @@
 					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
 			</div>
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
 					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 			</div>
 		</section>
@@ -218,7 +218,7 @@
 			</div>
 
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
 					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 			</div>
 			<div class="member">
