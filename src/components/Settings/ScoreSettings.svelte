@@ -387,6 +387,10 @@
 	.single {
 		width: calc(50% - 1rem);
 	}
+	:global(.tabs-container .stats-grid) {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+	}
 	@media screen and (max-width: 600px) {
 		.options {
 			grid-template-columns: 1fr;

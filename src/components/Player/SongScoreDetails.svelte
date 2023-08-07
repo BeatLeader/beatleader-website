@@ -152,6 +152,8 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		align-items: center;
+		margin-left: -5em;
+		margin-right: -5em;
 	}
 
 	.stats-grid :global(> *) {
@@ -162,9 +164,21 @@
 		align-self: stretch;
 	}
 
+	@media screen and (max-width: 1052px) {
+		.stats-grid {
+			margin-left: -2em;
+			margin-right: -2em;
+		}
+	}
+
 	@media screen and (max-width: 767px) {
 		.stats-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.stats-grid {
+			margin-left: 0;
+			margin-right: 0;
 		}
 	}
 </style>

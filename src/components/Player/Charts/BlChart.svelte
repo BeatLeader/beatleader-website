@@ -46,8 +46,8 @@
 
 		const activityColor = '#333';
 		const rankedActivityColor = '#eb008c';
-		const improvementsColor = '#aaa';
-		const rankedImprovementsColor = '#f48cff';
+		const improvementsColor = '#474747';
+		const rankedImprovementsColor = '#f04dae';
 
 		const dayTimestamps = statsHistory.timestamp.map(unix => dateFromUnix(unix).getTime());
 
