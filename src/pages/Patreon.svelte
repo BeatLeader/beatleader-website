@@ -56,89 +56,91 @@
 		</div>
 	{:else if action == 'linkPatreon'}
 		<ContentBox>
-			{#if !patreoned}
-				<div class="sorting-options">
-					<span> Link your account to receive Patreon features for your tier. </span>
-				</div>
-			{/if}
-			{#if !loggedInPlayer}
-				<div class="login-form">
-					<div class="title">Please log in first to link Patreon</div>
-					<form action={BL_API_URL + 'signin'} method="post">
-						<input type="hidden" name="Provider" value="Steam" />
-						<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
-
-						<Button icon={steamSvg} label="Log In with Steam" type="green" />
-					</form>
-					<br />
-					<span>Quest Log In (no ReeSabers)</span>
-					<div class="input-container">
-						<div class="cat">Login</div>
-						<input bind:value={login} placeholder="Login" />
-					</div>
-					<div class="input-container">
-						<div class="cat">Password</div>
-						<input type="password" bind:value={password} placeholder="Password" />
-					</div>
-
-					<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
-
+			<div class="header-box">
+				{#if !patreoned}
 					<div class="sorting-options">
-						<span
-							class="beat-savior-reveal clickable"
-							class:opened={showBeatSaverLogin}
-							on:click={() => (showBeatSaverLogin = !showBeatSaverLogin)}
-							on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
-							title="Show login with BeatSaver">
-							{#if showBeatSaverLogin}
-								I'm not a mapper
-							{:else}
-								Are you a mapper?
-							{/if}
-
-							<i class="fas fa-chevron-down" />
-						</span>
+						<span> Link your account to receive Patreon features for your tier. </span>
 					</div>
-
-					{#if showBeatSaverLogin}
-						<span class="beat-saver-description"
-							>By using BeatSaver login you are linking Patreon to the account not usable in-game. <br />Make sure you understand what you
-							are doing</span>
+				{/if}
+				{#if !loggedInPlayer}
+					<div class="login-form">
+						<div class="title">Please log in first to link Patreon</div>
 						<form action={BL_API_URL + 'signin'} method="post">
-							<input type="hidden" name="Provider" value="BeatSaver" />
+							<input type="hidden" name="Provider" value="Steam" />
 							<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
 
-							<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
+							<Button icon={steamSvg} label="Log In with Steam" type="green" />
 						</form>
-					{/if}
-				</div>
-			{:else if patreoned}
-				<span>
-					Your account is linked to Patreon, but no active subsription was found.<br /><br />
-				</span>
-				<Button iconFa="fas fa-arrows-rotate" label="Refresh status" type="submit" on:click={() => account.refreshPatreon()} />
-			{:else}
-				<form action={BL_API_URL + 'signin'} method="post">
-					<input type="hidden" name="Provider" value="Patreon" />
-					<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project'} />
+						<br />
+						<span>Quest Log In (no ReeSabers)</span>
+						<div class="input-container">
+							<div class="cat">Login</div>
+							<input bind:value={login} placeholder="Login" />
+						</div>
+						<div class="input-container">
+							<div class="cat">Password</div>
+							<input type="password" bind:value={password} placeholder="Password" />
+						</div>
 
-					<Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit" />
-				</form>
-				<span>
-					If you are not yet a patron, you can become one
-					<strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</a></strong>
-				</span>
-			{/if}
+						<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
 
-			{#if loading}
-				<Spinner />
-			{/if}
-			{#if error}
-				<p class="error">{error}</p>
-			{/if}
-			{#if message}
-				<p class="messagep">{message}</p>
-			{/if}
+						<div class="sorting-options">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showBeatSaverLogin}
+								on:click={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+								on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+								title="Show login with BeatSaver">
+								{#if showBeatSaverLogin}
+									I'm not a mapper
+								{:else}
+									Are you a mapper?
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+						</div>
+
+						{#if showBeatSaverLogin}
+							<span class="beat-saver-description"
+								>By using BeatSaver login you are linking Patreon to the account not usable in-game. <br />Make sure you understand what you
+								are doing</span>
+							<form action={BL_API_URL + 'signin'} method="post">
+								<input type="hidden" name="Provider" value="BeatSaver" />
+								<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
+
+								<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
+							</form>
+						{/if}
+					</div>
+				{:else if patreoned}
+					<span>
+						Your account is linked to Patreon, but no active subsription was found.<br /><br />
+					</span>
+					<Button iconFa="fas fa-arrows-rotate" label="Refresh status" type="submit" on:click={() => account.refreshPatreon()} />
+				{:else}
+					<form action={BL_API_URL + 'signin'} method="post">
+						<input type="hidden" name="Provider" value="Patreon" />
+						<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project'} />
+
+						<Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit" />
+					</form>
+					<span>
+						If you are not yet a patron, you can become one
+						<strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</a></strong>
+					</span>
+				{/if}
+
+				{#if loading}
+					<Spinner />
+				{/if}
+				{#if error}
+					<p class="error">{error}</p>
+				{/if}
+				{#if message}
+					<p class="messagep">{message}</p>
+				{/if}
+			</div>
 		</ContentBox>
 	{:else}
 		<ContentBox>
@@ -169,30 +171,32 @@
 			</ul>
 			<span style="color: red">ONLY FOR PC BEAT SABER</span>
 
-			<div class="benefit-button-container">
-				<Button
-					iconFa="fas fa-download"
-					title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
-						? 'Log in on the top of the Page with Steam and Link Patreon'
-						: 'Download Reesabers'}
-					label="Download"
-					url={BL_API_URL + 'reesabers'}
-					onlyurl={true}
-					disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
-					type="green" />
-			</div>
-			{#if isSupporter && loggedInPlayer < 1000000000000000}
+			{#if action == 'linkPatreon' || isSupporter}
 				<div class="benefit-button-container">
-					<span>Sorry but account you linked can't be used in the PC game.<br /></span>
-					<span>Feel free to ask help on Discord.<br /></span>
 					<Button
-						iconFa="fas fa-tower-cell"
-						title="Contact on Discord"
-						label="Ask devs!"
-						url={'https://discord.com/channels/921820046345523311/951919251227295844'}
+						iconFa="fas fa-download"
+						title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
+							? 'Log in on the top of the Page with Steam and Link Patreon'
+							: 'Download Reesabers'}
+						label="Download"
+						url={BL_API_URL + 'reesabers'}
 						onlyurl={true}
-						type="blurple" />
+						disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
+						type="green" />
 				</div>
+				{#if isSupporter && loggedInPlayer < 1000000000000000}
+					<div class="benefit-button-container">
+						<span>Sorry but account you linked can't be used in the PC game.<br /></span>
+						<span>Feel free to ask help on Discord.<br /></span>
+						<Button
+							iconFa="fas fa-tower-cell"
+							title="Contact on Discord"
+							label="Ask devs!"
+							url={'https://discord.com/channels/921820046345523311/951919251227295844'}
+							onlyurl={true}
+							type="blurple" />
+					</div>
+				{/if}
 			{/if}
 		</ContentBox>
 
@@ -249,36 +253,29 @@
 		</ContentBox>
 	</div>
 
-	{#if loggedInPlayer && !isSupporter && action != 'linkPatreon'}
+	{#if action != 'linkPatreon' && !isSupporter}
 		<ContentBox>
-			<span>
-				Link your account to receive patreon features for your tier.<br /><br />
-			</span>
-			<form action={BL_API_URL + 'signin'} method="post">
-				<input type="hidden" name="Provider" value="Patreon" />
-				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project'} />
-
-				<Button iconFa="fas fa-plus-square" label="Link to patreon" type="submit" />
-			</form>
-			<span>
-				If you are not yet a patron, you can become one
-				<strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</a></strong>
-			</span>
-
-			{#if loading}
-				<Spinner />
-			{/if}
-			{#if error}
-				<p class="error">{error}</p>
-			{/if}
-			{#if message}
-				<p class="messagep">{message}</p>
-			{/if}
+			<div class="header-box">
+				<span>
+					Already a patron? Link your account here to receive patreon features for your tier.<br /><br />
+				</span>
+				<Button url={CURRENT_URL + '/supporting-project/link'} onlyurl={true} iconFa="fas fa-link" label="Link to patreon" type="submit" />
+				<span>
+					If you are not yet a patron, you can become one
+					<strong> <a class="inlineLink" href="https://www.patreon.com/beatleader">here</a></strong>
+				</span>
+			</div>
 		</ContentBox>
 	{/if}
 </div>
 
 <style>
+	.header-box {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
 	.top-container {
 		display: flex;
 		flex-direction: column;
