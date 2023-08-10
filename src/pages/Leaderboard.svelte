@@ -1009,7 +1009,7 @@
 									<PredictedAccGraph {leaderboard} />
 									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
 										<div>
-											<small class="level-author">{song.hash.toUpperCase()}</small>
+											<small style="display: inline-block;">{song.hash.toUpperCase()}</small>
 											{#if latestHash}
 												<i class="fa fa-check" style="color: lime;" title="Latest map version" />
 											{:else if latestHash == undefined}
