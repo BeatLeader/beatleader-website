@@ -258,7 +258,7 @@ export default (options = {}) => {
 		);
 
 	const rankingGlobal = async (page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
-		return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), options, priority);
+		return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
 	};
 
 	const rankingCountry = async (countries, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
