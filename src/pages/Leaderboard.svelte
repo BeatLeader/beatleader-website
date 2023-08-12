@@ -1119,7 +1119,7 @@
 	}
 
 	.page-content {
-		max-width: 58em;
+		max-width: 65em;
 		width: 100%;
 	}
 
