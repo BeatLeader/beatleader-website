@@ -303,3 +303,17 @@ html[data-theme='dark'] {
 	white-space: nowrap !important;
 	border: 0 !important;
 }
+
+@media screen and (max-width: 767px) {
+	.mt-body {
+		padding: 0;
+	}
+
+	.mt-toot {
+		padding: 1rem 0.5rem 2rem 1rem;
+	}
+
+	.mt-avatar {
+		display: none;
+	}
+}
