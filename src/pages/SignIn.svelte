@@ -462,4 +462,15 @@
 		width: 18em;
 		text-align: center;
 	}
+
+	@media screen and (max-width: 767px) {
+		.options {
+			flex-direction: column;
+		}
+
+		.with-line-to-left {
+			border-top: 0.3em solid #cbc7c7;
+			border-left: none;
+		}
+	}
 </style>
