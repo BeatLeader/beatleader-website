@@ -106,9 +106,6 @@
 		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
 		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
 		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'reweighting', label: 'Ranked, reweighting', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'reweighted', label: 'Ranked, reweighted', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cube', color: 'var(--beatleader-primary)'},
 	];
 
 	const baseMytypeFilterOptions = [
@@ -162,17 +159,6 @@
 		if (mapper) {
 			mytypeFilterOptions.push({key: 'mymaps', label: 'My maps', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
 		}
-		if (mapper || rt) {
-			mytypeFilterOptions.push({key: 'mynominated', label: 'My nominated', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
-		}
-		if (rt) {
-			mytypeFilterOptions.push({
-				key: 'othersnominated',
-				label: "Other's nominated",
-				iconFa: 'fa fa-cubes',
-				color: 'var(--beatleader-primary)',
-			});
-		}
 	}
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
@@ -185,6 +171,28 @@
 			if (result.id == currentFilters.sortBy) {
 				result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
 				sortValue = result;
+			}
+
+			if (result.id == 'timestamp') {
+				switch (currentFilters.type) {
+					case 'ranked':
+						result.label = 'Rank date';
+						result.title = 'Sort by the date map become ranked';
+						break;
+					case 'qualified':
+						result.label = 'Qualification date';
+						result.title = 'Sort by the map qualification date';
+						break;
+					case 'nominated':
+						result.label = 'Nomination date';
+						result.title = 'Sort by the map nomination date';
+						break;
+
+					default:
+						result.label = 'Upload date';
+						result.title = 'Sort by the map upload date';
+						break;
+				}
 			}
 
 			return result;
