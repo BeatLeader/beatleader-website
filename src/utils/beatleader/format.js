@@ -506,7 +506,7 @@ export const ModifiersList = [
 		icon: 'NoFailIcon.png',
 	},
 	{
-		id: 'OL',
+		id: 'IF',
 		name: '1 Life',
 		icon: 'OneLifeIcon.png',
 	},
