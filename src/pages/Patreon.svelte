@@ -177,9 +177,19 @@
 						iconFa="fas fa-download"
 						title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
 							? 'Log in on the top of the Page with Steam and Link Patreon'
-							: 'Download Reesabers'}
-						label="Download"
+							: 'Download Reesabers for 1.31'}
+						label="Download for 1.31"
 						url={BL_API_URL + 'reesabers'}
+						onlyurl={true}
+						disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
+						type="green" />
+					<Button
+						iconFa="fas fa-download"
+						title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
+							? 'Log in on the top of the Page with Steam and Link Patreon'
+							: 'Download Reesabers for 1.27-1.29'}
+						label="Download for 1.27-1.29"
+						url={BL_API_URL + 'reesaberslegacy'}
 						onlyurl={true}
 						disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
 						type="green" />
