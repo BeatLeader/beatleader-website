@@ -43,6 +43,11 @@
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 	}
 
+	:global(.popover-contents .atropos-highlight) {
+		top: -150% !important;
+		height: 400% !important;
+	}
+
 	.achievement img {
 		width: 4em;
 		height: 4em;

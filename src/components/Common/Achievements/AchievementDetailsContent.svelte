@@ -12,7 +12,6 @@
 		achievement.achievementDescription.levels
 			.sort((a, b) => b.level - a.level)
 			.forEach((element, index) => {
-				console.log(element);
 				if (element.level == level.level) {
 					grade = index;
 				}
