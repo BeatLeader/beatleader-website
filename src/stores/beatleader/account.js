@@ -2,6 +2,7 @@ import {writable} from 'svelte/store';
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 import userApiClient from '../../network/clients/beatleader/account/api';
 import queue from '../../network/queues/queues';
+import {configStore} from '../config';
 
 let store = null;
 let storeSubCount = 0;
@@ -77,6 +78,7 @@ export default (refreshOnCreate = true) => {
 				} else {
 					account.error = null;
 					refresh(true);
+					configStore.syncFromServer();
 				}
 				set(account);
 			});

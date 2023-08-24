@@ -2,6 +2,7 @@ import {writable} from 'svelte/store';
 import deepEqual from 'deep-equal';
 import keyValueRepository from '../db/repository/key-value';
 import {deepClone, opt} from '../utils/js';
+import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 const STORE_CONFIG_KEY = 'config';
 
@@ -148,24 +149,30 @@ export default async () => {
 
 	const {subscribe, set: storeSet} = writable(currentConfig);
 
+	const storeConfig = async newConfig => {
+		await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
+		fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(newConfig)});
+	};
+
 	const get = key => (key ? currentConfig[key] : currentConfig);
 	const set = async (config, persist = true) => {
 		const newConfig = deepClone(DEFAULT_CONFIG);
-		Object.keys(config).forEach(key => {
+		const configToSet = deepClone(config);
+		Object.keys(configToSet).forEach(key => {
 			if (key === 'locale') {
-				newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
+				newConfig[key] = configToSet?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
 				return;
 			}
 			if (key === 'selectedPlaylist') {
-				newConfig[key] = config?.[key] ?? newConfig?.[key] ?? {};
+				newConfig[key] = configToSet?.[key] ?? newConfig?.[key] ?? {};
 				return;
 			}
 
-			newConfig[key] = {...newConfig?.[key], ...config?.[key]};
+			newConfig[key] = configToSet?.[key] ?? newConfig?.[key];
 		});
 
 		if (persist) {
-			await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
+			await storeConfig(newConfig);
 			dbConfig = newConfig;
 		}
 
@@ -182,7 +189,7 @@ export default async () => {
 		currentConfig[key] = value;
 
 		if (persist) {
-			await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
+			await storeConfig(currentConfig);
 			dbConfig = currentConfig;
 		}
 
@@ -194,7 +201,7 @@ export default async () => {
 	};
 
 	const persist = async () => {
-		await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
+		await storeConfig(currentConfig);
 		dbConfig = currentConfig;
 		await set(currentConfig, false);
 	};
@@ -230,17 +237,23 @@ export default async () => {
 
 	if (savedConfig) {
 		dbConfig = savedConfig;
-		if (
-			dbConfig.preferences.theme == 'mirror' &&
-			dbConfig.preferences.bgColor == 'rgba(29, 7, 34, 0.6282)' &&
-			dbConfig.preferences.headerColor == 'rgba(53, 0, 70, 0.2)'
-		) {
-			dbConfig.preferences.theme = 'ree-dark';
-			dbConfig.preferences.bgColor = 'rgba(29, 7, 34, 0.6284)';
-			await keyValueRepository().set(dbConfig, STORE_CONFIG_KEY);
-		}
 		await set(savedConfig, false);
 	}
+
+	const syncFromServer = () => {
+		fetch(BL_API_URL + 'user/config', {credentials: 'include'}).then(async response => {
+			if (response.status == 404 && savedConfig) {
+				await fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(savedConfig)});
+			} else if (response.status == 200) {
+				const cloudConfig = await response.json();
+				await set(cloudConfig, false);
+				dbConfig = cloudConfig;
+				settingsChanged = false;
+				await keyValueRepository().set(cloudConfig, STORE_CONFIG_KEY);
+			}
+		});
+	};
+	syncFromServer();
 	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
 	configStore = {
@@ -253,6 +266,7 @@ export default async () => {
 		getSettingsChanged: () => settingsChanged,
 		persist,
 		reset,
+		syncFromServer,
 	};
 
 	return configStore;
