@@ -23,6 +23,7 @@
 	export let inline = false;
 	export let disabled = false;
 	export let iconClass = null;
+	export let style = '';
 </script>
 
 <span
@@ -31,7 +32,7 @@
 	class:disabled
 	class:not-selected={notSelected}
 	class:fluid
-	style="--color:{color}; --background-color:{bgColor}"
+	style="--color:{color}; --background-color:{bgColor}; {style}"
 	{title}
 	on:click>
 	<span class="label">

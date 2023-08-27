@@ -22,6 +22,7 @@
 
 	function onPageChanged(event) {
 		page = event.detail.page;
+		selectedIndex = null;
 	}
 
 	let fileinput;

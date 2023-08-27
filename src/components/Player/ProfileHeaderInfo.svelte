@@ -140,11 +140,11 @@
 					<span class="nickname">{name}</span>
 				{/if}
 
-				{#if !editModel && playerInfo?.clans?.length}
-					<span class="clan-badges"><ClanBadges player={playerInfo} /></span>
+				{#if playerInfo?.clans?.length}
+					<span class="clan-badges"><ClanBadges player={playerInfo} {editModel} /></span>
 				{/if}
 
-				{#if changes && changes.length}
+				{#if !editModel && changes && changes.length}
 					<div class="score-options-section">
 						<span
 							class="beat-savior-reveal clickable"
