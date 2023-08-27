@@ -30,6 +30,7 @@ export const DEFAULT_CONFIG = {
 		scoresSortOptions: 'last',
 		theme: 'ree-dark',
 		oneclick: 'modassistant',
+		webPlayer: 'beatleader',
 		bgimage: '/assets/background.jpg',
 		bgColor: 'rgba(29, 7, 34, 0.6284)',
 		headerColor: 'rgba(53, 0, 70, 0.2)',

@@ -19,6 +19,7 @@
 	const DEFAULT_ACC_CHART = 1;
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
+	const DEFAULT_WEB_PLAYER = 'beatleader';
 
 	const scoreComparisonMethods = [
 		{name: 'No comparison', value: 'none'},
@@ -170,6 +171,11 @@
 		{name: 'Playlist sync', value: 'playlist'},
 	];
 
+	const webPlayerOptions = [
+		{name: 'BeatLeader', value: DEFAULT_WEB_PLAYER},
+		{name: 'ArcViewer', value: 'arcviewer'},
+	];
+
 	let currentLocale = DEFAULT_LOCALE;
 	let currentScoreBadges = null;
 	let currentScoreBadgeSelected = null;
@@ -179,6 +185,7 @@
 	let currentAccChartIndex = DEFAULT_ACC_CHART;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
+	let currentWebPlayer = DEFAULT_WEB_PLAYER;
 
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
@@ -199,6 +206,7 @@
 		if (config?.scoreComparison != currentScoreComparisonMethod)
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
 		if (config?.preferences?.oneclick != currentOneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
+		if (config?.preferences?.webPlayer != currentWebPlayer) currentWebPlayer = config?.preferences?.webPlayer ?? DEFAULT_WEB_PLAYER;
 		if (stringify(config?.scoreBadges) !== stringify(currentScoreBadges)) {
 			currentScoreBadges = deepClone(Object.values(config?.scoreBadges) ?? DEFAULT_CONFIG.scoreBadges);
 			currentScoreBadgeSelected = null;
@@ -261,6 +269,7 @@
 	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
+	$: settempsetting('preferences', 'webPlayer', currentWebPlayer);
 	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
 	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: settempsetting('scoreBadges', null, currentScoreBadges);
@@ -341,6 +350,10 @@
 		<section class="option">
 			<label title="How One-Click button will work">One-click installs</label>
 			<Select bind:value={currentOneclick} options={oneclickOptions} />
+		</section>
+		<section class="option">
+			<label title="Which web replay player to use">Web replays</label>
+			<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
 		</section>
 	</div>
 </div>

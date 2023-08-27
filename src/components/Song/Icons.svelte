@@ -99,6 +99,23 @@
 		successToast(text + ' Copied to Clipboard!');
 	}
 
+	function webPlayerLink(replayLink, scoreId, webPlayer) {
+		if (webPlayer == 'arcviewer') {
+			if (replayLink?.length) {
+				return `https://allpoland.github.io/ArcViewer/?replayURL=${replayLink}`;
+			} else if (scoreId) {
+				return `https://allpoland.github.io/ArcViewer/?scoreID=${scoreId}`;
+			}
+		} else {
+			if (replayLink?.length) {
+				return `https://replay.beatleader.xyz/?link=${replayLink}`;
+			} else if (scoreId) {
+				return `https://replay.beatleader.xyz/?scoreId=${scoreId}`;
+			}
+		}
+		return null;
+	}
+
 	$: updateIcons(icons);
 	$: updateSongKey(hash);
 	$: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null;
@@ -117,11 +134,7 @@
 	$: ocplaylistSong = ocplaylistSongs?.length ? ocplaylistSongs[0] : null;
 	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name));
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
-	$: replayUrl = replayLink?.length
-		? `https://replay.beatleader.xyz/?link=${replayLink}`
-		: scoreId
-		? `https://replay.beatleader.xyz/?scoreId=${scoreId}`
-		: null;
+	$: replayUrl = webPlayerLink(replayLink, scoreId, $configStore.preferences.webPlayer);
 	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 		charName ? `&mode=${charName}` : ''
 	}`;
