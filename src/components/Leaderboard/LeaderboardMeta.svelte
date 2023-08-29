@@ -28,7 +28,7 @@
 		title,
 		description,
 		images: [{url: image}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

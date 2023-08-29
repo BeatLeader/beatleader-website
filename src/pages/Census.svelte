@@ -112,7 +112,7 @@
 		title,
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/census2023.png'}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

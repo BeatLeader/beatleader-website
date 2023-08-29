@@ -270,7 +270,7 @@
 						url: BL_API_URL + 'playlist/image/' + playlistId + '.png',
 					},
 				],
-				site_name: ssrConfig.name,
+				siteName: ssrConfig.name,
 			}}
 			twitter={{
 				handle: '@handle',

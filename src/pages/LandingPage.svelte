@@ -131,7 +131,7 @@
 		title: ssrConfig.name + ' - Beat Saber leaderboard',
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',
