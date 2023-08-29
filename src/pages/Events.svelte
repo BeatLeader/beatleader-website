@@ -1,5 +1,5 @@
 <script>
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import ssrConfig from '../ssr-config';
 	import {fade, fly} from 'svelte/transition';
 	import createEventsStore from '../stores/http/http-events-store';
@@ -9,9 +9,9 @@
 	import Event from '../components/Event/Event.svelte';
 
 	export let page = 1;
-	export let location;
 
-	let shouldBeForceRefreshed = new URLSearchParams(location?.search ?? '')?.get('refresh') ?? false;
+	const location = useLocation();
+	let shouldBeForceRefreshed = new URLSearchParams($location?.search ?? '')?.get('refresh') ?? false;
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
@@ -39,7 +39,7 @@
 	};
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 
 	const eventsStore = createEventsStore(page, currentFilters);
 
@@ -68,7 +68,7 @@
 	$: numOfEvents = $eventsStore ? $eventsStore?.metadata?.total : null;
 	$: itemsPerPage = $eventsStore ? $eventsStore?.metadata?.itemsPerPage : 10;
 
-	$: changePageAndFilters(page, location, shouldBeForceRefreshed);
+	$: changePageAndFilters(page, $location, shouldBeForceRefreshed);
 
 	$: eventsPage = $eventsStore?.data ?? [];
 </script>

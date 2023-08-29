@@ -1,6 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
@@ -59,7 +59,6 @@
 	export let leaderboardId;
 	export let type = 'global';
 	export let page = 1;
-	export let location;
 	export let dontNavigate = false;
 	export let withoutDiffSwitcher = false;
 	export let withoutHeader = false;
@@ -73,6 +72,8 @@
 
 	export let autoScrollToTop = true;
 	export let showStats = true;
+
+	const location = useLocation();
 
 	if (!dontNavigate) document.body.classList.add('slim');
 
@@ -147,7 +148,7 @@
 	let currentLeaderboardId = leaderboardId;
 	let currentType = type;
 
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 	let leaderboard = null;
 
 	let modifiedPass = null;
@@ -581,7 +582,7 @@
 	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: updateParams(leaderboardId, type, page);
-	$: updateFilters(buildFiltersFromLocation(location));
+	$: updateFilters(buildFiltersFromLocation($location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: leaderboard = $leaderboardStore?.leaderboard;
@@ -603,7 +604,7 @@
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
 
-	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
+	$: makeComplexFilters(buildFiltersFromLocation($location), mainPlayerCountry);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));

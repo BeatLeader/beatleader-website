@@ -1,6 +1,6 @@
 <script>
 	import {onMount} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
 	import createTwitchService from '../services/twitch';
@@ -33,7 +33,8 @@
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
-	export let location = null;
+
+	const location = useLocation();
 
 	let service = null;
 	let serviceParams = null;
@@ -209,7 +210,7 @@
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
-	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
+	$: editing = new URLSearchParams($location?.search).get('edit') ?? null;
 </script>
 
 <svelte:head>
