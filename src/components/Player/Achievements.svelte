@@ -9,7 +9,7 @@
 	let achievements = [];
 
 	function fetchAchievements(playerId) {
-		fetchJson(BL_API_URL + `player/${playerId}/achievements`, {credentials: 'include'})
+		fetchJson(BL_API_URL + `player/${playerId}/achievements`)
 			.then(clientInfo => {
 				achievements = clientInfo.body;
 			})

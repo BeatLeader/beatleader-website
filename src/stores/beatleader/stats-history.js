@@ -1,9 +1,14 @@
 import {writable} from 'svelte/store';
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 import {toBlMidnight} from '../../utils/date';
+import {fetchJson} from '../../network/fetch';
+import {getResponseBody} from '../../network/queues/queues';
+import makePendingPromisePool from '../../utils/pending-promises';
 
 let store = null;
 let storeSubCount = 0;
+
+const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
 export default () => {
 	storeSubCount++;
@@ -16,58 +21,63 @@ export default () => {
 
 	const fetchStats = async (playerData, count = 50) => {
 		if (!playerData) return;
-		fetch(BL_API_URL + `player/${playerData.playerId}/history?count=${count}`)
-			.then(response => response.json())
-			.then(data => {
-				var processedStatsHistory = {};
-				var statsHistory = data ?? [];
 
-				if (statsHistory.length) {
-					const reversedStatsHistory = statsHistory.reverse();
-					Object.keys(statsHistory[0]).forEach(key => {
-						processedStatsHistory[key] = [];
-						reversedStatsHistory.forEach(element => {
-							switch (key) {
-								case 'averageAccuracy':
-								case 'averageRankedAccuracy':
-								case 'medianAccuracy':
-								case 'medianRankedAccuracy':
-								case 'topAccuracy':
-									processedStatsHistory[key].push(element[key] * 100);
-									break;
+		return resolvePromiseOrWaitForPending(`player/${playerData.playerId}/history/${count}`, () =>
+			fetchJson(BL_API_URL + `player/${playerData.playerId}/history?count=${count}`)
+				.then(data => getResponseBody(data))
+				.then(data => {
+					var processedStatsHistory = {};
+					var statsHistory = data ?? [];
 
-								default:
-									processedStatsHistory[key].push(element[key]);
-									break;
+					if (statsHistory.length) {
+						const reversedStatsHistory = statsHistory.reverse();
+						Object.keys(statsHistory[0]).forEach(key => {
+							processedStatsHistory[key] = [];
+							reversedStatsHistory.forEach(element => {
+								switch (key) {
+									case 'averageAccuracy':
+									case 'averageRankedAccuracy':
+									case 'medianAccuracy':
+									case 'medianRankedAccuracy':
+									case 'topAccuracy':
+										processedStatsHistory[key].push(element[key] * 100);
+										break;
+
+									default:
+										processedStatsHistory[key].push(element[key]);
+										break;
+								}
+							});
+							const current = playerData.scoreStats[key] ?? playerData.playerInfo[key];
+							if (current) {
+								processedStatsHistory[key].push(current);
 							}
 						});
-						const current = playerData.scoreStats[key] ?? playerData.playerInfo[key];
-						if (current) {
-							processedStatsHistory[key].push(current);
+						processedStatsHistory['timestamp'].push(toBlMidnight(new Date()).getTime() / 1000 + 60 * 60 * 24);
+						processedStatsHistory['countryRank'].push(playerData.playerInfo.countries[0].rank);
+					}
+
+					['totalPlayCount', 'rankedPlayCount', 'unrankedPlayCount', 'unrankedImprovementsCount', 'rankedImprovementsCount'].forEach(
+						key => {
+							if (!processedStatsHistory || !processedStatsHistory[key]) return;
+
+							processedStatsHistory[`${key}Daily`] = processedStatsHistory[key].reduce((cum, item) => {
+								const prev = cum.length ? processedStatsHistory[key][cum.length - 1] : 0;
+
+								let value = item ? item - (prev ?? 0) : 0;
+								if ((value && value < 0) || !cum.length) value = 0;
+
+								cum.push(value);
+
+								return cum;
+							}, []);
 						}
-					});
-					processedStatsHistory['timestamp'].push(toBlMidnight(new Date()).getTime() / 1000 + 60 * 60 * 24);
-					processedStatsHistory['countryRank'].push(playerData.playerInfo.countries[0].rank);
-				}
+					);
 
-				['totalPlayCount', 'rankedPlayCount', 'unrankedPlayCount', 'unrankedImprovementsCount', 'rankedImprovementsCount'].forEach(key => {
-					if (!processedStatsHistory || !processedStatsHistory[key]) return;
-
-					processedStatsHistory[`${key}Daily`] = processedStatsHistory[key].reduce((cum, item) => {
-						const prev = cum.length ? processedStatsHistory[key][cum.length - 1] : 0;
-
-						let value = item ? item - (prev ?? 0) : 0;
-						if ((value && value < 0) || !cum.length) value = 0;
-
-						cum.push(value);
-
-						return cum;
-					}, []);
-				});
-
-				votingStatuses[playerData.playerId] = processedStatsHistory;
-				set(votingStatuses);
-			});
+					votingStatuses[playerData.playerId] = processedStatsHistory;
+					set(votingStatuses);
+				})
+		);
 	};
 
 	const subscribe = fn => {

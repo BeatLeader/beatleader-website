@@ -2,12 +2,19 @@ import createScoresService from '../../../../services/beatleader/scores';
 // import createAccSaberService from '../../../../services/accsaber';
 import createBeatSaviorService from '../../../../services/beatsavior';
 import {capitalize} from '../../../../utils/js';
+import {BL_API_URL} from '../../../../network/queues/beatleader/api-queue';
+import {processScore} from '../../../../network/clients/beatleader/scores/utils/processScore';
+import {fetchJson} from '../../../../network/fetch';
+import {getResponseBody} from '../../../../network/queues/queues';
+import makePendingPromisePool from '../../../../utils/pending-promises';
 
 let scoreFetcher = null;
 
 let blScoresService = null;
 // let accSaberService = null;
 let beatSaviorService = null;
+
+const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
 export default () => {
 	if (scoreFetcher) return scoreFetcher;
@@ -65,7 +72,15 @@ export default () => {
 		}
 	};
 
-	scoreFetcher = {fetchCachedScores: fetchLiveScores, fetchLiveScores};
+	const fetchPinnedScores = async id => {
+		if (!id) return;
+
+		return resolvePromiseOrWaitForPending(`pinnedScores/${id}`, () =>
+			fetchJson(BL_API_URL + `player/${id}/pinnedScores`).then(data => getResponseBody(data)?.map(s => processScore(s)) ?? [])
+		);
+	};
+
+	scoreFetcher = {fetchCachedScores: fetchLiveScores, fetchLiveScores, fetchPinnedScores};
 
 	return scoreFetcher;
 };
