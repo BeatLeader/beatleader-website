@@ -92,6 +92,7 @@ export default [
 			resolve({
 				browser: true,
 				dedupe: ['svelte'],
+				exportConditions: ['browser'],
 			}),
 			commonjs(),
 
