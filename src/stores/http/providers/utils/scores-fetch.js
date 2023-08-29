@@ -36,7 +36,7 @@ export default () => {
 		};
 	};
 
-	const fetchLiveScores = async (player, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
+	const fetchLiveScores = async (playerId, service, serviceParams = {sort: 'date', order: 'desc', page: 1}, otherParams = {}) => {
 		const processedServiceParams = processServiceParamsFilters(serviceParams);
 
 		switch (service) {
@@ -49,13 +49,13 @@ export default () => {
 					otherParams?.force
 				);
 			case 'beatsavior':
-				return beatSaviorService.getPlayerScoresPage(player?.playerId, processedServiceParams);
+				return beatSaviorService.getPlayerScoresPage(playerId, processedServiceParams);
 			// case 'accsaber':
 			// 	return accSaberService.getPlayerScoresPage(player?.playerId, processedServiceParams);
 			case 'beatleader':
 			default:
 				return blScoresService.fetchScoresPageOrGetFromCache(
-					player,
+					playerId,
 					processedServiceParams,
 					otherParams?.refreshInterval,
 					otherParams?.priority,

@@ -23,11 +23,12 @@ export default () => {
 		const refreshInterval = firstFetch ? 5 * SECOND : MINUTE;
 		firstFetch = false;
 
-		const player = await playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force);
+		const data = await Promise.all([
+			playerService.fetchPlayerOrGetFromCache(playerId, refreshInterval, priority, signal, force),
+			scoresFetcher.fetchLiveScores(playerId, service, serviceParams, {refreshInterval, priority, signal, force}),
+		]);
 
-		const scores = await scoresFetcher.fetchLiveScores(player, service, serviceParams, {refreshInterval, priority, signal, force});
-
-		return {...player, scores, service, serviceParams};
+		return {...data[0], scores: data[1], service, serviceParams};
 	};
 	return {
 		getProcessed: fetchPlayerAndScores,
