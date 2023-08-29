@@ -19,8 +19,6 @@ export default (
 
 	const {subscribe: subscribeParams, set: setParams} = writable(null);
 
-	let playerService = createPlayerService();
-
 	let lastRecentPlay = null;
 	let playerForLastRecentPlay = null;
 

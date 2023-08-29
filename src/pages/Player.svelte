@@ -9,7 +9,7 @@
 	import createStatsHistoryStore from '../stores/beatleader/stats-history';
 	import editModel from '../stores/beatleader/profile-edit-model';
 	import {configStore} from '../stores/config';
-	import {capitalize, opt} from '../utils/js';
+	import {capitalize} from '../utils/js';
 	import ssrConfig from '../ssr-config';
 	import processPlayerData from '../components/Player/utils/profile';
 	import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors';
@@ -23,13 +23,12 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import CardsCarousel from '../components/Player/CardsCarousel.svelte';
 	import PinnedScores from '../components/Player/PinnedScores.svelte';
-
-	const STORE_SORTING_KEY = 'PlayerScoreSorting';
-	const STORE_ORDER_KEY = 'PlayerScoreOrder';
-
 	import keyValueRepository from '../db/repository/key-value';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
+
+	const STORE_SORTING_KEY = 'PlayerScoreSorting';
+	const STORE_ORDER_KEY = 'PlayerScoreOrder';
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
@@ -186,7 +185,7 @@
 	$: updateTwitchProfile(currentPlayerId);
 
 	$: playerData = $playerStore;
-	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
+	$: playerId = playerData?.playerId ?? null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
 
 	let scoresPlayerId = null;
@@ -196,7 +195,7 @@
 		if (scoresPlayerId && scoresPlayerId === currentPlayerId) {
 			scoresState = null;
 		} else {
-			scoresState = opt($playerStore, 'scores', null);
+			scoresState = $playerStore?.scores ?? null;
 		}
 
 		scoresPlayerId = currentPlayerId;
@@ -240,7 +239,7 @@
 			{#if !$editModel}
 				<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
 				<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
-				<Achievements {playerId} {playerData} />
+				<Achievements {playerId} />
 			{/if}
 
 			{#if scoresPlayerId}
