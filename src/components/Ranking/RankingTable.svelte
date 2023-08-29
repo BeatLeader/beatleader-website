@@ -388,7 +388,7 @@
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div
 				class="ranking-grid-row {!noIcons && $configStore.preferences.showFriendsButtonOnRanking ? 'with-friends-button' : ''}"
-				in:fly={{delay: idx * 10, x: 100}}>
+				in:fly|global={{delay: idx * 10, x: 100}}>
 				<PlayerCard
 					{player}
 					playerId={mainPlayerId}

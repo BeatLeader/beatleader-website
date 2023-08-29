@@ -20,7 +20,7 @@
 	<title>Help - {ssrConfig.name}</title>
 </svelte:head>
 
-<article bind:this={articleEl} transition:fade>
+<article bind:this={articleEl} transition:fade|global>
 	<ContentBox>
 		<h1 class="title is-3">Help</h1>
 

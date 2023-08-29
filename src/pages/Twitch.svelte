@@ -47,7 +47,7 @@
 	<title>Twitch integration | {ssrConfig.name}</title>
 </svelte:head>
 
-<article transition:fade>
+<article transition:fade|global>
 	<ContentBox>
 		<h1 class="title is-3">Twitch integration</h1>
 

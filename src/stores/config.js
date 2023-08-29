@@ -186,6 +186,8 @@ export default async () => {
 		return newConfig;
 	};
 
+	const update = fn => set(fn(currentConfig));
+
 	const setForKey = async (key, value, persist = true) => {
 		currentConfig[key] = value;
 
@@ -195,7 +197,6 @@ export default async () => {
 		}
 
 		settingsChanged = !deepEqual(currentConfig, dbConfig);
-		currentConfig = currentConfig;
 		storeSet(currentConfig);
 
 		return currentConfig;
@@ -260,6 +261,7 @@ export default async () => {
 	configStore = {
 		subscribe,
 		set,
+		update,
 		get,
 		getLocale,
 		setForKey,

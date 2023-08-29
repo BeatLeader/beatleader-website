@@ -124,7 +124,7 @@
 {#if positiveVotes?.length}
 	<Popover triggerEvents={['hover', 'focus']} referenceElement={positiveCounter} placement="top" spaceAway={10}>
 		<ContentBox>
-			<div class="popover-contents" transition:fade={{duration: 250}}>
+			<div class="popover-contents" transition:fade|global={{duration: 250}}>
 				{#each positiveVotes as vote}
 					<QualityVote {vote} />
 				{/each}
@@ -136,7 +136,7 @@
 {#if neutralVotes?.length}
 	<Popover triggerEvents={['hover', 'focus']} referenceElement={neutralCounter} placement="top" spaceAway={10}>
 		<ContentBox>
-			<div class="popover-contents" transition:fade={{duration: 250}}>
+			<div class="popover-contents" transition:fade|global={{duration: 250}}>
 				{#each neutralVotes as vote}
 					<QualityVote {vote} />
 				{/each}
@@ -148,7 +148,7 @@
 {#if negativeVotes?.length}
 	<Popover triggerEvents={['hover', 'focus']} referenceElement={negativeCounter} placement="top" spaceAway={10}>
 		<ContentBox>
-			<div class="popover-contents" transition:fade={{duration: 250}}>
+			<div class="popover-contents" transition:fade|global={{duration: 250}}>
 				{#each negativeVotes as vote}
 					<QualityVote {vote} />
 				{/each}

@@ -7,7 +7,7 @@
 </script>
 
 {#if videos && videos.length}
-	<section transition:fade>
+	<section transition:fade|global>
 		<h3 class="title is-6"><i class="fab fa-twitch" /> Twitch VODs</h3>
 
 		<div class="videos">

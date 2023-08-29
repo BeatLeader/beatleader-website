@@ -33,7 +33,7 @@
 	<title>{ssrConfig.name} - Beat Saber leaderboard</title>
 </svelte:head>
 
-<article class="page-content" transition:fade>
+<article class="page-content" transition:fade|global>
 	<div class="sspl-page-container">
 		<div class="big-landing-box">
 			<div class="cinematics">
@@ -131,7 +131,7 @@
 		title: ssrConfig.name + ' - Beat Saber leaderboard',
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

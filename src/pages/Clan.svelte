@@ -177,7 +177,7 @@
 			{#if playersPage?.length}
 				<div class="players grid-transition-helper" class:with-icons={isFounder}>
 					{#each playersPage as player, idx (player.playerId)}
-						<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
+						<div class="ranking-grid-row" in:fly|global={{delay: idx * 10, x: 100}}>
 							<PlayerCard
 								{player}
 								playerId={mainPlayerId}

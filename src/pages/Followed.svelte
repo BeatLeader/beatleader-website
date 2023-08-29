@@ -116,8 +116,8 @@
 						<a
 							href={`/u/${f.playerId}`}
 							on:click|preventDefault={() => navigate(`/u/${f.playerId}`)}
-							in:fade={{delay: idx * 20, duration: 200}}
-							out:fade={{duration: 50}}>
+							in:fade|global={{delay: idx * 20, duration: 200}}
+							out:fade|global={{duration: 50}}>
 							<ContentBox cls="friend-box">
 								<div class="friend-container">
 									<span

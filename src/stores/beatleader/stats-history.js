@@ -12,7 +12,7 @@ export default () => {
 	let votingStatuses = {};
 
 	const get = () => votingStatuses;
-	const {subscribe: subscribeState, set} = writable(votingStatuses);
+	const {subscribe: subscribeState, set, update} = writable(votingStatuses);
 
 	const fetchStats = async (playerData, count = 50) => {
 		if (!playerData) return;
@@ -88,6 +88,7 @@ export default () => {
 		subscribe,
 		get,
 		set,
+		update,
 		fetchStats,
 	};
 

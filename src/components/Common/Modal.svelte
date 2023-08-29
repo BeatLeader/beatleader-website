@@ -53,7 +53,7 @@
 	on:click={() => {
 		closeable ? close() : null;
 	}}
-	transition:fade />
+	transition:fade|global />
 
 <div
 	class="ss-modal"
@@ -61,7 +61,7 @@
 	aria-modal="true"
 	bind:this={modal}
 	style="--width: {width}; --height: {height};"
-	transition:fly={{y: heightInPx ? heightInPx : 300}}>
+	transition:fly|global={{y: heightInPx ? heightInPx : 300}}>
 	<div class="inner">
 		<slot />
 	</div>

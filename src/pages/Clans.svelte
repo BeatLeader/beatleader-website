@@ -1,5 +1,5 @@
 <script>
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {createEventDispatcher} from 'svelte';
 	import {fade, fly} from 'svelte/transition';
 	import createClansStore from '../stores/http/http-clans-store';
@@ -16,9 +16,10 @@
 	import ClanInfoSmall from '../components/Clans/ClanInfoSmall.svelte';
 
 	export let page = 1;
-	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
+
+	const location = useLocation();
 
 	document.body.classList.remove('slim');
 	const dispatch = createEventDispatcher();
@@ -28,7 +29,7 @@
 	let createError = null;
 	let createIsSaving = false;
 
-	let shouldBeForceRefreshed = new URLSearchParams(location?.search ?? '')?.get('refresh') ?? false;
+	let shouldBeForceRefreshed = new URLSearchParams($location?.search ?? '')?.get('refresh') ?? false;
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
@@ -62,7 +63,7 @@
 	};
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 	let boxEl = null;
 
 	const clansStore = createClansStore(page, currentFilters);
@@ -145,7 +146,7 @@
 	$: numOfClans = $clansStore ? $clansStore?.metadata?.total : null;
 	$: itemsPerPage = $clansStore ? $clansStore?.metadata?.itemsPerPage : 10;
 
-	$: changePageAndFilters(page, location, shouldBeForceRefreshed);
+	$: changePageAndFilters(page, $location, shouldBeForceRefreshed);
 
 	$: clanRequests = $account?.clanRequest ?? [];
 
@@ -157,7 +158,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if !createMode && $account?.clan?.id}
 			<ContentBox>
 				<h1 class="title is-5">My clan</h1>
@@ -174,7 +175,7 @@
 					<h2 class="title is-5">Clan requests</h2>
 
 					{#each clanRequests as clan, idx (clan.id)}
-						<section class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
+						<section class={`clan-line row-${idx}`} in:fly|global={{delay: idx * 10, x: 100}}>
 							<div class="main" on:click={() => onClanClick(clan)}>
 								<ClanInfo editMode={false} {clan} />
 							</div>
@@ -216,7 +217,7 @@
 			{#if clansPage?.length}
 				<div class="clans grid-transition-helper">
 					{#each clansPage as clan, idx (clan.id)}
-						<div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
+						<div class={`clan-line row-${idx}`} in:fly|global={{delay: idx * 10, x: 100}}>
 							<div class="main" on:click={() => onClanClick(clan)}>
 								<ClanInfoSmall {clan} />
 							</div>

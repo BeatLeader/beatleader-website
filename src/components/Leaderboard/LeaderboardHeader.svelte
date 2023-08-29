@@ -61,7 +61,7 @@
 		style={coverUrl
 			? `background: linear-gradient(#303030a2, #303030a2), url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
 			: ''}
-		transition:fade>
+		transition:fade|global>
 		<div class="cinematics">
 			<div class="cinematics-canvas">
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />

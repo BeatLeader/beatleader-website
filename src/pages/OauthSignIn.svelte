@@ -1,4 +1,5 @@
 <script>
+	import {useLocation} from 'svelte-routing';
 	import Button from '../components/Common/Button.svelte';
 	import createAccountStore from '../stores/beatleader/account';
 	import createOculusStore from '../stores/beatleader/oculususer';
@@ -10,9 +11,9 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import {fetchJson} from '../network/fetch';
 
-	export let location;
+	const location = useLocation();
 
-	const searchParams = new URLSearchParams(location?.search ?? '');
+	const searchParams = new URLSearchParams($location?.search ?? '');
 
 	const account = createAccountStore();
 	const oculus = createOculusStore();
@@ -104,17 +105,17 @@
 			<p class="error">{error}</p>
 		{/if}
 
-		<Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password, window.location.search)} />
+		<Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password, $location.search)} />
 		<form action={BL_API_URL + 'signin'} method="post">
 			<input type="hidden" name="Provider" value="Steam" />
-			<input type="hidden" name="oauthState" value={window.location.search} />
+			<input type="hidden" name="oauthState" value={$location.search} />
 			<input type="hidden" name="ReturnUrl" value={CURRENT_URL} />
 
 			<Button icon={steamSvg} label="Login with Steam" type="submit" />
 		</form>
 		<form action={BL_API_URL + 'signin'} method="post">
 			<input type="hidden" name="Provider" value="BeatSaver" />
-			<input type="hidden" name="oauthState" value={window.location.search} />
+			<input type="hidden" name="oauthState" value={$location.search} />
 			<input type="hidden" name="ReturnUrl" value={CURRENT_URL} />
 
 			<Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit" />

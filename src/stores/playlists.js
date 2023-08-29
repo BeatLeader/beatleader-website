@@ -53,6 +53,8 @@ export default () => {
 		return newConfig;
 	};
 
+	const update = fn => set(fn(playlists));
+
 	const create = async (song = null, inputPlaylist = null) => {
 		const playlist = inputPlaylist
 			? inputPlaylist
@@ -290,6 +292,7 @@ export default () => {
 		subscribe,
 		unsubscribe,
 		set,
+		update,
 		get,
 		create,
 		select,

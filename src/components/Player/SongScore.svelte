@@ -113,8 +113,8 @@
 {#if songScore}
 	<div
 		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
-		in:maybe={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
-		out:maybe={{fn: fade, duration: 100}}
+		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
+		out:maybe|global={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
 			<span class="rank tablet-and-up">
@@ -239,7 +239,7 @@
 		</div>
 
 		{#if showDetails}
-			<div transition:slide>
+			<div transition:slide|global>
 				<SongScoreDetails
 					{playerId}
 					{songScore}

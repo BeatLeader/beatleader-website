@@ -1,5 +1,5 @@
 <script>
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
@@ -19,8 +19,9 @@
 	import {Confetti} from 'svelte-confetti';
 
 	export let page = 1;
-	export let location;
 	export let eventId;
+
+	const location = useLocation();
 
 	const account = createAccountStore();
 
@@ -100,7 +101,7 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 	let currentEventId = eventId;
 	let currentEvent;
 	let boxEl = null;
@@ -171,7 +172,7 @@
 
 	let modalShown;
 
-	$: changeParams(page, eventId, location, true);
+	$: changeParams(page, eventId, $location, true);
 	$: scrollToTop(pending);
 	$: mainPlayerId = $account?.id;
 </script>
@@ -187,7 +188,7 @@
 		</ContentBox>
 	</aside>
 
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if eventId == 23}
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>

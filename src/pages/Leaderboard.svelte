@@ -1,6 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
@@ -59,7 +59,6 @@
 	export let leaderboardId;
 	export let type = 'global';
 	export let page = 1;
-	export let location;
 	export let dontNavigate = false;
 	export let withoutDiffSwitcher = false;
 	export let withoutHeader = false;
@@ -73,6 +72,8 @@
 
 	export let autoScrollToTop = true;
 	export let showStats = true;
+
+	const location = useLocation();
 
 	if (!dontNavigate) document.body.classList.add('slim');
 
@@ -147,7 +148,7 @@
 	let currentLeaderboardId = leaderboardId;
 	let currentType = type;
 
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 	let leaderboard = null;
 
 	let modifiedPass = null;
@@ -581,7 +582,7 @@
 	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: updateParams(leaderboardId, type, page);
-	$: updateFilters(buildFiltersFromLocation(location));
+	$: updateFilters(buildFiltersFromLocation($location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: leaderboard = $leaderboardStore?.leaderboard;
@@ -603,7 +604,7 @@
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
 
-	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
+	$: makeComplexFilters(buildFiltersFromLocation($location), mainPlayerCountry);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
@@ -658,7 +659,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if leaderboard && song && !withoutHeader}
 			<ContentBox cls="leaderboard-header-box">
 				<LeaderboardHeader
@@ -711,7 +712,7 @@
 				{/if}
 
 				{#if leaderboardShowSorting}
-					<nav class="switcher-nav" transition:fade>
+					<nav class="switcher-nav" transition:fade|global>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
 							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
@@ -739,8 +740,8 @@
 								class={`row-${idx}`}
 								class:user-score={score?.isUserScore}
 								class:user-score-top={score?.userScoreTop}
-								in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-								out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+								in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+								out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}
 								animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
 								<Score
 									{leaderboardId}
@@ -896,7 +897,7 @@
 									<Spinner />
 								</div>
 							{:then beatSavior}
-								<div transition:slide class="tab">
+								<div transition:slide|global class="tab">
 									<BeatSaviorDetails {beatSavior} />
 								</div>
 							{/await}
@@ -909,7 +910,7 @@
 						{/if}
 					{/if}
 				{:else}
-					<p transition:fade>No scores found.</p>
+					<p transition:fade|global>No scores found.</p>
 				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>
@@ -917,7 +918,7 @@
 		</div>
 	</article>
 	{#if separatePage && type !== 'accsaber'}
-		<aside transition:fade>
+		<aside transition:fade|global>
 			{#if qualification && !isRanked}
 				<ContentBox>
 					{#if !commentaryShown}

@@ -14,7 +14,7 @@
 	$: !exmachinadata && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type);
 </script>
 
-<article transition:fade>
+<article transition:fade|global>
 	{#if notes}
 		<ExmachinaCurve {notes} on:speed-changed={e => starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, e.detail)} />
 	{/if}

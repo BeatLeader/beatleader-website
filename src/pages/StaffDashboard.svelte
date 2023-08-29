@@ -1,6 +1,6 @@
 <script>
 	import {fade} from 'svelte/transition';
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLocalStorageStore from '../stores/localstorage';
 	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
@@ -33,9 +33,8 @@
 	import {Ranked_Const} from './../utils/beatleader/consts';
 	import Reveal from '../components/Common/Reveal.svelte';
 	import QualityInfo from '../components/Leaderboard/QualityVotes/QualityInfo.svelte';
-	import Pager from '../components/Common/Pager.svelte';
 
-	export let location;
+	const location = useLocation();
 
 	document.body.classList.add('remove');
 
@@ -508,7 +507,7 @@
 		navigate(`/staff?${buildSearchFromFilters(currentFilters)}`, {replace});
 	}
 
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 
 	let error = null;
 	let isLoading = true;
@@ -1205,7 +1204,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		<ContentBox>
 			<h1 class="title is-3">
 				{#if !error && !isLoading}
