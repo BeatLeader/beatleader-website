@@ -88,7 +88,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if configStore && $configStore}
 			<ContentBox>
 				<h1 class="header-title">Settings</h1>

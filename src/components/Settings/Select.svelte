@@ -111,8 +111,8 @@
 		<PageOverlay target={header}>
 			<body
 				bind:this={menu}
-				in:fly={{y: -5, duration: 200}}
-				out:fly={{y: -5, duration: 200}}
+				in:fly|global={{y: -5, duration: 200}}
+				out:fly|global={{y: -5, duration: 200}}
 				on:introend={menu.focus()}
 				on:keydown={onKeyDownMenu}
 				tabIndex="0"

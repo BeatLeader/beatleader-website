@@ -24,7 +24,7 @@
 	$: settempsetting('showFriendsButtonOnRanking', currentShowFriendsButton);
 </script>
 
-<div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
+<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile">
 		<RankingTable page={1} meta={false} editing={true} />
 	</div>

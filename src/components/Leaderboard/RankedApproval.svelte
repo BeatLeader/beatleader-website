@@ -26,7 +26,7 @@
 	}
 </script>
 
-<div transition:fade>
+<div transition:fade|global>
 	{#if !ranked}
 		<div class="title-box">
 			Map is ready to be ranked🎉<br />

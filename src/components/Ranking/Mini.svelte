@@ -41,7 +41,7 @@
 </script>
 
 {#if miniRanking && miniRanking[0]}
-	<section transition:fade>
+	<section transition:fade|global>
 		<h3 class="title is-6">
 			{#if country}
 				<Flag country={miniRanking[0].country} />

@@ -78,7 +78,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		<ContentBox>
 			<h1 class="title is-5">
 				Events
@@ -99,7 +99,7 @@
 							}}
 							class="event-box"
 							class:finished={Date.now() / 1000 > event?.endDate}
-							in:fade={{delay: idx * 10}}>
+							in:fade|global={{delay: idx * 10}}>
 							<ContentBox cls={event.id == 23 ? 'festive' : ''}>
 								<Event {event} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
 							</ContentBox>

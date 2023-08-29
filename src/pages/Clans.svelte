@@ -157,7 +157,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if !createMode && $account?.clan?.id}
 			<ContentBox>
 				<h1 class="title is-5">My clan</h1>
@@ -174,7 +174,7 @@
 					<h2 class="title is-5">Clan requests</h2>
 
 					{#each clanRequests as clan, idx (clan.id)}
-						<section class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
+						<section class={`clan-line row-${idx}`} in:fly|global={{delay: idx * 10, x: 100}}>
 							<div class="main" on:click={() => onClanClick(clan)}>
 								<ClanInfo editMode={false} {clan} />
 							</div>
@@ -216,7 +216,7 @@
 			{#if clansPage?.length}
 				<div class="clans grid-transition-helper">
 					{#each clansPage as clan, idx (clan.id)}
-						<div class={`clan-line row-${idx}`} in:fly={{delay: idx * 10, x: 100}}>
+						<div class={`clan-line row-${idx}`} in:fly|global={{delay: idx * 10, x: 100}}>
 							<div class="main" on:click={() => onClanClick(clan)}>
 								<ClanInfoSmall {clan} />
 							</div>

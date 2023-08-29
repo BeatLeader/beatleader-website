@@ -440,7 +440,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		<ContentBox cls="maps-box" bind:box={boxEl}>
 			<h1 class="title is-5">
 				Maps

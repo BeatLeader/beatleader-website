@@ -72,7 +72,7 @@
 </script>
 
 {#if playerInfoByCategory}
-	<div class="accsaber-swipe-card" transition:fade>
+	<div class="accsaber-swipe-card" transition:fade|global>
 		<h3 class="title is-6">
 			<a href={`https://accsaber.com/player-profile/${playerInfoByCategory?.[0]?.playerInfo?.playerId}`} target="_blank" rel="noreferrer">
 				<img src="/assets/accsaber-logo.png" alt="AccSaberLogo" /> <span>AccSaber</span>

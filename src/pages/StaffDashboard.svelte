@@ -1205,7 +1205,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		<ContentBox>
 			<h1 class="title is-3">
 				{#if !error && !isLoading}

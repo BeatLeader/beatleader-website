@@ -147,8 +147,8 @@
 {#if playlist}
 	<div
 		class={`song-score row-${idx}`}
-		in:fly={{x: 300, delay: idx * 30, duration: 500}}
-		out:fade={{duration: 100}}
+		in:fly|global={{x: 300, delay: idx * 30, duration: 500}}
+		out:fade|global={{duration: 100}}
 		class:with-details={detailsOpened}>
 		<div class="playlistInfo" on:click={() => onDetailsButtonClick()}>
 			<td class="col--details-btn">

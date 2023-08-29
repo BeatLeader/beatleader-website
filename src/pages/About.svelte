@@ -27,7 +27,7 @@
 	<title>About - {ssrConfig.name}</title>
 </svelte:head>
 
-<article bind:this={articleEl} transition:fade>
+<article bind:this={articleEl} transition:fade|global>
 	<ContentBox>
 		<h1 class="title is-3">People who keep BeatLeader running</h1>
 		<h1 class="title is-4">Development Team</h1>

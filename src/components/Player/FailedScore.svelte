@@ -40,8 +40,8 @@
 {#if songScore}
 	<div
 		class={`song-score row-${idx}`}
-		in:fly={{x: 300, delay: idx * 30, duration: 500}}
-		out:fade={{duration: 100}}
+		in:fly|global={{x: 300, delay: idx * 30, duration: 500}}
+		out:fade|global={{duration: 100}}
 		class:with-details={showDetails}>
 		<div class="icons up-to-tablet">
 			<Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay} altReplay={true} />
@@ -128,7 +128,7 @@
 		</div>
 
 		{#if showDetails}
-			<div transition:slide>
+			<div transition:slide|global>
 				<SongScoreDetails
 					{playerId}
 					{songScore}

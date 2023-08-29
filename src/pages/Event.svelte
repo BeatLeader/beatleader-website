@@ -187,7 +187,7 @@
 		</ContentBox>
 	</aside>
 
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if eventId == 23}
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>

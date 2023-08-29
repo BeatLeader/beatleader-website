@@ -70,7 +70,7 @@
 	$: updateSongKey(hash);
 </script>
 
-<div class="container row-${idx}" transition:slide>
+<div class="container row-${idx}" transition:slide|global>
 	{#if songInfo}
 		<img class="cover" src={coverUrl} alt="" />
 		<div style="display: grid; padding-left: 1em">

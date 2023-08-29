@@ -181,7 +181,7 @@
 	$: stats = calculateStats(filteredScores);
 </script>
 
-<div class="beat-savior" transition:fade>
+<div class="beat-savior" transition:fade|global>
 	<h3 class="title is-6">
 		<a href={`https://beat-savior.herokuapp.com/BeatSaviorSwipeCard.svelte#/profile/${playerId}`} target="_blank" rel="noreferrer">
 			<span class="beatsavior-icon" />

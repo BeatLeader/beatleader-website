@@ -159,7 +159,7 @@
 	$: loading = false;
 </script>
 
-<article transition:fade>
+<article transition:fade|global>
 	<span>Predicted accability:</span>
 	<section class="accuracy-chart" style="--height: {height}">
 		<canvas class="chartjs" bind:this={canvas} />

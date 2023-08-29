@@ -347,7 +347,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/37')}>
 			<div class="event-container">
 				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/23594-event.png" />

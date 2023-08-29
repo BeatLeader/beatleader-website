@@ -658,7 +658,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if leaderboard && song && !withoutHeader}
 			<ContentBox cls="leaderboard-header-box">
 				<LeaderboardHeader
@@ -711,7 +711,7 @@
 				{/if}
 
 				{#if leaderboardShowSorting}
-					<nav class="switcher-nav" transition:fade>
+					<nav class="switcher-nav" transition:fade|global>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
 							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
@@ -739,8 +739,8 @@
 								class={`row-${idx}`}
 								class:user-score={score?.isUserScore}
 								class:user-score-top={score?.userScoreTop}
-								in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-								out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+								in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+								out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}
 								animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
 								<Score
 									{leaderboardId}
@@ -896,7 +896,7 @@
 									<Spinner />
 								</div>
 							{:then beatSavior}
-								<div transition:slide class="tab">
+								<div transition:slide|global class="tab">
 									<BeatSaviorDetails {beatSavior} />
 								</div>
 							{/await}
@@ -909,7 +909,7 @@
 						{/if}
 					{/if}
 				{:else}
-					<p transition:fade>No scores found.</p>
+					<p transition:fade|global>No scores found.</p>
 				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>
@@ -917,7 +917,7 @@
 		</div>
 	</article>
 	{#if separatePage && type !== 'accsaber'}
-		<aside transition:fade>
+		<aside transition:fade|global>
 			{#if qualification && !isRanked}
 				<ContentBox>
 					{#if !commentaryShown}

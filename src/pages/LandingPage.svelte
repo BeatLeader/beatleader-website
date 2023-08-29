@@ -33,7 +33,7 @@
 	<title>{ssrConfig.name} - Beat Saber leaderboard</title>
 </svelte:head>
 
-<article class="page-content" transition:fade>
+<article class="page-content" transition:fade|global>
 	<div class="sspl-page-container">
 		<div class="big-landing-box">
 			<div class="cinematics">
