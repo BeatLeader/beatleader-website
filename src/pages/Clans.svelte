@@ -93,11 +93,11 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/clans/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/clans/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters() {
-		navigate(`/clans/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/clans/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function onSearchChanged(e) {
@@ -140,6 +140,8 @@
 
 		navigateToCurrentPageAndFilters();
 	}
+
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = clansStore.isLoading;
 	$: pending = clansStore.pending;

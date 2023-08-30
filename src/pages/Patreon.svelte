@@ -15,6 +15,8 @@
 
 	export let action;
 
+	document.body.scrollIntoView({behavior: 'smooth'});
+
 	let login;
 	let password;
 

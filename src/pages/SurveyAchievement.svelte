@@ -12,6 +12,8 @@
 	import {Confetti} from 'svelte-confetti';
 	import ssrConfig from '../ssr-config';
 
+	document.body.scrollIntoView({behavior: 'smooth'});
+
 	const account = createAccountStore();
 
 	let achievement;

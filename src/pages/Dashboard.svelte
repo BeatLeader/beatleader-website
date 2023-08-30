@@ -9,7 +9,7 @@
 	import FollowedScores from '../components/Dashboard/FollowedScores.svelte';
 	import MastodonTimeline from '../components/Dashboard/MastodonTimeline/MastodonTimeline.svelte';
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: browserTitle = `${ssrConfig.name} Dashboard`;
 	$: metaDescription =

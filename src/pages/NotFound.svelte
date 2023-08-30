@@ -5,6 +5,7 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 
 	document.body.classList.add('slim');
+	document.body.scrollIntoView({behavior: 'smooth'});
 </script>
 
 <svelte:head>

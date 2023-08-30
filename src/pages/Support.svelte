@@ -9,11 +9,7 @@
 
 	let articleEl = null;
 
-	function scrollToTop() {
-		if (articleEl) scrollToTargetAdjusted(articleEl, 50);
-	}
-
-	$: scrollToTop(articleEl);
+	document.body.scrollIntoView({behavior: 'smooth'});
 </script>
 
 <svelte:head>

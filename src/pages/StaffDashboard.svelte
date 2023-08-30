@@ -170,7 +170,7 @@
 		start = new Date().getTime();
 		setTimeout(() => {
 			if (new Date().getTime() - start > 499) {
-				updateCurrentFiltersFromParams(true);
+				updateCurrentFiltersFromParams();
 			}
 		}, 500);
 	};
@@ -464,7 +464,7 @@
 		return filters;
 	});
 
-	function updateCurrentFiltersFromParams(noScroll) {
+	function updateCurrentFiltersFromParams() {
 		params.forEach(p => {
 			switch (true) {
 				case p.key === 'star_range':
@@ -504,7 +504,7 @@
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/staff?${buildSearchFromFilters(currentFilters)}`, {replace});
+		navigate(`/staff?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
 	}
 
 	let currentFilters = buildFiltersFromLocation($location);
@@ -552,7 +552,7 @@
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, positiveVotes, negativeVotes, ...rest} = map;
 
-						song.difficulties = (song?.difficulties ?? []);
+						song.difficulties = song?.difficulties ?? [];
 
 						if (song?.hash?.length && !carry[song.hash]) {
 							const minStars = song?.difficulties?.reduce(
@@ -805,6 +805,7 @@
 		},
 	});
 
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 	$: updateAllLabels($labelsStore);
 	$: updateTags(allLabels);
 	$: allLabelsHash = allLabels.map(v => v?.id ?? '').join(':') ?? '';

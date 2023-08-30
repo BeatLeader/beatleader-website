@@ -55,6 +55,7 @@
 	let login;
 	let password;
 
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 	$: loggedInPlayer = opt($account, 'player');
 	$: error = opt($account, 'error') ?? $oculus?.error ?? clientFetchError;
 	$: message = opt($account, 'message');

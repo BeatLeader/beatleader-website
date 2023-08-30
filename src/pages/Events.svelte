@@ -58,10 +58,10 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/events/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/events/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = eventsStore.isLoading;
 	$: pending = eventsStore.pending;

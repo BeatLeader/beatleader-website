@@ -8,6 +8,8 @@
 	import {censusData} from '../others/census';
 	import ssrConfig from '../ssr-config';
 
+	document.body.scrollIntoView({behavior: 'smooth'});
+
 	let title = 'Beat Saber in Numbers';
 	let metaDescription = '2023 Player Census results';
 </script>
