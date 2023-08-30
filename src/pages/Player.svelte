@@ -50,6 +50,7 @@
 		if (!newPlayerId) return;
 		serviceParams = newServiceParams;
 		if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
+			document.body.scrollIntoView({behavior: 'smooth'});
 			playerStore.fetch(newPlayerId, service, newServiceParams);
 		} else {
 			playerStore.setService(service);

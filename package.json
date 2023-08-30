@@ -42,7 +42,7 @@
     "svelte-notifications": "^0.9.97",
     "svelte-preprocess": "^5.0.3",
     "svelte-range-slider-pips": "^2.0.3",
-    "svelte-routing": "2.1.0",
+    "svelte-routing": "https://github.com/BeatLeader/svelte-routing.git#preservescroll",
     "tslib": "^2.0.0",
     "typescript": "^5.0.0"
   },
