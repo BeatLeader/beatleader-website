@@ -5,6 +5,8 @@
 	import {processScore} from '../network/clients/beatleader/scores/utils/processScore';
 	import {BL_SOCKET_URL} from '../network/queues/beatleader/api-queue';
 
+	document.body.scrollIntoView({behavior: 'smooth'});
+
 	let scores = [];
 	let page = 0;
 	let itemsPerPage = 10;

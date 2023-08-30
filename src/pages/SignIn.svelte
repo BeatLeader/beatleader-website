@@ -14,6 +14,8 @@
 
 	export let action;
 
+	document.body.scrollIntoView({behavior: 'smooth'});
+
 	const account = createAccountStore();
 	const oculus = createOculusStore();
 

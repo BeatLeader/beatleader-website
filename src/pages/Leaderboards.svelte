@@ -209,13 +209,11 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
-
-		document.body.scrollIntoView({behavior: 'smooth'});
+		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters() {
-		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function onSearchChanged(e) {
@@ -370,7 +368,7 @@
 		});
 	}
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;

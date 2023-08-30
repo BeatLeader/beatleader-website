@@ -12,15 +12,11 @@
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
+	document.body.scrollIntoView({behavior: 'smooth'});
 
 	let articleEl = null;
 
-	function scrollToTop() {
-		if (articleEl) scrollToTargetAdjusted(articleEl, 50);
-	}
-
 	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 500}, true);
-	$: scrollToTop(articleEl);
 </script>
 
 <svelte:head>

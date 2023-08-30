@@ -127,11 +127,6 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	function scrollToTop() {
-		if (!preventScroll && boxEl) scrollToTargetAdjusted(boxEl, 70);
-		preventScroll = false;
-	}
-
 	function changeParams(newPage, eventId, newLocation, replace) {
 		currentEventId = eventId;
 		newPage = parseInt(newPage, 10);
@@ -156,11 +151,11 @@
 	function onPageChanged(event) {
 		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/event/${currentEventId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/event/${currentEventId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/event/${currentEventId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace});
+		navigate(`/event/${currentEventId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
 	}
 
 	let topPlayerId;
@@ -172,8 +167,8 @@
 
 	let modalShown;
 
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, eventId, $location, true);
-	$: scrollToTop(pending);
 	$: mainPlayerId = $account?.id;
 </script>
 

@@ -6,7 +6,8 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	document.body.scrollIntoView({behavior: 'smooth'});
+
 	$: metaDescription =
 		ssrConfig.name +
 		" is Beat Saber's leaderboard with open code and community. Start posting your scores to compete with others on more than 100,000 different maps.";

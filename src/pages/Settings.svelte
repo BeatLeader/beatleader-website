@@ -1,5 +1,4 @@
 <script>
-	import {onMount} from 'svelte';
 	import {fade} from 'svelte/transition';
 	import ssrConfig from '../ssr-config';
 	import {configStore} from '../stores/config';
@@ -12,6 +11,8 @@
 	import LeaderboardSettings from '../components/Settings/LeaderboardSettings.svelte';
 	import AccountSettings from '../components/Settings/AccountSettings.svelte';
 	import RankingSettings from '../components/Settings/RankingSettings.svelte';
+
+	document.body.scrollIntoView({behavior: 'smooth'});
 
 	const account = createAccountStore();
 
@@ -53,6 +54,7 @@
 		previousIndex = selectedNavigationIndex;
 		selectedNavigationIndex = index;
 		history.replaceState(undefined, undefined, item.link);
+		document.body.scrollIntoView({behavior: 'smooth'});
 	}
 
 	async function onSave() {
@@ -66,8 +68,6 @@
 			await configStore.reset();
 		}
 	}
-
-	onMount(() => setTimeout(() => window.scrollTo(0, 0), 300));
 
 	$: settingsChanged = $configStore ? configStore.getSettingsChanged() : undefined;
 	$: animationSign = previousIndex == undefined ? 0 : selectedNavigationIndex >= previousIndex ? 1 : -1;

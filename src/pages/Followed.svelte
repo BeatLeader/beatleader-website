@@ -13,6 +13,7 @@
 	import Spinner from '../components/Common/Spinner.svelte';
 
 	document.body.classList.add('slim');
+	document.body.scrollIntoView({behavior: 'smooth'});
 
 	const account = createAccountStore();
 

@@ -281,7 +281,10 @@
 
 		const newPage = event.detail.page + 1;
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`, {
+				preserveScroll: true,
+			});
 		else changeParams(currentLeaderboardId, currentType, newPage, currentFilters);
 	}
 
@@ -289,7 +292,8 @@
 		const newLeaderboardId = opt(event, 'detail.leaderboardId');
 		if (!newLeaderboardId) return;
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -298,14 +302,16 @@
 		if (!newType) return;
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
-		if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`, {preserveScroll: true});
 		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, newFilters);
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
 
 	function onSelectedGroupEntryChanged(event) {
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -425,7 +431,8 @@
 			currentFilters.order = 'desc';
 		}
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -460,7 +467,8 @@
 	function onModifiersChanged(event) {
 		currentFilters.modifiers = event?.detail?.value ?? '';
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -470,7 +478,8 @@
 		currentFilters.search = newFilters.search;
 		currentFilters.countries = newFilters.countries;
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -579,7 +588,7 @@
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
 
-	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
+	$: if (autoScrollToTop || $location) document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: updateParams(leaderboardId, type, page);
 	$: updateFilters(buildFiltersFromLocation($location));

@@ -283,11 +283,11 @@
 	function onPageChanged(event) {
 		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace});
+		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
 	}
 
 	function onSortChanged(event) {
@@ -337,7 +337,7 @@
 		});
 	}
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, $location, true);
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
