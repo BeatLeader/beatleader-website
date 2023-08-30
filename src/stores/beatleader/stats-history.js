@@ -23,8 +23,8 @@ export default () => {
 		if (!playerData) return;
 
 		return resolvePromiseOrWaitForPending(`player/${playerData.playerId}/history/${count}`, () =>
-			fetchJson(BL_API_URL + `player/${playerData.playerId}/history?count=${count}`)
-				.then(data => getResponseBody(data))
+			fetch(BL_API_URL + `player/${playerData.playerId}/history?count=${count}`)
+				.then(response => response.json())
 				.then(data => {
 					var processedStatsHistory = {};
 					var statsHistory = data ?? [];
