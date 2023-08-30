@@ -1,8 +1,6 @@
 const STORE_SORTING_KEY = 'PlayerScoreSorting';
 const STORE_ORDER_KEY = 'PlayerScoreOrder';
 
-import keyValueRepository from '../../../db/repository/key-value';
-
 export default () => {
 	let currentService = null;
 	let currentServiceParams = {};
@@ -44,9 +42,9 @@ export default () => {
 		currentService = service;
 		currentServiceParams = {...defaultServiceParams, ...currentServiceParams, ...serviceParams};
 
-		if (!init && currentService == 'beatleader') {
-			keyValueRepository().set(currentServiceParams.sort, STORE_SORTING_KEY);
-			keyValueRepository().set(currentServiceParams.order, STORE_ORDER_KEY);
+		if (!init && currentService === 'beatleader') {
+			localStorage.setItem(STORE_SORTING_KEY, currentServiceParams.sort);
+			localStorage.setItem(STORE_ORDER_KEY, currentServiceParams.order);
 		}
 
 		return get();
