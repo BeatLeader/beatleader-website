@@ -60,13 +60,13 @@
 
 	async function refreshSavedParams() {
 		let params = serviceParamsManager.getParams();
-		const scoresSortOptions = await configStore.get('preferences').scoresSortOptions;
-		if (scoresSortOptions == 'last') {
-			const sortingOption = await keyValueRepository().get(STORE_SORTING_KEY);
+		const scoresSortOptions = configStore.get('preferences').scoresSortOptions;
+		if (scoresSortOptions === 'last') {
+			const sortingOption = localStorage.getItem(STORE_SORTING_KEY) ?? 'pp';
 			if (sortingOption) {
 				params.sort = sortingOption;
 			}
-			const orderOption = await keyValueRepository().get(STORE_ORDER_KEY);
+			const orderOption = localStorage.getItem(STORE_ORDER_KEY) ?? 'desc';
 			if (orderOption) {
 				params.order = orderOption;
 			}
