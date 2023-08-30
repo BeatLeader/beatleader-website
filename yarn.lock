@@ -1681,10 +1681,9 @@ svelte-range-slider-pips@^2.0.3:
   resolved "https://registry.yarnpkg.com/svelte-range-slider-pips/-/svelte-range-slider-pips-2.2.2.tgz#1622acbfe0e517aaf18d571dcff0a18b6e85cce6"
   integrity sha512-SsiIBpCkBnqvfaHLeIDolTfZlc8m7y93MhlxPKQ90YMZnE/rAxj+IoCrd7LTL/nXA2SCla4IJutSzfwdOtJddA==
 
-svelte-routing@2.1.0:
+"svelte-routing@https://github.com/BeatLeader/svelte-routing.git#preservescroll":
   version "2.1.0"
-  resolved "https://registry.yarnpkg.com/svelte-routing/-/svelte-routing-2.1.0.tgz#45723f5bdca7658cd5dc6e85f812f4b0c8e52e1b"
-  integrity sha512-bPkeL2IY3tzSJLyJtW9ld8UgHWLG85Aa1rfY9CDPXilwJQ6kZBFe0mgdyiy5RT6f/L+3eBlrZa8RxFymE/1Xiw==
+  resolved "https://github.com/BeatLeader/svelte-routing.git#7c6549e56113ade96658571a0b5f7c1c534c72c0"
 
 svelte-select@^4.4.7:
   version "4.4.7"
