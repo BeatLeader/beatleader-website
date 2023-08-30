@@ -588,7 +588,7 @@
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
 
-	$: if (autoScrollToTop || $location) document.body.scrollIntoView({behavior: 'smooth'});
+	$: if (autoScrollToTop && $location) document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: updateParams(leaderboardId, type, page);
 	$: updateFilters(buildFiltersFromLocation($location));
