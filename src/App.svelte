@@ -1,6 +1,6 @@
 <script>
 	import {onMount, setContext} from 'svelte';
-	import {Router, Route, navigate} from 'svelte-routing';
+	import {Router, navigate} from 'svelte-routing';
 	import Notifications from 'svelte-notifications';
 	import buildInfo from '../build-info';
 	import {configStore} from './stores/config';
@@ -40,6 +40,7 @@
 	import CensusPage from './pages/Census.svelte';
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
+	import Route from './components/Common/Route.svelte';
 
 	export let url = '';
 

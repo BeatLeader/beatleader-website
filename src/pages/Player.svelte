@@ -50,6 +50,7 @@
 		if (!newPlayerId) return;
 		serviceParams = newServiceParams;
 		if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
+			document.body.scrollIntoView({behavior: 'smooth'});
 			playerStore.fetch(newPlayerId, service, newServiceParams);
 		} else {
 			playerStore.setService(service);
@@ -219,7 +220,7 @@
 <svelte:window bind:innerWidth bind:innerHeight />
 
 <section class="align-content player-page">
-	<article class="page-content" transition:fade|global>
+	<article class="page-content" transition:fade>
 		{#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
 			<ContentBox>
 				<p class="error">Player not found.</p>

@@ -128,7 +128,7 @@
 		</div>
 
 		{#if showDetails}
-			<div transition:slide|global>
+			<div transition:slide>
 				<SongScoreDetails
 					{playerId}
 					{songScore}
