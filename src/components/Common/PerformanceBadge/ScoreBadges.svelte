@@ -1,6 +1,7 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
 	import {writable} from 'svelte/store';
+	import Badge from '../Badge.svelte';
 
 	export let badges = null;
 	export let additionalClass = null;
@@ -45,14 +46,20 @@
 						dispatch('badge-click', {row: rowIdx, col: colIdx});
 					}}>
 					{#if col?.badges?.length}
-						<svelte:component this={col?.badges?.[col?.idx ?? 0].component} {...col?.badges?.[col?.idx ?? 0].componentProps}>
-							<span slot="label">
-								{#if col?.badges?.[col?.idx ?? 0].icon}
-									<i class={col.badges[col?.idx ?? 0].icon} />
-								{/if}
-								<svelte:component this={col?.badges?.[col?.idx ?? 0].slotComponent} {...col?.badges?.[col?.idx ?? 0].slotComponentProps} />
-							</span>
-						</svelte:component>
+						{#if col?.badges?.[col?.idx ?? 0]?.component === Badge}
+							<svelte:component this={col?.badges?.[col?.idx ?? 0]?.component} {...col?.badges?.[col?.idx ?? 0]?.componentProps}>
+								<span slot="label">
+									{#if col?.badges?.[col?.idx ?? 0]?.icon}
+										<i class={col.badges[col?.idx ?? 0]?.icon} />
+									{/if}
+									<svelte:component
+										this={col?.badges?.[col?.idx ?? 0]?.slotComponent}
+										{...col?.badges?.[col?.idx ?? 0]?.slotComponentProps} />
+								</span>
+							</svelte:component>
+						{:else}
+							<svelte:component this={col?.badges?.[col?.idx ?? 0]?.component} {...col?.badges?.[col?.idx ?? 0]?.componentProps} />
+						{/if}
 					{/if}
 				</span>
 			{/each}
