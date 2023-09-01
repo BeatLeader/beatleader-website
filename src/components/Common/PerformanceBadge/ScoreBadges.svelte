@@ -12,15 +12,14 @@
 	const dispatch = createEventDispatcher();
 
 	let cols = 0;
-	let indexes = [];
-
+	let filteredBadges = badges;
 	let indexesRefreshed = null;
 
-	function rotateBadge(rowIdx, colIdx) {
-		if (!Number.isFinite(indexes?.[rowIdx]?.[colIdx]?.idx)) return;
+	function rotateBadge(col, rowIdx, colIdx) {
+		if (!filteredBadges?.[rowIdx]?.[colIdx]?.badges) return;
 
-		indexes[rowIdx][colIdx].idx += 1;
-		if (indexes[rowIdx][colIdx].idx > indexes[rowIdx][colIdx].length - 1) indexes[rowIdx][colIdx].idx = 0;
+		filteredBadges[rowIdx][colIdx].idx += 1;
+		if (filteredBadges[rowIdx][colIdx].idx > col.badges.length - 1) filteredBadges[rowIdx][colIdx].idx = 0;
 
 		indexesRefreshed = Math.random();
 	}
@@ -30,34 +29,34 @@
 
 		cols = badges[0].length - emptyColIndexes.length;
 
-		indexes = badges.map(row => row.filter((_, idx) => !emptyColIndexes.includes(idx)).map(col => ({idx: 0, length: col?.length ?? 0})));
+		filteredBadges = badges.map(row => row.filter((_, idx) => !emptyColIndexes.includes(idx)).map(col => ({idx: 0, badges: col})));
 	}
 	$: minWidth = cols ? 6.4 * cols + (cols - 1) * 0.4 : 0;
-
-	$: currentBadges = indexes.map((row, rowIdx) => row.map((col, colIdx) => badges?.[rowIdx]?.[colIdx]?.[col?.idx ?? 0] ?? null));
 </script>
 
 <div class="player-performance-badges" class:not-demo={forceNotDemo} style:--min-width={`${minWidth}em`} style:--cols={cols}>
-	{#if currentBadges?.length}
+	{#if filteredBadges?.length}
 		{#key indexesRefreshed}
-			{#each currentBadges as row, rowIdx}
-				{#each row as badge, colIdx}
+			{#each filteredBadges as row, rowIdx}
+				{#each row as col, colIdx}
 					<span
-						class={`with-badge ${badge?.className ?? ''} ${additionalClass ?? ''}`}
-						class:multi={!forceNotDemo && !$isDemo && indexes?.[rowIdx]?.[colIdx]?.length > 1}
+						class={`with-badge ${col?.badges?.[col?.idx ?? 0]?.className ?? ''} ${additionalClass ?? ''}`}
+						class:multi={!forceNotDemo && !$isDemo && col?.badges?.length > 1}
 						class:selected={rowIdx === selected?.row && colIdx === selected?.col}
-						title={badge?.title}
+						title={col.title}
 						on:click={() => {
-							if (!$isDemo && indexes?.[rowIdx]?.[colIdx]?.length > 1) rotateBadge(rowIdx, colIdx);
+							if (!$isDemo && col?.badges?.length > 1) rotateBadge(col, rowIdx, colIdx);
 							dispatch('badge-click', {row: rowIdx, col: colIdx});
 						}}>
-						{#if indexes?.[rowIdx]?.[colIdx]?.length}
-							<svelte:component this={badge?.component} {...badge?.componentProps}>
+						{#if col?.badges?.length}
+							<svelte:component this={col?.badges?.[col?.idx ?? 0]?.component} {...col?.badges?.[col?.idx ?? 0]?.componentProps}>
 								<span slot="label">
-									{#if badge?.icon}
-										<i class={badge?.icon} />
+									{#if col?.badges?.[col?.idx ?? 0]?.icon}
+										<i class={col.badges[col?.idx ?? 0]?.icon} />
 									{/if}
-									<svelte:component this={badge?.slotComponent} {...badge?.slotComponentProps} />
+									<svelte:component
+										this={col?.badges?.[col?.idx ?? 0]?.slotComponent}
+										{...col?.badges?.[col?.idx ?? 0]?.slotComponentProps} />
 								</span>
 							</svelte:component>
 						{/if}
