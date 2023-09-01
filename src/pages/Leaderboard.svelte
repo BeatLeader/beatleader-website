@@ -304,7 +304,10 @@
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
 		if (!dontNavigate)
 			navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`, {preserveScroll: true});
-		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, newFilters);
+		else if (!dontChangeType) {
+			currentFilters = newFilters;
+			changeParams(currentLeaderboardId, newType, 1, newFilters);
+		}
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
