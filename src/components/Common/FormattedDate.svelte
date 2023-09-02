@@ -9,12 +9,14 @@
 	export let absolute = false;
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
-	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? formatDate(dateObj) : null);
 	$: formatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDate : formatDateRelative;
-	$: formatted = dateObj ? (absolute ? formatDate(dateObj) : formatFunction(dateObj)) : noDate;
+	$: titleFormatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDateRelative : formatDate;
+	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? titleFormatFunction(dateObj) : null);
+	
+	$: formatted = dateObj ? (absolute ? titleFormatFunction(dateObj) : formatFunction(dateObj)) : noDate;
 	$: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromUnix(date)) : null;
-	$: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? formatDate(prevDateObj) : null);
-	$: prevFormatted = prevDateObj ? (absolute ? formatDate(prevDateObj) : formatFunction(prevDateObj)) : '';
+	$: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? titleFormatFunction(prevDateObj) : null);
+	$: prevFormatted = prevDateObj ? (absolute ? titleFormatFunction(prevDateObj) : formatFunction(prevDateObj)) : '';
 </script>
 
 <span title={dateTitle}>
