@@ -10,10 +10,11 @@
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
 	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? formatDate(dateObj) : null);
-	$: formatted = dateObj ? (absolute ? formatDate(dateObj) : formatDateRelative(dateObj)) : noDate;
+	$: formatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDate : formatDateRelative;
+	$: formatted = dateObj ? (absolute ? formatDate(dateObj) : formatFunction(dateObj)) : noDate;
 	$: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromUnix(date)) : null;
 	$: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? formatDate(prevDateObj) : null);
-	$: prevFormatted = prevDateObj ? (absolute ? formatDate(prevDateObj) : formatDateRelative(prevDateObj)) : '';
+	$: prevFormatted = prevDateObj ? (absolute ? formatDate(prevDateObj) : formatFunction(prevDateObj)) : '';
 </script>
 
 <span title={dateTitle}>

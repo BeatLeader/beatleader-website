@@ -51,6 +51,7 @@ export const DEFAULT_CONFIG = {
 	},
 	scorePreferences: {
 		badgeRows: 2,
+		dateFormat: 'relative',
 	},
 	scoreBadges: [
 		[

@@ -131,7 +131,7 @@ export function formatDateRelativeShort(val, roundFunc = Math.round) {
 	else return roundFunc(diffInSecs / (60 * 60 * 24 * 365)) + 'y';
 }
 
-export function formatDateRelative(val, roundFunc = Math.round, unit = 'auto', locale = getCurrentLocale()) {
+export function formatDateRelative(val, roundFunc = Math.floor, unit = 'auto', locale = getCurrentLocale()) {
 	if (!isValidDate(val)) return null;
 
 	const rtf = new Intl.RelativeTimeFormat(locale, {

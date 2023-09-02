@@ -20,11 +20,17 @@
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 	const DEFAULT_WEB_PLAYER = 'beatleader';
+	const DEFAULT_TIME_FORMAT = 'relative';
 
 	const scoreComparisonMethods = [
 		{name: 'No comparison', value: 'none'},
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
 		{name: 'In details', value: 'in-details'},
+	];
+
+	const timeFormats = [
+		{name: 'Relative', value: DEFAULT_TIME_FORMAT},
+		{name: 'Full', value: 'full'},
 	];
 
 	const configPresets = [
@@ -186,6 +192,7 @@
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
 	let currentWebPlayer = DEFAULT_WEB_PLAYER;
+	let currentTimeFormat = DEFAULT_TIME_FORMAT;
 
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
@@ -207,6 +214,7 @@
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
 		if (config?.preferences?.oneclick != currentOneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
 		if (config?.preferences?.webPlayer != currentWebPlayer) currentWebPlayer = config?.preferences?.webPlayer ?? DEFAULT_WEB_PLAYER;
+		if (config?.scorePreferences?.dateFormat != currentTimeFormat) currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
 		if (stringify(config?.scoreBadges) !== stringify(currentScoreBadges)) {
 			currentScoreBadges = deepClone(Object.values(config?.scoreBadges) ?? DEFAULT_CONFIG.scoreBadges);
 			currentScoreBadgeSelected = null;
@@ -270,6 +278,7 @@
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 	$: settempsetting('preferences', 'webPlayer', currentWebPlayer);
+	$: settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
 	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
 	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: settempsetting('scoreBadges', null, currentScoreBadges);
@@ -354,6 +363,10 @@
 		<section class="option">
 			<label title="Which web replay player to use">Web replays</label>
 			<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
+		</section>
+		<section class="option">
+			<label title="How to show time for the score">Timeset</label>
+			<Select bind:value={currentTimeFormat} options={timeFormats} />
 		</section>
 	</div>
 </div>
