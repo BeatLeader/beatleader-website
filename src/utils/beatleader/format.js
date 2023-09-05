@@ -803,6 +803,58 @@ export function getHumanDiffInfo(diffInfo) {
 	}
 }
 
+export function describeProfilePart(part) {
+	switch (part) {
+		case 'changes':
+			return 'Rank change';
+		case 'clans':
+			return 'Clans';
+		case 'graphs':
+			return 'Graphs';
+		case 'pinnedScores':
+			return 'Pinned scores';
+		case 'achievements':
+			return 'Achievements';
+		case 'histogram':
+			return 'Histogram';
+		case 'scoresToPlaylist':
+			return 'Scores to playlist button';
+		case 'globalMiniRanking':
+			return 'Global mini ranking';
+		case 'countryMiniRanking':
+			return 'Country mini ranking';
+		case 'friendsMiniRanking':
+			return 'Friends mini ranking';
+	}
+
+	return 'Undefined';
+}
+
+export function describeGraphAxis(axis) {
+	switch (axis) {
+		case 'y0':
+			return 'Rank';
+		case 'y1':
+			return 'Pp';
+		case 'y2':
+			return 'Country rank';
+		case 'y3':
+			return 'Ranked play count';
+		case 'y4':
+			return 'Total play count';
+		case 'y5':
+			return 'Ranked scores';
+		case 'y6':
+			return 'Ranked improved';
+		case 'y7':
+			return 'Unranked scores';
+		case 'y8':
+			return 'Unranked improved';
+	}
+
+	return 'Undefined';
+}
+
 export const all_countries = [
 	'ad',
 	'ae',

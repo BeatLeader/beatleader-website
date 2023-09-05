@@ -238,9 +238,15 @@
 				startEditing={editing} />
 
 			{#if !$editModel}
-				<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
-				<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
-				<Achievements {playerId} />
+				{#if $configStore.profileParts.graphs}
+					<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
+				{/if}
+				{#if $configStore.profileParts.pinnedScores}
+					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
+				{/if}
+				{#if $configStore.profileParts.achievements}
+					<Achievements {playerId} />
+				{/if}
 			{/if}
 
 			{#if scoresPlayerId}
@@ -262,7 +268,7 @@
 		{/if}
 	</article>
 
-	{#if innerWidth > 1749}
+	{#if innerWidth > 1749 && ($configStore.profileParts.globalMiniRanking || $configStore.profileParts.countryMiniRanking || $configStore.profileParts.friendsMiniRanking)}
 		<aside>
 			<MiniRankings {rank} {country} {countryRank} box={true} />
 

@@ -140,7 +140,7 @@
 					<span class="nickname">{name}</span>
 				{/if}
 
-				{#if playerInfo?.clans?.length}
+				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
 					<span class="clan-badges"><ClanBadges player={playerInfo} {editModel} /></span>
 				{/if}
 
@@ -190,7 +190,7 @@
 
 				<Value
 					value={playerInfo?.rank}
-					prevValue={prevRank}
+					prevValue={$configStore.profileParts.changes ? prevRank : undefined}
 					{prevLabel}
 					prefix="#"
 					digits={0}
@@ -218,7 +218,7 @@
 
 						<Value
 							value={country.rank}
-							prevValue={prevCountryRank}
+							prevValue={$configStore.profileParts.changes ? prevCountryRank : undefined}
 							{prevLabel}
 							prefix="#"
 							digits={0}
@@ -234,7 +234,7 @@
 			{/if}
 
 			<span class="pp">
-				<Value value={playerInfo?.pp} suffix="pp" prevValue={prevPp} {prevLabel} inline={true} zero="0pp" />
+				<Value value={playerInfo?.pp} suffix="pp" prevValue={$configStore.profileParts.changes ? prevPp : undefined} {prevLabel} inline={true} zero="0pp" />
 			</span>
 
 			{#if showRedact && isAdmin && loggedInPlayer != playerId}

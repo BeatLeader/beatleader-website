@@ -11,12 +11,12 @@
 	import {capitalize} from '../../../utils/js';
 	import Switcher from '../../Common/Switcher.svelte';
 	import {onLegendClick} from './utils/legend-click-handler';
+	import {configStore} from '../../../stores/config';
 
 	const dispatch = createEventDispatcher();
 
 	export let playerId = null;
 	export let playerHistory = null;
-	export let height = '350px';
 
 	const CHART_DEBOUNCE = 300;
 	const CHART_DAYS = 30;
@@ -322,14 +322,15 @@
 
 	$: selectedCategory = availableCategories?.find(c => c.label === capitalize(category)) ?? null;
 
+	$: height = $configStore.preferences.graphHeight;
 	$: chartHash = calcHistoryHash(playerId, playerRankHistory, category);
 	$: debounceChartHash(chartHash);
 	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas);
 </script>
 
 {#if playerRankHistory?.length}
-	<section class="chart" style="--height: {height}">
-		<canvas class="chartjs" bind:this={canvas} height={parseInt(height, 10)} />
+	<section class="chart" style="--height: {height}px">
+		<canvas class="chartjs" bind:this={canvas} {height} />
 	</section>
 
 	<div class="chart-switcher">

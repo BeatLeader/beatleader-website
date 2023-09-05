@@ -19,7 +19,6 @@
 	export let averageAcc = null;
 	export let medianAcc = null;
 	export let type = 'accuracy'; // or percentage
-	export let height = '350px';
 
 	Chart.register(zoomPlugin);
 
@@ -452,6 +451,7 @@
 
 	$: fetchPlayerScores(playerId);
 
+	$: height = $configStore.preferences.graphHeight;
 	$: chartHash = calcPlayerScoresHash(playerScores);
 	$: debounceChartHash(chartHash);
 	$: selectedPlaylistIndex = $configStore?.selectedPlaylist;
@@ -459,8 +459,8 @@
 	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, selectedPlaylist);
 </script>
 
-<section class="chart" style="--height: {height}">
-	<canvas class="chartjs" bind:this={canvas} height={parseInt(height, 10)} />
+<section class="chart" style="--height: {height}px">
+	<canvas class="chartjs" bind:this={canvas} {height} />
 	{#if isLoading}
 		<Spinner width="10em" height="10em" />
 	{:else if !selectedPlaylist}

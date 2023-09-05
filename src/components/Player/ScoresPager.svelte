@@ -11,6 +11,7 @@
 	import Pager from '../Common/Pager.svelte';
 	import {debounce} from '../../utils/debounce';
 	import stringify from 'json-stable-stringify';
+	import { configStore } from '../../stores/config';
 
 	export let playerId = null;
 	export let service = null;
@@ -220,7 +221,7 @@
 
 	$: playerId, service, serviceParams, resetCurrentValues();
 	$: refreshAllPlayerServiceScores(playerId, service, serviceParams);
-	$: debouncedRefreshGroupedScores(playerScores, playerScoresHistogram, playerScoresHistogramBucketSize);
+	$: if ($configStore.profileParts.histogram) debouncedRefreshGroupedScores(playerScores, playerScoresHistogram, playerScoresHistogramBucketSize);
 
 	$: itemsPerPage = fixedItemsPerPage
 		? fixedItemsPerPage
@@ -238,7 +239,7 @@
 	mode={totalItems ? 'pages' : 'simple'}
 	on:page-changed />
 
-{#if groupedPlayerScores?.length}
+{#if $configStore.profileParts.histogram && groupedPlayerScores?.length}
 	<section class="scores-date-browse">
 		<ChartBrowser
 			data={groupedPlayerScores}

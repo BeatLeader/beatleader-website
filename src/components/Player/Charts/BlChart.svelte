@@ -12,7 +12,6 @@
 	import {configStore} from '../../../stores/config';
 
 	export let playerId = null;
-	export let height = '350px';
 
 	const CHART_DEBOUNCE = 300;
 	const MAGIC_INACTIVITY_RANK = 999999;
@@ -29,7 +28,7 @@
 
 	const calcHistoryHash = statsHistory => stringify(statsHistory);
 
-	async function setupChart(hash, canvas, statsHistory) {
+	async function setupChart(hash, canvas, statsHistory, height) {
 		if (!hash || !canvas || !statsHistory?.rank?.length || chartHash === lastHistoryHash) return;
 
 		let rankHistory = statsHistory.rank;
@@ -321,6 +320,9 @@
 						legend: {
 							display: true,
 							onClick: onLegendClick,
+							labels: {
+								filter: item => $configStore.chartLegendVisible['y' + item.datasetIndex],
+							},
 						},
 						tooltip: {
 							position: 'nearest',
@@ -383,12 +385,14 @@
 	$: statsHistory = $statsHistoryStore[playerId];
 	$: chartHash = calcHistoryHash(statsHistory);
 	$: debounceChartHash(chartHash);
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, statsHistory);
+	$: height = $configStore.preferences.graphHeight;
+	$: if (debouncedChartHash || height) setupChart(debouncedChartHash, canvas, statsHistory, height);
+	$: if ($configStore.chartLegendVisible && chart) chart.update();
 </script>
 
 {#if statsHistory?.rank?.length}
-	<section class="chart" style="--height: {height}">
-		<canvas class="chartjs" bind:this={canvas} height={parseInt(height, 10)} />
+	<section class="chart" style="--height: {height}px">
+		<canvas class="chartjs" bind:this={canvas} {height} />
 	</section>
 {/if}
 

@@ -36,6 +36,7 @@ export const DEFAULT_CONFIG = {
 		headerColor: 'rgba(53, 0, 70, 0.2)',
 		daysToCompare: 1,
 		daysOfHistory: 30,
+		graphHeight: 350,
 		leaderboardStatsShown: false,
 		curveShown: false,
 		qualificationInfoShown: false,
@@ -52,6 +53,8 @@ export const DEFAULT_CONFIG = {
 	scorePreferences: {
 		badgeRows: 2,
 		dateFormat: 'relative',
+		showHmd: true,
+		showTriangle: true,
 	},
 	scoreBadges: [
 		[
@@ -119,6 +122,29 @@ export const DEFAULT_CONFIG = {
 		y7: true,
 		y8: true,
 	},
+	chartLegendVisible: {
+		y0: true,
+		y1: true,
+		y2: true,
+		y3: true,
+		y4: true,
+		y5: true,
+		y6: true,
+		y7: true,
+		y8: true,
+	},
+	profileParts: {
+		changes: true,
+		clans: true,
+		graphs: true,
+		pinnedScores: true,
+		achievements: true,
+		histogram: true,
+		scoresToPlaylist: true,
+		globalMiniRanking: true,
+		countryMiniRanking: true,
+		friendsMiniRanking: false,
+	},
 	visibleScoreIcons: {
 		pin: false,
 		playlist: false,
@@ -160,6 +186,15 @@ export default async () => {
 	const set = async (config, persist = true) => {
 		const newConfig = deepClone(DEFAULT_CONFIG);
 		const configToSet = deepClone(config);
+		const recursiveFollback = (configToSet, newConfig, key) => {
+			if (configToSet?.[key] && typeof configToSet[key] === 'object') {
+				Object.keys(configToSet[key]).forEach(innerkey => {
+					recursiveFollback(configToSet[key], newConfig?.[key], innerkey);
+				});
+			} else if (newConfig != null) {
+				newConfig[key] = configToSet?.[key] ?? newConfig?.[key];
+			}
+		};
 		Object.keys(configToSet).forEach(key => {
 			if (key === 'locale') {
 				newConfig[key] = configToSet?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
@@ -170,7 +205,7 @@ export default async () => {
 				return;
 			}
 
-			newConfig[key] = configToSet?.[key] ?? newConfig?.[key];
+			recursiveFollback(configToSet, newConfig, key);
 		});
 
 		if (persist) {

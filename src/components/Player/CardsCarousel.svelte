@@ -8,6 +8,7 @@
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Carousel from '../Common/Carousel.svelte';
 	import createBeatSaviorService from '../../services/beatsavior';
+	import {configStore} from '../../stores/config';
 	// import createAccSaberService from '../../services/accsaber';
 
 	export let twitchVideos = null;
@@ -59,7 +60,10 @@
 					},
 			  ]
 					.concat(
-						$pageContainer.name !== 'xxl'
+						$pageContainer.name !== 'xxl' &&
+							($configStore.profileParts.friendsMiniRanking ||
+								$configStore.profileParts.countryMiniRanking ||
+								$configStore.profileParts.globalMiniRanking)
 							? [
 									{
 										name: `ranking-${playerId}`,

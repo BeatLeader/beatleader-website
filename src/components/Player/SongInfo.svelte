@@ -6,6 +6,7 @@
 	import Icons from '../Song/Icons.svelte';
 	import Badge from '../Common/Badge.svelte';
 	import SongCover from './SongCover.svelte';
+	import { configStore } from '../../stores/config';
 
 	export let leaderboard = null;
 	export let score = null;
@@ -33,7 +34,7 @@
 
 {#if song}
 	<section>
-		<SongCover mods={score?.mods} {leaderboard} {notClickable} url={leaderboardUrl} />
+		<SongCover mods={score?.mods} {leaderboard} {notClickable} url={leaderboardUrl} triangle={$configStore.scorePreferences.showTriangle} />
 
 		<div class="songinfo">
 			{#if notClickable}

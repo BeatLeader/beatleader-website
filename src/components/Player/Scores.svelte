@@ -20,6 +20,7 @@
 	import RangeSlider from 'svelte-range-slider-pips';
 	import OpDeletionDialog from './OPDeletionDialog.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue.js';
+	import { configStore } from '../../stores/config.js';
 
 	const dispatch = createEventDispatcher();
 	const {open, close} = getContext('simple-modal');
@@ -213,7 +214,7 @@
 		<p>No scores.</p>
 	{/if}
 
-	{#if currentService == 'beatleader'}
+	{#if currentService == 'beatleader' && $configStore.profileParts.scoresToPlaylist}
 		<Button
 			cls={pagerTotalScores > itemsPerPage ? 'scores-playlist-button' : 'scores-playlist-button-relative'}
 			iconFa="fas fa-list"

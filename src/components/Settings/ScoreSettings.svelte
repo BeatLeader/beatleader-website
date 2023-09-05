@@ -193,6 +193,8 @@
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
 	let currentWebPlayer = DEFAULT_WEB_PLAYER;
 	let currentTimeFormat = DEFAULT_TIME_FORMAT;
+	let currentShowHmd = true;
+	let currentShowTriangle = true;
 
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
@@ -214,7 +216,10 @@
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
 		if (config?.preferences?.oneclick != currentOneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
 		if (config?.preferences?.webPlayer != currentWebPlayer) currentWebPlayer = config?.preferences?.webPlayer ?? DEFAULT_WEB_PLAYER;
-		if (config?.scorePreferences?.dateFormat != currentTimeFormat) currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
+		if (config?.scorePreferences?.dateFormat != currentTimeFormat)
+			currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
+		if (config?.scorePreferences?.showHmd != currentShowHmd) currentShowHmd = config?.scorePreferences?.showHmd ?? true;
+		if (config?.scorePreferences?.showTriangle != currentShowTriangle) currentShowTriangle = config?.scorePreferences?.showTriangle ?? true;
 		if (stringify(config?.scoreBadges) !== stringify(currentScoreBadges)) {
 			currentScoreBadges = deepClone(Object.values(config?.scoreBadges) ?? DEFAULT_CONFIG.scoreBadges);
 			currentScoreBadgeSelected = null;
@@ -279,6 +284,8 @@
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 	$: settempsetting('preferences', 'webPlayer', currentWebPlayer);
 	$: settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
+	$: settempsetting('scorePreferences', 'showHmd', currentShowHmd);
+	$: settempsetting('scorePreferences', 'showTriangle', currentShowTriangle);
 	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
 	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: settempsetting('scoreBadges', null, currentScoreBadges);
@@ -326,6 +333,23 @@
 							design="slider"
 							on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
 					{/each}
+				</div>
+			</section>
+			<section class="option full">
+				<label title="Determines which info should be displayed at score">Score info to show:</label>
+				<div class="switches">
+					<Switch
+						value={currentShowHmd}
+						label="Show headset"
+						fontSize={12}
+						design="slider"
+						on:click={() => (currentShowHmd = !currentShowHmd)} />
+					<Switch
+						value={currentShowTriangle}
+						label="Show triangle"
+						fontSize={12}
+						design="slider"
+						on:click={() => (currentShowTriangle = !currentShowTriangle)} />
 				</div>
 			</section>
 			<section class="option full">

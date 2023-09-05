@@ -3,6 +3,7 @@
 	import {cubicOut} from 'svelte/easing';
 	import Value from '../Common/Value.svelte';
 	import {getHeadsetForHMD, describePlatform, getControllerForEnum} from '../../utils/beatleader/format';
+	import { configStore } from '../../stores/config';
 
 	export let rank;
 	export let country;
@@ -46,7 +47,7 @@
 		<Value value={$currentRank} prefix="#" zero="-" digits={0} canBeSetup={false} />
 	</strong>
 
-	{#if headset}
+	{#if $configStore.scorePreferences.showHmd && headset}
 		<img src={'/assets/' + headset.icon} alt={headset.name} {title} style={headsetStyle} />
 	{/if}
 </span>

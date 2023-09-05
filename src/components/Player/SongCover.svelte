@@ -10,6 +10,7 @@
 	export let url = null;
 	export let notClickable = false;
 	export let starsKey = 'stars';
+	export let triangle = true;
 
 	const DEFAULT_IMG = '/assets/song-default.png';
 
@@ -81,7 +82,7 @@
 			</div>
 		{/if}
 
-		{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
+		{#if triangle && (leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating)}
 			<div class="type">
 				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} {mods} />
 			</div>
