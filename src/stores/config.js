@@ -187,7 +187,7 @@ export default async () => {
 		const newConfig = deepClone(DEFAULT_CONFIG);
 		const configToSet = deepClone(config);
 		const recursiveFollback = (configToSet, newConfig, key) => {
-			if (configToSet?.[key] && typeof configToSet[key] === 'object') {
+			if (configToSet?.[key] && typeof configToSet[key] === 'object' && !Array.isArray(configToSet[key])) {
 				Object.keys(configToSet[key]).forEach(innerkey => {
 					recursiveFollback(configToSet[key], newConfig?.[key], innerkey);
 				});
