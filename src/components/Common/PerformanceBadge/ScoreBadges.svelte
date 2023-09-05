@@ -32,6 +32,8 @@
 		filteredBadges = badges.map(row => row.filter((_, idx) => !emptyColIndexes.includes(idx)).map(col => ({idx: 0, badges: col})));
 	}
 	$: minWidth = cols ? 6.4 * cols + (cols - 1) * 0.4 : 0;
+
+	$: badges, (indexesRefreshed = Math.random());
 </script>
 
 <div class="player-performance-badges" class:not-demo={forceNotDemo} style:--min-width={`${minWidth}em`} style:--cols={cols}>
