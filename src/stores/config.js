@@ -44,9 +44,7 @@ export const DEFAULT_CONFIG = {
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
 
-		showFriendsButtonOnRanking: true,
 		showFiltersOnRanking: true,
-
 		maps3D: true,
 		mapsViewType: 'maps-cards',
 	},
@@ -110,6 +108,14 @@ export const DEFAULT_CONFIG = {
 		replaysWatched: true,
 		top1Score: false,
 		top1Count: false,
+	},
+	rankingList: {
+		showClans: true,
+		showDifference: true,
+		showFriendsButton: true,
+		showCountryRank: true,
+		showColorsForCountryRank: true,
+		ppToTheLeft: false,
 	},
 	chartLegend: {
 		y: true,

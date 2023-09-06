@@ -243,6 +243,7 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
+	let previousPage = 0;
 	let currentFilters = buildFiltersFromLocation($location);
 	let boxEl = null;
 
@@ -276,7 +277,7 @@
 		}
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
-
+		previousPage = currentPage;
 		currentPage = newPage;
 	}
 
@@ -373,6 +374,7 @@
 				page={currentPage}
 				filters={currentFilters}
 				meta={true}
+				animationSign={currentPage >= previousPage ? 1 : -1}
 				on:filters-updated={onFiltersUpdated}
 				on:page-changed={onPageChanged}
 				on:sort-changed={onSortChanged}

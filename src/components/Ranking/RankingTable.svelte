@@ -25,6 +25,7 @@
 	export let showTypeSwitcher = true;
 	export let meta = false;
 	export let editing = false;
+	export let animationSign = 1;
 
 	let currentFilters = filters;
 
@@ -359,6 +360,9 @@
 	$: dispatch('pending', $pending?.page);
 	$: dispatch('players-fetched', $rankingStore?.data);
 
+	$: maxRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.rank)) : 0;
+	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.countries[0].rank)) : 0;
+
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
 	$: refreshSortValues(allSortValues, currentFilters, $configStore.rankingPreferences);
 </script>
@@ -387,17 +391,19 @@
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div
-				class="ranking-grid-row {!noIcons && $configStore.preferences.showFriendsButtonOnRanking ? 'with-friends-button' : ''}"
-				in:fly|global={{delay: idx * 10, x: 100}}>
+				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''}"
+				in:fly|global={{delay: idx * 10, x: animationSign * 100}}>
 				<PlayerCard
 					{player}
 					playerId={mainPlayerId}
 					{playerClickFilter}
 					{currentFilters}
 					value={sortValue?.value(player)}
+					{maxRank}
+					{maxCountryRank}
 					valueProps={eventId == 32 ? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0} : sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if !noIcons && $configStore.preferences.showFriendsButtonOnRanking}
+				{#if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />
 				{/if}
 			</div>

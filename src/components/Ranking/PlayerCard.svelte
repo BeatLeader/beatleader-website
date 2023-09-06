@@ -14,6 +14,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import MiniProfile from '../Player/MiniProfile.svelte';
 	import Popover from '../Common/Popover.svelte';
+	import {configStore} from '../../stores/config';
 
 	export let player;
 	export let currentFilters = null;
@@ -23,6 +24,8 @@
 	export let value = null;
 	export let valueProps = {};
 	export let playerClickFilter = null;
+	export let maxRank = 1;
+	export let maxCountryRank = 1;
 
 	const dispatch = createEventDispatcher();
 
@@ -92,12 +95,28 @@
 		}
 	}
 
+	let firstColumnWidth = '3.5em';
+	function updateFirstColumn(maxRank, maxCountryRank, showCountryRank) {
+		var result = 1.5;
+		if (showCountryRank) {
+			result += 4;
+			result += ((maxCountryRank + '').length - 1) * 0.6;
+		}
+		result += ((maxRank + '').length - 1) * 0.6;
+
+		firstColumnWidth = result + 'em';
+	}
+	$: updateFirstColumn(maxRank, maxCountryRank, $configStore.rankingList.showCountryRank);
+
 	let referenceElement;
 </script>
 
 <div
-	class={`player-card ${playerId == player.playerId ? 'current' : ''} ${showRainbow(player) ? 'rainbow' : ''}`}
+	class={`player-card ${$configStore.rankingList.ppToTheLeft ? 'with-pp-on-left' : ''} ${playerId == player.playerId ? 'current' : ''} ${
+		showRainbow(player) ? 'rainbow' : ''
+	}`}
 	bind:this={referenceElement}
+	style="grid-template-columns: {firstColumnWidth} 4em auto 1fr;"
 	on:click={e => onPlayerClick(e, player)}
 	on:keypress={e => onPlayerClick(e, player)}
 	on:pointerover={() => hoverStats(player)}>
@@ -109,36 +128,55 @@
 			on:keypress={e => onGlobalClick(e, player)}>
 			#<Value value={rank} digits={0} zero="?" />
 		</div>
-		<div
-			class={`rank ${
-				countryRank === 1 ? 'gold' : countryRank === 2 ? 'silver' : countryRank === 3 ? 'brown' : countryRank >= 10000 ? 'small' : ''
-			}`}
-			title="Go to country ranking"
-			on:click={e => onCountryClick(player)}
-			on:keypress={e => onGlobalClick(e, player)}>
-			#<Value value={countryRank} digits={0} zero="?" />
-			<Flag country={opt(player, 'playerInfo.countries.0.country')} />
-		</div>
+		{#if $configStore.rankingList.showCountryRank}
+			<div
+				class={`rank ${$configStore.rankingList.showColorsForCountryRank ? '' : 'not'}${
+					countryRank === 1 ? 'gold' : countryRank === 2 ? 'silver' : countryRank === 3 ? 'brown' : countryRank >= 10000 ? 'small' : ''
+				}`}
+				title="Go to country ranking"
+				on:click={e => onCountryClick(player)}
+				on:keypress={e => onGlobalClick(e, player)}>
+				#<Value value={countryRank} digits={0} zero="?" />
+				<Flag country={opt(player, 'playerInfo.countries.0.country')} />
+			</div>
+		{/if}
+		{#if $configStore.rankingList.ppToTheLeft}
+			<div class="steam-and-pp">
+				<div>
+					{#if valueProps.isText}
+						{value}
+					{:else}
+						<Value {value} {...valueProps} />
+					{/if}
+				</div>
+			</div>
+		{/if}
 	</div>
 	<div class="player-avatar">
 		<Avatar {player} />
 	</div>
 	<div class="player-name-and-rank">
 		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} disablePopover={true} />
-		<span class="change">
-			<Change value={opt(player, 'others.difference')} digits={0} />
-		</span>
-		<ClanBadges {player} />
+		{#if $configStore.rankingList.showDifference}
+			<span class="change">
+				<Change value={opt(player, 'others.difference')} digits={0} />
+			</span>
+		{/if}
+		{#if $configStore.rankingList.showClans}
+			<ClanBadges {player} />
+		{/if}
 	</div>
-	<div class="steam-and-pp">
-		<div>
-			{#if valueProps.isText}
-				{value}
-			{:else}
-				<Value {value} {...valueProps} />
-			{/if}
+	{#if !$configStore.rankingList.ppToTheLeft}
+		<div class="steam-and-pp">
+			<div>
+				{#if valueProps.isText}
+					{value}
+				{:else}
+					<Value {value} {...valueProps} />
+				{/if}
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 {#if player && player.playerInfo}
@@ -152,7 +190,6 @@
 <style>
 	.player-card {
 		display: inline-grid;
-		grid-template-columns: 7.5em 4em auto 1fr;
 		grid-template-rows: 1fr;
 		padding: 0 0.2em 0 0.2em;
 		border: 2px solid var(--dimmed);
@@ -162,6 +199,9 @@
 		font-size: 1.12em;
 		align-items: center;
 		width: 100%;
+	}
+	.player-card.with-pp-on-left {
+		grid-template-columns: 12em 4em auto 1fr;
 	}
 
 	.current {
@@ -289,7 +329,7 @@
 
 	@media screen and (max-width: 768px) {
 		.player-card {
-			grid-template-columns: 50% 50%;
+			grid-template-columns: 50% 50% !important;
 			grid-template-rows: 1fr 1fr;
 		}
 
