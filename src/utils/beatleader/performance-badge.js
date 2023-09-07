@@ -561,6 +561,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 	}
 
 	return {
+		metric,
 		component,
 		componentProps,
 		slotComponent,
