@@ -276,22 +276,21 @@
 										ret.push(`${song.name} (${capitalize(song?.diff?.replace('Plus', '+' ?? ''))})`);
 										ret.push(`${song.levelAuthor}`);
 									}
-									break;
-							}
-
-							if (selectedPlaylist) {
-								const item = ctx.raw;
-								if (item.playlistSong) {
-									if (item.difficulties.length == 1 && item.difficulties[0] == item.diff) {
-										ret.push(`Click to remove from the ${selectedPlaylist.playlistTitle}`);
-									} else if (item.difficulties.length == 1 || !item.difficulties.includes(item.diff)) {
-										ret.push(`Click to add this diff to the ${selectedPlaylist.playlistTitle}`);
-									} else {
-										ret.push(`Click to remove this diff from the ${selectedPlaylist.playlistTitle}`);
+									if (selectedPlaylist) {
+										const item = ctx.raw;
+										if (item.playlistSong) {
+											if (item.difficulties.length == 1 && item.difficulties[0] == item.diff) {
+												ret.push(`Click to remove from the ${selectedPlaylist.playlistTitle}`);
+											} else if (item.difficulties.length == 1 || !item.difficulties.includes(item.diff)) {
+												ret.push(`Click to add this diff to the ${selectedPlaylist.playlistTitle}`);
+											} else {
+												ret.push(`Click to remove this diff from the ${selectedPlaylist.playlistTitle}`);
+											}
+										} else {
+											ret.push(`Click to add to the ${selectedPlaylist.playlistTitle}`);
+										}
 									}
-								} else {
-									ret.push(`Click to add to the ${selectedPlaylist.playlistTitle}`);
-								}
+									break;
 							}
 
 							return ret;
