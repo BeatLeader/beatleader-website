@@ -9,7 +9,7 @@
 	export let absolute = false;
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
-	$: dateFormat = $configStore.scorePreferences.dateFormat;
+	$: dateFormat = $configStore.scorePreferences.dateFormat == null ? 'relative' : $configStore.scorePreferences.dateFormat;
 	$: formatFunction = dateFormat == 'full' ? formatDate : 
 						(dateFormat == 'relative' ? formatDateRelative : formatDateCustom);
 	$: titleFormatFunction = dateFormat == 'full' ? formatDateRelative : 
