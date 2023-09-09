@@ -6,15 +6,14 @@
 	export let prevDate = null;
 	export let noDate = '';
 	export let prevPrefix = '';
-	export let absolute = false;
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
 	$: dateFormat = $configStore.scorePreferences.dateFormat == null ? 'relative' : $configStore.scorePreferences.dateFormat;
-	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? formatDateCustomTooltip(dateObj, dateFormat) : null);
-	$: formatted = dateObj ? (absolute ? formatDateCustomTooltip(dateObj, dateFormat) : formatDateCustom(dateObj, dateFormat)) : noDate;
+	$: dateTitle = (configStore, $configStore, dateObj ? formatDateCustomTooltip(dateObj, dateFormat) : null);
+	$: formatted = dateObj ? formatDateCustom(dateObj, dateFormat) : noDate;
 	$: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromUnix(date)) : null;
-	$: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? formatDateCustomTooltip(prevDateObj, dateFormat) : null);
-	$: prevFormatted = prevDateObj ? (absolute ? formatDateCustomTooltip(prevDateObj, dateFormat) : formatDateCustom(prevDateObj, dateFormat)) : '';
+	$: prevDateTitle = (configStore, $configStore, prevDateObj ? formatDateCustomTooltip(prevDateObj, dateFormat) : null);
+	$: prevFormatted = prevDateObj ? formatDateCustom(prevDateObj, dateFormat) : '';
 </script>
 
 <span title={dateTitle}>
