@@ -30,7 +30,15 @@
 
 	const timeFormats = [
 		{name: 'Relative', value: DEFAULT_TIME_FORMAT},
-		{name: 'Full', value: 'full'},
+		{name: 'Full Date, Auto Format', value: 'full'},
+		{name: 'MM/DD/YYYY', value: 'MM/DD/YYYY'},
+		{name: 'DD.MM.YYYY', value: 'DD.MM.YYYY'},
+		{name: 'YYYY-MM-DD', value: 'YYYY-MM-DD'},
+		{name: 'M/DD/YY, H:mm:ss AM/PM', value: 'M/DD/YY, H:mm:ss AM/PM'},
+		{name: 'DD.MM.YYYY HH:mm:ss', value: 'DD.MM.YYYY HH:mm:ss'},
+		{name: 'YYYY-MM-DD HH:mm:ss', value: 'YYYY-MM-DD HH:mm:ss'},
+		{name: 'M/D/YY', value: 'M/D/YY'},
+		{name: 'D.M.YY', value: 'D.M.YY'},
 	];
 
 	const configPresets = [
@@ -389,7 +397,7 @@
 			<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
 		</section>
 		<section class="option">
-			<label title="How to show time for the score">Timeset</label>
+			<label title="How to show time for the score">Timeset Date Format</label>
 			<Select bind:value={currentTimeFormat} options={timeFormats} />
 		</section>
 	</div>

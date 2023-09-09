@@ -1,5 +1,5 @@
 <script>
-	import {dateFromUnix, formatDate, formatDateRelative, isValidDate} from '../../utils/date';
+	import {dateFromUnix, formatDate, formatDateRelative, formatDateCustom, isValidDate} from '../../utils/date';
 	import {configStore} from '../../stores/config';
 
 	export let date = new Date();
@@ -9,14 +9,18 @@
 	export let absolute = false;
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
-	$: formatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDate : formatDateRelative;
-	$: titleFormatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDateRelative : formatDate;
-	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? titleFormatFunction(dateObj) : null);
+	$: dateFormat = $configStore.scorePreferences.dateFormat;
+	$: formatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDate : 
+						($configStore.scorePreferences.dateFormat == 'relative' ? formatDate : formatDateCustom)
+	;
+	$: titleFormatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDate : 
+						($configStore.scorePreferences.dateFormat == 'relative' ? formatDate : formatDateCustom)
+	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? titleFormatFunction(dateObj, dateFormat) : null);
 	
-	$: formatted = dateObj ? (absolute ? titleFormatFunction(dateObj) : formatFunction(dateObj)) : noDate;
+	$: formatted = dateObj ? (absolute ? titleFormatFunction(dateObj, dateFormat) : formatFunction(dateObj, dateFormat)) : noDate;
 	$: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromUnix(date)) : null;
-	$: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? titleFormatFunction(prevDateObj) : null);
-	$: prevFormatted = prevDateObj ? (absolute ? titleFormatFunction(prevDateObj) : formatFunction(prevDateObj)) : '';
+	$: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? titleFormatFunction(prevDateObj, dateFormat) : null);
+	$: prevFormatted = prevDateObj ? (absolute ? titleFormatFunction(prevDateObj, dateFormat) : formatFunction(prevDateObj, dateFormat)) : '';
 </script>
 
 <span title={dateTitle}>
