@@ -10,11 +10,10 @@
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
 	$: dateFormat = $configStore.scorePreferences.dateFormat;
-	$: formatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDate : 
-						($configStore.scorePreferences.dateFormat == 'relative' ? formatDate : formatDateCustom)
-	;
-	$: titleFormatFunction = $configStore.scorePreferences.dateFormat == 'full' ? formatDate : 
-						($configStore.scorePreferences.dateFormat == 'relative' ? formatDate : formatDateCustom)
+	$: formatFunction = dateFormat == 'full' ? formatDate : 
+						(dateFormat == 'relative' ? formatDateRelative : formatDateCustom);
+	$: titleFormatFunction = dateFormat == 'full' ? formatDateRelative : 
+						     (dateFormat == 'relative' ? formatDate : formatDateCustom);
 	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? titleFormatFunction(dateObj, dateFormat) : null);
 	
 	$: formatted = dateObj ? (absolute ? titleFormatFunction(dateObj, dateFormat) : formatFunction(dateObj, dateFormat)) : noDate;

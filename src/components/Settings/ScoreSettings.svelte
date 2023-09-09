@@ -397,7 +397,7 @@
 			<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
 		</section>
 		<section class="option">
-			<label title="How to show time for the score">Timeset Date Format</label>
+			<label title="How to show time for the score">Date Format</label>
 			<Select bind:value={currentTimeFormat} options={timeFormats} />
 		</section>
 	</div>
