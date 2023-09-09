@@ -95,7 +95,7 @@ export function formatDateWithOptions(val, options = {localeMatcher: 'best fit'}
 	return rtf.format(val);
 }
 
-export function formatDate(val,dateFormat,  dateStyle = 'short', timeStyle = 'medium', locale = getCurrentLocale()) {
+export function formatDate(val,  dateStyle = 'short', timeStyle = 'medium', locale = getCurrentLocale()) {
 	return formatDateWithOptions(
 		val,
 		{
@@ -107,9 +107,26 @@ export function formatDate(val,dateFormat,  dateStyle = 'short', timeStyle = 'me
 	);
 }
 
-export function formatDateCustom(val, dateFormat, dateStyle = 'short', timeStyle = 'medium', locale = getCurrentLocale()) {
-	if (!isValidDate(val)) return null;
-	
+export function formatDateCustomTooltip(val, dateFormat) {
+	//if relative is displayed use full as the tooltip
+	if(dateFormat == 'relative'){
+		return formatDate(val);
+	}
+	//for absolute dates use the relative format
+	return formatDateRelative(val);
+}
+
+export function formatDateCustom(val, dateFormat) {
+	if (!isValidDate(val)){
+		return null;
+	}
+	if(dateFormat == 'full'){
+		return formatDate(val)
+	}
+	if(dateFormat == 'relative'){
+		return formatDateRelative(val);
+	}
+
 	let year = val.getFullYear()
 	year = ('' + year).slice(-2);
 
@@ -166,7 +183,7 @@ export function formatDateRelativeShort(val, roundFunc = Math.round) {
 	else return roundFunc(diffInSecs / (60 * 60 * 24 * 365)) + 'y';
 }
 
-export function formatDateRelative(val, dateFormat, roundFunc = Math.floor, unit = 'auto', locale = getCurrentLocale()) {
+export function formatDateRelative(val, roundFunc = Math.floor, unit = 'auto', locale = getCurrentLocale()) {
 	if (!isValidDate(val)) return null;
 	
 	const rtf = new Intl.RelativeTimeFormat(locale, {
