@@ -59,7 +59,7 @@
 				{#if graphPageIndex === 0 || !replayAccGraphs}
 					<Chart {beatSavior} />
 				{:else}
-					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} />
+					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} {beatSavior} />
 				{/if}
 				{#if replayAccGraphs}
 					<CompactPagination pageIndex={graphPageIndex} pagesCount={2} on:change={onGraphPaginationChange} />

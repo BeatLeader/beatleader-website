@@ -34,6 +34,7 @@
 
 	$: stats = beatSavior ? beatSavior.stats : null;
 	$: fc = stats && !stats.miss && !stats.wallHit && !stats.bombHit;
+	$: bothHandsStats = stats?.accLeft && stats?.accRight;
 
 	$: jumpDistance = beatSavior ? beatSavior.songJumpDistance : null;
 	$: totalMistakes = stats ? stats.miss + stats.wallHit + stats.bombHit : null;
@@ -90,7 +91,7 @@
 						prevValue={compareToTotalMistakes}
 						prevAbsolute={true}
 						prevWithSign={false} />
-					{#if stats.miss || (compareToStats && compareToStats.miss)}
+					{#if bothHandsStats && (stats.miss || (compareToStats && compareToStats.miss))}
 						<span class="left addon"
 							><Value
 								value={leftMiss}
@@ -118,7 +119,7 @@
 						prevValue={compareToStats ? compareToStats.missedNotes : null}
 						prevAbsolute={true}
 						prevWithSign={false} />
-					{#if stats.missedNotes || (compareToStats && compareToStats.missedNotes)}
+					{#if bothHandsStats && (stats.missedNotes || (compareToStats && compareToStats.missedNotes))}
 						<span class="left addon"
 							><Value
 								value={leftMissedNotes}
@@ -146,7 +147,7 @@
 						prevValue={compareToStats ? compareToStats.badCuts : null}
 						prevAbsolute={true}
 						prevWithSign={false} />
-					{#if stats.badCuts || (compareToStats && compareToStats.badCuts)}
+					{#if bothHandsStats && (stats.badCuts || (compareToStats && compareToStats.badCuts))}
 						<span class="left addon"
 							><Value
 								value={leftBadCuts}

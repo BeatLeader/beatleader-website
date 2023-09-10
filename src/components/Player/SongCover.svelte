@@ -76,15 +76,15 @@
 			</a>
 		{/if}
 
-		{#if leaderboard?.diffInfo?.type != 'Standard'}
-			<div class="mode">
-				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
-			</div>
-		{/if}
-
 		{#if triangle && (leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating)}
 			<div class="type">
 				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} {mods} />
+			</div>
+		{/if}
+
+		{#if leaderboard?.diffInfo?.type != 'Standard'}
+			<div class="mode">
+				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
 			</div>
 		{/if}
 
@@ -124,7 +124,7 @@
 		align-items: center;
 		position: absolute;
 		top: 0.8em;
-		right: 0;
+		right: -0.5em;
 		font-size: 0.75em;
 	}
 

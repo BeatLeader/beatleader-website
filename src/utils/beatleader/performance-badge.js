@@ -253,6 +253,12 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			break;
 
 		case 'accLeft':
+			const accLeft = beatSavior?.stats?.accLeft ?? 0;
+			if (accLeft == 0) {
+				component = null;
+				break;
+			}
+
 			title = isDemo
 				? 'Click to setup'
 				: beatSavior?.stats?.leftAverageCut
@@ -268,7 +274,6 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				title,
 			};
 
-			const accLeft = beatSavior?.stats?.accLeft ?? 0;
 			const prevAccLeft = def?.withImprovements ? accLeft - (improvements?.accLeft ?? 0) : null;
 
 			slotComponentProps = {
@@ -281,6 +286,12 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			break;
 
 		case 'accRight':
+			const accRight = beatSavior?.stats?.accRight ?? 0;
+			if (accRight == 0) {
+				component = null;
+				break;
+			}
+
 			title = isDemo
 				? 'Click to setup'
 				: beatSavior?.stats?.rightAverageCut
@@ -298,7 +309,6 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				title,
 			};
 
-			const accRight = beatSavior?.stats?.accRight ?? 0;
 			const prevAccRight = def?.withImprovements ? accRight - (improvements?.accRight ?? 0) : null;
 
 			slotComponentProps = {

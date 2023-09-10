@@ -5,6 +5,7 @@
 	export let replayAccGraphs = null;
 	export let underswingsData = null;
 	export let height = '12em';
+	export let beatSavior = null;
 
 	let canvas = null;
 	let chart = null;
@@ -52,8 +53,19 @@
 
 		const minMaxCounter = createMinMaxCounter(0, 115, 1.0);
 
+		var hands = [];
+		if (beatSavior?.stats?.accLeft) {
+			hands.push('red');
+		}
+		if (beatSavior?.stats?.accRight) {
+			hands.push('blue');
+		}
+		if (hands.length == 2) {
+			hands.push('total');
+		}
+
 		for (let i = 0; i < chartData.times.length; i++) {
-			['red', 'blue', 'total'].forEach(saberType => {
+			hands.forEach(saberType => {
 				minMaxCounter.update(chartData.realScoreBySaber[saberType][i]);
 				minMaxCounter.update(chartData.fullSwingBySaber[saberType][i]);
 			});
@@ -86,8 +98,10 @@
 			},
 		};
 
-		const datasets = [
-			{
+		var datasets = [];
+
+		if (beatSavior?.stats?.accLeft) {
+			datasets.push({
 				yAxisID: 'score',
 				label: 'Accuracy (left)',
 				data: chartData.fullSwingBySaber.red,
@@ -100,8 +114,8 @@
 				tension: 0.4,
 				spanGaps: true,
 				order: 3,
-			},
-			{
+			});
+			datasets.push({
 				yAxisID: 'score',
 				label: 'Underswing (left)',
 				data: chartData.realScoreBySaber.red,
@@ -115,8 +129,11 @@
 				tension: 0.4,
 				spanGaps: true,
 				order: 4,
-			},
-			{
+			});
+		}
+
+		if (beatSavior?.stats?.accRight) {
+			datasets.push({
 				yAxisID: 'score',
 				label: 'Accuracy (right)',
 				data: chartData.fullSwingBySaber.blue,
@@ -129,8 +146,8 @@
 				tension: 0.4,
 				spanGaps: true,
 				order: 5,
-			},
-			{
+			});
+			datasets.push({
 				yAxisID: 'score',
 				label: 'Underswing (right)',
 				data: chartData.realScoreBySaber.blue,
@@ -144,7 +161,10 @@
 				tension: 0.4,
 				spanGaps: true,
 				order: 6,
-			},
+			});
+		}
+
+		datasets = datasets.concat([
 			{
 				yAxisID: 'score',
 				label: 'Accuracy',
@@ -188,7 +208,7 @@
 				spanGaps: true,
 				order: 0,
 			},
-		];
+		]);
 
 		if (!chart) {
 			chart = new Chart(canvas, {
