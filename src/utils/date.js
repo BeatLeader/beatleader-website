@@ -155,7 +155,7 @@ export function formatDateCustom(val, dateFormat) {
 		.replace('YY', year)
 		.replace('H', hour % 12)
 		.replace('AM/PM', hour < 12 ? 'AM' : 'PM')
-		.replace('M', val.getMonth())
+		.replace('M', val.getMonth() + 1)
 		.replace('D', val.getDate());
 }
 
