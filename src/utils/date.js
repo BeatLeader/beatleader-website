@@ -153,9 +153,9 @@ export function formatDateCustom(val, dateFormat) {
 		.replace('mm', minute)
 		.replace('ss', second)
 		.replace('YY', year)
-		.replace('H', hour % 12)
+		.replace('H', hour % 12 == 0 ? 12 : hour % 12)
 		.replace('AM/PM', hour < 12 ? 'AM' : 'PM')
-		.replace('M', val.getMonth())
+		.replace('M', val.getMonth() + 1)
 		.replace('D', val.getDate());
 }
 
