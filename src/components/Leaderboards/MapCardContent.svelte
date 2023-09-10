@@ -40,7 +40,10 @@
 	$: coverImage && retrieveBackgroundColor(coverImage);
 </script>
 
-<div class={`map-card row-${idx} ${viewType}`} in:fly|global={{delay: 250 + idx * 50, duration: 400, y: 100}} out:fade|global={{delay: 0, duration: 150}}>
+<div
+	class={`map-card row-${idx} ${viewType}`}
+	in:fly|global={{delay: 250 + idx * 50, duration: 400, y: 100}}
+	out:fade|global={{delay: 0, duration: 150}}>
 	<div class="card-background" style="background-image:  url({coverImage});" data-atropos-offset="-1" />
 	<div class="map-card-header">
 		<div class="difficulty">
@@ -69,7 +72,7 @@
 			</div>
 			<div class="mapper" data-atropos-offset="0.2">Mapper: {map?.song?.mapper}</div>
 		</div>
-		<div class="other-details">
+		<div class="other-details" data-atropos-offset="0.1">
 			<div class="details-and-icons">
 				{#if map?.plays}
 					<div class="map-details">
@@ -136,10 +139,10 @@
 
 	.card-background {
 		position: absolute;
-		width: 120%;
-		height: 120%;
-		left: -10%;
-		top: -10%;
+		width: 110%;
+		height: 110%;
+		left: -5%;
+		top: -5%;
 		pointer-events: none;
 		background-size: cover;
 		background-position: 50%;
@@ -235,7 +238,7 @@
 
 	.details-and-icons {
 		display: flex;
-		padding: 0.3em;
+		padding: 0.25em 0.3em 0.3em 0.3em;
 		justify-content: space-between;
 	}
 

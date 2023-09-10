@@ -51,7 +51,7 @@
 		align-items: center;
 		justify-content: space-between;
 		grid-column-gap: 0.4em;
-		padding: 0.3em;
+		padding: 0 0.3em 0.1em 0.3em;
 	}
 
 	.song-score.with-details .main {
@@ -122,7 +122,7 @@
 
 	.rank .timeset {
 		width: auto;
-		min-width: 7em;
+		min-width: 9em;
 		font-size: 0.8em;
 	}
 
@@ -194,10 +194,6 @@
 	}
 
 	@media screen and (max-width: 767px) {
-		.song-score {
-			padding: 0.75em 0;
-		}
-
 		.song-score .main {
 			flex-wrap: wrap;
 		}
