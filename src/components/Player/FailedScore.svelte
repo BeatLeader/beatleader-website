@@ -57,20 +57,12 @@
 					hmd={score.hmd}
 					platform={score.player.scoreStats.platform} />
 				<div class="timeset tablet-and-up">
-					<FormattedDate
-						date={score.timeSet}
-						prevPrefix="vs "
-						prevDate={prevScore ? prevScore.timeSet : null}
-						absolute={service === 'beatsavior'} />
+					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} />
 				</div>
 			</span>
 
 			<span class="timeset mobile-only">
-				<FormattedDate
-					date={score.timeSet}
-					prevPrefix="vs "
-					prevDate={prevScore ? prevScore.timeSet : null}
-					absolute={service === 'beatsavior'} />
+				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} />
 			</span>
 
 			<span class="song">

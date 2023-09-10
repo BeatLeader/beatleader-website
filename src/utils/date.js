@@ -107,6 +107,58 @@ export function formatDate(val, dateStyle = 'short', timeStyle = 'medium', local
 	);
 }
 
+export function formatDateCustomTooltip(val, dateFormat) {
+	//if relative is displayed use full as the tooltip
+	if (dateFormat == 'relative') {
+		return formatDate(val);
+	}
+	//for absolute dates use the relative format
+	return formatDateRelative(val);
+}
+
+export function formatDateCustom(val, dateFormat) {
+	if (!isValidDate(val)) {
+		return null;
+	}
+	if (dateFormat == 'full') {
+		return formatDate(val);
+	}
+	if (dateFormat == 'relative') {
+		return formatDateRelative(val);
+	}
+
+	let year = val.getFullYear();
+	year = ('' + year).slice(-2);
+
+	let month = val.getMonth();
+	month = ('0' + (month + 1)).slice(-2);
+
+	let date = val.getDate();
+	date = ('0' + date).slice(-2);
+
+	let hour = val.getHours();
+	hour = ('0' + hour).slice(-2);
+
+	let minute = val.getMinutes();
+	minute = ('0' + minute).slice(-2);
+
+	let second = val.getSeconds();
+	second = ('0' + second).slice(-2);
+
+	return dateFormat
+		.replace('YYYY', val.getFullYear())
+		.replace('MM', month)
+		.replace('DD', date)
+		.replace('HH', hour)
+		.replace('mm', minute)
+		.replace('ss', second)
+		.replace('YY', year)
+		.replace('H', hour % 12 == 0 ? 12 : hour % 12)
+		.replace('AM/PM', hour < 12 ? 'AM' : 'PM')
+		.replace('M', val.getMonth() + 1)
+		.replace('D', val.getDate());
+}
+
 export function formatDateRelativeInUnits(val, unit = 'day', locale = getCurrentLocale()) {
 	const rtf = new Intl.RelativeTimeFormat(locale, {
 		localeMatcher: 'best fit',
