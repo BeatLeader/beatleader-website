@@ -12,7 +12,6 @@
 	import {configStore} from '../../../stores/config';
 
 	export let playerId = null;
-	export let height = '350px';
 
 	const CHART_DEBOUNCE = 300;
 	const MAGIC_INACTIVITY_RANK = 999999;
@@ -29,7 +28,7 @@
 
 	const calcHistoryHash = statsHistory => stringify(statsHistory);
 
-	async function setupChart(hash, canvas, statsHistory) {
+	async function setupChart(hash, canvas, statsHistory, height) {
 		if (!hash || !canvas || !statsHistory?.rank?.length || chartHash === lastHistoryHash) return;
 
 		let rankHistory = statsHistory.rank;
@@ -43,8 +42,11 @@
 		const ppColor = '#007100';
 		const rankedPlayCountColor = '#3e3e3e';
 		const totalPlayCountColor = '#fff';
+
 		const activityColor = '#333';
 		const rankedActivityColor = '#eb008c';
+		const improvementsColor = '#474747';
+		const rankedImprovementsColor = '#f04dae';
 
 		const dayTimestamps = statsHistory.timestamp.map(unix => dateFromUnix(unix).getTime());
 
@@ -203,7 +205,12 @@
 			});
 		});
 
-		if (statsHistory?.rankedPlayCountDaily?.length || statsHistory?.unrankedPlayCountDaily?.length) {
+		if (
+			statsHistory?.rankedPlayCountDaily?.length ||
+			statsHistory?.unrankedPlayCountDaily?.length ||
+			statsHistory?.rankedImprovementsCountDaily?.length ||
+			statsHistory?.unrankedImprovementsCountDaily?.length
+		) {
 			lastYIdx++;
 			const scoresAxisKey = `y${lastYIdx}`;
 
@@ -223,7 +230,7 @@
 				},
 			};
 
-			if (statsHistory?.rankedPlayCountDaily?.length)
+			if (statsHistory?.rankedPlayCountDaily?.length) {
 				datasets.push({
 					yAxisID: scoresAxisKey,
 					label: 'Ranked scores',
@@ -238,8 +245,9 @@
 					order: 0,
 					hidden: !$configStore.chartLegend[scoresAxisKey],
 				});
+			}
 
-			if (statsHistory?.unrankedPlayCountDaily?.length)
+			if (statsHistory?.unrankedPlayCountDaily?.length) {
 				datasets.push({
 					yAxisID: scoresAxisKey,
 					label: 'Unranked scores',
@@ -254,6 +262,41 @@
 					order: 1,
 					hidden: !$configStore.chartLegend[scoresAxisKey],
 				});
+			}
+
+			if (statsHistory?.rankedImprovementsCountDaily?.length) {
+				datasets.push({
+					yAxisID: scoresAxisKey,
+					label: 'Ranked improved',
+					data: dayTimestamps.map((x, idx) => ({x, y: statsHistory.rankedImprovementsCountDaily?.[idx] ?? null})),
+					fill: false,
+					borderColor: rankedImprovementsColor,
+					backgroundColor: rankedImprovementsColor,
+					round: 0,
+					type: 'bar',
+					maxBarThickness: 25,
+					stack: 'daily-scores',
+					order: 0,
+					hidden: !$configStore.chartLegend[scoresAxisKey],
+				});
+			}
+
+			if (statsHistory?.unrankedImprovementsCountDaily?.length) {
+				datasets.push({
+					yAxisID: scoresAxisKey,
+					label: 'Unranked improved',
+					data: dayTimestamps.map((x, idx) => ({x, y: statsHistory.unrankedImprovementsCountDaily?.[idx] ?? null})),
+					fill: false,
+					borderColor: improvementsColor,
+					backgroundColor: improvementsColor,
+					round: 0,
+					type: 'bar',
+					maxBarThickness: 25,
+					stack: 'daily-scores',
+					order: 1,
+					hidden: !$configStore.chartLegend[scoresAxisKey],
+				});
+			}
 		}
 
 		if (!chart) {
@@ -277,6 +320,9 @@
 						legend: {
 							display: true,
 							onClick: onLegendClick,
+							labels: {
+								filter: item => $configStore.chartLegendVisible['y' + item.datasetIndex],
+							},
 						},
 						tooltip: {
 							position: 'nearest',
@@ -339,12 +385,14 @@
 	$: statsHistory = $statsHistoryStore[playerId];
 	$: chartHash = calcHistoryHash(statsHistory);
 	$: debounceChartHash(chartHash);
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, statsHistory);
+	$: height = $configStore.preferences.graphHeight;
+	$: if (debouncedChartHash || height) setupChart(debouncedChartHash, canvas, statsHistory, height);
+	$: if ($configStore.chartLegendVisible && chart) chart.update();
 </script>
 
 {#if statsHistory?.rank?.length}
-	<section class="chart" style="--height: {height}">
-		<canvas class="chartjs" bind:this={canvas} height={parseInt(height, 10)} />
+	<section class="chart" style="--height: {height}px">
+		<canvas class="chartjs" bind:this={canvas} {height} />
 	</section>
 {/if}
 

@@ -13,6 +13,7 @@
 	export let players = null;
 	export let rank = 0;
 	export let country = false;
+	export let friends = false;
 	export let isLoading = true;
 
 	let miniRanking = null;
@@ -41,14 +42,18 @@
 </script>
 
 {#if miniRanking && miniRanking[0]}
-	<section transition:fade>
+	<section transition:fade|global>
 		<h3 class="title is-6">
 			{#if country}
 				<Flag country={miniRanking[0].country} />
+				<span>Country ranking</span>
+			{:else if friends}
+				<i class="fas fa-people-group svelte-1pb1u1r" />
+				<span>Friends ranking</span>
 			{:else}
 				<i class="fas fa-globe-americas svelte-1pb1u1r" />
+				<span>Global ranking</span>
 			{/if}
-			<span>{country ? 'Country' : 'Global'} ranking</span>
 		</h3>
 		{#if isLoading}
 			<Spinner />

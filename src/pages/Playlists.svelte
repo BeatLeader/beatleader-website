@@ -1,4 +1,5 @@
 <script>
+	import {useLocation} from 'svelte-routing';
 	import ssrConfig from '../ssr-config';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createPlaylistStore from '../stores/playlists';
@@ -12,6 +13,7 @@
 
 	const playlists = createPlaylistStore();
 	const account = createAccountStore();
+	const location = useLocation();
 
 	let itemsPerPage = 5;
 	let page = 0;
@@ -22,6 +24,7 @@
 
 	function onPageChanged(event) {
 		page = event.detail.page;
+		selectedIndex = null;
 	}
 
 	let fileinput;
@@ -52,6 +55,7 @@
 		}
 	}
 
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 	$: totalItems = $playlists.length;
 	$: updatePage(parseInt(index, 10), $playlists.length);
 </script>

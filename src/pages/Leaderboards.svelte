@@ -1,6 +1,6 @@
 <script>
 	import {tick} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
@@ -45,9 +45,10 @@
 	import Select from '../components/Settings/Select.svelte';
 
 	export let page = 1;
-	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
+
+	const location = useLocation();
 
 	document.body.classList.remove('slim');
 
@@ -98,7 +99,7 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 	let boxEl = null;
 
 	const typeFilterOptions = [
@@ -106,9 +107,6 @@
 		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
 		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
 		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'reweighting', label: 'Ranked, reweighting', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'reweighted', label: 'Ranked, reweighted', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
-		{key: 'unranked', label: 'Unranked', iconFa: 'fa fa-cube', color: 'var(--beatleader-primary)'},
 	];
 
 	const baseMytypeFilterOptions = [
@@ -162,17 +160,6 @@
 		if (mapper) {
 			mytypeFilterOptions.push({key: 'mymaps', label: 'My maps', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
 		}
-		if (mapper || rt) {
-			mytypeFilterOptions.push({key: 'mynominated', label: 'My nominated', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
-		}
-		if (rt) {
-			mytypeFilterOptions.push({
-				key: 'othersnominated',
-				label: "Other's nominated",
-				iconFa: 'fa fa-cubes',
-				color: 'var(--beatleader-primary)',
-			});
-		}
 	}
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
@@ -185,6 +172,28 @@
 			if (result.id == currentFilters.sortBy) {
 				result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
 				sortValue = result;
+			}
+
+			if (result.id == 'timestamp') {
+				switch (currentFilters.type) {
+					case 'ranked':
+						result.label = 'Rank date';
+						result.title = 'Sort by the date map become ranked';
+						break;
+					case 'qualified':
+						result.label = 'Qualification date';
+						result.title = 'Sort by the map qualification date';
+						break;
+					case 'nominated':
+						result.label = 'Nomination date';
+						result.title = 'Sort by the map nomination date';
+						break;
+
+					default:
+						result.label = 'Upload date';
+						result.title = 'Sort by the map upload date';
+						break;
+				}
 			}
 
 			return result;
@@ -200,13 +209,11 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
-
-		document.body.scrollIntoView({behavior: 'smooth'});
+		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters() {
-		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function onSearchChanged(e) {
@@ -361,7 +368,7 @@
 		});
 	}
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
@@ -376,7 +383,7 @@
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
-	$: changePageAndFilters(page, location);
+	$: changePageAndFilters(page, $location);
 
 	$: starsKey =
 		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'
@@ -432,7 +439,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		<ContentBox cls="maps-box" bind:box={boxEl}>
 			<h1 class="title is-5">
 				Maps
@@ -763,7 +770,7 @@
 		title: ssrConfig.name + ' - Maps',
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

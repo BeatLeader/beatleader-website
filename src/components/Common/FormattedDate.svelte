@@ -1,19 +1,19 @@
 <script>
-	import {dateFromUnix, formatDate, formatDateRelative, isValidDate} from '../../utils/date';
+	import {dateFromUnix, formatDateCustom, formatDateCustomTooltip, isValidDate} from '../../utils/date';
 	import {configStore} from '../../stores/config';
 
 	export let date = new Date();
 	export let prevDate = null;
 	export let noDate = '';
 	export let prevPrefix = '';
-	export let absolute = false;
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
-	$: dateTitle = (configStore, $configStore, dateObj && !absolute ? formatDate(dateObj) : null);
-	$: formatted = dateObj ? (absolute ? formatDate(dateObj) : formatDateRelative(dateObj)) : noDate;
+	$: dateFormat = $configStore.scorePreferences.dateFormat == null ? 'relative' : $configStore.scorePreferences.dateFormat;
+	$: dateTitle = (configStore, $configStore, dateObj ? formatDateCustomTooltip(dateObj, dateFormat) : null);
+	$: formatted = dateObj ? formatDateCustom(dateObj, dateFormat) : noDate;
 	$: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromUnix(date)) : null;
-	$: prevDateTitle = (configStore, $configStore, prevDateObj && !absolute ? formatDate(prevDateObj) : null);
-	$: prevFormatted = prevDateObj ? (absolute ? formatDate(prevDateObj) : formatDateRelative(prevDateObj)) : '';
+	$: prevDateTitle = (configStore, $configStore, prevDateObj ? formatDateCustomTooltip(prevDateObj, dateFormat) : null);
+	$: prevFormatted = prevDateObj ? formatDateCustom(prevDateObj, dateFormat) : '';
 </script>
 
 <span title={dateTitle}>

@@ -1,9 +1,8 @@
 <script>
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fly} from 'svelte/transition';
 	import createClanStore from '../stores/http/http-clan-store';
 	import createAccountStore from '../stores/beatleader/account';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -20,12 +19,12 @@
 
 	export let clanId;
 	export let page = 1;
-	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
 
 	document.body.classList.remove('slim');
 
+	const location = useLocation();
 	const account = createAccountStore();
 
 	const clanService = createClanService();
@@ -61,10 +60,6 @@
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 
-	function scrollToTop() {
-		if (boxEl) scrollToTargetAdjusted(boxEl, 44);
-	}
-
 	const clanStore = createClanStore(clanId, page, currentFilters);
 
 	function changePageAndFilters(clanId, newPage, newLocation) {
@@ -82,11 +77,11 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/clan/${clanId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/clan/${clanId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters() {
-		navigate(`/clan/${clanId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/clan/${clanId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function onSearchChanged(e) {
@@ -120,13 +115,14 @@
 		}
 	}
 
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+
 	$: isLoading = clanStore.isLoading;
 	$: pending = clanStore.pending;
 	$: numOfItems = $clanStore ? $clanStore?.metadata?.total : null;
 	$: itemsPerPage = $clanStore ? $clanStore?.metadata?.itemsPerPage : 10;
 
 	$: changePageAndFilters(clanId, page, location);
-	$: scrollToTop($pending);
 
 	$: clan = $clanStore?.container ?? null;
 	$: playersPage = $clanStore?.data ?? [];
@@ -177,7 +173,7 @@
 			{#if playersPage?.length}
 				<div class="players grid-transition-helper" class:with-icons={isFounder}>
 					{#each playersPage as player, idx (player.playerId)}
-						<div class="ranking-grid-row" in:fly={{delay: idx * 10, x: 100}}>
+						<div class="ranking-grid-row" in:fly|global={{delay: idx * 10, x: 100}}>
 							<PlayerCard
 								{player}
 								playerId={mainPlayerId}

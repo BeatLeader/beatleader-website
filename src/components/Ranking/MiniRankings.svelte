@@ -2,6 +2,7 @@
 	import createRankingService from '../../services/beatleader/ranking';
 	import Mini from './Mini.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
+	import {configStore} from '../../stores/config';
 
 	export let rank = null;
 	export let country = null;
@@ -11,43 +12,62 @@
 	let rankingService = createRankingService();
 	let globalRanking = null;
 	let countryRanking = null;
+	let friendsRanking = null;
 	let isLoading = true;
 
-	async function onParamsChanged(rank, country, countryRank) {
+	async function onParamsChanged(rank, country, countryRank, friends) {
 		if (!rank) return;
 
 		try {
 			isLoading = true;
 
-			const ranking = await rankingService.getMiniRanking(rank, country, countryRank);
+			const ranking = await rankingService.getMiniRanking(rank, country, countryRank, friends);
 			if (!ranking) return;
 
 			globalRanking = ranking.global;
 			countryRanking = ranking.country;
+			friendsRanking = ranking.friends;
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	$: onParamsChanged(rank, country, countryRank);
+	$: onParamsChanged(rank, country, countryRank, $configStore.profileParts.friendsMiniRanking);
 </script>
 
 {#if !box}
-	<div>
-		<Mini {isLoading} players={globalRanking} {rank} on:height-changed />
-	</div>
+	{#if $configStore.profileParts.globalMiniRanking}
+		<div>
+			<Mini {isLoading} players={globalRanking} {rank} on:height-changed />
+		</div>
+	{/if}
 
-	<div>
-		<Mini {isLoading} players={countryRanking} rank={countryRank} country={true} on:height-changed />
-	</div>
+	{#if $configStore.profileParts.countryMiniRanking}
+		<div>
+			<Mini {isLoading} players={countryRanking} rank={countryRank} country={true} on:height-changed />
+		</div>
+	{/if}
+	{#if $configStore.profileParts.friendsMiniRanking}
+		<div>
+			<Mini {isLoading} players={friendsRanking} {rank} friends={true} on:height-changed />
+		</div>
+	{/if}
 {:else}
-	<ContentBox>
-		<Mini {isLoading} players={globalRanking} {rank} on:height-changed />
-	</ContentBox>
-
-	<ContentBox>
-		<Mini {isLoading} players={countryRanking} rank={countryRank} country={true} on:height-changed />
-	</ContentBox>
+	{#if $configStore.profileParts.globalMiniRanking}
+		<ContentBox>
+			<Mini {isLoading} players={globalRanking} {rank} on:height-changed />
+		</ContentBox>
+	{/if}
+	{#if $configStore.profileParts.countryMiniRanking}
+		<ContentBox>
+			<Mini {isLoading} players={countryRanking} rank={countryRank} country={true} on:height-changed />
+		</ContentBox>
+	{/if}
+	{#if $configStore.profileParts.friendsMiniRanking}
+		<ContentBox>
+			<Mini {isLoading} players={friendsRanking} {rank} friends={true} on:height-changed />
+		</ContentBox>
+	{/if}
 {/if}
 
 <style>

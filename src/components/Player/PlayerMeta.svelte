@@ -34,7 +34,7 @@
 		title: $playerStore?.name,
 		description,
 		images: [{url: $playerStore?.playerInfo.avatar}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

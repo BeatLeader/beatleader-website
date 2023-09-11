@@ -8,8 +8,26 @@
 
 	const playlists = createPlaylistStore();
 
+	var badgeScale = 1;
+	var lastPlaylist = null;
+
+	function animateBadge(songsCount, playlist) {
+		if (songsCount) {
+			if (playlist !== lastPlaylist) {
+				lastPlaylist = playlist;
+				return;
+			}
+			badgeScale = 1.2;
+			setTimeout(() => {
+				badgeScale = 1;
+			}, 300);
+		}
+	}
+
 	$: selectedPlaylist = $configStore?.selectedPlaylist;
 	$: playlist = $playlists?.[selectedPlaylist] ?? null;
+	$: songsCount = playlist?.songs?.length;
+	$: animateBadge(songsCount, playlist);
 </script>
 
 {#if playlist}
@@ -34,8 +52,8 @@
 						: '/assets/song-default.png'}
 					alt="PlaylistImage" />
 			</a>
-			<div class="playlist-map-count">
-				<Badge label={playlist.songs?.length} bgColor="red" onlyLabel={true} />
+			<div class="playlist-map-count" style="scale: {badgeScale};">
+				<Badge label={songsCount} bgColor="red" onlyLabel={true} />
 			</div>
 		</ContentBox>
 	</section>
@@ -54,6 +72,7 @@
 		position: absolute;
 		bottom: -0.25em;
 		left: 0.3em;
+		transition: scale 0.3s cubic-bezier(0.38, 0.19, 0, 0.81);
 	}
 
 	.unselect {

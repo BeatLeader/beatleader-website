@@ -5,6 +5,7 @@
 	import stringify from 'json-stable-stringify';
 	import {configStore, DEFAULT_CONFIG} from '../../stores/config';
 	import createAccountStore from '../../stores/beatleader/account';
+	import createLeaderboardStore from '../../stores/http/http-leaderboard-store';
 	import {deepClone, optSet} from '../../utils/js';
 	import Switch from '../Common/Switch.svelte';
 	import DemoLeaderboardScore from './DemoLeaderboardScore.svelte';
@@ -12,6 +13,8 @@
 	import BadgeEdit from './BadgeEdit.svelte';
 	import {isAnySupporter} from '../Player/Overlay/overlay';
 	import Spinner from '../Common/Spinner.svelte';
+	import ContentBox from '../Common/ContentBox.svelte';
+	import LeaderboardHeader from '../Leaderboard/LeaderboardHeader.svelte';
 
 	export let animationSign = 1;
 
@@ -172,6 +175,7 @@
 	};
 
 	const account = createAccountStore();
+	const leaderboardStore = createLeaderboardStore('2c7d691', 'global', 1, {});
 
 	function onConfigUpdated(config) {
 		if (stringify(config?.leaderboardPreferences?.badges) !== stringify(currentScoreBadges)) {
@@ -259,6 +263,14 @@
 		anySupporter = isAnySupporter(account?.player?.playerInfo?.role);
 	}
 
+	$: leaderboard = $leaderboardStore?.leaderboard;
+	$: ratings = {
+		passRating: leaderboard?.stats?.passRating,
+		accRating: leaderboard?.stats?.accRating,
+		techRating: leaderboard?.stats?.techRating,
+		stars: leaderboard?.stats?.stars,
+	};
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
 
@@ -266,10 +278,13 @@
 	$: settempsetting('leaderboardPreferences', 'badges', currentScoreBadges);
 
 	$: scoreDetailsPreferences = $configStore?.leaderboardPreferences?.show ?? {};
+	$: showSubtitle = $configStore?.leaderboardPreferences?.showSubtitleInHeader ?? false;
+	$: showStats = $configStore?.leaderboardPreferences?.showStatsInHeader ?? false;
+	$: showHash = $configStore?.leaderboardPreferences?.showHashInHeader ?? false;
 	$: updateProfileSettings($account);
 </script>
 
-<div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
+<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<DemoLeaderboardScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
 		<section class="option full">
@@ -327,6 +342,40 @@
 						fontSize={12}
 						design="slider"
 						on:click={() => toggleAllRatings()} />
+				</div>
+			</section>
+		{/if}
+		{#if leaderboard}
+			<section class="option full">
+				<label>Header:</label>
+				<ContentBox cls="leaderboard-header-box">
+					<LeaderboardHeader {leaderboard} {ratings} latestHash={true} />
+				</ContentBox>
+				<div class="switches">
+					<div title="Show map stats">
+						<Switch
+							value={showSubtitle}
+							label="Show song subtitle"
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('leaderboardPreferences', 'showSubtitleInHeader', !showSubtitle)} />
+					</div>
+					<div title="Show map stats">
+						<Switch
+							value={showStats}
+							label="Show map stats"
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('leaderboardPreferences', 'showStatsInHeader', !showStats)} />
+					</div>
+					<div title="Show map hash">
+						<Switch
+							value={showHash}
+							label="Show hash"
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('leaderboardPreferences', 'showHashInHeader', !showHash)} />
+					</div>
 				</div>
 			</section>
 		{/if}

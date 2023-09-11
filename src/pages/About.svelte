@@ -12,22 +12,18 @@
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
+	document.body.scrollIntoView({behavior: 'smooth'});
 
 	let articleEl = null;
 
-	function scrollToTop() {
-		if (articleEl) scrollToTargetAdjusted(articleEl, 50);
-	}
-
 	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 500}, true);
-	$: scrollToTop(articleEl);
 </script>
 
 <svelte:head>
 	<title>About - {ssrConfig.name}</title>
 </svelte:head>
 
-<article bind:this={articleEl} transition:fade>
+<article bind:this={articleEl} transition:fade|global>
 	<ContentBox>
 		<h1 class="title is-3">People who keep BeatLeader running</h1>
 		<h1 class="title is-4">Development Team</h1>
@@ -97,7 +93,7 @@
 				<p class="memberDescription">Quest mod and server contributor</p>
 			</div>
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
 					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 				<p class="memberTitle">not to be confused with notes</p>
 				<p class="memberDescription">Map rating and review specialist</p>
@@ -144,6 +140,10 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561199257569878.gif" alt="Uragirimono" /><a
 					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
 			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
+					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
+			</div>
 		</section>
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
@@ -178,10 +178,6 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
 					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
-					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 			</div>
 		</section>
 
@@ -218,7 +214,7 @@
 			</div>
 
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/9e0dd4dd76f23aba764a1aae67537d0595250807_full.jpg" alt="Loloppe" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
 					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 			</div>
 			<div class="member">

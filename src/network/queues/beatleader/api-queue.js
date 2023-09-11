@@ -61,7 +61,8 @@ export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?pla
 export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph';
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
-export const BL_API_MINIRANKINGS_URL = BL_API_URL + 'minirankings?rank=${rank}&country=${country}&countryRank=${countryRank}';
+export const BL_API_MINIRANKINGS_URL =
+	BL_API_URL + 'minirankings?rank=${rank}&country=${country}&countryRank=${countryRank}&friends=${friends}';
 export const BL_API_EVENTS_URL = BL_API_URL + 'events?page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}';
@@ -180,7 +181,8 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},
-		{id: 'name', value: `${led?.song?.name ?? ''} ${led?.song?.subName ?? ''}`},
+		{id: 'name', value: led?.song?.name ?? ''},
+		{id: 'subName', value: led?.song?.subName},
 	].reduce(
 		(cum, sid) => {
 			let value = sid.value;
@@ -301,7 +303,7 @@ export default (options = {}) => {
 		);
 
 	const rankingGlobal = async (page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
-		return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), options, priority);
+		return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
 	};
 
 	const rankingCountry = async (countries, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
@@ -326,8 +328,12 @@ export default (options = {}) => {
 	const rankingEventFollowed = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
 		rankingEventGlobal(page, eventId, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
-	const minirankings = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank}), options, priority);
+	const minirankings = async (rank, country, countryRank, friends, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(
+			substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank, friends}),
+			{...options, credentials: 'include'},
+			priority
+		);
 
 	const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(

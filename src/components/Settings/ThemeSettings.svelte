@@ -57,7 +57,7 @@
 	$: settempsetting('theme', currentTheme);
 </script>
 
-<div class="options" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
+<div class="options" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<section class="option">
 		<label title="Choose the theme you want">Theme</label>
 		<Select bind:value={currentTheme} options={themes}/>

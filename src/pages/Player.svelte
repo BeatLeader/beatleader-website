@@ -1,15 +1,15 @@
 <script>
 	import {onMount} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
 	import createTwitchService from '../services/twitch';
-	import createAccSaberService from '../services/accsaber';
+	// import createAccSaberService from '../services/accsaber';
 	import createPinnedScoresStore from '../stores/beatleader/pinned-scores';
 	import createStatsHistoryStore from '../stores/beatleader/stats-history';
 	import editModel from '../stores/beatleader/profile-edit-model';
 	import {configStore} from '../stores/config';
-	import {capitalize, opt} from '../utils/js';
+	import {capitalize} from '../utils/js';
 	import ssrConfig from '../ssr-config';
 	import processPlayerData from '../components/Player/utils/profile';
 	import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors';
@@ -23,17 +23,17 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import CardsCarousel from '../components/Player/CardsCarousel.svelte';
 	import PinnedScores from '../components/Player/PinnedScores.svelte';
-
-	const STORE_SORTING_KEY = 'PlayerScoreSorting';
-	const STORE_ORDER_KEY = 'PlayerScoreOrder';
-
 	import keyValueRepository from '../db/repository/key-value';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
 
+	const STORE_SORTING_KEY = 'PlayerScoreSorting';
+	const STORE_ORDER_KEY = 'PlayerScoreOrder';
+
 	export let initialPlayerId = null;
 	export let initialParams = null;
-	export let location = null;
+
+	const location = useLocation();
 
 	let service = null;
 	let serviceParams = null;
@@ -50,6 +50,7 @@
 		if (!newPlayerId) return;
 		serviceParams = newServiceParams;
 		if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
+			document.body.scrollIntoView({behavior: 'smooth'});
 			playerStore.fetch(newPlayerId, service, newServiceParams);
 		} else {
 			playerStore.setService(service);
@@ -59,13 +60,13 @@
 
 	async function refreshSavedParams() {
 		let params = serviceParamsManager.getParams();
-		const scoresSortOptions = await configStore.get('preferences').scoresSortOptions;
-		if (scoresSortOptions == 'last') {
-			const sortingOption = await keyValueRepository().get(STORE_SORTING_KEY);
+		const scoresSortOptions = configStore.get('preferences').scoresSortOptions;
+		if (scoresSortOptions === 'last') {
+			const sortingOption = localStorage.getItem(STORE_SORTING_KEY) ?? 'pp';
 			if (sortingOption) {
 				params.sort = sortingOption;
 			}
-			const orderOption = await keyValueRepository().get(STORE_ORDER_KEY);
+			const orderOption = localStorage.getItem(STORE_ORDER_KEY) ?? 'desc';
 			if (orderOption) {
 				params.order = orderOption;
 			}
@@ -94,7 +95,7 @@
 	const twitchService = createTwitchService();
 	let twitchVideos = [];
 
-	const accSaberService = createAccSaberService();
+	// const accSaberService = createAccSaberService();
 
 	function onPageChanged(event) {
 		let newPage = event?.detail ?? null;
@@ -104,7 +105,7 @@
 
 		serviceParamsManager.update({page: newPage});
 
-		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
 	}
 
 	function onServiceChanged(event) {
@@ -115,7 +116,7 @@
 
 		serviceParamsManager.update({}, newService);
 
-		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
 	}
 
 	function onServiceParamsChanged(event) {
@@ -127,7 +128,7 @@
 		serviceParamsManager.update(newServiceParams);
 
 		if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
-			navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+			navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
 		} else {
 			changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
 		}
@@ -185,7 +186,7 @@
 	$: updateTwitchProfile(currentPlayerId);
 
 	$: playerData = $playerStore;
-	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
+	$: playerId = playerData?.playerId ?? null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
 
 	let scoresPlayerId = null;
@@ -195,12 +196,12 @@
 		if (scoresPlayerId && scoresPlayerId === currentPlayerId) {
 			scoresState = null;
 		} else {
-			scoresState = opt($playerStore, 'scores', null);
+			scoresState = $playerStore?.scores ?? null;
 		}
 
 		scoresPlayerId = currentPlayerId;
 	}
-	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
+	// $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.countries[0].country;
@@ -209,7 +210,7 @@
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
-	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
+	$: editing = new URLSearchParams($location?.search).get('edit') ?? null;
 </script>
 
 <svelte:head>
@@ -219,7 +220,7 @@
 <svelte:window bind:innerWidth bind:innerHeight />
 
 <section class="align-content player-page">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
 			<ContentBox>
 				<p class="error">Player not found.</p>
@@ -237,9 +238,15 @@
 				startEditing={editing} />
 
 			{#if !$editModel}
-				<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
-				<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
-				<Achievements {playerId} {playerData} />
+				{#if $configStore.profileParts.graphs}
+					<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
+				{/if}
+				{#if $configStore.profileParts.pinnedScores}
+					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
+				{/if}
+				{#if $configStore.profileParts.achievements}
+					<Achievements {playerId} />
+				{/if}
 			{/if}
 
 			{#if scoresPlayerId}
@@ -261,7 +268,7 @@
 		{/if}
 	</article>
 
-	{#if innerWidth > 1749}
+	{#if innerWidth > 1749 && ($configStore.profileParts.globalMiniRanking || $configStore.profileParts.countryMiniRanking || $configStore.profileParts.friendsMiniRanking)}
 		<aside>
 			<MiniRankings {rank} {country} {countryRank} box={true} />
 
@@ -271,7 +278,7 @@
 				</ContentBox>
 			{/if}
 
-			{#await accSaberAvailable}
+			<!-- {#await accSaberAvailable}
 				Loading...
 			{:then accSaberAvailable}
 				{#if accSaberAvailable}
@@ -279,7 +286,7 @@
 						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
 					</ContentBox>
 				{/if}
-			{/await}
+			{/await} -->
 		</aside>
 	{/if}
 </section>

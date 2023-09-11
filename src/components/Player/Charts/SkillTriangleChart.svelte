@@ -1,10 +1,13 @@
 <script>
 	import Value from '../../Common/Value.svelte';
+	import {createEventDispatcher} from 'svelte';
 
 	export let playerInfo = null;
 	export let width = '10em';
 	export let height = '10em';
 	export let showRatings = true;
+
+	const dispatch = createEventDispatcher();
 
 	const DEFAULT_MAX_TECH_PP = 1300;
 	const DEFAULT_MAX_ACC_PP = 15000;
@@ -44,6 +47,7 @@
 		y: 86.6 - (gypL - normalizedAccPp * gypL) / 2,
 	};
 	$: corner3 = {x: 50, y: (86.6 - gypL / 2) * (1 - normalizedPassPp)};
+	$: dispatch('height-changed');
 </script>
 
 {#if playerInfo}

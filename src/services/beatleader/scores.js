@@ -223,15 +223,15 @@ export default () => {
 		scoreStatsApiClient.getProcessed({...options, scoreId, priority});
 
 	const fetchScoresPageOrGetFromCache = async (
-		player,
+		playerId,
 		serviceParams = {sort: 'date', order: 'desc', page: 1},
 		refreshInterval = MINUTE,
 		priority = PRIORITY.FG_LOW,
 		signal = null
 	) => {
-		if (!player || !player.playerId) return null;
+		if (!playerId) return null;
 
-		return fetchScoresPage(player.playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: refreshInterval});
+		return fetchScoresPage(playerId, serviceParams, priority, {signal, cacheTtl: MINUTE, maxAge: refreshInterval});
 	};
 
 	const fetchFollowedScores = async (

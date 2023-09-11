@@ -8,9 +8,9 @@
 	import {getContext} from 'svelte';
 	import {DateTime} from 'luxon';
 	import stringify from 'json-stable-stringify';
+	import {configStore} from '../../../stores/config';
 
 	export let playerId = null;
-	export let height = '350px';
 
 	const CHART_DAYS = 50;
 	const CHART_DEBOUNCE = 300;
@@ -231,14 +231,15 @@
 	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
 
 	$: statsHistory = $statsHistoryStore[playerId];
+	$: height = $configStore.preferences.graphHeight;
 	$: chartHash = calcHistoryHash(statsHistory);
 	$: debounceChartHash(chartHash);
 	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, statsHistory);
 </script>
 
 {#if statsHistory?.averageAccuracy?.length}
-	<section class="chart" style="--height: {height}">
-		<canvas class="chartjs" bind:this={canvas} height={parseInt(height, 10)} />
+	<section class="chart" style="--height: {height}px">
+		<canvas class="chartjs" bind:this={canvas} {height} />
 	</section>
 {/if}
 

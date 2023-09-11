@@ -37,7 +37,7 @@
 </script>
 
 {#if beatSavior}
-	<section class="beat-savior" transition:fade>
+	<section class="beat-savior" transition:fade|global>
 		{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails)}
 			<DetailsBox cls="details-and-hands">
 				{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics}
@@ -59,7 +59,7 @@
 				{#if graphPageIndex === 0 || !replayAccGraphs}
 					<Chart {beatSavior} />
 				{:else}
-					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} />
+					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} {beatSavior} />
 				{/if}
 				{#if replayAccGraphs}
 					<CompactPagination pageIndex={graphPageIndex} pagesCount={2} on:change={onGraphPaginationChange} />

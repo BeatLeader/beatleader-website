@@ -13,6 +13,7 @@
 	import Spinner from '../components/Common/Spinner.svelte';
 
 	document.body.classList.add('slim');
+	document.body.scrollIntoView({behavior: 'smooth'});
 
 	const account = createAccountStore();
 
@@ -116,8 +117,8 @@
 						<a
 							href={`/u/${f.playerId}`}
 							on:click|preventDefault={() => navigate(`/u/${f.playerId}`)}
-							in:fade={{delay: idx * 20, duration: 200}}
-							out:fade={{duration: 50}}>
+							in:fade|global={{delay: idx * 20, duration: 200}}
+							out:fade|global={{duration: 50}}>
 							<ContentBox cls="friend-box">
 								<div class="friend-container">
 									<span

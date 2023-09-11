@@ -122,11 +122,11 @@
 							<LandingPage />
 						{/if}
 					</Route>
-					<Route path="/u/:initialPlayerId/*initialParams" let:params let:location>
-						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
+					<Route path="/u/:initialPlayerId/*initialParams" let:params>
+						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} />
 					</Route>
-					<Route path="/staff" let:location>
-						<StaffDashboard {location} />
+					<Route path="/staff">
+						<StaffDashboard />
 					</Route>
 					<Route path="/privacy" component={PrivacyPage} />
 					<Route path="/about" component={AboutPage} />
@@ -139,44 +139,42 @@
 						<PatreonPage action="linkPatreon" />
 					</Route>
 					<Route path="/supporting-project" component={PatreonPage} />
-					<Route path="/ranking/*page" let:params let:location>
-						<RankingPage page={params.page} {location} />
+					<Route path="/ranking/*page" let:params>
+						<RankingPage page={params.page} />
 					</Route>
-					<Route path="/leaderboard/:type/:leaderboardId/*page" let:params let:location>
+					<Route path="/leaderboard/:type/:leaderboardId/*page" let:params>
 						<LeaderboardPage
 							leaderboardId={params.leaderboardId}
 							type={params.type}
 							page={params.page}
-							{location}
 							dontChangeType={false}
 							showCurve={true}
 							separatePage={true} />
 					</Route>
-					<Route path="/leaderboard/approval/:type/:leaderboardId/*page" let:params let:location>
+					<Route path="/leaderboard/approval/:type/:leaderboardId/*page" let:params>
 						<LeaderboardPage
 							leaderboardId={params.leaderboardId}
 							type={params.type}
 							page={params.page}
-							{location}
 							dontChangeType={false}
 							showCurve={true}
 							separatePage={true}
 							showApproveRequest={true} />
 					</Route>
-					<Route path="/leaderboards/*page" let:params let:location>
-						<LeaderboardsPage page={params.page} {location} />
+					<Route path="/leaderboards/*page" let:params>
+						<LeaderboardsPage page={params.page} />
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
 					</Route>
-					<Route path="/event/:eventId/*page" let:params let:location>
-						<EventPage eventId={params.eventId} page={params.page} {location} />
+					<Route path="/event/:eventId/*page" let:params>
+						<EventPage eventId={params.eventId} page={params.page} />
 					</Route>
-					<Route path="/events/*page" let:params let:location>
-						<EventsPage page={params.page} {location} />
+					<Route path="/events/*page" let:params>
+						<EventsPage page={params.page} />
 					</Route>
-					<Route path="/clans/*page" let:params let:location>
-						<ClansPage page={params.page} {location} />
+					<Route path="/clans/*page" let:params>
+						<ClansPage page={params.page} />
 					</Route>
 					<Route path="/playlists/*id" let:params>
 						<PlaylistsPage index={params.id} />
@@ -185,13 +183,13 @@
 						<PlaylistPage id={params.id} />
 					</Route>
 					<Route path="/twitch" component={TwitchPage} />
-					<Route path="/support" component={SupportPage} />
+					<Route path="/help" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>
 						<SigninPage action={params.action} />
 					</Route>
-					<Route path="/signin/oauth2" let:location>
-						<OauthSignInPage {location} />
+					<Route path="/signin/oauth2">
+						<OauthSignInPage />
 					</Route>
 					<Route path="/*" component={NotFoundPage} />
 				</div>
@@ -212,17 +210,17 @@
 	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
 	<ContentBox cls="footer-box">
 		<p>
-			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
+			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
 			|
 			<a href="https://api.beatleader.xyz/swagger/index.html">API</a>
 			|
 			<a href="https://beatleader.wiki/">Wiki</a>
 			|
-			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
+			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
 			|
 			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
 			|
-			<a href="/support" on:click|preventDefault={() => navigate('/support')}>Support</a>
+			<a href="/help" on:click|preventDefault={() => navigate('/help')}>Help</a>
 			|
 			<a href="/socket" on:click|preventDefault={() => navigate('/socket')}>Scores feed</a>
 			|

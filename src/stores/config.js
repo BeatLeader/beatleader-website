@@ -2,6 +2,7 @@ import {writable} from 'svelte/store';
 import deepEqual from 'deep-equal';
 import keyValueRepository from '../db/repository/key-value';
 import {deepClone, opt} from '../utils/js';
+import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 const STORE_CONFIG_KEY = 'config';
 
@@ -29,11 +30,13 @@ export const DEFAULT_CONFIG = {
 		scoresSortOptions: 'last',
 		theme: 'ree-dark',
 		oneclick: 'modassistant',
+		webPlayer: 'beatleader',
 		bgimage: '/assets/background.jpg',
 		bgColor: 'rgba(29, 7, 34, 0.6284)',
 		headerColor: 'rgba(53, 0, 70, 0.2)',
 		daysToCompare: 1,
 		daysOfHistory: 30,
+		graphHeight: 350,
 		leaderboardStatsShown: false,
 		curveShown: false,
 		qualificationInfoShown: false,
@@ -41,11 +44,15 @@ export const DEFAULT_CONFIG = {
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
 
+		showFiltersOnRanking: true,
 		maps3D: true,
 		mapsViewType: 'maps-cards',
 	},
 	scorePreferences: {
 		badgeRows: 2,
+		dateFormat: 'relative',
+		showHmd: true,
+		showTriangle: true,
 	},
 	scoreBadges: [
 		[
@@ -76,6 +83,10 @@ export const DEFAULT_CONFIG = {
 			[{metric: 'pauses'}, {metric: 'maxStreak'}, {metric: 'mistakes', withImprovements: false}],
 		],
 		badgeRows: 1,
+
+		showStatsInHeader: false,
+		showHashInHeader: false,
+
 		show: {
 			avatar: true,
 			country: true,
@@ -84,14 +95,61 @@ export const DEFAULT_CONFIG = {
 			replay: true,
 		},
 	},
+	rankingPreferences: {
+		pp: true,
+		weightedAcc: true,
+		acc: true,
+		topPp: true,
+		maxStreak: true,
+		playCount: true,
+		lastplay: false,
+		weightedRank: false,
+		rank: true,
+		replaysWatched: true,
+		top1Score: false,
+		top1Count: false,
+	},
+	rankingList: {
+		showClans: true,
+		showDifference: true,
+		showFriendsButton: true,
+		showCountryRank: true,
+		showColorsForCountryRank: true,
+		ppToTheLeft: false,
+	},
 	chartLegend: {
 		y: true,
 		y1: true,
-		y2: true,
+		y2: false,
 		y3: false,
 		y4: false,
 		y5: true,
 		y6: true,
+		y7: true,
+		y8: true,
+	},
+	chartLegendVisible: {
+		y0: true,
+		y1: true,
+		y2: true,
+		y3: true,
+		y4: true,
+		y5: true,
+		y6: true,
+		y7: true,
+		y8: true,
+	},
+	profileParts: {
+		changes: true,
+		clans: true,
+		graphs: true,
+		pinnedScores: true,
+		achievements: true,
+		histogram: true,
+		scoresToPlaylist: true,
+		globalMiniRanking: true,
+		countryMiniRanking: true,
+		friendsMiniRanking: false,
 	},
 	visibleScoreIcons: {
 		pin: false,
@@ -125,20 +183,39 @@ export default async () => {
 
 	const {subscribe, set: storeSet} = writable(currentConfig);
 
+	const storeConfig = async newConfig => {
+		await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
+		fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(newConfig)});
+	};
+
 	const get = key => (key ? currentConfig[key] : currentConfig);
 	const set = async (config, persist = true) => {
 		const newConfig = deepClone(DEFAULT_CONFIG);
-		Object.keys(config).forEach(key => {
+		const configToSet = deepClone(config);
+		const recursiveFollback = (configToSet, newConfig, key) => {
+			if (configToSet?.[key] && typeof configToSet[key] === 'object' && !Array.isArray(configToSet[key])) {
+				Object.keys(configToSet[key]).forEach(innerkey => {
+					recursiveFollback(configToSet[key], newConfig?.[key], innerkey);
+				});
+			} else if (newConfig != null) {
+				newConfig[key] = configToSet?.[key] ?? newConfig?.[key];
+			}
+		};
+		Object.keys(configToSet).forEach(key => {
 			if (key === 'locale') {
-				newConfig[key] = config?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
+				newConfig[key] = configToSet?.[key] ?? newConfig?.[key] ?? DEFAULT_LOCALE;
+				return;
+			}
+			if (key === 'selectedPlaylist') {
+				newConfig[key] = configToSet?.[key] ?? newConfig?.[key] ?? {};
 				return;
 			}
 
-			newConfig[key] = {...newConfig?.[key], ...config?.[key]};
+			recursiveFollback(configToSet, newConfig, key);
 		});
 
 		if (persist) {
-			await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
+			await storeConfig(newConfig);
 			dbConfig = newConfig;
 		}
 
@@ -151,23 +228,24 @@ export default async () => {
 		return newConfig;
 	};
 
+	const update = fn => set(fn(currentConfig));
+
 	const setForKey = async (key, value, persist = true) => {
 		currentConfig[key] = value;
 
 		if (persist) {
-			await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
+			await storeConfig(currentConfig);
 			dbConfig = currentConfig;
 		}
 
 		settingsChanged = !deepEqual(currentConfig, dbConfig);
-		currentConfig = currentConfig;
 		storeSet(currentConfig);
 
 		return currentConfig;
 	};
 
 	const persist = async () => {
-		await keyValueRepository().set(currentConfig, STORE_CONFIG_KEY);
+		await storeConfig(currentConfig);
 		dbConfig = currentConfig;
 		await set(currentConfig, false);
 	};
@@ -203,22 +281,29 @@ export default async () => {
 
 	if (savedConfig) {
 		dbConfig = savedConfig;
-		if (
-			dbConfig.preferences.theme == 'mirror' &&
-			dbConfig.preferences.bgColor == 'rgba(29, 7, 34, 0.6282)' &&
-			dbConfig.preferences.headerColor == 'rgba(53, 0, 70, 0.2)'
-		) {
-			dbConfig.preferences.theme = 'ree-dark';
-			dbConfig.preferences.bgColor = 'rgba(29, 7, 34, 0.6284)';
-			await keyValueRepository().set(dbConfig, STORE_CONFIG_KEY);
-		}
 		await set(savedConfig, false);
 	}
+
+	const syncFromServer = () => {
+		fetch(BL_API_URL + 'user/config', {credentials: 'include'}).then(async response => {
+			if (response.status == 404 && savedConfig) {
+				await fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(savedConfig)});
+			} else if (response.status == 200) {
+				const cloudConfig = await response.json();
+				await set(cloudConfig, false);
+				dbConfig = cloudConfig;
+				settingsChanged = false;
+				await keyValueRepository().set(cloudConfig, STORE_CONFIG_KEY);
+			}
+		});
+	};
+	syncFromServer();
 	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
 	configStore = {
 		subscribe,
 		set,
+		update,
 		get,
 		getLocale,
 		setForKey,
@@ -226,6 +311,7 @@ export default async () => {
 		getSettingsChanged: () => settingsChanged,
 		persist,
 		reset,
+		syncFromServer,
 	};
 
 	return configStore;

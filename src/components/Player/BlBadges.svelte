@@ -5,7 +5,7 @@
 </script>
 
 {#if badges}
-	<div class="bl-badges" transition:fade={{duration: 500}}>
+	<div class="bl-badges" transition:fade|global={{duration: 500}}>
 		{#each badges as badge (badge.src)}
 			{#if badge.link}
 				<a href={badge.link}>

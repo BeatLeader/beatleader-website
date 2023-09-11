@@ -10,6 +10,7 @@
 	export let url = null;
 	export let notClickable = false;
 	export let starsKey = 'stars';
+	export let triangle = true;
 
 	const DEFAULT_IMG = '/assets/song-default.png';
 
@@ -19,8 +20,13 @@
 	function preloadImages(images) {
 		if (!images.some(img => img?.url?.length)) return;
 
+		loadedImages = [];
 		images.forEach(imgObj => {
-			if (!imgObj?.url?.length || preloadCache[imgObj?.url]) return;
+			if (!imgObj?.url?.length) return;
+			if (preloadCache[imgObj?.url]) {
+				loadedImages = [...loadedImages, imgObj];
+				return;
+			}
 
 			const url = imgObj.url;
 
@@ -70,15 +76,15 @@
 			</a>
 		{/if}
 
-		{#if leaderboard?.diffInfo?.type != 'Standard'}
-			<div class="mode">
-				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
+		{#if triangle && (leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating)}
+			<div class="type">
+				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} {mods} />
 			</div>
 		{/if}
 
-		{#if leaderboard?.difficulty?.accRating || leaderboard?.difficultyBl?.accRating}
-			<div class="type">
-				<MapTriangleSmall leaderboard={leaderboard?.difficulty?.accRating ? leaderboard?.difficulty : leaderboard?.difficultyBl} {mods} />
+		{#if leaderboard?.diffInfo?.type != 'Standard'}
+			<div class="mode">
+				<Difficulty diff={leaderboard.diffInfo} pointer={true} hideTitle={true} reverseColors={true} showDiffIcons={true} />
 			</div>
 		{/if}
 
@@ -118,7 +124,7 @@
 		align-items: center;
 		position: absolute;
 		top: 0.8em;
-		right: 0;
+		right: -0.5em;
 		font-size: 0.75em;
 	}
 

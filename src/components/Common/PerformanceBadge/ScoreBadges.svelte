@@ -17,8 +17,10 @@
 	function rotateBadge(col, rowIdx, colIdx) {
 		if (!filteredBadges?.[rowIdx]?.[colIdx]?.badges) return;
 
-		filteredBadges[rowIdx][colIdx].idx++;
+		filteredBadges[rowIdx][colIdx].idx += 1;
 		if (filteredBadges[rowIdx][colIdx].idx > col.badges.length - 1) filteredBadges[rowIdx][colIdx].idx = 0;
+
+		filteredBadges[rowIdx][colIdx].id = `bdg-${rowIdx}-${colIdx}-${col?.badges?.[filteredBadges[rowIdx][colIdx].idx]?.metric}`;
 	}
 
 	$: if (Array.isArray(badges) && badges?.length) {
@@ -26,15 +28,22 @@
 
 		cols = badges[0].length - emptyColIndexes.length;
 
-		filteredBadges = badges.map(row => row.filter((_, idx) => !emptyColIndexes.includes(idx)).map(col => ({idx: 0, badges: col})));
+		filteredBadges = badges.map((row, rowIdx) =>
+			row
+				.filter((_, idx) => !emptyColIndexes.includes(idx))
+				.map((col, colIdx) => ({id: `bdg-${rowIdx}-${colIdx}-${col?.[0]?.metric}`, idx: 0, badges: col}))
+		);
 	}
 	$: minWidth = cols ? 6.4 * cols + (cols - 1) * 0.4 : 0;
 </script>
 
 <div class="player-performance-badges" class:not-demo={forceNotDemo} style:--min-width={`${minWidth}em`} style:--cols={cols}>
 	{#if filteredBadges?.length}
-		{#each filteredBadges as row, rowIdx}
-			{#each row as col, colIdx}
+		{#each filteredBadges as row, rowIdx (row
+			?.map(r => r?.id)
+			?.filter(id => id)
+			?.join('-') ?? Math.random())}
+			{#each row as col, colIdx (col?.id ?? Math.random())}
 				<span
 					class={`with-badge ${col?.badges?.[col?.idx ?? 0]?.className ?? ''} ${additionalClass ?? ''}`}
 					class:multi={!forceNotDemo && !$isDemo && col?.badges?.length > 1}
@@ -45,12 +54,14 @@
 						dispatch('badge-click', {row: rowIdx, col: colIdx});
 					}}>
 					{#if col?.badges?.length}
-						<svelte:component this={col?.badges?.[col?.idx ?? 0].component} {...col?.badges?.[col?.idx ?? 0].componentProps}>
+						<svelte:component this={col?.badges?.[col?.idx ?? 0]?.component} {...col?.badges?.[col?.idx ?? 0]?.componentProps}>
 							<span slot="label">
-								{#if col?.badges?.[col?.idx ?? 0].icon}
-									<i class={col.badges[col?.idx ?? 0].icon} />
+								{#if col?.badges?.[col?.idx ?? 0]?.icon}
+									<i class={col.badges[col?.idx ?? 0]?.icon} />
 								{/if}
-								<svelte:component this={col?.badges?.[col?.idx ?? 0].slotComponent} {...col?.badges?.[col?.idx ?? 0].slotComponentProps} />
+								<svelte:component
+									this={col?.badges?.[col?.idx ?? 0]?.slotComponent}
+									{...col?.badges?.[col?.idx ?? 0]?.slotComponentProps} />
 							</span>
 						</svelte:component>
 					{/if}

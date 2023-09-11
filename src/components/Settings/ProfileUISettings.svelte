@@ -3,12 +3,17 @@
 	import Select from './Select.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import Profile from '../Player/Profile.svelte';
+	import Switch from '../Common/Switch.svelte';
 	import processPlayerData from '../Player/utils/profile';
 	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
 	import createPlayerInfoWithScoresStore from '../../stores/http/http-player-with-scores-store';
+	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {fly, fade} from 'svelte/transition';
 	import CardsCarousel from '../Player/CardsCarousel.svelte';
+	import {describeGraphAxis, describeProfilePart} from '../../utils/beatleader/format';
+	import PinnedScores from '../Player/PinnedScores.svelte';
+	import Achievements from '../Player/Achievements.svelte';
 
 	export let animationSign = 1;
 
@@ -56,10 +61,22 @@
 		await configStore.setForKey('preferences', preferences, false);
 	}
 
+	async function setroottempsetting(key, subkey, value) {
+		if (subkey) {
+			var preferences = configStore.get(key);
+			preferences[subkey] = value;
+			await configStore.setForKey(key, preferences, false);
+		} else {
+			await configStore.setForKey(key, value, false);
+		}
+	}
+
 	const account = createAccountStore();
 	const statsHistoryStore = createStatsHistoryStore();
+	const pinnedScoresStore = createPinnedScoresStore();
 
 	$: playerStore = createPlayerInfoWithScoresStore($account?.player?.playerId ?? '1');
+	$: pinnedScoresStore.fetchScores($account?.player?.playerId ?? '1');
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
 	$: settempsetting('iconsOnAvatars', currentAvatarIcons);
@@ -71,23 +88,34 @@
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
+	$: profileParts = Object.keys($configStore.profileParts);
+	$: graphLegends = Object.keys($configStore.chartLegendVisible);
 </script>
 
-<div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
+<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile">
 		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" clanEffects={false} />
-		<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {playerData} />
+
+		{#if $configStore.profileParts.graphs}
+			<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {playerData} />
+		{/if}
+		{#if $configStore.profileParts.pinnedScores}
+			<PinnedScores {pinnedScoresStore} {playerId} />
+		{/if}
+		{#if $configStore.profileParts.achievements}
+			<Achievements {playerId} />
+		{/if}
 	</div>
 
 	<div class="options">
 		<section class="option">
 			<label title="Determines when to show icons on player avatars">Icons on avatars</label>
-			<Select bind:value={currentAvatarIcons} options={avatarIcons}/>
+			<Select bind:value={currentAvatarIcons} options={avatarIcons} />
 		</section>
 
 		<section class="option">
 			<label title="How to sort scores by defauls">Sort scores by</label>
-			<Select bind:value={currentSortOption} options={sortOptions}/>
+			<Select bind:value={currentSortOption} options={sortOptions} />
 		</section>
 
 		<section class="option">
@@ -123,6 +151,52 @@
 					currentDaysOfHistory = event.detail.values[0];
 				}} />
 		</section>
+
+		<section class="option full">
+			<label title="Determines which parts of the profile to show">Profile parts to show:</label>
+			<div class="switches">
+				{#each profileParts as key}
+					<Switch
+						value={$configStore.profileParts[key]}
+						label={describeProfilePart(key)}
+						fontSize={12}
+						design="slider"
+						on:click={() => setroottempsetting('profileParts', key, !$configStore.profileParts[key])} />
+				{/each}
+			</div>
+		</section>
+
+		{#if $configStore.profileParts.graphs}
+			<section class="option">
+				<label title="How many days of history to show on the profile">Graph height(px):</label>
+				<RangeSlider
+					min={200}
+					max={500}
+					step={1}
+					values={[$configStore.preferences.graphHeight]}
+					float
+					hoverable
+					pips
+					pipstep={30}
+					all="label"
+					on:change={event => {
+						$configStore.preferences.graphHeight = event.detail.values[0];
+					}} />
+			</section>
+			<section class="option full">
+				<label title="Which graph legend elements to show">Graph legend:</label>
+				<div class="switches">
+					{#each graphLegends as key}
+						<Switch
+							value={$configStore.chartLegendVisible[key]}
+							label={describeGraphAxis(key)}
+							fontSize={12}
+							design="slider"
+							on:click={() => setroottempsetting('chartLegendVisible', key, !$configStore.chartLegendVisible[key])} />
+					{/each}
+				</div>
+			</section>
+		{/if}
 	</div>
 </div>
 
@@ -169,9 +243,52 @@
 		margin-bottom: 0.25em;
 	}
 
+	.options {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-gap: 1em;
+		align-items: start;
+		justify-items: start;
+		margin-top: 1rem;
+	}
+	* :global(.option) {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+	* :global(.option.full) {
+		grid-column: span 2;
+	}
+	* :global(label) {
+		display: block;
+		font-size: 0.75em;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #afafaf !important;
+		margin-bottom: 0.25em;
+	}
+	.switches {
+		display: flex;
+		grid-gap: 1em;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+		padding: 0.5em;
+	}
+	.switches.start {
+		justify-content: flex-start;
+	}
+	.single {
+		width: calc(50% - 1rem);
+	}
+
 	@media screen and (max-width: 600px) {
-		.options {
-			grid-template-columns: 1fr;
+		.switches {
+			display: grid;
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		:global(.s--slider) {
+			justify-content: space-between;
 		}
 	}
 </style>

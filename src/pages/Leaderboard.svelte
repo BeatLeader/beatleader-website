@@ -1,6 +1,6 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
@@ -56,11 +56,11 @@
 	import Score from '../components/Leaderboard/Score.svelte';
 	import ClanRankingScore from '../components/Leaderboard/ClanRankingScore.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
+	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
 	export let page = 1;
-	export let location;
 	export let dontNavigate = false;
 	export let withoutDiffSwitcher = false;
 	export let withoutHeader = false;
@@ -74,6 +74,8 @@
 
 	export let autoScrollToTop = true;
 	export let showStats = true;
+
+	const location = useLocation();
 
 	if (!dontNavigate) document.body.classList.add('slim');
 
@@ -148,7 +150,7 @@
 	let currentLeaderboardId = leaderboardId;
 	let currentType = type;
 
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 	let leaderboard = null;
 
 	let modifiedPass = null;
@@ -283,7 +285,10 @@
 
 		const newPage = event.detail.page + 1;
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`, {
+				preserveScroll: true,
+			});
 		else changeParams(currentLeaderboardId, currentType, newPage, currentFilters);
 	}
 
@@ -291,7 +296,8 @@
 		const newLeaderboardId = opt(event, 'detail.leaderboardId');
 		if (!newLeaderboardId) return;
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -300,14 +306,19 @@
 		if (!newType) return;
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
-		if (!dontNavigate) navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`);
-		else if (!dontChangeType) changeParams(currentLeaderboardId, newType, 1, newFilters);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`, {preserveScroll: true});
+		else if (!dontChangeType) {
+			currentFilters = newFilters;
+			changeParams(currentLeaderboardId, newType, 1, newFilters);
+		}
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
 
 	function onSelectedGroupEntryChanged(event) {
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -440,7 +451,8 @@
 			currentFilters.order = 'desc';
 		}
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -475,7 +487,8 @@
 	function onModifiersChanged(event) {
 		currentFilters.modifiers = event?.detail?.value ?? '';
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -485,7 +498,8 @@
 		currentFilters.search = newFilters.search;
 		currentFilters.countries = newFilters.countries;
 
-		if (!dontNavigate) navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`);
+		if (!dontNavigate)
+			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
 	}
 
@@ -595,10 +609,10 @@
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
 
-	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
+	$: if (autoScrollToTop && $location) document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: updateParams(leaderboardId, type, page);
-	$: updateFilters(buildFiltersFromLocation(location));
+	$: updateFilters(buildFiltersFromLocation($location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
@@ -621,7 +635,7 @@
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
 
-	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
+	$: makeComplexFilters(buildFiltersFromLocation($location), mainPlayerCountry);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
@@ -676,7 +690,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if leaderboard && song && !withoutHeader}
 			<ContentBox cls="leaderboard-header-box">
 				<LeaderboardHeader
@@ -685,6 +699,7 @@
 					{leaderboard}
 					{leaderboardStore}
 					{ratings}
+					{latestHash}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
@@ -698,56 +713,58 @@
 			{#if $leaderboardStore}
 				{#if type !== 'accsaber'}
 					<nav class="diff-switch">
-						<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
+						<div>
+							<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
+						</div>
 
 						{#if !withoutDiffSwitcher && diffs && diffs.length}
 							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
 						{/if}
 
 						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
+
+						{#if currentType != 'clanranking'}
+							<div class="sorting-options">
+								<span
+									class="beat-savior-reveal clickable"
+									class:opened={leaderboardShowSorting}
+									on:click={() => boolflip('leaderboardShowSorting')}
+									on:keydown={() => boolflip('leaderboardShowSorting')}
+									title="Show sorting and search for the leaderboard">
+									{#if leaderboardShowSorting}
+										<i class="fa-solid invert-xmart fa-filter-circle-xmark" />
+									{:else}
+										<i class="fa-solid fa-filter" />
+									{/if}
+
+									<i class="fas fa-chevron-down" />
+								</span>
+							</div>
+						{/if}
 					</nav>
 				{/if}
 
-				{#if currentType != 'clanranking'}
-					<div class="sorting-options">
-						<span
-							class="beat-savior-reveal clickable"
-							class:opened={leaderboardShowSorting}
-							on:click={() => boolflip('leaderboardShowSorting')}
-							on:keydown={() => boolflip('leaderboardShowSorting')}
-							title="Show sorting and search for the leaderboard">
-							{#if leaderboardShowSorting}
-								Hide filters and sorting
-							{:else}
-								Show filters and sorting
-							{/if}
-
-							<i class="fas fa-chevron-down" />
-						</span>
-					</div>
-
-					{#if leaderboardShowSorting}
-						<nav class="switcher-nav">
-							<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-							<div style="display: flex;">
-								<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
-								<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
-							</div>
-						</nav>
-					{/if}
+				{#if leaderboardShowSorting}
+					<nav class="switcher-nav" transition:fade|global>
+						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
+						<div style="display: flex;">
+							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
+							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+						</div>
+					</nav>
 				{/if}
 
-					{#if battleRoyaleDraft}
-						<div class="royale-title-container">
-							<span class="royale-title">Select players from the leaderboard to join</span>
-							<Button
-								type="purple"
-								label="Let the battle begin!"
-								title="Use the button to the right of timeset for every score to toggle player"
-								disabled={!battleRoyaleDraftList?.length}
-								on:click={() => startBattleRoyale()} />
-						</div>
-					{/if}
+				{#if battleRoyaleDraft}
+					<div class="royale-title-container">
+						<span class="royale-title">Select players from the leaderboard to join</span>
+						<Button
+							type="purple"
+							label="Let the battle begin!"
+							title="Use the button to the right of timeset for every score to toggle player"
+							disabled={!battleRoyaleDraftList?.length}
+							on:click={() => startBattleRoyale()} />
+					</div>
+				{/if}
 
 				{#if currentType != 'clanranking'}
 					{#if scoresWithUser?.length}
@@ -757,8 +774,8 @@
 									class={`row-${idx}`}
 									class:user-score={score?.isUserScore}
 									class:user-score-top={score?.userScoreTop}
-									in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-									out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+									in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}
 									animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
 									<Score
 										{leaderboardId}
@@ -785,6 +802,15 @@
 														</span>
 													</Badge>
 												</div>
+												{#if score.score.rankVoting.stars}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
+															</span>
+														</Badge>
+													</div>
+												{/if}
 												{#if score.score.rankVoting.stars}
 													<div class="score with-badge">
 														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
@@ -951,10 +977,44 @@
 						{#if !isNominated && leaderboard.qualification}
 							<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
 						{/if}
-						{#if leaderboard.changes}
-							<ReweightStatusRanked map={leaderboard} />
+					{/if}
+
+					{#if separatePage && type !== 'accsaber'}
+						<div class="score-options-section">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showAverageStats}
+								on:click={() => (showAverageStats = !showAverageStats)}
+								title="Show average stats and ranking changes">
+								{#if showAverageStats}
+									Hide details
+								{:else}
+									Show more details
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+						</div>
+						{#if showAverageStats}
+							{#await beatSaviorPromise}
+								<div class="tab">
+									<Spinner />
+								</div>
+							{:then beatSavior}
+								<div transition:slide|global class="tab">
+									<BeatSaviorDetails {beatSavior} />
+								</div>
+							{/await}
+							{#if !isNominated && leaderboard.qualification}
+								<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
+							{/if}
+							{#if leaderboard.changes}
+								<ReweightStatusRanked map={leaderboard} />
+							{/if}
 						{/if}
 					{/if}
+				{:else}
+					<p transition:fade|global>No scores found.</p>
 				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>
@@ -962,7 +1022,7 @@
 		</div>
 	</article>
 	{#if separatePage && type !== 'accsaber'}
-		<aside transition:fade>
+		<aside transition:fade|global>
 			{#if qualification && !isRanked}
 				<ContentBox>
 					{#if !commentaryShown}
@@ -1048,17 +1108,22 @@
 							</div>
 							{#if leaderboard?.stats}
 								<div class="stats-with-icons">
-									<LeaderboardStats {leaderboard} curve={true} />
-									<div>
-										<small class="level-author">{song.hash.toUpperCase()}</small>
-										{#if latestHash}
-											<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-										{:else if latestHash == undefined}
-											<Spinner />
-										{:else}
-											<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-										{/if}
-									</div>
+									{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
+										<LeaderboardStats {leaderboard} />
+									{/if}
+									<PredictedAccGraph {leaderboard} />
+									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
+										<div>
+											<small style="display: inline-block;">{song.hash.toUpperCase()}</small>
+											{#if latestHash}
+												<i class="fa fa-check" style="color: lime;" title="Latest map version" />
+											{:else if latestHash == undefined}
+												<Spinner />
+											{:else}
+												<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
+											{/if}
+										</div>
+									{/if}
 
 									{#if iconsInInfo}
 										<Icons {hash} {diffInfo} mapCheck={true} />
@@ -1165,8 +1230,9 @@
 
 	.diff-switch {
 		display: flex;
-		justify-content: center;
-		margin-bottom: 1em;
+		justify-content: space-between;
+		margin-bottom: 0.3em;
+		margin-top: 0.2em;
 		gap: 0.6em;
 		flex-wrap: wrap;
 	}
@@ -1300,6 +1366,10 @@
 		white-space: nowrap;
 	}
 
+	.invert-xmart {
+		transform: none !important;
+	}
+
 	:global(.battleroyalebtn) {
 		margin-left: 1em;
 		margin-bottom: 0.5em;
@@ -1330,7 +1400,7 @@
 	}
 
 	:global(.voteButton) {
-		margin-top: 0.25em !important;
+		margin-top: 0 !important;
 		height: 1.8em;
 	}
 
@@ -1352,9 +1422,7 @@
 	}
 
 	.sorting-options {
-		display: grid;
-		justify-items: center;
-		margin-top: -0.8em;
+		margin-top: 0.2em;
 	}
 
 	.status-header {
@@ -1391,6 +1459,10 @@
 		.diff-switch :global(> *:not(:last-child)) {
 			margin-right: 0;
 			margin-bottom: 0.5em;
+		}
+
+		.diff-switch {
+			gap: 0.1em;
 		}
 	}
 

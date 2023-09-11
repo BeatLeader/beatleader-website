@@ -1,5 +1,5 @@
 <script>
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
@@ -19,8 +19,9 @@
 	import {Confetti} from 'svelte-confetti';
 
 	export let page = 1;
-	export let location;
 	export let eventId;
+
+	const location = useLocation();
 
 	const account = createAccountStore();
 
@@ -100,7 +101,7 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation(location);
+	let currentFilters = buildFiltersFromLocation($location);
 	let currentEventId = eventId;
 	let currentEvent;
 	let boxEl = null;
@@ -124,11 +125,6 @@
 		preventScroll = noScroll;
 
 		navigateToCurrentPageAndFilters();
-	}
-
-	function scrollToTop() {
-		if (!preventScroll && boxEl) scrollToTargetAdjusted(boxEl, 70);
-		preventScroll = false;
 	}
 
 	function changeParams(newPage, eventId, newLocation, replace) {
@@ -155,11 +151,11 @@
 	function onPageChanged(event) {
 		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/event/${currentEventId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/event/${currentEventId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/event/${currentEventId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace});
+		navigate(`/event/${currentEventId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
 	}
 
 	let topPlayerId;
@@ -171,8 +167,8 @@
 
 	let modalShown;
 
-	$: changeParams(page, eventId, location, true);
-	$: scrollToTop(pending);
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: changeParams(page, eventId, $location, true);
 	$: mainPlayerId = $account?.id;
 </script>
 
@@ -187,7 +183,7 @@
 		</ContentBox>
 	</aside>
 
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		{#if eventId == 23}
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<span>

@@ -1,5 +1,5 @@
 <script>
-	import {navigate} from 'svelte-routing';
+	import {navigate, useLocation} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import {
 		createBuildFiltersFromLocation,
@@ -18,14 +18,17 @@
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import BackToTop from '../components/Common/BackToTop.svelte';
-	import Button from '../components/Common/Button.svelte';
+	import {configStore} from '../stores/config';
+
+	import produce from 'immer';
 
 	export let page = 1;
-	export let location;
 
 	document.body.classList.remove('slim');
 
 	const FILTERS_DEBOUNCE_MS = 500;
+
+	const location = useLocation();
 
 	const findParam = key => params.find(p => p.key === key);
 
@@ -240,7 +243,8 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation(location);
+	let previousPage = 0;
+	let currentFilters = buildFiltersFromLocation($location);
 	let boxEl = null;
 
 	let isLoading = false;
@@ -273,18 +277,18 @@
 		}
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
-
+		previousPage = currentPage;
 		currentPage = newPage;
 	}
 
 	function onPageChanged(event) {
 		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`);
+		navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
 	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace});
+		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
 	}
 
 	function onSortChanged(event) {
@@ -328,8 +332,16 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
-	$: changeParams(page, location, true);
+	function boolflip(name) {
+		$configStore = produce($configStore, draft => {
+			draft.preferences[name] = !draft.preferences[name];
+		});
+	}
+
+	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: changeParams(page, $location, true);
+
+	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 </script>
 
 <svelte:head>
@@ -337,7 +349,7 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade>
+	<article class="page-content" transition:fade|global>
 		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/37')}>
 			<div class="event-container">
 				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/23594-event.png" />
@@ -362,6 +374,7 @@
 				page={currentPage}
 				filters={currentFilters}
 				meta={true}
+				animationSign={currentPage >= previousPage ? 1 : -1}
 				on:filters-updated={onFiltersUpdated}
 				on:page-changed={onPageChanged}
 				on:sort-changed={onSortChanged}
@@ -373,43 +386,61 @@
 	</article>
 
 	<aside>
-		<ContentBox>
-			<h2 class="title is-5">Filters</h2>
+		<ContentBox cls={!showFilters ? 'show-filters-box' : ''}>
+			{#if !showFilters}
+				<div class="score-options-section">
+					<span class="beat-savior-reveal clickable" on:click={() => boolflip('showFiltersOnRanking')} title="Show filters">
+						<i class="fas fa-filter" />
+						<i class="fas fa-chevron-right" />
+					</span>
+				</div>
+			{:else}
+				<div class="box-with-left-arrow">
+					<div class="score-options-section to-the-left">
+						<span class="beat-savior-reveal clickable" on:click={() => boolflip('showFiltersOnRanking')} title="Hide filters">
+							<i class="fas fa-chevron-left" />
+						</span>
+					</div>
+					<div>
+						<h2 class="title is-5">Filters</h2>
 
-			{#each params as param}
-				{#if param.type}
-					<section class="filter">
-						<label>{param?.label ?? param?.key ?? ''}</label>
+						{#each params as param}
+							{#if param.type}
+								<section class="filter">
+									<label>{param?.label ?? param?.key ?? ''}</label>
 
-						{#if param?.type === 'input'}
-							<input
-								type="text"
-								placeholder={param.placeholder ?? null}
-								value={param.value}
-								on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
-						{:else if param?.type === 'switch'}
-							<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
-						{:else if param?.type === 'countries'}
-							<Countries countries={param.value} on:change={param.onChange} />
-						{:else if param?.type === 'headsets'}
-							<Headsets headsets={param.value} on:change={param.onChange} />
-						{:else if param?.type === 'slider'}
-							<RangeSlider
-								range
-								min={param.min}
-								max={param.max}
-								step={param.step}
-								values={param.values}
-								float
-								hoverable
-								pips
-								pipstep={param.pipstep}
-								all="label"
-								on:change={param.onChange} />
-						{/if}
-					</section>
-				{/if}
-			{/each}
+									{#if param?.type === 'input'}
+										<input
+											type="text"
+											placeholder={param.placeholder ?? null}
+											value={param.value}
+											on:input={debounce(param.onChange, FILTERS_DEBOUNCE_MS)} />
+									{:else if param?.type === 'switch'}
+										<Switcher values={param.values} value={param.value} multi={!!param?.multi} on:change={param.onChange} />
+									{:else if param?.type === 'countries'}
+										<Countries countries={param.value} on:change={param.onChange} />
+									{:else if param?.type === 'headsets'}
+										<Headsets headsets={param.value} on:change={param.onChange} />
+									{:else if param?.type === 'slider'}
+										<RangeSlider
+											range
+											min={param.min}
+											max={param.max}
+											step={param.step}
+											values={param.values}
+											float
+											hoverable
+											pips
+											pipstep={param.pipstep}
+											all="label"
+											on:change={param.onChange} />
+									{/if}
+								</section>
+							{/if}
+						{/each}
+					</div>
+				</div>
+			{/if}
 		</ContentBox>
 	</aside>
 </section>
@@ -419,16 +450,12 @@
 <style>
 	.align-content {
 		display: flex;
-		justify-content: flex-end !important;
+		justify-content: center;
 	}
 
 	.page-content {
-		max-width: 65em;
+		max-width: 58em;
 		width: 100%;
-	}
-
-	aside {
-		width: 25em;
 	}
 
 	aside .filter {
@@ -479,6 +506,11 @@
 		cursor: pointer;
 	}
 
+	:global(.show-filters-box) {
+		margin-inline: 0;
+		padding: 0.5rem !important;
+	}
+
 	.event-container {
 		width: 100%;
 		height: 100%;
@@ -510,6 +542,27 @@
 		font-size: larger;
 		font-weight: 600;
 		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	}
+
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		margin: 0.3em;
+	}
+
+	.to-the-left {
+		margin-left: -0.5em !important;
+	}
+
+	.box-with-left-arrow {
+		display: grid;
+		align-items: center;
+		grid-template-columns: 1em auto !important;
+		max-width: 20em;
+	}
+
+	.clickable {
+		cursor: pointer;
 	}
 
 	@media screen and (max-width: 1275px) {

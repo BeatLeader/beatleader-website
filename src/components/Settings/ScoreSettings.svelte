@@ -19,11 +19,26 @@
 	const DEFAULT_ACC_CHART = 1;
 	const DEFAULT_SCORE_COMPARISON_METHOD = 'in-place';
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
+	const DEFAULT_WEB_PLAYER = 'beatleader';
+	const DEFAULT_TIME_FORMAT = 'relative';
 
 	const scoreComparisonMethods = [
 		{name: 'No comparison', value: 'none'},
 		{name: 'In place', value: DEFAULT_SCORE_COMPARISON_METHOD},
 		{name: 'In details', value: 'in-details'},
+	];
+
+	const timeFormats = [
+		{name: 'Relative', value: DEFAULT_TIME_FORMAT},
+		{name: 'Full Date, Auto Format', value: 'full'},
+		{name: 'MM/DD/YYYY', value: 'MM/DD/YYYY'},
+		{name: 'DD.MM.YYYY', value: 'DD.MM.YYYY'},
+		{name: 'YYYY-MM-DD', value: 'YYYY-MM-DD'},
+		{name: 'M/DD/YY, H:mm:ss AM/PM', value: 'M/DD/YY, H:mm:ss AM/PM'},
+		{name: 'DD.MM.YYYY HH:mm:ss', value: 'DD.MM.YYYY HH:mm:ss'},
+		{name: 'YYYY-MM-DD HH:mm:ss', value: 'YYYY-MM-DD HH:mm:ss'},
+		{name: 'M/D/YY', value: 'M/D/YY'},
+		{name: 'D.M.YY', value: 'D.M.YY'},
 	];
 
 	const configPresets = [
@@ -170,6 +185,11 @@
 		{name: 'Playlist sync', value: 'playlist'},
 	];
 
+	const webPlayerOptions = [
+		{name: 'BeatLeader', value: DEFAULT_WEB_PLAYER},
+		{name: 'ArcViewer', value: 'arcviewer'},
+	];
+
 	let currentLocale = DEFAULT_LOCALE;
 	let currentScoreBadges = null;
 	let currentScoreBadgeSelected = null;
@@ -179,6 +199,10 @@
 	let currentAccChartIndex = DEFAULT_ACC_CHART;
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
+	let currentWebPlayer = DEFAULT_WEB_PLAYER;
+	let currentTimeFormat = DEFAULT_TIME_FORMAT;
+	let currentShowHmd = true;
+	let currentShowTriangle = true;
 
 	const scoreDetailsKeyDescription = {
 		showMapInfo: 'Map info',
@@ -199,6 +223,11 @@
 		if (config?.scoreComparison != currentScoreComparisonMethod)
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
 		if (config?.preferences?.oneclick != currentOneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
+		if (config?.preferences?.webPlayer != currentWebPlayer) currentWebPlayer = config?.preferences?.webPlayer ?? DEFAULT_WEB_PLAYER;
+		if (config?.scorePreferences?.dateFormat != currentTimeFormat)
+			currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
+		if (config?.scorePreferences?.showHmd != currentShowHmd) currentShowHmd = config?.scorePreferences?.showHmd ?? true;
+		if (config?.scorePreferences?.showTriangle != currentShowTriangle) currentShowTriangle = config?.scorePreferences?.showTriangle ?? true;
 		if (stringify(config?.scoreBadges) !== stringify(currentScoreBadges)) {
 			currentScoreBadges = deepClone(Object.values(config?.scoreBadges) ?? DEFAULT_CONFIG.scoreBadges);
 			currentScoreBadgeSelected = null;
@@ -261,6 +290,10 @@
 	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
+	$: settempsetting('preferences', 'webPlayer', currentWebPlayer);
+	$: settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
+	$: settempsetting('scorePreferences', 'showHmd', currentShowHmd);
+	$: settempsetting('scorePreferences', 'showTriangle', currentShowTriangle);
 	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
 	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
 	$: settempsetting('scoreBadges', null, currentScoreBadges);
@@ -271,7 +304,7 @@
 	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key !== 'delete');
 </script>
 
-<div class="main-container" in:fly={{y: animationSign * 200, duration: 400}} out:fade={{duration: 100}}>
+<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<DemoProfileScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
 		<section class="option full">
@@ -311,6 +344,23 @@
 				</div>
 			</section>
 			<section class="option full">
+				<label title="Determines which info should be displayed at score">Score info to show:</label>
+				<div class="switches">
+					<Switch
+						value={currentShowHmd}
+						label="Show headset"
+						fontSize={12}
+						design="slider"
+						on:click={() => (currentShowHmd = !currentShowHmd)} />
+					<Switch
+						value={currentShowTriangle}
+						label="Show triangle"
+						fontSize={12}
+						design="slider"
+						on:click={() => (currentShowTriangle = !currentShowTriangle)} />
+				</div>
+			</section>
+			<section class="option full">
 				<label title="Determines which data should be displayed in score details">Score details settings:</label>
 				<div class="switches">
 					{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex'].includes(k)) as key}
@@ -341,6 +391,14 @@
 		<section class="option">
 			<label title="How One-Click button will work">One-click installs</label>
 			<Select bind:value={currentOneclick} options={oneclickOptions} />
+		</section>
+		<section class="option">
+			<label title="Which web replay player to use">Web replays</label>
+			<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
+		</section>
+		<section class="option">
+			<label title="How to show time for the score">Date Format</label>
+			<Select bind:value={currentTimeFormat} options={timeFormats} />
 		</section>
 	</div>
 </div>

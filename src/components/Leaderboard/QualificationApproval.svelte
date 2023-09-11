@@ -27,7 +27,7 @@
 	$: currentMapperId = $account.player ? $account.player.playerInfo.mapperId : null;
 </script>
 
-<div transition:fade>
+<div transition:fade|global>
 	{#if !approved}
 		<div class="title-box">
 			Hello {leaderboard?.song.levelAuthorName}, your map made such an impression on our community that we wanted to rank it!🎉<br />
@@ -55,7 +55,7 @@
 		</div>
 
 		{#if showDetails}
-			<div transition:slide class="tab title-box">
+			<div transition:slide|global class="tab title-box">
 				Ranking means players will be receiving PP from your map. And probably putting a lot of effort in improving on it.<br />
 				After your map is ranked - please don't remove or update it on the BeatSaver.<br />
 				Doing so will make the ranked leaderboard impossible to score on for new players which will bar you from ranking future maps<br />

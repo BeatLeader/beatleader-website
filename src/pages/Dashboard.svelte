@@ -9,7 +9,7 @@
 	import FollowedScores from '../components/Dashboard/FollowedScores.svelte';
 	import MastodonTimeline from '../components/Dashboard/MastodonTimeline/MastodonTimeline.svelte';
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
+	document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: browserTitle = `${ssrConfig.name} Dashboard`;
 	$: metaDescription =
@@ -21,7 +21,7 @@
 	<title>{browserTitle}</title>
 </svelte:head>
 
-<article class="page-content" transition:fade>
+<article class="page-content" transition:fade|global>
 	<div class="columns is-multiline">
 		<div class="content column is-full is-two-fifths-fullhd">
 			<FollowedRanking />
@@ -57,7 +57,7 @@
 		title: ssrConfig.name + ' - Website',
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

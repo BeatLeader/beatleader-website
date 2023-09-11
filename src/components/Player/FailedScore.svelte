@@ -40,8 +40,8 @@
 {#if songScore}
 	<div
 		class={`song-score row-${idx}`}
-		in:fly={{x: 300, delay: idx * 30, duration: 500}}
-		out:fade={{duration: 100}}
+		in:fly|global={{x: 300, delay: idx * 30, duration: 500}}
+		out:fade|global={{duration: 100}}
 		class:with-details={showDetails}>
 		<div class="icons up-to-tablet">
 			<Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay} altReplay={true} />
@@ -57,20 +57,12 @@
 					hmd={score.hmd}
 					platform={score.player.scoreStats.platform} />
 				<div class="timeset tablet-and-up">
-					<FormattedDate
-						date={score.timeSet}
-						prevPrefix="vs "
-						prevDate={prevScore ? prevScore.timeSet : null}
-						absolute={service === 'beatsavior'} />
+					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} />
 				</div>
 			</span>
 
 			<span class="timeset mobile-only">
-				<FormattedDate
-					date={score.timeSet}
-					prevPrefix="vs "
-					prevDate={prevScore ? prevScore.timeSet : null}
-					absolute={service === 'beatsavior'} />
+				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={prevScore ? prevScore.timeSet : null} />
 			</span>
 
 			<span class="song">
@@ -128,7 +120,7 @@
 		</div>
 
 		{#if showDetails}
-			<div transition:slide>
+			<div transition:slide|global>
 				<SongScoreDetails
 					{playerId}
 					{songScore}

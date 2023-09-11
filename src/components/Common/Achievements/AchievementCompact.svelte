@@ -30,7 +30,7 @@
 </div>
 
 <Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
-	<div class="popover-contents" transition:fade={{duration: 250}}>
+	<div class="popover-contents" transition:fade|global={{duration: 250}}>
 		<AchievementDetails {achievement} />
 	</div>
 </Popover>
@@ -41,6 +41,11 @@
 		align-items: center;
 		border-radius: 0.8em;
 		box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	}
+
+	:global(.popover-contents .atropos-highlight) {
+		top: -150% !important;
+		height: 400% !important;
 	}
 
 	.achievement img {

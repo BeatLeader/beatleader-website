@@ -54,6 +54,7 @@ function updateScoresStats(playerData) {
 					prefix: '#',
 					bgColor: 'var(--selected)',
 				},
+				{key: 'peakRank', title: 'Highest achieved ranking position', label: 'Peak rank', bgColor: 'var(--ppColour)'},
 				{key: 'averageRank', label: 'Average rank', title: 'Average rank', digits: 2, prefix: '#', bgColor: 'var(--selected)'},
 				{key: 'topPlatform', label: 'Platform', title: 'Last 50 scores top platform', bgColor: 'var(--selected)'},
 				{key: 'topHMD', label: 'Headset', title: 'Last 50 scores top headset', bgColor: 'var(--selected)'},

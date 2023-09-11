@@ -139,10 +139,12 @@
 	.tech-and-acc {
 		color: white;
 		display: flex;
-		grid-gap: 0.4em;
+		grid-gap: 4em;
+		font-size: 0.8em;
 	}
 	.pass {
 		color: white;
+		font-size: 0.8em;
 	}
 	.stars {
 		position: absolute;

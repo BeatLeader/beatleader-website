@@ -135,13 +135,13 @@
 		z-index: 100;
 		background: rgba(0, 0, 0, 0.8);
 		-webkit-mask-image: radial-gradient(
-			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 155px,
+			circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 + 8.75rem) 11em,
 			transparent 0,
 			transparent 120px,
 			black 121px
 		);
 		mask-image: radial-gradient(
-			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 155px,
+			circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 + 8.75rem) 11em,
 			transparent 0,
 			transparent 120px,
 			black 121px
@@ -152,13 +152,13 @@
 
 	:global(.mirror) .avatar-modal {
 		-webkit-mask-image: radial-gradient(
-			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 175px,
+			circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 + 8.75rem) 11em,
 			transparent 0,
 			transparent 120px,
 			black 121px
 		);
 		mask-image: radial-gradient(
-			circle 120px at calc((100vw - 2rem - min(65em, 100vw - 2rem)) / 2 + 120px - 0.75rem) 175px,
+			circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 + 8.75rem) 11em,
 			transparent 0,
 			transparent 120px,
 			black 121px
@@ -168,8 +168,8 @@
 
 	.avatar-buttons {
 		position: absolute;
-		top: calc(155px - 120px + 230px + 1rem);
-		left: calc((100vw - min(65em, 100vw - 2rem)) / 2 - 0.75rem);
+		top: calc(155px - 120px + 230px + 4rem);
+		left: calc((100vw - min(65em, 95vw - 2rem)) / 2 + 1.75rem);
 		width: 220px;
 		padding-top: 0.5rem;
 
@@ -193,11 +193,11 @@
 	}
 
 	:global(.mirror) .avatar-buttons {
-		top: calc(175px - 120px + 230px + 1rem);
+		top: calc(175px - 120px + 230px + 4rem);
 	}
 
 	.avatar-main {
-		padding-left: calc((100vw - min(65em, 100vw - 2rem)) / 2 - 0.75rem + 240px);
+		padding-left: calc((100vw - min(65em, 93vw - 2rem)) / 2 + 5.75rem + 240px);
 	}
 
 	.avatar-main .wrapper {
@@ -289,13 +289,13 @@
 	@media screen and (min-width: 1750px) {
 		.avatar-modal {
 			-webkit-mask-image: radial-gradient(
-				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 155px,
+				circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 - 4.25rem) 11em,
 				transparent 0,
 				transparent 120px,
 				black 121px
 			);
 			mask-image: radial-gradient(
-				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 155px,
+				circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 - 4.25rem) 11em,
 				transparent 0,
 				transparent 120px,
 				black 121px
@@ -304,13 +304,13 @@
 
 		:global(.mirror) .avatar-modal {
 			-webkit-mask-image: radial-gradient(
-				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 175px,
+				circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 - 4.25rem) 11em,
 				transparent 0,
 				transparent 120px,
 				black 121px
 			);
 			mask-image: radial-gradient(
-				circle 120px at calc((100vw - min(65em, 100vw)) / 2 + 120px - 2rem - 12.5em) 175px,
+				circle 120px at calc((100vw - min(65em, 95vw - 2rem)) / 2 - 4.25rem) 11em,
 				transparent 0,
 				transparent 120px,
 				black 121px
@@ -318,11 +318,11 @@
 		}
 
 		.avatar-buttons {
-			left: calc((100vw - min(65em, 100vw)) / 2 - 1rem - 12.5em);
+			left: calc((100vw - min(65em, 100vw)) / 2 - 1rem - 10em);
 		}
 
 		.avatar-main {
-			padding-left: calc((100vw - min(65em, 100vw)) / 2 + 240px - 1rem - 12.5em);
+			padding-left: calc((100vw - min(65em, 100vw)) / 2 + 240px - 1rem - 8.5em);
 		}
 	}
 

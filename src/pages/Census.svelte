@@ -8,6 +8,8 @@
 	import {censusData} from '../others/census';
 	import ssrConfig from '../ssr-config';
 
+	document.body.scrollIntoView({behavior: 'smooth'});
+
 	let title = 'Beat Saber in Numbers';
 	let metaDescription = '2023 Player Census results';
 </script>
@@ -112,7 +114,7 @@
 		title,
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/census2023.png'}],
-		site_name: ssrConfig.name,
+		siteName: ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

@@ -113,26 +113,11 @@
 {#if songScore}
 	<div
 		class={`song-score row-${idx} ${inList ? 'score-in-list' : ''}`}
-		in:maybe={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
-		out:maybe={{fn: fade, duration: 100}}
+		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
+		out:maybe|global={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
-		{#if !noIcons}
-			<div class="up-to-tablet icons">
-				<Icons
-					layoutType="flat"
-					{hash}
-					{twitchUrl}
-					{diffInfo}
-					scoreId={score.id}
-					icons={selectedIcons}
-					{serviceIcon}
-					noPin={!isPlayerScore}
-					on:score-pinned={onScorePinned} />
-			</div>
-		{/if}
-
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
-			<span class="rank">
+			<span class="rank tablet-and-up">
 				{#if service !== 'beatsavior'}
 					<ScoreRank
 						rank={score.rank}
@@ -143,21 +128,9 @@
 						platform={score.platform} />
 				{/if}
 
-				<div class="timeset tablet-and-up">
-					<FormattedDate
-						date={score.timeSet}
-						prevPrefix="vs "
-						prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null}
-						absolute={service === 'beatsavior'} />
+				<div class="timeset">
+					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null} />
 				</div>
-			</span>
-
-			<span class="timeset mobile-only">
-				<FormattedDate
-					date={score.timeSet}
-					prevPrefix="vs "
-					prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null}
-					absolute={service === 'beatsavior'} />
 			</span>
 
 			<span class="song">
@@ -189,8 +162,50 @@
 				</div>
 			</span>
 
+			{#if !noIcons}
+				<div class="up-to-tablet icons">
+					<Icons
+						layoutType="large"
+						{hash}
+						{twitchUrl}
+						{diffInfo}
+						scoreId={score.id}
+						icons={selectedIcons}
+						{serviceIcon}
+						noPin={!isPlayerScore}
+						on:score-pinned={onScorePinned} />
+				</div>
+				<div class="mobile-only icons">
+					<Icons
+						layoutType="flat"
+						{hash}
+						{twitchUrl}
+						{diffInfo}
+						scoreId={score.id}
+						icons={selectedIcons}
+						{serviceIcon}
+						noPin={!isPlayerScore}
+						on:score-pinned={onScorePinned} />
+				</div>
+			{/if}
+			<span class="rank mobile-only">
+				{#if service !== 'beatsavior'}
+					<ScoreRank
+						rank={score.rank}
+						countryRank={score.ssplCountryRank}
+						countryRankTotal={null}
+						hmd={score.hmd}
+						controller={score.controller}
+						platform={score.platform} />
+				{/if}
+			</span>
+
+			<span class="timeset mobile-only">
+				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null} />
+			</span>
+
 			{#if showAnyDetails}
-				<div class="score-options-section">
+				<div class="score-options-section tablet-and-up">
 					<span
 						class="beat-savior-reveal clickable"
 						class:opened={showDetails}
@@ -202,10 +217,21 @@
 			{/if}
 
 			<PlayerPerformance {service} {songScore} {showDetails} {modifiers} {additionalStat} {selectedMetric} on:badge-click />
+			{#if showAnyDetails}
+				<div class="score-options-section mobile-only">
+					<span
+						class="beat-savior-reveal clickable"
+						class:opened={showDetails}
+						on:click={() => (showDetails = !showDetails)}
+						title="Show details">
+						<i class="fas fa-chevron-down" />
+					</span>
+				</div>
+			{/if}
 		</div>
 
 		{#if showDetails}
-			<div transition:slide>
+			<div transition:slide|global>
 				<SongScoreDetails
 					{playerId}
 					{songScore}
@@ -361,13 +387,21 @@
 		border-radius: 5px;
 	}
 
+	.score-options-section.mobile-only {
+		display: none !important;
+	}
+	.mobile-only.icons {
+		display: none;
+	}
+
 	@media screen and (max-width: 1023px) {
-		.icons {
-			display: flex;
-			align-items: center;
-			margin-bottom: 0.5em;
+		.song-score .main {
+			flex-wrap: wrap;
 		}
-		.up-to-tablet {
+		.song {
+			min-width: 25.25em;
+		}
+		.up-to-tablet.icons {
 			display: flex;
 		}
 	}
@@ -375,6 +409,9 @@
 	@media screen and (max-width: 767px) {
 		.song-score {
 			padding: 0.75em 0;
+		}
+		.song {
+			min-width: 15.25em;
 		}
 
 		.song-score .main {
@@ -396,12 +433,23 @@
 			padding-bottom: 0.75em;
 		}
 
-		.up-to-tablet {
-			margin-bottom: 0.5em;
+		.up-to-tablet.icons {
+			display: none;
+		}
+
+		.mobile-only.icons {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			margin-top: -0.6em;
+			margin-bottom: 0.4em;
 		}
 
 		.player {
 			text-align: center;
+		}
+		.score-options-section.mobile-only {
+			display: grid !important;
 		}
 	}
 </style>

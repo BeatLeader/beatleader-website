@@ -24,6 +24,7 @@
 	.type {
 		display: flex;
 		font-weight: 600;
+		font-size: 0.8em;
 		padding: 1px 2px;
 		min-width: 1.5em;
 		max-height: 1.5em;

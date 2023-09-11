@@ -92,8 +92,8 @@
 						component: MenuLine,
 						props: {player, withRank: false},
 						onClick: e => {
-							e.preventDefault();
-							e.stopPropagation();
+							e?.preventDefault();
+							e?.stopPropagation();
 							accountMenuShown = false;
 							navigateToPlayer(player.playerId);
 						},
@@ -118,7 +118,6 @@
 					label: 'Add new...',
 					callback: async () => {
 						playlists.create();
-						navigate('/playlists');
 					},
 				},
 			});

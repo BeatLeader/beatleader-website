@@ -235,7 +235,7 @@
 </script>
 
 {#if enableCreateMode || clan?.id}
-	<section class="clan-info" transition:fade>
+	<section class="clan-info" transition:fade|global>
 		<div class="clanData">
 			<div
 				class="imageInput"

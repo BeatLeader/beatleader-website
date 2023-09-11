@@ -123,7 +123,12 @@
 							<Value value={score.score.weight * score.score.pp} digits={2} />
 						{:else if sortBy == 'mistakes'}
 							<i class="icon-mistakes icon-mistakes-mini" />
-							<Value value={(score.score.badCuts ?? 0) + (score.score.missedNotes ?? 0) + (score.score.wallsHit ?? 0) + (score.score.bombCuts ?? 0) } digits={0} />
+							<Value
+								value={(score.score.badCuts ?? 0) +
+									(score.score.missedNotes ?? 0) +
+									(score.score.wallsHit ?? 0) +
+									(score.score.bombCuts ?? 0)}
+								digits={0} />
 						{:else if sortBy === 'acc'}
 							<Value value={score?.score?.acc} suffix="%" />
 						{:else if sortBy === 'date' || $configStore?.leaderboardPreferences?.show?.date === true}
@@ -158,8 +163,19 @@
 					{:else}
 						{#if $configStore?.leaderboardPreferences?.show?.replay !== false}
 							<Button
-								url={`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`}
-								on:click={() => showPreview(`https://replay.beatleader.xyz/?scoreId=${score?.score.id}`)}
+								url={`${
+									$configStore.preferences.webPlayer == 'arcviewer'
+										? 'https://allpoland.github.io/ArcViewer/?scoreID='
+										: 'https://replay.beatleader.xyz/?scoreId='
+								}${score?.score.id}`}
+								on:click={() =>
+									showPreview(
+										`${
+											$configStore.preferences.webPlayer == 'arcviewer'
+												? 'https://allpoland.github.io/ArcViewer/?scoreID='
+												: 'https://replay.beatleader.xyz/?scoreId='
+										}${score?.score.id}`
+									)}
 								cls="replay-button-alt"
 								icon="<div class='replay-icon-alt'></div>"
 								title="Replay"

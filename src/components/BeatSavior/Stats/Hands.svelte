@@ -12,131 +12,134 @@
 
 {#if stats}
 	<div class="acc">
-		<div class="hand-values">
-			<HandAcc
-				value={stats.accLeft}
-				cut={stats.leftAverageCut}
-				color={stats.saberAColor}
-				hand="left"
-				{name}
-				compareToValue={compareTo ? compareTo.accLeft : null}
-				compareToCut={compareTo ? compareTo.leftAverageCut : null}
-				{compareToName} />
+		{#if stats.accLeft}
+			<div class="hand-values">
+				<HandAcc
+					value={stats.accLeft}
+					cut={stats.leftAverageCut}
+					color={stats.saberAColor}
+					hand="left"
+					{name}
+					compareToValue={compareTo ? compareTo.accLeft : null}
+					compareToCut={compareTo ? compareTo.leftAverageCut : null}
+					{compareToName} />
 
-			{#if stats.leftTimeDependence}
-				<div class="td badge-stat">
-					<Badge
-						label="TD"
-						title="Left hand time dependence"
-						value={stats.leftTimeDependence}
-						color="white"
-						bgColor={ssrConfig.leftSaberColor}
-						digits={3}
-						fluid={true}>
-						<small slot="additional">
-							{#if compareTo}{formatNumber(compareTo.leftTimeDependence, 3)}{/if}
-						</small>
-					</Badge>
-				</div>
-			{/if}
-			{#if stats.leftPreswing}
-				<div class="preswing badge-stat">
-					<Badge
-						label="PRE"
-						title="Left hand preswing"
-						value={stats.leftPreswing * 100}
-						color="white"
-						bgColor={ssrConfig.leftSaberColor}
-						digits={2}
-						suffix="%"
-						fluid={true}>
-						<small slot="additional">
-							{#if compareTo}{formatNumber(compareTo.leftPreswing * 100, 2)}%{/if}
-						</small>
-					</Badge>
-				</div>
-			{/if}
-			{#if stats.leftPostswing}
-				<div class="postswing badge-stat">
-					<Badge
-						label="POST"
-						title="Left hand postswing"
-						value={stats.leftPostswing * 100}
-						color="white"
-						bgColor={ssrConfig.leftSaberColor}
-						digits={2}
-						suffix="%"
-						fluid={true}>
-						<small slot="additional">
-							{#if compareTo}{formatNumber(compareTo.leftPostswing * 100, 2)}%{/if}
-						</small>
-					</Badge>
-				</div>
-			{/if}
-		</div>
+				{#if stats.leftTimeDependence}
+					<div class="td badge-stat">
+						<Badge
+							label="TD"
+							title="Left hand time dependence"
+							value={stats.leftTimeDependence}
+							color="white"
+							bgColor={ssrConfig.leftSaberColor}
+							digits={3}
+							fluid={true}>
+							<small slot="additional">
+								{#if compareTo}{formatNumber(compareTo.leftTimeDependence, 3)}{/if}
+							</small>
+						</Badge>
+					</div>
+				{/if}
+				{#if stats.leftPreswing}
+					<div class="preswing badge-stat">
+						<Badge
+							label="PRE"
+							title="Left hand preswing"
+							value={stats.leftPreswing * 100}
+							color="white"
+							bgColor={ssrConfig.leftSaberColor}
+							digits={2}
+							suffix="%"
+							fluid={true}>
+							<small slot="additional">
+								{#if compareTo}{formatNumber(compareTo.leftPreswing * 100, 2)}%{/if}
+							</small>
+						</Badge>
+					</div>
+				{/if}
+				{#if stats.leftPostswing}
+					<div class="postswing badge-stat">
+						<Badge
+							label="POST"
+							title="Left hand postswing"
+							value={stats.leftPostswing * 100}
+							color="white"
+							bgColor={ssrConfig.leftSaberColor}
+							digits={2}
+							suffix="%"
+							fluid={true}>
+							<small slot="additional">
+								{#if compareTo}{formatNumber(compareTo.leftPostswing * 100, 2)}%{/if}
+							</small>
+						</Badge>
+					</div>
+				{/if}
+			</div>
+		{/if}
+		{#if stats.accRight}
+			<div class="hand-values">
+				<HandAcc
+					value={stats.accRight}
+					cut={stats.rightAverageCut}
+					color={stats.saberBColor}
+					hand="right"
+					{name}
+					compareToValue={compareTo ? compareTo.accRight : null}
+					compareToCut={compareTo ? compareTo.rightAverageCut : null}
+					{compareToName} />
 
-		<div class="hand-values">
-			<HandAcc
-				value={stats.accRight}
-				cut={stats.rightAverageCut}
-				color={stats.saberBColor}
-				hand="right"
-				{name}
-				compareToValue={compareTo ? compareTo.accRight : null}
-				compareToCut={compareTo ? compareTo.rightAverageCut : null}
-				{compareToName} />
-
-			{#if stats.rightTimeDependence}
-				<div class="td badge-stat">
-					<Badge
-						label="TD"
-						title="Right hand time dependence"
-						value={stats.rightTimeDependence}
-						color="white"
-						bgColor={ssrConfig.rightSaberColor}
-						digits={3}
-						fluid={true}>
-						<small slot="additional">
-							{#if compareTo}{formatNumber(compareTo.rightTimeDependence, 3)}{/if}
-						</small>
-					</Badge>
-				</div>
-			{/if}
-			{#if stats.rightPreswing}
-				<div class="preswing badge-stat">
-					<Badge
-						label="PRE"
-						title="Right hand preswing"
-						value={stats.rightPreswing * 100}
-						color="white"
-						bgColor={ssrConfig.rightSaberColor}
-						digits={2}
-						suffix="%"
-						fluid={true}>
-						<small slot="additional">
-							{#if compareTo}{formatNumber(compareTo.rightPreswing * 100, 2)}%{/if}
-						</small>
-					</Badge>
-				</div>
-			{/if}
-			{#if stats.rightPostswing}
-				<div class="postswing badge-stat">
-					<Badge
-						label="POST"
-						title="Right hand postswing"
-						value={stats.rightPostswing * 100}
-						color="white"
-						bgColor={ssrConfig.rightSaberColor}
-						digits={2}
-						suffix="%"
-						fluid={true}>
-						<small slot="additional">
-							{#if compareTo}{formatNumber(compareTo.rightPostswing * 100, 2)}%{/if}
-						</small>
-					</Badge>
-				</div>
-			{/if}
-		</div>
+				{#if stats.rightTimeDependence}
+					<div class="td badge-stat">
+						<Badge
+							label="TD"
+							title="Right hand time dependence"
+							value={stats.rightTimeDependence}
+							color="white"
+							bgColor={ssrConfig.rightSaberColor}
+							digits={3}
+							fluid={true}>
+							<small slot="additional">
+								{#if compareTo}{formatNumber(compareTo.rightTimeDependence, 3)}{/if}
+							</small>
+						</Badge>
+					</div>
+				{/if}
+				{#if stats.rightPreswing}
+					<div class="preswing badge-stat">
+						<Badge
+							label="PRE"
+							title="Right hand preswing"
+							value={stats.rightPreswing * 100}
+							color="white"
+							bgColor={ssrConfig.rightSaberColor}
+							digits={2}
+							suffix="%"
+							fluid={true}>
+							<small slot="additional">
+								{#if compareTo}{formatNumber(compareTo.rightPreswing * 100, 2)}%{/if}
+							</small>
+						</Badge>
+					</div>
+				{/if}
+				{#if stats.rightPostswing}
+					<div class="postswing badge-stat">
+						<Badge
+							label="POST"
+							title="Right hand postswing"
+							value={stats.rightPostswing * 100}
+							color="white"
+							bgColor={ssrConfig.rightSaberColor}
+							digits={2}
+							suffix="%"
+							fluid={true}>
+							<small slot="additional">
+								{#if compareTo}{formatNumber(compareTo.rightPostswing * 100, 2)}%{/if}
+							</small>
+						</Badge>
+					</div>
+				{/if}
+			</div>
+		{/if}
 	</div>
 {/if}
 

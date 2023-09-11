@@ -151,7 +151,6 @@
 					if (
 						status == DifficultyStatus.qualified &&
 						!isjuniorRT &&
-						qualification.rtMember != playerId &&
 						qualification.criteriaChecker != playerId &&
 						qualification.criteriaMet == 1 &&
 						qualification.criteriaMet == criteriaMet &&
