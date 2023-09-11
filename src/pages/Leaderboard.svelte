@@ -175,9 +175,8 @@
 			iconFa: 'fas fa-globe-americas',
 			url: `/leaderboard/global/${currentLeaderboardId}/1`,
 			filters: {countries: ''},
-		}
-	]
-	.concat(
+		},
+	].concat(
 		type === 'accsaber'
 			? [
 					{
@@ -356,16 +355,16 @@
 			.map(to => to)
 			.concat(
 				isRanked
-				? [
-					{
-						type: 'clanranking',
-						label: 'Clan Ranking',
-						iconFa: 'fas fa-flag',
-						url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
-						filters: {countries: ''},
-					}
-				]
-				: []
+					? [
+							{
+								type: 'clanranking',
+								label: 'Clan Ranking',
+								iconFa: 'fas fa-flag',
+								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
 			)
 			.concat(
 				playerIsFollowingSomeone
@@ -870,33 +869,31 @@
 					{:else}
 						<p transition:fade>No scores found.</p>
 					{/if}
+				{:else if clanRankingList?.length}
+					<div class="scores-grid grid-transition-helper">
+						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
+							<div
+								class={`row-${idx}`}
+								in:fly={{x: 200, delay: idx * 20, duration: 500}}
+								out:fade={{x: 200, delay: idx * 20, duration: 500}}
+								animate:flip={{duration: 300}}>
+								<ClanRankingScore
+									{leaderboardId}
+									{idx}
+									{cr}
+									{type}
+									{modifiers}
+									{fixedBrowserTitle}
+									{battleRoyaleDraft}
+									{battleRoyaleDraftList}
+									sortBy={currentFilters.sortBy}
+									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+							</div>
+						{/each}
+					</div>
 				{:else}
-					{#if clanRankingList?.length}
-						<div class="scores-grid grid-transition-helper">
-							{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
-								<div
-									class={`row-${idx}`}
-									in:fly={{x: 200, delay: idx * 20, duration: 500}}
-									out:fade={{x: 200, delay: idx * 20, duration: 500}}
-									animate:flip={{duration: 300}}>
-									<ClanRankingScore
-										{leaderboardId}
-										{idx}
-										{cr}
-										{type}
-										{modifiers}
-										{fixedBrowserTitle}
-										{battleRoyaleDraft}
-										{battleRoyaleDraftList}
-										sortBy={currentFilters.sortBy}
-										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
-								</div>
-							{/each}
-						</div>
-					{:else}
-						<p transition:fade>No clan ranking found.</p>
-					{/if}
+					<p transition:fade>No clan ranking found.</p>
 				{/if}
 
 				{#if votingStats}
