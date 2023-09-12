@@ -54,12 +54,8 @@
 		gap: 0.6em;
 	}
 
-	.clan-badges {
-		margin-left: 0.5em;
-		font-size: 1rem;
-		padding: 0 !important;
-		font-weight: bold;
-		min-width: fit-content;
+	.captor-clan {
+		text-align: center;
 	}
 
 	.captured-by {
@@ -68,22 +64,5 @@
 
 	:global(.clan-badges span.label) {
 		font-weight: bold;
-	}
-
-	.clan-badges :global(a > *) {
-		margin-bottom: 0 !important;
-		margin-right: 0.25em !important;
-		padding: 0 !important;
-		font-weight: bold;
-		width: min-content !important;
-	}
-	.clan-badges :global(a > *:last-child) {
-		margin-right: 0 !important;
-	}
-
-	@media screen and (max-width: 300px) {
-		.clan-badges {
-			display: none;
-		}
 	}
 </style>
