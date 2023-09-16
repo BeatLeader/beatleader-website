@@ -83,12 +83,17 @@
 
 			for (let index = 0; index < ownersIds.length; index++) {
 				const element = ownersIds[index];
-
 				let playerService = createPlayerService();
-				let owner = await playerService.fetchPlayerOrGetFromCache(element);
-
+				let owner = playerService.fetchPlayerOrGetFromCache(element);
 				if (owner?.playerId != playerId) {
-					canModify = false;
+					if (playerService.isMainPlayer(owner.playerId)) {
+						canModify = false;
+					} else {
+						let main_id = playerService.getPlayerMain(element);
+						if (main_id == null || main_id != playerId) {
+							canModify = false;
+						}
+					}
 				}
 				if (owner) {
 					newOwners.push(owner);
@@ -135,7 +140,7 @@
 
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
-	$: updatePage(songs.length);
+	$: updatePage();
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
 	$: updateExpanded(expanded);
 	$: description = `
