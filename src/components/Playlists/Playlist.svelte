@@ -11,7 +11,7 @@
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import customProtocolCheck from 'custom-protocol-check';
 	import {getNotificationsContext} from 'svelte-notifications';
-	import Spinner from '../Common/Spinner.svelte';
+	import Spinner from '../Common/Spinner.svelte';	
 
 	export let playlist;
 	export let idx;
@@ -70,7 +70,7 @@
 	let canModify = true;
 	let canShare = true;
 
-	async function retrieveOwner(playlist, playerId) {
+	async function retrieveOwner(playlist, playerId) {		
 		var newOwners = [];
 		if (playlist?.customData?.owner) {
 			canShare = false;
@@ -80,15 +80,20 @@
 			}
 
 			let ownersIds = playlist.customData.owner.split(',');
-
+			
 			for (let index = 0; index < ownersIds.length; index++) {
-				const element = ownersIds[index];
-
-				let playerService = createPlayerService();
-				let owner = await playerService.fetchPlayerOrGetFromCache(element);
-
+				const element = ownersIds[index];	
+				let playerService = createPlayerService();	
+				let owner = playerService.fetchPlayerOrGetFromCache(element);
 				if (owner?.playerId != playerId) {
-					canModify = false;
+					if (playerService.isMainPlayer(owner.playerId)) {
+						canModify = false;
+					} else {
+						let main_id = playerService.getPlayerMain(element);
+						if (main_id == null || main_id != playerId) {
+							canModify = false;
+						}
+					}
 				}
 				if (owner) {
 					newOwners.push(owner);
@@ -135,7 +140,7 @@
 
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
-	$: updatePage(songs.length);
+	$: updatePage();
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
 	$: updateExpanded(expanded);
 	$: description = `

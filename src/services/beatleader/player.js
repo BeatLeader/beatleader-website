@@ -51,6 +51,8 @@ export default () => {
 
 	const isPlayerMain = playerId => playerId === mainPlayerId;
 
+	const getPlayerMain = playerId => mainPlayerId;
+
 	const getProfileFreshnessDate = (player, refreshInterval = null) => {
 		const lastUpdated = player && player.profileLastUpdated ? player.profileLastUpdated : null;
 		if (!lastUpdated) return addToDate(-SECOND);
@@ -120,6 +122,7 @@ export default () => {
 
 	service = {
 		isMainPlayer,
+		getPlayerMain,
 		getAll,
 		getAllActive,
 		getPlayerGain,
