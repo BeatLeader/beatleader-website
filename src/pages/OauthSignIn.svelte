@@ -26,6 +26,10 @@
 			title: 'Access your id, username and avatar',
 			icon: 'fas fa-user-check',
 		},
+		clan: {
+			title: 'Manage your clan',
+			icon: 'fas fa-people-group',
+		},
 		offline_access: {
 			title: 'Prolong access to your account without this prompt',
 			icon: 'fa-solid fa-server',
