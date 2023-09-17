@@ -4,14 +4,16 @@
 	import Badge from '../Common/Badge.svelte';
 	import ClanBadges from '../Player/ClanBadges.svelte';
 	import ClanName from '../Clans/ClanName.svelte';
+	import createClanRankingStore from '../../stores/http/http-clan-ranking-store';
 	import {fade, fly} from 'svelte/transition';
 	import {flip} from 'svelte/animate';
-	import {getContext} from 'svelte';
 	import {getTimeStringColor} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
+	import Pager from '../../components/Common/Pager.svelte';
 	import Pp from '../Common/PerformanceBadge/Pp.svelte'
 	import Score from '../Leaderboard/Score.svelte';
+	import Spinner from '../../components/Common/Spinner.svelte';
 	import Value from '../Common/Value.svelte';
 
 	export let leaderboardId = null;
@@ -21,8 +23,13 @@
 	export let cr = null
 	export let fixedBrowserTitle = null;
 	export let modifiers = null;
+	export let page;
+	export let associatedScoresPage = 1;
+	export let itemsPerPage = 5;
 	export let sortBy = 'rank';
-	export let type = 'beatleader';
+	export let type = 'clanranking';
+
+	const clanRankingStore = createClanRankingStore(leaderboardId, cr.id, associatedScoresPage, {});
 
 	function navigateToClan(clanTag) {
 		if (!clanTag) return;
@@ -30,8 +37,36 @@
 		navigate(`/clan/${clanTag}/players/1?`);
 	}
 
-	let showClanRankingScores = false
-	let clanRank = idx + 1;
+	function changeParams(newAssociatedScoresPage) {
+		let currAssociatedScoresPage = parseInt(newAssociatedScoresPage, 10);
+		if (isNaN(currAssociatedScoresPage)) currAssociatedScoresPage = 1;
+
+		clanRankingStore.fetch(leaderboardId, cr.id, currAssociatedScoresPage, true);
+	}
+
+	function onPageChanged(event) {
+		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
+
+		const newAssociatedScoresPage = event.detail.page + 1;
+		associatedScoresPage = newAssociatedScoresPage;
+		changeParams(newAssociatedScoresPage);
+	}
+
+	function onViewAssociatedScores() {
+		if (!showClanRankingScores) {
+			changeParams(1);
+		}
+		showClanRankingScores = !showClanRankingScores;
+	}
+
+	let showClanRankingScores = false;
+	let clanRank = ((page - 1) * 10) + idx + 1;
+
+	$: scores = $clanRankingStore?.clanRanking?.scores ?? [];
+	$: totalItems = $clanRankingStore?.totalItems ?? 0;
+
+	$: isLoading = clanRankingStore.isLoading;
+	$: pending = clanRankingStore.pending;
 </script>
 
 {#if cr}
@@ -79,7 +114,7 @@
 				<span
 					class="beat-savior-reveal clickable"
 					class:opened={showClanRankingScores}
-					on:click={() => (showClanRankingScores = !showClanRankingScores)}
+					on:click={onViewAssociatedScores}
 					title="Show Scores">
 					<i class="fas fa-chevron-down" />
 				</span>
@@ -112,30 +147,47 @@
 			</span>
 		</div>
 	</div>
-	{#if showClanRankingScores}
-		<div class="scores-subgrid grid-transition-helper">
-		{#each opt(cr, 'scores') as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
-			<div
-				class={`row-${idx}`}
-				class:user-score={score?.isUserScore}
-				class:user-score-top={score?.userScoreTop}
-				in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-				out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-				animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-				<Score
-					{leaderboardId}
-					{score}
-					{type}
-					{modifiers}
-					{fixedBrowserTitle}
-					{battleRoyaleDraft}
-					{battleRoyaleDraftList}
-					sortBy={sortBy}
-					on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-					on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+	{#if !$clanRankingStore && $isLoading}
+		<div class="align-spinner">
+			<Spinner />
+		</div>
+	{/if}
+	{#if $clanRankingStore && !$isLoading}
+		{#if showClanRankingScores}
+			<div class="scores-subgrid grid-transition-helper">
+			{#each scores as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
+				<div
+					class={`row-${idx}`}
+					class:user-score={score?.isUserScore}
+					class:user-score-top={score?.userScoreTop}
+					in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+					out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
+					animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
+					<Score
+						{leaderboardId}
+						{score}
+						{type}
+						{modifiers}
+						{fixedBrowserTitle}
+						{battleRoyaleDraft}
+						{battleRoyaleDraftList}
+						sortBy={sortBy}
+						on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+						on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+				</div>
+			{/each}
+			<div class="clan-pager">
+				<Pager
+				totalItems={totalItems}
+				{itemsPerPage}
+				itemsPerPageValues={null}
+				currentPage={associatedScoresPage != 0 ? associatedScoresPage - 1 : 1}
+				loadingPage={null}
+				mode={scores.length ? 'pages' : 'simple'}
+				on:page-changed={onPageChanged} />
 			</div>
-		{/each}
-	</div>
+		</div>
+		{/if}
 	{/if}
 {/if}
 
@@ -150,6 +202,10 @@
 
 	.acc :global(.badge .label) {
 		min-width: fit-content;
+	}
+
+	.clan-pager {
+		padding-bottom: 0.4em;
 	}
 
 	.score {

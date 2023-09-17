@@ -349,7 +349,7 @@
 	}
 
 	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked) {
-		if (!country?.length && !playerIsFollowingSomeone) return;
+		//if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
 			.map(to => to)
@@ -882,6 +882,7 @@
 									{idx}
 									{cr}
 									{type}
+									{page}
 									{modifiers}
 									{fixedBrowserTitle}
 									{battleRoyaleDraft}

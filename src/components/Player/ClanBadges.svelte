@@ -5,9 +5,9 @@
 	import Badge from '../Common/Badge.svelte';
 	import createBadgeUtils from '../Common/utils/badge';
 
-	export let player;
-	export let clan;
-	export let editModel;
+	export let player = null;
+	export let clan = null;
+	export let editModel = null;
 
 	const badgeUtils = createBadgeUtils();
 
