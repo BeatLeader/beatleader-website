@@ -27,7 +27,7 @@
 			icon: 'fas fa-user-check',
 		},
 		offline_access: {
-			title: 'Offline access to your account',
+			title: 'Prolong access to your account without this prompt',
 			icon: 'fa-solid fa-server',
 		},
 	};
