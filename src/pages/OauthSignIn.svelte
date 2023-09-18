@@ -3,7 +3,6 @@
 	import Button from '../components/Common/Button.svelte';
 	import createAccountStore from '../stores/beatleader/account';
 	import createOculusStore from '../stores/beatleader/oculususer';
-	import {opt} from '../utils/js';
 	import {CURRENT_URL, BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import beatSaverSvg from '../resources/beatsaver.svg';
@@ -27,12 +26,20 @@
 			title: 'Access your id, username and avatar',
 			icon: 'fas fa-user-check',
 		},
+		clan: {
+			title: 'Manage your clan',
+			icon: 'fas fa-people-group',
+		},
+		offline_access: {
+			title: 'Prolong access to your account without this prompt',
+			icon: 'fa-solid fa-server',
+		},
 	};
 
 	var clientFetchError = null;
 
 	function fetchClient(searchParams) {
-		scope = searchParams.get('scope').split(',');
+		scope = searchParams.get('scope').split(' ');
 		fetchJson(BL_API_URL + 'oauthclient/info?clientId=' + searchParams.get('client_id'))
 			.then(clientInfo => {
 				clientDetais = clientInfo.body;
@@ -56,10 +63,10 @@
 	let password;
 
 	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
-	$: loggedInPlayer = opt($account, 'player');
-	$: error = opt($account, 'error') ?? $oculus?.error ?? clientFetchError;
-	$: message = opt($account, 'message');
-	$: loading = opt($account, 'loading');
+	$: loggedInPlayer = $account?.player;
+	$: error = $account?.error ?? $oculus?.error ?? clientFetchError;
+	$: message = $account?.message;
+	$: loading = $account?.loading;
 
 	$: fetchClient(searchParams);
 </script>
@@ -83,8 +90,8 @@
 		{/if}
 		{#each scope as scopeValue}
 			<div class="scope-description">
-				<i class={scopeDesriptions[scopeValue].icon} />
-				<span>{scopeDesriptions[scopeValue].title}</span>
+				<i class={scopeDesriptions?.[scopeValue]?.icon ?? ''} />
+				<span>{scopeDesriptions?.[scopeValue]?.title ?? scopeValue}</span>
 			</div>
 		{/each}
 	</div>
