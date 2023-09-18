@@ -155,38 +155,35 @@
 	{#if $clanRankingStore && !$isLoading}
 		{#if showClanRankingScores}
 			<div class="scores-subgrid grid-transition-helper">
-			{#each scores as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
-				<div
-					class={`row-${idx}`}
-					class:user-score={score?.isUserScore}
-					class:user-score-top={score?.userScoreTop}
-					in:fly={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-					out:fade={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-					animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
-					<Score
-						{leaderboardId}
-						{score}
-						{type}
-						{modifiers}
-						{fixedBrowserTitle}
-						{battleRoyaleDraft}
-						{battleRoyaleDraftList}
-						sortBy={sortBy}
-						on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-						on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+				{#each scores as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
+					<div
+						in:fly={{x: 200, delay: idx * 20, duration: 300}}
+						out:fade={{duration: 300}}
+						animate:flip={{duration: 300}}>
+						<Score
+							{leaderboardId}
+							{score}
+							{type}
+							{modifiers}
+							{fixedBrowserTitle}
+							{battleRoyaleDraft}
+							{battleRoyaleDraftList}
+							sortBy={sortBy}
+							on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+							on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+					</div>
+				{/each}
+				<div class="clan-pager">
+					<Pager
+					totalItems={totalItems}
+					{itemsPerPage}
+					itemsPerPageValues={null}
+					currentPage={associatedScoresPage != 0 ? associatedScoresPage - 1 : 1}
+					loadingPage={null}
+					mode={scores.length ? 'pages' : 'simple'}
+					on:page-changed={onPageChanged} />
 				</div>
-			{/each}
-			<div class="clan-pager">
-				<Pager
-				totalItems={totalItems}
-				{itemsPerPage}
-				itemsPerPageValues={null}
-				currentPage={associatedScoresPage != 0 ? associatedScoresPage - 1 : 1}
-				loadingPage={null}
-				mode={scores.length ? 'pages' : 'simple'}
-				on:page-changed={onPageChanged} />
 			</div>
-		</div>
 		{/if}
 	{/if}
 {/if}

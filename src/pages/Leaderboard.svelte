@@ -885,8 +885,8 @@
 									{page}
 									{modifiers}
 									{fixedBrowserTitle}
-									{battleRoyaleDraft}
-									{battleRoyaleDraftList}
+									bind:battleRoyaleDraft={battleRoyaleDraft}
+									bind:battleRoyaleDraftList={battleRoyaleDraftList}
 									sortBy={currentFilters.sortBy}
 									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
