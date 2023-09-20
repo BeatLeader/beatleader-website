@@ -221,6 +221,14 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561199081029968R37.png" alt="thinking" /><a
 					href="https://www.beatleader.xyz/u/76561199081029968">thinking</a>
 			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198831724075.png" alt="edgii" /><a
+					href="https://www.beatleader.xyz/u/76561198831724075">edgii</a>
+			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198072855418.gif" alt="LackWiz" /><a
+					href="https://www.beatleader.xyz/u/76561198072855418">LackWiz</a>
+			</div>
 		</section>
 
 		{#if $rankingStore?.data?.length}
