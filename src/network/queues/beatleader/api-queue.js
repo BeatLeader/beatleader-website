@@ -35,12 +35,8 @@ export const BL_API_RANKING_URL =
 export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
-export const BL_API_CLAN_RANKING_URL =
-	BL_API_URL +
-	'leaderboard/clanRankings/${leaderboardId}?page=${page}';
-export const BL_API_CLAN_RANKING_SCORES_URL =
-	BL_API_URL +
-	'leaderboard/clanRankings/${leaderboardId}/${clanRankingId}?page=${page}';
+export const BL_API_CLAN_RANKING_URL = BL_API_URL + 'leaderboard/clanRankings/${leaderboardId}?page=${page}';
+export const BL_API_CLAN_RANKING_SCORES_URL = BL_API_URL + 'leaderboard/clanRankings/${leaderboardId}/${clanRankingId}?page=${page}';
 export const BL_API_LEADERBOARD_URL =
 	BL_API_URL +
 	'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
@@ -151,7 +147,7 @@ const processClanRankingsHeader = response => response?.map(processClanRanking) 
 
 const processClanRankings = (leaderboardId, page, response) => {
 	// First process the leaderboard
-	const ret = processLeaderboard(leaderboardId, page, response)
+	const ret = processLeaderboard(leaderboardId, page, response);
 	// Second process the clanRankings
 	const clanRanking = response.body.clanRanking?.map(processClanRanking) ?? null;
 
@@ -171,9 +167,9 @@ const processClanRankings = (leaderboardId, page, response) => {
 		clanRanking,
 		page,
 		pageQty,
-		totalItems
+		totalItems,
 	};
-}
+};
 
 const processClanRankingSingle = (clanRankingId, page, response) => {
 	// Process the clanRanking
@@ -186,9 +182,9 @@ const processClanRankingSingle = (clanRankingId, page, response) => {
 		clanRanking,
 		page,
 		pageQty,
-		totalItems
+		totalItems,
 	};
-}
+};
 
 const processLeaderboard = (leaderboardId, page, respons) => {
 	let led = respons.body;
@@ -248,7 +244,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 	);
 
 	const leaderboardGroup = led?.leaderboardGroup?.sort((a, b) => b.timestamp - a.timestamp) ?? null;
-	const clanRankingHeader = processClanRankingsHeader(led?.clanRanking);
+	const topClan = led?.clan;
 
 	const {stats, ...song} = songInfo;
 	const leaderboard = {
@@ -261,7 +257,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		changes: led.changes,
 		reweight: led.reweight,
 		difficultyBl: led?.difficulty ?? null,
-		clanRankingContested: led?.clanRankingContested ?? false
+		clanRankingContested: led?.clanRankingContested ?? false,
 	};
 
 	const totalItems = led.plays;
@@ -280,7 +276,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		pageQty,
 		totalItems,
 		scores,
-		clanRankingHeader
+		topClan,
 	};
 };
 

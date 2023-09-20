@@ -31,7 +31,7 @@
 		dispatch('group-changed');
 	}
 
-	let leaderboardCaptor = opt($leaderboardStore, 'clanRankingHeader', null);
+	let leaderboardCaptor = opt($leaderboardStore, 'topClan', null);
 
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	let cinematicsCanvas;
@@ -144,7 +144,7 @@
 				</select>
 			{/if}
 			{#if isRanked}
-				<LeaderboardDisplayCaptureStatus clan={leaderboardCaptor?.[0]?.clan ?? null} clanRankingContested={leaderboard?.clanRankingContested} />
+				<LeaderboardDisplayCaptureStatus clan={leaderboardCaptor} clanRankingContested={leaderboard?.clanRankingContested} />
 			{/if}
 		</div>
 	</header>
