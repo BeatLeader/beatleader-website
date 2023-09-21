@@ -257,6 +257,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		changes: led.changes,
 		reweight: led.reweight,
 		difficultyBl: led?.difficulty ?? null,
+		topClan,
 		clanRankingContested: led?.clanRankingContested ?? false,
 	};
 
@@ -276,7 +277,6 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		pageQty,
 		totalItems,
 		scores,
-		topClan,
 	};
 };
 

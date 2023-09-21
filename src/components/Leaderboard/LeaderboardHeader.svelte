@@ -31,8 +31,6 @@
 		dispatch('group-changed');
 	}
 
-	let leaderboardCaptor = opt($leaderboardStore, 'topClan', null);
-
 	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	let cinematicsCanvas;
 
@@ -52,6 +50,7 @@
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
 	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
+	$: leaderboardCaptor = leaderboard?.topClan;
 
 	$: drawCinematics(cinematicsCanvas, coverUrl);
 
@@ -99,6 +98,9 @@
 						<MapTypeDescription type={leaderboard?.stats.type} />
 					{/if}
 				</div>
+				{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
+					<LeaderboardDisplayCaptureStatus clan={leaderboardCaptor} clanRankingContested={leaderboard?.clanRankingContested} />
+				{/if}
 				{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 					<LeaderboardStats {leaderboard} />
 				{/if}
@@ -142,9 +144,6 @@
 						</option>
 					{/each}
 				</select>
-			{/if}
-			{#if isRanked}
-				<LeaderboardDisplayCaptureStatus clan={leaderboardCaptor} clanRankingContested={leaderboard?.clanRankingContested} />
 			{/if}
 		</div>
 	</header>

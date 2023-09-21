@@ -86,6 +86,8 @@ export const DEFAULT_CONFIG = {
 
 		showStatsInHeader: false,
 		showHashInHeader: false,
+		showClanCaptureInHeader: true,
+		showClanCaptureInList: true,
 
 		show: {
 			avatar: true,

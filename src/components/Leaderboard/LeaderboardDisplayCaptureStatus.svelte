@@ -5,6 +5,7 @@
 
 	export let clan = null;
 	export let clanRankingContested = null;
+	export let withTitle = true;
 
 	const badgeUtils = createBadgeUtils();
 </script>
@@ -12,7 +13,9 @@
 <div class="status-and-type">
 	{#if clanRankingContested}
 		<div style=" --clan-color: #000000" class="captor-clan captor-clan-outline">
-			<p class="captured-by">Captured by:</p>
+			{#if withTitle}
+				<p class="captured-by">Captured by:</p>
+			{/if}
 			<Badge
 				label="&#9876 CONTESTED &#9876"
 				onlyLabel={true}
@@ -23,7 +26,9 @@
 		</div>
 	{:else if (clan ?? null) === null}
 		<div style=" --clan-color: #000000" class="captor-clan captor-clan-outline">
-			<p class="captured-by">Captured by:</p>
+			{#if withTitle}
+				<p class="captured-by">Captured by:</p>
+			{/if}
 			<Badge
 				label="UNCAPTURED"
 				onlyLabel={true}
@@ -34,7 +39,9 @@
 		</div>
 	{:else}
 		<div style=" --clan-color: {clan ?? '#000000'}" class="captor-clan captor-clan-outline">
-			<p class="captured-by">Captured by:</p>
+			{#if withTitle}
+				<p class="captured-by">Captured by:</p>
+			{/if}
 			<a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
 				<Badge
 					label={clan?.tag ?? '???'}
@@ -56,6 +63,8 @@
 
 	.captor-clan {
 		text-align: center;
+		display: flex;
+		gap: 0.5em;
 	}
 
 	.captured-by {
