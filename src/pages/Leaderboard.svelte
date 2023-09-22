@@ -752,8 +752,7 @@
 								class:user-score={score?.isUserScore}
 								class:user-score-top={score?.userScoreTop}
 								in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-								out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-								animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
+								out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
 								<Score
 									{leaderboardId}
 									{score}
