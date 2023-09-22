@@ -55,7 +55,7 @@
 		}
 	}
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: totalItems = $playlists.length;
 	$: updatePage(parseInt(index, 10), $playlists.length);
 </script>

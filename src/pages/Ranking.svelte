@@ -1,5 +1,5 @@
 <script>
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import {
 		createBuildFiltersFromLocation,
@@ -23,12 +23,11 @@
 	import produce from 'immer';
 
 	export let page = 1;
+	export let location;
 
 	document.body.classList.remove('slim');
 
 	const FILTERS_DEBOUNCE_MS = 500;
-
-	const location = useLocation();
 
 	const findParam = key => params.find(p => p.key === key);
 
@@ -243,8 +242,9 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
+
 	let previousPage = 0;
-	let currentFilters = buildFiltersFromLocation($location);
+	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 
 	let isLoading = false;
@@ -338,8 +338,8 @@
 		});
 	}
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
-	$: changeParams(page, $location, true);
+	$: document.body.scrollIntoView({behavior: 'smooth'});
+	$: changeParams(page, location, true);
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 </script>

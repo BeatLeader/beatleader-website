@@ -1,6 +1,6 @@
 <script>
 	import {fade} from 'svelte/transition';
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLocalStorageStore from '../stores/localstorage';
 	import leaderboardsApiClient from '../network/clients/beatleader/leaderboard/api-leaderboards';
@@ -34,7 +34,7 @@
 	import Reveal from '../components/Common/Reveal.svelte';
 	import QualityInfo from '../components/Leaderboard/QualityVotes/QualityInfo.svelte';
 
-	const location = useLocation();
+	export let location;
 
 	document.body.classList.add('remove');
 
@@ -507,7 +507,7 @@
 		navigate(`/staff?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
 	}
 
-	let currentFilters = buildFiltersFromLocation($location);
+	let currentFilters = buildFiltersFromLocation(location);
 
 	let error = null;
 	let isLoading = true;
@@ -805,7 +805,7 @@
 		},
 	});
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: updateAllLabels($labelsStore);
 	$: updateTags(allLabels);
 	$: allLabelsHash = allLabels.map(v => v?.id ?? '').join(':') ?? '';

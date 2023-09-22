@@ -1,5 +1,5 @@
 <script>
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ssrConfig from '../ssr-config';
@@ -19,9 +19,8 @@
 	import {Confetti} from 'svelte-confetti';
 
 	export let page = 1;
+	export let location;
 	export let eventId;
-
-	const location = useLocation();
 
 	const account = createAccountStore();
 
@@ -101,7 +100,7 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation($location);
+	let currentFilters = buildFiltersFromLocation(location);
 	let currentEventId = eventId;
 	let currentEvent;
 	let boxEl = null;
@@ -167,8 +166,8 @@
 
 	let modalShown;
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
-	$: changeParams(page, eventId, $location, true);
+	$: document.body.scrollIntoView({behavior: 'smooth'});
+	$: changeParams(page, eventId, location, true);
 	$: mainPlayerId = $account?.id;
 </script>
 

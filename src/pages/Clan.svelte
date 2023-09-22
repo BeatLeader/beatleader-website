@@ -115,7 +115,7 @@
 		}
 	}
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = clanStore.isLoading;
 	$: pending = clanStore.pending;

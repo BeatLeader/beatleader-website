@@ -15,7 +15,7 @@
 	const account = createAccountStore();
 	var playlist = null;
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: playlists.getShared(id, result => {
 		playlist = result;
 	});

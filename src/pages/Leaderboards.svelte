@@ -1,6 +1,6 @@
 <script>
 	import {tick} from 'svelte';
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
@@ -45,10 +45,9 @@
 	import Select from '../components/Settings/Select.svelte';
 
 	export let page = 1;
+	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
-
-	const location = useLocation();
 
 	document.body.classList.remove('slim');
 
@@ -99,7 +98,7 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation($location);
+	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 
 	const typeFilterOptions = [
@@ -368,7 +367,7 @@
 		});
 	}
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
@@ -383,7 +382,7 @@
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
-	$: changePageAndFilters(page, $location);
+	$: changePageAndFilters(page, location);
 
 	$: starsKey =
 		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'
