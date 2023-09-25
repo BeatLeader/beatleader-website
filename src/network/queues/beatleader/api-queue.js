@@ -7,7 +7,7 @@ import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
 export const BL_API_URL =
-	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? `https://api.beatleader.xyz/` : `/cors/blapi/`;
+	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? `https://localhost:44313/` : `/cors/blapi/`;
 export const BL_SOCKET_URL = 'wss://api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
