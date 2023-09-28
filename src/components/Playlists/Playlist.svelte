@@ -72,6 +72,9 @@
 
 	async function retrieveOwner(playlist, playerId) {
 		var newOwners = [];
+		canModify = true;
+		canShare = true;
+
 		if (playlist?.customData?.owner) {
 			canShare = false;
 			if (playlist.customData.owner == 'BeatLeader') {
@@ -83,10 +86,8 @@
 
 			for (let index = 0; index < ownersIds.length; index++) {
 				const element = ownersIds[index];
-
 				let playerService = createPlayerService();
-				let owner = await playerService.fetchPlayerOrGetFromCache(element);
-
+				let owner = await playerService.fetchPlayerOrGetFromCache(element, undefined, undefined, undefined, undefined, false);
 				if (owner?.playerId != playerId) {
 					canModify = false;
 				}
@@ -135,7 +136,7 @@
 
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
-	$: updatePage(songs.length);
+	$: updatePage();
 	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
 	$: updateExpanded(expanded);
 	$: description = `
