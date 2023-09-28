@@ -71,9 +71,9 @@ export default () => {
 	const isResponseCached = response => playerApiClient.isResponseCached(response);
 	const getDataFromResponse = response => playerApiClient.getDataFromResponse(response);
 
-	const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) =>
+	const fetchPlayer = async (playerId, priority = PRIORITY.FG_LOW, keepOriginalId = true, {fullResponse = false, ...options} = {}) =>
 		resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}/${options.maxAge ?? MINUTE}`, () =>
-			playerApiClient.getProcessed({...options, playerId, priority, fullResponse})
+			playerApiClient.getProcessed({...options, playerId, priority, keepOriginalId, fullResponse})
 		);
 
 	const findPlayer = async (query, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) =>
@@ -81,8 +81,14 @@ export default () => {
 			playerFindApiClient.getProcessed({...options, query, priority, fullResponse})
 		);
 
-	const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
-		fetchPlayer(playerId, priority, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval});
+	const fetchPlayerOrGetFromCache = async (
+		playerId,
+		refreshInterval = MINUTE,
+		priority = PRIORITY.FG_LOW,
+		signal = null,
+		force = false,
+		keepOriginalId = true
+	) => fetchPlayer(playerId, priority, keepOriginalId, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval});
 
 	const fetchAccGraph = async (playerId, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
 		try {
