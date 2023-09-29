@@ -1,13 +1,15 @@
 <script>
-  export let status = 2;
+  export let status;
 </script>
 
-{#if status !== 0}
+{#if status && status !== 0}
   <div>
     {#if status === 1}
-      <h1>Nominated</h1>
+      <span>Nominated</span>
     {:else if status === 2}
-      <h1>Not Nominated</h1>
+      <span>Not Nominated</span>
+    {:else}
+      <span>Status {status}</span>
     {/if}
     
   </div>
@@ -17,7 +19,6 @@
   div {
     display: flex;
     height: 24px;
-    padding-right: 0.3em;
     background-color: #323232;
     border-radius: 6px;
     padding-left: 0.4em;
@@ -25,7 +26,8 @@
     line-height: 170%;
   }
 
-  h1 {
+  span {
+    color: #e9e9e9;
     margin-top: -0.1em;
   }
 
