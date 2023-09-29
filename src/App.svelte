@@ -40,6 +40,7 @@
 	import CensusPage from './pages/Census.svelte';
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
+	import ReviewHub from './pages/ReviewHub.svelte';
 
 	export let url = '';
 
@@ -183,6 +184,9 @@
 					</Route>
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
+					</Route>
+					<Route path="/reviewhub/*page" let:params let:location>
+						<ReviewHub page={params.page} {location}/>
 					</Route>
 					<Route path="/twitch" component={TwitchPage} />
 					<Route path="/help" component={SupportPage} />
