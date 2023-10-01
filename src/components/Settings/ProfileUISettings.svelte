@@ -14,6 +14,7 @@
 	import {describeGraphAxis, describeProfilePart} from '../../utils/beatleader/format';
 	import PinnedScores from '../Player/PinnedScores.svelte';
 	import Achievements from '../Player/Achievements.svelte';
+	import {debounce} from '../../utils/debounce';
 
 	export let animationSign = 1;
 
@@ -21,6 +22,7 @@
 	const DEFAULT_SORT_VALUE = 'last';
 	const DEFAULT_DAYS_TO_COMPARE = 1;
 	const DEFAULT_DAYS_OF_HISTORY = 30;
+	const DEFAULT_GRAPH_HEIGHT = 350;
 
 	const avatarIcons = [
 		{name: 'Always show', value: DEFAULT_AVATAR_ICONS},
@@ -43,6 +45,7 @@
 	let currentSortOption = DEFAULT_SORT_VALUE;
 	let currentDaysToCompare = DEFAULT_DAYS_TO_COMPARE;
 	let currentDaysOfHistory = DEFAULT_DAYS_OF_HISTORY;
+	let currentGraphHeight = DEFAULT_GRAPH_HEIGHT;
 
 	function onConfigUpdated(config) {
 		if (config?.preferences?.iconsOnAvatars != currentAvatarIcons)
@@ -53,6 +56,8 @@
 			currentDaysToCompare = config?.preferences?.daysToCompare ?? DEFAULT_DAYS_TO_COMPARE;
 		if (config?.preferences?.daysOfHistory != currentDaysOfHistory)
 			currentDaysOfHistory = config?.preferences?.daysOfHistory ?? DEFAULT_DAYS_OF_HISTORY;
+		if (config?.preferences?.graphHeight != currentGraphHeight)
+			currentGraphHeight = config?.preferences?.graphHeight ?? DEFAULT_GRAPH_HEIGHT;
 	}
 
 	async function settempsetting(key, value) {
@@ -71,6 +76,18 @@
 		}
 	}
 
+	function onDaysOfHistoryChange(event) {
+		currentDaysOfHistory = event.detail.values[0];
+	}
+
+	const debouncedOnDaysOfHistoryChange = debounce(onDaysOfHistoryChange, 400);
+
+	function onGraphHeightChange(event) {
+		currentGraphHeight = event.detail.values[0];
+	}
+
+	const debouncedOnGraphHeightChange = debounce(onGraphHeightChange, 400);
+
 	const account = createAccountStore();
 	const statsHistoryStore = createStatsHistoryStore();
 	const pinnedScoresStore = createPinnedScoresStore();
@@ -83,6 +100,7 @@
 	$: settempsetting('scoresSortOptions', currentSortOption);
 	$: settempsetting('daysToCompare', currentDaysToCompare);
 	$: settempsetting('daysOfHistory', currentDaysOfHistory);
+	$: settempsetting('graphHeight', currentGraphHeight);
 
 	$: playerData = $playerStore;
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
@@ -147,9 +165,7 @@
 				pips
 				pipstep={30}
 				all="label"
-				on:change={event => {
-					currentDaysOfHistory = event.detail.values[0];
-				}} />
+				on:change={debouncedOnDaysOfHistoryChange} />
 		</section>
 
 		<section class="option full">
@@ -173,15 +189,13 @@
 					min={200}
 					max={500}
 					step={1}
-					values={[$configStore.preferences.graphHeight]}
+					values={[currentGraphHeight]}
 					float
 					hoverable
 					pips
 					pipstep={30}
 					all="label"
-					on:change={event => {
-						$configStore.preferences.graphHeight = event.detail.values[0];
-					}} />
+					on:change={debouncedOnGraphHeightChange} />
 			</section>
 			<section class="option full">
 				<label title="Which graph legend elements to show">Graph legend:</label>
