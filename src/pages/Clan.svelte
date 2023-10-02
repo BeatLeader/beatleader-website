@@ -127,6 +127,9 @@
 	$: clan = $clanStore?.container ?? null;
 	$: playersPage = $clanStore?.data ?? [];
 
+	$: maxRank = playersPage ? Math.max(...playersPage.map(p => p.playerInfo?.rank)) : 0;
+	$: maxCountryRank = playersPage ? Math.max(...playersPage.map(p => p.playerInfo?.countries[0].rank)) : 0;
+
 	$: clanLeaderId = clan?.leaderID ?? null;
 	$: isFounder = clan?.id && clanLeaderId === $account?.player?.playerId;
 
@@ -180,6 +183,8 @@
 								withCrown={clanLeaderId === player.playerId}
 								selectedClanTag={clan?.tag}
 								value={player?.playerInfo?.pp}
+								{maxRank}
+								{maxCountryRank}
 								valueProps={{suffix: 'pp', zero: '-'}} />
 
 							{#if isFounder && canBeKicked(clan, player)}
