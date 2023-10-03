@@ -328,6 +328,8 @@ export function getControllerForEnum(controller) {
 			return 'Joy-Con';
 		case 77:
 			return 'Steam Deck';
+		case 78:
+			return 'Etee';
 	}
 
 	return '';
