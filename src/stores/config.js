@@ -152,7 +152,7 @@ export const DEFAULT_CONFIG = {
 		friendsMiniRanking: false,
 	},
 	visibleScoreIcons: {
-		pin: false,
+		pin: true,
 		playlist: false,
 		bsr: true,
 		bs: true,
