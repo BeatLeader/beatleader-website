@@ -10,7 +10,7 @@
 
 <div>
   {#each mappers as mapper}
-    <Mapper playerId={mapper} compact={compact}/>
+    <Mapper playerId={mapper} compact={compact} />
   {/each}
 </div>
 

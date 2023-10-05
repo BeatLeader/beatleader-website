@@ -6,6 +6,7 @@
 
     export let playerId;
     export let compact = false;
+    export let hideFlag = false;
 
 	const playerService = createPlayerService();
 
@@ -30,7 +31,7 @@
     <a title={user ? user.name : null} href={`/u/${playerId}/1?`}><Avatar player={user} /></a>
     {#if !compact}
     <div class="mapper-name">
-        <PlayerNameWithFlag player={user} on:click={user ? () => navigateToPlayer(playerId) : null} disablePopover />
+        <PlayerNameWithFlag player={user} on:click={user ? () => navigateToPlayer(playerId) : null} disablePopover, hideFlag={hideFlag} />
     </div>
     {/if}
     
