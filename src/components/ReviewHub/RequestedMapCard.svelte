@@ -27,6 +27,11 @@
 
   }
 
+  let mappers = [
+    "76561198051924392",
+    "76561198183820433"
+  ];
+
   $: difficulties = [{
     color: "#8f48db",
     type: "Standard",
@@ -89,7 +94,7 @@
         <div class="song-info-row">
           <h2 style="margin-top: -0.1em;">Author</h2>
     
-          <CardMappers />
+          <CardMappers mappers={mappers}/>
         </div>
 
         <div class="tags">
