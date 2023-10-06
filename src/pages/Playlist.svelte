@@ -1,5 +1,4 @@
 <script>
-	import {useLocation} from 'svelte-routing';
 	import createPlaylistStore from '../stores/playlists';
 	import Playlist from '../components/Playlists/Playlist.svelte';
 	import createAccountStore from '../stores/beatleader/account';
@@ -9,15 +8,15 @@
 
 	export let id;
 
-	const location = useLocation();
-
 	const playlists = createPlaylistStore();
 	const account = createAccountStore();
 	var playlist = null;
+	var localPlaylistId = null;
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
-	$: playlists.getShared(id, result => {
+	$: playlists.getShared(id, (result, resultId) => {
 		playlist = result;
+		localPlaylistId = resultId;
 	});
 </script>
 
@@ -27,7 +26,14 @@
 
 <ContentBox>
 	{#if playlist}
-		<Playlist playlistId={id} accountStore={account} expanded={true} {playlist} idx={0} store={playlists} />
+		<Playlist
+			sharedPlaylistId={id}
+			currentPlayerId={$account.id}
+			expanded={true}
+			playlistExport={playlist}
+			{localPlaylistId}
+			idx={0}
+			store={playlists} />
 	{:else}
 		<Spinner />
 	{/if}
