@@ -190,7 +190,7 @@ export default () => {
 				for (let i = 0; i < remotePlaylists.length; i++) {
 					const element = remotePlaylists[i];
 					var localPlaylist = hashed[element.hash];
-					if (!localPlaylist || !localPlaylist.customData?.id) {
+					if (!localPlaylist || !localPlaylist.customData?.id || localPlaylist.customData?.owner != element.ownerId) {
 						if (indexed[element.id]) {
 							playlists = playlists.filter(p => p.customData?.id != element.id);
 						}
