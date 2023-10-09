@@ -2,7 +2,7 @@
 	import {createEventDispatcher, getContext} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {getTimeStringColor} from '../../utils/date';
-	import config, {configStore} from '../../stores/config';
+	import {configStore} from '../../stores/config';
 	import Button from '../Common/Button.svelte';
 	import Badge from '../Common/Badge.svelte';
 	import Value from '../Common/Value.svelte';
@@ -12,7 +12,7 @@
 	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import Preview from '../Common/Preview.svelte';
-	import { describePlatform, getControllerForEnum, getHeadsetForHMD } from '../../utils/beatleader/format';
+	import {describePlatform, getControllerForEnum, getHeadsetForHMD} from '../../utils/beatleader/format';
 
 	export let leaderboardId = null;
 	export let score = null;
@@ -61,7 +61,8 @@
 	$: isBot = score?.player?.playerInfo?.bot;
 
 	$: headset = getHeadsetForHMD(score?.score?.hmd);
-	$: controllerDescription = getControllerForEnum(score?.score?.controller).length > 0 ? ' with ' + getControllerForEnum(score?.score?.controller) : '';
+	$: controllerDescription =
+		getControllerForEnum(score?.score?.controller).length > 0 ? ' with ' + getControllerForEnum(score?.score?.controller) : '';
 	$: platformDescription = describePlatform(score?.score?.platform);
 	$: title = headset?.name + controllerDescription + (platformDescription?.description ? '\n' + platformDescription?.description : '');
 	$: headsetStyle = `width: 1.2em; filter: ${headset?.color}`;

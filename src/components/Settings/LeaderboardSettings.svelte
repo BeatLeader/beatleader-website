@@ -177,7 +177,7 @@
 		clans: 'Clans',
 		date: 'Date',
 		replay: 'Replay',
-		hmd: 'HMD',
+		hmd: 'Headset',
 	};
 
 	const account = createAccountStore();
