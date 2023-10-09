@@ -1370,6 +1370,14 @@
 		.diff-switch {
 			gap: 0.1em;
 		}
+
+		:global(.player-score .player-performance-badges .with-badge) {
+			min-width: 4em !important;
+		}
+
+		:global(.player-performance-badges) {
+			min-width: 0 !important;
+		}
 	}
 
 	:global(.leaderboard-header-box) {
