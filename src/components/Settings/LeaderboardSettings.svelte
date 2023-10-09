@@ -39,6 +39,7 @@
 						clans: false,
 						date: true,
 						replay: true,
+						hmd: false,
 					},
 				},
 			},
@@ -72,6 +73,7 @@
 						clans: true,
 						date: true,
 						replay: true,
+						hmd: false,
 					},
 				},
 			},
@@ -93,6 +95,7 @@
 						clans: true,
 						date: true,
 						replay: true,
+						hmd: false,
 					},
 				},
 			},
@@ -114,6 +117,7 @@
 						clans: true,
 						date: true,
 						replay: true,
+						hmd: false,
 					},
 				},
 			},
@@ -135,6 +139,7 @@
 						clans: true,
 						date: true,
 						replay: true,
+						hmd: false,
 					},
 				},
 			},
@@ -172,6 +177,7 @@
 		clans: 'Clans',
 		date: 'Date',
 		replay: 'Replay',
+		hmd: 'HMD',
 	};
 
 	const account = createAccountStore();

@@ -93,6 +93,7 @@ export const DEFAULT_CONFIG = {
 			clans: true,
 			date: true,
 			replay: true,
+			hmd: false,
 		},
 	},
 	rankingPreferences: {
