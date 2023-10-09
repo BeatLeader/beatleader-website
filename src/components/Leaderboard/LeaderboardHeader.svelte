@@ -353,9 +353,21 @@
 		:global(.title-container .stats) {
 			justify-content: center !important;
 		}
+
+		.header {
+			border-radius: 0;
+			margin-bottom: 0;
+		}
+
+		:global(.leaderboard-header-box) {
+			margin: 0 !important;
+		}
 	}
 
 	@media screen and (max-width: 520px) {
+		.cinematics {
+			display: none;
+		}
 		header {
 			flex-direction: column;
 		}
