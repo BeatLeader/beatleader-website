@@ -76,17 +76,23 @@
 		}
 	}
 
+	function onCurrentDaysToCompareChange(event) {
+		currentDaysToCompare = event.detail.values[0];
+	}
+
+	const debouncedOnCurrentDaysToCompareChange = debounce(onCurrentDaysToCompareChange, 100);
+
 	function onDaysOfHistoryChange(event) {
 		currentDaysOfHistory = event.detail.values[0];
 	}
 
-	const debouncedOnDaysOfHistoryChange = debounce(onDaysOfHistoryChange, 400);
+	const debouncedOnDaysOfHistoryChange = debounce(onDaysOfHistoryChange, 100);
 
 	function onGraphHeightChange(event) {
 		currentGraphHeight = event.detail.values[0];
 	}
 
-	const debouncedOnGraphHeightChange = debounce(onGraphHeightChange, 400);
+	const debouncedOnGraphHeightChange = debounce(onGraphHeightChange, 100);
 
 	const account = createAccountStore();
 	const statsHistoryStore = createStatsHistoryStore();
@@ -148,9 +154,7 @@
 				pips
 				pipstep={6}
 				all="label"
-				on:change={event => {
-					currentDaysToCompare = event.detail.values[0];
-				}} />
+				on:change={debouncedOnCurrentDaysToCompareChange} />
 		</section>
 
 		<section class="option">

@@ -7,6 +7,7 @@
 	import {userDescriptionForModifier} from '../../utils/beatleader/format';
 	import {getPPFromAcc, computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
+	import {debounce} from '../../utils/debounce';
 
 	export let passRating = 5;
 	export let accRating = 5;
@@ -179,6 +180,19 @@
 		dispatch('modified-stars', {passRating, accRating, techRating, stars: null});
 	});
 
+	function onRangeChange(event) {
+		startAcc = event.detail.values[0] / 100;
+		endAcc = event.detail.values[1] / 100;
+
+		if (startAcc - minAcc < 0.05 && minAcc >= 0.05) {
+			minAcc -= 0.05;
+		} else if (startAcc - minAcc > 0.1) {
+			minAcc += 0.05;
+		}
+	}
+
+	const debouncedOnRangeChange = debounce(onRangeChange, 100);
+
 	$: modifiersArr = Object.entries(modifiers ?? {})
 		?.filter(m => m?.[0] !== 'modifierId')
 		?.map(m => ({
@@ -239,16 +253,7 @@
 		pipstep={225}
 		all="label"
 		formatter={v => formatNumber(v, 0)}
-		on:change={event => {
-			startAcc = event.detail.values[0] / 100;
-			endAcc = event.detail.values[1] / 100;
-
-			if (startAcc - minAcc < 0.05 && minAcc >= 0.05) {
-				minAcc -= 0.05;
-			} else if (startAcc - minAcc > 0.1) {
-				minAcc += 0.05;
-			}
-		}} />
+		on:change={debouncedOnRangeChange} />
 </div>
 
 <style>
