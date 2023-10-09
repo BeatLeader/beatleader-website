@@ -60,8 +60,6 @@
 		(sortBy === 'date' && $configStore?.leaderboardPreferences?.show?.date === false);
 	$: isBot = score?.player?.playerInfo?.bot;
 
-	console.log(score);
-
 	$: headset = getHeadsetForHMD(score?.score?.hmd);
 	$: controllerDescription = getControllerForEnum(score?.score?.controller).length > 0 ? ' with ' + getControllerForEnum(score?.score?.controller) : '';
 	$: platformDescription = describePlatform(score?.score?.platform);
