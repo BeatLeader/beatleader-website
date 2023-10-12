@@ -67,7 +67,7 @@
 	var leaderboardTypeOptions = [
 		{
 			name: 'General',
-			id: 'general',
+			id: 'www',
 			logoBig: '/assets/logo.png',
 			logoSmall: '/assets/logo-small.png',
 		},
@@ -91,7 +91,7 @@
 		},
 	];
 
-	let leaderboardType = leaderboardTypeOptions.find(t => t.id == GLOBAL_LEADERBOARD_TYPE);
+	let leaderboardType = leaderboardTypeOptions.find(t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == "general" && t.id == 'www'));
 
 	let signupOptions = [];
 
