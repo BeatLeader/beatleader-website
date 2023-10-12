@@ -221,7 +221,7 @@
 				<img src="/assets/logo.png" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BEATLEADER</span>
-					{#if leaderboardType.id != 'general'}
+					{#if leaderboardType.id != 'www'}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
 				</div>
@@ -231,7 +231,7 @@
 				<img src="/assets/logo-small.png" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BL</span>
-					{#if leaderboardType.id != 'general'}
+					{#if leaderboardType.id != 'www'}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
 				</div>
