@@ -57,7 +57,7 @@
 		let annotations = [];
 		const data = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
-			const pp = getPPFromAcc(GLOBAL_LEADERBOARD_TYPE == 'golf' ? 1 - acc : acc, passRating, accRating, techRating, mode);
+			const pp = getPPFromAcc(acc, passRating, accRating, techRating, mode);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
 			if (pp < minPp) minPp = pp;
