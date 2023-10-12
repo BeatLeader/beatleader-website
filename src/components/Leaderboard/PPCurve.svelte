@@ -3,7 +3,7 @@
 	import 'chartjs-adapter-luxon';
 	import Chart from 'chart.js/auto';
 	import regionsPlugin from './utils/regions-plugin';
-	import {formatNumber} from '../../utils/format';
+	import {formatNumber, GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {userDescriptionForModifier} from '../../utils/beatleader/format';
 	import {getPPFromAcc, computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
@@ -29,6 +29,13 @@
 		minAcc = 0.5,
 		maxAcc = 1;
 
+	if (GLOBAL_LEADERBOARD_TYPE == 'golf') {
+		startAcc = 0;
+		endAcc = 0.3;
+		minAcc = 0;
+		maxAcc = 0.5;
+	}
+
 	const mutuallyExclusive = {
 		NA: ['DA'],
 		GN: ['DA'],
@@ -46,14 +53,14 @@
 		const mainColor = '#eb008c';
 		const annotationColor = '#aaa';
 
-		let minPp = 0;
+		let minPp = 70000;
 		let annotations = [];
 		const data = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
-			const pp = getPPFromAcc(acc, passRating, accRating, techRating, mode);
+			const pp = getPPFromAcc(GLOBAL_LEADERBOARD_TYPE == 'golf' ? 1 - acc : acc, passRating, accRating, techRating, mode);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
-			if (!minPp) minPp = pp;
+			if (pp < minPp) minPp = pp;
 
 			if (acc > startAcc && (acc * 100) % Math.round(((maxAcc - startAcc) * 100) / 8) < 0.001)
 				if (pp)

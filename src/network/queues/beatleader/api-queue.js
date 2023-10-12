@@ -6,47 +6,50 @@ import {getDiffColor} from '../../../utils/beatleader/format';
 import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
-export const BL_API_URL =
-	CURRENT_URL == 'https://www.beatleader.xyz' || CURRENT_URL == 'http://localhost:8888' ? `https://api.beatleader.xyz/` : `/cors/blapi/`;
+export const BL_API_URL = `https://api.beatleader.xyz/`;
 export const BL_SOCKET_URL = 'wss://api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
-export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?keepOriginalId=true';
+export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}&keepOriginalId=true';
 export const BL_API_SCORES_URL =
 	BL_API_URL +
-	'player/${playerId}/scores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
+	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
 export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
-	'user/friendScores?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
+	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}';
 export const BL_API_SCORE_PIN_URL =
-	BL_API_URL + 'score/${scoreId}/pin?pin=${pin}&link=${link}&description=${description}&priority=${priority}';
+	BL_API_URL +
+	'score/${scoreId}/pin?pin=${pin}&leaderboardContext=${leaderboardContext}&link=${link}&description=${description}&priority=${priority}';
 export const BL_API_LEADERBOARD_STATS_URL = BL_API_URL + 'leaderboard/statistic/${leaderboardId}';
-export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}';
+export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}?leaderboardContext=${leaderboardContext}';
 export const BL_API_SCORES_HISTOGRAM_URL =
 	BL_API_URL +
-	'player/${playerId}/histogram?sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}&eventId=${eventId}';
-export const BL_API_FIND_PLAYER_URL = BL_API_URL + 'players?search=${query}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
+	'player/${playerId}/histogram?leaderboardContext=${leaderboardContext}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}&eventId=${eventId}';
+export const BL_API_FIND_PLAYER_URL =
+	BL_API_URL +
+	'players?search=${query}&leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'players?page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
+	'players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
 export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
 export const BL_API_LEADERBOARD_URL =
 	BL_API_URL +
-	'leaderboard/${leaderboardId}?page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
+	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
-	'leaderboards?page=${page}&count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
+	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
-export const BL_API_CLANS_URL = BL_API_URL + 'clans?page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?page=${page}';
+export const BL_API_CLANS_URL =
+	BL_API_URL + 'clans?leaderboardContext=${leaderboardContext}&page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
+export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
 export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
@@ -58,11 +61,12 @@ export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}';
 export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${player}';
 export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}';
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}';
-export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph';
+export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&';
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_MINIRANKINGS_URL =
-	BL_API_URL + 'minirankings?rank=${rank}&country=${country}&countryRank=${countryRank}&friends=${friends}';
+	BL_API_URL +
+	'minirankings?rank=${rank}&leaderboardContext=${leaderboardContext}&country=${country}&countryRank=${countryRank}&friends=${friends}';
 export const BL_API_EVENTS_URL = BL_API_URL + 'events?page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
 
 export const STEAM_API_PROFILE_URL = STEAM_API_URL + '/ISteamUser/GetPlayerSummaries/v0002/?key=${steamKey}&steamids=${playerId}';
