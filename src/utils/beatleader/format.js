@@ -292,6 +292,8 @@ export function getControllerForEnum(controller) {
 			return 'Oculus Touch controllers';
 		case 16:
 			return 'Oculus Touch 2 controllers';
+	    case 79:
+			return 'Meta Quest 3 controllers';
 		case 256:
 			return 'Quest 2 controllers';
 		case 2:
