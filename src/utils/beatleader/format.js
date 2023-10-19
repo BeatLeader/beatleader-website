@@ -25,11 +25,11 @@ export function extractDiffAndType(ssDiff) {
 }
 
 export function getIconNameForDiff(diffInfo) {
-	return modeDescriptions[diffInfo.type]?.icon ?? 'standard-icon';
+	return modeDescriptions[diffInfo.type]?.icon ?? 'baguette-icon';
 }
 
 export function getDescriptionForDiff(diffInfo) {
-	return modeDescriptions[diffInfo.type]?.title ?? 'Standard';
+	return modeDescriptions[diffInfo.type]?.title ?? 'Unknown';
 }
 
 export const HMDs = {
@@ -413,6 +413,12 @@ export const modeDescriptions = {
 	Lawless: {
 		title: 'Lawless',
 		icon: 'lawless-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Legacy: {
+		title: 'Legacy',
+		icon: 'legacy-icon',
 		color: 'purple',
 		textColor: 'white',
 	},

@@ -221,7 +221,7 @@
 						Object.entries(modeDescriptions).map(([key, type]) => {
 							return {
 								id: key.toLowerCase(),
-								name: modeDescriptions?.[key]?.title ?? 'Standard',
+								name: modeDescriptions?.[key]?.title ?? 'Unknown',
 							};
 						})
 					),
