@@ -16,9 +16,6 @@
 <section class="align-content">
   <article class="page-content" transition:fade|global>
     <ContentBox>
-      <h1>
-        map list
-      </h1>
 			<div class="requests">
 				<RequestedMapCard />
 				<RequestedMapCard />
@@ -29,13 +26,16 @@
     </ContentBox>
   </article>
 
-  <aside>
+
+	<aside>
     <ContentBox>
       <h1>
         filters
       </h1>
     </ContentBox>
   </aside>
+	
+
 </section>
 
 <style>
@@ -45,8 +45,15 @@
 	}
 
 	.page-content {
-		max-width: 65em;
+		max-width: 80em;
 		width: 100%;
+	}
+
+	@media (max-width: 1506px) {
+		.page-content {
+			max-width: fit-content;
+			width: 100%;
+		}
 	}
 
 	article {

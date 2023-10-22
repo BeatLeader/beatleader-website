@@ -125,21 +125,32 @@
 
 <style>
   .card {
-    width: 480px;
+    min-width: 33em;
+    width: calc(50% - 1em);
     height: 128px;
     border-radius: 6px;
     background: #252525 !important;
     overflow: hidden;
   }
 
+  @media (max-width: 1506px) {
+		.card {
+      width: calc(100% - 1em);
+      height: 128px;
+      border-radius: 6px;
+      background: #252525 !important;
+      overflow: hidden;
+    }
+	}
+
   .card-details {
-    width: 480px;
+    width: 100%;
     height: 100px;
     display: flex;
   }
 
   .card-stats {
-    width: 480px;
+    width: 100%;
     height: 28px;
     background: #2b2b2b !important;
     padding-left: 0.3em;
@@ -161,7 +172,6 @@
 
   .song-info {
     width: 100%;
-    max-width: 380px;
     display: flex;
     flex-direction: column;
     padding: 0.2em;
@@ -207,7 +217,7 @@
   .tags {
     height: 24px;
     display: flex;
-    padding-right: 0.3em;
+    padding-right: 0.2em;
 		gap: 0.6em;
   }
 
