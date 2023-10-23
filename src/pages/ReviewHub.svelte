@@ -49,13 +49,6 @@
 		width: 100%;
 	}
 
-	@media (max-width: 1506px) {
-		.page-content {
-			max-width: fit-content;
-			width: 100%;
-		}
-	}
-
 	article {
 		width: calc(100% - 25em);
 		overflow-x: hidden;
