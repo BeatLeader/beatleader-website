@@ -9,10 +9,8 @@
 	const DEFAULT_MAX_RATING = 15;
 	const gypL = 57.74;
 
-	$: maxRating =
-		Number.isFinite(mapRating?.passRating) && mapRating?.passRating > DEFAULT_MAX_RATING
-			? Math.ceil(mapRating?.passRating)
-			: DEFAULT_MAX_RATING;
+	$: maxRatingValue = Math.max(mapRating?.passRating ?? 0, Math.max(mapRating?.techRating ?? 0, mapRating?.accRating ?? 0));
+	$: maxRating = Number.isFinite(maxRatingValue) && maxRatingValue > DEFAULT_MAX_RATING ? Math.ceil(maxRatingValue) : DEFAULT_MAX_RATING;
 	$: corner1 = {
 		x: (gypL - (mapRating.techRating / maxRating) * gypL) * 0.866,
 		y: 86.6 - (gypL - (mapRating.techRating / maxRating) * gypL) / 2,
