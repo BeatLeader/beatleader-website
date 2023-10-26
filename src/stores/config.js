@@ -6,14 +6,15 @@ import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 const STORE_CONFIG_KEY = 'config';
 
-export const DEFAULT_LOCALE = 'en-US';
-
 export let configStore = null;
 
 const BROWSER_MAGIC_VALUE = '__BROWSER';
+const US_LOCALE = 'en-US';
+
+export const DEFAULT_LOCALE = BROWSER_MAGIC_VALUE;
 
 const locales = {
-	'en-US': {id: 'en-US', name: 'United States'},
+	US_LOCALE: {id: US_LOCALE, name: 'United States'},
 	BROWSER_MAGIC_VALUE: {id: BROWSER_MAGIC_VALUE, name: 'Browser settings'},
 };
 export const getCurrentLocale = () => configStore?.getLocale();
@@ -257,7 +258,7 @@ export default async () => {
 	};
 
 	const getLocale = () =>
-		currentConfig?.locale === BROWSER_MAGIC_VALUE ? navigator.language ?? DEFAULT_LOCALE : currentConfig?.locale ?? DEFAULT_LOCALE;
+		currentConfig?.locale === BROWSER_MAGIC_VALUE ? navigator.language ?? US_LOCALE : currentConfig?.locale ?? US_LOCALE;
 
 	const determineNewSettingsAvailable = dbConfig =>
 		Object.entries(newSettingsAvailableDefinition)
