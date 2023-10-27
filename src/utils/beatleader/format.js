@@ -25,7 +25,7 @@ export function extractDiffAndType(ssDiff) {
 }
 
 export function getIconNameForDiff(diffInfo) {
-	return modeDescriptions[diffInfo.type]?.icon ?? 'baguette-icon';
+	return modeDescriptions[diffInfo.type]?.icon ?? 'fas fa-circle-question';
 }
 
 export function getDescriptionForDiff(diffInfo) {
