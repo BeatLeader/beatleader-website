@@ -161,7 +161,7 @@
 	.big-title {
 		font-size: 4em;
 		line-height: 1.2em;
-		font-family: 'Audiowide';
+		font-family: 'Nosifer';
 	}
 
 	.big-description {

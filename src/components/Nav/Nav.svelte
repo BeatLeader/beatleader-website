@@ -91,7 +91,9 @@
 		},
 	];
 
-	let leaderboardType = leaderboardTypeOptions.find(t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == "general" && t.id == 'www'));
+	let leaderboardType = leaderboardTypeOptions.find(
+		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'general' && t.id == 'www')
+	);
 
 	let signupOptions = [];
 
@@ -220,7 +222,7 @@
 			<div class="logo-container desktop-and-up">
 				<img src="/assets/logo.png" class="logo" alt="" />
 				<div class="logo-name">
-					<span class="name">BEATLEADER</span>
+					<span class="name">BOOOLEADER</span>
 					{#if leaderboardType.id != 'www'}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
@@ -569,7 +571,7 @@
 	}
 
 	.name {
-		font-family: 'Audiowide';
+		font-family: 'Nosifer';
 		letter-spacing: 0.2em;
 		font-size: 0.9em;
 		margin-top: 0.3em;

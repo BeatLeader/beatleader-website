@@ -292,7 +292,7 @@ export function getControllerForEnum(controller) {
 			return 'Oculus Touch controllers';
 		case 16:
 			return 'Oculus Touch 2 controllers';
-	    case 79:
+		case 79:
 			return 'Meta Quest 3 controllers';
 		case 256:
 			return 'Quest 2 controllers';
@@ -374,6 +374,12 @@ export function describePlatform(platform) {
 }
 
 export const modeDescriptions = {
+	GhostStandard: {
+		title: 'Spooky!',
+		icon: 'fas fa-ghost',
+		color: 'purple',
+		textColor: 'white',
+	},
 	Standard: {
 		name: 'Standard',
 		icon: 'standard-icon',
