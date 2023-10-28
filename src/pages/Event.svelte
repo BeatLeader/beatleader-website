@@ -250,7 +250,7 @@
 					<b>Bats? Ghosts? Pumpkins? It's Halloween again? 😱 </b><br />
 					Have you ever competed with Ghost Notes modifier? It's time to try! We picked several maps from the awesome
 					<a href="https://bsaber.com/scaretastic-pack/" target="_blank" rel="noreferrer">Scaretastic Pack</a>
-					and from the BSMG contest submissions. <br /><br />
+					and from the <a href="https://beatsaver.com/playlists/203171">BSMG Halloween contest</a>. <br /><br />
 					<b>Try your best with Ghost Notes on separate leaderboards to receive merch from BSMG store as a prize for top 5!.</b> <br />
 					Skill issue? Don't worry, you can buy it yourself <a href="https://bsmgstore.com/" target="_blank" rel="noreferrer">here</a>
 					<br />
