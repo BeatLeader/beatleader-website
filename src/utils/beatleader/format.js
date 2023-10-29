@@ -695,6 +695,7 @@ export const requirementsMap = {
 	mappingExtensions: 1 << 3,
 	cinema: 1 << 4,
 	V3: 1 << 5,
+	optionalProperties: 1 << 6,
 };
 
 export const requirementsDescription = {
@@ -731,6 +732,13 @@ export const requirementsDescription = {
 		name: 'V3 Notes',
 		icon: 'v3-icon',
 		color: 'purple',
+		textColor: 'white',
+	},
+	optionalProperties: {
+		title: 'v3.3 Map with optional properties for elements. May not work on Quest',
+		name: 'Optional Properties',
+		icon: 'fas fa-file',
+		color: 'grey',
 		textColor: 'white',
 	},
 };
