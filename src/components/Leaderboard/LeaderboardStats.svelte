@@ -10,15 +10,23 @@
 	let beatSaverService;
 
 	async function findDiff(leaderboard) {
+		var diffFinder = map => {
+			return map?.versions[0].diffs.find(
+				el =>
+					el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase() &&
+					el.characteristic.toLowerCase() === leaderboard.diffInfo.type.toLowerCase()
+			);
+		};
+
 		if (leaderboard?.beatMaps) {
-			diff = leaderboard?.beatMaps?.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase());
+			diff = diffFinder(leaderboard?.beatMaps);
 		} else if (leaderboard?.song) {
 			if (!beatSaverService) {
 				beatSaverService = createBeatSaverService();
 			}
 
 			const songInfoValue = await beatSaverService.byHash(leaderboard.song.hash);
-			diff = songInfoValue.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase());
+			diff = diffFinder(songInfoValue);
 		}
 	}
 
