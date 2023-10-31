@@ -133,16 +133,16 @@
 					href="https://www.beatleader.xyz/u/76561199050525271">nucleii</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198044544317.png" alt="TG90" /><a
-					href="https://www.beatleader.xyz/u/76561198044544317">TG90</a>
-			</div>
-			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561199257569878.gif" alt="Uragirimono" /><a
 					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
 			</div>
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198073989976R47.png" alt="Loloppe" /><a
 					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
+			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
+					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
 			</div>
 		</section>
 		<h1 class="title is-5">Junior RT</h1>
@@ -174,10 +174,6 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198989311828.png" alt="Rise" /><a
 					href="https://www.beatleader.xyz/u/76561198989311828">Rise</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
-					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
 			</div>
 		</section>
 
@@ -356,6 +352,10 @@
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/c27d8365b40b11235ac6d248c89ab63b612e5372_full.jpg" alt="iPixelGalaxy" /><a
 					href="https://www.beatleader.xyz/u/76561198967815164">iPixelGalaxy</a>
+			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198044544317.png" alt="TG90" /><a
+					href="https://www.beatleader.xyz/u/76561198044544317">TG90</a>
 			</div>
 		</section>
 
