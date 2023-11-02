@@ -21,7 +21,6 @@
 	import {configStore} from '../stores/config';
 
 	import produce from 'immer';
-	import Button from '../components/Common/Button.svelte';
 
 	export let page = 1;
 	export let location;
@@ -351,16 +350,16 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/38')}>
+		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/37')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/Spooksaber2.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/23594-event.png" />
 				<div class="event-text-container">
-					<span class="event-title">Boooo! What's hiding in the dark?!</span>
-					<span class="event-text">Ghost notes competition for Halloween!</span>
+					<span class="event-title">Biggest ranked batch in a while!</span>
+					<span class="event-text">Ranked week competition is back, compete on 29 maps to win a badge.</span>
 				</div>
-				<Button label="Event" iconFa="fas fa-ghost" on:click={() => navigate('/event/38')} />
+				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/37')} />
 			</div>
-		</ContentBox>
+		</ContentBox> -->
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">

@@ -330,12 +330,6 @@
 			diffArray = diffArray.sort(function (a, b) {
 				let diffNumA = parseInt(a.leaderboardId.substring(idLength + 1));
 				let diffNumB = parseInt(b.leaderboardId.substring(idLength + 1));
-				if (a.type == 'GhostStandard') {
-					diffNumA = -1;
-				}
-				if (b.type == 'GhostStandard') {
-					diffNumB = -1;
-				}
 				if (diffNumA < diffNumB) return -1;
 				if (diffNumA > diffNumB) return 1;
 				return 0;
