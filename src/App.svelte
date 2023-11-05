@@ -112,7 +112,7 @@
 <div class="main-background" />
 {#if $configStore.preferences.reebanner}
 	<div class="reebanner">
-		<a class="reelink" href="https://www.patreon.com/beatleader" />
+		<a class="reelink" href="https://www.patreon.com/posts/reesabers-on-92302764" />
 		<div class="banner-spacer" />
 		<img class="reesaber-red" src="/assets/reesaber-red.png" />
 		<span class="link-text">ReeSabers are finally on QUEST!</span>
