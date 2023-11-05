@@ -40,6 +40,7 @@
 	import CensusPage from './pages/Census.svelte';
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
+	import produce from 'immer';
 
 	export let url = '';
 
@@ -109,6 +110,23 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
+{#if $configStore.preferences.reebanner}
+	<div class="reebanner">
+		<a class="reelink" href="https://www.patreon.com/beatleader" />
+		<div class="banner-spacer" />
+		<img class="reesaber-red" src="/assets/reesaber-red.png" />
+		<span class="link-text">ReeSabers are finally on QUEST!</span>
+		<img class="reesaber-blue" src="/assets/reesaber-blue.png" />
+		<button
+			class="close-banner"
+			title="Hide banner"
+			on:click|preventDefault|stopPropagation={() => {
+				$configStore = produce($configStore, draft => {
+					draft.preferences.reebanner = false;
+				});
+			}}><i class="fas fa-xmark" /></button>
+	</div>
+{/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000}>
@@ -236,6 +254,65 @@
 </footer>
 
 <style>
+	.reebanner {
+		background-color: black;
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	.reelink {
+		position: absolute;
+		width: 100%;
+		height: 3em;
+		z-index: 102;
+		pointer-events: auto;
+	}
+
+	.link-text {
+		z-index: 101;
+		font-weight: 800;
+		color: cornflowerblue;
+	}
+
+	.banner-spacer {
+		width: 3em;
+	}
+
+	.close-banner {
+		border: none;
+		color: white;
+		background-color: transparent;
+		cursor: pointer;
+		width: 3em;
+		z-index: 104;
+		pointer-events: auto;
+	}
+
+	.reesaber-red {
+		height: 8em;
+		position: absolute;
+		right: 65%;
+		top: -1.1em;
+		z-index: 100;
+	}
+	.reesaber-blue {
+		height: 8em;
+		position: absolute;
+		left: 65%;
+		top: -1.1em;
+		z-index: 100;
+	}
+
 	:global(.notifications) {
 		position: fixed;
 		z-index: 10000;
@@ -265,6 +342,20 @@
 	@media (max-width: 600px) {
 		main {
 			margin-top: 0;
+		}
+
+		.reesaber-red {
+			right: 5%;
+			top: -1.9em;
+		}
+
+		.reesaber-blue {
+			display: none;
+		}
+		.link-text {
+			color: white;
+			text-shadow: 3px 3px black;
+			margin-bottom: 0.2em;
 		}
 	}
 

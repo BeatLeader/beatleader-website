@@ -48,6 +48,8 @@ export const DEFAULT_CONFIG = {
 		showFiltersOnRanking: true,
 		maps3D: true,
 		mapsViewType: 'maps-cards',
+
+		reebanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,

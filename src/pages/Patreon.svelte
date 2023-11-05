@@ -171,42 +171,46 @@
 				<li>A ton of customizations to make your game stand out not only for you, but for your recordings as well</li>
 				<li>Built-in motion blur for the smoothest sabers you have ever experienced</li>
 			</ul>
-			<span style="color: red">ONLY FOR PC BEAT SABER</span>
 
 			{#if action == 'linkPatreon' || isSupporter}
 				<div class="benefit-button-container">
 					<Button
 						iconFa="fas fa-download"
-						title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
-							? 'Log in on the top of the Page with Steam and Link Patreon'
-							: 'Download Reesabers for 1.31'}
-						label="Download for 1.31"
+						title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.31'}
+						label="Download for PC 1.31"
 						url={BL_API_URL + 'reesabers'}
 						onlyurl={true}
-						disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
+						disabled={!loggedInPlayer || !isSupporter}
 						type="green" />
 					<Button
 						iconFa="fas fa-download"
-						title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
-							? 'Log in on the top of the Page with Steam and Link Patreon'
-							: 'Download Reesabers for 1.27-1.29'}
-						label="Download for 1.27-1.29"
+						title={!loggedInPlayer || !isSupporter
+							? 'Log in on the top of the Page and Link Patreon'
+							: 'Download PC Reesabers for 1.27-1.29'}
+						label="Download for PC 1.27-1.29"
 						url={BL_API_URL + 'reesaberslegacy'}
 						onlyurl={true}
-						disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
+						disabled={!loggedInPlayer || !isSupporter}
+						type="green" />
+					<Button
+						iconFa="fas fa-download"
+						title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
+						label="Download for Quest 1.28"
+						url={BL_API_URL + 'questreesabers'}
+						onlyurl={true}
+						disabled={!loggedInPlayer || !isSupporter}
 						type="green" />
 				</div>
 				{#if isSupporter && loggedInPlayer < 1000000000000000}
 					<div class="benefit-button-container">
-						<span>Sorry but account you linked can't be used in the PC game.<br /></span>
-						<span>Feel free to ask help on Discord.<br /></span>
 						<Button
-							iconFa="fas fa-tower-cell"
-							title="Contact on Discord"
-							label="Ask devs!"
-							url={'https://discord.com/channels/921820046345523311/951919251227295844'}
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
+							label="Download for 1.28"
+							url={BL_API_URL + 'questreesabers'}
 							onlyurl={true}
-							type="blurple" />
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
 					</div>
 				{/if}
 			{/if}
