@@ -381,7 +381,7 @@ export const modeDescriptions = {
 		textColor: 'white',
 	},
 	Standard: {
-		name: 'Standard',
+		title: 'Standard',
 		icon: 'standard-icon',
 		color: 'purple',
 		textColor: 'white',
