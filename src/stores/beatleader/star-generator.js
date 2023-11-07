@@ -15,7 +15,7 @@ export default () => {
 
 	const fetchExMachina = async (hash, diff, mode, scale = 1) => {
 		if (!hash || !diff || !mode) return;
-		fetch(`https://bs-replays-ai.azurewebsites.net/json/${hash}/${mode}/${diffForDiffName(diff)}/full/time-scale/${scale}`)
+		fetch(`https://stage.api.beatleader.net/json/${hash}/${mode}/${diffForDiffName(diff)}/full/time-scale/${scale}`)
 			.then(async response => {
 				if (response.status == 200) {
 					const data = await response.json();
