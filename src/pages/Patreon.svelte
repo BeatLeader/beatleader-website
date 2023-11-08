@@ -173,41 +173,42 @@
 			</ul>
 
 			{#if action == 'linkPatreon' || isSupporter}
-				<div class="benefit-button-container">
-					<Button
-						iconFa="fas fa-download"
-						title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.31'}
-						label="Download for PC 1.31"
-						url={BL_API_URL + 'reesabers'}
-						onlyurl={true}
-						disabled={!loggedInPlayer || !isSupporter}
-						type="green" />
-					<Button
-						iconFa="fas fa-download"
-						title={!loggedInPlayer || !isSupporter
-							? 'Log in on the top of the Page and Link Patreon'
-							: 'Download PC Reesabers for 1.27-1.29'}
-						label="Download for PC 1.27-1.29"
-						url={BL_API_URL + 'reesaberslegacy'}
-						onlyurl={true}
-						disabled={!loggedInPlayer || !isSupporter}
-						type="green" />
-					<Button
-						iconFa="fas fa-download"
-						title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
-						label="Download for Quest 1.28"
-						url={BL_API_URL + 'questreesabers'}
-						onlyurl={true}
-						disabled={!loggedInPlayer || !isSupporter}
-						type="green" />
-				</div>
 				{#if isSupporter && loggedInPlayer < 1000000000000000}
 					<div class="benefit-button-container">
 						<Button
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
-							label="Download for 1.28"
-							url={BL_API_URL + 'questreesabers'}
+							label="Download for Quest 1.28"
+							url={BL_API_URL + 'questreesabers.qmod'}
+							onlyurl={true}
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
+					</div>
+				{:else}
+					<div class="benefit-button-container">
+						<Button
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.31'}
+							label="Download for PC 1.31"
+							url={BL_API_URL + 'reesabers.zip'}
+							onlyurl={true}
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
+						<Button
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter
+								? 'Log in on the top of the Page and Link Patreon'
+								: 'Download PC Reesabers for 1.27-1.29'}
+							label="Download for PC 1.27-1.29"
+							url={BL_API_URL + 'reesaberslegacy.zip'}
+							onlyurl={true}
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
+						<Button
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
+							label="Download for Quest 1.28"
+							url={BL_API_URL + 'questreesabers.qmod'}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
