@@ -173,9 +173,9 @@
 		{
 			key: 'score_range',
 			label: 'Scores count',
-			default: [0, 10000],
+			default: [0, 15000],
 			min: 0,
-			max: 10000,
+			max: 15000,
 			step: 1,
 			pipstep: 2000,
 			type: 'slider',
