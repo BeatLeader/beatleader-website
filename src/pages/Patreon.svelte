@@ -179,7 +179,7 @@
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
 							label="Download for Quest 1.28"
-							url={BL_API_URL + 'questreesabers.qmod'}
+							url={BL_API_URL + 'questreesabers'}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
@@ -190,7 +190,7 @@
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.31'}
 							label="Download for PC 1.31"
-							url={BL_API_URL + 'reesabers.zip'}
+							url={BL_API_URL + 'reesabers'}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
@@ -200,7 +200,7 @@
 								? 'Log in on the top of the Page and Link Patreon'
 								: 'Download PC Reesabers for 1.27-1.29'}
 							label="Download for PC 1.27-1.29"
-							url={BL_API_URL + 'reesaberslegacy.zip'}
+							url={BL_API_URL + 'reesaberslegacy'}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
@@ -208,7 +208,7 @@
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
 							label="Download for Quest 1.28"
-							url={BL_API_URL + 'questreesabers.qmod'}
+							url={BL_API_URL + 'questreesabers'}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
