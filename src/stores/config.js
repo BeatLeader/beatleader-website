@@ -77,6 +77,7 @@ export const DEFAULT_CONFIG = {
 		showAccChart: true,
 		showSliceDetails: false,
 		showAccSpreadChart: false,
+		showPredictedAcc: false,
 		showLeaderboard: true,
 		defaultAccChartIndex: 0,
 	},

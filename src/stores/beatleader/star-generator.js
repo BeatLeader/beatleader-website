@@ -20,10 +20,10 @@ export default () => {
 				if (response.status == 200) {
 					const data = await response.json();
 
-					starRatings[hash + diff + mode] = data;
+					starRatings[hash + diff + mode + scale] = data;
 					set(starRatings);
 				} else {
-					starRatings[hash + diff + mode] = undefined;
+					starRatings[hash + diff + mode + scale] = undefined;
 					set(starRatings);
 				}
 			})

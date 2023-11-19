@@ -3,12 +3,14 @@
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
 	import {configStore} from '../../stores/config';
 	import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic';
+	import createStarGeneratorStore from '../../stores/beatleader/star-generator';
 	import {computeModifiedRating, getPPFromAcc} from '../../utils/beatleader/pp';
 	import BeatSaviorDetails from '../BeatSavior/Details.svelte';
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
 	import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte';
 	import Spinner from '../Common/Spinner.svelte';
 	import ReplayDetails from '../Score/ReplayDetails.svelte';
+	import {modifiersToSpeed} from '../../utils/beatleader/format';
 
 	export let playerId;
 	export let songScore;
@@ -68,9 +70,19 @@
 		inBuiltLeaderboardPage = Math.floor((rank - 1) / scoresPerPage) + 1;
 	}
 
+	const starGeneratorStore = createStarGeneratorStore();
+
 	$: leaderboard = songScore?.leaderboard ?? null;
 	$: score = songScore?.score ?? null;
 	$: beatSaviorPromise = scoreStatisticEnhancer(songScore);
+
+	$: hash = leaderboard?.song?.hash;
+	$: diffInfo = leaderboard?.diffInfo;
+	$: showPredictions = $configStore?.scoreDetailsPreferences?.showPredictedAcc;
+	$: scale = modifiersToSpeed(score.mods);
+	$: exmachinadata = showPredictions && $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type + scale];
+	$: !exmachinadata && showPredictions && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, scale);
+	$: notes = exmachinadata?.notes;
 
 	$: updateInBuiltLeaderboardPage(
 		score && score.rank ? score.rank : null,
@@ -90,7 +102,7 @@
 			{#await beatSaviorPromise}
 				<Spinner />
 			{:then beatSavior}
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} />
 			{/await}
 
 			{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}

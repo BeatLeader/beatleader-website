@@ -605,6 +605,18 @@ export const ModifiersList = [
 	},
 ];
 
+export function modifiersToSpeed(modifiers) {
+	if (!modifiers) return 1;
+	if (modifiers.includes('SF')) {
+		return 1.5;
+	} else if (modifiers.includes('FS')) {
+		return 1.2;
+	} else if (modifiers.includes('SS')) {
+		return 0.85;
+	}
+	return 1;
+}
+
 export function userDescriptionForModifier(modifier) {
 	return ModifiersList.find(m => m.id == modifier)?.name ?? 'Unknown modifier';
 }
