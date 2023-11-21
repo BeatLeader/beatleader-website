@@ -317,7 +317,9 @@
 				chart.options.scales.y.min = minMaxCounter.minValue;
 				chart.options.scales.y.max = minMaxCounter.maxValue;
 			}
-			chart.plugins.title.text = title;
+			if (chart.plugins.title) {
+				chart.plugins.title.text = title;
+			}
 			chart.update();
 		}
 	}

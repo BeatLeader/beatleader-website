@@ -18,6 +18,8 @@
 	let themeName = 'darkss';
 	let theme = null;
 
+	let average = 0;
+
 	function processChartData(chartData, resolution, smoothPeriodPercentage, weightFunctionSteepness) {
 		var data = [];
 		if (chartData.length === 0 || resolution === 0) return data;
@@ -41,7 +43,12 @@
 
 			if (divider === 0) continue;
 			const value = (100 + (sum / divider) * 15) / 1.15;
+			average += value;
 			data.push([songTime, value]);
+		}
+
+		if (data.length) {
+			average /= data.length;
 		}
 
 		return data;
@@ -143,7 +150,7 @@
 </script>
 
 <article transition:fade|global>
-	<span>Predicted accability:</span>
+	<span>Predicted accability (avg {average.toFixed(2)}%):</span>
 	<section class="accuracy-chart" style="--height: {height}">
 		<canvas class="chartjs" bind:this={canvas} />
 	</section>
@@ -152,6 +159,7 @@
 			<Spinner />
 		</div>
 	{/if}
+
 	<span>At speed:</span>
 	<RangeSlider
 		min={0.5}
