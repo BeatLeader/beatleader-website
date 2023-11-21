@@ -312,13 +312,9 @@
 			});
 		} else {
 			chart.data = {labels, datasets};
-			chart.options.plugins.legend.display = true;
 			if (chart.options.scales.y) {
 				chart.options.scales.y.min = minMaxCounter.minValue;
 				chart.options.scales.y.max = minMaxCounter.maxValue;
-			}
-			if (chart.plugins.title) {
-				chart.plugins.title.text = title;
 			}
 			chart.update();
 		}
