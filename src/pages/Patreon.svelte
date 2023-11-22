@@ -74,7 +74,7 @@
 							<Button icon={steamSvg} label="Log In with Steam" type="green" />
 						</form>
 						<br />
-						<span>Quest Log In (no ReeSabers)</span>
+						<span>or Log In with BL account from the Quest mod</span>
 						<div class="input-container">
 							<div class="cat">Login</div>
 							<input bind:value={login} placeholder="Login" />
@@ -85,6 +85,7 @@
 						</div>
 
 						<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
+						<a href="https://discord.com/channels/921820046345523311/951919251227295844">forgot password?</a>
 
 						<div class="sorting-options">
 							<span
