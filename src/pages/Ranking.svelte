@@ -21,7 +21,6 @@
 	import {configStore} from '../stores/config';
 
 	import produce from 'immer';
-	import Button from '../components/Common/Button.svelte';
 
 	export let page = 1;
 	export let location;
@@ -351,17 +350,16 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/39')}>
+		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/37')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="/assets/week65m.png" />
-				<div class="event-sub-container">
-					<span class="event-title">Ranked batches are back!</span>
-					<div>
-						<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/39')} />
-					</div>
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/23594-event.png" />
+				<div class="event-text-container">
+					<span class="event-title">Biggest ranked batch in a while!</span>
+					<span class="event-text">Ranked week competition is back, compete on 29 maps to win a badge.</span>
 				</div>
+				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/37')} />
 			</div>
-		</ContentBox>
+		</ContentBox> -->
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -517,15 +515,8 @@
 		width: 100%;
 		height: 100%;
 		display: flex;
-		justify-content: center;
-		gap: 0.6em;
+		justify-content: space-around;
 		align-items: center;
-	}
-
-	.event-sub-container {
-		display: flex;
-		gap: 1.2em;
-		flex-direction: column;
 	}
 
 	.event-text-container {
@@ -534,15 +525,14 @@
 	}
 
 	.event-image {
-		width: 8em;
-		height: 8em;
+		width: 6em;
+		height: 6em;
 		margin-right: 1em;
 	}
 
 	.event-title {
 		color: var(--text-color);
 		font-size: x-large;
-		margin-top: -0.6em;
 		font-weight: 800;
 		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
