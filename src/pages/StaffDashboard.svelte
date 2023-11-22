@@ -259,7 +259,6 @@
 			valueCondition: 'and',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
-				{id: 'allowed', label: 'Mapper allowed'},
 				{
 					id: 'criteria',
 					label: 'Any Criteria',
@@ -296,7 +295,6 @@
 			valueCondition: 'and',
 			values: [
 				{id: 'current_batch', label: 'Current batch'},
-				{id: 'allowed', label: 'Mapper allowed'},
 				{
 					id: 'criteria',
 					label: 'Any Criteria',
@@ -611,14 +609,13 @@
 									: 0;
 							carry.qualified +=
 								diff?.status === DifficultyStatus.qualified || DifficultyStatus.ranked || !!diff?.qualified || !!diff?.ranked ? 1 : 0;
-							carry.mapperAllowed += diff?.qualification?.mapperAllowed ? 1 : 0;
 							carry.criteriaMet += [1, 2].includes(diff?.qualification?.criteriaMet) ? 1 : 0;
 							carry.approved += diff?.qualification?.approved ? 1 : 0;
 							carry.votesTotal += diff?.votesTotal ?? 0;
 							carry.votesPositive += diff?.votesPositive ?? 0;
 							carry.votesNegative += diff?.votesNegative ?? 0;
 
-							['nominated', 'qualified', 'mapperAllowed', 'criteriaMet', 'approved'].forEach(key => {
+							['nominated', 'qualified', 'criteriaMet', 'approved'].forEach(key => {
 								carry[`${key}Ratio`] = s?.difficulties?.length ? carry[key] / s.difficulties.length : 0;
 							});
 
@@ -632,7 +629,6 @@
 							nominatedRatio: 0,
 							qualified: 0,
 							qualifiedRatio: 0,
-							mapperAllowed: 0,
 							mapperAllowedRatio: 0,
 							criteriaMet: 0,
 							criteriaMetRatio: 0,
@@ -661,7 +657,6 @@
 										diff?.status === DifficultyStatus.qualified || DifficultyStatus.ranked || !!diff?.qualified || !!diff?.ranked
 											? 'Yes'
 											: 'No',
-									mapperAllowed: diff?.qualification?.mapperAllowed ? 'Yes' : 'No',
 									criteriaMet:
 										diff?.qualification?.criteriaMet === 1
 											? 'Yes'
@@ -865,11 +860,6 @@
 							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
 
 							switch (key) {
-								case 'allowed':
-									if (statusCond === 'or') result ||= s?.totals?.mapperAllowed > 0;
-									else result &&= s?.totals?.mapperAllowed > 0;
-									break;
-
 								case 'criteria':
 									switch (statusCond) {
 										case 'or':
@@ -921,11 +911,6 @@
 							const values = (parts ?? []).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
 
 							switch (key) {
-								case 'allowed':
-									if (statusNotCond === 'or') result ||= s?.totals?.mapperAllowed < s?.difficulties?.length;
-									else result &&= s?.totals?.mapperAllowed < s?.difficulties?.length;
-									break;
-
 								case 'criteria':
 									switch (statusNotCond) {
 										case 'or':

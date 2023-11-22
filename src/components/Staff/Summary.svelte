@@ -10,7 +10,6 @@
 	export let count;
 
 	const keys = {
-		mapperAllowed: 'Mapper allowed',
 		criteriaMet: 'Criteria checked',
 		approved: 'RT approved',
 	};
@@ -141,9 +140,9 @@
 	.totals {
 		display: grid;
 		align-items: flex-start;
-		grid-template-columns: 50% 25% 25%;
+		grid-template-columns: 50% 50%;
 		gap: 0.7rem;
-		margin-right: 1.4em;
+		margin: 0 0.9em;
 	}
 
 	.ratio {
@@ -161,7 +160,7 @@
 	}
 
 	.totals.with-count {
-		min-width: 18rem;
+		min-width: 12rem;
 	}
 
 	.ratio.ok {
