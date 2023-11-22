@@ -40,6 +40,7 @@
 	import CensusPage from './pages/Census.svelte';
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
+	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
 	import produce from 'immer';
 
 	export let url = '';
@@ -211,6 +212,9 @@
 					<Route path="/signin/oauth2" let:location>
 						<OauthSignInPage {location} />
 					</Route>
+					<Route path="/developer" let:params let:location>
+						<DeveloperPortalPage {location} />
+					</Route>
 					<Route path="/*" component={NotFoundPage} />
 				</div>
 			</main>
@@ -232,7 +236,7 @@
 		<p>
 			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
 			|
-			<a href="https://api.beatleader.xyz/swagger/index.html">API</a>
+			<a href="/developer">Developer Portal</a>
 			|
 			<a href="https://beatleader.wiki/">Wiki</a>
 			|
