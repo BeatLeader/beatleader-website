@@ -40,6 +40,7 @@
 	import CensusPage from './pages/Census.svelte';
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
+	import Maps from './pages/Maps.svelte';
 
 	export let url = '';
 
@@ -165,6 +166,9 @@
 					</Route>
 					<Route path="/leaderboards/*page" let:params let:location>
 						<LeaderboardsPage page={params.page} {location} />
+					</Route>
+					<Route path="/maps">
+						<Maps />
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
