@@ -67,13 +67,12 @@
 	let translation = carouselWidth * 0.25;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
-	let totalCards = 3;
 
 	const bodyStore = createContainerStore();
 	const containerStore = createContainerStore();
 
 	function moveForward() {
-		if (currentCenteredIndex + 1 < totalCards) {
+		if (currentCenteredIndex + 1 < cards.length) {
 			translation -= carouselWidth * 0.5;
 			currentCenteredIndex++;
 		}
@@ -100,7 +99,7 @@
 	}
 
 	function moveRightOrReset() {
-		if (currentCenteredIndex + 1 < totalCards) {
+		if (currentCenteredIndex + 1 < cards.length) {
 			translation -= carouselWidth * 0.5;
 			currentCenteredIndex++;
 		} else {
@@ -229,8 +228,8 @@
 
 	.bullets > span {
 		display: inline-block;
-		width: 0.65em;
-		height: 0.65em;
+		width: 0.70em;
+		height: 0.70em;
 		background-color: rgba(111, 111, 111, 0.75);
 		border-radius: 50%;
 		cursor: pointer;
