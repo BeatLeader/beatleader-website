@@ -1,10 +1,11 @@
 <script>
-	import ContentBox from "../components/Common/ContentBox.svelte";
+  import ContentBox from "../components/Common/ContentBox.svelte";
+	import DiscoverCard from "../components/Maps/DiscoverCard.svelte";
+	import FeaturedCarousel from "../components/Maps/FeaturedCarousel.svelte";
 	import MapsCategoryCard from "../components/Maps/MapsCategoryCard.svelte";
   import {fade} from 'svelte/transition';
 
   let categoryCardHeight = 400;
-
 
 </script>
 
@@ -14,7 +15,7 @@
 
 <section class="align-content">
   <article class="page-content" transition:fade|global>
-    <ContentBox>
+    <ContentBox class="main-content">
       <h1 class="header">MAPS</h1>
 
       <div class="categories">
@@ -22,6 +23,13 @@
         <MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} bgColor = "#15261D"/>
         <MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor = "#240C2D"/>
       </div>
+
+      <div class="items">
+        <DiscoverCard />
+        <FeaturedCarousel />
+
+      </div>
+      
 
     </ContentBox>
   </article>
@@ -76,6 +84,14 @@
       margin: 1.5em;
       margin-top: 4.25em;
     }
+  }
+
+  .items {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5em;
+    margin: 3.25em;
   }
 
 </style>
