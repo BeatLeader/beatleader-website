@@ -34,7 +34,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="grid-item">
+<div class="grid-item" class:active>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active>
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active>
@@ -70,8 +70,13 @@
 		display: flex;
 		width: 100%;
 		padding: 1em;
-		position: relative;
+    position: relative;
+    transition: padding 300ms ease;
 	}
+
+  .grid-item.active {
+    padding: 0.2em;
+  }
 
 	.card {
 		width: 100%;
@@ -84,12 +89,6 @@
 		flex-direction: column;
 		border-radius: 12px;
 		cursor: pointer;
-		transition: transform 300ms ease;
-	}
-
-	.card.active {
-		transform: scale(1.1);
-		z-index: 2;
 	}
 
 	.background-container {
@@ -114,7 +113,6 @@
 		transition: transform 600ms ease;
 		z-index: 0;
 		pointer-events: none;
-		z-index: 1;
 	}
 
 	.card:hover .background {
@@ -135,7 +133,6 @@
 		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
 		border-radius: 12px;
 		position: relative;
-		z-index: 1;
 	}
 
 	.content h1 {
@@ -154,7 +151,7 @@
 		row-gap: -0.25em;
 		column-gap: 0.5em;
 		position: absolute;
-		bottom: 1.85em;
+		bottom: 1.6em;
 		left: 1.25em;
 		width: calc(100% - 2.5em);
 		pointer-events: none;
@@ -172,7 +169,6 @@
 		bottom: 0;
 		left: 0;
 		pointer-events: none;
-		z-index: 0;
 	}
 
 	.cinematics-canvas {
@@ -183,6 +179,7 @@
 		top: 0;
 		transform: scale(1.05) translateZ(0);
 		width: 100%;
+		z-index: -1;
 		height: 100%;
 		transition: ease-in-out 300ms;
 	}
