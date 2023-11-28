@@ -115,7 +115,7 @@
 	$: startObserving(mainEl);
 </script>
 
-<section bind:this={mainEl} class="carousel" style="--cards-cnt: {3}; --translation: {translation}%;">
+<section bind:this={mainEl} class="carousel" style="--cards-cnt: {cards.length}; --translation: {translation}%;">
 	{#if cards.length > 1 && showNavBullets}
 		<div class="bullets">
 			{#each cards as card, index}
