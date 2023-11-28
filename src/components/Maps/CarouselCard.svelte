@@ -75,7 +75,7 @@
 	}
 
   .grid-item.active {
-    padding: 0.2em;
+    padding: 0.5em;
   }
 
 	.card {
@@ -115,7 +115,7 @@
 		pointer-events: none;
 	}
 
-	.card:hover .background {
+	.card.active:hover .background {
 		transform: scale(1.1);
 	}
 	.card:hover .cinematics-canvas {
