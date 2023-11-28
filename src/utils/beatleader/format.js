@@ -762,6 +762,37 @@ export function mapRequirementsListFromMask(type) {
 		.filter(d => d);
 }
 
+export const songStatusesMap = {
+	curated: 1 << 1,
+	mapOfTheWeek: 1 << 2,
+};
+
+export const songStatusesDescription = {
+	curated: {
+		title: 'Map was curated by BeastSaber team!',
+		name: 'Curated',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/beastsabericon.png',
+		color: '#00bc8c',
+		textColor: 'white',
+	},
+	mapOfTheWeek: {
+		title: 'BeastSaber Map Of The Week',
+		name: 'Map Of The Week',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/beastsabericon.png',
+		color: '#454088',
+		textColor: 'white',
+	},
+};
+
+export function songStatusesListFromMask(type) {
+	return Object.keys(songStatusesMap)
+		.filter(key => songStatusesMap[key] & type)
+		.map(key => songStatusesDescription[key])
+		.filter(d => d);
+}
+
 export function votingsForTypeStats(stats) {
 	let result = '';
 	stats.forEach((element, i) => {

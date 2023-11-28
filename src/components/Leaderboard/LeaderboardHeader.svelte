@@ -14,6 +14,7 @@
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../stores/config';
 	import Spinner from '../Common/Spinner.svelte';
+	import SongStatus from './SongStatus.svelte';
 
 	export let leaderboard;
 	export let ratings = null;
@@ -94,6 +95,13 @@
 						<MapTypeDescription type={leaderboard?.stats.type} />
 					{/if}
 				</div>
+				{#if song.externalStatuses}
+					<div class="song-statuses">
+						{#each leaderboard.song.externalStatuses as songStatus}
+							<SongStatus {songStatus} />
+						{/each}
+					</div>
+				{/if}
 				{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 					<LeaderboardStats {leaderboard} />
 				{/if}
@@ -223,6 +231,12 @@
 		justify-content: space-between;
 		flex-direction: column;
 		grid-gap: 0.2em;
+	}
+
+	.song-statuses {
+		color: #ffffffab;
+		display: flex;
+		gap: 0.25em;
 	}
 
 	.cinematics {

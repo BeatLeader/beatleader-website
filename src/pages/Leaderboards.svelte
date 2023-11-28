@@ -31,6 +31,8 @@
 		DifficultyStatus,
 		requirementsMap,
 		modeDescriptions,
+		songStatusesMap,
+		songStatusesDescription,
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
@@ -75,6 +77,7 @@
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
 		{key: 'mapRequirements', default: null, process: processIntFilter},
+		{key: 'songStatus', default: null, process: processIntFilter},
 		{key: 'allRequirements', default: 0, process: processIntFilter},
 	];
 
@@ -134,6 +137,17 @@
 			color: requirementsDescription?.[key]?.color ?? 'var(--beatleader-primary',
 			textColor: requirementsDescription?.[key]?.textColor ?? null,
 			title: requirementsDescription?.[key]?.title ?? null,
+		};
+	});
+
+	const songStatusOptions = Object.entries(songStatusesMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(songStatusesDescription?.[key]?.name ?? key),
+			icon: `<span class="${songStatusesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: songStatusesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: songStatusesDescription?.[key]?.textColor ?? null,
+			title: songStatusesDescription?.[key]?.title ?? null,
 		};
 	});
 
@@ -266,6 +280,21 @@
 		else currentFilters.mapRequirements |= event.detail.key;
 
 		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = null;
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onSongStatusChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = 0;
+
+		if (currentFilters.songStatus & event.detail.key) currentFilters.songStatus &= currentFilters.songStatus ^ event.detail.key;
+		else currentFilters.songStatus |= event.detail.key;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = null;
 
 		currentPage = 1;
 
@@ -506,6 +535,14 @@
 						on:change={onMyTypeChanged} />
 				</section>
 			{/if}
+
+			<section class="filter">
+				<Switcher
+					values={songStatusOptions}
+					value={songStatusOptions.filter(c => currentFilters.songStatus & c.key)}
+					multi={true}
+					on:change={onSongStatusChanged} />
+			</section>
 
 			<div style="margin-bottom: 0.1em">
 				<Select

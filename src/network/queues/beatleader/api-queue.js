@@ -42,11 +42,12 @@ export const BL_API_LEADERBOARD_URL =
 	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
-	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
+	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
-	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
+	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
 export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
+
 export const BL_API_CLANS_URL =
 	BL_API_URL + 'clans?leaderboardContext=${leaderboardContext}&page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}';
@@ -155,6 +156,7 @@ const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'requirements', value: currentDiff?.requirements ?? null},
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
+		{id: 'externalStatuses', value: led?.song?.externalStatuses},
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},
