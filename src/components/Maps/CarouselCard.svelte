@@ -70,7 +70,7 @@
 		display: flex;
 		width: 100%;
 		padding: 1em;
-    position: relative;
+		position: relative;
 	}
 
 	.card {
@@ -84,12 +84,13 @@
 		flex-direction: column;
 		border-radius: 12px;
 		cursor: pointer;
-    transition: transform 300ms ease;
+		transition: transform 300ms ease;
 	}
 
-  .card.active {
-    transform: scale(1.1);
-  }
+	.card.active {
+		transform: scale(1.1);
+		z-index: 2;
+	}
 
 	.background-container {
 		width: 100%;
@@ -113,6 +114,7 @@
 		transition: transform 600ms ease;
 		z-index: 0;
 		pointer-events: none;
+		z-index: 1;
 	}
 
 	.card:hover .background {
@@ -133,6 +135,7 @@
 		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
 		border-radius: 12px;
 		position: relative;
+		z-index: 1;
 	}
 
 	.content h1 {
@@ -169,7 +172,7 @@
 		bottom: 0;
 		left: 0;
 		pointer-events: none;
-    z-index: -1;
+		z-index: 0;
 	}
 
 	.cinematics-canvas {
