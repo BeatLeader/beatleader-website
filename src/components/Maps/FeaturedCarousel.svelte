@@ -222,7 +222,7 @@
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
-		bottom: 0.2em;
+		bottom: 0.5em;
 		z-index: 1;
 	}
 
