@@ -115,16 +115,13 @@
 				imageUrl={card.imageUrl}
 				buttons={card.buttons}
 				active={index === currentCenteredIndex}
-				on:click={() => moveOrOpen(index, card.targetUrl)} />
+				clickAction={() => moveOrOpen(index, card.targetUrl)} />
 		{/each}
 	</div>
 </section>
 
 <div on:click={moveForward} style="height: 24px; background: black;">Move forward</div>
 <div on:click={moveBackward} style="height: 24px; background: black;">Move backward</div>
-<div on:click={() => moveToPosition(0)} style="height: 24px; background: black;">Move to 0</div>
-<div on:click={() => moveToPosition(1)} style="height: 24px; background: black;">Move to 1</div>
-<div on:click={() => moveToPosition(2)} style="height: 24px; background: black;">Move to 2</div>
 
 <style>
 	.carousel {

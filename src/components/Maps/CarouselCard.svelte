@@ -7,8 +7,13 @@
 	export let imageUrl = '';
 	export let buttons = [];
 	export let active = false;
+	export let clickAction;
 
 	let cinematicsCanvas;
+
+	function handleCardClick() {
+		clickAction();
+	}
 
 	function drawCinematics(cinematicsCanvas, coverUrl) {
 		if (coverUrl && cinematicsCanvas) {
@@ -29,8 +34,8 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="grid-item" on:click|preventDefault>
-	<div class="card" style="background-image: url({imageUrl});">
+<div class="grid-item">
+	<div class="card" style="background-image: url({imageUrl});" on:click={handleCardClick}>
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -41,7 +46,7 @@
 			<h1>{title}</h1>
 			<p>{body}</p>
 
-			<div class="buttons">
+			<div class="buttons" class:active>
 				{#each buttons as button}
 					<Button
 						label={button.text}
@@ -107,6 +112,11 @@
 		bottom: 1.85em;
 		left: 1.25em;
 		width: calc(100% - 2.5em);
+		pointer-events: none;
+	}
+
+	.buttons.active {
+		pointer-events: all;
 	}
 
 	.cinematics {
