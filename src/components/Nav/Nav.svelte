@@ -89,9 +89,17 @@
 			logoBig: '/assets/logo.png',
 			logoSmall: '/assets/favicon-96x96.png',
 		},
+		{
+			name: 'SCPM',
+			id: 'scpm',
+			logoBig: '/assets/logo.png',
+			logoSmall: '/assets/favicon-96x96.png',
+		},
 	];
 
-	let leaderboardType = leaderboardTypeOptions.find(t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == "general" && t.id == 'www'));
+	let leaderboardType = leaderboardTypeOptions.find(
+		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'general' && t.id == 'www')
+	);
 
 	let signupOptions = [];
 
