@@ -118,6 +118,10 @@
 	.card.active:hover .background {
 		transform: scale(1.1);
 	}
+
+  .card:hover .background {
+    transform: scale(1.025);
+  }
 	.card:hover .cinematics-canvas {
 		transform: scale(1.125);
 		filter: blur(5em) opacity(0.5) saturate(250%) brightness(120%);
