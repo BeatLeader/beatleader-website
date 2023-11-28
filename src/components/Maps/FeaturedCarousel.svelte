@@ -36,6 +36,7 @@
 	];
 
 	export let showNavBullets = true;
+	export let autoMoveInterval = null;
 
 	let mainEl = null;
 	let translation = 25;
@@ -73,8 +74,24 @@
 		}
 	}
 
+	function moveRightOrReset() {
+		if (currentCenteredIndex + 1 < totalCards) {
+			translation -= 50;
+			currentCenteredIndex++;
+		} else {
+			translation = 25;
+			currentCenteredIndex = 0;
+		}
+	}
+
 	onMount(() => {
+		let intervalId;
+		if (autoMoveInterval) {
+			intervalId = setInterval(moveRightOrReset, autoMoveInterval);
+		}
+
 		return () => {
+			if (intervalId) clearInterval(intervalId);
 			if (mainEl) {
 				mainEl.removeEventListener('swiped-left', moveForward);
 				mainEl.removeEventListener('swiped-right', moveBackward);
