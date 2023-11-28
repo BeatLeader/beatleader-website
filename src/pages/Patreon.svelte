@@ -189,9 +189,17 @@
 					<div class="benefit-button-container">
 						<Button
 							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.33'}
+							label="Download for PC 1.33"
+							url={BL_API_URL + 'reesaberscurrent'}
+							onlyurl={true}
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
+						<Button
+							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.31'}
 							label="Download for PC 1.31"
-							url={BL_API_URL + 'reesabers'}
+							url={BL_API_URL + 'reesabersprevious'}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
