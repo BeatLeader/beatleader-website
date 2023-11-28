@@ -33,13 +33,38 @@
 				},
 			],
 		},
+		{
+			title: 'Card 2',
+			body: 'Card 2 description',
+			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+			targetUrl: '/leaderboard/global/345b9xx91/1',
+		},
+		{
+			title: 'Card 2',
+			body: 'Card 2 description',
+			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+			targetUrl: '/leaderboard/global/345b9xx91/1',
+		},
+		{
+			title: 'Card 2',
+			body: 'Card 2 description',
+			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+			targetUrl: '/leaderboard/global/345b9xx91/1',
+		},
+		{
+			title: 'Card 2',
+			body: 'Card 2 description',
+			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+			targetUrl: '/leaderboard/global/345b9xx91/1',
+		},
 	];
 
 	export let showNavBullets = true;
 	export let autoMoveInterval = null;
 
+	let carouselWidth;
 	let mainEl = null;
-	let translation = 25;
+	let translation = carouselWidth * 0.25;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
 	let totalCards = 3;
@@ -49,20 +74,20 @@
 
 	function moveForward() {
 		if (currentCenteredIndex + 1 < totalCards) {
-			translation -= 50;
+			translation -= carouselWidth * 0.5;
 			currentCenteredIndex++;
 		}
 	}
 
 	function moveBackward() {
 		if (currentCenteredIndex - 1 >= 0) {
-			translation += 50;
+			translation += carouselWidth * 0.5;
 			currentCenteredIndex--;
 		}
 	}
 
 	function moveToPosition(index) {
-		translation = index * -50 + 25;
+		translation = index * carouselWidth * -0.5 + carouselWidth * 0.25;
 		currentCenteredIndex = index;
 	}
 
@@ -76,12 +101,16 @@
 
 	function moveRightOrReset() {
 		if (currentCenteredIndex + 1 < totalCards) {
-			translation -= 50;
+			translation -= carouselWidth * 0.5;
 			currentCenteredIndex++;
 		} else {
-			translation = 25;
+			translation = carouselWidth * 0.5;
 			currentCenteredIndex = 0;
 		}
+	}
+
+	function handleResize() {
+		moveToPosition(currentCenteredIndex);
 	}
 
 	onMount(() => {
@@ -89,8 +118,11 @@
 		if (autoMoveInterval) {
 			intervalId = setInterval(moveRightOrReset, autoMoveInterval);
 		}
+		window.addEventListener('resize', handleResize);
+		handleResize();
 
 		return () => {
+			window.removeEventListener('resize', handleResize);
 			if (intervalId) clearInterval(intervalId);
 			if (mainEl) {
 				mainEl.removeEventListener('swiped-left', moveForward);
@@ -115,7 +147,12 @@
 	$: startObserving(mainEl);
 </script>
 
-<section bind:this={mainEl} class="carousel" style="--cards-cnt: {cards.length}; --translation: {translation}%;">
+<section
+	bind:this={mainEl}
+	bind:offsetWidth={carouselWidth}
+	on:resize={handleResize}
+	class="carousel"
+	style="--cards-cnt: {cards.length}; --translation: {translation}px; --width: {carouselWidth}px;">
 	{#if cards.length > 1 && showNavBullets}
 		<div class="bullets">
 			{#each cards as card, index}
@@ -171,7 +208,8 @@
 
 	.cards-wrapper {
 		display: grid;
-		grid-template-columns: repeat(var(--cards-cnt), 50%);
+		position: absolute;
+		grid-template-columns: repeat(var(--cards-cnt), calc(var(--width) * 0.5));
 		grid-template-rows: 1fr;
 		height: 100%;
 		min-height: inherit;
