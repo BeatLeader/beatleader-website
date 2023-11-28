@@ -35,7 +35,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="grid-item">
-	<div class="card" on:click={handleCardClick} on:mouseenter>
+	<div class="card" on:click={handleCardClick} on:mouseenter class:active>
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -70,6 +70,7 @@
 		display: flex;
 		width: 100%;
 		padding: 1em;
+    position: relative;
 	}
 
 	.card {
@@ -83,7 +84,12 @@
 		flex-direction: column;
 		border-radius: 12px;
 		cursor: pointer;
+    transition: transform 300ms ease;
 	}
+
+  .card.active {
+    transform: scale(1.1);
+  }
 
 	.background-container {
 		width: 100%;
@@ -163,6 +169,7 @@
 		bottom: 0;
 		left: 0;
 		pointer-events: none;
+    z-index: -1;
 	}
 
 	.cinematics-canvas {
@@ -173,7 +180,6 @@
 		top: 0;
 		transform: scale(1.05) translateZ(0);
 		width: 100%;
-		z-index: -1;
 		height: 100%;
 		transition: ease-in-out 300ms;
 	}
