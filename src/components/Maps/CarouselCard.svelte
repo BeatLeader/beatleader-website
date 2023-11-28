@@ -98,7 +98,9 @@
 	.buttons {
 		display: flex;
 		flex-direction: row;
+		flex-wrap: wrap-reverse;
 		justify-content: flex-end;
+		overflow: hidden;
 		row-gap: -0.25em;
 		column-gap: 0.5em;
 		position: absolute;
