@@ -24,6 +24,7 @@
 	}
 
 	$: drawCinematics(cinematicsCanvas, imageUrl);
+	$: if (buttons.length > 3) buttons = buttons.slice(0, 3);
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -76,6 +77,7 @@
 		display: flex;
 		flex-direction: column;
 		border-radius: 12px;
+		cursor: pointer;
 	}
 
 	.content {
@@ -96,11 +98,13 @@
 	.buttons {
 		display: flex;
 		flex-direction: row;
-		justify-content: flex-start;
-		gap: 0.5em;
+		justify-content: flex-end;
+		row-gap: -0.25em;
+		column-gap: 0.5em;
 		position: absolute;
-		bottom: 1em;
+		bottom: 1.85em;
 		left: 1.25em;
+		width: calc(100% - 2.5em);
 	}
 
 	.cinematics {
