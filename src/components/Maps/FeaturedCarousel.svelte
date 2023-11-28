@@ -21,7 +21,17 @@
       title: "Card 3",
       body: "Card 3 description",
       imageUrl: "/assets/landing-big.jpg",
-      targetUrl: undefined
+      targetUrl: undefined,
+      buttons: [
+        {
+          text: "Button 1",
+          type: "primary"
+        },
+        {
+          text: "Button 2",
+          url: "/leaderboard/global/345b9xx91/1",
+        }
+      ]
     }
   ]
 
@@ -97,6 +107,7 @@
         title={card.title}
         body={card.body}
         imageUrl={card.imageUrl}
+        buttons={card.buttons}
         on:click = {() => moveOrOpen(index, card.targetUrl)}
       />
     {/each}
@@ -118,6 +129,7 @@
     position: relative;
     overflow: hidden;
     display: block;
+    border-radius: 12px;
   }
   
   .carousel:after {

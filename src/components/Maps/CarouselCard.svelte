@@ -1,7 +1,11 @@
 <script>
+	import Button from "../Common/Button.svelte";
+  import { navigate } from "svelte-routing/src/history";
+
   export let title = "";
   export let body = "";
   export let imageUrl = "";
+  export let buttons = [];
 
 
   let cinematicsCanvas;
@@ -41,7 +45,14 @@
       <h1>{title}</h1>
       <p>{body}</p>
 
+      <div class="buttons">
+        {#each buttons as button}
+          <Button label={button.text} url={button.url} type={button.type} on:click = {() => {if (button.url) navigate(button.url)}}/>
+        {/each}
+      </div>
     </div>
+
+    
 
   </div>
 </div>
@@ -74,6 +85,8 @@
     padding: 1em;
     padding-left: 1.25em;
     text-align: left;
+    max-width: 100%;
+    overflow: hidden;
   }
 
   .content h1 {
@@ -82,6 +95,16 @@
 
   .content p {
     color: white;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.5em;
+    position: absolute;
+    bottom: 1em;
+    left: 1.25em;
   }
 
   .cinematics {
