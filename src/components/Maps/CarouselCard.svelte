@@ -35,11 +35,14 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="grid-item">
-	<div class="card" style="background-image: url({imageUrl});" on:click={handleCardClick}>
+	<div class="card" on:click={handleCardClick} on:mouseenter>
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 			</div>
+		</div>
+		<div class="background-container">
+			<div class="background" style="background-image: url({imageUrl});" />
 		</div>
 
 		<div class="content">
@@ -72,9 +75,6 @@
 	.card {
 		width: 100%;
 		height: 100%;
-		background-size: cover;
-		background-repeat: no-repeat;
-		background-position: center;
 		background-color: rgb(21, 38, 29) !important;
 		position: relative;
 		overflow: visible;
@@ -85,12 +85,48 @@
 		cursor: pointer;
 	}
 
+	.background-container {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		overflow: hidden;
+		border-radius: 12px;
+	}
+
+	.background {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		width: 100%;
+		height: 100%;
+		transition: transform 600ms ease;
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.card:hover .background {
+		transform: scale(1.1);
+	}
+	.card:hover .cinematics-canvas {
+		transform: scale(1.125);
+		filter: blur(5em) opacity(0.5) saturate(250%) brightness(120%);
+	}
+
 	.content {
 		padding: 1em;
 		padding-left: 1.25em;
 		text-align: left;
 		max-width: 100%;
+		height: 100%;
 		overflow: hidden;
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+		border-radius: 12px;
+		position: relative;
 	}
 
 	.content h1 {
@@ -113,6 +149,7 @@
 		left: 1.25em;
 		width: calc(100% - 2.5em);
 		pointer-events: none;
+		text-shadow: none;
 	}
 
 	.buttons.active {
@@ -138,7 +175,7 @@
 		width: 100%;
 		z-index: -1;
 		height: 100%;
-		transition: filter ease-in-out 300ms;
+		transition: ease-in-out 300ms;
 	}
 
 	.cinematics-canvas.active {
