@@ -229,8 +229,8 @@
 
 	.bullets > span {
 		display: inline-block;
-		width: 1em;
-		height: 1em;
+		width: 0.65em;
+		height: 0.65em;
 		background-color: rgba(111, 111, 111, 0.75);
 		border-radius: 50%;
 		cursor: pointer;
