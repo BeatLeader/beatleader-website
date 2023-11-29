@@ -9,6 +9,7 @@
 
 	export let notes;
 	export let height = '12em';
+	export let speed;
 
 	const dispatch = createEventDispatcher();
 
@@ -141,15 +142,13 @@
 			chart.update();
 		}
 	}
-
-	let speed = 1;
 	let start = 0;
 
 	$: notes && setupChart(canvas, notes.rows);
 	$: loading = false;
 </script>
 
-<article transition:fade|global>
+<article>
 	<span>Predicted accability (avg {average.toFixed(2)}%):</span>
 	<section class="accuracy-chart" style="--height: {height}">
 		<canvas class="chartjs" bind:this={canvas} />

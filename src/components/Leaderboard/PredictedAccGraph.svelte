@@ -7,17 +7,15 @@
 
 	const starGeneratorStore = createStarGeneratorStore();
 
-	let scale = 1.0;
+	let speed = 1.0;
 
 	$: hash = leaderboard?.song?.hash;
 	$: diffInfo = leaderboard?.diffInfo;
-	$: exmachinadata = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type + scale];
+	$: exmachinadata = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type + speed];
 	$: notes = exmachinadata?.notes;
-	$: !exmachinadata && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, scale);
+	$: !exmachinadata && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, speed);
 </script>
 
 <article transition:fade|global>
-	{#if notes}
-		<ExmachinaCurve {notes} on:speed-changed={e => (scale = e.detail)} />
-	{/if}
+	<ExmachinaCurve {notes} {speed} on:speed-changed={e => (speed = e.detail)} />
 </article>
