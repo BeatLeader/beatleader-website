@@ -191,15 +191,30 @@
 	.carousel {
 		width: 100%;
 		height: 20em;
-		background: #232323 !important;
+		/*background: #232323 !important;*/
 		position: relative;
-		overflow: hidden;
+		overflow: visible;
 		display: block;
 		border-radius: 12px;
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
+		mask-type: alpha;
+		-webkit-mask-image: linear-gradient(
+			90deg,
+			transparent 0%,
+			white 15%,
+			white 85%,
+			transparent 100%
+		);
+    mask-image: linear-gradient(
+			90deg,
+			transparent 0%,
+			white 15%,
+			white 85%,
+			transparent 100%
+		);
 	}
 
-	.carousel:after {
+	/*.carousel:after {
 		content: '';
 		position: absolute;
 		top: 0;
@@ -214,7 +229,7 @@
 			rgba(0, 0, 0, 0) 85%,
 			rgba(35, 35, 35, 1) 100%
 		) !important;
-	}
+	}*/
 
 	.cards-wrapper {
 		display: grid;
