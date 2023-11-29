@@ -190,7 +190,9 @@
 <style>
 	.carousel {
 		width: 100%;
-		height: 20em;
+		height: 40em;
+		margin-top: -10em;
+		margin-bottom: -10em;
 		/*background: #232323 !important;*/
 		position: relative;
 		overflow: visible;
@@ -236,7 +238,8 @@
 		position: absolute;
 		grid-template-columns: repeat(var(--cards-cnt), calc(var(--width) * 0.5));
 		grid-template-rows: 1fr;
-		height: 100%;
+		top: 10em;
+		bottom: 10em;
 		min-height: inherit;
 		overflow: visible;
 		transform: translateX(var(--translation));
@@ -248,7 +251,7 @@
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
-		bottom: 0.5em;
+		bottom: 10.5em;
 		z-index: 1;
 	}
 

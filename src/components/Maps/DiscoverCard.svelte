@@ -13,6 +13,7 @@
     border-radius: 12px;
     background: #232323;
     box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
+    z-index: 3;
   }
 
   .header {
