@@ -19,14 +19,11 @@
 	let themeName = 'darkss';
 	let theme = null;
 
-	let average = 0;
-
 	function processChartData(chartData, resolution, smoothPeriodPercentage, weightFunctionSteepness) {
 		var data = [];
 		if (chartData.length === 0 || resolution === 0) return data;
-		average = 0;
 
-		var songDuration = chartData[chartData.length - 1][4];
+		var songDuration = chartData[chartData.length - 1][1];
 		const distanceWeightFunction = createDistanceWeightFunction(songDuration * smoothPeriodPercentage, weightFunctionSteepness);
 
 		for (let i = 0.0; i < resolution; i += 1.0) {
@@ -37,7 +34,7 @@
 
 			for (let j = 0.0; j < chartData.length; j += 1.0) {
 				const item = chartData[j];
-				const weight = distanceWeightFunction.getWeight(item[4] - songTime);
+				const weight = distanceWeightFunction.getWeight(item[1] - songTime);
 
 				sum += item[0] * weight;
 				divider += weight;
@@ -45,12 +42,7 @@
 
 			if (divider === 0) continue;
 			const value = (100 + (sum / divider) * 15) / 1.15;
-			average += value;
 			data.push([songTime, value]);
-		}
-
-		if (data.length) {
-			average /= data.length;
 		}
 
 		return data;
@@ -146,6 +138,7 @@
 	let start = 0;
 
 	$: notes && setupChart(canvas, notes.rows);
+	$: average = (notes && notes.AIacc * 100) ?? 0;
 	$: loading = false;
 </script>
 

@@ -22,7 +22,7 @@
 		var data = [];
 		if (chartData.length === 0 || resolution === 0) return data;
 
-		var songDuration = chartData[chartData.length - 1][4];
+		var songDuration = chartData[chartData.length - 1][1];
 		const distanceWeightFunction = createDistanceWeightFunction(songDuration * smoothPeriodPercentage, weightFunctionSteepness);
 
 		for (let i = 0.0; i < resolution; i += 1.0) {
@@ -33,7 +33,7 @@
 
 			for (let j = 0.0; j < chartData.length; j += 1.0) {
 				const item = chartData[j];
-				const weight = distanceWeightFunction.getWeight(item[4] - songTime);
+				const weight = distanceWeightFunction.getWeight(item[1] - songTime);
 
 				sum += item[0] * weight;
 				divider += weight;
