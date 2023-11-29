@@ -24,6 +24,7 @@
 	function processChartData(chartData, resolution, smoothPeriodPercentage, weightFunctionSteepness) {
 		var data = [];
 		if (chartData.length === 0 || resolution === 0) return data;
+		average = 0;
 
 		var songDuration = chartData[chartData.length - 1][4];
 		const distanceWeightFunction = createDistanceWeightFunction(songDuration * smoothPeriodPercentage, weightFunctionSteepness);
