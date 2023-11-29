@@ -101,10 +101,9 @@
 		</section>
 
 		<h1 class="title is-4">Ranking Team</h1>
-		
+
 		<h1 class="title is-5">Core RT</h1>
 		<section class="content center">
-					
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198125474611.png" alt="AntiLink" /><a
 					href="https://www.beatleader.xyz/u/76561198125474611">AntiLink</a>
@@ -137,7 +136,6 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561199257569878.gif" alt="Uragirimono" /><a
 					href="https://www.beatleader.xyz/u/76561199257569878">Uragirimono</a>
 			</div>
-			
 		</section>
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
@@ -282,6 +280,7 @@
 				<li><a href="https://beatsaver.com" target="_blank" rel="noreferrer">Beat Saver API</a></li>
 				<li><a href="https://beat-savior.herokuapp.com" target="_blank" rel="noreferrer">Beat Savior API</a></li>
 				<li><a href="https://accsaber.com" target="_blank" rel="noreferrer">AccSaber API</a></li>
+				<li><a href="https://bsaber.com/" target="_blank" rel="noreferrer">BeastSaber website</a></li>
 			</ul>
 
 			<h2 class="title is-6">The project also uses the following open source libraries:</h2>
