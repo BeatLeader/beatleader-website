@@ -142,32 +142,8 @@
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561199032148036.png" alt="Gabriel" /><a
-					href="https://www.beatleader.xyz/u/76561199032148036">Gabriel</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/ace2952c36acc7e898e786ec8365c623b4587c9b_full.jpg" alt="HarveyRacoonMan" /><a
-					href="https://www.beatleader.xyz/u/76561198145281261">HarveyRacoonMan</a>
-			</div>
-			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561199146457878.png" alt="Mewtex" /><a
 					href="https://www.beatleader.xyz/u/76561199146457878">Mewtex</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/64b7d765323b85e5e91b8f1d522cfd71aaed7a36_full.jpg" alt="monke" /><a
-					href="https://www.beatleader.xyz/u/76561198991576823">monke</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198331589800.png" alt="NDonkeyN" /><a
-					href="https://www.beatleader.xyz/u/76561198331589800">NDonkeyN</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/4e08a645a7c6f2bd2772478d057b493f08183335_full.jpg" alt="OwenTheProgrammer" /><a
-					href="https://www.beatleader.xyz/u/76561198135417563">OwenTheProgrammer</a>
-			</div>
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198989311828.png" alt="Rise" /><a
-					href="https://www.beatleader.xyz/u/76561198989311828">Rise</a>
 			</div>
 		</section>
 
