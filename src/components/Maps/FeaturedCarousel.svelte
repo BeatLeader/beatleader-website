@@ -64,7 +64,7 @@
 
 	let carouselWidth;
 	let mainEl = null;
-	let translation = carouselWidth * 0.25;
+	let translation = carouselWidth * -0.25;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
 
@@ -86,7 +86,7 @@
 	}
 
 	function moveToPosition(index) {
-		translation = index * carouselWidth * -0.5 + carouselWidth * 0.25;
+		translation = index * carouselWidth * -0.5 + carouselWidth * -0.25;
 		currentCenteredIndex = index;
 	}
 
@@ -151,7 +151,7 @@
 	bind:offsetWidth={carouselWidth}
 	on:resize={handleResize}
 	class="carousel"
-	style="--cards-cnt: {cards.length}; --translation: {translation}px; --width: {carouselWidth}px;">
+	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px;">
 	{#if cards.length > 1 && showNavBullets}
 		<div class="bullets">
 			{#each cards as card, index}
@@ -161,6 +161,13 @@
 	{/if}
 
 	<div class="cards-wrapper">
+    <CarouselCard
+				title={cards[cards.length-1].title}
+				body={cards[cards.length-1].body}
+        imageUrl={cards[cards.length-1].imageUrl}
+        buttons={cards[cards.length-1].buttons}
+				active={cards.length-1 === currentCenteredIndex}
+				clickAction={() => moveOrOpen(cards.length-1, cards[cards.length-1].targetUrl)} />
 		{#each cards as card, index}
 			<CarouselCard
 				title={card.title}
@@ -170,11 +177,15 @@
 				active={index === currentCenteredIndex}
 				clickAction={() => moveOrOpen(index, card.targetUrl)} />
 		{/each}
+    <CarouselCard
+				title={cards[0].title}
+				body={cards[0].body}
+        imageUrl={cards[0].imageUrl}
+        buttons={cards[0].buttons}
+				active={0 === currentCenteredIndex}
+				clickAction={() => moveOrOpen(0, cards[0].targetUrl)} />
 	</div>
 </section>
-
-<div on:click={moveForward} style="height: 24px; background: black;">Move forward</div>
-<div on:click={moveBackward} style="height: 24px; background: black;">Move backward</div>
 
 <style>
 	.carousel {

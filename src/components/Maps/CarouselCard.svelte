@@ -140,10 +140,12 @@
 	}
 
 	.content h1 {
+    user-select: none;
 	}
 
 	.content p {
 		color: white;
+    user-select: none;
 	}
 
 	.buttons {
