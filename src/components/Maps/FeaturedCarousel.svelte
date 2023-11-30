@@ -35,7 +35,7 @@
 	}
 
 	function moveToPosition(index) {
-		translation = index * carouselWidth * -0.5 + showFillerCards ? carouselWidth * -0.25 : carouselWidth * 0.25;
+		translation = index * carouselWidth * -0.5 + (showFillerCards ? carouselWidth * -0.25 : carouselWidth * 0.25);
 		currentCenteredIndex = index;
 	}
 
