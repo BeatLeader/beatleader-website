@@ -10,10 +10,12 @@
 	export let autoMoveInterval = null;
 	export let showFillerCards = cards.length > 1 ? true : false;
 	export let height = '40em';
+	export let cardWidthRatio = 0.5;
 
+	let halfCardWidthRatio = cardWidthRatio * 0.5;
 	let carouselWidth;
 	let mainEl = null;
-	let translation = showFillerCards ? carouselWidth * -0.25 : carouselWidth * 0.25;
+	let translation = showFillerCards ? carouselWidth * -halfCardWidthRatio : carouselWidth * halfCardWidthRatio;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
 
@@ -22,20 +24,20 @@
 
 	function moveForward() {
 		if (currentCenteredIndex + 1 < cards.length) {
-			translation -= carouselWidth * 0.5;
+			translation -= carouselWidth * cardWidthRatio;
 			currentCenteredIndex++;
 		}
 	}
 
 	function moveBackward() {
 		if (currentCenteredIndex - 1 >= 0) {
-			translation += carouselWidth * 0.5;
+			translation += carouselWidth * cardWidthRatio;
 			currentCenteredIndex--;
 		}
 	}
 
 	function moveToPosition(index) {
-		translation = index * carouselWidth * -0.5 + (showFillerCards ? carouselWidth * -0.25 : carouselWidth * 0.25);
+		translation = index * carouselWidth * -cardWidthRatio + (showFillerCards ? carouselWidth * -halfCardWidthRatio : carouselWidth * halfCardWidthRatio);
 		currentCenteredIndex = index;
 	}
 
@@ -49,10 +51,10 @@
 
 	function moveRightOrReset() {
 		if (currentCenteredIndex + 1 < cards.length) {
-			translation -= carouselWidth * 0.5;
+			translation -= carouselWidth * cardWidthRatio;
 			currentCenteredIndex++;
 		} else {
-			translation = carouselWidth * 0.5;
+			translation = carouselWidth * cardWidthRatio;
 			currentCenteredIndex = 0;
 		}
 	}
@@ -101,7 +103,7 @@
 	bind:offsetWidth={carouselWidth}
 	on:resize={handleResize}
 	class="carousel"
-	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height};">
+	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio};">
 	{#if cards.length > 1 && showNavBullets}
 		<div class="bullets">
 			{#each cards as card, index}
@@ -185,7 +187,7 @@
 	.cards-wrapper {
 		display: grid;
 		position: absolute;
-		grid-template-columns: repeat(var(--cards-cnt), calc(var(--width) * 0.5));
+		grid-template-columns: repeat(var(--cards-cnt), calc(var(--width) * var(--cardWidthRatio)));
 		grid-template-rows: 1fr;
 		top: 10em;
 		bottom: 10em;
