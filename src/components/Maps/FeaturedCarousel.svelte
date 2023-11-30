@@ -4,63 +4,11 @@
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing/src/history';
 
-	export let cards = [
-		{
-			title: 'Card 1',
-			body: 'Card 1 description',
-			imageUrl: '/assets/landing-big.jpg',
-			targetUrl: undefined,
-		},
-		{
-			title: 'Card 2',
-			body: 'Card 2 description',
-			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-			targetUrl: '/leaderboard/global/345b9xx91/1',
-		},
-		{
-			title: 'Card 3',
-			body: 'Card 3 description',
-			imageUrl: '/assets/landing-big.jpg',
-			targetUrl: undefined,
-			buttons: [
-				{
-					text: 'Button 1',
-					type: 'primary',
-				},
-				{
-					text: 'Button 2',
-					url: '/leaderboard/global/345b9xx91/1',
-				},
-			],
-		},
-		{
-			title: 'Card 2',
-			body: 'Card 2 description',
-			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-			targetUrl: '/leaderboard/global/345b9xx91/1',
-		},
-		{
-			title: 'Card 2',
-			body: 'Card 2 description',
-			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-			targetUrl: '/leaderboard/global/345b9xx91/1',
-		},
-		{
-			title: 'Card 2',
-			body: 'Card 2 description',
-			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-			targetUrl: '/leaderboard/global/345b9xx91/1',
-		},
-		{
-			title: 'Card 2',
-			body: 'Card 2 description',
-			imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-			targetUrl: '/leaderboard/global/345b9xx91/1',
-		},
-	];
+	export let cards;
 
 	export let showNavBullets = true;
 	export let autoMoveInterval = null;
+	export let showFillerCards = true;
 
 	let carouselWidth;
 	let mainEl = null;
@@ -146,6 +94,7 @@
 	$: startObserving(mainEl);
 </script>
 
+{#if cards && cards.length > 0}
 <section
 	bind:this={mainEl}
 	bind:offsetWidth={carouselWidth}
@@ -161,31 +110,30 @@
 	{/if}
 
 	<div class="cards-wrapper">
-    <CarouselCard
-				title={cards[cards.length-1].title}
-				body={cards[cards.length-1].body}
-        imageUrl={cards[cards.length-1].imageUrl}
-        buttons={cards[cards.length-1].buttons}
+		{#if showFillerCards}
+			<svelte:component
+				this={cards[cards.length-1].component}
+				{...cards[cards.length-1].props}
 				active={cards.length-1 === currentCenteredIndex}
-				clickAction={() => moveOrOpen(cards.length-1, cards[cards.length-1].targetUrl)} />
+				clickAction={() => moveToPosition(cards.length-1)} />
+		{/if}
 		{#each cards as card, index}
-			<CarouselCard
-				title={card.title}
-				body={card.body}
-				imageUrl={card.imageUrl}
-				buttons={card.buttons}
+			<svelte:component
+				this={card.component}
+				{...card.props}
 				active={index === currentCenteredIndex}
-				clickAction={() => moveOrOpen(index, card.targetUrl)} />
+				clickAction={() => moveToPosition(index)} />
 		{/each}
-    <CarouselCard
-				title={cards[0].title}
-				body={cards[0].body}
-        imageUrl={cards[0].imageUrl}
-        buttons={cards[0].buttons}
+		{#if showFillerCards}
+			<svelte:component
+				this={cards[0].component}
+				{...cards[0].props}
 				active={0 === currentCenteredIndex}
-				clickAction={() => moveOrOpen(0, cards[0].targetUrl)} />
+				clickAction={() => moveToPosition(0)} />
+		{/if}
 	</div>
 </section>
+{/if}
 
 <style>
 	.carousel {

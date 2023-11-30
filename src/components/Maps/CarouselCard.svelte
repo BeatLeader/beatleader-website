@@ -5,6 +5,7 @@
 	export let title = '';
 	export let body = '';
 	export let imageUrl = '';
+	export let targetUrl;
 	export let buttons = [];
 	export let active = false;
 	export let clickAction;
@@ -12,7 +13,11 @@
 	let cinematicsCanvas;
 
 	function handleCardClick() {
-		clickAction();
+		if (active) {
+			if (targetUrl) navigate(targetUrl);
+		} else {
+			clickAction();
+		}
 	}
 
 	function drawCinematics(cinematicsCanvas, coverUrl) {
@@ -81,7 +86,7 @@
 	.card {
 		width: 100%;
 		height: 100%;
-		background-color: rgb(21, 38, 29) !important;
+		background-color: rgb(32, 32, 32) !important;
 		position: relative;
 		overflow: visible;
 		box-sizing: border-box;
