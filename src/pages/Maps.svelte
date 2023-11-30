@@ -1,11 +1,88 @@
 <script>
   import ContentBox from "../components/Common/ContentBox.svelte";
+	import CarouselCard from "../components/Maps/CarouselCard.svelte";
 	import DiscoverCard from "../components/Maps/DiscoverCard.svelte";
 	import FeaturedCarousel from "../components/Maps/FeaturedCarousel.svelte";
 	import MapsCategoryCard from "../components/Maps/MapsCategoryCard.svelte";
   import {fade} from 'svelte/transition';
 
   let categoryCardHeight = 400;
+
+  let cards = [
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Card 1',
+				body: 'Card 1 description',
+				imageUrl: '/assets/landing-big.jpg',
+				targetUrl: undefined,
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Card 2',
+				body: 'Card 2 description',
+				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+				targetUrl: '/leaderboard/global/345b9xx91/1',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Card 3',
+				body: 'Card 3 description',
+				imageUrl: '/assets/landing-big.jpg',
+				targetUrl: undefined,
+				buttons: [
+					{
+						text: 'Button 1',
+						type: 'primary',
+					},
+					{
+						text: 'Button 2',
+						url: '/leaderboard/global/345b9xx91/1',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Card 4',
+				body: 'Card 4 description',
+				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+				targetUrl: undefined,
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Card 5',
+				body: 'Card 5 description',
+				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+				targetUrl: undefined,
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Card 6',
+				body: 'Card 6 description',
+				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+				targetUrl: undefined,
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Card 7',
+				body: 'Card 7 description',
+				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
+				targetUrl: undefined,
+			},
+		}
+	];
 
 </script>
 
@@ -26,7 +103,7 @@
 
       <div class="items">
         <DiscoverCard />
-        <FeaturedCarousel />
+        <FeaturedCarousel cards={cards}/>
 
       </div>
       

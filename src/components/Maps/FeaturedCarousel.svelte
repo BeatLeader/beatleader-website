@@ -8,11 +8,11 @@
 
 	export let showNavBullets = true;
 	export let autoMoveInterval = null;
-	export let showFillerCards = true;
+	export let showFillerCards = cards.length > 1 ? true : false;
 
 	let carouselWidth;
 	let mainEl = null;
-	let translation = carouselWidth * -0.25;
+	let translation = showFillerCards ? carouselWidth * -0.25 : carouselWidth * 0.25;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
 
@@ -34,7 +34,7 @@
 	}
 
 	function moveToPosition(index) {
-		translation = index * carouselWidth * -0.5 + carouselWidth * -0.25;
+		translation = index * carouselWidth * -0.5 + showFillerCards ? carouselWidth * -0.25 : carouselWidth * 0.25;
 		currentCenteredIndex = index;
 	}
 
