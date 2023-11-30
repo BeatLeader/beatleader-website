@@ -19,9 +19,9 @@
       <h1 class="header">MAPS</h1>
 
       <div class="categories">
-        <MapsCategoryCard categoryName="Ranked" showRankedCounter cardHeight={categoryCardHeight} bgColor = "#292823" />
-        <MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} bgColor = "#15261D"/>
-        <MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor = "#240C2D"/>
+        <MapsCategoryCard categoryName="Ranked" showRankedCounter cardHeight={categoryCardHeight} bgColor = "#2d0c1f" />
+        <MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} bgColor = "#292823"/>
+        <MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor = "#15261D"/>
       </div>
 
       <div class="items">
