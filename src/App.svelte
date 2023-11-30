@@ -41,6 +41,7 @@
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
 	import Maps from './pages/Maps.svelte';
+	import Replayed from './pages/Replayed.svelte';
 
 	export let url = '';
 
@@ -169,6 +170,9 @@
 					</Route>
 					<Route path="/maps">
 						<Maps />
+					</Route>
+					<Route path="/replayed">
+						<Replayed />
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />

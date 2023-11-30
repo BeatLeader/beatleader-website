@@ -12,7 +12,7 @@
 	export let height = '40em';
 	export let cardWidthRatio = 0.5;
 
-	let halfCardWidthRatio = cardWidthRatio * 0.5;
+	let halfCardWidthRatio = (1-cardWidthRatio)/2;
 	let carouselWidth;
 	let mainEl = null;
 	let translation = showFillerCards ? carouselWidth * -halfCardWidthRatio : carouselWidth * halfCardWidthRatio;
@@ -118,21 +118,24 @@
 				this={cards[cards.length-1].component}
 				{...cards[cards.length-1].props}
 				active={cards.length-1 === currentCenteredIndex}
-				clickAction={() => moveToPosition(cards.length-1)} />
+				clickAction={() => moveToPosition(cards.length-1)}
+				nextAction={moveForward} />
 		{/if}
 		{#each cards as card, index}
 			<svelte:component
 				this={card.component}
 				{...card.props}
 				active={index === currentCenteredIndex}
-				clickAction={() => moveToPosition(index)} />
+				clickAction={() => moveToPosition(index)}
+				nextAction={moveForward} />
 		{/each}
 		{#if showFillerCards}
 			<svelte:component
 				this={cards[0].component}
 				{...cards[0].props}
 				active={0 === currentCenteredIndex}
-				clickAction={() => moveToPosition(0)} />
+				clickAction={() => moveToPosition(0)}
+				nextAction={moveForward} />
 		{/if}
 	</div>
 </section>
