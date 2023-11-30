@@ -9,6 +9,7 @@
 	export let showNavBullets = true;
 	export let autoMoveInterval = null;
 	export let showFillerCards = cards.length > 1 ? true : false;
+	export let height = '40em';
 
 	let carouselWidth;
 	let mainEl = null;
@@ -100,7 +101,7 @@
 	bind:offsetWidth={carouselWidth}
 	on:resize={handleResize}
 	class="carousel"
-	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px;">
+	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height};">
 	{#if cards.length > 1 && showNavBullets}
 		<div class="bullets">
 			{#each cards as card, index}
@@ -138,7 +139,7 @@
 <style>
 	.carousel {
 		width: 100%;
-		height: 40em;
+		height: var(--carouselHeight);
 		margin-top: -10em;
 		margin-bottom: -10em;
 		/*background: #232323 !important;*/
