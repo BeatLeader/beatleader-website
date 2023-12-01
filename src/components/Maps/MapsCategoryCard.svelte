@@ -21,7 +21,7 @@
 			{:else if $rankedTimer.minutes > 0}
 				<span class="countdown">{$rankedTimer.minutes} Minutes</span>
 			{:else}
-				<span class="countdown">{$rankedTimer.seconds} Seconds</span>
+				<span class="countdown">{Math.round($rankedTimer.seconds)} Seconds</span>
 			{/if}
 		</div>
 	{/if}
