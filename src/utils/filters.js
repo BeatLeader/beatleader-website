@@ -9,6 +9,17 @@ export const buildSearchFromFilters = filters => {
 	return searchParams.toString();
 };
 
+export const buildSearchFromFiltersWithDefaults = (filters, defaults) => {
+	if (!filters) return '';
+
+	const searchParams = new URLSearchParams();
+	Object.entries(filters).forEach(([key, value]) => {
+		if (value?.toString()?.length && defaults.find(p => p.key == key).default != value) searchParams.append(key, value);
+	});
+
+	return searchParams.toString();
+};
+
 export const processStringFilter = val => val?.toString() ?? '';
 export const processStringArrayFilter = val => (val?.toString()?.length ? val.toString().split(',') : []);
 export const processIntArrayFilter = val =>

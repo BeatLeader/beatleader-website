@@ -15,7 +15,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import {
 		createBuildFiltersFromLocation,
-		buildSearchFromFilters,
+		buildSearchFromFiltersWithDefaults,
 		processFloatFilter,
 		processStringFilter,
 		processIntFilter,
@@ -59,7 +59,7 @@
 
 	const params = [
 		{key: 'search', default: '', process: processStringFilter},
-		{key: 'type', default: '', process: processStringFilter},
+		{key: 'type', default: 'ranked', process: processStringFilter},
 		{key: 'mytype', default: '', process: processStringFilter},
 		{key: 'stars_from', default: undefined, process: processFloatFilter},
 		{key: 'stars_to', default: undefined, process: processFloatFilter},
@@ -177,8 +177,8 @@
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
 
-	function changePageAndFilters(newPage, newLocation) {
-		currentFilters = buildFiltersFromLocation(newLocation);
+	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
+		currentFilters = newFilters;
 
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
@@ -216,17 +216,30 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		currentPage = newPage;
+
+		if (setUrl) {
+			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const url = `/leaderboards/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
 		leaderboardsStore.fetch(currentPage, {...currentFilters});
+	}
+
+	function navigateToCurrentPageAndFilters(replaceState) {
+		changePageAndFilters(currentPage, currentFilters, replaceState);
 	}
 
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-	}
+		currentPage = event.detail.page + 1;
 
-	function navigateToCurrentPageAndFilters() {
-		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
+		navigateToCurrentPageAndFilters(true);
 	}
 
 	function onSearchChanged(e) {
@@ -236,6 +249,7 @@
 
 		currentFilters.search = search;
 		currentPage = 1;
+
 		navigateToCurrentPageAndFilters();
 	}
 
@@ -411,7 +425,7 @@
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
-	$: changePageAndFilters(page, location);
+	$: changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
 
 	$: starsKey =
 		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'

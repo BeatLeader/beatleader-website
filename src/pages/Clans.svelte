@@ -33,15 +33,15 @@
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
+	const processString = val => val?.toString();
+
+	const params = [
+		{key: 'search', default: '', process: processString},
+		{key: 'sortBy', default: 'pp', process: processString},
+		{key: 'order', default: 'desc', process: processString},
+	];
+
 	const buildFiltersFromLocation = location => {
-		const processString = val => val?.toString();
-
-		const params = [
-			{key: 'search', default: '', process: processString},
-			{key: 'sortBy', default: 'pp', process: processString},
-			{key: 'order', default: 'desc', process: processString},
-		];
-
 		const searchParams = new URLSearchParams(location?.search ?? '');
 
 		return params.reduce(
@@ -56,7 +56,11 @@
 		if (!filters) return '';
 
 		const searchParams = new URLSearchParams();
-		Object.entries(filters).forEach(([key, value]) => searchParams.append(key, value));
+		Object.entries(filters).forEach(([key, value]) => {
+			if (params.find(p => p.key == key).default != value) {
+				searchParams.append(key, value);
+			}
+		});
 
 		return searchParams.toString();
 	};
@@ -67,10 +71,10 @@
 
 	const clansStore = createClansStore(page, currentFilters);
 
-	function changePageAndFilters(newPage, newLocation, force) {
+	function changePageAndFilters(newPage, newCurrentFilters, force, replace, setUrl = true) {
 		shouldBeForceRefreshed = false;
 
-		currentFilters = buildFiltersFromLocation(newLocation);
+		currentFilters = newCurrentFilters;
 
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
@@ -86,22 +90,30 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		currentPage = newPage;
+
+		if (setUrl) {
+			const query = buildSearchFromFilters(currentFilters);
+			const url = `/clans/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
 		clansStore.fetch(currentPage, {...currentFilters}, force);
 	}
 
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/clans/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-	}
-
-	function navigateToCurrentPageAndFilters() {
-		navigate(`/clans/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
+		changePageAndFilters(event.detail.page + 1, currentFilters, false, false);
 	}
 
 	function onSearchChanged(e) {
 		currentFilters.search = e.target.value ?? '';
-		navigateToCurrentPageAndFilters();
+
+		changePageAndFilters(1, currentFilters, false, true);
 	}
 
 	const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
@@ -136,8 +148,9 @@
 		} else {
 			currentFilters.sortBy = event.detail.id;
 		}
+		currentPage = 1;
 
-		navigateToCurrentPageAndFilters();
+		changePageAndFilters(1, currentFilters, false, true);
 	}
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
@@ -147,7 +160,7 @@
 	$: numOfClans = $clansStore ? $clansStore?.metadata?.total : null;
 	$: itemsPerPage = $clansStore ? $clansStore?.metadata?.itemsPerPage : 10;
 
-	$: changePageAndFilters(page, location, shouldBeForceRefreshed);
+	$: changePageAndFilters(page, buildFiltersFromLocation(location), shouldBeForceRefreshed, false, false);
 
 	$: clanRequests = $account?.clanRequest ?? [];
 

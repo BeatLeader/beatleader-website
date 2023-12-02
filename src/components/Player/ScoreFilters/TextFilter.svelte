@@ -26,9 +26,8 @@
 
 		if (e.key === 'Enter') {
 			e.preventDefault();
-
-			dispatch('change', value);
 		}
+		dispatch('change', value);
 	}
 
 	$: if (open && filterEl) filterEl.focus();
