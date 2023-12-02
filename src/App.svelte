@@ -391,7 +391,6 @@
 		left: 0;
 		min-width: 5rem;
 		max-width: 10rem;
-		max-height: 5rem;
 		overflow: hidden;
 		display: none;
 		background-color: lightyellow;
