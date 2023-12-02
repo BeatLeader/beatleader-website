@@ -918,9 +918,9 @@ export function describeGraphAxis(axis) {
 		case 'y5':
 			return 'Ranked scores';
 		case 'y6':
-			return 'Ranked improved';
-		case 'y7':
 			return 'Unranked scores';
+		case 'y7':
+			return 'Ranked improved';
 		case 'y8':
 			return 'Unranked improved';
 	}
