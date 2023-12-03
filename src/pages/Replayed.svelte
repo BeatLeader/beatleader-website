@@ -3,6 +3,7 @@
 	import ContentBox from "../components/Common/ContentBox.svelte";
 	import FeaturedCarousel from "../components/Maps/FeaturedCarousel.svelte";
 	import ReplayedCard from "../components/Replayed/ReplayedCard.svelte";
+  import { onMount } from "svelte";
 
   let cards = [
     {
@@ -33,9 +34,9 @@
   <article class="page-content align-content" transition:fade|global>
     <ContentBox cls="main-content-replayed">
       <div class="items">
-        <FeaturedCarousel cards={cards} showFillerCards={false} height={"120%"} cardWidthRatio={0.80}/>
+
+        <FeaturedCarousel cards={cards} showFillerCards={false} height={"150%"} cardWidthRatio={0.95} showButtons/>
       </div>
-      
 
     </ContentBox>
   </article>
@@ -49,15 +50,13 @@
 	}
 
   :global(.main-content-replayed) {
-    max-width: 100%;
-    max-height: 100%;
-    aspect-ratio: 0.6 / 1;
+    aspect-ratio: 9 / 16;
   }
 
 	.page-content {
     width: 100%;
     height: 100%;
-    overflow: visible;
+    overflow: hidden;
 	}
 
 	article {
@@ -69,10 +68,9 @@
   .items {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 1.5em;
-    margin: 0.5em;
+    width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
 </style>
