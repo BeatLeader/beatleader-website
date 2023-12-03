@@ -13,6 +13,8 @@ export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
 export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}&keepOriginalId=true';
+export const BL_API_PLAYER_SAVER_INFO_URL =
+	BL_API_URL + 'player/beatsaver/${playerId}?leaderboardContext=${leaderboardContext}&keepOriginalId=true';
 export const BL_API_SCORES_URL =
 	BL_API_URL +
 	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
@@ -225,6 +227,9 @@ export default (options = {}) => {
 
 	const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_PLAYER_INFO_URL, {playerId}), options, priority);
+
+	const playerBySaver = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_PLAYER_SAVER_INFO_URL, {playerId}), options, priority);
 
 	const steamProfile = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(STEAM_API_PROFILE_URL, {steamKey: STEAM_KEY, playerId}), options, priority);
@@ -463,7 +468,10 @@ export default (options = {}) => {
 
 	return {
 		user,
+
 		player,
+		playerBySaver,
+
 		steamProfile,
 		gameInfo,
 		findPlayer,
