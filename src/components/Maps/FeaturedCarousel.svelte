@@ -11,6 +11,7 @@
 	export let showFillerCards = cards.length > 1 ? true : false;
 	export let height = '40em';
 	export let cardWidthRatio = 0.5;
+	export let showButtons = false;
 
 	let halfCardWidthRatio = (1-cardWidthRatio)/2;
 	let carouselWidth;
@@ -18,6 +19,8 @@
 	let translation = showFillerCards ? carouselWidth * -halfCardWidthRatio : carouselWidth * halfCardWidthRatio;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
+	let maskLeft = "15%";
+	let maskRight = "85%";
 
 	const bodyStore = createContainerStore();
 	const containerStore = createContainerStore();
@@ -39,6 +42,7 @@
 	function moveToPosition(index) {
 		translation = index * carouselWidth * -cardWidthRatio + (showFillerCards ? carouselWidth * -halfCardWidthRatio : carouselWidth * halfCardWidthRatio);
 		currentCenteredIndex = index;
+		console.log();
 	}
 
 	function moveOrOpen(index, url) {
@@ -61,6 +65,13 @@
 
 	function handleResize() {
 		moveToPosition(currentCenteredIndex);
+		if (cardWidthRatio > 0.9) {
+			maskLeft = "4%";
+			maskRight = "96%";
+		} else {
+			maskLeft = "15%";
+			maskRight = "85%";
+		}
 	}
 
 	onMount(() => {
@@ -95,6 +106,10 @@
 	}
 
 	$: startObserving(mainEl);
+	$: {
+		halfCardWidthRatio = (1-cardWidthRatio)/2;
+		handleResize();
+	}
 </script>
 
 {#if cards && cards.length > 0}
@@ -103,14 +118,23 @@
 	bind:offsetWidth={carouselWidth}
 	on:resize={handleResize}
 	class="carousel"
-	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio};">
+	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
 	{#if cards.length > 1 && showNavBullets}
 		<div class="bullets">
 			{#each cards as card, index}
 				<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
 			{/each}
+			{#if showButtons}
+				<div class="button-left" on:click = {moveBackward}>
+					<i class="fa-solid fa-arrow-left"></i>
+				</div>
+				<div class="button-right" on:click = {moveForward}>
+					<i class="fa-solid fa-arrow-right"></i>
+				</div>
+			{/if}
 		</div>
 	{/if}
+	
 
 	<div class="cards-wrapper">
 		{#if showFillerCards}
@@ -157,15 +181,15 @@
 		-webkit-mask-image: linear-gradient(
 			90deg,
 			transparent 0%,
-			white 15%,
-			white 85%,
+			white var(--maskLeft),
+			white var(--maskRight),
 			transparent 100%
 		);
     mask-image: linear-gradient(
 			90deg,
 			transparent 0%,
-			white 15%,
-			white 85%,
+			white var(--maskLeft),
+			white var(--maskRight),
 			transparent 100%
 		);
 	}
@@ -222,5 +246,25 @@
 
 	.bullets > span.active {
 		background-color: var(--textColor);
+	}
+
+	.button-left {
+		position: absolute;
+		left: -1em;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 1;
+		cursor: pointer;
+		filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.85));
+	}
+
+	.button-right {
+		position: absolute;
+		right: -1em;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 1;
+		cursor: pointer;
+		filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.85));
 	}
 </style>
