@@ -1,14 +1,15 @@
 <script>
-  import ContentBox from "../components/Common/ContentBox.svelte";
-	import CarouselCard from "../components/Maps/CarouselCard.svelte";
-	import DiscoverCard from "../components/Maps/DiscoverCard.svelte";
-	import FeaturedCarousel from "../components/Maps/FeaturedCarousel.svelte";
-	import MapsCategoryCard from "../components/Maps/MapsCategoryCard.svelte";
-  import {fade} from 'svelte/transition';
+	import {onDestroy, onMount} from 'svelte';
+	import ContentBox from '../components/Common/ContentBox.svelte';
+	import CarouselCard from '../components/Maps/CarouselCard.svelte';
+	import DiscoverCard from '../components/Maps/DiscoverCard.svelte';
+	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
+	import MapsCategoryCard from '../components/Maps/MapsCategoryCard.svelte';
+	import {fade} from 'svelte/transition';
 
-  let categoryCardHeight = 400;
+	let categoryCardHeight = 400;
 
-  let cards = [
+	let cards = [
 		{
 			component: CarouselCard,
 			props: {
@@ -81,9 +82,27 @@
 				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
 				targetUrl: undefined,
 			},
-		}
+		},
 	];
 
+	let cardWidthRatio = 0.5;
+
+	function updateCardWidthRatio() {
+		if (window.innerWidth < 950) {
+			cardWidthRatio = 0.7;
+		} else {
+			cardWidthRatio = 0.5;
+		}
+	}
+
+	onMount(() => {
+		updateCardWidthRatio();
+		window.addEventListener('resize', updateCardWidthRatio);
+	});
+
+	onDestroy(() => {
+		window.removeEventListener('resize', updateCardWidthRatio);
+	});
 </script>
 
 <svelte:head>
@@ -91,30 +110,26 @@
 </svelte:head>
 
 <section class="align-content">
-  <article class="page-content" transition:fade|global>
-    <ContentBox class="main-content">
-      <h1 class="header">MAPS</h1>
+	<article class="page-content" transition:fade|global>
+		<ContentBox class="main-content">
+			<h1 class="header">MAPS</h1>
 
-      <div class="categories">
-        <MapsCategoryCard categoryName="Ranked" showRankedCounter cardHeight={categoryCardHeight} bgColor = "#2d0c1f" />
-        <MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} bgColor = "#292823"/>
-        <MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor = "#15261D"/>
-      </div>
+			<div class="categories">
+				<MapsCategoryCard categoryName="Ranked" showRankedCounter cardHeight={categoryCardHeight} bgColor="#2d0c1f" />
+				<MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} bgColor="#292823" />
+				<MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor="#15261D" />
+			</div>
 
-      <div class="items">
-        <DiscoverCard />
-        <FeaturedCarousel cards={cards}/>
-
-      </div>
-      
-
-    </ContentBox>
-  </article>
-
+			<div class="items">
+				<DiscoverCard />
+				<FeaturedCarousel {cards} {cardWidthRatio} />
+			</div>
+		</ContentBox>
+	</article>
 </section>
 
 <style>
-  .align-content {
+	.align-content {
 		display: flex;
 		justify-content: center !important;
 	}
@@ -122,7 +137,7 @@
 	.page-content {
 		max-width: 75em;
 		width: 100%;
-    overflow: hidden;
+		overflow: hidden;
 	}
 
 	article {
@@ -130,45 +145,51 @@
 		overflow-x: hidden;
 	}
 
-  .header {
-    position: absolute;
-    left: 50%;
-    top: -0.375em;
-    transform: translateX(-50%);
+	.header {
+		position: absolute;
+		left: 50%;
+		top: -0.375em;
+		transform: translateX(-50%);
 
-    color: rgba(255, 255, 255, 0.50) !important;
-    font-family: Audiowide;
-    font-size: 150px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-  }
+		color: rgba(255, 255, 255, 0.5) !important;
+		font-family: Audiowide;
+		font-size: 150px;
+		font-style: normal;
+		font-weight: 400;
+		line-height: normal;
+	}
 
-  .categories {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 3.25em;
-    margin: 3.25em;
-    margin-top: 4.25em;
-  }
+	.categories {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		gap: 3.25em;
+		margin: 3.25em;
+		margin-top: 4.25em;
+	}
 
-  @media screen and (max-width: 950px) {
-    .categories {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5em;
-      margin: 1.5em;
-      margin-top: 4.25em;
-    }
-  }
+	.items {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 1.5em;
+		margin: 3.25em;
+	}
 
-  .items {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 1.5em;
-    margin: 3.25em;
-  }
-
+	@media screen and (max-width: 950px) {
+		.categories {
+			display: flex;
+			flex-direction: column;
+			gap: 1.5em;
+			margin: 1.5em;
+			margin-top: 4.25em;
+		}
+		.items {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			gap: 1.5em;
+			margin: 1.5em;
+		}
+	}
 </style>
