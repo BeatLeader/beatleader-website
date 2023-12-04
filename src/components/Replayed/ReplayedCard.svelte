@@ -4,6 +4,7 @@
 	import {navigate} from 'svelte-routing/src/history';
 	import Reveal from '../Common/Reveal.svelte';
 	import { cubicOut } from 'svelte/easing';
+	import { onMount } from 'svelte';
 
 	export let title = '';
 	export let subText = '';
@@ -18,6 +19,8 @@
 	let mainStat = stats?.entries[0];
 	let revealed = false;
   let dominantColor = "rgb(92, 120, 133)";
+  let activeMounted = false;
+  let activeReady = false;
 
 	buttons.push({
 		text: 'Next',
@@ -51,7 +54,10 @@
 	function reveal() {
 		revealed = true;
 	}
+  
+  onMount(() => activeMounted = true);
 
+  $: activeReady = activeMounted && active;
 	$: drawCinematics(cinematicsCanvas, imageUrl);
 	$: if (buttons.length > 3) buttons = buttons.slice(0, 3);
 	$: {
@@ -78,26 +84,26 @@
       {/if}
 		</div>
 
-    {#if !revealed}
+    {#if activeReady && !revealed}
     <div class="intro-card-container">
-      <div class="intro-card" transition:scale={{duration: 1000, start: 1.5, opacity: 0}}>
+      <div class="intro-card" out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
         <div class="intro-card-content">
           <div class="header">
-            <h1>{title}</h1>
-            <p>{subText}</p>
+            <h1 in:fly={{y: "2em", duration: 700, easing: cubicOut, opacity: 0}}>{title}</h1>
+            <p in:fly={{y: "2em", duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{subText}</p>
           </div>
   
           {#if stats?.type === 'mapList'}
-            <img src={mainStat.imageUrl} alt={mainStat.title} />
-            <h2>{mainStat.title}</h2>
-            <h3>{mainStat.mapper}</h3>
+            <img src={mainStat.imageUrl} alt={mainStat.title} in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+            <h2 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.title}</h2>
+            <h3 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
           {/if}
         </div>
       </div>
     </div>
     {/if}
 		
-
+    {#if revealed}
 		<div class="content">
 			<div class="buttons" class:active>
 				{#each buttons as button}
@@ -111,7 +117,12 @@
 						}} />
 				{/each}
 			</div>
+      <div class="bottom-container" transition:fly={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
+				<img class="bottom-icon" src="/assets/favicon.svg" />
+				<span>beatleader.xyz/replayed</span>
+			</div>
 		</div>
+    {/if}
 	</div>
 </div>
 
@@ -310,7 +321,7 @@
 		row-gap: -0.25em;
 		column-gap: 0.5em;
 		position: absolute;
-		bottom: 1.6em;
+		bottom: 1.5%;
 		left: 1.25em;
 		width: calc(100% - 2.5em);
 		pointer-events: none;
@@ -352,4 +363,21 @@
 		transform: scale(1.125);
 		filter: blur(5em) opacity(0.5) saturate(250%) brightness(120%);
 	}
+
+  .bottom-container {
+		display: flex;
+		position: absolute;
+    bottom: 0.5em;
+    left: 0.5em;
+	}
+
+  .bottom-container span {
+    color: white;
+    font-size: 1.25vh;
+  }
+
+  .bottom-icon {
+		width: 2vh;
+	}
+
 </style>
