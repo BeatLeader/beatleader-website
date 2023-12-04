@@ -341,8 +341,8 @@
 	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
-		currentFilters[ratingType + '_from'] = event.detail.values[0];
-		currentFilters[ratingType + '_to'] = event.detail.values[1];
+		currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
+		currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
 		starsChanged();
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
