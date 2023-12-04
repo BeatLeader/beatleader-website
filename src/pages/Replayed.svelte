@@ -50,7 +50,7 @@
 	<article class="page-content align-content" transition:fade|global>
 		<ContentBox cls="main-content-replayed">
 			<div class="items">
-				<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={0.95} showButtons />
+				<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} showButtons />
 			</div>
 		</ContentBox>
 	</article>

@@ -1,8 +1,9 @@
 <script>
-	import {fade} from 'svelte/transition';
+	import {fade, fly, scale} from 'svelte/transition';
 	import Button from '../Common/Button.svelte';
 	import {navigate} from 'svelte-routing/src/history';
 	import Reveal from '../Common/Reveal.svelte';
+	import { cubicOut } from 'svelte/easing';
 
 	export let title = '';
 	export let subText = '';
@@ -13,10 +14,10 @@
 	export let active = false;
 	export let clickAction;
 	export let nextAction;
-	export let introBgColor = 'rgba(201, 52, 157, 1)';
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
+  let dominantColor = "rgb(92, 120, 133)";
 
 	buttons.push({
 		text: 'Next',
@@ -63,7 +64,7 @@
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="grid-item" class:active>
-	<div class="card" on:click={handleCardClick} on:mouseenter class:active>
+	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active={revealed}>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -71,22 +72,31 @@
 		</div>
 		<div class="background-container">
 			<div class="background" style="background-image: url({imageUrl});" />
+      {#if revealed}
+        <div class="background-solid-top" transition:fly={{ y: "-100%", duration: 1800, easing: cubicOut, opacity: 0}}/>
+        <div class="background-solid-bottom" transition:fly={{ y: "100%", duration: 1800, easing: cubicOut, opacity: 0}}/>
+      {/if}
 		</div>
 
-		<div class="intro-card" style="background-color:{introBgColor};" class:inactive={revealed}>
-			<div class="intro-card-content">
-				<div class="header">
-					<h1>{title}</h1>
-					<p>{subText}</p>
-				</div>
-
-				{#if stats?.type === 'mapList'}
-					<img src={mainStat.imageUrl} alt={mainStat.title} />
-					<h2>{mainStat.title}</h2>
-					<h3>{mainStat.mapper}</h3>
-				{/if}
-			</div>
-		</div>
+    {#if !revealed}
+    <div class="intro-card-container">
+      <div class="intro-card" transition:scale={{duration: 1000, start: 1.5, opacity: 0}}>
+        <div class="intro-card-content">
+          <div class="header">
+            <h1>{title}</h1>
+            <p>{subText}</p>
+          </div>
+  
+          {#if stats?.type === 'mapList'}
+            <img src={mainStat.imageUrl} alt={mainStat.title} />
+            <h2>{mainStat.title}</h2>
+            <h3>{mainStat.mapper}</h3>
+          {/if}
+        </div>
+      </div>
+    </div>
+    {/if}
+		
 
 		<div class="content">
 			<div class="buttons" class:active>
@@ -110,13 +120,12 @@
 		box-sizing: border-box;
 		display: flex;
 		width: 100%;
-		padding: 0.5em;
+		padding: 1.9em;
 		position: relative;
 		transition: padding 300ms ease;
 	}
 
 	.grid-item.active {
-		padding: 0.5em;
 	}
 
 	.intro-card {
@@ -132,8 +141,8 @@
 		justify-content: center;
 		border-radius: 12px;
 		padding: 1em;
-		backdrop-filter: blur(1em);
 		z-index: 20;
+    background-color: var(--dominantColor);
 
 		color: white;
 		user-select: none;
@@ -144,11 +153,9 @@
 		font-style: normal;
 		line-height: normal;
 		text-align: center;
-
-		transition: transform 300ms ease-in-out, opacity 300ms ease-in-out, backdrop-filter 300ms ease-in-out;
 	}
 
-	.intro-card::before {
+	.intro-card-container {
 		left: 0;
 		right: 0;
 		top: 0;
@@ -156,13 +163,6 @@
 		position: absolute;
 		overflow: hidden;
 		border-radius: 12px;
-	}
-
-	.intro-card.inactive {
-		pointer-events: none;
-		opacity: 0;
-		backdrop-filter: blur(1em) opacity(0);
-		transform: translateX(-100%);
 	}
 
 	.intro-card h1 {
@@ -241,34 +241,44 @@
 		background-position: center;
 		width: 100%;
 		height: 100%;
-		transition: transform 600ms ease;
+		transition: transform 2500ms ease-out;
 		z-index: 0;
 		pointer-events: none;
 		filter: blur(0.25em);
+    transform: scale(1.01);
 	}
 
-	.background::after {
-		content: '';
+  .card.revealed .background {
+		transform: scale(1.1);
+	}
+
+  .card:hover .background {
+		transform: scale(1.115);
+	}
+
+	.background-solid-top {
 		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(255, 255, 255, 0.15);
-		backdrop-filter: blur(0.25em);
+		top: -3em;
+		left: -2em;
+		width: 120%;
+		height: 20%;
+		background-color: var(--dominantColor);
+    opacity: 0.95;
+    transform: rotate(-10deg);
+    border-radius: 12px;
 	}
 
-	.card.active .background {
-		transform: scale(1);
-	}
-
-	.card:hover .background {
-		transform: scale(1.025);
-	}
-	.card:hover .cinematics-canvas.active {
-		transform: scale(1.125);
-		filter: blur(5em) opacity(0.5) saturate(250%) brightness(120%);
-	}
+  .background-solid-bottom {
+    position: absolute;
+		bottom: -3em;
+		left: -2em;
+		width: 120%;
+		height: 20%;
+		background-color: var(--dominantColor);
+    opacity: 0.95;
+    transform: rotate(-10deg);
+    border-radius: 12px;
+  }
 
 	.content {
 		padding: 1em;
@@ -330,11 +340,16 @@
 		width: 100%;
 		z-index: -1;
 		height: 100%;
-		transition: ease-in-out 300ms;
+    transition: cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
 	}
 
 	.cinematics-canvas.active {
 		transform: scale(1.05) translateZ(0);
 		filter: blur(5em) opacity(0.5) saturate(250%);
+	}
+
+  .card:hover .cinematics-canvas.active {
+		transform: scale(1.125);
+		filter: blur(5em) opacity(0.5) saturate(250%) brightness(120%);
 	}
 </style>
