@@ -189,6 +189,25 @@ export const HMDs = {
 		color: '',
 		priority: 24,
 	},
+	66: {
+		name: 'Bigscreen Beyond',
+		icon: 'bigscreen.svg',
+		color: '',
+		priority: 24,
+	},
+	67: {
+		name: 'NOLO Sonic',
+		icon: 'nolo.png',
+		color: '',
+		priority: 24,
+	},
+	68: {
+		name: 'Hypereal',
+		icon: 'hypereal.jpg',
+		color: '',
+		priority: 24,
+	},
+
 	48: {
 		name: 'Arpara',
 		icon: 'arpara.png',
@@ -227,6 +246,12 @@ export const HMDs = {
 	},
 	53: {
 		name: 'Varjo',
+		icon: 'varjo.svg',
+		color: '',
+		priority: 14,
+	},
+	69: {
+		name: 'Varjo Aero',
 		icon: 'varjo.svg',
 		color: '',
 		priority: 14,
@@ -769,7 +794,7 @@ export const songStatusesMap = {
 
 export const songStatusesDescription = {
 	curated: {
-		title: 'Map was curated by BeastSaber team!',
+		title: 'Map was curated DATE by BeastSaber team!',
 		name: 'Curated',
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/beastsabericon.png',
@@ -777,7 +802,7 @@ export const songStatusesDescription = {
 		textColor: 'white',
 	},
 	mapOfTheWeek: {
-		title: 'BeastSaber Map Of The Week',
+		title: 'BeastSaber Map Of The Week DATE',
 		name: 'Map Of The Week',
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/beastsabericon.png',
