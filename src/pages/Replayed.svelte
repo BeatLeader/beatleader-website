@@ -3,7 +3,6 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
-	import {onMount} from 'svelte';
 
 	let cards = [
 		{
@@ -11,18 +10,18 @@
 			props: {
 				title: 'Your most fails',
 				subText: 'This map made you struggle the most',
+        contentSubText: "These are the top 10 maps you failed the most times",
 				stats: {
 					type: 'mapList',
 					entries: [
 						{
 							index: 0,
-							title: 'Villain Virus',
+							name: 'Villain Virus',
 							mapper: 'GalaxyMaster & GojiCrafter',
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
 					],
 				},
-				imageUrl: '/assets/landing-big.jpg',
 				buttons: [
 					{
 						text: 'More Info',
@@ -34,9 +33,74 @@
 		{
 			component: ReplayedCard,
 			props: {
-				title: 'Test Card 2',
-				body: 'hi',
-				imageUrl: '/assets/landing-big.jpg',
+				title: 'Your top mappers',
+				subText: 'This mapper was your favourite',
+        contentSubText: "These are the top 10 mappers you played the most",
+				stats: {
+					type: 'mapperList',
+					entries: [
+						{
+							index: 0,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 1,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 2,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 3,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 4,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 5,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 6,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 7,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 8,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+            {
+							index: 9,
+							name: 'Light Ai',
+              minutes: 100.33,
+							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+						},
+					],
+				},
 			},
 		},
 	];

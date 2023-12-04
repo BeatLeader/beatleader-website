@@ -8,9 +8,9 @@
 
 	export let title = '';
 	export let subText = '';
+  export let contentSubText = '';
 	export let stats;
 	export let imageUrl = '';
-	export let targetUrl;
 	export let buttons = [];
 	export let active = false;
 	export let clickAction;
@@ -94,9 +94,13 @@
           </div>
   
           {#if stats?.type === 'mapList'}
-            <img src={mainStat.imageUrl} alt={mainStat.title} in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
-            <h2 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.title}</h2>
+            <img src={mainStat.imageUrl} alt={mainStat.name} in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+            <h2 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
             <h3 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
+          {:else if stats?.type === 'mapperList'}
+            <img src={mainStat.imageUrl} alt={mainStat.name} in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+            <h2 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
+            <h3 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.minutes + " minutes played"}</h3>
           {/if}
         </div>
       </div>
@@ -105,7 +109,36 @@
 		
     {#if revealed}
 		<div class="content">
-			<div class="buttons" class:active>
+      <div class="header">
+        <h1>{title}</h1>
+        <p>{contentSubText}</p>
+      </div>
+     
+      <div class="data">
+        {#if stats?.type === 'mapList'}
+          {#each stats?.entries.slice(0, 5) as stat, index}
+            <div class="stat" transition:fly={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: (200 * index) + 500}}>
+              <h2>{index+1}</h2>
+              <img src={stat.imageUrl} alt={stat.name} />
+              <h2>{stat.name}</h2>
+              <i class="fa-solid fa-minus" />
+              <h3>{stat.mapper}</h3>
+            </div>
+          {/each}
+        {:else if stats?.type === 'mapperList'}
+            {#each stats?.entries.slice(0, 5) as stat, index}
+            <div class="stat" transition:fly={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: (200 * index) + 500}}>
+              <h2>{index+1}</h2>
+              <img src={stat.imageUrl} alt={stat.name} />
+              <h2>{stat.name}</h2>
+              <i class="fa-solid fa-minus" />
+              <h3>{stat.minutes} min</h3>
+            </div>
+          {/each}
+        {/if}
+      </div>
+
+			<div class="buttons" class:active transition:fly={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: 2500}}>
 				{#each buttons as button}
 					<Button
 						label={button.text}
@@ -117,6 +150,7 @@
 						}} />
 				{/each}
 			</div>
+
       <div class="bottom-container" transition:fly={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 				<img class="bottom-icon" src="/assets/favicon.svg" />
 				<span>beatleader.xyz/replayed</span>
@@ -127,6 +161,55 @@
 </div>
 
 <style>
+
+  .data {
+    position: relative;
+    margin-top: 2em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin-top: 1em;
+  }
+  .stat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5em;
+    font-size: 2.5vh;
+    color: white;
+  }
+
+  .stat img {
+    height: 3.5vh;
+		justify-content: center;
+		align-self: center;
+		border-radius: 12px;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+  }
+
+  .stat h2 {
+		font-size: 80%;
+		font-weight: 700;
+    margin: 0px;
+	}
+
+	.stat h3 {
+		font-size: 60%;
+		font-weight: 600;
+    margin: 0px;
+	}
+
+  .stat i {
+    font-size: 60%;
+    color: rgb(190, 190, 190);
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    min-height: 20%;
+  }
+
 	.grid-item {
 		box-sizing: border-box;
 		display: flex;
@@ -255,7 +338,7 @@
 		transition: transform 2500ms ease-out;
 		z-index: 0;
 		pointer-events: none;
-		filter: blur(0.25em);
+		filter: blur(0.6vh);
     transform: scale(1.01);
 	}
 
@@ -269,7 +352,7 @@
 
 	.background-solid-top {
 		position: absolute;
-		top: -3em;
+		top: -5%;
 		left: -2em;
 		width: 120%;
 		height: 20%;
@@ -281,7 +364,7 @@
 
   .background-solid-bottom {
     position: absolute;
-		bottom: -3em;
+		bottom: -5%;
 		left: -2em;
 		width: 120%;
 		height: 20%;
