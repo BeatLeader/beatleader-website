@@ -110,29 +110,34 @@
     {#if revealed}
 		<div class="content">
       <div class="header">
-        <h1>{title}</h1>
-        <p>{contentSubText}</p>
+        <h1 in:fly|global={{y: "100px", duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
+        <p in:fly|global={{y: "100px", duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
       </div>
      
       <div class="data">
         {#if stats?.type === 'mapList'}
           {#each stats?.entries.slice(0, 5) as stat, index}
-            <div class="stat" transition:fly={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: (200 * index) + 500}}>
-              <h2>{index+1}</h2>
+            <div class="stat" transition:fly|global={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: (200 * index) + 500}}>
+              <h2 class="stat-number">{index+1}</h2>
               <img src={stat.imageUrl} alt={stat.name} />
-              <h2>{stat.name}</h2>
-              <i class="fa-solid fa-minus" />
-              <h3>{stat.mapper}</h3>
+              <div style="display: flex; flex-direction: column; overflow: hidden; gap: 0.2em;">
+                <h2 class="truncated">{stat.name}</h2>
+                <div style="display: flex; gap: 0.2em; align-items: center;">
+                  <h3 class="truncated">{stat.mapper}</h3>
+                  <i class="fa-solid fa-minus" />
+                  <h3 class="minutes">{stat.minutes} min</h3>
+                </div>
+              </div>
             </div>
           {/each}
         {:else if stats?.type === 'mapperList'}
             {#each stats?.entries.slice(0, 5) as stat, index}
-            <div class="stat" transition:fly={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: (200 * index) + 500}}>
-              <h2>{index+1}</h2>
+            <div class="stat" transition:fly|global={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: (200 * index) + 500}}>
+              <h2 class="stat-number">{index+1}</h2>
               <img src={stat.imageUrl} alt={stat.name} />
-              <h2>{stat.name}</h2>
+              <h2 class="truncated">{stat.name}</h2>
               <i class="fa-solid fa-minus" />
-              <h3>{stat.minutes} min</h3>
+              <h3 class="minutes">{stat.minutes} min</h3>
             </div>
           {/each}
         {/if}
@@ -172,15 +177,17 @@
   }
   .stat {
     display: flex;
+    overflow: hidden;
     flex-direction: row;
     align-items: center;
     gap: 0.5em;
     font-size: 2.5vh;
     color: white;
+    height: 2em;
   }
 
   .stat img {
-    height: 3.5vh;
+    height: 1.75em;
 		justify-content: center;
 		align-self: center;
 		border-radius: 12px;
@@ -191,6 +198,7 @@
 		font-size: 80%;
 		font-weight: 700;
     margin: 0px;
+    min-width: 0;
 	}
 
 	.stat h3 {
@@ -198,6 +206,22 @@
 		font-weight: 600;
     margin: 0px;
 	}
+
+  .stat .minutes {
+    width: max-content;
+    white-space: nowrap;
+  }
+
+  .truncated {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .stat-number {
+    min-width: 0.6em !important;
+  }
 
   .stat i {
     font-size: 60%;
