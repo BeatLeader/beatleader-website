@@ -13,14 +13,14 @@
 	export let cardWidthRatio = 0.5;
 	export let showButtons = false;
 
-	let halfCardWidthRatio = (1-cardWidthRatio)/2;
+	let halfCardWidthRatio = (1 - cardWidthRatio) / 2;
 	let carouselWidth;
 	let mainEl = null;
-	let translation = showFillerCards ? carouselWidth * -halfCardWidthRatio : carouselWidth * halfCardWidthRatio;
+	let translation = 0 * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
-	let maskLeft = "15%";
-	let maskRight = "85%";
+	let maskLeft = '15%';
+	let maskRight = '85%';
 
 	const bodyStore = createContainerStore();
 	const containerStore = createContainerStore();
@@ -40,9 +40,11 @@
 	}
 
 	function moveToPosition(index) {
-		translation = index * carouselWidth * -cardWidthRatio + (showFillerCards ? carouselWidth * -halfCardWidthRatio : carouselWidth * halfCardWidthRatio);
+		let addition = 0;
+		if (showFillerCards) addition++;
+		translation = (index + addition) * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
 		currentCenteredIndex = index;
-		console.log();
+		console.log(index);
 	}
 
 	function moveOrOpen(index, url) {
@@ -66,11 +68,11 @@
 	function handleResize() {
 		moveToPosition(currentCenteredIndex);
 		if (cardWidthRatio > 0.9) {
-			maskLeft = "4%";
-			maskRight = "96%";
+			maskLeft = '4%';
+			maskRight = '96%';
 		} else {
-			maskLeft = "15%";
-			maskRight = "85%";
+			maskLeft = '15%';
+			maskRight = '85%';
 		}
 	}
 
@@ -107,62 +109,62 @@
 
 	$: startObserving(mainEl);
 	$: {
-		halfCardWidthRatio = (1-cardWidthRatio)/2;
+		halfCardWidthRatio = (1 - cardWidthRatio) / 2;
 		handleResize();
 	}
 </script>
 
 {#if cards && cards.length > 0}
-<section
-	bind:this={mainEl}
-	bind:offsetWidth={carouselWidth}
-	on:resize={handleResize}
-	class="carousel"
-	style="--cards-cnt: {cards.length+2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
-	{#if cards.length > 1 && showNavBullets}
-		<div class="bullets">
+	<section
+		bind:this={mainEl}
+		bind:offsetWidth={carouselWidth}
+		on:resize={handleResize}
+		class="carousel"
+		style="--cards-cnt: {cards.length +
+			2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
+		{#if cards.length > 1 && showNavBullets}
+			<div class="bullets">
+				{#each cards as card, index}
+					<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
+				{/each}
+				{#if showButtons}
+					<div class="button-left" on:click={moveBackward}>
+						<i class="fa-solid fa-arrow-left" />
+					</div>
+					<div class="button-right" on:click={moveForward}>
+						<i class="fa-solid fa-arrow-right" />
+					</div>
+				{/if}
+			</div>
+		{/if}
+
+		<div class="cards-wrapper">
+			{#if showFillerCards}
+				<svelte:component
+					this={cards[cards.length - 1].component}
+					{...cards[cards.length - 1].props}
+					active={cards.length - 1 === currentCenteredIndex}
+					clickAction={() => moveToPosition(cards.length - 1)}
+					nextAction={moveForward} />
+			{/if}
 			{#each cards as card, index}
-				<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
+				<svelte:component
+					this={card.component}
+					{...card.props}
+					active={index === currentCenteredIndex}
+					clickAction={() => moveToPosition(index)}
+					nextAction={moveForward} />
 			{/each}
-			{#if showButtons}
-				<div class="button-left" on:click = {moveBackward}>
-					<i class="fa-solid fa-arrow-left"></i>
-				</div>
-				<div class="button-right" on:click = {moveForward}>
-					<i class="fa-solid fa-arrow-right"></i>
-				</div>
+			{#if showFillerCards}
+				<svelte:component
+					this={cards[0].component}
+					{...cards[0].props}
+					active={0 === currentCenteredIndex}
+					clickAction={() => moveToPosition(0)}
+					nextAction={moveForward} />
 			{/if}
 		</div>
-	{/if}
-	
-
-	<div class="cards-wrapper">
-		{#if showFillerCards}
-			<svelte:component
-				this={cards[cards.length-1].component}
-				{...cards[cards.length-1].props}
-				active={cards.length-1 === currentCenteredIndex}
-				clickAction={() => moveToPosition(cards.length-1)}
-				nextAction={moveForward} />
-		{/if}
-		{#each cards as card, index}
-			<svelte:component
-				this={card.component}
-				{...card.props}
-				active={index === currentCenteredIndex}
-				clickAction={() => moveToPosition(index)}
-				nextAction={moveForward} />
-		{/each}
-		{#if showFillerCards}
-			<svelte:component
-				this={cards[0].component}
-				{...cards[0].props}
-				active={0 === currentCenteredIndex}
-				clickAction={() => moveToPosition(0)}
-				nextAction={moveForward} />
-		{/if}
-	</div>
-</section>
+	</section>
 {/if}
 
 <style>
@@ -178,20 +180,8 @@
 		border-radius: 12px;
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
 		mask-type: alpha;
-		-webkit-mask-image: linear-gradient(
-			90deg,
-			transparent 0%,
-			white var(--maskLeft),
-			white var(--maskRight),
-			transparent 100%
-		);
-    mask-image: linear-gradient(
-			90deg,
-			transparent 0%,
-			white var(--maskLeft),
-			white var(--maskRight),
-			transparent 100%
-		);
+		-webkit-mask-image: linear-gradient(90deg, transparent 0%, white var(--maskLeft), white var(--maskRight), transparent 100%);
+		mask-image: linear-gradient(90deg, transparent 0%, white var(--maskLeft), white var(--maskRight), transparent 100%);
 	}
 
 	/*.carousel:after {
@@ -235,8 +225,8 @@
 
 	.bullets > span {
 		display: inline-block;
-		width: 0.70em;
-		height: 0.70em;
+		width: 0.7em;
+		height: 0.7em;
 		background-color: rgba(111, 111, 111, 0.75);
 		border-radius: 50%;
 		cursor: pointer;
