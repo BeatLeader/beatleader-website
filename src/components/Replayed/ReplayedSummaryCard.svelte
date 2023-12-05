@@ -61,7 +61,12 @@
 			context.drawImage(img, 0, 0, 1, 1);
 			const imageData = context.getImageData(0, 0, 1, 1).data.slice(0, 3);
 
-			dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
+			if (imageData[0] > 229.5 && imageData[1] > 229.5 && imageData[2] > 229.5) {
+				dominantColor = `rgb(${imageData[0] * 0.8},${imageData[1] * 0.8},${imageData[2] * 0.8})`;
+			} else {
+				dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
+			}
+			
 		};
 	}
 
@@ -111,13 +116,13 @@
 
 				<div class="data-columns">
 					{#if summaryType === 'player'}
-						<div class="data">
+						<div class="data" style="width: 40%">
+							<h2>Top Mappers</h2>
 							{#each stats.topMappers as stat, index}
 								<div
 									class="stat"
 									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
 									<h2 class="stat-number">{index + 1}</h2>
-									<img src={stat.avatar} alt={stat.name} />
 									<div class="stat-stacked-info">
 										<h2 class="truncated">{stat.name}</h2>
 										<h3 class="minutes">{stat.minutesPlayed} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
@@ -125,16 +130,23 @@
 								</div>
 							{/each}
 						</div>
-						<div class="data">
-							{#each stats.topMappers as stat, index}
+						<div class="data" style="width: 60%">
+							<h2>Top Maps</h2>
+							{#each stats.topMaps as stat, index}
 								<div
 									class="stat"
 									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
 									<h2 class="stat-number">{index + 1}</h2>
-									<img src={stat.avatar} alt={stat.name} />
+									<img src={stat.cover} alt={stat.name} />
+
 									<div class="stat-stacked-info">
 										<h2 class="truncated">{stat.name}</h2>
-										<h3 class="minutes">{stat.minutesPlayed} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
+
+										<div class="stat-stacked-subinfo">
+											<h3 class="truncated">{stat.mapper}</h3>
+											<i class="fa-solid fa-minus" />
+											<h3 class="minutes">{stat.minutes} min</h3>
+										</div>
 									</div>
 								</div>
 							{/each}
@@ -170,7 +182,13 @@
 		flex-direction: column;
 		gap: 0.75em;
 		margin-top: 1em;
-		width: 100%;
+		font-size: 2vh;
+	}
+
+	.data h2 {
+		font-size: 100%;
+		font-weight: 700;
+		margin: 0px;
 	}
 
 	.stat {
