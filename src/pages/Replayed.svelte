@@ -9,7 +9,7 @@
 			component: ReplayedCard,
 			props: {
 				title: 'Your most played',
-				subText: 'You played this map the most hours of any',
+				subText: 'You played this map the most minutes of any',
         contentSubText: "These are the top 5 maps you played the most",
 				stats: {
 					type: 'mapList',
@@ -78,7 +78,7 @@
 							name: 'Villain Virus',
               author: "Kobaryo",
 							mapper: 'GalaxyMaster & GojiCrafter',
-              minutes: 300.33,
+              count: 5,
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
             {
@@ -86,7 +86,7 @@
 							name: 'Villain Virus',
               author: "Kobaryo",
 							mapper: 'GalaxyMaster & GojiCrafter',
-              minutes: 300.33,
+              count: 4,
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
             {
@@ -94,7 +94,7 @@
 							name: 'Villain Virus',
               author: "Kobaryo",
 							mapper: 'GalaxyMaster & GojiCrafter',
-              minutes: 300.33,
+              count: 3,
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
             {
@@ -102,7 +102,7 @@
 							name: 'Following the Waving Wings -Last Plaudits-',
               author: "Kobaryo",
 							mapper: 'GalaxyMaster & GojiCrafter',
-              minutes: 300.33,
+              count: 2,
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
             {
@@ -110,7 +110,7 @@
 							name: 'Villain Virus',
               author: "Kobaryo",
 							mapper: 'GalaxyMaster & GojiCrafter',
-              minutes: 300.33,
+              count: 1,
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
 					],

@@ -116,6 +116,7 @@
             <img src={mainStat.imageUrl} alt={mainStat.name} in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
             <h2 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
             <h3 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
+            <h4 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>{(mainStat?.minutes ? mainStat.minutes + " minutes played" : "Failed " + mainStat.count + " times")}</h4>
           {:else if stats?.type === 'mapperList'}
             <img src={mainStat.imageUrl} alt={mainStat.name} in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
             <h2 in:fly|global={{y: "2em", duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
@@ -332,6 +333,13 @@
 	.intro-card h3 {
 		font-size: 60%;
 		font-weight: 600;
+	}
+
+  .intro-card h4 {
+		font-size: 50%;
+		font-weight: 500;
+    color: white !important;
+    margin-top: 0.5em;
 	}
 
 	.intro-card p {
