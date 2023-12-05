@@ -131,6 +131,11 @@
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
 								{mainStat.minutes + ' minutes played'}
 							</h3>
+							{#if mainStat.percentPlayers}
+								<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
+									{mainStat.percentPlayers + '% of players'}
+								</h4>
+							{/if}
 						{:else if stats?.type === 'statList'}
 							<img
 								src={mainStat.imageUrl}
