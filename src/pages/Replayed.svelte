@@ -67,7 +67,7 @@
 		{
 			component: ReplayedCard,
 			props: {
-				title: 'Your most fails',
+				title: 'Your most failed',
 				subText: 'This map made you struggle the most',
         contentSubText: "These are the top 5 maps you failed the most times",
 				stats: {
