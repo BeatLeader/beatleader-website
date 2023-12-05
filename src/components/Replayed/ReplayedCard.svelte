@@ -147,7 +147,7 @@
                 <div class="stat-map-subinfo">
                   <h3 class="truncated">{stat.mapper}</h3>
                   <i class="fa-solid fa-minus" />
-                  <h3 class="minutes">{stat.minutes} min</h3>
+                  <h3 class="minutes">{(stat?.minutes ? stat.minutes + " min" : "Failed " + stat.count + "x")}</h3>
                 </div>
               </div>
             </div>
