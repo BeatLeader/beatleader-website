@@ -54,6 +54,23 @@
 	function reveal() {
 		revealed = true;
 	}
+
+  function retrieveBackgroundColor(img) {
+		var context = document.createElement('canvas').getContext('2d');
+		if (typeof img == 'string') {
+			var src = img;
+			img = new Image();
+			img.setAttribute('crossOrigin', '');
+			img.src = src;
+		}
+		img.onload = () => {
+			context.imageSmoothingEnabled = true;
+			context.drawImage(img, 0, 0, 1, 1);
+			const imageData = context.getImageData(0, 0, 1, 1).data.slice(0, 3);
+
+			dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
+		};
+	}
   
   onMount(() => activeMounted = true);
 
@@ -64,6 +81,8 @@
 		stats?.entries.sort((a, b) => a.index - b.index);
 		mainStat = stats?.entries[0];
 		imageUrl = mainStat?.imageUrl;
+
+    retrieveBackgroundColor(imageUrl);
 	}
 </script>
 
@@ -120,9 +139,11 @@
             <div class="stat" transition:fly|global={{ y: "100%", duration: 900, easing: cubicOut, opacity: 0, delay: (200 * index) + 500}}>
               <h2 class="stat-number">{index+1}</h2>
               <img src={stat.imageUrl} alt={stat.name} />
-              <div style="display: flex; flex-direction: column; overflow: hidden; gap: 0.2em;">
+
+              <div class="stat-map-info">
                 <h2 class="truncated">{stat.name}</h2>
-                <div style="display: flex; gap: 0.2em; align-items: center;">
+
+                <div class="stat-map-subinfo">
                   <h3 class="truncated">{stat.mapper}</h3>
                   <i class="fa-solid fa-minus" />
                   <h3 class="minutes">{stat.minutes} min</h3>
@@ -177,7 +198,7 @@
   }
   .stat {
     display: flex;
-    overflow: hidden;
+    overflow: visible;
     flex-direction: row;
     align-items: center;
     gap: 0.5em;
@@ -198,7 +219,6 @@
 		font-size: 80%;
 		font-weight: 700;
     margin: 0px;
-    min-width: 0;
 	}
 
 	.stat h3 {
@@ -217,6 +237,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    box-sizing: border-box;
+    line-height: 1.3em !important;
+    padding-right: 0.5em;
   }
 
   .stat-number {
@@ -226,6 +249,19 @@
   .stat i {
     font-size: 60%;
     color: rgb(190, 190, 190);
+  }
+
+  .stat-map-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    gap: 0.2em;
+  }
+
+  .stat-map-subinfo {
+    display: flex;
+    gap: 0.2em;
+    align-items: center;
   }
 
   .header {
