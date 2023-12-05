@@ -160,10 +160,10 @@
 								<h2 class="stat-number">{index + 1}</h2>
 								<img src={stat.imageUrl} alt={stat.name} />
 
-								<div class="stat-map-info">
+								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
 
-									<div class="stat-map-subinfo">
+									<div class="stat-stacked-subinfo">
 										<h3 class="truncated">{stat.mapper}</h3>
 										<i class="fa-solid fa-minus" />
 										<h3 class="minutes">{stat?.minutes ? stat.minutes + ' min' : 'Failed ' + stat.count + 'x'}</h3>
@@ -176,16 +176,16 @@
 							<div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
 								<h2 class="stat-number">{index + 1}</h2>
 								<img src={stat.imageUrl} alt={stat.name} />
-								<h2 class="truncated">{stat.name}</h2>
-								<i class="fa-solid fa-minus" />
-								<h3 class="minutes">{stat.minutes} min</h3>
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+									<h3 class="minutes">{stat.minutes} minutes</h3>
+								</div>
 							</div>
 						{/each}
 					{:else if stats?.type === 'statList'}
 						{#each stats?.entries.slice(0, 5) as stat, index}
 							<div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
-								<h2 class="stat-number">{index + 1}</h2>
-								<div class="stat-map-info">
+								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
 									<h3 class="minutes">{stat.value}</h3>
 								</div>
@@ -265,6 +265,7 @@
 	.stat .minutes {
 		width: max-content;
 		white-space: nowrap;
+		padding-right: 0.5em;
 	}
 
 	.truncated {
@@ -286,14 +287,14 @@
 		color: rgb(190, 190, 190);
 	}
 
-	.stat-map-info {
+	.stat-stacked-info {
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
 		gap: 0.2em;
 	}
 
-	.stat-map-subinfo {
+	.stat-stacked-subinfo {
 		display: flex;
 		gap: 0.2em;
 		align-items: center;

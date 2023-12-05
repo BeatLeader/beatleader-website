@@ -171,7 +171,7 @@
 			props: {
 				title: 'Other stats',
 				subText: 'How many events did you participate in',
-				contentSubText: '',
+				contentSubText: 'Some other stats about your year',
 				stats: {
 					type: 'statList',
 					entries: [
