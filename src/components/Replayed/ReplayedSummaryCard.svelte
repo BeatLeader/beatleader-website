@@ -7,7 +7,7 @@
 	import {onMount} from 'svelte';
 
 	export let title = 'Your 2023 in Beat Saber';
-	export let subText = '';
+	export let subText = 'Summarized';
 	export let contentSubText = '';
 	export let stats;
 	export let imageUrl = '';
@@ -93,8 +93,8 @@
 				<div class="intro-card" out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
 					<div class="intro-card-content">
 						<div class="header">
-							<h1 in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0}}>{title}</h1>
-							<p in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{subText}</p>
+							<h1 in:fly={{y: '2em', duration: 1000, easing: cubicOut, opacity: 0}}>{title}</h1>
+							<p in:fly={{y: '2em', duration: 800, easing: cubicOut, opacity: 0, delay: 1100}}>{subText}</p>
 						</div>
 					</div>
 				</div>
@@ -210,7 +210,7 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		min-height: 20%;
+		min-height: 13%;
 	}
 
 	.grid-item {
@@ -285,6 +285,7 @@
 	}
 
 	.intro-card p {
+		margin-top: 0.5em;
 		font-size: 50%;
 		font-weight: 400;
 	}
@@ -470,6 +471,9 @@
 	}
 
 	.bottom-container-right {
+		display: flex;
+		position: absolute;
+		bottom: 0.5em;
 		right: 0.5em;
 	}
 

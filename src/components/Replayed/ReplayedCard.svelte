@@ -383,6 +383,7 @@
 	}
 
 	.intro-card p {
+		margin-top: 0.5em;
 		font-size: 50%;
 		font-weight: 400;
 	}
