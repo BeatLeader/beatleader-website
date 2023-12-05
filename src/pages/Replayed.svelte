@@ -3,6 +3,7 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
+	import ReplayedSummaryCard from '../components/Replayed/ReplayedSummaryCard.svelte';
 
 	let cards = [
 		{
@@ -199,6 +200,95 @@
 							imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
 						},
 					],
+				},
+			},
+		},
+		{
+			component: ReplayedSummaryCard,
+			props: {
+				title: 'Your 2023 in Beat Saber',
+				imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
+				stats: {
+					topMappers: [
+						{
+							name: 'Light Ai',
+							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							minutesPlayed: 100.33,
+							percentPlayers: 0.01,
+						},
+						{
+							name: 'Light Ai',
+							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							minutesPlayed: 100.33,
+							percentPlayers: 0.01,
+						},
+						{
+							name: 'Light Ai',
+							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							minutesPlayed: 100.33,
+							percentPlayers: 0.01,
+						},
+						{
+							name: 'Light Ai',
+							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							minutesPlayed: 100.33,
+							percentPlayers: 0.01,
+						},
+						{
+							name: 'Light Ai',
+							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							minutesPlayed: 100.33,
+							percentPlayers: 0.01,
+						},
+					],
+					topMaps: [
+						{
+							name: 'Utakata no Sekai de (feat. nayuta)',
+							mapper: 'Light Ai',
+							author: 'DJ Raisei vs Setca.',
+							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
+							previewLink: '',
+							minutes: 3040.33,
+						},
+						{
+							name: 'Utakata no Sekai de (feat. nayuta)',
+							mapper: 'Light Ai',
+							author: 'DJ Raisei vs Setca.',
+							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
+							previewLink: '',
+							minutes: 3040.33,
+						},
+						{
+							name: 'Utakata no Sekai de (feat. nayuta)',
+							mapper: 'Light Ai',
+							author: 'DJ Raisei vs Setca.',
+							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
+							previewLink: '',
+							minutes: 3040.33,
+						},
+						{
+							name: 'Utakata no Sekai de (feat. nayuta)',
+							mapper: 'Light Ai',
+							author: 'DJ Raisei vs Setca.',
+							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
+							previewLink: '',
+							minutes: 3040.33,
+						},
+						{
+							name: 'Utakata no Sekai de (feat. nayuta)',
+							mapper: 'Light Ai',
+							author: 'DJ Raisei vs Setca.',
+							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
+							previewLink: '',
+							minutes: 3040.33,
+						},
+					],
+					eventsParticipation: {
+						count: 2,
+						averageRank: 113.5,
+					},
+					minutesPlayed: 1149.07,
+					topCategory: 'Ranked, Balanced',
 				},
 			},
 		},
