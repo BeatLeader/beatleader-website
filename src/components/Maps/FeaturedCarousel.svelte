@@ -44,7 +44,6 @@
 		if (showFillerCards) addition++;
 		translation = (index + addition) * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
 		currentCenteredIndex = index;
-		console.log(index);
 	}
 
 	function moveOrOpen(index, url) {
