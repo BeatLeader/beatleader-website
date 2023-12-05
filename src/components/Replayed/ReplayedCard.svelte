@@ -183,7 +183,7 @@
 								<img src={stat.imageUrl} alt={stat.name} />
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.minutes} minutes</h3>
+									<h3 class="minutes">{stat.minutes} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
 								</div>
 							</div>
 						{/each}
@@ -241,18 +241,23 @@
 		height: 2em;
 	}
 
-	@media screen and (max-height: 780px) {
-		.stat {
-			font-size: 2vh;
-		}
-	}
-
 	.stat img {
 		height: 1.75em;
+		width: 1.75em;
 		justify-content: center;
 		align-self: center;
 		border-radius: 12px;
 		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+	}
+
+	@media screen and (max-height: 780px) {
+		.stat {
+			font-size: 2vh;
+		}
+
+		.stat img {
+			border-radius: 8px;
+		}
 	}
 
 	.stat h2 {

@@ -9,11 +9,12 @@
 	export let title = 'Your 2023 in Beat Saber';
 	export let subText = 'Summarized';
 	export let contentSubText = '';
-	export let stats;
+	export let stats = {};
 	export let imageUrl = '';
 	export let active = false;
 	export let clickAction;
 	export let nextAction;
+	export let summaryType;
 
 	let revealed = false;
 	let dominantColor = 'rgb(92, 120, 133)';
@@ -108,7 +109,38 @@
 					<p in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
 				</div>
 
-				<div class="data" />
+				<div class="data-columns">
+					{#if summaryType === 'player'}
+						<div class="data">
+							{#each stats.topMappers as stat, index}
+								<div
+									class="stat"
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+									<h2 class="stat-number">{index + 1}</h2>
+									<img src={stat.avatar} alt={stat.name} />
+									<div class="stat-stacked-info">
+										<h2 class="truncated">{stat.name}</h2>
+										<h3 class="minutes">{stat.minutesPlayed} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
+									</div>
+								</div>
+							{/each}
+						</div>
+						<div class="data">
+							{#each stats.topMappers as stat, index}
+								<div
+									class="stat"
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+									<h2 class="stat-number">{index + 1}</h2>
+									<img src={stat.avatar} alt={stat.name} />
+									<div class="stat-stacked-info">
+										<h2 class="truncated">{stat.name}</h2>
+										<h3 class="minutes">{stat.minutesPlayed} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
+									</div>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
 
 				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<img class="bottom-icon" src="/assets/favicon.svg" />
@@ -124,6 +156,13 @@
 </div>
 
 <style>
+	.data-columns {
+		display: flex;
+		flex-direction: row;
+		gap: 0.25em;
+		justify-content: space-evenly;
+	}
+
 	.data {
 		position: relative;
 		margin-top: 2em;
@@ -131,30 +170,37 @@
 		flex-direction: column;
 		gap: 0.75em;
 		margin-top: 1em;
+		width: 100%;
 	}
+
 	.stat {
 		display: flex;
 		overflow: visible;
 		flex-direction: row;
 		align-items: center;
 		gap: 0.5em;
-		font-size: 2.5vh;
+		font-size: 2vh;
 		color: white;
 		height: 2em;
 	}
 
-	@media screen and (max-height: 780px) {
-		.stat {
-			font-size: 2vh;
-		}
-	}
-
 	.stat img {
 		height: 1.75em;
+		width: 1.75em;
 		justify-content: center;
 		align-self: center;
 		border-radius: 12px;
 		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
+	}
+
+	@media screen and (max-height: 780px) {
+		.stat {
+			font-size: 1.75vh;
+		}
+
+		.stat img {
+			border-radius: 8px;
+		}
 	}
 
 	.stat h2 {

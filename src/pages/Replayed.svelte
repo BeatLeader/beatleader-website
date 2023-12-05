@@ -10,7 +10,7 @@
 			component: ReplayedCard,
 			props: {
 				title: 'Your most played',
-				subText: 'You played this map the most minutes of any',
+				subText: 'You played this map the most',
 				contentSubText: 'These are the top 5 maps you played the most',
 				stats: {
 					type: 'mapList',
@@ -207,36 +207,38 @@
 			component: ReplayedSummaryCard,
 			props: {
 				title: 'Your 2023 in Beat Saber',
+				subText: 'A year summarized',
 				imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
+				summaryType: 'player',
 				stats: {
 					topMappers: [
 						{
 							name: 'Light Ai',
-							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
 							minutesPlayed: 100.33,
 							percentPlayers: 0.01,
 						},
 						{
 							name: 'Light Ai',
-							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
 							minutesPlayed: 100.33,
 							percentPlayers: 0.01,
 						},
 						{
 							name: 'Light Ai',
-							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
 							minutesPlayed: 100.33,
 							percentPlayers: 0.01,
 						},
 						{
 							name: 'Light Ai',
-							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
 							minutesPlayed: 100.33,
 							percentPlayers: 0.01,
 						},
 						{
 							name: 'Light Ai',
-							Avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
+							avatar: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
 							minutesPlayed: 100.33,
 							percentPlayers: 0.01,
 						},
@@ -316,7 +318,7 @@
 	}
 
 	:global(.main-content-replayed) {
-		aspect-ratio: 9 / 16;
+		aspect-ratio: 9 / 14.5; /*results in ~9 / 16 for ReplayedCard*/
 	}
 
 	.page-content {
