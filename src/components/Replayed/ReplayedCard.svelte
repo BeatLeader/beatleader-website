@@ -131,6 +131,15 @@
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
 								{mainStat.minutes + ' minutes played'}
 							</h3>
+						{:else if stats?.type === 'statList'}
+							<img
+								src={mainStat.imageUrl}
+								alt={mainStat.name}
+								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
+							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
+								{mainStat.value}
+							</h3>
 						{/if}
 					</div>
 				</div>
@@ -170,6 +179,16 @@
 								<h2 class="truncated">{stat.name}</h2>
 								<i class="fa-solid fa-minus" />
 								<h3 class="minutes">{stat.minutes} min</h3>
+							</div>
+						{/each}
+					{:else if stats?.type === 'statList'}
+						{#each stats?.entries.slice(0, 5) as stat, index}
+							<div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+								<h2 class="stat-number">{index + 1}</h2>
+								<div class="stat-map-info">
+									<h2 class="truncated">{stat.name}</h2>
+									<h3 class="minutes">{stat.value}</h3>
+								</div>
 							</div>
 						{/each}
 					{/if}
