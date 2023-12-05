@@ -140,8 +140,8 @@
 		{#if revealed}
 			<div class="content">
 				<div class="header">
-					<h1 in:fly|global={{y: '100px', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
-					<p in:fly|global={{y: '100px', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
+					<h1 in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
+					<p in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
 				</div>
 
 				<div class="data">
