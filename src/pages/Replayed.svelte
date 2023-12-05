@@ -5,12 +5,71 @@
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
 
 	let cards = [
+    {
+			component: ReplayedCard,
+			props: {
+				title: 'Your most played',
+				subText: 'You played this map the most hours of any',
+        contentSubText: "These are the top 5 maps you played the most",
+				stats: {
+					type: 'mapList',
+					entries: [
+						{
+							index: 0,
+							name: 'Utakata no Sekai de (feat. nayuta)',
+              author: "DJ Raisei vs Setca.",
+							mapper: 'Light Ai',
+              minutes: 3040.33,
+							imageUrl: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
+						},
+            {
+							index: 1,
+							name: 'Utakata no Sekai de (feat. nayuta)',
+              author: "DJ Raisei vs Setca.",
+							mapper: 'Light Ai',
+              minutes: 300.33,
+							imageUrl: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
+						},
+            {
+							index: 2,
+							name: 'Villain Virus',
+              author: "Kobaryo",
+							mapper: 'GalaxyMaster & GojiCrafter',
+              minutes: 300.33,
+							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
+						},
+            {
+							index: 3,
+							name: 'Following the Waving Wings -Last Plaudits-',
+              author: "Kobaryo",
+							mapper: 'GalaxyMaster & GojiCrafter',
+              minutes: 300.33,
+							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
+						},
+            {
+							index: 4,
+							name: 'Villain Virus',
+              author: "Kobaryo",
+							mapper: 'GalaxyMaster & GojiCrafter',
+              minutes: 300.33,
+							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
+						},
+					],
+				},
+				buttons: [
+					{
+						text: 'More Info',
+						type: 'secondary',
+					},
+				],
+			},
+		},
 		{
 			component: ReplayedCard,
 			props: {
 				title: 'Your most fails',
 				subText: 'This map made you struggle the most',
-        contentSubText: "These are the top 10 maps you failed the most times",
+        contentSubText: "These are the top 5 maps you failed the most times",
 				stats: {
 					type: 'mapList',
 					entries: [
@@ -69,7 +128,7 @@
 			props: {
 				title: 'Your top mappers',
 				subText: 'This mapper was your favourite',
-        contentSubText: "These are the top 10 mappers you played the most",
+        contentSubText: "These are the top 5 mappers you played the most",
 				stats: {
 					type: 'mapperList',
 					entries: [
@@ -99,36 +158,6 @@
 						},
             {
 							index: 4,
-							name: 'Light Ai',
-              minutes: 100.33,
-							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-            {
-							index: 5,
-							name: 'Light Ai',
-              minutes: 100.33,
-							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-            {
-							index: 6,
-							name: 'Light Ai',
-              minutes: 100.33,
-							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-            {
-							index: 7,
-							name: 'Light Ai',
-              minutes: 100.33,
-							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-            {
-							index: 8,
-							name: 'Light Ai',
-              minutes: 100.33,
-							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-            {
-							index: 9,
 							name: 'Light Ai',
               minutes: 100.33,
 							imageUrl: 'https://cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
