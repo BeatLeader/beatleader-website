@@ -20,7 +20,7 @@
 	let dominantColor = 'rgb(92, 120, 133)';
 	let activeMounted = false;
 	let activeReady = false;
-	const colors = ['rgb(139, 52, 145)', 'rgb(200, 112, 207)', 'rgb(89, 111, 255)', 'rgb(108, 205, 248)', 'rgb(39, 39, 39)', 'rgb(235, 91, 91)', 'rgb(49, 102, 42)'];
+	const colors = ['rgb(92, 120, 133)', 'rgb(139, 52, 145)', 'rgb(200, 112, 207)', 'rgb(89, 111, 255)', 'rgb(108, 205, 248)', 'rgb(39, 39, 39)', 'rgb(235, 91, 91)'];
 
 	let cinematicsCanvas;
 
