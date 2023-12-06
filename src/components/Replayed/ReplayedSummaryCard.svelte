@@ -262,25 +262,6 @@
 		gap: 0.35em;
 	}
 
-	@media screen and (max-height: 780px) {
-		.stat {
-			font-size: 1.75vh;
-		}
-
-		.data {
-			font-size: 1.75vh;
-		}
-
-		.data-small {
-			margin-top: 1.5em;
-			font-size: 1.75vh;
-		}
-
-		.stat-small {
-			font-size: 1.5vh;
-		}
-	}
-
 	@media screen and (max-height: 860px) {
 		.stat {
 			font-size: 1.85vh;
@@ -297,6 +278,25 @@
 
 		.stat-small {
 			font-size: 1.85vh;
+		}
+	}
+
+	@media screen and (max-height: 780px) {
+		.stat {
+			font-size: 1.75vh;
+		}
+
+		.data {
+			font-size: 1.75vh;
+		}
+
+		.data-small {
+			margin-top: 1.5em;
+			font-size: 1.75vh;
+		}
+
+		.stat-small {
+			font-size: 1.5vh;
 		}
 	}
 
