@@ -3,6 +3,8 @@
 	import createContainerStore from '../../stores/container';
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing/src/history';
+	import { fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 
 	export let cards;
 
@@ -122,7 +124,7 @@
 		style="--cards-cnt: {cards.length +
 			2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
 		{#if cards.length > 1 && showNavBullets}
-			<div class="bullets">
+			<div class="bullets" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}}>
 				{#each cards as card, index}
 					<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
 				{/each}
