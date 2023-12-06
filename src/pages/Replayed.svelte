@@ -7,7 +7,7 @@
 	import { fetchJson } from '../network/fetch';
 	import { BL_API_URL } from '../network/queues/beatleader/api-queue';
 
-  export let replayedType = 'mapper';
+  export let replayedType = 'player';
 
 	let cards;
 
@@ -113,23 +113,23 @@
             entries: [
               {
                 name: 'Hits',
-                value: data.hits,
+                value: data.hits + " total hits",
               },
               {
                 name: 'Misses',
-                value: data.misses,
+                value: data.misses + " total misses",
               },
               {
                 name: 'Plays',
-                value: data.plays,
+                value: data.plays + " total plays",
               },
               {
                 name: 'Fails',
-                value: data.fails,
+                value: data.fails + " total fails",
               },
               {
                 name: 'Restarts',
-                value: data.restarts,
+                value: data.restarts + " total restarts",
               },
               {
                 name: 'Event participation',
@@ -145,11 +145,11 @@
               },
               {
                 name: 'active days',
-                value: data.activeDays,
+                value: data.activeDays + " days",
               },
               {
                 name: 'days streak',
-                value: data.daysStreak,
+                value: data.daysStreak + " days",
               }
             ]
           },
@@ -170,15 +170,15 @@
             extraStats: [
               {
                 name: 'Plays',
-                value: data.plays,
+                value: data.plays + " total plays",
               },
               {
                 name: 'Active days',
-                value: data.activeDays,
+                value: data.activeDays + " days",
               },
               {
                 name: 'Days streak',
-                value: data.daysStreak,
+                value: data.daysStreak + " days",
               },
               {
                 name: 'Minutes played',
@@ -193,8 +193,6 @@
         },
       },
     )
-
-    console.log(_cards);
 
     cards = _cards;
   }
