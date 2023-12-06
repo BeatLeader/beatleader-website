@@ -8,11 +8,12 @@
 	import { BL_API_URL } from '../network/queues/beatleader/api-queue';
 
   export let replayedType = 'player';
+  export let playerId = "76561198051924392";
 
 	let cards;
 
   function fetchReplayed() {
-		fetchJson(BL_API_URL + 'replayed', {
+		fetchJson(BL_API_URL + 'replayed' + (playerId ? `?playerId=${playerId}` : ''), {
 			credentials: 'include',
 		}).then(async response => {
       if (replayedType === 'player' && response.body.player != null) {
@@ -113,27 +114,27 @@
             entries: [
               {
                 name: 'Hits',
-                value: data.hits + " total hits",
+                value: data.hits,
               },
               {
                 name: 'Misses',
-                value: data.misses + " total misses",
+                value: data.misses,
               },
               {
                 name: 'Plays',
-                value: data.plays + " total plays",
+                value: data.plays,
               },
               {
                 name: 'Fails',
-                value: data.fails + " total fails",
+                value: data.fails,
               },
               {
                 name: 'Restarts',
-                value: data.restarts + " total restarts",
+                value: data.restarts,
               },
               {
                 name: 'Event participation',
-                value: `${data.eventsParticipation.count} events (avg rank: ${data.eventsParticipation.averageRank})`,
+                value: `${data.eventsParticipation.count} events (avg rank: ${data.eventsParticipation.averageRank.toFixed(0)})`,
               },
               {
                 name: 'Minutes played',
@@ -145,11 +146,11 @@
               },
               {
                 name: 'active days',
-                value: data.activeDays + " days",
+                value: data.activeDays,
               },
               {
                 name: 'days streak',
-                value: data.daysStreak + " days",
+                value: data.daysStreak,
               }
             ]
           },
@@ -170,19 +171,19 @@
             extraStats: [
               {
                 name: 'Plays',
-                value: data.plays + " total plays",
+                value: data.plays,
               },
               {
                 name: 'Active days',
-                value: data.activeDays + " days",
+                value: data.activeDays,
               },
               {
                 name: 'Days streak',
-                value: data.daysStreak + " days",
+                value: data.daysStreak,
               },
               {
                 name: 'Minutes played',
-                value: data.minutesPlayed.toFixed(2) + ' min',
+                value: data.minutesPlayed.toFixed(2),
               },
               {
                 name: 'Top category',
@@ -268,16 +269,16 @@
             type: 'statList',
             entries: [
               {
-                name: 'Plays',
-                value: data.playsCount + " total plays",
+                name: 'Total plays',
+                value: data.playsCount,
               },
               {
-                name: 'Fails',
-                value: data.failsCount + " total fails",
+                name: 'Total fails',
+                value: data.failsCount,
               },
               {
-                name: 'FCs',
-                value: data.fCsCount + " total FCs",
+                name: 'Total FCs',
+                value: data.fCsCount,
               },
               {
                 name: 'Total Minutes played',
@@ -285,7 +286,7 @@
               },
               {
                 name: 'Total unique players',
-                value: data.playersCount + " players",
+                value: data.playersCount,
               },
             ]
           },

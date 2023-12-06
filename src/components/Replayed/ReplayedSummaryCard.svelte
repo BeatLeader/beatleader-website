@@ -100,7 +100,6 @@
 								<h2 class="stat-number">{index + 1}</h2>
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.minutesPlayed.toFixed(2)} min{index === 0 ? ', ' + stat.percentPlayers.toFixed(2) + '%' : ''}</h3>
 								</div>
 							</div>
 						{/each}
@@ -130,8 +129,8 @@
 						{#each stats.extraStats.slice(0, 3) as stat, index}
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.value}</h3>
+									<h3 class="truncated">{stat.name}</h3>
+									<h2 class="other-stats">{stat.value}</h2>
 								</div>
 							</div>
 						{/each}
@@ -140,8 +139,8 @@
 						{#each stats.extraStats.slice(3, 6) as stat, index}
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.value}</h3>
+									<h3 class="truncated">{stat.name}</h3>
+									<h2 class="other-stats">{stat.value}</h2>
 								</div>
 							</div>
 						{/each}
@@ -177,8 +176,8 @@
 						{#each stats.extraStats.slice(0, 3) as stat, index}
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.value}</h3>
+									<h3 class="truncated">{stat.name}</h3>
+									<h2 class="other-stats">{stat.value}</h2>
 								</div>
 							</div>
 						{/each}
@@ -187,8 +186,8 @@
 						{#each stats.extraStats.slice(3, 6) as stat, index}
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.value}</h3>
+									<h3 class="truncated">{stat.name}</h3>
+									<h2 class="other-stats">{stat.value}</h2>
 								</div>
 							</div>
 						{/each}
@@ -236,9 +235,9 @@
 	}
 
 	.data-small {
-		margin-top: 2.15em;
-		font-size: 1.75vh;
-		gap: 0.40em;
+		margin-top: 2em;
+		font-size: 2vh;
+		gap: 0.8em;
 	}
 
 	.data h2 {
@@ -273,11 +272,31 @@
 		}
 
 		.data-small {
-			font-size: 1.5vh;
+			margin-top: 1.5em;
+			font-size: 1.75vh;
 		}
 
 		.stat-small {
 			font-size: 1.5vh;
+		}
+	}
+
+	@media screen and (max-height: 860px) {
+		.stat {
+			font-size: 1.85vh;
+		}
+
+		.data {
+			font-size: 1.85vh;
+		}
+
+		.data-small {
+			margin-top: 1.7em;
+			font-size: 1.85vh;
+		}
+
+		.stat-small {
+			font-size: 1.85vh;
 		}
 	}
 
@@ -307,6 +326,16 @@
 		white-space: nowrap;
 		padding-right: 0.5em;
 		line-height: 1.3em !important;
+	}
+
+	.stat .other-stats {
+		width: max-content;
+		white-space: nowrap;
+		padding-right: 0.5em;
+		line-height: 1.3em !important;
+		font-size: 120%;
+		font-weight: 700;
+		margin: 0px;
 	}
 
 	.truncated {
