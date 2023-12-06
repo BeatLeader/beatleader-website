@@ -21,6 +21,7 @@
 	let password;
 
 	let showBeatSaverLogin = false;
+	let showOtherVersions = false;
 
 	$: loggedInPlayer = opt($account, 'id');
 	$: error = opt($account, 'error');
@@ -189,17 +190,9 @@
 					<div class="benefit-button-container">
 						<Button
 							iconFa="fas fa-download"
-							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.33'}
-							label="Download for PC 1.33"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.34'}
+							label="Download for PC 1.34"
 							url={BL_API_URL + 'reesaberscurrent'}
-							onlyurl={true}
-							disabled={!loggedInPlayer || !isSupporter}
-							type="green" />
-						<Button
-							iconFa="fas fa-download"
-							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.31'}
-							label="Download for PC 1.31"
-							url={BL_API_URL + 'reesabersprevious'}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
@@ -222,6 +215,30 @@
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
 					</div>
+
+					{#if loggedInPlayer && isSupporter}
+						<div class="versions-list">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showOtherVersions}
+								on:click={() => (showOtherVersions = !showOtherVersions)}
+								on:keydown={() => (showOtherVersions = !showOtherVersions)}
+								title="Show ReeSabers downloads for other versions">
+								{#if showOtherVersions}
+									Hide versions
+								{:else}
+									Other versions
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+
+							{#if showOtherVersions}
+								<a href={BL_API_URL + 'reesabersversion?version=1.33.0'}> Version for 1.33.0</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.31.0'}> Version for 1.31.0</a>
+							{/if}
+						</div>
+					{/if}
 				{/if}
 			{/if}
 		</ContentBox>
@@ -323,6 +340,11 @@
 	.benefits-gif {
 		max-width: 36em;
 		padding: 1em;
+	}
+	.versions-list {
+		display: flex;
+		flex-direction: column;
+		align-self: flex-start;
 	}
 	:global(.benefits-box) {
 		width: 60%;
