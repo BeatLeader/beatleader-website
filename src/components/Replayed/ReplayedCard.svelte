@@ -15,7 +15,7 @@
 	export let active = false;
 	export let clickAction;
 	export let nextAction;
-  export let forcedColor;
+  export let forcedColor = null;
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -272,7 +272,7 @@
 
   .data-small {
 		font-size: 1.75vh;
-		gap: 0.40em;
+    gap: 1.5em;
 	}
 
 	.stat {
@@ -331,6 +331,7 @@
 		width: max-content;
 		white-space: nowrap;
 		padding-right: 0.5em;
+    line-height: 1.3em !important;
 	}
 
 	.truncated {
@@ -562,6 +563,12 @@
     cursor: default;
 	}
 
+  @media screen and (max-height: 780px) {
+		.content {
+      padding: 0.3em;
+    }
+	}
+
 	.content h1 {
 		font-size: 80%;
 		font-weight: 700;
@@ -642,5 +649,14 @@
 
 	.bottom-icon {
 		width: 2vh;
+	}
+
+  @media screen and (max-height: 780px) {
+		.bottom-container {
+      display: flex;
+      position: absolute;
+      bottom: 0.3em;
+      left: 0.3em;
+    }
 	}
 </style>
