@@ -20,6 +20,7 @@
 	let dominantColor = 'rgb(92, 120, 133)';
 	let activeMounted = false;
 	let activeReady = false;
+	const colors = ['rgb(139, 52, 145)', 'rgb(200, 112, 207)', 'rgb(89, 111, 255)', 'rgb(108, 205, 248)', 'rgb(39, 39, 39)', 'rgb(235, 91, 91)', 'rgb(49, 102, 42)'];
 
 	let cinematicsCanvas;
 
@@ -31,50 +32,18 @@
 		}
 	}
 
-	function drawCinematics(cinematicsCanvas, coverUrl) {
-		if (coverUrl && cinematicsCanvas) {
-			cinematicsCanvas.style.opacity = 1;
-			const context = cinematicsCanvas.getContext('2d');
-
-			const cover = new Image();
-			cover.onload = function () {
-				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
-			};
-			cover.src = coverUrl;
-		}
-	}
-
 	function reveal() {
 		revealed = true;
 	}
 
-	function retrieveBackgroundColor(img) {
-		var context = document.createElement('canvas').getContext('2d');
-		if (typeof img == 'string') {
-			var src = img;
-			img = new Image();
-			img.setAttribute('crossOrigin', '');
-			img.src = src;
-		}
-		img.onload = () => {
-			context.imageSmoothingEnabled = true;
-			context.drawImage(img, 0, 0, 1, 1);
-			const imageData = context.getImageData(0, 0, 1, 1).data.slice(0, 3);
-
-			if (imageData[0] > 229.5 && imageData[1] > 229.5 && imageData[2] > 229.5) {
-				dominantColor = `rgb(${imageData[0] * 0.8},${imageData[1] * 0.8},${imageData[2] * 0.8})`;
-			} else {
-				dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
-			}
-			
-		};
+	function setBackgroundColor(index) {
+		dominantColor = colors[index];
 	}
+
 
 	onMount(() => (activeMounted = true));
 
 	$: activeReady = activeMounted && active;
-	$: drawCinematics(cinematicsCanvas, imageUrl);
-	$: retrieveBackgroundColor(imageUrl);
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -87,7 +56,7 @@
 			</div>
 		</div>
 		<div class="background-container">
-			<div class="background" style="background-image: url({imageUrl});" />
+			<div class="background" />
 			{#if revealed}
 				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} />
 				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} />
@@ -117,11 +86,11 @@
 				<div class="data-columns">
 					{#if summaryType === 'player'}
 						<div class="data" style="width: 40%">
-							<h2>Top Mappers</h2>
+							<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Mappers</h2>
 							{#each stats.topMappers as stat, index}
 								<div
 									class="stat"
-									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
 									<h2 class="stat-number">{index + 1}</h2>
 									<div class="stat-stacked-info">
 										<h2 class="truncated">{stat.name}</h2>
@@ -131,11 +100,11 @@
 							{/each}
 						</div>
 						<div class="data" style="width: 60%">
-							<h2>Top Maps</h2>
+							<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Maps</h2>
 							{#each stats.topMaps as stat, index}
 								<div
 									class="stat"
-									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
 									<h2 class="stat-number">{index + 1}</h2>
 									<img src={stat.cover} alt={stat.name} />
 
@@ -159,8 +128,15 @@
 					<span>beatleader.xyz/replayed</span>
 				</div>
 				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
-					<img class="bottom-icon" src="/assets/favicon.svg" />
-					<span>share</span>
+					<div style="display: flex; justify-content: flex-end;">
+						<img class="bottom-icon" src="/assets/favicon.svg" />
+						<span>share</span>
+					</div>
+					<div class="bullets">
+						{#each colors as color, index}
+							<span class:active={color === dominantColor} style="background-color: {color};" on:click={() => setBackgroundColor(index)} />
+						{/each}
+					</div>
 				</div>
 			</div>
 		{/if}
@@ -202,23 +178,23 @@
 		height: 2em;
 	}
 
-	.stat img {
-		height: 1.75em;
-		width: 1.75em;
-		justify-content: center;
-		align-self: center;
-		border-radius: 12px;
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
-	}
-
 	@media screen and (max-height: 780px) {
 		.stat {
 			font-size: 1.75vh;
 		}
 
-		.stat img {
-			border-radius: 8px;
+		.data {
+			font-size: 1.75vh;
 		}
+	}
+
+	.stat img {
+		height: 1.75em;
+		width: 1.75em;
+		justify-content: center;
+		align-self: center;
+		border-radius: 0.5em;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
 	}
 
 	.stat h2 {
@@ -274,7 +250,7 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		min-height: 13%;
+		min-height: 19%;
 	}
 
 	.grid-item {
@@ -284,6 +260,7 @@
 		padding: 1.9em;
 		position: relative;
 		transition: padding 300ms ease;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.grid-item.active {
@@ -405,16 +382,14 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-		background-size: cover;
-		background-repeat: no-repeat;
-		background-position: center;
+		background-color: var(--dominantColor);
 		width: 100%;
 		height: 100%;
-		transition: transform 2500ms ease-out;
 		z-index: 0;
 		pointer-events: none;
-		filter: blur(0.6vh);
 		transform: scale(1.01);
+		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
+		filter: brightness(70%);
 	}
 
 	.card.revealed .background {
@@ -432,9 +407,10 @@
 		width: 120%;
 		height: 20%;
 		background-color: var(--dominantColor);
-		opacity: 0.95;
 		transform: rotate(-10deg);
 		border-radius: 12px;
+		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
+		box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.45);
 	}
 
 	.background-solid-bottom {
@@ -444,9 +420,10 @@
 		width: 120%;
 		height: 20%;
 		background-color: var(--dominantColor);
-		opacity: 0.95;
 		transform: rotate(-10deg);
 		border-radius: 12px;
+		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
+		box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45)
 	}
 
 	.content {
@@ -515,6 +492,7 @@
 		z-index: -1;
 		height: 100%;
 		transition: cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
+		background-color: var(--dominantColor);
 	}
 
 	.cinematics-canvas.active {
@@ -536,9 +514,11 @@
 
 	.bottom-container-right {
 		display: flex;
+		flex-direction: column;
 		position: absolute;
 		bottom: 0.5em;
 		right: 0.5em;
+		gap: 0.25em;
 	}
 
 	.bottom-container span {
@@ -553,5 +533,19 @@
 
 	.bottom-icon {
 		width: 2vh;
+	}
+
+	.bullets {
+		display: flex;
+		text-align: end;
+	}
+
+	.bullets > span {
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		border-radius: 50%;
+		cursor: pointer;
+		margin: 0 0.25em;
 	}
 </style>

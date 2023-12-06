@@ -68,7 +68,12 @@
 			context.drawImage(img, 0, 0, 1, 1);
 			const imageData = context.getImageData(0, 0, 1, 1).data.slice(0, 3);
 
-			dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
+			if (imageData[0] > 229.5 && imageData[1] > 229.5 && imageData[2] > 229.5) {
+				dominantColor = `rgb(${imageData[0] * 0.8},${imageData[1] * 0.8},${imageData[2] * 0.8})`;
+			} else {
+				dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
+			}
+
 		};
 	}
 
@@ -240,24 +245,20 @@
 		color: white;
 		height: 2em;
 	}
-
-	.stat img {
-		height: 1.75em;
-		width: 1.75em;
-		justify-content: center;
-		align-self: center;
-		border-radius: 12px;
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
-	}
-
+  
 	@media screen and (max-height: 780px) {
 		.stat {
 			font-size: 2vh;
 		}
+	}
 
-		.stat img {
-			border-radius: 8px;
-		}
+  .stat img {
+		height: 1.75em;
+		width: 1.75em;
+		justify-content: center;
+		align-self: center;
+		border-radius: 0.5em;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
 	}
 
 	.stat h2 {
@@ -323,6 +324,7 @@
 		padding: 1.9em;
 		position: relative;
 		transition: padding 300ms ease;
+    -webkit-tap-highlight-color: transparent;
 	}
 
 	.grid-item.active {
@@ -474,6 +476,7 @@
 		opacity: 0.95;
 		transform: rotate(-10deg);
 		border-radius: 12px;
+    box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.45);
 	}
 
 	.background-solid-bottom {
@@ -486,6 +489,7 @@
 		opacity: 0.95;
 		transform: rotate(-10deg);
 		border-radius: 12px;
+    box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45);
 	}
 
 	.content {

@@ -181,6 +181,7 @@
 		mask-type: alpha;
 		-webkit-mask-image: linear-gradient(90deg, transparent 0%, white var(--maskLeft), white var(--maskRight), transparent 100%);
 		mask-image: linear-gradient(90deg, transparent 0%, white var(--maskLeft), white var(--maskRight), transparent 100%);
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	/*.carousel:after {
