@@ -137,7 +137,54 @@
 						{/each}
 					</div>
 					<div class="data data-small" style="width: 60%">
-						{#each stats.extraStats.slice(3, 5) as stat, index}
+						{#each stats.extraStats.slice(3, 6) as stat, index}
+							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+									<h3 class="minutes">{stat.value}</h3>
+								</div>
+							</div>
+						{/each}
+					</div>
+
+				</div>
+				{:else if summaryType === 'mapper'}
+				<div class="data-columns">
+					<div class="data" style="width: 100%">
+						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Maps</h2>
+						{#each stats.topMaps.slice(0, 5) as stat, index}
+							<div
+								class="stat"
+								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
+								<h2 class="stat-number">{index + 1}</h2>
+								<img src={stat.cover} alt={stat.name} />
+
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+
+									<div class="stat-stacked-subinfo">
+										<h3 class="truncated">{stat.mapper}</h3>
+										<i class="fa-solid fa-minus" />
+										<h3 class="minutes">{stat.minutes.toFixed(2)  + ' min'}</h3>
+									</div>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</div>
+				<div class="data-columns">
+					<div class="data data-small" style="width: 40%">
+						{#each stats.extraStats.slice(0, 3) as stat, index}
+							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+									<h3 class="minutes">{stat.value}</h3>
+								</div>
+							</div>
+						{/each}
+					</div>
+					<div class="data data-small" style="width: 60%">
+						{#each stats.extraStats.slice(3, 6) as stat, index}
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>

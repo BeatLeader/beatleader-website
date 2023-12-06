@@ -271,23 +271,23 @@
             entries: [
               {
                 name: 'Plays',
-                value: data.playsCount,
+                value: data.playsCount + " total plays",
               },
               {
                 name: 'Fails',
-                value: data.failsCount,
+                value: data.failsCount + " total fails",
               },
               {
                 name: 'FCs',
-                value: data.fCsCount,
+                value: data.fCsCount + " total FCs",
               },
               {
                 name: 'Total Minutes played',
                 value: data.minutesPlayed.toFixed(2) + ' min',
               },
               {
-                name: 'Amount of unique players',
-                value: data.playersCount,
+                name: 'Total unique players',
+                value: data.playersCount + " players",
               },
             ]
           },
@@ -308,15 +308,15 @@
             extraStats: [
               {
                 name: 'Plays',
-                value: data.playsCount,
+                value: data.playsCount + " total plays",
               },
               {
                 name: 'Fails',
-                value: data.failsCount,
+                value: data.failsCount + " total fails",
               },
               {
                 name: 'FCs',
-                value: data.fCsCount,
+                value: data.fCsCount + " total FCs",
               },
               {
                 name: 'Top 5 mapper',
@@ -327,7 +327,7 @@
                 value: data.minutesPlayed.toFixed(2) + ' min',
               },
               {
-                name: 'Amount of unique players',
+                name: 'Total unique players',
                 value: data.playersCount,
               },
             ],
