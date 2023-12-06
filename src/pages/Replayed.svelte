@@ -73,7 +73,7 @@
         },
       },
     )
-    _cards.push(
+    if (data.topFailed) _cards.push(
       {
         component: ReplayedCard,
         props: {
@@ -87,7 +87,7 @@
         },
       },
     )
-    _cards.push(
+    if (data.topRestarted) _cards.push(
       {
         component: ReplayedCard,
         props: {
