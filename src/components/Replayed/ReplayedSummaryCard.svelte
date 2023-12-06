@@ -306,6 +306,7 @@
 		width: max-content;
 		white-space: nowrap;
 		padding-right: 0.5em;
+		line-height: 1.3em !important;
 	}
 
 	.truncated {
@@ -533,6 +534,12 @@
 		cursor: default;
 	}
 
+	@media screen and (max-height: 780px) {
+		.content {
+      padding: 0.3em;
+    }
+	}
+
 	.content h1 {
 		font-size: 80%;
 		font-weight: 700;
@@ -642,5 +649,20 @@
 		border-radius: 50%;
 		cursor: pointer;
 		margin: 0 0.25em;
+	}
+
+	@media screen and (max-height: 780px) {
+		.bottom-container {
+      display: flex;
+      position: absolute;
+      bottom: 0.3em;
+      left: 0.3em;
+    }
+
+		.bottom-container-right {
+			bottom: 0.3em;
+			right: 0.3em;
+			gap: 0.25em;
+		}
 	}
 </style>
