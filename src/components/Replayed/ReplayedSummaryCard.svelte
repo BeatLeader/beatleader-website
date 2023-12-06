@@ -436,6 +436,7 @@
 		border-radius: 12px;
 		position: relative;
 		font-size: 3.5vh;
+		cursor: default;
 	}
 
 	.content h1 {

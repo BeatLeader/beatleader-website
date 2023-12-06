@@ -245,7 +245,7 @@
 		color: white;
 		height: 2em;
 	}
-  
+
 	@media screen and (max-height: 780px) {
 		.stat {
 			font-size: 2vh;
@@ -502,6 +502,7 @@
 		border-radius: 12px;
 		position: relative;
 		font-size: 3.5vh;
+    cursor: default;
 	}
 
 	.content h1 {
