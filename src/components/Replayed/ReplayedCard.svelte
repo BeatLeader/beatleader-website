@@ -141,12 +141,12 @@
 							{/if}
 						{:else if stats?.type === 'statList'}
 							<img
-								src={mainStat.imageUrl}
-								alt={mainStat.name}
+								src={imageUrl}
+								alt={stats.entries[6]?.name}
 								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
-							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
+							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
-								{mainStat.value}
+								{stats.entries[6]?.value}
 							</h3>
 						{/if}
 					</div>

@@ -176,7 +176,7 @@
 			component: ReplayedCard,
 			props: {
 				title: 'Other stats',
-				subText: 'How many events did you participate in',
+				subText: 'How much did you play this year?',
 				contentSubText: 'Some other stats about your year',
         imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
 				stats: {
