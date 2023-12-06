@@ -167,7 +167,6 @@
 							type={params.type}
 							page={params.page}
 							{location}
-							dontChangeType={false}
 							showCurve={true}
 							separatePage={true} />
 					</Route>
@@ -177,7 +176,6 @@
 							type={params.type}
 							page={params.page}
 							{location}
-							dontChangeType={false}
 							showCurve={true}
 							separatePage={true}
 							showApproveRequest={true} />

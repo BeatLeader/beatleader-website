@@ -22,7 +22,6 @@
 
 	function onKeyUp(e) {
 		const value = e?.target?.value ?? null;
-		if (!value?.length) return;
 
 		if (e.key === 'Enter') {
 			e.preventDefault();
