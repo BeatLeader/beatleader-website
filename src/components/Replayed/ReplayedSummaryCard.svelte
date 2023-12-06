@@ -52,7 +52,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="grid-item" class:active>
+<div class="grid-item" class:active transition:fly|global={{y: '25%', duration: 900, easing: cubicOut, opacity: 0}}>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active={revealed}>
@@ -91,7 +91,7 @@
 				<div class="data-columns">
 					<div class="data" style="width: 40%">
 						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Mappers</h2>
-						{#each stats.topMappers as stat, index}
+						{#each stats.topMappers.slice(0, 5) as stat, index}
 							<div
 								class="stat"
 								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
@@ -105,7 +105,7 @@
 					</div>
 					<div class="data" style="width: 60%">
 						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Maps</h2>
-						{#each stats.topMaps as stat, index}
+						{#each stats.topMaps.slice(0, 5) as stat, index}
 							<div
 								class="stat"
 								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
@@ -276,6 +276,7 @@
 	.stat i {
 		font-size: 60%;
 		color: rgb(190, 190, 190);
+		padding-right: 0.5em;
 	}
 
 	.stat-stacked-info {
@@ -433,7 +434,7 @@
 		pointer-events: none;
 		transform: scale(1.01);
 		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
-		filter: brightness(70%);
+		filter: brightness(85%);
 	}
 
 	.card.revealed .background {

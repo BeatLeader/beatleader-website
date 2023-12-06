@@ -1,344 +1,303 @@
 <script>
-	import {fade} from 'svelte/transition';
+	import {fade, fly} from 'svelte/transition';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
 	import ReplayedSummaryCard from '../components/Replayed/ReplayedSummaryCard.svelte';
+	import { fetchJson } from '../network/fetch';
+	import { BL_API_URL } from '../network/queues/beatleader/api-queue';
 
-	let cards = [
-		{
-			component: ReplayedCard,
-			props: {
-				title: 'Your most played',
-				subText: 'You played this map the most',
-				contentSubText: 'These are the top 5 maps you played the most',
-				stats: {
-					type: 'mapList',
-					entries: [
-						{
-							name: 'Utakata no Sekai de (feat. nayuta)',
-							author: 'DJ Raisei vs Setca.',
-							mapper: 'Light Ai',
-							minutes: 3040.335454545,
-							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Utakata no Sekai de (feat. nayuta)',
-							author: 'DJ Raisei vs Setca.',
-							mapper: 'Light Ai',
-							minutes: 300.33,
-							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Villain Virus',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							minutes: 300.33,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Following the Waving Wings -Last Plaudits-',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							minutes: 300.33,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Villain Virus',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							minutes: 300.33,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-					],
-				},
-				buttons: [
-					{
-						text: 'More Info',
-						type: 'secondary',
-					},
-				],
-			},
-		},
-		{
-			component: ReplayedCard,
-			props: {
-				title: 'Your most failed',
-				subText: 'This map made you struggle the most',
-				contentSubText: 'These are the top 5 maps you failed the most times',
-				stats: {
-					type: 'mapList',
-					entries: [
-						{
-							name: 'Villain Virus',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							count: 12,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Villain Virus',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							count: 12,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Villain Virus',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							count: 12,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Villain Virus',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							count: 12,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-						{
-							name: 'Villain Virus',
-							author: 'Kobaryo',
-							mapper: 'GalaxyMaster & GojiCrafter',
-							count: 12,
-							cover: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
-              previewLink: "https://eu.cdn.beatsaver.com/b42d47f506e27997c121a79de17a95fd833e1475.mp3",
-						},
-					],
-				},
-				buttons: [
-					{
-						text: 'More Info',
-						type: 'secondary',
-					},
-				],
-			},
-		},
-		{
-			component: ReplayedCard,
-			props: {
-				title: 'Your top mappers',
-				subText: 'This mapper was your favourite',
-				contentSubText: 'These are the top 5 mappers you played the most',
-				stats: {
-					type: 'playerList',
-					entries: [
-						{
-							beatLeaderId: '76561198051924392',
-              beatSaverId: "10642",
-							name: 'Light Ai',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-							avatar: '/cors/cdnbeatsaver/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-						{
-							beatLeaderId: '76561198051924392',
-              beatSaverId: "10642",
-							name: 'Light Ai',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-							avatar: '/cors/cdnbeatsaver/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-						{
-							beatLeaderId: '76561198051924392',
-              beatSaverId: "10642",
-							name: 'Light Ai',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-							avatar: '/cors/cdnbeatsaver/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-						{
-							beatLeaderId: '76561198051924392',
-              beatSaverId: "10642",
-							name: 'Light Ai',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-							avatar: '/cors/cdnbeatsaver/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-						{
-							beatLeaderId: '76561198051924392',
-              beatSaverId: "10642",
-							name: 'Light Ai',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-							avatar: '/cors/cdnbeatsaver/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-						},
-					],
-				},
-			},
-		},
-		{
-			component: ReplayedCard,
-			props: {
-				title: 'Other stats',
-				subText: 'How much did you play this year?',
-				contentSubText: 'Some other stats about your year',
-        imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
-				stats: {
-					type: 'statList',
-					entries: [
-						{
-              name: 'hits',
-              value: '217338',
-            },
-            {
-              name: 'misses',
-              value: '1447',
-            },
-            {
-              name: 'plays',
-              value: '918',
-            },
-            {
-              name: 'fails',
-              value: '17',
-            },
-            {
-              name: 'restarts',
-              value: '224',
-            },
-            {
-              name: 'Event participation',
-              value: '2 events (avg rank: 113.5)',
-            },
-            {
-              name: 'Minutes played',
-              value: '1149.07 min',
-            },
-            {
-              name: 'Top categories',
-              value: 'Ranked, Balanced',
-            },
-            {
-              name: 'active days',
-              value: '46',
-            },
-            {
-              name: 'days streak',
-              value: '0',
-            }
-					],
-				},
-			},
-		},
-		{
-			component: ReplayedSummaryCard,
-			props: {
-				title: 'Your 2023 in Beat Saber',
-				subText: 'A year summarized',
-				imageUrl: 'https://media.discordapp.net/attachments/504380776624947212/1181640384858836992/2.5_2_pfp_4_final_choice.png',
-				summaryType: 'player',
-				stats: {
-					topMappers: [
-						{
-							name: 'Light Ai',
-							avatar: 'https://eu.cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-						},
-						{
-							name: 'Light Ai',
-							avatar: 'https://eu.cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-						},
-						{
-							name: 'Light Ai',
-							avatar: 'https://eu.cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-						},
-						{
-							name: 'Light Ai',
-							avatar: 'https://eu.cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-						},
-						{
-							name: 'Light Ai',
-							avatar: 'https://eu.cdn.beatsaver.com/avatar/4a1162e0d049531ef2affff298b459b3ac1644a6.png',
-							minutesPlayed: 100.33,
-							percentPlayers: 0.01,
-						},
-					],
-					topMaps: [
-						{
-							name: 'Utakata no Sekai de (feat. nayuta)',
-							mapper: 'Light Ai',
-							author: 'DJ Raisei vs Setca.',
-							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
-							previewLink: '',
-							minutes: 3040.33,
-						},
-						{
-							name: 'Utakata no Sekai de (feat. nayuta)',
-							mapper: 'Light Ai',
-							author: 'DJ Raisei vs Setca.',
-							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
-							previewLink: '',
-							minutes: 3040.33,
-						},
-						{
-							name: 'Utakata no Sekai de (feat. nayuta)',
-							mapper: 'Light Ai',
-							author: 'DJ Raisei vs Setca.',
-							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
-							previewLink: '',
-							minutes: 3040.33,
-						},
-						{
-							name: 'Utakata no Sekai de (feat. nayuta)',
-							mapper: 'Light Ai',
-							author: 'DJ Raisei vs Setca.',
-							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
-							previewLink: '',
-							minutes: 3040.33,
-						},
-						{
-							name: 'Utakata no Sekai de (feat. nayuta)',
-							mapper: 'Light Ai',
-							author: 'DJ Raisei vs Setca.',
-							cover: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
-							previewLink: '',
-							minutes: 3040.33,
-						},
-					],
-          extraStats: [
-            {
-              name: 'Plays',
-              value: '918',
-            },
-            {
-              name: 'Active days',
-              value: '46',
-            },
-            {
-              name: 'Days streak',
-              value: '0',
-            },
-            {
-              name: 'Minutes played',
-              value: '1149.07 min',
-            },
-            {
-              name: 'Top categories',
-              value: 'Ranked, Balanced',
-            },
-          ],
-				},
-			},
-		},
-	];
+  export let replayedType = 'mapper';
+
+	let cards;
+
+  function fetchReplayed() {
+		fetchJson(BL_API_URL + 'replayed', {
+			credentials: 'include',
+		}).then(async response => {
+      if (replayedType === 'player' && response.body.player != null) {
+        prepPlayerData(response.body.player);
+      } else if (replayedType === 'mapper' && response.body.mapper != null) {
+        prepMapperData(response.body.mapper);
+      } else {
+        return;
+      }
+
+
+		});
+	}
+
+  function prepPlayerData(data) {
+    let _cards = [];
+
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Your top mappers',
+          subText: 'This mapper was your favourite',
+          contentSubText: 'These are the top 5 mappers you played the most',
+          stats: {
+            type: 'playerList',
+            entries: data.topMappers.slice(0, 5),
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Your top mappers %',
+          subText: 'You were one of the top players for this mapper',
+          contentSubText: 'You were one of the top players for these 3 mappers',
+          stats: {
+            type: 'playerList',
+            entries: data.topMappersPercentage.slice(0, 3),
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Your top maps',
+          subText: 'This map was your favourite',
+          contentSubText: 'These are the top 5 maps you played the most',
+          stats: {
+            type: 'mapList',
+            entries: data.topMaps.slice(0, 5),
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Your most failed',
+          subText: 'This map made you struggle the most',
+          contentSubText: 'These are the top 5 maps you failed the most times',
+          stats: {
+            type: 'mapList',
+            entries: data.topFailed.slice(0, 5),
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Your most restarted',
+          subText: 'You grinded this map a lot',
+          contentSubText: 'These are the top 5 maps you grinded the most times',
+          stats: {
+            type: 'mapList',
+            entries: data.topRestarted.slice(0, 5),
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Other stats',
+          subText: 'How much did you play this year?',
+          contentSubText: 'Some other stats about your year',
+          stats: {
+            type: 'statList',
+            entries: [
+              {
+                name: 'Hits',
+                value: data.hits,
+              },
+              {
+                name: 'Misses',
+                value: data.misses,
+              },
+              {
+                name: 'Plays',
+                value: data.plays,
+              },
+              {
+                name: 'Fails',
+                value: data.fails,
+              },
+              {
+                name: 'Restarts',
+                value: data.restarts,
+              },
+              {
+                name: 'Event participation',
+                value: `${data.eventsParticipation.count} events (avg rank: ${data.eventsParticipation.averageRank})`,
+              },
+              {
+                name: 'Minutes played',
+                value: data.minutesPlayed.toFixed(2) + ' min',
+              },
+              {
+                name: 'Top category',
+                value: data.topCategory,
+              },
+              {
+                name: 'active days',
+                value: data.activeDays,
+              },
+              {
+                name: 'days streak',
+                value: data.daysStreak,
+              }
+            ]
+          },
+        },
+      },
+    )
+
+    _cards.push(
+      {
+        component: ReplayedSummaryCard,
+        props: {
+          title: 'Your 2023 in Beat Saber',
+          subText: 'A year summarized',
+          summaryType: 'player',
+          stats: {
+            topMappers: data.topMappers.slice(0, 5),
+            topMaps: data.topMaps.slice(0, 5),
+            extraStats: [
+              {
+                name: 'Plays',
+                value: data.plays,
+              },
+              {
+                name: 'Active days',
+                value: data.activeDays,
+              },
+              {
+                name: 'Days streak',
+                value: data.daysStreak,
+              },
+              {
+                name: 'Minutes played',
+                value: data.minutesPlayed.toFixed(2) + ' min',
+              },
+              {
+                name: 'Top category',
+                value: data.topCategory,
+              },
+            ],
+          },
+        },
+      },
+    )
+
+    console.log(_cards);
+
+    cards = _cards;
+  }
+
+  function prepMapperData(data) {
+    let _cards = [];
+
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Your top maps',
+          subText: 'This map was the most popular',
+          contentSubText: 'These are the top 5 maps that were played the most',
+          stats: {
+            type: 'mapList',
+            entries: data.topMaps.slice(0, 5),
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Top x mapper',
+          subText: 'For how many players were you the top mapper?',
+          contentSubText: 'For how many players were you in the top 1, 3, or 5 mappers?',
+          stats: {
+            type: 'statList',
+            entries: [
+              {
+                name: 'Top 1 mapper',
+                value: `for ${data.tops.top1Count} players, ${data.tops.top1Percentage.toFixed(3)}% of all players`,
+              },
+              {
+                name: 'Top 3 mapper',
+                value: `for ${data.tops.top3Count} players, ${data.tops.top3Percentage.toFixed(3)}% of all players`,
+              },
+              {
+                name: 'Top 5 mapper',
+                value: `for ${data.tops.top5Count} players, ${data.tops.top5Percentage.toFixed(3)}% of all players`,
+              }
+            ]
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Your top players',
+          subText: 'This players played your maps the most',
+          contentSubText: 'These players played your maps the most',
+          stats: {
+            type: 'playerList',
+            entries: data.topPlayers.slice(0, 5),
+          },
+        },
+      },
+    )
+    _cards.push(
+      {
+        component: ReplayedCard,
+        props: {
+          title: 'Other stats',
+          subText: 'How much were your maps played this year?',
+          contentSubText: 'Some other stats about your year',
+          stats: {
+            type: 'statList',
+            entries: [
+              {
+                name: 'Plays',
+                value: data.playsCount,
+              },
+              {
+                name: 'Fails',
+                value: data.failsCount,
+              },
+              {
+                name: 'FCs',
+                value: data.fCsCount,
+              },
+              {
+                name: 'Total Minutes played',
+                value: data.minutesPlayed.toFixed(2) + ' min',
+              },
+              {
+                name: 'Amount of unique players',
+                value: data.playersCount,
+              },
+            ]
+          },
+        },
+      },
+    )
+
+    cards = _cards;
+  }
+
+
+
+  $: fetchReplayed();
 </script>
 
 <svelte:head>
@@ -349,7 +308,9 @@
 	<article class="page-content align-content" transition:fade|global>
 		<ContentBox cls="main-content-replayed">
 			<div class="items">
+        {#if cards}
 				<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} showButtons />
+        {/if}
 			</div>
 		</ContentBox>
 	</article>
