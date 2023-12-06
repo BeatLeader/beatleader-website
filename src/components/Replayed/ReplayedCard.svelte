@@ -4,7 +4,7 @@
 	import {navigate} from 'svelte-routing/src/history';
 	import Reveal from '../Common/Reveal.svelte';
 	import {cubicOut} from 'svelte/easing';
-	import {onMount} from 'svelte';
+	import {createEventDispatcher, onMount} from 'svelte';
 
 	export let title = '';
 	export let subText = '';
@@ -16,6 +16,8 @@
 	export let clickAction;
 	export let nextAction;
   export let forcedColor = null;
+
+  const dispatch = createEventDispatcher();
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -84,8 +86,56 @@
     return link;
   }
 
+  function startAutoRevealCount() {
+		window.dispatchEvent(
+			new CustomEvent('startAutoRevealCount', {
+				detail: {
+					reveal: reveal,
+				},
+				bubbles: true
+			})
+		);
+  }
+
+	function startAutoNextCount() {
+		window.dispatchEvent(
+			new CustomEvent('startAutoNextCount', {
+				detail: {
+					next: nextAction,
+				},
+				bubbles: true
+			})
+		);
+	}
+
+  function startSong() {
+		window.dispatchEvent(
+			new CustomEvent('startSong', {
+				detail: {
+					previewLink: mainStat.previewLink,
+				},
+				bubbles: true,
+			})
+		);
+  }
+
+  function stopSong() {
+		window.dispatchEvent(
+			new CustomEvent('stopSong', { bubbles: true })
+		);
+  }
+
+	function notifyReveal() {
+		window.dispatchEvent(
+			new CustomEvent('cardWasRevealed', { bubbles: true })
+		);
+	}
+
 	onMount(() => (activeMounted = true));
 
+
+	$: revealed ? notifyReveal() : null;
+  $: active? null : stopSong();
 	$: activeReady = activeMounted && active;
 	$: drawCinematics(cinematicsCanvas, imageUrl);
 	$: if (buttons?.length > 3) buttons = buttons.slice(0, 3);
@@ -136,10 +186,10 @@
 							<img
 								src={mainStat.cover}
 								alt={mainStat.name}
-								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} on:introend={startSong}/>
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
-							<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
+							<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}} on:introend={startAutoRevealCount}>
 								{mainStat?.minutes ? mainStat.minutes.toFixed(2) + ' minutes played' : mainStat.count + ' times'}
 							</h4>
 						{:else if stats?.type === 'playerList'}
@@ -148,7 +198,7 @@
 								alt={mainStat.name}
 								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
-							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
+							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
 								{mainStat.minutesPlayed.toFixed(2) + ' minutes played'}
 							</h3>
 							{#if mainStat.percentPlayers}
@@ -158,7 +208,7 @@
 							{/if}
 						{:else if stats?.type === 'statList'}
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.value ? stats.entries[6].value : mainStat.name}</h2>
-							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
+							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
 								{stats.entries[6]?.value ? stats.entries[6].value : mainStat.value}
               </h3>
 						{/if}
@@ -231,7 +281,7 @@
 					{/if}
 				</div>
 
-				<div class="buttons" class:active transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 2500}}>
+				<div class="buttons" class:active transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 2500}} on:introend={startAutoNextCount}>
 					{#each buttons as button}
 						<Button
 							label={button.text}

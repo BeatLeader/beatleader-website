@@ -6,6 +6,7 @@
 	import ReplayedSummaryCard from '../components/Replayed/ReplayedSummaryCard.svelte';
 	import { fetchJson } from '../network/fetch';
 	import { BL_API_URL } from '../network/queues/beatleader/api-queue';
+	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
 
   export let replayedType = 'player';
   export let playerId = "76561198051924392";
@@ -349,6 +350,7 @@
 			<div class="items">
         {#if cards}
 				<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} showButtons />
+        <SoundMotionController />
         {/if}
 			</div>
 		</ContentBox>
