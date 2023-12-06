@@ -58,9 +58,9 @@
 	function retrieveBackgroundColor(img) {
 		var context = document.createElement('canvas').getContext('2d');
 		if (typeof img == 'string') {
-			var src = img;
+			var src = cleanLinkOfCors(img);
 			img = new Image();
-			img.setAttribute('crossOrigin', '');
+      img.crossOrigin = 'anonymous';
 			img.src = src;
 		}
 		img.onload = () => {
@@ -77,11 +77,17 @@
 		};
 	}
 
+  function cleanLinkOfCors(link) {
+    link = link.replace('https://cdn.assets.beatleader.xyz/', '/cors/cdn-assets-bl/');
+    link = link.replace('https://cdn.beatsaver.com/', '/cors/cdnbeatsaver/');
+    return link;
+  }
+
 	onMount(() => (activeMounted = true));
 
 	$: activeReady = activeMounted && active;
 	$: drawCinematics(cinematicsCanvas, imageUrl);
-	$: if (buttons.length > 3) buttons = buttons.slice(0, 3);
+	$: if (buttons?.length > 3) buttons = buttons.slice(0, 3);
 	$: {
 		mainStat = stats?.entries[0];
     switch (stats.type) {
@@ -101,7 +107,7 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="grid-item" class:active>
+<div class="grid-item" class:active transition:fly|global={{y: '25%', duration: 900, easing: cubicOut, opacity: 0}}>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active={revealed}>
@@ -133,7 +139,7 @@
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
 							<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
-								{mainStat?.minutes ? mainStat.minutes.toFixed(2) + ' minutes played' : 'Failed ' + mainStat.count + ' times'}
+								{mainStat?.minutes ? mainStat.minutes.toFixed(2) + ' minutes played' : mainStat.count + ' times'}
 							</h4>
 						{:else if stats?.type === 'playerList'}
 							<img
@@ -150,14 +156,10 @@
 								</h4>
 							{/if}
 						{:else if stats?.type === 'statList'}
-							<img
-								src={imageUrl}
-								alt={stats.entries[6]?.name}
-								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
-							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.name}</h2>
+							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.value ? stats.entries[6].value : mainStat.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
-								{stats.entries[6]?.value}
-							</h3>
+								{stats.entries[6]?.value ? stats.entries[6].value : mainStat.value}
+              </h3>
 						{/if}
 					</div>
 				</div>
@@ -184,7 +186,7 @@
 									<div class="stat-stacked-subinfo">
 										<h3 class="truncated">{stat.mapper}</h3>
 										<i class="fa-solid fa-minus" />
-										<h3 class="minutes">{stat?.minutes ? stat.minutes.toFixed(2)  + ' min' : 'Failed ' + stat.count + 'x'}</h3>
+										<h3 class="minutes">{stat?.minutes ? stat.minutes.toFixed(2)  + ' min' : stat.count + ' times'}</h3>
 									</div>
 								</div>
 							</div>
@@ -196,13 +198,13 @@
 								<img src={stat.avatar} alt={stat.name} />
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.minutesPlayed.toFixed(2)} min{index === 0 ? ', ' + stat.percentPlayers.toFixed(2) + '%' : ''}</h3>
+									<h3 class="minutes">{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers ? ', ' + stat.percentPlayers.toFixed(2) + '%' : ''}</h3>
 								</div>
 							</div>
 						{/each}
 					{:else if stats?.type === 'statList'}
             <div class="data-columns">
-              <div class="data data-small" style="width: 40%">
+              <div class="data data-small" style={stats.entries.slice(5, 10).length ? "width: 40%" : "width: 100%"}>
                 {#each stats.entries.slice(0, 5) as stat, index}
                   <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
                     <div class="stat-stacked-info">
@@ -212,6 +214,7 @@
                   </div>
                 {/each}
               </div>
+              {#if stats.entries.slice(5, 10).length}
               <div class="data data-small" style="width: 60%">
                 {#each stats.entries.slice(5, 10) as stat, index}
                   <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
@@ -222,6 +225,7 @@
                   </div>
                 {/each}
               </div>
+              {/if}
             </div>
 					{/if}
 				</div>
@@ -345,6 +349,7 @@
 	.stat i {
 		font-size: 60%;
 		color: rgb(190, 190, 190);
+    padding-right: 0.5em;
 	}
 
 	.stat-stacked-info {
@@ -495,6 +500,7 @@
 		position: absolute;
 		top: 0;
 		left: 0;
+    background-color: var(--dominantColor);
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
@@ -503,8 +509,9 @@
 		transition: transform 2500ms ease-out;
 		z-index: 0;
 		pointer-events: none;
-		filter: blur(0.6vh);
+		filter: brightness(85%) blur(0.6vh);
 		transform: scale(1.01);
+    
 	}
 
 	.card.revealed .background {
