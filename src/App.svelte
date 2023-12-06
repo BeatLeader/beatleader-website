@@ -174,6 +174,9 @@
 					<Route path="/replayed">
 						<Replayed />
 					</Route>
+					<Route path="/replayed/mapper">
+						<Replayed replayedType="mapper"/>
+					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
 					</Route>
