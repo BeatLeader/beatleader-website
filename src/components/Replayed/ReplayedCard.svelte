@@ -15,6 +15,7 @@
 	export let active = false;
 	export let clickAction;
 	export let nextAction;
+  export let forcedColor;
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -101,7 +102,7 @@
           imageUrl = imageUrl;
           break;
     }
-		retrieveBackgroundColor(imageUrl);
+		forcedColor ? dominantColor = forcedColor : retrieveBackgroundColor(imageUrl);
 	}
 </script>
 

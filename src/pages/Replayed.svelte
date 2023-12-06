@@ -107,6 +107,7 @@
           title: 'Other stats',
           subText: 'How much did you play this year?',
           contentSubText: 'Some other stats about your year',
+          forcedColor: 'rgb(89, 111, 255)',
           stats: {
             type: 'statList',
             entries: [
@@ -222,6 +223,7 @@
           title: 'Top x mapper',
           subText: 'For how many players were you the top mapper?',
           contentSubText: 'For how many players were you in the top 1, 3, or 5 mappers?',
+          forcedColor: 'rgb(89, 111, 255)',
           stats: {
             type: 'statList',
             entries: [
@@ -263,6 +265,7 @@
           title: 'Other stats',
           subText: 'How much were your maps played this year?',
           contentSubText: 'Some other stats about your year',
+          forcedColor: 'rgb(139, 52, 145)',
           stats: {
             type: 'statList',
             entries: [
@@ -287,6 +290,47 @@
                 value: data.playersCount,
               },
             ]
+          },
+        },
+      },
+    )
+
+    _cards.push(
+      {
+        component: ReplayedSummaryCard,
+        props: {
+          title: 'Your 2023 in Mapping',
+          subText: 'A year summarized',
+          summaryType: 'mapper',
+          colorStartIndex: 4,
+          stats: {
+            topMaps: data.topMaps.slice(0, 5),
+            extraStats: [
+              {
+                name: 'Plays',
+                value: data.playsCount,
+              },
+              {
+                name: 'Fails',
+                value: data.failsCount,
+              },
+              {
+                name: 'FCs',
+                value: data.fCsCount,
+              },
+              {
+                name: 'Top 5 mapper',
+                value: `for ${data.tops.top5Count} players, ${data.tops.top5Percentage.toFixed(3)}% of all players`,
+              },
+              {
+                name: 'Total Minutes played',
+                value: data.minutesPlayed.toFixed(2) + ' min',
+              },
+              {
+                name: 'Amount of unique players',
+                value: data.playersCount,
+              },
+            ],
           },
         },
       },

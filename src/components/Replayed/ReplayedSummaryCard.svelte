@@ -15,6 +15,7 @@
 	export let clickAction;
 	export let nextAction;
 	export let summaryType;
+	export let colorStartIndex = 0;
 
 	let revealed = false;
 	let dominantColor = 'rgb(92, 120, 133)';
@@ -46,6 +47,7 @@
 
 
 	onMount(() => (activeMounted = true));
+	setBackgroundColor(colorStartIndex);
 
 	$: activeReady = activeMounted && active;
 </script>
