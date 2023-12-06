@@ -123,7 +123,7 @@
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
 							<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
-								{mainStat?.minutes ? mainStat.minutes + ' minutes played' : 'Failed ' + mainStat.count + ' times'}
+								{mainStat?.minutes ? mainStat.minutes.toFixed(2) + ' minutes played' : 'Failed ' + mainStat.count + ' times'}
 							</h4>
 						{:else if stats?.type === 'mapperList'}
 							<img
@@ -132,11 +132,11 @@
 								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
-								{mainStat.minutes + ' minutes played'}
+								{mainStat.minutes.toFixed(2) + ' minutes played'}
 							</h3>
 							{#if mainStat.percentPlayers}
 								<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
-									{mainStat.percentPlayers + '% of players'}
+									{mainStat.percentPlayers.toFixed(2) + '% of players'}
 								</h4>
 							{/if}
 						{:else if stats?.type === 'statList'}
@@ -146,7 +146,7 @@
 								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>
-								{stats.entries[6]?.value}
+								{stats.entries[6]?.value.toFixed(2)}
 							</h3>
 						{/if}
 					</div>
@@ -174,7 +174,7 @@
 									<div class="stat-stacked-subinfo">
 										<h3 class="truncated">{stat.mapper}</h3>
 										<i class="fa-solid fa-minus" />
-										<h3 class="minutes">{stat?.minutes ? stat.minutes + ' min' : 'Failed ' + stat.count + 'x'}</h3>
+										<h3 class="minutes">{stat?.minutes ? stat.minutes.toFixed(2)  + ' min' : 'Failed ' + stat.count + 'x'}</h3>
 									</div>
 								</div>
 							</div>
@@ -186,7 +186,7 @@
 								<img src={stat.imageUrl} alt={stat.name} />
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.minutes} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
+									<h3 class="minutes">{stat.minutes.toFixed(2)} min{index === 0 ? ', ' + stat.percentPlayers.toFixed(2) + '%' : ''}</h3>
 								</div>
 							</div>
 						{/each}
@@ -197,7 +197,7 @@
                   <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
                     <div class="stat-stacked-info">
                       <h2 class="truncated">{stat.name}</h2>
-                      <h3 class="minutes">{stat.value}</h3>
+                      <h3 class="minutes">{stat.value.toFixed(2)}</h3>
                     </div>
                   </div>
                 {/each}
@@ -207,7 +207,7 @@
                   <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
                     <div class="stat-stacked-info">
                       <h2 class="truncated">{stat.name}</h2>
-                      <h3 class="minutes">{stat.value}</h3>
+                      <h3 class="minutes">{stat.value.toFixed(2)}</h3>
                     </div>
                   </div>
                 {/each}

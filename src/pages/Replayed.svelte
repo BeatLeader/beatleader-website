@@ -16,15 +16,13 @@
 					type: 'mapList',
 					entries: [
 						{
-							index: 0,
 							name: 'Utakata no Sekai de (feat. nayuta)',
 							author: 'DJ Raisei vs Setca.',
 							mapper: 'Light Ai',
-							minutes: 3040.33,
+							minutes: 3040.335454545,
 							imageUrl: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
 						},
 						{
-							index: 1,
 							name: 'Utakata no Sekai de (feat. nayuta)',
 							author: 'DJ Raisei vs Setca.',
 							mapper: 'Light Ai',
@@ -32,7 +30,6 @@
 							imageUrl: 'https://eu.cdn.beatsaver.com/f0f9a64303c5f4254a9a3624dd79bddb3e437682.jpg',
 						},
 						{
-							index: 2,
 							name: 'Villain Virus',
 							author: 'Kobaryo',
 							mapper: 'GalaxyMaster & GojiCrafter',
@@ -40,7 +37,6 @@
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
 						{
-							index: 3,
 							name: 'Following the Waving Wings -Last Plaudits-',
 							author: 'Kobaryo',
 							mapper: 'GalaxyMaster & GojiCrafter',
@@ -48,7 +44,6 @@
 							imageUrl: 'https://eu.cdn.beatsaver.com/46dae11677d6191ed03ad61286a09b9070be7800.jpg',
 						},
 						{
-							index: 4,
 							name: 'Villain Virus',
 							author: 'Kobaryo',
 							mapper: 'GalaxyMaster & GojiCrafter',
