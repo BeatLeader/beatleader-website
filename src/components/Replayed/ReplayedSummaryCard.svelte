@@ -40,6 +40,10 @@
 		dominantColor = colors[index];
 	}
 
+	async function takeScreenshot() {
+		//not implemented
+	}
+
 
 	onMount(() => (activeMounted = true));
 
@@ -151,7 +155,7 @@
 				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<div style="display: flex; justify-content: flex-end;">
 						<img class="bottom-icon" src="/assets/favicon.svg" />
-						<span>share</span>
+						<span on:click={takeScreenshot}>share</span>
 					</div>
 					<div class="bullets">
 						{#each colors as color, index}
