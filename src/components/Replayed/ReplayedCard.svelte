@@ -83,10 +83,8 @@
 	$: drawCinematics(cinematicsCanvas, imageUrl);
 	$: if (buttons.length > 3) buttons = buttons.slice(0, 3);
 	$: {
-		stats?.entries.sort((a, b) => a.index - b.index);
 		mainStat = stats?.entries[0];
-		imageUrl = mainStat?.imageUrl;
-
+    if (mainStat?.imageUrl) imageUrl = mainStat.imageUrl;
 		retrieveBackgroundColor(imageUrl);
 	}
 </script>
@@ -193,14 +191,28 @@
 							</div>
 						{/each}
 					{:else if stats?.type === 'statList'}
-						{#each stats?.entries.slice(0, 5) as stat, index}
-							<div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
-								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.value}</h3>
-								</div>
-							</div>
-						{/each}
+            <div class="data-columns">
+              <div class="data data-small" style="width: 40%">
+                {#each stats.entries.slice(0, 5) as stat, index}
+                  <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+                    <div class="stat-stacked-info">
+                      <h2 class="truncated">{stat.name}</h2>
+                      <h3 class="minutes">{stat.value}</h3>
+                    </div>
+                  </div>
+                {/each}
+              </div>
+              <div class="data data-small" style="width: 60%">
+                {#each stats.entries.slice(5, 10) as stat, index}
+                  <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+                    <div class="stat-stacked-info">
+                      <h2 class="truncated">{stat.name}</h2>
+                      <h3 class="minutes">{stat.value}</h3>
+                    </div>
+                  </div>
+                {/each}
+              </div>
+            </div>
 					{/if}
 				</div>
 
@@ -227,6 +239,13 @@
 </div>
 
 <style>
+  .data-columns {
+		display: flex;
+		flex-direction: row;
+		gap: 0.25em;
+		justify-content: space-evenly;
+	}
+
 	.data {
 		position: relative;
 		margin-top: 2em;
@@ -235,6 +254,12 @@
 		gap: 0.75em;
 		margin-top: 1em;
 	}
+
+  .data-small {
+		font-size: 1.75vh;
+		gap: 0.40em;
+	}
+
 	.stat {
 		display: flex;
 		overflow: visible;
@@ -246,11 +271,25 @@
 		height: 2em;
 	}
 
+  .stat-small {
+		font-size: 1.75vh;
+		gap: 0.35em;
+	}
+
 	@media screen and (max-height: 780px) {
 		.stat {
 			font-size: 2vh;
 		}
+
+    .data-small {
+			font-size: 1.5vh;
+		}
+
+		.stat-small {
+			font-size: 1.5vh;
+		}
 	}
+  
 
   .stat img {
 		height: 1.75em;

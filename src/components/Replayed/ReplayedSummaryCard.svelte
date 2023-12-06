@@ -83,45 +83,68 @@
 					<p in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
 				</div>
 
+				{#if summaryType === 'player'}
 				<div class="data-columns">
-					{#if summaryType === 'player'}
-						<div class="data" style="width: 40%">
-							<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Mappers</h2>
-							{#each stats.topMappers as stat, index}
-								<div
-									class="stat"
-									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
-									<h2 class="stat-number">{index + 1}</h2>
-									<div class="stat-stacked-info">
-										<h2 class="truncated">{stat.name}</h2>
-										<h3 class="minutes">{stat.minutesPlayed} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
+					<div class="data" style="width: 40%">
+						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Mappers</h2>
+						{#each stats.topMappers as stat, index}
+							<div
+								class="stat"
+								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
+								<h2 class="stat-number">{index + 1}</h2>
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+									<h3 class="minutes">{stat.minutesPlayed} min{index === 0 ? ', ' + stat.percentPlayers + '%' : ''}</h3>
+								</div>
+							</div>
+						{/each}
+					</div>
+					<div class="data" style="width: 60%">
+						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Maps</h2>
+						{#each stats.topMaps as stat, index}
+							<div
+								class="stat"
+								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
+								<h2 class="stat-number">{index + 1}</h2>
+								<img src={stat.cover} alt={stat.name} />
+
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+
+									<div class="stat-stacked-subinfo">
+										<h3 class="truncated">{stat.mapper}</h3>
+										<i class="fa-solid fa-minus" />
+										<h3 class="minutes">{stat.minutes} min</h3>
 									</div>
 								</div>
-							{/each}
-						</div>
-						<div class="data" style="width: 60%">
-							<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Maps</h2>
-							{#each stats.topMaps as stat, index}
-								<div
-									class="stat"
-									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
-									<h2 class="stat-number">{index + 1}</h2>
-									<img src={stat.cover} alt={stat.name} />
-
-									<div class="stat-stacked-info">
-										<h2 class="truncated">{stat.name}</h2>
-
-										<div class="stat-stacked-subinfo">
-											<h3 class="truncated">{stat.mapper}</h3>
-											<i class="fa-solid fa-minus" />
-											<h3 class="minutes">{stat.minutes} min</h3>
-										</div>
-									</div>
-								</div>
-							{/each}
-						</div>
-					{/if}
+							</div>
+						{/each}
+					</div>
 				</div>
+				<div class="data-columns">
+					<div class="data data-small" style="width: 40%">
+						{#each stats.extraStats.slice(0, 3) as stat, index}
+							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+									<h3 class="minutes">{stat.value}</h3>
+								</div>
+							</div>
+						{/each}
+					</div>
+					<div class="data data-small" style="width: 60%">
+						{#each stats.extraStats.slice(3, 5) as stat, index}
+							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+								<div class="stat-stacked-info">
+									<h2 class="truncated">{stat.name}</h2>
+									<h3 class="minutes">{stat.value}</h3>
+								</div>
+							</div>
+						{/each}
+					</div>
+
+				</div>
+				{/if}
 
 				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<img class="bottom-icon" src="/assets/favicon.svg" />
@@ -161,6 +184,12 @@
 		font-size: 2vh;
 	}
 
+	.data-small {
+		margin-top: 2.15em;
+		font-size: 1.75vh;
+		gap: 0.40em;
+	}
+
 	.data h2 {
 		font-size: 100%;
 		font-weight: 700;
@@ -178,6 +207,11 @@
 		height: 2em;
 	}
 
+	.stat-small {
+		font-size: 1.75vh;
+		gap: 0.35em;
+	}
+
 	@media screen and (max-height: 780px) {
 		.stat {
 			font-size: 1.75vh;
@@ -185,6 +219,14 @@
 
 		.data {
 			font-size: 1.75vh;
+		}
+
+		.data-small {
+			font-size: 1.5vh;
+		}
+
+		.stat-small {
+			font-size: 1.5vh;
 		}
 	}
 
@@ -250,7 +292,7 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		min-height: 19%;
+		min-height: 17%;
 	}
 
 	.grid-item {

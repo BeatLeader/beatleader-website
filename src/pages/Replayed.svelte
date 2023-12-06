@@ -178,27 +178,50 @@
 				title: 'Other stats',
 				subText: 'How many events did you participate in',
 				contentSubText: 'Some other stats about your year',
+        imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
 				stats: {
 					type: 'statList',
 					entries: [
 						{
-							index: 0,
-							name: 'Event participation',
-							value: '2 events (average rank: 113.5)',
-							imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
-						},
-						{
-							index: 1,
-							name: 'Total minutes played',
-							value: '1149.07 min',
-							imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
-						},
-						{
-							index: 2,
-							name: 'Top categories',
-							value: 'Ranked, Balanced',
-							imageUrl: 'https://cdn.assets.beatleader.xyz/76561198051924392R17.png',
-						},
+              name: 'hits',
+              value: '217338',
+            },
+            {
+              name: 'misses',
+              value: '1447',
+            },
+            {
+              name: 'plays',
+              value: '918',
+            },
+            {
+              name: 'fails',
+              value: '17',
+            },
+            {
+              name: 'restarts',
+              value: '224',
+            },
+            {
+              name: 'Event participation',
+              value: '2 events (avg rank: 113.5)',
+            },
+            {
+              name: 'Minutes played',
+              value: '1149.07 min',
+            },
+            {
+              name: 'Top categories',
+              value: 'Ranked, Balanced',
+            },
+            {
+              name: 'active days',
+              value: '46',
+            },
+            {
+              name: 'days streak',
+              value: '0',
+            }
 					],
 				},
 			},
@@ -285,12 +308,28 @@
 							minutes: 3040.33,
 						},
 					],
-					eventsParticipation: {
-						count: 2,
-						averageRank: 113.5,
-					},
-					minutesPlayed: 1149.07,
-					topCategory: 'Ranked, Balanced',
+          extraStats: [
+            {
+              name: 'Plays',
+              value: '918',
+            },
+            {
+              name: 'Active days',
+              value: '46',
+            },
+            {
+              name: 'Days streak',
+              value: '0',
+            },
+            {
+              name: 'Minutes played',
+              value: '1149.07 min',
+            },
+            {
+              name: 'Top categories',
+              value: 'Ranked, Balanced',
+            },
+          ],
 				},
 			},
 		},
