@@ -282,7 +282,7 @@
               },
               {
                 name: 'Total Minutes played',
-                value: data.minutesPlayed.toFixed(2) + ' min',
+                value: data.minutesPlayed.toFixed(2),
               },
               {
                 name: 'Total unique players',
@@ -307,23 +307,19 @@
             extraStats: [
               {
                 name: 'Plays',
-                value: data.playsCount + " total plays",
+                value: data.playsCount,
               },
               {
                 name: 'Fails',
-                value: data.failsCount + " total fails",
+                value: data.failsCount,
               },
               {
                 name: 'FCs',
-                value: data.fCsCount + " total FCs",
-              },
-              {
-                name: 'Top 5 mapper',
-                value: `for ${data.tops.top5Count} players, ${data.tops.top5Percentage.toFixed(3)}% of all players`,
+                value: data.fCsCount,
               },
               {
                 name: 'Total Minutes played',
-                value: data.minutesPlayed.toFixed(2) + ' min',
+                value: data.minutesPlayed.toFixed(2),
               },
               {
                 name: 'Total unique players',

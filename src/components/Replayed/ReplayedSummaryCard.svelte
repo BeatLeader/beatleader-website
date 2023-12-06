@@ -136,7 +136,7 @@
 						{/each}
 					</div>
 					<div class="data data-small" style="width: 60%">
-						{#each stats.extraStats.slice(3, 6) as stat, index}
+						{#each stats.extraStats.slice(3, 5) as stat, index}
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
 									<h3 class="truncated">{stat.name}</h3>
@@ -183,7 +183,7 @@
 						{/each}
 					</div>
 					<div class="data data-small" style="width: 60%">
-						{#each stats.extraStats.slice(3, 6) as stat, index}
+						{#each stats.extraStats.slice(3, 5) as stat, index}
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
 									<h3 class="truncated">{stat.name}</h3>
