@@ -129,7 +129,7 @@
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.value.toFixed(2)}</h3>
+									<h3 class="minutes">{stat.value}</h3>
 								</div>
 							</div>
 						{/each}
@@ -139,7 +139,7 @@
 							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.value.toFixed(2)}</h3>
+									<h3 class="minutes">{stat.value}</h3>
 								</div>
 							</div>
 						{/each}
