@@ -15,6 +15,7 @@
 
   let previewLinks = [];
   let activeSongTimeouts = [];
+  let loadingSongTimeout;
 
   const progressBarX = tweened(0, {
 		duration: 3000,
@@ -86,10 +87,15 @@
       audioPlayer.pause();
       audioPlayer.src = previewLinks[0];
       audioPlayer.load();
+      loadingSongTimeout = setTimeout(() => {
+        previewLinks.shift();
+        loadNextSong();
+      }, 1000);
     }
   }
 
   function playAudio() {
+    clearTimeout(loadingSongTimeout);
     activeSongTimeouts.forEach((timeout) => {
       clearTimeout(timeout);
     });
