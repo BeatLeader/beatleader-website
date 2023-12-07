@@ -4,6 +4,8 @@
 	import { tweened } from "svelte/motion";
 	import { fade, fly } from "svelte/transition";
 
+  export let volume = 0.25;
+
   let soundEnabled = false;
   let autoplayEnabled = true;
   let interruptRevealQueued = false;
@@ -95,7 +97,7 @@
       duration: 0
     });
     audioPlayer.play();
-    audioPlayerVolume.set(0.25, {
+    audioPlayerVolume.set(volume, {
       duration: 2500
     });
     activeSongTimeouts.push(
