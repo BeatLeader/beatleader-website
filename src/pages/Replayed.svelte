@@ -110,7 +110,7 @@
 	}
 
 	$: fetchReplayed();
-	$: color = new URLSearchParams(location?.search ?? '')?.get('color') ?? 'black';
+	$: color = new URLSearchParams(location?.search ?? '')?.get('color') ?? null;
 </script>
 
 <svelte:head>
