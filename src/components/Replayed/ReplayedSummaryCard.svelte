@@ -35,6 +35,7 @@
 
 	function reveal() {
 		revealed = true;
+		interruptMotion();
 	}
 
 	function setBackgroundColor(index) {
@@ -45,10 +46,71 @@
 		//not implemented
 	}
 
+	function startAutoRevealCount() {
+		if (active) window.dispatchEvent(
+			new CustomEvent('startAutoRevealCount', {
+				detail: {
+					reveal: reveal,
+				},
+				bubbles: true
+			})
+		);
+  }
+
+	function startAutoNextCount() {
+		if (active) window.dispatchEvent(
+			new CustomEvent('startAutoNextCount', {
+				detail: {
+					next: nextAction,
+				},
+				bubbles: true
+			})
+		);
+	}
+
+	function interruptMotion() {
+    	if (active) window.dispatchEvent(
+			new CustomEvent('interruptMotion', {
+				bubbles: true,
+			})
+		);
+	}
+
+  function startSong() {
+		if (active) window.dispatchEvent(
+			new CustomEvent('startSong', {
+				detail: {
+					previewLinks: [
+						stats.topMaps[0].previewLink,
+						stats.topMaps[1].previewLink,
+						stats.topMaps[2].previewLink,
+						stats.topMaps[3].previewLink,
+						stats.topMaps[4].previewLink,
+					],
+				},
+				bubbles: true,
+			})
+		);
+  }
+
+  function stopSong() {
+		window.dispatchEvent(
+			new CustomEvent('stopSong', { bubbles: true })
+		);
+  }
+
+	function notifyReveal() {
+		if (active) window.dispatchEvent(
+			new CustomEvent('cardWasRevealed', { bubbles: true })
+		);
+	}
+
 
 	onMount(() => (activeMounted = true));
 	setBackgroundColor(colorStartIndex);
 
+	$: revealed ? notifyReveal() : null;
+  $: active? null : stopSong();
 	$: activeReady = activeMounted && active;
 </script>
 
@@ -75,7 +137,7 @@
 					<div class="intro-card-content">
 						<div class="header">
 							<h1 in:fly={{y: '2em', duration: 1000, easing: cubicOut, opacity: 0}}>{title}</h1>
-							<p in:fly={{y: '2em', duration: 800, easing: cubicOut, opacity: 0, delay: 1100}}>{subText}</p>
+							<p in:fly={{y: '2em', duration: 800, easing: cubicOut, opacity: 0, delay: 1100}} on:introend={startAutoRevealCount}>{subText}</p>
 						</div>
 					</div>
 				</div>
@@ -105,7 +167,7 @@
 						{/each}
 					</div>
 					<div class="data" style="width: 60%">
-						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Maps</h2>
+						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}} on:introend={startSong}>Top Maps</h2>
 						{#each stats.topMaps.slice(0, 5) as stat, index}
 							<div
 								class="stat"
@@ -150,7 +212,7 @@
 				{:else if summaryType === 'mapper'}
 				<div class="data-columns">
 					<div class="data" style="width: 100%">
-						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Maps</h2>
+						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}} on:introend={startSong}>Top Maps</h2>
 						{#each stats.topMaps.slice(0, 5) as stat, index}
 							<div
 								class="stat"
