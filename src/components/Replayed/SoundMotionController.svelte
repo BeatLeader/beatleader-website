@@ -11,6 +11,9 @@
   let revealQueued = false;
   let nextQueued = false;
 
+  let previewLinks = [];
+  let activeSongTimeouts = [];
+
   const progressBarX = tweened(0, {
 		duration: 3000,
 		easing: linear
@@ -22,7 +25,8 @@
   });
 
   const audioPlayer = new Audio();
-  audioPlayer.addEventListener("loadeddata", playAudio);
+  audioPlayer.onloadeddata = playAudio;
+  audioPlayer.onended = loadNextSong;
 
   function toggleAutoplay() {
     autoplayEnabled = !autoplayEnabled;
@@ -31,6 +35,7 @@
 
   function toggleSound() {
     soundEnabled = !soundEnabled;
+    soundEnabled ? loadNextSong() : stopSongQuickly();
   }
 
   function startAutoRevealCount(event) {
@@ -68,12 +73,24 @@
   }
 
   function startSong(event) {
-    if (event?.detail?.previewLink && soundEnabled) {
-      audioPlayer.src = event.detail.previewLink;
+    if (event?.detail?.previewLinks?.length > 0) {
+      previewLinks = event.detail.previewLinks.slice();
+      soundEnabled ? loadNextSong() : null;
+    }
+  }
+
+  function loadNextSong() {
+    if (previewLinks.length > 0) {
+      audioPlayer.pause();
+      audioPlayer.src = previewLinks[0];
+      audioPlayer.load();
     }
   }
 
   function playAudio() {
+    activeSongTimeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
     audioPlayerVolume.set(0, {
       duration: 0
     });
@@ -81,20 +98,39 @@
     audioPlayerVolume.set(0.25, {
       duration: 2500
     });
-    setTimeout(() => {
-      audioPlayerVolume.set(0, {
-        duration: 1500
-      });
-    }, 8500);
+    activeSongTimeouts.push(
+      setTimeout(() => {
+        audioPlayerVolume.set(0, {
+          duration: 1500
+        });
+      }, 8500)
+    );
+    activeSongTimeouts.push(
+      setTimeout(() => {
+        previewLinks.shift();
+      }, 10000)
+    );
   }
 
-  function stopSong() {
+  function stopSong(time = 1500) {
+    activeSongTimeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
     audioPlayerVolume.set(0, {
-      duration: 500
+      duration: time
     });
     setTimeout(() => {
       audioPlayer.pause();
-    }, 500);
+    }, time);
+  }
+
+  function stopSongQuickly() {
+    stopSong(500);
+  }
+
+  function clearSongs() {
+    stopSong();
+    previewLinks = [];
   }
 
   function cardWasRevealed() {
@@ -110,10 +146,9 @@
   }
 
   $: audioPlayer.volume = $audioPlayerVolume;
-  $: soundEnabled ? null : stopSong();
 </script>
 
-<svelte:window on:startAutoRevealCount={startAutoRevealCount} on:startSong={startSong} on:stopsong={stopSong} on:cardWasRevealed={cardWasRevealed}
+<svelte:window on:startAutoRevealCount={startAutoRevealCount} on:startSong={startSong} on:stopSong={clearSongs} on:cardWasRevealed={cardWasRevealed}
 on:startAutoNextCount={startAutoNextCount} on:interruptMotion={interruptMotion}/>
 
 <div class="buttons" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}} >

@@ -119,7 +119,13 @@
 		if (active) window.dispatchEvent(
 			new CustomEvent('startSong', {
 				detail: {
-					previewLink: mainStat.previewLink,
+					previewLinks: [
+						stats?.entries[0].previewLink,
+						stats?.entries[1].previewLink,
+						stats?.entries[2].previewLink,
+						stats?.entries[3].previewLink,
+						stats?.entries[4].previewLink,
+					],
 				},
 				bubbles: true,
 			})
@@ -127,7 +133,7 @@
   }
 
   function stopSong() {
-		if (active) window.dispatchEvent(
+		window.dispatchEvent(
 			new CustomEvent('stopSong', { bubbles: true })
 		);
   }
