@@ -28,6 +28,7 @@
 	const containerStore = createContainerStore();
 
 	function moveForward() {
+		interruptMotion();
 		if (currentCenteredIndex + 1 < cards.length) {
 			translation -= carouselWidth * cardWidthRatio;
 			currentCenteredIndex++;
@@ -35,6 +36,7 @@
 	}
 
 	function moveBackward() {
+		interruptMotion();
 		if (currentCenteredIndex - 1 >= 0) {
 			translation += carouselWidth * cardWidthRatio;
 			currentCenteredIndex--;
@@ -42,6 +44,7 @@
 	}
 
 	function moveToPosition(index) {
+		interruptMotion();
 		let addition = 0;
 		if (showFillerCards) addition++;
 		translation = (index + addition) * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
@@ -57,6 +60,7 @@
 	}
 
 	function moveRightOrReset() {
+		interruptMotion();
 		if (currentCenteredIndex + 1 < cards.length) {
 			translation -= carouselWidth * cardWidthRatio;
 			currentCenteredIndex++;
@@ -111,9 +115,6 @@
 	function interruptMotion() {
 		window.dispatchEvent(
 			new CustomEvent('interruptMotion', {
-				detail: {
-					type: 'next',
-				},
 				bubbles: true,
 			})
 		);
@@ -137,13 +138,13 @@
 		{#if cards.length > 1 && showNavBullets}
 			<div class="bullets" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}}>
 				{#each cards as card, index}
-					<span class:active={index === currentCenteredIndex} on:click={() => {moveToPosition(index); interruptMotion();}} />
+					<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
 				{/each}
 				{#if showButtons}
-					<div class="button-left" on:click={() => {moveBackward; interruptMotion();}}>
+					<div class="button-left" on:click={moveBackward}>
 						<i class="fa-solid fa-arrow-left" />
 					</div>
-					<div class="button-right" on:click={() => {moveForward; interruptMotion();}}>
+					<div class="button-right" on:click={moveForward}>
 						<i class="fa-solid fa-arrow-right" />
 					</div>
 				{/if}
@@ -158,7 +159,7 @@
 					active={cards.length - 1 === currentCenteredIndex}
 					clickAction={() => moveToPosition(cards.length - 1)}
 					nextAction={moveForward}
-					nextButtonAction={() => {moveForward(); interruptMotion();}} />
+					nextButtonAction={moveForward} />
 			{/if}
 			{#each cards as card, index}
 				<svelte:component
@@ -167,7 +168,7 @@
 					active={index === currentCenteredIndex}
 					clickAction={() => moveToPosition(index)}
 					nextAction={moveForward}
-					nextButtonAction={() => {moveForward(); interruptMotion();}} />
+					nextButtonAction={moveForward} />
 			{/each}
 			{#if showFillerCards}
 				<svelte:component
@@ -176,7 +177,7 @@
 					active={0 === currentCenteredIndex}
 					clickAction={() => moveToPosition(0)}
 					nextAction={moveForward}
-					nextButtonAction={() => {moveForward(); interruptMotion();}} />
+					nextButtonAction={moveForward} />
 			{/if}
 		</div>
 	</section>

@@ -34,7 +34,7 @@
 
 	function handleCardClick() {
 		if (active) {
-			revealInterrupt();
+			reveal();
 		} else {
 			clickAction();
 		}
@@ -53,13 +53,9 @@
 		}
 	}
 
-	function revealInterrupt() {
-		interruptReveal();
-		reveal();
-	}
-
 	function reveal() {
 		revealed = true;
+		interruptMotion();
 	}
 
 	function retrieveBackgroundColor(img) {
@@ -112,12 +108,9 @@
 		);
 	}
 
-	function interruptReveal() {
+	function interruptMotion() {
 		window.dispatchEvent(
 			new CustomEvent('interruptMotion', {
-				detail: {
-					type: 'reveal',
-				},
 				bubbles: true,
 			})
 		);

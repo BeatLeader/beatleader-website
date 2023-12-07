@@ -5,8 +5,10 @@
 
   let soundEnabled = false;
   let autoplayEnabled = true;
-  let interruptRevealQueued = [];
-  let interruptNextQueued = [];
+  let interruptRevealQueued = false;
+  let interruptNextQueued = false;
+  let revealQueued = false;
+  let nextQueued = false;
 
   const progressBarX = tweened(0, {
 		duration: 3000,
@@ -24,9 +26,11 @@
 
   function startAutoRevealCount(event) {
     if (!autoplayEnabled) return;
+    revealQueued = true;
     setTimeout(() => {
-      if (autoplayEnabled && interruptRevealQueued.length === 0) event.detail.reveal();
-      interruptRevealQueued.shift();
+      revealQueued = false;
+      if (autoplayEnabled && !interruptRevealQueued) event.detail.reveal();
+      interruptRevealQueued = false;
     }, 3500);
 
     progressBarX.set(0, {
@@ -39,9 +43,11 @@
 
   function startAutoNextCount(event) {
     if (!autoplayEnabled) return;
+    nextQueued = true;
     setTimeout(() => {
-      if (autoplayEnabled && interruptNextQueued.length === 0) event.detail.next();
-      interruptNextQueued.shift();
+      nextQueued = false;
+      if (autoplayEnabled && !interruptNextQueued) event.detail.next();
+      interruptNextQueued = false;
     }, 9000);
 
     progressBarX.set(0, {
@@ -64,17 +70,9 @@
     
   }
 
-  function interruptMotion(event) {
-    switch (event?.detail?.type) {
-      case 'reveal':
-        interruptRevealQueued.push(true);
-        break;
-      case 'next':
-        interruptNextQueued.push(true);
-        break;
-      default:
-        break;
-    }
+  function interruptMotion() {
+    revealQueued ? interruptRevealQueued = true : null;
+    nextQueued ? interruptNextQueued = true : null;
     progressBarX.set(100, {
       duration: 0
     });
