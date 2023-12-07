@@ -158,8 +158,7 @@
 					{...cards[cards.length - 1].props}
 					active={cards.length - 1 === currentCenteredIndex}
 					clickAction={() => moveToPosition(cards.length - 1)}
-					nextAction={moveForward}
-					nextButtonAction={moveForward} />
+					nextAction={moveForward} />
 			{/if}
 			{#each cards as card, index}
 				<svelte:component
@@ -167,8 +166,7 @@
 					{...card.props}
 					active={index === currentCenteredIndex}
 					clickAction={() => moveToPosition(index)}
-					nextAction={moveForward}
-					nextButtonAction={moveForward} />
+					nextAction={moveForward} />
 			{/each}
 			{#if showFillerCards}
 				<svelte:component
@@ -176,8 +174,7 @@
 					{...cards[0].props}
 					active={0 === currentCenteredIndex}
 					clickAction={() => moveToPosition(0)}
-					nextAction={moveForward}
-					nextButtonAction={moveForward} />
+					nextAction={moveForward} />
 			{/if}
 		</div>
 	</section>

@@ -15,7 +15,6 @@
 	export let active = false;
 	export let clickAction;
 	export let nextAction;
-	export let nextButtonAction;
   export let forcedColor = null;
 
 	let mainStat = stats?.entries[0];
@@ -27,7 +26,7 @@
 	buttons.push({
 		text: 'Next',
 		type: 'primary',
-		function: nextButtonAction,
+		function: nextAction,
 	});
 
 	let cinematicsCanvas;
@@ -87,7 +86,7 @@
   }
 
   function startAutoRevealCount() {
-		window.dispatchEvent(
+		if (active) window.dispatchEvent(
 			new CustomEvent('startAutoRevealCount', {
 				detail: {
 					reveal: reveal,
@@ -98,7 +97,7 @@
   }
 
 	function startAutoNextCount() {
-		window.dispatchEvent(
+		if (active) window.dispatchEvent(
 			new CustomEvent('startAutoNextCount', {
 				detail: {
 					next: nextAction,
@@ -109,7 +108,7 @@
 	}
 
 	function interruptMotion() {
-		window.dispatchEvent(
+    	if (active) window.dispatchEvent(
 			new CustomEvent('interruptMotion', {
 				bubbles: true,
 			})
@@ -117,7 +116,7 @@
 	}
 
   function startSong() {
-		window.dispatchEvent(
+		if (active) window.dispatchEvent(
 			new CustomEvent('startSong', {
 				detail: {
 					previewLink: mainStat.previewLink,
@@ -128,13 +127,13 @@
   }
 
   function stopSong() {
-		window.dispatchEvent(
+		if (active) window.dispatchEvent(
 			new CustomEvent('stopSong', { bubbles: true })
 		);
   }
 
 	function notifyReveal() {
-		window.dispatchEvent(
+		if (active) window.dispatchEvent(
 			new CustomEvent('cardWasRevealed', { bubbles: true })
 		);
 	}
@@ -215,7 +214,7 @@
 								</h4>
 							{/if}
 						{:else if stats?.type === 'statList'}
-							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.value ? stats.entries[6].value : mainStat.name}</h2>
+							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.value ? stats.entries[6].name : mainStat.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
 								{stats.entries[6]?.value ? stats.entries[6].value : mainStat.value}
               </h3>
