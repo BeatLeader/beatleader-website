@@ -134,7 +134,6 @@
 	</div>
 {/if}
 <Router {url}>
-	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
@@ -224,41 +223,6 @@
 		</Modal>
 	</Notifications>
 </Router>
-
-<PlaylistCart />
-
-{#if $search}
-	<Search />
-{/if}
-
-<link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
-
-<footer>
-	<p class="build">Build: {buildInfo.buildVersion} ({buildInfo.buildDate})</p>
-	<ContentBox cls="footer-box">
-		<p>
-			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
-			|
-			<a href="/developer">Developer Portal</a>
-			|
-			<a href="https://beatleader.wiki/">Wiki</a>
-			|
-			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
-			|
-			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
-			|
-			<a href="/help" on:click|preventDefault={() => navigate('/help')}>Help</a>
-			|
-			<a href="/socket" on:click|preventDefault={() => navigate('/socket')}>Scores feed</a>
-			|
-			<a href="https://twitter.com/beatleader_">Twitter</a>
-			|
-			<a href="https://discord.gg/2RG5YVqtG6">Discord</a>
-			|
-			<a href="https://patreon.com/BeatLeader">Patreon</a>
-		</p>
-	</ContentBox>
-</footer>
 
 <style>
 	.reebanner {

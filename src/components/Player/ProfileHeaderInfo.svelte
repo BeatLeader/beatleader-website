@@ -234,21 +234,14 @@
 			{/if}
 
 			<span class="pp">
-				<Value value={playerInfo?.pp} suffix="pp" prevValue={$configStore.profileParts.changes ? prevPp : undefined} {prevLabel} inline={true} zero="0pp" />
+				<Value
+					value={playerInfo?.pp}
+					suffix="pp"
+					prevValue={$configStore.profileParts.changes ? prevPp : undefined}
+					{prevLabel}
+					inline={true}
+					zero="0pp" />
 			</span>
-
-			{#if showRedact && isAdmin && loggedInPlayer != playerId}
-				{#if playerInfo?.banned}
-					<Button
-						cls="banButton"
-						title="Unban player"
-						label="Unban player"
-						type="danger"
-						on:click={async () => await account.unbanPlayer(playerId)} />
-				{:else}
-					<Button cls="banButton" title="Ban player" label="Ban player" type="danger" on:click={async () => (showBanForm = !showBanForm)} />
-				{/if}
-			{/if}
 		</div>
 
 		{#if editModel?.data && editModel?.data?.country?.toUpperCase() !== playerInfo?.countries?.[0]?.country}
@@ -263,12 +256,6 @@
 	{:else if error}
 		<div>
 			<Error {error} />
-		</div>
-	{/if}
-
-	{#if canRedact && !editModel?.data}
-		<div class="edit-button">
-			<Button type="text" title="Edit profile" cls="editNameButton" iconFa="fas fa-edit" on:click={() => dispatch('edit-model-enable')} />
 		</div>
 	{/if}
 </div>

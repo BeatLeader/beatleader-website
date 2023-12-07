@@ -210,11 +210,7 @@
 </script>
 
 <svelte:window on:keyup={onKeyUp} />
-{#if clanEffects && playerInfo?.clans?.filter(cl => cl.tag == 'BB').length}
-	<Rain />
-{/if}
 
-<AvatarOverlayEditor bind:editModel={$editModel} {roles} />
 <ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
@@ -234,16 +230,6 @@
 		</div>
 	{/if}
 	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
-	<div style="margin: 0; padding: 0;">
-		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
-	</div>
-	<div style="margin: 0; padding: 0;">
-		{#if screenshoting}
-			<div class="screenshotSpinner"><Spinner /></div>
-		{:else}
-			<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
-		{/if}
-	</div>
 
 	<div class="player-general-info" class:edit-enabled={!!$editModel}>
 		<div class="avatar-and-roles">
@@ -256,16 +242,6 @@
 					on:click={() => {
 						if ($editModel) $editModel.avatarOverlayEdit = true;
 					}} />
-
-				{#if playerInfo && !isLoading}
-					<div style="margin: 0; padding: 0;">
-						<AvatarOverlayIcons
-							{playerData}
-							bind:editModel={$editModel}
-							on:modal-shown={() => (modalShown = true)}
-							on:modal-hidden={() => (modalShown = false)} />
-					</div>
-				{/if}
 			</div>
 			{#if roles}
 				<div class="role-icons {$editModel ? 'editing' : ''}">
@@ -297,30 +273,6 @@
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
 			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel={$editModel} />
-
-			{#if $editModel}
-				<div class="edit-buttons">
-					<Button
-						loading={$editModel.isSaving}
-						color="white"
-						bgColor="var(--beatleader-primary)"
-						label="Save"
-						iconFa="fas fa-check"
-						noMargin={true}
-						on:click={onSaveEditModel} />
-					<Button
-						disabled={$editModel.isSaving}
-						type="default"
-						label="Cancel"
-						iconFa="fas fa-times"
-						noMargin={true}
-						on:click={onCancelEditModel} />
-				</div>
-			{/if}
-
-			{#if $account.error}
-				<Error error={$account.error} />
-			{/if}
 		</div>
 	</div>
 </ContentBox>

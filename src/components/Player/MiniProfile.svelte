@@ -45,10 +45,6 @@
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
 				<Avatar {isLoading} {playerInfo} />
-
-				{#if playerInfo && !isLoading}
-					<AvatarOverlayIcons {playerData} />
-				{/if}
 			</div>
 			{#if roles}
 				<div class="role-icons">

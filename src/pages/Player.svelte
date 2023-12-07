@@ -16,16 +16,7 @@
 	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
 	import eventBus from '../utils/broadcast-channel-pubsub';
 	import Profile from '../components/Player/Profile.svelte';
-	import Scores from '../components/Player/Scores.svelte';
-	import MiniRankings from '../components/Ranking/MiniRankings.svelte';
-	import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte';
-	import TwitchVideos from '../components/Player/TwitchVideos.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import CardsCarousel from '../components/Player/CardsCarousel.svelte';
-	import PinnedScores from '../components/Player/PinnedScores.svelte';
-	import keyValueRepository from '../db/repository/key-value';
-	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
-	import Achievements from '../components/Player/Achievements.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -182,11 +173,9 @@
 		?.split('/')
 		.map(s => capitalize(s))
 		.join(' / ')} - ${ssrConfig.name}`;
-	$: updateTwitchProfile(currentPlayerId);
 
 	$: playerData = $playerStore;
 	$: playerId = playerData?.playerId ?? null;
-	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
 
 	let scoresPlayerId = null;
 	let scoresState = null;
@@ -200,14 +189,6 @@
 
 		scoresPlayerId = currentPlayerId;
 	}
-	// $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
-
-	$: rank = $playerStore?.playerInfo.rank;
-	$: country = $playerStore?.playerInfo.countries[0].country;
-	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
-
-	$: pinnedScoresStore.fetchScores(playerData?.playerId);
-	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 </script>
@@ -235,61 +216,9 @@
 				{avatarHash}
 				fixedBrowserTitle={browserTitle}
 				startEditing={editing} />
-
-			{#if !$editModel}
-				{#if $configStore.profileParts.graphs}
-					<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
-				{/if}
-				{#if $configStore.profileParts.pinnedScores}
-					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
-				{/if}
-				{#if $configStore.profileParts.achievements}
-					<Achievements {playerId} />
-				{/if}
-			{/if}
-
-			{#if scoresPlayerId}
-				<ContentBox>
-					<Scores
-						playerId={scoresPlayerId}
-						player={$playerStore}
-						initialState={scoresState}
-						initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
-						initialService={$paramsStore.currentService}
-						initialServiceParams={$paramsStore.currentServiceParams}
-						numOfScores={$playerStore?.scoreStats?.totalPlayCount ?? null}
-						on:service-changed={onServiceChanged}
-						on:service-params-changed={onServiceParamsChanged}
-						on:page-changed={onPageChanged}
-						fixedBrowserTitle={browserTitle} />
-				</ContentBox>
-			{/if}
 		{/if}
 	</article>
-
-	{#if innerWidth > 1749 && ($configStore.profileParts.globalMiniRanking || $configStore.profileParts.countryMiniRanking || $configStore.profileParts.friendsMiniRanking)}
-		<aside>
-			<MiniRankings {rank} {country} {countryRank} box={true} />
-
-			{#if twitchVideos && twitchVideos.length}
-				<ContentBox>
-					<TwitchVideos videos={twitchVideos} />
-				</ContentBox>
-			{/if}
-
-			<!-- {#await accSaberAvailable}
-				Loading...
-			{:then accSaberAvailable}
-				{#if accSaberAvailable}
-					<ContentBox>
-						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
-					</ContentBox>
-				{/if}
-			{/await} -->
-		</aside>
-	{/if}
 </section>
-<PlayerMeta {playerStore} />
 
 <style>
 	.align-content {

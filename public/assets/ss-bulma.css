@@ -11352,7 +11352,11 @@ label.panel-block:hover {
 }
 
 html {
-	background-color: var(--background) !important;
+	background-color: transparent !important;
+}
+
+body {
+	background-color: transparent;
 }
 
 .title {
@@ -11460,6 +11464,7 @@ html {
 
 body {
 	color: var(--textColor);
+	background-color: transparent;
 	margin: 0 auto;
 	padding: 0;
 	min-height: 100vh;
