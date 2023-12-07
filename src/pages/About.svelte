@@ -193,6 +193,14 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561198072855418.gif" alt="LackWiz" /><a
 					href="https://www.beatleader.xyz/u/76561198072855418">LackWiz</a>
 			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/fede1355e88a5ffae6e9bfc20de4ec33a18ef5d1_full.jpg" alt="GalaxyMaster" /><a
+					href="https://www.beatleader.xyz/u/76561198075923914">GalaxyMaster</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/1ae4cec7a3ffd6f9952d5495d9c79f7cdc154e12_full.jpg" alt="Kansas" /><a
+					href="https://www.beatleader.xyz/u/76561198042527254">Kansas</a>
+			</div>
 		</section>
 
 		{#if $rankingStore?.data?.length}
