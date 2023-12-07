@@ -12,6 +12,20 @@
     headers = {X-From = "Netlify"}
 
 [[redirects]]
+    from = "/cors/cdnbeatsaver/*"
+    to = "https://cdn.beatsaver.com/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}
+
+[[redirects]]
+    from = "/cors/cdn-assets-bl/*"
+    to = "https://cdn.assets.beatleader.xyz/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}
+
+[[redirects]]
     from = "/cors/steamcommunity/*"
     to = "https://steamcommunity.com/:splat"
     status = 200

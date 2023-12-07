@@ -42,6 +42,8 @@
 	import PatreonPage from './pages/Patreon.svelte';
 	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
 	import produce from 'immer';
+	import Maps from './pages/Maps.svelte';
+	import Replayed from './pages/Replayed.svelte';
 
 	export let url = '';
 
@@ -186,6 +188,15 @@
 					</Route>
 					<Route path="/leaderboards/*page" let:params let:location>
 						<LeaderboardsPage page={params.page} {location} />
+					</Route>
+					<Route path="/maps">
+						<Maps />
+					</Route>
+					<Route path="/replayed/*id" let:params>
+						<Replayed playerId={(params.id ? params.id : null)}/>
+					</Route>
+					<Route path="/replayed/mapper/*id" let:params>
+						<Replayed replayedType="mapper" playerId={(params.id ? params.id : null)}/>
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
