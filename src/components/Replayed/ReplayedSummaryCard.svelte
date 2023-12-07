@@ -116,22 +116,22 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div class="grid-item" class:active transition:fly|global={{y: '25%', duration: 900, easing: cubicOut, opacity: 0}}>
+<div class="grid-item" class:active>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
-			<div class="cinematics-canvas" class:active={revealed}>
+			<div class="cinematics-canvas" class:active={false}>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 			</div>
 		</div>
 		<div class="background-container">
 			<div class="background" />
-			{#if revealed}
+			{#if true}
 				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} />
 				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} />
 			{/if}
 		</div>
 
-		{#if activeReady && !revealed}
+		{#if false}
 			<div class="intro-card-container">
 				<div class="intro-card" out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
 					<div class="intro-card-content">
@@ -144,21 +144,21 @@
 			</div>
 		{/if}
 
-		{#if revealed}
+		{#if true}
 			<div class="content">
 				<div class="header">
-					<h1 in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
-					<p in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
+					<h1 >{title}</h1>
+					<p >{contentSubText}</p>
 				</div>
 
 				{#if summaryType === 'player'}
 				<div class="data-columns">
 					<div class="data" style="width: 40%">
-						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}}>Top Mappers</h2>
+						<h2 >Top Mappers</h2>
 						{#each stats.topMappers.slice(0, 5) as stat, index}
 							<div
 								class="stat"
-								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
+								>
 								<h2 class="stat-number">{index + 1}</h2>
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
@@ -167,11 +167,9 @@
 						{/each}
 					</div>
 					<div class="data" style="width: 60%">
-						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}} on:introend={startSong}>Top Maps</h2>
+						<h2>Top Maps</h2>
 						{#each stats.topMaps.slice(0, 5) as stat, index}
-							<div
-								class="stat"
-								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
+							<div class="stat">
 								<h2 class="stat-number">{index + 1}</h2>
 								<img src={stat.cover} alt={stat.name} />
 
@@ -189,7 +187,7 @@
 				<div class="data-columns">
 					<div class="data data-small" style="width: 40%">
 						{#each stats.extraStats.slice(0, 3) as stat, index}
-							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
+							<div class="stat stat-small">
 								<div class="stat-stacked-info">
 									<h3 class="truncated">{stat.name}</h3>
 									<h2 class="other-stats">{stat.value}</h2>
@@ -199,7 +197,7 @@
 					</div>
 					<div class="data data-small" style="width: 60%">
 						{#each stats.extraStats.slice(3, 5) as stat, index}
-							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
+							<div class="stat stat-small">
 								<div class="stat-stacked-info">
 									<h3 class="truncated">{stat.name}</h3>
 									<h2 class="other-stats">{stat.value}</h2>
@@ -212,11 +210,9 @@
 				{:else if summaryType === 'mapper'}
 				<div class="data-columns">
 					<div class="data" style="width: 100%">
-						<h2 transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 500}} on:introend={startSong}>Top Maps</h2>
+						<h2>Top Maps</h2>
 						{#each stats.topMaps.slice(0, 5) as stat, index}
-							<div
-								class="stat"
-								transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 700}}>
+							<div class="stat">
 								<h2 class="stat-number">{index + 1}</h2>
 								<img src={stat.cover} alt={stat.name} />
 
@@ -236,7 +232,7 @@
 				<div class="data-columns">
 					<div class="data data-small" style="width: 40%">
 						{#each stats.extraStats.slice(0, 3) as stat, index}
-							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
+							<div class="stat stat-small">
 								<div class="stat-stacked-info">
 									<h3 class="truncated">{stat.name}</h3>
 									<h2 class="other-stats">{stat.value}</h2>
@@ -246,7 +242,7 @@
 					</div>
 					<div class="data data-small" style="width: 60%">
 						{#each stats.extraStats.slice(3, 5) as stat, index}
-							<div class="stat stat-small" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * (index + 6) + 500}}>
+							<div class="stat stat-small">
 								<div class="stat-stacked-info">
 									<h3 class="truncated">{stat.name}</h3>
 									<h2 class="other-stats">{stat.value}</h2>
@@ -258,21 +254,9 @@
 				</div>
 				{/if}
 
-				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
+				<div class="bottom-container">
 					<img class="bottom-icon" src="/assets/favicon.svg" />
 					<span>beatleader.xyz/replayed</span>
-				</div>
-				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
-					<div class="share-button" on:click={takeScreenshot}>
-						<div>
-							<img class="bottom-icon" src="/assets/favicon.svg" />
-							share</div>
-					</div>
-					<div class="bullets">
-						{#each colors as color, index}
-							<span class:active={color === dominantColor} style="background-color: {color};" on:click={() => setBackgroundColor(index)} />
-						{/each}
-					</div>
 				</div>
 			</div>
 		{/if}

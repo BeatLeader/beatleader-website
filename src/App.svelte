@@ -196,7 +196,7 @@
 						<Replayed playerId={(params.id ? params.id : null)}/>
 					</Route>
 					<Route path="/replayed/mapper/*id" let:params>
-						<Replayed replayedType="mapper" playerId={(params.id ? params.id : null)}/>
+						<Replayed replayedType="mapper" playerId={(params.id ? params.id : null)} />
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
