@@ -256,7 +256,7 @@
         component: ReplayedCard,
         props: {
           title: 'Your top players',
-          subText: 'This players played your maps the most',
+          subText: 'This player played your maps the most',
           contentSubText: 'These players played your maps the most',
           stats: {
             type: 'playerList',
