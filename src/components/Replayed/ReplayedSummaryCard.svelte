@@ -818,7 +818,7 @@
 	.share-button div {
 		display: flex;
     width: max-content;
-    margin: 0 0.25em;
+    margin-right: 0.25em;
     color: white;
     font-size: 1.25vh;
 		gap: 0.3em;
