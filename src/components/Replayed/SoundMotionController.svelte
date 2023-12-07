@@ -5,6 +5,8 @@
 
   let soundEnabled = false;
   let autoplayEnabled = true;
+  let interruptRevealQueued = [];
+  let interruptNextQueued = [];
 
   const progressBarX = tweened(0, {
 		duration: 3000,
@@ -13,6 +15,7 @@
 
   function toggleAutoplay() {
     autoplayEnabled = !autoplayEnabled;
+    if (!autoplayEnabled) interruptMotion();
   }
 
   function toggleSound() {
@@ -20,9 +23,10 @@
   }
 
   function startAutoRevealCount(event) {
-    console.log("startAutoRevealCount");
+    if (!autoplayEnabled) return;
     setTimeout(() => {
-      if (autoplayEnabled) event.detail.reveal();
+      if (autoplayEnabled && interruptRevealQueued.length === 0) event.detail.reveal();
+      interruptRevealQueued.shift();
     }, 3500);
 
     progressBarX.set(0, {
@@ -34,9 +38,10 @@
   }
 
   function startAutoNextCount(event) {
-    console.log("startAutoNextCount");
+    if (!autoplayEnabled) return;
     setTimeout(() => {
-      if (autoplayEnabled) event.detail.next();
+      if (autoplayEnabled && interruptNextQueued.length === 0) event.detail.next();
+      interruptNextQueued.shift();
     }, 9000);
 
     progressBarX.set(0, {
@@ -59,21 +64,29 @@
     
   }
 
+  function interruptMotion(event) {
+    switch (event?.detail?.type) {
+      case 'reveal':
+        interruptRevealQueued.push(true);
+        break;
+      case 'next':
+        interruptNextQueued.push(true);
+        break;
+      default:
+        break;
+    }
+    progressBarX.set(100, {
+      duration: 0
+    });
+  }
+
 
 </script>
 
-<svelte:window on:startAutoRevealCount={startAutoRevealCount} on:startSong={startSong} on:stopsong={stopSong} on:cardWasRevealed={cardWasRevealed} on:startAutoNextCount={startAutoNextCount}/>
+<svelte:window on:startAutoRevealCount={startAutoRevealCount} on:startSong={startSong} on:stopsong={stopSong} on:cardWasRevealed={cardWasRevealed}
+on:startAutoNextCount={startAutoNextCount} on:interruptMotion={interruptMotion}/>
 
 <div class="buttons" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}} >
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-static-element-interactions -->
-  <div class="toggle-button" on:click={toggleSound}>
-    {#if soundEnabled}
-    <i class="fa-solid fa-volume-high" />
-    {:else}
-    <i class="fa-solid fa-volume-xmark" />
-    {/if}
-  </div>
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="toggle-button" on:click={toggleAutoplay}>
@@ -88,6 +101,15 @@
     <progress value={$progressBarX} max="100" out:fade|global={{duration: 600, easing: cubicOut}}/>
     {/if}
   </div>
+  <!-- svelte-ignore a11y-click-events-have-key-events -->
+  <!-- svelte-ignore a11y-no-static-element-interactions -->
+  <div class="toggle-button" on:click={toggleSound}>
+    {#if soundEnabled}
+    <i class="fa-solid fa-volume-high" />
+    {:else}
+    <i class="fa-solid fa-volume-xmark" />
+    {/if}
+  </div>
 
 </div>
 
@@ -96,15 +118,10 @@
 		display: flex;
 		text-align: end;
     position: absolute;
-    bottom: 1.6em;
-    right: max(2%, calc(100% - 103vw));
+    bottom: 0.6em;
+    right: 50%;
+    transform: translateX(50%);
     -webkit-tap-highlight-color: transparent;
-	}
-
-  @media screen and (max-height: 820px) {
-		.buttons {
-      bottom: 0.6em;
-    }
 	}
 
 	.toggle-button {
@@ -116,7 +133,7 @@
 		height: 1.5em;
 		cursor: pointer;
     margin: 0;
-		margin-right: 0.25em;
+		margin: 0 0.25em;
     color: white;
     opacity: 0.75;
     background-color: transparent;

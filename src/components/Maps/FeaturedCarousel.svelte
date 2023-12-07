@@ -108,6 +108,17 @@
 		}
 	}
 
+	function interruptMotion() {
+		window.dispatchEvent(
+			new CustomEvent('interruptMotion', {
+				detail: {
+					type: 'next',
+				},
+				bubbles: true,
+			})
+		);
+	}
+
 	$: startObserving(mainEl);
 	$: {
 		halfCardWidthRatio = (1 - cardWidthRatio) / 2;
@@ -126,13 +137,13 @@
 		{#if cards.length > 1 && showNavBullets}
 			<div class="bullets" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}}>
 				{#each cards as card, index}
-					<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
+					<span class:active={index === currentCenteredIndex} on:click={() => {moveToPosition(index); interruptMotion();}} />
 				{/each}
 				{#if showButtons}
-					<div class="button-left" on:click={moveBackward}>
+					<div class="button-left" on:click={() => {moveBackward; interruptMotion();}}>
 						<i class="fa-solid fa-arrow-left" />
 					</div>
-					<div class="button-right" on:click={moveForward}>
+					<div class="button-right" on:click={() => {moveForward; interruptMotion();}}>
 						<i class="fa-solid fa-arrow-right" />
 					</div>
 				{/if}
@@ -146,7 +157,8 @@
 					{...cards[cards.length - 1].props}
 					active={cards.length - 1 === currentCenteredIndex}
 					clickAction={() => moveToPosition(cards.length - 1)}
-					nextAction={moveForward} />
+					nextAction={moveForward}
+					nextButtonAction={() => {moveForward(); interruptMotion();}} />
 			{/if}
 			{#each cards as card, index}
 				<svelte:component
@@ -154,7 +166,8 @@
 					{...card.props}
 					active={index === currentCenteredIndex}
 					clickAction={() => moveToPosition(index)}
-					nextAction={moveForward} />
+					nextAction={moveForward}
+					nextButtonAction={() => {moveForward(); interruptMotion();}} />
 			{/each}
 			{#if showFillerCards}
 				<svelte:component
@@ -162,7 +175,8 @@
 					{...cards[0].props}
 					active={0 === currentCenteredIndex}
 					clickAction={() => moveToPosition(0)}
-					nextAction={moveForward} />
+					nextAction={moveForward}
+					nextButtonAction={() => {moveForward(); interruptMotion();}} />
 			{/if}
 		</div>
 	</section>

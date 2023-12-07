@@ -4,7 +4,7 @@
 	import {navigate} from 'svelte-routing/src/history';
 	import Reveal from '../Common/Reveal.svelte';
 	import {cubicOut} from 'svelte/easing';
-	import {createEventDispatcher, onMount} from 'svelte';
+	import {onMount} from 'svelte';
 
 	export let title = '';
 	export let subText = '';
@@ -15,9 +15,8 @@
 	export let active = false;
 	export let clickAction;
 	export let nextAction;
+	export let nextButtonAction;
   export let forcedColor = null;
-
-  const dispatch = createEventDispatcher();
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -28,14 +27,14 @@
 	buttons.push({
 		text: 'Next',
 		type: 'primary',
-		function: nextAction,
+		function: nextButtonAction,
 	});
 
 	let cinematicsCanvas;
 
 	function handleCardClick() {
 		if (active) {
-			reveal();
+			revealInterrupt();
 		} else {
 			clickAction();
 		}
@@ -52,6 +51,11 @@
 			};
 			cover.src = coverUrl;
 		}
+	}
+
+	function revealInterrupt() {
+		interruptReveal();
+		reveal();
 	}
 
 	function reveal() {
@@ -104,6 +108,17 @@
 					next: nextAction,
 				},
 				bubbles: true
+			})
+		);
+	}
+
+	function interruptReveal() {
+		window.dispatchEvent(
+			new CustomEvent('interruptMotion', {
+				detail: {
+					type: 'reveal',
+				},
+				bubbles: true,
 			})
 		);
 	}
