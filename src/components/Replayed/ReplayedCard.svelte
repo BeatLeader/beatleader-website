@@ -15,7 +15,7 @@
 	export let active = false;
 	export let clickAction;
 	export let nextAction;
-  export let forcedColor = null;
+	export let forcedColor = null;
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -62,7 +62,7 @@
 		if (typeof img == 'string') {
 			var src = cleanLinkOfCors(img);
 			img = new Image();
-      img.crossOrigin = 'anonymous';
+			img.crossOrigin = 'anonymous';
 			img.src = src;
 		}
 		img.onload = () => {
@@ -75,103 +75,102 @@
 			} else {
 				dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
 			}
-
 		};
 	}
 
-  function cleanLinkOfCors(link) {
-    link = link.replace('https://cdn.assets.beatleader.xyz/', '/cors/cdn-assets-bl/');
-    link = link.replace('https://cdn.beatsaver.com/', '/cors/cdnbeatsaver/');
-    return link;
-  }
+	function cleanLinkOfCors(link) {
+		link = link.replace('https://cdn.assets.beatleader.xyz/', '/cors/cdn-assets-bl/');
+		link = link.replace('https://cdn.beatsaver.com/', '/cors/cdnbeatsaver/');
+		return link;
+	}
 
-  function startAutoRevealCount() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('startAutoRevealCount', {
-				detail: {
-					reveal: reveal,
-				},
-				bubbles: true
-			})
-		);
-  }
+	function startAutoRevealCount() {
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('startAutoRevealCount', {
+					detail: {
+						reveal: reveal,
+					},
+					bubbles: true,
+				})
+			);
+	}
 
 	function startAutoNextCount() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('startAutoNextCount', {
-				detail: {
-					next: nextAction,
-				},
-				bubbles: true
-			})
-		);
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('startAutoNextCount', {
+					detail: {
+						next: nextAction,
+					},
+					bubbles: true,
+				})
+			);
 	}
 
 	function interruptMotion() {
-    	if (active) window.dispatchEvent(
-			new CustomEvent('interruptMotion', {
-				bubbles: true,
-			})
-		);
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('interruptMotion', {
+					bubbles: true,
+				})
+			);
 	}
 
-  function startSong() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('startSong', {
-				detail: {
-					previewLinks: [
-						stats?.entries[0]?.previewLink
-					],
-				},
-				bubbles: true,
-			})
-		);
-  }
+	function startSong() {
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('startSong', {
+					detail: {
+						previewLinks: [stats?.entries[0]?.previewLink],
+					},
+					bubbles: true,
+				})
+			);
+	}
 
-  function stopSong() {
-		window.dispatchEvent(
-			new CustomEvent('stopSong', { bubbles: true })
-		);
-  }
+	function stopSong() {
+		window.dispatchEvent(new CustomEvent('stopSong', {bubbles: true}));
+	}
 
 	function notifyReveal() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('cardWasRevealed', {
-				detail: {
-					previewLinks: [
-						stats?.entries[1]?.previewLink,
-						stats?.entries[2]?.previewLink,
-						stats?.entries[3]?.previewLink,
-						stats?.entries[4]?.previewLink,
-					],
-				},
-				bubbles: true,
-			})
-		);
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('cardWasRevealed', {
+					detail: {
+						previewLinks: [
+							stats?.entries[1]?.previewLink,
+							stats?.entries[2]?.previewLink,
+							stats?.entries[3]?.previewLink,
+							stats?.entries[4]?.previewLink,
+						],
+					},
+					bubbles: true,
+				})
+			);
 	}
 
 	onMount(() => (activeMounted = true));
 
-
 	$: revealed ? notifyReveal() : null;
-  $: active? null : stopSong();
+	$: active ? null : stopSong();
 	$: activeReady = activeMounted && active;
 	$: drawCinematics(cinematicsCanvas, imageUrl);
 	$: if (buttons?.length > 3) buttons = buttons.slice(0, 3);
 	$: {
 		mainStat = stats?.entries[0];
-    switch (stats.type) {
-        case 'mapList':
-          imageUrl = mainStat.cover;
-          break;
-        case 'playerList':
-          imageUrl = mainStat.avatar;
-          break;
-        default:
-          imageUrl = imageUrl;
-          break;
-    }
-		forcedColor ? dominantColor = forcedColor : retrieveBackgroundColor(imageUrl);
+		switch (stats.type) {
+			case 'mapList':
+				imageUrl = mainStat.cover;
+				break;
+			case 'playerList':
+				imageUrl = mainStat.avatar;
+				break;
+			default:
+				imageUrl = imageUrl;
+				break;
+		}
+		forcedColor ? (dominantColor = forcedColor) : retrieveBackgroundColor(imageUrl);
 	}
 </script>
 
@@ -205,7 +204,8 @@
 							<img
 								src={mainStat.cover}
 								alt={mainStat.name}
-								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} on:introend={startSong}/>
+								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}}
+								on:introend={startSong} />
 							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
 							<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}} on:introend={startAutoRevealCount}>
@@ -226,10 +226,12 @@
 								</h4>
 							{/if}
 						{:else if stats?.type === 'statList'}
-							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{stats.entries[6]?.value ? stats.entries[6].name : mainStat.name}</h2>
+							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>
+								{stats.entries[6]?.value ? stats.entries[6].name : mainStat.name}
+							</h2>
 							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
 								{stats.entries[6]?.value ? stats.entries[6].value : mainStat.value}
-              </h3>
+							</h3>
 						{/if}
 					</div>
 				</div>
@@ -256,7 +258,7 @@
 									<div class="stat-stacked-subinfo">
 										<h3 class="truncated">{stat.mapper}</h3>
 										<i class="fa-solid fa-minus" />
-										<h3 class="minutes">{stat?.minutes ? stat.minutes.toFixed(2)  + ' min' : stat.count + ' times'}</h3>
+										<h3 class="minutes">{stat?.minutes ? stat.minutes.toFixed(2) + ' min' : stat.count + ' times'}</h3>
 									</div>
 								</div>
 							</div>
@@ -268,39 +270,49 @@
 								<img src={stat.avatar} alt={stat.name} />
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers ? ', ' + stat.percentPlayers.toFixed(2) + '%' : ''}</h3>
+									<h3 class="minutes">
+										{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers ? ', ' + stat.percentPlayers.toFixed(2) + '%' : ''}
+									</h3>
 								</div>
 							</div>
 						{/each}
 					{:else if stats?.type === 'statList'}
-            <div class="data-columns">
-              <div class="data data-small" style={stats.entries.slice(5, 10).length ? "width: 40%" : "width: 100%"}>
-                {#each stats.entries.slice(0, 5) as stat, index}
-                  <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
-                    <div class="stat-stacked-info">
-                      <h2 class="truncated">{stat.name}</h2>
-                      <h3 class="minutes">{stat.value}</h3>
-                    </div>
-                  </div>
-                {/each}
-              </div>
-              {#if stats.entries.slice(5, 10).length}
-              <div class="data data-small" style="width: 60%">
-                {#each stats.entries.slice(5, 10) as stat, index}
-                  <div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
-                    <div class="stat-stacked-info">
-                      <h2 class="truncated">{stat.name}</h2>
-                      <h3 class="minutes">{stat.value}</h3>
-                    </div>
-                  </div>
-                {/each}
-              </div>
-              {/if}
-            </div>
+						<div class="data-columns">
+							<div class="data data-small" style={stats.entries.slice(5, 10).length ? 'width: 40%' : 'width: 100%'}>
+								{#each stats.entries.slice(0, 5) as stat, index}
+									<div
+										class="stat"
+										transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+										<div class="stat-stacked-info">
+											<h2 class="truncated">{stat.name}</h2>
+											<h3 class="minutes">{stat.value}</h3>
+										</div>
+									</div>
+								{/each}
+							</div>
+							{#if stats.entries.slice(5, 10).length}
+								<div class="data data-small" style="width: 60%">
+									{#each stats.entries.slice(5, 10) as stat, index}
+										<div
+											class="stat"
+											transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+											<div class="stat-stacked-info">
+												<h2 class="truncated">{stat.name}</h2>
+												<h3 class="minutes">{stat.value}</h3>
+											</div>
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
 					{/if}
 				</div>
 
-				<div class="buttons" class:active transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 2500}} on:introend={startAutoNextCount}>
+				<div
+					class="buttons"
+					class:active
+					transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 2500}}
+					on:introend={startAutoNextCount}>
 					{#each buttons as button}
 						<Button
 							label={button.text}
@@ -323,7 +335,7 @@
 </div>
 
 <style>
-  .data-columns {
+	.data-columns {
 		display: flex;
 		flex-direction: row;
 		gap: 0.25em;
@@ -339,9 +351,9 @@
 		margin-top: 1em;
 	}
 
-  .data-small {
+	.data-small {
 		font-size: 1.75vh;
-    gap: 1.5em;
+		gap: 1.5em;
 	}
 
 	.stat {
@@ -355,7 +367,7 @@
 		height: 2em;
 	}
 
-  .stat-small {
+	.stat-small {
 		font-size: 1.75vh;
 		gap: 0.35em;
 	}
@@ -365,7 +377,7 @@
 			font-size: 2vh;
 		}
 
-    .data-small {
+		.data-small {
 			font-size: 1.5vh;
 		}
 
@@ -373,9 +385,8 @@
 			font-size: 1.5vh;
 		}
 	}
-  
 
-  .stat img {
+	.stat img {
 		height: 1.75em;
 		width: 1.75em;
 		justify-content: center;
@@ -400,7 +411,7 @@
 		width: max-content;
 		white-space: nowrap;
 		padding-right: 0.5em;
-    line-height: 1.3em !important;
+		line-height: 1.3em !important;
 	}
 
 	.truncated {
@@ -420,7 +431,7 @@
 	.stat i {
 		font-size: 60%;
 		color: rgb(190, 190, 190);
-    padding-right: 0.5em;
+		padding-right: 0.5em;
 	}
 
 	.stat-stacked-info {
@@ -446,10 +457,10 @@
 		box-sizing: border-box;
 		display: flex;
 		width: 100%;
-		padding: 1.9em;
+		padding: 1em;
 		position: relative;
 		transition: padding 300ms ease;
-    -webkit-tap-highlight-color: transparent;
+		-webkit-tap-highlight-color: transparent;
 	}
 
 	.grid-item.active {
@@ -571,7 +582,7 @@
 		position: absolute;
 		top: 0;
 		left: 0;
-    background-color: var(--dominantColor);
+		background-color: var(--dominantColor);
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-position: center;
@@ -582,7 +593,6 @@
 		pointer-events: none;
 		filter: brightness(85%) blur(0.6vh);
 		transform: scale(1.01);
-    
 	}
 
 	.card.revealed .background {
@@ -603,7 +613,7 @@
 		opacity: 0.95;
 		transform: rotate(-10deg);
 		border-radius: 12px;
-    box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.45);
+		box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.45);
 	}
 
 	.background-solid-bottom {
@@ -616,7 +626,7 @@
 		opacity: 0.95;
 		transform: rotate(-10deg);
 		border-radius: 12px;
-    box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45);
+		box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45);
 	}
 
 	.content {
@@ -629,13 +639,13 @@
 		border-radius: 12px;
 		position: relative;
 		font-size: 3.5vh;
-    cursor: default;
+		cursor: default;
 	}
 
-  @media screen and (max-height: 780px) {
+	@media screen and (max-height: 780px) {
 		.content {
-      padding: 0.3em;
-    }
+			padding: 0.3em;
+		}
 	}
 
 	.content h1 {
@@ -720,12 +730,12 @@
 		width: 2vh;
 	}
 
-  @media screen and (max-height: 780px) {
+	@media screen and (max-height: 780px) {
 		.bottom-container {
-      display: flex;
-      position: absolute;
-      bottom: 0.3em;
-      left: 0.3em;
-    }
+			display: flex;
+			position: absolute;
+			bottom: 0.3em;
+			left: 0.3em;
+		}
 	}
 </style>

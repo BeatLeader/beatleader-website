@@ -3,8 +3,8 @@
 	import createContainerStore from '../../stores/container';
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing/src/history';
-	import { fly } from 'svelte/transition';
-	import { cubicOut } from 'svelte/easing';
+	import {fly} from 'svelte/transition';
+	import {cubicOut} from 'svelte/easing';
 
 	export let cards;
 
@@ -185,7 +185,6 @@
 		width: 100%;
 		height: var(--carouselHeight);
 		margin-top: -10em;
-		margin-bottom: -10em;
 		/*background: #232323 !important;*/
 		position: relative;
 		overflow: visible;
@@ -221,7 +220,7 @@
 		grid-template-columns: repeat(var(--cards-cnt), calc(var(--width) * var(--cardWidthRatio)));
 		grid-template-rows: 1fr;
 		top: 10em;
-		bottom: 10em;
+		bottom: 0em;
 		min-height: inherit;
 		overflow: visible;
 		transform: translateX(var(--translation));

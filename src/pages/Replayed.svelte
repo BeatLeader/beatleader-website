@@ -119,13 +119,11 @@
 
 <section class="align-content">
 	<article class="page-content align-content">
-		<ContentBox cls="main-content-replayed">
-			<div class="items">
-				{#if cards}
-					<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} />
-				{/if}
-			</div>
-		</ContentBox>
+		<div class="items">
+			{#if cards}
+				<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} />
+			{/if}
+		</div>
 	</article>
 </section>
 

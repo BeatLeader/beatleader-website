@@ -21,7 +21,15 @@
 	let dominantColor = 'rgb(92, 120, 133)';
 	let activeMounted = false;
 	let activeReady = false;
-	const colors = ['rgb(92, 120, 133)', 'rgb(139, 52, 145)', 'rgb(200, 112, 207)', 'rgb(89, 111, 255)', 'rgb(108, 205, 248)', 'rgb(39, 39, 39)', 'rgb(235, 91, 91)'];
+	const colors = [
+		'rgb(92, 120, 133)',
+		'rgb(139, 52, 145)',
+		'rgb(200, 112, 207)',
+		'rgb(89, 111, 255)',
+		'rgb(108, 205, 248)',
+		'rgb(39, 39, 39)',
+		'rgb(235, 91, 91)',
+	];
 
 	let cinematicsCanvas;
 
@@ -47,70 +55,69 @@
 	}
 
 	function startAutoRevealCount() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('startAutoRevealCount', {
-				detail: {
-					reveal: reveal,
-				},
-				bubbles: true
-			})
-		);
-  }
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('startAutoRevealCount', {
+					detail: {
+						reveal: reveal,
+					},
+					bubbles: true,
+				})
+			);
+	}
 
 	function startAutoNextCount() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('startAutoNextCount', {
-				detail: {
-					next: nextAction,
-				},
-				bubbles: true
-			})
-		);
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('startAutoNextCount', {
+					detail: {
+						next: nextAction,
+					},
+					bubbles: true,
+				})
+			);
 	}
 
 	function interruptMotion() {
-    	if (active) window.dispatchEvent(
-			new CustomEvent('interruptMotion', {
-				bubbles: true,
-			})
-		);
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('interruptMotion', {
+					bubbles: true,
+				})
+			);
 	}
 
-  function startSong() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('startSong', {
-				detail: {
-					previewLinks: [
-						stats?.topMaps[0]?.previewLink,
-						stats?.topMaps[1]?.previewLink,
-						stats?.topMaps[2]?.previewLink,
-						stats?.topMaps[3]?.previewLink,
-						stats?.topMaps[4]?.previewLink,
-					],
-				},
-				bubbles: true,
-			})
-		);
-  }
+	function startSong() {
+		if (active)
+			window.dispatchEvent(
+				new CustomEvent('startSong', {
+					detail: {
+						previewLinks: [
+							stats?.topMaps[0]?.previewLink,
+							stats?.topMaps[1]?.previewLink,
+							stats?.topMaps[2]?.previewLink,
+							stats?.topMaps[3]?.previewLink,
+							stats?.topMaps[4]?.previewLink,
+						],
+					},
+					bubbles: true,
+				})
+			);
+	}
 
-  function stopSong() {
-		window.dispatchEvent(
-			new CustomEvent('stopSong', { bubbles: true })
-		);
-  }
+	function stopSong() {
+		window.dispatchEvent(new CustomEvent('stopSong', {bubbles: true}));
+	}
 
 	function notifyReveal() {
-		if (active) window.dispatchEvent(
-			new CustomEvent('cardWasRevealed', { bubbles: true })
-		);
+		if (active) window.dispatchEvent(new CustomEvent('cardWasRevealed', {bubbles: true}));
 	}
-
 
 	onMount(() => (activeMounted = true));
 	setBackgroundColor(colorStartIndex);
 
 	$: revealed ? notifyReveal() : null;
-  $: active? null : stopSong();
+	$: active ? null : stopSong();
 	$: activeReady = activeMounted && active;
 </script>
 
@@ -137,7 +144,9 @@
 					<div class="intro-card-content">
 						<div class="header">
 							<h1 in:fly={{y: '2em', duration: 1000, easing: cubicOut, opacity: 0}}>{title}</h1>
-							<p in:fly={{y: '2em', duration: 800, easing: cubicOut, opacity: 0, delay: 1100}} on:introend={startAutoRevealCount}>{subText}</p>
+							<p in:fly={{y: '2em', duration: 800, easing: cubicOut, opacity: 0, delay: 1100}} on:introend={startAutoRevealCount}>
+								{subText}
+							</p>
 						</div>
 					</div>
 				</div>
@@ -147,111 +156,107 @@
 		{#if true}
 			<div class="content">
 				<div class="header">
-					<h1 >{title}</h1>
-					<p >{contentSubText}</p>
+					<h1>{title}</h1>
+					<p>{contentSubText}</p>
 				</div>
 
 				{#if summaryType === 'player'}
-				<div class="data-columns">
-					<div class="data" style="width: 40%">
-						<h2 >Top Mappers</h2>
-						{#each stats.topMappers.slice(0, 5) as stat, index}
-							<div
-								class="stat"
-								>
-								<h2 class="stat-number">{index + 1}</h2>
-								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-								</div>
-							</div>
-						{/each}
-					</div>
-					<div class="data" style="width: 60%">
-						<h2>Top Maps</h2>
-						{#each stats.topMaps.slice(0, 5) as stat, index}
-							<div class="stat">
-								<h2 class="stat-number">{index + 1}</h2>
-								<img src={stat.cover} alt={stat.name} />
-
-								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-
-									<div class="stat-stacked-subinfo">
-										<h3 class="truncated">{stat.mapper}</h3>
+					<div class="data-columns">
+						<div class="data" style="width: 40%">
+							<h2>Top Mappers</h2>
+							{#each stats.topMappers.slice(0, 5) as stat, index}
+								<div class="stat">
+									<h2 class="stat-number">{index + 1}</h2>
+									<div class="stat-stacked-info">
+										<h2 class="truncated">{stat.name}</h2>
 									</div>
 								</div>
-							</div>
-						{/each}
-					</div>
-				</div>
-				<div class="data-columns">
-					<div class="data data-small" style="width: 40%">
-						{#each stats.extraStats.slice(0, 3) as stat, index}
-							<div class="stat stat-small">
-								<div class="stat-stacked-info">
-									<h3 class="truncated">{stat.name}</h3>
-									<h2 class="other-stats">{stat.value}</h2>
-								</div>
-							</div>
-						{/each}
-					</div>
-					<div class="data data-small" style="width: 60%">
-						{#each stats.extraStats.slice(3, 5) as stat, index}
-							<div class="stat stat-small">
-								<div class="stat-stacked-info">
-									<h3 class="truncated">{stat.name}</h3>
-									<h2 class="other-stats">{stat.value}</h2>
-								</div>
-							</div>
-						{/each}
-					</div>
+							{/each}
+						</div>
+						<div class="data" style="width: 60%">
+							<h2>Top Maps</h2>
+							{#each stats.topMaps.slice(0, 5) as stat, index}
+								<div class="stat">
+									<h2 class="stat-number">{index + 1}</h2>
+									<img src={stat.cover} alt={stat.name} />
 
-				</div>
+									<div class="stat-stacked-info">
+										<h2 class="truncated">{stat.name}</h2>
+
+										<div class="stat-stacked-subinfo">
+											<h3 class="truncated">{stat.mapper}</h3>
+										</div>
+									</div>
+								</div>
+							{/each}
+						</div>
+					</div>
+					<div class="data-columns">
+						<div class="data data-small" style="width: 40%">
+							{#each stats.extraStats.slice(0, 3) as stat, index}
+								<div class="stat stat-small">
+									<div class="stat-stacked-info">
+										<h3 class="truncated">{stat.name}</h3>
+										<h2 class="other-stats">{stat.value}</h2>
+									</div>
+								</div>
+							{/each}
+						</div>
+						<div class="data data-small" style="width: 60%">
+							{#each stats.extraStats.slice(3, 5) as stat, index}
+								<div class="stat stat-small">
+									<div class="stat-stacked-info">
+										<h3 class="truncated">{stat.name}</h3>
+										<h2 class="other-stats">{stat.value}</h2>
+									</div>
+								</div>
+							{/each}
+						</div>
+					</div>
 				{:else if summaryType === 'mapper'}
-				<div class="data-columns">
-					<div class="data" style="width: 100%">
-						<h2>Top Maps</h2>
-						{#each stats.topMaps.slice(0, 5) as stat, index}
-							<div class="stat">
-								<h2 class="stat-number">{index + 1}</h2>
-								<img src={stat.cover} alt={stat.name} />
+					<div class="data-columns">
+						<div class="data" style="width: 100%">
+							<h2>Top Maps</h2>
+							{#each stats.topMaps.slice(0, 5) as stat, index}
+								<div class="stat">
+									<h2 class="stat-number">{index + 1}</h2>
+									<img src={stat.cover} alt={stat.name} />
 
-								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
+									<div class="stat-stacked-info">
+										<h2 class="truncated">{stat.name}</h2>
 
-									<div class="stat-stacked-subinfo">
-										<h3 class="truncated">{stat.mapper}</h3>
-										<i class="fa-solid fa-minus" />
-										<h3 class="minutes">{stat.minutes.toFixed(2)  + ' min'}</h3>
+										<div class="stat-stacked-subinfo">
+											<h3 class="truncated">{stat.mapper}</h3>
+											<i class="fa-solid fa-minus" />
+											<h3 class="minutes">{stat.minutes.toFixed(2) + ' min'}</h3>
+										</div>
 									</div>
 								</div>
-							</div>
-						{/each}
+							{/each}
+						</div>
 					</div>
-				</div>
-				<div class="data-columns">
-					<div class="data data-small" style="width: 40%">
-						{#each stats.extraStats.slice(0, 3) as stat, index}
-							<div class="stat stat-small">
-								<div class="stat-stacked-info">
-									<h3 class="truncated">{stat.name}</h3>
-									<h2 class="other-stats">{stat.value}</h2>
+					<div class="data-columns">
+						<div class="data data-small" style="width: 40%">
+							{#each stats.extraStats.slice(0, 3) as stat, index}
+								<div class="stat stat-small">
+									<div class="stat-stacked-info">
+										<h3 class="truncated">{stat.name}</h3>
+										<h2 class="other-stats">{stat.value}</h2>
+									</div>
 								</div>
-							</div>
-						{/each}
-					</div>
-					<div class="data data-small" style="width: 60%">
-						{#each stats.extraStats.slice(3, 5) as stat, index}
-							<div class="stat stat-small">
-								<div class="stat-stacked-info">
-									<h3 class="truncated">{stat.name}</h3>
-									<h2 class="other-stats">{stat.value}</h2>
+							{/each}
+						</div>
+						<div class="data data-small" style="width: 60%">
+							{#each stats.extraStats.slice(3, 5) as stat, index}
+								<div class="stat stat-small">
+									<div class="stat-stacked-info">
+										<h3 class="truncated">{stat.name}</h3>
+										<h2 class="other-stats">{stat.value}</h2>
+									</div>
 								</div>
-							</div>
-						{/each}
+							{/each}
+						</div>
 					</div>
-
-				</div>
 				{/if}
 
 				<div class="bottom-container">
@@ -428,7 +433,7 @@
 		box-sizing: border-box;
 		display: flex;
 		width: 100%;
-		padding: 1.9em;
+		padding: 1em;
 		position: relative;
 		transition: padding 300ms ease;
 		-webkit-tap-highlight-color: transparent;
@@ -594,7 +599,7 @@
 		transform: rotate(-10deg);
 		border-radius: 12px;
 		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
-		box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45)
+		box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45);
 	}
 
 	.content {
@@ -612,8 +617,8 @@
 
 	@media screen and (max-height: 780px) {
 		.content {
-      padding: 0.3em;
-    }
+			padding: 0.3em;
+		}
 	}
 
 	.content h1 {
@@ -731,11 +736,11 @@
 
 	@media screen and (max-height: 780px) {
 		.bottom-container {
-      display: flex;
-      position: absolute;
-      bottom: 0.3em;
-      left: 0.3em;
-    }
+			display: flex;
+			position: absolute;
+			bottom: 0.3em;
+			left: 0.3em;
+		}
 
 		.bottom-container-right {
 			bottom: 0.3em;
@@ -756,10 +761,10 @@
 
 	.share-button div {
 		display: flex;
-    width: max-content;
-    margin: 0 0.25em;
-    color: white;
-    font-size: 1.25vh;
-    gap: 0.125em;
+		width: max-content;
+		margin: 0 0.25em;
+		color: white;
+		font-size: 1.25vh;
+		gap: 0.125em;
 	}
 </style>
