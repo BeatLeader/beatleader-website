@@ -263,9 +263,10 @@
 					<span>beatleader.xyz/replayed</span>
 				</div>
 				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
-					<div style="display: flex; justify-content: flex-end;">
-						<img class="bottom-icon" src="/assets/favicon.svg" />
-						<span on:click={takeScreenshot}>share</span>
+					<div class="share-button" on:click={takeScreenshot}>
+						<div>
+							<img class="bottom-icon" src="/assets/favicon.svg" />
+							share</div>
 					</div>
 					<div class="bullets">
 						{#each colors as color, index}
@@ -708,6 +709,8 @@
 	.bottom-container-right {
 		display: flex;
 		flex-direction: column;
+		justify-content: flex-end;
+		align-items: flex-end;
 		position: absolute;
 		bottom: 0.5em;
 		right: 0.5em;
@@ -755,5 +758,24 @@
 			right: 0.3em;
 			gap: 0.25em;
 		}
+	}
+
+	.share-button {
+		display: flex;
+		justify-content: flex-end;
+		background-color: #3273db;
+		padding: 0.125em;
+		border-radius: 8px;
+		width: min-content;
+		cursor: pointer;
+	}
+
+	.share-button div {
+		display: flex;
+    width: max-content;
+    margin: 0 0.25em;
+    color: white;
+    font-size: 1.25vh;
+    gap: 0.125em;
 	}
 </style>
