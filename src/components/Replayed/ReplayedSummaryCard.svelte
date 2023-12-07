@@ -59,7 +59,7 @@
 	async function takeScreenshot() {
 		try {
 			screenshoting = true;
-			const blob = await fetch(`/replayed${(summaryType === "mapper" ? "/mapper" : "")}?color=${colorStartIndex}`).then(response => response.blob());
+			const blob = await fetch(`/screenshot/464x800/replayed${(summaryType === "mapper" ? "/mapper" : "")}?color=${colorStartIndex}`).then(response => response.blob());
 			try {
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 				successToast('Screenshot Copied to Clipboard');
@@ -821,6 +821,7 @@
     margin: 0 0.25em;
     color: white;
     font-size: 1.25vh;
-    gap: 0.125em;
+		gap: 0.3em;
+    align-items: center;
 	}
 </style>
