@@ -309,7 +309,7 @@
 							{#if screenshoting}
 							<Spinner />
 							{:else}
-							<img class="bottom-icon" src="/assets/favicon.svg" />
+							<i class="fa-solid fa-share-from-square" />
 							{/if}
 							share</div>
 					</div>
@@ -818,7 +818,7 @@
 	.share-button div {
 		display: flex;
     width: max-content;
-    margin-right: 0.25em;
+    margin: 0 0.25em;
     color: white;
     font-size: 1.25vh;
 		gap: 0.3em;
