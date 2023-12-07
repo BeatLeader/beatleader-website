@@ -1,6 +1,6 @@
 import {getCurrentLocale} from '../stores/config';
 
-var lcount = 2;
+var lcount = 3;
 if (window.location.host.includes('localhost')) {
 	lcount = 1;
 }
