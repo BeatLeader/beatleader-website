@@ -53,6 +53,7 @@
 	}
 
 	function setBackgroundColor(index) {
+		colorStartIndex = index;
 		dominantColor = colors[index];
 	}
 
