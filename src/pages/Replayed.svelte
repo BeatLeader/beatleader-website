@@ -4,118 +4,113 @@
 	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
 	import ReplayedSummaryCard from '../components/Replayed/ReplayedSummaryCard.svelte';
-	import { fetchJson } from '../network/fetch';
-	import { BL_API_URL } from '../network/queues/beatleader/api-queue';
+	import {fetchJson} from '../network/fetch';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
 
-  export let replayedType = 'player';
-  export let playerId = null;
-  export let color = null;
+	export let replayedType = 'player';
+	export let playerId = null;
+	export let location = null;
 
 	let cards;
 
-  function fetchReplayed() {
+	function fetchReplayed() {
 		fetchJson(BL_API_URL + 'replayed' + (playerId ? `?playerId=${playerId}` : ''), {
 			credentials: 'include',
 		}).then(async response => {
-      if (replayedType === 'player' && response.body.player != null) {
-        prepPlayerData(response.body.player);
-      } else if (replayedType === 'mapper' && response.body.mapper != null) {
-        prepMapperData(response.body.mapper);
-      } else {
-        return;
-      }
-
-
+			if (replayedType === 'player' && response.body.player != null) {
+				prepPlayerData(response.body.player);
+			} else if (replayedType === 'mapper' && response.body.mapper != null) {
+				prepMapperData(response.body.mapper);
+			} else {
+				return;
+			}
 		});
 	}
 
-  function prepPlayerData(data) {
-    let _cards = [];
-    _cards.push(
-      {
-        component: ReplayedSummaryCard,
-        props: {
-          title: 'Your 2023 in Beat Saber',
-          subText: 'A year summarized',
-          summaryType: 'player',
-          colorStartIndex: (color ? color : 0),
-          stats: {
-            topMappers: data.topMappers.slice(0, 5),
-            topMaps: data.topMaps.slice(0, 5),
-            extraStats: [
-              {
-                name: 'Plays',
-                value: data.plays,
-              },
-              {
-                name: 'Active days',
-                value: data.activeDays,
-              },
-              {
-                name: 'Days streak',
-                value: data.daysStreak,
-              },
-              {
-                name: 'Minutes played',
-                value: data.minutesPlayed.toFixed(2),
-              },
-              {
-                name: 'Top category',
-                value: data.topCategory,
-              },
-            ],
-          },
-        },
-      },
-    )
+	function prepPlayerData(data) {
+		let _cards = [];
+		_cards.push({
+			component: ReplayedSummaryCard,
+			props: {
+				title: 'Your 2023 in Beat Saber',
+				subText: 'A year summarized',
+				summaryType: 'player',
+				colorStartIndex: color ? color : 0,
+				stats: {
+					topMappers: data.topMappers.slice(0, 5),
+					topMaps: data.topMaps.slice(0, 5),
+					extraStats: [
+						{
+							name: 'Plays',
+							value: data.plays,
+						},
+						{
+							name: 'Active days',
+							value: data.activeDays,
+						},
+						{
+							name: 'Days streak',
+							value: data.daysStreak,
+						},
+						{
+							name: 'Minutes played',
+							value: data.minutesPlayed.toFixed(2),
+						},
+						{
+							name: 'Top category',
+							value: data.topCategory,
+						},
+					],
+				},
+			},
+		});
 
-    cards = _cards;
-  }
+		cards = _cards;
+	}
 
-  function prepMapperData(data) {
-    let _cards = [];
-    _cards.push(
-      {
-        component: ReplayedSummaryCard,
-        props: {
-          title: 'Your 2023 in Mapping',
-          subText: 'A year summarized',
-          summaryType: 'mapper',
-          colorStartIndex: (color ? color : 4),
-          stats: {
-            topMaps: data.topMaps.slice(0, 5),
-            extraStats: [
-              {
-                name: 'Plays',
-                value: data.playsCount,
-              },
-              {
-                name: 'Fails',
-                value: data.failsCount,
-              },
-              {
-                name: 'FCs',
-                value: data.fCsCount,
-              },
-              {
-                name: 'Total Minutes played',
-                value: data.minutesPlayed.toFixed(2),
-              },
-              {
-                name: 'Total unique players',
-                value: data.playersCount,
-              },
-            ],
-          },
-        },
-      },
-    )
+	function prepMapperData(data) {
+		let _cards = [];
+		_cards.push({
+			component: ReplayedSummaryCard,
+			props: {
+				title: 'Your 2023 in Mapping',
+				subText: 'A year summarized',
+				summaryType: 'mapper',
+				colorStartIndex: color ? color : 4,
+				stats: {
+					topMaps: data.topMaps.slice(0, 5),
+					extraStats: [
+						{
+							name: 'Plays',
+							value: data.playsCount,
+						},
+						{
+							name: 'Fails',
+							value: data.failsCount,
+						},
+						{
+							name: 'FCs',
+							value: data.fCsCount,
+						},
+						{
+							name: 'Total Minutes played',
+							value: data.minutesPlayed.toFixed(2),
+						},
+						{
+							name: 'Total unique players',
+							value: data.playersCount,
+						},
+					],
+				},
+			},
+		});
 
-    cards = _cards;
-  }
+		cards = _cards;
+	}
 
-  $: fetchReplayed();
+	$: fetchReplayed();
+	$: color = new URLSearchParams(location?.search ?? '')?.get('color') ?? 'black';
 </script>
 
 <svelte:head>
@@ -126,9 +121,9 @@
 	<article class="page-content align-content">
 		<ContentBox cls="main-content-replayed">
 			<div class="items">
-        {#if cards}
-				  <FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} />
-        {/if}
+				{#if cards}
+					<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} />
+				{/if}
 			</div>
 		</ContentBox>
 	</article>

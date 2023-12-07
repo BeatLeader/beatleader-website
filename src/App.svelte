@@ -118,23 +118,6 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-{#if $configStore.preferences.reebanner}
-	<div class="reebanner">
-		<a class="reelink" href="https://www.patreon.com/posts/reesabers-on-92302764" />
-		<div class="banner-spacer" />
-		<img class="reesaber-red" src="/assets/reesaber-red.png" />
-		<span class="link-text">ReeSabers are finally on QUEST!</span>
-		<img class="reesaber-blue" src="/assets/reesaber-blue.png" />
-		<button
-			class="close-banner"
-			title="Hide banner"
-			on:click|preventDefault|stopPropagation={() => {
-				$configStore = produce($configStore, draft => {
-					draft.preferences.reebanner = false;
-				});
-			}}><i class="fas fa-xmark" /></button>
-	</div>
-{/if}
 <Router {url}>
 	<Notifications zIndex={10000}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
@@ -192,11 +175,11 @@
 					<Route path="/maps">
 						<Maps />
 					</Route>
-					<Route path="/replayed/*id" let:params>
-						<Replayed playerId={(params.id ? params.id : null)}/>
+					<Route path="/replayed/*id" let:params let:location>
+						<Replayed playerId={params.id ? params.id : null} {location} />
 					</Route>
 					<Route path="/replayed/mapper/*id" let:params>
-						<Replayed replayedType="mapper" playerId={(params.id ? params.id : null)} />
+						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} {location} />
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
