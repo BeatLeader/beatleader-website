@@ -8,10 +8,9 @@
 
   let soundEnabled = false;
   let autoplayEnabled = true;
-  let interruptRevealQueued = false;
-  let interruptNextQueued = false;
-  let revealQueued = false;
-  let nextQueued = false;
+
+  let activeRevealTimeouts = [];
+  let activeNextTimeouts = [];
 
   let previewLinks = [];
   let activeSongTimeouts = [];
@@ -43,12 +42,13 @@
 
   function startAutoRevealCount(event) {
     if (!autoplayEnabled) return;
-    revealQueued = true;
-    setTimeout(() => {
-      revealQueued = false;
-      if (autoplayEnabled && !interruptRevealQueued) event.detail.reveal();
-      interruptRevealQueued = false;
-    }, 3500);
+    activeRevealTimeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+    activeNextTimeouts = [];
+    activeRevealTimeouts.push(setTimeout(() => {
+      if (autoplayEnabled) event.detail.reveal();
+    }, 3500));
 
     progressBarX.set(0, {
 		  duration: 0
@@ -60,12 +60,13 @@
 
   function startAutoNextCount(event) {
     if (!autoplayEnabled) return;
-    nextQueued = true;
-    setTimeout(() => {
-      nextQueued = false;
-      if (autoplayEnabled && !interruptNextQueued) event.detail.next();
-      interruptNextQueued = false;
-    }, 9000);
+    activeNextTimeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+    activeNextTimeouts = [];
+    activeNextTimeouts.push(setTimeout(() => {
+      if (autoplayEnabled) event.detail.next();
+    }, 9000));
 
     progressBarX.set(0, {
 		  duration: 0
@@ -99,6 +100,7 @@
     activeSongTimeouts.forEach((timeout) => {
       clearTimeout(timeout);
     });
+    activeSongTimeouts = [];
     audioPlayerVolume.set(0, {
       duration: 0
     });
@@ -149,8 +151,14 @@
   }
 
   function interruptMotion() {
-    revealQueued ? interruptRevealQueued = true : null;
-    nextQueued ? interruptNextQueued = true : null;
+    activeRevealTimeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+    activeRevealTimeouts = [];
+    activeNextTimeouts.forEach((timeout) => {
+      clearTimeout(timeout);
+    });
+    activeNextTimeouts = [];
     progressBarX.set(100, {
       duration: 0
     });
