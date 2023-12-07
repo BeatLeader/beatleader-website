@@ -229,7 +229,7 @@
         props: {
           title: 'Top x mapper',
           subText: 'For how many players were you the top mapper?',
-          contentSubText: 'For how many players were you in the top 1, 3, or 5 mappers?',
+          contentSubText: 'For how many players were you in the top 1, 3, or 5 of most played mappers?',
           forcedColor: 'rgb(89, 111, 255)',
           stats: {
             type: 'statList',
