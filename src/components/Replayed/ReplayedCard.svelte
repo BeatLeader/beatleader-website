@@ -23,6 +23,12 @@
 	let activeMounted = false;
 	let activeReady = false;
 
+
+	buttons.push({
+		text: 'Replay',
+		type: 'default',
+		function: resetReveal,
+	});
 	buttons.push({
 		text: 'Next',
 		type: 'primary',
@@ -50,6 +56,12 @@
 			};
 			cover.src = coverUrl;
 		}
+	}
+
+	function resetReveal() {
+		revealed = false;
+		interruptMotion();
+		stopSong();
 	}
 
 	function reveal() {
