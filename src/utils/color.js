@@ -44,3 +44,15 @@ export function setGlobalCSSValue(name, value) {
 	var r = document.querySelector(':root');
 	r.style.setProperty('--' + name, value);
 }
+
+export function importFonts(fontNames) {
+	fontNames.split(',').forEach(name => {
+		var link = document.createElement('link');
+		link.href = `https://fonts.googleapis.com/css2?family=${name
+			.trim()
+			.split(' ')
+			.join('+')}:wght@100;200;300;400;500;600;700;800;900&display=swap`;
+		link.rel = 'stylesheet';
+		document.head.appendChild(link);
+	});
+}

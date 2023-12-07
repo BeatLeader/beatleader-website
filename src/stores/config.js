@@ -35,6 +35,7 @@ export const DEFAULT_CONFIG = {
 		bgimage: '/assets/background.jpg',
 		bgColor: 'rgba(29, 7, 34, 0.6284)',
 		headerColor: 'rgba(53, 0, 70, 0.2)',
+		fontNames: 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif',
 		daysToCompare: 1,
 		daysOfHistory: 30,
 		graphHeight: 350,

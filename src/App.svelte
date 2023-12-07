@@ -32,7 +32,7 @@
 	import EventsPage from './pages/Events.svelte';
 	import Socket from './pages/Socket.svelte';
 	import Settings from './pages/Settings.svelte';
-	import {setGlobalCSSValue} from './utils/color';
+	import {importFonts, setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
@@ -106,6 +106,11 @@
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
+		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
+
+		if ($configStore.preferences.theme == 'mirror') {
+			importFonts($configStore.preferences.fontNames);
+		}
 	}
 </script>
 
