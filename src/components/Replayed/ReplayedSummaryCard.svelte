@@ -5,6 +5,8 @@
 	import Reveal from '../Common/Reveal.svelte';
 	import {cubicOut} from 'svelte/easing';
 	import {onMount} from 'svelte';
+	import { getNotificationsContext } from 'svelte-notifications';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let title = 'Your 2023 in Beat Saber';
 	export let subText = 'Summarized';
@@ -16,6 +18,7 @@
 	export let nextAction;
 	export let summaryType;
 	export let colorStartIndex = 0;
+	export let playerId = null;
 
 	let revealed = false;
 	let dominantColor = 'rgb(92, 120, 133)';
@@ -24,6 +27,9 @@
 	const colors = ['rgb(92, 120, 133)', 'rgb(139, 52, 145)', 'rgb(200, 112, 207)', 'rgb(89, 111, 255)', 'rgb(108, 205, 248)', 'rgb(39, 39, 39)', 'rgb(235, 91, 91)'];
 
 	let cinematicsCanvas;
+	let screenshoting = false;
+
+	const {addNotification} = getNotificationsContext();
 
 	function handleCardClick() {
 		if (active) {
@@ -42,8 +48,44 @@
 		dominantColor = colors[index];
 	}
 
+	function successToast(text) {
+		addNotification({
+			text: text,
+			position: 'top-right',
+			type: 'success',
+			removeAfter: 2000,
+		});
+	}
+
 	async function takeScreenshot() {
-		//not implemented
+		try {
+			screenshoting = true;
+			const blob = await fetch(`/replayed${(summaryType === "mapper" ? "/mapper" : "")}${(playerId ? "/" + playerId : "")}?color=${colorStartIndex}`).then(response => response.blob());
+			try {
+				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+				successToast('Screenshot Copied to Clipboard');
+			} catch {
+				const anchor = document.createElement('a');
+				const objURL = URL.createObjectURL(blob);
+				anchor.href = objURL;
+				anchor.style.display = 'none';
+				anchor.download = 'replayed.png';
+				document.body.appendChild(anchor);
+				anchor.click();
+				document.body.removeChild(anchor);
+				URL.revokeObjectURL(objURL);
+				successToast('Screenshot Saved');
+			}
+		} catch (e) {
+			addNotification({
+				text: 'Screenshot Failed',
+				position: 'top-right',
+				type: 'error',
+				removeAfter: 4000,
+			});
+		} finally {
+			screenshoting = false;
+		}
 	}
 
 	function startAutoRevealCount() {
@@ -265,7 +307,11 @@
 				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<div class="share-button" on:click={takeScreenshot}>
 						<div>
+							{#if screenshoting}
+							<Spinner />
+							{:else}
 							<img class="bottom-icon" src="/assets/favicon.svg" />
+							{/if}
 							share</div>
 					</div>
 					<div class="bullets">
