@@ -79,7 +79,7 @@
   function startSong(event) {
     if (event?.detail?.previewLinks?.length > 0) {
       previewLinks = event.detail.previewLinks.slice();
-      soundEnabled ? loadNextSong() : null;
+      loadNextSong();
     }
   }
 
@@ -171,7 +171,6 @@
   }
 
   $: volume > 0 ? soundEnabled = true : soundEnabled = false;
-  $: soundEnabled ? loadNextSong() : stopSongQuickly();
   $: audioPlayer.volume = $audioPlayerVolume;
 </script>
 
@@ -204,7 +203,7 @@ on:startAutoNextCount={startAutoNextCount} on:interruptMotion={interruptMotion}/
   </div>
 
   {#if sliderOpen}
-  <div class="volume-slider" transition:fade|global={{duration: 900, easing: cubicOut}}>
+  <div class="volume-slider" transition:fade|global={{duration: 500, easing: cubicOut}}>
     <input type="range" min="0" max="0.25" step="0.01" bind:value={volume} on:input={setVolume} />
   </div>
   {/if}
