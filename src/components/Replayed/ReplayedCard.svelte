@@ -280,7 +280,7 @@
 								<img src={stat.avatar} alt={stat.name} />
 								<div class="stat-stacked-info">
 									<h2 class="truncated">{stat.name}</h2>
-									<h3 class="minutes">{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers ? ', ' + stat.percentPlayers.toFixed(2) + '%' : ''}</h3>
+									<h3 class="minutes">{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers ? ', ' + 'top ' + stat.percentPlayers.toFixed(2) + '% of players' : ''}</h3>
 								</div>
 							</div>
 						{/each}
