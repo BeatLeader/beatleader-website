@@ -391,6 +391,8 @@
 
 	:global(.main-content-replayed) {
 		aspect-ratio: 9 / 14.5; /*results in ~9 / 16 for ReplayedCard*/
+		padding: 0rem !important;
+		max-width: 100% !important;
 	}
 
 	.page-content {
