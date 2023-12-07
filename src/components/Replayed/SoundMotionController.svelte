@@ -194,7 +194,7 @@ on:startAutoNextCount={startAutoNextCount} on:interruptMotion={interruptMotion}/
 		display: flex;
 		text-align: end;
     position: absolute;
-    bottom: 0.7em;
+    top: 1.2em;
     right: 50%;
     transform: translateX(50%);
     -webkit-tap-highlight-color: transparent;
