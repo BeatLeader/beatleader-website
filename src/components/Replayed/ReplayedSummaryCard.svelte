@@ -160,7 +160,7 @@
 <div class="grid-item" class:active transition:fly|global={{y: '25%', duration: 900, easing: cubicOut, opacity: 0}}>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
-			<div class="cinematics-canvas" class:active={revealed}>
+			<div class="cinematics-canvas" class:active={active && revealed}>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0; left: 0;" />
 			</div>
 		</div>
