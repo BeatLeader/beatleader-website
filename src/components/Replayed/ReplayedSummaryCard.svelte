@@ -504,7 +504,7 @@
 		flex-direction: column;
 		border-radius: 12px;
 		cursor: pointer;
-		box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.75);
+		box-shadow: 2px 2px 0.75em rgba(0, 0, 0, 0.75);
 	}
 
 	.background-container {
