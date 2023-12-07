@@ -141,8 +141,11 @@
     previewLinks = [];
   }
 
-  function cardWasRevealed() {
-    
+  function cardWasRevealed(event) {
+    if (event?.detail?.previewLinks?.length > 0) {
+      previewLinks.push(...event.detail.previewLinks);
+      soundEnabled && audioPlayer.paused ? loadNextSong() : null;
+    }
   }
 
   function interruptMotion() {
