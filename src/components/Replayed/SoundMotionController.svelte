@@ -4,10 +4,11 @@
 	import { tweened } from "svelte/motion";
 	import { fade, fly } from "svelte/transition";
 
-  export let volume = 0.15;
+  export let volume = 0;
 
   let soundEnabled = false;
   let autoplayEnabled = true;
+  let sliderOpen = false;
 
   let activeRevealTimeouts = [];
   let activeNextTimeouts = [];
@@ -36,8 +37,7 @@
   }
 
   function toggleSound() {
-    soundEnabled = !soundEnabled;
-    soundEnabled ? loadNextSong() : stopSongQuickly();
+    sliderOpen = !sliderOpen;
   }
 
   function startAutoRevealCount(event) {
@@ -164,6 +164,14 @@
     });
   }
 
+  function setVolume() {
+    audioPlayerVolume.set(volume, {
+      duration: 0
+    });
+  }
+
+  $: volume > 0 ? soundEnabled = true : soundEnabled = false;
+  $: soundEnabled ? loadNextSong() : stopSongQuickly();
   $: audioPlayer.volume = $audioPlayerVolume;
 </script>
 
@@ -188,12 +196,18 @@ on:startAutoNextCount={startAutoNextCount} on:interruptMotion={interruptMotion}/
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-static-element-interactions -->
   <div class="toggle-button" on:click={toggleSound}>
-    {#if soundEnabled}
+    {#if volume > 0}
     <i class="fa-solid fa-volume-high" />
     {:else}
     <i class="fa-solid fa-volume-xmark" />
     {/if}
   </div>
+
+  {#if sliderOpen}
+  <div class="volume-slider" transition:fade|global={{duration: 900, easing: cubicOut}}>
+    <input type="range" min="0" max="0.25" step="0.01" bind:value={volume} on:input={setVolume} />
+  </div>
+  {/if}
 
 </div>
 
@@ -252,6 +266,42 @@ on:startAutoNextCount={startAutoNextCount} on:interruptMotion={interruptMotion}/
   .progress-bar-container progress::-moz-progress-bar {
     background-color: white;
     border-radius: 0.25em;
+  }
+
+  .volume-slider {
+    position: absolute;
+    right: -4em;
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+
+  .volume-slider input[type="range"] {
+    width: 5em;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    background: rgb(139, 139, 139);
+    height: 0.6em;
+    border-radius: 0.25em;
+    opacity: 0.75;
+  }
+
+  input[type="range"]::-moz-range-track {
+    background: rgb(139, 139, 139);
+    height: 0.6em;
+    border-radius: 0.25em;
+    opacity: 0.75;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    transform: translateY(-25%);
+    height: 4em;
+    width: 4em;
   }
 
 </style>
