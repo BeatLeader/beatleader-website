@@ -69,6 +69,11 @@
     status = 200
 
 [[redirects]]
+    from = '/screenshot-replayed/*'
+    to = 'https://screenshoter.beatleader.xyz/screenshot/464x800/replayed/:splat'
+    status = 200
+
+[[redirects]]
     from = '/robots.txt'
     to = '/robots.txt'
     status = 200

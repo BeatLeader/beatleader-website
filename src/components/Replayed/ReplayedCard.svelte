@@ -692,6 +692,7 @@
 		z-index: -1;
 		height: 100%;
 		transition: cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
+		background-color: var(--dominantColor);
 	}
 
 	.cinematics-canvas.active {
