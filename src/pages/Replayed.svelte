@@ -9,7 +9,7 @@
 	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
 
   export let replayedType = 'player';
-  export let playerId = "76561198042474317";
+  export let playerId = null;
 
 	let cards;
 
