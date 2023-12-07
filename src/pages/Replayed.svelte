@@ -12,6 +12,7 @@
   export let playerId = null;
 
 	let cards;
+  let replayedNotAvailable = false;
 
   function fetchReplayed() {
 		fetchJson(BL_API_URL + 'replayed' + (playerId ? `?playerId=${playerId}` : ''), {
@@ -22,11 +23,11 @@
       } else if (replayedType === 'mapper' && response.body.mapper != null) {
         prepMapperData(response.body.mapper);
       } else {
-        return;
+        replayedNotAvailable = true;
       }
-
-
-		});
+		}).catch(err => {
+      replayedNotAvailable = true;
+    });
 	}
 
   function prepPlayerData(data) {
@@ -343,7 +344,7 @@
 </script>
 
 <svelte:head>
-	<title>BeatLeader Replayed 2023</title>
+	<title>BeatLeader 2023 Replayed</title>
 </svelte:head>
 
 <section class="align-content">
@@ -353,7 +354,21 @@
         {#if cards}
 				<FeaturedCarousel {cards} showFillerCards={false} height={'1000%'} cardWidthRatio={1} showButtons />
         <SoundMotionController />
+        {:else if replayedNotAvailable}
+          <h2>
+            Replayed not available
+          </h2>
+          {#if replayedType === 'player'}
+            <h3>
+              You need to play at least 1 song to get your 2023 replayed
+            </h3>
+          {:else if replayedType === 'mapper'}
+            <h3>
+              Try linking your BeatSaver account
+            </h3>
+          {/if}
         {/if}
+
 			</div>
 		</ContentBox>
 	</article>
@@ -387,5 +402,17 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
+    text-align: center;
+	}
+
+  .items h2 {
+    margin-top: 40%;
+		font-size: 2vh;
+		font-weight: 700;
+	}
+
+	.items h3 {
+    font-size: 1.5vh;
+		font-weight: 600;
 	}
 </style>
