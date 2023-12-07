@@ -7,6 +7,7 @@
 	import {onMount} from 'svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let title = 'Your 2023 in Beat Saber';
 	export let subText = 'Summarized';
@@ -67,9 +68,10 @@
 	async function takeScreenshot() {
 		try {
 			screenshoting = true;
-			const blob = await fetch(`/screenshot-replayed${summaryType === 'mapper' ? '/mapper' : ''}?color=${colorStartIndex}`).then(response =>
-				response.blob()
-			);
+			const blob = await fetch(
+				`${BL_API_URL}screenshot/464x800/replayed${summaryType === 'mapper' ? '/mapper' : ''}?color=${colorStartIndex}`,
+				{credentials: 'include'}
+			).then(response => response.blob());
 			try {
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 				successToast('Screenshot Copied to Clipboard');
