@@ -4,7 +4,7 @@
 	import { tweened } from "svelte/motion";
 	import { fade, fly } from "svelte/transition";
 
-  export let volume = 0.25;
+  export let volume = 0.15;
 
   let soundEnabled = false;
   let autoplayEnabled = true;
