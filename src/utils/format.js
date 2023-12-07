@@ -1,7 +1,7 @@
 import {getCurrentLocale} from '../stores/config';
 
 const lcount = window.location.host.includes('localhost') ? 1 : 2;
-export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? (location.host.split('.')[0] == 'www' ? 'general' : location.host.split('.')[0]) : 'general';
+export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? location.host.split('.')[0] : 'general';
 
 export function setLeaderboardType(newType) {
 	GLOBAL_LEADERBOARD_TYPE = newType;
