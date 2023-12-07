@@ -222,7 +222,7 @@
 							</h3>
 							{#if mainStat.percentPlayers}
 								<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
-									{mainStat.percentPlayers.toFixed(2) + '% of players'}
+									{'top ' + mainStat.percentPlayers.toFixed(2) + '% of players'}
 								</h4>
 							{/if}
 						{:else if stats?.type === 'statList'}
