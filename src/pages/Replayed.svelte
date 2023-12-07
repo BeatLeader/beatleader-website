@@ -414,6 +414,7 @@
 		height: 100%;
 		overflow: hidden;
     text-align: center;
+		font-family: 'Noto Sans';
 	}
 
   .items h2 {
