@@ -283,12 +283,12 @@
 		flex-direction: column;
 		gap: 0.75em;
 		margin-top: 1em;
-		font-size: 2vh;
+		font-size: 21.14px; /*2vh*/
 	}
 
 	.data-small {
 		margin-top: 2em;
-		font-size: 2vh;
+		font-size: 21.14px; /*2vh*/
 		gap: 0.8em;
 	}
 
@@ -304,52 +304,14 @@
 		flex-direction: row;
 		align-items: center;
 		gap: 0.5em;
-		font-size: 2vh;
+		font-size: 21.14px; /*2vh*/
 		color: white;
 		height: 2em;
 	}
 
 	.stat-small {
-		font-size: 1.75vh;
+		font-size: 18.5px; /*1.75vh*/
 		gap: 0.35em;
-	}
-
-	@media screen and (max-height: 860px) {
-		.stat {
-			font-size: 1.85vh;
-		}
-
-		.data {
-			font-size: 1.85vh;
-		}
-
-		.data-small {
-			margin-top: 1.7em;
-			font-size: 1.85vh;
-		}
-
-		.stat-small {
-			font-size: 1.85vh;
-		}
-	}
-
-	@media screen and (max-height: 780px) {
-		.stat {
-			font-size: 1.75vh;
-		}
-
-		.data {
-			font-size: 1.75vh;
-		}
-
-		.data-small {
-			margin-top: 1.5em;
-			font-size: 1.75vh;
-		}
-
-		.stat-small {
-			font-size: 1.5vh;
-		}
 	}
 
 	.stat img {
@@ -461,7 +423,7 @@
 		color: white;
 		user-select: none;
 		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
-		font-size: 3.5vh;
+		font-size: 37px; /*3.5vh*/
 
 		font-family: Noto Sans SC;
 		font-style: normal;
@@ -611,7 +573,7 @@
 		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
 		border-radius: 12px;
 		position: relative;
-		font-size: 3.5vh;
+		font-size: 37px; /*3.5vh*/
 		cursor: default;
 	}
 
@@ -708,16 +670,16 @@
 
 	.bottom-container span {
 		color: white;
-		font-size: 1.25vh;
+		font-size: 13.21px; /*1.25vh*/
 	}
 
 	.bottom-container-right span {
 		color: white;
-		font-size: 1.25vh;
+		font-size: 13.21px; /*1.25vh*/
 	}
 
 	.bottom-icon {
-		width: 2vh;
+		width: 21.14px; /*2vh*/
 	}
 
 	.bullets {
@@ -764,7 +726,7 @@
 		width: max-content;
 		margin: 0 0.25em;
 		color: white;
-		font-size: 1.25vh;
+		font-size: 13.21px; /*1.25vh*/
 		gap: 0.125em;
 	}
 </style>

@@ -138,8 +138,8 @@
 	}
 
 	.page-content {
-		width: 100%;
-		height: 100%;
+		width: 464px;
+		height: 800px;
 		overflow: hidden;
 	}
 
