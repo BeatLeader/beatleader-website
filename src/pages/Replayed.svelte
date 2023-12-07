@@ -173,6 +173,7 @@
           title: 'Your 2023 in Beat Saber',
           subText: 'A year summarized',
           summaryType: 'player',
+          playerId: playerId,
           stats: {
             topMappers: data.topMappers.slice(0, 5),
             topMaps: data.topMaps.slice(0, 5),
@@ -310,6 +311,7 @@
           subText: 'A year summarized',
           summaryType: 'mapper',
           colorStartIndex: 4,
+          playerId: playerId,
           stats: {
             topMaps: data.topMaps.slice(0, 5),
             extraStats: [
