@@ -1,12 +1,10 @@
 import {writable} from 'svelte/store';
 import keyValueRepository from '../db/repository/key-value';
-import {opt} from '../utils/js';
 import {configStore} from './config';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 import {substituteVars} from '../utils/format';
 
 const STORE_PLAYLISTS_KEY = 'playlists';
-const defaultImage = '';
 
 export let playlistStore = null;
 
@@ -70,7 +68,11 @@ export default () => {
 		}
 
 		let playlists = await get();
-		playlists.push(playlist);
+		if (playlists.length && playlists[0].oneclick) {
+			playlists.splice(1, 0, playlist);
+		} else {
+			playlists.unshift(playlist);
+		}
 
 		await set(playlists, true);
 		await select(playlist);
@@ -83,7 +85,7 @@ export default () => {
 	};
 
 	const downloadOneClick = async () => {
-		fetch(BL_API_URL + 'user/oneclickplaylist', {
+		await fetch(BL_API_URL + 'user/oneclickplaylist', {
 			credentials: 'include',
 		})
 			.then(response => response.json())
@@ -109,17 +111,31 @@ export default () => {
 		});
 	};
 
-	const share = async (index, callback) => {
+	const uploadPlaylist = async (playlist, playlists, shared) => {
+		if (playlist.oneclick) return;
+
+		var remote = await fetch(
+			BL_API_URL +
+				`user/playlist?id=${playlist.customData?.id ?? ''}&shared=${shared !== undefined ? shared : playlist.customData?.shared ?? false}`,
+			{
+				credentials: 'include',
+				method: 'POST',
+				body: JSON.stringify(playlist),
+			}
+		).then(response => response.json());
+		if (remote) {
+			playlist.customData = remote;
+
+			await set(playlists, true);
+		}
+	};
+
+	const share = async (index, toShare, callback) => {
 		let playlists = await get();
 		let playlist = playlists[index];
 
-		fetch(BL_API_URL + 'user/playlist', {
-			credentials: 'include',
-			method: 'POST',
-			body: JSON.stringify(playlist),
-		})
-			.then(response => response.text())
-			.then(shareId => callback(shareId));
+		await uploadPlaylist(playlist, playlists, toShare);
+		callback(playlist.customData.id);
 	};
 
 	const getShared = (id, callback) => {
@@ -127,8 +143,93 @@ export default () => {
 			credentials: 'include',
 		})
 			.then(response => response.json())
-			.then(playlist => {
-				callback(playlist);
+			.then(async playlist => {
+				let playlists = await get();
+				var idx = undefined;
+				for (let index = 0; index < playlists.length; index++) {
+					const element = playlists[index];
+					if (element.customData?.hash == playlist.customData?.hash) {
+						idx = index;
+						break;
+					}
+				}
+				callback(playlist, idx);
+			});
+	};
+
+	async function computeSha256Hash(data) {
+		const customData = data.customData;
+		data.customData = null;
+		const encoder = new TextEncoder();
+		const dataUint8 = encoder.encode(JSON.stringify(data));
+		const hashBuffer = await crypto.subtle.digest('SHA-256', dataUint8);
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+		data.customData = customData;
+		return hashHex;
+	}
+
+	const syncPlaylists = async () => {
+		fetch(BL_API_URL + 'user/playlists', {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(async remotePlaylists => {
+				let playlists = await get();
+
+				let hashed = {};
+				let indexed = {};
+				for (let i = 0; i < playlists.length; i++) {
+					const element = playlists[i];
+					if (element.oneclick) continue;
+					hashed[await computeSha256Hash(element)] = element;
+					if (element.customData?.id) {
+						indexed[element.customData.id] = element;
+					}
+				}
+				for (let i = 0; i < remotePlaylists.length; i++) {
+					const element = remotePlaylists[i];
+					var localPlaylist = hashed[element.hash];
+					if (!localPlaylist || !localPlaylist.customData?.id || localPlaylist.customData?.owner != element.ownerId) {
+						if (indexed[element.id]) {
+							playlists = playlists.filter(p => p.customData?.id != element.id);
+						}
+						if (localPlaylist) {
+							playlists = playlists.filter(p => p !== localPlaylist);
+						}
+						var remote = await fetch(BL_API_URL + 'playlist/' + element.id, {
+							credentials: 'include',
+						}).then(response => response.json());
+						if (remote) {
+							playlists.push(remote);
+						}
+						hashed[element.hash] = remote;
+					}
+				}
+
+				var resultList = [];
+
+				for (let i = 0; i < playlists.length; i++) {
+					const element = playlists[i];
+					if (!element.customData?.id && !element.oneclick) {
+						await fetch(BL_API_URL + 'user/playlist', {
+							credentials: 'include',
+							method: 'POST',
+							body: JSON.stringify(element),
+						})
+							.then(response => response.json())
+							.then(customData => {
+								element.customData = customData;
+								resultList.push(element);
+							});
+					} else {
+						resultList.push(element);
+					}
+				}
+
+				resultList = resultList.sort((a, b) => (b.customData?.id ?? 9999999) - (a.customData?.id ?? 9999999));
+
+				await set(resultList, true);
 			});
 	};
 
@@ -139,7 +240,7 @@ export default () => {
 
 		let url = substituteVars(
 			BL_API_URL +
-				'playlist/generate?count=${count}&type=${type}&search=${search}&title=${playlistTitle}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}',
+				'playlist/generate?count=${count}&type=${type}&search=${search}&title=${playlistTitle}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&songStatus=${songStatus}&allRequirements=${allRequirements}',
 			{count, ...filters},
 			true,
 			true
@@ -198,7 +299,15 @@ export default () => {
 
 	const deleteList = async index => {
 		let playlists = await get();
+		const playlist = playlists[index];
 		playlists.splice(index, 1);
+
+		if (playlist.customData?.id) {
+			fetch(BL_API_URL + `user/playlist?id=${playlist.customData.id}`, {
+				credentials: 'include',
+				method: 'DELETE',
+			});
+		}
 
 		await set(playlists, true);
 	};
@@ -215,7 +324,29 @@ export default () => {
 
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
+		} else {
+			uploadPlaylist(playlists[index], playlists);
 		}
+
+		await set(playlists, true);
+	};
+
+	const updateIcon = async (playlistIndex, icon) => {
+		let playlists = await get();
+		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+
+		playlists[index].image = icon;
+		uploadPlaylist(playlists[index], playlists);
+
+		await set(playlists, true);
+	};
+
+	const updateTitle = async (playlistIndex, title) => {
+		let playlists = await get();
+		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+
+		playlists[index].playlistTitle = title;
+		uploadPlaylist(playlists[index], playlists);
 
 		await set(playlists, true);
 	};
@@ -233,6 +364,8 @@ export default () => {
 
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
+		} else {
+			uploadPlaylist(playlists[index], playlists);
 		}
 
 		await set(playlists, true);
@@ -247,6 +380,8 @@ export default () => {
 
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
+		} else {
+			uploadPlaylist(playlists[index], playlists);
 		}
 
 		await set(playlists, true);
@@ -260,6 +395,8 @@ export default () => {
 
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
+		} else {
+			uploadPlaylist(playlists[index], playlists);
 		}
 
 		await set(playlists, true);
@@ -281,10 +418,11 @@ export default () => {
 		if (dbConfig) set(dbConfig, false, true);
 
 		if ((await configStore.get('preferences').oneclick) == 'playlist') {
-			downloadOneClick();
+			await downloadOneClick();
 		} else {
-			deleteOneClick();
+			await deleteOneClick();
 		}
+		await syncPlaylists();
 	};
 	refresh();
 
@@ -306,6 +444,8 @@ export default () => {
 		share,
 		generatePlaylist,
 		generatePlayerPlaylist,
+		updateIcon,
+		updateTitle,
 	};
 
 	return playlistStore;

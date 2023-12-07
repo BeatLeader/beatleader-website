@@ -13,14 +13,21 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
 
-	export let playlist;
+	export let playlistExport;
+	export let sharedPlaylistId = null;
+	export let localPlaylistId;
 	export let idx;
 	export let store;
 	export let expanded = false;
-	export let accountStore;
-	export let playlistId;
+	export let currentPlayerId;
 
 	const {addNotification} = getNotificationsContext();
+
+	let playlist = null;
+
+	function setPlaylist(playlistExport) {
+		playlist = playlistExport;
+	}
 
 	let page = 0;
 	let itemsPerPage = 5;
@@ -36,8 +43,8 @@
 		let reader = new FileReader();
 		reader.readAsDataURL(image);
 		reader.onload = e => {
+			store.updateIcon(localPlaylistId, e.target.result);
 			playlist.image = e.target.result;
-			store.set($store);
 		};
 	};
 
@@ -54,26 +61,26 @@
 	let redactingTitle = false;
 	function onRedactButtonClick() {
 		if (redactingTitle && titleInput.value) {
+			store.updateTitle(localPlaylistId, titleInput.value);
 			playlist.playlistTitle = titleInput.value;
-			store.set($store);
 		}
 		redactingTitle = !redactingTitle;
 	}
 
-	function sharePlaylist() {
-		store.share(idx, shareId => {
+	function sharePlaylist(idx, toShare) {
+		store.share(idx, toShare, shareId => {
+			playlist.customData.shared = toShare;
 			navigate('/playlist/' + shareId);
 		});
 	}
 
 	let owners = [];
 	let canModify = true;
-	let canShare = true;
 
-	async function retrieveOwner(playlist, playerId) {
+	async function retrieveOwner(playlist, currentPlayerId) {
 		var newOwners = [];
+		canModify = true;
 		if (playlist?.customData?.owner) {
-			canShare = false;
 			if (playlist.customData.owner == 'BeatLeader') {
 				canModify = false;
 				return;
@@ -87,7 +94,7 @@
 				let playerService = createPlayerService();
 				let owner = await playerService.fetchPlayerOrGetFromCache(element);
 
-				if (owner?.playerId != playerId) {
+				if (owner?.playerId + '' != currentPlayerId) {
 					canModify = false;
 				}
 				if (owner) {
@@ -133,11 +140,13 @@
 		);
 	}
 
+	$: setPlaylist(playlistExport);
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
-	$: retrieveOwner(playlist, $accountStore?.player?.playerId);
+	$: retrieveOwner(playlist, currentPlayerId);
 	$: updateExpanded(expanded);
+	$: playlistId = sharedPlaylistId ?? playlist?.customData?.id;
 	$: description = `
 		Beat Saber playlist
 		${totalItems} songs
@@ -146,7 +155,7 @@
 
 {#if playlist}
 	<div
-		class={`song-score row-${idx}`}
+		class={`song-score row-${localPlaylistId ?? 0}`}
 		in:fly|global={{x: 300, delay: idx * 30, duration: 500}}
 		out:fade|global={{duration: 100}}
 		class:with-details={detailsOpened}>
@@ -177,7 +186,12 @@
 			<div class="titleAndButtons">
 				<div style="display: grid; width: 90%;">
 					<div style="display: flex;">
-						<span class="playlistTitle" style="display: {redactingTitle ? 'none' : 'block'};">{playlist.playlistTitle}</span>
+						{#if !sharedPlaylistId && playlistId}
+							<a href="/playlist/{playlistId}" class="playlistTitle" style="display: {redactingTitle ? 'none' : 'block'};"
+								>{playlist.playlistTitle}</a>
+						{:else}
+							<span class="playlistTitle" style="display: {redactingTitle ? 'none' : 'block'};">{playlist.playlistTitle}</span>
+						{/if}
 						<input
 							type="text"
 							style="display: {redactingTitle ? 'block' : 'none'};"
@@ -217,10 +231,22 @@
 								title="Delete playlist"
 								noMargin={true}
 								type="danger"
-								on:click={() => store.deleteList(idx)} />
-						{/if}
-						{#if canShare}
-							<Button iconFa="fas fa-upload" title="Share playlist" noMargin={true} type="primary" on:click={() => sharePlaylist(idx)} />
+								on:click={() => store.deleteList(localPlaylistId)} />
+							{#if playlist.customData?.shared}
+								<Button
+									iconFa="fas fa-share"
+									title="Stop sharing playlist"
+									noMargin={true}
+									type="lessdanger"
+									on:click={() => sharePlaylist(localPlaylistId, false)} />
+							{:else}
+								<Button
+									iconFa="fas fa-share"
+									title="Share playlist"
+									noMargin={true}
+									type="primary"
+									on:click={() => sharePlaylist(localPlaylistId, true)} />
+							{/if}
 						{/if}
 					{/if}
 					{#if playlistId}

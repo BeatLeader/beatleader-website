@@ -391,7 +391,7 @@
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div
-				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''}"
+				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''} {type}-rating"
 				in:fly|global={{delay: idx * 10, x: animationSign * 100}}>
 				<PlayerCard
 					{player}
@@ -474,6 +474,10 @@
 
 	.type-switcher {
 		margin-left: 0.4em;
+	}
+
+	:global(.followed-rating .clan-badges) {
+		display: none;
 	}
 
 	nav > :global(*) {

@@ -1,4 +1,5 @@
 import playerApiClient from '../../network/clients/beatleader/player/api';
+import playerBySaverApiClient from '../../network/clients/beatleader/player/api-saver';
 import playerFindApiClient from '../../network/clients/beatleader/players/api-player-find';
 import playerAccGraphApiClient from '../../network/clients/beatleader/accgraph/api';
 import {PRIORITY} from '../../network/queues/http-queue';
@@ -73,6 +74,10 @@ export default () => {
 		resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}/${options.maxAge ?? MINUTE}`, () =>
 			playerApiClient.getProcessed({...options, playerId, priority, fullResponse})
 		);
+	const fetchPlayerSaver = async (playerId, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) =>
+		resolvePromiseOrWaitForPending(`apiClient/${playerId}/${fullResponse}/${options.maxAge ?? MINUTE}`, () =>
+			playerBySaverApiClient.getProcessed({...options, playerId, priority, fullResponse})
+		);
 
 	const findPlayer = async (query, priority = PRIORITY.FG_LOW, {fullResponse = false, ...options} = {}) =>
 		resolvePromiseOrWaitForPending(`apiClient/find/${query}/${fullResponse}`, () =>
@@ -127,6 +132,7 @@ export default () => {
 		isProfileFresh,
 		fetchPlayer,
 		fetchPlayerOrGetFromCache,
+		fetchPlayerSaver,
 		findPlayer,
 		fetchAccGraph,
 		destroyService,

@@ -1,4 +1,4 @@
-import {formatNumber} from '../../utils/format';
+import {GLOBAL_LEADERBOARD_TYPE, formatNumber} from '../../utils/format';
 
 export const WEIGHT_COEFFICIENT = 0.965;
 
@@ -118,18 +118,24 @@ function Inflate(peepee) {
 	return (650 * Math.pow(peepee, 1.3)) / Math.pow(650, 1.3);
 }
 
-export const buildCurve = (accuracy, passRating, accRating, techRating) => {
+export const buildCurve = (accuracy, passRating, accRating, techRating, golf) => {
 	var passPP = 15.2 * Math.exp(Math.pow(passRating, 1 / 2.62)) - 30;
 	if (!isFinite(passPP) || isNaN(passPP)) {
 		passPP = 0;
 	}
-	var accPP = Curve2(accuracy) * accRating * 34;
+	var accPP = golf ? accuracy * accRating * 42 : Curve2(accuracy) * accRating * 34;
 	var techPP = Math.exp(1.9 * accuracy) * 1.08 * techRating;
 	return Inflate(passPP + accPP + techPP);
 };
 
 export const getPPFromAcc = (acc, passRating, accRating, techRating, mode) => {
-	return mode == 'rhythmgamestandard' ? acc * passRating * 55 : buildCurve(acc, passRating, accRating, techRating);
+	if (GLOBAL_LEADERBOARD_TYPE == 'golf') {
+		return buildCurve(1 - acc, passRating, accRating, techRating, true);
+	} else if (mode == 'rhythmgamestandard') {
+		return acc * passRating * 55;
+	} else {
+		return buildCurve(acc, passRating, accRating, techRating);
+	}
 };
 
 export const AccRatingFromAIAcc = (predictedAcc, passRating, techRating) => {

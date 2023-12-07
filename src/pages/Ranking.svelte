@@ -3,10 +3,10 @@
 	import {fade} from 'svelte/transition';
 	import {
 		createBuildFiltersFromLocation,
-		buildSearchFromFilters,
 		processStringFilter,
 		processStringArrayFilter,
 		processIntArrayFilter,
+		buildSearchFromFiltersWithDefaults,
 	} from '../utils/filters';
 	import ssrConfig from '../ssr-config';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -173,9 +173,9 @@
 		{
 			key: 'score_range',
 			label: 'Scores count',
-			default: [0, 10000],
+			default: [0, 15000],
 			min: 0,
-			max: 10000,
+			max: 15000,
 			step: 1,
 			pipstep: 2000,
 			type: 'slider',
@@ -270,8 +270,8 @@
 		navigateToCurrentPageAndFilters();
 	}
 
-	function changeParams(newPage, newLocation, replace) {
-		currentFilters = buildFiltersFromLocation(newLocation);
+	function changeParams(newPage, newFilters, replace, setUrl = true) {
+		currentFilters = newFilters;
 		if (!currentFilters?.sortBy?.length) {
 			currentFilters.sortBy = 'pp';
 		}
@@ -279,16 +279,28 @@
 		if (isNaN(newPage)) newPage = 1;
 		previousPage = currentPage;
 		currentPage = newPage;
+
+		if (setUrl) {
+			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const url = `/ranking/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+	}
+
+	function navigateToCurrentPageAndFilters(replace) {
+		changeParams(currentPage, currentFilters, replace);
 	}
 
 	function onPageChanged(event) {
 		if (event?.detail?.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/ranking/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-	}
+		currentPage = event.detail.page + 1;
 
-	function navigateToCurrentPageAndFilters(replace) {
-		navigate(`/ranking/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {replace, preserveScroll: true});
+		navigateToCurrentPageAndFilters();
 	}
 
 	function onSortChanged(event) {
@@ -339,7 +351,7 @@
 	}
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
-	$: changeParams(page, location, true);
+	$: changeParams(page, buildFiltersFromLocation(location), false, false);
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 </script>

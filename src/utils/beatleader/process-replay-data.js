@@ -4,7 +4,7 @@ import {NoteCutDirection, NoteLineLayer, NoteScoringType} from './note-constants
 //region AccGraphs
 
 const accGraphResolution = 100;
-const weightedPeriodSeconds = 5.0;
+const smoothPeriodPercentage = 0.02;
 const weightFunctionSteepness = 3.0;
 
 export function processAccGraphs(replay) {
@@ -19,7 +19,7 @@ export function processAccGraphs(replay) {
 	if (!replay?.notes?.length) return result;
 
 	const lastNoteTime = replay.notes[replay.notes.length - 1].eventTime;
-	const distanceWeightFunction = createDistanceWeightFunction(weightedPeriodSeconds, weightFunctionSteepness);
+	const distanceWeightFunction = createDistanceWeightFunction(lastNoteTime * smoothPeriodPercentage, weightFunctionSteepness);
 
 	for (let i = 0.0; i < accGraphResolution; i += 1.0) {
 		const time = lastNoteTime * (i / (accGraphResolution - 1));

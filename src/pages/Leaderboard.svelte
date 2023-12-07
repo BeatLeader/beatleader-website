@@ -33,7 +33,7 @@
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
-	import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters';
+	import {buildSearchFromFiltersWithDefaults, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters';
 	import {flip} from 'svelte/animate';
 	import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score';
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
@@ -63,7 +63,6 @@
 	export let dontNavigate = false;
 	export let withoutDiffSwitcher = false;
 	export let withoutHeader = false;
-	export let dontChangeType = false;
 	export let fixedBrowserTitle = null;
 	export let higlightedScore = null;
 	export let iconsInInfo = false;
@@ -262,7 +261,7 @@
 
 	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
 
-	function changeParams(newLeaderboardId, newType, newPage, currentFilters) {
+	function changeParams(newLeaderboardId, newType, newPage, currentFilters, setUrl, replace) {
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
@@ -272,6 +271,16 @@
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 
+		if (setUrl) {
+			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const url = `/leaderboard/${currentType}/${currentLeaderboardId}/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
 		leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage, {...currentFilters});
 	}
 
@@ -280,20 +289,14 @@
 
 		const newPage = event.detail.page + 1;
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`, {
-				preserveScroll: true,
-			});
-		else changeParams(currentLeaderboardId, currentType, newPage, currentFilters);
+		changeParams(currentLeaderboardId, currentType, newPage, currentFilters, !dontNavigate, false);
 	}
 
 	function onDiffChange(event) {
 		const newLeaderboardId = opt(event, 'detail.leaderboardId');
 		if (!newLeaderboardId) return;
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
+		changeParams(newLeaderboardId, currentType, 1, currentFilters, !dontNavigate, false);
 	}
 
 	function onTypeChanged(event) {
@@ -301,20 +304,15 @@
 		if (!newType) return;
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
-		if (!dontNavigate)
-			navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`, {preserveScroll: true});
-		else if (!dontChangeType) {
-			currentFilters = newFilters;
-			changeParams(currentLeaderboardId, newType, 1, newFilters);
-		}
+
+		currentFilters = newFilters;
+		changeParams(currentLeaderboardId, newType, 1, newFilters, !dontNavigate, true);
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
 
 	function onSelectedGroupEntryChanged(event) {
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, false);
 	}
 
 	function processDiffs(diffArray, song) {
@@ -433,9 +431,7 @@
 			currentFilters.order = 'desc';
 		}
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
 	var complexFilters = [];
@@ -469,9 +465,7 @@
 	function onModifiersChanged(event) {
 		currentFilters.modifiers = event?.detail?.value ?? '';
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
 	function onFiltersChanged(event) {
@@ -480,9 +474,7 @@
 		currentFilters.search = newFilters.search;
 		currentFilters.countries = newFilters.countries;
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
 	let battleRoyaleDraft = false;
@@ -1369,6 +1361,14 @@
 
 		.diff-switch {
 			gap: 0.1em;
+		}
+
+		:global(.player-score .player-performance-badges .with-badge) {
+			min-width: 4em !important;
+		}
+
+		:global(.player-performance-badges) {
+			min-width: 0 !important;
 		}
 	}
 

@@ -6,14 +6,15 @@ import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 const STORE_CONFIG_KEY = 'config';
 
-export const DEFAULT_LOCALE = 'en-US';
-
 export let configStore = null;
 
 const BROWSER_MAGIC_VALUE = '__BROWSER';
+const US_LOCALE = 'en-US';
+
+export const DEFAULT_LOCALE = BROWSER_MAGIC_VALUE;
 
 const locales = {
-	'en-US': {id: 'en-US', name: 'United States'},
+	US_LOCALE: {id: US_LOCALE, name: 'United States'},
 	BROWSER_MAGIC_VALUE: {id: BROWSER_MAGIC_VALUE, name: 'Browser settings'},
 };
 export const getCurrentLocale = () => configStore?.getLocale();
@@ -34,6 +35,7 @@ export const DEFAULT_CONFIG = {
 		bgimage: '/assets/background.jpg',
 		bgColor: 'rgba(29, 7, 34, 0.6284)',
 		headerColor: 'rgba(53, 0, 70, 0.2)',
+		fontNames: 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif',
 		daysToCompare: 1,
 		daysOfHistory: 30,
 		graphHeight: 350,
@@ -47,6 +49,8 @@ export const DEFAULT_CONFIG = {
 		showFiltersOnRanking: true,
 		maps3D: true,
 		mapsViewType: 'maps-cards',
+
+		reebanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -74,6 +78,7 @@ export const DEFAULT_CONFIG = {
 		showAccChart: true,
 		showSliceDetails: false,
 		showAccSpreadChart: false,
+		showPredictedAcc: false,
 		showLeaderboard: true,
 		defaultAccChartIndex: 0,
 	},
@@ -93,6 +98,7 @@ export const DEFAULT_CONFIG = {
 			clans: true,
 			date: true,
 			replay: true,
+			hmd: false,
 		},
 	},
 	rankingPreferences: {
@@ -152,7 +158,7 @@ export const DEFAULT_CONFIG = {
 		friendsMiniRanking: false,
 	},
 	visibleScoreIcons: {
-		pin: false,
+		pin: true,
 		playlist: false,
 		bsr: true,
 		bs: true,
@@ -256,7 +262,7 @@ export default async () => {
 	};
 
 	const getLocale = () =>
-		currentConfig?.locale === BROWSER_MAGIC_VALUE ? navigator.language ?? DEFAULT_LOCALE : currentConfig?.locale ?? DEFAULT_LOCALE;
+		currentConfig?.locale === BROWSER_MAGIC_VALUE ? navigator.language ?? US_LOCALE : currentConfig?.locale ?? US_LOCALE;
 
 	const determineNewSettingsAvailable = dbConfig =>
 		Object.entries(newSettingsAvailableDefinition)

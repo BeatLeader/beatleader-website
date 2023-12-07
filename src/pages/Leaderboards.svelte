@@ -15,7 +15,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import {
 		createBuildFiltersFromLocation,
-		buildSearchFromFilters,
+		buildSearchFromFiltersWithDefaults,
 		processFloatFilter,
 		processStringFilter,
 		processIntFilter,
@@ -31,6 +31,8 @@
 		DifficultyStatus,
 		requirementsMap,
 		modeDescriptions,
+		songStatusesMap,
+		songStatusesDescription,
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
@@ -57,7 +59,7 @@
 
 	const params = [
 		{key: 'search', default: '', process: processStringFilter},
-		{key: 'type', default: '', process: processStringFilter},
+		{key: 'type', default: 'ranked', process: processStringFilter},
 		{key: 'mytype', default: '', process: processStringFilter},
 		{key: 'stars_from', default: undefined, process: processFloatFilter},
 		{key: 'stars_to', default: undefined, process: processFloatFilter},
@@ -75,6 +77,7 @@
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
 		{key: 'mapRequirements', default: null, process: processIntFilter},
+		{key: 'songStatus', default: null, process: processIntFilter},
 		{key: 'allRequirements', default: 0, process: processIntFilter},
 	];
 
@@ -137,6 +140,17 @@
 		};
 	});
 
+	const songStatusOptions = Object.entries(songStatusesMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(songStatusesDescription?.[key]?.name ?? key),
+			icon: `<span class="${songStatusesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: songStatusesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: songStatusesDescription?.[key]?.textColor ?? null,
+			title: songStatusesDescription?.[key]?.title ?? null,
+		};
+	});
+
 	const modeFilterOptions = [
 		{
 			key: null,
@@ -163,8 +177,8 @@
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
 
-	function changePageAndFilters(newPage, newLocation) {
-		currentFilters = buildFiltersFromLocation(newLocation);
+	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
+		currentFilters = newFilters;
 
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
@@ -202,17 +216,30 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		currentPage = newPage;
+
+		if (setUrl) {
+			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const url = `/leaderboards/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
 		leaderboardsStore.fetch(currentPage, {...currentFilters});
+	}
+
+	function navigateToCurrentPageAndFilters(replaceState) {
+		changePageAndFilters(currentPage, currentFilters, replaceState);
 	}
 
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-	}
+		currentPage = event.detail.page + 1;
 
-	function navigateToCurrentPageAndFilters() {
-		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
+		navigateToCurrentPageAndFilters(true);
 	}
 
 	function onSearchChanged(e) {
@@ -222,6 +249,7 @@
 
 		currentFilters.search = search;
 		currentPage = 1;
+
 		navigateToCurrentPageAndFilters();
 	}
 
@@ -272,6 +300,21 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onSongStatusChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = 0;
+
+		if (currentFilters.songStatus & event.detail.key) currentFilters.songStatus &= currentFilters.songStatus ^ event.detail.key;
+		else currentFilters.songStatus |= event.detail.key;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = null;
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onMyTypeChanged(event) {
 		if (!event?.detail) return;
 
@@ -298,8 +341,8 @@
 	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
-		currentFilters[ratingType + '_from'] = event.detail.values[0];
-		currentFilters[ratingType + '_to'] = event.detail.values[1];
+		currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
+		currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
 		starsChanged();
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
@@ -382,7 +425,7 @@
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
-	$: changePageAndFilters(page, location);
+	$: changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
 
 	$: starsKey =
 		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'
@@ -506,6 +549,14 @@
 						on:change={onMyTypeChanged} />
 				</section>
 			{/if}
+
+			<section class="filter">
+				<Switcher
+					values={songStatusOptions}
+					value={songStatusOptions.filter(c => currentFilters.songStatus & c.key)}
+					multi={true}
+					on:change={onSongStatusChanged} />
+			</section>
 
 			<div style="margin-bottom: 0.1em">
 				<Select

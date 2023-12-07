@@ -1,10 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&display=swap');
-
-* {
-    font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
-}
 
 body {
     padding: 0;
@@ -21,6 +15,11 @@ body {
 :root {
     --ppColour: rgb(226, 183, 255) !important;
     --row-separator: #00000059 !important;
+    --font-names: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
+}
+
+* {
+    font-family: var(--font-names)
 }
 
 // Navigator
@@ -359,4 +358,8 @@ select {
 
 .cinematics {
     display: none;
+}
+
+.desktop-and-up .logo {
+    margin-top: -0.25em !important;
 }

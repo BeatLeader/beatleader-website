@@ -129,7 +129,7 @@
 
 		<Button cls="voteButton" disabled={true} iconFa="fas fa-lock" title="New map nominations were temporarely disabled" noMargin={true} />
 	{/if} -->
-	<!-- {#if isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
+	{#if isRanked && isRT && (!reweight || reweight.rtMember == $account?.id || reweight.finished || !isjuniorRT)}
 		<Button
 			cls="voteButton"
 			iconFa="fa fa-scale-balanced"
@@ -138,7 +138,7 @@
 			on:click={() => {
 				rankUpdate = !rankUpdate;
 			}} />
-	{/if} -->
+	{/if}
 	{#if isRT && (leaderboard?.stats?.status === DifficultyStatus.nominated || (!isjuniorRT && isQualified))}
 		<Button
 			cls="voteButton"

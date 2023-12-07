@@ -1,6 +1,15 @@
 import {getCurrentLocale} from '../stores/config';
 
+const lcount = window.location.host.includes('localhost') ? 1 : 2;
+export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? (location.host.split('.')[0] == 'www' ? 'general' : location.host.split('.')[0]) : 'general';
+
+export function setLeaderboardType(newType) {
+	GLOBAL_LEADERBOARD_TYPE = newType;
+}
+
 export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery = false, process = v => v) => {
+	vars.leaderboardContext = GLOBAL_LEADERBOARD_TYPE;
+
 	let replaced = Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), process(vars[key] ?? '')), url);
 
 	if (clearUnused) replaced = replaced.replace(new RegExp('\\${.*?}', 'gi'), '');

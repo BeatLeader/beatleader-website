@@ -25,11 +25,11 @@ export function extractDiffAndType(ssDiff) {
 }
 
 export function getIconNameForDiff(diffInfo) {
-	return modeDescriptions[diffInfo.type]?.icon ?? 'standard-icon';
+	return modeDescriptions[diffInfo.type]?.icon ?? 'fas fa-circle-question';
 }
 
 export function getDescriptionForDiff(diffInfo) {
-	return modeDescriptions[diffInfo.type]?.title ?? 'Standard';
+	return modeDescriptions[diffInfo.type]?.title ?? 'Unknown';
 }
 
 export const HMDs = {
@@ -38,6 +38,12 @@ export const HMDs = {
 		icon: 'oculus.svg',
 		color: 'invert(49%) sepia(26%) saturate(5619%) hue-rotate(146deg) brightness(93%) contrast(86%)',
 		priority: 1,
+	},
+	512: {
+		name: 'Quest 3',
+		icon: 'meta.svg',
+		color: 'invert(49%) sepia(26%) saturate(5619%) hue-rotate(260deg) brightness(93%) contrast(86%)',
+		priority: 2,
 	},
 	64: {
 		name: 'Valve Index',
@@ -183,6 +189,25 @@ export const HMDs = {
 		color: '',
 		priority: 24,
 	},
+	66: {
+		name: 'Bigscreen Beyond',
+		icon: 'bigscreen.svg',
+		color: '',
+		priority: 24,
+	},
+	67: {
+		name: 'NOLO Sonic',
+		icon: 'nolo.png',
+		color: '',
+		priority: 24,
+	},
+	68: {
+		name: 'Hypereal',
+		icon: 'hypereal.jpg',
+		color: '',
+		priority: 24,
+	},
+
 	48: {
 		name: 'Arpara',
 		icon: 'arpara.png',
@@ -221,6 +246,12 @@ export const HMDs = {
 	},
 	53: {
 		name: 'Varjo',
+		icon: 'varjo.svg',
+		color: '',
+		priority: 14,
+	},
+	69: {
+		name: 'Varjo Aero',
 		icon: 'varjo.svg',
 		color: '',
 		priority: 14,
@@ -286,6 +317,8 @@ export function getControllerForEnum(controller) {
 			return 'Oculus Touch controllers';
 		case 16:
 			return 'Oculus Touch 2 controllers';
+		case 79:
+			return 'Meta Quest 3 controllers';
 		case 256:
 			return 'Quest 2 controllers';
 		case 2:
@@ -328,6 +361,8 @@ export function getControllerForEnum(controller) {
 			return 'Joy-Con';
 		case 77:
 			return 'Steam Deck';
+		case 78:
+			return 'Etee';
 	}
 
 	return '';
@@ -364,8 +399,14 @@ export function describePlatform(platform) {
 }
 
 export const modeDescriptions = {
+	GhostStandard: {
+		title: 'Spooky!',
+		icon: 'fas fa-ghost',
+		color: 'purple',
+		textColor: 'white',
+	},
 	Standard: {
-		name: 'Standard',
+		title: 'Standard',
 		icon: 'standard-icon',
 		color: 'purple',
 		textColor: 'white',
@@ -403,6 +444,12 @@ export const modeDescriptions = {
 	Lawless: {
 		title: 'Lawless',
 		icon: 'lawless-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Legacy: {
+		title: 'Legacy',
+		icon: 'legacy-icon',
 		color: 'purple',
 		textColor: 'white',
 	},
@@ -583,6 +630,18 @@ export const ModifiersList = [
 	},
 ];
 
+export function modifiersToSpeed(modifiers) {
+	if (!modifiers) return 1;
+	if (modifiers.includes('SF')) {
+		return 1.5;
+	} else if (modifiers.includes('FS')) {
+		return 1.2;
+	} else if (modifiers.includes('SS')) {
+		return 0.85;
+	}
+	return 1;
+}
+
 export function userDescriptionForModifier(modifier) {
 	return ModifiersList.find(m => m.id == modifier)?.name ?? 'Unknown modifier';
 }
@@ -673,6 +732,7 @@ export const requirementsMap = {
 	mappingExtensions: 1 << 3,
 	cinema: 1 << 4,
 	V3: 1 << 5,
+	optionalProperties: 1 << 6,
 };
 
 export const requirementsDescription = {
@@ -711,12 +771,50 @@ export const requirementsDescription = {
 		color: 'purple',
 		textColor: 'white',
 	},
+	optionalProperties: {
+		title: 'v3.3 Map with optional properties for elements. May not work on Quest',
+		name: 'Optional Properties',
+		icon: 'fas fa-file',
+		color: 'grey',
+		textColor: 'white',
+	},
 };
 
 export function mapRequirementsListFromMask(type) {
 	return Object.keys(requirementsMap)
 		.filter(key => requirementsMap[key] & type)
 		.map(key => requirementsDescription[key])
+		.filter(d => d);
+}
+
+export const songStatusesMap = {
+	curated: 1 << 1,
+	mapOfTheWeek: 1 << 2,
+};
+
+export const songStatusesDescription = {
+	curated: {
+		title: 'Map was curated DATE by BeastSaber team!',
+		name: 'Curated',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/beastsabericon.png',
+		color: '#00bc8c',
+		textColor: 'white',
+	},
+	mapOfTheWeek: {
+		title: 'BeastSaber Map Of The Week DATE',
+		name: 'Map Of The Week',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/beastsabericon.png',
+		color: '#454088',
+		textColor: 'white',
+	},
+};
+
+export function songStatusesListFromMask(type) {
+	return Object.keys(songStatusesMap)
+		.filter(key => songStatusesMap[key] & type)
+		.map(key => songStatusesDescription[key])
 		.filter(d => d);
 }
 
@@ -845,9 +943,9 @@ export function describeGraphAxis(axis) {
 		case 'y5':
 			return 'Ranked scores';
 		case 'y6':
-			return 'Ranked improved';
-		case 'y7':
 			return 'Unranked scores';
+		case 'y7':
+			return 'Ranked improved';
 		case 'y8':
 			return 'Unranked improved';
 	}

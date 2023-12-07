@@ -21,6 +21,7 @@
 	let password;
 
 	let showBeatSaverLogin = false;
+	let showOtherVersions = false;
 
 	$: loggedInPlayer = opt($account, 'id');
 	$: error = opt($account, 'error');
@@ -74,7 +75,7 @@
 							<Button icon={steamSvg} label="Log In with Steam" type="green" />
 						</form>
 						<br />
-						<span>Quest Log In (no ReeSabers)</span>
+						<span>or Log In with BL account from the Quest mod</span>
 						<div class="input-container">
 							<div class="cat">Login</div>
 							<input bind:value={login} placeholder="Login" />
@@ -85,6 +86,7 @@
 						</div>
 
 						<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
+						<a href="https://discord.com/channels/921820046345523311/951919251227295844">forgot password?</a>
 
 						<div class="sorting-options">
 							<span
@@ -171,43 +173,72 @@
 				<li>A ton of customizations to make your game stand out not only for you, but for your recordings as well</li>
 				<li>Built-in motion blur for the smoothest sabers you have ever experienced</li>
 			</ul>
-			<span style="color: red">ONLY FOR PC BEAT SABER</span>
 
 			{#if action == 'linkPatreon' || isSupporter}
-				<div class="benefit-button-container">
-					<Button
-						iconFa="fas fa-download"
-						title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
-							? 'Log in on the top of the Page with Steam and Link Patreon'
-							: 'Download Reesabers for 1.31'}
-						label="Download for 1.31"
-						url={BL_API_URL + 'reesabers'}
-						onlyurl={true}
-						disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
-						type="green" />
-					<Button
-						iconFa="fas fa-download"
-						title={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000
-							? 'Log in on the top of the Page with Steam and Link Patreon'
-							: 'Download Reesabers for 1.27-1.29'}
-						label="Download for 1.27-1.29"
-						url={BL_API_URL + 'reesaberslegacy'}
-						onlyurl={true}
-						disabled={!loggedInPlayer || !isSupporter || loggedInPlayer < 1000000000000000}
-						type="green" />
-				</div>
 				{#if isSupporter && loggedInPlayer < 1000000000000000}
 					<div class="benefit-button-container">
-						<span>Sorry but account you linked can't be used in the PC game.<br /></span>
-						<span>Feel free to ask help on Discord.<br /></span>
 						<Button
-							iconFa="fas fa-tower-cell"
-							title="Contact on Discord"
-							label="Ask devs!"
-							url={'https://discord.com/channels/921820046345523311/951919251227295844'}
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
+							label="Download for Quest 1.28"
+							url={BL_API_URL + 'questreesabers'}
 							onlyurl={true}
-							type="blurple" />
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
 					</div>
+				{:else}
+					<div class="benefit-button-container">
+						<Button
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.34'}
+							label="Download for PC 1.34"
+							url={BL_API_URL + 'reesaberscurrent'}
+							onlyurl={true}
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
+						<Button
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter
+								? 'Log in on the top of the Page and Link Patreon'
+								: 'Download PC Reesabers for 1.27-1.29'}
+							label="Download for PC 1.27-1.29"
+							url={BL_API_URL + 'reesaberslegacy'}
+							onlyurl={true}
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
+						<Button
+							iconFa="fas fa-download"
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
+							label="Download for Quest 1.28"
+							url={BL_API_URL + 'questreesabers'}
+							onlyurl={true}
+							disabled={!loggedInPlayer || !isSupporter}
+							type="green" />
+					</div>
+
+					{#if loggedInPlayer && isSupporter}
+						<div class="versions-list">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showOtherVersions}
+								on:click={() => (showOtherVersions = !showOtherVersions)}
+								on:keydown={() => (showOtherVersions = !showOtherVersions)}
+								title="Show ReeSabers downloads for other versions">
+								{#if showOtherVersions}
+									Hide versions
+								{:else}
+									Other versions
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+
+							{#if showOtherVersions}
+								<a href={BL_API_URL + 'reesabersversion?version=1.33.0'}> Version for 1.33.0</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.31.0'}> Version for 1.31.0</a>
+							{/if}
+						</div>
+					{/if}
 				{/if}
 			{/if}
 		</ContentBox>
@@ -309,6 +340,11 @@
 	.benefits-gif {
 		max-width: 36em;
 		padding: 1em;
+	}
+	.versions-list {
+		display: flex;
+		flex-direction: column;
+		align-self: flex-start;
 	}
 	:global(.benefits-box) {
 		width: 60%;

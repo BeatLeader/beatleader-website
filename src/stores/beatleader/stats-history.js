@@ -1,9 +1,8 @@
 import {writable} from 'svelte/store';
 import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 import {toBlMidnight} from '../../utils/date';
-import {fetchJson} from '../../network/fetch';
-import {getResponseBody} from '../../network/queues/queues';
 import makePendingPromisePool from '../../utils/pending-promises';
+import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 
 let store = null;
 let storeSubCount = 0;
@@ -23,7 +22,7 @@ export default () => {
 		if (!playerData) return;
 
 		return resolvePromiseOrWaitForPending(`player/${playerData.playerId}/history/${count}`, () =>
-			fetch(BL_API_URL + `player/${playerData.playerId}/history?count=${count}`)
+			fetch(BL_API_URL + `player/${playerData.playerId}/history?count=${count}&leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
 				.then(response => response.json())
 				.then(data => {
 					var processedStatsHistory = {};

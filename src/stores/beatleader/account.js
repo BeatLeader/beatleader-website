@@ -30,15 +30,6 @@ export default (refreshOnCreate = true) => {
 		}
 
 		set(account);
-
-		fetch(BL_API_URL + 'user/playlists', {
-			credentials: 'include',
-		})
-			.then(response => response.json())
-			.then(playlists => {
-				account.playlists = playlists;
-				set(account);
-			});
 	};
 
 	if (refreshOnCreate) refresh();

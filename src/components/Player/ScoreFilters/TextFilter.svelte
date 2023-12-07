@@ -22,13 +22,11 @@
 
 	function onKeyUp(e) {
 		const value = e?.target?.value ?? null;
-		if (!value?.length) return;
 
 		if (e.key === 'Enter') {
 			e.preventDefault();
-
-			dispatch('change', value);
 		}
+		dispatch('change', value);
 	}
 
 	$: if (open && filterEl) filterEl.focus();

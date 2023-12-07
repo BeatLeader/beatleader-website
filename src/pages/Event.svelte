@@ -244,6 +244,24 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 38}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span>
+					<b>Bats? Ghosts? Pumpkins? It's Halloween again? 😱 </b><br />
+					Have you ever competed with Ghost Notes modifier? It's time to try! We picked several maps from the awesome
+					<a href="https://bsaber.com/scaretastic-pack/" target="_blank" rel="noreferrer">Scaretastic Pack</a>
+					and from the <a href="https://beatsaver.com/playlists/203171">BSMG Halloween contest</a>. <br /><br />
+					<b>Try your best with Ghost Notes on separate leaderboards to receive merch from BSMG store as a prize for top 5!.</b> <br />
+					Skill issue? Don't worry, you can buy it yourself <a href="https://bsmgstore.com/" target="_blank" rel="noreferrer">here</a>
+					<br />
+					Huge thanks to modders and mappers who always provide us with festive content 🙏 <br /><br />
+				</span>
+				<span>
+					<br />
+					<b>Have a scary weekend and holiday, many sweets and fun!</b>
+				</span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}

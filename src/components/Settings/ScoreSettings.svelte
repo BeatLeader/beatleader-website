@@ -70,6 +70,7 @@
 					showAccChart: false,
 					showSliceDetails: false,
 					showAccSpreadChart: false,
+					showPredictedAcc: false,
 					showLeaderboard: true,
 					defaultAccChartIndex: 0,
 				},
@@ -129,6 +130,7 @@
 					showAccChart: true,
 					showSliceDetails: true,
 					showAccSpreadChart: true,
+					showPredictedAcc: false,
 					showLeaderboard: true,
 					defaultAccChartIndex: 1,
 				},
@@ -211,6 +213,7 @@
 		showAccChart: 'Acc chart',
 		showSliceDetails: 'Slice details',
 		showAccSpreadChart: 'Acc spread chart',
+		showPredictedAcc: 'Predicted acc',
 		showLeaderboard: 'Map leaderboard',
 	};
 

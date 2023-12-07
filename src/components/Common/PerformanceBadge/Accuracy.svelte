@@ -87,7 +87,11 @@
 		class="mods"
 		slot="additional"
 		title={$isDemo ? 'Click to setup' : showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
-		>{#if showMods && mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
+		>{#if showMods && mods && mods.length}
+			{#each mods as mod}
+				<span>{mod}</span>
+			{/each}
+		{/if}</small>
 </Badge>
 
 <style>
@@ -98,11 +102,12 @@
 	}
 
 	.mods {
-		max-width: 1.5em;
-		max-height: 2em;
+		max-width: 2.5em;
 		line-height: 1;
-		white-space: normal !important;
-		overflow: hidden;
+		flex-wrap: wrap;
+		gap: 0.3em;
+		display: flex;
+		justify-content: center;
 	}
 
 	.mods:empty {

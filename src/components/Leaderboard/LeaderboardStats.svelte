@@ -1,28 +1,10 @@
 <script>
-	import {fade, fly} from 'svelte/transition';
 	import Value from '../Common/Value.svelte';
 	import Duration from '../Song/Duration.svelte';
-	import createBeatSaverService from '../../services/beatmaps';
 
 	export let leaderboard;
 
-	let diff;
-	let beatSaverService;
-
-	async function findDiff(leaderboard) {
-		if (leaderboard?.beatMaps) {
-			diff = leaderboard?.beatMaps?.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase());
-		} else if (leaderboard?.song) {
-			if (!beatSaverService) {
-				beatSaverService = createBeatSaverService();
-			}
-
-			const songInfoValue = await beatSaverService.byHash(leaderboard.song.hash);
-			diff = songInfoValue.versions[0].diffs.find(el => el.difficulty.toLowerCase() === leaderboard.diffInfo.diff.toLowerCase());
-		}
-	}
-
-	$: findDiff(leaderboard);
+	$: diff = leaderboard?.difficultyBl;
 </script>
 
 {#if diff}
@@ -91,11 +73,11 @@
 				</div>
 			{/if}
 
-			{#if diff.obstacles}
+			{#if diff.walls}
 				<div>
 					<i class="fas fa-skull" /> Obstacles:
 					<strong>
-						<Value value={diff.obstacles} digits={0} zero="0" />
+						<Value value={diff.walls} digits={0} zero="0" />
 					</strong>
 				</div>
 			{/if}

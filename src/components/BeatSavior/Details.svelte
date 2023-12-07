@@ -13,6 +13,7 @@
 	export let showGrid = true;
 	export let replayAccGraphs = null;
 	export let underswingsData = null;
+	export let notes;
 
 	let graphPageIndex = $configStore?.scoreDetailsPreferences?.defaultAccChartIndex ?? 1;
 
@@ -59,7 +60,7 @@
 				{#if graphPageIndex === 0 || !replayAccGraphs}
 					<Chart {beatSavior} />
 				{:else}
-					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} {beatSavior} />
+					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} {beatSavior} {notes} />
 				{/if}
 				{#if replayAccGraphs}
 					<CompactPagination pageIndex={graphPageIndex} pagesCount={2} on:change={onGraphPaginationChange} />

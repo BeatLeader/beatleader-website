@@ -32,7 +32,7 @@
 	import EventsPage from './pages/Events.svelte';
 	import Socket from './pages/Socket.svelte';
 	import Settings from './pages/Settings.svelte';
-	import {setGlobalCSSValue} from './utils/color';
+	import {importFonts, setGlobalCSSValue} from './utils/color';
 	import ContentBox from './components/Common/ContentBox.svelte';
 	import PlaylistCart from './components/Playlists/PlaylistCart.svelte';
 	import Search from './components/Search/Search.svelte';
@@ -40,6 +40,8 @@
 	import CensusPage from './pages/Census.svelte';
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
+	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
+	import produce from 'immer';
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 
@@ -106,11 +108,33 @@
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
+		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
+
+		if ($configStore.preferences.theme == 'mirror') {
+			importFonts($configStore.preferences.fontNames);
+		}
 	}
 </script>
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
+{#if $configStore.preferences.reebanner}
+	<div class="reebanner">
+		<a class="reelink" href="https://www.patreon.com/posts/reesabers-on-92302764" />
+		<div class="banner-spacer" />
+		<img class="reesaber-red" src="/assets/reesaber-red.png" />
+		<span class="link-text">ReeSabers are finally on QUEST!</span>
+		<img class="reesaber-blue" src="/assets/reesaber-blue.png" />
+		<button
+			class="close-banner"
+			title="Hide banner"
+			on:click|preventDefault|stopPropagation={() => {
+				$configStore = produce($configStore, draft => {
+					draft.preferences.reebanner = false;
+				});
+			}}><i class="fas fa-xmark" /></button>
+	</div>
+{/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000}>
@@ -150,7 +174,6 @@
 							type={params.type}
 							page={params.page}
 							{location}
-							dontChangeType={false}
 							showCurve={true}
 							separatePage={true} />
 					</Route>
@@ -160,7 +183,6 @@
 							type={params.type}
 							page={params.page}
 							{location}
-							dontChangeType={false}
 							showCurve={true}
 							separatePage={true}
 							showApproveRequest={true} />
@@ -204,6 +226,9 @@
 					<Route path="/signin/oauth2" let:location>
 						<OauthSignInPage {location} />
 					</Route>
+					<Route path="/developer" let:params let:location>
+						<DeveloperPortalPage {location} />
+					</Route>
 					<Route path="/*" component={NotFoundPage} />
 				</div>
 			</main>
@@ -225,7 +250,7 @@
 		<p>
 			<a href="/about" on:click|preventDefault={() => navigate('/about')}>About</a>
 			|
-			<a href="https://api.beatleader.xyz/swagger/index.html">API</a>
+			<a href="/developer">Developer Portal</a>
 			|
 			<a href="https://beatleader.wiki/">Wiki</a>
 			|
@@ -247,6 +272,65 @@
 </footer>
 
 <style>
+	.reebanner {
+		background-color: black;
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	.reelink {
+		position: absolute;
+		width: 100%;
+		height: 3em;
+		z-index: 102;
+		pointer-events: auto;
+	}
+
+	.link-text {
+		z-index: 101;
+		font-weight: 800;
+		color: cornflowerblue;
+	}
+
+	.banner-spacer {
+		width: 3em;
+	}
+
+	.close-banner {
+		border: none;
+		color: white;
+		background-color: transparent;
+		cursor: pointer;
+		width: 3em;
+		z-index: 104;
+		pointer-events: auto;
+	}
+
+	.reesaber-red {
+		height: 8em;
+		position: absolute;
+		right: 65%;
+		top: -1.1em;
+		z-index: 100;
+	}
+	.reesaber-blue {
+		height: 8em;
+		position: absolute;
+		left: 65%;
+		top: -1.1em;
+		z-index: 100;
+	}
+
 	:global(.notifications) {
 		position: fixed;
 		z-index: 10000;
@@ -276,6 +360,20 @@
 	@media (max-width: 600px) {
 		main {
 			margin-top: 0;
+		}
+
+		.reesaber-red {
+			right: 5%;
+			top: -1.9em;
+		}
+
+		.reesaber-blue {
+			display: none;
+		}
+		.link-text {
+			color: white;
+			text-shadow: 3px 3px black;
+			margin-bottom: 0.2em;
 		}
 	}
 
@@ -307,7 +405,6 @@
 		left: 0;
 		min-width: 5rem;
 		max-width: 10rem;
-		max-height: 5rem;
 		overflow: hidden;
 		display: none;
 		background-color: lightyellow;

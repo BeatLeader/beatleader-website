@@ -3,6 +3,7 @@
 
 	export let player;
 	export let overlaySuffix = 'small';
+	export let title = null;
 
 	$: avatar = player?.playerInfo?.avatar;
 	$: profileSettings = player?.profileSettings;
@@ -14,7 +15,7 @@
 </script>
 
 {#if avatar}
-	<figure class="image is-24x24" on:click>
+	<figure class="image is-24x24" {title} on:click>
 		<img src={avatar} alt="" />
 		{#if overlayUrl}
 			<img
