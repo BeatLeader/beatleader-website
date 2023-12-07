@@ -464,6 +464,9 @@
 	.stat .other-stats {
 		width: max-content;
 		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-width: 100%;
 		padding-right: 0.5em;
 		line-height: 1.3em !important;
 		font-size: 120%;
