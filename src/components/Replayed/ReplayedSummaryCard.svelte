@@ -18,7 +18,6 @@
 	export let nextAction;
 	export let summaryType;
 	export let colorStartIndex = 0;
-	export let playerId = null;
 
 	let revealed = false;
 	let dominantColor = 'rgb(92, 120, 133)';
@@ -60,7 +59,7 @@
 	async function takeScreenshot() {
 		try {
 			screenshoting = true;
-			const blob = await fetch(`/replayed${(summaryType === "mapper" ? "/mapper" : "")}${(playerId ? "/" + playerId : "")}?color=${colorStartIndex}`).then(response => response.blob());
+			const blob = await fetch(`/replayed${(summaryType === "mapper" ? "/mapper" : "")}?color=${colorStartIndex}`).then(response => response.blob());
 			try {
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 				successToast('Screenshot Copied to Clipboard');
