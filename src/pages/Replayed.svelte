@@ -7,12 +7,16 @@
 	import { fetchJson } from '../network/fetch';
 	import { BL_API_URL } from '../network/queues/beatleader/api-queue';
 	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
+  import createAccountStore from '../stores/beatleader/account';
 
   export let replayedType = 'player';
   export let playerId = null;
 
+  const account = createAccountStore();
+
 	let cards;
   let replayedNotAvailable = false;
+  let loggedInPlayer;
 
   function fetchReplayed() {
 		fetchJson(BL_API_URL + 'replayed' + (playerId ? `?playerId=${playerId}` : ''), {
@@ -341,6 +345,7 @@
 
 
   $: fetchReplayed();
+  $: loggedInPlayer = $account?.id;
 </script>
 
 <svelte:head>
@@ -358,9 +363,13 @@
           <h2>
             Replayed not available
           </h2>
-          {#if replayedType === 'player'}
+          {#if !loggedInPlayer}
             <h3>
-              You need to play at least 1 song to get your 2023 replayed
+              You need to be logged in to see your 2023 replayed
+            </h3>
+          {:else if replayedType === 'player'}
+            <h3>
+              You need to play at least 1 map to get your 2023 replayed
             </h3>
           {:else if replayedType === 'mapper'}
             <h3>
