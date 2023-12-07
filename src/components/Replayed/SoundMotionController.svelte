@@ -1,4 +1,5 @@
 <script>
+	import { audio } from "suneditor/src/plugins";
 	import { cubicOut, linear } from "svelte/easing";
 	import { tweened } from "svelte/motion";
 	import { fade, fly } from "svelte/transition";
@@ -14,6 +15,14 @@
 		duration: 3000,
 		easing: linear
 	});
+
+  const audioPlayerVolume = tweened(0, {
+    duration: 500,
+    easing: linear
+  });
+
+  const audioPlayer = new Audio();
+  audioPlayer.addEventListener("loadeddata", playAudio);
 
   function toggleAutoplay() {
     autoplayEnabled = !autoplayEnabled;
@@ -59,11 +68,33 @@
   }
 
   function startSong(event) {
-    console.log("startSong", event.detail.previewLink);
+    if (event?.detail?.previewLink && soundEnabled) {
+      audioPlayer.src = event.detail.previewLink;
+    }
   }
 
-  function stopSong(event) {
-    console.log("stopSong");
+  function playAudio() {
+    audioPlayerVolume.set(0, {
+      duration: 0
+    });
+    audioPlayer.play();
+    audioPlayerVolume.set(0.25, {
+      duration: 2500
+    });
+    setTimeout(() => {
+      audioPlayerVolume.set(0, {
+        duration: 1500
+      });
+    }, 8500);
+  }
+
+  function stopSong() {
+    audioPlayerVolume.set(0, {
+      duration: 500
+    });
+    setTimeout(() => {
+      audioPlayer.pause();
+    }, 500);
   }
 
   function cardWasRevealed() {
@@ -78,7 +109,8 @@
     });
   }
 
-
+  $: audioPlayer.volume = $audioPlayerVolume;
+  $: soundEnabled ? null : stopSong();
 </script>
 
 <svelte:window on:startAutoRevealCount={startAutoRevealCount} on:startSong={startSong} on:stopsong={stopSong} on:cardWasRevealed={cardWasRevealed}
