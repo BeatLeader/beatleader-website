@@ -126,7 +126,7 @@
 <div class="grid-item" class:active>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
-			<div class="cinematics-canvas" class:active={false}>
+			<div class="cinematics-canvas" class:active={true}>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 			</div>
 		</div>
@@ -504,6 +504,7 @@
 		flex-direction: column;
 		border-radius: 12px;
 		cursor: pointer;
+		/*box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.75);*/
 	}
 
 	.background-container {
