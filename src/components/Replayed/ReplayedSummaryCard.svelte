@@ -81,11 +81,11 @@
 			new CustomEvent('startSong', {
 				detail: {
 					previewLinks: [
-						stats.topMaps[0].previewLink,
-						stats.topMaps[1].previewLink,
-						stats.topMaps[2].previewLink,
-						stats.topMaps[3].previewLink,
-						stats.topMaps[4].previewLink,
+						stats?.topMaps[0]?.previewLink,
+						stats?.topMaps[1]?.previewLink,
+						stats?.topMaps[2]?.previewLink,
+						stats?.topMaps[3]?.previewLink,
+						stats?.topMaps[4]?.previewLink,
 					],
 				},
 				bubbles: true,

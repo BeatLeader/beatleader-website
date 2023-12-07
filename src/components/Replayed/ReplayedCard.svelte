@@ -120,7 +120,7 @@
 			new CustomEvent('startSong', {
 				detail: {
 					previewLinks: [
-						stats?.entries[0].previewLink
+						stats?.entries[0]?.previewLink
 					],
 				},
 				bubbles: true,
@@ -139,10 +139,10 @@
 			new CustomEvent('cardWasRevealed', {
 				detail: {
 					previewLinks: [
-						stats?.entries[1].previewLink,
-						stats?.entries[2].previewLink,
-						stats?.entries[3].previewLink,
-						stats?.entries[4].previewLink,
+						stats?.entries[1]?.previewLink,
+						stats?.entries[2]?.previewLink,
+						stats?.entries[3]?.previewLink,
+						stats?.entries[4]?.previewLink,
 					],
 				},
 				bubbles: true,
