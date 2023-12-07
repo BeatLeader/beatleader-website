@@ -57,10 +57,10 @@
         props: {
           title: 'Your top mappers %',
           subText: 'You were one of the top players for this mapper',
-          contentSubText: 'You were one of the top players for these 3 mappers',
+          contentSubText: 'You were one of the top players for these 5 mappers',
           stats: {
             type: 'playerList',
-            entries: data.topMappersPercentage.slice(0, 3),
+            entries: data.topMappersPercentage.slice(0, 5),
           },
         },
       },
