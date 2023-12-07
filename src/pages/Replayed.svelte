@@ -9,7 +9,7 @@
 	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
 
   export let replayedType = 'player';
-  export let playerId = "76561198051924392";
+  export let playerId = "76561198042474317";
 
 	let cards;
 
@@ -80,7 +80,7 @@
         props: {
           title: 'Your most failed',
           subText: 'This map made you struggle the most',
-          contentSubText: 'These are the top 5 maps you failed the most times',
+          contentSubText: 'These are the top 5 maps you failed the most',
           stats: {
             type: 'mapList',
             entries: data.topFailed.slice(0, 5),
@@ -135,7 +135,7 @@
               },
               {
                 name: 'Event participation',
-                value: `${data.eventsParticipation.count} events (avg rank: ${data.eventsParticipation.averageRank.toFixed(0)})`,
+                value: (data?.eventsParticipation === null ? null : `${data?.eventsParticipation?.count} events (avg rank: ${data?.eventsParticipation?.averageRank?.toFixed(0)})`),
               },
               {
                 name: 'Minutes played',
@@ -158,6 +158,8 @@
         },
       },
     )
+
+    _cards[_cards.length - 1].props.stats.entries = _cards[_cards.length - 1].props.stats.entries.filter(e => e.value != null && e.value != undefined);
 
     _cards.push(
       {
