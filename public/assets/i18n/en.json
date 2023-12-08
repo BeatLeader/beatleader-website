@@ -1,0 +1,1974 @@
+{
+    "reesabers-are-finally-on-quest-:f": {
+        "origin": "ReeSabers are finally on QUEST!",
+        "translated": null
+    },
+    "build-:f": {
+        "origin": "Build: ",
+        "translated": null
+    },
+    "-:f": {
+        "origin": " =",
+        "translated": null
+    },
+    "about:f": {
+        "origin": "About",
+        "translated": null
+    },
+    "developer-portal:f": {
+        "origin": "Developer Portal",
+        "translated": null
+    },
+    "wiki:f": {
+        "origin": "Wiki",
+        "translated": null
+    },
+    "source:f": {
+        "origin": "Source",
+        "translated": null
+    },
+    "privacy-policy:f": {
+        "origin": "Privacy policy",
+        "translated": null
+    },
+    "help:f": {
+        "origin": "Help",
+        "translated": null
+    },
+    "scores-feed:f": {
+        "origin": "Scores feed",
+        "translated": null
+    },
+    "twitter:f": {
+        "origin": "Twitter",
+        "translated": null
+    },
+    "discord:f": {
+        "origin": "Discord",
+        "translated": null
+    },
+    "patreon:f": {
+        "origin": "Patreon",
+        "translated": null
+    },
+    "you-will-kick:f": {
+        "origin": "You will kick ",
+        "translated": null
+    },
+    "out-of-the-clan-:f": {
+        "origin": " out of the clan...",
+        "translated": null
+    },
+    "ranking:f": {
+        "origin": "\r\n\r\n\t\tRanking\r\n\t",
+        "translated": null
+    },
+    "have-you-ever-wondered-how-beat-saber-would-feel-with-timing-based-scoring-instead-of-accuracy-based:l16": {
+        "origin": "\r\n\t\t\t\t\tHave you ever wondered how Beat Saber would feel with timing based scoring instead of accuracy based? Wonder no more!",
+        "translated": null
+    },
+    "limited-time-offer-from-beatleader-install-the-mods-and-play-custom-mode-to-try-our-attempt-at-reima:l16": {
+        "origin": "\r\n\t\t\t\t\tLimited time offer from BeatLeader. Install the mods and play custom mode to try our attempt at reimagining the game.",
+        "translated": null
+    },
+    "no-preswing-postswing-or-accuracy-only-you-and-cubes-:f": {
+        "origin": "\r\n\t\t\t\t\tNo preswing, postswing or accuracy, only you and cubes. ",
+        "translated": null
+    },
+    "event-consists-of-10-christmas-themed-songs-and-10-most-voted-ranked-maps-:f": {
+        "origin": "\r\n\t\t\t\t\tEvent consists of 10 Christmas themed songs and 10 most voted ranked maps.",
+        "translated": null
+    },
+    "thank-you-mappers-and-ranking-team-for-the-productive-year:f": {
+        "origin": "\r\n\t\t\t\t\tThank you mappers and ranking team for the productive year",
+        "translated": null
+    },
+    "happy-holidays-and-have-fun-:f": {
+        "origin": "Happy holidays and have fun!",
+        "translated": null
+    },
+    "score-recycling-initiative:f": {
+        "origin": "Score Recycling Initiative",
+        "translated": null
+    },
+    "players-were-improving-their-scores-to-cut-down-wasted-space-and-make-pp-growth-sustainable:f": {
+        "origin": "\r\n\t\t\t\t\tPlayers were improving their scores to cut down wasted space and make PP growth sustainable",
+        "translated": null
+    },
+    "beat-saber-turned-5-happy-birthday-and-thank-you-for-megaton-of-dopamine-generated-:f": {
+        "origin": "Beat Saber turned 5! Happy Birthday and thank you for megaton of Dopamine generated!",
+        "translated": null
+    },
+    "check-out-and-compete-on-maps-made-by-awesome-mappers-for:f": {
+        "origin": "\r\n\t\t\t\t\tCheck out and compete on maps made by awesome mappers for\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "-2018-throwback-:f": {
+        "origin": "[2018 THROWBACK]",
+        "translated": null
+    },
+    "and:f": {
+        "origin": "\r\n\t\t\t\t\tand ",
+        "translated": null
+    },
+    "bsmg-anniversary:f": {
+        "origin": "BSMG anniversary",
+        "translated": null
+    },
+    "top-5-will-receive-merch-from-bsmg-store-as-a-prize-:f": {
+        "origin": "\r\n\t\t\t\t\tTop 5 will receive merch from BSMG store as a prize!. ",
+        "translated": null
+    },
+    "skill-issue-don-t-worry-you-can-buy-it-yourself:f": {
+        "origin": "\r\n\t\t\t\t\tSkill issue? Don't worry, you can buy it yourself ",
+        "translated": null
+    },
+    "here:f": {
+        "origin": "here",
+        "translated": null
+    },
+    "support-modders-who-are-providing-you-with-an-exceptional-experience-for-5-years:f": {
+        "origin": "\r\n\t\t\t\t\tSupport modders who are providing you with an exceptional experience for 5 years ",
+        "translated": null
+    },
+    "check-out-also-festive-sabers-and-mod-in-the-mod-assistant:f": {
+        "origin": "\r\n\t\t\t\tCheck out also festive sabers and mod in the mod assistant\r\n\t\t\t\t",
+        "translated": null
+    },
+    "or-try-our-small-festive-theme:f": {
+        "origin": "\r\n\t\t\t\t\tOr try our small \"festive\" theme ",
+        "translated": null
+    },
+    "in-settings:f": {
+        "origin": " in settings",
+        "translated": null
+    },
+    "happy-weekends-and-have-fun-:f": {
+        "origin": "Happy weekends and have fun!",
+        "translated": null
+    },
+    "bats-ghosts-pumpkins-it-s-halloween-again-:f": {
+        "origin": "Bats? Ghosts? Pumpkins? It's Halloween again? 😱 ",
+        "translated": null
+    },
+    "have-you-ever-competed-with-ghost-notes-modifier-it-s-time-to-try-we-picked-several-maps-from-the-aw:l5": {
+        "origin": "\r\n\t\t\t\t\tHave you ever competed with Ghost Notes modifier? It's time to try! We picked several maps from the awesome\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "scaretastic-pack:f": {
+        "origin": "Scaretastic Pack",
+        "translated": null
+    },
+    "and-from-the:f": {
+        "origin": "\r\n\t\t\t\t\tand from the ",
+        "translated": null
+    },
+    "bsmg-halloween-contest:f": {
+        "origin": "BSMG Halloween contest",
+        "translated": null
+    },
+    "try-your-best-with-ghost-notes-on-separate-leaderboards-to-receive-merch-from-bsmg-store-as-a-prize-:l10": {
+        "origin": "Try your best with Ghost Notes on separate leaderboards to receive merch from BSMG store as a prize for top 5!.",
+        "translated": null
+    },
+    "huge-thanks-to-modders-and-mappers-who-always-provide-us-with-festive-content-:f": {
+        "origin": "\r\n\t\t\t\t\tHuge thanks to modders and mappers who always provide us with festive content 🙏 ",
+        "translated": null
+    },
+    "have-a-scary-weekend-and-holiday-many-sweets-and-fun-:f": {
+        "origin": "Have a scary weekend and holiday, many sweets and fun!",
+        "translated": null
+    },
+    "maps:f": {
+        "origin": "Maps",
+        "translated": null
+    },
+    "sorting:f": {
+        "origin": "Sorting",
+        "translated": null
+    },
+    "filters:f": {
+        "origin": "Filters",
+        "translated": null
+    },
+    "song-author-mapper-hash:f": {
+        "origin": "Song/Author/Mapper/Hash",
+        "translated": null
+    },
+    "stars:f": {
+        "origin": "\r\n\t\t\t\t\tStars\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "to:f": {
+        "origin": "to",
+        "translated": null
+    },
+    "acc-rating:f": {
+        "origin": "\r\n\t\t\t\t\tAcc rating\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "pass-rating:f": {
+        "origin": "\r\n\t\t\t\t\tPass rating\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "tech-rating:f": {
+        "origin": "\r\n\t\t\t\t\tTech rating\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "date-range:f": {
+        "origin": "Date range",
+        "translated": null
+    },
+    "has-mode:f": {
+        "origin": "Has mode",
+        "translated": null
+    },
+    "playlists:f": {
+        "origin": "\r\n\tPlaylists\r\n",
+        "translated": null
+    },
+    "select-players-from-the-leaderboard-to-join:f": {
+        "origin": "Select players from the leaderboard to join",
+        "translated": null
+    },
+    "average-:f": {
+        "origin": "Average: ",
+        "translated": null
+    },
+    "hide-details:f": {
+        "origin": "Hide details",
+        "translated": null
+    },
+    "my-clan:f": {
+        "origin": "My clan",
+        "translated": null
+    },
+    "clan-requests:f": {
+        "origin": "Clan requests",
+        "translated": null
+    },
+    "clans:f": {
+        "origin": "Clans",
+        "translated": null
+    },
+    "tag-clan-name:f": {
+        "origin": "Tag/Clan Name",
+        "translated": null
+    },
+    "twitch-integration:f": {
+        "origin": "Twitch integration",
+        "translated": null
+    },
+    "back-to-home:f": {
+        "origin": "Back to Home",
+        "translated": null
+    },
+    "404-you-missed:f": {
+        "origin": "404 | You Missed",
+        "translated": null
+    },
+    "followed:f": {
+        "origin": "Followed",
+        "translated": null
+    },
+    "loading-:f": {
+        "origin": "Loading...",
+        "translated": null
+    },
+    "by-using-beatleader-you-agree-to-the-following-privacy-policy-:f": {
+        "origin": "\r\n\r\n\t\tBy using BeatLeader you agree to the following privacy policy.",
+        "translated": null
+    },
+    "this-policy-may-change-at-any-time-so-please-check-it-regularly-:f": {
+        "origin": " This policy may change at any time, so please check it regularly.",
+        "translated": null
+    },
+    "click-here:f": {
+        "origin": "Click here",
+        "translated": null
+    },
+    "to-see-the-changes-in-history-of-terms-of-service-:f": {
+        "origin": " to see the changes in\r\n\t\thistory of terms of service.",
+        "translated": null
+    },
+    "beatleader-general-data-policy:f": {
+        "origin": "BeatLeader general data policy",
+        "translated": null
+    },
+    "beatleader-is-a-service-that-collects-data-about-beat-saber-players-and-their-plays-:f": {
+        "origin": "\r\n\t\tBeatLeader is a service that collects data about Beat Saber players and their plays.",
+        "translated": null
+    },
+    "the-main-purpose-of-this-service-is-to-provide-a-leaderboard-for-beat-saber-players-:f": {
+        "origin": " The main purpose of this service is to\r\n\t\tprovide a leaderboard for Beat Saber players.",
+        "translated": null
+    },
+    "the-service-is-free-to-use-:f": {
+        "origin": " The service is free to use.",
+        "translated": null
+    },
+    "the-service-is-not-affiliated-with-beat-games-oculus-or-steam-:f": {
+        "origin": " The service is not affiliated with Beat Games,\r\n\t\tOculus or Steam.\r\n\r\n\t\t",
+        "translated": null
+    },
+    "all-the-data-collected-by-beatleader-is-public-:f": {
+        "origin": "All the data collected by BeatLeader is public.",
+        "translated": null
+    },
+    "with-an-exception-for-sensitive-data-like-your-auth-info-ip-address-or-private-data-by-desing-for-ex:l14": {
+        "origin": "\r\n\t\tWith an exception for sensitive data like your auth info, ip address or private data by desing(for example friends).\r\n\r\n\t\t",
+        "translated": null
+    },
+    "how-your-data-is-protected-:f": {
+        "origin": "How your data is protected?",
+        "translated": null
+    },
+    "your-data-is-stored-in-a-secure-database-with-limited-access-:f": {
+        "origin": "\r\n\t\tYour data is stored in a secure database with limited access.",
+        "translated": null
+    },
+    "public-access-for-your-data-through-api-may-be-limited-in-case-of-any-security-conserns-:f": {
+        "origin": "\r\n\t\tPublic access for your data through API may be limited in case of any security conserns.",
+        "translated": null
+    },
+    "also-there-is-no-perfect-way-of-protecting-your-data-so-it-may-be-leaked-:f": {
+        "origin": "\r\n\t\tAlso there is no perfect way of protecting your data, so it may be leaked.",
+        "translated": null
+    },
+    "please-keep-this-always-in-mind-change-password-regularly-and-use-2fa-link-your-profile-to-steam-:f": {
+        "origin": "\r\n\t\tPlease keep this always in mind, change password regularly and use 2FA(link your profile to Steam).",
+        "translated": null
+    },
+    "how-your-data-is-used-:f": {
+        "origin": "How your data is used?",
+        "translated": null
+    },
+    "your-data-is-used-to-provide-you-with-a-leaderboard-and-other-features-of-beatleader-:f": {
+        "origin": "\r\n\t\tYour data is used to provide you with a leaderboard and other features of BeatLeader.",
+        "translated": null
+    },
+    "being-publicly-available-it-can-also-be-used-for-any-purposes-by-anyone-:f": {
+        "origin": "\r\n\t\tBeing publicly available it can also be used for any purposes by anyone.",
+        "translated": null
+    },
+    "the-main-reason-for-it-to-be-public-is-a-mod-nature-of-beatleader-service-and-decentrilized-developm:l4": {
+        "origin": "\r\n\t\tThe main reason for it to be public is a mod nature of BeatLeader service and decentrilized development.",
+        "translated": null
+    },
+    "this-way-we-hope-it-will-be-used-for-the-benefits-of-the-whole-community-without-any-gatekeeping-:f": {
+        "origin": "\r\n\t\tThis way we hope it will be used for the benefits of the whole community without any gatekeeping.",
+        "translated": null
+    },
+    "what-data-beatleader-mods-collect-:f": {
+        "origin": "What data BeatLeader mods collect?",
+        "translated": null
+    },
+    "1-platform-specific-id:f": {
+        "origin": "1. Platform specific ID",
+        "translated": null
+    },
+    "in-order-to-identify-you-as-a-beat-saber-player-we-collect-your-personal-id-from-the-platform-on-whi:l99": {
+        "origin": "\r\n\t\tIn order to identify you as a Beat Saber player, we collect your personal ID from the platform on which you own the game. For example: Steam\r\n\t\tID, Oculus ID. This ID is then used as ID in BeatLeader system.\r\n\t\t",
+        "translated": null
+    },
+    "2-profile-picture:f": {
+        "origin": "2. Profile picture",
+        "translated": null
+    },
+    "your-oculus-or-steam-profile-picture-will-be-used-as-beatleader-profile-picture-:f": {
+        "origin": "\r\n\t\tYour Oculus or Steam profile picture will be used as BeatLeader profile picture.\r\n\t\t",
+        "translated": null
+    },
+    "3-profile-name:f": {
+        "origin": "3. Profile name",
+        "translated": null
+    },
+    "your-oculus-or-steam-profile-name-will-be-used-as-beatleader-profile-name-:f": {
+        "origin": "\r\n\t\tYour Oculus or Steam profile name will be used as BeatLeader profile name.\r\n\t\t",
+        "translated": null
+    },
+    "4-ip-address:f": {
+        "origin": "4. IP address",
+        "translated": null
+    },
+    "some-requests-will-use-your-ip-address-to-set-a-country-for-profile-or-to-protect-sensitive-endpoint:l21": {
+        "origin": "\r\n\t\tSome requests will use your IP address to set a country for profile or to protect sensitive endpoints (for example \"log in\").\r\n\r\n\t\t",
+        "translated": null
+    },
+    "5-replays:f": {
+        "origin": "5. Replays",
+        "translated": null
+    },
+    "the-main-purpose-of-this-service-is-to-collect-your-beat-saber-plays-so-yes-we-collect-them-:f": {
+        "origin": "\r\n\t\tThe main purpose of this service is to collect your Beat Saber plays, so yes, we collect them.",
+        "translated": null
+    },
+    "replays-may-contain-personally-identifiable-information-example-being-your-movements-height-or-even-:l318": {
+        "origin": " Replays may contain personally\r\n\t\tidentifiable information. Example being your movements, height or even your body shape. Your data, including associated personally\r\n\t\tidentifiable information, will be broadly publicly available to anyone with an internet connection via the BeatLeader website. It will\r\n\t\talso be accessible to academic researchers, who may use it to conduct research topics such as VR security, privacy, and usability.\r\n\t\t",
+        "translated": null
+    },
+    "on-top-of-being-publicly-available-using-beatleader-api-your-data-will-be-available-to-anyone-who-ha:l31": {
+        "origin": "\r\n\r\n\t\tOn top of being publicly available using BeatLeader API your data will be available to anyone who has a direct link to your replay.",
+        "translated": null
+    },
+    "also-beatleader-api-is-used-by-other-services-so-your-data-may-be-available-to-them-as-well-:f": {
+        "origin": "\r\n\t\tAlso BeatLeader API is used by other services, so your data may be available to them as well.",
+        "translated": null
+    },
+    "and-beatleader-database-dump-is-publicly-available-in-beatleader-discord-for-any-purposes-with-strip:l113": {
+        "origin": " And BeatLeader database dump is\r\n\t\tpublicly available in BeatLeader discord for any purposes with stripped sensitive data as: login, password, ips and social account\r\n\t\ttokens (data which is not otherwise available via API).\r\n\r\n\t\t",
+        "translated": null
+    },
+    "steam-specific:f": {
+        "origin": "Steam specific",
+        "translated": null
+    },
+    "your-steam-country-will-be-used-if-it-s-public-this-data-is-used-on-the-website-country-is-changeabl:l2": {
+        "origin": "\r\n\t\tYour Steam country will be used if it's public. This data is used on the website. (Country is changeable)\r\n\t\t",
+        "translated": null
+    },
+    "patreon-specific:f": {
+        "origin": "Patreon specific",
+        "translated": null
+    },
+    "the-server-will-use-your-patreon-profile-id-to-ensure-your-pledge-to-grant-the-patron-role-:f": {
+        "origin": "\r\n\t\tThe server will use your Patreon profile id to ensure your pledge to grant the \"Patron\" role.\r\n\t\t",
+        "translated": null
+    },
+    "third-party-social-applications:f": {
+        "origin": "Third-party social applications",
+        "translated": null
+    },
+    "beatleader-uses-third-party-social-applications-to-provide-additional-features-these-applications-ma:l221": {
+        "origin": "\r\n\t\tBeatLeader uses third-party social applications to provide additional features. These applications may collect additional data about you.\r\n\t\tBeatLeader will collect your social account id and access token to use it with third-party social applications. You may delete this info\r\n\t\tby unlinking your social account from BeatLeader.\r\n\r\n\t\t",
+        "translated": null
+    },
+    "can-i-delete-all-my-data-from-beatleader-:f": {
+        "origin": "Can I delete all my data from BeatLeader?",
+        "translated": null
+    },
+    "yes-:f": {
+        "origin": "Yes. ",
+        "translated": null
+    },
+    "what-data-does-this-website-collect-:f": {
+        "origin": "What data does this website collect?",
+        "translated": null
+    },
+    "no-data-is-collected-:f": {
+        "origin": "No data is collected.",
+        "translated": null
+    },
+    "does-this-website-use-cookies-:f": {
+        "origin": "Does this website use cookies?",
+        "translated": null
+    },
+    "yes-this-website-uses-a-single-authentication-cookie-to-store-your-login-session-:f": {
+        "origin": "Yes! This website uses a single authentication cookie to store your login session.",
+        "translated": null
+    },
+    "no-cookies-were-used-for-tracking-or-any-other-purposes-:f": {
+        "origin": "\r\n\t\tNo cookies were used for tracking or any other purposes.\r\n\r\n\t\t",
+        "translated": null
+    },
+    "does-this-website-use-third-party-services-:f": {
+        "origin": "Does this website use third-party services?",
+        "translated": null
+    },
+    "yes-this-website-uses-other-awesome-beat-saber-projects-like-beatsaver-accsaber-beatsavior-and-arcvi:l87": {
+        "origin": "Yes! This website uses other awesome Beat Saber projects like BeatSaver, AccSaber, BeatSavior and ArcViewer. No data is sent there,\r\n\t\t\tbut they may collect it on opening dedicated service website",
+        "translated": null
+    },
+    "what-data-does-web-replay-player-website-collect-:f": {
+        "origin": "What data does web replay player website collect?",
+        "translated": null
+    },
+    "what-data-does-web-beatleader-discord-bots-collect-:f": {
+        "origin": "What data does web BeatLeader discord bots collect?",
+        "translated": null
+    },
+    "your-discord-user-id-and-data-from-the-beatleader-api:f": {
+        "origin": "Your Discord user id and data from the BeatLeader API",
+        "translated": null
+    },
+    "player-not-found-:f": {
+        "origin": "Player not found.",
+        "translated": null
+    },
+    "people-who-keep-beatleader-running:f": {
+        "origin": "People who keep BeatLeader running",
+        "translated": null
+    },
+    "development-team:f": {
+        "origin": "Development Team",
+        "translated": null
+    },
+    "nsgolova:f": {
+        "origin": "NSGolova",
+        "translated": null
+    },
+    "bug-factory:f": {
+        "origin": "bug factory",
+        "translated": null
+    },
+    "server-web-player-quest-mod-developer:f": {
+        "origin": "Server, web player, quest mod developer",
+        "translated": null
+    },
+    "karghoff:f": {
+        "origin": "Karghoff",
+        "translated": null
+    },
+    "bug-detective:f": {
+        "origin": "bug detective",
+        "translated": null
+    },
+    "anti-cheat-developer-helped-with-pc-mod-and-web-player:f": {
+        "origin": "Anti-cheat developer, helped with PC mod and Web player",
+        "translated": null
+    },
+    "reezonate:f": {
+        "origin": "Reezonate",
+        "translated": null
+    },
+    "3d-and-ui-guru:f": {
+        "origin": "3D and UI guru",
+        "translated": null
+    },
+    "pc-mod-developer:f": {
+        "origin": "PC mod developer",
+        "translated": null
+    },
+    "motzel:f": {
+        "origin": "motzel",
+        "translated": null
+    },
+    "true-boomer:f": {
+        "origin": "true boomer",
+        "translated": null
+    },
+    "creator-of-this-website-and-greatest-contributor-:f": {
+        "origin": "Creator of this website and greatest contributor.",
+        "translated": null
+    },
+    "hermanest:f": {
+        "origin": "Hermanest",
+        "translated": null
+    },
+    "true-zoomer:f": {
+        "origin": "true zoomer",
+        "translated": null
+    },
+    "pc-replay-player-developer:f": {
+        "origin": "PC replay player developer",
+        "translated": null
+    },
+    "dzramen:f": {
+        "origin": "DZRamen",
+        "translated": null
+    },
+    "ex-machina:f": {
+        "origin": "EX MACHINA",
+        "translated": null
+    },
+    "ranking-ai-developer-and-biggest-supporter:f": {
+        "origin": "Ranking AI developer and biggest supporter",
+        "translated": null
+    },
+    "lackwiz:f": {
+        "origin": "LackWiz",
+        "translated": null
+    },
+    "soft-leader:f": {
+        "origin": "soft leader",
+        "translated": null
+    },
+    "founding-ranking-and-rating-system-dev-loves-cat-notes:f": {
+        "origin": "Founding ranking and rating system dev. Loves cat notes",
+        "translated": null
+    },
+    "christoffyw:f": {
+        "origin": "Christoffyw",
+        "translated": null
+    },
+    "ranked-is-stinky:f": {
+        "origin": "ranked is stinky",
+        "translated": null
+    },
+    "made-discord-bot-and-helped-with-quest-mod:f": {
+        "origin": "Made discord bot and helped with quest mod",
+        "translated": null
+    },
+    "microcber:f": {
+        "origin": "MicroCBer",
+        "translated": null
+    },
+    "non-native-speaker:f": {
+        "origin": "non-native speaker",
+        "translated": null
+    },
+    "made-theme-system-on-the-website:f": {
+        "origin": "Made theme system on the website",
+        "translated": null
+    },
+    "tatenshi:f": {
+        "origin": "Tatenshi",
+        "translated": null
+    },
+    "distracted-from-the-master-s-thesis:f": {
+        "origin": "distracted from the master's thesis",
+        "translated": null
+    },
+    "quest-mod-and-server-contributor:f": {
+        "origin": "Quest mod and server contributor",
+        "translated": null
+    },
+    "loloppe:f": {
+        "origin": "Loloppe",
+        "translated": null
+    },
+    "not-to-be-confused-with-notes:f": {
+        "origin": "not to be confused with notes",
+        "translated": null
+    },
+    "map-rating-and-review-specialist:f": {
+        "origin": "Map rating and review specialist",
+        "translated": null
+    },
+    "ranking-team:f": {
+        "origin": "Ranking Team",
+        "translated": null
+    },
+    "core-rt:f": {
+        "origin": "Core RT",
+        "translated": null
+    },
+    "antilink:f": {
+        "origin": "AntiLink",
+        "translated": null
+    },
+    "cookedchili:f": {
+        "origin": "CookedChili",
+        "translated": null
+    },
+    "emy:f": {
+        "origin": "Emy",
+        "translated": null
+    },
+    "light-ai:f": {
+        "origin": "Light Ai",
+        "translated": null
+    },
+    "nucleii:f": {
+        "origin": "nucleii",
+        "translated": null
+    },
+    "uragirimono:f": {
+        "origin": "Uragirimono",
+        "translated": null
+    },
+    "junior-rt:f": {
+        "origin": "Junior RT",
+        "translated": null
+    },
+    "mewtex:f": {
+        "origin": "Mewtex",
+        "translated": null
+    },
+    "nomination-quality-team:f": {
+        "origin": "Nomination Quality Team",
+        "translated": null
+    },
+    "nqt-organizers:f": {
+        "origin": "NQT Organizers",
+        "translated": null
+    },
+    "zana:f": {
+        "origin": "Zana",
+        "translated": null
+    },
+    "core-nqt:f": {
+        "origin": "Core NQT",
+        "translated": null
+    },
+    "bigslick:f": {
+        "origin": "BigSlick",
+        "translated": null
+    },
+    "complexfrequency:f": {
+        "origin": "ComplexFrequency",
+        "translated": null
+    },
+    "thinking:f": {
+        "origin": "thinking",
+        "translated": null
+    },
+    "edgii:f": {
+        "origin": "edgii",
+        "translated": null
+    },
+    "galaxymaster:f": {
+        "origin": "GalaxyMaster",
+        "translated": null
+    },
+    "kansas:f": {
+        "origin": "Kansas",
+        "translated": null
+    },
+    "sponsors:f": {
+        "origin": "Sponsors",
+        "translated": null
+    },
+    "supporters:f": {
+        "origin": "Supporters",
+        "translated": null
+    },
+    "tippers:f": {
+        "origin": "Tippers",
+        "translated": null
+    },
+    "you-:f": {
+        "origin": "You!",
+        "translated": null
+    },
+    "thank-you-for-using-beatleader-and-believing-in-the-open-source-:f": {
+        "origin": "Thank you for using BeatLeader and believing in the open-source!",
+        "translated": null
+    },
+    "beatleader-:f": {
+        "origin": "BeatLeader?",
+        "translated": null
+    },
+    "beatleader-is-an-open-source-leaderboard-system-for-the-beat-saber-our-goal-is-to-make-an-expandable:l91": {
+        "origin": "\r\n\t\t\tBeatLeader is an open-source leaderboard system for the Beat Saber. Our goal is to make an expandable, sustainable, and transparent system\r\n\t\t\twith zero bus factor and reliance on a specific person.\r\n\r\n\t\t\t",
+        "translated": null
+    },
+    "what-is-done-:f": {
+        "origin": "What is done?",
+        "translated": null
+    },
+    "mods-are-posting-replays-to-the-server-the-website-is-showing-leaderboards-and-cool-stats-replay-vie:l168": {
+        "origin": "\r\n\t\t\tMods are posting replays to the server, the website is showing leaderboards and cool stats. Replay viewers can show plays on all platforms\r\n\t\t\tfor every score. You can even draft the web battle royale of replays. Maps are ranked every week after map voting and criteria check.\r\n\r\n\t\t\t",
+        "translated": null
+    },
+    "what-is-not-done-:f": {
+        "origin": "What is not done?",
+        "translated": null
+    },
+    "not-a-lot-actually-the-core-part-of-the-beatleader-is-done-even-the-server-is-more-or-less-sustainab:l50": {
+        "origin": "\r\n\t\t\tNot a lot, actually. The core part of the BeatLeader is done, even the server is more or less sustainable. But we have a lot of plans for\r\n\t\t\tfuture features.\r\n\r\n\t\t\t",
+        "translated": null
+    },
+    "how-this-is-different-from-the-scoresaber:f": {
+        "origin": "How this is different from the ScoreSaber",
+        "translated": null
+    },
+    "the-main-difference-is-that-all-our-projects-are-open-source-and-this-is-part-of-the-reason-why-they:l185": {
+        "origin": "\r\n\t\t\tThe main difference is that all our projects are open-source. And this is part of the reason why they exist. That's it. :coffage: We are\r\n\t\t\tdoing our best to make it cooler, with more features, integrations, customization, etc... But the main goal was to make it transparent\r\n\t\t\tand expandable by anyone.\r\n\r\n\t\t\t",
+        "translated": null
+    },
+    "you-mean-like-anyone-:f": {
+        "origin": "You mean like anyone?",
+        "translated": null
+    },
+    "you-can-find-links-to-github-in-the-footer-check-our-discord-server-for-instructions-on-how-to-start:l214": {
+        "origin": "\r\n\t\t\tYou can find links to GitHub in the footer. Check our Discord server for instructions on how to start making changes. Pull requests are\r\n\t\t\twelcome! But you don't need to be a developer to help. We need a lot of help with design, ranking maps, drawings, events, etc... Feedback,\r\n\t\t\tcrash reports and your wildest ideas are great too!\r\n\t\t",
+        "translated": null
+    },
+    "credits:f": {
+        "origin": "Credits",
+        "translated": null
+    },
+    "this-project-was-only-possible-thanks-to-the-following-great-apis-:f": {
+        "origin": "This project was only possible thanks to the following great APIs:",
+        "translated": null
+    },
+    "beat-saver-api:f": {
+        "origin": "Beat Saver API",
+        "translated": null
+    },
+    "beat-savior-api:f": {
+        "origin": "Beat Savior API",
+        "translated": null
+    },
+    "accsaber-api:f": {
+        "origin": "AccSaber API",
+        "translated": null
+    },
+    "beastsaber-website:f": {
+        "origin": "BeastSaber website",
+        "translated": null
+    },
+    "the-project-also-uses-the-following-open-source-libraries-:f": {
+        "origin": "The project also uses the following open source libraries:",
+        "translated": null
+    },
+    "svelte:f": {
+        "origin": "svelte",
+        "translated": null
+    },
+    "idb:f": {
+        "origin": "idb",
+        "translated": null
+    },
+    "svelte-routing:f": {
+        "origin": "svelte-routing",
+        "translated": null
+    },
+    "chart-js:f": {
+        "origin": "chart.js",
+        "translated": null
+    },
+    "p-queue:f": {
+        "origin": "p-queue",
+        "translated": null
+    },
+    "comlink:f": {
+        "origin": "comlink",
+        "translated": null
+    },
+    "immer:f": {
+        "origin": "immer",
+        "translated": null
+    },
+    "broadcast-channel:f": {
+        "origin": "broadcast-channel",
+        "translated": null
+    },
+    "eventemitter3:f": {
+        "origin": "eventemitter3",
+        "translated": null
+    },
+    "luxon:f": {
+        "origin": "luxon",
+        "translated": null
+    },
+    "json-stable-stringify:f": {
+        "origin": "json-stable-stringify",
+        "translated": null
+    },
+    "heroicons:f": {
+        "origin": "heroicons",
+        "translated": null
+    },
+    "font-awesome:f": {
+        "origin": "font-awesome",
+        "translated": null
+    },
+    "special-thanks-to:f": {
+        "origin": "\r\n\t\t\t\tSpecial thanks to\r\n\t\t\t\t",
+        "translated": null
+    },
+    "danielduel:f": {
+        "origin": "DanielDuel",
+        "translated": null
+    },
+    "for-making-the-default-song-icon-:f": {
+        "origin": "\r\n\t\t\t\tfor making the default song icon.\r\n\t\t\t",
+        "translated": null
+    },
+    "retired-staff:f": {
+        "origin": "Retired Staff",
+        "translated": null
+    },
+    "shrado:f": {
+        "origin": "shrado",
+        "translated": null
+    },
+    "fentonvr:f": {
+        "origin": "FentonVR",
+        "translated": null
+    },
+    "ipixelgalaxy:f": {
+        "origin": "iPixelGalaxy",
+        "translated": null
+    },
+    "tg90:f": {
+        "origin": "TG90",
+        "translated": null
+    },
+    "aquaflee:f": {
+        "origin": "Aquaflee",
+        "translated": null
+    },
+    "log-in:f": {
+        "origin": "Log In",
+        "translated": null
+    },
+    "log-in-with-steam-or-the-account-you-created-in-game-:f": {
+        "origin": "Log in with Steam or the account you created in game.",
+        "translated": null
+    },
+    "i-m-not-a-mapper:f": {
+        "origin": "I'm not a mapper",
+        "translated": null
+    },
+    "by-using-beatsaver-login-you-are-making-the-account-not-usable-in-game-make-sure-you-understand-what:l14": {
+        "origin": "By using BeatSaver login you are making the account not usable in-game. Make sure you understand what you are doing",
+        "translated": null
+    },
+    "login-may-differ-from-username:f": {
+        "origin": "Login, may differ from username",
+        "translated": null
+    },
+    "password:f": {
+        "origin": "Password",
+        "translated": null
+    },
+    "forgot-password-:f": {
+        "origin": "forgot password?",
+        "translated": null
+    },
+    "to-use-quest-mod-sign-up-in-the-mod-preferences-with-new-login-and-password:f": {
+        "origin": "To use Quest mod - sign up in the mod preferences with new login and password ",
+        "translated": null
+    },
+    "to-log-in-with-oculus-pc-:f": {
+        "origin": "To log in with Oculus PC - ",
+        "translated": null
+    },
+    "check-this-instruction:f": {
+        "origin": "check this instruction",
+        "translated": null
+    },
+    "your-beatleader-account-will-be-suspended-:f": {
+        "origin": "Your BeatLeader account will be suspended!",
+        "translated": null
+    },
+    "if-you-have-any-issues-with-mods-websites-or-the-app-:f": {
+        "origin": "\r\n\r\n\t\tIf you have any issues with mods, websites or the app -",
+        "translated": null
+    },
+    "join-our-discord-server:f": {
+        "origin": "Join our Discord server",
+        "translated": null
+    },
+    "and-ask-in:f": {
+        "origin": " and ask in\r\n\t\t",
+        "translated": null
+    },
+    "-help:f": {
+        "origin": "#help",
+        "translated": null
+    },
+    "-write-a-report-in:f": {
+        "origin": ", write a report in\r\n\t\t",
+        "translated": null
+    },
+    "-bugreports:f": {
+        "origin": "#bugreports",
+        "translated": null
+    },
+    "or-ping:f": {
+        "origin": "\r\n\t\tor ping ",
+        "translated": null
+    },
+    "nsgolova-3325-:f": {
+        "origin": "NSGolova#3325.",
+        "translated": null
+    },
+    "or:f": {
+        "origin": "\r\n\r\n\t\tor",
+        "translated": null
+    },
+    "write-me-an-email:f": {
+        "origin": "Write me an email",
+        "translated": null
+    },
+    "-and-i-ll-know-a:f": {
+        "origin": ". And I'll know a ",
+        "translated": null
+    },
+    "clan-for-you:f": {
+        "origin": "clan for you",
+        "translated": null
+    },
+    "login-with-beatleader:f": {
+        "origin": "Login with BeatLeader",
+        "translated": null
+    },
+    "-welcome-:f": {
+        "origin": ", Welcome!",
+        "translated": null
+    },
+    "wants-to-access-your-beatleader-account:f": {
+        "origin": " wants to access your BeatLeader account",
+        "translated": null
+    },
+    "this-will-allow:f": {
+        "origin": "This will allow ",
+        "translated": null
+    },
+    "to-:f": {
+        "origin": " to:",
+        "translated": null
+    },
+    "all:f": {
+        "origin": "ALL ",
+        "translated": null
+    },
+    "any:f": {
+        "origin": "ANY ",
+        "translated": null
+    },
+    "events:f": {
+        "origin": "Events",
+        "translated": null
+    },
+    "beat-saber-in-numbers:f": {
+        "origin": "Beat Saber in Numbers",
+        "translated": null
+    },
+    "beatleader-together-with-university-of-california-berkeley-conducted-a-large-scale-comprehensive-sur:l325": {
+        "origin": "\r\n\t\t\tBeatLeader together with University of California, Berkeley conducted a large-scale comprehensive survey of 1,006 Beat Saber players\r\n\t\t\tthat sheds light on several important aspects of playerbase, including their background, biometrics, demographics, health information,\r\n\t\t\tbehavioral patterns, and technical device specifications. This further provide insights into the ranking community and potential\r\n\t\t\tcorrelation with player performance.\r\n\t\t",
+        "translated": null
+    },
+    "pdf:f": {
+        "origin": "PDF",
+        "translated": null
+    },
+    "the-survey-was-conducted-among-ranked-players-and-the-results-might-not-be-representative-of-all-bea:l192": {
+        "origin": "\r\n\t\t\tThe survey was conducted among ranked players, and the results might not be representative of all Beat Saber players. Additionally,\r\n\t\t\tthe survey relied on self-reported data, which can be subject to bias. And correlation does not imply causation, so these findings\r\n\t\t\tshould be interpreted with caution.\r\n\t\t",
+        "translated": null
+    },
+    "key-findings:f": {
+        "origin": "Key findings",
+        "translated": null
+    },
+    "age-:f": {
+        "origin": "Age:",
+        "translated": null
+    },
+    "younger-players-outperform-older-players-on-average-with-18-19-being-the-best-performing-age-group-p:l113": {
+        "origin": " Younger players outperform older players on average, with 18-19 being the best performing age group. Possible explanations\r\n\t\t\t\tinclude a reduction with age of eyesight, reaction time, physical fitness, and neuroplasticity.\r\n\t\t\t",
+        "translated": null
+    },
+    "physical-fitness-:f": {
+        "origin": "Physical Fitness:",
+        "translated": null
+    },
+    "we-found-that-users-with-any-experience-playing-an-individual-or-team-sport-perform-11-9-better-than:l201": {
+        "origin": " We found that users with any experience playing an individual or team sport perform 11.9% better than\r\n\t\t\t\tthose without such experience on average. Sports requiring a high degree of hand-eye coordination, such as Badminton, Tennis, and Golf,\r\n\t\t\t\tappear to have the highest positive effect on Beat Saber performance.\r\n\t\t\t",
+        "translated": null
+    },
+    "behavior-patterns-:f": {
+        "origin": "Behavior Patterns:",
+        "translated": null
+    },
+    "warming-up-and-being-healthy-generally-improves-performance-in-the-game-:f": {
+        "origin": " Warming up and being healthy generally improves performance in the game.\r\n\t\t\t",
+        "translated": null
+    },
+    "unexpected-correlations-with-performance:f": {
+        "origin": "Unexpected Correlations with Performance",
+        "translated": null
+    },
+    "experience-with-rhythm-games-:f": {
+        "origin": "Experience with Rhythm Games:",
+        "translated": null
+    },
+    "having-experience-with-rhythm-games-other-than-beat-saber-has-a-slight-negative-effect-on-beat-saber:l13": {
+        "origin": " Having experience with rhythm games other than Beat Saber has a slight negative effect\r\n\t\t\t\ton Beat Saber performance.\r\n\t\t\t",
+        "translated": null
+    },
+    "musical-background-:f": {
+        "origin": "Musical Background:",
+        "translated": null
+    },
+    "also-experience-with-musical-instruments-or-dancing-has-a-slight-negative-effect-on-beat-saber-perfo:l84": {
+        "origin": " Also experience with musical instruments or dancing has a slight negative effect on Beat Saber performance.\r\n\t\t\t\tBeat Saber in fact is more like an athletic sport than a typical rhythm game.\r\n\t\t\t",
+        "translated": null
+    },
+    "operating-system-:f": {
+        "origin": "Operating System:",
+        "translated": null
+    },
+    "windows-10-users-outperform-windows-11-users-by-an-average-of-10-2-a-possible-explanation-for-this-m:l77": {
+        "origin": " Windows 10 users outperform Windows 11 users by an average of 10.2%. A possible explanation for this\r\n\t\t\t\tmay be that those who primarily use their PC for gaming may prefer Windows 10.\r\n\t\t\t",
+        "translated": null
+    },
+    "clothing-:f": {
+        "origin": "Clothing:",
+        "translated": null
+    },
+    "in-general-less-clothing-appears-to-correlate-with-better-performance-with-fewer-garments-on-the-upp:l191": {
+        "origin": " In general, less clothing appears to correlate with better performance, with fewer garments on the upper body,\r\n\t\t\t\tlower body, and feet all being associated with better average scores. This could be explained by the fact that clothing may serve to\r\n\t\t\t\tlimit range of motion, or to reduce heat dissipation.\r\n\t\t\t",
+        "translated": null
+    },
+    "political-orientation-:f": {
+        "origin": "Political Orientation:",
+        "translated": null
+    },
+    "self-identified-conservatives-outperform-self-identified-liberals-by-an-average-of-20-8-this-trend-i:l108": {
+        "origin": " Self-identified conservatives outperform self-identified liberals by an average of 20.8%. This\r\n\t\t\t\ttrend is particularly significant as it runs contrary to the finding that younger players generally perform better ¯\\_(ツ)_/¯\r\n\t\t\t",
+        "translated": null
+    },
+    "thanks-to-everyone-who-took-part-in-the-survey-your-responses-provided-insights-on-things-we-always-:l15": {
+        "origin": "Thanks to everyone who took part in the survey! Your responses provided insights on things we always wondered about.",
+        "translated": null
+    },
+    "achievements-were-updated-according-to-the-quality-of-the-data-you-provided-contact-nsgolova-if-you-:l67": {
+        "origin": "\r\n\t\t\tAchievements were updated according to the quality of the data you provided. Contact NSGolova if you don't have achievement in your\r\n\t\t\tprofile, but took part in the survey.\r\n\t\t",
+        "translated": null
+    },
+    "good-luck-don-t-forget-to-warm-up-and-may-the-115s-be-with-you-:f": {
+        "origin": "Good luck, don't forget to warm up and may the 115s be with you! (✿◠‿◠)",
+        "translated": null
+    },
+    "settings:f": {
+        "origin": "\r\n\r\n\t\t\tSettings\r\n\r\n\t\t\t",
+        "translated": null
+    },
+    "yay-thank-you-for-supporting-beatleader-:f": {
+        "origin": "Yay! Thank you for supporting BeatLeader!❤️",
+        "translated": null
+    },
+    "claim-your-benefits-:f": {
+        "origin": "\r\n\t\t\tClaim your benefits:\r\n\t\t",
+        "translated": null
+    },
+    "reesabers:f": {
+        "origin": "Reesabers",
+        "translated": null
+    },
+    "the-most-advanced-and-beautiful-custom-sabers-mod-for-beat-saber:f": {
+        "origin": "The most advanced and beautiful custom sabers mod for Beat Saber",
+        "translated": null
+    },
+    "a-ton-of-customizations-to-make-your-game-stand-out-not-only-for-you-but-for-your-recordings-as-well:f": {
+        "origin": "A ton of customizations to make your game stand out not only for you, but for your recordings as well",
+        "translated": null
+    },
+    "built-in-motion-blur-for-the-smoothest-sabers-you-have-ever-experienced:f": {
+        "origin": "Built-in motion blur for the smoothest sabers you have ever experienced",
+        "translated": null
+    },
+    "profile-recognition:f": {
+        "origin": "Profile recognition",
+        "translated": null
+    },
+    "select-one-of-the-stunning-avatar-borders:f": {
+        "origin": "Select one of the stunning avatar borders",
+        "translated": null
+    },
+    "7-more-scores-to-pin-:f": {
+        "origin": "7 more scores to pin!",
+        "translated": null
+    },
+    "customize-colors-for-web-replays-and-embeds:f": {
+        "origin": "Customize colors for web replays and embeds",
+        "translated": null
+    },
+    "social-links-in-game:f": {
+        "origin": "Social links in-game",
+        "translated": null
+    },
+    "add-a-message-to-show-in-the-game-only-for-sponsors-:f": {
+        "origin": "Add a message to show in the game (only for sponsors)",
+        "translated": null
+    },
+    "special-powers:f": {
+        "origin": "Special powers",
+        "translated": null
+    },
+    "access-private-chat-for-supporters:f": {
+        "origin": "Access private chat for supporters",
+        "translated": null
+    },
+    "priority-for-feature-requests:f": {
+        "origin": "Priority for feature requests",
+        "translated": null
+    },
+    "roles-in-discord-server:f": {
+        "origin": "Roles in Discord server",
+        "translated": null
+    },
+    "already-a-patron-link-your-account-here-to-receive-patreon-features-for-your-tier-:f": {
+        "origin": "\r\n\t\t\t\t\tAlready a patron? Link your account here to receive patreon features for your tier.",
+        "translated": null
+    },
+    "if-you-are-not-yet-a-patron-you-can-become-one:f": {
+        "origin": "\r\n\t\t\t\t\tIf you are not yet a patron, you can become one\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "hello-future-beatleader-:f": {
+        "origin": "Hello, future BeatLeader!",
+        "translated": null
+    },
+    "this-is-beat-saber-leaderboard-:f": {
+        "origin": "This is Beat Saber leaderboard!",
+        "translated": null
+    },
+    "start-posting-your-scores-to-compete-with-others-on-more-than-100-000-different-maps-:f": {
+        "origin": "Start posting your scores to compete with others on more than 100,000 different maps.",
+        "translated": null
+    },
+    "in-game-leaderboards:f": {
+        "origin": "In-game leaderboards",
+        "translated": null
+    },
+    "for-custom-maps-:f": {
+        "origin": "for custom maps!",
+        "translated": null
+    },
+    "gameplay-replays-:f": {
+        "origin": "Gameplay replays!",
+        "translated": null
+    },
+    "fully-open-source-project-and-community:f": {
+        "origin": "Fully open-source project and community",
+        "translated": null
+    },
+    "complexity-ratings-for-all-maps:f": {
+        "origin": "Complexity ratings for all maps",
+        "translated": null
+    },
+    "ranked-maps-to-earn-performance-points:f": {
+        "origin": "Ranked maps to earn Performance Points",
+        "translated": null
+    },
+    "detailed-statistics-for-every-score:f": {
+        "origin": "Detailed statistics for every score",
+        "translated": null
+    },
+    "clans-events-and-many-more-:f": {
+        "origin": "Clans, events, and many more!",
+        "translated": null
+    },
+    "check-out:f": {
+        "origin": "Check out ",
+        "translated": null
+    },
+    "the-global-rankings:f": {
+        "origin": "the global rankings",
+        "translated": null
+    },
+    "to-find-the-best-players:f": {
+        "origin": " to find the best players",
+        "translated": null
+    },
+    "we-aggregate-the-data-from-other-cool-projects-to-help-you-play-better-:f": {
+        "origin": "We aggregate the data from other cool projects to help you play better:",
+        "translated": null
+    },
+    "beatsaver:f": {
+        "origin": " BeatSaver ",
+        "translated": null
+    },
+    "arcviewer:f": {
+        "origin": " ArcViewer ",
+        "translated": null
+    },
+    "accsaber:f": {
+        "origin": "AccSaber",
+        "translated": null
+    },
+    "beastsaber:f": {
+        "origin": " BeastSaber ",
+        "translated": null
+    },
+    "beatsavior:f": {
+        "origin": " BeatSavior ",
+        "translated": null
+    },
+    "never-modded-beat-saber-:f": {
+        "origin": "Never modded Beat Saber? ",
+        "translated": null
+    },
+    "it-s-easy-:f": {
+        "origin": "It's easy!",
+        "translated": null
+    },
+    "2023-census-of-beat-saber-users:f": {
+        "origin": "2023 Census of Beat Saber Users",
+        "translated": null
+    },
+    "thank-you-for-your-contribution-:f": {
+        "origin": "Thank you for your contribution!",
+        "translated": null
+    },
+    "your-responses-will-have-a-meaningful-impact-on-the-beat-saber-modding-community-in-addition-to-adva:l75": {
+        "origin": "Your responses will have a meaningful impact on the Beat Saber modding community, in addition to advancing public knowledge on\r\n\t\t\tsafety, usability, and data security/privacy in VR.\r\n\t\t",
+        "translated": null
+    },
+    "go-to-survey:f": {
+        "origin": "Go to survey",
+        "translated": null
+    },
+    "let-s-create-something-awesome-together-:f": {
+        "origin": "Let's create something awesome together!",
+        "translated": null
+    },
+    "oauth-applications:f": {
+        "origin": "\r\n\t\t\t\tOauth Applications\r\n\r\n\t\t\t\t",
+        "translated": null
+    },
+    "beatleader:f": {
+        "origin": "BEATLEADER",
+        "translated": null
+    },
+    "bl:f": {
+        "origin": "BL",
+        "translated": null
+    },
+    "me:f": {
+        "origin": "\r\n\r\n\t\t\t\tMe\r\n\t\t\t",
+        "translated": null
+    },
+    "search:f": {
+        "origin": "\r\n\r\n\t\tSearch\r\n\t",
+        "translated": null
+    },
+    "search-:f": {
+        "origin": "Search...",
+        "translated": null
+    },
+    "ctrl-:f": {
+        "origin": "Ctrl + /",
+        "translated": null
+    },
+    "new-ranked-batch-in:f": {
+        "origin": "New ranked batch in",
+        "translated": null
+    },
+    "days:f": {
+        "origin": "Days",
+        "translated": null
+    },
+    "hours:f": {
+        "origin": "Hours",
+        "translated": null
+    },
+    "minutes:f": {
+        "origin": "Minutes",
+        "translated": null
+    },
+    "seconds:f": {
+        "origin": "Seconds",
+        "translated": null
+    },
+    "on:f": {
+        "origin": "on",
+        "translated": null
+    },
+    "off:f": {
+        "origin": "off",
+        "translated": null
+    },
+    "change:f": {
+        "origin": "Change",
+        "translated": null
+    },
+    "this-is-magic-playlist-which-will-be-automatically-synced-by-mod-:f": {
+        "origin": "This is magic playlist which will be automatically synced by mod. ",
+        "translated": null
+    },
+    "quest-v0-4-:f": {
+        "origin": "Quest v0.4+.",
+        "translated": null
+    },
+    "songs:f": {
+        "origin": " songs",
+        "translated": null
+    },
+    "accuracy-ranking:f": {
+        "origin": " accuracy ranking",
+        "translated": null
+    },
+    "leader:f": {
+        "origin": "Leader",
+        "translated": null
+    },
+    "players-participating:f": {
+        "origin": "Players participating",
+        "translated": null
+    },
+    "will-end:f": {
+        "origin": "Will end ",
+        "translated": null
+    },
+    "duration-:f": {
+        "origin": "Duration:",
+        "translated": null
+    },
+    "notes-:f": {
+        "origin": " Notes:\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "bpm-:f": {
+        "origin": " BPM:\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "njs-:f": {
+        "origin": " NJS:\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "offset-:f": {
+        "origin": " Offset:\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "nps-:f": {
+        "origin": " NPS:\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "bombs-:f": {
+        "origin": " Bombs:\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "obstacles-:f": {
+        "origin": " Obstacles:\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "started:f": {
+        "origin": "\r\n\t\t\t\tStarted ",
+        "translated": null
+    },
+    "by:f": {
+        "origin": " by\r\n\t\t\t",
+        "translated": null
+    },
+    "ranked-unranked:f": {
+        "origin": "Ranked → Unranked",
+        "translated": null
+    },
+    "modifiers-updated:f": {
+        "origin": "Modifiers updated",
+        "translated": null
+    },
+    "hide-reweighing-changelog:f": {
+        "origin": "Hide reweighing changelog",
+        "translated": null
+    },
+    "criteria-checked-by-:f": {
+        "origin": " Criteria checked by:",
+        "translated": null
+    },
+    "approved-by-rt-:f": {
+        "origin": " Approved by RT:",
+        "translated": null
+    },
+    "ready-to-rank:f": {
+        "origin": " Ready to rank ",
+        "translated": null
+    },
+    "hide-qualification-changelog:f": {
+        "origin": "Hide qualification changelog",
+        "translated": null
+    },
+    "discord-forum:f": {
+        "origin": " Discord Forum ",
+        "translated": null
+    },
+    "profanity-check-:f": {
+        "origin": "Profanity check:",
+        "translated": null
+    },
+    "type-:f": {
+        "origin": "Type:",
+        "translated": null
+    },
+    "intensity-:f": {
+        "origin": "Intensity:",
+        "translated": null
+    },
+    "in:f": {
+        "origin": "In",
+        "translated": null
+    },
+    "time-:f": {
+        "origin": "Time: ",
+        "translated": null
+    },
+    "x-:f": {
+        "origin": "\r\n\t\t\t\t\t\t\t\t\t\t\t\tX: ",
+        "translated": null
+    },
+    "hide-ranking-changelog:f": {
+        "origin": "Hide ranking changelog",
+        "translated": null
+    },
+    "mapped-by-:f": {
+        "origin": "Mapped by: ",
+        "translated": null
+    },
+    "twitch-vods:f": {
+        "origin": " Twitch VODs",
+        "translated": null
+    },
+    "date:f": {
+        "origin": "Date",
+        "translated": null
+    },
+    "video:f": {
+        "origin": "Video",
+        "translated": null
+    },
+    "duration:f": {
+        "origin": "Duration",
+        "translated": null
+    },
+    "pinned-scores:f": {
+        "origin": "Pinned scores",
+        "translated": null
+    },
+    "achievements:f": {
+        "origin": "Achievements",
+        "translated": null
+    },
+    "ranking-of-followed:f": {
+        "origin": "\r\n\t\t\t\tRanking of Followed\r\n\t\t\t\t",
+        "translated": null
+    },
+    "scores-of-followed:f": {
+        "origin": "Scores of Followed",
+        "translated": null
+    },
+    "theme:f": {
+        "origin": "Theme",
+        "translated": null
+    },
+    "background-image:f": {
+        "origin": "Background Image",
+        "translated": null
+    },
+    "reset-to-default:f": {
+        "origin": "Reset to default",
+        "translated": null
+    },
+    "main-color:f": {
+        "origin": "Main Color",
+        "translated": null
+    },
+    "header-color:f": {
+        "origin": "Header Color",
+        "translated": null
+    },
+    "fonts-google-fonts-or-system-:f": {
+        "origin": "Fonts (Google Fonts or System)",
+        "translated": null
+    },
+    "preset-:f": {
+        "origin": "Preset:",
+        "translated": null
+    },
+    "score-metrics-settings-:f": {
+        "origin": "Score metrics settings:",
+        "translated": null
+    },
+    "score-comparison-settings-:f": {
+        "origin": "Score comparison settings:",
+        "translated": null
+    },
+    "buttons-to-show-:f": {
+        "origin": "Buttons to show:",
+        "translated": null
+    },
+    "score-info-to-show-:f": {
+        "origin": "Score info to show:",
+        "translated": null
+    },
+    "score-details-settings-:f": {
+        "origin": "Score details settings:",
+        "translated": null
+    },
+    "default-acc-chart-in-details:f": {
+        "origin": "Default acc chart in details",
+        "translated": null
+    },
+    "score-comparison:f": {
+        "origin": "Score comparison",
+        "translated": null
+    },
+    "locale:f": {
+        "origin": "Locale",
+        "translated": null
+    },
+    "one-click-installs:f": {
+        "origin": "One-click installs",
+        "translated": null
+    },
+    "web-replays:f": {
+        "origin": "Web replays",
+        "translated": null
+    },
+    "date-format:f": {
+        "origin": "Date Format",
+        "translated": null
+    },
+    "options:f": {
+        "origin": "Options",
+        "translated": null
+    },
+    "icons-on-avatars:f": {
+        "origin": "Icons on avatars",
+        "translated": null
+    },
+    "sort-scores-by:f": {
+        "origin": "Sort scores by",
+        "translated": null
+    },
+    "rank-and-pp-gain:f": {
+        "origin": "Rank and pp gain",
+        "translated": null
+    },
+    "days-of-history:f": {
+        "origin": "Days of history",
+        "translated": null
+    },
+    "profile-parts-to-show-:f": {
+        "origin": "Profile parts to show:",
+        "translated": null
+    },
+    "graph-height-px-:f": {
+        "origin": "Graph height(px):",
+        "translated": null
+    },
+    "graph-legend-:f": {
+        "origin": "Graph legend:",
+        "translated": null
+    },
+    "other-saved-automatically-account-synced-:f": {
+        "origin": "Other (saved automatically, account synced):",
+        "translated": null
+    },
+    "to-enable-this-feature-please-support-us-on:f": {
+        "origin": "To enable this feature please support us on ",
+        "translated": null
+    },
+    "header-:f": {
+        "origin": "Header:",
+        "translated": null
+    },
+    "migrate:f": {
+        "origin": "Migrate",
+        "translated": null
+    },
+    "change-password:f": {
+        "origin": "Change password",
+        "translated": null
+    },
+    "my-login:f": {
+        "origin": "My login",
+        "translated": null
+    },
+    "link-socials:f": {
+        "origin": "Link socials",
+        "translated": null
+    },
+    "link-patreon:f": {
+        "origin": "Link Patreon",
+        "translated": null
+    },
+    "activate-account:f": {
+        "origin": "Activate account",
+        "translated": null
+    },
+    "3:f": {
+        "origin": "3",
+        "translated": null
+    },
+    "construct-your-hypotetical-player:f": {
+        "origin": "Construct your hypotetical player",
+        "translated": null
+    },
+    "with-desired-parameters-to-predict-pp-count-:f": {
+        "origin": "with desired parameters to predict PP count! ",
+        "translated": null
+    },
+    "employment-status-:f": {
+        "origin": "Employment Status:",
+        "translated": null
+    },
+    "educational-status-:f": {
+        "origin": "Educational Status:",
+        "translated": null
+    },
+    "primary-language-:f": {
+        "origin": "Primary Language:",
+        "translated": null
+    },
+    "base-stations-:f": {
+        "origin": "Base Stations:",
+        "translated": null
+    },
+    "rhythm-games-:f": {
+        "origin": "Rhythm Games:",
+        "translated": null
+    },
+    "athletics-:f": {
+        "origin": "Athletics:",
+        "translated": null
+    },
+    "coffee-:f": {
+        "origin": "Coffee:",
+        "translated": null
+    },
+    "preparation-:f": {
+        "origin": "Preparation:",
+        "translated": null
+    },
+    "model-player-:f": {
+        "origin": "Model player: ",
+        "translated": null
+    },
+    "pp:f": {
+        "origin": "pp",
+        "translated": null
+    },
+    "note-it-will-be-impossible-to-change-after-creation:f": {
+        "origin": "Note: it will be impossible to change after creation",
+        "translated": null
+    },
+    "scopes:f": {
+        "origin": "Scopes",
+        "translated": null
+    },
+    "redirect-urls-:f": {
+        "origin": "Redirect URLs:",
+        "translated": null
+    },
+    "song-s-:f": {
+        "origin": " song(s)",
+        "translated": null
+    },
+    "search-anything:f": {
+        "origin": "Search anything",
+        "translated": null
+    },
+    "tab:f": {
+        "origin": "tab",
+        "translated": null
+    },
+    "to-switch-group:f": {
+        "origin": " to switch group ",
+        "translated": null
+    },
+    "to-navigate:f": {
+        "origin": " to navigate\r\n\t\t\t",
+        "translated": null
+    },
+    "to-select:f": {
+        "origin": "\r\n\t\t\t\tto select\r\n\t\t\t",
+        "translated": null
+    },
+    "esc:f": {
+        "origin": "esc",
+        "translated": null
+    },
+    "to-close:f": {
+        "origin": " to close",
+        "translated": null
+    },
+    "are-you-sure-:f": {
+        "origin": "Are you sure?",
+        "translated": null
+    },
+    "country-ranking:f": {
+        "origin": "Country ranking",
+        "translated": null
+    },
+    "mapper-:f": {
+        "origin": "Mapper: ",
+        "translated": null
+    },
+    "plays-:f": {
+        "origin": " plays.\r\n\t\t\t\t\t",
+        "translated": null
+    },
+    "acc-:f": {
+        "origin": " Acc ★",
+        "translated": null
+    },
+    "pass-:f": {
+        "origin": " Pass ★",
+        "translated": null
+    },
+    "tech-:f": {
+        "origin": " Tech ★",
+        "translated": null
+    },
+    "is-this-map-suitable-for-rank-:f": {
+        "origin": "Is this map suitable for rank?",
+        "translated": null
+    },
+    "map-status:f": {
+        "origin": "Map status",
+        "translated": null
+    },
+    "criteria-check-result:f": {
+        "origin": "Criteria check result",
+        "translated": null
+    },
+    "acc-rating-:f": {
+        "origin": "Acc rating:",
+        "translated": null
+    },
+    "pass-rating-:f": {
+        "origin": "Pass rating:",
+        "translated": null
+    },
+    "tech-rating-:f": {
+        "origin": "Tech rating:",
+        "translated": null
+    },
+    "hide-modifiers:f": {
+        "origin": "Hide modifiers",
+        "translated": null
+    },
+    "keep-this-map-ranked-:f": {
+        "origin": "Keep this map ranked?",
+        "translated": null
+    },
+    "predicted-accability-avg:f": {
+        "origin": "Predicted accability (avg ",
+        "translated": null
+    },
+    "at-speed-:f": {
+        "origin": "At speed:",
+        "translated": null
+    },
+    "vs-me-:f": {
+        "origin": "\r\n\t\t\t\tvs me (",
+        "translated": null
+    },
+    "fail-reason-:f": {
+        "origin": "\r\n\t\t\tFail reason: ",
+        "translated": null
+    },
+    "are-you-sure-you-want-to-delete-all-cheezed-scores-:f": {
+        "origin": "Are you sure you want to delete all cheezed scores?",
+        "translated": null
+    },
+    "an-invitation-will-be-sent-to-the-player-to-join-the-clan-:f": {
+        "origin": "An invitation will be sent to the player to join the clan.",
+        "translated": null
+    },
+    "this-message-will-be-shown-in-game-for-your-scores-:f": {
+        "origin": "This message will be shown in-game for your scores.",
+        "translated": null
+    },
+    "you-can-use:f": {
+        "origin": "\r\n\t\t\t\t\t\tYou can use ",
+        "translated": null
+    },
+    "unity-tags:f": {
+        "origin": "Unity tags",
+        "translated": null
+    },
+    "here-:f": {
+        "origin": " here.",
+        "translated": null
+    },
+    "make-sure-you-selected-right-country-you-can-change-it-only-every-30-days-:f": {
+        "origin": "Make sure you selected right country. You can change it only every 30 days.",
+        "translated": null
+    },
+    "missing-template:f": {
+        "origin": "Missing template",
+        "translated": null
+    },
+    "metric:f": {
+        "origin": "Metric ",
+        "translated": null
+    },
+    "primary-metric:f": {
+        "origin": " Primary metric ",
+        "translated": null
+    },
+    "alternative-metrics:f": {
+        "origin": "Alternative metrics ",
+        "translated": null
+    },
+    "they-will-be-shown-if-the-primary-metric-does-not-exist-such-as-pp-for-unrankeds-and-rotated-when-cl:l27": {
+        "origin": "They will be shown if the primary metric does not exist, such as PP for unrankeds, and rotated when clicked if more are selected.",
+        "translated": null
+    },
+    "-edited-:f": {
+        "origin": "(Edited)",
+        "translated": null
+    },
+    "how-it-correlates-with-performance-:f": {
+        "origin": "How it correlates with performance?",
+        "translated": null
+    },
+    "are-you-sure-you-want-to-reset-the-secret-this-will-break-your-current-set-up-:f": {
+        "origin": "Are you sure you want to reset the secret? This will break your current set up.",
+        "translated": null
+    },
+    "hue:f": {
+        "origin": "Hue",
+        "translated": null
+    },
+    "sat:f": {
+        "origin": "Sat",
+        "translated": null
+    },
+    "fail:f": {
+        "origin": "\r\n\t\t\t\t\tFAIL ",
+        "translated": null
+    },
+    "at:f": {
+        "origin": "AT ",
+        "translated": null
+    },
+    "fc:f": {
+        "origin": "FC",
+        "translated": null
+    },
+    "beat-savior-average:f": {
+        "origin": "Beat Savior average",
+        "translated": null
+    },
+    "average-calculated-from:f": {
+        "origin": "Average calculated from ",
+        "translated": null
+    },
+    "run-s-:f": {
+        "origin": " run(s).",
+        "translated": null
+    },
+    "players:f": {
+        "origin": "Players",
+        "translated": null
+    },
+    "this-vote-will-be-the-third-negative-:f": {
+        "origin": "\r\n\t\t\tThis vote will be the third negative?",
+        "translated": null
+    },
+    "are-you-sure-you-want-to-stop-the-nomination-:f": {
+        "origin": "\r\n\t\t\tAre you sure you want to stop the nomination?\r\n\t\t",
+        "translated": null
+    },
+    "bot:f": {
+        "origin": "BOT",
+        "translated": null
+    },
+    "inactive:f": {
+        "origin": "Inactive",
+        "translated": null
+    },
+    "reason-:f": {
+        "origin": "Reason:",
+        "translated": null
+    },
+    "changed-by-admin:f": {
+        "origin": "Changed by Admin",
+        "translated": null
+    },
+    "if-you-play-like-this-:f": {
+        "origin": "\r\n\t\t\tIf you play like this:\r\n\t\t\t",
+        "translated": null
+    },
+    "-vs:f": {
+        "origin": "(vs\r\n\t\t\t\t\t\t\t",
+        "translated": null
+    },
+    "acc:f": {
+        "origin": "Acc",
+        "translated": null
+    },
+    "td:f": {
+        "origin": "TD",
+        "translated": null
+    }
+}

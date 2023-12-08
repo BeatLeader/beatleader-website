@@ -1,0 +1,1962 @@
+{
+    "reesabers-are-finally-on-quest-:f": {
+        "origin": "ReeSabers are finally on QUEST!",
+        "translated": "ReeSabers终于登陆QUEST！"
+    },
+    "build-:f": {
+        "origin": "Build: ",
+        "translated": "构建： "
+    },
+    "-:f": {
+        "origin": "\r\n\t\t\t\t\t\t\t)",
+        "translated": "\r\n\t\t\t\t\t\t\t)"
+    },
+    "about:f": {
+        "origin": "About",
+        "translated": "关于"
+    },
+    "developer-portal:f": {
+        "origin": "Developer Portal",
+        "translated": "开发者门户"
+    },
+    "wiki:f": {
+        "origin": "Wiki",
+        "translated": "维基"
+    },
+    "source:f": {
+        "origin": "Source",
+        "translated": "源码"
+    },
+    "privacy-policy:f": {
+        "origin": "Privacy policy",
+        "translated": "隐私政策"
+    },
+    "help:f": {
+        "origin": "Help",
+        "translated": "帮助"
+    },
+    "scores-feed:f": {
+        "origin": "Scores feed",
+        "translated": "分数榜"
+    },
+    "twitter:f": {
+        "origin": "Twitter",
+        "translated": "推特"
+    },
+    "discord:f": {
+        "origin": "Discord",
+        "translated": "Discord"
+    },
+    "patreon:f": {
+        "origin": "Patreon",
+        "translated": "Patreon"
+    },
+    "ranking:f": {
+        "origin": "\r\n\r\n\t\tRanking\r\n\t",
+        "translated": "\r\n\r\n\t\t排名\r\n\t"
+    },
+    "select-players-from-the-leaderboard-to-join:f": {
+        "origin": "Select players from the leaderboard to join",
+        "translated": "从排行榜中选择玩家加入"
+    },
+    "average-:f": {
+        "origin": "Average: ",
+        "translated": "平均值: "
+    },
+    "hide-details:f": {
+        "origin": "Hide details",
+        "translated": "隐藏细节"
+    },
+    "you-will-kick:f": {
+        "origin": "You will kick ",
+        "translated": "你将被踢出氏族..."
+    },
+    "out-of-the-clan-:f": {
+        "origin": " out of the clan...",
+        "translated": "我的氏族"
+    },
+    "my-clan:f": {
+        "origin": "My clan",
+        "translated": "氏族请求"
+    },
+    "clan-requests:f": {
+        "origin": "Clan requests",
+        "translated": "氏族"
+    },
+    "clans:f": {
+        "origin": "Clans",
+        "translated": "筛选器"
+    },
+    "filters:f": {
+        "origin": "Filters",
+        "translated": "标签/氏族名称"
+    },
+    "tag-clan-name:f": {
+        "origin": "Tag/Clan Name"
+    },
+    "maps:f": {
+        "origin": "Maps",
+        "translated": "地图"
+    },
+    "sorting:f": {
+        "origin": "Sorting",
+        "translated": "排序"
+    },
+    "song-author-mapper-hash:f": {
+        "origin": "Song/Author/Mapper/Hash",
+        "translated": "歌曲/作者/制作人/哈希"
+    },
+    "stars:f": {
+        "origin": "\r\n\t\t\t\t\tStars\r\n\t\t\t\t\t",
+        "translated": "\r\n\t\t\t\t\t星级\r\n\t\t\t\t\t"
+    },
+    "to:f": {
+        "origin": "to",
+        "translated": "到"
+    },
+    "acc-rating:f": {
+        "origin": "\r\n\t\t\t\t\tAcc rating\r\n\t\t\t\t\t",
+        "translated": "\r\n\t\t\t\t\t准确率\r\n\t\t\t\t\t"
+    },
+    "pass-rating:f": {
+        "origin": "\r\n\t\t\t\t\tPass rating\r\n\t\t\t\t\t",
+        "translated": "\r\n\t\t\t\t\t通过率\r\n\t\t\t\t\t"
+    },
+    "tech-rating:f": {
+        "origin": "\r\n\t\t\t\t\tTech rating\r\n\t\t\t\t\t",
+        "translated": "\r\n\t\t\t\t\t技术评级\r\n\t\t\t\t\t"
+    },
+    "date-range:f": {
+        "origin": "Date range",
+        "translated": "日期范围"
+    },
+    "has-mode:f": {
+        "origin": "Has mode",
+        "translated": "游戏模式"
+    },
+    "playlists:f": {
+        "origin": "\r\n\tPlaylists\r\n",
+        "translated": "\r\n\t播放列表\r\n"
+    },
+    "followed:f": {
+        "origin": "Followed",
+        "translated": "已关注"
+    },
+    "loading-:f": {
+        "origin": "Loading...",
+        "translated": "正在加载..."
+    },
+    "have-you-ever-wondered-how-beat-saber-would-feel-with-timing-based-scoring-instead-of-accuracy-based:l16": {
+        "origin": "\r\n\t\t\t\t\tHave you ever wondered how Beat Saber would feel with timing based scoring instead of accuracy based? Wonder no more!",
+        "translated": "\r\n\t\t\t\t\t你是否曾想过用基于时间的得分而不是准确性的方式来体验Beat Saber？不必再纠结了！"
+    },
+    "limited-time-offer-from-beatleader-install-the-mods-and-play-custom-mode-to-try-our-attempt-at-reima:l16": {
+        "origin": "\r\n\t\t\t\t\tLimited time offer from BeatLeader. Install the mods and play custom mode to try our attempt at reimagining the game.",
+        "translated": "\r\n\t\t\t\t\tBeatLeader限时提供。安装模块并尝试我们重新构想的自定义模式。"
+    },
+    "no-preswing-postswing-or-accuracy-only-you-and-cubes-:f": {
+        "origin": "\r\n\t\t\t\t\tNo preswing, postswing or accuracy, only you and cubes. ",
+        "translated": "\r\n\t\t\t\t\t没有预挥、后挥或准确性，只有你和方块。"
+    },
+    "event-consists-of-10-christmas-themed-songs-and-10-most-voted-ranked-maps-:f": {
+        "origin": "\r\n\t\t\t\t\tEvent consists of 10 Christmas themed songs and 10 most voted ranked maps.",
+        "translated": "\r\n\t\t\t\t\t活动包括10首圣诞主题的歌曲和10个最受欢迎的排名谱面。"
+    },
+    "thank-you-mappers-and-ranking-team-for-the-productive-year:f": {
+        "origin": "\r\n\t\t\t\t\tThank you mappers and ranking team for the productive year",
+        "translated": "\r\n\t\t\t\t\t感谢映射师和排名团队在这个充实的一年里的付出。"
+    },
+    "happy-holidays-and-have-fun-:f": {
+        "origin": "Happy holidays and have fun!",
+        "translated": "节日快乐，玩得开心！"
+    },
+    "score-recycling-initiative:f": {
+        "origin": "Score Recycling Initiative",
+        "translated": "分数回收计划"
+    },
+    "players-were-improving-their-scores-to-cut-down-wasted-space-and-make-pp-growth-sustainable:f": {
+        "origin": "\r\n\t\t\t\t\tPlayers were improving their scores to cut down wasted space and make PP growth sustainable",
+        "translated": "\r\n\t\t\t\t\t玩家们正在提高他们的分数，减少浪费的空间，使PP的增长可持续。"
+    },
+    "beat-saber-turned-5-happy-birthday-and-thank-you-for-megaton-of-dopamine-generated-:f": {
+        "origin": "Beat Saber turned 5! Happy Birthday and thank you for megaton of Dopamine generated!",
+        "translated": "Beat Saber 五周年啦！祝你生日快乐，感谢你带来了大量的多巴胺！"
+    },
+    "check-out-and-compete-on-maps-made-by-awesome-mappers-for:f": {
+        "origin": "\r\n\t\t\t\t\tCheck out and compete on maps made by awesome mappers for\r\n\t\t\t\t\t",
+        "translated": "\r\n\t\t\t\t\t来看看由优秀的映射师制作的地图，参与比赛吧！"
+    },
+    "-2018-throwback-:f": {
+        "origin": "[2018 THROWBACK]",
+        "translated": "【2018年回顾】"
+    },
+    "and:f": {
+        "origin": "\r\n\t\t\t\t\tand ",
+        "translated": "\r\n\t\t\t\t\t并且 "
+    },
+    "bsmg-anniversary:f": {
+        "origin": "BSMG anniversary",
+        "translated": "BSMG周年纪念活动"
+    },
+    "top-5-will-receive-merch-from-bsmg-store-as-a-prize-:f": {
+        "origin": "\r\n\t\t\t\t\tTop 5 will receive merch from BSMG store as a prize!. ",
+        "translated": "\r\n\t\t\t\t\t前5名将会获得BSMG商店的商品作为奖品！ "
+    },
+    "skill-issue-don-t-worry-you-can-buy-it-yourself:f": {
+        "origin": "\r\n\t\t\t\t\tSkill issue? Don't worry, you can buy it yourself ",
+        "translated": "\r\n\t\t\t\t\t技术问题？别担心，你可以自己买 "
+    },
+    "here:f": {
+        "origin": "here",
+        "translated": "这里"
+    },
+    "support-modders-who-are-providing-you-with-an-exceptional-experience-for-5-years:f": {
+        "origin": "\r\n\t\t\t\t\tSupport modders who are providing you with an exceptional experience for 5 years ",
+        "translated": "\r\n\t\t\t\t\t支持为你提供了5年非凡体验的mod开发者们 "
+    },
+    "check-out-also-festive-sabers-and-mod-in-the-mod-assistant:f": {
+        "origin": "\r\n\t\t\t\tCheck out also festive sabers and mod in the mod assistant\r\n\t\t\t\t",
+        "translated": "\r\n\t\t\t\t还可以在mod助手中找到节日风格的刀光和mod\r\n\t\t\t\t"
+    },
+    "or-try-our-small-festive-theme:f": {
+        "origin": "\r\n\t\t\t\t\tOr try our small \"festive\" theme ",
+        "translated": "\r\n\t\t\t\t\t或者试试我们小巧的“节日”主题 "
+    },
+    "in-settings:f": {
+        "origin": " in settings",
+        "translated": "在设置中"
+    },
+    "happy-weekends-and-have-fun-:f": {
+        "origin": "Happy weekends and have fun!",
+        "translated": "快乐的周末，玩的开心！"
+    },
+    "bats-ghosts-pumpkins-it-s-halloween-again-:f": {
+        "origin": "Bats? Ghosts? Pumpkins? It's Halloween again? 😱 ",
+        "translated": "蝙蝠？鬼？南瓜？万圣节又到了？ 😱 "
+    },
+    "have-you-ever-competed-with-ghost-notes-modifier-it-s-time-to-try-we-picked-several-maps-from-the-aw:l5": {
+        "origin": "\r\n\t\t\t\t\tHave you ever competed with Ghost Notes modifier? It's time to try! We picked several maps from the awesome\r\n\t\t\t\t\t",
+        "translated": "\r\n\t\t\t\t\t你有没有试过使用Ghost Notes修改器进行比赛？现在是时候试试了！我们从令人惊叹的\r\n\t\t\t\t\t"
+    },
+    "scaretastic-pack:f": {
+        "origin": "Scaretastic Pack",
+        "translated": "Scaretastic Pack"
+    },
+    "and-from-the:f": {
+        "origin": "\r\n\t\t\t\t\tand from the ",
+        "translated": "\r\n\t\t\t\t\t和"
+    },
+    "bsmg-halloween-contest:f": {
+        "origin": "BSMG Halloween contest",
+        "translated": "BSMG万圣节比赛"
+    },
+    "try-your-best-with-ghost-notes-on-separate-leaderboards-to-receive-merch-from-bsmg-store-as-a-prize-:l10": {
+        "origin": "Try your best with Ghost Notes on separate leaderboards to receive merch from BSMG store as a prize for top 5!.",
+        "translated": "的地图中挑选了几个地图"
+    },
+    "huge-thanks-to-modders-and-mappers-who-always-provide-us-with-festive-content-:f": {
+        "origin": "\r\n\t\t\t\t\tHuge thanks to modders and mappers who always provide us with festive content 🙏 ",
+        "translated": "\r\n\t\t\t\t\t非常感谢那些始终为我们提供节日内容的调试器和映射师们 🙏 "
+    },
+    "have-a-scary-weekend-and-holiday-many-sweets-and-fun-:f": {
+        "origin": "Have a scary weekend and holiday, many sweets and fun!",
+        "translated": "祝大家度过一个可怕的周末和节日，享受许多糖果和乐趣！"
+    },
+    "people-who-keep-beatleader-running:f": {
+        "origin": "People who keep BeatLeader running",
+        "translated": "感谢那些使BeatLeader持续运行的人们"
+    },
+    "development-team:f": {
+        "origin": "Development Team",
+        "translated": "开发团队"
+    },
+    "nsgolova:f": {
+        "origin": "NSGolova",
+        "translated": "NSGolova"
+    },
+    "bug-factory:f": {
+        "origin": "bug factory",
+        "translated": "错误工厂"
+    },
+    "server-web-player-quest-mod-developer:f": {
+        "origin": "Server, web player, quest mod developer",
+        "translated": "服务器、网页播放器以及Quest模组开发者"
+    },
+    "karghoff:f": {
+        "origin": "Karghoff",
+        "translated": "Karghoff"
+    },
+    "bug-detective:f": {
+        "origin": "bug detective",
+        "translated": "bug detective"
+    },
+    "anti-cheat-developer-helped-with-pc-mod-and-web-player:f": {
+        "origin": "Anti-cheat developer, helped with PC mod and Web player",
+        "translated": "反作弊开发者，帮助处理PC模组和Web播放器"
+    },
+    "reezonate:f": {
+        "origin": "Reezonate",
+        "translated": "Reezonate"
+    },
+    "3d-and-ui-guru:f": {
+        "origin": "3D and UI guru",
+        "translated": "3D和UI专家"
+    },
+    "pc-mod-developer:f": {
+        "origin": "PC mod developer",
+        "translated": "PC模组开发者"
+    },
+    "motzel:f": {
+        "origin": "motzel",
+        "translated": "motzel"
+    },
+    "true-boomer:f": {
+        "origin": "true boomer",
+        "translated": "真正的老骨头"
+    },
+    "creator-of-this-website-and-greatest-contributor-:f": {
+        "origin": "Creator of this website and greatest contributor.",
+        "translated": "本网站的创建者和最伟大的贡献者。"
+    },
+    "hermanest:f": {
+        "origin": "Hermanest",
+        "translated": "Hermanest"
+    },
+    "true-zoomer:f": {
+        "origin": "true zoomer",
+        "translated": "true zoomer"
+    },
+    "pc-replay-player-developer:f": {
+        "origin": "PC replay player developer",
+        "translated": "PC replay player developer"
+    },
+    "dzramen:f": {
+        "origin": "DZRamen",
+        "translated": "DZRamen"
+    },
+    "ex-machina:f": {
+        "origin": "EX MACHINA",
+        "translated": "EX MACHINA"
+    },
+    "ranking-ai-developer-and-biggest-supporter:f": {
+        "origin": "Ranking AI developer and biggest supporter",
+        "translated": "Ranking AI developer and biggest supporter"
+    },
+    "lackwiz:f": {
+        "origin": "LackWiz",
+        "translated": "LackWiz"
+    },
+    "soft-leader:f": {
+        "origin": "soft leader",
+        "translated": "soft leader"
+    },
+    "founding-ranking-and-rating-system-dev-loves-cat-notes:f": {
+        "origin": "Founding ranking and rating system dev. Loves cat notes",
+        "translated": "创立排名和评分系统开发者。喜欢猫的注释。"
+    },
+    "christoffyw:f": {
+        "origin": "Christoffyw",
+        "translated": "Christoffyw"
+    },
+    "ranked-is-stinky:f": {
+        "origin": "ranked is stinky",
+        "translated": "排名很臭。"
+    },
+    "made-discord-bot-and-helped-with-quest-mod:f": {
+        "origin": "Made discord bot and helped with quest mod",
+        "translated": "制作了Discord机器人并帮助了Quest模式。"
+    },
+    "microcber:f": {
+        "origin": "MicroCBer",
+        "translated": "MicroCBer"
+    },
+    "non-native-speaker:f": {
+        "origin": "non-native speaker",
+        "translated": "非母语者。"
+    },
+    "made-theme-system-on-the-website:f": {
+        "origin": "Made theme system on the website",
+        "translated": "在网站上制作了主题系统。"
+    },
+    "tatenshi:f": {
+        "origin": "Tatenshi",
+        "translated": "Tatenshi"
+    },
+    "distracted-from-the-master-s-thesis:f": {
+        "origin": "distracted from the master's thesis",
+        "translated": "分散了对硕士论文的注意力"
+    },
+    "quest-mod-and-server-contributor:f": {
+        "origin": "Quest mod and server contributor",
+        "translated": "Quest模组和服务器贡献者"
+    },
+    "loloppe:f": {
+        "origin": "Loloppe",
+        "translated": "Loloppe"
+    },
+    "not-to-be-confused-with-notes:f": {
+        "origin": "not to be confused with notes",
+        "translated": "不要与音符搞混"
+    },
+    "map-rating-and-review-specialist:f": {
+        "origin": "Map rating and review specialist",
+        "translated": "地图评级和评论专家"
+    },
+    "ranking-team:f": {
+        "origin": "Ranking Team",
+        "translated": "排名团队"
+    },
+    "core-rt:f": {
+        "origin": "Core RT",
+        "translated": "核心RT"
+    },
+    "antilink:f": {
+        "origin": "AntiLink",
+        "translated": "阻断链接"
+    },
+    "cookedchili:f": {
+        "origin": "CookedChili",
+        "translated": "CookedChili"
+    },
+    "emy:f": {
+        "origin": "Emy",
+        "translated": "Emy"
+    },
+    "light-ai:f": {
+        "origin": "Light Ai",
+        "translated": "Light Ai"
+    },
+    "nucleii:f": {
+        "origin": "nucleii",
+        "translated": "nucleii"
+    },
+    "uragirimono:f": {
+        "origin": "Uragirimono",
+        "translated": "Uragirimono"
+    },
+    "junior-rt:f": {
+        "origin": "Junior RT",
+        "translated": "Junior RT"
+    },
+    "mewtex:f": {
+        "origin": "Mewtex",
+        "translated": "Mewtex"
+    },
+    "nomination-quality-team:f": {
+        "origin": "Nomination Quality Team",
+        "translated": "Nomination Quality Team"
+    },
+    "nqt-organizers:f": {
+        "origin": "NQT Organizers",
+        "translated": "NQT 组织者"
+    },
+    "zana:f": {
+        "origin": "Zana",
+        "translated": "Zana"
+    },
+    "core-nqt:f": {
+        "origin": "Core NQT",
+        "translated": "核心 NQT"
+    },
+    "bigslick:f": {
+        "origin": "BigSlick",
+        "translated": "BigSlick"
+    },
+    "complexfrequency:f": {
+        "origin": "ComplexFrequency",
+        "translated": "复杂频率"
+    },
+    "thinking:f": {
+        "origin": "thinking",
+        "translated": "思考中"
+    },
+    "edgii:f": {
+        "origin": "edgii",
+        "translated": "edgii"
+    },
+    "galaxymaster:f": {
+        "origin": "GalaxyMaster",
+        "translated": "GalaxyMaster"
+    },
+    "kansas:f": {
+        "origin": "Kansas",
+        "translated": "Kansas"
+    },
+    "sponsors:f": {
+        "origin": "Sponsors",
+        "translated": "Sponsors"
+    },
+    "supporters:f": {
+        "origin": "Supporters",
+        "translated": "Supporters"
+    },
+    "tippers:f": {
+        "origin": "Tippers",
+        "translated": "Tippers"
+    },
+    "you-:f": {
+        "origin": "You!",
+        "translated": "You!"
+    },
+    "thank-you-for-using-beatleader-and-believing-in-the-open-source-:f": {
+        "origin": "Thank you for using BeatLeader and believing in the open-source!",
+        "translated": "谢谢您使用BeatLeader并相信这个开源项目！"
+    },
+    "beatleader-:f": {
+        "origin": "BeatLeader?",
+        "translated": "BeatLeader？"
+    },
+    "beatleader-is-an-open-source-leaderboard-system-for-the-beat-saber-our-goal-is-to-make-an-expandable:l91": {
+        "origin": "\r\n\t\t\tBeatLeader is an open-source leaderboard system for the Beat Saber. Our goal is to make an expandable, sustainable, and transparent system\r\n\t\t\twith zero bus factor and reliance on a specific person.\r\n\r\n\t\t\t",
+        "translated": "\\r\\n\\t\\t\\tBeatLeader是一个针对Beat Saber的开源排行榜系统。我们的目标是打造一个可扩展、可持续、透明的系统，\\r\\n\\t\\t\\t并且不依赖于任何个人。\\r\\n\\r\\n\\t\\t\\t"
+    },
+    "what-is-done-:f": {
+        "origin": "What is done?",
+        "translated": "做了什么？"
+    },
+    "mods-are-posting-replays-to-the-server-the-website-is-showing-leaderboards-and-cool-stats-replay-vie:l168": {
+        "origin": "\r\n\t\t\tMods are posting replays to the server, the website is showing leaderboards and cool stats. Replay viewers can show plays on all platforms\r\n\t\t\tfor every score. You can even draft the web battle royale of replays. Maps are ranked every week after map voting and criteria check.\r\n\r\n\t\t\t",
+        "translated": "\r\n\t\t\tMods正在将回放上传到服务器，网站正在显示排行榜和酷炫的统计数据。回放观看者可以在所有平台上显示每个分数的播放情况。你甚至可以使用回放创建网页版战斗皇家。地图每周根据地图投票和标准检查进行排名。\r\n\r\n\t\t\t"
+    },
+    "what-is-not-done-:f": {
+        "origin": "What is not done?",
+        "translated": "还没做什么？"
+    },
+    "not-a-lot-actually-the-core-part-of-the-beatleader-is-done-even-the-server-is-more-or-less-sustainab:l50": {
+        "origin": "\r\n\t\t\tNot a lot, actually. The core part of the BeatLeader is done, even the server is more or less sustainable. But we have a lot of plans for\r\n\t\t\tfuture features.\r\n\r\n\t\t\t",
+        "translated": "\r\n\t\t\t实际上还没做很多。 BeatLeader的核心部分已经完成，甚至服务器也比较可持续。但我们对未来的功能有很多计划。\r\n\r\n\t\t\t"
+    },
+    "how-this-is-different-from-the-scoresaber:f": {
+        "origin": "How this is different from the ScoreSaber",
+        "translated": "与ScoreSaber有何不同？"
+    },
+    "the-main-difference-is-that-all-our-projects-are-open-source-and-this-is-part-of-the-reason-why-they:l185": {
+        "origin": "\r\n\t\t\tThe main difference is that all our projects are open-source. And this is part of the reason why they exist. That's it. :coffage: We are\r\n\t\t\tdoing our best to make it cooler, with more features, integrations, customization, etc... But the main goal was to make it transparent\r\n\t\t\tand expandable by anyone.\r\n\r\n\t\t\t",
+        "translated": "\r\n\t\t\t主要的区别在于我们所有的项目都是开源的。这也是它们存在的部分原因。就是这样。 ：coffage: 我们正尽力使它更酷，具备更多功能、集成和定制等... 但主要目标是让任何人都可以透明地扩展它。\r\n\r\n\t\t\t"
+    },
+    "you-mean-like-anyone-:f": {
+        "origin": "You mean like anyone?",
+        "translated": "你是指任何人吗？"
+    },
+    "yes-:f": {
+        "origin": "\r\n\t\tYes! ",
+        "translated": "\r\n\t\t是的！"
+    },
+    "you-can-find-links-to-github-in-the-footer-check-our-discord-server-for-instructions-on-how-to-start:l214": {
+        "origin": "\r\n\t\t\tYou can find links to GitHub in the footer. Check our Discord server for instructions on how to start making changes. Pull requests are\r\n\t\t\twelcome! But you don't need to be a developer to help. We need a lot of help with design, ranking maps, drawings, events, etc... Feedback,\r\n\t\t\tcrash reports and your wildest ideas are great too!\r\n\t\t",
+        "translated": "\r\n\t\t\t你可以在页脚找到链接到GitHub的地址。请查看我们Discord服务器上的说明以了解如何开始进行更改。我们欢迎Pull requests！但你不需要成为开发人员来提供帮助。我们需要很多设计、排名地图、绘图、活动等方面的帮助...反馈、崩溃报告和你最疯狂的想法也是很好的！\r\n\t\t"
+    },
+    "credits:f": {
+        "origin": "Credits",
+        "translated": "鸣谢"
+    },
+    "this-project-was-only-possible-thanks-to-the-following-great-apis-:f": {
+        "origin": "This project was only possible thanks to the following great APIs:",
+        "translated": "这个项目之所以能够实现，要感谢以下伟大的API："
+    },
+    "beat-saver-api:f": {
+        "origin": "Beat Saver API",
+        "translated": "Beat Saver API"
+    },
+    "beat-savior-api:f": {
+        "origin": "Beat Savior API",
+        "translated": "Beat Savior API"
+    },
+    "accsaber-api:f": {
+        "origin": "AccSaber API",
+        "translated": "AccSaber API"
+    },
+    "beastsaber-website:f": {
+        "origin": "BeastSaber website",
+        "translated": "BeastSaber 网站"
+    },
+    "the-project-also-uses-the-following-open-source-libraries-:f": {
+        "origin": "The project also uses the following open source libraries:",
+        "translated": "该项目还使用了以下开源库："
+    },
+    "svelte:f": {
+        "origin": "svelte",
+        "translated": "svelte"
+    },
+    "idb:f": {
+        "origin": "idb",
+        "translated": "idb"
+    },
+    "svelte-routing:f": {
+        "origin": "svelte-routing",
+        "translated": "svelte-routing"
+    },
+    "chart-js:f": {
+        "origin": "chart.js",
+        "translated": "chart.js"
+    },
+    "p-queue:f": {
+        "origin": "p-queue",
+        "translated": "p-queue"
+    },
+    "comlink:f": {
+        "origin": "comlink",
+        "translated": "comlink"
+    },
+    "immer:f": {
+        "origin": "immer",
+        "translated": "immer"
+    },
+    "broadcast-channel:f": {
+        "origin": "broadcast-channel",
+        "translated": "broadcast-channel"
+    },
+    "eventemitter3:f": {
+        "origin": "eventemitter3",
+        "translated": "eventemitter3"
+    },
+    "luxon:f": {
+        "origin": "luxon",
+        "translated": "luxon"
+    },
+    "json-stable-stringify:f": {
+        "origin": "json-stable-stringify",
+        "translated": "json-stable-stringify"
+    },
+    "heroicons:f": {
+        "origin": "heroicons",
+        "translated": "heroicons"
+    },
+    "font-awesome:f": {
+        "origin": "font-awesome",
+        "translated": "font-awesome"
+    },
+    "special-thanks-to:f": {
+        "origin": "\r\n\t\t\t\tSpecial thanks to\r\n\t\t\t\t",
+        "translated": "\r\n\t\t\t\t特别致谢\r\n\t\t\t\t"
+    },
+    "danielduel:f": {
+        "origin": "DanielDuel",
+        "translated": "DanielDuel"
+    },
+    "for-making-the-default-song-icon-:f": {
+        "origin": "\r\n\t\t\t\tfor making the default song icon.\r\n\t\t\t",
+        "translated": "\r\n\t\t\t\t为制作默认的歌曲图标。\r\n\t\t\t"
+    },
+    "retired-staff:f": {
+        "origin": "Retired Staff",
+        "translated": "已退休员工"
+    },
+    "shrado:f": {
+        "origin": "shrado",
+        "translated": "shrado"
+    },
+    "fentonvr:f": {
+        "origin": "FentonVR",
+        "translated": "FentonVR"
+    },
+    "ipixelgalaxy:f": {
+        "origin": "iPixelGalaxy",
+        "translated": "iPixelGalaxy"
+    },
+    "tg90:f": {
+        "origin": "TG90",
+        "translated": "TG90"
+    },
+    "aquaflee:f": {
+        "origin": "Aquaflee",
+        "translated": "Aquaflee"
+    },
+    "back-to-home:f": {
+        "origin": "Back to Home",
+        "translated": "返回主页"
+    },
+    "twitch-integration:f": {
+        "origin": "Twitch integration",
+        "translated": "Twitch集成"
+    },
+    "player-not-found-:f": {
+        "origin": "Player not found.",
+        "translated": "Player not found."
+    },
+    "by-using-beatleader-you-agree-to-the-following-privacy-policy-:f": {
+        "origin": "\r\n\r\n\t\tBy using BeatLeader you agree to the following privacy policy.",
+        "translated": "使用BeatLeader即表示您同意下列隐私政策。\r\n\r\n\t\t本政策可能随时发生变更，请定期查阅。\r\n"
+    },
+    "this-policy-may-change-at-any-time-so-please-check-it-regularly-:f": {
+        "origin": " This policy may change at any time, so please check it regularly.",
+        "translated": "点击此处查看服务条款的历史更改记录。\r\n\r\n\t\tBeatLeader通用数据政策。"
+    },
+    "click-here:f": {
+        "origin": "Click here",
+        "translated": "\r\n\t\tBeatLeader是收集关于Beat Saber玩家及其游戏数据的服务。\r\n"
+    },
+    "to-see-the-changes-in-history-of-terms-of-service-:f": {
+        "origin": " to see the changes in\r\n\t\thistory of terms of service.",
+        "translated": "此服务的主要目的是为Beat Saber玩家提供排行榜。"
+    },
+    "beatleader-general-data-policy:f": {
+        "origin": "BeatLeader general data policy"
+    },
+    "beatleader-is-a-service-that-collects-data-about-beat-saber-players-and-their-plays-:f": {
+        "origin": "\r\n\t\tBeatLeader is a service that collects data about Beat Saber players and their plays."
+    },
+    "the-main-purpose-of-this-service-is-to-provide-a-leaderboard-for-beat-saber-players-:f": {
+        "origin": " The main purpose of this service is to\r\n\t\tprovide a leaderboard for Beat Saber players."
+    },
+    "the-service-is-free-to-use-:f": {
+        "origin": " The service is free to use.",
+        "translated": "这项服务是免费使用的。"
+    },
+    "the-service-is-not-affiliated-with-beat-games-oculus-or-steam-:f": {
+        "origin": " The service is not affiliated with Beat Games,\r\n\t\tOculus or Steam.\r\n\r\n\t\t",
+        "translated": "该服务与Beat Games、Oculus或Steam无关。"
+    },
+    "all-the-data-collected-by-beatleader-is-public-:f": {
+        "origin": "All the data collected by BeatLeader is public.",
+        "translated": "BeatLeader收集的所有数据都是公开的。"
+    },
+    "with-an-exception-for-sensitive-data-like-your-auth-info-ip-address-or-private-data-by-desing-for-ex:l14": {
+        "origin": "\r\n\t\tWith an exception for sensitive data like your auth info, ip address or private data by desing(for example friends).\r\n\r\n\t\t",
+        "translated": "敏感数据（例如您的授权信息、IP地址或私人数据等）按设计放在私密区域，除此之外公开。"
+    },
+    "how-your-data-is-protected-:f": {
+        "origin": "How your data is protected?",
+        "translated": "您的数据如何得到保护？"
+    },
+    "your-data-is-stored-in-a-secure-database-with-limited-access-:f": {
+        "origin": "\r\n\t\tYour data is stored in a secure database with limited access.",
+        "translated": "您的数据存储在具有有限访问权限的安全数据库中。"
+    },
+    "public-access-for-your-data-through-api-may-be-limited-in-case-of-any-security-conserns-:f": {
+        "origin": "\r\n\t\tPublic access for your data through API may be limited in case of any security conserns.",
+        "translated": "鉴于安全问题，在API上公开访问您的数据可能会受到限制。"
+    },
+    "also-there-is-no-perfect-way-of-protecting-your-data-so-it-may-be-leaked-:f": {
+        "origin": "\r\n\t\tAlso there is no perfect way of protecting your data, so it may be leaked.",
+        "translated": "同时，没有完美的数据保护方式，因此数据有可能会泄露。"
+    },
+    "please-keep-this-always-in-mind-change-password-regularly-and-use-2fa-link-your-profile-to-steam-:f": {
+        "origin": "\r\n\t\tPlease keep this always in mind, change password regularly and use 2FA(link your profile to Steam).",
+        "translated": "\r\n\t\t请一直记住这一点，定期更改密码并使用2FA（将您的个人资料链接到Steam）。"
+    },
+    "how-your-data-is-used-:f": {
+        "origin": "How your data is used?",
+        "translated": "您的数据如何使用？"
+    },
+    "your-data-is-used-to-provide-you-with-a-leaderboard-and-other-features-of-beatleader-:f": {
+        "origin": "\r\n\t\tYour data is used to provide you with a leaderboard and other features of BeatLeader.",
+        "translated": "\r\n\t\t您的数据用于提供BeatLeader的排行榜和其他功能。"
+    },
+    "being-publicly-available-it-can-also-be-used-for-any-purposes-by-anyone-:f": {
+        "origin": "\r\n\t\tBeing publicly available it can also be used for any purposes by anyone.",
+        "translated": "\r\n\t\t作为公开可见的数据，任何人都可以将其用于任何目的。"
+    },
+    "the-main-reason-for-it-to-be-public-is-a-mod-nature-of-beatleader-service-and-decentrilized-developm:l4": {
+        "origin": "\r\n\t\tThe main reason for it to be public is a mod nature of BeatLeader service and decentrilized development.",
+        "translated": "\r\n\t\t其公开的主要原因是BeatLeader服务的自定义性质和分散式开发。"
+    },
+    "this-way-we-hope-it-will-be-used-for-the-benefits-of-the-whole-community-without-any-gatekeeping-:f": {
+        "origin": "\r\n\t\tThis way we hope it will be used for the benefits of the whole community without any gatekeeping.",
+        "translated": "\r\n\t\t我们希望这样一来，它将被用于整个社区的利益，而没有任何门槛。"
+    },
+    "what-data-beatleader-mods-collect-:f": {
+        "origin": "What data BeatLeader mods collect?",
+        "translated": "BeatLeader模组收集哪些数据？"
+    },
+    "1-platform-specific-id:f": {
+        "origin": "1. Platform specific ID",
+        "translated": "1. 平台特定ID"
+    },
+    "in-order-to-identify-you-as-a-beat-saber-player-we-collect-your-personal-id-from-the-platform-on-whi:l99": {
+        "origin": "\r\n\t\tIn order to identify you as a Beat Saber player, we collect your personal ID from the platform on which you own the game. For example: Steam\r\n\t\tID, Oculus ID. This ID is then used as ID in BeatLeader system.\r\n\t\t",
+        "translated": "\r\n\t\t为了识别您作为《Beat Saber》玩家，我们会从您拥有该游戏的平台上收集您的个人ID。例如：Steam\r\n\t\tID、Oculus ID。此ID将作为BeatLeader系统中的ID使用。\r\n\t\t"
+    },
+    "2-profile-picture:f": {
+        "origin": "2. Profile picture",
+        "translated": "2. 头像"
+    },
+    "your-oculus-or-steam-profile-picture-will-be-used-as-beatleader-profile-picture-:f": {
+        "origin": "\r\n\t\tYour Oculus or Steam profile picture will be used as BeatLeader profile picture.\r\n\t\t",
+        "translated": "\r\n\t\t您的Oculus或Steam头像将作为BeatLeader的头像。\r\n\t\t"
+    },
+    "3-profile-name:f": {
+        "origin": "3. Profile name",
+        "translated": "3. 用户名"
+    },
+    "your-oculus-or-steam-profile-name-will-be-used-as-beatleader-profile-name-:f": {
+        "origin": "\r\n\t\tYour Oculus or Steam profile name will be used as BeatLeader profile name.\r\n\t\t",
+        "translated": "\r\n\t\t您的Oculus或Steam用户名将作为BeatLeader的用户名。\r\n\t\t"
+    },
+    "4-ip-address:f": {
+        "origin": "4. IP address",
+        "translated": "4. IP地址"
+    },
+    "some-requests-will-use-your-ip-address-to-set-a-country-for-profile-or-to-protect-sensitive-endpoint:l21": {
+        "origin": "\r\n\t\tSome requests will use your IP address to set a country for profile or to protect sensitive endpoints (for example \"log in\").\r\n\r\n\t\t",
+        "translated": "\r\n\t\t某些请求将使用您的IP地址来设置个人资料的国家或保护敏感终端点（例如“登录”）。\r\n\r\n\t\t"
+    },
+    "5-replays:f": {
+        "origin": "5. Replays",
+        "translated": "5. 回放"
+    },
+    "the-main-purpose-of-this-service-is-to-collect-your-beat-saber-plays-so-yes-we-collect-them-:f": {
+        "origin": "\r\n\t\tThe main purpose of this service is to collect your Beat Saber plays, so yes, we collect them.",
+        "translated": "\r\n\t\t这项服务的主要目的是收集你的Beat Saber游戏记录，所以是的，我们会收集它们。"
+    },
+    "replays-may-contain-personally-identifiable-information-example-being-your-movements-height-or-even-:l318": {
+        "origin": " Replays may contain personally\r\n\t\tidentifiable information. Example being your movements, height or even your body shape. Your data, including associated personally\r\n\t\tidentifiable information, will be broadly publicly available to anyone with an internet connection via the BeatLeader website. It will\r\n\t\talso be accessible to academic researchers, who may use it to conduct research topics such as VR security, privacy, and usability.\r\n\t\t",
+        "translated": "回放可能包含个人身份可识别信息，例如你的动作、身高甚至体形。你的数据，包括相关的个人身份可识别信息，将通过BeatLeader网站向任何拥有互联网连接的人广泛公开。它还将提供给学术研究人员，他们可以将其用于进行有关VR安全、隐私和可用性等研究主题。"
+    },
+    "on-top-of-being-publicly-available-using-beatleader-api-your-data-will-be-available-to-anyone-who-ha:l31": {
+        "origin": "\r\n\r\n\t\tOn top of being publicly available using BeatLeader API your data will be available to anyone who has a direct link to your replay.",
+        "translated": "\r\n\r\n\t\t除了可以通过BeatLeader API公开使用外，你的数据还将对任何拥有你回放直接链接的人可用。"
+    },
+    "also-beatleader-api-is-used-by-other-services-so-your-data-may-be-available-to-them-as-well-:f": {
+        "origin": "\r\n\t\tAlso BeatLeader API is used by other services, so your data may be available to them as well.",
+        "translated": "同时，其他服务也将使用BeatLeader API，因此你的数据也可能对它们可用。"
+    },
+    "and-beatleader-database-dump-is-publicly-available-in-beatleader-discord-for-any-purposes-with-strip:l113": {
+        "origin": " And BeatLeader database dump is\r\n\t\tpublicly available in BeatLeader discord for any purposes with stripped sensitive data as: login, password, ips and social account\r\n\t\ttokens (data which is not otherwise available via API).\r\n\r\n\t\t",
+        "translated": "并且BeatLeader数据库的备份在BeatLeader的Discord服务器上公开提供，供任何目的使用，其中的敏感数据已经被清除，包括登录信息、密码、IP地址和社交账号令牌等（这些数据在API中无法获取）。\r\n\r\n\t\t"
+    },
+    "steam-specific:f": {
+        "origin": "Steam specific",
+        "translated": "特定于Steam的"
+    },
+    "your-steam-country-will-be-used-if-it-s-public-this-data-is-used-on-the-website-country-is-changeabl:l2": {
+        "origin": "\r\n\t\tYour Steam country will be used if it's public. This data is used on the website. (Country is changeable)\r\n\t\t",
+        "translated": "\r\n\t\t如果你的Steam国家信息是公开的，它将在网站上使用。（国家信息可以更改）\r\n\t\t"
+    },
+    "patreon-specific:f": {
+        "origin": "Patreon specific",
+        "translated": "特定于Patreon"
+    },
+    "the-server-will-use-your-patreon-profile-id-to-ensure-your-pledge-to-grant-the-patron-role-:f": {
+        "origin": "\r\n\t\tThe server will use your Patreon profile id to ensure your pledge to grant the \"Patron\" role.\r\n\t\t",
+        "translated": "\r\n\t\t服务器将使用您的Patreon个人资料ID来确保您的捐赠以获得\"赞助者\"角色。\r\n\t\t"
+    },
+    "third-party-social-applications:f": {
+        "origin": "Third-party social applications",
+        "translated": "第三方社交应用"
+    },
+    "beatleader-uses-third-party-social-applications-to-provide-additional-features-these-applications-ma:l221": {
+        "origin": "\r\n\t\tBeatLeader uses third-party social applications to provide additional features. These applications may collect additional data about you.\r\n\t\tBeatLeader will collect your social account id and access token to use it with third-party social applications. You may delete this info\r\n\t\tby unlinking your social account from BeatLeader.\r\n\r\n\t\t",
+        "translated": "\r\n\t\tBeatLeader使用第三方社交应用提供附加功能。这些应用可能会收集有关您的其他数据。\r\n\t\tBeatLeader将收集您的社交账户ID和访问令牌以与第三方社交应用程序一起使用。您可以通过取消与BeatLeader的社交账户链接来删除这些信息。\r\n\r\n\t\t"
+    },
+    "can-i-delete-all-my-data-from-beatleader-:f": {
+        "origin": "Can I delete all my data from BeatLeader?",
+        "translated": "我可以从BeatLeader删除所有我的数据吗？"
+    },
+    "what-data-does-this-website-collect-:f": {
+        "origin": "What data does this website collect?",
+        "translated": "这个网站收集哪些数据？"
+    },
+    "no-data-is-collected-:f": {
+        "origin": "No data is collected.",
+        "translated": "不会收集任何数据。"
+    },
+    "does-this-website-use-cookies-:f": {
+        "origin": "Does this website use cookies?",
+        "translated": "这个网站使用cookies吗？"
+    },
+    "yes-this-website-uses-a-single-authentication-cookie-to-store-your-login-session-:f": {
+        "origin": "Yes! This website uses a single authentication cookie to store your login session.",
+        "translated": "是的！这个网站使用一种身份验证cookie来存储您的登录会话。"
+    },
+    "no-cookies-were-used-for-tracking-or-any-other-purposes-:f": {
+        "origin": "\r\n\t\tNo cookies were used for tracking or any other purposes.\r\n\r\n\t\t",
+        "translated": "没有使用Cookie进行追踪或其他任何目的。\r\n\r\n"
+    },
+    "does-this-website-use-third-party-services-:f": {
+        "origin": "Does this website use third-party services?",
+        "translated": "这个网站使用第三方服务吗？"
+    },
+    "yes-this-website-uses-other-awesome-beat-saber-projects-like-beatsaver-accsaber-beatsavior-and-arcvi:l87": {
+        "origin": "Yes! This website uses other awesome Beat Saber projects like BeatSaver, AccSaber, BeatSavior and ArcViewer. No data is sent there,\r\n\t\t\tbut they may collect it on opening dedicated service website",
+        "translated": "是的！这个网站使用了其他很棒的Beat Saber项目，比如BeatSaver、AccSaber、BeatSavior和ArcViewer。但不会传送任何数据到这些网站，但是它们可能会在打开专用服务网站时收集数据。\r\n"
+    },
+    "what-data-does-web-replay-player-website-collect-:f": {
+        "origin": "What data does web replay player website collect?",
+        "translated": "Web回放播放器网站收集哪些数据？"
+    },
+    "what-data-does-web-beatleader-discord-bots-collect-:f": {
+        "origin": "What data does web BeatLeader discord bots collect?",
+        "translated": "Web BeatLeader Discord机器人收集哪些数据？"
+    },
+    "your-discord-user-id-and-data-from-the-beatleader-api:f": {
+        "origin": "Your Discord user id and data from the BeatLeader API",
+        "translated": "您的Discord用户ID和来自BeatLeader API的数据。\r\n"
+    },
+    "404-you-missed:f": {
+        "origin": "404 | You Missed",
+        "translated": "404 | 您错过了"
+    },
+    "if-you-have-any-issues-with-mods-websites-or-the-app-:f": {
+        "origin": "\r\n\r\n\t\tIf you have any issues with mods, websites or the app -",
+        "translated": "\r\n\r\n如果您对模组、网站或应用有任何问题-"
+    },
+    "join-our-discord-server:f": {
+        "origin": "Join our Discord server",
+        "translated": "加入我们的Discord服务器"
+    },
+    "and-ask-in:f": {
+        "origin": " and ask in\r\n\t\t",
+        "translated": "并在"
+    },
+    "-help:f": {
+        "origin": "#help",
+        "translated": "#help"
+    },
+    "-write-a-report-in:f": {
+        "origin": ", write a report in\r\n\t\t",
+        "translated": "频道中提问，或在"
+    },
+    "-bugreports:f": {
+        "origin": "#bugreports",
+        "translated": "#bugreports"
+    },
+    "or-ping:f": {
+        "origin": "\r\n\t\tor ping ",
+        "translated": "频道中提交报告，或私信ping"
+    },
+    "nsgolova-3325-:f": {
+        "origin": "NSGolova#3325.",
+        "translated": "NSGolova#3325。"
+    },
+    "or:f": {
+        "origin": "\r\n\r\n\t\tor"
+    },
+    "write-me-an-email:f": {
+        "origin": "Write me an email",
+        "translated": "给我写封邮件"
+    },
+    "-and-i-ll-know-a:f": {
+        "origin": ". And I'll know a ",
+        "translated": "。并且我会给你找一个"
+    },
+    "clan-for-you:f": {
+        "origin": "clan for you",
+        "translated": "战队"
+    },
+    "log-in:f": {
+        "origin": "Log In",
+        "translated": "登录"
+    },
+    "log-in-with-steam-or-the-account-you-created-in-game-:f": {
+        "origin": "Log in with Steam or the account you created in game.",
+        "translated": "使用Steam或在游戏中创建的账号登录。"
+    },
+    "i-m-not-a-mapper:f": {
+        "origin": "I'm not a mapper",
+        "translated": "我不是制图者"
+    },
+    "by-using-beatsaver-login-you-are-making-the-account-not-usable-in-game-make-sure-you-understand-what:l14": {
+        "origin": "By using BeatSaver login you are making the account not usable in-game. Make sure you understand what you are doing",
+        "translated": "通过使用BeatSaver登录，你将使账号无法在游戏中使用。请确保你明白自己在做什么"
+    },
+    "login-may-differ-from-username:f": {
+        "origin": "Login, may differ from username",
+        "translated": "登录，可能与用户名不同"
+    },
+    "password:f": {
+        "origin": "Password",
+        "translated": "密码"
+    },
+    "forgot-password-:f": {
+        "origin": "forgot password?",
+        "translated": "忘记密码了吗？"
+    },
+    "to-use-quest-mod-sign-up-in-the-mod-preferences-with-new-login-and-password:f": {
+        "origin": "To use Quest mod - sign up in the mod preferences with new login and password ",
+        "translated": "要使用Quest的模组，请在模组偏好设置中注册新的登录名和密码。"
+    },
+    "to-log-in-with-oculus-pc-:f": {
+        "origin": "To log in with Oculus PC - ",
+        "translated": "要使用Oculus PC登录，请"
+    },
+    "check-this-instruction:f": {
+        "origin": "check this instruction",
+        "translated": "查看这份说明"
+    },
+    "your-beatleader-account-will-be-suspended-:f": {
+        "origin": "Your BeatLeader account will be suspended!",
+        "translated": "您的BeatLeader账户将会被暂停！"
+    },
+    "login-with-beatleader:f": {
+        "origin": "Login with BeatLeader",
+        "translated": "使用BeatLeader登录"
+    },
+    "-welcome-:f": {
+        "origin": ", Welcome!",
+        "translated": "，欢迎您！"
+    },
+    "wants-to-access-your-beatleader-account:f": {
+        "origin": " wants to access your BeatLeader account",
+        "translated": " wants to access your BeatLeader account"
+    },
+    "this-will-allow:f": {
+        "origin": "This will allow ",
+        "translated": "This will allow "
+    },
+    "to-:f": {
+        "origin": " to:",
+        "translated": " to:"
+    },
+    "events:f": {
+        "origin": "Events",
+        "translated": "Events"
+    },
+    "all:f": {
+        "origin": "ALL ",
+        "translated": "ALL "
+    },
+    "any:f": {
+        "origin": "ANY ",
+        "translated": "ANY "
+    },
+    "settings:f": {
+        "origin": "\r\n\r\n\t\t\tSettings\r\n\r\n\t\t\t",
+        "translated": "\r\n\r\n\t\t\tSettings\r\n\r\n\t\t\t"
+    },
+    "hello-future-beatleader-:f": {
+        "origin": "Hello, future BeatLeader!",
+        "translated": "Hello, future BeatLeader!"
+    },
+    "this-is-beat-saber-leaderboard-:f": {
+        "origin": "This is Beat Saber leaderboard!",
+        "translated": "这是 Beat Saber 排行榜！"
+    },
+    "start-posting-your-scores-to-compete-with-others-on-more-than-100-000-different-maps-:f": {
+        "origin": "Start posting your scores to compete with others on more than 100,000 different maps.",
+        "translated": "开始上传你的分数，在超过100,000个不同的地图上与其他人竞争。"
+    },
+    "in-game-leaderboards:f": {
+        "origin": "In-game leaderboards",
+        "translated": "游戏内排行榜"
+    },
+    "for-custom-maps-:f": {
+        "origin": "for custom maps!",
+        "translated": "适用于自定义地图！"
+    },
+    "gameplay-replays-:f": {
+        "origin": "Gameplay replays!",
+        "translated": "游戏回放！"
+    },
+    "fully-open-source-project-and-community:f": {
+        "origin": "Fully open-source project and community",
+        "translated": "完全开源的项目和社区"
+    },
+    "complexity-ratings-for-all-maps:f": {
+        "origin": "Complexity ratings for all maps",
+        "translated": "所有地图的复杂度评级"
+    },
+    "ranked-maps-to-earn-performance-points:f": {
+        "origin": "Ranked maps to earn Performance Points",
+        "translated": "排名地图以获得表现积分"
+    },
+    "detailed-statistics-for-every-score:f": {
+        "origin": "Detailed statistics for every score",
+        "translated": "每个得分的详细统计数据"
+    },
+    "clans-events-and-many-more-:f": {
+        "origin": "Clans, events, and many more!",
+        "translated": "部落、活动等等！"
+    },
+    "check-out:f": {
+        "origin": "Check out ",
+        "translated": "请查看 "
+    },
+    "the-global-rankings:f": {
+        "origin": "the global rankings",
+        "translated": "全球排名"
+    },
+    "to-find-the-best-players:f": {
+        "origin": " to find the best players",
+        "translated": "以找到最佳选手"
+    },
+    "we-aggregate-the-data-from-other-cool-projects-to-help-you-play-better-:f": {
+        "origin": "We aggregate the data from other cool projects to help you play better:",
+        "translated": "我们汇总了来自其他酷炫项目的数据，帮助您玩得更好:"
+    },
+    "beatsaver:f": {
+        "origin": " BeatSaver ",
+        "translated": " BeatSaver "
+    },
+    "arcviewer:f": {
+        "origin": " ArcViewer ",
+        "translated": " ArcViewer "
+    },
+    "accsaber:f": {
+        "origin": "AccSaber",
+        "translated": "AccSaber"
+    },
+    "beastsaber:f": {
+        "origin": " BeastSaber ",
+        "translated": " BeastSaber "
+    },
+    "beatsavior:f": {
+        "origin": " BeatSavior ",
+        "translated": " BeatSavior "
+    },
+    "never-modded-beat-saber-:f": {
+        "origin": "Never modded Beat Saber? ",
+        "translated": "从未修改过 Beat Saber? "
+    },
+    "it-s-easy-:f": {
+        "origin": "It's easy!",
+        "translated": "很简单！"
+    },
+    "yay-thank-you-for-supporting-beatleader-:f": {
+        "origin": "Yay! Thank you for supporting BeatLeader!❤️",
+        "translated": "耶！谢谢您支持 BeatLeader！❤️"
+    },
+    "claim-your-benefits-:f": {
+        "origin": "\r\n\t\t\tClaim your benefits:\r\n\t\t",
+        "translated": "\r\n\t\t\t领取您的福利：\r\n\t\t"
+    },
+    "reesabers:f": {
+        "origin": "Reesabers",
+        "translated": "Reesabers"
+    },
+    "the-most-advanced-and-beautiful-custom-sabers-mod-for-beat-saber:f": {
+        "origin": "The most advanced and beautiful custom sabers mod for Beat Saber",
+        "translated": "为Beat Saber设计的最先进和美丽的自定义剑MOD。"
+    },
+    "a-ton-of-customizations-to-make-your-game-stand-out-not-only-for-you-but-for-your-recordings-as-well:f": {
+        "origin": "A ton of customizations to make your game stand out not only for you, but for your recordings as well",
+        "translated": "大量自定义选项使您的游戏不仅对您自己而且对录像产生独特效果。"
+    },
+    "built-in-motion-blur-for-the-smoothest-sabers-you-have-ever-experienced:f": {
+        "origin": "Built-in motion blur for the smoothest sabers you have ever experienced",
+        "translated": "内置动态模糊，使您体验到最流畅的剑。"
+    },
+    "profile-recognition:f": {
+        "origin": "Profile recognition",
+        "translated": "个人资料识别。"
+    },
+    "select-one-of-the-stunning-avatar-borders:f": {
+        "origin": "Select one of the stunning avatar borders",
+        "translated": "选择一个令人惊叹的角色边框。"
+    },
+    "7-more-scores-to-pin-:f": {
+        "origin": "7 more scores to pin!",
+        "translated": "还有7个更多的得分可以添加！"
+    },
+    "customize-colors-for-web-replays-and-embeds:f": {
+        "origin": "Customize colors for web replays and embeds",
+        "translated": "为网络重放和嵌入式视频自定义颜色。"
+    },
+    "social-links-in-game:f": {
+        "origin": "Social links in-game",
+        "translated": "游戏内置社交链接。"
+    },
+    "add-a-message-to-show-in-the-game-only-for-sponsors-:f": {
+        "origin": "Add a message to show in the game (only for sponsors)",
+        "translated": "在游戏中添加要显示的消息（仅限赞助商）"
+    },
+    "special-powers:f": {
+        "origin": "Special powers",
+        "translated": "特殊技能"
+    },
+    "access-private-chat-for-supporters:f": {
+        "origin": "Access private chat for supporters",
+        "translated": "访问支持者私聊"
+    },
+    "priority-for-feature-requests:f": {
+        "origin": "Priority for feature requests",
+        "translated": "优先处理功能请求"
+    },
+    "roles-in-discord-server:f": {
+        "origin": "Roles in Discord server",
+        "translated": "在Discord服务器中拥有角色"
+    },
+    "already-a-patron-link-your-account-here-to-receive-patreon-features-for-your-tier-:f": {
+        "origin": "\r\n\t\t\t\t\tAlready a patron? Link your account here to receive patreon features for your tier.",
+        "translated": "\r\n\t\t\t\t\t已经是赞助者了吗？在此处链接您的帐户，以获得您的等级的 patreon 功能。"
+    },
+    "if-you-are-not-yet-a-patron-you-can-become-one:f": {
+        "origin": "\r\n\t\t\t\t\tIf you are not yet a patron, you can become one\r\n\t\t\t\t\t",
+        "translated": "\r\n\t\t\t\t\t如果您还不是赞助者，可以成为一位。\r\n\t\t\t\t\t"
+    },
+    "2023-census-of-beat-saber-users:f": {
+        "origin": "2023 Census of Beat Saber Users",
+        "translated": "2023 年 Beat Saber 用户普查"
+    },
+    "thank-you-for-your-contribution-:f": {
+        "origin": "Thank you for your contribution!",
+        "translated": "谢谢您的贡献！\n"
+    },
+    "your-responses-will-have-a-meaningful-impact-on-the-beat-saber-modding-community-in-addition-to-adva:l75": {
+        "origin": "Your responses will have a meaningful impact on the Beat Saber modding community, in addition to advancing public knowledge on\r\n\t\t\tsafety, usability, and data security/privacy in VR.\r\n\t\t",
+        "translated": "您的回答对于Beat Saber的修改社区有重要影响，同时也推动了VR领域的安全性、可用性以及数据安全/隐私方面的公众知识。\n"
+    },
+    "go-to-survey:f": {
+        "origin": "Go to survey",
+        "translated": "进入调查"
+    },
+    "beat-saber-in-numbers:f": {
+        "origin": "Beat Saber in Numbers",
+        "translated": "Beat Saber的数字统计"
+    },
+    "beatleader-together-with-university-of-california-berkeley-conducted-a-large-scale-comprehensive-sur:l325": {
+        "origin": "\r\n\t\t\tBeatLeader together with University of California, Berkeley conducted a large-scale comprehensive survey of 1,006 Beat Saber players\r\n\t\t\tthat sheds light on several important aspects of playerbase, including their background, biometrics, demographics, health information,\r\n\t\t\tbehavioral patterns, and technical device specifications. This further provide insights into the ranking community and potential\r\n\t\t\tcorrelation with player performance.\r\n\t\t",
+        "translated": "\n\t\t\tBeatLeader与加利福尼亚大学伯克利分校合作进行了一项规模庞大的综合调查，共有1,006名Beat Saber玩家参与，揭示了玩家群体的多个重要方面，包括他们的背景、生理数据、人口统计信息、健康状况、行为模式和设备技术规格。这进一步提供了对排名社区和与玩家表现的潜在相关性的见解。\n"
+    },
+    "pdf:f": {
+        "origin": "PDF",
+        "translated": "PDF"
+    },
+    "the-survey-was-conducted-among-ranked-players-and-the-results-might-not-be-representative-of-all-bea:l192": {
+        "origin": "\r\n\t\t\tThe survey was conducted among ranked players, and the results might not be representative of all Beat Saber players. Additionally,\r\n\t\t\tthe survey relied on self-reported data, which can be subject to bias. And correlation does not imply causation, so these findings\r\n\t\t\tshould be interpreted with caution.\r\n\t\t",
+        "translated": "\n\t\t\t此调查针对排名玩家进行，结果可能不能代表所有Beat Saber玩家。此外，调查依赖于自我报告的数据，可能存在偏见。而相关性并不意味着因果关系，因此应谨慎解读这些发现。\n"
+    },
+    "key-findings:f": {
+        "origin": "Key findings",
+        "translated": "主要发现"
+    },
+    "age-:f": {
+        "origin": "Age:",
+        "translated": "年龄："
+    },
+    "younger-players-outperform-older-players-on-average-with-18-19-being-the-best-performing-age-group-p:l113": {
+        "origin": " Younger players outperform older players on average, with 18-19 being the best performing age group. Possible explanations\r\n\t\t\t\tinclude a reduction with age of eyesight, reaction time, physical fitness, and neuroplasticity.\r\n\t\t\t",
+        "translated": " 年纪较小的玩家平均表现优于年纪较大的玩家，其中18-19岁年龄组的表现最好。可能的解释包括随着年龄增长，视力、反应时间、体能和神经可塑性的减少。\r\n\t\t\t"
+    },
+    "physical-fitness-:f": {
+        "origin": "Physical Fitness:",
+        "translated": "身体素质："
+    },
+    "we-found-that-users-with-any-experience-playing-an-individual-or-team-sport-perform-11-9-better-than:l201": {
+        "origin": " We found that users with any experience playing an individual or team sport perform 11.9% better than\r\n\t\t\t\tthose without such experience on average. Sports requiring a high degree of hand-eye coordination, such as Badminton, Tennis, and Golf,\r\n\t\t\t\tappear to have the highest positive effect on Beat Saber performance.\r\n\t\t\t",
+        "translated": " 我们发现有任何个人或团队运动经验的用户平均表现比没有这种经验的用户好11.9%。像羽毛球、网球和高尔夫这样需要高度手眼协调能力的运动似乎对节奏光剑游戏的表现有最积极的影响。\r\n\t\t\t"
+    },
+    "behavior-patterns-:f": {
+        "origin": "Behavior Patterns:",
+        "translated": "行为模式："
+    },
+    "warming-up-and-being-healthy-generally-improves-performance-in-the-game-:f": {
+        "origin": " Warming up and being healthy generally improves performance in the game.\r\n\t\t\t",
+        "translated": " 热身和保持健康通常会提高游戏表现。\r\n\t\t\t"
+    },
+    "unexpected-correlations-with-performance:f": {
+        "origin": "Unexpected Correlations with Performance",
+        "translated": "与表现的意外相关因素"
+    },
+    "experience-with-rhythm-games-:f": {
+        "origin": "Experience with Rhythm Games:",
+        "translated": "对节奏游戏的经验："
+    },
+    "having-experience-with-rhythm-games-other-than-beat-saber-has-a-slight-negative-effect-on-beat-saber:l13": {
+        "origin": " Having experience with rhythm games other than Beat Saber has a slight negative effect\r\n\t\t\t\ton Beat Saber performance.\r\n\t\t\t",
+        "translated": "参与过除了Beat Saber以外的其他音乐游戏会对Beat Saber的表现产生轻微的负面影响。\r\n\t\t\t"
+    },
+    "musical-background-:f": {
+        "origin": "Musical Background:",
+        "translated": "音乐背景："
+    },
+    "also-experience-with-musical-instruments-or-dancing-has-a-slight-negative-effect-on-beat-saber-perfo:l84": {
+        "origin": " Also experience with musical instruments or dancing has a slight negative effect on Beat Saber performance.\r\n\t\t\t\tBeat Saber in fact is more like an athletic sport than a typical rhythm game.\r\n\t\t\t",
+        "translated": "此外，对乐器或舞蹈有经验也会对Beat Saber的表现产生轻微的负面影响。实际上，Beat Saber更像是一项体育运动，而不是传统的节奏游戏。\r\n\t\t\t"
+    },
+    "operating-system-:f": {
+        "origin": "Operating System:",
+        "translated": "操作系统："
+    },
+    "windows-10-users-outperform-windows-11-users-by-an-average-of-10-2-a-possible-explanation-for-this-m:l77": {
+        "origin": " Windows 10 users outperform Windows 11 users by an average of 10.2%. A possible explanation for this\r\n\t\t\t\tmay be that those who primarily use their PC for gaming may prefer Windows 10.\r\n\t\t\t",
+        "translated": "相比于Windows 11用户，Windows 10用户的表现平均超过10.2%。可能的解释是主要用于游戏的PC用户更喜欢使用Windows 10。\r\n\t\t\t"
+    },
+    "clothing-:f": {
+        "origin": "Clothing:",
+        "translated": "服装："
+    },
+    "in-general-less-clothing-appears-to-correlate-with-better-performance-with-fewer-garments-on-the-upp:l191": {
+        "origin": " In general, less clothing appears to correlate with better performance, with fewer garments on the upper body,\r\n\t\t\t\tlower body, and feet all being associated with better average scores. This could be explained by the fact that clothing may serve to\r\n\t\t\t\tlimit range of motion, or to reduce heat dissipation.\r\n\t\t\t",
+        "translated": "一般而言，穿得较少与较好的表现呈相关性，上身、下身和脚上的衣物越少，与更好的平均分数相关。这可能是因为衣物可能限制了动作范围，或减少了热量散发。\r\n\t\t\t"
+    },
+    "political-orientation-:f": {
+        "origin": "Political Orientation:",
+        "translated": "政治取向："
+    },
+    "self-identified-conservatives-outperform-self-identified-liberals-by-an-average-of-20-8-this-trend-i:l108": {
+        "origin": " Self-identified conservatives outperform self-identified liberals by an average of 20.8%. This\r\n\t\t\t\ttrend is particularly significant as it runs contrary to the finding that younger players generally perform better ¯\\_(ツ)_/¯\r\n\t\t\t",
+        "translated": "自我认同为保守派的人平均表现比自我认同为自由派的人好出20.8%。这一趋势尤为重要，因为它与一般情况下年轻玩家表现更好的发现相矛盾 ¯\\_(ツ)_/¯"
+    },
+    "thanks-to-everyone-who-took-part-in-the-survey-your-responses-provided-insights-on-things-we-always-:l15": {
+        "origin": "Thanks to everyone who took part in the survey! Your responses provided insights on things we always wondered about.",
+        "translated": "感谢参与调查的每个人！你们的回答为我们提供了我们一直想知道的见解。"
+    },
+    "achievements-were-updated-according-to-the-quality-of-the-data-you-provided-contact-nsgolova-if-you-:l67": {
+        "origin": "\r\n\t\t\tAchievements were updated according to the quality of the data you provided. Contact NSGolova if you don't have achievement in your\r\n\t\t\tprofile, but took part in the survey.\r\n\t\t",
+        "translated": "成就根据你提供的数据质量进行了更新。如果你参与了调查但在你的个人资料中没有成就，请联系NSGolova。"
+    },
+    "good-luck-don-t-forget-to-warm-up-and-may-the-115s-be-with-you-:f": {
+        "origin": "Good luck, don't forget to warm up and may the 115s be with you! (✿◠‿◠)",
+        "translated": "祝你好运，不要忘记热身，愿115与你同在！(✿◠‿◠)"
+    },
+    "let-s-create-something-awesome-together-:f": {
+        "origin": "Let's create something awesome together!",
+        "translated": "让我们一起创造一些令人惊叹的事情！"
+    },
+    "oauth-applications:f": {
+        "origin": "\r\n\t\t\t\tOauth Applications\r\n\r\n\t\t\t\t",
+        "translated": "Oauth应用程序"
+    },
+    "beatleader:f": {
+        "origin": "BEATLEADER",
+        "translated": "BEATLEADER"
+    },
+    "bl:f": {
+        "origin": "BL",
+        "translated": "BL"
+    },
+    "me:f": {
+        "origin": "\r\n\r\n\t\t\t\tMe\r\n\t\t\t",
+        "translated": "\r\n\r\n\t\t\t\t我\r\n\t\t\t"
+    },
+    "search:f": {
+        "origin": "\r\n\r\n\t\tSearch\r\n\t",
+        "translated": "\r\n\r\n\t\t搜索\r\n\t"
+    },
+    "search-:f": {
+        "origin": "Search...",
+        "translated": "搜索..."
+    },
+    "ctrl-:f": {
+        "origin": "Ctrl + /",
+        "translated": "Ctrl + /"
+    },
+    "new-ranked-batch-in:f": {
+        "origin": "New ranked batch in",
+        "translated": "新的评级批次将在"
+    },
+    "days:f": {
+        "origin": "Days",
+        "translated": "天"
+    },
+    "hours:f": {
+        "origin": "Hours",
+        "translated": "小时"
+    },
+    "minutes:f": {
+        "origin": "Minutes",
+        "translated": "分钟"
+    },
+    "seconds:f": {
+        "origin": "Seconds",
+        "translated": "秒"
+    },
+    "on:f": {
+        "origin": "on",
+        "translated": "打开"
+    },
+    "off:f": {
+        "origin": "off",
+        "translated": "关闭"
+    },
+    "change:f": {
+        "origin": "Change",
+        "translated": "切换"
+    },
+    "this-is-magic-playlist-which-will-be-automatically-synced-by-mod-:f": {
+        "origin": "This is magic playlist which will be automatically synced by mod. ",
+        "translated": "这是一个神奇的播放列表，将由模组自动同步。"
+    },
+    "quest-v0-4-:f": {
+        "origin": "Quest v0.4+.",
+        "translated": "Quest v0.4+。"
+    },
+    "songs:f": {
+        "origin": " songs",
+        "translated": "首歌曲"
+    },
+    "accuracy-ranking:f": {
+        "origin": " accuracy ranking",
+        "translated": "准确度排名"
+    },
+    "duration-:f": {
+        "origin": "Duration:",
+        "translated": "持续时间："
+    },
+    "notes-:f": {
+        "origin": " Notes:\r\n\t\t\t\t\t",
+        "translated": "音符：\r\n\t\t\t\t\t"
+    },
+    "bpm-:f": {
+        "origin": " BPM:\r\n\t\t\t\t\t",
+        "translated": "BPM：\r\n\t\t\t\t\t"
+    },
+    "njs-:f": {
+        "origin": " NJS:\r\n\t\t\t\t\t",
+        "translated": "NJS：\r\n\t\t\t\t\t"
+    },
+    "offset-:f": {
+        "origin": " Offset:\r\n\t\t\t\t\t",
+        "translated": "偏移量：\r\n\t\t\t\t\t"
+    },
+    "nps-:f": {
+        "origin": " NPS:\r\n\t\t\t\t\t",
+        "translated": "NPS：\r\n\t\t\t\t\t"
+    },
+    "bombs-:f": {
+        "origin": " Bombs:\r\n\t\t\t\t\t",
+        "translated": "炸弹：\r\n\t\t\t\t\t"
+    },
+    "obstacles-:f": {
+        "origin": " Obstacles:\r\n\t\t\t\t\t",
+        "translated": "障碍物：\r\n\t\t\t\t\t"
+    },
+    "discord-forum:f": {
+        "origin": " Discord Forum ",
+        "translated": " Discord论坛 "
+    },
+    "criteria-checked-by-:f": {
+        "origin": " Criteria checked by:",
+        "translated": " 由以下人员评估："
+    },
+    "approved-by-rt-:f": {
+        "origin": " Approved by RT:",
+        "translated": " 经RT批准："
+    },
+    "ready-to-rank:f": {
+        "origin": " Ready to rank ",
+        "translated": " 准备进行评级 "
+    },
+    "hide-qualification-changelog:f": {
+        "origin": "Hide qualification changelog",
+        "translated": "隐藏资格变更日志"
+    },
+    "started:f": {
+        "origin": "\r\n\t\t\t\tStarted ",
+        "translated": "\r\n\t\t\t\t开始 "
+    },
+    "by:f": {
+        "origin": " by\r\n\t\t\t",
+        "translated": " by\r\n\t\t\t"
+    },
+    "ranked-unranked:f": {
+        "origin": "Ranked → Unranked",
+        "translated": "评级完成 → 取消评级"
+    },
+    "modifiers-updated:f": {
+        "origin": "Modifiers updated",
+        "translated": "修饰符已更新"
+    },
+    "hide-reweighing-changelog:f": {
+        "origin": "Hide reweighing changelog",
+        "translated": "隐藏重评变更日志"
+    },
+    "hide-ranking-changelog:f": {
+        "origin": "Hide ranking changelog",
+        "translated": "隐藏排名变更日志"
+    },
+    "profanity-check-:f": {
+        "origin": "Profanity check:",
+        "translated": "亵渎检查:"
+    },
+    "type-:f": {
+        "origin": "Type:",
+        "translated": "类型:"
+    },
+    "intensity-:f": {
+        "origin": "Intensity:",
+        "translated": "强度:"
+    },
+    "in:f": {
+        "origin": "In",
+        "translated": "在"
+    },
+    "time-:f": {
+        "origin": "Time: ",
+        "translated": "时间: "
+    },
+    "x-:f": {
+        "origin": "\r\n\t\t\t\t\t\t\t\t\t\t\t\tX: ",
+        "translated": "\r\n\t\t\t\t\t\t\t\t\t\t\t\tX: "
+    },
+    "mapped-by-:f": {
+        "origin": "Mapped by: ",
+        "translated": "映射者："
+    },
+    "twitch-vods:f": {
+        "origin": " Twitch VODs",
+        "translated": "Twitch VODs"
+    },
+    "date:f": {
+        "origin": "Date",
+        "translated": "日期"
+    },
+    "video:f": {
+        "origin": "Video",
+        "translated": "视频"
+    },
+    "duration:f": {
+        "origin": "Duration",
+        "translated": "时长"
+    },
+    "pinned-scores:f": {
+        "origin": "Pinned scores",
+        "translated": "置顶分数"
+    },
+    "achievements:f": {
+        "origin": "Achievements",
+        "translated": "成就"
+    },
+    "leader:f": {
+        "origin": "Leader",
+        "translated": "领导者"
+    },
+    "players-participating:f": {
+        "origin": "Players participating",
+        "translated": "参与的玩家"
+    },
+    "will-end:f": {
+        "origin": "Will end ",
+        "translated": "将结束"
+    },
+    "scores-of-followed:f": {
+        "origin": "Scores of Followed",
+        "translated": "跟进的分数"
+    },
+    "ranking-of-followed:f": {
+        "origin": "\r\n\t\t\t\tRanking of Followed\r\n\t\t\t\t",
+        "translated": "\r\n\t\t\t\t跟进排名\r\n\t\t\t\t"
+    },
+    "icons-on-avatars:f": {
+        "origin": "Icons on avatars",
+        "translated": "头像上的图标"
+    },
+    "sort-scores-by:f": {
+        "origin": "Sort scores by",
+        "translated": "根据分数排序"
+    },
+    "rank-and-pp-gain:f": {
+        "origin": "Rank and pp gain",
+        "translated": "排名和pp增益"
+    },
+    "days-of-history:f": {
+        "origin": "Days of history",
+        "translated": "历史记录天数"
+    },
+    "profile-parts-to-show-:f": {
+        "origin": "Profile parts to show:",
+        "translated": "要显示的个人资料部分："
+    },
+    "graph-height-px-:f": {
+        "origin": "Graph height(px):",
+        "translated": "图表高度(px)："
+    },
+    "graph-legend-:f": {
+        "origin": "Graph legend:",
+        "translated": "图例："
+    },
+    "preset-:f": {
+        "origin": "Preset:",
+        "translated": "预设："
+    },
+    "score-metrics-settings-:f": {
+        "origin": "Score metrics settings:",
+        "translated": "分数指标设置："
+    },
+    "score-comparison-settings-:f": {
+        "origin": "Score comparison settings:",
+        "translated": "分数比较设置："
+    },
+    "buttons-to-show-:f": {
+        "origin": "Buttons to show:",
+        "translated": "要显示的按钮："
+    },
+    "score-info-to-show-:f": {
+        "origin": "Score info to show:",
+        "translated": "要显示的分数信息："
+    },
+    "score-details-settings-:f": {
+        "origin": "Score details settings:",
+        "translated": "分数详细设置："
+    },
+    "default-acc-chart-in-details:f": {
+        "origin": "Default acc chart in details",
+        "translated": "默认的准确度图表细节"
+    },
+    "score-comparison:f": {
+        "origin": "Score comparison",
+        "translated": "分数比较"
+    },
+    "locale:f": {
+        "origin": "Locale",
+        "translated": "语言环境"
+    },
+    "one-click-installs:f": {
+        "origin": "One-click installs",
+        "translated": "一键安装"
+    },
+    "web-replays:f": {
+        "origin": "Web replays",
+        "translated": "网页回放"
+    },
+    "date-format:f": {
+        "origin": "Date Format",
+        "translated": "日期格式"
+    },
+    "theme:f": {
+        "origin": "Theme",
+        "translated": "主题"
+    },
+    "background-image:f": {
+        "origin": "Background Image",
+        "translated": "背景图片"
+    },
+    "reset-to-default:f": {
+        "origin": "Reset to default",
+        "translated": "恢复为默认"
+    },
+    "main-color:f": {
+        "origin": "Main Color",
+        "translated": "主要颜色"
+    },
+    "header-color:f": {
+        "origin": "Header Color",
+        "translated": "标题颜色"
+    },
+    "fonts-google-fonts-or-system-:f": {
+        "origin": "Fonts (Google Fonts or System)",
+        "translated": "字体（Google字体或系统字体）"
+    },
+    "migrate:f": {
+        "origin": "Migrate",
+        "translated": "迁移"
+    },
+    "change-password:f": {
+        "origin": "Change password",
+        "translated": "更改密码"
+    },
+    "my-login:f": {
+        "origin": "My login",
+        "translated": "我的登录"
+    },
+    "link-socials:f": {
+        "origin": "Link socials",
+        "translated": "链接社交媒体"
+    },
+    "link-patreon:f": {
+        "origin": "Link Patreon",
+        "translated": "链接 Patreon"
+    },
+    "activate-account:f": {
+        "origin": "Activate account",
+        "translated": "激活账户"
+    },
+    "other-saved-automatically-account-synced-:f": {
+        "origin": "Other (saved automatically, account synced):",
+        "translated": "其他（自动保存，账户同步）:"
+    },
+    "to-enable-this-feature-please-support-us-on:f": {
+        "origin": "To enable this feature please support us on ",
+        "translated": "请通过以下方式支持我们以启用此功能："
+    },
+    "header-:f": {
+        "origin": "Header:",
+        "translated": "标题:"
+    },
+    "options:f": {
+        "origin": "Options",
+        "translated": "选项"
+    },
+    "3:f": {
+        "origin": "3",
+        "translated": "3"
+    },
+    "construct-your-hypotetical-player:f": {
+        "origin": "Construct your hypotetical player",
+        "translated": "构建你的虚拟玩家"
+    },
+    "with-desired-parameters-to-predict-pp-count-:f": {
+        "origin": "with desired parameters to predict PP count! ",
+        "translated": "以预测PP数!"
+    },
+    "employment-status-:f": {
+        "origin": "Employment Status:",
+        "translated": "就业状况:"
+    },
+    "educational-status-:f": {
+        "origin": "Educational Status:",
+        "translated": "教育水平:"
+    },
+    "primary-language-:f": {
+        "origin": "Primary Language:",
+        "translated": "主要语言:"
+    },
+    "base-stations-:f": {
+        "origin": "Base Stations:",
+        "translated": "基站数量:"
+    },
+    "rhythm-games-:f": {
+        "origin": "Rhythm Games:",
+        "translated": "节奏游戏:"
+    },
+    "athletics-:f": {
+        "origin": "Athletics:",
+        "translated": "运动："
+    },
+    "coffee-:f": {
+        "origin": "Coffee:",
+        "translated": "咖啡："
+    },
+    "preparation-:f": {
+        "origin": "Preparation:",
+        "translated": "准备："
+    },
+    "model-player-:f": {
+        "origin": "Model player: ",
+        "translated": "模型玩家： "
+    },
+    "pp:f": {
+        "origin": "pp",
+        "translated": "pp"
+    },
+    "note-it-will-be-impossible-to-change-after-creation:f": {
+        "origin": "Note: it will be impossible to change after creation",
+        "translated": "注意：创建后将无法更改"
+    },
+    "scopes:f": {
+        "origin": "Scopes",
+        "translated": "范围"
+    },
+    "redirect-urls-:f": {
+        "origin": "Redirect URLs:",
+        "translated": "重定向URL："
+    },
+    "song-s-:f": {
+        "origin": " song(s)",
+        "translated": "歌曲(s)"
+    },
+    "search-anything:f": {
+        "origin": "Search anything",
+        "translated": "搜索任何内容"
+    },
+    "tab:f": {
+        "origin": "tab",
+        "translated": "选项卡"
+    },
+    "to-switch-group:f": {
+        "origin": " to switch group ",
+        "translated": " 切换组别 "
+    },
+    "to-navigate:f": {
+        "origin": " to navigate\r\n\t\t\t",
+        "translated": " 导航\r\n\t\t\t"
+    },
+    "to-select:f": {
+        "origin": "\r\n\t\t\t\tto select\r\n\t\t\t",
+        "translated": "\r\n\t\t\t\t选择\r\n\t\t\t"
+    },
+    "esc:f": {
+        "origin": "esc",
+        "translated": "esc"
+    },
+    "to-close:f": {
+        "origin": " to close",
+        "translated": " 关闭"
+    },
+    "country-ranking:f": {
+        "origin": "Country ranking",
+        "translated": "Country ranking"
+    },
+    "acc-:f": {
+        "origin": " Acc ★",
+        "translated": " Acc ★"
+    },
+    "pass-:f": {
+        "origin": " Pass ★",
+        "translated": " Pass ★"
+    },
+    "tech-:f": {
+        "origin": " Tech ★",
+        "translated": " Tech ★"
+    },
+    "predicted-accability-avg:f": {
+        "origin": "Predicted accability (avg ",
+        "translated": "Predicted accability (avg "
+    },
+    "at-speed-:f": {
+        "origin": "At speed:",
+        "translated": "At speed:"
+    },
+    "vs-me-:f": {
+        "origin": "\r\n\t\t\t\tvs me (",
+        "translated": "\r\n\t\t\t\tvs me ("
+    },
+    "an-invitation-will-be-sent-to-the-player-to-join-the-clan-:f": {
+        "origin": "An invitation will be sent to the player to join the clan.",
+        "translated": "An invitation will be sent to the player to join the clan."
+    },
+    "this-message-will-be-shown-in-game-for-your-scores-:f": {
+        "origin": "This message will be shown in-game for your scores.",
+        "translated": "这个消息将在游戏中显示您的分数。\n您可以在这里使用 Unity 标签。\n请确保选择了正确的国家。您只能每30天更改一次。\n这个地图适合进行排名吗？\n地图状态\n条件检查结果"
+    },
+    "you-can-use:f": {
+        "origin": "\r\n\t\t\t\t\t\tYou can use "
+    },
+    "unity-tags:f": {
+        "origin": "Unity tags"
+    },
+    "here-:f": {
+        "origin": " here."
+    },
+    "make-sure-you-selected-right-country-you-can-change-it-only-every-30-days-:f": {
+        "origin": "Make sure you selected right country. You can change it only every 30 days."
+    },
+    "is-this-map-suitable-for-rank-:f": {
+        "origin": "Is this map suitable for rank?"
+    },
+    "map-status:f": {
+        "origin": "Map status"
+    },
+    "criteria-check-result:f": {
+        "origin": "Criteria check result"
+    },
+    "acc-rating-:f": {
+        "origin": "Acc rating:",
+        "translated": "Acc rating:"
+    },
+    "pass-rating-:f": {
+        "origin": "Pass rating:",
+        "translated": "Pass rating:"
+    },
+    "tech-rating-:f": {
+        "origin": "Tech rating:",
+        "translated": "Tech rating:"
+    },
+    "hide-modifiers:f": {
+        "origin": "Hide modifiers",
+        "translated": "Hide modifiers"
+    },
+    "keep-this-map-ranked-:f": {
+        "origin": "Keep this map ranked?",
+        "translated": "Keep this map ranked?"
+    },
+    "fail-reason-:f": {
+        "origin": "\r\n\t\t\tFail reason: ",
+        "translated": "\r\n\t\t\tFail reason: "
+    },
+    "are-you-sure-you-want-to-delete-all-cheezed-scores-:f": {
+        "origin": "Are you sure you want to delete all cheezed scores?",
+        "translated": "Are you sure you want to delete all cheezed scores?"
+    },
+    "are-you-sure-:f": {
+        "origin": "Are you sure?",
+        "translated": "Are you sure?"
+    },
+    "mapper-:f": {
+        "origin": "Mapper: ",
+        "translated": "创作者："
+    },
+    "plays-:f": {
+        "origin": " plays.\r\n\t\t\t\t\t",
+        "translated": " plays.\r\n\t\t\t\t\t"
+    },
+    "missing-template:f": {
+        "origin": "Missing template",
+        "translated": "缺少模板"
+    },
+    "metric:f": {
+        "origin": "Metric ",
+        "translated": "度量"
+    },
+    "primary-metric:f": {
+        "origin": " Primary metric ",
+        "translated": "主要度量"
+    },
+    "alternative-metrics:f": {
+        "origin": "Alternative metrics ",
+        "translated": "备选度量"
+    },
+    "they-will-be-shown-if-the-primary-metric-does-not-exist-such-as-pp-for-unrankeds-and-rotated-when-cl:l27": {
+        "origin": "They will be shown if the primary metric does not exist, such as PP for unrankeds, and rotated when clicked if more are selected.",
+        "translated": "如果主要度量不存在（如未排名的情况下的PP），它们将会被显示，如果选择了更多的度量，就可以点击旋转了。"
+    },
+    "hue:f": {
+        "origin": "Hue",
+        "translated": "色调"
+    },
+    "sat:f": {
+        "origin": "Sat",
+        "translated": "Sat"
+    },
+    "fail:f": {
+        "origin": "\r\n\t\t\t\t\tFAIL ",
+        "translated": "\r\n\t\t\t\t\tFAIL "
+    },
+    "at:f": {
+        "origin": "AT ",
+        "translated": "AT "
+    },
+    "fc:f": {
+        "origin": "FC",
+        "translated": "FC"
+    },
+    "-edited-:f": {
+        "origin": "(Edited)",
+        "translated": "(Edited)"
+    },
+    "beat-savior-average:f": {
+        "origin": "Beat Savior average",
+        "translated": "Beat Savior average"
+    },
+    "average-calculated-from:f": {
+        "origin": "Average calculated from ",
+        "translated": "Average calculated from "
+    },
+    "run-s-:f": {
+        "origin": " run(s).",
+        "translated": " run(s)."
+    },
+    "how-it-correlates-with-performance-:f": {
+        "origin": "How it correlates with performance?",
+        "translated": "如何与表现相关？"
+    },
+    "are-you-sure-you-want-to-reset-the-secret-this-will-break-your-current-set-up-:f": {
+        "origin": "Are you sure you want to reset the secret? This will break your current set up.",
+        "translated": "您确定要重置秘密吗？这将破坏您当前的设置。"
+    },
+    "players:f": {
+        "origin": "Players",
+        "translated": "玩家"
+    },
+    "this-vote-will-be-the-third-negative-:f": {
+        "origin": "\r\n\t\t\tThis vote will be the third negative?",
+        "translated": "\r\n\t\t\t这次投票会是第三次否决吗？"
+    },
+    "are-you-sure-you-want-to-stop-the-nomination-:f": {
+        "origin": "\r\n\t\t\tAre you sure you want to stop the nomination?\r\n\t\t",
+        "translated": "\r\n\t\t\t您确定要停止提名吗？\r\n\t\t"
+    },
+    "bot:f": {
+        "origin": "BOT",
+        "translated": "机器人"
+    },
+    "inactive:f": {
+        "origin": "Inactive",
+        "translated": "不活跃"
+    },
+    "reason-:f": {
+        "origin": "Reason:",
+        "translated": "原因："
+    },
+    "changed-by-admin:f": {
+        "origin": "Changed by Admin",
+        "translated": "Changed by Admin"
+    },
+    "if-you-play-like-this-:f": {
+        "origin": "\r\n\t\t\tIf you play like this:\r\n\t\t\t",
+        "translated": "\r\n\t\t\t如果你这样玩：\r\n\t\t\t"
+    },
+    "-vs:f": {
+        "origin": "(vs\r\n\t\t\t\t\t\t\t",
+        "translated": "(对战\r\n\t\t\t\t\t\t\t"
+    },
+    "acc:f": {
+        "origin": "Acc",
+        "translated": "Acc"
+    },
+    "td:f": {
+        "origin": "TD",
+        "translated": "TD"
+    }
+}
