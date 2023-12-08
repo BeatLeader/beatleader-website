@@ -119,7 +119,7 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-{#if $configStore.preferences.reebanner}
+<!-- {#if $configStore.preferences.reebanner}
 	<div class="reebanner">
 		<a class="reelink" href="https://www.patreon.com/posts/reesabers-on-92302764" />
 		<div class="banner-spacer" />
@@ -132,6 +132,28 @@
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
 					draft.preferences.reebanner = false;
+				});
+			}}><i class="fas fa-xmark" /></button>
+	</div>
+{/if} -->
+{#if $configStore.preferences.replayedbanner}
+	<div class="replayedbanner">
+		<a class="reelink" href="/replayed" />
+		<div class="banner-spacer" />
+		<img class="cover-1" src="https://eu.cdn.beatsaver.com/dd90f0e236c73c1a0565634bfd7eb168c0e81b58.jpg" />
+		<span class="replayed-link-text">Your 2023 rePlayed is here!</span>
+
+		<img class="cover-2" src="https://eu.cdn.beatsaver.com/4d03502003602e8e8f0d9f8c84a3e70da0c389f6.jpg" />
+		<img class="cover-3" src="https://eu.cdn.beatsaver.com/3b2005183b2ac76c2a65f34540ebb6fd293ddb38.jpg" />
+		<img class="cover-4" src="https://eu.cdn.beatsaver.com/6be290e33fd748cd678d4c38f1d59e582a44045f.jpg" />
+		<img class="cover-5" src="https://eu.cdn.beatsaver.com/8931f3f17f8f5259c076660c986b816d7e86d708.jpg" />
+		<img class="cover-6" src="https://eu.cdn.beatsaver.com/b97774a83bdfd669e1bd231039cccfa1162efa13.jpg" />
+		<button
+			class="close-banner"
+			title="Hide banner"
+			on:click|preventDefault|stopPropagation={() => {
+				$configStore = produce($configStore, draft => {
+					draft.preferences.replayedbanner = false;
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
@@ -292,6 +314,22 @@
 		pointer-events: none;
 	}
 
+	.replayedbanner {
+		background-color: rgb(99 0 178);
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
+	}
+
 	.reelink {
 		position: absolute;
 		width: 100%;
@@ -304,6 +342,12 @@
 		z-index: 101;
 		font-weight: 800;
 		color: cornflowerblue;
+	}
+
+	.replayed-link-text {
+		z-index: 101;
+		font-weight: 800;
+		color: #20a0ee;
 	}
 
 	.banner-spacer {
@@ -333,6 +377,72 @@
 		left: 65%;
 		top: -1.1em;
 		z-index: 100;
+	}
+
+	.cover-1 {
+		height: 4em;
+		position: absolute;
+		left: 25%;
+		top: -0.7em;
+		transform: rotateZ(7deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-2 {
+		height: 3em;
+		position: absolute;
+		left: 10%;
+		top: 0.5em;
+		transform: rotateZ(350deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-3 {
+		height: 2em;
+		position: absolute;
+		left: 19%;
+		top: -0.2em;
+		transform: rotateZ(3deg);
+		z-index: 100;
+		border-radius: 6px;
+		box-shadow: 1px 5px 7px #0000007a;
+	}
+
+	.cover-4 {
+		height: 4em;
+		position: absolute;
+		right: 7%;
+		top: -0.7em;
+		transform: rotateZ(4deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-5 {
+		height: 3em;
+		position: absolute;
+		right: 18%;
+		top: 0.6em;
+		transform: rotateZ(10deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-6 {
+		height: 4em;
+		position: absolute;
+		right: 25%;
+		top: -1.4em;
+		transform: rotateZ(349deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	:global(.notifications) {
@@ -374,7 +484,28 @@
 		.reesaber-blue {
 			display: none;
 		}
+		.cover-1 {
+			left: 65%;
+		}
+		.cover-3 {
+			left: 45%;
+		}
+		.cover-4 {
+			display: none;
+		}
+		.cover-5 {
+			display: none;
+		}
+		.cover-6 {
+			display: none;
+		}
 		.link-text {
+			color: white;
+			text-shadow: 3px 3px black;
+			margin-bottom: 0.2em;
+		}
+
+		.replayed-link-text {
 			color: white;
 			text-shadow: 3px 3px black;
 			margin-bottom: 0.2em;
