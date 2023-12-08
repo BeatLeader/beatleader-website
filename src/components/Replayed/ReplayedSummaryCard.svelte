@@ -70,13 +70,11 @@
 		try {
 			screenshoting = true;
 			const blob = await fetch(
-				`${BL_API_URL}screenshot/464x800/replayed${summaryType === 'mapper' ? '/mapper' : ''}?color=${colorStartIndex}`,
+				`${BL_API_URL}screenshot/464x800/replayed/replayed${summaryType === 'mapper' ? '/mapper' : ''}?color=${colorStartIndex}`,
 				{credentials: 'include'}
 			).then(response => response.blob());
-			try {
-				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
-				successToast('Screenshot Copied to Clipboard');
-			} catch {
+
+			const fallback = () => {
 				const anchor = document.createElement('a');
 				const objURL = URL.createObjectURL(blob);
 				anchor.href = objURL;
@@ -87,7 +85,19 @@
 				document.body.removeChild(anchor);
 				URL.revokeObjectURL(objURL);
 				successToast('Screenshot Saved');
-			}
+			};
+
+			navigator.permissions
+				.query({name: 'clipboard-write'})
+				.then(async result => {
+					if (result.state === 'granted' || result.state === 'prompt') {
+						await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+						successToast('Screenshot Copied to Clipboard');
+					} else {
+						fallback();
+					}
+				})
+				.catch(() => fallback());
 		} catch (e) {
 			addNotification({
 				text: 'Screenshot Failed',
