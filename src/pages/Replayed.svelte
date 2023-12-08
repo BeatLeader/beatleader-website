@@ -395,19 +395,38 @@
 							{#if showBeatSaverLogin}
 								<form action={BL_API_URL + 'signin'} method="post">
 									<input type="hidden" name="Provider" value="BeatSaver" />
-									<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed'} />
+									<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed/mapper'} />
 
 									<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
 								</form>
 							{/if}
 						</div>
 					{:else if replayedType === 'player'}
-						<h3>You need to play at least 1 map to get your 2023 replayed</h3>
+						<div class="centering-container">
+							<h3>
+								Sorry, it appears you a new player.<br /><br />Go play something from the ranked batch,<br />and let's meet back in a year!
+							</h3>
+						</div>
 					{:else if replayedType === 'mapper'}
-						<h3>Try linking your BeatSaver account</h3>
+						<div class="centering-container">
+							{#if $account?.player?.playerInfo?.mapperId}
+								<h3>
+									Looks like your mapping year was quiet.<br /><br />But it's always a good time to<br />map something for rePlayed 2024!
+								</h3>
+							{:else}
+								<h3>Please link your BeatSaver account to view<br /><b>Mapper rePlayed 2023</b></h3>
+
+								<form action={BL_API_URL + 'signin'} method="post">
+									<input type="hidden" name="Provider" value="BeatSaver" />
+									<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed/mapper'} />
+
+									<Button icon={beatSaverSvg} label="Link BeatSaver" type="submit" />
+								</form>
+							{/if}
+						</div>
 					{/if}
 				{:else}
-					<div class="spinner-container">
+					<div class="centering-container">
 						<Spinner />
 					</div>
 				{/if}
@@ -461,13 +480,15 @@
 		font-weight: 600;
 	}
 
-	.spinner-container {
+	.centering-container {
 		display: flex;
 		width: 100%;
 		height: 100%;
 		justify-content: center;
 		align-self: center;
 		align-items: center;
+		flex-direction: column;
+		gap: 1em;
 	}
 
 	.error {
