@@ -515,7 +515,7 @@
 		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
 		font-size: 3.5vh;
 
-		font-family: Noto Sans SC;
+		font-family: 'Noto Sans';
 		font-style: normal;
 		line-height: normal;
 		text-align: center;
