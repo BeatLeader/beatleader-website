@@ -18,6 +18,7 @@
 	export let clickAction;
 	export let nextAction;
 	export let forcedColor = null;
+	export let replayedType;
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -373,7 +374,7 @@
 
 				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<img class="bottom-icon" src="/assets/favicon.svg" />
-					<span>beatleader.xyz/replayed</span>
+					<span>beatleader.xyz/replayed{replayedType === 'mapper' ? '/mapper' : ''}</span>
 				</div>
 			</div>
 		{/if}

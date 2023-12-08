@@ -55,6 +55,7 @@
 				title: 'Your Top Mappers',
 				subText: 'This mapper was your favourite',
 				contentSubText: 'These are the top 5 mappers you played the most',
+				replayedType: 'player',
 				stats: {
 					type: 'playerList',
 					entries: data.topMappers.slice(0, 5),
@@ -67,6 +68,7 @@
 				title: 'Your Top Mappers %',
 				subText: 'You were one of the top players for this mapper',
 				contentSubText: 'You were one of the top players for these 5 mappers',
+				replayedType: 'player',
 				stats: {
 					type: 'playerList',
 					entries: data.topMappersPercentage.slice(0, 5),
@@ -79,6 +81,7 @@
 				title: 'Your Most Played',
 				subText: 'This map was your favourite',
 				contentSubText: 'These are the 5 maps you played the most',
+				replayedType: 'player',
 				stats: {
 					type: 'mapList',
 					entries: data.topMaps.slice(0, 5),
@@ -92,6 +95,7 @@
 					title: 'Your Most Failed',
 					subText: 'This map made you struggle the most',
 					contentSubText: 'These are the top 5 maps you failed the most',
+					replayedType: 'player',
 					stats: {
 						type: 'mapList',
 						entries: data.topFailed.slice(0, 5),
@@ -105,6 +109,7 @@
 					title: 'Your Most Restarted',
 					subText: 'You grinded this map a lot',
 					contentSubText: 'These are the top 5 maps you grinded the most times',
+					replayedType: 'player',
 					stats: {
 						type: 'mapList',
 						entries: data.topRestarted.slice(0, 5),
@@ -118,6 +123,7 @@
 				subText: 'How much did you play this year?',
 				contentSubText: 'Some other stats about your year',
 				forcedColor: 'rgb(89, 111, 255)',
+				replayedType: 'player',
 				stats: {
 					type: 'statList',
 					entries: [
@@ -220,6 +226,7 @@
 				title: 'Most Played Maps',
 				subText: 'This map was your most popular',
 				contentSubText: 'These are your 5 top played maps',
+				replayedType: 'mapper',
 				stats: {
 					type: 'mapList',
 					entries: data.topMaps.slice(0, 5),
@@ -233,6 +240,7 @@
 				subText: 'For how many players were you the top mapper?',
 				contentSubText: 'For how many players were you in the top 1, 3, or 5 of most played mappers?',
 				forcedColor: 'rgb(89, 111, 255)',
+				replayedType: 'mapper',
 				stats: {
 					type: 'statList',
 					entries: [
@@ -258,6 +266,7 @@
 				title: 'Your Top Players',
 				subText: 'This player played your maps the most',
 				contentSubText: 'These players played your maps the most',
+				replayedType: 'mapper',
 				stats: {
 					type: 'playerList',
 					entries: data.topPlayers.slice(0, 5),
@@ -271,6 +280,7 @@
 				subText: 'How much were your maps played this year?',
 				contentSubText: 'Some other stats about your year',
 				forcedColor: 'rgb(139, 52, 145)',
+				replayedType: 'mapper',
 				stats: {
 					type: 'statList',
 					entries: [
