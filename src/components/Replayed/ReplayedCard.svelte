@@ -5,6 +5,8 @@
 	import Reveal from '../Common/Reveal.svelte';
 	import {cubicOut} from 'svelte/easing';
 	import {onMount} from 'svelte';
+	import Flag from '../Common/Flag.svelte';
+	import createPlayerService from '../../services/beatleader/player';
 
 	export let title = '';
 	export let subText = '';
@@ -22,6 +24,7 @@
 	let dominantColor = 'rgb(92, 120, 133)';
 	let activeMounted = false;
 	let activeReady = false;
+	let countries = [];
 
 
 	buttons.push({
@@ -36,6 +39,17 @@
 	});
 
 	let cinematicsCanvas;
+
+	const playerService = createPlayerService();
+
+	async function retrievePlayerCountry(playerId) {
+		if (playerId === undefined) return;
+		let user = await playerService.fetchPlayerOrGetFromCache(playerId);
+		countries.push({
+			country: user.playerInfo.countries[0].country,
+			playerId: playerId,
+		});
+	}
 
 	function handleCardClick() {
 		if (active) {
@@ -164,7 +178,6 @@
 
 	onMount(() => (activeMounted = true));
 
-
 	$: revealed ? notifyReveal() : null;
   $: active? null : stopSong();
 	$: activeReady = activeMounted && active;
@@ -184,6 +197,12 @@
           break;
     }
 		forcedColor ? dominantColor = forcedColor : retrieveBackgroundColor(imageUrl);
+
+		if (stats?.type === 'playerList') {
+			stats.entries.forEach((entry) => {
+				retrievePlayerCountry(entry?.beatLeaderId);
+			});
+		}
 	}
 </script>
 
@@ -279,7 +298,15 @@
 								<h2 class="stat-number">{index + 1}</h2>
 								<img src={stat.avatar} alt={stat.name} />
 								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
+									<div style="display: flex;">
+										<h2 class="truncated">{stat.name}</h2>
+										{#if countries.some(country => country.playerId === stat.beatLeaderId) && countries.find(country => country.playerId === stat.beatLeaderId).country.toLowerCase() !== 'not set'}
+											<img class="flag"
+											alt={`${countries.find(country => country.playerId === stat.beatLeaderId).country.toLowerCase()} flag`}
+											src={`/assets/flags/${countries.find(country => country.playerId === stat.beatLeaderId).country.toLowerCase()}.png`}
+											loading="lazy"/>
+										{/if}
+									</div>
 									<h3 class="minutes">{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers ? ', ' + 'top ' + stat.percentPlayers.toFixed(2) + '% of players' : ''}</h3>
 								</div>
 							</div>
@@ -740,5 +767,15 @@
       bottom: 0.3em;
       left: 0.3em;
     }
+	}
+
+	.flag {
+		width: 1.2em !important;
+    height: 50% !important;
+    vertical-align: middle;
+    align-self: center !important;
+		justify-content: center !important;
+		border-radius: 0px !important;
+		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85) !important;
 	}
 </style>
