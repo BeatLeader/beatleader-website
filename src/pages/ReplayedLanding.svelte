@@ -64,7 +64,7 @@
 					<div class="centering-container" transition:fade|global>
 						<h2>BeatLeader rePlayed 2023</h2>
 						{#if playerReplayedAvailable || mapperReplayedAvailable}
-							<div style="display: flex; gap: 1em;">
+							<div style="display: flex; gap: 1em; font-size: 1.5vh;">
 								<Button label="Player rePlayed" url="/replayed/player" type="primary" on:click={() => navigate('/replayed/player')} />
 								<Button label="Mapper rePlayed" url="/replayed/mapper" type="primary" on:click={() => navigate('/replayed/mapper')} />
 							</div>
