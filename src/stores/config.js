@@ -51,6 +51,7 @@ export const DEFAULT_CONFIG = {
 		mapsViewType: 'maps-cards',
 
 		reebanner: true,
+		replayedbanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,

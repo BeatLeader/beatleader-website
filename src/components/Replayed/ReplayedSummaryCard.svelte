@@ -87,17 +87,21 @@
 				successToast('Screenshot Saved');
 			};
 
-			navigator.permissions
-				.query({name: 'clipboard-write'})
-				.then(async result => {
-					if (result.state === 'granted' || result.state === 'prompt') {
-						await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
-						successToast('Screenshot Copied to Clipboard');
-					} else {
-						fallback();
-					}
-				})
-				.catch(() => fallback());
+			if (navigator.userAgent.match(/SamsungBrowser/i)) {
+				fallback();
+			} else {
+				navigator.permissions
+					.query({name: 'clipboard-write'})
+					.then(async result => {
+						if (result.state === 'granted' || result.state === 'prompt') {
+							await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
+							successToast('Screenshot Copied to Clipboard');
+						} else {
+							fallback();
+						}
+					})
+					.catch(() => fallback());
+			}
 		} catch (e) {
 			addNotification({
 				text: 'Screenshot Failed',
