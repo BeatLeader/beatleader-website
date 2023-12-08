@@ -1,5 +1,6 @@
 <script>
 	import {audio} from 'suneditor/src/plugins';
+	import {onDestroy, onMount} from 'svelte';
 	import {cubicOut, linear} from 'svelte/easing';
 	import {tweened} from 'svelte/motion';
 	import {fade, fly} from 'svelte/transition';
@@ -173,6 +174,10 @@
 			duration: 0,
 		});
 	}
+
+	onDestroy(() => {
+		clearSongs();
+	});
 
 	$: volume > 0 ? (soundEnabled = true) : (soundEnabled = false);
 	$: audioPlayer.volume = $audioPlayerVolume;
