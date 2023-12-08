@@ -7,7 +7,9 @@
 	import {onMount} from 'svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, CURRENT_URL} from '../../network/queues/beatleader/api-queue';
+	import {MetaTags} from 'svelte-meta-tags';
+	import ssrConfig from '../../ssr-config';
 
 	export let title = 'Your 2023 in Beat Saber';
 	export let subText = 'Summarized';
@@ -362,6 +364,25 @@
 		{/if}
 	</div>
 </div>
+
+<MetaTags
+	title="BeatLeader rePlayed 2023"
+	description="View your BeatLeader mapper rePlayed 2023"
+	openGraph={{
+		title: 'BeatLeader rePlayed 2023',
+		description: 'View your BeatLeader mapper rePlayed 2023',
+		images: CURRENT_URL + '/assets/logo-small.png',
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: 'BeatLeader rePlayed 2023',
+		description: 'View your BeatLeader mapper rePlayed 2023',
+		image: CURRENT_URL + '/assets/logo-small.png',
+		imageAlt: 'BeatLeader rePlayed 2023',
+	}} />
 
 <style>
 	.data-columns {

@@ -7,6 +7,9 @@
 	import {onMount} from 'svelte';
 	import Flag from '../Common/Flag.svelte';
 	import createPlayerService from '../../services/beatleader/player';
+	import {MetaTags} from 'svelte-meta-tags';
+	import {CURRENT_URL} from '../../network/queues/beatleader/api-queue';
+	import ssrConfig from '../../ssr-config';
 
 	export let title = '';
 	export let subText = '';
@@ -380,6 +383,25 @@
 		{/if}
 	</div>
 </div>
+
+<MetaTags
+	title="BeatLeader rePlayed 2023"
+	description="View your BeatLeader player rePlayed 2023"
+	openGraph={{
+		title: 'BeatLeader rePlayed 2023',
+		description: 'View your BeatLeader player rePlayed 2023',
+		images: CURRENT_URL + '/assets/logo-small.png',
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: 'BeatLeader rePlayed 2023',
+		description: 'View your BeatLeader player rePlayed 2023',
+		image: CURRENT_URL + '/assets/logo-small.png',
+		imageAlt: 'BeatLeader rePlayed 2023',
+	}} />
 
 <style>
 	.data-columns {

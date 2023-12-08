@@ -12,6 +12,8 @@
 	import steamSvg from '../resources/steam.svg';
 	import Button from '../components/Common/Button.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import ssrConfig from '../ssr-config';
 
 	export let replayedType = 'player';
 	export let playerId = null;
@@ -445,6 +447,25 @@
 		</ContentBox>
 	</article>
 </section>
+
+<MetaTags
+	title="BeatLeader rePlayed 2023"
+	description="View your BeatLeader rePlayed 2023"
+	openGraph={{
+		title: 'BeatLeader rePlayed 2023',
+		description: 'View your BeatLeader rePlayed 2023',
+		images: CURRENT_URL + '/assets/logo-small.png',
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: 'BeatLeader rePlayed 2023',
+		description: 'View your BeatLeader rePlayed 2023',
+		image: CURRENT_URL + '/assets/logo-small.png',
+		imageAlt: 'BeatLeader rePlayed 2023',
+	}} />
 
 <style>
 	.align-content {
