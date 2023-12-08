@@ -165,11 +165,11 @@
 							value: data.topCategory,
 						},
 						{
-							name: 'active days',
+							name: 'Active days',
 							value: data.activeDays,
 						},
 						{
-							name: 'days streak',
+							name: 'Days streak',
 							value: data.daysStreak,
 						},
 					],
