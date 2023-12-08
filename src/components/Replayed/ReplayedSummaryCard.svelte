@@ -261,7 +261,7 @@
 
 				<div class="bottom-container">
 					<img class="bottom-icon" src="/assets/favicon.svg" />
-					<span>beatleader.xyz/replayed</span>
+					<span>beatleader.xyz/replayed{summaryType === 'mapper' ? '/mapper' : ''}</span>
 				</div>
 			</div>
 		{/if}
