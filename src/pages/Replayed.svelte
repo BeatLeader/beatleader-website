@@ -41,7 +41,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Your top mappers',
+          title: 'Your Top Mappers',
           subText: 'This mapper was your favourite',
           contentSubText: 'These are the top 5 mappers you played the most',
           stats: {
@@ -55,7 +55,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Your top mappers %',
+          title: 'Your Top Mappers %',
           subText: 'You were one of the top players for this mapper',
           contentSubText: 'You were one of the top players for these 5 mappers',
           stats: {
@@ -69,9 +69,9 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Your top maps',
+          title: 'Your Most Played',
           subText: 'This map was your favourite',
-          contentSubText: 'These are the top 5 maps you played the most',
+          contentSubText: 'These are the 5 maps you played the most',
           stats: {
             type: 'mapList',
             entries: data.topMaps.slice(0, 5),
@@ -83,7 +83,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Your most failed',
+          title: 'Your Most Failed',
           subText: 'This map made you struggle the most',
           contentSubText: 'These are the top 5 maps you failed the most',
           stats: {
@@ -97,7 +97,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Your most restarted',
+          title: 'Your Most Restarted',
           subText: 'You grinded this map a lot',
           contentSubText: 'These are the top 5 maps you grinded the most times',
           stats: {
@@ -111,7 +111,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Other stats',
+          title: 'Other Stats',
           subText: 'How much did you play this year?',
           contentSubText: 'Some other stats about your year',
           forcedColor: 'rgb(89, 111, 255)',
@@ -213,9 +213,9 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Your top maps',
-          subText: 'This map was the most popular',
-          contentSubText: 'These are the top 5 maps that were played the most',
+          title: 'Most Played Maps',
+          subText: 'This map was your most popular',
+          contentSubText: 'These are your 5 top played maps',
           stats: {
             type: 'mapList',
             entries: data.topMaps.slice(0, 5),
@@ -227,7 +227,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Top x mapper',
+          title: 'Top x Mapper',
           subText: 'For how many players were you the top mapper?',
           contentSubText: 'For how many players were you in the top 1, 3, or 5 of most played mappers?',
           forcedColor: 'rgb(89, 111, 255)',
@@ -255,7 +255,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Your top players',
+          title: 'Your Top Players',
           subText: 'This player played your maps the most',
           contentSubText: 'These players played your maps the most',
           stats: {
@@ -269,7 +269,7 @@
       {
         component: ReplayedCard,
         props: {
-          title: 'Other stats',
+          title: 'Other Stats',
           subText: 'How much were your maps played this year?',
           contentSubText: 'Some other stats about your year',
           forcedColor: 'rgb(139, 52, 145)',
