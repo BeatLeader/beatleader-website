@@ -374,7 +374,7 @@
 
 				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<img class="bottom-icon" src="/assets/favicon.svg" />
-					<span>beatleader.xyz/replayed{replayedType === 'mapper' ? '/mapper' : ''}</span>
+					<span>beatleader.xyz/replayed</span>
 				</div>
 			</div>
 		{/if}

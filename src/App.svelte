@@ -44,6 +44,7 @@
 	import produce from 'immer';
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
+	import ReplayedLanding from './pages/ReplayedLanding.svelte';
 
 	export let url = '';
 
@@ -193,11 +194,14 @@
 					<Route path="/maps">
 						<Maps />
 					</Route>
-					<Route path="/replayed/*id" let:params>
-						<Replayed playerId={(params.id ? params.id : null)}/>
+					<Route path="/replayed">
+						<ReplayedLanding />
+					</Route>
+					<Route path="/replayed/player/*id" let:params>
+						<Replayed playerId={params.id ? params.id : null} />
 					</Route>
 					<Route path="/replayed/mapper/*id" let:params>
-						<Replayed replayedType="mapper" playerId={(params.id ? params.id : null)}/>
+						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
 					</Route>
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />

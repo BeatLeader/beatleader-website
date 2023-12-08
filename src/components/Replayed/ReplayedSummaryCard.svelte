@@ -335,7 +335,7 @@
 
 				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<img class="bottom-icon" src="/assets/favicon.svg" />
-					<span>beatleader.xyz/replayed{summaryType === 'mapper' ? '/mapper' : ''}</span>
+					<span>beatleader.xyz/replayed</span>
 				</div>
 				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<div class="share-button" on:click={takeScreenshot}>
