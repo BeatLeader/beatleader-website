@@ -404,7 +404,8 @@
 					{:else if replayedType === 'player'}
 						<div class="centering-container">
 							<h3>
-								Sorry, it appears you a new player.<br /><br />Go play something from the ranked batch,<br />and let's meet back in a year!
+								Looks like you didn't play much this year.<br /><br />Why not play something from the ranked batch,<br />and we'll see you
+								next year!
 							</h3>
 						</div>
 					{:else if replayedType === 'mapper'}
@@ -414,7 +415,7 @@
 									Looks like your mapping year was quiet.<br /><br />But it's always a good time to<br />map something for rePlayed 2024!
 								</h3>
 							{:else}
-								<h3>Please link your BeatSaver account to view<br /><b>Mapper rePlayed 2023</b></h3>
+								<h3>Please link your BeatSaver account to view<br /><b>your Mapper rePlayed 2023</b></h3>
 
 								<form action={BL_API_URL + 'signin'} method="post">
 									<input type="hidden" name="Provider" value="BeatSaver" />
