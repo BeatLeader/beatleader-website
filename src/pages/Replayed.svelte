@@ -342,7 +342,7 @@
 </script>
 
 <svelte:head>
-	<title>BeatLeader 2023 Replayed</title>
+	<title>BeatLeader rePlayed 2023</title>
 </svelte:head>
 
 <section class="align-content">
@@ -383,9 +383,9 @@
 									on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
 									title="Show login with BeatSaver">
 									{#if showBeatSaverLogin}
-										I'm not a mapper
+										I play the game too
 									{:else}
-										Are you a mapper?
+										Don't play the game but still map?
 									{/if}
 
 									<i class="fas fa-chevron-down" />
