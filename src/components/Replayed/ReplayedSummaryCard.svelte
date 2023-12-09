@@ -162,7 +162,7 @@
 
 				{#if summaryType === 'player'}
 					<div class="data-columns">
-						<div class="data" style="width: 40%">
+						<div class="data" style="width: 44%">
 							<h2>Top Mappers</h2>
 							{#each stats.topMappers.slice(0, 5) as stat, index}
 								<div class="stat">
@@ -173,7 +173,7 @@
 								</div>
 							{/each}
 						</div>
-						<div class="data" style="width: 60%">
+						<div class="data" style="width: 56%">
 							<h2>Top Maps</h2>
 							{#each stats.topMaps.slice(0, 5) as stat, index}
 								<div class="stat">
@@ -192,7 +192,7 @@
 						</div>
 					</div>
 					<div class="data-columns">
-						<div class="data data-small" style="width: 40%">
+						<div class="data data-small" style="width: 44%">
 							{#each stats.extraStats.slice(0, 3) as stat, index}
 								<div class="stat stat-small">
 									<div class="stat-stacked-info">
@@ -202,7 +202,7 @@
 								</div>
 							{/each}
 						</div>
-						<div class="data data-small" style="width: 60%">
+						<div class="data data-small" style="width: 56%">
 							{#each stats.extraStats.slice(3, 5) as stat, index}
 								<div class="stat stat-small stat-n-{index}">
 									<div class="stat-stacked-info">
@@ -236,7 +236,7 @@
 						</div>
 					</div>
 					<div class="data-columns">
-						<div class="data data-small" style="width: 40%">
+						<div class="data data-small" style="width: 44%">
 							{#each stats.extraStats.slice(0, 3) as stat, index}
 								<div class="stat stat-small">
 									<div class="stat-stacked-info">
@@ -246,7 +246,7 @@
 								</div>
 							{/each}
 						</div>
-						<div class="data data-small" style="width: 60%">
+						<div class="data data-small" style="width: 56%">
 							{#each stats.extraStats.slice(3, 5) as stat, index}
 								<div class="stat stat-small stat-n-{index}">
 									<div class="stat-stacked-info">
