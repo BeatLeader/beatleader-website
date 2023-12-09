@@ -204,7 +204,7 @@
 						</div>
 						<div class="data data-small" style="width: 60%">
 							{#each stats.extraStats.slice(3, 5) as stat, index}
-								<div class="stat stat-small">
+								<div class="stat stat-small stat-n-{index}">
 									<div class="stat-stacked-info">
 										<h3 class="truncated">{stat.name}</h3>
 										<h2 class="other-stats">{stat.value}</h2>
@@ -248,7 +248,7 @@
 						</div>
 						<div class="data data-small" style="width: 60%">
 							{#each stats.extraStats.slice(3, 5) as stat, index}
-								<div class="stat stat-small">
+								<div class="stat stat-small stat-n-{index}">
 									<div class="stat-stacked-info">
 										<h3 class="truncated">{stat.name}</h3>
 										<h2 class="other-stats">{stat.value}</h2>
@@ -353,6 +353,16 @@
 		font-size: 120%;
 		font-weight: 700;
 		margin: 0px;
+	}
+
+	.stat-n-1 {
+		height: auto;
+		min-height: 2em;
+		margin-top: -0.3em;
+	}
+
+	.stat-n-1 .other-stats {
+		white-space: wrap;
 	}
 
 	.truncated {
