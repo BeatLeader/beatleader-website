@@ -477,6 +477,7 @@
 		aspect-ratio: 9 / 14.5; /*results in ~9 / 16 for ReplayedCard*/
 		padding: 0rem !important;
 		max-width: 100% !important;
+		min-width: 18em;
 	}
 
 	.page-content {

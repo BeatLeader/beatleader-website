@@ -4,6 +4,7 @@
 	import {cubicOut, linear} from 'svelte/easing';
 	import {tweened} from 'svelte/motion';
 	import {fade, fly} from 'svelte/transition';
+	import {isIOSSafari} from '../../utils/beatleader/browserCheck';
 
 	export let volume = 0;
 
@@ -100,6 +101,8 @@
 		}
 	}
 
+	let gestureReceived = false;
+
 	function playAudio() {
 		clearTimeout(loadingSongTimeout);
 		activeSongTimeouts.forEach(timeout => {
@@ -109,7 +112,9 @@
 		audioPlayerVolume.set(0, {
 			duration: 0,
 		});
-		audioPlayer.play();
+		if (!isIOSSafari() || gestureReceived) {
+			audioPlayer.play();
+		}
 		audioPlayerVolume.set(volume, {
 			duration: 2500,
 		});
@@ -189,7 +194,13 @@
 	on:stopSong={clearSongs}
 	on:cardWasRevealed={cardWasRevealed}
 	on:startAutoNextCount={startAutoNextCount}
-	on:interruptMotion={interruptMotion} />
+	on:interruptMotion={interruptMotion}
+	on:click={() => {
+		if (!gestureReceived && isIOSSafari()) {
+			audioPlayer.play();
+		}
+		gestureReceived = true;
+	}} />
 
 <div class="buttons" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}}>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -206,20 +217,22 @@
 			<progress value={$progressBarX} max="100" out:fade|global={{duration: 600, easing: cubicOut}} />
 		{/if}
 	</div>
-	<!-- svelte-ignore a11y-click-events-have-key-events -->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div class="toggle-button" on:click={toggleSound}>
-		{#if volume > 0}
-			<i class="fa-solid fa-volume-high" />
-		{:else}
-			<i class="fa-solid fa-volume-xmark" />
-		{/if}
-	</div>
-
-	{#if sliderOpen}
-		<div class="volume-slider" transition:fade|global={{duration: 500, easing: cubicOut}}>
-			<input type="range" min="0" max="0.25" step="0.01" bind:value={volume} on:input={setVolume} />
+	{#if !isIOSSafari()}
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div class="toggle-button" on:click={toggleSound}>
+			{#if volume > 0}
+				<i class="fa-solid fa-volume-high" />
+			{:else}
+				<i class="fa-solid fa-volume-xmark" />
+			{/if}
 		</div>
+
+		{#if sliderOpen}
+			<div class="volume-slider" transition:fade|global={{duration: 500, easing: cubicOut}}>
+				<input type="range" min="0" max="0.25" step="0.01" bind:value={volume} on:input={setVolume} />
+			</div>
+		{/if}
 	{/if}
 </div>
 
