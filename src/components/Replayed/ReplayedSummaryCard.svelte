@@ -72,7 +72,7 @@
 		try {
 			screenshoting = true;
 			const blob = await fetch(
-				`${BL_API_URL}screenshot/464x800/replayed/replayed${summaryType === 'mapper' ? '/mapper' : ''}?color=${colorStartIndex}`,
+				`${BL_API_URL}screenshot/464x800/replayed/general/replayed${summaryType === 'mapper' ? '/mapper' : ''}?color=${colorStartIndex}`,
 				{credentials: 'include'}
 			).then(response => response.blob());
 
