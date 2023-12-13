@@ -376,6 +376,10 @@
 		:global(.leaderboard-header-box) {
 			margin: 0 !important;
 		}
+
+		.song-statuses {
+			justify-content: center;
+		}
 	}
 
 	@media screen and (max-width: 520px) {
