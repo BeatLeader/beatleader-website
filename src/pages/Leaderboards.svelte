@@ -341,8 +341,13 @@
 	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
-		currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
-		currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
+		if (sliderLimits.MIN_STARS != event.detail.values[0] || Number.isFinite(currentFilters[ratingType + '_from'])) {
+			currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
+		}
+
+		if (sliderLimits.MAX_STARS != event.detail.values[1] || Number.isFinite(currentFilters[ratingType + '_to'])) {
+			currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
+		}
 		starsChanged();
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
@@ -622,7 +627,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.stars_from, currentFilters.stars_to]}
+					values={[
+						Number.isFinite(currentFilters.stars_from) ? currentFilters.stars_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.stars_to) ? currentFilters.stars_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -656,7 +664,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.accrating_from, currentFilters.accrating_to]}
+					values={[
+						Number.isFinite(currentFilters.accrating_from) ? currentFilters.accrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.accrating_to) ? currentFilters.accrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -690,7 +701,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.passrating_from, currentFilters.passrating_to]}
+					values={[
+						Number.isFinite(currentFilters.passrating_from) ? currentFilters.passrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.passrating_to) ? currentFilters.passrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -724,7 +738,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.techrating_from, currentFilters.techrating_to]}
+					values={[
+						Number.isFinite(currentFilters.techrating_from) ? currentFilters.techrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.techrating_to) ? currentFilters.techrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
