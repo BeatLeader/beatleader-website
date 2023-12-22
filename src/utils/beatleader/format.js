@@ -726,6 +726,59 @@ export function mapTypeListFromMask(type) {
 		.filter(d => d);
 }
 
+export const presetTypes = ['minimal', 'forVideos', 'GPUBurner', 'customModel', 'customTrail'];
+export const presetTypesMap = {
+	none: 0,
+	minimal: 1 << 1,
+	forVideos: 1 << 2,
+	GPUBurner: 1 << 3,
+	customModel: 1 << 4,
+	customTrail: 1 << 5,
+};
+export const presetTypesDescription = {
+	minimal: {
+		title: 'Slower map suitable for high accuracy plays.',
+		name: 'Minimal',
+		icon: '/assets/peeposhy.gif',
+		color: 'purple',
+		textColor: 'white',
+	},
+	forVideos: {
+		title: 'Tech map with quirky patterns',
+		name: 'For Videos',
+		icon: '/assets/goosage.gif',
+		color: 'red',
+		textColor: 'white',
+	},
+	GPUBurner: {
+		title: 'Medium speed map with regular patterns',
+		name: 'GPU Burner',
+		icon: '/assets/bl_fire.gif',
+		color: 'green',
+		textColor: 'white',
+	},
+	speed: {
+		title: 'High speed map. Please warm up before playing!',
+		name: 'speed',
+		icon: 'speed-icon',
+		color: 'orange',
+		textColor: 'black',
+	},
+};
+
+export function presetTypeFromMask(type) {
+	const types = Object.keys(presetTypesMap).filter(key => presetTypesMap[key] & type);
+
+	return types?.length ? types.join(',') : 'none';
+}
+
+export function presetTypeListFromMask(type) {
+	return Object.keys(presetTypesMap)
+		.filter(key => presetTypesMap[key] & type)
+		.map(key => preseTtypesDescription[key])
+		.filter(d => d);
+}
+
 export const requirementsMap = {
 	chroma: 1 << 1,
 	noodles: 1 << 2,

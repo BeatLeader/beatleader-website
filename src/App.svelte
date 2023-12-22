@@ -14,6 +14,8 @@
 	import LeaderboardsPage from './pages/Leaderboards.svelte';
 	import ClanPage from './pages/Clan.svelte';
 	import ClansPage from './pages/Clans.svelte';
+	import ReePresetPage from './pages/ReePreset.svelte';
+	import ReePresetsPage from './pages/ReePresets.svelte';
 	import FollowedPage from './pages/Followed.svelte';
 	import PlayerPage from './pages/Player.svelte';
 	import TwitchPage from './pages/Twitch.svelte';
@@ -228,14 +230,20 @@
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
 					</Route>
+					<Route path="/clans/*page" let:params let:location>
+						<ClansPage page={params.page} {location} />
+					</Route>
+					<Route path="/reepreset/:presetId/*page" let:params>
+						<ReePresetPage presetId={params.presetId} page={params.page} />
+					</Route>
+					<Route path="/reepresets/*page" let:params let:location>
+						<ReePresetsPage page={params.page} {location} />
+					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
 					</Route>
 					<Route path="/events/*page" let:params let:location>
 						<EventsPage page={params.page} {location} />
-					</Route>
-					<Route path="/clans/*page" let:params let:location>
-						<ClansPage page={params.page} {location} />
 					</Route>
 					<Route path="/playlists/*id" let:params>
 						<PlaylistsPage index={params.id} />
