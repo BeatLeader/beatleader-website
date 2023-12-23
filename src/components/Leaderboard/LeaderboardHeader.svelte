@@ -136,7 +136,7 @@
 			{#if leaderboardGroup && leaderboardGroup.length > 1}
 				<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
 					{#each leaderboardGroup as option (option.id)}
-						<option class="group-option" value={option.id}>
+						<option class="group-option" value={option.id} title={dateFromUnix(option.timestamp)}>
 							{#if option.timestamp}
 								{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
 							{:else}
