@@ -5,7 +5,6 @@
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
 	import createVotingStore from '../stores/beatleader/rankVoting';
-	import createBeatSaverService from '../services/beatmaps';
 	import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic';
 	import {opt, capitalize} from '../utils/js';
 	import stringify from 'json-stable-stringify';
@@ -55,6 +54,7 @@
 	import Score from '../components/Leaderboard/Score.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
+	import HashDisplay from '../components/Common/HashDisplay.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -565,18 +565,6 @@
 		}
 	}
 
-	let latestHash;
-
-	async function checkMapHash(hash) {
-		if (hash) {
-			let beatSaverService = createBeatSaverService();
-
-			const songInfoValue = await beatSaverService.byHash(hash, true);
-
-			latestHash = songInfoValue?.versions[0].hash.toLowerCase() == hash.toLowerCase();
-		}
-	}
-
 	let showAverageStats = false;
 
 	$: isLoading = leaderboardStore.isLoading;
@@ -627,7 +615,6 @@
 	$: votingStats = $votingStore[leaderboardId];
 
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
-	$: if (song) checkMapHash(song.hash);
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
 
@@ -670,7 +657,6 @@
 					bind:battleRoyaleDraft
 					{leaderboard}
 					{ratings}
-					{latestHash}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
@@ -1011,16 +997,7 @@
 									{/if}
 									<PredictedAccGraph {leaderboard} />
 									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
-										<div>
-											<small style="display: inline-block;">{song.hash.toUpperCase()}</small>
-											{#if latestHash}
-												<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-											{:else if latestHash == undefined}
-												<Spinner />
-											{:else}
-												<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-											{/if}
-										</div>
+										<HashDisplay {song} />
 									{/if}
 
 									{#if iconsInInfo}

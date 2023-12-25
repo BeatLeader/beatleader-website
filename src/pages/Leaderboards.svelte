@@ -997,6 +997,7 @@
 	.mode-and-diff {
 		display: flex;
 		gap: 1em;
+		flex-wrap: wrap;
 	}
 
 	:global(.pager-and-switch .pagination) {

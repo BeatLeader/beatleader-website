@@ -15,10 +15,10 @@
 	import {configStore} from '../../stores/config';
 	import Spinner from '../Common/Spinner.svelte';
 	import SongStatus from './SongStatus.svelte';
+	import HashDisplay from '../Common/HashDisplay.svelte';
 
 	export let leaderboard;
 	export let ratings = null;
-	export let latestHash = null;
 
 	export let currentLeaderboardId;
 	export let batleRoyale = true;
@@ -106,16 +106,7 @@
 					<LeaderboardStats {leaderboard} />
 				{/if}
 				{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-					<div>
-						<small class="level-author" style="display: inline-block;">{song.hash.toUpperCase()}</small>
-						{#if latestHash}
-							<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-						{:else if latestHash == undefined}
-							<Spinner />
-						{:else}
-							<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-						{/if}
-					</div>
+					<HashDisplay {song} />
 				{/if}
 			</div>
 
