@@ -31,6 +31,7 @@
 		DifficultyStatus,
 		requirementsMap,
 		modeDescriptions,
+		difficultyDescriptions,
 		songStatusesMap,
 		songStatusesDescription,
 	} from '../utils/beatleader/format';
@@ -74,6 +75,7 @@
 		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
 		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mode', default: null, process: processStringFilter},
+		{key: 'difficulty', default: null, process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
 		{key: 'mapRequirements', default: null, process: processIntFilter},
@@ -164,6 +166,23 @@
 				icon: `<span class="${modeDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
 				color: modeDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
 				textColor: modeDescriptions?.[key]?.textColor ?? null,
+			};
+		})
+	);
+
+	const difficultyFilterOptions = [
+		{
+			key: null,
+			label: 'Any mode',
+		},
+	].concat(
+		Object.entries(difficultyDescriptions).map(([key, type]) => {
+			return {
+				key,
+				label: capitalize(difficultyDescriptions?.[key]?.title ?? key),
+				icon: `<span class="${difficultyDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
+				color: difficultyDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
+				textColor: difficultyDescriptions?.[key]?.textColor ?? null,
 			};
 		})
 	);
@@ -325,6 +344,14 @@
 	}
 
 	async function onModeChanged(event) {
+		await tick();
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	async function onDifficultyChanged(event) {
 		await tick();
 
 		currentPage = 1;
@@ -762,13 +789,26 @@
 			</section>
 
 			<section class="filter">
-				<label>Has mode</label>
-				<Select
-					bind:value={currentFilters.mode}
-					on:change={onModeChanged}
-					options={modeFilterOptions}
-					nameSelector={x => x.label}
-					valueSelector={x => x.key} />
+				<div class="mode-and-diff">
+					<div>
+						<label>Has diff</label>
+						<Select
+							bind:value={currentFilters.difficulty}
+							on:change={onDifficultyChanged}
+							options={difficultyFilterOptions}
+							nameSelector={x => x.label}
+							valueSelector={x => x.key} />
+					</div>
+					<div>
+						<label>Has mode</label>
+						<Select
+							bind:value={currentFilters.mode}
+							on:change={onModeChanged}
+							options={modeFilterOptions}
+							nameSelector={x => x.label}
+							valueSelector={x => x.key} />
+					</div>
+				</div>
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>
@@ -948,6 +988,11 @@
 	.table-switches {
 		display: flex;
 		gap: 0.5em;
+	}
+
+	.mode-and-diff {
+		display: flex;
+		gap: 1em;
 	}
 
 	:global(.pager-and-switch .pagination) {
