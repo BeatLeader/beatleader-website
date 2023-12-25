@@ -153,10 +153,11 @@
 		};
 	});
 
+	const modeNullPlaceholder = 'Any mode';
 	const modeFilterOptions = [
 		{
 			key: null,
-			label: 'Any mode',
+			label: modeNullPlaceholder,
 		},
 	].concat(
 		Object.entries(modeDescriptions).map(([key, type]) => {
@@ -170,10 +171,11 @@
 		})
 	);
 
+	const difficultyNullPlaceholder = 'Any diff';
 	const difficultyFilterOptions = [
 		{
 			key: null,
-			label: 'Any mode',
+			label: difficultyNullPlaceholder,
 		},
 	].concat(
 		Object.entries(difficultyDescriptions).map(([key, type]) => {
@@ -796,6 +798,7 @@
 							bind:value={currentFilters.difficulty}
 							on:change={onDifficultyChanged}
 							options={difficultyFilterOptions}
+							nullPlaceholder={difficultyNullPlaceholder}
 							nameSelector={x => x.label}
 							valueSelector={x => x.key} />
 					</div>
@@ -805,6 +808,7 @@
 							bind:value={currentFilters.mode}
 							on:change={onModeChanged}
 							options={modeFilterOptions}
+							nullPlaceholder={modeNullPlaceholder}
 							nameSelector={x => x.label}
 							valueSelector={x => x.key} />
 					</div>

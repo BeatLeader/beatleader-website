@@ -10,6 +10,7 @@
 	export let value = options?.length > 0 ? options[0] : null;
 	export let nameSelector = obj => obj?.name;
 	export let valueSelector = obj => obj?.value;
+	export let nullPlaceholder = 'Select an option';
 
 	export let fontPadding = 0.4;
 	export let fontSize = 1;
@@ -97,11 +98,7 @@
 			{#if options?.length > 0 && value != null && options.find(x => valueSelector(x) == value)?.icon}
 				<i class="fa {options.find(x => valueSelector(x) == value).icon}" style="margin-right: {fontPadding}em" />
 			{/if}
-			{options?.length > 0
-				? value != null
-					? nameSelector(options.find(x => valueSelector(x) == value))
-					: 'Select an option'
-				: 'No options'}
+			{options?.length > 0 ? (value != null ? nameSelector(options.find(x => valueSelector(x) == value)) : nullPlaceholder) : 'No options'}
 		</div>
 		<div style="padding: 0 {fontPadding}em 0 {fontPadding * 2}em">
 			<i class="fa fa-chevron-down dropdown-arrow {isOpened ? 'opened' : ''}" />
