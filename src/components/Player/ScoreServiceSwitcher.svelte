@@ -221,7 +221,7 @@
 						Object.entries(modeDescriptions).map(([key, type]) => {
 							return {
 								id: key.toLowerCase(),
-								name: modeDescriptions?.[key]?.title ?? 'Standard',
+								name: modeDescriptions?.[key]?.title ?? 'Unknown',
 							};
 						})
 					),
@@ -240,6 +240,7 @@
 						{id: requirementsMap.V3, name: 'V3'},
 						{id: requirementsMap.cinema, name: 'Cinema'},
 						{id: requirementsMap.mappingExtensions, name: 'Mapping Extensions'},
+						{id: requirementsMap.optionalProperties, name: 'Optional Properties'},
 					],
 				},
 			},

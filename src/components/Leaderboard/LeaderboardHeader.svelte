@@ -15,11 +15,12 @@
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../stores/config';
 	import Spinner from '../Common/Spinner.svelte';
+	import SongStatus from './SongStatus.svelte';
+	import HashDisplay from '../Common/HashDisplay.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
 	export let ratings = null;
-	export let latestHash = null;
 
 	export let currentLeaderboardId;
 	export let batleRoyale = true;
@@ -101,20 +102,18 @@
 				{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
 					<LeaderboardDisplayCaptureStatus clan={leaderboardCaptor} clanRankingContested={leaderboard?.clanRankingContested} />
 				{/if}
+				{#if song.externalStatuses}
+					<div class="song-statuses">
+						{#each leaderboard.song.externalStatuses as songStatus}
+							<SongStatus {songStatus} />
+						{/each}
+					</div>
+				{/if}
 				{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 					<LeaderboardStats {leaderboard} />
 				{/if}
 				{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-					<div>
-						<small class="level-author" style="display: inline-block;">{song.hash.toUpperCase()}</small>
-						{#if latestHash}
-							<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-						{:else if latestHash == undefined}
-							<Spinner />
-						{:else}
-							<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-						{/if}
-					</div>
+					<HashDisplay {song} />
 				{/if}
 			</div>
 
@@ -230,6 +229,12 @@
 		justify-content: space-between;
 		flex-direction: column;
 		grid-gap: 0.2em;
+	}
+
+	.song-statuses {
+		color: #ffffffab;
+		display: flex;
+		gap: 0.25em;
 	}
 
 	.cinematics {
@@ -360,9 +365,25 @@
 		:global(.title-container .stats) {
 			justify-content: center !important;
 		}
+
+		.header {
+			border-radius: 0;
+			margin-bottom: 0;
+		}
+
+		:global(.leaderboard-header-box) {
+			margin: 0 !important;
+		}
+
+		.song-statuses {
+			justify-content: center;
+		}
 	}
 
 	@media screen and (max-width: 520px) {
+		.cinematics {
+			display: none;
+		}
 		header {
 			flex-direction: column;
 		}

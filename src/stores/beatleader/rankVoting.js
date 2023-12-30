@@ -150,7 +150,7 @@ export default () => {
 			.catch(err => null);
 	};
 
-	const updateReweight = async (hash, diff, mode, rankability, stars, types, criteriaMet, criteriaCommentary, modifiers) => {
+	const updateReweight = async (hash, diff, mode, rankability, types, criteriaMet, criteriaCommentary, modifiers) => {
 		if (!hash || !diff || !mode) return;
 		let type = 0;
 		types.forEach(typeName => {
@@ -165,7 +165,6 @@ export default () => {
 		const url =
 			BL_API_URL +
 			`reweight/${hash}/${diff}/${mode}?keep=${rankability ? 'true' : 'false'}` +
-			(stars ? '&stars=' + stars : '') +
 			(type ? '&type=' + type : '') +
 			(criteriaMet != null ? '&criteriaCheck=' + criteriaMet : '') +
 			(criteriaCommentary != null ? '&criteriaCommentary=' + encodeURIComponent(criteriaCommentary) : '') +

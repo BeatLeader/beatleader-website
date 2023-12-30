@@ -15,8 +15,8 @@
 	export let hideTitle = false;
 	export let nameAndStars = false;
 
-	$: diffColor = enabled ? diffInfo?.color : 'gray';
 	$: diffInfo = diff ? getHumanDiffInfo(diff) : null;
+	$: diffColor = enabled ? diffInfo?.color : 'gray';
 	$: areStarsModified = stars && modifiedStars && formatNumber(stars) !== formatNumber(modifiedStars);
 	$: title =
 		(useShortName && diffInfo?.type !== 'Standard' ? diffInfo?.name : diffInfo?.fullName) +

@@ -55,7 +55,7 @@
 	header={PlayersHeader}
 	item={PlayersItem}
 	noItems="No players found."
-	url={`ranking?search=${filters.search}`}
+	url={`/ranking?search=${filters.search}`}
 	{priority}
 	on:message={onMessage}
 	on:close />

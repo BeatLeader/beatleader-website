@@ -85,37 +85,49 @@
 		<ContentBox>
 			<h3 class="description">We aggregate the data from other cool projects to help you play better:</h3>
 			<div class="sources">
-				<div>
+				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
 							<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
 						</a>
 					</h3>
-					<a class="imageLink" href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
+					<a href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
 				</div>
-				<div>
+				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
 							<img src="/assets/ArcViewerIcon.png" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
 						</a>
 					</h3>
-					<a class="imageLink" href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
+					<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
 				</div>
-				<div>
+				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
 							<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaber Logo" />
 						</a>
 					</h3>
-					<a class="imageLink" href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
+					<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
 				</div>
-				<div>
+				<div class="source">
+					<h3 class="title is-6">
+						<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
+							<img
+								src="https://bsaber.com/wp-content/uploads/2018/07/cropped-Beastsaber-Site-Icon-300x300.png"
+								title="BeastSaber"
+								class="icon"
+								alt="BeastSaber Logo" />
+						</a>
+					</h3>
+					<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
+				</div>
+				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
 							<span class="icon beatsavior-icon" title="BeatSavior" />
 						</a>
 					</h3>
-					<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
+					<a href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
 				</div>
 			</div>
 			<div class="global-ranking-call">
@@ -178,6 +190,13 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 2em;
+	}
+
+	.source {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.features {

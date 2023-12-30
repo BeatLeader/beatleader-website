@@ -1,5 +1,5 @@
 <script>
-	import {useLocation} from 'svelte-routing';
+	import {dndzone} from 'svelte-dnd-action';
 	import ssrConfig from '../ssr-config';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createPlaylistStore from '../stores/playlists';
@@ -9,11 +9,10 @@
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 
-	export let index;
+	export let index = null;
 
 	const playlists = createPlaylistStore();
 	const account = createAccountStore();
-	const location = useLocation();
 
 	let itemsPerPage = 5;
 	let page = 0;
@@ -24,7 +23,6 @@
 
 	function onPageChanged(event) {
 		page = event.detail.page;
-		selectedIndex = null;
 	}
 
 	let fileinput;
@@ -42,11 +40,8 @@
 
 	function updatePage(index) {
 		if (Number.isFinite(index)) {
-			if (selectedIndex == index) return;
-
 			page = Math.floor(index / itemsPerPage);
 			selectedIndex = index;
-
 			setTimeout(() => {
 				if (playlistsEl) scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60);
 			}, 500);
@@ -55,9 +50,37 @@
 		}
 	}
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	var playlistList = [];
+
+	function initPlaylistList(playlists, totalItems, itemsPerPage, page) {
+		playlistList = playlists
+			.slice(
+				totalItems > itemsPerPage ? page * itemsPerPage : 0,
+				(page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems
+			)
+			.map(p => {
+				return {
+					id: p.customData?.id ?? 0,
+					playlist: p,
+				};
+			});
+	}
+
+	// use:dndzone={{items: playlistList, flipDurationMs: 300}}
+	// 		on:consider={handleDndConsider}
+	// 		on:finalize={handleDndFinalize}
+
+	function handleDndConsider(e) {
+		playlistList = e.detail.items;
+	}
+	function handleDndFinalize(e) {
+		playlistList = e.detail.items;
+	}
+
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: totalItems = $playlists.length;
 	$: updatePage(parseInt(index, 10), $playlists.length);
+	$: initPlaylistList($playlists, totalItems, itemsPerPage, page);
 </script>
 
 <svelte:head>
@@ -72,9 +95,15 @@
 	</div>
 	{#if $playlists && $playlists.length}
 		<div bind:this={playlistsEl} class="song-scores grid-transition-helper">
-			{#each $playlists.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as playlist, pageIdx}
-				{@const idx = page * itemsPerPage + pageIdx}
-				<Playlist expanded={selectedIndex === idx} accountStore={account} {playlist} {idx} store={playlists} />
+			{#each playlistList as playlist, pageIdx}
+				{@const localPlaylistId = page * itemsPerPage + pageIdx}
+				<Playlist
+					expanded={selectedIndex === localPlaylistId}
+					currentPlayerId={$account.id}
+					playlistExport={playlist.playlist}
+					{localPlaylistId}
+					idx={pageIdx}
+					store={playlists} />
 			{/each}
 		</div>
 	{:else}

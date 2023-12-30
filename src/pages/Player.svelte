@@ -1,6 +1,6 @@
 <script>
 	import {onMount} from 'svelte';
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
 	import createTwitchService from '../services/twitch';
@@ -32,8 +32,7 @@
 
 	export let initialPlayerId = null;
 	export let initialParams = null;
-
-	const location = useLocation();
+	export let location = null;
 
 	let service = null;
 	let serviceParams = null;
@@ -210,7 +209,7 @@
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
-	$: editing = new URLSearchParams($location?.search).get('edit') ?? null;
+	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
 </script>
 
 <svelte:head>
@@ -219,8 +218,8 @@
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
-<section class="align-content player-page">
-	<article class="page-content" transition:fade|global>
+<section class="align-content player-page" transition:fade|global>
+	<article class="page-content">
 		{#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
 			<ContentBox>
 				<p class="error">Player not found.</p>

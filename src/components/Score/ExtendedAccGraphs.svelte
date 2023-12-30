@@ -1,33 +1,16 @@
 <script>
 	import Chart from 'chart.js/auto';
 	import {formatNumber} from '../../utils/format';
+	import {createMinMaxCounter, createDistanceWeightFunction} from '../../utils/math';
 
 	export let replayAccGraphs = null;
 	export let underswingsData = null;
 	export let height = '12em';
 	export let beatSavior = null;
+	export let notes = null;
 
 	let canvas = null;
 	let chart = null;
-
-	function createMinMaxCounter(clampMin, clampMax, step) {
-		return {
-			minValue: 1e10,
-			maxValue: -1e10,
-			clampMin: clampMin,
-			clampMax: clampMax,
-			step: step,
-			update: function (value) {
-				let tmp = Math.floor(value / this.step) * this.step;
-				if (tmp < this.minValue) this.minValue = tmp;
-				tmp = Math.ceil(value / this.step) * this.step;
-				if (tmp > this.maxValue) this.maxValue = tmp;
-
-				if (this.minValue < this.clampMin) this.minValue = this.clampMin;
-				if (this.maxValue > this.clampMax) this.maxValue = this.clampMax;
-			},
-		};
-	}
 
 	function timeToLabel(time) {
 		const minutes = Math.floor(time / 60);
@@ -35,7 +18,36 @@
 		return minutes + ':' + seconds.toString().padStart(2, '0');
 	}
 
-	async function setupChart(canvas, chartData) {
+	function processChartData(chartData, resolution, smoothPeriodPercentage, weightFunctionSteepness) {
+		var data = [];
+		if (chartData.length === 0 || resolution === 0) return data;
+
+		var songDuration = chartData[chartData.length - 1][1];
+		const distanceWeightFunction = createDistanceWeightFunction(songDuration * smoothPeriodPercentage, weightFunctionSteepness);
+
+		for (let i = 0.0; i < resolution; i += 1.0) {
+			const songTime = (songDuration * i) / (resolution - 1);
+
+			var sum = 0;
+			var divider = 0;
+
+			for (let j = 0.0; j < chartData.length; j += 1.0) {
+				const item = chartData[j];
+				const weight = distanceWeightFunction.getWeight(item[1] - songTime);
+
+				sum += item[0] * weight;
+				divider += weight;
+			}
+
+			if (divider === 0) continue;
+			const value = 100 + (sum / divider) * 15;
+			data.push(value);
+		}
+
+		return data;
+	}
+
+	async function setupChart(canvas, chartData, underswingsData, notes) {
 		if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
 		const title =
@@ -71,6 +83,29 @@
 			});
 		}
 
+		var datasets = [];
+
+		if (notes) {
+			var notesData = processChartData(notes.rows, 100, 0.02, 3);
+
+			for (let i = 0; i < notesData.length; i++) {
+				minMaxCounter.update(notesData[i]);
+			}
+
+			datasets.push({
+				yAxisID: 'score',
+				label: 'Predicted',
+				data: notesData,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4,
+				borderColor: '#fe4dfe',
+				borderWidth: 1,
+				pointRadius: 0,
+				type: 'line',
+				borderDash: [3, 3],
+			});
+		}
+
 		const xAxis = {
 			scaleLabel: {
 				display: true,
@@ -97,8 +132,6 @@
 				},
 			},
 		};
-
-		var datasets = [];
 
 		if (beatSavior?.stats?.accLeft) {
 			datasets.push({
@@ -279,15 +312,15 @@
 			});
 		} else {
 			chart.data = {labels, datasets};
-			chart.options.plugins.legend.display = true;
-			chart.options.scales.y.min = minMaxCounter.minValue;
-			chart.options.scales.y.max = minMaxCounter.maxValue;
-			chart.plugins.title.text = title;
+			if (chart.options.scales.y) {
+				chart.options.scales.y.min = minMaxCounter.minValue;
+				chart.options.scales.y.max = minMaxCounter.maxValue;
+			}
 			chart.update();
 		}
 	}
 
-	$: setupChart(canvas, replayAccGraphs, underswingsData);
+	$: setupChart(canvas, replayAccGraphs, underswingsData, notes);
 </script>
 
 {#if replayAccGraphs}

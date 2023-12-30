@@ -187,15 +187,11 @@
 	}
 
 	function fetchAI(leaderboard) {
-		fetch(`https://bs-replays-ai.azurewebsites.net/bl-reweight/${leaderboard?.song?.hash}/Standard/${leaderboard?.difficultyBl?.value}`)
+		fetch(`https://stage.api.beatleader.net/ppai2/${leaderboard?.song?.hash}/Standard/${leaderboard?.difficultyBl?.value}`)
 			.then(d => d.json())
 			.then(d => {
 				techRating = d.none.lack_map_calculation.balanced_tech * 10;
-				accRating = AccRatingFromAIAcc(
-					d.none.AIacc,
-					d.none.lack_map_calculation.balanced_pass_diff,
-					d.none.lack_map_calculation.balanced_tech * 10
-				);
+				accRating = d.none.acc_rating;
 				passRating = d.none.lack_map_calculation.balanced_pass_diff;
 			});
 	}

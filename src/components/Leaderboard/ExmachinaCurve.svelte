@@ -5,9 +5,11 @@
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {createEventDispatcher} from 'svelte';
 	import Spinner from '../Common/Spinner.svelte';
+	import {createDistanceWeightFunction, createMinMaxCounter} from '../../utils/math';
 
 	export let notes;
 	export let height = '12em';
+	export let speed;
 
 	const dispatch = createEventDispatcher();
 
@@ -17,51 +19,46 @@
 	let themeName = 'darkss';
 	let theme = null;
 
-	async function setupChart(canvas, chartData, compareChartData, name, compareToName) {
+	function processChartData(chartData, resolution, smoothPeriodPercentage, weightFunctionSteepness) {
+		var data = [];
+		if (chartData.length === 0 || resolution === 0) return data;
+
+		var songDuration = chartData[chartData.length - 1][1];
+		const distanceWeightFunction = createDistanceWeightFunction(songDuration * smoothPeriodPercentage, weightFunctionSteepness);
+
+		for (let i = 0.0; i < resolution; i += 1.0) {
+			const songTime = (songDuration * i) / (resolution - 1);
+
+			var sum = 0;
+			var divider = 0;
+
+			for (let j = 0.0; j < chartData.length; j += 1.0) {
+				const item = chartData[j];
+				const weight = distanceWeightFunction.getWeight(item[1] - songTime);
+
+				sum += item[0] * weight;
+				divider += weight;
+			}
+
+			if (divider === 0) continue;
+			const value = (100 + (sum / divider) * 15) / 1.15;
+			data.push([songTime, value]);
+		}
+
+		return data;
+	}
+
+	async function setupChart(canvas, chartData) {
 		if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
 		const accColor = theme && theme.alternate ? theme.alternate : '#72a8ff';
-		const compareColor = theme && theme.dimmed ? theme.alternate : '#3e3e3e';
-		var windowSize = chartData.length / chartData[chartData.length - 1][4];
-		if (windowSize < 1) {
-			windowSize = 1;
+
+		var data = processChartData(chartData, 200, 0.02, 3);
+
+		const minMaxCounter = createMinMaxCounter(0, 100, 1.0);
+		for (let i = 0; i < data.length; i++) {
+			minMaxCounter.update(data[i][1]);
 		}
-		windowSize = Math.round(windowSize);
-
-		var data = [];
-		for (let i = 0; i < chartData.length; i++) {
-			var accumulator = chartData[i][0];
-			var counter = 1;
-
-			for (let j = 1; j < windowSize; j++) {
-				if (i + j < chartData.length) {
-					accumulator += chartData[i + j][0];
-					counter++;
-				}
-			}
-			for (let j = 1; j < windowSize; j++) {
-				if (i - j >= 0) {
-					accumulator += chartData[i - j][0];
-					counter++;
-				}
-			}
-
-			data.push((100 + (accumulator / counter) * 15) / 1.15);
-		}
-
-		const mainMinValue = Math.floor(Math.max(Math.floor(data.reduce((min, cur) => (cur < min ? cur : min), 100)), 0) * 0.99);
-		const mainMaxValue = Math.ceil(Math.min(Math.ceil(data.reduce((max, cur) => (cur > max ? cur : max), 0)), 100));
-
-		const compareData = compareChartData ? Object.values(compareChartData).map(v => v * 100) : null;
-		const compareMinValue = compareChartData
-			? Math.floor(Math.max(Math.floor(compareData.reduce((min, cur) => (cur < min ? cur : min), 100)), 0) * 0.99)
-			: 100;
-		const compareMaxValue = compareChartData
-			? Math.ceil(Math.min(Math.ceil(compareData.reduce((max, cur) => (cur > max ? cur : max), 0)), 100))
-			: 0;
-
-		const minValue = Math.min(mainMinValue, compareMinValue);
-		const maxValue = Math.max(mainMaxValue, compareMaxValue);
 
 		const datasets = [
 			{
@@ -76,23 +73,11 @@
 			},
 		];
 
-		if (compareData)
-			datasets.push({
-				label: compareToName ? compareToName : 'Compared',
-				data: compareData,
-				cubicInterpolationMode: 'monotone',
-				tension: 0.4,
-				borderColor: compareColor,
-				borderWidth: 2,
-				pointRadius: 0,
-				type: 'line',
-			});
-
-		const labels = (compareData && compareData.length > data.length ? compareChartData : chartData).map(
+		const labels = data.map(
 			v =>
-				Math.floor(v[4] / 60) +
+				Math.floor(v[0] / 60) +
 				':' +
-				Math.round(v[4] % 60, 2)
+				Math.round(v[0] % 60, 2)
 					.toString()
 					.padStart(2, '0')
 		);
@@ -131,8 +116,8 @@
 							},
 						},
 						y: {
-							min: minValue,
-							max: maxValue,
+							min: minMaxCounter.minValue,
+							max: minMaxCounter.maxValue,
 							ticks: {
 								callback: function (val) {
 									return val + '%';
@@ -145,22 +130,20 @@
 			});
 		} else {
 			chart.data = {labels, datasets};
-			chart.options.plugins.legend.display = !!compareData;
-			chart.options.scales.y.min = minValue;
-			chart.options.scales.y.max = maxValue;
+			chart.options.scales.y.min = minMaxCounter.minValue;
+			chart.options.scales.y.max = minMaxCounter.maxValue;
 			chart.update();
 		}
 	}
-
-	let speed = 1;
 	let start = 0;
 
-	$: notes && setupChart(canvas, notes.rows, null, null, null);
+	$: notes && setupChart(canvas, notes.rows);
+	$: average = (notes && notes.AIacc * 100) ?? 0;
 	$: loading = false;
 </script>
 
-<article transition:fade|global>
-	<span>Predicted accability:</span>
+<article>
+	<span>Predicted accability (avg {average.toFixed(2)}%):</span>
 	<section class="accuracy-chart" style="--height: {height}">
 		<canvas class="chartjs" bind:this={canvas} />
 	</section>
@@ -169,6 +152,7 @@
 			<Spinner />
 		</div>
 	{/if}
+
 	<span>At speed:</span>
 	<RangeSlider
 		min={0.5}
@@ -197,6 +181,7 @@
 <style>
 	.spinner-container {
 	}
+
 	.accuracy-chart {
 		height: 100%;
 	}

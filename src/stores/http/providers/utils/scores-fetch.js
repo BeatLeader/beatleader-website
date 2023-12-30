@@ -7,6 +7,7 @@ import {processScore} from '../../../../network/clients/beatleader/scores/utils/
 import {fetchJson} from '../../../../network/fetch';
 import {getResponseBody} from '../../../../network/queues/queues';
 import makePendingPromisePool from '../../../../utils/pending-promises';
+import {GLOBAL_LEADERBOARD_TYPE} from '../../../../utils/format';
 
 let scoreFetcher = null;
 
@@ -76,7 +77,9 @@ export default () => {
 		if (!id) return;
 
 		return resolvePromiseOrWaitForPending(`pinnedScores/${id}`, () =>
-			fetchJson(BL_API_URL + `player/${id}/pinnedScores`).then(data => getResponseBody(data)?.map(s => processScore(s)) ?? [])
+			fetchJson(BL_API_URL + `player/${id}/pinnedScores?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`).then(
+				data => getResponseBody(data)?.map(s => processScore(s)) ?? []
+			)
 		);
 	};
 

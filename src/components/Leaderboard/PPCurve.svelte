@@ -3,10 +3,11 @@
 	import 'chartjs-adapter-luxon';
 	import Chart from 'chart.js/auto';
 	import regionsPlugin from './utils/regions-plugin';
-	import {formatNumber} from '../../utils/format';
+	import {formatNumber, GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {userDescriptionForModifier} from '../../utils/beatleader/format';
 	import {getPPFromAcc, computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
+	import {debounce} from '../../utils/debounce';
 
 	export let passRating = 5;
 	export let accRating = 5;
@@ -28,6 +29,13 @@
 		minAcc = 0.5,
 		maxAcc = 1;
 
+	if (GLOBAL_LEADERBOARD_TYPE == 'golf') {
+		startAcc = 0;
+		endAcc = 0.3;
+		minAcc = 0;
+		maxAcc = 0.5;
+	}
+
 	const mutuallyExclusive = {
 		NA: ['DA'],
 		GN: ['DA'],
@@ -45,14 +53,14 @@
 		const mainColor = '#eb008c';
 		const annotationColor = '#aaa';
 
-		let minPp = 0;
+		let minPp = 70000;
 		let annotations = [];
 		const data = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
 			const pp = getPPFromAcc(acc, passRating, accRating, techRating, mode);
 			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
 
-			if (!minPp) minPp = pp;
+			if (pp < minPp) minPp = pp;
 
 			if (acc > startAcc && (acc * 100) % Math.round(((maxAcc - startAcc) * 100) / 8) < 0.001)
 				if (pp)
@@ -179,6 +187,19 @@
 		dispatch('modified-stars', {passRating, accRating, techRating, stars: null});
 	});
 
+	function onRangeChange(event) {
+		startAcc = event.detail.values[0] / 100;
+		endAcc = event.detail.values[1] / 100;
+
+		if (startAcc - minAcc < 0.05 && minAcc >= 0.05) {
+			minAcc -= 0.05;
+		} else if (startAcc - minAcc > 0.1) {
+			minAcc += 0.05;
+		}
+	}
+
+	const debouncedOnRangeChange = debounce(onRangeChange, 100);
+
 	$: modifiersArr = Object.entries(modifiers ?? {})
 		?.filter(m => m?.[0] !== 'modifierId')
 		?.map(m => ({
@@ -239,16 +260,7 @@
 		pipstep={225}
 		all="label"
 		formatter={v => formatNumber(v, 0)}
-		on:change={event => {
-			startAcc = event.detail.values[0] / 100;
-			endAcc = event.detail.values[1] / 100;
-
-			if (startAcc - minAcc < 0.05 && minAcc >= 0.05) {
-				minAcc -= 0.05;
-			} else if (startAcc - minAcc > 0.1) {
-				minAcc += 0.05;
-			}
-		}} />
+		on:change={debouncedOnRangeChange} />
 </div>
 
 <style>

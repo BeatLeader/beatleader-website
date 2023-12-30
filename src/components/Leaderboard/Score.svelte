@@ -12,6 +12,7 @@
 	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import Preview from '../Common/Preview.svelte';
+	import {describePlatform, getControllerForEnum, getHeadsetForHMD} from '../../utils/beatleader/format';
 
 	export let leaderboardId = null;
 	export let score = null;
@@ -58,6 +59,13 @@
 		$configStore?.leaderboardPreferences?.show?.date === true ||
 		(sortBy === 'date' && $configStore?.leaderboardPreferences?.show?.date === false);
 	$: isBot = score?.player?.playerInfo?.bot;
+
+	$: headset = getHeadsetForHMD(score?.score?.hmd);
+	$: controllerDescription =
+		getControllerForEnum(score?.score?.controller).length > 0 ? ' with ' + getControllerForEnum(score?.score?.controller) : '';
+	$: platformDescription = describePlatform(score?.score?.platform);
+	$: title = headset?.name + controllerDescription + (platformDescription?.description ? '\n' + platformDescription?.description : '');
+	$: headsetStyle = `width: 1.2em; filter: ${headset?.color}`;
 </script>
 
 {#if score}
@@ -82,6 +90,9 @@
 				</Badge>
 			</div>
 			<div class="player">
+				{#if $configStore?.leaderboardPreferences?.show?.hmd !== false}
+					<img src={'/assets/' + headset?.icon} alt={headset?.name} {title} style={headsetStyle} />
+				{/if}
 				{#if $configStore?.leaderboardPreferences?.show?.avatar !== false}
 					<Avatar player={score.player} />
 				{/if}

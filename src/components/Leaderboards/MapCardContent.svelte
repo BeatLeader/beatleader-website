@@ -68,8 +68,8 @@
 		{/if}
 	</div>
 
-	<div class="song-info">
-		<div class="song-title" style="background-color: {backgroundColor};">
+	<div class="song-info" style="background-color: {backgroundColor};">
+		<div class="song-title">
 			<div class="name-and-author">
 				<span class="name" data-atropos-offset="3">{map?.song?.name}</span>
 
@@ -227,7 +227,6 @@
 		background-color: #0a0a0a;
 		flex-grow: 1;
 		border-radius: 0 0 0.3em 0.3em;
-		margin: -0.03em;
 	}
 
 	.maps-table .other-details {

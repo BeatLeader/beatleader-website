@@ -1,5 +1,5 @@
 <script>
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {createEventDispatcher} from 'svelte';
 	import {fade, fly} from 'svelte/transition';
 	import createClansStore from '../stores/http/http-clans-store';
@@ -16,10 +16,9 @@
 	import ClanInfoSmall from '../components/Clans/ClanInfoSmall.svelte';
 
 	export let page = 1;
+	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
-
-	const location = useLocation();
 
 	document.body.classList.remove('slim');
 	const dispatch = createEventDispatcher();
@@ -29,20 +28,20 @@
 	let createError = null;
 	let createIsSaving = false;
 
-	let shouldBeForceRefreshed = new URLSearchParams($location?.search ?? '')?.get('refresh') ?? false;
+	let shouldBeForceRefreshed = new URLSearchParams(location?.search ?? '')?.get('refresh') ?? false;
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
+	const processString = val => val?.toString();
+
+	const params = [
+		{key: 'search', default: '', process: processString},
+		{key: 'sortBy', default: 'captures', process: processString},
+		{key: 'order', default: 'desc', process: processString},
+	];
+
 	const buildFiltersFromLocation = location => {
-		const processString = val => val?.toString();
-
-		const params = [
-			{key: 'search', default: '', process: processString},
-			{key: 'sortBy', default: 'captures', process: processString},
-			{key: 'order', default: 'desc', process: processString},
-		];
-
 		const searchParams = new URLSearchParams(location?.search ?? '');
 
 		return params.reduce(
@@ -57,21 +56,25 @@
 		if (!filters) return '';
 
 		const searchParams = new URLSearchParams();
-		Object.entries(filters).forEach(([key, value]) => searchParams.append(key, value));
+		Object.entries(filters).forEach(([key, value]) => {
+			if (params.find(p => p.key == key).default != value) {
+				searchParams.append(key, value);
+			}
+		});
 
 		return searchParams.toString();
 	};
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation($location);
+	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 
 	const clansStore = createClansStore(page, currentFilters);
 
-	function changePageAndFilters(newPage, newLocation, force) {
+	function changePageAndFilters(newPage, newCurrentFilters, force, replace, setUrl = true) {
 		shouldBeForceRefreshed = false;
 
-		currentFilters = buildFiltersFromLocation(newLocation);
+		currentFilters = newCurrentFilters;
 
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
@@ -87,22 +90,30 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		currentPage = newPage;
+
+		if (setUrl) {
+			const query = buildSearchFromFilters(currentFilters);
+			const url = `/clans/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
 		clansStore.fetch(currentPage, {...currentFilters}, force);
 	}
 
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/clans/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-	}
-
-	function navigateToCurrentPageAndFilters() {
-		navigate(`/clans/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
+		changePageAndFilters(event.detail.page + 1, currentFilters, false, false);
 	}
 
 	function onSearchChanged(e) {
 		currentFilters.search = e.target.value ?? '';
-		navigateToCurrentPageAndFilters();
+
+		changePageAndFilters(1, currentFilters, false, true);
 	}
 
 	const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
@@ -125,7 +136,7 @@
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank clans with 3 players or more', iconFa: 'fa fa-list-ol'},
 		{id: 'count', label: 'Players', title: 'Sort by player count', iconFa: 'fa fa-user'},
-		{id: 'captures', label: 'Maps Captured', title: 'Sort by maps captured', iconFa: 'fa fa-flag'}
+		{id: 'captures', label: 'Maps Captured', title: 'Sort by maps captured', iconFa: 'fa fa-flag'},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -138,18 +149,19 @@
 		} else {
 			currentFilters.sortBy = event.detail.id;
 		}
+		currentPage = 1;
 
-		navigateToCurrentPageAndFilters();
+		changePageAndFilters(1, currentFilters, false, true);
 	}
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = clansStore.isLoading;
 	$: pending = clansStore.pending;
 	$: numOfClans = $clansStore ? $clansStore?.metadata?.total : null;
 	$: itemsPerPage = $clansStore ? $clansStore?.metadata?.itemsPerPage : 10;
 
-	$: changePageAndFilters(page, $location, shouldBeForceRefreshed);
+	$: changePageAndFilters(page, buildFiltersFromLocation(location), shouldBeForceRefreshed, false, false);
 
 	$: clanRequests = $account?.clanRequest ?? [];
 
@@ -167,7 +179,7 @@
 				<h1 class="title is-5">My clan</h1>
 
 				<a href={`/clan/${$account.clan.tag}`} on:click|preventDefault={() => navigate(`/clan/${$account.clan.tag}`)}>
-					<ClanInfoSmall clan={$account.clan}/>
+					<ClanInfoSmall clan={$account.clan} />
 				</a>
 			</ContentBox>
 		{/if}

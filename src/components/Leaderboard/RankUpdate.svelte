@@ -1,14 +1,12 @@
 <script>
 	import Dialog from '../Common/Dialog.svelte';
 	import Button from '../Common/Button.svelte';
-	import RangeSlider from 'svelte-range-slider-pips';
 	import Select from 'svelte-select';
 	import {createEventDispatcher} from 'svelte';
 
-	import {votingTypes, mapTypeFromMask, DifficultyStatus} from '../../utils/beatleader/format';
+	import {votingTypes, mapTypeFromMask} from '../../utils/beatleader/format';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {deepClone, shallowEqual} from '../../utils/js';
-	import {Ranked_Const} from '../../utils/beatleader/consts';
 	import CriteriaCheck from './CriteriaCheck.svelte';
 
 	const dispatch = createEventDispatcher();
@@ -62,7 +60,7 @@
 			reweight.rtMember == playerId ||
 			somethingChanged(suitableForRank, criteriaMet, criteriaCommentary, stars, selectedTypes, modifiers)
 		) {
-			votingStore.updateReweight(hash, diff, mode, suitableForRank, stars, selectedTypes, criteriaMet, criteriaCommentary, modifiers);
+			votingStore.updateReweight(hash, diff, mode, suitableForRank, selectedTypes, criteriaMet, criteriaCommentary, modifiers);
 		} else {
 			votingStore.approveReweight(hash, diff, mode);
 		}
@@ -168,40 +166,6 @@
 				<input type="text" style="width: 100%;" bind:value={criteriaCommentary} placeholder="Criteria commentary" class="input-reset" />
 			{/if}
 			{#if suitableForRank}
-				<div>
-					<label>Stars:</label>
-
-					<div class="buttons-and-slider">
-						<Button
-							title="Less"
-							iconFa="fas fa-caret-left"
-							type="text"
-							on:click={() => {
-								if (stars > 0) stars -= Ranked_Const.STAR_GRANULARITY;
-							}} />
-
-						<RangeSlider
-							min={Ranked_Const.MIN_STARS}
-							max={Ranked_Const.MAX_STARS}
-							step={Ranked_Const.STAR_GRANULARITY}
-							values={[stars]}
-							float
-							hoverable
-							pips
-							pipstep={20}
-							all="label"
-							on:change={event => {
-								stars = event.detail.values[0];
-							}} />
-						<Button
-							title="More"
-							iconFa="fas fa-caret-right"
-							type="text"
-							on:click={() => {
-								if (stars > 0) stars += Ranked_Const.STAR_GRANULARITY;
-							}} />
-					</div>
-				</div>
 				<div>
 					<label>Type:</label>
 					{#each selectedTypes as type, idx}

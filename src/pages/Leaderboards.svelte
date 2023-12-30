@@ -1,6 +1,6 @@
 <script>
 	import {tick} from 'svelte';
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
 	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
@@ -15,7 +15,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import {
 		createBuildFiltersFromLocation,
-		buildSearchFromFilters,
+		buildSearchFromFiltersWithDefaults,
 		processFloatFilter,
 		processStringFilter,
 		processIntFilter,
@@ -31,6 +31,9 @@
 		DifficultyStatus,
 		requirementsMap,
 		modeDescriptions,
+		difficultyDescriptions,
+		songStatusesMap,
+		songStatusesDescription,
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
@@ -45,10 +48,9 @@
 	import Select from '../components/Settings/Select.svelte';
 
 	export let page = 1;
+	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
-
-	const location = useLocation();
 
 	document.body.classList.remove('slim');
 
@@ -58,7 +60,7 @@
 
 	const params = [
 		{key: 'search', default: '', process: processStringFilter},
-		{key: 'type', default: '', process: processStringFilter},
+		{key: 'type', default: 'ranked', process: processStringFilter},
 		{key: 'mytype', default: '', process: processStringFilter},
 		{key: 'stars_from', default: undefined, process: processFloatFilter},
 		{key: 'stars_to', default: undefined, process: processFloatFilter},
@@ -73,9 +75,11 @@
 		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
 		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mode', default: null, process: processStringFilter},
+		{key: 'difficulty', default: null, process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
 		{key: 'mapRequirements', default: null, process: processIntFilter},
+		{key: 'songStatus', default: null, process: processIntFilter},
 		{key: 'allRequirements', default: 0, process: processIntFilter},
 	];
 
@@ -99,7 +103,7 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
-	let currentFilters = buildFiltersFromLocation($location);
+	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 
 	const typeFilterOptions = [
@@ -138,10 +142,22 @@
 		};
 	});
 
+	const songStatusOptions = Object.entries(songStatusesMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(songStatusesDescription?.[key]?.name ?? key),
+			icon: `<span class="${songStatusesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: songStatusesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: songStatusesDescription?.[key]?.textColor ?? null,
+			title: songStatusesDescription?.[key]?.title ?? null,
+		};
+	});
+
+	const modeNullPlaceholder = 'Any mode';
 	const modeFilterOptions = [
 		{
 			key: null,
-			label: 'Any mode',
+			label: modeNullPlaceholder,
 		},
 	].concat(
 		Object.entries(modeDescriptions).map(([key, type]) => {
@@ -155,6 +171,24 @@
 		})
 	);
 
+	const difficultyNullPlaceholder = 'Any diff';
+	const difficultyFilterOptions = [
+		{
+			key: null,
+			label: difficultyNullPlaceholder,
+		},
+	].concat(
+		Object.entries(difficultyDescriptions).map(([key, type]) => {
+			return {
+				key,
+				label: capitalize(difficultyDescriptions?.[key]?.title ?? key),
+				icon: `<span class="${difficultyDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
+				color: difficultyDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
+				textColor: difficultyDescriptions?.[key]?.textColor ?? null,
+			};
+		})
+	);
+
 	function addAdditionalFilters(mapper, rt) {
 		mytypeFilterOptions = [...baseMytypeFilterOptions];
 		if (mapper) {
@@ -164,8 +198,8 @@
 
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
 
-	function changePageAndFilters(newPage, newLocation) {
-		currentFilters = buildFiltersFromLocation(newLocation);
+	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
+		currentFilters = newFilters;
 
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
@@ -203,17 +237,30 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		currentPage = newPage;
+
+		if (setUrl) {
+			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const url = `/leaderboards/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
 		leaderboardsStore.fetch(currentPage, {...currentFilters});
+	}
+
+	function navigateToCurrentPageAndFilters(replaceState) {
+		changePageAndFilters(currentPage, currentFilters, replaceState);
 	}
 
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/leaderboards/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-	}
+		currentPage = event.detail.page + 1;
 
-	function navigateToCurrentPageAndFilters() {
-		navigate(`/leaderboards/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
+		navigateToCurrentPageAndFilters(true);
 	}
 
 	function onSearchChanged(e) {
@@ -223,6 +270,7 @@
 
 		currentFilters.search = search;
 		currentPage = 1;
+
 		navigateToCurrentPageAndFilters();
 	}
 
@@ -273,6 +321,21 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onSongStatusChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = 0;
+
+		if (currentFilters.songStatus & event.detail.key) currentFilters.songStatus &= currentFilters.songStatus ^ event.detail.key;
+		else currentFilters.songStatus |= event.detail.key;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = null;
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function onMyTypeChanged(event) {
 		if (!event?.detail) return;
 
@@ -290,6 +353,14 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	async function onDifficultyChanged(event) {
+		await tick();
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function starsChanged() {
 		currentPage = 1;
 
@@ -299,8 +370,13 @@
 	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
-		currentFilters[ratingType + '_from'] = event.detail.values[0];
-		currentFilters[ratingType + '_to'] = event.detail.values[1];
+		if (sliderLimits.MIN_STARS != event.detail.values[0] || Number.isFinite(currentFilters[ratingType + '_from'])) {
+			currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
+		}
+
+		if (sliderLimits.MAX_STARS != event.detail.values[1] || Number.isFinite(currentFilters[ratingType + '_to'])) {
+			currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
+		}
 		starsChanged();
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
@@ -368,7 +444,7 @@
 		});
 	}
 
-	$: $location, document.body.scrollIntoView({behavior: 'smooth'});
+	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = leaderboardsStore.isLoading;
 	$: pending = leaderboardsStore.pending;
@@ -383,7 +459,7 @@
 
 	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
 
-	$: changePageAndFilters(page, $location);
+	$: changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
 
 	$: starsKey =
 		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'
@@ -508,6 +584,14 @@
 				</section>
 			{/if}
 
+			<section class="filter">
+				<Switcher
+					values={songStatusOptions}
+					value={songStatusOptions.filter(c => currentFilters.songStatus & c.key)}
+					multi={true}
+					on:change={onSongStatusChanged} />
+			</section>
+
 			<div style="margin-bottom: 0.1em">
 				<Select
 					bind:value={currentFilters.allTypes}
@@ -572,7 +656,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.stars_from, currentFilters.stars_to]}
+					values={[
+						Number.isFinite(currentFilters.stars_from) ? currentFilters.stars_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.stars_to) ? currentFilters.stars_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -606,7 +693,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.accrating_from, currentFilters.accrating_to]}
+					values={[
+						Number.isFinite(currentFilters.accrating_from) ? currentFilters.accrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.accrating_to) ? currentFilters.accrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -640,7 +730,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.passrating_from, currentFilters.passrating_to]}
+					values={[
+						Number.isFinite(currentFilters.passrating_from) ? currentFilters.passrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.passrating_to) ? currentFilters.passrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -674,7 +767,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.techrating_from, currentFilters.techrating_to]}
+					values={[
+						Number.isFinite(currentFilters.techrating_from) ? currentFilters.techrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.techrating_to) ? currentFilters.techrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -695,13 +791,28 @@
 			</section>
 
 			<section class="filter">
-				<label>Has mode</label>
-				<Select
-					bind:value={currentFilters.mode}
-					on:change={onModeChanged}
-					options={modeFilterOptions}
-					nameSelector={x => x.label}
-					valueSelector={x => x.key} />
+				<div class="mode-and-diff">
+					<div>
+						<label>Has diff</label>
+						<Select
+							bind:value={currentFilters.difficulty}
+							on:change={onDifficultyChanged}
+							options={difficultyFilterOptions}
+							nullPlaceholder={difficultyNullPlaceholder}
+							nameSelector={x => x.label}
+							valueSelector={x => x.key} />
+					</div>
+					<div>
+						<label>Has mode</label>
+						<Select
+							bind:value={currentFilters.mode}
+							on:change={onModeChanged}
+							options={modeFilterOptions}
+							nullPlaceholder={modeNullPlaceholder}
+							nameSelector={x => x.label}
+							valueSelector={x => x.key} />
+					</div>
+				</div>
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>
@@ -881,6 +992,12 @@
 	.table-switches {
 		display: flex;
 		gap: 0.5em;
+	}
+
+	.mode-and-diff {
+		display: flex;
+		gap: 1em;
+		flex-wrap: wrap;
 	}
 
 	:global(.pager-and-switch .pagination) {

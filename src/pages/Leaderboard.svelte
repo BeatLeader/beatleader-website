@@ -1,11 +1,10 @@
 <script>
 	import {createEventDispatcher, getContext} from 'svelte';
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
 	import createVotingStore from '../stores/beatleader/rankVoting';
-	import createBeatSaverService from '../services/beatmaps';
 	import scoreStatisticEnhancer from '../stores/http/enhancers/scores/scoreStatistic';
 	import {opt, capitalize} from '../utils/js';
 	import stringify from 'json-stable-stringify';
@@ -34,7 +33,7 @@
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
-	import {buildSearchFromFilters, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters';
+	import {buildSearchFromFiltersWithDefaults, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters';
 	import {flip} from 'svelte/animate';
 	import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score';
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
@@ -57,14 +56,15 @@
 	import ClanRankingScore from '../components/Leaderboard/ClanRankingScore.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
+	import HashDisplay from '../components/Common/HashDisplay.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
 	export let page = 1;
+	export let location;
 	export let dontNavigate = false;
 	export let withoutDiffSwitcher = false;
 	export let withoutHeader = false;
-	export let dontChangeType = false;
 	export let fixedBrowserTitle = null;
 	export let higlightedScore = null;
 	export let iconsInInfo = false;
@@ -74,8 +74,6 @@
 
 	export let autoScrollToTop = true;
 	export let showStats = true;
-
-	const location = useLocation();
 
 	if (!dontNavigate) document.body.classList.add('slim');
 
@@ -150,7 +148,7 @@
 	let currentLeaderboardId = leaderboardId;
 	let currentType = type;
 
-	let currentFilters = buildFiltersFromLocation($location);
+	let currentFilters = buildFiltersFromLocation(location);
 	let leaderboard = null;
 
 	let modifiedPass = null;
@@ -266,7 +264,7 @@
 
 	const leaderboardStore = createLeaderboardStore(leaderboardId, type, page, currentFilters);
 
-	function changeParams(newLeaderboardId, newType, newPage, currentFilters) {
+	function changeParams(newLeaderboardId, newType, newPage, currentFilters, setUrl, replace) {
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
@@ -276,6 +274,16 @@
 		const newCurrentTypeOption = findCurrentTypeOption(currentType, currentFilters);
 		if (newCurrentTypeOption) currentTypeOption = newCurrentTypeOption;
 
+		if (setUrl) {
+			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const url = `/leaderboard/${currentType}/${currentLeaderboardId}/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
 		leaderboardStore.fetch(currentLeaderboardId, currentType, currentPage, {...currentFilters});
 	}
 
@@ -284,20 +292,14 @@
 
 		const newPage = event.detail.page + 1;
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/${newPage}?${buildSearchFromFilters(currentFilters)}`, {
-				preserveScroll: true,
-			});
-		else changeParams(currentLeaderboardId, currentType, newPage, currentFilters);
+		changeParams(currentLeaderboardId, currentType, newPage, currentFilters, !dontNavigate, false);
 	}
 
 	function onDiffChange(event) {
 		const newLeaderboardId = opt(event, 'detail.leaderboardId');
 		if (!newLeaderboardId) return;
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${newLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(newLeaderboardId, currentType, 1, currentFilters);
+		changeParams(newLeaderboardId, currentType, 1, currentFilters, !dontNavigate, false);
 	}
 
 	function onTypeChanged(event) {
@@ -305,20 +307,15 @@
 		if (!newType) return;
 
 		const newFilters = {...currentFilters, ...(event?.detail?.filters ?? null)};
-		if (!dontNavigate)
-			navigate(`/leaderboard/${newType}/${currentLeaderboardId}/1?${buildSearchFromFilters(newFilters)}`, {preserveScroll: true});
-		else if (!dontChangeType) {
-			currentFilters = newFilters;
-			changeParams(currentLeaderboardId, newType, 1, newFilters);
-		}
+
+		currentFilters = newFilters;
+		changeParams(currentLeaderboardId, newType, 1, newFilters, !dontNavigate, true);
 
 		dispatch('type-changed', {leaderboardId: currentLeaderboardId, type: newType, page: currentPage, filters: newFilters});
 	}
 
 	function onSelectedGroupEntryChanged(event) {
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, false);
 	}
 
 	function processDiffs(diffArray, song) {
@@ -450,9 +447,7 @@
 			currentFilters.order = 'desc';
 		}
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
 	var complexFilters = [];
@@ -486,9 +481,7 @@
 	function onModifiersChanged(event) {
 		currentFilters.modifiers = event?.detail?.value ?? '';
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
 	function onFiltersChanged(event) {
@@ -497,9 +490,7 @@
 		currentFilters.search = newFilters.search;
 		currentFilters.countries = newFilters.countries;
 
-		if (!dontNavigate)
-			navigate(`/leaderboard/${currentType}/${currentLeaderboardId}/1?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-		else changeParams(currentLeaderboardId, currentType, 1, currentFilters);
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
 	let battleRoyaleDraft = false;
@@ -591,27 +582,15 @@
 		}
 	}
 
-	let latestHash;
-
-	async function checkMapHash(hash) {
-		if (hash) {
-			let beatSaverService = createBeatSaverService();
-
-			const songInfoValue = await beatSaverService.byHash(hash, true);
-
-			latestHash = songInfoValue?.versions[0].hash.toLowerCase() == hash.toLowerCase();
-		}
-	}
-
 	let showAverageStats = false;
 
 	$: isLoading = leaderboardStore.isLoading;
 	$: pending = leaderboardStore.pending;
 
-	$: if (autoScrollToTop && $location) document.body.scrollIntoView({behavior: 'smooth'});
+	$: if (autoScrollToTop) document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: updateParams(leaderboardId, type, page);
-	$: updateFilters(buildFiltersFromLocation($location));
+	$: updateFilters(buildFiltersFromLocation(location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
 	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
@@ -634,7 +613,7 @@
 	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
 
-	$: makeComplexFilters(buildFiltersFromLocation($location), mainPlayerCountry);
+	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: isRT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('rankedteam'));
@@ -654,7 +633,6 @@
 	$: votingStats = $votingStore[leaderboardId];
 
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
-	$: if (song) checkMapHash(song.hash);
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
 
@@ -698,7 +676,6 @@
 					{leaderboard}
 					{leaderboardStore}
 					{ratings}
-					{latestHash}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
 			</ContentBox>
@@ -764,7 +741,6 @@
 							on:click={() => startBattleRoyale()} />
 					</div>
 				{/if}
-
 				{#if currentType != 'clanranking'}
 					{#if scoresWithUser?.length}
 						<div class="scores-grid grid-transition-helper">
@@ -774,8 +750,7 @@
 									class:user-score={score?.isUserScore}
 									class:user-score-top={score?.userScoreTop}
 									in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}
-									animate:flip={score?.isUserScore ? {duration: 300} : {duration: 300}}>
+									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
 									<Score
 										{leaderboardId}
 										{score}
@@ -885,8 +860,8 @@
 									{page}
 									{modifiers}
 									{fixedBrowserTitle}
-									bind:battleRoyaleDraft={battleRoyaleDraft}
-									bind:battleRoyaleDraftList={battleRoyaleDraftList}
+									bind:battleRoyaleDraft
+									bind:battleRoyaleDraftList
 									sortBy={currentFilters.sortBy}
 									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
@@ -1111,16 +1086,7 @@
 									{/if}
 									<PredictedAccGraph {leaderboard} />
 									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
-										<div>
-											<small style="display: inline-block;">{song.hash.toUpperCase()}</small>
-											{#if latestHash}
-												<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-											{:else if latestHash == undefined}
-												<Spinner />
-											{:else}
-												<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-											{/if}
-										</div>
+										<HashDisplay {song} />
 									{/if}
 
 									{#if iconsInInfo}
@@ -1461,6 +1427,14 @@
 
 		.diff-switch {
 			gap: 0.1em;
+		}
+
+		:global(.player-score .player-performance-badges .with-badge) {
+			min-width: 4em !important;
+		}
+
+		:global(.player-performance-badges) {
+			min-width: 0 !important;
 		}
 	}
 

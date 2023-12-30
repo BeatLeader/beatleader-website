@@ -1,7 +1,6 @@
 <script>
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing';
-	import {globalHistory} from 'svelte-routing/src/history';
 	import eventBus from '../../utils/broadcast-channel-pubsub';
 	import createAccountStore from '../../stores/beatleader/account';
 	import createPlaylistStore from '../../stores/playlists';
@@ -18,6 +17,8 @@
 	import MenuLine from '../Player/MenuLine.svelte';
 	import LinkMenuItem from './LinkMenuItem.svelte';
 	import PlaylistHeaderMenuItem from './PlaylistHeaderMenuItem.svelte';
+	import {globalHistory} from 'svelte-routing/src/history';
+	import {GLOBAL_LEADERBOARD_TYPE, setLeaderboardType} from '../../utils/format';
 
 	let className = null;
 	export {className as class};
@@ -33,6 +34,7 @@
 
 	let accountMenuShown = false;
 	let mobileMenuShown = false;
+	var currenturl;
 
 	onMount(async () => {
 		const settingsBadgeUnsubscribe = eventBus.on('settings-notification-badge', message => (settingsNotificationBadge = message));
@@ -47,6 +49,10 @@
 
 		document.addEventListener('keydown', keyDownHandler);
 
+		globalHistory.listen(({location, action}) => {
+			currenturl = location.href;
+		});
+
 		return () => {
 			settingsBadgeUnsubscribe();
 			document.removeEventListener('keydown', keyDownHandler);
@@ -55,6 +61,45 @@
 
 	const playlists = createPlaylistStore();
 	const account = createAccountStore();
+
+	let testMenuShown = false;
+
+	var leaderboardTypeOptions = [
+		{
+			name: 'General',
+			id: '',
+			logoBig: '/assets/logo.png',
+			logoSmall: '/assets/logo-small.png',
+		},
+		{
+			name: 'No modifiers',
+			id: 'nomods',
+			logoBig: '/assets/logo-no-pause.png',
+			logoSmall: '/assets/logo-small-no-pause.png',
+		},
+		{
+			name: 'No pauses',
+			id: 'nopause',
+			logoBig: '/assets/logo.png',
+			logoSmall: '/assets/favicon-96x96.png',
+		},
+		{
+			name: 'Golf',
+			id: 'golf',
+			logoBig: '/assets/logo.png',
+			logoSmall: '/assets/favicon-96x96.png',
+		},
+		{
+			name: 'SCPM',
+			id: 'scpm',
+			logoBig: '/assets/logo.png',
+			logoSmall: '/assets/favicon-96x96.png',
+		},
+	];
+
+	let leaderboardType = leaderboardTypeOptions.find(
+		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'general' && t.id == '')
+	);
 
 	let signupOptions = [];
 
@@ -141,6 +186,14 @@
 		}
 	}
 
+	function normalizedId(id) {
+		return id != '' ? id + '.' : '';
+	}
+
+	function updateHref() {
+		currenturl = window.location.href;
+	}
+	$: updateHref();
 	$: player = $account?.player;
 	$: starredFollowedIds = player?.profileSettings?.starredFriends ?? [];
 	$: starredFollowed =
@@ -154,10 +207,81 @@
 </script>
 
 <nav class={`ssr-page-container ${className ?? ''}`}>
-	<a href="/" on:click|preventDefault={() => navigate('/')}>
-		<img src="/assets/logo.png" class="logo desktop-and-up" alt="" />
-		<img src="/assets/favicon-96x96.png" class="logo up-to-tablet" alt="" />
-	</a>
+	<div
+		class="hovermenu nav-button"
+		on:mouseover={() => {
+			if (!isTouchDevice()) testMenuShown = true;
+		}}
+		on:focus={() => {
+			if (!isTouchDevice()) testMenuShown = true;
+		}}
+		on:mouseleave={() => {
+			if (!isTouchDevice()) testMenuShown = false;
+		}}>
+		<a
+			class="logo-link"
+			href="/"
+			on:click|preventDefault={() => {
+				if (!isTouchDevice()) navigate('/');
+			}}
+			use:mobileTouch={() => (testMenuShown = true)}>
+			<div class="logo-container desktop-and-up">
+				<img src="/assets/logo.png" class="logo" alt="" />
+				<div class="logo-name">
+					<span class="name">BEATLEADER</span>
+					{#if leaderboardType.id != ''}
+						<span class="leaderboard-type">{leaderboardType.name}</span>
+					{/if}
+				</div>
+			</div>
+
+			<div class="logo-container tablet">
+				<img src="/assets/logo-small.png" class="logo" alt="" />
+				<div class="logo-name">
+					<span class="name">BL</span>
+					{#if leaderboardType.id != ''}
+						<span class="leaderboard-type">{leaderboardType.name}</span>
+					{/if}
+				</div>
+			</div>
+
+			<div class="logo-container up-to-tablet">
+				<img src="/assets/logo-small.png" class="logo" alt="" />
+				{#if leaderboardType.id != 'general'}
+					<span class="leaderboard-type">{leaderboardType.name}</span>
+				{/if}
+			</div>
+		</a>
+		<Dropdown
+			items={isTouchDevice()
+				? [
+						{
+							name: 'Dashboard',
+							id: 'dashboard',
+						},
+						...leaderboardTypeOptions,
+				  ]
+				: leaderboardTypeOptions}
+			bind:shown={testMenuShown}>
+			<svelte:fragment slot="row" let:item>
+				{#if item.id == 'dashboard'}
+					<a href="/">
+						{item.name}
+					</a>
+				{:else}
+					<a
+						style="display: block; width: 100%"
+						href={currenturl.replace(
+							location.protocol + '//' + normalizedId(leaderboardType.id),
+							location.protocol + '//' + normalizedId(item.id)
+						)}>
+						<i class={item.icon} />
+						{item.name}
+					</a>
+				{/if}
+			</svelte:fragment>
+		</Dropdown>
+	</div>
 
 	{#if player}
 		<div class="me nav-button">
@@ -427,6 +551,11 @@
 		user-select: none;
 	}
 
+	.logo-link {
+		height: 100%;
+		display: flex;
+	}
+
 	.playlists {
 		position: relative;
 	}
@@ -447,17 +576,78 @@
 		font-weight: 500;
 	}
 
-	.logo {
-		height: 2.5rem;
-		margin-top: 0.1em;
+	.name {
+		font-family: 'Audiowide';
+		letter-spacing: 0.2em;
+		font-size: 0.9em;
+		margin-top: 0.3em;
 	}
 
-	.logo.up-to-tablet {
-		height: 100%;
-		padding: 0;
+	.leaderboard-type {
+		color: #9f9f9f;
+		font-size: 0.8em;
+		font-weight: 600;
+		margin-top: -0.2em;
+	}
+
+	.logo-container.desktop-and-up {
+		display: flex;
+	}
+
+	.logo-container.up-to-tablet {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 0.1em;
+	}
+
+	.logo-container.tablet {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.1em;
+	}
+
+	.desktop-and-up .logo-name {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.desktop-and-up .logo {
+		width: 6em;
+		height: 3em;
+		margin-top: -0.4em;
+		margin-left: -0.4em;
+	}
+
+	.up-to-tablet .logo {
 		margin: 0;
+		margin-top: -0.3em;
+		height: 2.5em;
+		width: 2.5em;
+		padding: 0;
 		aspect-ratio: 1;
 		max-width: none;
+	}
+
+	.tablet .logo-name {
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.tablet .name {
+		margin-top: -0.1em;
+		margin-left: 0.3em;
+	}
+
+	.tablet .logo {
+		height: 2.5em;
+		width: 2.5em;
 	}
 
 	nav svg,
@@ -537,6 +727,12 @@
 		}
 	}
 
+	@media screen and (min-width: 1022px) {
+		.logo-container.tablet {
+			display: none !important;
+		}
+	}
+
 	@media screen and (min-width: 768px) {
 		.search-button {
 			flex: 1;
@@ -580,6 +776,9 @@
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
+		}
+		.logo-container.up-to-tablet {
+			display: none !important;
 		}
 	}
 
@@ -661,6 +860,9 @@
 
 		.notification-badge {
 			left: 0.75rem;
+		}
+		.logo-container.tablet {
+			display: none !important;
 		}
 	}
 

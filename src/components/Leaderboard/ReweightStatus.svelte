@@ -49,18 +49,6 @@
 			<PlayerNameWithFlag player={nominator} hideFlag={true} on:click={nominator ? () => navigateToPlayer(nominator.playerId) : null} />
 		</div>
 
-		{#if reweight.accRating != diff.accRating}
-			{diff.accRating} → {reweight.accRating} Acc ★
-		{/if}
-
-		{#if reweight.passRating != diff.passRating}
-			{diff.passRating} → {reweight.passRating} Pass ★
-		{/if}
-
-		{#if reweight.techRating != diff.techRating}
-			{diff.techRating} → {reweight.techRating} Tech ★
-		{/if}
-
 		{#if reweight.type != diff.type}
 			{mapTypeFromMask(diff.type)} → {mapTypeFromMask(reweight.type)}
 		{/if}
