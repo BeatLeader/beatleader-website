@@ -1,11 +1,12 @@
 <!-- https://codepen.io/arickle/pen/XKjMZY -->
 <script>
 	export let slow = true;
+	export let icons = null;
 
 	let frontRow;
 	let backRow;
 
-	const iconClasses = ['soup-icon', 'pixelsoup-icon'];
+	const iconClasses = icons ?? ['soup-icon', 'pixelsoup-icon'];
 
 	var makeItRain = function (frontRow, backRow) {
 		if (!frontRow || !backRow) return;
