@@ -264,6 +264,10 @@
 			</section>
 
 			<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+
+			<a class="globalmap" href="/clans/globalmap">
+				<img src="/assets/clan-map.png" />
+			</a>
 		</ContentBox>
 	</aside>
 </section>

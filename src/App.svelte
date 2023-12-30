@@ -45,6 +45,7 @@
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
+	import ClansMap from './pages/ClansMap.svelte';
 
 	export let url = '';
 
@@ -236,6 +237,9 @@
 					</Route>
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
+					</Route>
+					<Route path="/clans/globalmap" let:location>
+						<ClansMap {location} />
 					</Route>
 					<Route path="/playlists/*id" let:params>
 						<PlaylistsPage index={params.id} />
