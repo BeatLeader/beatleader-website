@@ -211,6 +211,19 @@
 				<p>No clans found.</p>
 			{/if}
 		</ContentBox>
+		{#if clan?.tag == 'FELA'}
+			<ContentBox>
+				<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
+					<iframe
+						width="100%"
+						style="aspect-ratio: 16/9;"
+						src="https://allpoland.github.io/ArcViewer/?id=159c7"
+						title="[THE FELLAS MAP COLLAB] NECROMANSER"
+						frameborder="0"
+						allowfullscreen />
+				</div>
+			</ContentBox>
+		{/if}
 	</article>
 </section>
 
