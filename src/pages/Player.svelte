@@ -277,6 +277,21 @@
 				</ContentBox>
 			{/if}
 
+			{#if playerInfo?.clans?.filter(cl => cl.tag == 'FELA').length}
+				<ContentBox>
+					<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
+						<iframe
+							width="100%"
+							style="aspect-ratio: 16/9;"
+							src="https://www.youtube-nocookie.com/embed/REGXZZ67F_k?si=b4lLpGGYeIZ8kRb8"
+							title="YouTube video player"
+							frameborder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							allowfullscreen />
+					</div>
+				</ContentBox>
+			{/if}
+
 			<!-- {#await accSaberAvailable}
 				Loading...
 			{:then accSaberAvailable}
