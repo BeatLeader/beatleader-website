@@ -9,7 +9,7 @@
 	import Badge from '../Common/Badge.svelte';
 	import Icons from '../Song/Icons.svelte';
 	import {formatDiffStatus} from '../../utils/beatleader/format';
-	import {dateFromUnix, formatDateRelative} from '../../utils/date';
+	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../stores/config';
@@ -136,7 +136,7 @@
 			{#if leaderboardGroup && leaderboardGroup.length > 1}
 				<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
 					{#each leaderboardGroup as option (option.id)}
-						<option class="group-option" value={option.id} title={dateFromUnix(option.timestamp)}>
+						<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
 							{#if option.timestamp}
 								{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
 							{:else}
