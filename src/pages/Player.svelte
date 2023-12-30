@@ -26,6 +26,7 @@
 	import keyValueRepository from '../db/repository/key-value';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
+	import RandomRain from '../components/Common/RandomRain.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -217,6 +218,10 @@
 </svelte:head>
 
 <svelte:window bind:innerWidth bind:innerHeight />
+
+{#if playerInfo?.clans?.filter(cl => cl.tag == 'SOUP').length}
+	<RandomRain />
+{/if}
 
 <section class="align-content player-page" transition:fade|global>
 	<article class="page-content">

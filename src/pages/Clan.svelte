@@ -16,6 +16,7 @@
 	import Dialog from '../components/Common/Dialog.svelte';
 	import Error from '../components/Common/Error.svelte';
 	import Rain from '../components/Common/Rain.svelte';
+	import RandomRain from '../components/Common/RandomRain.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -142,6 +143,9 @@
 
 {#if clan?.tag == 'BSFR' || clan?.tag == 'BB'}
 	<Rain baguete={clan?.tag == 'BSFR'} />
+{/if}
+{#if clan?.tag == 'SOUP'}
+	<RandomRain />
 {/if}
 
 <section class="align-content">
