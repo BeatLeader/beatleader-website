@@ -22,16 +22,6 @@
 	var clans = [];
 
 	onMount(() => {
-		// Setup resize observer
-		const resizeObserver = new ResizeObserver(entries => {
-			for (let entry of entries) {
-				const {width: newWidth, height: newHeight} = entry.contentRect;
-				updateCanvasSize(newWidth, newHeight);
-			}
-		});
-
-		resizeObserver.observe(container);
-
 		// Initialize canvas
 		canvas = d3.select('#clan-map-container').append('canvas').attr('width', width).attr('height', height).node();
 		context = canvas.getContext('2d');
@@ -171,16 +161,23 @@
 					label.x = clans[i].x - lwidth / 2;
 					label.y = clans[i].y + lheight / 4;
 				}
+				renderCanvas();
 			}); // Re-render canvas on each tick
 	}
 
 	function renderCanvas() {
+		context.save();
 		context.clearRect(0, 0, width, height); // Clear the canvas
 
 		context.translate(currentZoom.x, currentZoom.y); // Apply translation
 		context.scale(currentZoom.k, currentZoom.k); // Apply scale
 
+		var animating = false;
+
 		circles.forEach(c => {
+			if (c.toIncrease != 0) {
+				animating = true;
+			}
 			if (isCircleVisible(c)) {
 				drawMap(c);
 			}
@@ -195,6 +192,11 @@
 		// 		drawLink(link);
 		// 	}
 		// });
+		context.restore();
+
+		if (animating) {
+			requestAnimationFrame(renderCanvas);
+		}
 	}
 
 	function isCircleVisible(element) {
@@ -346,9 +348,7 @@
 		});
 		canvas.style.cursor = foundHovered ? 'pointer' : 'default';
 
-		if (foundHovered) {
-			renderCanvas();
-		}
+		renderCanvas();
 	}
 
 	function handleClick(event) {
@@ -368,15 +368,22 @@
 	}
 
 	function updateCanvasSize(newWidth, newHeight) {
-		width = newWidth;
-		height = newHeight;
-		canvas.width = width;
-		canvas.height = height;
-		renderCanvas();
+		if (Math.abs(newWidth - width) > 10 || Math.abs(newHeight - height) > 10) {
+			width = newWidth;
+			height = newHeight;
+			canvas.width = width;
+			canvas.height = height;
+			renderCanvas();
+		}
 	}
+
+	let newWidth;
+	let newHeight;
+
+	$: canvas && updateCanvasSize(newWidth, newHeight);
 </script>
 
-<div bind:this={container} id="clan-map-container" />
+<div bind:offsetWidth={newWidth} bind:offsetHeight={newHeight} id="clan-map-container" />
 
 <style>
 	#clan-map-container {
