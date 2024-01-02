@@ -121,7 +121,7 @@
 			() => {
 				thinking = false;
 				addNotification({
-					text: 'Nothing happened? Check this instruction: https://beatleader.wiki/en/website/one-click-install',
+					html: 'Nothing happened? Check this instruction: <a href="https://beatleader.wiki/en/website/one-click-install">https://beatleader.wiki/en/website/one-click-install</a>',
 					position: 'top-right',
 					type: 'error',
 					removeAfter: 4000,

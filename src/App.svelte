@@ -45,6 +45,7 @@
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
+	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 
 	export let url = '';
 
@@ -160,7 +161,7 @@
 {/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
-	<Notifications zIndex={10000}>
+	<Notifications zIndex={10000} item={NotificationComponent}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
