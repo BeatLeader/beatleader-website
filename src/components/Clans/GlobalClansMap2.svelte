@@ -434,6 +434,29 @@
 				circle.hovered = false;
 			}
 		});
+		if (!foundHovered) {
+			clanLabels.forEach(label => {
+				const textMetrics = context.measureText(label.label);
+				const textWidth = textMetrics.width;
+				const textHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
+
+				if (mouseX > label.x && mouseX < label.x + textWidth && mouseY > label.y - textHeight && mouseY < label.y) {
+					// Check the color at the mouse position
+					const pixel = context.getImageData(mouseX, mouseY, 1, 1).data;
+					const rgba = `rgba(${pixel[0]}, ${pixel[1]}, ${pixel[2]}, ${pixel[3] / 255})`;
+
+					console.log(rgba);
+
+					if (rgba === 'rgba(255, 255, 255, 0.6)') {
+						// The mouse is over a clan label
+						// TODO: Implement what should happen when a label is hovered
+						console.log(label.label);
+						foundHovered = true;
+					}
+				}
+			});
+		}
+
 		canvas.style.cursor = foundHovered ? 'pointer' : 'default';
 
 		renderCanvas();
@@ -534,6 +557,11 @@
 
 <style>
 	#clan-map-container {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		right: 0;
+		left: 0;
 		width: 100%;
 		height: 100%;
 	}
