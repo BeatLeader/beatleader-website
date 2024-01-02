@@ -100,7 +100,10 @@
 					{/if}
 				</div>
 				{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
-					<LeaderboardDisplayCaptureStatus clan={leaderboardCaptor} clanRankingContested={leaderboard?.clanRankingContested} />
+					<LeaderboardDisplayCaptureStatus
+						leaderboardId={leaderboard?.leaderboardId}
+						clan={leaderboardCaptor}
+						clanRankingContested={leaderboard?.clanRankingContested} />
 				{/if}
 				{#if song.externalStatuses}
 					<div class="song-statuses">

@@ -1,47 +1,60 @@
 <script>
-	import {onMount} from 'svelte';
 	import * as d3 from 'd3';
 	import {clansData} from './response';
 	import {navigate} from 'svelte-routing';
 
+	export let leaderboardId;
+
 	let container; // Reference to the container div
-	let canvas,
-		context,
-		currentZoom,
-		width = 1200,
-		height = 800;
+	let canvas, context, currentZoom, width, height;
 	let allData, simulation;
-	let currentScale = 0.24999999999999994;
-	const hoverRadius = 28;
+
+	const defaultScale = 0.25;
+	var zoom;
+	let currentScale = defaultScale;
+	const hoverRadius = 38;
 
 	var circles = [];
 	var clanLabels = [];
+	var labelsMap = {};
 	var links = [];
+	let simulated = false;
 
 	var clanMap = {};
 	var clans = [];
 
-	onMount(() => {
+	function init(newWidth, newHeight) {
+		width = newWidth;
+		height = newHeight;
+
 		// Initialize canvas
 		canvas = d3.select('#clan-map-container').append('canvas').attr('width', width).attr('height', height).node();
 		context = canvas.getContext('2d');
 
-		// Process your data
-		processData();
+		if (leaderboardId) {
+			fetch('/assets/clansMap.json')
+				.then(r => r.json())
+				.then(cache => {
+					processData(cache);
 
-		// Initialize canvas elements and interactions
-		initializeCanvas();
+					// Initialize canvas elements and interactions
+					initializeCanvas();
 
-		// Start simulation
-		startSimulation();
+					simulated = true;
+				});
+		} else {
+			// Process your data
+			processData();
 
-		// Clean up
-		return () => {
-			resizeObserver.disconnect();
-		};
-	});
+			// Initialize canvas elements and interactions
+			initializeCanvas();
 
-	function processData() {
+			// Start simulation
+			startSimulation();
+		}
+	}
+
+	function processData(cache) {
 		const data = clansData.map(m => {
 			return {...m, id: m.leaderboardId};
 		});
@@ -51,7 +64,13 @@
 			for (let j = 0; j < map.clans.length; j++) {
 				var clan = map.clans[j];
 				if (!clanMap[clan.clan.id]) {
-					const clanPoint = {...clan, id: clan.clan.id, topCount: j == 0 ? 1 : 0};
+					const clanPoint = {
+						...clan,
+						x: cache ? cache.clans[clan.clan.id].x : 0,
+						y: cache ? cache.clans[clan.clan.id].y : 0,
+						id: clan.clan.id,
+						topCount: j == 0 ? 1 : 0,
+					};
 					clanMap[clan.clan.id] = clanPoint;
 					clans.push(clanPoint);
 				} else if (j == 0) {
@@ -67,34 +86,54 @@
 			links.push({
 				source: map.leaderboardId,
 				target: map.clans[0].clan.id,
-				strength: map.tie ? map.clans[0].pp * 0.2 : map.clans[0].pp, // you can later use this strength for adjusting the link
+				strength: map.tie ? map.clans[0].pp * 0.23 : map.clans[0].pp, // you can later use this strength for adjusting the link
 			});
 			if (map.clans.length > 1) {
 				links.push({
 					source: map.leaderboardId,
 					target: map.clans[1].clan.id,
-					strength: map.clans[1].pp * 0.2, // you can later use this strength for adjusting the link
+					strength: map.clans[1].pp * 0.23, // you can later use this strength for adjusting the link
 				});
 			}
 			if (map.clans.length > 2) {
 				links.push({
 					source: map.leaderboardId,
 					target: map.clans[2].clan.id,
-					strength: map.clans[2].pp * 0.2, // you can later use this strength for adjusting the link
+					strength: map.clans[2].pp * 0.23, // you can later use this strength for adjusting the link
 				});
 			}
 		}
 
+		const convertHexToRGBA = (hexCode, opacity = 1) => {
+			let hex = hexCode.replace('#', '');
+
+			if (hex.length === 3) {
+				hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+			}
+
+			const r = parseInt(hex.substring(0, 2), 16);
+			const g = parseInt(hex.substring(2, 4), 16);
+			const b = parseInt(hex.substring(4, 6), 16);
+
+			/* Backward compatibility for whole number based opacity values. */
+			if (opacity > 1 && opacity <= 100) {
+				opacity = opacity / 100;
+			}
+
+			return `rgba(${r},${g},${b},${opacity})`;
+		};
+
 		// For each leaderboard/map
 		data.forEach(map => {
-			const topClan = map.clans[0]; // Assuming the clans are sorted by their 'pp'
+			const topClan = map.clans[0];
 
 			circles.push({
 				id: map.leaderboardId,
-				x: Math.random() * width,
-				y: Math.random() * height,
+				x: cache ? cache.circles[map.leaderboardId].x : 0,
+				y: cache ? cache.circles[map.leaderboardId].y : 0,
 				r: map.stars,
-				color: map.tie ? 'grey' : topClan.clan.color,
+				color: map.tie ? 'grey' : convertHexToRGBA(topClan.clan.color, (1 - map.clans[1].pp / map.clans[0].pp) * 8),
+				hoverColor: map.tie ? 'grey' : topClan.clan.color,
 				coverImageUrl: map.coverImage, // Add the URL of the cover image
 				clans: map.clans,
 				image: null, // Placeholder for the image object
@@ -106,12 +145,15 @@
 
 		// For each clan
 		clans.forEach(clan => {
-			clanLabels.push({
-				x: Math.random() * width,
-				y: Math.random() * height,
+			const clanLabel = {
+				id: clan.clan.id,
+				x: cache ? cache.clans[clan.clan.id].x : 0,
+				y: cache ? cache.clans[clan.clan.id].y : 0,
 				label: clan.clan.tag,
 				fontSize: Math.sqrt(clan.topCount) * 10,
-			});
+			};
+			clanLabels.push(clanLabel);
+			labelsMap[clan.clan.id] = clanLabel;
 		});
 	}
 
@@ -135,35 +177,64 @@
 				d3
 					.forceLink(links)
 					.id(d => d.id)
-					.strength(d => d.strength * 0.0001)
+					.strength(d => d.strength * 0.0004)
 			)
 			.force('x', d3.forceX(width / 2).strength(0.05))
 			.force('y', d3.forceY(height / 2).strength(0.05))
-			// .force(
-			// 	'collide',
-			// 	d3.forceCollide(d => (d.name ? 0.1 : 0.15))
-			// )
 			// Adjust the multiplier as needed
 			.force(
 				'charge',
-				d3.forceManyBody().strength(d => (d.name ? -200 : -100))
-			)
-			.on('tick', () => {
-				for (let i = 0; i < circles.length; i++) {
-					var circle = circles[i];
-					circle.x = allData[i].x;
-					circle.y = allData[i].y;
-				}
-				for (let i = 0; i < clanLabels.length; i++) {
-					var label = clanLabels[i];
-					const lwidth = label.label.length * label.fontSize;
-					const lheight = label.fontSize;
-					label.x = clans[i].x - lwidth / 2;
-					label.y = clans[i].y + lheight / 4;
-				}
-				renderCanvas();
-			}); // Re-render canvas on each tick
+				d3.forceManyBody().strength(d => (d.clan ? -1000 : -150))
+			);
+
+		if (leaderboardId) {
+			for (let i = 0; i < 200; i++) {
+				simulation.tick();
+			}
+			renderCanvas();
+			simulated = true;
+		}
+		simulation.on('tick', () => {
+			for (let i = 0; i < circles.length; i++) {
+				var circle = circles[i];
+				circle.x = allData[i].x;
+				circle.y = allData[i].y;
+			}
+			for (let i = 0; i < clanLabels.length; i++) {
+				var label = clanLabels[i];
+				const lwidth = label.label.length * (label.fontSize / 2);
+				const lheight = label.fontSize;
+				label.x = clans[i].x - lwidth / 2;
+				label.y = clans[i].y + lheight / 4;
+			}
+			renderCanvas();
+		}); // Re-render canvas on each tick
 	}
+
+	// setTimeout(() => {
+	// 	function saveJSONAsFile(json, fileName) {
+	// 		var link = document.createElement('a');
+
+	// 		document.body.appendChild(link); // for Firefox
+
+	// 		link.setAttribute('href', URL.createObjectURL(new Blob([json], {type: 'application/json'})));
+	// 		link.setAttribute('download', fileName);
+	// 		link.click();
+	// 	}
+
+	// 	var localCirclesMap = {};
+	// 	circles.forEach(circle => {
+	// 		localCirclesMap[circle.id] = {x: circle.x, y: circle.y};
+	// 	});
+
+	// 	var localClansMap = {};
+	// 	clanLabels.forEach(clan => {
+	// 		localClansMap[clan.id] = {x: clan.x, y: clan.y};
+	// 	});
+
+	// 	const serializedState = JSON.stringify({circles: localCirclesMap, clans: localClansMap});
+	// 	saveJSONAsFile(serializedState, 'clansmap.json');
+	// }, 20000);
 
 	function renderCanvas() {
 		context.save();
@@ -174,7 +245,12 @@
 
 		var animating = false;
 
+		clanLabels.forEach(l => {
+			drawClan(l);
+		});
+
 		circles.forEach(c => {
+			if (c.hovered) return;
 			if (c.toIncrease != 0) {
 				animating = true;
 			}
@@ -183,15 +259,16 @@
 			}
 		});
 
-		clanLabels.forEach(l => {
-			drawClan(l);
+		circles.forEach(c => {
+			if (!c.hovered) return;
+			if (c.toIncrease != 0) {
+				animating = true;
+			}
+			if (isCircleVisible(c)) {
+				drawMap(c);
+			}
 		});
 
-		// links.forEach(link => {
-		// 	if (isLinkVisible(link)) {
-		// 		drawLink(link);
-		// 	}
-		// });
 		context.restore();
 
 		if (animating) {
@@ -228,9 +305,14 @@
 		}
 
 		if (circle.hovered) {
+			if (circle.toIncrease === 0 && circle.hovered) {
+				circle.animatedRadius = hoverRadius / currentScale;
+			}
 			circle.clans.forEach(clan => {
 				const pp = clan.pp;
 				const lineWidth = ((pp / circle.clans[0].pp) * 20) / currentScale;
+
+				drawClan(labelsMap[clan.clan.id], true);
 
 				// Draw a line between the map and the clan
 				drawLink(circle, clanMap[clan.clan.id], lineWidth);
@@ -240,20 +322,18 @@
 			});
 		}
 
-		// Draw map elements (like circles)
 		context.beginPath();
 		context.arc(circle.x, circle.y, circle.animatedRadius, 0, 2 * Math.PI);
-		context.fillStyle = circle.color; // Replace with actual logic to determine color
+		context.fillStyle = circle.hovered ? circle.hoverColor : circle.color;
 		context.fill();
+
 		if (circle.hovered && circle.coverImageUrl && !circle.image) {
-			// Load the image if not already loaded
 			circle.image = new Image();
-			circle.image.onload = () => renderCanvas(); // Re-render when the image is loaded
+			circle.image.onload = () => renderCanvas();
 			circle.image.src = circle.coverImageUrl;
 		}
 
 		if (circle.hovered && circle.image) {
-			// Draw the image
 			drawCoverImage(circle);
 		}
 	}
@@ -272,9 +352,9 @@
 		context.restore(); // Restore the context to draw other elements
 	}
 
-	function drawClan(label) {
+	function drawClan(label, hovered) {
 		// Draw clan elements (like labels)
-		context.fillStyle = 'white'; // Example style
+		context.fillStyle = hovered ? 'white' : 'rgba(255, 255, 255, 0.6)'; // Example style
 		context.font = label.fontSize + 'px Arial'; // Example font, adjust as needed
 		context.fillText(label.label, label.x, label.y);
 		// Additional drawing details for clans
@@ -290,13 +370,21 @@
 	}
 
 	function drawLinkText(mapData, clan, lineWidth, pp) {
-		const angle = Math.atan2(clan.y - mapData.y, clan.x - mapData.x);
+		var angle = Math.atan2(clan.y - mapData.y, clan.x - mapData.x);
+		const text = `${Math.round(pp)}pp`;
+		var flipped = false;
+		if (angle > Math.PI / 2 || angle < -Math.PI / 2) {
+			angle += Math.PI;
+			flipped = true;
+		}
 		context.save();
 		context.translate(mapData.x, mapData.y);
 		context.rotate(angle);
+		context.translate(flipped ? -20 - lineWidth * text.length : 20, -lineWidth * 0.25);
+
 		context.fillStyle = 'purple';
 		context.font = `${lineWidth * 0.8}px Arial`;
-		context.fillText(`${Math.round(pp)}pp`, 30 / currentScale, lineWidth / 2);
+		context.fillText(text, 30 / currentScale, lineWidth / 2);
 		context.restore();
 	}
 
@@ -306,7 +394,7 @@
 		canvas.addEventListener('mousemove', handleMouseMove);
 		canvas.addEventListener('click', handleClick);
 
-		const zoom = d3
+		zoom = d3
 			.zoom()
 			.scaleExtent([0.1, 10])
 			.on('zoom', event => {
@@ -316,7 +404,7 @@
 			});
 
 		d3.select(canvas).call(zoom);
-		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(currentScale);
+		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(defaultScale);
 		d3.select(canvas).call(zoom.transform, initialTransform);
 	}
 
@@ -339,7 +427,7 @@
 				circle.hovered = true;
 				circle.toIncrease = circle.hovered && circle.animatedRadius < hoverRadius / currentScale ? 1 : 0;
 				foundHovered = true;
-			} else {
+			} else if (circle.id != leaderboardId) {
 				if (circle.hovered) {
 					circle.toIncrease = -1; // Start decreasing radius
 				}
@@ -362,7 +450,7 @@
 			const isHovered = dx * dx + dy * dy <= circle.animatedRadius * circle.animatedRadius;
 
 			if (isHovered) {
-				navigate(`/leaderboard/clanranking/${circle.id}/1`, '_blank');
+				navigate(`/leaderboard/clanranking/${circle.id}/1`);
 			}
 		});
 	}
@@ -377,13 +465,72 @@
 		}
 	}
 
+	let animating = false;
+	let animationStartTime;
+
+	function animateZoom(targetMapId, duration = 4000) {
+		const targetMap = circles.find(d => d.id == targetMapId);
+		if (!targetMap) return;
+
+		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(defaultScale);
+		d3.select(canvas).call(zoom.transform, initialTransform);
+
+		const targetZoomLevel = 2; // Desired zoom level
+		const targetTransform = d3.zoomIdentity
+			.translate(width / 2, height / 2)
+			.scale(targetZoomLevel)
+			.translate(-targetMap.x, -targetMap.y);
+
+		console.log(width + '  ' + height);
+		console.log(-targetMap.x + '  ' + -targetMap.y);
+
+		animationStartTime = performance.now();
+		animating = true;
+
+		function zoomStep(timestamp) {
+			if (!animating) return;
+
+			const elapsedTime = timestamp - animationStartTime;
+			const t = Math.min(1, elapsedTime / duration);
+
+			d3.select(canvas).call(zoom.transform, interpolateZoom(currentZoom, targetTransform, t));
+
+			if (t > 0.14 && !targetMap.hovered) {
+				targetMap.hovered = true;
+				targetMap.toIncrease = 1;
+			}
+
+			if (t < 1) {
+				requestAnimationFrame(zoomStep);
+			} else {
+				animating = false;
+			}
+		}
+
+		requestAnimationFrame(zoomStep);
+	}
+
+	function interpolateZoom(startTransform, endTransform, t) {
+		// Interpolate scale and translation
+		const interpolatedScale = d3.interpolate(startTransform.k, endTransform.k)(t);
+		const interpolatedTranslate = [
+			d3.interpolate(startTransform.x, endTransform.x)(t),
+			d3.interpolate(startTransform.y, endTransform.y)(t),
+		];
+
+		return d3.zoomIdentity.translate(interpolatedTranslate[0], interpolatedTranslate[1]).scale(interpolatedScale);
+	}
+
 	let newWidth;
 	let newHeight;
 
+	$: !canvas && newWidth && newHeight && init(newWidth, newHeight);
 	$: canvas && updateCanvasSize(newWidth, newHeight);
+	$: leaderboardId && simulated && animateZoom(leaderboardId);
 </script>
 
-<div bind:offsetWidth={newWidth} bind:offsetHeight={newHeight} id="clan-map-container" />
+<svelte:window bind:innerWidth={newWidth} bind:innerHeight={newHeight} />
+<div id="clan-map-container" />
 
 <style>
 	#clan-map-container {
