@@ -90,20 +90,20 @@
 			links.push({
 				source: map.leaderboardId,
 				target: map.clans[0].id,
-				strength: map.tie ? map.clans[0].pp * 0.23 : map.clans[0].pp, // you can later use this strength for adjusting the link
+				strength: map.tie ? map.clans[0].pp * 3 : map.clans[0].pp * 2.5, // you can later use this strength for adjusting the link
 			});
 			if (map.clans.length > 1) {
 				links.push({
 					source: map.leaderboardId,
 					target: map.clans[1].id,
-					strength: map.clans[1].pp * 0.23, // you can later use this strength for adjusting the link
+					strength: map.tie ? map.clans[1].pp * 3 : map.clans[1].pp * 0.45, // you can later use this strength for adjusting the link
 				});
 			}
 			if (map.clans.length > 2) {
 				links.push({
 					source: map.leaderboardId,
 					target: map.clans[2].id,
-					strength: map.clans[2].pp * 0.23, // you can later use this strength for adjusting the link
+					strength: map.tie ? map.clans[2].pp * 3 : map.clans[2].pp * 0.45, // you can later use this strength for adjusting the link
 				});
 			}
 		}
@@ -119,11 +119,6 @@
 			const g = parseInt(hex.substring(2, 4), 16);
 			const b = parseInt(hex.substring(4, 6), 16);
 
-			/* Backward compatibility for whole number based opacity values. */
-			if (opacity > 1 && opacity <= 100) {
-				opacity = opacity / 100;
-			}
-
 			return `rgba(${r},${g},${b},${opacity})`;
 		};
 
@@ -136,7 +131,9 @@
 				x: cache ? cache.circles[map.leaderboardId].x : topClan.x,
 				y: cache ? cache.circles[map.leaderboardId].y : topClan.y,
 				r: map.stars,
-				color: map.tie ? 'grey' : convertHexToRGBA(topClan.color, map.clans.length > 1 ? (1 - map.clans[1].pp / map.clans[0].pp) * 8 : 1),
+				color: map.tie
+					? 'grey'
+					: convertHexToRGBA(topClan.color, map.clans.length > 1 ? Math.max((1 - map.clans[1].pp / map.clans[0].pp) * 8, 0.3) : 1),
 				hoverColor: map.tie ? 'grey' : topClan.color,
 				coverImageUrl: map.coverImage, // Add the URL of the cover image
 				clans: map.clans,
@@ -194,7 +191,7 @@
 			// Adjust the multiplier as needed
 			.force(
 				'charge',
-				d3.forceManyBody().strength(d => (d.color ? -1000 : -150))
+				d3.forceManyBody().strength(d => (d.color ? -1000 : -400))
 			);
 
 		if (leaderboardId || clanTag) {
@@ -260,6 +257,11 @@
 		});
 
 		circles.forEach(c => {
+			if (!labelsMap[c.clans[0].id].hovered) return;
+			drawOutlines(c);
+		});
+
+		circles.forEach(c => {
 			if (c.hovered) return;
 			if (c.toIncrease != 0) {
 				animating = true;
@@ -279,6 +281,18 @@
 
 		if (animating) {
 			requestAnimationFrame(renderCanvas);
+		}
+	}
+
+	function drawOutlines(circle) {
+		if (labelsMap[circle.clans[0].id].hovered) {
+			const lineWidth = 2.5 / currentScale;
+
+			context.beginPath();
+			context.arc(circle.x, circle.y, circle.animatedRadius + lineWidth * 0.4, 0, 2 * Math.PI);
+			context.lineWidth = lineWidth;
+			context.strokeStyle = 'white';
+			context.stroke();
 		}
 	}
 
