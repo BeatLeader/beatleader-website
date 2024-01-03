@@ -380,9 +380,20 @@
 
 	// Additional functions for drawing lines, text, etc.
 
+	function isMobileDevice() {
+		return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+	}
+
 	function setupInteractions() {
-		canvas.addEventListener('mousemove', handleMouseMove);
-		canvas.addEventListener('click', handleClick);
+		if (isMobileDevice()) {
+			// Mobile interactions
+			canvas.addEventListener('touchstart', handleTouchStart, false);
+			canvas.addEventListener('touchend', handleTouchEnd, false);
+		} else {
+			// Desktop interactions
+			canvas.addEventListener('mousemove', handleMouseMove);
+			canvas.addEventListener('click', handleClick);
+		}
 
 		zoom = d3
 			.zoom()
@@ -473,6 +484,26 @@
 				}
 			});
 		}
+	}
+
+	let touchStartTimer;
+
+	function handleTouchStart(event) {
+		event.preventDefault();
+		const touch = event.touches[0];
+		const mouseX = (touch.clientX - canvas.getBoundingClientRect().left) / currentZoom.k - currentZoom.x / currentZoom.k;
+		const mouseY = (touch.clientY - canvas.getBoundingClientRect().top) / currentZoom.k - currentZoom.y / currentZoom.k;
+
+		checkCircleHover(mouseX, mouseY);
+
+		touchStartTimer = setTimeout(() => {
+			handleClick(touch);
+		}, 2000); // Long tap duration
+	}
+
+	function handleTouchEnd(event) {
+		event.preventDefault();
+		clearTimeout(touchStartTimer);
 	}
 
 	function updateCanvasSize(newWidth, newHeight) {
