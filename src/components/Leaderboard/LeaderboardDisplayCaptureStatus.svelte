@@ -43,7 +43,9 @@
 			{#if withTitle}
 				<p class="captured-by">Captured by:</p>
 			{/if}
-			<a href={`/clansmap/${leaderboardId}`} on:click|preventDefault|stopPropagation={() => navigate(`/clansmap/${leaderboardId}`)}>
+			<a
+				href={`/clansmap/leaderboard/${leaderboardId}`}
+				on:click|preventDefault|stopPropagation={() => navigate(`/clansmap/leaderboard/${leaderboardId}`)}>
 				<Badge
 					label={clan?.tag ?? '???'}
 					onlyLabel={true}

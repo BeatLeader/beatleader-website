@@ -238,8 +238,14 @@
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
 					</Route>
-					<Route path="/clansmap/*leaderboardId" let:params let:location>
+					<Route path="/clansmap/leaderboard/*leaderboardId" let:params let:location>
 						<ClansMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/clansmap" let:location>
+						<ClansMap {location} />
+					</Route>
+					<Route path="/clansmap/clan/*clanTag" let:params let:location>
+						<ClansMap clanTag={params.clanTag} {location} />
 					</Route>
 					<Route path="/playlists/*id" let:params>
 						<PlaylistsPage index={params.id} />

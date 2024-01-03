@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createAccountStore from '../../stores/beatleader/account';
 	import Button from '../../components/Common/Button.svelte';
@@ -298,15 +299,17 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge
-								label={rankedPoolPercentLabel(tag)}
-								value={rankedPoolPercent}
-								suffix="%"
-								withZeroSuffix={true}
-								digits={1}
-								fluid={true}
-								bgColor="var(--rankedPoolColor)"
-								styling="clanInfo" />
+							<a href={`/clansmap/clan/${tag}`} on:click|preventDefault|stopPropagation={() => navigate(`/clansmap/clan/${tag}`)}>
+								<Badge
+									label={rankedPoolPercentLabel(tag)}
+									value={rankedPoolPercent}
+									suffix="%"
+									withZeroSuffix={true}
+									digits={1}
+									fluid={true}
+									bgColor="var(--rankedPoolColor)"
+									styling="clanInfo" />
+							</a>
 							<Badge
 								label={capturesLabel(tag)}
 								value={clanCapturedMaps}

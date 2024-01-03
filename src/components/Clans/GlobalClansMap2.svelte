@@ -1,11 +1,11 @@
 <script>
 	import * as d3 from 'd3';
-	import {clansData} from './response';
 	import {navigate} from 'svelte-routing';
 
 	export let leaderboardId;
+	export let clanTag;
 
-	let container; // Reference to the container div
+	let clansData;
 	let canvas, context, currentZoom, width, height;
 	let allData, simulation;
 
@@ -23,6 +23,14 @@
 	var clanMap = {};
 	var clans = [];
 
+	function fetchClanData() {
+		fetch('https://cdn.assets.beatleader.xyz/global-map-file.json')
+			.then(d => d.json())
+			.then(data => {
+				clansData = data;
+			});
+	}
+
 	function init(newWidth, newHeight) {
 		width = newWidth;
 		height = newHeight;
@@ -31,7 +39,7 @@
 		canvas = d3.select('#clan-map-container').append('canvas').attr('width', width).attr('height', height).node();
 		context = canvas.getContext('2d');
 
-		if (leaderboardId) {
+		if (leaderboardId || clanTag) {
 			fetch('/assets/clansMap.json')
 				.then(r => r.json())
 				.then(cache => {
@@ -55,28 +63,23 @@
 	}
 
 	function processData(cache) {
-		const data = clansData.map(m => {
+		const data = clansData.points.map(m => {
 			return {...m, id: m.leaderboardId};
 		});
 
-		for (let i = 0; i < data.length; i++) {
-			const map = data[i];
-			for (let j = 0; j < map.clans.length; j++) {
-				var clan = map.clans[j];
-				if (!clanMap[clan.clan.id]) {
-					const clanPoint = {
-						...clan,
-						x: cache ? cache.clans[clan.clan.id].x : 0,
-						y: cache ? cache.clans[clan.clan.id].y : 0,
-						id: clan.clan.id,
-						topCount: j == 0 ? 1 : 0,
-					};
-					clanMap[clan.clan.id] = clanPoint;
-					clans.push(clanPoint);
-				} else if (j == 0) {
-					clanMap[clan.clan.id].topCount++;
-				}
+		for (let i = 0; i < clansData.clans.length; i++) {
+			var clan = clansData.clans[i];
+			clan.topCount = 0;
+			if (cache) {
+				clan.x = cache.clans[clan.id].x;
+				clan.y = cache.clans[clan.id].y;
 			}
+			clanMap[clan.id] = clan;
+			clans.push(clan);
+		}
+
+		for (let i = 0; i < data.length; i++) {
+			clanMap[data[i].clans[0].id].topCount++;
 		}
 
 		allData = data.concat(clans);
@@ -85,20 +88,20 @@
 			const map = data[i];
 			links.push({
 				source: map.leaderboardId,
-				target: map.clans[0].clan.id,
+				target: map.clans[0].id,
 				strength: map.tie ? map.clans[0].pp * 0.23 : map.clans[0].pp, // you can later use this strength for adjusting the link
 			});
 			if (map.clans.length > 1) {
 				links.push({
 					source: map.leaderboardId,
-					target: map.clans[1].clan.id,
+					target: map.clans[1].id,
 					strength: map.clans[1].pp * 0.23, // you can later use this strength for adjusting the link
 				});
 			}
 			if (map.clans.length > 2) {
 				links.push({
 					source: map.leaderboardId,
-					target: map.clans[2].clan.id,
+					target: map.clans[2].id,
 					strength: map.clans[2].pp * 0.23, // you can later use this strength for adjusting the link
 				});
 			}
@@ -125,15 +128,15 @@
 
 		// For each leaderboard/map
 		data.forEach(map => {
-			const topClan = map.clans[0];
+			const topClan = clanMap[map.clans[0].id];
 
 			circles.push({
 				id: map.leaderboardId,
-				x: cache ? cache.circles[map.leaderboardId].x : 0,
-				y: cache ? cache.circles[map.leaderboardId].y : 0,
+				x: cache ? cache.circles[map.leaderboardId].x : topClan.x,
+				y: cache ? cache.circles[map.leaderboardId].y : topClan.y,
 				r: map.stars,
-				color: map.tie ? 'grey' : convertHexToRGBA(topClan.clan.color, (1 - map.clans[1].pp / map.clans[0].pp) * 8),
-				hoverColor: map.tie ? 'grey' : topClan.clan.color,
+				color: map.tie ? 'grey' : convertHexToRGBA(topClan.color, map.clans.length > 1 ? (1 - map.clans[1].pp / map.clans[0].pp) * 8 : 1),
+				hoverColor: map.tie ? 'grey' : topClan.color,
 				coverImageUrl: map.coverImage, // Add the URL of the cover image
 				clans: map.clans,
 				image: null, // Placeholder for the image object
@@ -145,15 +148,18 @@
 
 		// For each clan
 		clans.forEach(clan => {
+			const label = clan.tag;
+			const fontSize = Math.sqrt(clan.topCount) * 10;
+
 			const clanLabel = {
-				id: clan.clan.id,
-				x: cache ? cache.clans[clan.clan.id].x : 0,
-				y: cache ? cache.clans[clan.clan.id].y : 0,
-				label: clan.clan.tag,
-				fontSize: Math.sqrt(clan.topCount) * 10,
+				id: clan.id,
+				x: clan.x,
+				y: clan.y,
+				label,
+				fontSize,
 			};
 			clanLabels.push(clanLabel);
-			labelsMap[clan.clan.id] = clanLabel;
+			labelsMap[clan.id] = clanLabel;
 		});
 	}
 
@@ -184,11 +190,11 @@
 			// Adjust the multiplier as needed
 			.force(
 				'charge',
-				d3.forceManyBody().strength(d => (d.clan ? -1000 : -150))
+				d3.forceManyBody().strength(d => (d.color ? -1000 : -150))
 			);
 
-		if (leaderboardId) {
-			for (let i = 0; i < 200; i++) {
+		if (leaderboardId || clanTag) {
+			for (let i = 0; i < 20; i++) {
 				simulation.tick();
 			}
 			renderCanvas();
@@ -246,7 +252,7 @@
 		var animating = false;
 
 		clanLabels.forEach(l => {
-			drawClan(l);
+			drawClan(l, l.hovered);
 		});
 
 		circles.forEach(c => {
@@ -254,9 +260,7 @@
 			if (c.toIncrease != 0) {
 				animating = true;
 			}
-			if (isCircleVisible(c)) {
-				drawMap(c);
-			}
+			drawMap(c);
 		});
 
 		circles.forEach(c => {
@@ -264,9 +268,7 @@
 			if (c.toIncrease != 0) {
 				animating = true;
 			}
-			if (isCircleVisible(c)) {
-				drawMap(c);
-			}
+			drawMap(c);
 		});
 
 		context.restore();
@@ -274,22 +276,6 @@
 		if (animating) {
 			requestAnimationFrame(renderCanvas);
 		}
-	}
-
-	function isCircleVisible(element) {
-		return true;
-		const scaledWidth = width / currentZoom.k;
-		const scaledHeight = height / currentZoom.k;
-		const x = (element.x - currentZoom.x) / currentZoom.k;
-		const y = (element.y - currentZoom.y) / currentZoom.k;
-
-		return x >= 0 && x <= scaledWidth && y >= 0 && y <= scaledHeight;
-	}
-
-	function isLinkVisible(link) {
-		return true;
-		// Similar logic to isElementVisible to determine if the link is visible
-		// ...
 	}
 
 	function drawMap(circle) {
@@ -312,19 +298,19 @@
 				const pp = clan.pp;
 				const lineWidth = ((pp / circle.clans[0].pp) * 20) / currentScale;
 
-				drawClan(labelsMap[clan.clan.id], true);
+				drawClan(labelsMap[clan.id], true);
 
 				// Draw a line between the map and the clan
-				drawLink(circle, clanMap[clan.clan.id], lineWidth);
+				drawLink(circle, clanMap[clan.id], lineWidth, pp / circle.clans[0].pp);
 
 				// Draw text along the link
-				drawLinkText(circle, clanMap[clan.clan.id], lineWidth, pp);
+				drawLinkText(circle, clanMap[clan.id], lineWidth, pp);
 			});
 		}
 
 		context.beginPath();
 		context.arc(circle.x, circle.y, circle.animatedRadius, 0, 2 * Math.PI);
-		context.fillStyle = circle.hovered ? circle.hoverColor : circle.color;
+		context.fillStyle = circle.hovered || labelsMap[circle.clans[0].id].hovered ? circle.hoverColor : circle.color;
 		context.fill();
 
 		if (circle.hovered && circle.coverImageUrl && !circle.image) {
@@ -360,11 +346,11 @@
 		// Additional drawing details for clans
 	}
 
-	function drawLink(mapData, clan, lineWidth) {
+	function drawLink(mapData, clan, lineWidth, alpha) {
 		context.beginPath();
 		context.moveTo(mapData.x, mapData.y);
 		context.lineTo(clan.x, clan.y);
-		context.strokeStyle = 'white';
+		context.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
 		context.lineWidth = lineWidth;
 		context.stroke();
 	}
@@ -436,23 +422,16 @@
 		});
 		if (!foundHovered) {
 			clanLabels.forEach(label => {
-				const textMetrics = context.measureText(label.label);
-				const textWidth = textMetrics.width;
-				const textHeight = textMetrics.actualBoundingBoxAscent + textMetrics.actualBoundingBoxDescent;
+				const lwidth = label.label.length * (label.fontSize * 0.65);
+				const lheight = label.fontSize * 0.9;
+				const isHovered = mouseX > label.x && mouseX < label.x + lwidth && mouseY > label.y - lheight && mouseY < label.y;
 
-				if (mouseX > label.x && mouseX < label.x + textWidth && mouseY > label.y - textHeight && mouseY < label.y) {
-					// Check the color at the mouse position
-					const pixel = context.getImageData(mouseX, mouseY, 1, 1).data;
-					const rgba = `rgba(${pixel[0]}, ${pixel[1]}, ${pixel[2]}, ${pixel[3] / 255})`;
+				if (isHovered && !foundHovered) {
+					label.hovered = true;
 
-					console.log(rgba);
-
-					if (rgba === 'rgba(255, 255, 255, 0.6)') {
-						// The mouse is over a clan label
-						// TODO: Implement what should happen when a label is hovered
-						console.log(label.label);
-						foundHovered = true;
-					}
+					foundHovered = true;
+				} else if (label.label != clanTag) {
+					label.hovered = false;
 				}
 			});
 		}
@@ -466,16 +445,30 @@
 		const rect = canvas.getBoundingClientRect();
 		const mouseX = (event.clientX - rect.left) / currentZoom.k - currentZoom.x / currentZoom.k;
 		const mouseY = (event.clientY - rect.top) / currentZoom.k - currentZoom.y / currentZoom.k;
+		let foundHovered = false;
 
 		circles.forEach(circle => {
 			const dx = mouseX - circle.x;
 			const dy = mouseY - circle.y;
 			const isHovered = dx * dx + dy * dy <= circle.animatedRadius * circle.animatedRadius;
 
-			if (isHovered) {
+			if (isHovered && !foundHovered) {
 				navigate(`/leaderboard/clanranking/${circle.id}/1`);
+				foundHovered = true;
 			}
 		});
+
+		if (!foundHovered) {
+			clanLabels.forEach(label => {
+				const lwidth = label.label.length * (label.fontSize * 0.65);
+				const lheight = label.fontSize * 0.9;
+				const isHovered = mouseX > label.x && mouseX < label.x + lwidth && mouseY > label.y - lheight && mouseY < label.y;
+
+				if (isHovered && !foundHovered) {
+					navigate(`/clan/${label.label}/1`);
+				}
+			});
+		}
 	}
 
 	function updateCanvasSize(newWidth, newHeight) {
@@ -491,7 +484,7 @@
 	let animating = false;
 	let animationStartTime;
 
-	function animateZoom(targetMapId, duration = 4000) {
+	function animateZoomMap(targetMapId, duration = 800) {
 		const targetMap = circles.find(d => d.id == targetMapId);
 		if (!targetMap) return;
 
@@ -504,8 +497,46 @@
 			.scale(targetZoomLevel)
 			.translate(-targetMap.x, -targetMap.y);
 
-		console.log(width + '  ' + height);
-		console.log(-targetMap.x + '  ' + -targetMap.y);
+		animationStartTime = performance.now();
+		animating = true;
+
+		function zoomStep(timestamp) {
+			if (!animating) return;
+
+			const elapsedTime = timestamp - animationStartTime;
+			const t = Math.min(1, elapsedTime / duration);
+
+			d3.select(canvas).call(zoom.transform, interpolateZoom(initialTransform, targetTransform, t));
+
+			if (t > 0.8 && !targetMap.hovered) {
+				targetMap.hovered = true;
+				targetMap.toIncrease = 1;
+			}
+
+			if (t < 1) {
+				requestAnimationFrame(zoomStep);
+			} else {
+				animating = false;
+			}
+		}
+
+		requestAnimationFrame(zoomStep);
+	}
+
+	function animateZoomClan(targetClanTag, duration = 800) {
+		const targetClan = clanLabels.find(d => d.label == targetClanTag);
+		if (!targetClan) return;
+
+		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(defaultScale);
+		d3.select(canvas).call(zoom.transform, initialTransform);
+
+		const targetZoomLevel = 0.6; // Desired zoom level
+		const lwidth = targetClan.label.length * (targetClan.fontSize * 0.65);
+		const lheight = targetClan.fontSize * 0.9;
+		const targetTransform = d3.zoomIdentity
+			.translate(width / 2, height / 2)
+			.scale(targetZoomLevel)
+			.translate(-targetClan.x - lwidth / 2, -targetClan.y + lheight / 2);
 
 		animationStartTime = performance.now();
 		animating = true;
@@ -516,11 +547,10 @@
 			const elapsedTime = timestamp - animationStartTime;
 			const t = Math.min(1, elapsedTime / duration);
 
-			d3.select(canvas).call(zoom.transform, interpolateZoom(currentZoom, targetTransform, t));
+			d3.select(canvas).call(zoom.transform, interpolateZoom(initialTransform, targetTransform, t));
 
-			if (t > 0.14 && !targetMap.hovered) {
-				targetMap.hovered = true;
-				targetMap.toIncrease = 1;
+			if (t > 0.8 && !targetClan.hovered) {
+				targetClan.hovered = true;
 			}
 
 			if (t < 1) {
@@ -547,9 +577,12 @@
 	let newWidth;
 	let newHeight;
 
-	$: !canvas && newWidth && newHeight && init(newWidth, newHeight);
+	$: !clansData && fetchClanData();
+	$: !canvas && newWidth && newHeight && clansData && init(newWidth, newHeight);
 	$: canvas && updateCanvasSize(newWidth, newHeight);
-	$: leaderboardId && simulated && animateZoom(leaderboardId);
+
+	$: leaderboardId && simulated && animateZoomMap(leaderboardId);
+	$: clanTag && simulated && animateZoomClan(clanTag);
 </script>
 
 <svelte:window bind:innerWidth={newWidth} bind:innerHeight={newHeight} />
@@ -564,5 +597,6 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
+		background-color: black;
 	}
 </style>
