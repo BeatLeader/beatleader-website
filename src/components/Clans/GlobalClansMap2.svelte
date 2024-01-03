@@ -286,7 +286,7 @@
 
 	function drawOutlines(circle) {
 		if (labelsMap[circle.clans[0].id].hovered) {
-			const lineWidth = 2.5 / currentScale;
+			const lineWidth = 2 / currentScale;
 
 			context.beginPath();
 			context.arc(circle.x, circle.y, circle.animatedRadius + lineWidth * 0.4, 0, 2 * Math.PI);
