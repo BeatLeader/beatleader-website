@@ -70,6 +70,7 @@
 		for (let i = 0; i < clansData.clans.length; i++) {
 			var clan = clansData.clans[i];
 			clan.topCount = 0;
+
 			if (cache) {
 				clan.x = cache.clans[clan.id].x;
 				clan.y = cache.clans[clan.id].y;
@@ -151,10 +152,13 @@
 			const label = clan.tag;
 			const fontSize = Math.sqrt(clan.topCount) * 10;
 
+			const lwidth = clan.tag.length * (fontSize * 0.65);
+			const lheight = fontSize * 0.9;
+
 			const clanLabel = {
 				id: clan.id,
-				x: clan.x,
-				y: clan.y,
+				x: clan.x - lwidth / 2,
+				y: clan.y + lheight / 4,
 				label,
 				fontSize,
 			};
@@ -234,7 +238,7 @@
 	// 	});
 
 	// 	var localClansMap = {};
-	// 	clanLabels.forEach(clan => {
+	// 	clans.forEach(clan => {
 	// 		localClansMap[clan.id] = {x: clan.x, y: clan.y};
 	// 	});
 
