@@ -46,6 +46,7 @@
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
 	import ClansMap from './pages/ClansMap.svelte';
+	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 
 	export let url = '';
 
@@ -243,6 +244,12 @@
 					</Route>
 					<Route path="/clansmap" let:location>
 						<ClansMap {location} />
+					</Route>
+					<Route path="/songsuggestmap/leaderboard/*leaderboardId" let:params let:location>
+						<SongSuggestMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/songsuggestmap" let:location>
+						<SongSuggestMap {location} />
 					</Route>
 					<Route path="/clansmap/clan/*clanTag" let:params let:location>
 						<ClansMap clanTag={params.clanTag} {location} />
