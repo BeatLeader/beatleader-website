@@ -83,6 +83,7 @@
 					(map.techRating / 15) * 255
 				)})`,
 				alpha: map.time > 0 ? (map.time - 1641323993) / 31536000 : 0,
+				name: map.name,
 				hoverColor: 'purple',
 				coverImageUrl: map.cover,
 				image: null, // Placeholder for the image object
@@ -285,6 +286,12 @@
 
 		if (circle.hovered && circle.image) {
 			drawCoverImage(circle);
+
+			const fontSize = circle.animatedRadius / 2;
+
+			context.fillStyle = 'white'; // Example style
+			context.font = fontSize + 'px Arial'; // Example font, adjust as needed
+			context.fillText(circle.name, circle.x - (fontSize * circle.name.length) / 4, circle.y);
 		}
 	}
 
@@ -304,9 +311,6 @@
 
 	function drawClan(label, hovered) {
 		// Draw clan elements (like labels)
-		context.fillStyle = hovered ? 'white' : 'rgba(255, 255, 255, 0.6)'; // Example style
-		context.font = label.fontSize + 'px Arial'; // Example font, adjust as needed
-		context.fillText(label.label, label.x, label.y);
 		// Additional drawing details for clans
 	}
 
@@ -330,7 +334,7 @@
 		context.save();
 		context.translate(mapData.x, mapData.y);
 		context.rotate(angle);
-		context.translate(flipped ? -20 - lineWidth * text.length : 20, -lineWidth * 0.25);
+		context.translate(flipped ? -40 - lineWidth * text.length : 40, -lineWidth * 0.25);
 
 		context.fillStyle = 'purple';
 		context.font = `${lineWidth * 0.8}px Arial`;
@@ -413,7 +417,7 @@
 			const isHovered = dx * dx + dy * dy <= circle.animatedRadius * circle.animatedRadius;
 
 			if (isHovered && !foundHovered) {
-				navigate(`/leaderboard/${circle.id}/1`);
+				navigate(`/leaderboard/global/${circle.id}/1`);
 				foundHovered = true;
 			}
 		});
