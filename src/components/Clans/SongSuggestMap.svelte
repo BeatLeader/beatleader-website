@@ -206,9 +206,7 @@
 
 		var animating = false;
 
-		circles.forEach(c => {
-			drawOutlines(c);
-		});
+		circles.forEach(c => {});
 
 		circles.forEach(c => {
 			if (c.hovered) return;
@@ -216,6 +214,7 @@
 				animating = true;
 			}
 			drawMap(c);
+			drawOutlines(c);
 		});
 
 		circles.forEach(c => {
@@ -224,6 +223,7 @@
 				animating = true;
 			}
 			drawMap(c);
+			drawOutlines(c);
 		});
 
 		context.restore();
@@ -235,7 +235,7 @@
 
 	function drawOutlines(circle) {
 		if (circle.alpha) {
-			const lineWidth = 1 / currentScale;
+			const lineWidth = 2.5 / currentScale;
 
 			context.beginPath();
 			context.arc(circle.x, circle.y, circle.animatedRadius + lineWidth * 0.4, 0, 2 * Math.PI);
