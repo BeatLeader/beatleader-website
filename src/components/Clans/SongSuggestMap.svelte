@@ -2,10 +2,9 @@
 	import * as d3 from 'd3';
 	import {navigate} from 'svelte-routing';
 
-	import {linksList} from './songsuggestlinks';
-	import {maps} from './songsuggestmaps';
-
 	export let leaderboardId;
+
+	let linksList, maps;
 
 	let canvas, context, currentZoom, width, height;
 	let allData, simulation;
@@ -26,6 +25,19 @@
 
 	var clanMap = {};
 	var clans = [];
+
+	function fetchData() {
+		fetch('/assets/maps.json')
+			.then(r => r.json())
+			.then(cache => {
+				maps = cache;
+			});
+		fetch('/assets/edges.json')
+			.then(r => r.json())
+			.then(cache => {
+				linksList = cache;
+			});
+	}
 
 	function init(newWidth, newHeight) {
 		width = newWidth;
@@ -67,7 +79,10 @@
 				y: Math.random() * height,
 				links: [],
 				r: map.stars,
-				color: map.time > 0 ? `rgba(255, 0, 0, ${(map.time - 1641323993) / 31536000})` : 'grey',
+				color: `rgb(${Math.round((map.accRating / 15) * 255)}, ${Math.round((map.passRating / 15) * 255)}, ${Math.round(
+					(map.techRating / 15) * 255
+				)})`,
+				alpha: map.time > 0 ? (map.time - 1641323993) / 31536000 : 0,
 				hoverColor: 'purple',
 				coverImageUrl: map.cover,
 				image: null, // Placeholder for the image object
@@ -96,6 +111,16 @@
 
 		circles.forEach(element => {
 			element.links = element.links.sort((a, b) => b.strength - a.strength);
+
+			const length = Math.max(
+				element.links.reduce((cum, l) => {
+					return cum + l.strength;
+				}, 0),
+				2
+			);
+
+			element.r = length;
+			element.animatedRadius = length;
 		});
 
 		allData = maps;
@@ -121,14 +146,20 @@
 				d3
 					.forceLink(links)
 					.id(d => d.id)
-					.strength(d => d.strength * 0.1)
+					.strength(d => d.strength * 0.5)
 			)
 			.force('x', d3.forceX(width / 2).strength(0.05))
 			.force('y', d3.forceY(height / 2).strength(0.05))
+			// .force(
+			// 	'collide',
+			// 	d3.forceCollide(d => d.r)
+			// )
 			// Adjust the multiplier as needed
 			.force(
 				'charge',
-				d3.forceManyBody().strength(d => -100)
+				d3.forceManyBody().strength(d => {
+					return circlesMap[d.id].r * -100;
+				})
 			);
 		simulation.on('tick', () => {
 			for (let i = 0; i < circles.length; i++) {
@@ -175,6 +206,10 @@
 		var animating = false;
 
 		circles.forEach(c => {
+			drawOutlines(c);
+		});
+
+		circles.forEach(c => {
 			if (c.hovered) return;
 			if (c.toIncrease != 0) {
 				animating = true;
@@ -198,13 +233,13 @@
 	}
 
 	function drawOutlines(circle) {
-		if (labelsMap[circle.clans[0].id].hovered) {
-			const lineWidth = 2 / currentScale;
+		if (circle.alpha) {
+			const lineWidth = 1 / currentScale;
 
 			context.beginPath();
 			context.arc(circle.x, circle.y, circle.animatedRadius + lineWidth * 0.4, 0, 2 * Math.PI);
 			context.lineWidth = lineWidth;
-			context.strokeStyle = 'white';
+			context.strokeStyle = `rgba(255, 255, 255, ${circle.alpha})`;
 			context.stroke();
 		}
 	}
@@ -470,7 +505,8 @@
 	let newWidth;
 	let newHeight;
 
-	$: !canvas && newWidth && newHeight && init(newWidth, newHeight);
+	$: !linksList && fetchData();
+	$: !canvas && newWidth && newHeight && linksList && maps && init(newWidth, newHeight);
 	$: canvas && updateCanvasSize(newWidth, newHeight);
 
 	$: leaderboardId && simulated && animateZoomMap(leaderboardId);
