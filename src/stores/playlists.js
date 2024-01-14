@@ -31,6 +31,16 @@ function saveJSONAsFile(json, fileName) {
 	link.click();
 }
 
+function saveFromId(id, fileName) {
+	var link = document.createElement('a');
+
+	document.body.appendChild(link); // for Firefox
+
+	link.setAttribute('href', `${BL_API_URL}playlist/${id}`);
+	link.setAttribute('download', fileName);
+	link.click();
+}
+
 export default () => {
 	if (playlistStore) return playlistStore;
 
@@ -321,7 +331,11 @@ export default () => {
 	};
 
 	const download = async playlist => {
-		saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + '.bplist');
+		if (playlist.customData.id) {
+			saveFromId(playlist.customData.id, playlist.playlistTitle + '.bplist');
+		} else {
+			saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + '.bplist');
+		}
 	};
 
 	const add = async (song, playlistIndex) => {
