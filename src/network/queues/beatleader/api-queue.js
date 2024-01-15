@@ -153,6 +153,7 @@ export const processClanRanking = cr => {
 	ret.averageAccuracy = cr.averageAccuracy;
 	ret.averageAcc = cr.averageAccuracy * 100;
 	ret.totalScore = cr.totalScore;
+	ret.rank = cr.rank;
 	ret.scores = processLeaderboardScores(cr.associatedScores);
 
 	return ret;
