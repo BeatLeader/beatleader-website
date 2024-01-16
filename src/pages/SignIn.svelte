@@ -108,7 +108,7 @@
 			{/if}
 
 			<b>To use Quest mod - sign up in the mod preferences with new login and password </b>
-			<b>To log in with Oculus PC - <a href="https://beatleader.wiki/en/accounts#website-1">check this instruction</a> </b>
+			<b>To log in with Oculus PC - <a href="https://beatleader.wiki/en/accounts/signup#website-1">check this instruction</a> </b>
 
 			<br />
 		{:else if loggedInPlayer > 70000000000000000}
