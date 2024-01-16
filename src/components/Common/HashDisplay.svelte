@@ -39,10 +39,10 @@
 		successToast('Hash Copied to Clipboard!');
 	}
 
-	$: song && checkMapHash(song.hash);
+	$: song && song.hash.length == 40 && checkMapHash(song.hash);
 </script>
 
-{#if song}
+{#if song && song.hash.length == 40}
 	<div>
 		<small class="hash-container" title="Click to copy to clipboard" on:click={() => copyToClipboard()}>{song.hash.toUpperCase()}</small>
 		{#if latestHash}
