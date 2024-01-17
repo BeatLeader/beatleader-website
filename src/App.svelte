@@ -47,6 +47,7 @@
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
 	import ClansMap from './pages/ClansMap.svelte';
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
+	import GigaMap from './pages/GigaMap.svelte';
 
 	export let url = '';
 
@@ -250,6 +251,9 @@
 					</Route>
 					<Route path="/songsuggestmap" let:location>
 						<SongSuggestMap {location} />
+					</Route>
+					<Route path="/gigamap" let:location>
+						<GigaMap {location} />
 					</Route>
 					<Route path="/clansmap/clan/*clanTag" let:params let:location>
 						<ClansMap clanTag={params.clanTag} {location} />
