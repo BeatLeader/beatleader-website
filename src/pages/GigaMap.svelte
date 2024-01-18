@@ -1,7 +1,8 @@
 <script>
-	import GlobalClansMap from '../components/Clans/GigaMap.svelte';
+	import GigaMap from '../components/Clans/GigaMap.svelte';
 
 	export let leaderboardId;
+	export let topCount;
 </script>
 
-<GlobalClansMap {leaderboardId} />
+<GigaMap {leaderboardId} {topCount} />

@@ -252,8 +252,14 @@
 					<Route path="/songsuggestmap" let:location>
 						<SongSuggestMap {location} />
 					</Route>
-					<Route path="/gigamap" let:location>
-						<GigaMap {location} />
+					<Route path="/datavis/gigamap50" let:location>
+						<GigaMap {location} topCount={50} />
+					</Route>
+					<Route path="/datavis/gigamap1000" let:location>
+						<GigaMap {location} topCount={1000} />
+					</Route>
+					<Route path="/datavis/gigamap5000" let:location>
+						<GigaMap {location} topCount={5000} />
 					</Route>
 					<Route path="/clansmap/clan/*clanTag" let:params let:location>
 						<ClansMap clanTag={params.clanTag} {location} />
