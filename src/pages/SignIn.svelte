@@ -185,7 +185,7 @@
 		{/if}
 	{:else if action == 'socials'}
 		{#if socials && socials.find(s => s.service == 'BeatSaver')}
-			{#if loggedInPlayer > 1000000000000000}
+			{#if loggedInPlayer < 30000000 || loggedInPlayer > 1000000000000000}
 				<form action={BL_API_URL + 'user/unlink'} method="post">
 					<input type="hidden" name="Provider" value="BeatSaver" />
 					<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
