@@ -228,14 +228,17 @@
 					<Route path="/replayed/mapper/*id" let:params>
 						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
 					</Route>
-					<Route path="/clan/:clanId/*page" let:params>
-						<ClanPage clanId={params.clanId} page={params.page} />
-					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
 					</Route>
 					<Route path="/events/*page" let:params let:location>
 						<EventsPage page={params.page} {location} />
+					</Route>
+					<Route path="/clan/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} />
+					</Route>
+					<Route path="/clan/maps/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} maps={true} />
 					</Route>
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />

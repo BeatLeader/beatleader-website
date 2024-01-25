@@ -10,26 +10,59 @@
 	import {getTimeStringColor} from '../../utils/date';
 	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
-	import Pager from '../../components/Common/Pager.svelte';
+	import Pager from '../Common/Pager.svelte';
 	import Pp from '../Common/PerformanceBadge/Pp.svelte';
-	import Score from '../Leaderboard/Score.svelte';
-	import Spinner from '../../components/Common/Spinner.svelte';
+	import Score from './Score.svelte';
+	import Spinner from '../Common/Spinner.svelte';
 	import Value from '../Common/Value.svelte';
 
-	export let leaderboardId = null;
-	export let idx = null;
-	export let battleRoyaleDraft = false;
-	export let battleRoyaleDraftList = [];
+	import {configStore} from '../../stores/config';
+	import SongInfo from '../Player/SongInfo.svelte';
+	import ScoreRank from '../Player/ScoreRank.svelte';
+	import FormattedDate from '../Common/FormattedDate.svelte';
+	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
+	import Icons from '../Song/Icons.svelte';
+	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
+	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+
 	export let cr = null;
+	export let idx = null;
 	export let fixedBrowserTitle = null;
-	export let modifiers = null;
 	export let page;
 	export let associatedScoresPage = 1;
 	export let itemsPerPage = 5;
 	export let sortBy = 'rank';
 	export let type = 'clanranking';
+	export let noIcons = false;
+	export let icons = null;
+	export let showSong = true;
+	export let inList = true;
+	export let additionalStat = null;
+	export let animationSign = 1;
 
-	const clanRankingStore = createClanRankingStore(leaderboardId, cr.id, associatedScoresPage, {});
+	let showDetails = false;
+
+	function visibleScoreIcons(config) {
+		var result = [];
+
+		Object.keys(config).forEach(key => {
+			if (config[key]) {
+				result.push(key);
+			}
+		});
+
+		return result;
+	}
+
+	function maybe(node, options) {
+		if (animationSign) {
+			return options.fn(node, options);
+		} else {
+			return options.fn(node, {duration: 0, delay: 0, easing: () => 0});
+		}
+	}
+
+	const clanRankingStore = createClanRankingStore(cr.leaderboard.leaderboardId, cr.id, associatedScoresPage, {});
 
 	function navigateToClan(clanTag) {
 		if (!clanTag) return;
@@ -41,7 +74,7 @@
 		let currAssociatedScoresPage = parseInt(newAssociatedScoresPage, 10);
 		if (isNaN(currAssociatedScoresPage)) currAssociatedScoresPage = 1;
 
-		clanRankingStore.fetch(leaderboardId, cr.id, currAssociatedScoresPage, true);
+		clanRankingStore.fetch(cr.leaderboard.leaderboardId, cr.id, currAssociatedScoresPage, true);
 	}
 
 	function onPageChanged(event) {
@@ -60,7 +93,12 @@
 	}
 
 	let showClanRankingScores = false;
-	let clanRank = (page - 1) * 10 + idx + 1;
+
+	$: leaderboard = opt(cr, 'leaderboard', null);
+	$: hash = leaderboard?.song?.hash;
+	$: diffInfo = opt(leaderboard, 'diffInfo');
+
+	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
 
 	$: scores = $clanRankingStore?.clanRanking?.scores ?? [];
 	$: totalItems = $clanRankingStore?.totalItems ?? 0;
@@ -70,43 +108,58 @@
 </script>
 
 {#if cr}
-	<div class={'player-score'}>
-		<div class="mobile-first-line">
-			<div class="rank with-badge">
-				<Badge
-					onlyLabel={true}
-					color="white"
-					bgColor={clanRank === 1
-						? 'darkgoldenrod'
-						: clanRank === 2
-						? '#888'
-						: clanRank === 3
-						? 'saddlebrown'
-						: clanRank >= 10000
-						? 'small'
-						: 'var(--dimmed)'}>
-					<span slot="label">
-						#<Value value={cr.rank} digits={0} zero="?" />
-					</span>
-				</Badge>
-			</div>
+	<div class={`player-score ${inList ? 'score-in-list' : ''}`}>
 
-			<div class="player">
-				<Avatar clan={cr?.clan} />
-				<ClanName clan={cr?.clan} on:click={cr?.clan ? () => navigateToClan(cr.clan?.tag) : null} />
-				<ClanBadges clan={cr?.clan} />
+		<span class="rank tablet-and-up">
+				<ScoreRank
+					rank={cr.rank} />
+
+			<div class="timeset">
+				<FormattedDate date={cr.lastUpdateTime} />
 			</div>
-			<div class="timeset above-tablet">
-				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber)}; ">
-					{cr?.lastUpdateTime}
-				</span>
+		</span>
+
+		<span class="song">
+			<div>
+				<SongInfo
+					{leaderboard}
+					score={cr}
+					rank={cr.rank}
+					{hash}
+					{noIcons}
+					category={leaderboard?.categoryDisplayName ?? null}
+					icons={selectedIcons} />
 			</div>
-			<div class="timeset mobile-only">
-				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber)}; ">
-					{cr?.lastUpdateTimeShort}
-				</span>
+		</span>
+
+		{#if !noIcons}
+			<div class="up-to-tablet icons">
+				<Icons
+					layoutType="large"
+					{hash}
+					{diffInfo}
+					icons={selectedIcons}
+					noPin={true} />
 			</div>
-		</div>
+			<div class="mobile-only icons">
+				<Icons
+					layoutType="flat"
+					{hash}
+					{diffInfo}
+					icons={selectedIcons}
+					noPin={true} />
+			</div>
+		{/if}
+		<span class="rank mobile-only">
+				<ScoreRank
+					rank={cr.rank} />
+		</span>
+
+		<span class="timeset mobile-only">
+			<FormattedDate date={cr.lastUpdateTimeNumber} />
+		</span>
+
+
 		<div class="mobile-second-line">
 			<div class="score-options-section">
 				<span
@@ -127,15 +180,7 @@
 			</span>
 
 			<span class="with-badge acc">
-				<Accuracy accuracyOverride={cr?.averageAcc} showMods={false} />
-			</span>
-
-			<span class="with-badge score">
-				<Badge onlyLabel={true} color="white" bgColor={'var(--dimmed)'}>
-					<span slot="label">
-						<Value value={cr?.totalScore} inline={false} digits={0} suffix="" />
-					</span>
-				</Badge>
+				<Accuracy accuracyOverride={cr?.averageAccuracy * 100} showMods={false} />
 			</span>
 		</div>
 	</div>
@@ -150,17 +195,11 @@
 				{#each scores as score, idx (opt(score, 'score.id', '') + opt(score, 'player.playerId', ''))}
 					<div in:fly={{x: 200, delay: idx * 20, duration: 300}} out:fade={{duration: 300}} animate:flip={{duration: 300}}>
 						<Score
-							{leaderboardId}
+							leaderboardId={cr.leaderboard.leaderboardId}
 							{score}
-							{type}
-							{modifiers}
 							{fixedBrowserTitle}
-							{battleRoyaleDraft}
-							{battleRoyaleDraftList}
 							{sortBy}
-							hideClans={true}
-							on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-							on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+							hideClans={true} />
 					</div>
 				{/each}
 				<div class="clan-pager">
@@ -179,6 +218,203 @@
 {/if}
 
 <style>
+	.score-in-list {
+		border-bottom: 1px solid var(--row-separator);
+		padding: 0.5em 0;
+	}
+
+	.song-score .up-to-tablet + .main {
+		padding-top: 0;
+	}
+
+	.song-score .main {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		justify-content: center;
+		grid-column-gap: 0.4em;
+	}
+
+	.song-score.with-details .main {
+		border-bottom: none;
+	}
+
+	.song-score .main > *:last-child {
+		margin-right: 0;
+	}
+
+	.song-score .main :global(.badge) {
+		margin: 0 !important;
+		padding: 0.125em 0.25em !important;
+		width: 100%;
+	}
+
+	.song-score .main :global(.badge small) {
+		font-size: 0.7em;
+		font-weight: normal;
+		margin-top: -2px;
+	}
+
+	.song-score .main :global(.inc),
+	.song-score :global(.dec) {
+		color: inherit;
+	}
+
+	.rank {
+		width: 5.5em;
+		text-align: center;
+	}
+
+	.song {
+		flex-grow: 1;
+		min-width: 15.25em;
+	}
+
+	.song > div {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.timeset {
+		width: 8.5em;
+		text-align: center;
+	}
+
+	.timeset.mobile-only {
+		align-items: baseline;
+		gap: 0.5em;
+		min-width: fit-content;
+	}
+
+	.player {
+		text-align: left;
+		padding-bottom: 0.5rem;
+	}
+
+	.main.beat-savior .timeset {
+		width: auto;
+	}
+
+	.timeset :global(small) {
+		line-height: 1;
+	}
+
+	.rank .timeset {
+		width: auto;
+		min-width: 7em;
+		font-size: 0.8em;
+	}
+
+	.with-badge :global(.badge) {
+		height: 100%;
+	}
+
+	small {
+		display: block;
+		text-align: center;
+		white-space: nowrap;
+		font-size: 0.75em;
+	}
+
+	.score-options-section {
+		display: grid;
+		justify-items: center;
+		margin: 0.3em;
+	}
+
+	h3 {
+		width: fit-content;
+		border-bottom-left-radius: 0.5em;
+		border-bottom-right-radius: 0.5em;
+		background: var(--row-separator);
+		padding: 0 1em 0;
+		margin-right: 0.5em;
+	}
+
+	h3.editable {
+		cursor: pointer;
+	}
+
+	h3 .move i {
+		padding: 0.25em 0.125em;
+		cursor: pointer !important;
+	}
+
+	h3 i.fa-edit {
+		display: inline-block;
+		margin-left: 0.5em;
+		cursor: pointer !important;
+	}
+
+	.icons h3 {
+		border-radius: 5px;
+	}
+
+	.score-options-section.mobile-only {
+		display: none !important;
+	}
+	.mobile-only.icons {
+		display: none;
+	}
+
+	@media screen and (max-width: 1023px) {
+		.song-score .main {
+			flex-wrap: wrap;
+		}
+		.song {
+			min-width: 25.25em;
+		}
+		.up-to-tablet.icons {
+			display: flex;
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		.song-score {
+			padding: 0.75em 0;
+		}
+		.song {
+			min-width: 15.25em;
+		}
+
+		.song-score .main {
+			flex-wrap: wrap;
+		}
+
+		.rank,
+		.timeset {
+			padding-bottom: 0 !important;
+		}
+
+		.song {
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			width: 100%;
+			margin-right: 0;
+			padding-top: 1em;
+			padding-bottom: 0.75em;
+		}
+
+		.up-to-tablet.icons {
+			display: none;
+		}
+
+		.mobile-only.icons {
+			display: flex;
+			justify-content: center;
+			width: 100%;
+			margin-top: -0.6em;
+			margin-bottom: 0.4em;
+		}
+
+		.player {
+			text-align: center;
+		}
+		.score-options-section.mobile-only {
+			display: grid !important;
+		}
+	}
 	.pp {
 		min-width: 5em;
 	}

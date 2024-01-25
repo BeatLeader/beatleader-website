@@ -32,7 +32,6 @@
 				}
 			}
 		}
-		console.log(clans);
 
 		const allData = data.concat(clans);
 

@@ -1,5 +1,5 @@
 import createHttpStore from './http-store';
-import createClanProvider from './providers/api-clan';
+import createClanProvider from './providers/api-clan-with-maps';
 import stringify from 'json-stable-stringify';
 
 export default (clanId, page = 1, filters = {search: '', sortBy: 'pp', order: 'desc'}, initialState = null, initialStateType = 'initial') => {

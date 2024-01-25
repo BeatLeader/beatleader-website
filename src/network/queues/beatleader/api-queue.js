@@ -62,7 +62,8 @@ export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/$
 
 export const BL_API_CLANS_URL =
 	BL_API_URL + 'clans?leaderboardContext=${leaderboardContext}&page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}';
+export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}';
+export const BL_API_CLAN_MAPS_URL = BL_API_URL + 'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
 export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
@@ -202,7 +203,7 @@ const processClanRankingSingle = (clanRankingId, page, response) => {
 	};
 };
 
-const processLeaderboard = (leaderboardId, page, respons) => {
+export const processLeaderboard = (leaderboardId, page, respons) => {
 	let led = respons.body;
 
 	const diffs =
@@ -409,6 +410,8 @@ export default (options = {}) => {
 
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
+	const clanMaps = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_CLAN_MAPS_URL, {clanId, page, ...filters}), options, priority);
 
 	const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchJson(
@@ -595,8 +598,10 @@ export default (options = {}) => {
 		leaderboardsGrouped,
 		leaderboard,
 		leaderboardsByHash,
+
 		clans,
 		clan,
+		clanMaps,
 		clanRanking,
 		clanRankingScores,
 		clanCreate,
