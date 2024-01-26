@@ -137,7 +137,7 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-{#if $configStore.preferences.replayedbanner}
+<!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
 		<div class="banner-spacer" />
@@ -158,7 +158,7 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
