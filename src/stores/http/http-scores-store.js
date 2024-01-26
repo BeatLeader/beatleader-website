@@ -1,6 +1,5 @@
 import createHttpStore from './http-store';
 import beatMapsEnhancer from './enhancers/common/beatmaps';
-import twitchEnhancer from './enhancers/scores/twitch';
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution';
 import {debounce} from '../../utils/debounce';
 import createApiScoresProvider from './providers/api-scores';
@@ -90,12 +89,12 @@ export default (
 			if (currentService !== 'accsaber') {
 				stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
 					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-					.then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
+					.then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow)))
 					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow));
 			} else {
 				stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
 					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-					.then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => twitchEnhancer(draft, currentPlayerId)))
+					.then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow)))
 					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow));
 			}
 		}

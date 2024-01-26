@@ -16,7 +16,6 @@
 	import ClansPage from './pages/Clans.svelte';
 	import FollowedPage from './pages/Followed.svelte';
 	import PlayerPage from './pages/Player.svelte';
-	import TwitchPage from './pages/Twitch.svelte';
 	import NotFoundPage from './pages/NotFound.svelte';
 	import PrivacyPage from './pages/Privacy.svelte';
 	import AboutPage from './pages/About.svelte';
@@ -244,7 +243,6 @@
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
-					<Route path="/twitch" component={TwitchPage} />
 					<Route path="/help" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>

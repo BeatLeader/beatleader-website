@@ -3,7 +3,6 @@
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
-	import createTwitchService from '../services/twitch';
 	// import createAccSaberService from '../services/accsaber';
 	import createPinnedScoresStore from '../stores/beatleader/pinned-scores';
 	import createStatsHistoryStore from '../stores/beatleader/stats-history';
@@ -19,7 +18,6 @@
 	import Scores from '../components/Player/Scores.svelte';
 	import MiniRankings from '../components/Ranking/MiniRankings.svelte';
 	import AccSaberMiniRanking from '../components/Ranking/AccSaberMini.svelte';
-	import TwitchVideos from '../components/Player/TwitchVideos.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import CardsCarousel from '../components/Player/CardsCarousel.svelte';
 	import PinnedScores from '../components/Player/PinnedScores.svelte';
@@ -92,9 +90,6 @@
 		return {service, serviceParams};
 	}
 
-	const twitchService = createTwitchService();
-	let twitchVideos = [];
-
 	// const accSaberService = createAccSaberService();
 
 	function onPageChanged(event) {
@@ -134,13 +129,6 @@
 		}
 	}
 
-	async function updateTwitchProfile(playerId) {
-		if (!playerId) return;
-
-		const twitchProfile = await twitchService.refresh(playerId);
-		twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
-	}
-
 	let avatarHash = '';
 	async function onPlayerDataUpdated() {
 		if (playerStore) {
@@ -150,18 +138,6 @@
 			avatarHash = (Math.random() * 100000).toString();
 		}
 	}
-
-	onMount(async () => {
-		const twitchUnsubscribe = eventBus.on('player-twitch-videos-updated', ({playerId: twitchPlayerId, twitchProfile}) => {
-			if (twitchPlayerId !== currentPlayerId) return;
-
-			twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
-		});
-
-		return () => {
-			twitchUnsubscribe();
-		};
-	});
 
 	let innerWidth = 0;
 	let innerHeight = 0;
@@ -183,7 +159,6 @@
 		?.split('/')
 		.map(s => capitalize(s))
 		.join(' / ')} - ${ssrConfig.name}`;
-	$: updateTwitchProfile(currentPlayerId);
 
 	$: playerData = $playerStore;
 	$: playerId = playerData?.playerId ?? null;
@@ -235,7 +210,6 @@
 				isLoading={$playerIsLoading}
 				error={$playerError}
 				{skeleton}
-				{twitchVideos}
 				on:player-data-updated={onPlayerDataUpdated}
 				{avatarHash}
 				fixedBrowserTitle={browserTitle}
@@ -243,7 +217,7 @@
 
 			{#if !$editModel}
 				{#if $configStore.profileParts.graphs}
-					<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {twitchVideos} {playerData} />
+					<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {playerData} />
 				{/if}
 				{#if $configStore.profileParts.pinnedScores}
 					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
@@ -275,12 +249,6 @@
 	{#if innerWidth > 1749 && ($configStore.profileParts.globalMiniRanking || $configStore.profileParts.countryMiniRanking || $configStore.profileParts.friendsMiniRanking)}
 		<aside>
 			<MiniRankings {rank} {country} {countryRank} box={true} />
-
-			{#if twitchVideos && twitchVideos.length}
-				<ContentBox>
-					<TwitchVideos videos={twitchVideos} />
-				</ContentBox>
-			{/if}
 
 			{#if playerInfo?.clans?.filter(cl => cl.tag == 'FELA').length}
 				<ContentBox>
