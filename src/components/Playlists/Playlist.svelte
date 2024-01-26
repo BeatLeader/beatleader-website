@@ -1,5 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
+	import {getContext} from 'svelte';
 	import {fade, fly, slide} from 'svelte/transition';
 	import Button from '../Common/Button.svelte';
 	import Pager from '../Common/Pager.svelte';
@@ -12,6 +13,7 @@
 	import customProtocolCheck from 'custom-protocol-check';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
+	import PlaylistDeleteConfirm from './PlaylistDeleteConfirm.svelte';
 
 	export let playlistExport;
 	export let sharedPlaylistId = null;
@@ -22,6 +24,7 @@
 	export let currentPlayerId;
 
 	const {addNotification} = getNotificationsContext();
+	const {open, close} = getContext('simple-modal');
 
 	let playlist = null;
 
@@ -140,6 +143,19 @@
 		);
 	}
 
+	const deletePlaylist = async localPlaylistId => {
+		open(PlaylistDeleteConfirm, {
+			playlistName: playlist.playlistTitle,
+			confirm: () => {
+				close();
+				store.deleteList(localPlaylistId);
+			},
+			cancel: () => {
+				close();
+			},
+		});
+	};
+
 	$: setPlaylist(playlistExport);
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
@@ -231,7 +247,7 @@
 								title="Delete playlist"
 								noMargin={true}
 								type="danger"
-								on:click={() => store.deleteList(localPlaylistId)} />
+								on:click={() => deletePlaylist(localPlaylistId)} />
 							{#if playlist.customData?.shared}
 								<Button
 									iconFa="fas fa-share"
