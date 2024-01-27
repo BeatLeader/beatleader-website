@@ -84,6 +84,7 @@
 		position: fixed;
 		left: -5em;
 		right: 0;
+		pointer-events: none;
 	}
 
 	.rain {
@@ -92,6 +93,7 @@
 		width: 100%;
 		height: 100%;
 		z-index: 2;
+		pointer-events: none;
 	}
 
 	.rain.back-row {
@@ -99,6 +101,7 @@
 		z-index: 1;
 		bottom: 60px;
 		opacity: 0.5;
+		pointer-events: none;
 	}
 
 	:global(.container.back-row-toggle .rain.back-row) {
@@ -114,6 +117,7 @@
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-image: url('https://cdn.assets.beatleader.xyz/SOUPclan.png');
+		pointer-events: none;
 	}
 
 	:global(.pixelsoup-icon) {
@@ -125,6 +129,7 @@
 		background-size: cover;
 		background-repeat: no-repeat;
 		background-image: url('/assets/soup_px.png');
+		pointer-events: none;
 	}
 
 	@keyframes baguette {
@@ -139,6 +144,7 @@
 		margin-left: 7px;
 		background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.25));
 		animation: stem 0.5s linear infinite;
+		pointer-events: none;
 	}
 
 	@keyframes stem {
@@ -165,6 +171,7 @@
 		transform: scale(0);
 		animation: splat 0.5s linear infinite;
 		display: none;
+		pointer-events: none;
 	}
 
 	@keyframes splat {
