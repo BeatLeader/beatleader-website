@@ -256,6 +256,10 @@ export function rankedIn() {
 	return DateTime.fromJSDate(getCurrentBatchDate()).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
 }
 
+export function rewindIn() {
+	return DateTime.fromJSDate(dateFromUnix("1706378400")).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
+}
+
 export function willBeRankedInCurrentBatch(approvalTimeset) {
 	if (!approvalTimeset) return false;
 
