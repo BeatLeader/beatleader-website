@@ -52,7 +52,6 @@ export const DEFAULT_CONFIG = {
 
 		reebanner: true,
 		replayedbanner: true,
-		rewindbanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,
