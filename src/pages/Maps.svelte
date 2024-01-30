@@ -85,7 +85,7 @@
 			<div class="categories">
 				<MapsCategoryCard categoryName="Ranked" showRankedCounter cardHeight={categoryCardHeight} bgColor="#2d0c1f" />
 				<MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} showComingSoon bgColor="#292823" />
-				<MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} showComingSoon bgColor="#15261D" />
+				<MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor="#15261D" />
 			</div>
 
 			<div class="items">
