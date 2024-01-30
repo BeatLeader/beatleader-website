@@ -1,4 +1,5 @@
 <script>
+	import {navigate} from 'svelte-routing';
 	import rankedTimer from '../../stores/ranked-timer';
 	import {fade} from 'svelte/transition';
 
@@ -7,9 +8,14 @@
 	export let cardHeight = 400;
 	export let bgColor = '#292823';
 	export let showComingSoon = false;
+	export let redirectUrl = null;
+
+	function handleClick() {
+		if (redirectUrl) navigate(redirectUrl);
+	}
 </script>
 
-<div class="card" style="height: {cardHeight}px; background: {bgColor} !important;">
+<div class="card" style="height: {cardHeight}px; background: {bgColor} !important;" on:click={handleClick}>
 	<h1>{categoryName}</h1>
 
 	{#if showRankedCounter && $rankedTimer}

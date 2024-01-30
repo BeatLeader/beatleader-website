@@ -83,9 +83,18 @@
 			<h1 class="header">MAPS</h1>
 
 			<div class="categories">
-				<MapsCategoryCard categoryName="Ranked" showRankedCounter cardHeight={categoryCardHeight} bgColor="#2d0c1f" />
+				<MapsCategoryCard
+					categoryName="Ranked"
+					showRankedCounter
+					cardHeight={categoryCardHeight}
+					bgColor="#2d0c1f"
+					redirectUrl={'/leaderboards'} />
 				<MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} showComingSoon bgColor="#292823" />
-				<MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor="#15261D" />
+				<MapsCategoryCard
+					categoryName="Curated"
+					cardHeight={categoryCardHeight}
+					bgColor="#15261D"
+					redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
 			</div>
 
 			<div class="items">
