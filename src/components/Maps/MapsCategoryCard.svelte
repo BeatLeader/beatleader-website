@@ -6,6 +6,7 @@
 	export let showRankedCounter = false;
 	export let cardHeight = 400;
 	export let bgColor = '#292823';
+	export let showComingSoon = false;
 </script>
 
 <div class="card" style="height: {cardHeight}px; background: {bgColor} !important;">
@@ -23,6 +24,12 @@
 			{:else}
 				<span class="countdown">{Math.round($rankedTimer.seconds)} Seconds</span>
 			{/if}
+		</div>
+	{/if}
+
+	{#if showComingSoon}
+		<div class="rankedBatchCounter" transition:fade>
+			<span class="counterHeader">Coming Soon</span>
 		</div>
 	{/if}
 </div>

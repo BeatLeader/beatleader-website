@@ -13,36 +13,29 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Card 1',
-				body: 'Card 1 description',
-				imageUrl: '/assets/landing-big.jpg',
-				targetUrl: undefined,
+				title: 'BS Rewind 2023',
+				body: 'Watch the best of 2023, compiled by Cube Community!',
+				imageUrl: '/assets/cc_rewind_23.png',
+				targetUrl: 'https://youtu.be/bbwJkCF4xp0',
+				forcedColor: 'rgb(180 95 114)',
 			},
 		},
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Card 2',
-				body: 'Card 2 description',
-				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-				targetUrl: '/leaderboard/global/345b9xx91/1',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Card 3',
-				body: 'Card 3 description',
-				imageUrl: '/assets/landing-big.jpg',
-				targetUrl: undefined,
+				title: 'BS Rewind Map',
+				body: 'Check out the new Rewind Map!',
+				imageUrl: '/assets/cc_rewind_23_map.png',
+				targetUrl: 'https://youtu.be/4-2GWGCJTmM?si=gCRDnNBepJw5BTOd',
 				buttons: [
 					{
-						text: 'Button 1',
+						text: 'Download',
 						type: 'primary',
+						url: 'https://beatsaver.com/maps/39736',
 					},
 					{
-						text: 'Button 2',
-						url: '/leaderboard/global/345b9xx91/1',
+						text: 'View Leaderboard',
+						url: '/leaderboard/global/3973691',
 					},
 				],
 			},
@@ -50,48 +43,23 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Card 4',
-				body: 'Card 4 description',
-				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-				targetUrl: undefined,
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Card 5',
-				body: 'Card 5 description',
-				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-				targetUrl: undefined,
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Card 6',
-				body: 'Card 6 description',
-				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-				targetUrl: undefined,
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Card 7',
-				body: 'Card 7 description',
-				imageUrl: 'https://www.beatleader.xyz/assets/landing-big-developer.jpg',
-				targetUrl: undefined,
+				title: 'CC site update',
+				body: 'Cube Community has updated their site, and added a new tournament calendar. Check it out!',
+				imageUrl: '/assets/cc_rewind_23_map.png',
+				targetUrl: 'https://cube.community/calendar',
+				forcedColor: 'rgb(180 95 114)',
 			},
 		},
 	];
 
 	let cardWidthRatio = 0.5;
+	let carouselHeight = '43em';
 
 	function updateCardWidthRatio() {
 		if (window.innerWidth < 950) {
-			cardWidthRatio = 0.7;
+			cardWidthRatio = 0.8;
 		} else {
-			cardWidthRatio = 0.5;
+			cardWidthRatio = 0.6;
 		}
 	}
 
@@ -116,13 +84,13 @@
 
 			<div class="categories">
 				<MapsCategoryCard categoryName="Ranked" showRankedCounter cardHeight={categoryCardHeight} bgColor="#2d0c1f" />
-				<MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} bgColor="#292823" />
-				<MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} bgColor="#15261D" />
+				<MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} showComingSoon bgColor="#292823" />
+				<MapsCategoryCard categoryName="Curated" cardHeight={categoryCardHeight} showComingSoon bgColor="#15261D" />
 			</div>
 
 			<div class="items">
 				<DiscoverCard />
-				<FeaturedCarousel {cards} {cardWidthRatio} />
+				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} />
 			</div>
 		</ContentBox>
 	</article>

@@ -9,8 +9,10 @@
 	export let buttons = [];
 	export let active = false;
 	export let clickAction;
+	export let forcedColor = null;
 
 	let cinematicsCanvas;
+	let dominantColor = 'rgb(92, 120, 133)';
 
 	function handleCardClick() {
 		if (active) {
@@ -33,14 +35,34 @@
 		}
 	}
 
+	function retrieveBackgroundColor(img) {
+		var context = document.createElement('canvas').getContext('2d');
+		if (typeof img == 'string') {
+			var src = img;
+			img = new Image();
+			img.crossOrigin = 'anonymous';
+			img.src = src;
+		}
+		img.onload = () => {
+			context.imageSmoothingEnabled = true;
+			context.drawImage(img, 0, 0, 1, 1);
+			const imageData = context.getImageData(0, 0, 1, 1).data.slice(0, 3);
+
+			if (imageData[0] > 229.5 && imageData[1] > 229.5 && imageData[2] > 229.5) {
+				dominantColor = `rgb(${imageData[0] * 0.8},${imageData[1] * 0.8},${imageData[2] * 0.8})`;
+			} else {
+				dominantColor = `rgb(${imageData[0]},${imageData[1]},${imageData[2]})`;
+			}
+		};
+	}
+
 	$: drawCinematics(cinematicsCanvas, imageUrl);
 	$: if (buttons.length > 3) buttons = buttons.slice(0, 3);
+	$: forcedColor ? (dominantColor = forcedColor) : retrieveBackgroundColor(imageUrl);
 </script>
 
-<!-- svelte-ignore a11y-no-static-element-interactions -->
-<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="grid-item" class:active>
-	<div class="card" on:click={handleCardClick} on:mouseenter class:active>
+	<div class="card" on:click={handleCardClick} on:mouseenter class:active style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active>
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -75,13 +97,13 @@
 		display: flex;
 		width: 100%;
 		padding: 1em;
-    position: relative;
-    transition: padding 300ms ease;
+		position: relative;
+		transition: padding 300ms ease;
 	}
 
-  .grid-item.active {
-    padding: 0.5em;
-  }
+	.grid-item.active {
+		padding: 0.5em;
+	}
 
 	.card {
 		width: 100%;
@@ -124,9 +146,9 @@
 		transform: scale(1.1);
 	}
 
-  .card:hover .background {
-    transform: scale(1.025);
-  }
+	.card:hover .background {
+		transform: scale(1.025);
+	}
 	.card:hover .cinematics-canvas {
 		transform: scale(1.125);
 		filter: blur(5em) opacity(0.5) saturate(250%) brightness(120%);
@@ -142,15 +164,18 @@
 		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
 		border-radius: 12px;
 		position: relative;
+
+		background: var(--dominantColor);
+		background: linear-gradient(180deg, var(--dominantColor) 0%, rgba(0, 0, 0, 0) 60%);
 	}
 
 	.content h1 {
-    user-select: none;
+		user-select: none;
 	}
 
 	.content p {
 		color: white;
-    user-select: none;
+		user-select: none;
 	}
 
 	.buttons {
