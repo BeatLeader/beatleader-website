@@ -15,7 +15,7 @@
 			props: {
 				title: 'BS Rewind 2023',
 				body: 'Watch the best of 2023, compiled by Cube Community!',
-				imageUrl: '/assets/cc_rewind_23.png',
+				imageUrl: '/assets/cc_rewind_23.jpg',
 				targetUrl: 'https://youtu.be/bbwJkCF4xp0',
 				forcedColor: 'rgb(180 95 114)',
 			},
