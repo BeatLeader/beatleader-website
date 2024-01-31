@@ -56,9 +56,9 @@
 			props: {
 				title: 'Got something to share?',
 				body: 'DM Light Ai on Discord to get your event or announcement featured here!',
-				imageUrl: '/assets/Discover/cc_rewind_23_map.png',
-				targetUrl: undefined,
-				forcedColor: undefined,
+				imageUrl: '/assets/Discover/lightai.png',
+				targetUrl: 'https://discordapp.com/users/138596754592497664',
+				forcedColor: 'rgb(111 191 226)',
 			},
 		},
 	];

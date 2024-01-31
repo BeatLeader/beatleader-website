@@ -118,6 +118,12 @@
 		cursor: pointer;
 	}
 
+	@media screen and (max-width: 950px) {
+		.card {
+			font-size: 0.75em;
+		}
+	}
+
 	.background-container {
 		width: 100%;
 		height: 100%;
@@ -187,7 +193,7 @@
 	.buttons {
 		display: flex;
 		flex-direction: row;
-		flex-wrap: wrap-reverse;
+		flex-wrap: wrap;
 		justify-content: flex-end;
 		overflow: hidden;
 		row-gap: -0.25em;
@@ -198,6 +204,12 @@
 		width: calc(100% - 2.5em);
 		pointer-events: none;
 		text-shadow: none;
+	}
+
+	@media screen and (max-width: 950px) {
+		.buttons {
+			bottom: 2.5em;
+		}
 	}
 
 	.buttons.active {
