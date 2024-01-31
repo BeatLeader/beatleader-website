@@ -7,8 +7,6 @@
 	import MapsCategoryCard from '../components/Maps/MapsCategoryCard.svelte';
 	import {fade} from 'svelte/transition';
 
-	let categoryCardHeight = 400;
-
 	let cards = [
 		{
 			component: CarouselCard,
@@ -94,18 +92,9 @@
 			<h1 class="header">MAPS</h1>
 
 			<div class="categories">
-				<MapsCategoryCard
-					categoryName="Ranked"
-					showRankedCounter
-					cardHeight={categoryCardHeight}
-					bgColor="#2d0c1f"
-					redirectUrl={'/leaderboards'} />
-				<MapsCategoryCard categoryName="Trending" cardHeight={categoryCardHeight} showComingSoon bgColor="#292823" />
-				<MapsCategoryCard
-					categoryName="Curated"
-					cardHeight={categoryCardHeight}
-					bgColor="#15261D"
-					redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
+				<MapsCategoryCard categoryName="Ranked" showRankedCounter bgColor="#2d0c1f" redirectUrl={'/leaderboards'} />
+				<MapsCategoryCard categoryName="Trending" showComingSoon bgColor="#292823" />
+				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
 			</div>
 
 			<div class="items">
@@ -154,6 +143,7 @@
 		gap: 3.25em;
 		margin: 3.25em;
 		margin-top: 4.25em;
+		font-size: 1em;
 	}
 
 	.items {
@@ -166,12 +156,12 @@
 
 	@media screen and (max-width: 950px) {
 		.categories {
-			display: flex;
 			flex-direction: column;
 			gap: 1.5em;
-			margin: 1.5em;
 			margin-top: 4.25em;
+			font-size: 0.75em;
 		}
+
 		.items {
 			display: flex;
 			flex-direction: column;

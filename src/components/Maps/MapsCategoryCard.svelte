@@ -5,7 +5,6 @@
 
 	export let categoryName;
 	export let showRankedCounter = false;
-	export let cardHeight = 400;
 	export let bgColor = '#292823';
 	export let showComingSoon = false;
 	export let redirectUrl = null;
@@ -15,7 +14,7 @@
 	}
 </script>
 
-<div class="card" style="height: {cardHeight}px; background: {bgColor} !important;" on:click={handleClick}>
+<div class="card" style="background: {bgColor} !important;" on:click={handleClick}>
 	<h1>{categoryName}</h1>
 
 	{#if showRankedCounter && $rankedTimer}
@@ -44,6 +43,7 @@
 <style>
 	.card {
 		width: 100%;
+		height: 25em;
 		border-radius: 12px;
 		position: relative;
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
@@ -59,7 +59,7 @@
 
 		color: #fff;
 		font-family: Noto Sans SC;
-		font-size: 42px;
+		font-size: 2.625em;
 
 		font-style: normal;
 		font-weight: 700;
@@ -80,7 +80,7 @@
 	.counterHeader {
 		color: #fff;
 		font-family: Noto Sans SC;
-		font-size: 20px;
+		font-size: 1.25em;
 		font-style: normal;
 		font-weight: 700;
 		line-height: normal;
@@ -89,7 +89,7 @@
 	.countdown {
 		color: #fff;
 		font-family: Noto Sans SC;
-		font-size: 24px;
+		font-size: 1.5em;
 		font-style: normal;
 		font-weight: 700;
 		line-height: normal;
