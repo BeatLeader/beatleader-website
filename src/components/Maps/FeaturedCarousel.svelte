@@ -29,6 +29,8 @@
 		if (currentCenteredIndex + 1 < cards.length) {
 			translation -= carouselWidth * cardWidthRatio;
 			currentCenteredIndex++;
+		} else if (showFillerCards) {
+			moveToPosition(0);
 		}
 	}
 
@@ -37,6 +39,8 @@
 		if (currentCenteredIndex - 1 >= 0) {
 			translation += carouselWidth * cardWidthRatio;
 			currentCenteredIndex--;
+		} else if (showFillerCards) {
+			moveToPosition(cards.length - 1);
 		}
 	}
 

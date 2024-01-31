@@ -169,6 +169,12 @@
 		background: linear-gradient(180deg, var(--dominantColor) 0%, rgba(0, 0, 0, 0) 40%);
 	}
 
+	@media screen and (max-width: 950px) {
+		.content {
+			background: linear-gradient(180deg, var(--dominantColor) 0%, rgba(0, 0, 0, 0) 60%);
+		}
+	}
+
 	.content h1 {
 		user-select: none;
 	}
