@@ -22,6 +22,7 @@
 	let currentCenteredIndex = 0;
 	let maskLeft = '15%';
 	let maskRight = '85%';
+	let autoMoveIntervalId;
 
 	function moveForward() {
 		interruptMotion();
@@ -58,12 +59,22 @@
 	function moveRightOrReset() {
 		interruptMotion();
 		if (currentCenteredIndex + 1 < cards.length) {
-			translation -= carouselWidth * cardWidthRatio;
-			currentCenteredIndex++;
+			moveForward();
 		} else {
-			translation = carouselWidth * cardWidthRatio;
-			currentCenteredIndex = 0;
+			moveToPosition(0);
 		}
+	}
+
+	function handleTimedAutoMove() {
+		moveRightOrReset();
+	}
+
+	function removeAutoMoveInterval() {
+		if (autoMoveIntervalId) clearInterval(autoMoveIntervalId);
+	}
+
+	function createAutoMoveInterval() {
+		if (autoMoveInterval) autoMoveIntervalId = setInterval(handleTimedAutoMove, autoMoveInterval);
 	}
 
 	function handleResize() {
@@ -78,16 +89,13 @@
 	}
 
 	onMount(() => {
-		let intervalId;
-		if (autoMoveInterval) {
-			intervalId = setInterval(moveRightOrReset, autoMoveInterval);
-		}
+		createAutoMoveInterval();
 		window.addEventListener('resize', handleResize);
 		handleResize();
 
 		return () => {
 			window.removeEventListener('resize', handleResize);
-			if (intervalId) clearInterval(intervalId);
+			removeAutoMoveInterval();
 			if (mainEl) {
 				mainEl.removeEventListener('swiped-left', moveForward);
 				mainEl.removeEventListener('swiped-right', moveBackward);
@@ -126,6 +134,8 @@
 		bind:this={mainEl}
 		bind:offsetWidth={carouselWidth}
 		on:resize={handleResize}
+		on:mouseenter={removeAutoMoveInterval}
+		on:mouseleave={createAutoMoveInterval}
 		class="carousel"
 		style="--cards-cnt: {cards.length +
 			2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">

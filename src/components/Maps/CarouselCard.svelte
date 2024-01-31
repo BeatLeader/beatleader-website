@@ -166,7 +166,7 @@
 		position: relative;
 
 		background: var(--dominantColor);
-		background: linear-gradient(180deg, var(--dominantColor) 0%, rgba(0, 0, 0, 0) 60%);
+		background: linear-gradient(180deg, var(--dominantColor) 0%, rgba(0, 0, 0, 0) 40%);
 	}
 
 	.content h1 {

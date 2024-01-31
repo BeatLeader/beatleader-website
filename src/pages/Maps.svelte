@@ -15,7 +15,7 @@
 			props: {
 				title: 'BS Rewind 2023',
 				body: 'Watch the best of 2023, compiled by Cube Community!',
-				imageUrl: '/assets/cc_rewind_23.jpg',
+				imageUrl: '/assets/Discover/cc_rewind_23.jpg',
 				targetUrl: 'https://youtu.be/bbwJkCF4xp0',
 				forcedColor: 'rgb(180 95 114)',
 			},
@@ -25,8 +25,9 @@
 			props: {
 				title: 'BS Rewind Map',
 				body: 'Check out the new Rewind Map!',
-				imageUrl: '/assets/cc_rewind_23_map.png',
+				imageUrl: '/assets/Discover/cc_rewind_23_map.png',
 				targetUrl: 'https://youtu.be/4-2GWGCJTmM?si=gCRDnNBepJw5BTOd',
+				forcedColor: 'rgb(66 87 104)',
 				buttons: [
 					{
 						text: 'Download',
@@ -45,9 +46,19 @@
 			props: {
 				title: 'CC site update',
 				body: 'Cube Community has updated their site, and added a new tournament calendar. Check it out!',
-				imageUrl: '/assets/cc_rewind_23_map.png',
+				imageUrl: '/assets/Discover/cc_site_update.png',
 				targetUrl: 'https://cube.community/calendar',
-				forcedColor: 'rgb(180 95 114)',
+				forcedColor: 'rgb(8 37 52)',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Got something to share?',
+				body: 'DM Light Ai on Discord to get your event or announcement featured here!',
+				imageUrl: '/assets/Discover/cc_rewind_23_map.png',
+				targetUrl: undefined,
+				forcedColor: undefined,
 			},
 		},
 	];
@@ -99,7 +110,7 @@
 
 			<div class="items">
 				<DiscoverCard />
-				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} />
+				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
 			</div>
 		</ContentBox>
 	</article>

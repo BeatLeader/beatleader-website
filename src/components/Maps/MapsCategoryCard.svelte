@@ -22,13 +22,14 @@
 		<div class="rankedBatchCounter" transition:fade>
 			<span class="counterHeader">Next batch in:</span>
 			{#if $rankedTimer.days > 0}
-				<span class="countdown">{$rankedTimer.days} Days</span>
+				<span class="countdown">{$rankedTimer.days} Day{$rankedTimer.days !== 1 ? 's' : ''}</span>
+				<span class="countdown">{$rankedTimer.hours} Hour{$rankedTimer.hours !== 1 ? 's' : ''}</span>
 			{:else if $rankedTimer.hours > 0}
-				<span class="countdown">{$rankedTimer.hours} Hours</span>
+				<span class="countdown">{$rankedTimer.hours} Hour{$rankedTimer.hours !== 1 ? 's' : ''}</span>
 			{:else if $rankedTimer.minutes > 0}
-				<span class="countdown">{$rankedTimer.minutes} Minutes</span>
+				<span class="countdown">{$rankedTimer.minutes} Minute{$rankedTimer.minutes !== 1 ? 's' : ''}</span>
 			{:else}
-				<span class="countdown">{Math.round($rankedTimer.seconds)} Seconds</span>
+				<span class="countdown">{Math.round($rankedTimer.seconds)} Second{$rankedTimer.seconds !== 1 ? 's' : ''}</span>
 			{/if}
 		</div>
 	{/if}
