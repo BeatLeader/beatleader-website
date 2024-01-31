@@ -177,7 +177,7 @@
 			flex-direction: column;
 			justify-content: space-between;
 			gap: 1.5em;
-			margin: 1.5em;
+			margin: 0.25em;
 		}
 	}
 </style>
