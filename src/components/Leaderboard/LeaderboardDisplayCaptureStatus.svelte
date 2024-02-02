@@ -6,6 +6,7 @@
 	export let clan = null;
 	export let clanRankingContested = null;
 	export let withTitle = true;
+	export let leaderboardId = null;
 
 	const badgeUtils = createBadgeUtils();
 </script>
@@ -42,7 +43,9 @@
 			{#if withTitle}
 				<p class="captured-by">Captured by:</p>
 			{/if}
-			<a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
+			<a
+				href={`/clansmap/leaderboard/${leaderboardId}`}
+				on:click|preventDefault|stopPropagation={() => navigate(`/clansmap/leaderboard/${leaderboardId}`)}>
 				<Badge
 					label={clan?.tag ?? '???'}
 					onlyLabel={true}

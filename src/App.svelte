@@ -44,11 +44,10 @@
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
-<<<<<<< HEAD
 	import ClansMap from './pages/ClansMap.svelte';
-=======
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
->>>>>>> master
+	import SongSuggestMap from './pages/SongSuggestMap.svelte';
+	import GigaMap from './pages/GigaMap.svelte';
 
 	export let url = '';
 
@@ -229,20 +228,44 @@
 					<Route path="/replayed/mapper/*id" let:params>
 						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
 					</Route>
-					<Route path="/clan/:clanId/*page" let:params>
-						<ClanPage clanId={params.clanId} page={params.page} />
-					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
 					</Route>
 					<Route path="/events/*page" let:params let:location>
 						<EventsPage page={params.page} {location} />
 					</Route>
+					<Route path="/clan/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} />
+					</Route>
+					<Route path="/clan/maps/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} maps={true} />
+					</Route>
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
 					</Route>
-					<Route path="/clans/globalmap" let:location>
+					<Route path="/clansmap/leaderboard/*leaderboardId" let:params let:location>
+						<ClansMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/clansmap" let:location>
 						<ClansMap {location} />
+					</Route>
+					<Route path="/songsuggestmap/leaderboard/*leaderboardId" let:params let:location>
+						<SongSuggestMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/songsuggestmap" let:location>
+						<SongSuggestMap {location} />
+					</Route>
+					<Route path="/datavis/gigamap50" let:location>
+						<GigaMap {location} topCount={50} />
+					</Route>
+					<Route path="/datavis/gigamap1000" let:location>
+						<GigaMap {location} topCount={1000} />
+					</Route>
+					<Route path="/datavis/gigamap5000" let:location>
+						<GigaMap {location} topCount={5000} />
+					</Route>
+					<Route path="/clansmap/clan/*clanTag" let:params let:location>
+						<ClansMap clanTag={params.clanTag} {location} />
 					</Route>
 					<Route path="/playlists/*id" let:params>
 						<PlaylistsPage index={params.id} />

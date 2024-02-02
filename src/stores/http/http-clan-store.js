@@ -2,7 +2,7 @@ import createHttpStore from './http-store';
 import createClanProvider from './providers/api-clan';
 import stringify from 'json-stable-stringify';
 
-export default (clanId, page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {
+export default (clanId, page = 1, filters = {search: '', sortBy: 'pp', order: 'desc'}, initialState = null, initialStateType = 'initial') => {
 	let currentClanId = clanId ? clanId : null;
 	let currentPage = page ? page : 1;
 	let currentFilters = filters ?? {};
@@ -17,7 +17,7 @@ export default (clanId, page = 1, filters = {}, initialState = null, initialStat
 
 	const httpStore = createHttpStore(
 		provider,
-		{clanId, page},
+		{clanId, page, filters},
 		initialState,
 		{
 			onInitialized: onNewData,

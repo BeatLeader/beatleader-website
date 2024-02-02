@@ -1,7 +1,9 @@
 <script>
 	import {navigate, useLocation} from 'svelte-routing';
-	import {fly} from 'svelte/transition';
+	import {fly, fade} from 'svelte/transition';
+	import {flip} from 'svelte/animate';
 	import createClanStore from '../stores/http/http-clan-store';
+	import createClanWithMapsStore from '../stores/http/http-clan-with-maps-store';
 	import createAccountStore from '../stores/beatleader/account';
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
@@ -17,9 +19,12 @@
 	import Error from '../components/Common/Error.svelte';
 	import Rain from '../components/Common/Rain.svelte';
 	import RandomRain from '../components/Common/RandomRain.svelte';
+	import ClanRankingSong from '../components/Leaderboard/ClanRankingSong.svelte';
+	import Switcher from '../components/Common/Switcher.svelte';
 
 	export let clanId;
 	export let page = 1;
+	export let maps = false;
 
 	const FILTERS_DEBOUNCE_MS = 500;
 
@@ -33,11 +38,15 @@
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
+	const processString = val => val?.toString();
+
+	const params = [
+		{key: 'search', default: '', process: processString},
+		{key: 'sortBy', default: 'pp', process: processString},
+		{key: 'order', default: 'desc', process: processString},
+	];
+
 	const buildFiltersFromLocation = location => {
-		const processString = val => val?.toString() ?? '';
-
-		const params = [{key: 'search', default: '', process: processString}];
-
 		const searchParams = new URLSearchParams(location?.search ?? '');
 
 		return params.reduce(
@@ -52,7 +61,11 @@
 		if (!filters) return '';
 
 		const searchParams = new URLSearchParams();
-		Object.entries(filters).forEach(([key, value]) => searchParams.append(key, value));
+		Object.entries(filters).forEach(([key, value]) => {
+			if (params.find(p => p.key == key).default != value) {
+				searchParams.append(key, value);
+			}
+		});
 
 		return searchParams.toString();
 	};
@@ -61,15 +74,41 @@
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 
-	const clanStore = createClanStore(clanId, page, currentFilters);
+	const clanWithMapsStore = createClanWithMapsStore(clanId, page, currentFilters);
+	const clanWithPlayersStore = createClanStore(clanId, page, currentFilters);
 
-	function changePageAndFilters(clanId, newPage, newLocation) {
-		if (!clanId) return;
+	var clanStore = maps ? clanWithMapsStore : clanWithPlayersStore;
 
-		currentFilters = buildFiltersFromLocation(newLocation);
+	function changePageAndFilters(newMaps, newPage, newCurrentFilters, replace, setUrl = true) {
+		currentFilters = newCurrentFilters;
+
+		sortValues = sortValues1
+			.filter(sv => !sv.hideFor || !sv.hideFor.includes(maps ? 'maps' : 'players'))
+			.map(v => {
+				let result = {...v};
+				if (result.id == currentFilters.sortBy) {
+					result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
+					sortValue = result;
+				}
+
+				return result;
+			});
 
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
+
+		if (setUrl) {
+			const query = buildSearchFromFilters(currentFilters);
+			const url = `/clan${newMaps ? '/maps/' : '/'}${clanId}/${currentPage}${query.length ? '?' : ''}${query}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
+		maps = newMaps;
+		clanStore = newMaps ? clanWithMapsStore : clanWithPlayersStore;
 
 		currentPage = newPage;
 		clanStore.fetch(clanId, currentPage, {...currentFilters});
@@ -78,16 +117,13 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-		navigate(`/clan/${clanId}/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
-	}
-
-	function navigateToCurrentPageAndFilters() {
-		navigate(`/clan/${clanId}/${currentPage}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
+		changePageAndFilters(maps, event.detail.page + 1, currentFilters, false);
 	}
 
 	function onSearchChanged(e) {
 		currentFilters.search = e.target.value ?? '';
-		navigateToCurrentPageAndFilters();
+
+		changePageAndFilters(maps, currentPage, currentFilters, false);
 	}
 	const debouncedOnSearchChanged = debounce(onSearchChanged, FILTERS_DEBOUNCE_MS);
 
@@ -116,6 +152,42 @@
 		}
 	}
 
+	const clanOptions = [
+		{key: 'players', label: 'Players', iconFa: 'fa fa-user', color: 'var(--beatleader-primary)'},
+		{key: 'maps', label: 'Maps', iconFa: 'fa fa-location-dot', color: 'var(--beatleader-primary)'},
+	];
+
+	function onTypeChanged(event) {
+		if (!event?.detail) return;
+
+		currentPage = 1;
+
+		changePageAndFilters(event.detail.key == 'maps', currentPage, currentFilters, false);
+	}
+
+	let sortValues1 = [
+		{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes'},
+		{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
+		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol'},
+		{id: 'date', label: 'Recent', title: 'Sort by the last score posted', iconFa: 'fa fa-clock', hideFor: ['players']},
+		{id: 'hold', label: 'Hold', title: 'Sort by PP dominance', iconFa: 'fa fa-flag', hideFor: ['players']},
+	];
+	let sortValues = sortValues1;
+	let sortValue = sortValues[0];
+
+	function onSortChange(event) {
+		if (!event?.detail?.id) return null;
+
+		if (currentFilters.sortBy == event.detail.id) {
+			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
+		} else {
+			currentFilters.sortBy = event.detail.id;
+		}
+		currentPage = 1;
+
+		changePageAndFilters(maps, currentPage, currentFilters, false);
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = clanStore.isLoading;
@@ -123,13 +195,13 @@
 	$: numOfItems = $clanStore ? $clanStore?.metadata?.total : null;
 	$: itemsPerPage = $clanStore ? $clanStore?.metadata?.itemsPerPage : 10;
 
-	$: changePageAndFilters(clanId, page, location);
+	$: changePageAndFilters(maps, page, buildFiltersFromLocation(location), false);
 
 	$: clan = $clanStore?.container ?? null;
 	$: playersPage = $clanStore?.data ?? [];
 
-	$: maxRank = playersPage ? Math.max(...playersPage.map(p => p.playerInfo?.rank)) : 0;
-	$: maxCountryRank = playersPage ? Math.max(...playersPage.map(p => p.playerInfo?.countries[0].rank)) : 0;
+	$: maxRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.rank)) : 0;
+	$: maxCountryRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.countries[0].rank)) : 0;
 
 	$: clanLeaderId = clan?.leaderID ?? null;
 	$: isFounder = clan?.id && clanLeaderId === $account?.player?.playerId;
@@ -177,7 +249,27 @@
 				</Dialog>
 			{/if}
 
-			{#if playersPage?.length}
+			<div class="switchers">
+				<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+
+				<Switcher values={clanOptions} value={clanOptions.find(o => o.key == (maps ? 'maps' : 'players'))} on:change={onTypeChanged} />
+			</div>
+
+			{#if maps}
+				<ContentBox>
+					<div class="scores-grid grid-transition-helper">
+						{#each playersPage as cr, idx (cr?.id ?? '')}
+							<div
+								class={`row-${idx}`}
+								in:fly={{x: 200, delay: idx * 20, duration: 500}}
+								out:fade={{x: 200, delay: idx * 20, duration: 500}}
+								animate:flip={{duration: 300}}>
+								<ClanRankingSong {idx} {cr} {page} sortBy={currentFilters.sortBy} />
+							</div>
+						{/each}
+					</div>
+				</ContentBox>
+			{:else if playersPage?.length}
 				<div class="players grid-transition-helper" class:with-icons={isFounder}>
 					{#each playersPage as player, idx (player.playerId)}
 						<div class="ranking-grid-row" in:fly|global={{delay: idx * 10, x: 100}}>
@@ -202,18 +294,15 @@
 						</div>
 					{/each}
 				</div>
-
-				<Pager
-					totalItems={numOfItems}
-					{itemsPerPage}
-					itemsPerPageValues={null}
-					currentPage={currentPage - 1}
-					loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-					mode={numOfItems ? 'pages' : 'simple'}
-					on:page-changed={onPageChanged} />
-			{:else if !$isLoading}
-				<p>No clans found.</p>
 			{/if}
+			<Pager
+				totalItems={numOfItems}
+				{itemsPerPage}
+				itemsPerPageValues={null}
+				currentPage={currentPage - 1}
+				loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+				mode={numOfItems ? 'pages' : 'simple'}
+				on:page-changed={onPageChanged} />
 		</ContentBox>
 		{#if clan?.tag == 'FELA'}
 			<ContentBox>
@@ -267,5 +356,11 @@
 
 	.players :global(> *:last-child) {
 		border-bottom: none !important;
+	}
+
+	.switchers {
+		display: flex;
+		gap: 1em;
+		justify-content: center;
 	}
 </style>

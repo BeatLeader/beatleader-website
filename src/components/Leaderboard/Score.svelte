@@ -26,6 +26,7 @@
 	export let battleRoyaleDraft = false;
 	export let battleRoyaleDraftList = [];
 	export let selectedMetric = null;
+	export let hideClans = false;
 
 	const MAX_ROYALE_LIST_LENGTH = 10;
 
@@ -113,7 +114,7 @@
 					hideFlag={$configStore?.leaderboardPreferences?.show?.country === false || isBot}
 					on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
-				{#if $configStore?.leaderboardPreferences?.show?.clans !== false}
+				{#if !hideClans || $configStore?.leaderboardPreferences?.show?.clans !== false}
 					<ClanBadges player={score.player} />
 				{/if}
 			</div>

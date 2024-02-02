@@ -265,7 +265,7 @@
 
 			<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
 
-			<a class="globalmap" href="/clans/globalmap">
+			<a class="globalmap" href="/clansmap">
 				<img src="/assets/clan-map.png" />
 			</a>
 		</ContentBox>

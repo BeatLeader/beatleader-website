@@ -943,47 +943,15 @@
 								<Spinner />
 							</div>
 						{:then beatSavior}
-							<div transition:slide class="tab">
+							<div transition:slide|global class="tab">
 								<BeatSaviorDetails {beatSavior} />
 							</div>
 						{/await}
 						{#if !isNominated && leaderboard.qualification}
 							<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
 						{/if}
-					{/if}
-
-					{#if separatePage && type !== 'accsaber'}
-						<div class="score-options-section">
-							<span
-								class="beat-savior-reveal clickable"
-								class:opened={showAverageStats}
-								on:click={() => (showAverageStats = !showAverageStats)}
-								title="Show average stats and ranking changes">
-								{#if showAverageStats}
-									Hide details
-								{:else}
-									Show more details
-								{/if}
-
-								<i class="fas fa-chevron-down" />
-							</span>
-						</div>
-						{#if showAverageStats}
-							{#await beatSaviorPromise}
-								<div class="tab">
-									<Spinner />
-								</div>
-							{:then beatSavior}
-								<div transition:slide|global class="tab">
-									<BeatSaviorDetails {beatSavior} />
-								</div>
-							{/await}
-							{#if !isNominated && leaderboard.qualification}
-								<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
-							{/if}
-							{#if leaderboard.changes}
-								<ReweightStatusRanked map={leaderboard} />
-							{/if}
+						{#if leaderboard.changes}
+							<ReweightStatusRanked map={leaderboard} />
 						{/if}
 					{/if}
 				{:else}

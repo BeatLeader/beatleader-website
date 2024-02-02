@@ -11,7 +11,7 @@
 	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
 	import Pager from '../../components/Common/Pager.svelte';
-	import Pp from '../Common/PerformanceBadge/Pp.svelte'
+	import Pp from '../Common/PerformanceBadge/Pp.svelte';
 	import Score from '../Leaderboard/Score.svelte';
 	import Spinner from '../../components/Common/Spinner.svelte';
 	import Value from '../Common/Value.svelte';
@@ -20,7 +20,7 @@
 	export let idx = null;
 	export let battleRoyaleDraft = false;
 	export let battleRoyaleDraftList = [];
-	export let cr = null
+	export let cr = null;
 	export let fixedBrowserTitle = null;
 	export let modifiers = null;
 	export let page;
@@ -60,7 +60,7 @@
 	}
 
 	let showClanRankingScores = false;
-	let clanRank = ((page - 1) * 10) + idx + 1;
+	let clanRank = (page - 1) * 10 + idx + 1;
 
 	$: scores = $clanRankingStore?.clanRanking?.scores ?? [];
 	$: totalItems = $clanRankingStore?.totalItems ?? 0;
@@ -86,17 +86,15 @@
 						? 'small'
 						: 'var(--dimmed)'}>
 					<span slot="label">
-						#<Value value={clanRank} digits={0} zero="?" />
+						#<Value value={cr.rank} digits={0} zero="?" />
 					</span>
 				</Badge>
 			</div>
 
 			<div class="player">
 				<Avatar clan={cr?.clan} />
-				<ClanName
-					clan={cr?.clan}
-					on:click={cr?.clan ? () => navigateToClan(cr.clan?.tag) : null} />
-				<ClanBadges clan={cr?.clan}/>
+				<ClanName clan={cr?.clan} on:click={cr?.clan ? () => navigateToClan(cr.clan?.tag) : null} />
+				<ClanBadges clan={cr?.clan} />
 			</div>
 			<div class="timeset above-tablet">
 				<span style="color: {getTimeStringColor(cr?.lastUpdateTimeNumber)}; ">
@@ -123,25 +121,19 @@
 			<span class="with-badge pp">
 				<Badge onlyLabel={true} color="white" bgColor="var(--ppColour)">
 					<span slot="label">
-						<Pp
-							pp={cr?.pp}
-							inline={false}
-							color="white" />
+						<Pp pp={cr?.pp} inline={false} color="white" />
 					</span>
 				</Badge>
 			</span>
 
 			<span class="with-badge acc">
-				<Accuracy accuracyOverride={cr?.averageAcc} showMods={false}/>
+				<Accuracy accuracyOverride={cr?.averageAcc} showMods={false} />
 			</span>
 
 			<span class="with-badge score">
-				<Badge
-					onlyLabel={true} 
-					color="white" 
-					bgColor={'var(--dimmed)'}>
+				<Badge onlyLabel={true} color="white" bgColor={'var(--dimmed)'}>
 					<span slot="label">
-						<Value value={cr?.totalScore} inline={false} digits={0} suffix=''/>
+						<Value value={cr?.totalScore} inline={false} digits={0} suffix="" />
 					</span>
 				</Badge>
 			</span>
@@ -155,11 +147,8 @@
 	{#if $clanRankingStore && !$isLoading}
 		{#if showClanRankingScores}
 			<div class="scores-subgrid grid-transition-helper">
-				{#each scores as score, idx ((opt(score, 'score.id', '')) + (opt(score, 'player.playerId', '')))}
-					<div
-						in:fly={{x: 200, delay: idx * 20, duration: 300}}
-						out:fade={{duration: 300}}
-						animate:flip={{duration: 300}}>
+				{#each scores as score, idx (opt(score, 'score.id', '') + opt(score, 'player.playerId', ''))}
+					<div in:fly={{x: 200, delay: idx * 20, duration: 300}} out:fade={{duration: 300}} animate:flip={{duration: 300}}>
 						<Score
 							{leaderboardId}
 							{score}
@@ -168,20 +157,21 @@
 							{fixedBrowserTitle}
 							{battleRoyaleDraft}
 							{battleRoyaleDraftList}
-							sortBy={sortBy}
+							{sortBy}
+							hideClans={true}
 							on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 							on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 					</div>
 				{/each}
 				<div class="clan-pager">
 					<Pager
-					totalItems={totalItems}
-					{itemsPerPage}
-					itemsPerPageValues={null}
-					currentPage={associatedScoresPage != 0 ? associatedScoresPage - 1 : 1}
-					loadingPage={null}
-					mode={scores.length ? 'pages' : 'simple'}
-					on:page-changed={onPageChanged} />
+						{totalItems}
+						{itemsPerPage}
+						itemsPerPageValues={null}
+						currentPage={associatedScoresPage != 0 ? associatedScoresPage - 1 : 1}
+						loadingPage={null}
+						mode={scores.length ? 'pages' : 'simple'}
+						on:page-changed={onPageChanged} />
 				</div>
 			</div>
 		{/if}

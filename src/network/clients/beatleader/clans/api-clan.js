@@ -51,6 +51,9 @@ const process = response => {
 const get = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) =>
 	queue.BEATLEADER_API.clan(clanId, page, filters, priority, queueOptions);
 
+const getWithMaps = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) =>
+	queue.BEATLEADER_API.clanMaps(clanId, page, filters, priority, queueOptions);
+
 const create = async ({
 	name,
 	tag,
@@ -136,6 +139,7 @@ const createClanClient = () => {
 
 	return {
 		...client,
+		getWithMaps,
 		create,
 		update,
 		accept,
