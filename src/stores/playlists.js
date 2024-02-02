@@ -31,6 +31,16 @@ function saveJSONAsFile(json, fileName) {
 	link.click();
 }
 
+function saveFromId(id, fileName) {
+	var link = document.createElement('a');
+
+	document.body.appendChild(link); // for Firefox
+
+	link.setAttribute('href', `${BL_API_URL}playlist/${id}`);
+	link.setAttribute('download', fileName);
+	link.click();
+}
+
 export default () => {
 	if (playlistStore) return playlistStore;
 
@@ -85,22 +95,26 @@ export default () => {
 	};
 
 	const downloadOneClick = async () => {
-		await fetch(BL_API_URL + 'user/oneclickplaylist', {
+		await fetch(BL_API_URL + 'user/oneclickplaylist/link', {
 			credentials: 'include',
 		})
-			.then(response => response.json())
-			.then(async playlist => {
-				if (!playlist.playlistTitle || !playlist.songs) {
-					return;
-				}
+			.then(response => response.text())
+			.then(playlistUrl =>
+				fetch(playlistUrl)
+					.then(r => r.json())
+					.then(async playlist => {
+						if (!playlist.playlistTitle || !playlist.songs) {
+							return;
+						}
 
-				await deleteOneClick();
-				playlist.oneclick = true;
-				let playlists = await get();
-				playlists.unshift(playlist);
+						await deleteOneClick();
+						playlist.oneclick = true;
+						let playlists = await get();
+						playlists.unshift(playlist);
 
-				await set(playlists, true);
-			});
+						await set(playlists, true);
+					})
+			);
 	};
 
 	const updateOneClick = async songs => {
@@ -139,22 +153,26 @@ export default () => {
 	};
 
 	const getShared = (id, callback) => {
-		fetch(BL_API_URL + 'playlist/' + id, {
+		fetch(BL_API_URL + `playlist/${id}/link`, {
 			credentials: 'include',
 		})
-			.then(response => response.json())
-			.then(async playlist => {
-				let playlists = await get();
-				var idx = undefined;
-				for (let index = 0; index < playlists.length; index++) {
-					const element = playlists[index];
-					if (element.customData?.hash == playlist.customData?.hash) {
-						idx = index;
-						break;
-					}
-				}
-				callback(playlist, idx);
-			});
+			.then(response => response.text())
+			.then(url =>
+				fetch(url)
+					.then(r => r.json())
+					.then(async playlist => {
+						let playlists = await get();
+						var idx = undefined;
+						for (let index = 0; index < playlists.length; index++) {
+							const element = playlists[index];
+							if (element.customData?.hash == playlist.customData?.hash) {
+								idx = index;
+								break;
+							}
+						}
+						callback(playlist, idx);
+					})
+			);
 	};
 
 	async function computeSha256Hash(data) {
@@ -313,7 +331,11 @@ export default () => {
 	};
 
 	const download = async playlist => {
-		saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + '.bplist');
+		if (playlist.customData.id) {
+			saveFromId(playlist.customData.id, playlist.playlistTitle + '.bplist');
+		} else {
+			saveJSONAsFile(JSON.stringify(playlist), playlist.playlistTitle + '.bplist');
+		}
 	};
 
 	const add = async (song, playlistIndex) => {

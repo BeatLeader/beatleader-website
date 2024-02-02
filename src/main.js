@@ -3,7 +3,6 @@ import log from './utils/logger';
 import initDb from './db/db';
 import initializeRepositories from './db/repositories-init';
 import initDownloadManager from './network/download-manager';
-import setupDataFixes from './db/fix-data';
 import createConfigStore from './stores/config';
 import createAccountStore from './stores/beatleader/account';
 import createPlayerService from './services/beatleader/player';
@@ -28,7 +27,6 @@ let app = null;
 
 		await initDb();
 		await initializeRepositories();
-		await setupDataFixes();
 
 		// WORKAROUND for immer.js esm (see https://github.com/immerjs/immer/issues/557)
 		window.process = {env: {NODE_ENV: 'production'}};

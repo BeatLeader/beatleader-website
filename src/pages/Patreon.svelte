@@ -181,7 +181,7 @@
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
 							label="Download for Quest 1.28"
-							url={BL_API_URL + 'questreesabers'}
+							url={BL_API_URL + `questreesabers.qmod?random=${Math.random()}`}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
@@ -210,7 +210,7 @@
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
 							label="Download for Quest 1.28"
-							url={BL_API_URL + 'questreesabers'}
+							url={BL_API_URL + `questreesabers.qmod?random=${Math.random()}`}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />

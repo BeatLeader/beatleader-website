@@ -16,7 +16,6 @@
 	import ClansPage from './pages/Clans.svelte';
 	import FollowedPage from './pages/Followed.svelte';
 	import PlayerPage from './pages/Player.svelte';
-	import TwitchPage from './pages/Twitch.svelte';
 	import NotFoundPage from './pages/NotFound.svelte';
 	import PrivacyPage from './pages/Privacy.svelte';
 	import AboutPage from './pages/About.svelte';
@@ -45,7 +44,11 @@
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
+<<<<<<< HEAD
 	import ClansMap from './pages/ClansMap.svelte';
+=======
+	import NotificationComponent from './components/Common/NotificationComponent.svelte';
+>>>>>>> master
 
 	export let url = '';
 
@@ -137,7 +140,7 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-{#if $configStore.preferences.replayedbanner}
+<!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
 		<div class="banner-spacer" />
@@ -158,10 +161,10 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
-	<Notifications zIndex={10000}>
+	<Notifications zIndex={10000} item={NotificationComponent}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
@@ -247,7 +250,6 @@
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
-					<Route path="/twitch" component={TwitchPage} />
 					<Route path="/help" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>

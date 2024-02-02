@@ -1,9 +1,12 @@
 <!-- https://codepen.io/arickle/pen/XKjMZY -->
 <script>
-	export let baguete = false;
+	export let slow = true;
+	export let icons = null;
 
 	let frontRow;
 	let backRow;
+
+	const iconClasses = icons ?? ['soup-icon', 'pixelsoup-icon'];
 
 	var makeItRain = function (frontRow, backRow) {
 		if (!frontRow || !backRow) return;
@@ -12,19 +15,20 @@
 		var drops = '';
 		var backDrops = '';
 
-		const animationDuration = `s; animation-duration: ${baguete ? '2.' : '0.5'}`;
-		const dropClass = baguete ? 'baguette-icon' : 'drop';
+		const animationDuration = `s; animation-duration: ${slow ? '3.' : '0.5'}`;
+		let dropClass;
 
 		while (increment < 100) {
+			dropClass = iconClasses[Math.floor(Math.random() * iconClasses.length)];
 			//couple random numbers to use for various randomizations
 			//random number between 98 and 1
 			var randoHundo = Math.floor(Math.random() * (98 - 1 + 1) + 1);
 			//random number between 5 and 2
 			var randoFiver = Math.floor(Math.random() * (5 - 2 + 1) + 2);
 			//increment
-			increment += randoFiver;
+			increment += randoFiver * 1.5;
 
-			const rotation = baguete ? `transform: translateY(-30vh) rotateZ(${Math.random() * 180 - 180}deg);` : '';
+			const rotation = `transform: translateY(-30vh) rotateZ(${Math.random() * 180 - 180}deg);`;
 			//add in a new raindrop with various randomizations to certain CSS properties
 			drops +=
 				`<div class="${dropClass}" style="` +
@@ -37,11 +41,8 @@
 				randoHundo +
 				animationDuration +
 				randoHundo +
-				`s;"><div class="${baguete ? '' : 'stem'}" style="animation-delay: 0.` +
-				randoHundo +
-				animationDuration +
-				randoHundo +
-				's;"></div><div class="splat" style="animation-delay: 0.' +
+				`s;">` +
+				'<div class="splat" style="animation-delay: 0.' +
 				randoHundo +
 				animationDuration +
 				randoHundo +
@@ -55,11 +56,8 @@
 				randoHundo +
 				animationDuration +
 				randoHundo +
-				`s;"><div class="${baguete ? '' : 'stem'}" style="animation-delay: 0.` +
-				randoHundo +
-				animationDuration +
-				randoHundo +
-				's;"></div><div class="splat" style="animation-delay: 0.' +
+				`s;">` +
+				'<div class="splat" style="animation-delay: 0.' +
 				randoHundo +
 				animationDuration +
 				randoHundo +
@@ -110,35 +108,28 @@
 		display: block;
 	}
 
-	:global(.drop) {
-		position: absolute;
-		bottom: 100%;
-		width: 15px;
-		height: 120px;
-		pointer-events: none;
-		animation: drop 0.5s linear infinite;
-		pointer-events: none;
-	}
-
-	:global(.baguette-icon) {
+	:global(.soup-icon) {
 		position: absolute;
 		width: 80px;
 		height: 80px;
 		pointer-events: none;
 		animation: baguette 2s linear infinite;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-image: url('https://cdn.assets.beatleader.xyz/SOUPclan.png');
 		pointer-events: none;
 	}
 
-	@keyframes drop {
-		0% {
-			transform: translateY(-20vh);
-		}
-		75% {
-			transform: translateY(90vh);
-		}
-		100% {
-			transform: translateY(90vh);
-		}
+	:global(.pixelsoup-icon) {
+		position: absolute;
+		width: 40px;
+		height: 40px;
+		pointer-events: none;
+		animation: baguette 2s linear infinite;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-image: url('/assets/soup_px.png');
+		pointer-events: none;
 	}
 
 	@keyframes baguette {

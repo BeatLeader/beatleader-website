@@ -108,7 +108,7 @@
 			{/if}
 
 			<b>To use Quest mod - sign up in the mod preferences with new login and password </b>
-			<b>To log in with Oculus PC - <a href="https://beatleader.wiki/en/accounts#website-1">check this instruction</a> </b>
+			<b>To log in with Oculus PC - <a href="https://beatleader.wiki/en/accounts/signup#website-1">check this instruction</a> </b>
 
 			<br />
 		{:else if loggedInPlayer > 70000000000000000}
@@ -185,7 +185,7 @@
 		{/if}
 	{:else if action == 'socials'}
 		{#if socials && socials.find(s => s.service == 'BeatSaver')}
-			{#if loggedInPlayer > 1000000000000000}
+			{#if loggedInPlayer < 30000000 || loggedInPlayer > 1000000000000000}
 				<form action={BL_API_URL + 'user/unlink'} method="post">
 					<input type="hidden" name="Provider" value="BeatSaver" />
 					<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />

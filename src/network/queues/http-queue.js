@@ -49,7 +49,7 @@ export default (options = {}) => {
 
 		for (let i = 0; i <= retriesCount; i++) {
 			try {
-				return await add(async () => {
+				return await (async () => {
 					if (lastRateLimitError) {
 						await lastRateLimitError.waitBeforeRetry();
 
@@ -67,7 +67,7 @@ export default (options = {}) => {
 
 							throw err;
 						});
-				}, priority);
+				})();
 			} catch (err) {
 				if (err instanceof SsrHttpResponseError) {
 					const {remaining, limit, resetAt} = err;

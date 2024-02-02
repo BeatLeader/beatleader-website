@@ -677,6 +677,7 @@ export const DifficultyStatus = {
 	unrankable: 4,
 	outdated: 5,
 	inevent: 6,
+	ost: 7
 };
 
 export function formatDiffStatus(status) {
@@ -695,6 +696,8 @@ export function formatDiffStatus(status) {
 			return 'Outdated';
 		case DifficultyStatus.inevent:
 			return 'In event';
+		case DifficultyStatus.ost:
+			return 'OST';
 	}
 }
 

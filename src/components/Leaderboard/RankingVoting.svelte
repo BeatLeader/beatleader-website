@@ -280,6 +280,7 @@
 					<label>Acc rating:</label>
 					<div class="buttons-and-slider">
 						<Button
+							disabled={true}
 							title="Less"
 							iconFa="fas fa-caret-left"
 							type="text"
@@ -302,6 +303,7 @@
 								accRating = event.detail.values[0];
 							}} />
 						<Button
+							disabled={true}
 							title="More"
 							iconFa="fas fa-caret-right"
 							type="text"
@@ -314,6 +316,7 @@
 					<label>Pass rating:</label>
 					<div class="buttons-and-slider">
 						<Button
+							disabled={true}
 							title="Less"
 							iconFa="fas fa-caret-left"
 							type="text"
@@ -336,6 +339,7 @@
 								passRating = event.detail.values[0];
 							}} />
 						<Button
+							disabled={true}
 							title="More"
 							iconFa="fas fa-caret-right"
 							type="text"
@@ -349,6 +353,7 @@
 					<label>Tech rating:</label>
 					<div class="buttons-and-slider">
 						<Button
+							disabled={true}
 							title="Less"
 							iconFa="fas fa-caret-left"
 							type="text"
@@ -371,6 +376,7 @@
 								techRating = event.detail.values[0];
 							}} />
 						<Button
+							disabled={true}
 							title="More"
 							iconFa="fas fa-caret-right"
 							type="text"
