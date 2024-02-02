@@ -26,8 +26,7 @@
 		try {
 			player = await playerService.fetchPlayerSaver(status.responsible);
 		} catch {}
-
-		console.log(player);
+		
 		if (player == null) {
 			responsible = await beatSaverService.getMapper(status.responsible);
 		}

@@ -1,12 +1,26 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createAccountStore from '../../stores/beatleader/account';
 	import Button from '../../components/Common/Button.svelte';
 	import Error from '../Common/Error.svelte';
 	import Spinner from '../Common/Spinner.svelte';
 	import {SsrHttpResponseError} from '../../network/errors';
-	import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue, ppIcon} from '../../utils/clans';
+	import {
+		playersTitle,
+		rankLabel,
+		accLabel,
+		ppLabel,
+		capturesLabel,
+		rankedPoolPercentLabel,
+		rankValue,
+		accValue,
+		ppValue,
+		capturesValue,
+		rankedPoolPercentValue,
+		ppIcon,
+	} from '../../utils/clans';
 	import createClanService from '../../services/beatleader/clan';
 	import Confirmation from '../Common/Confirmation.svelte';
 	import Badge from '../Common/Badge.svelte';
@@ -212,6 +226,8 @@
 			clanAverageRank = rankValue(tag, clanAverageRank);
 			clanAverageAccuracy = accValue(tag, clanAverageAccuracy);
 			clanPp = ppValue(tag, clanPp);
+			clanCapturedMaps = capturesValue(tag, clanCapturedMaps);
+			rankedPoolPercent = rankedPoolPercentValue(tag, rankedPoolPercent);
 		}
 	}
 
@@ -227,6 +243,8 @@
 
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
+	$: clanCapturedMaps = clan?.captureLeaderboardsCount ?? null;
+	$: rankedPoolPercent = clan?.rankedPoolPercentCaptured && clanCapturedMaps ? clan?.rankedPoolPercentCaptured * 100 : 0;
 	$: clanPp = clan?.pp ?? null;
 </script>
 
@@ -281,9 +299,47 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
-							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
-							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />
+							<a href={`/clansmap/clan/${tag}`} on:click|preventDefault|stopPropagation={() => navigate(`/clansmap/clan/${tag}`)}>
+								<Badge
+									label={rankedPoolPercentLabel(tag)}
+									value={rankedPoolPercent}
+									suffix="%"
+									withZeroSuffix={true}
+									digits={1}
+									fluid={true}
+									bgColor="var(--rankedPoolColor)"
+									styling="clanInfo" />
+							</a>
+							<Badge
+								label={capturesLabel(tag)}
+								value={clanCapturedMaps}
+								digits={0}
+								fluid={true}
+								bgColor="var(--capturedColor)"
+								styling="clanInfo" />
+							<Badge
+								label={rankLabel(tag)}
+								value={clanAverageRank}
+								prefix="#"
+								digits={0}
+								fluid={true}
+								bgColor="var(--decrease)"
+								styling="clanInfo" />
+							<Badge
+								label={accLabel(tag)}
+								value={clanAverageAccuracy}
+								suffix="%"
+								fluid={true}
+								bgColor="var(--selected)"
+								styling="clanInfo" />
+							<Badge
+								label={ppLabel(tag)}
+								iconClass={ppIcon(tag)}
+								value={clanPp}
+								suffix="pp"
+								fluid={true}
+								bgColor="var(--ppColour)"
+								styling="clanInfo" />
 						</section>
 					{/if}
 
@@ -436,6 +492,7 @@
 
 	.clanImage {
 		width: 10em;
+		border-radius: 0.25em;
 	}
 
 	.clanTag {

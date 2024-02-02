@@ -22,6 +22,7 @@
 	import CriteriaCommentary from '../components/Leaderboard/CriteriaCommentary.svelte';
 	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
 	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
+
 	import {
 		getIconNameForDiff,
 		getDescriptionForDiff,
@@ -52,6 +53,7 @@
 	import LeaderboardActionButtons from '../components/Leaderboard/LeaderboardActionButtons.svelte';
 	import LeaderboardHeader from '../components/Leaderboard/LeaderboardHeader.svelte';
 	import Score from '../components/Leaderboard/Score.svelte';
+	import ClanRankingScore from '../components/Leaderboard/ClanRankingScore.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
@@ -248,6 +250,7 @@
 
 	const stringifyFilters = (query, keys) =>
 		stringify((keys ?? Object.keys(query)).reduce((obj, k) => ({...obj, [k]: query?.[k] ?? ''}), {})).toLowerCase();
+
 	const findCurrentTypeOption = (type, filters) => {
 		const exactMatch = typeOptions.find(
 			to => to?.type === type && stringifyFilters(to?.filters ?? {}) === stringifyFilters(filters, Object.keys(to?.filters ?? []))
@@ -342,11 +345,24 @@
 		}));
 	}
 
-	function updateTypeOptions(country, playerIsFollowingSomeone) {
-		if (!country?.length && !playerIsFollowingSomeone) return;
+	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked) {
+		//if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
 			.map(to => to)
+			.concat(
+				isRanked
+					? [
+							{
+								type: 'clanranking',
+								label: 'Clan Ranking',
+								iconFa: 'fas fa-flag',
+								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
+			)
 			.concat(
 				playerIsFollowingSomeone
 					? [
@@ -544,6 +560,7 @@
 	}
 
 	let scoresWithUser;
+	let clanRankingList;
 
 	const lessFunction = (a, b) => a < b;
 	const greaterFunction = (a, b) => a > b;
@@ -576,6 +593,7 @@
 	$: updateFilters(buildFiltersFromLocation(location));
 
 	$: scores = $leaderboardStore?.scores?.map(s => ({...s, leaderboard: $leaderboardStore?.leaderboard})) ?? null;
+	$: clanRankingList = opt($leaderboardStore, 'clanRanking', null);
 	$: leaderboard = $leaderboardStore?.leaderboard;
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
 	$: initRatings(leaderboard);
@@ -602,7 +620,7 @@
 	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
 
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
-	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone);
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked);
 	$: refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
@@ -656,6 +674,7 @@
 					bind:currentLeaderboardId
 					bind:battleRoyaleDraft
 					{leaderboard}
+					{leaderboardStore}
 					{ratings}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
@@ -667,7 +686,6 @@
 					<Spinner />
 				</div>
 			{/if}
-
 			{#if $leaderboardStore}
 				{#if type !== 'accsaber'}
 					<nav class="diff-switch">
@@ -681,22 +699,24 @@
 
 						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
 
-						<div class="sorting-options">
-							<span
-								class="beat-savior-reveal clickable"
-								class:opened={leaderboardShowSorting}
-								on:click={() => boolflip('leaderboardShowSorting')}
-								on:keydown={() => boolflip('leaderboardShowSorting')}
-								title="Show sorting and search for the leaderboard">
-								{#if leaderboardShowSorting}
-									<i class="fa-solid invert-xmart fa-filter-circle-xmark" />
-								{:else}
-									<i class="fa-solid fa-filter" />
-								{/if}
+						{#if currentType != 'clanranking'}
+							<div class="sorting-options">
+								<span
+									class="beat-savior-reveal clickable"
+									class:opened={leaderboardShowSorting}
+									on:click={() => boolflip('leaderboardShowSorting')}
+									on:keydown={() => boolflip('leaderboardShowSorting')}
+									title="Show sorting and search for the leaderboard">
+									{#if leaderboardShowSorting}
+										<i class="fa-solid invert-xmart fa-filter-circle-xmark" />
+									{:else}
+										<i class="fa-solid fa-filter" />
+									{/if}
 
-								<i class="fas fa-chevron-down" />
-							</span>
-						</div>
+									<i class="fas fa-chevron-down" />
+								</span>
+							</div>
+						{/if}
 					</nav>
 				{/if}
 
@@ -721,180 +741,217 @@
 							on:click={() => startBattleRoyale()} />
 					</div>
 				{/if}
+				{#if currentType != 'clanranking'}
+					{#if scoresWithUser?.length}
+						<div class="scores-grid grid-transition-helper">
+							{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
+								<div
+									class={`row-${idx}`}
+									class:user-score={score?.isUserScore}
+									class:user-score-top={score?.userScoreTop}
+									in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
+									<Score
+										{leaderboardId}
+										{score}
+										{type}
+										highlight={score?.player?.playerId === higlightedPlayerId}
+										{modifiers}
+										{fixedBrowserTitle}
+										{battleRoyaleDraft}
+										{battleRoyaleDraftList}
+										sortBy={currentFilters.sortBy}
+										opened={openedDetails.includes(score?.score?.id)}
+										on:toggle-details={() => toggleOpen(score?.score?.id)}
+										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 
-				{#if scoresWithUser?.length}
-					<div class="scores-grid grid-transition-helper">
-						{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
-							<div
-								class={`row-${idx}`}
-								class:user-score={score?.isUserScore}
-								class:user-score-top={score?.userScoreTop}
-								in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
-								out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
-								<Score
-									{leaderboardId}
-									{score}
-									{type}
-									highlight={score?.player?.playerId === higlightedPlayerId}
-									{modifiers}
-									{fixedBrowserTitle}
-									{battleRoyaleDraft}
-									{battleRoyaleDraftList}
-									sortBy={currentFilters.sortBy}
-									opened={openedDetails.includes(score?.score?.id)}
-									on:toggle-details={() => toggleOpen(score?.score?.id)}
-									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
-
-								{#if separatePage && score.score.rankVoting}
-									<div class="rank-voting">
-										<div class="voting-result">
-											<div class="score with-badge">
-												<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-													<span slot="label">
-														<small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
-													</span>
-												</Badge>
+									{#if separatePage && score.score.rankVoting}
+										<div class="rank-voting">
+											<div class="voting-result">
+												<div class="score with-badge">
+													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+														<span slot="label">
+															<small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
+														</span>
+													</Badge>
+												</div>
+												{#if score.score.rankVoting.stars}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<small title="Rankability">{score.score.rankVoting.rankability > 0 ? 'YES' : 'NO'} </small>
+															</span>
+														</Badge>
+													</div>
+												{/if}
+												{#if score.score.rankVoting.stars}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<Value title="Stars" value={score.score.rankVoting.stars} inline={false} digits={2} />
+															</span>
+														</Badge>
+													</div>
+												{/if}
+												{#if score.score.rankVoting.type}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<small class="nowrap-label" title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
+															</span>
+														</Badge>
+													</div>
+												{/if}
+												{#if score.score.rankVoting.timeset}
+													<div class="score with-badge">
+														<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+															<span slot="label">
+																<small class="nowrap-label" title="Timeset"
+																	>{formatDateRelative(dateFromUnix(score.score.rankVoting.timeset))}</small>
+															</span>
+														</Badge>
+													</div>
+												{/if}
 											</div>
-											{#if score.score.rankVoting.stars}
-												<div class="score with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-														<span slot="label">
-															<Value title="Stars" value={score.score.rankVoting.stars} inline={false} digits={2} />
-														</span>
-													</Badge>
-												</div>
-											{/if}
-											{#if score.score.rankVoting.type}
-												<div class="score with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-														<span slot="label">
-															<small class="nowrap-label" title="Map type">{mapTypeFromMask(score.score.rankVoting.type)}</small>
-														</span>
-													</Badge>
-												</div>
-											{/if}
-											{#if score.score.rankVoting.timeset}
-												<div class="score with-badge">
-													<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-														<span slot="label">
-															<small class="nowrap-label" title="Timeset"
-																>{formatDateRelative(dateFromUnix(score.score.rankVoting.timeset))}</small>
-														</span>
-													</Badge>
+											{#if opt(score, 'player.playerId') != $account?.id}
+												<div class="voter-feedback">
+													{#if score.score.rankVoting.feedbacks && score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id).length}
+														{score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id)[0].value ? 'Good voter' : 'Bad voter'}
+													{:else}
+														<Button
+															cls="voter-feedback-button"
+															type="danger"
+															label="Bad voter"
+															title="Mark this vote as of bad quality."
+															noMargin={true}
+															on:click={() => updateVoteFeedback(score.score, 0)} />
+														<Button
+															cls="voter-feedback-button"
+															type="green"
+															label="Good voter"
+															title="This vote is decently represent the map."
+															noMargin={true}
+															on:click={() => updateVoteFeedback(score.score, 1)} />
+													{/if}
 												</div>
 											{/if}
 										</div>
-										{#if opt(score, 'player.playerId') != $account?.id}
-											<div class="voter-feedback">
-												{#if score.score.rankVoting.feedbacks && score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id).length}
-													{score.score.rankVoting.feedbacks.filter(f => f.rtMember == $account.id)[0].value ? 'Good voter' : 'Bad voter'}
-												{:else}
-													<Button
-														cls="voter-feedback-button"
-														type="danger"
-														label="Bad voter"
-														title="Mark this vote as of bad quality."
-														noMargin={true}
-														on:click={() => updateVoteFeedback(score.score, 0)} />
-													<Button
-														cls="voter-feedback-button"
-														type="green"
-														label="Good voter"
-														title="This vote is decently represent the map."
-														noMargin={true}
-														on:click={() => updateVoteFeedback(score.score, 1)} />
-												{/if}
-											</div>
-										{/if}
-									</div>
-								{/if}
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<p transition:fade>No scores found.</p>
+					{/if}
+				{:else if clanRankingList?.length}
+					<div class="scores-grid grid-transition-helper">
+						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
+							<div
+								class={`row-${idx}`}
+								in:fly={{x: 200, delay: idx * 20, duration: 500}}
+								out:fade={{x: 200, delay: idx * 20, duration: 500}}
+								animate:flip={{duration: 300}}>
+								<ClanRankingScore
+									{leaderboardId}
+									{idx}
+									{cr}
+									{type}
+									{page}
+									{modifiers}
+									{fixedBrowserTitle}
+									bind:battleRoyaleDraft
+									bind:battleRoyaleDraftList
+									sortBy={currentFilters.sortBy}
+									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
+									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 							</div>
 						{/each}
 					</div>
+				{:else}
+					<p transition:fade>No clan ranking found.</p>
+				{/if}
 
-					{#if votingStats}
-						<div class="voting-result">
-							<span>Average: </span>
-							<div class="score with-badge">
-								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-									<span slot="label">
-										<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
-									</span>
-								</Badge>
-							</div>
-							<div class="score with-badge">
-								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-									<span slot="label">
-										<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
-									</span>
-								</Badge>
-							</div>
-							{#if votingsForTypeStats(votingStats.type)}
-								<div class="score with-badge">
-									<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-										<span slot="label">
-											<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
-										</span>
-									</Badge>
-								</div>
-							{/if}
+				{#if votingStats}
+					<div class="voting-result">
+						<span>Average: </span>
+						<div class="score with-badge">
+							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								<span slot="label">
+									<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
+								</span>
+							</Badge>
 						</div>
-					{/if}
-
-					<Pager
-						totalItems={$leaderboardStore.totalItems}
-						{itemsPerPage}
-						itemsPerPageValues={null}
-						currentPage={currentPage - 1}
-						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-						mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
-						on:page-changed={onPageChanged} />
-
-					{#if !separatePage}
-						{#if showStats && leaderboard?.stats}
-							<div class="stats-with-icons">
-								<LeaderboardStats {leaderboard} />
-
-								{#if iconsInInfo}
-									<Icons {hash} {diffInfo} mapCheck={true} />
-								{/if}
+						<div class="score with-badge">
+							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+								<span slot="label">
+									<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
+								</span>
+							</Badge>
+						</div>
+						{#if votingsForTypeStats(votingStats.type)}
+							<div class="score with-badge">
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
+									<span slot="label">
+										<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
+									</span>
+								</Badge>
 							</div>
 						{/if}
-					{/if}
+					</div>
+				{/if}
+				<Pager
+					totalItems={$leaderboardStore.totalItems}
+					{itemsPerPage}
+					itemsPerPageValues={null}
+					currentPage={currentPage - 1}
+					loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+					mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+					on:page-changed={onPageChanged} />
 
-					{#if separatePage && type !== 'accsaber'}
-						<div class="score-options-section">
-							<span
-								class="beat-savior-reveal clickable"
-								class:opened={showAverageStats}
-								on:click={() => (showAverageStats = !showAverageStats)}
-								title="Show average stats and ranking changes">
-								{#if showAverageStats}
-									Hide details
-								{:else}
-									Show more details
-								{/if}
+				{#if !separatePage}
+					{#if showStats && leaderboard?.stats}
+						<div class="stats-with-icons">
+							<LeaderboardStats {leaderboard} />
 
-								<i class="fas fa-chevron-down" />
-							</span>
+							{#if iconsInInfo}
+								<Icons {hash} {diffInfo} mapCheck={true} />
+							{/if}
 						</div>
-						{#if showAverageStats}
-							{#await beatSaviorPromise}
-								<div class="tab">
-									<Spinner />
-								</div>
-							{:then beatSavior}
-								<div transition:slide|global class="tab">
-									<BeatSaviorDetails {beatSavior} />
-								</div>
-							{/await}
-							{#if !isNominated && leaderboard.qualification}
-								<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
+					{/if}
+				{/if}
+
+				{#if separatePage && type !== 'accsaber'}
+					<div class="score-options-section">
+						<span
+							class="beat-savior-reveal clickable"
+							class:opened={showAverageStats}
+							on:click={() => (showAverageStats = !showAverageStats)}
+							title="Show average stats and ranking changes">
+							{#if showAverageStats}
+								Hide details
+							{:else}
+								Show more details
 							{/if}
-							{#if leaderboard.changes}
-								<ReweightStatusRanked map={leaderboard} />
-							{/if}
+
+							<i class="fas fa-chevron-down" />
+						</span>
+					</div>
+					{#if showAverageStats}
+						{#await beatSaviorPromise}
+							<div class="tab">
+								<Spinner />
+							</div>
+						{:then beatSavior}
+							<div transition:slide|global class="tab">
+								<BeatSaviorDetails {beatSavior} />
+							</div>
+						{/await}
+						{#if !isNominated && leaderboard.qualification}
+							<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
+						{/if}
+						{#if leaderboard.changes}
+							<ReweightStatusRanked map={leaderboard} />
 						{/if}
 					{/if}
 				{:else}
