@@ -392,10 +392,11 @@
 		context.restore();
 	}
 
-	// Additional functions for drawing lines, text, etc.
-
 	function isMobileDevice() {
-		return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+		var hasTouchCapabilities = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+		var isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+		return hasTouchCapabilities && isMobileUserAgent;
 	}
 
 	function setupInteractions() {
