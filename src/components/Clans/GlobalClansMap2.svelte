@@ -40,7 +40,7 @@
 		context = canvas.getContext('2d');
 
 		if (leaderboardId || clanTag) {
-			fetch('/assets/clansMap.json')
+			fetch('https://cdn.assets.beatleader.xyz/clansmap-globalcache.json')
 				.then(r => r.json())
 				.then(cache => {
 					processData(cache);
@@ -217,31 +217,6 @@
 			renderCanvas();
 		}); // Re-render canvas on each tick
 	}
-
-	// setTimeout(() => {
-	// 	function saveJSONAsFile(json, fileName) {
-	// 		var link = document.createElement('a');
-
-	// 		document.body.appendChild(link); // for Firefox
-
-	// 		link.setAttribute('href', URL.createObjectURL(new Blob([json], {type: 'application/json'})));
-	// 		link.setAttribute('download', fileName);
-	// 		link.click();
-	// 	}
-
-	// 	var localCirclesMap = {};
-	// 	circles.forEach(circle => {
-	// 		localCirclesMap[circle.id] = {x: circle.x, y: circle.y};
-	// 	});
-
-	// 	var localClansMap = {};
-	// 	clans.forEach(clan => {
-	// 		localClansMap[clan.id] = {x: clan.x, y: clan.y};
-	// 	});
-
-	// 	const serializedState = JSON.stringify({circles: localCirclesMap, clans: localClansMap});
-	// 	saveJSONAsFile(serializedState, 'clansmap.json');
-	// }, 20000);
 
 	function renderCanvas() {
 		context.save();
