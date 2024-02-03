@@ -539,14 +539,14 @@
 	let animating = false;
 	let animationStartTime;
 
-	function animateZoomMap(targetMapId, duration = 800) {
+	function animateZoomMap(targetMapId, duration = 1000) {
 		const targetMap = circles.find(d => d.id == targetMapId);
 		if (!targetMap) return;
 
 		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(defaultScale);
 		d3.select(canvas).call(zoom.transform, initialTransform);
 
-		const targetZoomLevel = 2; // Desired zoom level
+		const targetZoomLevel = 0.7; // Desired zoom level
 		const targetTransform = d3.zoomIdentity
 			.translate(width / 2, height / 2)
 			.scale(targetZoomLevel)
