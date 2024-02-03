@@ -41,7 +41,7 @@
 		context = canvas.getContext('2d');
 
 		if (leaderboardId || clanTag) {
-			fetch('/assets/clansMap.json')
+			fetch('https://cdn.assets.beatleader.xyz/clansmap-globalcache.json')
 				.then(r => r.json())
 				.then(cache => {
 					processData(cache);
