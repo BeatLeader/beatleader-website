@@ -3,6 +3,7 @@
 
 	export let leaderboardId;
 	export let clanTag;
+	export let save = false;
 </script>
 
-<GlobalClansMap {leaderboardId} {clanTag} />
+<GlobalClansMap {leaderboardId} {clanTag} {save} />

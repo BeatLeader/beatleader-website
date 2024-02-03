@@ -3,7 +3,6 @@
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
-	import createTwitchService from '../services/twitch';
 	// import createAccSaberService from '../services/accsaber';
 	import createPinnedScoresStore from '../stores/beatleader/pinned-scores';
 	import createStatsHistoryStore from '../stores/beatleader/stats-history';
@@ -82,55 +81,6 @@
 		return {service, serviceParams};
 	}
 
-	const twitchService = createTwitchService();
-	let twitchVideos = [];
-
-	// const accSaberService = createAccSaberService();
-
-	function onPageChanged(event) {
-		let newPage = event?.detail ?? null;
-		if (!newPage) return;
-
-		if (!Number.isFinite(newPage)) newPage = 1;
-
-		serviceParamsManager.update({page: newPage});
-
-		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
-	}
-
-	function onServiceChanged(event) {
-		const newService = event?.detail ?? null;
-		if (!newService) return;
-
-		if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
-
-		serviceParamsManager.update({}, newService);
-
-		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
-	}
-
-	function onServiceParamsChanged(event) {
-		const newServiceParams = event?.detail ?? null;
-		if (!newServiceParams) return;
-
-		const oldServiceUrl = serviceParamsManager.getCurrentServiceUrl();
-
-		serviceParamsManager.update(newServiceParams);
-
-		if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
-			navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
-		} else {
-			changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
-		}
-	}
-
-	async function updateTwitchProfile(playerId) {
-		if (!playerId) return;
-
-		const twitchProfile = await twitchService.refresh(playerId);
-		twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
-	}
-
 	let avatarHash = '';
 	async function onPlayerDataUpdated() {
 		if (playerStore) {
@@ -140,18 +90,6 @@
 			avatarHash = (Math.random() * 100000).toString();
 		}
 	}
-
-	onMount(async () => {
-		const twitchUnsubscribe = eventBus.on('player-twitch-videos-updated', ({playerId: twitchPlayerId, twitchProfile}) => {
-			if (twitchPlayerId !== currentPlayerId) return;
-
-			twitchVideos = twitchProfile && twitchProfile.videos && twitchProfile.videos.length ? twitchProfile.videos : [];
-		});
-
-		return () => {
-			twitchUnsubscribe();
-		};
-	});
 
 	let innerWidth = 0;
 	let innerHeight = 0;
@@ -211,7 +149,6 @@
 				isLoading={$playerIsLoading}
 				error={$playerError}
 				{skeleton}
-				{twitchVideos}
 				on:player-data-updated={onPlayerDataUpdated}
 				{avatarHash}
 				fixedBrowserTitle={browserTitle}

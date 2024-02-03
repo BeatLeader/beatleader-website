@@ -215,6 +215,9 @@
 					<Route path="/clansmap/leaderboard/*leaderboardId" let:params let:location>
 						<ClansMap leaderboardId={params.leaderboardId} {location} />
 					</Route>
+					<Route path="/clansmap/save" let:params let:location>
+						<ClansMap save={true} {location} />
+					</Route>
 					<Route path="/clansmap" let:location>
 						<ClansMap {location} />
 					</Route>
