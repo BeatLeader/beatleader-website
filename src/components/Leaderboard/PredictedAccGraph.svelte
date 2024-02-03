@@ -10,10 +10,11 @@
 	let speed = 1.0;
 
 	$: hash = leaderboard?.song?.hash;
+	$: downloadUrl = leaderboard?.song?.downloadUrl;
 	$: diffInfo = leaderboard?.diffInfo;
 	$: exmachinadata = $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type + speed];
 	$: notes = exmachinadata?.notes;
-	$: !exmachinadata && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, speed);
+	$: !exmachinadata && starGeneratorStore.fetchExMachina(hash, downloadUrl, diffInfo?.diff, diffInfo?.type, speed);
 </script>
 
 <article transition:fade|global>

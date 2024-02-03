@@ -11,7 +11,9 @@
 	export let digits = 2;
 	export let type = 'number';
 	export let prefix = '';
+	export let withZeroPrefix = false;
 	export let suffix = '';
+	export let withZeroSuffix = false;
 	export let onlyLabel = false;
 	export let clickable = false;
 	export let notSelected = false;
@@ -52,7 +54,9 @@
 						{zero}
 						{digits}
 						{prefix}
+						{withZeroPrefix}
 						{suffix}
+						{withZeroSuffix}
 						{prevValue}
 						{prevLabel}
 						suffixPrev={prevSuffix}
@@ -101,6 +105,10 @@
 		height: 0.875em;
 		margin-top: 0.075em;
 		border-left: 1px solid var(--color, #eee);
+	}
+
+	.clanInfo {
+		margin: 0.25em 0.5em 0.5em 0 !important;
 	}
 
 	.badge span.label {

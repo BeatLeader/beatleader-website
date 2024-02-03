@@ -22,6 +22,8 @@
 	import Button from '../Common/Button.svelte';
 
 	import Spinner from '../Common/Spinner.svelte';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let playerData;
 	export let isLoading = false;
@@ -142,7 +144,9 @@
 	async function takeScreenshot() {
 		try {
 			screenshoting = true;
-			const blob = await fetch('/screenshot/u/' + playerId).then(response => response.blob());
+			const blob = await fetch(`${BL_API_URL}screenshot/800x600/myprofile/${GLOBAL_LEADERBOARD_TYPE}/u/${playerId}`).then(response =>
+				response.blob()
+			);
 			try {
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 				successToast('Screenshot Copied to Clipboard');

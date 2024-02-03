@@ -67,7 +67,7 @@
 	var leaderboardTypeOptions = [
 		{
 			name: 'General',
-			id: 'www',
+			id: '',
 			logoBig: '/assets/logo.png',
 			logoSmall: '/assets/logo-small.png',
 		},
@@ -98,7 +98,7 @@
 	];
 
 	let leaderboardType = leaderboardTypeOptions.find(
-		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'general' && t.id == 'www')
+		t => t.id == GLOBAL_LEADERBOARD_TYPE || (GLOBAL_LEADERBOARD_TYPE == 'general' && t.id == '')
 	);
 
 	let signupOptions = [];
@@ -187,7 +187,7 @@
 	}
 
 	function normalizedId(id) {
-		return id != 'general' ? id + '.' : '';
+		return id != '' ? id + '.' : '';
 	}
 
 	function updateHref() {
@@ -229,7 +229,7 @@
 				<img src="/assets/logo.png" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BEATLEADER</span>
-					{#if leaderboardType.id != 'www'}
+					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
 				</div>
@@ -239,7 +239,7 @@
 				<img src="/assets/logo-small.png" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BL</span>
-					{#if leaderboardType.id != 'www'}
+					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
 				</div>

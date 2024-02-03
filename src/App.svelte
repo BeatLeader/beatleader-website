@@ -16,7 +16,6 @@
 	import ClansPage from './pages/Clans.svelte';
 	import FollowedPage from './pages/Followed.svelte';
 	import PlayerPage from './pages/Player.svelte';
-	import TwitchPage from './pages/Twitch.svelte';
 	import NotFoundPage from './pages/NotFound.svelte';
 	import PrivacyPage from './pages/Privacy.svelte';
 	import AboutPage from './pages/About.svelte';
@@ -44,6 +43,11 @@
 	import produce from 'immer';
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
+	import ReplayedLanding from './pages/ReplayedLanding.svelte';
+	import ClansMap from './pages/ClansMap.svelte';
+	import NotificationComponent from './components/Common/NotificationComponent.svelte';
+	import SongSuggestMap from './pages/SongSuggestMap.svelte';
+	import GigaMap from './pages/GigaMap.svelte';
 
 	export let url = '';
 
@@ -184,14 +188,53 @@
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
 					</Route>
+					<Route path="/replayed">
+						<ReplayedLanding />
+					</Route>
+					<Route path="/replayed/player/*id" let:params>
+						<Replayed playerId={params.id ? params.id : null} />
+					</Route>
+					<Route path="/replayed/mapper/*id" let:params>
+						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
+					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
 					</Route>
 					<Route path="/events/*page" let:params let:location>
 						<EventsPage page={params.page} {location} />
 					</Route>
+					<Route path="/clan/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} />
+					</Route>
+					<Route path="/clan/maps/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} maps={true} />
+					</Route>
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
+					</Route>
+					<Route path="/clansmap/leaderboard/*leaderboardId" let:params let:location>
+						<ClansMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/clansmap" let:location>
+						<ClansMap {location} />
+					</Route>
+					<Route path="/songsuggestmap/leaderboard/*leaderboardId" let:params let:location>
+						<SongSuggestMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/songsuggestmap" let:location>
+						<SongSuggestMap {location} />
+					</Route>
+					<Route path="/datavis/gigamap50" let:location>
+						<GigaMap {location} topCount={50} />
+					</Route>
+					<Route path="/datavis/gigamap1000" let:location>
+						<GigaMap {location} topCount={1000} />
+					</Route>
+					<Route path="/datavis/gigamap5000" let:location>
+						<GigaMap {location} topCount={5000} />
+					</Route>
+					<Route path="/clansmap/clan/*clanTag" let:params let:location>
+						<ClansMap clanTag={params.clanTag} {location} />
 					</Route>
 					<Route path="/playlists/*id" let:params>
 						<PlaylistsPage index={params.id} />
@@ -199,7 +242,6 @@
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
-					<Route path="/twitch" component={TwitchPage} />
 					<Route path="/help" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>
@@ -235,6 +277,22 @@
 		pointer-events: none;
 	}
 
+	.replayedbanner {
+		background-color: rgb(99 0 178);
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
+	}
+
 	.reelink {
 		position: absolute;
 		width: 100%;
@@ -247,6 +305,12 @@
 		z-index: 101;
 		font-weight: 800;
 		color: cornflowerblue;
+	}
+
+	.replayed-link-text {
+		z-index: 101;
+		font-weight: 800;
+		color: #20a0ee;
 	}
 
 	.banner-spacer {
@@ -276,6 +340,72 @@
 		left: 65%;
 		top: -1.1em;
 		z-index: 100;
+	}
+
+	.cover-1 {
+		height: 4em;
+		position: absolute;
+		left: 25%;
+		top: -0.7em;
+		transform: rotateZ(7deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-2 {
+		height: 3em;
+		position: absolute;
+		left: 10%;
+		top: 0.5em;
+		transform: rotateZ(350deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-3 {
+		height: 2em;
+		position: absolute;
+		left: 19%;
+		top: -0.2em;
+		transform: rotateZ(3deg);
+		z-index: 100;
+		border-radius: 6px;
+		box-shadow: 1px 5px 7px #0000007a;
+	}
+
+	.cover-4 {
+		height: 4em;
+		position: absolute;
+		right: 7%;
+		top: -0.7em;
+		transform: rotateZ(4deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-5 {
+		height: 3em;
+		position: absolute;
+		right: 18%;
+		top: 0.6em;
+		transform: rotateZ(10deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
+	}
+
+	.cover-6 {
+		height: 4em;
+		position: absolute;
+		right: 25%;
+		top: -1.4em;
+		transform: rotateZ(349deg);
+		z-index: 100;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	:global(.notifications) {
@@ -317,7 +447,28 @@
 		.reesaber-blue {
 			display: none;
 		}
+		.cover-1 {
+			left: 65%;
+		}
+		.cover-3 {
+			left: 45%;
+		}
+		.cover-4 {
+			display: none;
+		}
+		.cover-5 {
+			display: none;
+		}
+		.cover-6 {
+			display: none;
+		}
 		.link-text {
+			color: white;
+			text-shadow: 3px 3px black;
+			margin-bottom: 0.2em;
+		}
+
+		.replayed-link-text {
 			color: white;
 			text-shadow: 3px 3px black;
 			margin-bottom: 0.2em;

@@ -7,7 +7,7 @@ export default () => {
 	if (!clanService) clanService = createClanService();
 
 	const getProcessed = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, signal = null, force = false} = {}) =>
-		clanService.fetchClanPage(clanId, page, filters, priority, signal, force);
+					clanService.fetchClanPage(clanId, page, filters, priority, signal, force);
 
 	return {
 		getProcessed,

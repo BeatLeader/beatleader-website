@@ -287,6 +287,10 @@
 	$: showSubtitle = $configStore?.leaderboardPreferences?.showSubtitleInHeader ?? false;
 	$: showStats = $configStore?.leaderboardPreferences?.showStatsInHeader ?? false;
 	$: showHash = $configStore?.leaderboardPreferences?.showHashInHeader ?? false;
+
+	$: showClanInHeader = $configStore?.leaderboardPreferences?.showClanCaptureInHeader ?? false;
+	$: showClanInList = $configStore?.leaderboardPreferences?.showClanCaptureInList ?? false;
+
 	$: updateProfileSettings($account);
 </script>
 
@@ -381,6 +385,22 @@
 							fontSize={12}
 							design="slider"
 							on:click={() => settempsetting('leaderboardPreferences', 'showHashInHeader', !showHash)} />
+					</div>
+					<div title="Show clan captured">
+						<Switch
+							value={showClanInHeader}
+							label="Show clan in header"
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('leaderboardPreferences', 'showClanCaptureInHeader', !showClanInHeader)} />
+					</div>
+					<div title="Show clan captured in the list">
+						<Switch
+							value={showClanInList}
+							label="Show clan in list"
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('leaderboardPreferences', 'showClanCaptureInList', !showClanInList)} />
 					</div>
 				</div>
 			</section>

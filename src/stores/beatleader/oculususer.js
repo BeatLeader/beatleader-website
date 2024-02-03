@@ -45,8 +45,12 @@ export default (refreshOnCreate = true) => {
 	};
 
 	const fetchOculusUser = token => {
-		fetch(BL_API_URL + 'oculususer?token=' + token, {
+		let data = new FormData();
+		data.append('token', token);
+		fetch(BL_API_URL + 'oculususer', {
+			method: 'POST',
 			credentials: 'include',
+			body: data,
 		})
 			.then(response => {
 				if (response.status == 200) {

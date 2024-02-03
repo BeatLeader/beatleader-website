@@ -1,24 +1,26 @@
 <script>
 	import MapTypeDescription from './MapTypeDescription.svelte';
 	import MapTriangle from '../Common/MapTriangle.svelte';
-
+	import {opt} from '../../utils/js';
 	import {createEventDispatcher} from 'svelte';
 	import {fade} from 'svelte/transition';
 
 	import Value from '../Common/Value.svelte';
 	import Badge from '../Common/Badge.svelte';
 	import Icons from '../Song/Icons.svelte';
-	import {formatDiffStatus} from '../../utils/beatleader/format';
-	import {dateFromUnix, formatDateRelative} from '../../utils/date';
+	import {formatDiffStatus, DifficultyStatus} from '../../utils/beatleader/format';
+	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
+	import LeaderboardDisplayCaptureStatus from './LeaderboardDisplayCaptureStatus.svelte';
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../stores/config';
 	import Spinner from '../Common/Spinner.svelte';
 	import SongStatus from './SongStatus.svelte';
+	import HashDisplay from '../Common/HashDisplay.svelte';
 
 	export let leaderboard;
+	export let leaderboardStore;
 	export let ratings = null;
-	export let latestHash = null;
 
 	export let currentLeaderboardId;
 	export let batleRoyale = true;
@@ -30,6 +32,7 @@
 		dispatch('group-changed');
 	}
 
+	$: isRanked = leaderboard?.stats?.status === DifficultyStatus.ranked;
 	let cinematicsCanvas;
 
 	function drawCinematics(cinematicsCanvas, coverUrl) {
@@ -48,6 +51,7 @@
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
 	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
+	$: leaderboardCaptor = leaderboard?.topClan;
 
 	$: drawCinematics(cinematicsCanvas, coverUrl);
 
@@ -95,6 +99,12 @@
 						<MapTypeDescription type={leaderboard?.stats.type} />
 					{/if}
 				</div>
+				{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
+					<LeaderboardDisplayCaptureStatus
+						leaderboardId={leaderboard?.leaderboardId}
+						clan={leaderboardCaptor}
+						clanRankingContested={leaderboard?.clanRankingContested} />
+				{/if}
 				{#if song.externalStatuses}
 					<div class="song-statuses">
 						{#each leaderboard.song.externalStatuses as songStatus}
@@ -106,16 +116,7 @@
 					<LeaderboardStats {leaderboard} />
 				{/if}
 				{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-					<div>
-						<small class="level-author" style="display: inline-block;">{song.hash.toUpperCase()}</small>
-						{#if latestHash}
-							<i class="fa fa-check" style="color: lime;" title="Latest map version" />
-						{:else if latestHash == undefined}
-							<Spinner />
-						{:else}
-							<i class="fa fa-xmark" style="color: red;" title="Outdated map" />
-						{/if}
-					</div>
+					<HashDisplay {song} />
 				{/if}
 			</div>
 
@@ -136,7 +137,7 @@
 			{#if leaderboardGroup && leaderboardGroup.length > 1}
 				<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
 					{#each leaderboardGroup as option (option.id)}
-						<option class="group-option" value={option.id}>
+						<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
 							{#if option.timestamp}
 								{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
 							{:else}
@@ -375,6 +376,10 @@
 
 		:global(.leaderboard-header-box) {
 			margin: 0 !important;
+		}
+
+		.song-statuses {
+			justify-content: center;
 		}
 	}
 

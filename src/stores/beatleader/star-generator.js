@@ -13,9 +13,9 @@ export default () => {
 	const get = () => starRatings;
 	const {subscribe: subscribeState, set} = writable(starRatings);
 
-	const fetchExMachina = async (hash, diff, mode, scale = 1) => {
+	const fetchExMachina = async (hash, link, diff, mode, scale = 1) => {
 		if (!hash || !diff || !mode) return;
-		fetch(`https://stage.api.beatleader.net/json/${hash}/${mode}/${diffForDiffName(diff)}/full/time-scale/${scale}`)
+		fetch(`https://stage.api.beatleader.net/json/${hash.length >= 40 ? hash : "link"}/${mode}/${diffForDiffName(diff)}/full/time-scale/${scale}${hash.length >= 40 ? "" : "?link="+link}`)
 			.then(async response => {
 				if (response.status == 200) {
 					const data = await response.json();

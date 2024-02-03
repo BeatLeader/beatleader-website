@@ -1,7 +1,16 @@
 import {getCurrentLocale} from '../stores/config';
 
-const lcount = window.location.host.includes('localhost') ? 1 : 2;
-export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? (location.host.split('.')[0] == 'www' ? 'general' : location.host.split('.')[0]) : 'general';
+var lcount = 2;
+if (window.location.host.includes('localhost')) {
+	lcount = 1;
+}
+if (window.location.host.includes('netlify.app') || window.location.host.includes('stage') || window.location.host.includes('test')) {
+	lcount = 3;
+}
+if (parseInt(location.host.split('.')[location.host.split('.').length - 1])) {
+	lcount = 4;
+}
+export var GLOBAL_LEADERBOARD_TYPE = location.host.split('.').length > lcount ? location.host.split('.')[0] : 'general';
 
 export function setLeaderboardType(newType) {
 	GLOBAL_LEADERBOARD_TYPE = newType;

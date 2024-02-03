@@ -51,6 +51,7 @@ export const DEFAULT_CONFIG = {
 		mapsViewType: 'maps-cards',
 
 		reebanner: true,
+		replayedbanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -91,6 +92,8 @@ export const DEFAULT_CONFIG = {
 
 		showStatsInHeader: false,
 		showHashInHeader: false,
+		showClanCaptureInHeader: true,
+		showClanCaptureInList: true,
 
 		show: {
 			avatar: true,
@@ -291,11 +294,11 @@ export default async () => {
 	}
 
 	const syncFromServer = () => {
-		fetch(BL_API_URL + 'user/config', {credentials: 'include'}).then(async response => {
+		fetch(BL_API_URL + 'user/config/link', {credentials: 'include'}).then(async response => {
 			if (response.status == 404 && savedConfig) {
 				await fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(savedConfig)});
 			} else if (response.status == 200) {
-				const cloudConfig = await response.json();
+				const cloudConfig = await fetch(await response.text()).then(r => r.json());
 				await set(cloudConfig, false);
 				dbConfig = cloudConfig;
 				settingsChanged = false;

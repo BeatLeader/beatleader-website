@@ -98,6 +98,12 @@
 				<p class="memberTitle">not to be confused with notes</p>
 				<p class="memberDescription">Map rating and review specialist</p>
 			</div>
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
+					href="https://www.beatleader.xyz/u/76561198051924392">Light Ai</a>
+				<p class="memberTitle">absolutely not a vocaloid addict</p>
+				<p class="memberDescription">Quality specialist and rePlayed creator</p>
+			</div>
 		</section>
 
 		<h1 class="title is-4">Ranking Team</h1>
@@ -192,6 +198,14 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198072855418.gif" alt="LackWiz" /><a
 					href="https://www.beatleader.xyz/u/76561198072855418">LackWiz</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/fede1355e88a5ffae6e9bfc20de4ec33a18ef5d1_full.jpg" alt="GalaxyMaster" /><a
+					href="https://www.beatleader.xyz/u/76561198075923914">GalaxyMaster</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/1ae4cec7a3ffd6f9952d5495d9c79f7cdc154e12_full.jpg" alt="Kansas" /><a
+					href="https://www.beatleader.xyz/u/76561198042527254">Kansas</a>
 			</div>
 		</section>
 

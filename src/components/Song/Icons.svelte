@@ -287,26 +287,26 @@
 					animated={true}
 					noMargin={true} />
 			{/if}
+		{/if}
 
-			{#if shownIcons.includes('replay') && replayUrl?.length}
-				<Button
-					url={replayUrl}
-					on:click={() => showPreview(replayUrl)}
-					cls={altReplay ? 'replay-button-alt' : 'replay-button'}
-					icon="<img src='/assets/{altReplay ? `replays.svg` : `bs-pepe.gif`}'>"
-					title="Replay"
-					animated={true}
-					noMargin={true} />
-			{/if}
+		{#if shownIcons.includes('replay') && replayUrl?.length}
+			<Button
+				url={replayUrl}
+				on:click={() => showPreview(replayUrl)}
+				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
+				icon="<img src='/assets/{altReplay ? `replays.svg` : `bs-pepe.gif`}'>"
+				title="Replay"
+				animated={true}
+				noMargin={true} />
+		{/if}
 
-			{#if shownIcons.includes('batleRoyale')}
-				<Button
-					icon="<div class='battleroyale{battleRoyaleDraft ? 'stop' : ''}-icon'></div>"
-					title="{battleRoyaleDraft ? 'Stop' : 'Start'} drafting battle royal"
-					noMargin={true}
-					animated={true}
-					on:click={() => (battleRoyaleDraft = !battleRoyaleDraft)} />
-			{/if}
+		{#if shownIcons.includes('batleRoyale')}
+			<Button
+				icon="<div class='battleroyale{battleRoyaleDraft ? 'stop' : ''}-icon'></div>"
+				title="{battleRoyaleDraft ? 'Stop' : 'Start'} drafting battle royal"
+				noMargin={true}
+				animated={true}
+				on:click={() => (battleRoyaleDraft = !battleRoyaleDraft)} />
 		{/if}
 	</span>
 </ScoreActionButtonsLayout>

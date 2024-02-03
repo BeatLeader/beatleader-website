@@ -48,6 +48,20 @@ export function ppLabel(tag) {
 	}
 }
 
+export function capturesLabel(tag) {
+	switch (tag) {
+		default:
+			return 'Maps Captured';
+	}
+}
+
+export function rankedPoolPercentLabel(tag) {
+	switch (tag) {
+		default:
+			return 'Ranked % Captured';
+	}
+}
+
 export function ppIcon(tag) {
 	switch (tag) {
 		case 'OOTK':
@@ -89,6 +103,20 @@ export function ppValue(tag, value) {
 		case 'WYSI':
 			return 727;
 
+		default:
+			return value;
+	}
+}
+
+export function capturesValue(tag, value) {
+	switch (tag) {
+		default:
+			return value;
+	}
+}
+
+export function rankedPoolPercentValue(tag, value) {
+	switch (tag) {
 		default:
 			return value;
 	}

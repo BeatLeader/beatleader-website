@@ -399,12 +399,6 @@ export function describePlatform(platform) {
 }
 
 export const modeDescriptions = {
-	GhostStandard: {
-		title: 'Spooky!',
-		icon: 'fas fa-ghost',
-		color: 'purple',
-		textColor: 'white',
-	},
 	Standard: {
 		title: 'Standard',
 		icon: 'standard-icon',
@@ -522,6 +516,35 @@ export function modeForModeName(modeName) {
 	}
 
 	return 0;
+}
+
+
+export const difficultyDescriptions = {
+	Easy: {
+		title: 'Easy',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Normal: {
+		title: 'Normal',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Hard: {
+		title: 'Hard',
+		color: 'purple',
+		textColor: 'white',
+	},
+	Expert: {
+		title: 'Expert',
+		color: 'purple',
+		textColor: 'white',
+	},
+	ExpertPlus: {
+		title: 'Expert+',
+		color: 'purple',
+		textColor: 'white',
+	},
 }
 
 export function diffForDiffName(diffName) {
@@ -654,6 +677,7 @@ export const DifficultyStatus = {
 	unrankable: 4,
 	outdated: 5,
 	inevent: 6,
+	ost: 7
 };
 
 export function formatDiffStatus(status) {
@@ -672,6 +696,8 @@ export function formatDiffStatus(status) {
 			return 'Outdated';
 		case DifficultyStatus.inevent:
 			return 'In event';
+		case DifficultyStatus.ost:
+			return 'OST';
 	}
 }
 

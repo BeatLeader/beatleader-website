@@ -242,7 +242,6 @@
 			title: 'Sort by replay watch count',
 			iconFa: 'fa fa-eye',
 			value: data => {
-				console.log(data);
 				return (data?.scoreStats?.anonimusReplayWatched ?? 0) + (data?.scoreStats?.authorizedReplayWatched ?? 0);
 			},
 			props: {digits: 0, prefix: '', suffix: ''},
