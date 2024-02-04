@@ -72,8 +72,8 @@
 			clan.topCount = 0;
 
 			if (cache) {
-				clan.x = cache.clans[clan.id].x;
-				clan.y = cache.clans[clan.id].y;
+				clan.x = cache.clans[clan.id]?.x ?? 0;
+				clan.y = cache.clans[clan.id]?.y ?? 0;
 			}
 			clanMap[clan.id] = clan;
 			clans.push(clan);
@@ -128,8 +128,8 @@
 
 			circles.push({
 				id: map.leaderboardId,
-				x: cache ? cache.circles[map.leaderboardId].x : topClan.x,
-				y: cache ? cache.circles[map.leaderboardId].y : topClan.y,
+				x: cache ? (cache.circles[map.leaderboardId]?.x ?? 0) : topClan.x,
+				y: cache ? (cache.circles[map.leaderboardId]?.y ?? 0) : topClan.y,
 				r: map.stars,
 				color: map.tie
 					? 'grey'

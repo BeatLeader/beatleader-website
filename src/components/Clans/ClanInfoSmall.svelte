@@ -39,8 +39,8 @@
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
 	$: clanPp = clan?.pp ?? null;
-	$: clanCapturedMaps = clan?.capturedLeaderboards?.length ?? null;
-	$: rankedPoolPercent = clan?.rankedPoolPercentCaptured && clanCapturedMaps ? clan.rankedPoolPercentCaptured * 100 : 0;
+	$: clanCapturedMaps = clan?.captureLeaderboardsCount ?? null;
+	$: rankedPoolPercent = clan?.rankedPoolPercentCaptured ? clan.rankedPoolPercentCaptured * 100 : 0;
 </script>
 
 {#if clan?.id}

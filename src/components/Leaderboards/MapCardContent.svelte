@@ -56,7 +56,7 @@
 
 			{#if $configStore?.leaderboardPreferences?.showClanCaptureInList && map?.difficulty?.status == DifficultyStatus.ranked}
 				<div class="capture-status">
-					<LeaderboardDisplayCaptureStatus clan={map?.clan} clanRankingContested={map?.clanRankingContested} withTitle={false} />
+					<LeaderboardDisplayCaptureStatus clan={map?.clan} clanRankingContested={map?.clanRankingContested} leaderboardId={map.id} withTitle={false} />
 				</div>
 			{/if}
 		</div>
