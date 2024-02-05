@@ -420,7 +420,7 @@
 							</div>
 						{/each}
 						<Button
-							label="Ann new url"
+							label="Add new URL"
 							iconFa="fas fa-plus-square"
 							on:click={() => {
 								playerChangesCallback.push('');
