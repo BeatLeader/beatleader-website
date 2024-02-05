@@ -92,6 +92,17 @@
 		showClanRankingScores = !showClanRankingScores;
 	}
 
+	let openedDetails = [];
+	function toggleOpen(scoreId) {
+		if (!scoreId) return;
+
+		if (openedDetails.includes(scoreId)) {
+			openedDetails = openedDetails.filter(id => id !== scoreId);
+		} else {
+			openedDetails = [...openedDetails, scoreId];
+		}
+	}
+
 	let showClanRankingScores = false;
 
 	$: leaderboard = opt(cr, 'leaderboard', null);
@@ -199,6 +210,8 @@
 							{score}
 							{fixedBrowserTitle}
 							{sortBy}
+							opened={openedDetails.includes(score?.score?.id)}
+							on:toggle-details={() => toggleOpen(score?.score?.id)}
 							hideClans={true} />
 					</div>
 				{/each}
