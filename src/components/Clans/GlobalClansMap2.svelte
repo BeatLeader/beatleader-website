@@ -539,7 +539,7 @@
 	let animating = false;
 	let animationStartTime;
 
-	function animateZoomMap(targetMapId, duration = 1000) {
+	function animateZoomMap(targetMapId, duration = 2000) {
 		const targetMap = circles.find(d => d.id == targetMapId);
 		if (!targetMap) return;
 
