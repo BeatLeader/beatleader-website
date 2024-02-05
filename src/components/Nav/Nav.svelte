@@ -61,7 +61,6 @@
 	});
 
 	function checkClanInvites() {
-		console.log($account?.clanRequest);
 		if ($account?.clanRequest?.length) {
 			let clansText = '';
 			$account.clanRequest.forEach(clan => {
