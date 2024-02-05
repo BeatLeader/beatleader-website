@@ -853,7 +853,7 @@
 								out:fade={{x: 200, delay: idx * 20, duration: 500}}
 								animate:flip={{duration: 300}}>
 								<ClanRankingScore
-									{leaderboardId}
+									leaderboardId={currentLeaderboardId}
 									{idx}
 									{cr}
 									{type}

@@ -51,7 +51,7 @@
 			}
 		});
 
-		return result;
+		return result.filter(i => i != 'replay' && i != 'delete');
 	}
 
 	function maybe(node, options) {
