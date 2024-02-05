@@ -2,10 +2,10 @@
 	import {onDestroy, onMount} from 'svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import CarouselCard from '../components/Maps/CarouselCard.svelte';
-	import DiscoverCard from '../components/Maps/DiscoverCard.svelte';
 	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
 	import MapsCategoryCard from '../components/Maps/MapsCategoryCard.svelte';
 	import {fade} from 'svelte/transition';
+	import HeaderCard from '../components/Maps/HeaderCard.svelte';
 
 	let cards = [
 		{
@@ -42,6 +42,29 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'Got something to share?',
+				body: 'DM Light Ai on Discord to get your map pack, event or announcement featured here!',
+				imageUrl: '/assets/Discover/lightai.png',
+				targetUrl: 'https://discordapp.com/users/138596754592497664',
+				forcedColor: 'rgb(111 191 226)',
+			},
+		},
+	];
+
+	let tournamentCards = [
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Beat Saber Events Feed',
+				body: 'BeatKhana has created a twitter account to keep you updated on all the latest Beat Saber events, Follow them now!',
+				imageUrl: '/assets/Discover/BSEF_banner.png',
+				targetUrl: 'https://twitter.com/beatsaberevents',
+				forcedColor: undefined,
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'CC site update',
 				body: 'Cube Community has updated their site, and added a new tournament calendar. Check it out!',
 				imageUrl: '/assets/Discover/cc_site_update.png',
@@ -53,7 +76,7 @@
 			component: CarouselCard,
 			props: {
 				title: 'Got something to share?',
-				body: 'DM Light Ai on Discord to get your event or announcement featured here!',
+				body: 'DM Light Ai on Discord to get your tournament, gameplay event or announcement featured here!',
 				imageUrl: '/assets/Discover/lightai.png',
 				targetUrl: 'https://discordapp.com/users/138596754592497664',
 				forcedColor: 'rgb(111 191 226)',
@@ -98,8 +121,10 @@
 			</div>
 
 			<div class="items">
-				<DiscoverCard />
+				<HeaderCard text="Discover" />
 				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
+				<HeaderCard text="Tournaments" />
+				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
 			</div>
 		</ContentBox>
 	</article>
