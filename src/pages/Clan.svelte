@@ -1,5 +1,5 @@
 <script>
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fly, fade} from 'svelte/transition';
 	import {flip} from 'svelte/animate';
 	import createClanStore from '../stores/http/http-clan-store';
@@ -25,12 +25,11 @@
 	export let clanId;
 	export let page = 1;
 	export let maps = false;
+	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
 
 	document.body.classList.remove('slim');
-
-	const location = useLocation();
 	const account = createAccountStore();
 
 	const clanService = createClanService();
@@ -83,7 +82,7 @@
 		currentFilters = newCurrentFilters;
 
 		sortValues = sortValues1
-			.filter(sv => !sv.hideFor || !sv.hideFor.includes(maps ? 'maps' : 'players'))
+			.filter(sv => !sv.hideFor || !sv.hideFor.includes(newMaps ? 'maps' : 'players'))
 			.map(v => {
 				let result = {...v};
 				if (result.id == currentFilters.sortBy) {
@@ -93,6 +92,9 @@
 
 				return result;
 			});
+		if (!sortValues.find(sv => sv.id == currentFilters.sortBy)) {
+			currentFilters.sortBy = 'pp';
+		}
 
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
@@ -170,7 +172,8 @@
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol'},
 		{id: 'date', label: 'Recent', title: 'Sort by the last score posted', iconFa: 'fa fa-clock', hideFor: ['players']},
-		{id: 'hold', label: 'Hold', title: 'Sort by PP dominance', iconFa: 'fa fa-flag', hideFor: ['players']},
+		{id: 'toconquer', label: 'To Conquer', title: 'Sort by PP needed to capture', iconFa: 'fa fa-arrows-to-circle', hideFor: ['players']},
+		{id: 'tohold', label: 'To Hold', title: 'Sort by captured maps PP dominance', iconFa: 'fa fa-flag', hideFor: ['players']},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -257,17 +260,21 @@
 
 			{#if maps}
 				<ContentBox>
-					<div class="scores-grid grid-transition-helper">
-						{#each playersPage as cr, idx (cr?.id ?? '')}
-							<div
-								class={`row-${idx}`}
-								in:fly={{x: 200, delay: idx * 20, duration: 500}}
-								out:fade={{x: 200, delay: idx * 20, duration: 500}}
-								animate:flip={{duration: 300}}>
-								<ClanRankingSong {idx} {cr} {page} sortBy={currentFilters.sortBy} />
-							</div>
-						{/each}
-					</div>
+					{#if playersPage?.length}
+						<div class="scores-grid grid-transition-helper">
+							{#each playersPage as cr, idx (cr?.id ?? '')}
+								<div
+									class={`row-${idx}`}
+									in:fly={{x: 200, delay: idx * 20, duration: 500}}
+									out:fade={{x: 200, delay: idx * 20, duration: 500}}
+									animate:flip={{duration: 300}}>
+									<ClanRankingSong {idx} {cr} {page} sortBy={currentFilters.sortBy} />
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<span>No maps found.</span>
+					{/if}
 				</ContentBox>
 			{:else if playersPage?.length}
 				<div class="players grid-transition-helper" class:with-icons={isFounder}>
