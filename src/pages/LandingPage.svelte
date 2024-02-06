@@ -27,7 +27,7 @@
 		}
 	}
 
-	$: drawCinematics(cinematicsCanvas, '/assets/Main/landing.png');
+	$: drawCinematics(cinematicsCanvas, '/assets/Main/landing.webp');
 </script>
 
 <svelte:head>
@@ -158,7 +158,7 @@
 
 <style>
 	.big-landing-box {
-		background: url('/assets/Main/landing.png') !important;
+		background: url('/assets/Main/landing.webp') !important;
 		background-position-y: -2em !important;
 		background-position-x: 0% !important;
 		background-size: 100% !important;
