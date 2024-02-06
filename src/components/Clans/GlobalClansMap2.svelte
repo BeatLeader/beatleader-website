@@ -250,7 +250,8 @@
 
 	function renderCanvas() {
 		context.save();
-		context.clearRect(0, 0, width, height); // Clear the canvas
+		context.fillStyle = "black";
+		context.fillRect(0, 0, width, height);
 
 		context.translate(currentZoom.x, currentZoom.y); // Apply translation
 		context.scale(currentZoom.k, currentZoom.k); // Apply scale
@@ -652,6 +653,5 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background-color: black;
 	}
 </style>
