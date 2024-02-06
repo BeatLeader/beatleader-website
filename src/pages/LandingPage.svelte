@@ -27,7 +27,7 @@
 		}
 	}
 
-	$: drawCinematics(cinematicsCanvas, '/assets/landing-big.jpg');
+	$: drawCinematics(cinematicsCanvas, '/assets/Main/landing.png');
 </script>
 
 <svelte:head>
@@ -158,11 +158,12 @@
 
 <style>
 	.big-landing-box {
-		background: url('/assets/landing-big.jpg') !important;
-		background-position-y: 50em !important;
-		background-position-x: 80% !important;
+		background: url('/assets/Main/landing.png') !important;
+		background-position-y: -2em !important;
+		background-position-x: 0% !important;
+		background-size: 100% !important;
 		display: flex;
-		justify-content: flex-end;
+		justify-content: flex-start;
 		margin: 4px 10px 18px;
 		border-radius: 6px;
 		padding: 1rem;
@@ -174,16 +175,19 @@
 		font-size: 4em;
 		line-height: 1.2em;
 		font-family: 'Audiowide';
+		text-shadow: 2px 2px 4px black;
 	}
 
 	.big-description {
 		margin-left: 0.3em;
+		text-shadow: 2px 2px 4px black;
 	}
 
 	.title-and-buttons {
 		margin-top: 3.6em;
 		margin-bottom: 2em;
 		max-width: 48%;
+		margin-left: 5em;
 	}
 
 	.sources {
@@ -288,15 +292,17 @@
 
 	@media screen and (min-width: 1250px) {
 		.big-landing-box {
-			background-position-y: 52% !important;
-			background-position-x: 80% !important;
+			background-position-y: -3em !important;
+			background-position-x: 0% !important;
 			background-size: 100% !important;
+			justify-content: flex-end;
 		}
 
 		.title-and-buttons {
 			margin-top: 4.6em;
 			margin-bottom: 3em;
 			max-width: 44%;
+			margin-right: 40em;
 		}
 	}
 
@@ -316,8 +322,9 @@
 		}
 
 		.big-landing-box {
-			background-position-y: 48.5em !important;
-			background-position-x: -21em !important;
+			background-position-y: -0.9em !important;
+			background-position-x: 62.2% !important;
+			background-size: 200% !important;
 		}
 
 		.big-title {
@@ -332,6 +339,7 @@
 			margin-top: 18em;
 			margin-bottom: -2em;
 			max-width: none;
+			margin-left: 0.125em;
 		}
 	}
 </style>
