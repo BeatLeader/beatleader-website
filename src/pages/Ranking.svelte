@@ -160,11 +160,11 @@
 		{
 			key: 'pp_range',
 			label: 'Pp range',
-			default: [0, 24000],
+			default: [null, null],
 			min: 0,
 			max: 24000,
 			step: 1,
-			pipstep: 4000,
+			pipstep: 6000,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
@@ -173,11 +173,11 @@
 		{
 			key: 'score_range',
 			label: 'Scores count',
-			default: [0, 15000],
+			default: [null, null],
 			min: 0,
 			max: 15000,
 			step: 1,
-			pipstep: 2000,
+			pipstep: 5000,
 			type: 'slider',
 			process: processIntArrayFilter,
 			values: [],
@@ -257,7 +257,11 @@
 			} else if (p.key === 'countries' || p.key === 'hmd') {
 				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : p?.value ?? '';
 			} else if (p.key === 'pp_range' || p.key === 'score_range') {
-				currentFilters[p.key] = (p?.values ?? []).map(i => i + '').join(',');
+				if (p?.values?.find(p => p)) {
+					currentFilters[p.key] = (p?.values ?? []).map(i => i + '').join(',');
+				} else {
+					currentFilters[p.key] = null;
+				}
 			} else {
 				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : p?.value ?? '';
 			}
@@ -419,7 +423,17 @@
 						{#each params as param}
 							{#if param.type}
 								<section class="filter">
-									<label>{param?.label ?? param?.key ?? ''}</label>
+									<label
+										>{param?.label ?? param?.key ?? ''}
+										{#if param?.type === 'slider' && (param.values[0] || param.values[1])}
+											<button
+												class="remove-type"
+												title="Remove"
+												on:click={() => {
+													param.onChange({detail: {values: [null, null]}});
+												}}><i class="fas fa-xmark" /></button>
+										{/if}
+									</label>
 
 									{#if param?.type === 'input'}
 										<input
@@ -439,7 +453,10 @@
 											min={param.min}
 											max={param.max}
 											step={param.step}
-											values={param.values}
+											values={[
+												Number.isFinite(param.values[0]) ? param.values[0] : Number.NEGATIVE_INFINITY,
+												Number.isFinite(param.values[1]) ? param.values[1] : Number.POSITIVE_INFINITY,
+											]}
 											float
 											hoverable
 											pips
@@ -575,6 +592,14 @@
 
 	.clickable {
 		cursor: pointer;
+	}
+
+	.remove-type {
+		border: none;
+		color: rgb(255, 0, 0);
+		background-color: transparent;
+		cursor: pointer;
+		transform: translate(-7px, -2px);
 	}
 
 	@media screen and (max-width: 1275px) {

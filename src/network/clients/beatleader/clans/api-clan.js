@@ -51,6 +51,9 @@ const process = response => {
 const get = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) =>
 	queue.BEATLEADER_API.clan(clanId, page, filters, priority, queueOptions);
 
+const getWithMaps = async ({clanId, page = 1, filters = {}, priority = queue.PRIORITY.FG_HIGH, ...queueOptions} = {}) =>
+	queue.BEATLEADER_API.clanMaps(clanId, page, filters, priority, queueOptions);
+
 const create = async ({
 	name,
 	tag,
@@ -58,11 +61,13 @@ const create = async ({
 	bio,
 	color,
 	icon,
+	playerChangesCallback,
+	clanRankingDiscordHook,
 	priority = queue.PRIORITY.FG_HIGH,
 	fullResponse = false,
 	...queueOptions
 } = {}) => {
-	const response = await queue.BEATLEADER_API.clanCreate(name, tag, description, bio, color, icon, priority, queueOptions);
+	const response = await queue.BEATLEADER_API.clanCreate(name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority, queueOptions);
 
 	return fullResponse ? response : getResponseBody(response);
 };
@@ -74,11 +79,13 @@ const update = async ({
 	bio,
 	color,
 	icon,
+	playerChangesCallback,
+	clanRankingDiscordHook,
 	priority = queue.PRIORITY.FG_HIGH,
 	fullResponse = false,
 	...queueOptions
 } = {}) => {
-	const response = await queue.BEATLEADER_API.clanUpdate(name, tag, description, bio, color, icon, priority, queueOptions);
+	const response = await queue.BEATLEADER_API.clanUpdate(name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority, queueOptions);
 
 	return fullResponse ? response : getResponseBody(response);
 };
@@ -136,6 +143,7 @@ const createClanClient = () => {
 
 	return {
 		...client,
+		getWithMaps,
 		create,
 		update,
 		accept,

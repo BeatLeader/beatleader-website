@@ -6,9 +6,9 @@
 	import { configStore } from '../../stores/config';
 
 	export let rank;
-	export let country;
-	export let countryRank;
-	export let countryRankTotal;
+	export let country = null;
+	export let countryRank = null;
+	export let countryRankTotal= null;
 	export let showCountryTotal = false;
 	export let inline = true;
 

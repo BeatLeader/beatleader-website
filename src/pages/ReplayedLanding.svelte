@@ -143,7 +143,7 @@
 	openGraph={{
 		title: 'BeatLeader rePlayed 2023',
 		description: 'View your BeatLeader rePlayed 2023',
-		images: CURRENT_URL + '/assets/logo-small.png',
+		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
 		siteName: ssrConfig.name,
 	}}
 	twitter={{

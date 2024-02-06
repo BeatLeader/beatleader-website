@@ -77,11 +77,12 @@
 	$: beatSaviorPromise = scoreStatisticEnhancer(songScore);
 
 	$: hash = leaderboard?.song?.hash;
+	$: downloadUrl = leaderboard?.song?.downloadUrl;
 	$: diffInfo = leaderboard?.diffInfo;
 	$: showPredictions = $configStore?.scoreDetailsPreferences?.showPredictedAcc;
 	$: scale = modifiersToSpeed(score.mods);
 	$: exmachinadata = showPredictions && $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type + scale];
-	$: !exmachinadata && showPredictions && starGeneratorStore.fetchExMachina(hash, diffInfo?.diff, diffInfo?.type, scale);
+	$: !exmachinadata && showPredictions && starGeneratorStore.fetchExMachina(hash, downloadUrl, diffInfo?.diff, diffInfo?.type, scale);
 	$: notes = exmachinadata?.notes;
 
 	$: updateInBuiltLeaderboardPage(

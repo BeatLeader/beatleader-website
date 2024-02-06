@@ -1,12 +1,26 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
+	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createAccountStore from '../../stores/beatleader/account';
 	import Button from '../../components/Common/Button.svelte';
 	import Error from '../Common/Error.svelte';
 	import Spinner from '../Common/Spinner.svelte';
 	import {SsrHttpResponseError} from '../../network/errors';
-	import {playersTitle, rankLabel, accLabel, ppLabel, rankValue, accValue, ppValue, ppIcon} from '../../utils/clans';
+	import {
+		playersTitle,
+		rankLabel,
+		accLabel,
+		ppLabel,
+		capturesLabel,
+		rankedPoolPercentLabel,
+		rankValue,
+		accValue,
+		ppValue,
+		capturesValue,
+		rankedPoolPercentValue,
+		ppIcon,
+	} from '../../utils/clans';
 	import createClanService from '../../services/beatleader/clan';
 	import Confirmation from '../Common/Confirmation.svelte';
 	import Badge from '../Common/Badge.svelte';
@@ -35,8 +49,12 @@
 	let color = '';
 	let description = '';
 	let bio = '';
+	let playerChangesCallback = [];
+	let clanRankingDiscordHook = [];
 	let iconUrl = null;
 	let iconData = null;
+
+	let showCallbackDetails = false;
 
 	const changeImage = e => {
 		let image = e.target.files[0];
@@ -107,7 +125,17 @@
 		await executeOperation(async () => {
 			let updatedClan = null;
 
-			const clanData = {...clan, name, tag, description, bio, color, icon: iconData ?? iconUrl};
+			const clanData = {
+				...clan,
+				name,
+				tag,
+				description,
+				bio,
+				color,
+				playerChangesCallback,
+				clanRankingDiscordHook,
+				icon: iconData ?? iconUrl,
+			};
 			if (clan?.id) updatedClan = await clanService.update(clanData);
 			else updatedClan = await clanService.create(clanData);
 
@@ -204,6 +232,16 @@
 		iconUrl = clan?.icon ?? 'https://cdn.assets.beatleader.xyz/NTG.png';
 		iconData = clan?.icon ?? null;
 		description = clan?.description ?? '';
+
+		playerChangesCallback = clan?.playerChangesCallback ? clan?.playerChangesCallback.split(',') : [];
+		if (!Array.isArray(playerChangesCallback)) {
+			playerChangesCallback = [playerChangesCallback];
+		}
+		clanRankingDiscordHook = clan?.clanRankingDiscordHook ? clan?.clanRankingDiscordHook.split(',') : [];
+		if (!Array.isArray(clanRankingDiscordHook)) {
+			clanRankingDiscordHook = [clanRankingDiscordHook];
+		}
+
 		bio = clan?.bio ?? '';
 	}
 
@@ -212,6 +250,8 @@
 			clanAverageRank = rankValue(tag, clanAverageRank);
 			clanAverageAccuracy = accValue(tag, clanAverageAccuracy);
 			clanPp = ppValue(tag, clanPp);
+			clanCapturedMaps = capturesValue(tag, clanCapturedMaps);
+			rankedPoolPercent = rankedPoolPercentValue(tag, rankedPoolPercent);
 		}
 	}
 
@@ -227,6 +267,8 @@
 
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
+	$: clanCapturedMaps = clan?.captureLeaderboardsCount ?? null;
+	$: rankedPoolPercent = clan?.rankedPoolPercentCaptured && clanCapturedMaps ? clan?.rankedPoolPercentCaptured * 100 : 0;
 	$: clanPp = clan?.pp ?? null;
 </script>
 
@@ -281,9 +323,47 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" />
-							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" />
-							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" />
+							<a href={`/clansmap/clan/${tag}`} on:click|preventDefault|stopPropagation={() => navigate(`/clansmap/clan/${tag}`)}>
+								<Badge
+									label={rankedPoolPercentLabel(tag)}
+									value={rankedPoolPercent}
+									suffix="%"
+									withZeroSuffix={true}
+									digits={1}
+									fluid={true}
+									bgColor="var(--rankedPoolColor)"
+									styling="clanInfo" />
+							</a>
+							<Badge
+								label={capturesLabel(tag)}
+								value={clanCapturedMaps}
+								digits={0}
+								fluid={true}
+								bgColor="var(--capturedColor)"
+								styling="clanInfo" />
+							<Badge
+								label={rankLabel(tag)}
+								value={clanAverageRank}
+								prefix="#"
+								digits={0}
+								fluid={true}
+								bgColor="var(--decrease)"
+								styling="clanInfo" />
+							<Badge
+								label={accLabel(tag)}
+								value={clanAverageAccuracy}
+								suffix="%"
+								fluid={true}
+								bgColor="var(--selected)"
+								styling="clanInfo" />
+							<Badge
+								label={ppLabel(tag)}
+								iconClass={ppIcon(tag)}
+								value={clanPp}
+								suffix="pp"
+								fluid={true}
+								bgColor="var(--ppColour)"
+								styling="clanInfo" />
 						</section>
 					{/if}
 
@@ -305,6 +385,72 @@
 							<input type="text" placeholder="Clan bio (optional)" bind:value={bio} disabled={!!pendingText} />
 						</section>
 					{/if}
+
+					<div class="hooks">
+						<span><b>Hooks for global map updates:</b></span>
+						{#each clanRankingDiscordHook as redirectUrl, idx}
+							<div>
+								<input type="text" placeholder="Discord hook" bind:value={clanRankingDiscordHook[idx]} disabled={!!pendingText} />
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => (clanRankingDiscordHook = clanRankingDiscordHook.filter((_, index) => index !== idx))}
+									><i class="fas fa-xmark" /></button>
+							</div>
+						{/each}
+						<Button
+							label="Add new hook"
+							iconFa="fas fa-plus-square"
+							on:click={() => {
+								clanRankingDiscordHook.push('');
+								clanRankingDiscordHook = clanRankingDiscordHook;
+							}} />
+					</div>
+
+					<div class="hooks">
+						<span><b>Player changes callback URLs:</b></span>
+						{#each playerChangesCallback as redirectUrl, idx}
+							<div>
+								<input type="text" placeholder="Your url" bind:value={playerChangesCallback[idx]} disabled={!!pendingText} />
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => (playerChangesCallback = playerChangesCallback.filter((_, index) => index !== idx))}
+									><i class="fas fa-xmark" /></button>
+							</div>
+						{/each}
+						<Button
+							label="Ann new url"
+							iconFa="fas fa-plus-square"
+							on:click={() => {
+								playerChangesCallback.push('');
+								playerChangesCallback = playerChangesCallback;
+							}} />
+						<div class="score-options-section">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showCallbackDetails}
+								on:click={() => (showCallbackDetails = !showCallbackDetails)}
+								title="Show average stats and ranking changes">
+								{#if showCallbackDetails}
+									Hide details
+								{:else}
+									How this works?
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+						</div>
+						{#if showCallbackDetails}
+							<span>This Url will be called on clan changes. It's usefull if you have a custom webserver for your clan.</span>
+							<span
+								>The format is <b>?action=&player=</b> where action could be <b>kick, join, leave, reject</b> and <b>player</b> is ID of the
+								player.</span>
+							<span
+								>For example callback url <b>https://myclan.com/blcallback</b> will be called as
+								<b>https://myclan.com/blcallback?action=join&player=76561198059961776</b> when NSGolova accepts your invitation.</span>
+						{/if}
+					</div>
 				{/if}
 
 				{#if editMode}
@@ -436,6 +582,7 @@
 
 	.clanImage {
 		width: 10em;
+		border-radius: 0.25em;
 	}
 
 	.clanTag {
@@ -479,6 +626,30 @@
 	.bio {
 		overflow: hidden;
 		word-break: break-word;
+	}
+
+	.discordHooks {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
+	}
+
+	.score-options-section {
+		margin-top: -0.5em;
+		margin-bottom: 0.8em;
 	}
 
 	@media screen and (max-width: 500px) {

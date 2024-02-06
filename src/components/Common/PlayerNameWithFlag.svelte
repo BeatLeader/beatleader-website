@@ -49,10 +49,11 @@
 	}
 
 	.player-name {
-		white-space: nowrap;
+		white-space: normal;
 		overflow-x: hidden;
 		overflow: hidden;
 		word-break: break-all;
+		max-height: 2em;
 	}
 
 	.player-name :global(> img) {

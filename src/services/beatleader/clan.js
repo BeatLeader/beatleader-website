@@ -5,6 +5,7 @@ import {PRIORITY} from '../../network/queues/http-queue';
 import {CLANS_PER_PAGE} from '../../utils/beatleader/consts';
 import {MINUTE, SECOND} from '../../utils/date';
 import createAccountStore from '../../stores/beatleader/account';
+import { processLeaderboard } from '../../network/queues/beatleader/api-queue';
 
 let service = null;
 export default () => {
@@ -31,6 +32,31 @@ export default () => {
 				maxAge: force ? SECOND : MINUTE,
 			})
 		);
+
+	const fetchClanPageWithMaps = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, signal = null, force = false) => {
+		var response = await resolvePromiseOrWaitForPending(`apiClient/clan/maps/${clanId}/${page}`, () =>
+			clanApiClient.getWithMaps({
+				clanId,
+				page,
+				filters,
+				signal,
+				priority,
+				cacheTtl: force ? null : MINUTE,
+				maxAge: force ? SECOND : MINUTE,
+			})
+		);
+
+		response.body.data.forEach(element => {
+			if (!element.leaderboard.diffInfo) {
+				element.leaderboard = processLeaderboard(element.leaderboard.id, page, {body: element.leaderboard}).leaderboard;
+			}
+			
+		});
+
+		
+
+		return response.body;
+	}
 
 	const create = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
 		if (!clan?.name || !clan.tag || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');
@@ -131,6 +157,7 @@ export default () => {
 	service = {
 		fetchClansPage,
 		fetchClanPage,
+		fetchClanPageWithMaps,
 		create,
 		update,
 		accept,

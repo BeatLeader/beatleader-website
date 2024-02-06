@@ -1,5 +1,6 @@
 <script>
 	import {navigate} from 'svelte-routing';
+	import {getContext} from 'svelte';
 	import {fade, fly, slide} from 'svelte/transition';
 	import Button from '../Common/Button.svelte';
 	import Pager from '../Common/Pager.svelte';
@@ -12,6 +13,7 @@
 	import customProtocolCheck from 'custom-protocol-check';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
+	import PlaylistDeleteConfirm from './PlaylistDeleteConfirm.svelte';
 
 	export let playlistExport;
 	export let sharedPlaylistId = null;
@@ -22,6 +24,7 @@
 	export let currentPlayerId;
 
 	const {addNotification} = getNotificationsContext();
+	const {open, close} = getContext('simple-modal');
 
 	let playlist = null;
 
@@ -121,7 +124,7 @@
 			() => {
 				thinking = false;
 				addNotification({
-					text: 'Nothing happened? Check this instruction: https://beatleader.wiki/en/website/one-click-install',
+					html: 'Nothing happened? Check this instruction: <a href="https://beatleader.wiki/en/website/one-click-install">https://beatleader.wiki/en/website/one-click-install</a>',
 					position: 'top-right',
 					type: 'error',
 					removeAfter: 4000,
@@ -139,6 +142,19 @@
 			3000
 		);
 	}
+
+	const deletePlaylist = async localPlaylistId => {
+		open(PlaylistDeleteConfirm, {
+			playlistName: playlist.playlistTitle,
+			confirm: () => {
+				close();
+				store.deleteList(localPlaylistId);
+			},
+			cancel: () => {
+				close();
+			},
+		});
+	};
 
 	$: setPlaylist(playlistExport);
 	$: songs = playlist.songs;
@@ -231,7 +247,7 @@
 								title="Delete playlist"
 								noMargin={true}
 								type="danger"
-								on:click={() => store.deleteList(localPlaylistId)} />
+								on:click={() => deletePlaylist(localPlaylistId)} />
 							{#if playlist.customData?.shared}
 								<Button
 									iconFa="fas fa-share"

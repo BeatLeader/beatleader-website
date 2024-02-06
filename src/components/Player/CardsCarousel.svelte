@@ -109,8 +109,6 @@
 			: []
 	);
 
-	let carouselWidth;
-
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 	$: refreshBeatSaviorState(playerId);
 
@@ -119,8 +117,8 @@
 
 <ContentBox>
 	<div class="columns">
-		<div class="column" bind:offsetWidth={carouselWidth}>
-			<Carousel cards={swipeCards} {carouselWidth} />
+		<div class="column">
+			<Carousel cards={swipeCards} />
 		</div>
 	</div>
 </ContentBox>

@@ -16,7 +16,6 @@
 	import ClansPage from './pages/Clans.svelte';
 	import FollowedPage from './pages/Followed.svelte';
 	import PlayerPage from './pages/Player.svelte';
-	import TwitchPage from './pages/Twitch.svelte';
 	import NotFoundPage from './pages/NotFound.svelte';
 	import PrivacyPage from './pages/Privacy.svelte';
 	import AboutPage from './pages/About.svelte';
@@ -45,6 +44,10 @@
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
+	import ClansMap from './pages/ClansMap.svelte';
+	import NotificationComponent from './components/Common/NotificationComponent.svelte';
+	import SongSuggestMap from './pages/SongSuggestMap.svelte';
+	import GigaMap from './pages/GigaMap.svelte';
 
 	export let url = '';
 
@@ -136,7 +139,7 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-{#if $configStore.preferences.replayedbanner}
+<!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
 		<div class="banner-spacer" />
@@ -157,10 +160,10 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
-	<Notifications zIndex={10000}>
+	<Notifications zIndex={10000} item={NotificationComponent}>
 		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
@@ -225,17 +228,44 @@
 					<Route path="/replayed/mapper/*id" let:params>
 						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
 					</Route>
-					<Route path="/clan/:clanId/*page" let:params>
-						<ClanPage clanId={params.clanId} page={params.page} />
-					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />
 					</Route>
 					<Route path="/events/*page" let:params let:location>
 						<EventsPage page={params.page} {location} />
 					</Route>
+					<Route path="/clan/:clanId/*page" let:params>
+						<ClanPage clanId={params.clanId} page={params.page} />
+					</Route>
+					<Route path="/clan/maps/:clanId/*page" let:params let:location>
+						<ClanPage clanId={params.clanId} page={params.page} maps={true} {location} />
+					</Route>
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
+					</Route>
+					<Route path="/clansmap/leaderboard/*leaderboardId" let:params let:location>
+						<ClansMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/clansmap" let:location>
+						<ClansMap {location} />
+					</Route>
+					<Route path="/songsuggestmap/leaderboard/*leaderboardId" let:params let:location>
+						<SongSuggestMap leaderboardId={params.leaderboardId} {location} />
+					</Route>
+					<Route path="/songsuggestmap" let:location>
+						<SongSuggestMap {location} />
+					</Route>
+					<Route path="/datavis/gigamap50" let:location>
+						<GigaMap {location} topCount={50} />
+					</Route>
+					<Route path="/datavis/gigamap1000" let:location>
+						<GigaMap {location} topCount={1000} />
+					</Route>
+					<Route path="/datavis/gigamap5000" let:location>
+						<GigaMap {location} topCount={5000} />
+					</Route>
+					<Route path="/clansmap/clan/*clanTag" let:params let:location>
+						<ClansMap clanTag={params.clanTag} {location} />
 					</Route>
 					<Route path="/playlists/*id" let:params>
 						<PlaylistsPage index={params.id} />
@@ -243,7 +273,6 @@
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
 					</Route>
-					<Route path="/twitch" component={TwitchPage} />
 					<Route path="/help" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
 					<Route path="/signin/*action" let:params>

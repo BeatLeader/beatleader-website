@@ -1,8 +1,11 @@
 import {getCurrentLocale} from '../stores/config';
 
-var lcount = 3;
+var lcount = 2;
 if (window.location.host.includes('localhost')) {
 	lcount = 1;
+}
+if (window.location.host.includes('netlify.app') || window.location.host.includes('stage') || window.location.host.includes('test')) {
+	lcount = 3;
 }
 if (parseInt(location.host.split('.')[location.host.split('.').length - 1])) {
 	lcount = 4;

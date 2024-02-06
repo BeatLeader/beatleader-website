@@ -10,6 +10,8 @@
 	import MapTriangleSmall from '../Leaderboard/MapTriangleSmall.svelte';
 	import {formatNumber} from '../../utils/format';
 	import SongScoreCompact from './SongScoreCompact.svelte';
+	import LeaderboardDisplayCaptureStatus from '../Leaderboard/LeaderboardDisplayCaptureStatus.svelte';
+	import {configStore} from '../../stores/config';
 
 	let backgroundColor = 'rgba(87, 82, 81, 0.7)';
 
@@ -51,6 +53,12 @@
 				{map}
 				{viewType}
 				stars={(map?.difficulty && map?.difficulty[starsKey]) ?? (map?.difficultyBl && map?.difficultyBl[starsKey])} />
+
+			{#if $configStore?.leaderboardPreferences?.showClanCaptureInList && map?.difficulty?.status == DifficultyStatus.ranked}
+				<div class="capture-status">
+					<LeaderboardDisplayCaptureStatus clan={map?.clan} clanRankingContested={map?.clanRankingContested} leaderboardId={map.id} withTitle={false} />
+				</div>
+			{/if}
 		</div>
 
 		{#if map?.difficulty?.accRating || map?.difficultyBl?.accRating}
@@ -280,6 +288,10 @@
 
 	.status {
 		padding-left: 0.3em;
+	}
+
+	.capture-status {
+		margin: 0.2em;
 	}
 
 	@media screen and (max-width: 767px) {

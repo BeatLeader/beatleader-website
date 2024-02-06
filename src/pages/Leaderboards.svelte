@@ -31,6 +31,7 @@
 		DifficultyStatus,
 		requirementsMap,
 		modeDescriptions,
+		difficultyDescriptions,
 		songStatusesMap,
 		songStatusesDescription,
 	} from '../utils/beatleader/format';
@@ -74,6 +75,7 @@
 		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
 		{key: 'order', default: 'desc', process: processStringFilter},
 		{key: 'mode', default: null, process: processStringFilter},
+		{key: 'difficulty', default: null, process: processStringFilter},
 		{key: 'mapType', default: null, process: processIntFilter},
 		{key: 'allTypes', default: 0, process: processIntFilter},
 		{key: 'mapRequirements', default: null, process: processIntFilter},
@@ -106,6 +108,7 @@
 
 	const typeFilterOptions = [
 		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
+		{key: 'ost', label: 'OST', iconFa: 'fa fa-compact-disc', color: 'var(--beatleader-primary)'},
 		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
 		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
 		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
@@ -151,10 +154,11 @@
 		};
 	});
 
+	const modeNullPlaceholder = 'Any mode';
 	const modeFilterOptions = [
 		{
 			key: null,
-			label: 'Any mode',
+			label: modeNullPlaceholder,
 		},
 	].concat(
 		Object.entries(modeDescriptions).map(([key, type]) => {
@@ -164,6 +168,24 @@
 				icon: `<span class="${modeDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
 				color: modeDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
 				textColor: modeDescriptions?.[key]?.textColor ?? null,
+			};
+		})
+	);
+
+	const difficultyNullPlaceholder = 'Any diff';
+	const difficultyFilterOptions = [
+		{
+			key: null,
+			label: difficultyNullPlaceholder,
+		},
+	].concat(
+		Object.entries(difficultyDescriptions).map(([key, type]) => {
+			return {
+				key,
+				label: capitalize(difficultyDescriptions?.[key]?.title ?? key),
+				icon: `<span class="${difficultyDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
+				color: difficultyDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
+				textColor: difficultyDescriptions?.[key]?.textColor ?? null,
 			};
 		})
 	);
@@ -332,6 +354,14 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	async function onDifficultyChanged(event) {
+		await tick();
+
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	function starsChanged() {
 		currentPage = 1;
 
@@ -341,8 +371,13 @@
 	function onStarsChanged(event, ratingType) {
 		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
 
-		currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
-		currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
+		if (sliderLimits.MIN_STARS != event.detail.values[0] || Number.isFinite(currentFilters[ratingType + '_from'])) {
+			currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
+		}
+
+		if (sliderLimits.MAX_STARS != event.detail.values[1] || Number.isFinite(currentFilters[ratingType + '_to'])) {
+			currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
+		}
 		starsChanged();
 	}
 	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
@@ -622,7 +657,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.stars_from, currentFilters.stars_to]}
+					values={[
+						Number.isFinite(currentFilters.stars_from) ? currentFilters.stars_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.stars_to) ? currentFilters.stars_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -656,7 +694,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.accrating_from, currentFilters.accrating_to]}
+					values={[
+						Number.isFinite(currentFilters.accrating_from) ? currentFilters.accrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.accrating_to) ? currentFilters.accrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -690,7 +731,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.passrating_from, currentFilters.passrating_to]}
+					values={[
+						Number.isFinite(currentFilters.passrating_from) ? currentFilters.passrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.passrating_to) ? currentFilters.passrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -724,7 +768,10 @@
 					min={sliderLimits.MIN_STARS}
 					max={sliderLimits.MAX_STARS}
 					step={sliderLimits.STAR_GRANULARITY}
-					values={[currentFilters.techrating_from, currentFilters.techrating_to]}
+					values={[
+						Number.isFinite(currentFilters.techrating_from) ? currentFilters.techrating_from : Number.NEGATIVE_INFINITY,
+						Number.isFinite(currentFilters.techrating_to) ? currentFilters.techrating_to : Number.POSITIVE_INFINITY,
+					]}
 					float
 					hoverable
 					pips
@@ -745,13 +792,28 @@
 			</section>
 
 			<section class="filter">
-				<label>Has mode</label>
-				<Select
-					bind:value={currentFilters.mode}
-					on:change={onModeChanged}
-					options={modeFilterOptions}
-					nameSelector={x => x.label}
-					valueSelector={x => x.key} />
+				<div class="mode-and-diff">
+					<div>
+						<label>Has diff</label>
+						<Select
+							bind:value={currentFilters.difficulty}
+							on:change={onDifficultyChanged}
+							options={difficultyFilterOptions}
+							nullPlaceholder={difficultyNullPlaceholder}
+							nameSelector={x => x.label}
+							valueSelector={x => x.key} />
+					</div>
+					<div>
+						<label>Has mode</label>
+						<Select
+							bind:value={currentFilters.mode}
+							on:change={onModeChanged}
+							options={modeFilterOptions}
+							nullPlaceholder={modeNullPlaceholder}
+							nameSelector={x => x.label}
+							valueSelector={x => x.key} />
+					</div>
+				</div>
 			</section>
 
 			<h2 class="title is-5">Playlists</h2>
@@ -931,6 +993,12 @@
 	.table-switches {
 		display: flex;
 		gap: 0.5em;
+	}
+
+	.mode-and-diff {
+		display: flex;
+		gap: 1em;
+		flex-wrap: wrap;
 	}
 
 	:global(.pager-and-switch .pagination) {

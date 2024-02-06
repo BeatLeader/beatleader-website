@@ -37,7 +37,7 @@
 
 	const params = [
 		{key: 'search', default: '', process: processString},
-		{key: 'sortBy', default: 'pp', process: processString},
+		{key: 'sortBy', default: 'captures', process: processString},
 		{key: 'order', default: 'desc', process: processString},
 	];
 
@@ -136,6 +136,7 @@
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy clans with 3 players or more', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank clans with 3 players or more', iconFa: 'fa fa-list-ol'},
 		{id: 'count', label: 'Players', title: 'Sort by player count', iconFa: 'fa fa-user'},
+		{id: 'captures', label: 'Maps Captured', title: 'Sort by maps captured', iconFa: 'fa fa-flag'},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -263,6 +264,10 @@
 			</section>
 
 			<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+
+			<a class="globalmap" href="/clansmap">
+				<img src="/assets/clan-map.png" />
+			</a>
 		</ContentBox>
 	</aside>
 </section>

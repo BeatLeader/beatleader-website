@@ -6,7 +6,8 @@
 	import Badge from '../Badge.svelte';
 	import Value from '../Value.svelte';
 
-	export let score;
+	export let score = null;
+	export let accuracyOverride = null;
 	export let prevScore = null;
 	export let showPercentageInstead = false;
 	export let showMods = true;
@@ -38,14 +39,14 @@
 		);
 	}
 
-	$: badge = getBadge(score?.acc);
+	$: badge = getBadge(accuracyOverride ?? score?.acc);
 	$: fcacc =
 		score?.fcAccuracy && score?.acc && Math.abs(score?.fcAccuracy * 100 - score?.acc) > 0.01
 			? '\nFC acc: ' + formatNumber(score?.fcAccuracy * 100) + '%'
 			: '';
 	$: mods = score?.mods;
 
-	$: value = score?.acc ?? 0;
+	$: value = accuracyOverride ?? score?.acc ?? 0;
 	$: prevValue =
 		secondary === 'improvement'
 			? value - (score?.scoreImprovement?.accuracy ?? 0)
