@@ -87,15 +87,13 @@ export default (
 
 		for (const scoreRow of newState) {
 			if (currentService !== 'accsaber') {
-				stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId))
-					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-					.then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow)))
-					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow));
+				stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => ppAttributionEnhancer(draft, currentPlayerId)).then(
+					scoreRow => setStateRow(enhanceTaskId, scoreRow)
+				);
 			} else {
-				stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft))
-					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-					.then(scoreRow => stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow)))
-					.then(scoreRow => setStateRow(enhanceTaskId, scoreRow));
+				stateProduce(scoreRow, getPatchId(currentPlayerId, scoreRow), draft => beatMapsEnhancer(draft)).then(scoreRow =>
+					setStateRow(enhanceTaskId, scoreRow)
+				);
 			}
 		}
 	};
