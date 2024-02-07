@@ -5,6 +5,7 @@
 	import ClanBadges from '../Player/ClanBadges.svelte';
 	import ClanName from '../Clans/ClanName.svelte';
 	import createClanRankingStore from '../../stores/http/http-clan-ranking-store';
+	import {processScore} from '../../network/clients/beatleader/scores/utils/processScore';
 	import {fade, fly} from 'svelte/transition';
 	import {flip} from 'svelte/animate';
 	import {getTimeStringColor} from '../../utils/date';
@@ -24,6 +25,7 @@
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import SongScoreCompact from '../Leaderboards/SongScoreCompact.svelte';
 
 	export let cr = null;
 	export let idx = null;
@@ -119,11 +121,9 @@
 </script>
 
 {#if cr}
-	<div class={`player-score ${inList ? 'score-in-list' : ''}`}>
-
+	<div class="player-score">
 		<span class="rank tablet-and-up">
-				<ScoreRank
-					rank={cr.rank} />
+			<ScoreRank rank={cr.rank} />
 
 			<div class="timeset">
 				<FormattedDate date={cr.lastUpdateTime} />
@@ -145,31 +145,19 @@
 
 		{#if !noIcons}
 			<div class="up-to-tablet icons">
-				<Icons
-					layoutType="large"
-					{hash}
-					{diffInfo}
-					icons={selectedIcons}
-					noPin={true} />
+				<Icons layoutType="large" {hash} {diffInfo} icons={selectedIcons} noPin={true} />
 			</div>
 			<div class="mobile-only icons">
-				<Icons
-					layoutType="flat"
-					{hash}
-					{diffInfo}
-					icons={selectedIcons}
-					noPin={true} />
+				<span class="rank">
+					<ScoreRank rank={cr.rank} />
+				</span>
+
+				<span class="timeset">
+					<FormattedDate date={cr.lastUpdateTimeNumber} />
+				</span>
+				<Icons layoutType="flat" {hash} {diffInfo} icons={selectedIcons} noPin={true} />
 			</div>
 		{/if}
-		<span class="rank mobile-only">
-				<ScoreRank
-					rank={cr.rank} />
-		</span>
-
-		<span class="timeset mobile-only">
-			<FormattedDate date={cr.lastUpdateTimeNumber} />
-		</span>
-
 
 		<div class="mobile-second-line">
 			<div class="score-options-section">
@@ -195,6 +183,12 @@
 			</span>
 		</div>
 	</div>
+	<div class={inList ? 'score-in-list' : ''}>
+		{#if cr.myScore}
+			<SongScoreCompact playerId={cr.myScore.playerId} songScore={processScore({leaderboard, ...cr.myScore})} service={'beatleader'} />
+		{/if}
+	</div>
+
 	{#if !$clanRankingStore && $isLoading}
 		<div class="align-spinner">
 			<Spinner />
@@ -419,6 +413,7 @@
 			width: 100%;
 			margin-top: -0.6em;
 			margin-bottom: 0.4em;
+			gap: 1em;
 		}
 
 		.player {
@@ -426,6 +421,10 @@
 		}
 		.score-options-section.mobile-only {
 			display: grid !important;
+		}
+
+		.player-score .rank {
+			margin-right: -1.5em;
 		}
 	}
 	.pp {
@@ -504,6 +503,7 @@
 		font-size: 0.875em;
 		min-width: 2em;
 		flex: none;
+		margin-top: 0.8em;
 	}
 
 	.player-score .player {
@@ -529,7 +529,7 @@
 	}
 
 	.player-score .timeset {
-		text-align: right;
+		text-align: center;
 		min-width: fit-content;
 	}
 
@@ -610,6 +610,13 @@
 		font-size: 0.9em !important;
 	}
 
+	:global(.song-score .main) {
+		max-width: 16em;
+		margin: 0.5em;
+		border: solid purple 2px;
+		border-radius: 6px;
+	}
+
 	@media screen and (max-width: 767px) {
 		.player-score {
 			flex-direction: column;
@@ -637,6 +644,10 @@
 
 		.mobile-second-line :global(.player-performance) {
 			width: 100%;
+		}
+
+		:global(.song-score .main) {
+			max-width: none;
 		}
 	}
 </style>
