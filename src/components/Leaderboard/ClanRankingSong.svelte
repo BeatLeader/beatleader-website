@@ -183,7 +183,7 @@
 			</span>
 		</div>
 	</div>
-	<div class={inList ? 'score-in-list' : ''}>
+	<div class={`clan-map-my-score ${inList ? 'score-in-list' : ''}`}>
 		{#if cr.myScore}
 			<SongScoreCompact playerId={cr.myScore.playerId} songScore={processScore({leaderboard, ...cr.myScore})} service={'beatleader'} />
 		{/if}
@@ -610,7 +610,7 @@
 		font-size: 0.9em !important;
 	}
 
-	:global(.song-score .main) {
+	:global(.clan-map-my-score .song-score .main) {
 		max-width: 16em;
 		margin: 0.5em;
 		border: solid purple 2px;
@@ -646,7 +646,7 @@
 			width: 100%;
 		}
 
-		:global(.song-score .main) {
+		:global(.clan-map-my-score .song-score .main) {
 			max-width: none;
 		}
 	}
