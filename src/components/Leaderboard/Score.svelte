@@ -114,7 +114,7 @@
 					hideFlag={$configStore?.leaderboardPreferences?.show?.country === false || isBot}
 					on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
 
-				{#if !hideClans || $configStore?.leaderboardPreferences?.show?.clans !== false}
+				{#if !hideClans && $configStore?.leaderboardPreferences?.show?.clans !== false}
 					<ClanBadges player={score.player} />
 				{/if}
 			</div>
