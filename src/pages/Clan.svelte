@@ -198,7 +198,7 @@
 	$: numOfItems = $clanStore ? $clanStore?.metadata?.total : null;
 	$: itemsPerPage = $clanStore ? $clanStore?.metadata?.itemsPerPage : 10;
 
-	$: changePageAndFilters(maps, page, buildFiltersFromLocation(location), false);
+	$: changePageAndFilters(maps, page, buildFiltersFromLocation(location), false, false);
 
 	$: clan = $clanStore?.container ?? null;
 	$: playersPage = $clanStore?.data ?? [];
