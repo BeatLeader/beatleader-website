@@ -240,6 +240,7 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
 		{id: 'externalStatuses', value: led?.song?.externalStatuses},
+		{id: 'featuredPlaylists', value: led?.featuredPlaylists},
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},

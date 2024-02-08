@@ -39,12 +39,14 @@ export const DEFAULT_CONFIG = {
 		daysToCompare: 1,
 		daysOfHistory: 30,
 		graphHeight: 350,
+
 		leaderboardStatsShown: false,
 		curveShown: false,
 		qualificationInfoShown: false,
 		commentaryShown: false,
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
+		leaderboardShowPlaylists: true,
 
 		showFiltersOnRanking: true,
 		maps3D: true,

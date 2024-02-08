@@ -79,6 +79,7 @@
 
 	let owners = [];
 	let canModify = true;
+	let canInstall = true;
 
 	async function retrieveOwner(playlist, currentPlayerId) {
 		var newOwners = [];
@@ -86,6 +87,10 @@
 		if (playlist?.customData?.owner) {
 			if (playlist.customData.owner == 'BeatLeader') {
 				canModify = false;
+				return;
+			}
+			if (playlist.customData.owner == 'BeatGames') {
+				canInstall = false;
 				return;
 			}
 
@@ -265,6 +270,7 @@
 							{/if}
 						{/if}
 					{/if}
+					{#if canInstall}
 					{#if playlistId}
 						{#if thinking}
 							<Spinner />
@@ -284,6 +290,7 @@
 						noMargin={true}
 						type="primary"
 						on:click={() => store.download(playlist)} />
+						{/if}
 				</div>
 			</div>
 		</div>
