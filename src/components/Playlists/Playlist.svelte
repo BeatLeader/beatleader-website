@@ -90,6 +90,7 @@
 				return;
 			}
 			if (playlist.customData.owner == 'BeatGames') {
+				canModify = false;
 				canInstall = false;
 				return;
 			}
@@ -271,26 +272,26 @@
 						{/if}
 					{/if}
 					{#if canInstall}
-					{#if playlistId}
-						{#if thinking}
-							<Spinner />
-						{:else}
-							<Button
-								url="bsplaylist://playlist/https://api.beatleader.xyz/playlist/{playlistId}"
-								noMargin={true}
-								type="green"
-								iconFa="far fa-hand-pointer"
-								title="One click install"
-								on:click={() => installOneClick()} />
+						{#if playlistId}
+							{#if thinking}
+								<Spinner />
+							{:else}
+								<Button
+									url="bsplaylist://playlist/https://api.beatleader.xyz/playlist/{playlistId}"
+									noMargin={true}
+									type="green"
+									iconFa="far fa-hand-pointer"
+									title="One click install"
+									on:click={() => installOneClick()} />
+							{/if}
 						{/if}
+						<Button
+							iconFa="fas fa-download"
+							title="Download playlist"
+							noMargin={true}
+							type="primary"
+							on:click={() => store.download(playlist)} />
 					{/if}
-					<Button
-						iconFa="fas fa-download"
-						title="Download playlist"
-						noMargin={true}
-						type="primary"
-						on:click={() => store.download(playlist)} />
-						{/if}
 				</div>
 			</div>
 		</div>
