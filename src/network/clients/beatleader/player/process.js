@@ -31,6 +31,7 @@ export default response => {
 		eventsParticipating,
 		profileSettings,
 		changes,
+		clanOrder,
 	} = response;
 
 	let profilePicture = avatar;
@@ -123,6 +124,7 @@ export default response => {
 			socials,
 			changes,
 			clans,
+			clanOrder,
 		},
 		profileSettings: profileSettings
 			? {
