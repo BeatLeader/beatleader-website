@@ -37,9 +37,9 @@
 			on:finalize={handleDndFinalize}
 			class="clan-badges">
 			{#each clans as clan, idx (clan.id)}
-				<a class="change-wobble clan-tag" href={`/clan/${clan?.tag}`} animate:flip={{duration: 300}} on:click|stopPropagation>
+				<a class="change-wobble clan-tag {idx == 0 ? 'main-clan' : ''}" href={`/clan/${clan?.tag}`} animate:flip={{duration: 300}} on:click|stopPropagation>
 					<Badge
-						label={(highlightMain && idx == 0 ? "👑" : "") + clan?.tag ?? '???'}
+						label={(highlightMain && idx == 0 ? "🏠" : "") + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
 						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
@@ -52,9 +52,9 @@
 	{:else}
 		<span class="clan-badges">
 			{#each clans as clan, idx (clan.tag)}
-				<a class="clan-tag" href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
+				<a class="clan-tag {idx == 0 ? 'main-clan' : ''}" href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
 					<Badge
-						label={(highlightMain && idx == 0 ? "👑" : "") + clan?.tag ?? '???'}
+						label={(highlightMain && idx == 0 ? "🏠" : "") + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
 						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
@@ -109,7 +109,7 @@
 	}
 
 	.clan-tag {
-		text-wrap: nowrap;
+		white-space: nowrap;
 	}
 
 	:global(.clan-badges .change-wobble .badge:nth-child(2n)) {
