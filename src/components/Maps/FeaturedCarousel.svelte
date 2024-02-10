@@ -1,6 +1,4 @@
 <script>
-	import CarouselCard from './CarouselCard.svelte';
-	import createContainerStore from '../../stores/container';
 	import {onMount} from 'svelte';
 	import {navigate} from 'svelte-routing/src/history';
 	import {fly} from 'svelte/transition';
@@ -16,16 +14,14 @@
 	export let showButtons = false;
 
 	let halfCardWidthRatio = (1 - cardWidthRatio) / 2;
+	let carouselWidth;
 	let mainEl = null;
+	let translation = 0 * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
 	let swipeHandlersBinded = false;
 	let currentCenteredIndex = 0;
 	let maskLeft = '15%';
 	let maskRight = '85%';
 	let autoMoveTimeouts = [];
-
-	const bodyStore = createContainerStore();
-	const containerStore = createContainerStore();
-	const mainStore = createContainerStore();
 
 	function moveForward() {
 		interruptMotion();
@@ -118,9 +114,6 @@
 	function startObserving(el) {
 		if (!el) return;
 
-		mainStore.observe(el);
-		bodyStore.observe(document.body);
-		containerStore.observe(el.parentElement);
 		if (!swipeHandlersBinded) {
 			mainEl.addEventListener('swiped-left', moveForward);
 			mainEl.addEventListener('swiped-right', moveBackward);
@@ -139,8 +132,6 @@
 	}
 
 	$: startObserving(mainEl);
-	$: carouselWidth = $mainStore.nodeWidth;
-	$: translation = 0 * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
 	$: {
 		halfCardWidthRatio = (1 - cardWidthRatio) / 2;
 		handleResize();
@@ -150,6 +141,7 @@
 {#if cards && cards.length > 0}
 	<section
 		bind:this={mainEl}
+		bind:offsetWidth={carouselWidth}
 		on:resize={handleResize}
 		on:mouseenter={removeAutoMoveTimeout}
 		on:mouseleave={createAutoMoveTimeout}
