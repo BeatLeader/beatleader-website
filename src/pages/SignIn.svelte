@@ -77,14 +77,7 @@
 					</div>
 
 					{#if showBeatSaverLogin}
-						<form action={BL_API_URL + 'signin'} method="post">
-							<input type="hidden" name="Provider" value="BeatSaver" />
-							<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
-
-							<Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit" />
-						</form>
-						<span class="beat-saver-description"
-							>By using BeatSaver login you are making the account not usable in-game. Make sure you understand what you are doing</span>
+						<a href="/developer">Click here if you do not own the game</a>
 					{/if}
 				</div>
 				<div class="login-option with-line-to-left">
