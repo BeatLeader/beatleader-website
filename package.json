@@ -47,6 +47,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@lottiefiles/svelte-lottie-player": "^0.3.0",
     "@popperjs/core": "^2.11.6",
     "atropos": "^1.0.2",
     "custom-protocol-check": "https://github.com/claap-app/custom-protocol-check.git",

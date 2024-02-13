@@ -79,6 +79,13 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@lottiefiles/svelte-lottie-player@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@lottiefiles/svelte-lottie-player/-/svelte-lottie-player-0.3.0.tgz#05fab9c2ac09144c877cdea7e3cfa06cd1b2c8e7"
+  integrity sha512-u7kwq6YlNYCN7pRO3er+1/uDDwBX12c8hnKFxmRejAW78d3Ps6Hdq9XDUYHNAr+0euEf9p2RvpDmZaKQzcJXVw==
+  dependencies:
+    lottie-web "^5.10.0"
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -1315,6 +1322,11 @@ lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
+
+lottie-web@^5.10.0:
+  version "5.12.2"
+  resolved "https://registry.yarnpkg.com/lottie-web/-/lottie-web-5.12.2.tgz#579ca9fe6d3fd9e352571edd3c0be162492f68e5"
+  integrity sha512-uvhvYPC8kGPjXT3MyKMrL3JitEAmDMp30lVkuq/590Mw9ok6pWcFCwXJveo0t5uqYw1UREQHofD+jVpdjBv8wg==
 
 luxon@^2.0.2:
   version "2.5.2"

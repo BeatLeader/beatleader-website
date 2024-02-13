@@ -48,6 +48,7 @@
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
+	import LovegePage from './pages/Lovege.svelte';
 
 	export let url = '';
 
@@ -283,6 +284,9 @@
 					</Route>
 					<Route path="/developer" let:params let:location>
 						<DeveloperPortalPage {location} />
+					</Route>
+					<Route path="/lovege" let:params let:location>
+						<LovegePage {location} />
 					</Route>
 					<Route path="/*" component={NotFoundPage} />
 				</div>
