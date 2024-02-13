@@ -66,7 +66,7 @@
 		getControllerForEnum(score?.score?.controller).length > 0 ? ' with ' + getControllerForEnum(score?.score?.controller) : '';
 	$: platformDescription = describePlatform(score?.score?.platform);
 	$: title = headset?.name + controllerDescription + (platformDescription?.description ? '\n' + platformDescription?.description : '');
-	$: headsetStyle = `width: 1.2em; filter: ${headset?.color}`;
+	$: headsetStyle = `width: 1.2em; height: 1.2em; filter: ${headset?.color}`;
 </script>
 
 {#if score}
@@ -92,7 +92,9 @@
 			</div>
 			<div class="player">
 				{#if $configStore?.leaderboardPreferences?.show?.hmd !== false}
-					<img src={'/assets/' + headset?.icon} alt={headset?.name} {title} style={headsetStyle} />
+					<div class="hmd-image-container">
+						<img src={'/assets/' + headset?.icon} alt={headset?.name} {title} style={headsetStyle} />
+					</div>
 				{/if}
 				{#if $configStore?.leaderboardPreferences?.show?.avatar !== false}
 					<Avatar player={score.player} />
@@ -367,6 +369,13 @@
 
 	.bot {
 		background-color: #8080804d;
+	}
+
+	.hmd-image-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		align-self: center;
 	}
 
 	:global(.bot-badge .badge) {
