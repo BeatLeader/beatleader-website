@@ -723,7 +723,7 @@
 					</nav>
 				{/if}
 
-				{#if leaderboardShowSorting}
+				{#if leaderboardShowSorting && currentType != 'clanranking'}
 					<nav class="switcher-nav" transition:fade|global>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
