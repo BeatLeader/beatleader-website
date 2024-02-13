@@ -213,7 +213,7 @@
 	function checkUnreadValentines(account) {
 		if (!account) return;
 
-		unreadValentines = account?.valentines?.find(v => !v.viewed)
+		unreadValentines = account?.valentines?.find(v => !v.viewed);
 	}
 
 	$: updateHref();
@@ -363,6 +363,26 @@
 		</a>
 	{/if}
 
+	<a
+		class="heart-link mobile-only"
+		href="/lovege"
+		on:click|preventDefault={() => {
+			navigate('/lovege');
+		}}>
+		<div class="lottie-heart">
+			{#if $configStore?.preferences?.openedLovege || !$configStore?.preferences?.openedLovege}
+			<LottiePlayer
+				speed="1"
+				width="1.3em"
+				height="1.3em"
+				autoplay
+				loop={unreadValentines || !$configStore?.preferences?.openedLovege}
+				controls={false}
+				src={`/assets/animations/lovege-${unreadValentines ? 'message' : 'clickme'}.json`} />
+				{/if}
+		</div>
+	</a>
+
 	<a href="/ranking/1" on:click|preventDefault={() => navigate('/ranking/1')}>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
 			<path
@@ -484,16 +504,18 @@
 			on:click|preventDefault={() => {
 				navigate('/lovege');
 			}}>
+			{#if $configStore?.preferences?.openedLovege || !$configStore?.preferences?.openedLovege}
 			<div class="lottie-heart">
 				<LottiePlayer
 					speed="1"
 					width="1.3em"
 					height="1.3em"
 					autoplay
-					loop
+					loop={unreadValentines || !$configStore?.preferences?.openedLovege}
 					controls={false}
-					src={`/assets/animations/lovege-${unreadValentines ? "message" : "clickme"}.json`} />
+					src={`/assets/animations/lovege-${unreadValentines ? 'message' : 'clickme'}.json`} />
 			</div>
+			{/if}
 		</a>
 
 		<a
@@ -758,10 +780,25 @@
 		background-color: #ffffff !important;
 	}
 
+	.heart-link.mobile-only {
+		align-items: center;
+		align-self: center;
+		justify-content: center;
+		margin-bottom: 0.8em;
+		padding-right: 0;
+    	padding-left: 0;
+	}
+
 	.lottie-heart {
 		margin-top: 0.08em;
 		width: 1.4em;
 		height: 1.4em;
+	}
+
+	.mobile-only .lottie-heart {
+		margin-top: 0.08em;
+		width: 2em;
+		height: 2em;
 	}
 
 	.heart-link:hover .heart-button {

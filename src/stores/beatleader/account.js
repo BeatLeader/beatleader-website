@@ -368,6 +368,15 @@ export default (refreshOnCreate = true) => {
 		set(account);
 	};
 
+	const noteMessageViewed = messageId => {
+		var valentine = account?.valentines?.find(v => v.id == messageId);
+		if (valentine) {
+			valentine.viewed = true;
+		}
+
+		set(account);
+	};
+
 	const addFollowed = async playerId => queue.BEATLEADER_API.addFollowed(playerId).finally(refresh);
 
 	const removeFollowed = async playerId => queue.BEATLEADER_API.removeFollowed(playerId).finally(refresh);
@@ -405,6 +414,7 @@ export default (refreshOnCreate = true) => {
 		removeFollowed,
 		refreshLastQualificationTime,
 		refreshPatreon,
+		noteMessageViewed
 	};
 
 	return store;
