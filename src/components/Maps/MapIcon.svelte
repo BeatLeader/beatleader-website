@@ -38,6 +38,7 @@
 		border-radius: 15%;
 		position: absolute;
 		overflow: hidden;
+		box-shadow: 2px 2px 13px 4px rgba(0, 0, 0, 0.25);
 	}
 
 	.map-icon img {
