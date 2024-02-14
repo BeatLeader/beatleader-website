@@ -126,7 +126,7 @@
 
 	@media screen and (max-width: 950px) {
 		.card {
-			font-size: 0.75em;
+			font-size: 0.9em;
 		}
 	}
 
