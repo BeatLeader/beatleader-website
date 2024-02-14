@@ -1,10 +1,13 @@
 <script>
+	import {fly} from 'svelte/transition';
+
 	export let left = null;
 	export let right = null;
 	export let top = null;
 	export let bottom = null;
 	export let width = '7em';
 	export let height = null;
+	export let image = null;
 
 	let style = '';
 
@@ -25,13 +28,20 @@
 	$: left, right, top, bottom, width && setStyle();
 </script>
 
-<div class="map-icon" {style} />
+<div class="map-icon" {style} transition:fly|global>
+	{#if image}<img src={image} alt="Map Icon" />{/if}
+</div>
 
 <style>
 	.map-icon {
 		aspect-ratio: 1/1;
-		background-color: #000;
 		border-radius: 15%;
 		position: absolute;
+		overflow: hidden;
+	}
+
+	.map-icon img {
+		width: 100%;
+		height: 100%;
 	}
 </style>

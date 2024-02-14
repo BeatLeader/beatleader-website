@@ -3,7 +3,8 @@
 	import rankedTimer from '../../stores/ranked-timer';
 	import {fade} from 'svelte/transition';
 	import MapIcon from './MapIcon.svelte';
-	import PageOverlay from '../Common/PageOverlay.svelte';
+	import {fetchJson} from '../../network/fetch';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let categoryName;
 	export let showRankedCounter = false;
@@ -27,46 +28,86 @@
 		}
 	}
 
-	function setRankedIcons() {
+	async function setRankedIcons() {
+		let images = [];
+
+		await fetchJson(
+			BL_API_URL +
+				'leaderboards' +
+				'?leaderboardContext=general&page=1&count=15&type=ranked&sortBy=timestamp&order=desc&allTypes=0&allRequirements=0'
+		).then(response => {
+			let uniqueData = response.body.data.filter((map, index, self) => {
+				const songId = map?.song?.id;
+				return songId && self.findIndex(m => m?.song?.id === songId) === index;
+			});
+
+			uniqueData.forEach(map => {
+				images.push(map?.song?.fullCoverImage ?? map?.song?.coverImage);
+			});
+		});
+
 		icons = [
 			{
 				width: '47%',
 				left: '-9%',
 				top: '32%',
+				image: images[0],
 			},
 			{
 				width: '39%',
 				right: '-3%',
 				top: '27%',
+				image: images[1],
 			},
 			{
 				width: '41%',
 				left: '8%',
 				top: '-22.7%',
+				image: images[2],
 			},
 		];
 	}
 
-	function setTrendingIcons() {
+	async function setTrendingIcons() {
 		icons = [];
 	}
 
-	function setCuratedIcons() {
+	async function setCuratedIcons() {
+		let images = [];
+
+		await fetchJson(
+			BL_API_URL +
+				'leaderboards' +
+				'?leaderboardContext=general&page=1&count=15&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=2&allRequirements=0'
+		).then(response => {
+			let uniqueData = response.body.data.filter((map, index, self) => {
+				const songId = map?.song?.id;
+				return songId && self.findIndex(m => m?.song?.id === songId) === index;
+			});
+
+			uniqueData.forEach(map => {
+				images.push(map?.song?.fullCoverImage ?? map?.song?.coverImage);
+			});
+		});
+
 		icons = [
 			{
 				width: '52%',
 				left: '-7%',
 				top: '44%',
+				image: images[0],
 			},
 			{
 				width: '43%',
 				right: '-5%',
 				top: '30%',
+				image: images[1],
 			},
 			{
 				width: '41%',
 				left: '8%',
 				top: '-22.7%',
+				image: images[2],
 			},
 		];
 	}
@@ -118,6 +159,7 @@
 		position: relative;
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
 		overflow: hidden;
+		cursor: pointer;
 	}
 
 	@media screen and (max-width: 950px) {
@@ -142,6 +184,8 @@
 		font-weight: 700;
 		line-height: normal;
 		z-index: 50;
+		text-shadow: 2px 2px 4px black;
+		pointer-events: none;
 	}
 
 	.rankedBatchCounter {
@@ -154,6 +198,8 @@
 		display: flex;
 		flex-direction: column;
 		z-index: 30;
+		text-shadow: 2px 2px 4px black;
+		pointer-events: none;
 	}
 
 	.counterHeader {
@@ -181,5 +227,11 @@
 		top: 0;
 		bottom: 0;
 		z-index: 1;
+		transition: transform 600ms ease-in-out;
+		transform-origin: 50% 20%;
+	}
+
+	.icons-container:hover {
+		transform: scale(1.1);
 	}
 </style>

@@ -43,7 +43,7 @@
 	import BackToTop from '../components/Common/BackToTop.svelte';
 	import MapCard from '../components/Leaderboards/MapCard.svelte';
 	import {configStore} from '../stores/config';
-	import produce from 'immer';
+	import produce, {current} from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
 
@@ -96,6 +96,7 @@
 
 		if (!filters.mapType) filters.mapType = null;
 
+		console.log('filters', filters);
 		return filters;
 	});
 
