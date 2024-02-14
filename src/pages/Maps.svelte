@@ -6,6 +6,9 @@
 	import MapsCategoryCard from '../components/Maps/MapsCategoryCard.svelte';
 	import {fade} from 'svelte/transition';
 	import HeaderCard from '../components/Maps/HeaderCard.svelte';
+	import {fetchJson} from '../network/fetch';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import _Context from 'suneditor/src/lib/context';
 
 	let cards = [
 		{
@@ -16,6 +19,16 @@
 				imageUrl: '/assets/Discover/23_BeastSaber_times.png',
 				targetUrl: undefined,
 				forcedColor: undefined,
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Map Of The Week',
+				body: 'Check out this weeks Map of the Week!',
+				imageUrl: '/assets/Main/landing.webp',
+				targetUrl: undefined,
+				forcedColor: 'rgba(0, 0, 0, 0)',
 			},
 		},
 		{
@@ -94,6 +107,36 @@
 		},
 	];
 
+	async function getLatestMapOfTheWeek() {
+		let map;
+		let image;
+		let leaderboardLink;
+		let description;
+
+		await fetchJson(
+			BL_API_URL +
+				'leaderboards' +
+				'?leaderboardContext=general&page=1&count=1&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=4&allRequirements=0'
+		).then(response => {
+			map = response.body.data[0];
+			console.log(map);
+			image = map?.song?.fullCoverImage ?? map?.song?.coverImage;
+			leaderboardLink = `/leaderboard/global/${map.id}`;
+			let mapper = map?.song?.mapper;
+			let songName = map?.song?.name + ' ' + map?.song?.subName;
+			let author = map?.song?.author;
+			description = `${author.trim()} - ${songName.trim()} \n Mapped by ${mapper.trim()}`;
+		});
+
+		let cardIndex = cards.findIndex(card => card.props.title === 'Map Of The Week');
+		let card = cards[cardIndex];
+		card.props.imageUrl = image;
+		card.props.targetUrl = leaderboardLink;
+		card.props.body = description;
+		card.props.forcedColor = undefined;
+		cards[cardIndex] = card;
+	}
+
 	let cardWidthRatio = 0.5;
 	let carouselHeight = '43em';
 
@@ -113,6 +156,8 @@
 	onDestroy(() => {
 		window.removeEventListener('resize', updateCardWidthRatio);
 	});
+
+	$: getLatestMapOfTheWeek();
 </script>
 
 <svelte:head>

@@ -35,10 +35,16 @@
 		}
 	}
 
+	function cleanLinkOfCors(link) {
+		link = link.replace('https://cdn.assets.beatleader.xyz/', '/cors/cdn-assets-bl/');
+		link = link.replace('https://cdn.beatsaver.com/', '/cors/cdnbeatsaver/');
+		return link;
+	}
+
 	function retrieveBackgroundColor(img) {
 		var context = document.createElement('canvas').getContext('2d');
 		if (typeof img == 'string') {
-			var src = img;
+			var src = cleanLinkOfCors(img);
 			img = new Image();
 			img.crossOrigin = 'anonymous';
 			img.src = src;
@@ -74,7 +80,7 @@
 
 		<div class="content">
 			<h1>{title}</h1>
-			<p>{body}</p>
+			<p style="white-space: pre-line">{body}</p>
 
 			<div class="buttons" class:active>
 				{#each buttons as button}
