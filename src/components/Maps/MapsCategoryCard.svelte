@@ -2,6 +2,8 @@
 	import {navigate} from 'svelte-routing';
 	import rankedTimer from '../../stores/ranked-timer';
 	import {fade} from 'svelte/transition';
+	import MapIcon from './MapIcon.svelte';
+	import PageOverlay from '../Common/PageOverlay.svelte';
 
 	export let categoryName;
 	export let showRankedCounter = false;
@@ -9,13 +11,81 @@
 	export let showComingSoon = false;
 	export let redirectUrl = null;
 
+	let icons = [];
+
+	function setIcons() {
+		switch (categoryName) {
+			case 'Ranked':
+				setRankedIcons();
+				break;
+			case 'Trending':
+				setTrendingIcons();
+				break;
+			case 'Curated':
+				setCuratedIcons();
+				break;
+		}
+	}
+
+	function setRankedIcons() {
+		icons = [
+			{
+				width: '47%',
+				left: '-9%',
+				top: '32%',
+			},
+			{
+				width: '39%',
+				right: '-3%',
+				top: '27%',
+			},
+			{
+				width: '41%',
+				left: '8%',
+				top: '-22.7%',
+			},
+		];
+	}
+
+	function setTrendingIcons() {
+		icons = [];
+	}
+
+	function setCuratedIcons() {
+		icons = [
+			{
+				width: '52%',
+				left: '-7%',
+				top: '44%',
+			},
+			{
+				width: '43%',
+				right: '-5%',
+				top: '30%',
+			},
+			{
+				width: '41%',
+				left: '8%',
+				top: '-22.7%',
+			},
+		];
+	}
+
 	function handleClick() {
 		if (redirectUrl) navigate(redirectUrl);
 	}
+
+	$: categoryName && setIcons();
 </script>
 
 <div class="card" style="background: {bgColor} !important;" on:click={handleClick}>
 	<h1>{categoryName}</h1>
+
+	<div class="icons-container">
+		{#each icons as icon}
+			<MapIcon {...icon} />
+		{/each}
+	</div>
 
 	{#if showRankedCounter && $rankedTimer}
 		<div class="rankedBatchCounter" transition:fade>
@@ -47,6 +117,13 @@
 		border-radius: 12px;
 		position: relative;
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
+		overflow: hidden;
+	}
+
+	@media screen and (max-width: 950px) {
+		.card {
+			height: 29em;
+		}
 	}
 
 	h1 {
@@ -64,6 +141,7 @@
 		font-style: normal;
 		font-weight: 700;
 		line-height: normal;
+		z-index: 50;
 	}
 
 	.rankedBatchCounter {
@@ -75,6 +153,7 @@
 		text-align: center;
 		display: flex;
 		flex-direction: column;
+		z-index: 30;
 	}
 
 	.counterHeader {
@@ -93,5 +172,14 @@
 		font-style: normal;
 		font-weight: 700;
 		line-height: normal;
+	}
+
+	.icons-container {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		z-index: 1;
 	}
 </style>
