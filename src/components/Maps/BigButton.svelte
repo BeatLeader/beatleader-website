@@ -13,8 +13,8 @@
 	.big-button {
 		position: relative;
 		width: fit-content;
-		padding: 0.5em 2em;
-		border-radius: 2.5em;
+		padding: 0.9em 2.3em;
+		border-radius: 0.5em;
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
 		z-index: 3;
 		cursor: pointer;
@@ -25,8 +25,8 @@
 	.big-button:before {
 		content: '';
 		position: absolute;
-		left: 0;
-		right: 0;
+		left: -0.25em;
+		right: -0.25em;
 		top: -6em;
 		bottom: -6em;
 		background: rgb(35, 35, 35);
@@ -36,7 +36,7 @@
 	}
 
 	.big-button:hover {
-		transform: scale(1.05);
+		transform: scale(1.025);
 	}
 
 	.big-button:hover:before {

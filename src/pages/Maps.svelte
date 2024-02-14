@@ -248,11 +248,11 @@
 		width: fit-content;
 		flex-direction: row;
 		justify-content: center;
-		gap: 1.25em;
-		padding: 1em;
+		gap: 0.6em;
+		padding: 0.6em;
 		background: #111111;
 		backdrop-filter: blur(10px) opacity(0.5);
-		border-radius: 2.5em;
+		border-radius: 0.5em;
 	}
 
 	@media screen and (max-width: 1920px) {
