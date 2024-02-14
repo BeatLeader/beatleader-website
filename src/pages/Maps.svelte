@@ -9,6 +9,8 @@
 	import {fetchJson} from '../network/fetch';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import _Context from 'suneditor/src/lib/context';
+	import BigButton from '../components/Maps/BigButton.svelte';
+	import EventCard from '../components/Maps/EventCard.svelte';
 
 	let cards = [
 		{
@@ -62,16 +64,6 @@
 				],
 			},
 		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Got something to share?',
-				body: 'DM Light Ai on Discord to get your map pack, event or announcement featured here!',
-				imageUrl: '/assets/Main/landing.webp',
-				targetUrl: 'https://discordapp.com/users/138596754592497664',
-				forcedColor: undefined,
-			},
-		},
 	];
 
 	let tournamentCards = [
@@ -95,16 +87,6 @@
 				forcedColor: 'rgb(8 37 52)',
 			},
 		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Got something to share?',
-				body: 'DM Light Ai on Discord to get your tournament, gameplay event or announcement featured here!',
-				imageUrl: '/assets/Main/landing.webp',
-				targetUrl: 'https://discordapp.com/users/138596754592497664',
-				forcedColor: undefined,
-			},
-		},
 	];
 
 	async function getLatestMapOfTheWeek() {
@@ -119,7 +101,6 @@
 				'?leaderboardContext=general&page=1&count=1&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=4&allRequirements=0'
 		).then(response => {
 			map = response.body.data[0];
-			console.log(map);
 			image = map?.song?.fullCoverImage ?? map?.song?.coverImage;
 			leaderboardLink = `/leaderboard/global/${map.id}`;
 			let mapper = map?.song?.mapper;
@@ -175,12 +156,22 @@
 				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
 			</div>
 
+			<div class="buttons">
+				<BigButton label="Leaderboards" destination="/leaderboards" />
+				<BigButton label="Events" destination="/events" />
+				<BigButton label="Nominated" destination="/leaderboards/1?type=nominated" />
+			</div>
+
 			<div class="items">
 				<HeaderCard text="Discover" />
 				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
 				<div style="margin-bottom: 2em;" />
 				<HeaderCard text="Tournaments" />
 				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
+				<EventCard
+					text="Got something to share?"
+					body="DM Light Ai on Discord to get your map packs, events, tournaments, or announcement featured here!"
+					image="/assets/Main/landing.webp" />
 			</div>
 		</ContentBox>
 	</article>
@@ -235,6 +226,14 @@
 		margin: 3.25em;
 	}
 
+	.buttons {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: 1.25em;
+		margin: 3.25em;
+	}
+
 	@media screen and (max-width: 950px) {
 		.categories {
 			flex-direction: column;
@@ -249,6 +248,10 @@
 			justify-content: space-between;
 			gap: 1.5em;
 			margin: 0.25em;
+		}
+
+		.buttons {
+			margin: 3.25em 0.25em;
 		}
 	}
 </style>

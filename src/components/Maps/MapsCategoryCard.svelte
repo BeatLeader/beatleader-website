@@ -183,7 +183,7 @@
 		font-style: normal;
 		font-weight: 700;
 		line-height: normal;
-		z-index: 50;
+		z-index: 30;
 		text-shadow: 2px 2px 4px black;
 		pointer-events: none;
 	}
