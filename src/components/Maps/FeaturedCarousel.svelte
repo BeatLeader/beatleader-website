@@ -209,6 +209,7 @@
 		-webkit-mask-image: linear-gradient(90deg, transparent 0%, white var(--maskLeft), white var(--maskRight), transparent 100%);
 		mask-image: linear-gradient(90deg, transparent 0%, white var(--maskLeft), white var(--maskRight), transparent 100%);
 		-webkit-tap-highlight-color: transparent;
+		pointer-events: none;
 	}
 
 	/*.carousel:after {
@@ -239,6 +240,7 @@
 		overflow: visible;
 		transform: translateX(var(--translation));
 		transition: ease-in-out 300ms;
+		pointer-events: all;
 	}
 
 	.bullets {
@@ -248,6 +250,7 @@
 		transform: translateX(-50%);
 		bottom: 10.5em;
 		z-index: 1;
+		pointer-events: all;
 	}
 
 	.bullets > span {
