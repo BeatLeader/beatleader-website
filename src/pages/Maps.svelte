@@ -11,6 +11,16 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'BeastSaber Mapping Awards Premiere',
+				body: 'Watch the BeastSaber Mapping Awards Premiere on Feb 17th at 10PM UTC!',
+				imageUrl: '/assets/Discover/23_BeastSaber_times.png',
+				targetUrl: undefined,
+				forcedColor: undefined,
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'BS Rewind 2023',
 				body: 'Watch the best of 2023, compiled by Cube Community!',
 				imageUrl: '/assets/Discover/cc_rewind_23.jpg',
@@ -44,9 +54,9 @@
 			props: {
 				title: 'Got something to share?',
 				body: 'DM Light Ai on Discord to get your map pack, event or announcement featured here!',
-				imageUrl: '/assets/Discover/lightai.png',
+				imageUrl: '/assets/Main/landing.webp',
 				targetUrl: 'https://discordapp.com/users/138596754592497664',
-				forcedColor: 'rgb(111 191 226)',
+				forcedColor: undefined,
 			},
 		},
 	];
@@ -77,9 +87,9 @@
 			props: {
 				title: 'Got something to share?',
 				body: 'DM Light Ai on Discord to get your tournament, gameplay event or announcement featured here!',
-				imageUrl: '/assets/Discover/lightai.png',
+				imageUrl: '/assets/Main/landing.webp',
 				targetUrl: 'https://discordapp.com/users/138596754592497664',
-				forcedColor: 'rgb(111 191 226)',
+				forcedColor: undefined,
 			},
 		},
 	];
@@ -123,6 +133,7 @@
 			<div class="items">
 				<HeaderCard text="Discover" />
 				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
+				<div style="margin-bottom: 2em;" />
 				<HeaderCard text="Tournaments" />
 				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
 			</div>
