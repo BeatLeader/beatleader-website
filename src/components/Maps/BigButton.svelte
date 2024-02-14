@@ -14,7 +14,7 @@
 		position: relative;
 		width: fit-content;
 		padding: 0.5em 2em;
-		border-radius: 23px;
+		border-radius: 2.5em;
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
 		z-index: 3;
 		cursor: pointer;
@@ -27,10 +27,10 @@
 		position: absolute;
 		left: 0;
 		right: 0;
-		top: -3em;
-		bottom: -3em;
-		background: rgb(217 24 116);
-		background: linear-gradient(130deg, rgb(217 24 116) 0%, rgb(47 36 188) 100%);
+		top: -6em;
+		bottom: -6em;
+		background: rgb(35, 35, 35);
+		background: linear-gradient(130deg, rgba(35, 35, 35, 1) 0%, rgba(55, 46, 122, 1) 100%);
 		transition: transform 300ms ease-in-out;
 		z-index: -1;
 	}
@@ -40,7 +40,7 @@
 	}
 
 	.big-button:hover:before {
-		transform: rotate(20deg);
+		transform: rotate(50deg);
 	}
 
 	.big-button h1 {

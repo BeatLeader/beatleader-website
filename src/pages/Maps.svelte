@@ -156,16 +156,23 @@
 				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
 			</div>
 
-			<div class="buttons">
-				<BigButton label="Leaderboards" destination="/leaderboards" />
-				<BigButton label="Events" destination="/events" />
-				<BigButton label="Nominated" destination="/leaderboards/1?type=nominated" />
+			<div class="buttons-container">
+				<div class="buttons">
+					<BigButton label="Leaderboards" destination="/leaderboards" />
+					<BigButton label="Events" destination="/events" />
+					<BigButton label="Nominated" destination="/leaderboards/1?type=nominated" />
+				</div>
 			</div>
 
 			<div class="items">
 				<HeaderCard text="Discover" />
 				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
-				<div style="margin-bottom: 2em;" />
+				<EventCard
+					text="Early 2024 Ranked event!"
+					body="Check out what was ranked and compete for a badge."
+					image="/assets/Main/landing.webp"
+					button={{url: '/event/44', label: 'Event', icon: 'fas fa-rocket'}} />
+				<div style="margin-bottom: 1em;" />
 				<HeaderCard text="Tournaments" />
 				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
 				<EventCard
@@ -187,6 +194,7 @@
 		max-width: 75em;
 		width: 100%;
 		overflow: hidden;
+		font-size: 1em;
 	}
 
 	article {
@@ -226,15 +234,38 @@
 		margin: 3.25em;
 	}
 
-	.buttons {
+	.buttons-container {
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		justify-content: center;
 		gap: 1.25em;
 		margin: 3.25em;
+		align-items: center;
+	}
+
+	.buttons {
+		display: flex;
+		width: fit-content;
+		flex-direction: row;
+		justify-content: center;
+		gap: 1.25em;
+		padding: 1em;
+		background: #111111;
+		backdrop-filter: blur(10px) opacity(0.5);
+		border-radius: 2.5em;
+	}
+
+	@media screen and (max-width: 1920px) {
+		.page-content {
+			font-size: 0.9em;
+		}
 	}
 
 	@media screen and (max-width: 950px) {
+		.page-content {
+			font-size: 0.8em;
+		}
+
 		.categories {
 			flex-direction: column;
 			gap: 1.5em;
@@ -250,7 +281,7 @@
 			margin: 0.25em;
 		}
 
-		.buttons {
+		.buttons-container {
 			margin: 3.25em 0.25em;
 		}
 	}
