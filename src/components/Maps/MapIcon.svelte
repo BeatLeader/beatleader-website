@@ -28,9 +28,11 @@
 	$: left, right, top, bottom, width && setStyle();
 </script>
 
-<div class="map-icon" {style} transition:fly|global>
-	{#if image}<img src={image} alt="Map Icon" />{/if}
-</div>
+{#if image}
+	<div class="map-icon" {style} transition:fly|global>
+		<img src={image} alt="Map Icon" />
+	</div>
+{/if}
 
 <style>
 	.map-icon {

@@ -33,8 +33,8 @@
 
 		await fetchJson(
 			BL_API_URL +
-				'leaderboards' +
-				'?leaderboardContext=general&page=1&count=15&type=ranked&sortBy=timestamp&order=desc&allTypes=0&allRequirements=0'
+				'leaderboards/groupped' +
+				'?leaderboardContext=general&page=1&count=3&type=ranked&sortBy=timestamp&order=desc&allTypes=0&allRequirements=0'
 		).then(response => {
 			let uniqueData = response.body.data.filter((map, index, self) => {
 				const songId = map?.song?.id;
@@ -77,9 +77,10 @@
 
 		await fetchJson(
 			BL_API_URL +
-				'leaderboards' +
-				'?leaderboardContext=general&page=1&count=15&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=2&allRequirements=0'
+				'leaderboards/groupped' +
+				'?leaderboardContext=general&page=1&count=3&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=2&allRequirements=0'
 		).then(response => {
+			console.log(response);
 			let uniqueData = response.body.data.filter((map, index, self) => {
 				const songId = map?.song?.id;
 				return songId && self.findIndex(m => m?.song?.id === songId) === index;
@@ -160,6 +161,10 @@
 		box-shadow: 2px 2px 18px 4px rgba(0, 0, 0, 0.25);
 		overflow: hidden;
 		cursor: pointer;
+
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 	}
 
 	@media screen and (max-width: 950px) {

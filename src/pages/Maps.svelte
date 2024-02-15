@@ -167,6 +167,7 @@
 			<div class="items">
 				<HeaderCard text="Discover" />
 				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
+				<div style="margin-bottom: -2.5em;" />
 				<EventCard
 					text="Early 2024 Ranked event!"
 					body="Check out what was ranked and compete for a badge."
@@ -175,6 +176,7 @@
 				<div style="margin-bottom: 1em;" />
 				<HeaderCard text="Tournaments" />
 				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
+				<div style="margin-bottom: 0.5em;" />
 				<EventCard
 					text="Got something to share?"
 					body="DM Light Ai on Discord to get your map packs, events, tournaments, or announcement featured here!"
