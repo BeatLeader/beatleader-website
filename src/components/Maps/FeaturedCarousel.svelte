@@ -161,6 +161,7 @@
 		);
 	}
 
+	$: mainDivStyle = showBigButtons ? 'position: relative;' : 'display: contents;';
 	$: startObserving(mainEl);
 	$: {
 		halfCardWidthRatio = (1 - cardWidthRatio) / 2;
@@ -169,7 +170,7 @@
 </script>
 
 {#if cards && cards.length > 0}
-	<div style="position: relative;">
+	<div style={mainDivStyle}>
 		<section
 			bind:this={mainEl}
 			bind:offsetWidth={carouselWidth}
