@@ -12,6 +12,7 @@
 	export let height = '40em';
 	export let cardWidthRatio = 0.5;
 	export let showButtons = false;
+	export let showBigButtons = false;
 
 	let halfCardWidthRatio = (1 - cardWidthRatio) / 2;
 	let carouselWidth;
@@ -139,58 +140,69 @@
 </script>
 
 {#if cards && cards.length > 0}
-	<section
-		bind:this={mainEl}
-		bind:offsetWidth={carouselWidth}
-		on:resize={handleResize}
-		on:mouseenter={removeAutoMoveTimeout}
-		on:mouseleave={createAutoMoveTimeout}
-		class="carousel"
-		style="--cards-cnt: {cards.length +
-			2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
-		{#if cards.length > 1 && showNavBullets}
-			<div class="bullets" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}}>
+	<div style="position: relative;">
+		<section
+			bind:this={mainEl}
+			bind:offsetWidth={carouselWidth}
+			on:resize={handleResize}
+			on:mouseenter={removeAutoMoveTimeout}
+			on:mouseleave={createAutoMoveTimeout}
+			class="carousel"
+			style="--cards-cnt: {cards.length +
+				2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
+			{#if cards.length > 1 && showNavBullets}
+				<div class="bullets" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}}>
+					{#each cards as card, index}
+						<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
+					{/each}
+					{#if showButtons}
+						<div class="button-left" on:click={moveBackward}>
+							<i class="fa-solid fa-arrow-left" />
+						</div>
+						<div class="button-right" on:click={moveForward}>
+							<i class="fa-solid fa-arrow-right" />
+						</div>
+					{/if}
+				</div>
+			{/if}
+
+			<div class="cards-wrapper">
+				{#if showFillerCards}
+					<svelte:component
+						this={cards[cards.length - 1].component}
+						{...cards[cards.length - 1].props}
+						active={cards.length - 1 === currentCenteredIndex}
+						clickAction={() => moveToPosition(cards.length - 1)}
+						nextAction={moveForward} />
+				{/if}
 				{#each cards as card, index}
-					<span class:active={index === currentCenteredIndex} on:click={() => moveToPosition(index)} />
+					<svelte:component
+						this={card.component}
+						{...card.props}
+						active={index === currentCenteredIndex}
+						clickAction={() => moveToPosition(index)}
+						nextAction={moveForward} />
 				{/each}
-				{#if showButtons}
-					<div class="button-left" on:click={moveBackward}>
-						<i class="fa-solid fa-arrow-left" />
-					</div>
-					<div class="button-right" on:click={moveForward}>
-						<i class="fa-solid fa-arrow-right" />
-					</div>
+				{#if showFillerCards}
+					<svelte:component
+						this={cards[0].component}
+						{...cards[0].props}
+						active={0 === currentCenteredIndex}
+						clickAction={() => moveToPosition(0)}
+						nextAction={moveForward} />
 				{/if}
 			</div>
-		{/if}
+		</section>
 
-		<div class="cards-wrapper">
-			{#if showFillerCards}
-				<svelte:component
-					this={cards[cards.length - 1].component}
-					{...cards[cards.length - 1].props}
-					active={cards.length - 1 === currentCenteredIndex}
-					clickAction={() => moveToPosition(cards.length - 1)}
-					nextAction={moveForward} />
-			{/if}
-			{#each cards as card, index}
-				<svelte:component
-					this={card.component}
-					{...card.props}
-					active={index === currentCenteredIndex}
-					clickAction={() => moveToPosition(index)}
-					nextAction={moveForward} />
-			{/each}
-			{#if showFillerCards}
-				<svelte:component
-					this={cards[0].component}
-					{...cards[0].props}
-					active={0 === currentCenteredIndex}
-					clickAction={() => moveToPosition(0)}
-					nextAction={moveForward} />
-			{/if}
-		</div>
-	</section>
+		{#if showBigButtons}
+			<div class="big-button left" on:click={moveBackward}>
+				<i class="fa-solid fa-arrow-left" />
+			</div>
+			<div class="big-button right" on:click={moveForward}>
+				<i class="fa-solid fa-arrow-right" />
+			</div>
+		{/if}
+	</div>
 {/if}
 
 <style>
@@ -287,5 +299,53 @@
 		z-index: 1;
 		cursor: pointer;
 		filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.85));
+	}
+
+	.big-button {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		z-index: 1;
+		cursor: pointer;
+		filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.85));
+		background: black;
+		padding: 0.75em;
+		width: 2.5em;
+		height: 2.5em;
+		border-radius: 2.5em;
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		transition: scale 150ms ease-in-out, transform 150ms ease-in-out;
+	}
+
+	.big-button:hover {
+		scale: 1.2;
+		transform: translateY(-42%);
+	}
+
+	.left {
+		left: 3em;
+	}
+
+	.right {
+		right: 3em;
+	}
+
+	@media (hover: none) {
+		.big-button:hover {
+			scale: 1;
+			transform: translateY(-50%);
+		}
+	}
+
+	@media screen and (max-width: 950px) {
+		.left {
+			left: 0.4em;
+		}
+
+		.right {
+			right: 0.4em;
+		}
 	}
 </style>

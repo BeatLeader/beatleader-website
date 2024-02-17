@@ -187,7 +187,7 @@
 
 			<div class="items">
 				<HeaderCard text="Discover" />
-				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
+				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
 				<div style="margin-bottom: -2.5em;" />
 				<EventCard
 					text="Early 2024 Ranked event!"
@@ -196,7 +196,7 @@
 					button={{url: '/event/44', label: 'Event', icon: 'fas fa-rocket'}} />
 				<div style="margin-bottom: 1em;" />
 				<HeaderCard text="Tournaments" />
-				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" />
+				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
 				<div style="margin-bottom: 0.5em;" />
 				<EventCard
 					text="Got something to share?"
@@ -292,7 +292,7 @@
 		.categories {
 			flex-direction: column;
 			gap: 1.5em;
-			margin-top: 4.25em;
+			margin-top: 6.25em;
 			font-size: 0.75em;
 		}
 
