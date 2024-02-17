@@ -257,7 +257,7 @@ export function rankedIn() {
 }
 
 export function rewindIn() {
-	return DateTime.fromJSDate(dateFromUnix("1708210800")).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
+	return DateTime.fromJSDate(dateFromUnix("1708207200")).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
 }
 
 export function willBeRankedInCurrentBatch(approvalTimeset) {
