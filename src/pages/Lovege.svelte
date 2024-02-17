@@ -1,7 +1,6 @@
 <script>
 	import ContentBox from '../components/Common/ContentBox.svelte';
-	import {fade, fly} from 'svelte/transition';
-	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import {LottiePlayer} from '@lottiefiles/svelte-lottie-player';
 	import createPlayerService from '../services/beatleader/player';
 	import Avatar from '../components/Common/Avatar.svelte';
@@ -11,17 +10,10 @@
 	import SendLovegeMessage from '../components/Lovege/SendLovegeMessage.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import createAccountStore from '../stores/beatleader/account';
-	import {configStore} from '../stores/config';
 	import ReadLovegeMessage from '../components/Lovege/ReadLovegeMessage.svelte';
-	import produce from 'immer';
-	import Spinner from '../components/Common/Spinner.svelte';
-	import steamSvg from '../resources/steam.svg';
 
 	const playerService = createPlayerService();
 	const account = createAccountStore();
-
-	let login;
-	let password;
 
 	const {open, close} = getContext('simple-modal');
 
@@ -57,16 +49,6 @@
 			});
 	}
 
-	function titleForSendButton(player) {
-		if (!player.sent) {
-			return 'Send a message to your favourite player!';
-		} else if (player.viewed) {
-			return 'Your message was opened!';
-		} else {
-			return 'Your message was delivered!';
-		}
-	}
-
 	function faIconForSendButton(player) {
 		if (!player.sent) {
 			return 'fa-heart';
@@ -77,15 +59,7 @@
 		}
 	}
 
-	function titleForOpenButton(player) {
-		if (player.viewed) {
-			return 'Read the message once more';
-		} else {
-			return 'New message!';
-		}
-	}
-
-	function faIconForOpenButton(player) {
+    function faIconForOpenButton(player) {
 		if (player.viewed) {
 			return 'fa-envelope-open';
 		} else {
@@ -112,16 +86,14 @@
 		});
 	};
 
-	const openViewMessage = async messagePlayer => {
-		fetch(BL_API_URL + `valentine/viewed?id=${messagePlayer.messageId}`, {credentials: 'include'});
+    const openViewMessage = async (messagePlayer) => {
+        fetch(BL_API_URL + `valentine/viewed?id=${messagePlayer.messageId}`, {credentials: 'include'})
 
 		open(ReadLovegeMessage, {
 			player: messagePlayer,
 			confirm: () => {
-				messagePlayer.viewed = true;
-				incomingMessages = incomingMessages;
-				account.noteMessageViewed(messagePlayer.messageId);
-
+                messagePlayer.viewed = true;
+                incomingMessages = incomingMessages;
 				close();
 			},
 			cancel: () => {
@@ -137,9 +109,8 @@
 			var player = await playerService.fetchPlayerOrGetFromCache(element.senderId);
 			player.views = element.viewCount;
 			player.viewed = element.viewed;
-			player.message = element.message;
-			player.messageId = element.id;
-			player.followed = element.followed;
+            player.message = element.message;
+            player.messageId = element.id;
 
 			players.push(player);
 		}
@@ -154,75 +125,33 @@
 		receivingMessage = account?.valentines?.find(v => !v.viewed);
 
 		if (receivingMessage) {
-			setTimeout(() => {
+			setInterval(() => {
 				fetchIncomingMessages(account?.valentines ?? []);
-			}, 1500);
+			}, 1000);
 		} else {
 			fetchIncomingMessages(account?.valentines ?? []);
 		}
 	}
 
-	function noteOpened() {
-		$configStore = produce($configStore, draft => {
-			draft.preferences.openedLovege = true;
-		});
-	}
-
-	$: noteOpened();
 	$: $account?.valentines ? checkUnreadValentines($account) : null;
 	$: $account?.player && fetchTopPlayers();
 </script>
 
 <div class="centering-container">
-	{#if !$account?.player}
-		<div class="login-form" transition:fade|global>
-			<div class="title">Please log in to view your<br /><b>favourite players</b></div>
-			<form action={BL_API_URL + 'signin'} method="post">
-				<input type="hidden" name="Provider" value="Steam" />
-				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/lovege'} />
-
-				<Button icon={steamSvg} label="Log In with Steam" type="green" />
-			</form>
-			<br />
-			<span>Quest Log In</span>
-			<div class="input-container">
-				<div class="cat">Login</div>
-				<input bind:value={login} placeholder="Login" />
-			</div>
-			<div class="input-container">
-				<div class="cat">Password</div>
-				<input type="password" bind:value={password} placeholder="Password" />
-			</div>
-
-			<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
-		</div>
-	{:else}
-		{#if !receivingMessage && (incomingMessages.length || topPlayers.length)}
-			<ContentBox cls="lovege-box">
-				<div class="cover-container">
-					<a href="https://x.com/MEGANESIUM310/status/1757389916588171489">
-						<img class="cover-image" src="/assets/lovege-cover.jpg" />
-					</a>
-					<span class="cover-title">Send some love to your favourite players!</span>
-				</div>
-			</ContentBox>
-		{/if}
+	{#if !$account?.player}{:else}
 		{#if incomingMessages.length}
 			<ContentBox cls="lovege-box">
 				<div class="lovege-container">
 					<span class="header-title">Messages to you:</span>
 					{#each incomingMessages as player}
 						<div class="list-item">
-							<div class="player-and-views">
-								<div class="player-info">
-									<Avatar {player} />
-									<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
-								</div>
-								<span>{player.views} replays watched</span>
+							<div class="player-info">
+								<Avatar {player} />
+								<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
 							</div>
+							<span>{player.views} replays</span>
 							<Button
 								iconFa="fas {faIconForOpenButton(player)}"
-								title={titleForOpenButton(player)}
 								type="danger"
 								on:click={() => openViewMessage(player)} />
 						</div>
@@ -232,7 +161,23 @@
 		{/if}
 		<ContentBox cls="lovege-box">
 			<div class="lovege-container">
-				{#if receivingMessage}
+				{#if topPlayers.length}
+					<span class="header-title">Your most loved</span>
+					{#each topPlayers as player, idx}
+						<div class="list-item">
+							<div class="player-info">
+								<Avatar {player} />
+								<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+							</div>
+							<span>{player.views} replays</span>
+							<Button
+								iconFa="fas {faIconForSendButton(player)}"
+								type="danger"
+								disabled={player.sent}
+								on:click={() => openSendMessage(player, idx)} />
+						</div>
+					{/each}
+				{:else if receivingMessage}
 					<span>Incoming!</span>
 					<LottiePlayer
 						speed="1"
@@ -242,25 +187,6 @@
 						autoplay
 						controls={false}
 						src={`/assets/animations/lovege-incoming.json`} />
-				{:else if topPlayers.length}
-					<span class="header-title">Your most loved:</span>
-					{#each topPlayers as player, idx}
-						<div class="list-item">
-							<div class="player-and-views">
-								<div class="player-info">
-									<Avatar {player} />
-									<PlayerNameWithFlag {player} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
-								</div>
-								<span>{player.views} replays watched</span>
-							</div>
-							<Button
-								iconFa="fas {faIconForSendButton(player)}"
-								title={titleForSendButton(player)}
-								type="danger"
-								disabled={player.sent}
-								on:click={() => openSendMessage(player, idx)} />
-						</div>
-					{/each}
 				{:else if sendingMessage}
 					<span>Your message is on the way...</span>
 					<LottiePlayer
@@ -281,8 +207,6 @@
 						autoplay
 						controls={false}
 						src={`/assets/animations/lovege-loading.json`} />
-				{:else}
-					<Spinner />
 				{/if}
 			</div>
 		</ContentBox>
@@ -295,34 +219,12 @@
 		justify-content: center;
 		align-items: center;
 		align-self: center;
-		flex-direction: column;
 	}
 
 	.lovege-container {
 		display: flex;
 		flex-direction: column;
-		gap: 1em;
-	}
-
-	.player-and-views {
-		display: flex;
-		flex-direction: column;
-		gap: 0.3em;
-	}
-
-	.cover-container {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.cover-title {
-		text-align: center;
-	}
-
-	.cover-image {
-		width: 14em;
+		gap: 0.5em;
 	}
 
 	.header-title {
@@ -332,7 +234,6 @@
 
 	.list-item {
 		display: flex;
-		align-items: center;
 		width: 18em;
 		justify-content: space-between;
 	}
@@ -346,39 +247,5 @@
 		max-width: 20em;
 		max-height: 20em;
 		background-color: pink;
-	}
-
-	.title {
-		text-align: center;
-	}
-
-	.error {
-		color: red;
-	}
-	.messagep {
-		color: green;
-	}
-
-	.input-container {
-		display: grid;
-		width: 20em;
-		margin-bottom: 0.5em;
-	}
-
-	.login-form {
-		display: flex;
-		flex-direction: column;
-		flex: none;
-		align-items: center;
-	}
-
-	.button-container {
-		display: flex;
-		justify-content: center;
-		margin: 1em;
-	}
-
-	.inlineLink {
-		display: contents;
 	}
 </style>

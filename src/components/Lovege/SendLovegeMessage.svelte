@@ -22,6 +22,7 @@
 			<div class="message-container">
 				<div class="player-container">
 					<img src={player?.playerInfo?.avatar} class="avatar" alt="" />
+					<span class="player-name">{player.name}</span>
 				</div>
 				<span class="main-message">Hi, I watched {player.views} of your plays, you are great!</span>
 				<input class="message-input" type="text" bind:value={message} placeholder="Your message here..." />
@@ -47,7 +48,6 @@
 		justify-content: center;
 		align-items: center;
 		width: 10em;
-		margin-bottom: 2em;
 	}
 	.avatar {
 		border-radius: 50%;
@@ -62,7 +62,6 @@
 	.message-input {
 		width: 100%;
 		background-color: #f0f8ff00;
-		color: white;
 	}
 	::placeholder {
 		color: black;
@@ -83,11 +82,5 @@
 		width: auto !important;
 		height: auto !important;
 		background-color: rgb(137 0 0) !important;
-	}
-
-	@media screen and (max-width: 767px) {
-		:global(.dialog-container header) {
-			max-width: 50%;
-		}
 	}
 </style>

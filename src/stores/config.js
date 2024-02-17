@@ -54,7 +54,6 @@ export const DEFAULT_CONFIG = {
 
 		reebanner: true,
 		replayedbanner: true,
-		openedLovege: false,
 	},
 	scorePreferences: {
 		badgeRows: 2,
