@@ -40,7 +40,6 @@
 
 	.header {
 		color: #fff;
-		font-family: Noto Sans SC;
 		font-size: 2em;
 		font-style: normal;
 		font-weight: 700;

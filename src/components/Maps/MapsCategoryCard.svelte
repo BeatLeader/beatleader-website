@@ -181,7 +181,6 @@
 		text-align: center;
 
 		color: #fff;
-		font-family: Noto Sans SC;
 		font-size: 2.625em;
 
 		font-style: normal;
@@ -208,7 +207,6 @@
 
 	.counterHeader {
 		color: #fff;
-		font-family: Noto Sans SC;
 		font-size: 1.25em;
 		font-style: normal;
 		font-weight: 700;
@@ -217,7 +215,6 @@
 
 	.countdown {
 		color: #fff;
-		font-family: Noto Sans SC;
 		font-size: 1.5em;
 		font-style: normal;
 		font-weight: 700;

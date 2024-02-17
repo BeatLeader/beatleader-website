@@ -45,7 +45,6 @@
 
 	.big-button h1 {
 		color: #fff;
-		font-family: Noto Sans SC;
 		font-size: 1.5em;
 		font-style: normal;
 		font-weight: 700;

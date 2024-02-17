@@ -19,7 +19,6 @@
 
 	.header {
 		color: #fff;
-		font-family: Noto Sans SC;
 		font-size: 2.5em;
 		font-style: normal;
 		font-weight: 700;
