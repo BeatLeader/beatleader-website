@@ -58,7 +58,6 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		max-width: 30em;
 	}
 	.message-warning {
 		color: #ffffff82;
@@ -110,7 +109,6 @@
 	.blurred-container {
 		display: flex;
 		gap: 1em;
-		text-align: center;
 	}
 	.blurred {
 		color: transparent;
