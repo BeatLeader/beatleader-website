@@ -70,7 +70,7 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Beat Saber European Championship',
+				title: 'BS European Championship',
 				body: "Get ready for BSEUC's 2024 EU Championship. Look out for its qualifiers in march, and the first matches in April!",
 				imageUrl: '/assets/Discover/bseuc_banner.webp',
 				targetUrl: 'https://bseuc.eu/',
