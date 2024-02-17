@@ -166,7 +166,7 @@
 {/if} -->
 {#if $rewindTimer && $configStore.preferences.beastiesbanner}
 	<div class="rewindbanner">
-		<a class="reelink" href="https://www.youtube.com/@BeatSaberMods" />
+		<a class="reelink" href="https://www.youtube.com/watch?v=-xLZKP6IjxI" />
 		<div class="banner-spacer" />
 		<img class="cc-cover-1" src="/assets/beastsabericonbig.webp" />
 

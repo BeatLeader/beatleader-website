@@ -19,7 +19,7 @@
 				title: 'BeastSaber Mapping Awards Premiere',
 				body: 'Watch the BeastSaber Mapping Awards Premiere on Feb 17th at 10PM UTC!',
 				imageUrl: '/assets/Discover/23_BeastSaber_times.png',
-				targetUrl: 'https://www.youtube.com/@BeatSaberMods',
+				targetUrl: 'https://www.youtube.com/watch?v=-xLZKP6IjxI',
 				linkName: 'YouTube',
 				forcedColor: undefined,
 			},
@@ -89,6 +89,28 @@
 					{
 						text: 'Rules',
 						url: 'https://bseuc.eu/rules',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'OOMBR',
+				body: 'OOMBR is a battle royale tourney run by Olbmaphlee1 and Oermergeesh, and will be streamed live on twitch on their accounts on Feb 24th at 2:00PM CST.',
+				imageUrl: '/assets/Discover/oombr_banner.png',
+				targetUrl: 'https://discord.gg/E2B8wePp',
+				linkName: 'OOMBR Discord',
+				forcedColor: 'rgb(20 20 20)',
+				buttons: [
+					{
+						text: 'Sign Up',
+						type: 'primary',
+						url: 'https://forms.gle/EaqxkvSuePQ6F5TR8',
+					},
+					{
+						text: 'Info',
+						url: 'https://docs.google.com/document/d/1Lq3FUb5Ul7KvTf5dkcsi9XHOrbvjYHgw-ei_V9Cvsd8/edit?usp=sharing',
 					},
 				],
 			},
