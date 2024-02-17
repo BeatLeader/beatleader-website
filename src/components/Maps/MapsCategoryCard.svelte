@@ -120,7 +120,7 @@
 	$: categoryName && setIcons();
 </script>
 
-<div class="card" style="background: {bgColor} !important;" on:click={handleClick}>
+<a href={redirectUrl} class="card" style="background: {bgColor} !important;" on:click|preventDefault={handleClick}>
 	<h1>{categoryName}</h1>
 
 	<div class="icons-container">
@@ -150,7 +150,7 @@
 			<span class="counterHeader">Coming Soon</span>
 		</div>
 	{/if}
-</div>
+</a>
 
 <style>
 	.card {
