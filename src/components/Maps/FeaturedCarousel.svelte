@@ -294,6 +294,11 @@
 		transform: translateX(var(--translation));
 		transition: ease-in-out 300ms;
 		pointer-events: all;
+
+		-webkit-perspective: 1000;
+		perspective: 1000;
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
 	}
 
 	.cards-wrapper.instant {
