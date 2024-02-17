@@ -15,7 +15,7 @@
 	</div>
 	<div class="right-container">
 		{#if button}
-			<Button label={button.label} iconFa={button.icon} on:click={() => navigate(button.url)} cls="no-margin scaleDownMobile" />
+			<Button label={button.label} iconFa={button.icon} on:click={() => navigate(button.url)} cls="no-margin" />
 		{/if}
 	</div>
 </div>
@@ -69,8 +69,12 @@
 	}
 
 	@media screen and (max-width: 450px) {
-		:global(.scaleDownMobile) {
-			transform: scale(0.8);
+		.header {
+			font-size: 1.5em;
+		}
+
+		.content {
+			font-size: 1em;
 		}
 	}
 </style>
