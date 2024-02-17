@@ -30,6 +30,7 @@
 				body: 'Check out this weeks Map of the Week!',
 				imageUrl: '/assets/Main/landing.webp',
 				targetUrl: undefined,
+				linkName: 'Leaderboard',
 				forcedColor: 'rgba(0, 0, 0, 0)',
 			},
 		},
@@ -40,6 +41,7 @@
 				body: 'Watch the best of 2023, compiled by Cube Community!',
 				imageUrl: '/assets/Discover/cc_rewind_23.jpg',
 				targetUrl: 'https://youtu.be/bbwJkCF4xp0',
+				linkName: 'YouTube video',
 				forcedColor: 'rgb(180 95 114)',
 			},
 		},
@@ -49,7 +51,8 @@
 				title: 'BS Rewind Map',
 				body: 'Check out the new Rewind Map!',
 				imageUrl: '/assets/Discover/cc_rewind_23_map.png',
-				targetUrl: 'https://youtu.be/4-2GWGCJTmM?si=gCRDnNBepJw5BTOd',
+				targetUrl: 'https://youtu.be/4-2GWGCJTmM',
+				linkName: 'YouTube video',
 				forcedColor: 'rgb(66 87 104)',
 				buttons: [
 					{
@@ -74,6 +77,7 @@
 				body: "Get ready for BSEUC's 2024 EU Championship. Look out for its qualifiers in march, and the first matches in April!",
 				imageUrl: '/assets/Discover/bseuc_banner.webp',
 				targetUrl: 'https://bseuc.eu/',
+				linkName: "BSEUC's website",
 				forcedColor: 'rgb(20 20 20)',
 				buttons: [
 					{
@@ -95,6 +99,7 @@
 				body: 'BeatKhana has created a twitter account to keep you updated on all the latest Beat Saber events, Follow them now!',
 				imageUrl: '/assets/Discover/BSEF_banner.png',
 				targetUrl: 'https://twitter.com/beatsaberevents',
+				linkName: 'Twitter',
 				forcedColor: undefined,
 			},
 		},
@@ -105,6 +110,7 @@
 				body: 'Cube Community has updated their site, and added a new tournament calendar. Check it out!',
 				imageUrl: '/assets/Discover/cc_site_update.png',
 				targetUrl: 'https://cube.community/calendar',
+				linkName: "Cube Community's website",
 				forcedColor: 'rgb(8 37 52)',
 			},
 		},

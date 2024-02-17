@@ -6,6 +6,7 @@
 	export let body = '';
 	export let imageUrl = '';
 	export let targetUrl;
+	export let linkName;
 	export let buttons = [];
 	export let active = false;
 	export let clickAction;
@@ -65,9 +66,10 @@
 	$: drawCinematics(cinematicsCanvas, imageUrl);
 	$: if (buttons.length > 3) buttons = buttons.slice(0, 3);
 	$: forcedColor ? (dominantColor = forcedColor) : retrieveBackgroundColor(imageUrl);
+	$: hoverTitle = active && targetUrl ? 'Go to ' + linkName ?? targetUrl : null;
 </script>
 
-<div class="grid-item" class:active>
+<div class="grid-item" class:active title={hoverTitle}>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active>
