@@ -8,7 +8,7 @@
 
 	export let showNavBullets = true;
 	export let autoMoveInterval = null;
-	export let showFillerCards = cards.length > 1 ? true : false;
+	export let showFillerCards = cards.length > 2 ? true : false;
 	export let height = '40em';
 	export let cardWidthRatio = 0.5;
 	export let showButtons = false;
@@ -23,6 +23,7 @@
 	let maskLeft = '15%';
 	let maskRight = '85%';
 	let autoMoveTimeouts = [];
+	let instantTransition = false;
 
 	function moveForward() {
 		interruptMotion();
@@ -30,7 +31,7 @@
 			translation -= carouselWidth * cardWidthRatio;
 			currentCenteredIndex++;
 		} else if (showFillerCards) {
-			moveToPosition(0);
+			handleInfToStartTransition();
 		}
 	}
 
@@ -40,16 +41,44 @@
 			translation += carouselWidth * cardWidthRatio;
 			currentCenteredIndex--;
 		} else if (showFillerCards) {
-			moveToPosition(cards.length - 1);
+			handleInfToEndTransition();
 		}
 	}
 
-	function moveToPosition(index) {
-		interruptMotion();
-		let addition = 0;
-		if (showFillerCards) addition++;
-		translation = (index + addition) * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
-		currentCenteredIndex = index;
+	function moveToPosition(index, noCheck = false) {
+		if (currentCenteredIndex === cards.length - 1 && index === 0 && !noCheck) {
+			handleInfToStartTransition();
+		} else if (currentCenteredIndex === 0 && index === cards.length - 1 && !noCheck) {
+			handleInfToEndTransition();
+		} else {
+			interruptMotion();
+			let addition = 0;
+			if (showFillerCards) addition = addition + 2;
+			translation = (index + addition) * carouselWidth * -cardWidthRatio + carouselWidth * halfCardWidthRatio;
+			currentCenteredIndex = index;
+		}
+	}
+
+	function handleInfToStartTransition() {
+		let rememberedIndex = currentCenteredIndex;
+		instantTransition = true;
+		moveToPosition(-1, true);
+		currentCenteredIndex = rememberedIndex;
+		setTimeout(() => {
+			instantTransition = false;
+			moveToPosition(0, true);
+		}, 10);
+	}
+
+	function handleInfToEndTransition() {
+		let rememberedIndex = currentCenteredIndex;
+		instantTransition = true;
+		moveToPosition(cards.length, true);
+		currentCenteredIndex = rememberedIndex;
+		setTimeout(() => {
+			instantTransition = false;
+			moveToPosition(cards.length - 1, true);
+		}, 10);
 	}
 
 	function moveOrOpen(index, url) {
@@ -149,7 +178,7 @@
 			on:mouseleave={createAutoMoveTimeout}
 			class="carousel"
 			style="--cards-cnt: {cards.length +
-				2}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
+				4}; --translation: {translation}px; --width: {carouselWidth}px; --carouselHeight: {height}; --cardWidthRatio: {cardWidthRatio}; --maskLeft: {maskLeft}; --maskRight: {maskRight}">
 			{#if cards.length > 1 && showNavBullets}
 				<div class="bullets" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0}}>
 					{#each cards as card, index}
@@ -166,8 +195,14 @@
 				</div>
 			{/if}
 
-			<div class="cards-wrapper">
+			<div class="cards-wrapper" class:instant={instantTransition}>
 				{#if showFillerCards}
+					<svelte:component
+						this={cards[cards.length - 2].component}
+						{...cards[cards.length - 2].props}
+						active={cards.length - 2 === currentCenteredIndex}
+						clickAction={() => moveToPosition(cards.length - 2)}
+						nextAction={moveForward} />
 					<svelte:component
 						this={cards[cards.length - 1].component}
 						{...cards[cards.length - 1].props}
@@ -189,6 +224,12 @@
 						{...cards[0].props}
 						active={0 === currentCenteredIndex}
 						clickAction={() => moveToPosition(0)}
+						nextAction={moveForward} />
+					<svelte:component
+						this={cards[1].component}
+						{...cards[1].props}
+						active={1 === currentCenteredIndex}
+						clickAction={() => moveToPosition(1)}
 						nextAction={moveForward} />
 				{/if}
 			</div>
@@ -253,6 +294,10 @@
 		transform: translateX(var(--translation));
 		transition: ease-in-out 300ms;
 		pointer-events: all;
+	}
+
+	.cards-wrapper.instant {
+		transition: none;
 	}
 
 	.bullets {
