@@ -49,6 +49,9 @@
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
 
+	import rewindTimer from './stores/rewind-timer';
+	import {padNumber} from './utils/format';
+
 	export let url = '';
 
 	let mainEl = null;
@@ -161,6 +164,52 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
+{#if $rewindTimer && $configStore.preferences.beastiesbanner}
+	<div class="rewindbanner">
+		<a class="reelink" href="https://www.youtube.com/@BeatSaberMods" />
+		<div class="banner-spacer" />
+		<img class="cc-cover-1" src="/assets/beastsabericonbig.webp" />
+
+		<div class="rewind-text-and-timer">
+			{#if $rewindTimer.seconds > 0}
+				<span class="replayed-link-text desktop-only">2023 BeastSaber Awards in</span>
+				<span class="replayed-link-text mobile-only">Mapping Awards in</span>
+
+				<div class="timer">
+					<div class="rewind-time">
+						<span>{padNumber($rewindTimer.hours)}</span>
+						<label class="desktop-only">Hours</label>
+						<label class="mobile-only">H</label>
+					</div>
+
+					<div class="rewind-time">
+						<span>{padNumber($rewindTimer.minutes)}</span>
+						<label class="desktop-only">Minutes</label>
+						<label class="mobile-only">M</label>
+					</div>
+
+					<div class="rewind-time">
+						<span>{padNumber(parseInt($rewindTimer.seconds, 10))}</span>
+						<label class="desktop-only">Seconds!</label>
+						<label class="mobile-only">S!</label>
+					</div>
+				</div>
+			{:else}
+				<span class="replayed-link-text">2023 BeastSaber Awards NOW! 🔴</span>
+			{/if}
+		</div>
+		<img class="cc-cover-2" src="/assets/beastsabericonbig.webp" />
+
+		<button
+			class="close-banner"
+			title="Hide banner"
+			on:click|preventDefault|stopPropagation={() => {
+				$configStore = produce($configStore, draft => {
+					draft.preferences.beastiesbanner = false;
+				});
+			}}><i class="fas fa-xmark" /></button>
+	</div>
+{/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
@@ -359,6 +408,39 @@
 		pointer-events: none;
 	}
 
+	.rewindbanner {
+		background-color: #2e0d51;
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	.timer {
+		display: flex;
+		gap: 0.3em;
+	}
+
+	.rewind-text-and-timer {
+		display: flex;
+		gap: 0.3em;
+		margin-right: 0.8em;
+		justify-content: center;
+	}
+
+	.rewind-time {
+		display: flex;
+		gap: 0.3em;
+	}
+
 	.reelink {
 		position: absolute;
 		width: 100%;
@@ -474,6 +556,20 @@
 		box-shadow: 2px 11px 7px #0000007a;
 	}
 
+	.cc-cover-1 {
+		height: 3.5em;
+		position: absolute;
+		left: 14%;
+		z-index: 100;
+	}
+
+	.cc-cover-2 {
+		height: 3.5em;
+		position: absolute;
+		right: 14%;
+		z-index: 100;
+	}
+
 	:global(.notifications) {
 		position: fixed;
 		z-index: 10000;
@@ -499,6 +595,20 @@
 
 	main {
 		margin-top: 1em;
+	}
+	.mobile-only {
+		display: none;
+	}
+	@media (max-width: 1000px) {
+		.rewind-text-and-timer {
+			flex-direction: column;
+			align-items: center;
+			gap: 0;
+		}
+
+		.timer {
+			margin-top: -0.3em;
+		}
 	}
 	@media (max-width: 600px) {
 		main {
@@ -538,6 +648,27 @@
 			color: white;
 			text-shadow: 3px 3px black;
 			margin-bottom: 0.2em;
+		}
+
+		.rewind-text-and-timer {
+			max-width: 60%;
+			text-align: center;
+			flex-wrap: wrap;
+		}
+
+		.cc-cover-1 {
+			left: 10%;
+		}
+
+		.cc-cover-2 {
+			right: 10%;
+		}
+
+		.mobile-only {
+			display: block;
+		}
+		.desktop-only {
+			display: none;
 		}
 	}
 
