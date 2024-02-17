@@ -397,9 +397,9 @@
 
 				<div class="dropdown-item">
 					<a
-						href="/leaderboards"
+						href="/maps"
 						on:click|preventDefault={() => {
-							navigate('/leaderboards');
+							navigate('/maps');
 						}}>
 						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 							><path
@@ -469,9 +469,9 @@
 		</a>
 
 		<a
-			href="/leaderboards"
+			href="/maps"
 			on:click|preventDefault={() => {
-				navigate('/leaderboards');
+				navigate('/maps');
 			}}>
 			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
 				><path
