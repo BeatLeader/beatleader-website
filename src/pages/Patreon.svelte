@@ -76,6 +76,7 @@
 						</form>
 						<br />
 						<span>or Log In with BL account from the Quest mod</span>
+						<span>if you never used BeatLeader you need to sign up in mod</span>
 						<div class="input-container">
 							<div class="cat">Login</div>
 							<input bind:value={login} placeholder="Login" />
@@ -87,35 +88,6 @@
 
 						<Button iconFa="fas fa-right-to-bracket" label="Log In" on:click={() => account.logIn(login, password)} />
 						<a href="https://discord.com/channels/921820046345523311/951919251227295844">forgot password?</a>
-
-						<div class="sorting-options">
-							<span
-								class="beat-savior-reveal clickable"
-								class:opened={showBeatSaverLogin}
-								on:click={() => (showBeatSaverLogin = !showBeatSaverLogin)}
-								on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
-								title="Show login with BeatSaver">
-								{#if showBeatSaverLogin}
-									I'm not a mapper
-								{:else}
-									Are you a mapper?
-								{/if}
-
-								<i class="fas fa-chevron-down" />
-							</span>
-						</div>
-
-						{#if showBeatSaverLogin}
-							<span class="beat-saver-description"
-								>By using BeatSaver login you are linking Patreon to the account not usable in-game. <br />Make sure you understand what you
-								are doing</span>
-							<form action={BL_API_URL + 'signin'} method="post">
-								<input type="hidden" name="Provider" value="BeatSaver" />
-								<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/supporting-project/link'} />
-
-								<Button icon={beatSaverSvg} label="Log In with BeatSaver" type="submit" />
-							</form>
-						{/if}
 					</div>
 				{:else if patreoned}
 					<span>
@@ -175,7 +147,7 @@
 			</ul>
 
 			{#if action == 'linkPatreon' || isSupporter}
-				{#if isSupporter && loggedInPlayer < 1000000000000000}
+				{#if isSupporter && loggedInPlayer < 30000000}
 					<div class="benefit-button-container">
 						<Button
 							iconFa="fas fa-download"

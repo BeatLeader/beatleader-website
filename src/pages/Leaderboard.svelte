@@ -57,6 +57,7 @@
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
+	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -635,6 +636,7 @@
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: featuredPlaylists = leaderboard?.stats?.featuredPlaylists;
 
 	function boolflip(name) {
 		$configStore = produce($configStore, draft => {
@@ -648,6 +650,7 @@
 	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
 	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
+	$: leaderboardShowPlaylists = $configStore?.preferences?.leaderboardShowPlaylists;
 
 	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
 
@@ -720,7 +723,7 @@
 					</nav>
 				{/if}
 
-				{#if leaderboardShowSorting}
+				{#if leaderboardShowSorting && currentType != 'clanranking'}
 					<nav class="switcher-nav" transition:fade|global>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
@@ -1026,6 +1029,32 @@
 									<ReweightStatus map={leaderboard} />
 								{/if}
 							</div>
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
+			{#if featuredPlaylists && featuredPlaylists.length}
+				<ContentBox>
+					{#if !leaderboardShowPlaylists}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Show map details">
+								<i class="fas fa-compact-disc" />
+
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Hide map details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							{#each featuredPlaylists as featuredPlaylist}
+								<div class="stats-with-icons">
+									<FeaturedPlaylist playlist={featuredPlaylist} />
+								</div>
+							{/each}
 						</div>
 					{/if}
 				</ContentBox>

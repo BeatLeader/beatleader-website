@@ -29,7 +29,7 @@ export const BL_API_SCORES_URL =
 export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
 	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
-export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}';
+export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.xyz/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
 	'score/${scoreId}/pin?pin=${pin}&leaderboardContext=${leaderboardContext}&link=${link}&description=${description}&priority=${priority}';
@@ -240,6 +240,7 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
 		{id: 'externalStatuses', value: led?.song?.externalStatuses},
+		{id: 'featuredPlaylists', value: led?.featuredPlaylists},
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},

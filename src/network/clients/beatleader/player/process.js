@@ -31,6 +31,7 @@ export default response => {
 		eventsParticipating,
 		profileSettings,
 		changes,
+		clanOrder,
 	} = response;
 
 	let profilePicture = avatar;
@@ -46,6 +47,8 @@ export default response => {
 			'medianAccuracy',
 			'medianRankedAccuracy',
 			'topAccuracy',
+			'topPercentile',
+			'countryTopPercentile',
 		].forEach(k => {
 			if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
 		});
@@ -121,6 +124,7 @@ export default response => {
 			socials,
 			changes,
 			clans,
+			clanOrder,
 		},
 		profileSettings: profileSettings
 			? {
