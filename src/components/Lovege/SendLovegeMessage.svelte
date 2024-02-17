@@ -9,14 +9,12 @@
 	let message = '';
 </script>
 
-<div class="dialog-container-lovege">
+<div class="dialog-container">
 	<DialogContent
 		type="confirm"
 		title="Send message to {player.name}"
 		okButton="Send"
 		okButtonType="green"
-		okButtonDisabled={message.length > 100}
-		okButtonTitle={message.length > 100 ? "Please keep your message short" : null}
 		cancelButton="Cancel"
 		on:confirm={() => confirm(message)}
 		on:cancel={cancel}>
@@ -34,11 +32,8 @@
 </div>
 
 <style>
-	.dialog-container-lovege {
+	.dialog-container {
 		margin: 1em;
-	}
-	:global(.dialog-container-lovege header) {
-		color: white !important;
 	}
 	.message-container {
 		display: flex;
@@ -68,8 +63,6 @@
 		width: 100%;
 		background-color: #f0f8ff00;
 		color: white;
-		border: none;
-		border-bottom: 1px solid white !important;
 	}
 	::placeholder {
 		color: black;
@@ -86,15 +79,14 @@
 		top: 0;
 		right: 0;
 	}
-	:global(.bg .wrap .window:has(.dialog-container-lovege)) {
+	:global(.wrap .window) {
 		width: auto !important;
 		height: auto !important;
-		background-color: #b53232 !important;
-		border-radius: 16px;
+		background-color: rgb(137 0 0) !important;
 	}
 
 	@media screen and (max-width: 767px) {
-		:global(.dialog-container-lovege header) {
+		:global(.dialog-container header) {
 			max-width: 50%;
 		}
 	}

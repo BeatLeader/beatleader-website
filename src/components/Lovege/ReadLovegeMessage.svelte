@@ -9,7 +9,7 @@
 	let blurred = true;
 </script>
 
-<div class="dialog-container-lovege">
+<div class="dialog-container">
 	<DialogContent
 		type="alert"
 		title="A message from {player.name}"
@@ -47,10 +47,10 @@
 </div>
 
 <style>
-	.dialog-container-lovege {
+	.dialog-container {
 		margin: 1em;
 	}
-	:global(.dialog-container-lovege header) {
+	:global(.dialog-container header) {
 		color: white !important;
 	}
 	.message-container {
@@ -58,6 +58,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		margin-top: 2em;
 	}
 	.message-warning {
 		color: #ffffff82;
@@ -92,7 +93,7 @@
 	}
 	.main-message {
 		font-size: 1.4em;
-		margin-bottom: 0.6em;
+		margin-bottom: 1em;
 		text-align: center;
 	}
 	.background-heart {
@@ -115,7 +116,7 @@
 		text-shadow: 0 0 8px #ffffff;
 	}
 
-	:global(.bg .wrap .window:has(.dialog-container-lovege)) {
+	:global(.bg .wrap .window) {
 		width: auto !important;
 		height: auto !important;
 		background-color: #b53232 !important;
@@ -123,7 +124,7 @@
 	}
 
 	@media screen and (max-width: 767px) {
-		:global(.dialog-container-lovege header) {
+		:global(.dialog-container header) {
 			max-width: 50%;
 		}
 	}
