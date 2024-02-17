@@ -69,7 +69,7 @@
 	$: hoverTitle = active && targetUrl ? 'Go to ' + linkName ?? targetUrl : null;
 </script>
 
-<div class="grid-item" class:active title={hoverTitle}>
+<a href={targetUrl} on:click|preventDefault class="grid-item" class:active title={hoverTitle}>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
 			<div class="cinematics-canvas" class:active>
@@ -97,7 +97,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</a>
 
 <style>
 	.grid-item {
