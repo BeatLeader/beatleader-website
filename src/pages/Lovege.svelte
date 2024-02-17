@@ -344,6 +344,8 @@
 
 	:global(.lovege-box) {
 		max-width: 20em;
+		max-height: 20em;
+		background-color: pink;
 	}
 
 	.title {
