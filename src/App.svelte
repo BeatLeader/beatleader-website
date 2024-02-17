@@ -164,52 +164,6 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-{#if $rewindTimer && $configStore.preferences.beastiesbanner}
-	<div class="rewindbanner">
-		<a class="reelink" href="https://www.youtube.com/watch?v=-xLZKP6IjxI" />
-		<div class="banner-spacer" />
-		<img class="cc-cover-1" src="/assets/beastsabericonbig.webp" />
-
-		<div class="rewind-text-and-timer">
-			{#if $rewindTimer.seconds > 0}
-				<span class="replayed-link-text desktop-only">2023 BeastSaber Awards in</span>
-				<span class="replayed-link-text mobile-only">Mapping Awards in</span>
-
-				<div class="timer">
-					<div class="rewind-time">
-						<span>{padNumber($rewindTimer.hours)}</span>
-						<label class="desktop-only">Hours</label>
-						<label class="mobile-only">H</label>
-					</div>
-
-					<div class="rewind-time">
-						<span>{padNumber($rewindTimer.minutes)}</span>
-						<label class="desktop-only">Minutes</label>
-						<label class="mobile-only">M</label>
-					</div>
-
-					<div class="rewind-time">
-						<span>{padNumber(parseInt($rewindTimer.seconds, 10))}</span>
-						<label class="desktop-only">Seconds!</label>
-						<label class="mobile-only">S!</label>
-					</div>
-				</div>
-			{:else}
-				<span class="replayed-link-text">2023 BeastSaber Awards NOW! 🔴</span>
-			{/if}
-		</div>
-		<img class="cc-cover-2" src="/assets/beastsabericonbig.webp" />
-
-		<button
-			class="close-banner"
-			title="Hide banner"
-			on:click|preventDefault|stopPropagation={() => {
-				$configStore = produce($configStore, draft => {
-					draft.preferences.beastiesbanner = false;
-				});
-			}}><i class="fas fa-xmark" /></button>
-	</div>
-{/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>

@@ -16,12 +16,23 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'BeastSaber Mapping Awards Premiere',
-				body: 'Watch the BeastSaber Mapping Awards Premiere on Feb 17th at 10PM UTC!',
-				imageUrl: '/assets/Discover/23_BeastSaber_times.png',
+				title: '??????',
+				body: '',
+				imageUrl: '/assets/Discover/extra_sensory_thumbnail.webp',
+				targetUrl: 'https://www.youtube.com/watch?v=gDIOShFXePo',
+				linkName: 'YouTube',
+				forcedColor: 'rgb(23 27 46)',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'BeastSaber Mapping Awards',
+				body: 'The BeastSaber Mapping Awards results have been announced! Check out the winners!',
+				imageUrl: '/assets/Discover/23_BeastSaber_Mapping_Awards.webp',
 				targetUrl: 'https://www.youtube.com/watch?v=-xLZKP6IjxI',
 				linkName: 'YouTube',
-				forcedColor: undefined,
+				forcedColor: 'rgb(7 6 8)',
 			},
 		},
 		{
