@@ -70,6 +70,27 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'Beat Saber European Championship',
+				body: "Get ready for BSEUC's 2024 EU Championship. Look out for its qualifiers in march, and the first matches in April!",
+				imageUrl: '/assets/Discover/bseuc_banner.webp',
+				targetUrl: 'https://bseuc.eu/',
+				forcedColor: 'rgb(20 20 20)',
+				buttons: [
+					{
+						text: 'Twitter',
+						type: 'primary',
+						url: 'https://twitter.com/bseuchampion',
+					},
+					{
+						text: 'Rules',
+						url: 'https://bseuc.eu/rules',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Beat Saber Events Feed',
 				body: 'BeatKhana has created a twitter account to keep you updated on all the latest Beat Saber events, Follow them now!',
 				imageUrl: '/assets/Discover/BSEF_banner.png',

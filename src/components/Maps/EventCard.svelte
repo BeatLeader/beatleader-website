@@ -48,10 +48,12 @@
 		text-align: left;
 		margin-top: -0.25em;
 		margin-bottom: 0.33em;
+		text-shadow: 2px 2px 4px black;
 	}
 
 	.content {
 		color: white;
+		text-shadow: 2px 2px 4px black;
 	}
 
 	.right-container {
