@@ -5,9 +5,9 @@
 	export let destination = null;
 </script>
 
-<div class="big-button" on:click={() => (destination ? navigate(destination) : null)}>
+<a href={destination} class="big-button" on:click|preventDefault={() => (destination ? navigate(destination) : null)}>
 	<h1>{label}</h1>
-</div>
+</a>
 
 <style>
 	.big-button {
