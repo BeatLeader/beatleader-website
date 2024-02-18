@@ -30,7 +30,7 @@
 				title: 'BeastSaber Mapping Awards',
 				body: 'The BeastSaber Mapping Awards results have been announced! Check out the winners!',
 				imageUrl: '/assets/Discover/23_BeastSaber_Mapping_Awards.webp',
-				targetUrl: 'https://www.youtube.com/watch?v=-xLZKP6IjxI',
+				targetUrl: 'https://youtu.be/qMIiUZ7D8GU',
 				linkName: 'YouTube',
 				forcedColor: 'rgb(7 6 8)',
 			},
