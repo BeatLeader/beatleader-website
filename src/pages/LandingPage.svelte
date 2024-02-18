@@ -113,13 +113,25 @@
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
 							<img
-								src="https://bsaber.com/wp-content/uploads/2018/07/cropped-Beastsaber-Site-Icon-300x300.png"
+								src="/assets/beastsabericonbig.webp"
 								title="BeastSaber"
 								class="icon"
 								alt="BeastSaber Logo" />
 						</a>
 					</h3>
 					<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
+				</div>
+				<div class="source">
+					<h3 class="title is-6">
+						<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
+							<img
+								src="/assets/cubecommunitylogo.webp"
+								title="CubeCommunity"
+								class="icon"
+								alt="CubeCommunity Logo" />
+						</a>
+					</h3>
+					<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>
 				</div>
 				<div class="source">
 					<h3 class="title is-6">

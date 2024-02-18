@@ -11809,6 +11809,16 @@ select {
 	background-image: url('./beastsabericonthick.png');
 }
 
+.cubecommunity-icon {
+	width: 2em;
+	height: 2em;
+	transform: translate(-10px, 0px);
+	margin-right: -1.5em;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./cubecommunitylogo.webp');
+}
+
 .dropdown-header {
 	width: 100%;
 	color: white;

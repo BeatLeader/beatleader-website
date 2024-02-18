@@ -295,6 +295,7 @@
 				<li><a href="https://beat-savior.herokuapp.com" target="_blank" rel="noreferrer">Beat Savior API</a></li>
 				<li><a href="https://accsaber.com" target="_blank" rel="noreferrer">AccSaber API</a></li>
 				<li><a href="https://bsaber.com/" target="_blank" rel="noreferrer">BeastSaber website</a></li>
+				<li><a href="https://cube.community" target="_blank" rel="noreferrer">CubeCommunity YouTube Channel</a></li>
 			</ul>
 
 			<h2 class="title is-6">The project also uses the following open source libraries:</h2>

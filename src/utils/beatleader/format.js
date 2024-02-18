@@ -816,6 +816,7 @@ export function mapRequirementsListFromMask(type) {
 export const songStatusesMap = {
 	curated: 1 << 1,
 	mapOfTheWeek: 1 << 2,
+	noodleMonday: 1 << 3,
 };
 
 export const songStatusesDescription = {
@@ -833,6 +834,14 @@ export const songStatusesDescription = {
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/beastsabericon.png',
 		color: '#454088',
+		textColor: 'white',
+	},
+	noodleMonday: {
+		title: 'CubeCommunity Noodle Monday map DATE',
+		name: 'Noodle Map Monday',
+		icon: 'cubecommunity-icon',
+		iconFile: '/assets/cubecommunitylogo-smaller.webp',
+		color: 'rgb(164 76 61)',
 		textColor: 'white',
 	},
 };

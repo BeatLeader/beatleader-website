@@ -219,7 +219,7 @@
 
 			<div class="buttons-container">
 				<div class="buttons">
-					<BigButton label="Leaderboards" destination="/leaderboards" />
+					<BigButton label="Leaderboards" destination="/leaderboards/1?type=all" />
 					<BigButton label="Events" destination="/events" />
 					<BigButton label="Nominated" destination="/leaderboards/1?type=nominated" />
 				</div>
