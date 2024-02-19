@@ -19,6 +19,8 @@
 	export let loadingService = null;
 	export let loadingServiceParams = null;
 
+	const SPECIAL_PLAYER_ID = 'user-friends';
+
 	const dispatch = createEventDispatcher();
 
 	const beatSaviorService = createBeatSaviorService();
@@ -283,6 +285,7 @@
 					case 'beatleader':
 						if (availableServiceNames.includes('beatleader')) {
 							serviceDef.filters = commonFilters
+								.filter(f => f.props.id != 'search' || playerId != SPECIAL_PLAYER_ID)
 								.map(f => ({
 									...f,
 									props: {...f.props, hidden: !sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`)},
