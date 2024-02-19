@@ -1,6 +1,7 @@
 <script>
 	import * as d3 from 'd3';
 	import {navigate} from 'svelte-routing';
+	import { isTouchDevice } from '../../utils/is-touch';
 
 	export let leaderboardId;
 
@@ -342,14 +343,8 @@
 		context.restore();
 	}
 
-	// Additional functions for drawing lines, text, etc.
-
-	function isMobileDevice() {
-		return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-	}
-
 	function setupInteractions() {
-		if (isMobileDevice()) {
+		if (isTouchDevice()) {
 			// Mobile interactions
 			canvas.addEventListener('touchstart', handleTouchStart, false);
 			canvas.addEventListener('touchend', handleTouchEnd, false);

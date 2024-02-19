@@ -1,6 +1,7 @@
 <script>
 	import * as d3 from 'd3';
 	import {navigate} from 'svelte-routing';
+	import { isTouchDevice } from '../../utils/is-touch';
 
 	export let leaderboardId;
 	export let clanTag;
@@ -367,15 +368,8 @@
 		context.restore();
 	}
 
-	function isMobileDevice() {
-		var hasTouchCapabilities = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-		var isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-		return hasTouchCapabilities && isMobileUserAgent;
-	}
-
 	function setupInteractions() {
-		if (isMobileDevice()) {
+		if (isTouchDevice()) {
 			// Mobile interactions
 			canvas.addEventListener('touchstart', handleTouchStart, false);
 			canvas.addEventListener('touchend', handleTouchEnd, false);
