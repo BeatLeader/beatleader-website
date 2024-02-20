@@ -61,6 +61,17 @@
 
 	let showClanRankingScores = false;
 	let clanRank = (page - 1) * 10 + idx + 1;
+	let openedDetails = [];
+
+	function toggleOpen(scoreId) {
+		if (!scoreId) return;
+
+		if (openedDetails.includes(scoreId)) {
+			openedDetails = openedDetails.filter(id => id !== scoreId);
+		} else {
+			openedDetails = [...openedDetails, scoreId];
+		}
+	}
 
 	$: scores = $clanRankingStore?.clanRanking?.scores ?? [];
 	$: totalItems = $clanRankingStore?.totalItems ?? 0;
@@ -158,6 +169,8 @@
 							{battleRoyaleDraft}
 							{battleRoyaleDraftList}
 							{sortBy}
+							opened={openedDetails.includes(score?.score?.id)}
+							on:toggle-details={() => toggleOpen(score?.score?.id)}
 							hideClans={true}
 							on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 							on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />

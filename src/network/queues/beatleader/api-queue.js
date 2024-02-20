@@ -9,6 +9,8 @@ export const CURRENT_URL = location.protocol + '//' + location.host;
 export const BL_API_URL = (() => {
 	if (location.host.includes('localhost') || location.host.includes('beatleader.xyz')) {
 		return 'https://api.beatleader.xyz/';
+	} else if (location.host.includes('stage')) {
+		return 'https://stage.api.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://api.beatleader.net/';
 	} else {
