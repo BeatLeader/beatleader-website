@@ -20,6 +20,7 @@ const process = response => {
 				lastWeekRank,
 				lastWeekCountryRank,
 				profileSettings,
+				clanOrder,
 			} = player;
 			const difference = lastWeekRank > 0 ? lastWeekRank - rank : null;
 
@@ -38,6 +39,7 @@ const process = response => {
 					lastWeekPp,
 					lastWeekRank,
 					lastWeekCountryRank,
+					clanOrder
 				},
 				others: {
 					difference,

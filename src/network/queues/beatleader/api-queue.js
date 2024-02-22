@@ -64,8 +64,8 @@ export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/$
 
 export const BL_API_CLANS_URL =
 	BL_API_URL + 'clans?leaderboardContext=${leaderboardContext}&page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_MAPS_URL = BL_API_URL + 'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}';
+export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
+export const BL_API_CLAN_MAPS_URL = BL_API_URL + 'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
 export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
