@@ -213,7 +213,7 @@
 
 			<div class="categories">
 				<MapsCategoryCard categoryName="Ranked" showRankedCounter bgColor="#2d0c1f" redirectUrl={'/leaderboards'} />
-				<MapsCategoryCard categoryName="Trending" showComingSoon bgColor="#292823" />
+				<MapsCategoryCard categoryName="Trending" bgColor="#292823" />
 				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
 			</div>
 

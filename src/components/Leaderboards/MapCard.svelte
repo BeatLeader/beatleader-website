@@ -3,11 +3,12 @@
 	import MapCardContent from './MapCardContent.svelte';
 
 	export let map;
-	export let starsKey;
+	export let starsKey = 'stars';
 	export let currentFilters;
 	export let idx;
 	export let maps3D;
 	export let viewType;
+	export let nodetails = false;
 
 	let hovered = false;
 	let timeoutId = null;
@@ -33,10 +34,10 @@
 		rotateTouch="scroll-y"
 		on:enter={() => onEnter()}
 		on:leave={() => onExit()}>
-		<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} />
+		<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} {nodetails} />
 	</Atropos>
 {:else}
-	<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} />
+	<MapCardContent {map} {idx} {currentFilters} {starsKey} {viewType} {nodetails} />
 {/if}
 
 <style>

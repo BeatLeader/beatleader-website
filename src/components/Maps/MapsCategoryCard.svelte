@@ -5,11 +5,11 @@
 	import MapIcon from './MapIcon.svelte';
 	import {fetchJson} from '../../network/fetch';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import TrendingMapsPopup from './TrendingMapsPopup.svelte';
 
 	export let categoryName;
 	export let showRankedCounter = false;
 	export let bgColor = '#292823';
-	export let showComingSoon = false;
 	export let redirectUrl = null;
 
 	let icons = [];
@@ -68,8 +68,49 @@
 		];
 	}
 
+	let trendingMaps = [];
 	async function setTrendingIcons() {
-		icons = [];
+		let images = [];
+
+		await fetchJson(BL_API_URL + 'trending', {credentials: 'include'}).then(response => {
+			let uniqueData = response.body.data.filter((map, index, self) => {
+				const songId = map?.song?.id;
+				return songId && self.findIndex(m => m?.song?.id === songId) === index;
+			});
+
+			uniqueData.forEach(map => {
+				images.push(map?.song?.fullCoverImage ?? map?.song?.coverImage);
+			});
+
+			trendingMaps = uniqueData.map(m => {
+				return {
+					...m,
+					diffInfo: {diff: m?.difficulty?.difficultyName, type: m?.difficulty?.modeName},
+					stars: m?.difficulty?.stars ?? null,
+				};
+			});
+		});
+
+		icons = [
+			{
+				width: '47%',
+				left: '-9%',
+				top: '26%',
+				image: images[0],
+			},
+			{
+				width: '55%',
+				right: '-3%',
+				bottom: '7%',
+				image: images[1],
+			},
+			{
+				width: '41%',
+				left: '38%',
+				top: '-12.7%',
+				image: images[2],
+			},
+		];
 	}
 
 	async function setCuratedIcons() {
@@ -112,12 +153,22 @@
 		];
 	}
 
+	let expanded = false;
+
 	function handleClick() {
-		if (redirectUrl) navigate(redirectUrl);
+		if (redirectUrl) {
+			navigate(redirectUrl);
+		} else {
+			expanded = true;
+		}
 	}
 
 	$: categoryName && setIcons();
 </script>
+
+{#if expanded}
+	<TrendingMapsPopup maps={trendingMaps} on:closed={() => (expanded = false)} />
+{/if}
 
 <a href={redirectUrl} class="card" style="background: {bgColor} !important;" on:click|preventDefault={handleClick}>
 	<h1>{categoryName}</h1>
@@ -141,12 +192,6 @@
 			{:else}
 				<span class="countdown">{Math.round($rankedTimer.seconds)} Second{$rankedTimer.seconds !== 1 ? 's' : ''}</span>
 			{/if}
-		</div>
-	{/if}
-
-	{#if showComingSoon}
-		<div class="rankedBatchCounter" transition:fade>
-			<span class="counterHeader">Coming Soon</span>
 		</div>
 	{/if}
 </a>
