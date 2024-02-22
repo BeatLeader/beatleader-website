@@ -55,6 +55,10 @@
 		gap: 1.5em;
 	}
 
+	:global(.content-box:has(.top-container)) {
+		backdrop-filter: none !important;
+	}
+
 	@media screen and (max-width: 767px) {
 		:global(.top-container .map-card.maps-table) {
 			width: 100% !important;
