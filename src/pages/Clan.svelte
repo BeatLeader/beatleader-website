@@ -298,7 +298,6 @@
 					{#each playersPage as player, idx (player.playerId)}
 						<div
 							class="ranking-grid-row"
-							style="opacity: {player.playerInfo?.clanOrder?.indexOf(clan?.tag) ? '0.7' : '1.0'}"
 							title={player.playerInfo?.clanOrder?.indexOf(clan?.tag) ? 'Not contributing to the global map for this clan' : null}
 							in:fly|global={{delay: idx * 10, x: 100}}>
 							<PlayerCard
@@ -309,6 +308,7 @@
 								value={player?.playerInfo?.pp}
 								{maxRank}
 								{maxCountryRank}
+								opacity={player.playerInfo?.clanOrder?.indexOf(clan?.tag) ? '0.7' : '1.0'}
 								valueProps={{suffix: 'pp', zero: '-'}} />
 
 							{#if isFounder && canBeKicked(clan, player)}
