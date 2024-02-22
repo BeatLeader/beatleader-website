@@ -8,7 +8,7 @@
 	import createRankingStore from '../stores/http/http-ranking-store';
 	import {BL_ASSETS_CDN} from '../network/queues/beatleader/page-queue';
 
-	const rankingStore = createRankingStore('global', 1, {role: 'sponsor,supporter,tipper', count: 500});
+	const rankingStore = createRankingStore('global', 1, {role: 'sponsor,supporter,tipper', count: 100});
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
@@ -16,7 +16,7 @@
 
 	let articleEl = null;
 
-	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 500}, true);
+	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 100}, true);
 </script>
 
 <svelte:head>
@@ -149,6 +149,10 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561199146457878.png" alt="Mewtex" /><a
 					href="https://www.beatleader.xyz/u/76561199146457878">Mewtex</a>
 			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/ccc9d6659a0c7fc6fed6a5c6afc2e837eb3fa674_full.jpg" alt="Cratornugget" /><a
+					href="https://www.beatleader.xyz/u/76561198307061479">Cratornugget</a>
+			</div>
 		</section>
 
 		<h1 class="title is-4">Nomination Quality Team</h1>
@@ -157,10 +161,6 @@
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/9eac1ff637afdcb6de7062b41ee1db567b8e8766_full.jpg" alt="CookedChili" /><a
 					href="https://www.beatleader.xyz/u/76561198147746455">CookedChili</a>
-			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
-					href="https://www.beatleader.xyz/u/76561198272028078">Zana</a>
 			</div>
 		</section>
 
@@ -344,6 +344,10 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198960449289.png" alt="Aquaflee" /><a
 					href="https://www.beatleader.xyz/u/76561198960449289">Aquaflee</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
+					href="https://www.beatleader.xyz/u/76561198272028078">Zana</a>
 			</div>
 		</section>
 
