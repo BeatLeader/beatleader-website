@@ -229,11 +229,11 @@
 				<HeaderCard text="Discover" />
 				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
 				<div style="margin-bottom: -2.5em;" />
-				<EventCard
+				<!--<EventCard
 					text="Early 2024 Ranked event!"
 					body="Check out what was ranked and compete for a badge."
 					image="/assets/Main/landing.webp"
-					button={{url: '/event/44', label: 'Event', icon: 'fas fa-rocket'}} />
+					button={{url: '/event/44', label: 'Event', icon: 'fas fa-rocket'}} />-->
 				<div style="margin-bottom: 1em;" />
 				<HeaderCard text="Tournaments" />
 				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
