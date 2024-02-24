@@ -370,10 +370,10 @@
 		<ContentBox cls="event-banner" on:click={() => navigate('/event/44')}>
 			<div class="event-container">
 				<!-- <img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/71875-event-s.png" /> -->
-				<div class="event-text-container">
+				<!-- <div class="event-text-container">
 					<span class="event-title">Ranked early 2024!</span>
 					<span class="event-text">Check out what was ranked and compete for a badge.</span>
-				</div>
+				</div> -->
 				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/44')} />
 			</div>
 		</ContentBox>
@@ -534,7 +534,8 @@
 		padding: 0.3em;
 		border-radius: 0.5em;
 		cursor: pointer;
-		background: linear-gradient(rgb(26 26 26 / 65%), rgb(16 16 16 / 79%)), center / cover no-repeat url(https://cdn.assets.beatleader.xyz/71875-event-s.webp) !important;
+		background: linear-gradient(rgb(26 26 26 / 65%), rgb(16 16 16 / 79%)),
+			center / cover no-repeat url(https://cdn.assets.beatleader.xyz/71875-event-s.webp) !important;
 	}
 
 	:global(.show-filters-box) {
