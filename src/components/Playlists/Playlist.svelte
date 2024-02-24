@@ -126,7 +126,7 @@
 	function installOneClick() {
 		thinking = true;
 		customProtocolCheck(
-			'bsplaylist://playlist/https://api.beatleader.xyz/playlist/' + playlistId,
+			'bsplaylist://playlist/' + playlist.customData.syncURL,
 			() => {
 				thinking = false;
 				addNotification({

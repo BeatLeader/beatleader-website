@@ -200,7 +200,8 @@ export default () => {
 				for (let i = 0; i < playlists.length; i++) {
 					const element = playlists[i];
 					if (element.oneclick) continue;
-					hashed[await computeSha256Hash(element)] = element;
+					const hash = await computeSha256Hash(element);
+					hashed[hash] = element;
 					if (element.customData?.id) {
 						indexed[element.customData.id] = element;
 					}
@@ -208,7 +209,7 @@ export default () => {
 				for (let i = 0; i < remotePlaylists.length; i++) {
 					const element = remotePlaylists[i];
 					var localPlaylist = hashed[element.hash];
-					if (!localPlaylist || !localPlaylist.customData?.id || localPlaylist.customData?.owner != element.ownerId) {
+					if (!element.deleted && (!localPlaylist || !localPlaylist.customData?.id)) {
 						if (indexed[element.id]) {
 							playlists = playlists.filter(p => p.customData?.id != element.id);
 						}
@@ -222,6 +223,8 @@ export default () => {
 							playlists.push(remote);
 						}
 						hashed[element.hash] = remote;
+					} else if (localPlaylist && element.deleted) {
+						playlists = playlists.filter(p => p !== localPlaylist);
 					}
 				}
 
