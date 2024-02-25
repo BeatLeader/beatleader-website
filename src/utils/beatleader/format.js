@@ -518,7 +518,6 @@ export function modeForModeName(modeName) {
 	return 0;
 }
 
-
 export const difficultyDescriptions = {
 	Easy: {
 		title: 'Easy',
@@ -545,7 +544,7 @@ export const difficultyDescriptions = {
 		color: 'purple',
 		textColor: 'white',
 	},
-}
+};
 
 export function diffForDiffName(diffName) {
 	switch (diffName) {
@@ -677,7 +676,7 @@ export const DifficultyStatus = {
 	unrankable: 4,
 	outdated: 5,
 	inevent: 6,
-	ost: 7
+	ost: 7,
 };
 
 export function formatDiffStatus(status) {
@@ -817,6 +816,8 @@ export const songStatusesMap = {
 	curated: 1 << 1,
 	mapOfTheWeek: 1 << 2,
 	noodleMonday: 1 << 3,
+	featuredOnCC: 1 << 4,
+	beastSaberAwarded: 1 << 5,
 };
 
 export const songStatusesDescription = {
@@ -843,6 +844,12 @@ export const songStatusesDescription = {
 		iconFile: '/assets/cubecommunitylogo-smaller.webp',
 		color: 'rgb(164 76 61)',
 		textColor: 'white',
+	},
+	beastSaberAwarded: {
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/beastsabericon.png',
+		color: 'yellow',
+		textColor: 'yellow',
 	},
 };
 

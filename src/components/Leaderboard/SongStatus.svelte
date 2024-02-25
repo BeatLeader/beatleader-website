@@ -26,7 +26,7 @@
 		try {
 			player = await playerService.fetchPlayerSaver(status.responsible);
 		} catch {}
-		
+
 		if (player == null) {
 			responsible = await beatSaverService.getMapper(status.responsible);
 		}
@@ -34,11 +34,11 @@
 
 	$: status = Object.entries(songStatusesMap).find(map => map[1] == songStatus.status)[0];
 	$: fetchResponsible(songStatus);
-	$: label = songStatusesDescription?.[status]?.name ?? status;
+	$: label = songStatusesDescription?.[status]?.name ?? songStatus.title ?? status;
 	$: iconFile = songStatusesDescription?.[status]?.iconFile ?? `${status}-icon`;
-	$: color = songStatusesDescription?.[status]?.color ?? 'var(--beatleader-primary';
+	$: color = songStatusesDescription?.[status]?.color ?? songStatus.color ?? 'var(--beatleader-primary)';
 	$: textColor = songStatusesDescription?.[status]?.textColor ?? null;
-	$: title = (songStatusesDescription?.[status]?.title ?? '').replace(
+	$: title = (songStatusesDescription?.[status]?.title ?? songStatus.details ?? '').replace(
 		'DATE',
 		songStatus?.timeset ? formatDateRelative(dateFromUnix(songStatus?.timeset)) : ''
 	);
