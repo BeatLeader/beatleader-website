@@ -32,7 +32,7 @@
 		requirementsMap,
 		modeDescriptions,
 		difficultyDescriptions,
-		songStatusesMap,
+		songStatusesFilterMap,
 		songStatusesDescription,
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
@@ -143,7 +143,7 @@
 		};
 	});
 
-	const songStatusOptions = Object.entries(songStatusesMap).map(([key, type]) => {
+	const songStatusOptions = Object.entries(songStatusesFilterMap).map(([key, type]) => {
 		return {
 			key: type,
 			label: capitalize(songStatusesDescription?.[key]?.name ?? key),

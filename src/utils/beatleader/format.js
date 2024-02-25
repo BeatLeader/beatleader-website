@@ -820,6 +820,12 @@ export const songStatusesMap = {
 	beastSaberAwarded: 1 << 5,
 };
 
+export const songStatusesFilterMap = {
+	curated: songStatusesMap.curated,
+	mapOfTheWeek: songStatusesMap.mapOfTheWeek,
+	noodleMonday: songStatusesMap.noodleMonday,
+};
+
 export const songStatusesDescription = {
 	curated: {
 		title: 'Map was curated DATE by BeastSaber team!',
