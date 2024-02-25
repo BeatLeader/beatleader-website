@@ -7,7 +7,7 @@
 	import {fade} from 'svelte/transition';
 	import HeaderCard from '../components/Maps/HeaderCard.svelte';
 	import {fetchJson} from '../network/fetch';
-	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import _Context from 'suneditor/src/lib/context';
 	import BigButton from '../components/Maps/BigButton.svelte';
 	import EventCard from '../components/Maps/EventCard.svelte';
