@@ -11,6 +11,8 @@
 	import _Context from 'suneditor/src/lib/context';
 	import BigButton from '../components/Maps/BigButton.svelte';
 	import EventCard from '../components/Maps/EventCard.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import ssrConfig from '../ssr-config';
 
 	let cards = [
 		{
@@ -200,6 +202,7 @@
 	});
 
 	$: getLatestMapOfTheWeek();
+	$: metaDescription = 'Discover custom maps for Beat Saber: trending, ranked and featured by the community';
 </script>
 
 <svelte:head>
@@ -246,6 +249,25 @@
 		</ContentBox>
 	</article>
 </section>
+
+<MetaTags
+	title={ssrConfig.name + ' - Maps'}
+	description={metaDescription}
+	openGraph={{
+		title: ssrConfig.name + ' - Maps',
+		description: metaDescription,
+		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: ssrConfig.name + ' - Maps',
+		description: metaDescription,
+		image: CURRENT_URL + '/assets/logo-small.png',
+		imageAlt: ssrConfig.name + "'s logo",
+	}} />
 
 <style>
 	.align-content {
