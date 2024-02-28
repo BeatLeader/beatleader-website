@@ -109,9 +109,9 @@
 				{#each leftData as cell, idx}
 					<div class="grid-cell left" title={formatHoverHint(cell)} style={'transform: rotate(' + getSecondaryGridRotation(idx) + ');'}>
 						{#if isDot(idx)}
-							<img src="/assets/noteDot.png" class="note-icon dot" alt="dot" />
+							<img src="/assets/noteDot.webp" class="note-icon dot" alt="dot" />
 						{:else}
-							<img src="/assets/noteArrow.png" class="note-icon arrow" alt="arrow" />
+							<img src="/assets/noteArrow.webp" class="note-icon arrow" alt="arrow" />
 						{/if}
 						{#if cell.count}
 							<p style={'transform: rotate(-' + getSecondaryGridRotation(idx) + ');'}>
@@ -130,9 +130,9 @@
 				{#each rightData as cell, idx}
 					<div class="grid-cell right" title={formatHoverHint(cell)} style={'transform: rotate(' + getSecondaryGridRotation(idx) + ');'}>
 						{#if isDot(idx)}
-							<img src="/assets/noteDot.png" class="note-icon dot" alt="dot" />
+							<img src="/assets/noteDot.webp" class="note-icon dot" alt="dot" />
 						{:else}
-							<img src="/assets/noteArrow.png" class="note-icon arrow" alt="arrow" />
+							<img src="/assets/noteArrow.webp" class="note-icon arrow" alt="arrow" />
 						{/if}
 						{#if cell.count}
 							<p style={'transform: rotate(-' + getSecondaryGridRotation(idx) + ');'}>

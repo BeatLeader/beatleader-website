@@ -128,7 +128,7 @@
 		animation: baguette 2s linear infinite;
 		background-size: cover;
 		background-repeat: no-repeat;
-		background-image: url('/assets/soup_px.png');
+		background-image: url('/assets/soup_px.webp');
 		pointer-events: none;
 	}
 

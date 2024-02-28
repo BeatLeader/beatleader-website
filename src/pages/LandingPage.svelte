@@ -61,11 +61,11 @@
 
 			<div class="features">
 				<div class="feature">
-					<img src="/assets/leaderboard-landing.png" class="feature-image" style="transform: rotate3d(0, 1, 0, 22deg);" />
+					<img src="/assets/leaderboard-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, 22deg);" />
 					<h3 class="feature-description">In-game leaderboards<br />for custom maps!</h3>
 				</div>
 				<div class="feature">
-					<img src="/assets/webreplays-landing.png" class="feature-image" style="transform: rotate3d(0, 1, 0, -22deg);" />
+					<img src="/assets/webreplays-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, -22deg);" />
 					<h3 class="feature-description">Gameplay replays!</h3>
 				</div>
 			</div>
@@ -96,7 +96,7 @@
 				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
-							<img src="/assets/ArcViewerIcon.png" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
+							<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
 						</a>
 					</h3>
 					<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
@@ -104,7 +104,7 @@
 				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-							<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaber Logo" />
+							<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
 						</a>
 					</h3>
 					<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
@@ -112,11 +112,7 @@
 				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
-							<img
-								src="/assets/beastsabericonbig.webp"
-								title="BeastSaber"
-								class="icon"
-								alt="BeastSaber Logo" />
+							<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
 						</a>
 					</h3>
 					<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
@@ -124,11 +120,7 @@
 				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
-							<img
-								src="/assets/cubecommunitylogo.webp"
-								title="CubeCommunity"
-								class="icon"
-								alt="CubeCommunity Logo" />
+							<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
 						</a>
 					</h3>
 					<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>

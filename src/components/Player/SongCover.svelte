@@ -12,7 +12,7 @@
 	export let starsKey = 'stars';
 	export let triangle = true;
 
-	const DEFAULT_IMG = '/assets/song-default.png';
+	const DEFAULT_IMG = '/assets/song-default.webp';
 
 	let preloadCache = {};
 	let loadedImages = [];

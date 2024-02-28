@@ -129,9 +129,9 @@
 	<div class="reebanner">
 		<a class="reelink" href="https://www.patreon.com/posts/reesabers-on-92302764" />
 		<div class="banner-spacer" />
-		<img class="reesaber-red" src="/assets/reesaber-red.png" />
+		<img class="reesaber-red" src="/assets/reesaber-red.webp" />
 		<span class="link-text">ReeSabers are finally on QUEST!</span>
-		<img class="reesaber-blue" src="/assets/reesaber-blue.png" />
+		<img class="reesaber-blue" src="/assets/reesaber-blue.webp" />
 		<button
 			class="close-banner"
 			title="Hide banner"

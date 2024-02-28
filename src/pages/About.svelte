@@ -212,7 +212,7 @@
 		{#if $rankingStore?.data?.length}
 			<div class="role-container">
 				<h1 class="title is-4">Sponsors</h1>
-				<img src={BL_ASSETS_CDN + '/patreon3.png'} alt="Sponsors" />
+				<img src={BL_ASSETS_CDN + '/patreon3.webp'} alt="Sponsors" />
 			</div>
 
 			<section class="content center">
@@ -225,7 +225,7 @@
 			</section>
 			<div class="role-container">
 				<h1 class="title is-4">Supporters</h1>
-				<img src={BL_ASSETS_CDN + '/patreon2.png'} alt="Supporters" />
+				<img src={BL_ASSETS_CDN + '/patreon2.webp'} alt="Supporters" />
 			</div>
 			<section class="content center">
 				{#each $rankingStore.data.filter(p => p.playerInfo.role.includes('supporter')) as player, idx (player?.playerId)}
@@ -237,7 +237,7 @@
 			</section>
 			<div class="role-container">
 				<h1 class="title is-4">Tippers</h1>
-				<img src={BL_ASSETS_CDN + '/patreon1.png'} alt="Tippers" />
+				<img src={BL_ASSETS_CDN + '/patreon1.webp'} alt="Tippers" />
 			</div>
 			<section class="content center">
 				{#each $rankingStore.data.filter(p => p.playerInfo.role.includes('tipper')) as player, idx (player?.playerId)}

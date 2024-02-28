@@ -64,7 +64,7 @@
 			props: {
 				title: 'BS Rewind Map',
 				body: 'Check out the new Rewind Map!',
-				imageUrl: '/assets/Discover/cc_rewind_23_map.png',
+				imageUrl: '/assets/Discover/cc_rewind_23_map.webp',
 				targetUrl: 'https://youtu.be/4-2GWGCJTmM',
 				linkName: 'YouTube video',
 				forcedColor: 'rgb(66 87 104)',
@@ -111,7 +111,7 @@
 			props: {
 				title: 'OOMBR',
 				body: 'OOMBR is a battle royale tourney run by Olbmaphlee1 and Oermergeesh, and will be streamed live on twitch on their accounts on Feb 24th at 2:00PM CST.',
-				imageUrl: '/assets/Discover/oombr_banner.png',
+				imageUrl: '/assets/Discover/oombr_banner.webp',
 				targetUrl: 'https://discord.gg/E2B8wePp',
 				linkName: 'OOMBR Discord',
 				forcedColor: 'rgb(20 20 20)',
@@ -133,7 +133,7 @@
 			props: {
 				title: 'Beat Saber Events Feed',
 				body: 'BeatKhana has created a twitter account to keep you updated on all the latest Beat Saber events, Follow them now!',
-				imageUrl: '/assets/Discover/BSEF_banner.png',
+				imageUrl: '/assets/Discover/BSEF_banner.webp',
 				targetUrl: 'https://twitter.com/beatsaberevents',
 				linkName: 'Twitter',
 				forcedColor: undefined,
@@ -144,7 +144,7 @@
 			props: {
 				title: 'CC site update',
 				body: 'Cube Community has updated their site, and added a new tournament calendar. Check it out!',
-				imageUrl: '/assets/Discover/cc_site_update.png',
+				imageUrl: '/assets/Discover/cc_site_update.webp',
 				targetUrl: 'https://cube.community/calendar',
 				linkName: "Cube Community's website",
 				forcedColor: 'rgb(8 37 52)',

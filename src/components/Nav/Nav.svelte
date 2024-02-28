@@ -82,32 +82,32 @@
 		{
 			name: 'General',
 			id: '',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/logo-small.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/logo-small.webp',
 		},
 		{
 			name: 'No modifiers',
 			id: 'nomods',
-			logoBig: '/assets/logo-no-pause.png',
-			logoSmall: '/assets/logo-small-no-pause.png',
+			logoBig: '/assets/logo-no-pause.webp',
+			logoSmall: '/assets/logo-small-no-pause.webp',
 		},
 		{
 			name: 'No pauses',
 			id: 'nopause',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/favicon-96x96.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'Golf',
 			id: 'golf',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/favicon-96x96.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'SCPM',
 			id: 'scpm',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/favicon-96x96.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
 		},
 	];
 
@@ -242,7 +242,7 @@
 			}}
 			use:mobileTouch={() => (testMenuShown = true)}>
 			<div class="logo-container desktop-and-up">
-				<img src="/assets/logo.png" class="logo" alt="" />
+				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BEATLEADER</span>
 					{#if leaderboardType.id != ''}
@@ -252,7 +252,7 @@
 			</div>
 
 			<div class="logo-container tablet">
-				<img src="/assets/logo-small.png" class="logo" alt="" />
+				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BL</span>
 					{#if leaderboardType.id != ''}
@@ -262,7 +262,7 @@
 			</div>
 
 			<div class="logo-container up-to-tablet">
-				<img src="/assets/logo-small.png" class="logo" alt="" />
+				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				{#if leaderboardType.id != 'general'}
 					<span class="leaderboard-type">{leaderboardType.name}</span>
 				{/if}
@@ -401,7 +401,7 @@
 						on:click|preventDefault={() => {
 							navigate('/maps');
 						}}>
-						<img class="maps-icon" src="/assets/maps-icon.png" />
+						<img class="maps-icon" src="/assets/maps-icon.webp" />
 
 						Maps
 					</a>
@@ -464,7 +464,7 @@
 			on:click|preventDefault={() => {
 				navigate('/maps');
 			}}>
-			<img class="maps-icon" src="/assets/maps-icon.png" />
+			<img class="maps-icon" src="/assets/maps-icon.webp" />
 
 			Maps
 		</a>
