@@ -1,6 +1,7 @@
 <script>
 	import Select from 'svelte-select';
 	import Item from './CountryPickerItem.svelte';
+	import {fetchJson} from '../../network/fetch';
 	export let selected = undefined;
 	let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
 	let itemFilter = (label, filterText, option) => {
@@ -10,7 +11,16 @@
 		const country = regionNames.of(label.toUpperCase()).toLowerCase();
 		return label.toLowerCase().includes(filterText.toLowerCase()) || country.includes(filterText.toLowerCase());
 	};
-	const items = [
+
+	let items = [];
+
+	const country = window.navigator.userLanguage || window.navigator.language.split('-', 2)[1];
+
+	$: {
+		items = [country.toLowerCase(), 'not set'];
+	}
+
+	/*const items = [
 		'ad',
 		'ae',
 		'af',
@@ -262,11 +272,14 @@
 		'zm',
 		'zw',
 		'not set',
-	];
+	];*/
 </script>
 
-<div class="selectContainer">
-	<Select value={selected} {itemFilter} {items} {Item} Selection={Item} isSearchable={true} on:select />
+<div style="display: flex; align-items: center;">
+	<div class="selectContainer">
+		<Select value={selected} {itemFilter} {items} {Item} Selection={Item} isSearchable={true} on:select />
+	</div>
+	<i class="fa-solid fa-question" style="margin-left: 0.5em" title="Country not listed? Contact an admin in our discord." />
 </div>
 
 <style>
