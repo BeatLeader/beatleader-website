@@ -3,7 +3,6 @@
 </script>
 
 <div class="featured-playlist-container">
-	<span class="featured-playlist-headline">Featured in:</span>
 	<a href={playlist.playlistLink}>
 		<img class="featured-playlist-cover" src={playlist.cover} />
 	</a>
@@ -25,26 +24,23 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-        gap: 0.3em;
+		gap: 0.3em;
 	}
 
-	.featured-playlist-headline {
+	.featured-playlist-title {
 		font-size: x-large;
+		font-weight: bold;
+		text-align: center;
 	}
 
-    .featured-playlist-title {
-        font-size: x-large;
-        font-weight: bold;
-    }
+	.featured-playlist-owner {
+		padding: 0.2em;
+		border-radius: 6px;
+	}
 
-    .featured-playlist-owner {
-        padding: 0.2em;
-        border-radius: 6px;
-    }
-
-    .featured-playlist-cover {
-        width: 12em;
-    }
+	.featured-playlist-cover {
+		width: 12em;
+	}
 
 	.song-status {
 		background-color: #00000061;

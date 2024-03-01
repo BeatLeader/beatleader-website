@@ -37,6 +37,8 @@
 	$: label = songStatusesDescription?.[status]?.name ?? songStatus.title ?? status;
 	$: iconFile = songStatusesDescription?.[status]?.iconFile ?? `${status}-icon`;
 	$: color = songStatusesDescription?.[status]?.color ?? songStatus.color ?? 'var(--beatleader-primary)';
+	$: gradient =
+		songStatusesDescription?.[status]?.gradient ?? songStatus.gradient ?? 'linear-gradient(rgb(26 26 26 / 65%), rgb(16 16 16 / 79%))';
 	$: textColor = songStatusesDescription?.[status]?.textColor ?? null;
 	$: title = (songStatusesDescription?.[status]?.title ?? songStatus.details ?? '').replace(
 		'DATE',
@@ -44,9 +46,7 @@
 	);
 </script>
 
-<div
-	class="song-status"
-	style="border: solid 2px {color}; background: linear-gradient(rgb(26 26 26 / 65%), rgb(16 16 16 / 79%)), center / cover no-repeat url({iconFile})">
+<div class="song-status" style="border: solid 2px {color}; background: {gradient}, center / cover no-repeat url({iconFile})">
 	{#if player}
 		<div class="player-info">
 			<Avatar {player} title={player.name} on:click={player ? () => navigateToPlayer(player.playerId) : null} />

@@ -1050,11 +1050,15 @@
 									<i class="fas fa-chevron-left" />
 								</span>
 							</div>
-							{#each featuredPlaylists as featuredPlaylist}
-								<div class="stats-with-icons">
-									<FeaturedPlaylist playlist={featuredPlaylist} />
-								</div>
-							{/each}
+
+							<div class="featured-playlists">
+								<span class="featured-playlist-headline">Featured in:</span>
+								{#each featuredPlaylists as featuredPlaylist}
+									<div class="stats-with-icons">
+										<FeaturedPlaylist playlist={featuredPlaylist} />
+									</div>
+								{/each}
+							</div>
 						</div>
 					{/if}
 				</ContentBox>
@@ -1225,6 +1229,16 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 		pointer-events: none;
+	}
+
+	.featured-playlists {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.featured-playlist-headline {
+		font-size: x-large;
+		text-align: center;
 	}
 
 	header {

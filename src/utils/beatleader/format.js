@@ -852,8 +852,9 @@ export const songStatusesDescription = {
 		textColor: 'white',
 	},
 	beastSaberAwarded: {
-		icon: 'beastsaber-icon',
-		iconFile: '/assets/beastsabericon.webp',
+		icon: 'beastaward-icon',
+		iconFile: '/assets/beastawardbackground.webp',
+		gradient: 'linear-gradient(rgb(26 26 26 / 8%), rgb(16 16 16 / 12%))',
 		color: 'yellow',
 		textColor: 'yellow',
 	},
