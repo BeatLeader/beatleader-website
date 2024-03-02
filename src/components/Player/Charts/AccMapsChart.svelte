@@ -2,7 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import zoomPlugin from 'chartjs-plugin-zoom';
 	import {formatNumber, roundToPrecision} from '../../../utils/format';
-	import {formatDateRelative} from '../../../utils/date';
+	import {formatDateRelative, getTimeStringColor} from '../../../utils/date';
 	import {debounce} from '../../../utils/debounce';
 	import regionsPlugin from './utils/regions-plugin';
 	import {deepClone, capitalize} from '../../../utils/js';
@@ -45,7 +45,6 @@
 	async function setupChart(hash, canvas, selectedPlaylist) {
 		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
 
-		const mapColor = '#ffffff';
 		const mapBorderColor = '#003e54';
 		const ssPlusColor = 'rgba(143,72,219, .4)';
 		const ssColor = 'rgba(190,42,66, .4)';
@@ -159,22 +158,24 @@
 			{
 				label: 'Maps',
 				borderColor: mapBorderColor,
-				backgroundColor: selectedPlaylist
-					? element => {
-							const item = element.raw;
-							if (item.playlistSong) {
-								if (item.difficulties.length == 1 && item.difficulties[0] == item.diff) {
-									return 'red';
-								} else if (item.difficulties.length == 1 || !item.difficulties.includes(item.diff)) {
-									return 'blue';
-								} else {
-									return 'yellow';
-								}
+				backgroundColor: element => {
+					const item = element.raw;
+					if (selectedPlaylist) {
+						if (item.playlistSong) {
+							if (item.difficulties.length == 1 && item.difficulties[0] == item.diff) {
+								return 'red';
+							} else if (item.difficulties.length == 1 || !item.difficulties.includes(item.diff)) {
+								return 'blue';
 							} else {
-								return 'grey';
+								return 'yellow';
 							}
-					  }
-					: mapColor,
+						} else {
+							return 'grey';
+						}
+					} else {
+						return getTimeStringColor(item.timeSet);
+					}
+				},
 				fill: false,
 				pointRadius: 3,
 				pointHoverRadius: 4,
