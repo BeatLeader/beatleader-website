@@ -283,8 +283,7 @@
 								<div
 									class={`row-${idx}`}
 									in:fly={{x: 200, delay: idx * 20, duration: 500}}
-									out:fade={{x: 200, delay: idx * 20, duration: 500}}
-									animate:flip={{duration: 300}}>
+									out:fade={{x: 200, delay: idx * 20, duration: 500}}>
 									<ClanRankingSong {idx} {cr} {page} sortBy={currentFilters.sortBy} />
 								</div>
 							{/each}
