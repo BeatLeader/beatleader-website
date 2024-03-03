@@ -72,7 +72,7 @@
 	async function setTrendingIcons() {
 		let images = [];
 
-		await fetchJson(BL_API_URL + 'trending', {credentials: 'include'}).then(response => {
+		await fetchJson(BL_API_URL + 'maps/trending', {credentials: 'include'}).then(response => {
 			let uniqueData = response.body.data.filter((map, index, self) => {
 				const songId = map?.song?.id;
 				return songId && self.findIndex(m => m?.song?.id === songId) === index;
@@ -116,11 +116,7 @@
 	async function setCuratedIcons() {
 		let images = [];
 
-		await fetchJson(
-			BL_API_URL +
-				'leaderboards/groupped' +
-				'?leaderboardContext=general&page=1&count=3&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=2&allRequirements=0'
-		).then(response => {
+		await fetchJson(BL_API_URL + 'maps/curated').then(response => {
 			let uniqueData = response.body.data.filter((map, index, self) => {
 				const songId = map?.song?.id;
 				return songId && self.findIndex(m => m?.song?.id === songId) === index;
