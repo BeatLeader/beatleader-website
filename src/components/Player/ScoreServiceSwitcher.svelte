@@ -422,7 +422,18 @@
 		} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
 	}
 
-	$: eventsParticipating = player?.eventsParticipating ?? null;
+	let eventsParticipating = null;
+
+	function fetchEventsParticipating(playerId) {
+		if (!playerId) return;
+		fetch(BL_API_URL + `player/${playerId}/eventsparticipating`)
+			.then(d => d.json())
+			.then(eventsParticipatingList => {
+				eventsParticipating = eventsParticipatingList;
+			});
+	}
+
+	$: fetchEventsParticipating(player?.playerId);
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 

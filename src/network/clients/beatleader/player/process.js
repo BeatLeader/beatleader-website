@@ -28,7 +28,6 @@ export default response => {
 		clans,
 		patreonFeatures,
 		socials,
-		eventsParticipating,
 		profileSettings,
 		changes,
 		clanOrder,
@@ -64,8 +63,6 @@ export default response => {
 	}
 
 	let sponsor = role?.includes('sponsor');
-
-	let processedEventsParticipating = eventsParticipating?.map(e => ({id: e?.eventId, name: e?.name}));
 
 	let profileAppearance = profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : [];
 	if (profileAppearance) {
@@ -136,6 +133,5 @@ export default response => {
 					profileAppearance,
 			  },
 		scoreStats: scoreStats ? scoreStats : null,
-		eventsParticipating: processedEventsParticipating,
 	};
 };
