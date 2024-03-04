@@ -11,6 +11,7 @@
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
 	import editModel from '../../stores/beatleader/profile-edit-model';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let playerId = null;
 	export let player = null;
