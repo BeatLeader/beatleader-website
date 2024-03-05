@@ -80,6 +80,7 @@
 		selectedTypes = selectedTypes.filter(m => m != typeToRemove);
 		mapTypes.push(typeToRemove);
 		mapTypes = mapTypes;
+		selectedType = '+';
 
 		let typeValue = 0;
 		if (Array.isArray(selectedTypes)) {

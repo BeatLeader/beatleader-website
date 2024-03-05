@@ -66,7 +66,11 @@
 	</div>
 
 	<div class="song-info" style="background-color: {backgroundColor};">
-		<div class="song-title">
+		<a
+			class="song-title"
+			href="/leaderboard/global/{map.id}/1"
+			on:keypress|preventDefault
+			on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)}>
 			<div class="name-and-author">
 				<span class="name" data-atropos-offset="3">{map?.song?.name}</span>
 
@@ -76,7 +80,7 @@
 				<span class="author" data-atropos-offset="1">{map?.song?.author}</span>
 			</div>
 			<div class="mapper" data-atropos-offset="0.2">Mapper: {map?.song?.mapper}</div>
-		</div>
+		</a>
 		<div class="other-details" data-atropos-offset="0.1">
 			<div class="details-and-icons">
 				<div class="title-and-tag-selector">
@@ -102,11 +106,6 @@
 			</div>
 		</div>
 	</div>
-	<a
-		class="map-link"
-		href="/leaderboard/global/{map.id}/1"
-		on:keypress|preventDefault
-		on:click|preventDefault={() => navigate(`/leaderboard/global/${map.id}/1`)} />
 </div>
 
 <style>
