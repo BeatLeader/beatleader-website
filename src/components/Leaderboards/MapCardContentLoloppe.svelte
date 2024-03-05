@@ -29,7 +29,7 @@
 			context.drawImage(img, 0, 0, 1, 1);
 			const imageData = context.getImageData(0, 0, 1, 1).data.slice(0, 3);
 
-			backgroundColor = `rgba(${imageData[0] * 0.5},${imageData[1] * 0.5},${imageData[2] * 0.5},0.7)`;
+			backgroundColor = `rgba(${imageData[0] * 0.5},${imageData[1] * 0.5},${imageData[2] * 0.5},0.9)`;
 		};
 	}
 
@@ -88,16 +88,12 @@
 					<TypeSelector type="speed" {map} on:open />
 				</div>
 			</div>
-		</div>
-		<div class="other-details" data-atropos-offset="0.1">
 			<div class="details-and-icons">
 				<div class="title-and-tag-selector">
 					<span>Style:</span>
 					<TypeSelector type="style" {map} on:open />
 				</div>
 			</div>
-		</div>
-		<div class="other-details" data-atropos-offset="0.1">
 			<div class="details-and-icons">
 				<div class="title-and-tag-selector">
 					<span>Features:</span>
@@ -150,8 +146,9 @@
 		display: flex;
 		gap: 1em;
 		width: 100%;
-		align-items: center;
+		align-items: start;
 		justify-content: space-between;
+		border-bottom: 1px solid white;
 	}
 
 	.map-card-header {

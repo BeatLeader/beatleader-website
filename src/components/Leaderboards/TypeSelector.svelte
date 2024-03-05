@@ -59,11 +59,13 @@
 
 	function selectType(typeToSelect) {
 		if (typeToSelect != '+') {
+			selectedType = null;
 			selectedTypes.push(typeToSelect);
 			selectedTypes = selectedTypes;
-
-			selectedType = '+';
 			mapTypes = allMapTypes.filter(m => !selectedTypes.includes(m));
+
+			selectedType = null;
+			selectedType = '+';
 
 			let typeValue = 0;
 			if (Array.isArray(selectedTypes)) {
@@ -80,6 +82,8 @@
 		selectedTypes = selectedTypes.filter(m => m != typeToRemove);
 		mapTypes.push(typeToRemove);
 		mapTypes = mapTypes;
+
+		selectedType = null;
 		selectedType = '+';
 
 		let typeValue = 0;
