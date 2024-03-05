@@ -743,12 +743,13 @@ export const typesDescription = {
 // Speed - 300 to 400 average ebpm?
 // Highspeed- 400+ average ebpm?
 
-export const speedTags = ['slow', 'midspeed', 'speed', 'highspeed'];
+export const speedTags = ['slow', 'medium', 'fast', 'extreme', 'insane'];
 export const speedTagsMap = {
 	slow: 1,
-	midspeed: 2,
-	speed: 4,
-	highspeed: 8,
+	medium: 2,
+	fast: 4,
+	extreme: 8,
+	insane: 16,
 };
 
 // Linear - Maps with low amount of repositioning and rotation required.
@@ -829,13 +830,14 @@ export const styleTagsMap = {
 export const featureTags = [
 	'inverted',
 	'windows',
-	'curved-sliders',
+	'sliders',
 	'chains',
 	'arc',
 	'triangle',
 	'inline',
 	'complex rhythm',
 	'palm up',
+	'reset',
 	'lean',
 	'angular tech',
 	'circling tech',
@@ -848,21 +850,22 @@ export const featureTags = [
 export const featureTagsMap = {
 	inverted: 1,
 	windows: 2,
-	'curved-sliders': 4,
+	sliders: 4,
 	chains: 8,
 	arc: 16,
 	triangle: 32,
 	inline: 64,
 	'complex rhythm': 128,
 	'palm up': 256,
-	lean: 512,
-	'angular tech': 1024,
-	'circling tech': 2048,
-	'momentum tech': 4096,
-	'complex stream': 8192,
-	shitpost: 16384,
-	metronome: 32768,
-	vibro: 65536,
+	reset: 512,
+	lean: 1024,
+	'angular tech': 2048,
+	'circling tech': 4096,
+	'momentum tech': 8192,
+	'complex stream': 16384,
+	shitpost: 32768,
+	metronome: 65536,
+	vibro: 131072,
 };
 
 export function mapTypeFromMask(type) {
