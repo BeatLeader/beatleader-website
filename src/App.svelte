@@ -12,6 +12,7 @@
 	import EventPage from './pages/Event.svelte';
 	import LeaderboardPage from './pages/Leaderboard.svelte';
 	import LeaderboardsPage from './pages/Leaderboards.svelte';
+	import LeaderboardsLoloppe from './pages/LeaderboardsLoloppe.svelte';
 	import ClanPage from './pages/Clan.svelte';
 	import ClansPage from './pages/Clans.svelte';
 	import FollowedPage from './pages/Followed.svelte';
@@ -219,6 +220,10 @@
 					<Route path="/leaderboards/*page" let:params let:location>
 						<LeaderboardsPage page={params.page} {location} />
 					</Route>
+					<Route path="/leaderboards/loloppe/*page" let:params let:location>
+						<LeaderboardsLoloppe page={params.page} {location} />
+					</Route>
+
 					<Route path="/maps">
 						<Maps />
 					</Route>

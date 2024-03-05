@@ -738,8 +738,141 @@ export const typesDescription = {
 	},
 };
 
+// Slow 0 to 150 average ebpm?
+// Midspeed - 150 to 300 average ebpm?
+// Speed - 300 to 400 average ebpm?
+// Highspeed- 400+ average ebpm?
+
+export const speedTags = ['slow', 'midspeed', 'speed', 'highspeed'];
+export const speedTagsMap = {
+	slow: 1,
+	midspeed: 2,
+	speed: 4,
+	highspeed: 8,
+};
+
+// Linear - Maps with low amount of repositioning and rotation required.
+// True Acc - https://wiki.accsaber.com/Beat_Saber/How_to_improve/definitions/
+// Standard Acc - https://wiki.accsaber.com/Beat_Saber/How_to_improve/definitions/
+// Tech Acc - https://wiki.accsaber.com/Beat_Saber/How_to_improve/definitions/
+// Tech - Maps that focus on complexity
+// Reset - Resets are the main thing of the map
+// Bomb (Reset) - Bomb resets are the main thing of the map
+// Balanced - A mix of style (mostly tech and linear)
+// Gimmick - Maps that focus on a specific gimmick that doesn't specifically fit anywhere else
+// Fitbeat - Maps that focus on moving the player with walls (mostly crouch walls, but also dodge walls)
+// Dance - Maps that copy a specific dance?
+// Challenge - Maps purely made for difficulty sake, usually break most of the mapping norms.
+// Jump - Maps that focus on jumps.
+// Stream - Maps that focus on streams.
+// Stamina - Lengthy maps with very long sustained patterns that will tire the player out
+// Paul
+// Poodle
+
+export const styleTags = [
+	'linear',
+	'true acc',
+	'standard acc',
+	'tech acc',
+	'tech',
+	'reset',
+	'bomb-resets',
+	'balanced',
+	'gimmick',
+	'fitbeat',
+	'dance',
+	'challenge',
+	'jump',
+	'stream',
+	'stamina',
+	'paul',
+	'poodle',
+];
+export const styleTagsMap = {
+	linear: 1,
+	'true acc': 2,
+	'standard acc': 4,
+	'tech acc': 8,
+	tech: 16,
+	reset: 32,
+	'bomb-resets': 64,
+	balanced: 128,
+	gimmick: 256,
+	fitbeat: 512,
+	dance: 1024,
+	challenge: 2048,
+	jump: 4096,
+	stream: 8192,
+	stamina: 16384,
+	paul: 32768,
+	poodle: 65536,
+};
+
+// Inverted - Contains inverted patterns
+// Windows - Contains windows
+// Curved Sliders - Contains sliders
+// Chains - Contains chains
+// Arc - Contains arc used for playability-sake
+// Triangle - Contains triangle patterns
+// Inline - Contains inline patterns
+// Complex rhythm - Contains non-sustained unorthodox polyrhythm
+// Palm up - Contains patttern that need to be hit as palm up
+// Lean - Contains wide/sustained body lean
+// Angular Tech - Contains tech that require heavy angle cheese
+// Circling Tech - Contains tech that require circling
+// Momentum Tech - Contains tech that require sustained rotation
+// Complex stream - Maps contains lengthy complex streams (also a style of the challenge community)
+// Shitpost - A style of the challenge community (Idk how to even define that one)
+// Metronome - A style of the challenge community (window-swipe swing similar to wrist rolls)
+// Vibro - A style of the challenge community (mostly double spam at high speed, often also using loloppe notes)
+
+export const featureTags = [
+	'inverted',
+	'windows',
+	'curved-sliders',
+	'chains',
+	'arc',
+	'triangle',
+	'inline',
+	'complex rhythm',
+	'palm up',
+	'lean',
+	'angular tech',
+	'circling tech',
+	'momentum tech',
+	'complex stream',
+	'shitpost',
+	'metronome',
+	'vibro',
+];
+export const featureTagsMap = {
+	inverted: 1,
+	windows: 2,
+	'curved-sliders': 4,
+	chains: 8,
+	arc: 16,
+	triangle: 32,
+	inline: 64,
+	'complex rhythm': 128,
+	'palm up': 256,
+	lean: 512,
+	'angular tech': 1024,
+	'circling tech': 2048,
+	'momentum tech': 4096,
+	'complex stream': 8192,
+	shitpost: 16384,
+	metronome: 32768,
+	vibro: 65536,
+};
+
 export function mapTypeFromMask(type) {
 	const types = Object.keys(typesMap).filter(key => typesMap[key] & type);
+
+	return types?.length ? types.join(',') : 'none';
+}
+
+export function mapTypeFrom(type, map) {
+	const types = Object.keys(map).filter(key => map[key] & type);
 
 	return types?.length ? types.join(',') : 'none';
 }
