@@ -287,6 +287,7 @@
 	$: showSubtitle = $configStore?.leaderboardPreferences?.showSubtitleInHeader ?? false;
 	$: showStats = $configStore?.leaderboardPreferences?.showStatsInHeader ?? false;
 	$: showHash = $configStore?.leaderboardPreferences?.showHashInHeader ?? false;
+	$: showGraph = $configStore?.leaderboardPreferences?.showGraphOption ?? false;
 
 	$: showClanInHeader = $configStore?.leaderboardPreferences?.showClanCaptureInHeader ?? false;
 	$: showClanInList = $configStore?.leaderboardPreferences?.showClanCaptureInList ?? false;
@@ -385,6 +386,14 @@
 							fontSize={12}
 							design="slider"
 							on:click={() => settempsetting('leaderboardPreferences', 'showHashInHeader', !showHash)} />
+					</div>
+					<div title="Show scores weight graph on ranked maps in the tab options">
+						<Switch
+							value={showGraph}
+							label="Show scores graph"
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('leaderboardPreferences', 'showGraphOption', !showGraph)} />
 					</div>
 					<div title="Show clan captured">
 						<Switch

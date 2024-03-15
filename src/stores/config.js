@@ -97,6 +97,7 @@ export const DEFAULT_CONFIG = {
 
 		showStatsInHeader: false,
 		showHashInHeader: false,
+		showGraphOption: false,
 		showClanCaptureInHeader: true,
 		showClanCaptureInList: true,
 

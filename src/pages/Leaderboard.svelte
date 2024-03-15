@@ -58,6 +58,7 @@
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
 	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
+	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -346,7 +347,7 @@
 		}));
 	}
 
-	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked) {
+	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked, showGraphOption) {
 		//if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
@@ -359,6 +360,19 @@
 								label: 'Clan Ranking',
 								iconFa: 'fas fa-flag',
 								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
+			)
+			.concat(
+				isRanked && showGraphOption
+					? [
+							{
+								type: 'graph',
+								label: 'Graph',
+								iconFa: 'fas fa-chart-line',
+								url: `/leaderboard/graph/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
 					  ]
@@ -611,7 +625,8 @@
 	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
 
-	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
+	$: currentPlayerId = $account?.id;
+	$: higlightedPlayerId = higlightedScore?.playerId ?? currentPlayerId;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
 
 	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
@@ -621,7 +636,8 @@
 	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
 
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
-	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked);
+	$: showGraphOption = $configStore?.leaderboardPreferences?.showGraphOption;
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked, showGraphOption);
 	$: refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
@@ -744,7 +760,7 @@
 							on:click={() => startBattleRoyale()} />
 					</div>
 				{/if}
-				{#if currentType != 'clanranking'}
+				{#if currentType != 'clanranking' && currentType != 'graph'}
 					{#if scoresWithUser?.length}
 						<div class="scores-grid grid-transition-helper">
 							{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
@@ -847,6 +863,8 @@
 					{:else}
 						<p transition:fade>No scores found.</p>
 					{/if}
+				{:else if currentType == 'graph'}
+					<MapScoresChart leaderboardId={currentLeaderboardId} {currentPlayerId} />
 				{:else if clanRankingList?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
