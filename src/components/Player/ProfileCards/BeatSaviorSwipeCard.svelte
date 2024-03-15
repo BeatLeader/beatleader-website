@@ -1,6 +1,5 @@
 <script>
 	import {fade} from 'svelte/transition';
-	import createBeatSaviorService from '../../../services/beatsavior';
 	import Switcher from '../../Common/Switcher.svelte';
 	import Hands from '../../BeatSavior/Stats/Hands.svelte';
 	import OtherStats from '../../BeatSavior/Stats/OtherStats.svelte';
@@ -17,8 +16,6 @@
 	let filters = allFilters;
 	let selectedType = filters[0];
 
-	const beatSaviorService = createBeatSaviorService();
-
 	let beatSaviorData = null;
 	let playerScoresAreAvailable = false;
 
@@ -27,16 +24,6 @@
 
 		filters = allFilters.filter(f => playerScoresAreAvailable || f.key === 'passed');
 		selectedType = filters.find(f => f.key === currentType) ?? filters?.[0];
-	}
-
-	async function refreshBeatSaviorScores(playerId) {
-		if (!playerId) return;
-
-		beatSaviorData = (await beatSaviorService.getPlayerScoresWithScoreSaber(playerId))?.filter(
-			bsData => bsData?.trackers?.winTracker?.won ?? false
-		);
-
-		playerScoresAreAvailable = beatSaviorData?.some(s => !!s.ssScore);
 	}
 
 	function calculateStats(scores) {
@@ -175,7 +162,6 @@
 		return null;
 	}
 
-	$: refreshBeatSaviorScores(playerId);
 	$: refreshAvailableFilters(playerScoresAreAvailable);
 	$: filteredScores = beatSaviorData?.filter(bsData => selectedType?.key !== 'best' || !!bsData?.ssScore) ?? null;
 	$: stats = calculateStats(filteredScores);

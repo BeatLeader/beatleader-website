@@ -1,7 +1,6 @@
 import eventBus from '../utils/broadcast-channel-pubsub';
 import log from '../utils/logger';
 import createQueue, {PRIORITY} from '../utils/queue';
-import createBeatSaviorService from '../services/beatsavior';
 // import createAccSaberService from '../services/accsaber';
 import {PRIORITY as HTTP_QUEUE_PRIORITY} from './queues/http-queue';
 import {HOUR, MINUTE} from '../utils/date';
@@ -9,7 +8,6 @@ import {HOUR, MINUTE} from '../utils/date';
 const INTERVAL_TICK = MINUTE;
 
 let initialized = false;
-let beatSaviorService = null;
 // let accSaberService = null;
 
 const TYPES = {
@@ -37,16 +35,8 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
 		});
 	};
 
-	switch (type) {
-		case TYPES.BEATSAVIOR:
-			log.debug(`Enqueue Beat Savior`, 'DlManager');
-
-			processThen(
-				queue.add(async () => beatSaviorService.refreshAll(force, networkPriority), priority),
-				then
-			).then(_ => log.debug('Enqueued Beat Savior processed.', 'DlManager'));
-
-			break;
+	switch (
+		type
 
 		// case TYPES.ACCSABER:
 		// 	log.debug(`Enqueue AccSaber updates`, 'DlManager');
@@ -57,6 +47,7 @@ const enqueue = async (queue, type, force = false, data = null, then = null) => 
 		// 	).then(_ => log.debug('Enqueued AccSaber updates processed.', 'DlManager'));
 
 		// 	break;
+	) {
 	}
 };
 
@@ -85,7 +76,6 @@ export default async () => {
 		throwOnTimeout: true,
 	});
 
-	beatSaviorService = createBeatSaviorService();
 	// accSaberService = createAccSaberService();
 
 	eventBus.leaderStore.subscribe(async isLeader => {

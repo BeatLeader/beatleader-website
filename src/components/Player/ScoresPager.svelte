@@ -5,7 +5,6 @@
 	import {formatNumber} from '../../utils/format';
 	import blApiScoresHistogramClient from '../../network/clients/beatleader/scores/api-histogram';
 	import createScoresService from '../../services/beatleader/scores';
-	import createBeatSaviorService from '../../services/beatsavior';
 	// import createAccSaberService from '../../services/accsaber';
 	import ChartBrowser from '../Common/ChartBrowser.svelte';
 	import Pager from '../Common/Pager.svelte';
@@ -24,7 +23,6 @@
 	const DEBOUNCE_THRESHOLD = 1000;
 
 	const scoresService = createScoresService();
-	const beatSaviorService = createBeatSaviorService();
 	// const accSaberService = createAccSaberService();
 
 	let playerScores = null;
@@ -79,10 +77,6 @@
 		switch (service) {
 			case 'beatleader':
 				serviceObj = scoresService;
-				break;
-
-			case 'beatsavior':
-				serviceObj = beatSaviorService;
 				break;
 
 			// case 'accsaber':

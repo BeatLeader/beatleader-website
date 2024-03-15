@@ -1,6 +1,5 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import createBeatSaviorService from '../../services/beatsavior';
 	// import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
 	import Switcher from '../Common/Switcher.svelte';
@@ -23,8 +22,6 @@
 	const SPECIAL_PLAYER_ID = 'user-friends';
 
 	const dispatch = createEventDispatcher();
-
-	const beatSaviorService = createBeatSaviorService();
 	// const accSaberService = createAccSaberService();
 	const account = createAccountStore();
 
