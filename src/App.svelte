@@ -165,6 +165,30 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
+{#if $configStore.preferences.ostbanner}
+	<div class="ostbanner">
+		<a class="reelink" href="/event/46" />
+		<div class="banner-spacer" />
+		<img class="cover-1" src="/assets/ost/OstVol1Cover.webp" />
+		<span class="replayed-link-text">OST Maps Competition!</span>
+
+		<img class="cover-2" src="/assets/ost/OstVol2Cover.webp" />
+		<img class="cover-3" src="/assets/ost/OstVol3Cover.webp" />
+		<img class="cover-4" src="/assets/ost/OstVol4Cover.webp" />
+		<img class="cover-5" src="/assets/ost/OstVol5Cover.webp" />
+		<img class="cover-6" src="/assets/ost/OstVol6Cover.webp" />
+		<img class="cover-7" src="/assets/ost/CamelliaCover.webp" />
+		<img class="cover-8" src="/assets/ost/ExtrasCover.webp" />
+		<button
+			class="close-banner"
+			title="Hide banner"
+			on:click|preventDefault|stopPropagation={() => {
+				$configStore = produce($configStore, draft => {
+					draft.preferences.ostbanner = false;
+				});
+			}}><i class="fas fa-xmark" /></button>
+	</div>
+{/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
@@ -417,7 +441,24 @@
 	.replayed-link-text {
 		z-index: 101;
 		font-weight: 800;
-		color: #20a0ee;
+		color: #ffffff;
+		text-shadow: 0 0 3px #000000;
+	}
+
+	.ostbanner {
+		background-color: rgb(0 113 198);
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
 	}
 
 	.banner-spacer {
@@ -457,7 +498,7 @@
 		transform: rotateZ(7deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-2 {
@@ -468,7 +509,7 @@
 		transform: rotateZ(350deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-3 {
@@ -479,7 +520,7 @@
 		transform: rotateZ(3deg);
 		z-index: 100;
 		border-radius: 6px;
-		box-shadow: 1px 5px 7px #0000007a;
+		box-shadow: 1px 5px 7px #000000d7;
 	}
 
 	.cover-4 {
@@ -490,7 +531,7 @@
 		transform: rotateZ(4deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-5 {
@@ -501,7 +542,7 @@
 		transform: rotateZ(10deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-6 {
@@ -512,7 +553,29 @@
 		transform: rotateZ(349deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
+	}
+
+	.cover-7 {
+		height: 2.4em;
+		position: absolute;
+		left: 3%;
+		top: 0.5em;
+		transform: rotateZ(356deg);
+		z-index: 80;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #000000d7;
+	}
+
+	.cover-8 {
+		height: 3em;
+		position: absolute;
+		right: 15%;
+		top: -1.5em;
+		transform: rotateZ(350deg);
+		z-index: 60;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cc-cover-1 {
@@ -595,6 +658,12 @@
 			display: none;
 		}
 		.cover-6 {
+			display: none;
+		}
+		.cover-7 {
+			display: none;
+		}
+		.cover-8 {
 			display: none;
 		}
 		.link-text {

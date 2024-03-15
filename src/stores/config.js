@@ -56,6 +56,7 @@ export const DEFAULT_CONFIG = {
 		replayedbanner: true,
 		rewindbanner: true,
 		beastiesbanner: true,
+		ostbanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,

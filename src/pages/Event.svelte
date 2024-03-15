@@ -262,6 +262,31 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 46}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span>
+					Compete on 50 original maps for Beat Saber spanned across 8 packs and almost 6 years!<br />
+
+					Let's remember what journey the game had and how your and mappers skill improved with time. <br />
+
+					<b>Top 10 will receive badges and top 5 various merch presents.</b><br />
+					All free difficulties and modes are included except "No Arrows" mode.<br /><br />
+				</span>
+				For the best OST support - update to the latest mod versions if you haven't yet:
+				<div class="downloadButtons">
+					<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.8" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download for PC" color="red" />
+					</a>
+					<a href="https://github.com/BeatLeader/beatleader-qmod/releases/tag/v0.7.1" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download for Quest" color="blue" />
+					</a>
+				</div>
+				<span>
+					<br />
+					<b>Good luck and have fun!</b>
+				</span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
