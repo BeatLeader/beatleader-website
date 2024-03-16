@@ -206,6 +206,13 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 31}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<b
+					>This event used completely separate leaderboards to allow players to set new scores. These leaderboards are gone now. Players
+					ranking kept for historical purpose here.<br /></b>
+			</ContentBox>
+		{/if}
 		{#if eventId == 32}
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<b>Score Recycling Initiative<br /></b>
