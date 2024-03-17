@@ -1,6 +1,7 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import {getContext} from 'svelte';
+	import {dndzone} from 'svelte-dnd-action';
 	import {fade, fly, slide} from 'svelte/transition';
 	import Button from '../Common/Button.svelte';
 	import Pager from '../Common/Pager.svelte';
@@ -27,8 +28,12 @@
 	const {open, close} = getContext('simple-modal');
 
 	let playlist = null;
+	let detailsOpened;
 
 	function setPlaylist(playlistExport) {
+		if (playlist?.hash != playlistExport?.hash) {
+			detailsOpened = false;
+		}
 		playlist = playlistExport;
 	}
 
@@ -51,21 +56,25 @@
 		};
 	};
 
-	let detailsOpened;
 	function onDetailsButtonClick() {
 		detailsOpened = !detailsOpened;
+		songList = songList;
 	}
 
 	function updateExpanded(expanded) {
 		detailsOpened = expanded;
 	}
 
-	let titleInput;
+	let titleInput, descriptionInput;
 	let redactingTitle = false;
 	function onRedactButtonClick() {
 		if (redactingTitle && titleInput.value) {
 			store.updateTitle(localPlaylistId, titleInput.value);
 			playlist.playlistTitle = titleInput.value;
+		}
+		if (redactingTitle && descriptionInput.value) {
+			store.updateDescription(localPlaylistId, descriptionInput.value);
+			playlist.playlistDescription = descriptionInput.value;
 		}
 		redactingTitle = !redactingTitle;
 	}
@@ -162,10 +171,75 @@
 		});
 	};
 
+	let songList = [];
+	function updateSongList(songs, page) {
+		songList = songs
+			.slice(
+				totalItems > itemsPerPage ? page * itemsPerPage : 0,
+				(page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems
+			)
+			.map(s => {
+				return {
+					id: s?.hash ?? s?.id ?? '',
+					song: s,
+				};
+			});
+	}
+
+	function filterUniqueHashes(arr) {
+		const seen = new Set();
+		return arr.filter(item => {
+			if (seen.has(item.id)) {
+				return false;
+			}
+			seen.add(item.id);
+			return true;
+		});
+	}
+
+	function handleDndConsider(e) {
+		songList = filterUniqueHashes(e.detail.items.filter(s => s && !s.page && !s.playlist));
+	}
+	function handleDndFinalize(e) {
+		var newList = e.detail.items.filter(s => s && !s.page && !s.playlist);
+		const songHash = e.detail.info.id;
+		const song = newList.find(s => s.id == songHash);
+		if (song) {
+			let index = newList.indexOf(song);
+			if (newList.length > 5) {
+				index -= newList.length - 5;
+			}
+			const objIndex = songs.findIndex(item => item.hash === songHash || item.id === songHash);
+			if (objIndex > (page + 1) * itemsPerPage) {
+				index += 1;
+			}
+
+			store.reorder(localPlaylistId, songHash, page * itemsPerPage + index, song.song);
+		}
+	}
+
+	let hoveredToDrop = false;
+	let timeout = null;
+
+	function dropToPlaylist(e) {
+		clearTimeout(timeout);
+
+		if (e.detail.items.length) {
+			hoveredToDrop = true;
+			timeout = setTimeout(() => {
+				hoveredToDrop = false;
+				detailsOpened = !detailsOpened;
+			}, 800);
+		} else {
+			hoveredToDrop = false;
+		}
+	}
+
 	$: setPlaylist(playlistExport);
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
+	$: updateSongList(songs, page);
 	$: retrieveOwner(playlist, currentPlayerId);
 	$: updateExpanded(expanded);
 	$: playlistId = sharedPlaylistId ?? playlist?.customData?.id;
@@ -177,11 +251,16 @@
 
 {#if playlist}
 	<div
-		class={`song-score row-${localPlaylistId ?? 0}`}
+		class={`playlist-row row-${localPlaylistId ?? 0} ${hoveredToDrop ? 'drag-hover' : ''}`}
 		in:fly|global={{x: 300, delay: idx * 30, duration: 500}}
 		out:fade|global={{duration: 100}}
 		class:with-details={detailsOpened}>
-		<div class="playlistInfo" on:click={() => onDetailsButtonClick()}>
+		<div
+			use:dndzone={{items: [{id: 'playlist' + localPlaylistId, playlist: true}], dragDisabled: true}}
+			on:consider={dropToPlaylist}
+			on:finalize={handleDndFinalize}
+			class="playlistInfo"
+			on:click={() => onDetailsButtonClick()}>
 			<td class="col--details-btn">
 				<Button
 					type="text"
@@ -208,19 +287,14 @@
 			<div class="titleAndButtons">
 				<div style="display: grid; width: 90%;">
 					<div style="display: flex;">
-						{#if !sharedPlaylistId && playlistId}
-							<a href="/playlist/{playlistId}" class="playlistTitle" style="display: {redactingTitle ? 'none' : 'block'};"
-								>{playlist.playlistTitle}</a>
+						{#if redactingTitle}
+							<input type="text" value={playlist.playlistTitle} placeholder="Playlist name" class="input-reset" bind:this={titleInput} />
+						{:else if !sharedPlaylistId && playlistId}
+							<a href="/playlist/{playlistId}" class="playlistTitle">{playlist.playlistTitle}</a>
 						{:else}
-							<span class="playlistTitle" style="display: {redactingTitle ? 'none' : 'block'};">{playlist.playlistTitle}</span>
+							<span class="playlistTitle">{playlist.playlistTitle}</span>
 						{/if}
-						<input
-							type="text"
-							style="display: {redactingTitle ? 'block' : 'none'};"
-							value={playlist.playlistTitle}
-							placeholder="Playlist name"
-							class="input-reset"
-							bind:this={titleInput} />
+
 						{#if canModify && !playlist.oneclick}
 							<Button
 								type="text"
@@ -234,7 +308,7 @@
 						<span class="oneclick-title">This is magic playlist which will be automatically synced by mod. <br />Quest v0.4+.</span>
 					{/if}
 
-					{#if owners.length}
+					{#if (sharedPlaylistId || !canModify) && owners.length}
 						{#each owners as owner}
 							<div class="player">
 								<PlayerNameWithFlag player={owner} />
@@ -295,16 +369,33 @@
 				</div>
 			</div>
 		</div>
-
-		{#if detailsOpened}
-			<div class="tab">
-				{#each songs.slice(totalItems > itemsPerPage ? page * itemsPerPage : 0, (page + 1) * itemsPerPage < totalItems ? (page + 1) * itemsPerPage : totalItems) as song, songId}
-					<Song {song} {canModify} listId={idx} {store} />
-				{/each}
+		{#if redactingTitle}
+			<textarea
+				class="playlistDescription"
+				cols="40"
+				rows="5"
+				value={playlist.playlistDescription ?? null}
+				placeholder="Playlist description (optional)"
+				bind:this={descriptionInput} />
+		{:else if playlist.playlistDescription?.length}
+			<span class="playlistDescription">{playlist.playlistDescription}</span>
+		{/if}
+		{#if songList}
+			<div
+				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true}}
+				on:consider={handleDndConsider}
+				on:finalize={handleDndFinalize}
+				class="tab">
+				{#if detailsOpened}
+					{#each songList as song (song.id)}
+						<Song song={song.song} {canModify} {store} {localPlaylistId} />
+					{/each}
+				{/if}
 			</div>
-
+		{/if}
+		{#if detailsOpened && songList}
 			{#if songs && songs.length > itemsPerPage}
-				<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} />
+				<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} dnd={true} />
 			{/if}
 		{/if}
 	</div>
@@ -335,9 +426,13 @@
 {/if}
 
 <style>
-	.song-score {
+	.playlist-row {
 		border-bottom: 1px solid var(--dimmed);
 		padding: 0.5em 0;
+	}
+
+	.drag-hover {
+		background-color: rgba(49, 49, 49, 0.617);
 	}
 
 	.playlistInfo {
@@ -350,6 +445,23 @@
 		max-width: 80%;
 		max-height: 3em;
 		overflow: auto;
+	}
+
+	.playlistDescription {
+		display: block;
+		max-height: 4em;
+		overflow: auto;
+		margin-left: 2.5em;
+	}
+
+	textarea.playlistDescription {
+		margin-top: 1em;
+		margin-left: 1.5em;
+	}
+
+	::placeholder {
+		color: rgb(0, 0, 0) !important;
+		opacity: 1; /* Firefox */
 	}
 
 	.titleAndButtons {
@@ -366,43 +478,43 @@
 		padding-left: 0.6em !important;
 	}
 
-	.song-score .icons.up-to-tablet + .main {
+	.playlist-row .icons.up-to-tablet + .main {
 		padding-top: 0;
 	}
 
-	.song-score .main {
+	.playlist-row .main {
 		display: flex;
 		flex-wrap: nowrap;
 		justify-content: space-evenly;
 		align-items: center;
 	}
 
-	.song-score.with-details .main {
+	.playlist-row.with-details .main {
 		border-bottom: none;
 	}
 
-	.song-score .main > * {
+	.playlist-row .main > * {
 		margin-right: 1em;
 	}
 
-	.song-score .main > *:last-child {
+	.playlist-row .main > *:last-child {
 		margin-right: 0;
 	}
 
-	.song-score .main :global(.badge) {
+	.playlist-row .main :global(.badge) {
 		margin: 0 !important;
 		padding: 0.125em 0.25em !important;
 		width: 100%;
 	}
 
-	.song-score .main :global(.badge small) {
+	.playlist-row .main :global(.badge small) {
 		font-size: 0.7em;
 		font-weight: normal;
 		margin-top: -2px;
 	}
 
-	.song-score .main :global(.inc),
-	.song-score :global(.dec) {
+	.playlist-row .main :global(.inc),
+	.playlist-row :global(.dec) {
 		color: inherit;
 	}
 
@@ -417,6 +529,10 @@
 		height: fit-content;
 		aspect-ratio: 1 / 1;
 		min-width: 6em;
+		margin-left: 1em;
+		margin-top: 1em;
+		margin-bottom: 0.5em;
+		border-radius: 12px;
 	}
 
 	.imageChange {

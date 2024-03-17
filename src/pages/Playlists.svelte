@@ -1,5 +1,4 @@
 <script>
-	import {dndzone} from 'svelte-dnd-action';
 	import ssrConfig from '../ssr-config';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createPlaylistStore from '../stores/playlists';
@@ -41,10 +40,12 @@
 	function updatePage(index) {
 		if (Number.isFinite(index)) {
 			page = Math.floor(index / itemsPerPage);
-			selectedIndex = index;
-			setTimeout(() => {
-				if (playlistsEl) scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60);
-			}, 500);
+			if (selectedIndex != index) {
+				selectedIndex = index;
+				setTimeout(() => {
+					if (playlistsEl) scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60);
+				}, 500);
+			}
 		} else if (totalItems <= itemsPerPage) {
 			page = 0;
 		}
@@ -64,17 +65,6 @@
 					playlist: p,
 				};
 			});
-	}
-
-	// use:dndzone={{items: playlistList, flipDurationMs: 300}}
-	// 		on:consider={handleDndConsider}
-	// 		on:finalize={handleDndFinalize}
-
-	function handleDndConsider(e) {
-		playlistList = e.detail.items;
-	}
-	function handleDndFinalize(e) {
-		playlistList = e.detail.items;
 	}
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
@@ -111,6 +101,6 @@
 	{/if}
 
 	{#if $playlists && $playlists.length > itemsPerPage}
-		<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} />
+		<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} dnd={true} />
 	{/if}
 </ContentBox>

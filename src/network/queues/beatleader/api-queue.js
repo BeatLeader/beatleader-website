@@ -60,8 +60,7 @@ export const BL_API_LEADERBOARDS_URL =
 export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
-export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
-
+export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}?my_scores=${my_scores}';
 export const BL_API_CLANS_URL =
 	BL_API_URL + 'clans?leaderboardContext=${leaderboardContext}&page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
 export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
@@ -405,8 +404,8 @@ export default (options = {}) => {
 		);
 	};
 
-	const leaderboardsByHash = async (hash, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_LEADERBOARDS_BY_HASH_URL, {hash}), options, priority);
+	const leaderboardsByHash = async (hash, my_scores, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_LEADERBOARDS_BY_HASH_URL, {hash, my_scores}), {...options, credentials: 'include'}, priority);
 
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);

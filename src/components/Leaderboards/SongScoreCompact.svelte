@@ -1,5 +1,4 @@
 <script>
-	import {configStore} from '../../stores/config';
 	import {opt} from '../../utils/js';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import ScoreRank from '../Player/ScoreRank.svelte';
@@ -7,13 +6,9 @@
 	export let songScore = null;
 	export let idx = 0;
 	export let service = null;
+	export let shortdate = false;
 
 	$: score = opt(songScore, 'score', null);
-	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
-
-	$: scoreBadgesHaveImprovements = [...(Object.values($configStore?.scoreBadges) ?? [])].some(row =>
-		row.some(col => !!col?.withImprovements || col?.secondary === 'improvement')
-	);
 </script>
 
 {#if songScore}
@@ -23,11 +18,11 @@
 				{#if service !== 'beatsavior'}
 					<ScoreRank rank={score.rank} />
 				{/if}
-
-				<div class="timeset">
-					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null} />
-				</div>
 			</span>
+
+			<div class="timeset">
+				<FormattedDate date={score.timeSet} externalDateFormat={shortdate ? 'relativeshort' : null} />
+			</div>
 			<div class="score">
 				{#if songScore.score.pp}
 					<span style="color: var(--ppColour)">{songScore.score.pp.toFixed(2)}pp</span>
@@ -80,7 +75,6 @@
 	}
 
 	.rank {
-		width: 5.5em;
 		text-align: center;
 		display: flex;
 		align-items: center;
@@ -97,7 +91,6 @@
 	}
 
 	.timeset {
-		width: 8.5em;
 		text-align: center;
 	}
 

@@ -10,6 +10,10 @@ export const diffColors = {
 	expertplus: '#8f48db',
 };
 
+export function getDiffNameColor(diffName) {
+	return diffColors[diffName.toLowerCase()] ? diffColors[diffName.toLowerCase()] : null;
+}
+
 export function getDiffColor(diffInfo) {
 	return diffColors[diffInfo.diff.toLowerCase()] ? diffColors[diffInfo.diff.toLowerCase()] : null;
 }

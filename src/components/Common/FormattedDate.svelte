@@ -6,9 +6,11 @@
 	export let prevDate = null;
 	export let noDate = '';
 	export let prevPrefix = '';
+	export let externalDateFormat = null;
 
 	$: dateObj = isValidDate(date) ? date : dateFromUnix(date);
-	$: dateFormat = $configStore.scorePreferences.dateFormat == null ? 'relative' : $configStore.scorePreferences.dateFormat;
+	$: dateFormat =
+		externalDateFormat ?? ($configStore.scorePreferences.dateFormat == null ? 'relative' : $configStore.scorePreferences.dateFormat);
 	$: dateTitle = (configStore, $configStore, dateObj ? formatDateCustomTooltip(dateObj, dateFormat) : null);
 	$: formatted = dateObj ? formatDateCustom(dateObj, dateFormat) : noDate;
 	$: prevDateObj = prevDate ? (isValidDate(prevDate) ? prevDate : dateFromUnix(date)) : null;

@@ -126,6 +126,9 @@ export function formatDateCustom(val, dateFormat) {
 	if (dateFormat == 'relative') {
 		return formatDateRelative(val);
 	}
+	if (dateFormat == 'relativeshort') {
+		return formatDateRelativeShort(val);
+	}
 
 	let year = val.getFullYear();
 	year = ('' + year).slice(-2);

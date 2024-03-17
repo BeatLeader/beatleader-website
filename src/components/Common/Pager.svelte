@@ -1,6 +1,7 @@
 <script>
 	import {createEventDispatcher, onMount} from 'svelte';
 	import Spinner from './Spinner.svelte';
+	import {dndzone} from 'svelte-dnd-action';
 	import {debounce} from '../../utils/debounce';
 	import {opt} from '../../utils/js';
 
@@ -16,6 +17,7 @@
 	export let displayMax = 11;
 	export let hide = false;
 	export let mode = 'pages';
+	export let dnd = false;
 	export let loadingPage = null;
 
 	let displayStart = false;
@@ -100,6 +102,23 @@
 		};
 	});
 
+	let consideredPage = null;
+	let timeout = null;
+
+	function dropToPlaylist(e, page) {
+		clearTimeout(timeout);
+
+		if (e.detail.items.length) {
+			consideredPage = page;
+			timeout = setTimeout(() => {
+				consideredPage = null;
+				dispatchEvent(page, false);
+			}, 500);
+		} else {
+			consideredPage = null;
+		}
+	}
+
 	$: isTotalItemsAvailable = Number.isFinite(totalItems);
 	$: pagesTotal = isTotalItemsAvailable ? Math.ceil(totalItems / itemsPerPage) : null;
 	$: allPages = isTotalItemsAvailable
@@ -177,34 +196,82 @@
 				{/if}
 			{:else}
 				{#if displayStart}
-					<li class:is-loading={loadingPage === 0}>
-						<button on:click={() => onPageChanged(0)} class={'pagination-link' + (currentPage === 0 ? ' is-current' : '')}>
-							<span class="spinner"><Spinner /></span>
-							<span class="page">1</span>
-						</button>
-					</li>
-					<li><span class="pagination-ellipsis">…</span></li>
+					{#if dnd}
+						<li class:is-loading={loadingPage === 0}>
+							<button
+								on:click={() => onPageChanged(0)}
+								use:dndzone={{items: [{id: 'page1', page: true}], dragDisabled: true}}
+								on:consider={e => dropToPlaylist(e, 0)}
+								on:click={() => onPageChanged(0)}
+								class={'pagination-link' + (currentPage === 0 ? ' is-current' : '') + (consideredPage === 0 ? ' considered' : '')}>
+								<span class="spinner"><Spinner /></span>
+								<span class="page">1</span>
+							</button>
+						</li>
+						<li><span class="pagination-ellipsis">…</span></li>
+					{:else}
+						<li class:is-loading={loadingPage === 0}>
+							<button on:click={() => onPageChanged(0)} class={'pagination-link' + (currentPage === 0 ? ' is-current' : '')}>
+								<span class="spinner"><Spinner /></span>
+								<span class="page">1</span>
+							</button>
+						</li>
+						<li><span class="pagination-ellipsis">…</span></li>
+					{/if}
 				{/if}
 
-				{#each displayedPages as page}
-					<li class:is-loading={loadingPage === page - 1}>
-						<button on:click={() => onPageChanged(page - 1)} class={'pagination-link' + (currentPage === page - 1 ? ' is-current' : '')}>
-							<span class="spinner"><Spinner /></span>
-							<span class="page">{page}</span>
-						</button>
-					</li>
-				{/each}
+				{#if dnd}
+					{#each displayedPages as page}
+						<li class:is-loading={loadingPage === page - 1}>
+							<button
+								use:dndzone={{items: [{id: 'page' + page, page: true}], dragDisabled: true}}
+								on:consider={e => dropToPlaylist(e, page - 1)}
+								on:click={() => onPageChanged(page - 1)}
+								class={'pagination-link' +
+									(currentPage === page - 1 ? ' is-current' : '') +
+									(consideredPage === page - 1 ? ' considered' : '')}>
+								<span class="spinner"><Spinner /></span>
+								<span class="page">{page}</span>
+							</button>
+						</li>
+					{/each}
+				{:else}
+					{#each displayedPages as page}
+						<li class:is-loading={loadingPage === page - 1}>
+							<button on:click={() => onPageChanged(page - 1)} class={'pagination-link' + (currentPage === page - 1 ? ' is-current' : '')}>
+								<span class="spinner"><Spinner /></span>
+								<span class="page">{page}</span>
+							</button>
+						</li>
+					{/each}
+				{/if}
 
 				{#if displayEnd}
 					<li><span class="pagination-ellipsis">…</span></li>
-					<li class:is-loading={loadingPage === pagesTotal - 1}>
-						<button
-							on:click={() => onPageChanged(pagesTotal - 1)}
-							class={'pagination-link' + (currentPage === pagesTotal - 1 ? ' is-current' : '')}>
-							<span class="spinner"><Spinner /></span>
-							<span class="page">{pagesTotal}</span>
-						</button>
-					</li>
+					{#if dnd}
+						<li class:is-loading={loadingPage === pagesTotal - 1}>
+							<button
+								use:dndzone={{items: [{id: 'page' + pagesTotal, page: true}], dragDisabled: true}}
+								on:consider={e => dropToPlaylist(e, pagesTotal - 1)}
+								on:click={() => onPageChanged(pagesTotal - 1)}
+								on:click={() => onPageChanged(pagesTotal - 1)}
+								class={'pagination-link' +
+									(currentPage === pagesTotal - 1 ? ' is-current' : '') +
+									(consideredPage === pagesTotal - 1 ? ' considered' : '')}>
+								<span class="spinner"><Spinner /></span>
+								<span class="page">{pagesTotal}</span>
+							</button>
+						</li>
+					{:else}
+						<li class:is-loading={loadingPage === pagesTotal - 1}>
+							<button
+								on:click={() => onPageChanged(pagesTotal - 1)}
+								class={'pagination-link' + (currentPage === pagesTotal - 1 ? ' is-current' : '')}>
+								<span class="spinner"><Spinner /></span>
+								<span class="page">{pagesTotal}</span>
+							</button>
+						</li>
+					{/if}
 				{/if}
 			{/if}
 		</ul>
@@ -244,6 +311,12 @@
 		color: var(--textColor, #000);
 		background-color: var(--foreground, #fff);
 		outline: none;
+	}
+
+	.pagination-link.considered {
+		color: var(--textColor);
+		background-color: rgb(123, 123, 227) !important;
+		border-color: var(--selected);
 	}
 
 	.pagination {
