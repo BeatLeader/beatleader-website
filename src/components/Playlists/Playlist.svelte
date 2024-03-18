@@ -8,9 +8,6 @@
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import createPlayerService from '../../services/beatleader/player';
 	import Song from './Song.svelte';
-	import {MetaTags} from 'svelte-meta-tags';
-	import ssrConfig from '../../ssr-config';
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import customProtocolCheck from 'custom-protocol-check';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
@@ -243,10 +240,6 @@
 	$: retrieveOwner(playlist, currentPlayerId);
 	$: updateExpanded(expanded);
 	$: playlistId = sharedPlaylistId ?? playlist?.customData?.id;
-	$: description = `
-		Beat Saber playlist
-		${totalItems} songs
-		${owners.length ? `Made by: ${owners.map(o => o.name).join(', ')}` : ''}`;
 </script>
 
 {#if playlist}
@@ -321,27 +314,35 @@
 
 				<div>
 					{#if !playlist.oneclick}
-						{#if canModify}
+						{#if !sharedPlaylistId || canModify}
 							<Button
 								iconFa="fas fa-trash-alt"
 								title="Delete playlist"
 								noMargin={true}
 								type="danger"
 								on:click={() => deletePlaylist(localPlaylistId)} />
-							{#if playlist.customData?.shared}
-								<Button
-									iconFa="fas fa-share"
-									title="Stop sharing playlist"
-									noMargin={true}
-									type="lessdanger"
-									on:click={() => sharePlaylist(localPlaylistId, false)} />
-							{:else}
-								<Button
-									iconFa="fas fa-share"
-									title="Share playlist"
-									noMargin={true}
-									type="primary"
-									on:click={() => sharePlaylist(localPlaylistId, true)} />
+						{/if}
+						{#if canModify}
+							{#if currentPlayerId}
+								{#if playlist.customData?.id}
+									{#if playlist.customData?.shared}
+										<Button
+											iconFa="fas fa-share"
+											title="Stop sharing playlist"
+											noMargin={true}
+											type="lessdanger"
+											on:click={() => sharePlaylist(localPlaylistId, false)} />
+									{:else}
+										<Button
+											iconFa="fas fa-share"
+											title="Share playlist"
+											noMargin={true}
+											type="primary"
+											on:click={() => sharePlaylist(localPlaylistId, true)} />
+									{/if}
+								{:else}
+									<Spinner />
+								{/if}
 							{/if}
 						{/if}
 					{/if}
@@ -399,30 +400,6 @@
 			{/if}
 		{/if}
 	</div>
-	{#if playlistId}
-		<MetaTags
-			title={playlist.playlistTitle}
-			{description}
-			openGraph={{
-				title: playlist.playlistTitle,
-				description,
-				images: [
-					{
-						url: BL_API_URL + 'playlist/image/' + playlistId + '.png',
-					},
-				],
-				siteName: ssrConfig.name,
-			}}
-			twitter={{
-				handle: '@handle',
-				site: '@beatleader_',
-				cardType: 'summary',
-				title: playlist.playlistTitle,
-				description,
-				image: BL_API_URL + 'playlist/image/' + playlistId + '.png',
-				imageAlt: playlist.playlistTitle + ' picture',
-			}} />
-	{/if}
 {/if}
 
 <style>

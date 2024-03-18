@@ -5,6 +5,8 @@
 	import ssrConfig from '../ssr-config';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 	export let id;
 
@@ -18,6 +20,13 @@
 		playlist = result;
 		localPlaylistId = resultId;
 	});
+	$: songs = playlist?.songs;
+	$: totalItems = songs?.length;
+
+	$: description = `
+		Beat Saber playlist
+		${totalItems} songs
+		${playlist?.playlistDescription ?? ''}`;
 </script>
 
 <svelte:head>
@@ -38,3 +47,28 @@
 		<Spinner />
 	{/if}
 </ContentBox>
+
+{#if playlist}
+	<MetaTags
+		title={playlist.playlistTitle}
+		{description}
+		openGraph={{
+			title: playlist.playlistTitle,
+			description,
+			images: [
+				{
+					url: BL_API_URL + 'playlist/image/' + id + '.png',
+				},
+			],
+			siteName: ssrConfig.name,
+		}}
+		twitter={{
+			handle: '@handle',
+			site: '@beatleader_',
+			cardType: 'summary',
+			title: playlist.playlistTitle,
+			description,
+			image: BL_API_URL + 'playlist/image/' + id + '.png',
+			imageAlt: playlist.playlistTitle + ' picture',
+		}} />
+{/if}

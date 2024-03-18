@@ -49,7 +49,7 @@ export default () => {
 
 	const {subscribe, unsubscribe, set: storeSet} = writable(playlists);
 
-	const get = async () => await keyValueRepository().get(STORE_PLAYLISTS_KEY);
+	const get = async () => (await keyValueRepository().get(STORE_PLAYLISTS_KEY)) ?? [];
 	const set = async (config, persist = true, promise = false) => {
 		const newConfig = promise ? await config : config;
 		if (!newConfig) return;
@@ -71,7 +71,7 @@ export default () => {
 					playlistTitle: 'New playlist',
 					playlistAuthor: 'BeatLeader',
 					songs: song ? [song] : [],
-					image: await toDataURL('/assets/favicon-128.png'),
+					image: await toDataURL('/assets/defaultplaylisticon.png'),
 			  };
 
 		if (!playlist.playlistTitle || !playlist.songs) {
@@ -86,7 +86,10 @@ export default () => {
 		}
 
 		await set(playlists, true);
-		await select(playlist);
+		if (!inputPlaylist) {
+			await select(playlist);
+		}
+		await uploadPlaylist(playlist, playlists);
 	};
 
 	const deleteOneClick = async () => {
@@ -366,6 +369,7 @@ export default () => {
 			});
 		}
 
+		await configStore.setForKey('selectedPlaylist', null);
 		await set(playlists, true);
 	};
 

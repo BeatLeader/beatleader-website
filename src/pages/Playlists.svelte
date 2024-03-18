@@ -7,6 +7,8 @@
 	import Pager from '../components/Common/Pager.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 
 	export let index = null;
 
@@ -71,10 +73,14 @@
 	$: totalItems = $playlists.length;
 	$: updatePage(parseInt(index, 10), $playlists.length);
 	$: initPlaylistList($playlists, totalItems, itemsPerPage, page);
+
+	$: metaTitle = `Playlists / ${ssrConfig.name}`;
+	$: description = `
+		Beat Saber playlists`;
 </script>
 
 <svelte:head>
-	<title>{`Playlists / ${ssrConfig.name}`}</title>
+	<title>{metaTitle}</title>
 </svelte:head>
 
 <ContentBox>
@@ -104,3 +110,26 @@
 		<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} dnd={true} />
 	{/if}
 </ContentBox>
+
+<MetaTags
+	title={metaTitle}
+	{description}
+	openGraph={{
+		title: metaTitle,
+		description,
+		images: [
+			{
+				url: CURRENT_URL + 'assets/defaultplaylisticon.png',
+			},
+		],
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: metaTitle,
+		description,
+		image: CURRENT_URL + 'assets/defaultplaylisticon.png',
+		imageAlt: metaTitle + ' picture',
+	}} />
