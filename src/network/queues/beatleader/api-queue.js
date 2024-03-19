@@ -63,11 +63,17 @@ export const BL_API_LEADERBOARDS_GROUPPED_URL =
 export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}?my_scores=${my_scores}';
 export const BL_API_CLANS_URL =
 	BL_API_URL + 'clans?leaderboardContext=${leaderboardContext}&page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
-export const BL_API_CLAN_MAPS_URL = BL_API_URL + 'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
+export const BL_API_CLAN_URL =
+	BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
+export const BL_API_CLAN_MAPS_URL =
+	BL_API_URL +
+	'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
 export const BL_API_CLAN_CREATE_URL =
-	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
-export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
+	BL_API_URL +
+	'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
+export const BL_API_CLAN_UPDATE_URL =
+	BL_API_URL +
+	'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
 export const BL_API_CLAN_ACCEPT_URL = BL_API_URL + 'clan/accept?id=${id}';
 export const BL_API_CLAN_REJECT_URL = BL_API_URL + 'clan/reject?id=${id}&ban=${ban}';
 export const BL_API_CLAN_REMOVE_URL = BL_API_URL + 'clan';
@@ -76,7 +82,7 @@ export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}';
 export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${player}';
 export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}';
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}';
-export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&';
+export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&type=${type}';
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_MINIRANKINGS_URL =
@@ -415,16 +421,50 @@ export default (options = {}) => {
 	const clanMaps = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLAN_MAPS_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
 
-	const clanCreate = async (name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority = PRIORITY.FG_HIGH, options = {}) =>
+	const clanCreate = async (
+		name,
+		tag,
+		description,
+		bio,
+		color,
+		icon,
+		playerChangesCallback,
+		clanRankingDiscordHook,
+		priority = PRIORITY.FG_HIGH,
+		options = {}
+	) =>
 		fetchJson(
-			substituteVars(BL_API_CLAN_CREATE_URL, {name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook}, true, true, encodeURIComponent),
+			substituteVars(
+				BL_API_CLAN_CREATE_URL,
+				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
+				true,
+				true,
+				encodeURIComponent
+			),
 			{body: icon, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
-	const clanUpdate = async (name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority = PRIORITY.FG_HIGH, options = {}) =>
+	const clanUpdate = async (
+		name,
+		tag,
+		description,
+		bio,
+		color,
+		icon,
+		playerChangesCallback,
+		clanRankingDiscordHook,
+		priority = PRIORITY.FG_HIGH,
+		options = {}
+	) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UPDATE_URL, {name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook}, true, true, encodeURIComponent),
+			substituteVars(
+				BL_API_CLAN_UPDATE_URL,
+				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
+				true,
+				true,
+				encodeURIComponent
+			),
 			{
 				body: icon instanceof ArrayBuffer ? icon : null,
 				...options,
@@ -515,8 +555,8 @@ export default (options = {}) => {
 			return r;
 		});
 
-	const accGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
+	const accGraph = async (playerId, type, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId, type}), {...options, credentials: 'include'}, priority);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(

@@ -2,9 +2,9 @@
 	import BlChart from '../Charts/BlChart.svelte';
 	import BlBadges from '../BlBadges.svelte';
 	import AccHistoryChart from '../Charts/AccHistoryChart.svelte';
-	import AccMapsChart from '../Charts/AccMapsChart.svelte';
 	import Switcher from '../../Common/Switcher.svelte';
 	import SkillTriangleChart from '../Charts/SkillTriangleChart.svelte';
+	import MapsGraphs from '../Charts/MapsGraphs.svelte';
 
 	export let playerId = null;
 	export let scoresStats = null;
@@ -13,7 +13,7 @@
 
 	const allSwitcherOptions = [
 		{id: 'rank', label: 'Rank & PP', iconFa: 'fas fa-chart-line'},
-		{id: 'accmaps', label: 'Maps Acc', iconFa: 'fas fa-music'},
+		{id: 'mapsgraphs', label: 'Maps Graphs', iconFa: 'fas fa-arrow-up-right-dots'},
 		{id: 'acchistory', label: 'Acc history', iconFa: 'fas fa-crosshairs'},
 		{id: 'triangle', label: 'Skill triangle', iconFa: 'skilltriangle-icon'},
 	];
@@ -31,9 +31,9 @@
 				chartComponentProps = {playerId};
 				break;
 
-			case 'accmaps':
-				chartComponent = AccMapsChart;
-				chartComponentProps = {playerId, medianAcc, averageAcc};
+			case 'mapsgraphs':
+				chartComponent = MapsGraphs;
+				chartComponentProps = {playerId, scoresStats};
 				break;
 
 			case 'acchistory':
@@ -57,14 +57,7 @@
 		selectedOption = event.detail;
 	}
 
-	$: avgStat = scoresStats?.find(s => s.key === 'averageRankedAccuracy') ?? null;
-	$: medianStat = scoresStats?.find(s => s.key === 'medianRankedAccuracy') ?? null;
-	$: avgAccTween = avgStat?.value ?? null;
-	$: medianAccTween = medianStat?.value ?? null;
-	$: averageAcc = $avgAccTween;
-	$: medianAcc = $medianAccTween;
-
-	$: updateChartComponent(selectedOption, averageAcc, medianAcc);
+	$: updateChartComponent(selectedOption);
 </script>
 
 <div class="beatleader-swipe-card">

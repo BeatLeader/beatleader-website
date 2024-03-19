@@ -3,6 +3,7 @@
 	import zoomPlugin from 'chartjs-plugin-zoom';
 	import {formatNumber, roundToPrecision} from '../../../utils/format';
 	import {formatDateRelative, getTimeStringColor} from '../../../utils/date';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {debounce} from '../../../utils/debounce';
 	import regionsPlugin from './utils/regions-plugin';
 	import {deepClone, capitalize} from '../../../utils/js';
@@ -25,6 +26,7 @@
 	const playerService = createPlayerService();
 	const playlists = createPlaylistStore();
 	const {addNotification} = getNotificationsContext();
+	const dispatch = createEventDispatcher();
 
 	const CHART_DEBOUNCE = 300;
 
@@ -433,6 +435,8 @@
 			}
 			chart.update();
 		}
+
+		dispatch('height-changed');
 	}
 
 	let debouncedChartHash = null;
@@ -443,7 +447,7 @@
 
 		try {
 			isLoading = true;
-			playerScores = await playerService.fetchAccGraph(playerId);
+			playerScores = await playerService.fetchAccGraph(playerId, 'acc');
 		} finally {
 			isLoading = false;
 		}
