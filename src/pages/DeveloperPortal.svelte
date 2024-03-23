@@ -103,7 +103,7 @@
 						href="https://api.beatleader.xyz/grafana/public-dashboards/24a088907eb24c599da93cf110686b43?orgId=1&refresh=10s"
 						target="_blank"
 						rel="noreferrer">
-						<Button iconFa="fas fa-chart-line" label="Graphana" />
+						<Button iconFa="fas fa-chart-line" label="Grafana" />
 					</a>
 				</div>
 			</div>
