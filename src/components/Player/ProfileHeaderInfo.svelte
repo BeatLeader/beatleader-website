@@ -85,6 +85,7 @@
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: canRedact = showRedact && ((isMain && loggedInPlayer === playerId) || isAdmin);
+	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(",");
 
 	function getIndex(array) {
 		if (!array || array.length == 1) {
@@ -141,7 +142,7 @@
 				{/if}
 
 				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
-					<span class="clan-badges"><ClanBadges player={playerInfo} {editModel} /></span>
+					<span class="clan-badges"><ClanBadges player={playerInfo} highlightMain={true} bind:editModel={editModel} /></span>
 				{/if}
 
 				{#if !editModel && changes && changes.length}
@@ -245,7 +246,11 @@
 		</div>
 
 		{#if editModel?.data && editModel?.data?.country?.toUpperCase() !== playerInfo?.countries?.[0]?.country}
-			Make sure you selected right country. You can change it only every 30 days.
+			<span class="warning">Make sure you selected right country. You can change it only every 30 days.</span>
+		{/if}
+
+		{#if editModel?.data?.clanOrder && editModel?.data?.clanOrder !== clanOrder}
+			<span class="warning">Your contribution in the Clan Wars will only apply to your main(first) clan. You can change order only once a week.</span>
 		{/if}
 
 		{#if error}
@@ -397,6 +402,10 @@
 
 	.player-nickname:hover .score-options-section {
 		display: block;
+	}
+
+	.warning {
+		color: yellow;
 	}
 
 	@media screen and (max-width: 767px) {

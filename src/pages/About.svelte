@@ -8,7 +8,7 @@
 	import createRankingStore from '../stores/http/http-ranking-store';
 	import {BL_ASSETS_CDN} from '../network/queues/beatleader/page-queue';
 
-	const rankingStore = createRankingStore('global', 1, {role: 'sponsor,supporter,tipper', count: 500});
+	const rankingStore = createRankingStore('global', 1, {role: 'sponsor,supporter,tipper', count: 100});
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
@@ -16,7 +16,7 @@
 
 	let articleEl = null;
 
-	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 500}, true);
+	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 100}, true);
 </script>
 
 <svelte:head>
@@ -149,6 +149,10 @@
 				<img src="https://cdn.assets.beatleader.xyz/76561199146457878.png" alt="Mewtex" /><a
 					href="https://www.beatleader.xyz/u/76561199146457878">Mewtex</a>
 			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/ccc9d6659a0c7fc6fed6a5c6afc2e837eb3fa674_full.jpg" alt="Cratornugget" /><a
+					href="https://www.beatleader.xyz/u/76561198307061479">Cratornugget</a>
+			</div>
 		</section>
 
 		<h1 class="title is-4">Nomination Quality Team</h1>
@@ -158,18 +162,10 @@
 				<img src="https://avatars.akamai.steamstatic.com/9eac1ff637afdcb6de7062b41ee1db567b8e8766_full.jpg" alt="CookedChili" /><a
 					href="https://www.beatleader.xyz/u/76561198147746455">CookedChili</a>
 			</div>
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
-					href="https://www.beatleader.xyz/u/76561198272028078">Zana</a>
-			</div>
 		</section>
 
 		<h1 class="title is-5">Core NQT</h1>
 		<section class="content center">
-			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/82239b5edc08f1d40117502a99129c1bee74de92_full.jpg" alt="BigSlick" /><a
-					href="https://www.beatleader.xyz/u/76561198014681219">BigSlick</a>
-			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/29c58b769f3cfb0fa3bf330b0e33bcead6b8d4ac_full.jpg" alt="ComplexFrequency" /><a
 					href="https://www.beatleader.xyz/u/76561198285246326">ComplexFrequency</a>
@@ -204,15 +200,23 @@
 					href="https://www.beatleader.xyz/u/76561198075923914">GalaxyMaster</a>
 			</div>
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/1ae4cec7a3ffd6f9952d5495d9c79f7cdc154e12_full.jpg" alt="Kansas" /><a
-					href="https://www.beatleader.xyz/u/76561198042527254">Kansas</a>
+				<img src="https://cdn.assets.beatleader.xyz/76561198273286768R27.png" alt="Marsh" /><a
+					href="https://www.beatleader.xyz/u/76561198273286768">Marsh</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/ccc9d6659a0c7fc6fed6a5c6afc2e837eb3fa674_full.jpg" alt="Cratornugget" /><a
+					href="https://www.beatleader.xyz/u/76561198307061479">Cratornugget</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/66b82be1c041733bbb4fdbfd79be8e3c3a02b989_full.jpg" alt="Jojobanana" /><a
+					href="https://www.beatleader.xyz/u/76561198294659898">Jojobanana</a>
 			</div>
 		</section>
 
 		{#if $rankingStore?.data?.length}
 			<div class="role-container">
 				<h1 class="title is-4">Sponsors</h1>
-				<img src={BL_ASSETS_CDN + '/patreon3.png'} alt="Sponsors" />
+				<img src={BL_ASSETS_CDN + '/patreon3.webp'} alt="Sponsors" />
 			</div>
 
 			<section class="content center">
@@ -225,7 +229,7 @@
 			</section>
 			<div class="role-container">
 				<h1 class="title is-4">Supporters</h1>
-				<img src={BL_ASSETS_CDN + '/patreon2.png'} alt="Supporters" />
+				<img src={BL_ASSETS_CDN + '/patreon2.webp'} alt="Supporters" />
 			</div>
 			<section class="content center">
 				{#each $rankingStore.data.filter(p => p.playerInfo.role.includes('supporter')) as player, idx (player?.playerId)}
@@ -237,7 +241,7 @@
 			</section>
 			<div class="role-container">
 				<h1 class="title is-4">Tippers</h1>
-				<img src={BL_ASSETS_CDN + '/patreon1.png'} alt="Tippers" />
+				<img src={BL_ASSETS_CDN + '/patreon1.webp'} alt="Tippers" />
 			</div>
 			<section class="content center">
 				{#each $rankingStore.data.filter(p => p.playerInfo.role.includes('tipper')) as player, idx (player?.playerId)}
@@ -295,6 +299,7 @@
 				<li><a href="https://beat-savior.herokuapp.com" target="_blank" rel="noreferrer">Beat Savior API</a></li>
 				<li><a href="https://accsaber.com" target="_blank" rel="noreferrer">AccSaber API</a></li>
 				<li><a href="https://bsaber.com/" target="_blank" rel="noreferrer">BeastSaber website</a></li>
+				<li><a href="https://cube.community" target="_blank" rel="noreferrer">CubeCommunity YouTube Channel</a></li>
 			</ul>
 
 			<h2 class="title is-6">The project also uses the following open source libraries:</h2>
@@ -343,6 +348,18 @@
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198960449289.png" alt="Aquaflee" /><a
 					href="https://www.beatleader.xyz/u/76561198960449289">Aquaflee</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/2b9951e8e6a9bdcaa6799f6b1a0bc2ba1e95387d_full.jpg" alt="Zana" /><a
+					href="https://www.beatleader.xyz/u/76561198272028078">Zana</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/1ae4cec7a3ffd6f9952d5495d9c79f7cdc154e12_full.jpg" alt="Kansas" /><a
+					href="https://www.beatleader.xyz/u/76561198042527254">Kansas</a>
+			</div>
+			<div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/82239b5edc08f1d40117502a99129c1bee74de92_full.jpg" alt="BigSlick" /><a
+					href="https://www.beatleader.xyz/u/76561198014681219">BigSlick</a>
 			</div>
 		</section>
 

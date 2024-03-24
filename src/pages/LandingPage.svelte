@@ -27,7 +27,7 @@
 		}
 	}
 
-	$: drawCinematics(cinematicsCanvas, '/assets/landing-big.jpg');
+	$: drawCinematics(cinematicsCanvas, '/assets/Main/landing.webp');
 </script>
 
 <svelte:head>
@@ -61,11 +61,11 @@
 
 			<div class="features">
 				<div class="feature">
-					<img src="/assets/leaderboard-landing.png" class="feature-image" style="transform: rotate3d(0, 1, 0, 22deg);" />
+					<img src="/assets/leaderboard-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, 22deg);" />
 					<h3 class="feature-description">In-game leaderboards<br />for custom maps!</h3>
 				</div>
 				<div class="feature">
-					<img src="/assets/webreplays-landing.png" class="feature-image" style="transform: rotate3d(0, 1, 0, -22deg);" />
+					<img src="/assets/webreplays-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, -22deg);" />
 					<h3 class="feature-description">Gameplay replays!</h3>
 				</div>
 			</div>
@@ -96,7 +96,7 @@
 				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
-							<img src="/assets/ArcViewerIcon.png" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
+							<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
 						</a>
 					</h3>
 					<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
@@ -104,7 +104,7 @@
 				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-							<img src="/assets/accsaber-logo.png" title="AccSaber" class="icon" alt="AccSaber Logo" />
+							<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
 						</a>
 					</h3>
 					<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
@@ -112,14 +112,18 @@
 				<div class="source">
 					<h3 class="title is-6">
 						<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
-							<img
-								src="https://bsaber.com/wp-content/uploads/2018/07/cropped-Beastsaber-Site-Icon-300x300.png"
-								title="BeastSaber"
-								class="icon"
-								alt="BeastSaber Logo" />
+							<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
 						</a>
 					</h3>
 					<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
+				</div>
+				<div class="source">
+					<h3 class="title is-6">
+						<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
+							<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
+						</a>
+					</h3>
+					<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>
 				</div>
 				<div class="source">
 					<h3 class="title is-6">
@@ -158,11 +162,12 @@
 
 <style>
 	.big-landing-box {
-		background: url('/assets/landing-big.jpg') !important;
-		background-position-y: 50em !important;
-		background-position-x: 80% !important;
+		background: url('/assets/Main/landing.webp') !important;
+		background-position-y: -2em !important;
+		background-position-x: 0% !important;
+		background-size: 100% !important;
 		display: flex;
-		justify-content: flex-end;
+		justify-content: flex-start;
 		margin: 4px 10px 18px;
 		border-radius: 6px;
 		padding: 1rem;
@@ -174,16 +179,19 @@
 		font-size: 4em;
 		line-height: 1.2em;
 		font-family: 'Audiowide';
+		text-shadow: 2px 2px 4px black;
 	}
 
 	.big-description {
 		margin-left: 0.3em;
+		text-shadow: 2px 2px 4px black;
 	}
 
 	.title-and-buttons {
 		margin-top: 3.6em;
 		margin-bottom: 2em;
 		max-width: 48%;
+		margin-left: 5em;
 	}
 
 	.sources {
@@ -288,15 +296,17 @@
 
 	@media screen and (min-width: 1250px) {
 		.big-landing-box {
-			background-position-y: 52% !important;
-			background-position-x: 80% !important;
+			background-position-y: -3em !important;
+			background-position-x: 0% !important;
 			background-size: 100% !important;
+			justify-content: flex-end;
 		}
 
 		.title-and-buttons {
 			margin-top: 4.6em;
 			margin-bottom: 3em;
 			max-width: 44%;
+			margin-right: 40em;
 		}
 	}
 
@@ -316,8 +326,9 @@
 		}
 
 		.big-landing-box {
-			background-position-y: 48.5em !important;
-			background-position-x: -21em !important;
+			background-position-y: -0.9em !important;
+			background-position-x: 62.2% !important;
+			background-size: 200% !important;
 		}
 
 		.big-title {
@@ -332,6 +343,7 @@
 			margin-top: 18em;
 			margin-bottom: -2em;
 			max-width: none;
+			margin-left: 0.125em;
 		}
 	}
 </style>

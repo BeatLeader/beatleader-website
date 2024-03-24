@@ -1,5 +1,5 @@
 <script>
-	import {navigate, useLocation} from 'svelte-routing';
+	import {navigate} from 'svelte-routing';
 	import {fly, fade} from 'svelte/transition';
 	import {flip} from 'svelte/animate';
 	import createClanStore from '../stores/http/http-clan-store';
@@ -21,16 +21,16 @@
 	import RandomRain from '../components/Common/RandomRain.svelte';
 	import ClanRankingSong from '../components/Leaderboard/ClanRankingSong.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
+	import {processBoolFilter} from '../utils/filters';
 
 	export let clanId;
 	export let page = 1;
 	export let maps = false;
+	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
 
 	document.body.classList.remove('slim');
-
-	const location = useLocation();
 	const account = createAccountStore();
 
 	const clanService = createClanService();
@@ -44,6 +44,7 @@
 		{key: 'search', default: '', process: processString},
 		{key: 'sortBy', default: 'pp', process: processString},
 		{key: 'order', default: 'desc', process: processString},
+		{key: 'primary', default: false, process: processBoolFilter},
 	];
 
 	const buildFiltersFromLocation = location => {
@@ -83,7 +84,7 @@
 		currentFilters = newCurrentFilters;
 
 		sortValues = sortValues1
-			.filter(sv => !sv.hideFor || !sv.hideFor.includes(maps ? 'maps' : 'players'))
+			.filter(sv => !sv.hideFor || !sv.hideFor.includes(newMaps ? 'maps' : 'players'))
 			.map(v => {
 				let result = {...v};
 				if (result.id == currentFilters.sortBy) {
@@ -93,6 +94,9 @@
 
 				return result;
 			});
+		if (!sortValues.find(sv => sv.id == currentFilters.sortBy)) {
+			currentFilters.sortBy = 'pp';
+		}
 
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
@@ -122,6 +126,11 @@
 
 	function onSearchChanged(e) {
 		currentFilters.search = e.target.value ?? '';
+
+		changePageAndFilters(maps, currentPage, currentFilters, false);
+	}
+	function onPrimaryToggle() {
+		currentFilters.primary = !currentFilters.primary;
 
 		changePageAndFilters(maps, currentPage, currentFilters, false);
 	}
@@ -170,7 +179,8 @@
 		{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs'},
 		{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol'},
 		{id: 'date', label: 'Recent', title: 'Sort by the last score posted', iconFa: 'fa fa-clock', hideFor: ['players']},
-		{id: 'hold', label: 'Hold', title: 'Sort by PP dominance', iconFa: 'fa fa-flag', hideFor: ['players']},
+		{id: 'toconquer', label: 'To Conquer', title: 'Sort by PP needed to capture', iconFa: 'fa fa-arrows-to-circle', hideFor: ['players']},
+		{id: 'tohold', label: 'To Hold', title: 'Sort by captured maps PP dominance', iconFa: 'fa fa-flag', hideFor: ['players']},
 	];
 	let sortValues = sortValues1;
 	let sortValue = sortValues[0];
@@ -195,7 +205,7 @@
 	$: numOfItems = $clanStore ? $clanStore?.metadata?.total : null;
 	$: itemsPerPage = $clanStore ? $clanStore?.metadata?.itemsPerPage : 10;
 
-	$: changePageAndFilters(maps, page, buildFiltersFromLocation(location), false);
+	$: changePageAndFilters(maps, page, buildFiltersFromLocation(location), false, false);
 
 	$: clan = $clanStore?.container ?? null;
 	$: playersPage = $clanStore?.data ?? [];
@@ -251,28 +261,44 @@
 
 			<div class="switchers">
 				<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
+				{#if !maps}
+					<Button
+						iconFa="fas fa-house"
+						title="Show only players with this clan as primary"
+						type={currentFilters.primary ? 'primary' : 'default'}
+						square={true}
+						cls="primary-clan-button"
+						squareSize="1.7rem"
+						on:click={() => onPrimaryToggle()} />
+				{/if}
 
 				<Switcher values={clanOptions} value={clanOptions.find(o => o.key == (maps ? 'maps' : 'players'))} on:change={onTypeChanged} />
 			</div>
 
 			{#if maps}
 				<ContentBox>
-					<div class="scores-grid grid-transition-helper">
-						{#each playersPage as cr, idx (cr?.id ?? '')}
-							<div
-								class={`row-${idx}`}
-								in:fly={{x: 200, delay: idx * 20, duration: 500}}
-								out:fade={{x: 200, delay: idx * 20, duration: 500}}
-								animate:flip={{duration: 300}}>
-								<ClanRankingSong {idx} {cr} {page} sortBy={currentFilters.sortBy} />
-							</div>
-						{/each}
-					</div>
+					{#if playersPage?.length}
+						<div class="scores-grid grid-transition-helper">
+							{#each playersPage as cr, idx (cr?.id ?? '')}
+								<div
+									class={`row-${idx}`}
+									in:fly={{x: 200, delay: idx * 20, duration: 500}}
+									out:fade={{x: 200, delay: idx * 20, duration: 500}}>
+									<ClanRankingSong {idx} {cr} {page} sortBy={currentFilters.sortBy} />
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<span>No maps found.</span>
+					{/if}
 				</ContentBox>
 			{:else if playersPage?.length}
 				<div class="players grid-transition-helper" class:with-icons={isFounder}>
 					{#each playersPage as player, idx (player.playerId)}
-						<div class="ranking-grid-row" in:fly|global={{delay: idx * 10, x: 100}}>
+						<div
+							class="ranking-grid-row"
+							title={player.playerInfo?.clanOrder?.indexOf(clan?.tag) ? 'Not contributing to the global map for this clan' : null}
+							in:fly|global={{delay: idx * 10, x: 100}}>
 							<PlayerCard
 								{player}
 								playerId={mainPlayerId}
@@ -281,6 +307,7 @@
 								value={player?.playerInfo?.pp}
 								{maxRank}
 								{maxCountryRank}
+								opacity={player.playerInfo?.clanOrder?.indexOf(clan?.tag) ? '0.7' : '1.0'}
 								valueProps={{suffix: 'pp', zero: '-'}} />
 
 							{#if isFounder && canBeKicked(clan, player)}
@@ -362,5 +389,10 @@
 		display: flex;
 		gap: 1em;
 		justify-content: center;
+	}
+
+	:global(.primary-clan-button) {
+		width: auto !important;
+		margin-top: 0.3em !important;
 	}
 </style>

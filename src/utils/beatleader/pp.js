@@ -120,7 +120,7 @@ function Inflate(peepee) {
 
 export const buildCurve = (accuracy, passRating, accRating, techRating, golf) => {
 	var passPP = 15.2 * Math.exp(Math.pow(passRating, 1 / 2.62)) - 30;
-	if (!isFinite(passPP) || isNaN(passPP)) {
+	if (!isFinite(passPP) || isNaN(passPP) || passPP < 0) {
 		passPP = 0;
 	}
 	var accPP = golf ? accuracy * accRating * 42 : Curve2(accuracy) * accRating * 34;

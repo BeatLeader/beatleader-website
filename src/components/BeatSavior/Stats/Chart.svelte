@@ -15,6 +15,30 @@
 	let themeName = 'darkss';
 	let theme = null;
 
+	function average(arr) {
+		return arr.reduce((p, c) => p + c, 0) / arr.length;
+	}
+
+	function removeTrailingOnes(arr) {
+		var firstNonOneIndex = 0;
+		var firstNonOneValue = 0;
+
+		for (let index = 0; index < arr.length; index++) {
+			const element = arr[index];
+			if (element < 99.9999) {
+				firstNonOneIndex = index;
+				firstNonOneValue = element;
+				break;
+			}
+		}
+
+		for (let index = 0; index < firstNonOneIndex; index++) {
+			arr[index] = firstNonOneValue;
+		}
+
+		return arr;
+	}
+
 	async function setupChart(canvas, chartData, compareChartData, name, compareToName) {
 		if (!canvas || !chartData || !Object.keys(chartData).length) return;
 
@@ -33,10 +57,14 @@
 		}
 
 		let data = Object.values(chartData).map(v => v * 100);
-		updateMinMax(data)
+		if (average(data) < 99) {
+			data = removeTrailingOnes(data);
+		}
+
+		updateMinMax(data);
 
 		const compareData = compareChartData ? Object.values(compareChartData).map(v => v * 100) : null;
-		updateMinMax(compareData)
+		updateMinMax(compareData);
 
 		const datasets = [
 			{

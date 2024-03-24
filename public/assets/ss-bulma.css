@@ -11537,7 +11537,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./accsaber-logo.png');
+	background-image: url('./accsaber-logo.webp');
 }
 
 .lawless-icon {
@@ -11611,7 +11611,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./horizontalstandard.png');
+	background-image: url('./horizontalstandard.webp');
 }
 
 .inversestandard-icon {
@@ -11621,7 +11621,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./inversestandard.png');
+	background-image: url('./inversestandard.webp');
 }
 
 .invertedstandard-icon {
@@ -11631,7 +11631,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./invertedstandard.png');
+	background-image: url('./invertedstandard.webp');
 }
 
 .verticalstandard-icon {
@@ -11641,7 +11641,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./verticalstandard.png');
+	background-image: url('./verticalstandard.webp');
 }
 
 .rhythmgamestandard-icon {
@@ -11649,7 +11649,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./rhythmgamestandard.png');
+	background-image: url('./rhythmgamestandard.webp');
 }
 
 .icon115s {
@@ -11657,7 +11657,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./115s.png');
+	background-image: url('./115s.webp');
 }
 
 .icon-mistakes {
@@ -11665,13 +11665,13 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./mistakes.png');
+	background-image: url('./mistakes.webp');
 }
 
 .icon-mistakes-mini {
 	width: 12px;
 	height: 12px;
-	content: url('./mistakes.png');
+	content: url('./mistakes.webp');
 	-webkit-filter: grayscale(100%);
 	filter: grayscale(100%);
 	filter: invert(0.6);
@@ -11682,7 +11682,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./lawless-controllable-icon.png');
+	background-image: url('./lawless-controllable-icon.webp');
 }
 
 .standard-controllable-icon {
@@ -11690,7 +11690,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./standard-controllable-icon.png');
+	background-image: url('./standard-controllable-icon.webp');
 }
 
 .onesaber-controllable-icon {
@@ -11698,7 +11698,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./onesaber-controllable-icon.png');
+	background-image: url('./onesaber-controllable-icon.webp');
 }
 
 .content-box.festive {
@@ -11811,7 +11811,17 @@ select {
 	margin-right: -1.5em;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./beastsabericonthick.png');
+	background-image: url('./beastsabericonthick.webp');
+}
+
+.cubecommunity-icon {
+	width: 2em;
+	height: 2em;
+	transform: translate(-10px, 0px);
+	margin-right: -1.5em;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./cubecommunitylogo.webp');
 }
 
 .dropdown-header {
@@ -11906,7 +11916,7 @@ body::-webkit-scrollbar-track {
 	background-size: cover;
 	background-repeat: no-repeat;
 	filter: grayscale(100%);
-	background-image: url('./battleRoyale.png');
+	background-image: url('./battleRoyale.webp');
 }
 
 .battleroyalestop-icon {
@@ -11915,7 +11925,7 @@ body::-webkit-scrollbar-track {
 	height: 140%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url(./battleRoyale.png);
+	background-image: url(./battleRoyale.webp);
 }
 
 .battleroyalejoin-icon {
@@ -11925,7 +11935,7 @@ body::-webkit-scrollbar-track {
 	background-size: cover;
 	background-repeat: no-repeat;
 	filter: grayscale(90%) brightness(2);
-	background-image: url(./battleRoyale.png);
+	background-image: url(./battleRoyale.webp);
 }
 
 .selected-playlist-box {

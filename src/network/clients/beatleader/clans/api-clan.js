@@ -20,6 +20,7 @@ const process = response => {
 				lastWeekRank,
 				lastWeekCountryRank,
 				profileSettings,
+				clanOrder,
 			} = player;
 			const difference = lastWeekRank > 0 ? lastWeekRank - rank : null;
 
@@ -38,6 +39,7 @@ const process = response => {
 					lastWeekPp,
 					lastWeekRank,
 					lastWeekCountryRank,
+					clanOrder
 				},
 				others: {
 					difference,
@@ -61,11 +63,13 @@ const create = async ({
 	bio,
 	color,
 	icon,
+	playerChangesCallback,
+	clanRankingDiscordHook,
 	priority = queue.PRIORITY.FG_HIGH,
 	fullResponse = false,
 	...queueOptions
 } = {}) => {
-	const response = await queue.BEATLEADER_API.clanCreate(name, tag, description, bio, color, icon, priority, queueOptions);
+	const response = await queue.BEATLEADER_API.clanCreate(name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority, queueOptions);
 
 	return fullResponse ? response : getResponseBody(response);
 };
@@ -77,11 +81,13 @@ const update = async ({
 	bio,
 	color,
 	icon,
+	playerChangesCallback,
+	clanRankingDiscordHook,
 	priority = queue.PRIORITY.FG_HIGH,
 	fullResponse = false,
 	...queueOptions
 } = {}) => {
-	const response = await queue.BEATLEADER_API.clanUpdate(name, tag, description, bio, color, icon, priority, queueOptions);
+	const response = await queue.BEATLEADER_API.clanUpdate(name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority, queueOptions);
 
 	return fullResponse ? response : getResponseBody(response);
 };

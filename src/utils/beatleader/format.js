@@ -10,6 +10,10 @@ export const diffColors = {
 	expertplus: '#8f48db',
 };
 
+export function getDiffNameColor(diffName) {
+	return diffColors[diffName.toLowerCase()] ? diffColors[diffName.toLowerCase()] : null;
+}
+
 export function getDiffColor(diffInfo) {
 	return diffColors[diffInfo.diff.toLowerCase()] ? diffColors[diffInfo.diff.toLowerCase()] : null;
 }
@@ -65,7 +69,7 @@ export const HMDs = {
 	},
 	60: {
 		name: 'Pico 4',
-		icon: 'piconeo.png',
+		icon: 'piconeo.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 5,
 	},
@@ -131,55 +135,55 @@ export const HMDs = {
 	},
 	38: {
 		name: 'Pimax 8K',
-		icon: 'pimax.png',
+		icon: 'pimax.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 15,
 	},
 	39: {
 		name: 'Pimax 5K',
-		icon: 'pimax.png',
+		icon: 'pimax.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 16,
 	},
 	40: {
 		name: 'Pimax Artisan',
-		icon: 'pimax.png',
+		icon: 'pimax.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 17,
 	},
 	33: {
 		name: 'Pico Neo 3',
-		icon: 'piconeo.png',
+		icon: 'piconeo.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 18,
 	},
 	34: {
 		name: 'Pico Neo 2',
-		icon: 'piconeo.png',
+		icon: 'piconeo.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 19,
 	},
 	41: {
 		name: 'HP Reverb',
-		icon: 'hp.png',
+		icon: 'hp.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 20,
 	},
 	42: {
 		name: 'Samsung WMR',
-		icon: 'samsung.png',
+		icon: 'samsung.webp',
 		color: '',
 		priority: 21,
 	},
 	43: {
 		name: 'Qiyu Dream',
-		icon: 'iqiyi.png',
+		icon: 'iqiyi.webp',
 		color: '',
 		priority: 22,
 	},
 	45: {
 		name: 'Lenovo Explorer',
-		icon: 'lenovo.png',
+		icon: 'lenovo.webp',
 		color: '',
 		priority: 23,
 	},
@@ -197,7 +201,7 @@ export const HMDs = {
 	},
 	67: {
 		name: 'NOLO Sonic',
-		icon: 'nolo.png',
+		icon: 'nolo.webp',
 		color: '',
 		priority: 24,
 	},
@@ -210,7 +214,7 @@ export const HMDs = {
 
 	48: {
 		name: 'Arpara',
-		icon: 'arpara.png',
+		icon: 'arpara.webp',
 		color: '',
 		priority: 25,
 	},
@@ -222,7 +226,7 @@ export const HMDs = {
 	},
 	55: {
 		name: 'Huawei VR',
-		icon: 'huawei.png',
+		icon: 'huawei.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 27,
 	},
@@ -301,7 +305,7 @@ export const HMDs = {
 	},
 	44: {
 		name: 'Disco',
-		icon: 'disco.png',
+		icon: 'disco.webp',
 		color: 'invert(99%) sepia(3%) saturate(82%) hue-rotate(58deg) brightness(118%) contrast(100%)',
 		priority: 39,
 	},
@@ -518,7 +522,6 @@ export function modeForModeName(modeName) {
 	return 0;
 }
 
-
 export const difficultyDescriptions = {
 	Easy: {
 		title: 'Easy',
@@ -545,7 +548,7 @@ export const difficultyDescriptions = {
 		color: 'purple',
 		textColor: 'white',
 	},
-}
+};
 
 export function diffForDiffName(diffName) {
 	switch (diffName) {
@@ -573,83 +576,83 @@ export const ModifiersList = [
 	{
 		id: 'NF',
 		name: 'No Fail',
-		icon: 'NoFailIcon.png',
+		icon: 'NoFailIcon.webp',
 	},
 	{
 		id: 'IF',
 		name: '1 Life',
-		icon: 'OneLifeIcon.png',
+		icon: 'OneLifeIcon.webp',
 	},
 	{
 		id: 'BE',
 		name: '4 Lives',
-		icon: 'FourLivesIcon.png',
+		icon: 'FourLivesIcon.webp',
 	},
 	{
 		id: 'NB',
 		name: 'No Bombs',
-		icon: 'NoBombsIcon.png',
+		icon: 'NoBombsIcon.webp',
 	},
 	{
 		id: 'NO',
 		name: 'No Walls',
-		icon: 'NoObstaclesIcon.png',
+		icon: 'NoObstaclesIcon.webp',
 	},
 	{
 		id: 'NA',
 		name: 'No Arrows',
-		icon: 'NoArrowsIcon.png',
+		icon: 'NoArrowsIcon.webp',
 	},
 	{
 		id: 'GN',
 		name: 'Ghost Notes',
-		icon: 'GhostNotes.png',
+		icon: 'GhostNotes.webp',
 	},
 	{
 		id: 'DA',
 		name: 'Disappearing Arrows',
-		icon: 'DisappearingArrows.png',
+		icon: 'DisappearingArrows.webp',
 	},
 	{
 		id: 'SC',
 		name: 'Small Notes',
-		icon: 'SmallNotesIcon.png',
+		icon: 'SmallNotesIcon.webp',
 	},
 	{
 		id: 'PM',
 		name: 'Pro Mode',
-		icon: 'ProModeIcon.png',
+		icon: 'ProModeIcon.webp',
 	},
 
 	{
 		id: 'SA',
 		name: 'Strict Angles',
-		icon: 'PreciseAnglesIcon.png',
+		icon: 'PreciseAnglesIcon.webp',
 	},
 	{
 		id: 'OD',
 		name: 'Old Dots',
-		icon: 'OldDotsIcon.png',
+		icon: 'OldDotsIcon.webp',
 	},
 	{
 		id: 'SS',
 		name: 'Slower Song',
-		icon: 'SlowerSongIcon.png',
+		icon: 'SlowerSongIcon.webp',
 	},
 	{
 		id: 'FS',
 		name: 'Faster Song',
-		icon: 'FasterSongIcon.png',
+		icon: 'FasterSongIcon.webp',
 	},
 	{
 		id: 'SF',
 		name: 'Super Fast Song',
-		icon: 'SuperFastSongIcon.png',
+		icon: 'SuperFastSongIcon.webp',
 	},
 	{
 		id: 'OP',
 		name: 'NJS cheesing',
-		icon: 'OutsidePlatformIcon.png',
+		icon: 'OutsidePlatformIcon.webp',
 	},
 ];
 
@@ -677,7 +680,7 @@ export const DifficultyStatus = {
 	unrankable: 4,
 	outdated: 5,
 	inevent: 6,
-	ost: 7
+	ost: 7,
 };
 
 export function formatDiffStatus(status) {
@@ -739,8 +742,144 @@ export const typesDescription = {
 	},
 };
 
+// Slow 0 to 150 average ebpm?
+// Midspeed - 150 to 300 average ebpm?
+// Speed - 300 to 400 average ebpm?
+// Highspeed- 400+ average ebpm?
+
+export const speedTags = ['slow', 'medium', 'fast', 'extreme', 'insane'];
+export const speedTagsMap = {
+	slow: 1,
+	medium: 2,
+	fast: 4,
+	extreme: 8,
+	insane: 16,
+};
+
+// Linear - Maps with low amount of repositioning and rotation required.
+// True Acc - https://wiki.accsaber.com/Beat_Saber/How_to_improve/definitions/
+// Standard Acc - https://wiki.accsaber.com/Beat_Saber/How_to_improve/definitions/
+// Tech Acc - https://wiki.accsaber.com/Beat_Saber/How_to_improve/definitions/
+// Tech - Maps that focus on complexity
+// Reset - Resets are the main thing of the map
+// Bomb (Reset) - Bomb resets are the main thing of the map
+// Balanced - A mix of style (mostly tech and linear)
+// Gimmick - Maps that focus on a specific gimmick that doesn't specifically fit anywhere else
+// Fitbeat - Maps that focus on moving the player with walls (mostly crouch walls, but also dodge walls)
+// Dance - Maps that copy a specific dance?
+// Challenge - Maps purely made for difficulty sake, usually break most of the mapping norms.
+// Jump - Maps that focus on jumps.
+// Stream - Maps that focus on streams.
+// Stamina - Lengthy maps with very long sustained patterns that will tire the player out
+// Paul
+// Poodle
+
+export const styleTags = [
+	'linear',
+	'true acc',
+	'standard acc',
+	'tech acc',
+	'tech',
+	'reset',
+	'bomb-resets',
+	'balanced',
+	'gimmick',
+	'fitbeat',
+	'dance',
+	'challenge',
+	'jump',
+	'stream',
+	'stamina',
+	'paul',
+	'poodle',
+];
+export const styleTagsMap = {
+	linear: 1,
+	'true acc': 2,
+	'standard acc': 4,
+	'tech acc': 8,
+	tech: 16,
+	reset: 32,
+	'bomb-resets': 64,
+	balanced: 128,
+	gimmick: 256,
+	fitbeat: 512,
+	dance: 1024,
+	challenge: 2048,
+	jump: 4096,
+	stream: 8192,
+	stamina: 16384,
+	paul: 32768,
+	poodle: 65536,
+};
+
+// Inverted - Contains inverted patterns
+// Windows - Contains windows
+// Curved Sliders - Contains sliders
+// Chains - Contains chains
+// Arc - Contains arc used for playability-sake
+// Triangle - Contains triangle patterns
+// Inline - Contains inline patterns
+// Complex rhythm - Contains non-sustained unorthodox polyrhythm
+// Palm up - Contains patttern that need to be hit as palm up
+// Lean - Contains wide/sustained body lean
+// Angular Tech - Contains tech that require heavy angle cheese
+// Circling Tech - Contains tech that require circling
+// Momentum Tech - Contains tech that require sustained rotation
+// Complex stream - Maps contains lengthy complex streams (also a style of the challenge community)
+// Shitpost - A style of the challenge community (Idk how to even define that one)
+// Metronome - A style of the challenge community (window-swipe swing similar to wrist rolls)
+// Vibro - A style of the challenge community (mostly double spam at high speed, often also using loloppe notes)
+
+export const featureTags = [
+	'inverted',
+	'windows',
+	'sliders',
+	'chains',
+	'arc',
+	'triangle',
+	'inline',
+	'complex rhythm',
+	'palm up',
+	'reset',
+	'lean',
+	'angular tech',
+	'circling tech',
+	'momentum tech',
+	'complex stream',
+	'shitpost',
+	'metronome',
+	'vibro',
+];
+export const featureTagsMap = {
+	inverted: 1,
+	windows: 2,
+	sliders: 4,
+	chains: 8,
+	arc: 16,
+	triangle: 32,
+	inline: 64,
+	'complex rhythm': 128,
+	'palm up': 256,
+	reset: 512,
+	lean: 1024,
+	'angular tech': 2048,
+	'circling tech': 4096,
+	'momentum tech': 8192,
+	'complex stream': 16384,
+	shitpost: 32768,
+	metronome: 65536,
+	vibro: 131072,
+};
+
 export function mapTypeFromMask(type) {
 	const types = Object.keys(typesMap).filter(key => typesMap[key] & type);
+
+	return types?.length ? types.join(',') : 'none';
+}
+
+export function mapTypeFrom(type, map) {
+	const types = Object.keys(map).filter(key => map[key] & type);
 
 	return types?.length ? types.join(',') : 'none';
 }
@@ -816,6 +955,15 @@ export function mapRequirementsListFromMask(type) {
 export const songStatusesMap = {
 	curated: 1 << 1,
 	mapOfTheWeek: 1 << 2,
+	noodleMonday: 1 << 3,
+	featuredOnCC: 1 << 4,
+	beastSaberAwarded: 1 << 5,
+};
+
+export const songStatusesFilterMap = {
+	curated: songStatusesMap.curated,
+	mapOfTheWeek: songStatusesMap.mapOfTheWeek,
+	noodleMonday: songStatusesMap.noodleMonday,
 };
 
 export const songStatusesDescription = {
@@ -823,7 +971,7 @@ export const songStatusesDescription = {
 		title: 'Map was curated DATE by BeastSaber team!',
 		name: 'Curated',
 		icon: 'beastsaber-icon',
-		iconFile: '/assets/beastsabericon.png',
+		iconFile: '/assets/beastsabericon.webp',
 		color: '#00bc8c',
 		textColor: 'white',
 	},
@@ -831,9 +979,24 @@ export const songStatusesDescription = {
 		title: 'BeastSaber Map Of The Week DATE',
 		name: 'Map Of The Week',
 		icon: 'beastsaber-icon',
-		iconFile: '/assets/beastsabericon.png',
+		iconFile: '/assets/beastsabericon.webp',
 		color: '#454088',
 		textColor: 'white',
+	},
+	noodleMonday: {
+		title: 'CubeCommunity Noodle Monday map DATE',
+		name: 'Noodle Map Monday',
+		icon: 'cubecommunity-icon',
+		iconFile: '/assets/cubecommunitylogo-smaller.webp',
+		color: 'rgb(164 76 61)',
+		textColor: 'white',
+	},
+	beastSaberAwarded: {
+		icon: 'beastaward-icon',
+		iconFile: '/assets/beastawardbackground.webp',
+		gradient: 'linear-gradient(rgb(26 26 26 / 8%), rgb(16 16 16 / 12%))',
+		color: 'yellow',
+		textColor: 'yellow',
 	},
 };
 

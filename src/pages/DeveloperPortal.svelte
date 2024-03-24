@@ -12,7 +12,8 @@
 	import Button from '../components/Common/Button.svelte';
 	import OauthApp from '../components/Developer/OauthApp.svelte';
 	import {fetchJson} from '../network/fetch';
-	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import beatSaverSvg from '../resources/beatsaver.svg';
 
 	export let page = 1;
 	export let location;
@@ -25,6 +26,7 @@
 	let createMode = false;
 	let createError = null;
 	let createIsSaving = false;
+	let showBeatSaverLogin = false;
 
 	let boxEl = null;
 
@@ -181,6 +183,36 @@
 						url="/signin"
 						onlyurl={true}
 						type="default" />
+				</div>
+			{/if}
+		</ContentBox>
+		<ContentBox>
+			<span
+				class="title is-5 chevron-clickable"
+				class:opened={showBeatSaverLogin}
+				on:click={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+				on:keydown={() => (showBeatSaverLogin = !showBeatSaverLogin)}
+				title="Show login with BeatSaver">
+				Mapper login
+
+				<i class="fas fa-chevron-down" />
+			</span>
+
+			{#if showBeatSaverLogin}
+				<div transition:fade|global>
+					<p style="padding: 1em 0">
+						This login option is only for mappers that <b>do not own the game</b>, but need to login to the website to manage their maps.
+						<br /> If you are a player, please use the game login. <b style="color:#ff6666">THIS IS NOT FOR PLAYERS</b> and is
+						<b style="color:#ff6666">unusable</b> in game. <br />
+						<b style="color:#ff6666">Reesabers are not available for this login method.</b>
+					</p>
+
+					<form action={BL_API_URL + 'signin'} method="post">
+						<input type="hidden" name="Provider" value="BeatSaver" />
+						<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+						<Button icon={beatSaverSvg} label="Login with BeatSaver" type="submit" />
+					</form>
 				</div>
 			{/if}
 		</ContentBox>
@@ -351,6 +383,15 @@
 
 	li {
 		line-height: 1.6;
+	}
+
+	.chevron-clickable > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.chevron-clickable.opened > i {
+		transform: rotateZ(180deg);
 	}
 
 	@media screen and (min-width: 1250px) {

@@ -28,9 +28,9 @@ export default response => {
 		clans,
 		patreonFeatures,
 		socials,
-		eventsParticipating,
 		profileSettings,
 		changes,
+		clanOrder,
 	} = response;
 
 	let profilePicture = avatar;
@@ -46,6 +46,8 @@ export default response => {
 			'medianAccuracy',
 			'medianRankedAccuracy',
 			'topAccuracy',
+			'topPercentile',
+			'countryTopPercentile',
 		].forEach(k => {
 			if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
 		});
@@ -61,8 +63,6 @@ export default response => {
 	}
 
 	let sponsor = role?.includes('sponsor');
-
-	let processedEventsParticipating = eventsParticipating?.map(e => ({id: e?.eventId, name: e?.name}));
 
 	let profileAppearance = profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : [];
 	if (profileAppearance) {
@@ -121,6 +121,7 @@ export default response => {
 			socials,
 			changes,
 			clans,
+			clanOrder,
 		},
 		profileSettings: profileSettings
 			? {
@@ -132,6 +133,5 @@ export default response => {
 					profileAppearance,
 			  },
 		scoreStats: scoreStats ? scoreStats : null,
-		eventsParticipating: processedEventsParticipating,
 	};
 };

@@ -25,6 +25,7 @@
 
 	let player = null;
 	let settingsNotificationBadge = null;
+	let clansNotification = null;
 
 	function navigateToPlayer(playerId) {
 		if (!playerId) return;
@@ -59,6 +60,19 @@
 		};
 	});
 
+	function checkClanInvites() {
+		if ($account?.clanRequest?.length) {
+			let clansText = '';
+			$account.clanRequest.forEach(clan => {
+				clansText += `• ${clan.name} \n`;
+			});
+			clansNotification =
+				`You have ${$account?.clanRequest?.length} clan invite${$account?.clanRequest?.length > 1 ? 's' : ''}: \n` + clansText;
+		} else {
+			clansNotification = null;
+		}
+	}
+
 	const playlists = createPlaylistStore();
 	const account = createAccountStore();
 
@@ -68,32 +82,32 @@
 		{
 			name: 'General',
 			id: '',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/logo-small.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/logo-small.webp',
 		},
 		{
 			name: 'No modifiers',
 			id: 'nomods',
-			logoBig: '/assets/logo-no-pause.png',
-			logoSmall: '/assets/logo-small-no-pause.png',
+			logoBig: '/assets/logo-no-pause.webp',
+			logoSmall: '/assets/logo-small-no-pause.webp',
 		},
 		{
 			name: 'No pauses',
 			id: 'nopause',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/favicon-96x96.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'Golf',
 			id: 'golf',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/favicon-96x96.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'SCPM',
 			id: 'scpm',
-			logoBig: '/assets/logo.png',
-			logoSmall: '/assets/favicon-96x96.png',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/favicon-96x96.webp',
 		},
 	];
 
@@ -204,6 +218,8 @@
 	$: notificationBadgeTitle = (settingsNotificationBadge ? [settingsNotificationBadge + '\n'] : [])
 		.concat(newSettingsAvailable ? ['New settings are available:'].concat(newSettingsAvailable) : [])
 		.join('\n');
+	$: $account?.clanRequest ? checkClanInvites() : null;
+	$: clanInviteBadgeTitle = clansNotification ? clansNotification : '';
 </script>
 
 <nav class={`ssr-page-container ${className ?? ''}`}>
@@ -226,7 +242,7 @@
 			}}
 			use:mobileTouch={() => (testMenuShown = true)}>
 			<div class="logo-container desktop-and-up">
-				<img src="/assets/logo.png" class="logo" alt="" />
+				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BEATLEADER</span>
 					{#if leaderboardType.id != ''}
@@ -236,7 +252,7 @@
 			</div>
 
 			<div class="logo-container tablet">
-				<img src="/assets/logo-small.png" class="logo" alt="" />
+				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BL</span>
 					{#if leaderboardType.id != ''}
@@ -246,7 +262,7 @@
 			</div>
 
 			<div class="logo-container up-to-tablet">
-				<img src="/assets/logo-small.png" class="logo" alt="" />
+				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				{#if leaderboardType.id != 'general'}
 					<span class="leaderboard-type">{leaderboardType.name}</span>
 				{/if}
@@ -368,30 +384,24 @@
 			use:clickOutside={{callback: () => (mobileMenuShown = false), parent: '.nav-button'}}>
 			<div class="dropdown-content">
 				<div class="dropdown-item">
-					<a href="/clans" on:click|preventDefault={() => navigate('/clans')}>
-						<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
-							><path
-								d="M184 88C184 118.9 158.9 144 128 144C97.07 144 72 118.9 72 88C72 57.07 97.07 32 128 32C158.9 32 184 57.07 184 88zM208.4 196.3C178.7 222.7 160 261.2 160 304C160 338.3 171.1 369.8 192 394.5V416C192 433.7 177.7 448 160 448H96C78.33 448 64 433.7 64 416V389.2C26.16 371.2 0 332.7 0 288C0 226.1 50.14 176 112 176H144C167.1 176 190.2 183.5 208.4 196.3V196.3zM64 245.7C54.04 256.9 48 271.8 48 288C48 304.2 54.04 319.1 64 330.3V245.7zM448 416V394.5C468 369.8 480 338.3 480 304C480 261.2 461.3 222.7 431.6 196.3C449.8 183.5 472 176 496 176H528C589.9 176 640 226.1 640 288C640 332.7 613.8 371.2 576 389.2V416C576 433.7 561.7 448 544 448H480C462.3 448 448 433.7 448 416zM576 330.3C585.1 319.1 592 304.2 592 288C592 271.8 585.1 256.9 576 245.7V330.3zM568 88C568 118.9 542.9 144 512 144C481.1 144 456 118.9 456 88C456 57.07 481.1 32 512 32C542.9 32 568 57.07 568 88zM256 96C256 60.65 284.7 32 320 32C355.3 32 384 60.65 384 96C384 131.3 355.3 160 320 160C284.7 160 256 131.3 256 96zM448 304C448 348.7 421.8 387.2 384 405.2V448C384 465.7 369.7 480 352 480H288C270.3 480 256 465.7 256 448V405.2C218.2 387.2 192 348.7 192 304C192 242.1 242.1 192 304 192H336C397.9 192 448 242.1 448 304zM256 346.3V261.7C246 272.9 240 287.8 240 304C240 320.2 246 335.1 256 346.3zM384 261.7V346.3C393.1 335 400 320.2 400 304C400 287.8 393.1 272.9 384 261.7z" /></svg>
+					<a href="/clans" title={clanInviteBadgeTitle} on:click|preventDefault={() => navigate('/clans')}>
+						<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
+							<path
+								d="M184 88C184 118.9 158.9 144 128 144C97.07 144 72 118.9 72 88C72 57.07 97.07 32 128 32C158.9 32 184 57.07 184 88zM208.4 196.3C178.7 222.7 160 261.2 160 304C160 338.3 171.1 369.8 192 394.5V416C192 433.7 177.7 448 160 448H96C78.33 448 64 433.7 64 416V389.2C26.16 371.2 0 332.7 0 288C0 226.1 50.14 176 112 176H144C167.1 176 190.2 183.5 208.4 196.3V196.3zM64 245.7C54.04 256.9 48 271.8 48 288C48 304.2 54.04 319.1 64 330.3V245.7zM448 416V394.5C468 369.8 480 338.3 480 304C480 261.2 461.3 222.7 431.6 196.3C449.8 183.5 472 176 496 176H528C589.9 176 640 226.1 640 288C640 332.7 613.8 371.2 576 389.2V416C576 433.7 561.7 448 544 448H480C462.3 448 448 433.7 448 416zM576 330.3C585.1 319.1 592 304.2 592 288C592 271.8 585.1 256.9 576 245.7V330.3zM568 88C568 118.9 542.9 144 512 144C481.1 144 456 118.9 456 88C456 57.07 481.1 32 512 32C542.9 32 568 57.07 568 88zM256 96C256 60.65 284.7 32 320 32C355.3 32 384 60.65 384 96C384 131.3 355.3 160 320 160C284.7 160 256 131.3 256 96zM448 304C448 348.7 421.8 387.2 384 405.2V448C384 465.7 369.7 480 352 480H288C270.3 480 256 465.7 256 448V405.2C218.2 387.2 192 348.7 192 304C192 242.1 242.1 192 304 192H336C397.9 192 448 242.1 448 304zM256 346.3V261.7C246 272.9 240 287.8 240 304C240 320.2 246 335.1 256 346.3zM384 261.7V346.3C393.1 335 400 320.2 400 304C400 287.8 393.1 272.9 384 261.7z" />
+						</svg>
 						Clans
+
+						{#if clansNotification}<div class="notification-badge" />{/if}
 					</a>
 				</div>
 
 				<div class="dropdown-item">
 					<a
-						href="/leaderboards"
+						href="/maps"
 						on:click|preventDefault={() => {
-							navigate('/leaderboards');
+							navigate('/maps');
 						}}>
-						<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-							><path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								stroke-width="2"
-								d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+						<img class="maps-icon" src="/assets/maps-icon.webp" />
 
 						Maps
 					</a>
@@ -450,20 +460,11 @@
 		</a>
 
 		<a
-			href="/leaderboards"
+			href="/maps"
 			on:click|preventDefault={() => {
-				navigate('/leaderboards');
+				navigate('/maps');
 			}}>
-			<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
-				><path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+			<img class="maps-icon" src="/assets/maps-icon.webp" />
 
 			Maps
 		</a>
@@ -483,11 +484,13 @@
 			Events
 		</a>
 
-		<a href="/clans" on:click|preventDefault={() => navigate('/clans')} class="tablet-and-up">
+		<a href="/clans" title={clanInviteBadgeTitle} on:click|preventDefault={() => navigate('/clans')} class="tablet-and-up">
 			<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
 				><path
 					d="M184 88C184 118.9 158.9 144 128 144C97.07 144 72 118.9 72 88C72 57.07 97.07 32 128 32C158.9 32 184 57.07 184 88zM208.4 196.3C178.7 222.7 160 261.2 160 304C160 338.3 171.1 369.8 192 394.5V416C192 433.7 177.7 448 160 448H96C78.33 448 64 433.7 64 416V389.2C26.16 371.2 0 332.7 0 288C0 226.1 50.14 176 112 176H144C167.1 176 190.2 183.5 208.4 196.3V196.3zM64 245.7C54.04 256.9 48 271.8 48 288C48 304.2 54.04 319.1 64 330.3V245.7zM448 416V394.5C468 369.8 480 338.3 480 304C480 261.2 461.3 222.7 431.6 196.3C449.8 183.5 472 176 496 176H528C589.9 176 640 226.1 640 288C640 332.7 613.8 371.2 576 389.2V416C576 433.7 561.7 448 544 448H480C462.3 448 448 433.7 448 416zM576 330.3C585.1 319.1 592 304.2 592 288C592 271.8 585.1 256.9 576 245.7V330.3zM568 88C568 118.9 542.9 144 512 144C481.1 144 456 118.9 456 88C456 57.07 481.1 32 512 32C542.9 32 568 57.07 568 88zM256 96C256 60.65 284.7 32 320 32C355.3 32 384 60.65 384 96C384 131.3 355.3 160 320 160C284.7 160 256 131.3 256 96zM448 304C448 348.7 421.8 387.2 384 405.2V448C384 465.7 369.7 480 352 480H288C270.3 480 256 465.7 256 448V405.2C218.2 387.2 192 348.7 192 304C192 242.1 242.1 192 304 192H336C397.9 192 448 242.1 448 304zM256 346.3V261.7C246 272.9 240 287.8 240 304C240 320.2 246 335.1 256 346.3zM384 261.7V346.3C393.1 335 400 320.2 400 304C400 287.8 393.1 272.9 384 261.7z" /></svg>
 			Clans
+
+			{#if clansNotification}<div class="notification-badge" />{/if}
 		</a>
 
 		<a href="/settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
@@ -703,6 +706,11 @@
 
 	.search-hint {
 		display: none !important;
+	}
+
+	.maps-icon {
+		width: 1.5em;
+		margin-right: 0.4em;
 	}
 
 	@media (pointer: coarse) {

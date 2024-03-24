@@ -69,35 +69,35 @@
 				break;
 			case 'booster':
 				show = profileAppearance && profileAppearance.includes('booster');
-				roleIcon = BL_ASSETS_CDN + '/boostericon.png';
+				roleIcon = BL_ASSETS_CDN + '/boostericon.webp';
 				roleDescription = 'Discord Server Booster';
 				if (profileAppearance.includes('tipper') && allRoles.includes('tipper')) {
-					roleIcon = BL_ASSETS_CDN + '/boosterpatreon1.png';
+					roleIcon = BL_ASSETS_CDN + '/boosterpatreon1.webp';
 					roleDescription = 'Tier 1 Patreon supporter and Discord Server Booster ❤️';
 				} else if (profileAppearance.includes('supporter') && allRoles.includes('supporter')) {
-					roleIcon = BL_ASSETS_CDN + '/boosterpatreon2.png';
+					roleIcon = BL_ASSETS_CDN + '/boosterpatreon2.webp';
 					roleDescription = 'Tier 2 Patreon supporter and Discord Server Booster ❤️';
 				} else if (profileAppearance.includes('sponsor') && allRoles.includes('sponsor')) {
-					roleIcon = BL_ASSETS_CDN + '/boosterpatreon3.png';
+					roleIcon = BL_ASSETS_CDN + '/boosterpatreon3.webp';
 					roleDescription = 'Highest tier Patreon supporter. Crypto godge, Discord Server Booster and awesome person owerall 😎';
 				}
 				cls = 'player-role';
 				break;
 			case 'tipper':
 				show = !profileAppearance || (profileAppearance.includes('tipper') && (!profileAppearance.includes('booster') || edit));
-				roleIcon = BL_ASSETS_CDN + '/patreon1.png';
+				roleIcon = BL_ASSETS_CDN + '/patreon1.webp';
 				roleDescription = 'Tier 1 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'supporter':
 				show = !profileAppearance || (profileAppearance.includes('supporter') && (!profileAppearance.includes('booster') || edit));
-				roleIcon = BL_ASSETS_CDN + '/patreon2.png';
+				roleIcon = BL_ASSETS_CDN + '/patreon2.webp';
 				roleDescription = 'Tier 2 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'sponsor':
 				show = !profileAppearance || (profileAppearance.includes('sponsor') && (!profileAppearance.includes('booster') || edit));
-				roleIcon = BL_ASSETS_CDN + '/patreon3.png';
+				roleIcon = BL_ASSETS_CDN + '/patreon3.webp';
 				roleDescription = 'Highest tier Patreon supporter. Crypto godge';
 				cls = 'player-role';
 				break;

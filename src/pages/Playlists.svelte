@@ -1,5 +1,4 @@
 <script>
-	import {dndzone} from 'svelte-dnd-action';
 	import ssrConfig from '../ssr-config';
 	import {scrollToTargetAdjusted} from '../utils/browser';
 	import createPlaylistStore from '../stores/playlists';
@@ -8,6 +7,8 @@
 	import Pager from '../components/Common/Pager.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 
 	export let index = null;
 
@@ -41,10 +42,12 @@
 	function updatePage(index) {
 		if (Number.isFinite(index)) {
 			page = Math.floor(index / itemsPerPage);
-			selectedIndex = index;
-			setTimeout(() => {
-				if (playlistsEl) scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60);
-			}, 500);
+			if (selectedIndex != index) {
+				selectedIndex = index;
+				setTimeout(() => {
+					if (playlistsEl) scrollToTargetAdjusted(playlistsEl.querySelector(`.row-${index}`), 60);
+				}, 500);
+			}
 		} else if (totalItems <= itemsPerPage) {
 			page = 0;
 		}
@@ -66,25 +69,18 @@
 			});
 	}
 
-	// use:dndzone={{items: playlistList, flipDurationMs: 300}}
-	// 		on:consider={handleDndConsider}
-	// 		on:finalize={handleDndFinalize}
-
-	function handleDndConsider(e) {
-		playlistList = e.detail.items;
-	}
-	function handleDndFinalize(e) {
-		playlistList = e.detail.items;
-	}
-
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: totalItems = $playlists.length;
 	$: updatePage(parseInt(index, 10), $playlists.length);
 	$: initPlaylistList($playlists, totalItems, itemsPerPage, page);
+
+	$: metaTitle = `Playlists / ${ssrConfig.name}`;
+	$: description = `
+		Beat Saber playlists`;
 </script>
 
 <svelte:head>
-	<title>{`Playlists / ${ssrConfig.name}`}</title>
+	<title>{metaTitle}</title>
 </svelte:head>
 
 <ContentBox>
@@ -111,6 +107,29 @@
 	{/if}
 
 	{#if $playlists && $playlists.length > itemsPerPage}
-		<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} />
+		<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} dnd={true} />
 	{/if}
 </ContentBox>
+
+<MetaTags
+	title={metaTitle}
+	{description}
+	openGraph={{
+		title: metaTitle,
+		description,
+		images: [
+			{
+				url: CURRENT_URL + 'assets/defaultplaylisticon.png',
+			},
+		],
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: metaTitle,
+		description,
+		image: CURRENT_URL + 'assets/defaultplaylisticon.png',
+		imageAlt: metaTitle + ' picture',
+	}} />

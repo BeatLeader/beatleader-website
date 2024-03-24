@@ -3,6 +3,7 @@ import keyValueRepository from '../db/repository/key-value';
 import {configStore} from './config';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 import {substituteVars} from '../utils/format';
+import deepEqual from 'deep-equal';
 
 const STORE_PLAYLISTS_KEY = 'playlists';
 
@@ -48,15 +49,15 @@ export default () => {
 
 	const {subscribe, unsubscribe, set: storeSet} = writable(playlists);
 
-	const get = () => playlists;
+	const get = async () => (await keyValueRepository().get(STORE_PLAYLISTS_KEY)) ?? [];
 	const set = async (config, persist = true, promise = false) => {
 		const newConfig = promise ? await config : config;
 		if (!newConfig) return;
 
-		if (persist) await keyValueRepository().set(newConfig, STORE_PLAYLISTS_KEY);
-
 		playlists = newConfig;
 		storeSet(newConfig);
+
+		if (persist) await keyValueRepository().set(newConfig, STORE_PLAYLISTS_KEY);
 
 		return newConfig;
 	};
@@ -70,7 +71,7 @@ export default () => {
 					playlistTitle: 'New playlist',
 					playlistAuthor: 'BeatLeader',
 					songs: song ? [song] : [],
-					image: await toDataURL('/assets/favicon-128.png'),
+					image: await toDataURL('/assets/defaultplaylisticon.png'),
 			  };
 
 		if (!playlist.playlistTitle || !playlist.songs) {
@@ -85,7 +86,10 @@ export default () => {
 		}
 
 		await set(playlists, true);
-		await select(playlist);
+		if (!inputPlaylist) {
+			await select(playlist);
+		}
+		await uploadPlaylist(playlist, playlists);
 	};
 
 	const deleteOneClick = async () => {
@@ -137,7 +141,7 @@ export default () => {
 				body: JSON.stringify(playlist),
 			}
 		).then(response => response.json());
-		if (remote) {
+		if (remote && !deepEqual(playlist.customData, remote)) {
 			playlist.customData = remote;
 
 			await set(playlists, true);
@@ -150,6 +154,33 @@ export default () => {
 
 		await uploadPlaylist(playlist, playlists, toShare);
 		callback(playlist.customData.id);
+	};
+
+	const reorder = async (index, hash, songIndex, songObject) => {
+		let playlists = await get();
+
+		let playlist = playlists[index];
+		let songs = playlist.songs;
+
+		const objIndex = songs.findIndex(item => item.hash === hash || item.id === hash);
+
+		if (objIndex > -1) {
+			const [itemToMove] = songs.splice(objIndex, 1);
+			songs.splice(songIndex, 0, itemToMove);
+		} else {
+			songs.splice(songIndex, 0, songObject);
+		}
+		if (playlist.customData) {
+			playlist.customData.hash = await computeSha256Hash(playlist);
+		}
+
+		await set(playlists, true);
+
+		if (playlists[index].oneclick) {
+			updateOneClick(playlists[index].songs);
+		} else {
+			uploadPlaylist(playlists[index], playlists);
+		}
 	};
 
 	const getShared = (id, callback) => {
@@ -200,7 +231,8 @@ export default () => {
 				for (let i = 0; i < playlists.length; i++) {
 					const element = playlists[i];
 					if (element.oneclick) continue;
-					hashed[await computeSha256Hash(element)] = element;
+					const hash = await computeSha256Hash(element);
+					hashed[hash] = element;
 					if (element.customData?.id) {
 						indexed[element.customData.id] = element;
 					}
@@ -208,7 +240,7 @@ export default () => {
 				for (let i = 0; i < remotePlaylists.length; i++) {
 					const element = remotePlaylists[i];
 					var localPlaylist = hashed[element.hash];
-					if (!localPlaylist || !localPlaylist.customData?.id || localPlaylist.customData?.owner != element.ownerId) {
+					if (!element.deleted && (!localPlaylist || !localPlaylist.customData?.id)) {
 						if (indexed[element.id]) {
 							playlists = playlists.filter(p => p.customData?.id != element.id);
 						}
@@ -222,6 +254,8 @@ export default () => {
 							playlists.push(remote);
 						}
 						hashed[element.hash] = remote;
+					} else if (localPlaylist && element.deleted) {
+						playlists = playlists.filter(p => p !== localPlaylist);
 					}
 				}
 
@@ -274,7 +308,11 @@ export default () => {
 				}
 
 				let playlists = await get();
-				playlists.push(playlist);
+				if (playlists[0]?.oneclick) {
+					playlists.splice(1, 0, playlist);
+				} else {
+					playlists.unshift(playlist);
+				}
 
 				await set(playlists, true);
 				await select(playlist);
@@ -306,7 +344,11 @@ export default () => {
 				}
 
 				let playlists = await get();
-				playlists.push(playlist);
+				if (playlists[0]?.oneclick) {
+					playlists.splice(1, 0, playlist);
+				} else {
+					playlists.unshift(playlist);
+				}
 
 				await set(playlists, true);
 				await select(playlist);
@@ -327,6 +369,7 @@ export default () => {
 			});
 		}
 
+		await configStore.setForKey('selectedPlaylist', null);
 		await set(playlists, true);
 	};
 
@@ -343,14 +386,13 @@ export default () => {
 		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
 		playlists[index].songs.push(song);
+		await set(playlists, true);
 
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
 		} else {
 			uploadPlaylist(playlists[index], playlists);
 		}
-
-		await set(playlists, true);
 	};
 
 	const updateIcon = async (playlistIndex, icon) => {
@@ -368,9 +410,19 @@ export default () => {
 		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
 		playlists[index].playlistTitle = title;
-		uploadPlaylist(playlists[index], playlists);
-
 		await set(playlists, true);
+
+		uploadPlaylist(playlists[index], playlists);
+	};
+
+	const updateDescription = async (playlistIndex, title) => {
+		let playlists = await get();
+		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
+
+		playlists[index].playlistDescription = title;
+		await set(playlists, true);
+
+		uploadPlaylist(playlists[index], playlists);
 	};
 
 	const decapitalizeFirstLetter = string => {
@@ -384,13 +436,13 @@ export default () => {
 		let song = playlists[index].songs.find(el => el.hash == hash);
 		song.difficulties.push({name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type});
 
+		await set(playlists, true);
+
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
 		} else {
 			uploadPlaylist(playlists[index], playlists);
 		}
-
-		await set(playlists, true);
 	};
 
 	const removeDiff = async (hash, diffInfo, playlistIndex) => {
@@ -398,15 +450,17 @@ export default () => {
 		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
 		let song = playlists[index].songs.find(el => el.hash == hash);
-		song.difficulties = song.difficulties.filter(el => el.name != decapitalizeFirstLetter(diffInfo.diff));
+		song.difficulties = song.difficulties.filter(
+			el => el.name != decapitalizeFirstLetter(diffInfo.diff) || el.characteristic != diffInfo.type
+		);
+
+		await set(playlists, true);
 
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
 		} else {
 			uploadPlaylist(playlists[index], playlists);
 		}
-
-		await set(playlists, true);
 	};
 
 	const remove = async (hash, playlistIndex) => {
@@ -414,14 +468,13 @@ export default () => {
 		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
 		playlists[index].songs = playlists[index].songs.filter(el => el.hash != hash);
+		await set(playlists, true);
 
 		if (playlists[index].oneclick) {
 			updateOneClick(playlists[index].songs);
 		} else {
 			uploadPlaylist(playlists[index], playlists);
 		}
-
-		await set(playlists, true);
 	};
 
 	const select = async playlist => {
@@ -468,6 +521,8 @@ export default () => {
 		generatePlayerPlaylist,
 		updateIcon,
 		updateTitle,
+		updateDescription,
+		reorder,
 	};
 
 	return playlistStore;

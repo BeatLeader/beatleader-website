@@ -1,6 +1,7 @@
 <script>
 	import * as d3 from 'd3';
 	import {navigate} from 'svelte-routing';
+	import {isTouchDevice} from '../../utils/is-touch';
 
 	export let leaderboardId;
 	export let clanTag;
@@ -73,8 +74,8 @@
 			clan.topCount = 0;
 
 			if (cache) {
-				clan.x = cache.clans[clan.id].x;
-				clan.y = cache.clans[clan.id].y;
+				clan.x = cache.clans[clan.id]?.x ?? 0;
+				clan.y = cache.clans[clan.id]?.y ?? 0;
 			}
 			clanMap[clan.id] = clan;
 			clans.push(clan);
@@ -129,8 +130,8 @@
 
 			circles.push({
 				id: map.leaderboardId,
-				x: cache ? cache.circles[map.leaderboardId].x : topClan.x,
-				y: cache ? cache.circles[map.leaderboardId].y : topClan.y,
+				x: cache ? cache.circles[map.leaderboardId]?.x ?? 0 : topClan.x,
+				y: cache ? cache.circles[map.leaderboardId]?.y ?? 0 : topClan.y,
 				r: map.stars,
 				color: map.tie
 					? 'grey'
@@ -250,7 +251,7 @@
 
 	function renderCanvas() {
 		context.save();
-		context.fillStyle = "black";
+		context.fillStyle = 'black';
 		context.fillRect(0, 0, width, height);
 
 		context.translate(currentZoom.x, currentZoom.y); // Apply translation
@@ -398,15 +399,8 @@
 		context.restore();
 	}
 
-	function isMobileDevice() {
-		var hasTouchCapabilities = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-		var isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-		return hasTouchCapabilities && isMobileUserAgent;
-	}
-
 	function setupInteractions() {
-		if (isMobileDevice()) {
+		if (isTouchDevice()) {
 			// Mobile interactions
 			canvas.addEventListener('touchstart', handleTouchStart, false);
 			canvas.addEventListener('touchend', handleTouchEnd, false);

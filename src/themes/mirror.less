@@ -174,80 +174,74 @@ nav.ssr-page-container {
     backdrop-filter: none !important;
 }
 
-.player-page,
-.leaderboard,
-.player-performance,
-.player-general-info,
-.page-content.scores {
-    .compare-player-name {
-        * {
-            background: transparent !important;
-            color: white !important;
-            border: none !important;
-        }
-    }
-
-
-    .hands-and-grid>*:nth-child(2)>span {
-        padding: 1.7rem !important;
-        background: rgba(255, 255, 255, 0.171) !important;
-    }
-
-    .badge {
-        font-size: 0.8rem !important;
+.compare-player-name {
+    * {
+        background: transparent !important;
         color: white !important;
-        --badge-color: rgba(255, 255, 255, 0.13);
-        border-bottom: 2px solid var(--background-color);
-        background: var(--badge-color) !important;
-        border-radius: 0.25rem;
-        padding: 0.4rem 0.3rem;
-    }
-
-    .rank {
-        .badge {
-            border-radius: 0;
-            background: none !important;
-            border: none;
-        }
-    }
-
-    .player-score {
-        min-height: 3rem;
         border: none !important;
+    }
+}
 
-        &.highlight {
-            background: #ffffff33;
-            margin: .4rem 0;
-            padding: 0;
 
-            &.mobile-second-line {
-                .badge {
-                    border: none;
-                    background: none !important;
-                }
+.hands-and-grid>*:nth-child(2)>span {
+    padding: 1.7rem !important;
+    background: rgba(255, 255, 255, 0.171) !important;
+}
+
+.badge {
+    font-size: 0.8rem !important;
+    color: white !important;
+    --badge-color: rgba(255, 255, 255, 0.13);
+    border-bottom: 2px solid var(--background-color);
+    background: var(--badge-color) !important;
+    border-radius: 0.25rem;
+    padding: 0.4rem 0.3rem;
+}
+
+.rank {
+    .badge {
+        border-radius: 0;
+        background: none !important;
+        border: none;
+    }
+}
+
+.player-score {
+    min-height: 3rem;
+    border: none !important;
+
+    &.highlight {
+        background: #ffffff33;
+        margin: .4rem 0;
+        padding: 0;
+
+        &.mobile-second-line {
+            .badge {
+                border: none;
+                background: none !important;
             }
         }
+    }
 
-        @media screen and (max-width: 767px) {
-            & {
-                height: unset !important;
+    @media screen and (max-width: 767px) {
+        & {
+            height: unset !important;
 
-                .clan-badges {
-                    display: none;
-                }
+            .clan-badges {
+                display: none;
             }
         }
     }
+}
 
-    .scores-grid {
-        * {
-            color: white !important;
-        }
+.scores-grid {
+    * {
+        color: white !important;
     }
+}
 
-    .badge.nominated-pp {
-        --background-color: var(--ppColour) !important;
-    }
+.badge.nominated-pp {
+    --background-color: var(--ppColour) !important;
 }
 
 // Remove some strange backgrounds&shadows

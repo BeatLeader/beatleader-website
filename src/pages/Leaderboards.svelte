@@ -32,7 +32,7 @@
 		requirementsMap,
 		modeDescriptions,
 		difficultyDescriptions,
-		songStatusesMap,
+		songStatusesFilterMap,
 		songStatusesDescription,
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
@@ -143,7 +143,7 @@
 		};
 	});
 
-	const songStatusOptions = Object.entries(songStatusesMap).map(([key, type]) => {
+	const songStatusOptions = Object.entries(songStatusesFilterMap).map(([key, type]) => {
 		return {
 			key: type,
 			label: capitalize(songStatusesDescription?.[key]?.name ?? key),
@@ -474,7 +474,7 @@
 			stars: m?.difficulty?.stars ?? null,
 		};
 	});
-	$: metaDescription = 'Search for ranked maps, playlists and leaderboards for Beat Saber';
+	$: metaDescription = currentFilters.type === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps';
 	$: hasRatingsByDefault = currentFilters.type === 'ranked' || currentFilters.type === 'nominated' || currentFilters.type === 'qualified';
 	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
 	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
@@ -876,10 +876,10 @@
 <BackToTop />
 
 <MetaTags
-	title={ssrConfig.name + ' - Maps'}
+	title={ssrConfig.name + ' - Leaderboards'}
 	description={metaDescription}
 	openGraph={{
-		title: ssrConfig.name + ' - Maps',
+		title: ssrConfig.name + ' - Leaderboards',
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
 		siteName: ssrConfig.name,
@@ -888,7 +888,7 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: ssrConfig.name + ' - Maps',
+		title: ssrConfig.name + ' - Leaderboards',
 		description: metaDescription,
 		image: CURRENT_URL + '/assets/logo-small.png',
 		imageAlt: ssrConfig.name + "'s logo",

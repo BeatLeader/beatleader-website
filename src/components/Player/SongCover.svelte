@@ -12,7 +12,7 @@
 	export let starsKey = 'stars';
 	export let triangle = true;
 
-	const DEFAULT_IMG = '/assets/song-default.png';
+	const DEFAULT_IMG = '/assets/song-default.webp';
 
 	let preloadCache = {};
 	let loadedImages = [];
@@ -41,9 +41,9 @@
 	}
 
 	$: hash = leaderboard?.song?.hash ?? null;
-	$: ssCoverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash)}.jpg` : null);
+	$: ssCoverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
 	$: beatSaverCoverUrl = leaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
-
+	
 	$: preloadImages([
 		{url: ssCoverUrl, priority: 10},
 		{url: beatSaverCoverUrl, priority: 5},

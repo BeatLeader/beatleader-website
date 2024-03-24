@@ -39,7 +39,8 @@
 	const {addNotification} = getNotificationsContext();
 
 	let songKey;
-	let songInfo;
+	let songName;
+	let levelAuthorName;
 	let shownIcons;
 
 	function updateIcons(icons) {
@@ -69,13 +70,18 @@
 		const songInfoValue = await beatSaverService.byHash(hash);
 		if (songInfoValue && songInfoValue.key) {
 			songKey = songInfoValue.key;
-			songInfo = {
-				hash,
-				songName: songInfoValue.name,
-				difficulties: [{name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type}],
-				levelAuthorName: songInfoValue.uploader.name,
-			};
+			songName = songInfoValue.name;
+			levelAuthorName = songInfoValue.uploader.name;
 		}
+	}
+
+	function getSongInfo() {
+		return {
+			hash,
+			songName,
+			difficulties: [{name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type}],
+			levelAuthorName,
+		};
 	}
 
 	function successToast(text) {
@@ -118,21 +124,24 @@
 
 	$: updateIcons(icons);
 	$: updateSongKey(hash);
-	$: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : null;
-	$: charName = diffInfo && diffInfo.type ? diffInfo.type : null;
+	$: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : '';
+	$: charName = diffInfo && diffInfo.type ? diffInfo.type : '';
 
 	$: selectedPlaylistIndex = opt($configStore, 'selectedPlaylist');
 	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
 	$: playlistSongs = selectedPlaylist?.songs?.filter(el => el.hash == hash);
 	$: playlistSong = playlistSongs?.length ? playlistSongs[0] : null;
-	$: difficulties = playlistSong?.difficulties?.map(el => capitalize(el.name));
+
+	$: playlistEntries = playlistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
+	$: playlistKey = diffName + charName;
 
 	$: oneclickToPlaylist = $configStore?.preferences?.oneclick == 'playlist';
 	$: ocPlaylistIndex = oneclickToPlaylist ? $playlists.findIndex(p => p.oneclick) : null;
 	$: ocPlaylist = ocPlaylistIndex != null ? $playlists[ocPlaylistIndex] : null;
 	$: ocplaylistSongs = ocPlaylist?.songs?.filter(el => el.hash == hash);
 	$: ocplaylistSong = ocplaylistSongs?.length ? ocplaylistSongs[0] : null;
-	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name));
+	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
+
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: replayUrl = webPlayerLink(replayLink, scoreId, $configStore.preferences.webPlayer);
 	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
@@ -177,7 +186,7 @@
 			{#if shownIcons.includes('playlist')}
 				{#if selectedPlaylist != null}
 					{#if playlistSong}
-						{#if difficulties.length == 1 && difficulties[0] == diffName}
+						{#if playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Remove from the {selectedPlaylist.playlistTitle}"
@@ -185,7 +194,7 @@
 								noMargin={true}
 								type="danger"
 								on:click={() => playlists.remove(hash)} />
-						{:else if difficulties.length == 1 || !difficulties.includes(diffName)}
+						{:else if playlistEntries.length == 1 || !playlistEntries.includes(playlistKey)}
 							<Button
 								iconFa="fas fa-list-ul"
 								title="Add this diff to the {selectedPlaylist.playlistTitle}"
@@ -207,7 +216,9 @@
 							title="Add to the {selectedPlaylist.playlistTitle}"
 							animated={true}
 							noMargin={true}
-							on:click={() => playlists.add(songInfo)} />
+							on:click={() => {
+								playlists.add(getSongInfo());
+							}} />
 					{/if}
 				{:else}
 					<Button
@@ -215,7 +226,7 @@
 						title="Create new playlist with this song"
 						animated={true}
 						noMargin={true}
-						on:click={() => playlists.create(songInfo)} />
+						on:click={() => playlists.create(getSongInfo())} />
 				{/if}
 			{/if}
 
@@ -238,7 +249,7 @@
 			{#if shownIcons.includes('oneclick')}
 				{#if oneclickToPlaylist && ocPlaylist != null}
 					{#if ocplaylistSong}
-						{#if ocdifficulties.length == 1 && ocdifficulties[0] == diffName}
+						{#if ocdifficulties.length == 1 && ocdifficulties[0] == playlistKey}
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Remove from the One-Click playlist"
@@ -246,7 +257,7 @@
 								noMargin={true}
 								type="danger"
 								on:click={() => playlists.remove(hash, ocPlaylistIndex)} />
-						{:else if ocdifficulties.length == 1 || !ocdifficulties.includes(diffName)}
+						{:else if ocdifficulties.length == 1 || !ocdifficulties.includes(playlistKey)}
 							<Button
 								iconFa="fas fa-hand-pointer"
 								title="Add this diff to the One-Click playlist"
@@ -269,7 +280,7 @@
 							type="purple"
 							animated={true}
 							noMargin={true}
-							on:click={() => playlists.add(songInfo, ocPlaylistIndex)} />
+							on:click={() => playlists.add(getSongInfo(), ocPlaylistIndex)} />
 					{/if}
 				{:else}
 					<a href="beatsaver://{songKey}">

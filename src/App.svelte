@@ -12,6 +12,7 @@
 	import EventPage from './pages/Event.svelte';
 	import LeaderboardPage from './pages/Leaderboard.svelte';
 	import LeaderboardsPage from './pages/Leaderboards.svelte';
+	import LeaderboardsLoloppe from './pages/LeaderboardsLoloppe.svelte';
 	import ClanPage from './pages/Clan.svelte';
 	import ClansPage from './pages/Clans.svelte';
 	import FollowedPage from './pages/Followed.svelte';
@@ -48,6 +49,9 @@
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
+
+	import rewindTimer from './stores/rewind-timer';
+	import {padNumber} from './utils/format';
 
 	export let url = '';
 
@@ -176,6 +180,10 @@
 					<Route path="/leaderboards/*page" let:params let:location>
 						<LeaderboardsPage page={params.page} {location} />
 					</Route>
+					<Route path="/leaderboards/loloppe/*page" let:params let:location>
+						<LeaderboardsLoloppe page={params.page} {location} />
+					</Route>
+
 					<Route path="/maps">
 						<Maps />
 					</Route>
@@ -203,11 +211,11 @@
 					<Route path="/events/*page" let:params let:location>
 						<EventsPage page={params.page} {location} />
 					</Route>
-					<Route path="/clan/:clanId/*page" let:params>
-						<ClanPage clanId={params.clanId} page={params.page} />
+					<Route path="/clan/:clanId/*page" let:params let:location>
+						<ClanPage clanId={params.clanId} page={params.page} {location} />
 					</Route>
-					<Route path="/clan/maps/:clanId/*page" let:params>
-						<ClanPage clanId={params.clanId} page={params.page} maps={true} />
+					<Route path="/clan/maps/:clanId/*page" let:params let:location>
+						<ClanPage clanId={params.clanId} page={params.page} maps={true} {location} />
 					</Route>
 					<Route path="/clans/*page" let:params let:location>
 						<ClansPage page={params.page} {location} />
@@ -296,6 +304,39 @@
 		pointer-events: none;
 	}
 
+	.rewindbanner {
+		background-color: #2e0d51;
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
+	}
+
+	.timer {
+		display: flex;
+		gap: 0.3em;
+	}
+
+	.rewind-text-and-timer {
+		display: flex;
+		gap: 0.3em;
+		margin-right: 0.8em;
+		justify-content: center;
+	}
+
+	.rewind-time {
+		display: flex;
+		gap: 0.3em;
+	}
+
 	.reelink {
 		position: absolute;
 		width: 100%;
@@ -313,7 +354,24 @@
 	.replayed-link-text {
 		z-index: 101;
 		font-weight: 800;
-		color: #20a0ee;
+		color: #ffffff;
+		text-shadow: 0 0 3px #000000;
+	}
+
+	.ostbanner {
+		background-color: rgb(0 113 198);
+		color: white;
+		font-size: large;
+		height: 3em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		justify-items: center;
+		align-items: center;
+		margin-bottom: -0.1em;
+
+		overflow: visible;
+		pointer-events: none;
 	}
 
 	.banner-spacer {
@@ -353,7 +411,7 @@
 		transform: rotateZ(7deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-2 {
@@ -364,7 +422,7 @@
 		transform: rotateZ(350deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-3 {
@@ -375,7 +433,7 @@
 		transform: rotateZ(3deg);
 		z-index: 100;
 		border-radius: 6px;
-		box-shadow: 1px 5px 7px #0000007a;
+		box-shadow: 1px 5px 7px #000000d7;
 	}
 
 	.cover-4 {
@@ -386,7 +444,7 @@
 		transform: rotateZ(4deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-5 {
@@ -397,7 +455,7 @@
 		transform: rotateZ(10deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
 	}
 
 	.cover-6 {
@@ -408,7 +466,43 @@
 		transform: rotateZ(349deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #0000007a;
+		box-shadow: 2px 11px 7px #000000d7;
+	}
+
+	.cover-7 {
+		height: 2.4em;
+		position: absolute;
+		left: 3%;
+		top: 0.5em;
+		transform: rotateZ(356deg);
+		z-index: 80;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #000000d7;
+	}
+
+	.cover-8 {
+		height: 3em;
+		position: absolute;
+		right: 15%;
+		top: -1.5em;
+		transform: rotateZ(350deg);
+		z-index: 60;
+		border-radius: 8px;
+		box-shadow: 2px 11px 7px #000000d7;
+	}
+
+	.cc-cover-1 {
+		height: 3.5em;
+		position: absolute;
+		left: 14%;
+		z-index: 100;
+	}
+
+	.cc-cover-2 {
+		height: 3.5em;
+		position: absolute;
+		right: 14%;
+		z-index: 100;
 	}
 
 	:global(.notifications) {
@@ -436,6 +530,20 @@
 
 	main {
 		margin-top: 1em;
+	}
+	.mobile-only {
+		display: none;
+	}
+	@media (max-width: 1000px) {
+		.rewind-text-and-timer {
+			flex-direction: column;
+			align-items: center;
+			gap: 0;
+		}
+
+		.timer {
+			margin-top: -0.3em;
+		}
 	}
 	@media (max-width: 600px) {
 		main {
@@ -465,6 +573,12 @@
 		.cover-6 {
 			display: none;
 		}
+		.cover-7 {
+			display: none;
+		}
+		.cover-8 {
+			display: none;
+		}
 		.link-text {
 			color: white;
 			text-shadow: 3px 3px black;
@@ -475,6 +589,27 @@
 			color: white;
 			text-shadow: 3px 3px black;
 			margin-bottom: 0.2em;
+		}
+
+		.rewind-text-and-timer {
+			max-width: 60%;
+			text-align: center;
+			flex-wrap: wrap;
+		}
+
+		.cc-cover-1 {
+			left: 10%;
+		}
+
+		.cc-cover-2 {
+			right: 10%;
+		}
+
+		.mobile-only {
+			display: block;
+		}
+		.desktop-only {
+			display: none;
 		}
 	}
 

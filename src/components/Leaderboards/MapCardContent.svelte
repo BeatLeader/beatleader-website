@@ -37,6 +37,7 @@
 	export let currentFilters;
 	export let idx;
 	export let viewType;
+	export let nodetails;
 
 	$: coverImage = map?.song?.fullCoverImage ?? map?.song?.coverImage;
 	$: coverImage && retrieveBackgroundColor(coverImage);
@@ -56,7 +57,11 @@
 
 			{#if $configStore?.leaderboardPreferences?.showClanCaptureInList && map?.difficulty?.status == DifficultyStatus.ranked}
 				<div class="capture-status">
-					<LeaderboardDisplayCaptureStatus clan={map?.clan} clanRankingContested={map?.clanRankingContested} withTitle={false} />
+					<LeaderboardDisplayCaptureStatus
+						clan={map?.clan}
+						clanRankingContested={map?.clanRankingContested}
+						leaderboardId={map.id}
+						withTitle={false} />
 				</div>
 			{/if}
 		</div>
@@ -82,23 +87,25 @@
 		</div>
 		<div class="other-details" data-atropos-offset="0.1">
 			<div class="details-and-icons">
-				{#if map?.plays}
-					<div class="map-details">
-						{map?.plays} plays.
-					</div>
-				{:else if Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
-					<div class="map-details">
-						<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
-							{#if currentFilters.sortBy === 'voting'}
-								Rating: {map.positiveVotes - map.negativeVotes}
-							{:else if currentFilters.sortBy === 'voteratio'}
-								Ratio:
-								{formatNumber((map.positiveVotes / (map.positiveVotes + map.negativeVotes)) * 100)}%
-							{:else}
-								{map.positiveVotes + map.negativeVotes} vote{map.positiveVotes + map.negativeVotes > 1 ? 's' : ''}
-							{/if}
-						</span>
-					</div>
+				{#if !nodetails}
+					{#if map?.plays}
+						<div class="map-details">
+							{map?.plays} plays.
+						</div>
+					{:else if Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
+						<div class="map-details">
+							<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
+								{#if currentFilters.sortBy === 'voting'}
+									Rating: {map.positiveVotes - map.negativeVotes}
+								{:else if currentFilters.sortBy === 'voteratio'}
+									Ratio:
+									{formatNumber((map.positiveVotes / (map.positiveVotes + map.negativeVotes)) * 100)}%
+								{:else}
+									{map.positiveVotes + map.negativeVotes} vote{map.positiveVotes + map.negativeVotes > 1 ? 's' : ''}
+								{/if}
+							</span>
+						</div>
+					{/if}
 				{/if}
 
 				{#if map?.song?.hash?.length}

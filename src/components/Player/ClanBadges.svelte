@@ -8,6 +8,7 @@
 	export let player = null;
 	export let clan = null;
 	export let editModel = null;
+	export let highlightMain = false;
 
 	const badgeUtils = createBadgeUtils();
 
@@ -35,30 +36,30 @@
 			on:consider={handleDndConsider}
 			on:finalize={handleDndFinalize}
 			class="clan-badges">
-			{#each clans as clan (clan.id)}
-				<a class="change-wobble" href={`/clan/${clan?.tag}`} animate:flip={{duration: 300}} on:click|stopPropagation>
+			{#each clans as clan, idx (clan.id)}
+				<a class="change-wobble clan-tag {idx == 0 ? 'main-clan' : ''}" href={`/clan/${clan?.tag}`} animate:flip={{duration: 300}} on:click|stopPropagation>
 					<Badge
-						label={clan?.tag ?? '???'}
+						label={(highlightMain && idx == 0 ? "🏠" : "") + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
 						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
 						bgColor={clan?.color ?? 'var(--dimmed)'}
 						style="animation-delay: -.{Math.round(Math.random() * 40)}s; animation-duration: .{20 + Math.round(Math.random() * 30)}s"
-						title="Change clan order" />
+						title={(highlightMain && idx == 0 ? "Main clan. " : "") + "Change clan order"} />
 				</a>
 			{/each}
 		</span>
 	{:else}
 		<span class="clan-badges">
-			{#each clans as clan (clan.tag)}
-				<a href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
+			{#each clans as clan, idx (clan.tag)}
+				<a class="clan-tag {idx == 0 ? 'main-clan' : ''}" href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
 					<Badge
-						label={clan?.tag ?? '???'}
+						label={(highlightMain && idx == 0 ? "🏠" : "") + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
 						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
 						bgColor={clan?.color ?? 'var(--dimmed)'}
-						title="Go to clan profile" />
+						title={(highlightMain && idx == 0 ? "Main clan. " : "") + "Go to clan profile"} />
 				</a>
 			{/each}
 		</span>
@@ -105,6 +106,10 @@
 	.change-wobble {
 		opacity: 1;
 		margin: 0.5em;
+	}
+
+	.clan-tag {
+		white-space: nowrap;
 	}
 
 	:global(.clan-badges .change-wobble .badge:nth-child(2n)) {

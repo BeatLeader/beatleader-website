@@ -1,6 +1,5 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	import createBeatSaviorService from '../../services/beatsavior';
 	// import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
 	import Switcher from '../Common/Switcher.svelte';
@@ -11,6 +10,7 @@
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
 	import editModel from '../../stores/beatleader/profile-edit-model';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let playerId = null;
 	export let player = null;
@@ -19,9 +19,9 @@
 	export let loadingService = null;
 	export let loadingServiceParams = null;
 
-	const dispatch = createEventDispatcher();
+	const SPECIAL_PLAYER_ID = 'user-friends';
 
-	const beatSaviorService = createBeatSaviorService();
+	const dispatch = createEventDispatcher();
 	// const accSaberService = createAccSaberService();
 	const account = createAccountStore();
 
@@ -283,6 +283,7 @@
 					case 'beatleader':
 						if (availableServiceNames.includes('beatleader')) {
 							serviceDef.filters = commonFilters
+								.filter(f => f.props.id != 'search' || playerId != SPECIAL_PLAYER_ID)
 								.map(f => ({
 									...f,
 									props: {...f.props, hidden: !sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`)},
@@ -419,7 +420,18 @@
 		} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
 	}
 
-	$: eventsParticipating = player?.eventsParticipating ?? null;
+	let eventsParticipating = null;
+
+	function fetchEventsParticipating(playerId) {
+		if (!playerId) return;
+		fetch(BL_API_URL + `player/${playerId}/eventsparticipating`)
+			.then(d => d.json())
+			.then(eventsParticipatingList => {
+				eventsParticipating = eventsParticipatingList;
+			});
+	}
+
+	$: fetchEventsParticipating(player?.playerId);
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 

@@ -17,7 +17,7 @@
 			navigate(url);
 			dispatch('close');
 		}}>
-		<img class="image" src="/assets/blwiki.png" alt="Wiki icon" />
+		<img class="image" src="/assets/blwiki.webp" alt="Wiki icon" />
 		<div class="name">{item?.title}</div>
 	</a>
 {/if}

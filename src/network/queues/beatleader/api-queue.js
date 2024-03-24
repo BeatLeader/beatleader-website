@@ -9,6 +9,8 @@ export const CURRENT_URL = location.protocol + '//' + location.host;
 export const BL_API_URL = (() => {
 	if (location.host.includes('localhost') || location.host.includes('beatleader.xyz')) {
 		return 'https://api.beatleader.xyz/';
+	} else if (location.host.includes('stage')) {
+		return 'https://stage.api.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://api.beatleader.net/';
 	} else {
@@ -29,7 +31,7 @@ export const BL_API_SCORES_URL =
 export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
 	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
-export const BL_API_SCORE_STATS_URL = BL_API_URL + 'score/statistic/${scoreId}';
+export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.xyz/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
 	'score/${scoreId}/pin?pin=${pin}&leaderboardContext=${leaderboardContext}&link=${link}&description=${description}&priority=${priority}';
@@ -58,15 +60,20 @@ export const BL_API_LEADERBOARDS_URL =
 export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
-export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}';
-
+export const BL_API_LEADERBOARDS_BY_HASH_URL = BL_API_URL + 'leaderboards/hash/${hash}?my_scores=${my_scores}';
 export const BL_API_CLANS_URL =
 	BL_API_URL + 'clans?leaderboardContext=${leaderboardContext}&page=${page}&search=${search}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_URL = BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}';
-export const BL_API_CLAN_MAPS_URL = BL_API_URL + 'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}';
+export const BL_API_CLAN_URL =
+	BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
+export const BL_API_CLAN_MAPS_URL =
+	BL_API_URL +
+	'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
 export const BL_API_CLAN_CREATE_URL =
-	BL_API_URL + 'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
-export const BL_API_CLAN_UPDATE_URL = BL_API_URL + 'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}';
+	BL_API_URL +
+	'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
+export const BL_API_CLAN_UPDATE_URL =
+	BL_API_URL +
+	'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
 export const BL_API_CLAN_ACCEPT_URL = BL_API_URL + 'clan/accept?id=${id}';
 export const BL_API_CLAN_REJECT_URL = BL_API_URL + 'clan/reject?id=${id}&ban=${ban}';
 export const BL_API_CLAN_REMOVE_URL = BL_API_URL + 'clan';
@@ -75,7 +82,7 @@ export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}';
 export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${player}';
 export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}';
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}';
-export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&';
+export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&type=${type}';
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_MINIRANKINGS_URL =
@@ -240,6 +247,7 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'type', value: currentDiff?.type},
 		{id: 'levelAuthorName', value: led?.song?.mapper},
 		{id: 'externalStatuses', value: led?.song?.externalStatuses},
+		{id: 'featuredPlaylists', value: led?.featuredPlaylists},
 		{id: 'authorName', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},
@@ -402,27 +410,61 @@ export default (options = {}) => {
 		);
 	};
 
-	const leaderboardsByHash = async (hash, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_LEADERBOARDS_BY_HASH_URL, {hash}), options, priority);
+	const leaderboardsByHash = async (hash, my_scores, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_LEADERBOARDS_BY_HASH_URL, {hash, my_scores}), {...options, credentials: 'include'}, priority);
 
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), options, priority);
+		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
 
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), options, priority);
+		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
 	const clanMaps = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLAN_MAPS_URL, {clanId, page, ...filters}), options, priority);
+		fetchJson(substituteVars(BL_API_CLAN_MAPS_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
 
-	const clanCreate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
+	const clanCreate = async (
+		name,
+		tag,
+		description,
+		bio,
+		color,
+		icon,
+		playerChangesCallback,
+		clanRankingDiscordHook,
+		priority = PRIORITY.FG_HIGH,
+		options = {}
+	) =>
 		fetchJson(
-			substituteVars(BL_API_CLAN_CREATE_URL, {name, tag, description, bio, color}, true, true, encodeURIComponent),
+			substituteVars(
+				BL_API_CLAN_CREATE_URL,
+				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
+				true,
+				true,
+				encodeURIComponent
+			),
 			{body: icon, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
-	const clanUpdate = async (name, tag, description, bio, color, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
+	const clanUpdate = async (
+		name,
+		tag,
+		description,
+		bio,
+		color,
+		icon,
+		playerChangesCallback,
+		clanRankingDiscordHook,
+		priority = PRIORITY.FG_HIGH,
+		options = {}
+	) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UPDATE_URL, {name, tag, description, bio, color}, true, true, encodeURIComponent),
+			substituteVars(
+				BL_API_CLAN_UPDATE_URL,
+				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
+				true,
+				true,
+				encodeURIComponent
+			),
 			{
 				body: icon instanceof ArrayBuffer ? icon : null,
 				...options,
@@ -513,8 +555,8 @@ export default (options = {}) => {
 			return r;
 		});
 
-	const accGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
+	const accGraph = async (playerId, type, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId, type}), {...options, credentials: 'include'}, priority);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(

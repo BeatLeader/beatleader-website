@@ -126,6 +126,9 @@ export function formatDateCustom(val, dateFormat) {
 	if (dateFormat == 'relative') {
 		return formatDateRelative(val);
 	}
+	if (dateFormat == 'relativeshort') {
+		return formatDateRelativeShort(val);
+	}
 
 	let year = val.getFullYear();
 	year = ('' + year).slice(-2);
@@ -254,6 +257,10 @@ export function getCurrentBatchDate() {
 
 export function rankedIn() {
 	return DateTime.fromJSDate(getCurrentBatchDate()).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
+}
+
+export function rewindIn() {
+	return DateTime.fromJSDate(dateFromUnix("1708207200")).diff(DateTime.now(), ['days', 'hours', 'minutes', 'seconds']).toObject();
 }
 
 export function willBeRankedInCurrentBatch(approvalTimeset) {

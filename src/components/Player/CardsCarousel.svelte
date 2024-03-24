@@ -4,10 +4,8 @@
 	import MiniRankingSwipeCard from './ProfileCards/MiniRankingSwipeCard.svelte';
 	import TwitchVideosSwipeCard from './ProfileCards/TwitchVideosSwipeCard.svelte';
 	import AccSaberSwipeCard from './ProfileCards/AccSaberSwipeCard.svelte';
-	import BeatSaviorSwipeCard from './ProfileCards/BeatSaviorSwipeCard.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Carousel from '../Common/Carousel.svelte';
-	import createBeatSaviorService from '../../services/beatsavior';
 	import {configStore} from '../../stores/config';
 	// import createAccSaberService from '../../services/accsaber';
 
@@ -19,19 +17,10 @@
 	export let playerData = null;
 
 	const pageContainer = getContext('pageContainer');
-	const beatSaviorService = createBeatSaviorService();
 	// const accSaberService = createAccSaberService();
 
 	// let accSaberPlayerInfo = null;
 	// let accSaberCategories = null;
-
-	let isBeatSaviorAvailable = false;
-
-	async function refreshBeatSaviorState(playerId) {
-		if (!playerId) return;
-
-		isBeatSaviorAvailable = await beatSaviorService.isDataForPlayerAvailable(playerId);
-	}
 
 	// async function updateAccSaberPlayerInfo(playerId) {
 	// 	if (!playerId) return;
@@ -85,17 +74,6 @@
 					// 		: []
 					// )
 					.concat(
-						isBeatSaviorAvailable
-							? [
-									{
-										name: `beat-savior-${playerId}`,
-										component: BeatSaviorSwipeCard,
-										props: {playerId},
-									},
-							  ]
-							: []
-					)
-					.concat(
 						$pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
 							? [
 									{
@@ -110,7 +88,6 @@
 	);
 
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
-	$: refreshBeatSaviorState(playerId);
 
 	// $: updateAccSaberPlayerInfo(playerId);
 </script>

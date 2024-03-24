@@ -39,12 +39,14 @@ export const DEFAULT_CONFIG = {
 		daysToCompare: 1,
 		daysOfHistory: 30,
 		graphHeight: 350,
+
 		leaderboardStatsShown: false,
 		curveShown: false,
 		qualificationInfoShown: false,
 		commentaryShown: false,
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
+		leaderboardShowPlaylists: true,
 
 		showFiltersOnRanking: true,
 		maps3D: true,
@@ -52,6 +54,9 @@ export const DEFAULT_CONFIG = {
 
 		reebanner: true,
 		replayedbanner: true,
+		rewindbanner: true,
+		beastiesbanner: true,
+		ostbanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -92,6 +97,7 @@ export const DEFAULT_CONFIG = {
 
 		showStatsInHeader: false,
 		showHashInHeader: false,
+		showGraphOption: false,
 		showClanCaptureInHeader: true,
 		showClanCaptureInList: true,
 

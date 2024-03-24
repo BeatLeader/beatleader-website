@@ -49,8 +49,12 @@
 	let color = '';
 	let description = '';
 	let bio = '';
+	let playerChangesCallback = [];
+	let clanRankingDiscordHook = [];
 	let iconUrl = null;
 	let iconData = null;
+
+	let showCallbackDetails = false;
 
 	const changeImage = e => {
 		let image = e.target.files[0];
@@ -121,7 +125,17 @@
 		await executeOperation(async () => {
 			let updatedClan = null;
 
-			const clanData = {...clan, name, tag, description, bio, color, icon: iconData ?? iconUrl};
+			const clanData = {
+				...clan,
+				name,
+				tag,
+				description,
+				bio,
+				color,
+				playerChangesCallback,
+				clanRankingDiscordHook,
+				icon: iconData ?? iconUrl,
+			};
 			if (clan?.id) updatedClan = await clanService.update(clanData);
 			else updatedClan = await clanService.create(clanData);
 
@@ -218,6 +232,16 @@
 		iconUrl = clan?.icon ?? 'https://cdn.assets.beatleader.xyz/NTG.png';
 		iconData = clan?.icon ?? null;
 		description = clan?.description ?? '';
+
+		playerChangesCallback = clan?.playerChangesCallback ? clan?.playerChangesCallback.split(',') : [];
+		if (!Array.isArray(playerChangesCallback)) {
+			playerChangesCallback = [playerChangesCallback];
+		}
+		clanRankingDiscordHook = clan?.clanRankingDiscordHook ? clan?.clanRankingDiscordHook.split(',') : [];
+		if (!Array.isArray(clanRankingDiscordHook)) {
+			clanRankingDiscordHook = [clanRankingDiscordHook];
+		}
+
 		bio = clan?.bio ?? '';
 	}
 
@@ -361,6 +385,72 @@
 							<input type="text" placeholder="Clan bio (optional)" bind:value={bio} disabled={!!pendingText} />
 						</section>
 					{/if}
+
+					<div class="hooks">
+						<span><b>Hooks for global map updates:</b></span>
+						{#each clanRankingDiscordHook as redirectUrl, idx}
+							<div>
+								<input type="text" placeholder="Discord hook" bind:value={clanRankingDiscordHook[idx]} disabled={!!pendingText} />
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => (clanRankingDiscordHook = clanRankingDiscordHook.filter((_, index) => index !== idx))}
+									><i class="fas fa-xmark" /></button>
+							</div>
+						{/each}
+						<Button
+							label="Add new hook"
+							iconFa="fas fa-plus-square"
+							on:click={() => {
+								clanRankingDiscordHook.push('');
+								clanRankingDiscordHook = clanRankingDiscordHook;
+							}} />
+					</div>
+
+					<div class="hooks">
+						<span><b>Player changes callback URLs:</b></span>
+						{#each playerChangesCallback as redirectUrl, idx}
+							<div>
+								<input type="text" placeholder="Your url" bind:value={playerChangesCallback[idx]} disabled={!!pendingText} />
+								<button
+									class="remove-type"
+									title="Remove"
+									on:click={() => (playerChangesCallback = playerChangesCallback.filter((_, index) => index !== idx))}
+									><i class="fas fa-xmark" /></button>
+							</div>
+						{/each}
+						<Button
+							label="Add new URL"
+							iconFa="fas fa-plus-square"
+							on:click={() => {
+								playerChangesCallback.push('');
+								playerChangesCallback = playerChangesCallback;
+							}} />
+						<div class="score-options-section">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showCallbackDetails}
+								on:click={() => (showCallbackDetails = !showCallbackDetails)}
+								title="Show average stats and ranking changes">
+								{#if showCallbackDetails}
+									Hide details
+								{:else}
+									How this works?
+								{/if}
+
+								<i class="fas fa-chevron-down" />
+							</span>
+						</div>
+						{#if showCallbackDetails}
+							<span>This Url will be called on clan changes. It's usefull if you have a custom webserver for your clan.</span>
+							<span
+								>The format is <b>?action=&player=</b> where action could be <b>kick, join, leave, reject</b> and <b>player</b> is ID of the
+								player.</span>
+							<span
+								>For example callback url <b>https://myclan.com/blcallback</b> will be called as
+								<b>https://myclan.com/blcallback?action=join&player=76561198059961776</b> when NSGolova accepts your invitation.</span>
+						{/if}
+					</div>
 				{/if}
 
 				{#if editMode}
@@ -536,6 +626,30 @@
 	.bio {
 		overflow: hidden;
 		word-break: break-word;
+	}
+
+	.discordHooks {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.beat-savior-reveal {
+		align-self: end;
+		cursor: pointer;
+	}
+
+	.beat-savior-reveal > i {
+		transition: transform 500ms;
+		transform-origin: 0.42em 0.5em;
+	}
+
+	.beat-savior-reveal.opened > i {
+		transform: rotateZ(180deg);
+	}
+
+	.score-options-section {
+		margin-top: -0.5em;
+		margin-bottom: 0.8em;
 	}
 
 	@media screen and (max-width: 500px) {

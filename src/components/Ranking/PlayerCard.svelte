@@ -26,6 +26,7 @@
 	export let playerClickFilter = null;
 	export let maxRank = 1;
 	export let maxCountryRank = 1;
+	export let opacity = '1.0';
 
 	const dispatch = createEventDispatcher();
 
@@ -116,7 +117,7 @@
 		showRainbow(player) ? 'rainbow' : ''
 	}`}
 	bind:this={referenceElement}
-	style="grid-template-columns: {firstColumnWidth} 4em auto 1fr;"
+	style="grid-template-columns: {firstColumnWidth} 4em auto 1fr; opacity: {opacity}"
 	on:click={e => onPlayerClick(e, player)}
 	on:keypress={e => onPlayerClick(e, player)}
 	on:pointerover={() => hoverStats(player)}>

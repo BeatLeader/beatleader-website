@@ -57,6 +57,8 @@
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
+	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
+	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -345,7 +347,7 @@
 		}));
 	}
 
-	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked) {
+	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked, showGraphOption) {
 		//if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
@@ -358,6 +360,19 @@
 								label: 'Clan Ranking',
 								iconFa: 'fas fa-flag',
 								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
+			)
+			.concat(
+				isRanked && showGraphOption
+					? [
+							{
+								type: 'graph',
+								label: 'Graph',
+								iconFa: 'fas fa-chart-line',
+								url: `/leaderboard/graph/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
 					  ]
@@ -610,7 +625,8 @@
 	$: isInEvent = leaderboard?.stats?.status === DifficultyStatus.inevent;
 	$: qualification = leaderboard?.qualification;
 
-	$: higlightedPlayerId = higlightedScore?.playerId ?? $account?.id;
+	$: currentPlayerId = $account?.id;
+	$: higlightedPlayerId = higlightedScore?.playerId ?? currentPlayerId;
 	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
 
 	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
@@ -620,7 +636,8 @@
 	$: isNQT = isAdmin || ($account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('qualityteam'));
 
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
-	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked);
+	$: showGraphOption = $configStore?.leaderboardPreferences?.showGraphOption;
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked, showGraphOption);
 	$: refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
@@ -635,6 +652,7 @@
 	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: featuredPlaylists = leaderboard?.stats?.featuredPlaylists;
 
 	function boolflip(name) {
 		$configStore = produce($configStore, draft => {
@@ -648,6 +666,7 @@
 	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
 	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
+	$: leaderboardShowPlaylists = $configStore?.preferences?.leaderboardShowPlaylists;
 
 	$: replayEnabled = $configStore?.leaderboardPreferences?.show?.replay ?? false;
 
@@ -720,7 +739,7 @@
 					</nav>
 				{/if}
 
-				{#if leaderboardShowSorting}
+				{#if leaderboardShowSorting && currentType != 'clanranking'}
 					<nav class="switcher-nav" transition:fade|global>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						<div style="display: flex;">
@@ -741,7 +760,7 @@
 							on:click={() => startBattleRoyale()} />
 					</div>
 				{/if}
-				{#if currentType != 'clanranking'}
+				{#if currentType != 'clanranking' && currentType != 'graph'}
 					{#if scoresWithUser?.length}
 						<div class="scores-grid grid-transition-helper">
 							{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
@@ -844,6 +863,8 @@
 					{:else}
 						<p transition:fade>No scores found.</p>
 					{/if}
+				{:else if currentType == 'graph'}
+					<MapScoresChart leaderboardId={currentLeaderboardId} {currentPlayerId} />
 				{:else if clanRankingList?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
@@ -853,7 +874,7 @@
 								out:fade={{x: 200, delay: idx * 20, duration: 500}}
 								animate:flip={{duration: 300}}>
 								<ClanRankingScore
-									{leaderboardId}
+									leaderboardId={currentLeaderboardId}
 									{idx}
 									{cr}
 									{type}
@@ -1030,6 +1051,36 @@
 					{/if}
 				</ContentBox>
 			{/if}
+			{#if featuredPlaylists && featuredPlaylists.length}
+				<ContentBox>
+					{#if !leaderboardShowPlaylists}
+						<div class="score-options-section">
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Show map details">
+								<i class="fas fa-compact-disc" />
+
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="box-with-left-arrow">
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Hide map details">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+
+							<div class="featured-playlists">
+								<span class="featured-playlist-headline">Featured in:</span>
+								{#each featuredPlaylists as featuredPlaylist}
+									<div class="stats-with-icons">
+										<FeaturedPlaylist playlist={featuredPlaylist} />
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
 			{#if showStats}
 				<ContentBox>
 					{#if !leaderboardStatsShown}
@@ -1196,6 +1247,16 @@
 		background-repeat: no-repeat;
 		background-size: cover;
 		pointer-events: none;
+	}
+
+	.featured-playlists {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.featured-playlist-headline {
+		font-size: x-large;
+		text-align: center;
 	}
 
 	header {

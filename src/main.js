@@ -6,7 +6,6 @@ import initDownloadManager from './network/download-manager';
 import createConfigStore from './stores/config';
 import createAccountStore from './stores/beatleader/account';
 import createPlayerService from './services/beatleader/player';
-import createBeatSaviorService from './services/beatsavior';
 import {enablePatches, setAutoFreeze} from 'immer';
 import ErrorComponent from './components/Common/Error.svelte';
 import './themes/mirror.less';
@@ -39,7 +38,6 @@ let app = null;
 		await createConfigStore();
 		createAccountStore();
 		createPlayerService();
-		createBeatSaviorService();
 
 		await initDownloadManager();
 
