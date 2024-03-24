@@ -52,6 +52,7 @@
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
+	import SongScoreDetailsStandalone from './components/Player/SongScoreDetailsStandalone.svelte';
 
 	export let url = '';
 
@@ -155,6 +156,9 @@
 						<PatreonPage action="linkPatreon" />
 					</Route>
 					<Route path="/supporting-project" component={PatreonPage} />
+					<Route path="/score/:id/stats" let:params>
+						<SongScoreDetailsStandalone scoreId={params.id} />
+					</Route>
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />
 					</Route>
