@@ -62,9 +62,6 @@
 				{:else}
 					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} {beatSavior} {notes} />
 				{/if}
-				{#if replayAccGraphs}
-					<CompactPagination pageIndex={graphPageIndex} pagesCount={2} on:change={onGraphPaginationChange} />
-				{/if}
 			</DetailsBox>
 		{/if}
 	</section>
