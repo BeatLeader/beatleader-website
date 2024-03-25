@@ -58,11 +58,7 @@
 
 		{#if $configStore?.scoreDetailsPreferences?.showAccChart}
 			<DetailsBox cls="chart">
-				{#if graphPageIndex === 0 || !replayAccGraphs}
-					<Chart {beatSavior} />
-				{:else}
-					<ExtendedAccGraphs {replayAccGraphs} {underswingsData} {beatSavior} {notes} />
-				{/if}
+				<Chart {beatSavior} />
 			</DetailsBox>
 		{/if}
 	</section>
