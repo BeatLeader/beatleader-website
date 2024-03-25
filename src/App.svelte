@@ -159,6 +159,9 @@
 					<Route path="/score/:id/stats" let:params>
 						<SongScoreDetailsStandalone scoreId={params.id} />
 					</Route>
+					<Route path="/score/:id/stats/graph" let:params>
+						<SongScoreDetailsStandalone scoreId={params.id} graphOnly={true} />
+					</Route>
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />
 					</Route>

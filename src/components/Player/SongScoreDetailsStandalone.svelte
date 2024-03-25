@@ -14,6 +14,7 @@
 	export let scoreId;
 	export let showMapInfo;
 	export let showPredictions;
+	export let graphOnly = false;
 
 	let songScore = null;
 
@@ -94,7 +95,7 @@
 			{#await beatSaviorPromise}
 				<Spinner />
 			{:then beatSavior}
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} />
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} {graphOnly} />
 			{/await}
 
 			{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}
