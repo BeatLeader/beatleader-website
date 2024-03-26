@@ -53,7 +53,7 @@
 		dataUrlReader.readAsDataURL(image);
 	};
 
-	const availableScopes = ['scp:profile', 'scp:clan'];
+	const availableScopes = ['scp:profile', 'scp:clan', 'scp:offline_access'];
 	let selectedScopes = scopes ? scopes.split(',') : [];
 
 	let unselectedScopes = availableScopes;
@@ -390,10 +390,22 @@
 
 				{#if !editMode}
 					<section>
-						<Confirmation {pendingText} {confirmedOperation}>
-							<Button label="Edit app" iconFa="fas fa-edit" type="primary" on:click={() => (editMode = true)} />
-							<Button label="Delete app" iconFa="fas fa-trash-alt" type="danger" on:click={() => (confirmedOperation = onRemove)} />
-						</Confirmation>
+						<div class="buttons">
+							<div>
+								<Confirmation {pendingText} {confirmedOperation}>
+									<Button label="Edit app" iconFa="fas fa-edit" type="primary" on:click={() => (editMode = true)} />
+									<Button label="Delete app" iconFa="fas fa-trash-alt" type="danger" on:click={() => (confirmedOperation = onRemove)} />
+								</Confirmation>
+							</div>
+							<Button
+								label="Try"
+								iconFa="fas fa-square-up-right"
+								type="green"
+								url={`${BL_API_URL}oauth2/authorize?client_id=${clientId}&scope=${encodeURIComponent(
+									selectedScopes.map(s => s.replace('scp:', '')).join(' ')
+								)}&response_type=code&redirect_uri=${encodeURIComponent(redirectUrls[0])}`}
+								onlyurl={true} />
+						</div>
 					</section>
 				{/if}
 
@@ -466,6 +478,11 @@
 	.clientSecretDisclaimer {
 		font-size: 0.6em;
 		color: red;
+	}
+
+	.buttons {
+		display: flex;
+		justify-content: space-between;
 	}
 
 	input[type='text'] {
