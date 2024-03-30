@@ -41,6 +41,27 @@
 						class: 'score-sorting',
 						values: [
 							{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/pp/1`},
+							{
+								id: 'accPP',
+								label: 'Acc PP',
+								title: 'Sort by acc PP',
+								iconFa: 'fa fa-arrows-to-dot',
+								url: `/u/${playerId}/beatleader/accPP/1`,
+							},
+							{
+								id: 'passPP',
+								label: 'Pass PP',
+								title: 'Sort by pass PP',
+								iconFa: 'fa fa-person-walking-dashed-line-arrow-right',
+								url: `/u/${playerId}/beatleader/passPP/1`,
+							},
+							{
+								id: 'techPP',
+								label: 'Tech PP',
+								title: 'Sort by tech PP',
+								iconFa: 'fa fa-arrows-split-up-and-left',
+								url: `/u/${playerId}/beatleader/techPP/1`,
+							},
 							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/date/1`},
 							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/acc/1`},
 							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
