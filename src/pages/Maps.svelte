@@ -18,30 +18,8 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: '??????',
-				body: '',
-				imageUrl: '/assets/Discover/extra_sensory_thumbnail.webp',
-				targetUrl: 'https://www.youtube.com/watch?v=gDIOShFXePo',
-				linkName: 'YouTube',
-				forcedColor: 'rgb(23 27 46)',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'BeastSaber Mapping Awards',
-				body: 'The BeastSaber Mapping Awards results have been announced! Check out the winners!',
-				imageUrl: '/assets/Discover/23_BeastSaber_Mapping_Awards.webp',
-				targetUrl: 'https://youtu.be/qMIiUZ7D8GU',
-				linkName: 'YouTube',
-				forcedColor: 'rgb(7 6 8)',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Map Of The Week',
-				body: 'Check out this weeks Map of the Week!',
+				title: 'Latest Map Of The Week',
+				body: 'No map of the week found :( Check back later',
 				imageUrl: '/assets/Main/landing.webp',
 				targetUrl: undefined,
 				linkName: 'Leaderboard',
@@ -51,34 +29,12 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'BS Rewind 2023',
-				body: 'Watch the best of 2023, compiled by Cube Community!',
-				imageUrl: '/assets/Discover/cc_rewind_23.jpg',
-				targetUrl: 'https://youtu.be/bbwJkCF4xp0',
-				linkName: 'YouTube video',
-				forcedColor: 'rgb(180 95 114)',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'BS Rewind Map',
-				body: 'Check out the new Rewind Map!',
-				imageUrl: '/assets/Discover/cc_rewind_23_map.webp',
-				targetUrl: 'https://youtu.be/4-2GWGCJTmM',
-				linkName: 'YouTube video',
-				forcedColor: 'rgb(66 87 104)',
-				buttons: [
-					{
-						text: 'Download',
-						type: 'primary',
-						url: 'https://beatsaver.com/maps/39736',
-					},
-					{
-						text: 'View Leaderboard',
-						url: '/leaderboard/global/3973691',
-					},
-				],
+				title: 'Extra Sensory 2 Reveal Trailer',
+				body: '',
+				imageUrl: '/assets/Discover/extra_sensory_thumbnail.webp',
+				targetUrl: 'https://www.youtube.com/watch?v=gDIOShFXePo',
+				linkName: 'YouTube',
+				forcedColor: 'rgb(23 27 46)',
 			},
 		},
 	];
@@ -88,7 +44,7 @@
 			component: CarouselCard,
 			props: {
 				title: 'BS European Championship',
-				body: "Get ready for BSEUC's 2024 EU Championship. Look out for its qualifiers in march, and the first matches in April!",
+				body: "Get ready for BSEUC's 2024 EU Championship. Look out for the first matches in April!",
 				imageUrl: '/assets/Discover/bseuc_banner.webp',
 				targetUrl: 'https://bseuc.eu/',
 				linkName: "BSEUC's website",
@@ -109,45 +65,12 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'OOMBR',
-				body: 'OOMBR is a battle royale tourney run by Olbmaphlee1 and Oermergeesh, and will be streamed live on twitch on their accounts on Feb 24th at 2:00PM CST.',
-				imageUrl: '/assets/Discover/oombr_banner.webp',
-				targetUrl: 'https://discord.gg/E2B8wePp',
-				linkName: 'OOMBR Discord',
-				forcedColor: 'rgb(20 20 20)',
-				buttons: [
-					{
-						text: 'Sign Up',
-						type: 'primary',
-						url: 'https://forms.gle/EaqxkvSuePQ6F5TR8',
-					},
-					{
-						text: 'Info',
-						url: 'https://docs.google.com/document/d/1Lq3FUb5Ul7KvTf5dkcsi9XHOrbvjYHgw-ei_V9Cvsd8/edit?usp=sharing',
-					},
-				],
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
 				title: 'Beat Saber Events Feed',
 				body: 'BeatKhana has created a twitter account to keep you updated on all the latest Beat Saber events, Follow them now!',
 				imageUrl: '/assets/Discover/BSEF_banner.webp',
 				targetUrl: 'https://twitter.com/beatsaberevents',
 				linkName: 'Twitter',
 				forcedColor: undefined,
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'CC site update',
-				body: 'Cube Community has updated their site, and added a new tournament calendar. Check it out!',
-				imageUrl: '/assets/Discover/cc_site_update.webp',
-				targetUrl: 'https://cube.community/calendar',
-				linkName: "Cube Community's website",
-				forcedColor: 'rgb(8 37 52)',
 			},
 		},
 	];
@@ -172,7 +95,7 @@
 			description = `${author.trim()} - ${songName.trim()} \n Mapped by ${mapper.trim()}`;
 		});
 
-		let cardIndex = cards.findIndex(card => card.props.title === 'Map Of The Week');
+		let cardIndex = cards.findIndex(card => card.props.title === 'Latest Map Of The Week');
 		let card = cards[cardIndex];
 		card.props.imageUrl = image;
 		card.props.targetUrl = leaderboardLink;
