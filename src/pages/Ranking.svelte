@@ -567,6 +567,7 @@
 		position: absolute;
 		width: 100%;
 		height: 100%;
+		z-index: 0;
 	}
 
 	:global(.content-box.event-banner .atropos-highlight) {
@@ -580,7 +581,7 @@
 	.event-text-and-button {
 		display: flex;
 		flex-direction: column;
-		z-index: 2;
+		z-index: 1;
 		align-items: center;
 	}
 
