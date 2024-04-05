@@ -19,6 +19,7 @@
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import BackToTop from '../components/Common/BackToTop.svelte';
 	import {configStore} from '../stores/config';
+	import Atropos from 'atropos/svelte';
 
 	import produce from 'immer';
 	import Button from '../components/Common/Button.svelte';
@@ -367,16 +368,24 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/44')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/47')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/71875-event-s.png" />
-				<div class="event-text-container">
-					<span class="event-title">Ranked early 2024!</span>
-					<span class="event-text">Check out what was ranked and compete for a badge.</span>
+				<Atropos rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
+					<div class="cover-bg" data-atropos-offset="-3" />
+					<div class="cover-girl" data-atropos-offset="0" />
+					<div class="cover-hands" data-atropos-offset="3" />
+				</Atropos>
+
+				<div class="event-text-and-button">
+					<div class="event-text-container">
+						<span class="event-title">Ranked week 86!</span>
+					</div>
+					<div>
+						<Button label="Event" cls="event-cover-btn" iconFa="fas fa-rocket" on:click={() => navigate('/event/47')} />
+					</div>
 				</div>
-				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/44')} />
 			</div>
-		</ContentBox> -->
+		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -531,11 +540,10 @@
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;
-		padding: 0.3em;
+		padding: 0 !important;
 		border-radius: 0.5em;
 		cursor: pointer;
-		background: linear-gradient(rgb(26 26 26 / 65%), rgb(16 16 16 / 79%)),
-			center / cover no-repeat url(https://cdn.assets.beatleader.xyz/71875-event-s.webp) !important;
+		overflow: hidden;
 	}
 
 	:global(.show-filters-box) {
@@ -547,7 +555,32 @@
 		width: 100%;
 		height: 100%;
 		display: flex;
-		justify-content: space-around;
+		position: relative;
+		height: 12em;
+		justify-content: flex-end;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	:global(.content-box.event-banner .atropos) {
+		width: 100%;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	:global(.content-box.event-banner .atropos-highlight) {
+		display: none;
+	}
+
+	:global(.content-box.event-banner .atropos-shadow) {
+		display: none;
+	}
+
+	.event-text-and-button {
+		display: flex;
+		flex-direction: column;
+		z-index: 2;
 		align-items: center;
 	}
 
@@ -562,11 +595,49 @@
 		margin-right: 1em;
 	}
 
+	:global(.event-cover-btn) {
+		box-shadow: 1px 1px black !important;
+	}
+
+	.cover-bg {
+		position: absolute;
+		display: block;
+		background: url(/assets/week86_bg.webp) !important;
+		background-size: cover !important;
+		background-position-y: 50% !important;
+		bottom: -10%;
+		left: -10%;
+		height: 120%;
+		width: 120%;
+	}
+
+	.cover-girl {
+		position: absolute;
+		display: block;
+		background: url(/assets/week86_girl.webp) !important;
+		background-size: cover !important;
+		background-position-y: 50% !important;
+		height: 100%;
+		width: 100%;
+	}
+
+	.cover-hands {
+		position: absolute;
+		display: block;
+		background: url(/assets/week86_hands.webp) !important;
+		background-size: cover !important;
+		background-position-y: 50% !important;
+		bottom: -5%;
+		left: -5%;
+		height: 110%;
+		width: 110%;
+	}
+
 	.event-title {
 		color: var(--text-color);
 		font-size: x-large;
 		font-weight: 800;
-		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+		text-shadow: 1px 1px 11px #000000e8;
 	}
 
 	.event-text {
@@ -605,6 +676,12 @@
 		transform: translate(-7px, -2px);
 	}
 
+	@media screen and (max-width: 512px) {
+		.cover-hands {
+			background-position-y: 0.2em !important;
+		}
+	}
+
 	@media screen and (max-width: 1275px) {
 		.align-content {
 			flex-direction: column;
@@ -614,10 +691,6 @@
 		aside {
 			width: 100%;
 			max-width: 65em;
-		}
-
-		.event-container {
-			flex-direction: column;
 		}
 
 		.event-text-container {

@@ -239,7 +239,7 @@
 		color: var(--color, #363636) !important;
 		background-color: var(--bg-color, #3273dc) !important;
 		outline: none !important;
-		box-shadow: none !important;
+		box-shadow: none;
 	}
 
 	.button:hover {
