@@ -593,6 +593,12 @@
 				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
 			} else if (orderingFunctions[1](userScore.score[key], scores[scores.length - 1]?.score[key])) {
 				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+			} else if (userScore.score[key] == scores[0].score[key]) {
+				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
+				scoresWithUser[scores.length].score.rank -= 1;
+			} else if (userScore.score[key] == scores[scores.length - 1]?.score[key]) {
+				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+				scoresWithUser[scores.length].score.rank += 1;
 			}
 		}
 	}
