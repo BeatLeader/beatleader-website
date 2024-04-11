@@ -452,7 +452,7 @@ export const modeDescriptions = {
 		textColor: 'white',
 	},
 	HorizontalStandard: {
-		title: 'Horisontal Standard (Chirality mod)',
+		title: 'Horizontal Standard (Chirality mod)',
 		icon: 'horizontalstandard-icon',
 		color: 'purple',
 		textColor: 'white',
