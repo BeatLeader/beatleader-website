@@ -368,7 +368,7 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/47')}>
+		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/47')}>
 			<div class="event-container">
 				<Atropos rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
 					<div class="cover-bg" data-atropos-offset="-3" />
@@ -385,7 +385,7 @@
 					</div>
 				</div>
 			</div>
-		</ContentBox>
+		</ContentBox> -->
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
