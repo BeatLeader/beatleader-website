@@ -297,6 +297,10 @@
 
 	.requirements {
 		display: flex;
+		flex-wrap: wrap;
+		row-gap: 0.5em;
+		padding-top: 0.7em;
+		padding-bottom: 0.7em;
 	}
 
 	header small {
