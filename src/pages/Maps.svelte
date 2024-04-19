@@ -29,6 +29,17 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'Latest Noodle Map Monday',
+				body: 'No noodle map monday found :( Check back later',
+				imageUrl: '/assets/Main/landing.webp',
+				targetUrl: undefined,
+				linkName: 'Leaderboard',
+				forcedColor: 'rgba(0, 0, 0, 0)',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Extra Sensory 2 Reveal Trailer',
 				body: '',
 				imageUrl: '/assets/Discover/extra_sensory_thumbnail.webp',
@@ -122,6 +133,35 @@
 		cards[cardIndex] = card;
 	}
 
+	async function getLatestNoodleMapMonday() {
+		let map;
+		let image;
+		let leaderboardLink;
+		let description;
+
+		await fetchJson(
+			BL_API_URL +
+				'leaderboards' +
+				'?leaderboardContext=general&page=1&count=1&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=8&allRequirements=0'
+		).then(response => {
+			map = response.body.data[0];
+			image = map?.song?.fullCoverImage ?? map?.song?.coverImage;
+			leaderboardLink = `/leaderboard/global/${map.id}`;
+			let mapper = map?.song?.mapper;
+			let songName = map?.song?.name + ' ' + map?.song?.subName;
+			let author = map?.song?.author;
+			description = `${author.trim()} - ${songName.trim()} \n Mapped by ${mapper.trim()}`;
+		});
+
+		let cardIndex = cards.findIndex(card => card.props.title === 'Latest Noodle Map Monday');
+		let card = cards[cardIndex];
+		card.props.imageUrl = image;
+		card.props.targetUrl = leaderboardLink;
+		card.props.body = description;
+		card.props.forcedColor = undefined;
+		cards[cardIndex] = card;
+	}
+
 	let cardWidthRatio = 0.5;
 	let carouselHeight = '43em';
 
@@ -143,6 +183,7 @@
 	});
 
 	$: getLatestMapOfTheWeek();
+	$: getLatestNoodleMapMonday();
 	$: metaDescription = 'Discover custom maps for Beat Saber: trending, ranked and featured by the community';
 </script>
 
