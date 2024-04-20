@@ -44,8 +44,12 @@
 
 		if ($configStore.preferences.theme != 'flylight') {
 			var mapBorderColor = '#003e54';
+
+			Chart.defaults.color = '#fff';
 		} else {
 			var mapBorderColor = '#dadadaaf';
+
+			Chart.defaults.color = '#757575';
 		}
 
 		lastHistoryHash = chartHash;

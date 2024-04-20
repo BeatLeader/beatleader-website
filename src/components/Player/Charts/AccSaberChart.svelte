@@ -96,12 +96,16 @@
 			var ppColor = '#007100';
 			var accColor = '#3273dc';
 			var rankedPlayCountColor = '#3e3e3e';
+
+			Chart.defaults.color = '#fff';
 		} else {
 			var gridColor = '#dadadaaf';
 			var rankColor = '#3e95cd';
 			var ppColor = '#007100';
 			var accColor = '#3273dc';
 			var rankedPlayCountColor = '#3e3e3e';
+
+			Chart.defaults.color = '#757575';
 		}
 
 

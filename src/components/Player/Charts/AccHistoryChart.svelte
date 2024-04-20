@@ -40,12 +40,16 @@
 			var averageRankedColor = '#3e95cd';
 			var medianColor = '#8992e8';
 			var medianRankedColor = '#565b92';
+
+			Chart.defaults.color = '#fff';
 		} else {
 			var gridColor = '#dadadaaf';
 			var averageColor = '#3273dc';
 			var averageRankedColor = '#3e95cd';
 			var medianColor = '#8992e8';
 			var medianRankedColor = '#565b92';
+
+			Chart.defaults.color = '#757575';
 		}
 
 		const datasets = [];
