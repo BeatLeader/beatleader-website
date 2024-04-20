@@ -42,7 +42,11 @@
 	async function setupChart(hash, canvas, selectedPlaylist) {
 		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
 
-		const mapBorderColor = '#003e54';
+		if ($configStore.preferences.theme != 'flylight') {
+			var mapBorderColor = '#003e54';
+		} else {
+			var mapBorderColor = '#dadadaaf';
+		}
 
 		lastHistoryHash = chartHash;
 		const refreshOptions = (!selectedPlaylist && lastPlaylist) || (selectedPlaylist && !lastPlaylist);

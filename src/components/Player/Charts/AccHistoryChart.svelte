@@ -34,11 +34,19 @@
 		const accHistory = statsHistory.averageAccuracy.slice(firstNonNullIndex);
 		const CHART_DAYS = accHistory.length;
 
-		const gridColor = '#2a2a2a';
-		const averageColor = '#3273dc';
-		const averageRankedColor = '#3e95cd';
-		const medianColor = '#8992e8';
-		const medianRankedColor = '#565b92';
+		if ($configStore.preferences.theme != 'flylight') {
+			var gridColor = '#2a2a2a';
+			var averageColor = '#3273dc';
+			var averageRankedColor = '#3e95cd';
+			var medianColor = '#8992e8';
+			var medianRankedColor = '#565b92';
+		} else {
+			var gridColor = '#dadadaaf';
+			var averageColor = '#3273dc';
+			var averageRankedColor = '#3e95cd';
+			var medianColor = '#8992e8';
+			var medianRankedColor = '#565b92';
+		}
 
 		const datasets = [];
 
