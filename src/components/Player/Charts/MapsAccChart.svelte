@@ -46,14 +46,28 @@
 
 	async function setupChart(hash, canvas, selectedPlaylist) {
 		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
+		
+		if ($configStore.preferences.theme != 'flylight') {
+			var mapBorderColor = '#003e54';
+			var ssPlusColor = 'rgba(143,72,219, .4)';
+			var ssColor = 'rgba(190,42,66, .4)';
+			var sPlusColor = 'rgba(255,99,71, .4)';
+			var sColor = 'rgba(89,176,244, .4)';
+			var aColor = 'rgba(60,179,113, .4)';
+			var averageLinesColor = 'rgba(255,255,255,.35)';
 
-		const mapBorderColor = '#003e54';
-		const ssPlusColor = 'rgba(143,72,219, .4)';
-		const ssColor = 'rgba(190,42,66, .4)';
-		const sPlusColor = 'rgba(255,99,71, .4)';
-		const sColor = 'rgba(89,176,244, .4)';
-		const aColor = 'rgba(60,179,113, .4)';
-		const averageLinesColor = 'rgba(255,255,255,.35)';
+			Chart.defaults.color = '#fff';
+		} else {
+			var mapBorderColor = '#dadadaaf';
+			var ssPlusColor = 'rgba(143,72,219, .4)';
+			var ssColor = 'rgba(190,42,66, .4)';
+			var sPlusColor = 'rgba(255,99,71, .4)';
+			var sColor = 'rgba(89,176,244, .4)';
+			var aColor = 'rgba(60,179,113, .4)';
+			var averageLinesColor = 'rgba(255,255,255,.35)';
+
+			Chart.defaults.color = '#757575';
+		}
 
 		lastHistoryHash = chartHash;
 		const refreshOptions = (!selectedPlaylist && lastPlaylist) || (selectedPlaylist && !lastPlaylist);

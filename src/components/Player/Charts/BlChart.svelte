@@ -1,6 +1,5 @@
 <script>
 	import Chart from 'chart.js/auto';
-	Chart.defaults.color = '#fff';
 	import 'chartjs-adapter-luxon';
 	import {createEventDispatcher, getContext} from 'svelte';
 	import {formatNumber} from '../../../utils/format';
@@ -36,17 +35,35 @@
 
 		lastHistoryHash = chartHash;
 
-		const gridColor = '#2a2a2a';
-		const rankColor = '#3e95cd';
-		const countryRankColor = '#8992e8';
-		const ppColor = '#007100';
-		const rankedPlayCountColor = '#3e3e3e';
-		const totalPlayCountColor = '#fff';
+		if ($configStore.preferences.theme != 'flylight') {
+			var gridColor = '#2a2a2a';
+			var rankColor = '#3e95cd';
+			var countryRankColor = '#8992e8';
+			var ppColor = '#007100';
+			var rankedPlayCountColor = '#3e3e3e';
+			var totalPlayCountColor = '#fff';
 
-		const activityColor = '#333';
-		const rankedActivityColor = '#eb008c';
-		const improvementsColor = '#474747';
-		const rankedImprovementsColor = '#f04dae';
+			var activityColor = '#333';
+			var rankedActivityColor = '#eb008c';
+			var improvementsColor = '#474747';
+			var rankedImprovementsColor = '#f04dae';
+
+			Chart.defaults.color = '#fff';
+		} else {
+			var gridColor = '#dadadaaf';
+			var rankColor = '#3e95cd';
+			var countryRankColor = '#8992e8';
+			var ppColor = '#007100';
+			var rankedPlayCountColor = '#3e3e3e';
+			var totalPlayCountColor = '#fff';
+
+			var activityColor = '#333';
+			var rankedActivityColor = '#eb008c';
+			var improvementsColor = '#474747';
+			var rankedImprovementsColor = '#f04dae';
+
+			Chart.defaults.color = '#757575';
+		}
 
 		const dayTimestamps = statsHistory.timestamp.map(unix => dateFromUnix(unix).getTime());
 

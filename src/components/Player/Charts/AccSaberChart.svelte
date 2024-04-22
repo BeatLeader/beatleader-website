@@ -90,11 +90,24 @@
 
 		const category = selectedCategory?.label?.toLowerCase();
 
-		const gridColor = '#2a2a2a';
-		const rankColor = '#3e95cd';
-		const ppColor = '#007100';
-		const accColor = '#3273dc';
-		const rankedPlayCountColor = '#3e3e3e';
+		if ($configStore.preferences.theme != 'flylight') {
+			var gridColor = '#2a2a2a';
+			var rankColor = '#3e95cd';
+			var ppColor = '#007100';
+			var accColor = '#3273dc';
+			var rankedPlayCountColor = '#3e3e3e';
+
+			Chart.defaults.color = '#fff';
+		} else {
+			var gridColor = '#dadadaaf';
+			var rankColor = '#3e95cd';
+			var ppColor = '#007100';
+			var accColor = '#3273dc';
+			var rankedPlayCountColor = '#3e3e3e';
+
+			Chart.defaults.color = '#757575';
+		}
+
 
 		const dtAccSaberToday = DateTime.fromJSDate(toAccSaberMidnight(new Date()));
 		const dayTimestamps = Array(CHART_DAYS)

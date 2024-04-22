@@ -15,6 +15,7 @@
 		{name: 'Mirror(Low) - MicroBlock', value: 'mirror-low'},
 		{name: 'Unbounded - MicroBlock', value: 'unbounded'},
 		{name: 'ReeDark', value: 'ree-dark'},
+		{name: 'FlyLight', value: 'flylight'},
 	];
 
 	let currentTheme = DEFAULT_THEME;
