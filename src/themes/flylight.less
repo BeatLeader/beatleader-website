@@ -6,6 +6,10 @@
   font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
 }
 
+:root {
+  --textColor: #757575;
+}
+
 * :not(.player-card) {
 
   --dimmed: #acacac;
@@ -142,16 +146,12 @@ div.name.svelte-1azenuo {
 }
 
 // Navigation bar? Top Bar? The one with the beatleader logo thingie
-nav.svelte-12iywmj>.svelte-12iywmj.svelte-12iywmj:not(.right):hover,
-nav.svelte-12iywmj>.right.svelte-12iywmj>.svelte-12iywmj:not(.dropdown-menu):hover {
-  background-color: rgb(204, 244, 255);
+nav>.right>:not(.dropdown-menu):hover,
+nav>:not(.right):hover {
+  background-color: rgb(204, 244, 255) !important;
 }
 
 svg {
-  color: #757575 !important;
-}
-
-nav a {
   color: #757575 !important;
 }
 
