@@ -65,8 +65,6 @@
 			Chart.defaults.color = '#757575';
 		}
 
-
-		
 		const dayTimestamps = statsHistory.timestamp.map(unix => dateFromUnix(unix).getTime());
 
 		const nomTimestamp = dayTimestamps[dayTimestamps.length - 1];

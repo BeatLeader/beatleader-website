@@ -54,8 +54,6 @@
 		const accColor = theme && theme.alternate ? theme.alternate : '#72a8ff';
 		const compareColor = theme && theme.dimmed ? theme.alternate : '#3e3e3e';
 
-
-
 		let minValue = 100;
 		let maxValue = 0;
 
