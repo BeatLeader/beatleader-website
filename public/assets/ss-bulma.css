@@ -7,7 +7,7 @@
 	--textColor: #eee;
 	--ppColour: #8992e8;
 	--capturedColor: #b49600;
-	--rankedPoolColor: #3EB489;
+	--rankedPoolColor: #3eb489;
 	--alternate: #72a8ff;
 	--selected: #3273dc;
 	--hover: #333;
@@ -11347,7 +11347,7 @@ label.panel-block:hover {
 :root {
 	--background: #222;
 	--foreground: #252525;
-	--textColor: #eee;
+	--textColor: #ffffffa1;
 
 	--ppColour: #8992e8;
 	--alternate: #72a8ff;
