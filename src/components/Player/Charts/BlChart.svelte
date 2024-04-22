@@ -50,7 +50,6 @@
 
 			Chart.defaults.color = '#fff';
 		} else {
-			console.log("Flylight")
 			var gridColor = '#dadadaaf';
 			var rankColor = '#3e95cd';
 			var countryRankColor = '#8992e8';
