@@ -213,7 +213,7 @@
 					ranking kept for historical purpose here.<br /></b>
 			</ContentBox>
 		{/if}
-		{#if eventId == 32}
+		{#if eventId == 32 || eventId == 48}
 			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 				<b>Score Recycling Initiative<br /></b>
 				<span>

@@ -400,7 +400,9 @@
 					value={sortValue?.value(player)}
 					{maxRank}
 					{maxCountryRank}
-					valueProps={eventId == 32 ? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0} : sortValue?.props ?? {}}
+					valueProps={eventId == 32 || eventId == 48
+						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
+						: sortValue?.props ?? {}}
 					on:filters-updated />
 				{#if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />

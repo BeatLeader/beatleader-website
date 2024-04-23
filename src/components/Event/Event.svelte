@@ -43,7 +43,9 @@
 				Ended {formatDateRelative(dateFromUnix(event.endDate))}
 			{/if}
 		</span>
-		<Button label="Show playlist" preventDefault={true} on:click={() => dispatch('show-playlist', event)} />
+		{#if event.id != 32 && event.id != 48}
+			<Button label="Show playlist" preventDefault={true} on:click={() => dispatch('show-playlist', event)} />
+		{/if}
 	</section>
 {/if}
 
