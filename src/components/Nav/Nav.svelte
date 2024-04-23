@@ -82,8 +82,8 @@
 		{
 			name: 'General',
 			id: '',
-			logoBig: '/assets/logo.gif',
-			logoSmall: '/assets/logo-small.gif',
+			logoBig: '/assets/logo.webp',
+			logoSmall: '/assets/logo-small.webp',
 		},
 		{
 			name: 'No modifiers',
@@ -94,19 +94,19 @@
 		{
 			name: 'No pauses',
 			id: 'nopause',
-			logoBig: '/assets/logo.gif',
+			logoBig: '/assets/logo.webp',
 			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'Golf',
 			id: 'golf',
-			logoBig: '/assets/logo.gif',
+			logoBig: '/assets/logo.webp',
 			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'SCPM',
 			id: 'scpm',
-			logoBig: '/assets/logo.gif',
+			logoBig: '/assets/logo.webp',
 			logoSmall: '/assets/favicon-96x96.webp',
 		},
 	];
@@ -242,7 +242,7 @@
 			}}
 			use:mobileTouch={() => (testMenuShown = true)}>
 			<div class="logo-container desktop-and-up">
-				<img src="/assets/logo.gif" class="logo" alt="" />
+				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BEATLEADER</span>
 					{#if leaderboardType.id != ''}
@@ -252,7 +252,7 @@
 			</div>
 
 			<div class="logo-container tablet">
-				<img src="/assets/logo-small.gif" class="logo" alt="" />
+				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				<div class="logo-name">
 					<span class="name">BL</span>
 					{#if leaderboardType.id != ''}
@@ -262,7 +262,7 @@
 			</div>
 
 			<div class="logo-container up-to-tablet">
-				<img src="/assets/logo-small.gif" class="logo" alt="" />
+				<img src="/assets/logo-small.webp" class="logo" alt="" />
 				{#if leaderboardType.id != 'general'}
 					<span class="leaderboard-type">{leaderboardType.name}</span>
 				{/if}

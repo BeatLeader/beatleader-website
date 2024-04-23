@@ -2,7 +2,6 @@
 	import Badge from '../Common/Badge.svelte';
 	import Skeleton from '../Common/Skeleton.svelte';
 	import {createEventDispatcher} from 'svelte';
-	import DailyImprovementBadge from '../Common/DailyImprovementBadge.svelte';
 
 	export let stats;
 	export let skeleton = false;
@@ -14,11 +13,7 @@
 	<div class="badges has-text-centered-mobile">
 		{#each stats as stat}
 			{#key stat.label}
-				{#if stat.key == 'dailyImprovements'}
-					<DailyImprovementBadge {...stat} on:click={() => dispatch('click', stat)} />
-				{:else}
-					<Badge {...stat} on:click={() => dispatch('click', stat)} />
-				{/if}
+				<Badge {...stat} on:click={() => dispatch('click', stat)} />
 			{/key}
 		{/each}
 	</div>

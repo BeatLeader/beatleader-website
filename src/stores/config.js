@@ -111,7 +111,6 @@ export const DEFAULT_CONFIG = {
 		},
 	},
 	rankingPreferences: {
-		dailyImprovements: true,
 		pp: true,
 		weightedAcc: true,
 		acc: true,

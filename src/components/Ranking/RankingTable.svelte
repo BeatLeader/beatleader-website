@@ -111,11 +111,6 @@
 			unranked: 'scoreStats.unrankedTop1Score',
 			all: 'scoreStats.top1Score',
 		},
-		dailyImprovements: {
-			ranked: 'scoreStats.dailyImprovements',
-			unranked: 'scoreStats.dailyImprovements',
-			all: 'scoreStats.dailyImprovements',
-		},
 	};
 
 	let allPpTypeValues = [
@@ -142,22 +137,7 @@
 	];
 	let currentPpTypeValue = filters.ppType ?? 'general';
 
-	// <div
-	// 			class={currentFilters.sortBy == 'dailyImprovements' ? 'fas fa-lightbulb icon dailyImprovements' : 'far fa-lightbulb icon off pp'}
-	// 			on:click={() => toggleSortBy()}
-	// 			title={'Sort by amount of recycled scores'}>
-	// 			<span class="sortBy">Sort by {currentFilters.sortBy == 'dailyImprovements' ? 'savings' : 'pp'}</span>
-	// 		</div>
-
 	let allSortValues = [
-		{
-			id: 'dailyImprovements',
-			label: 'Savings',
-			title: 'Sort by Improved scores',
-			iconFa: 'fa fa-lightbulb',
-			value: data => getStat(data, statKeys['dailyImprovements'][currentTypeValue]),
-			props: {prefix: '', suffix: '', zero: 'Carbon positive', digits: 0},
-		},
 		{
 			id: 'pp',
 			label: 'PP',
