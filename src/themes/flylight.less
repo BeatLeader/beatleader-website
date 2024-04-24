@@ -291,6 +291,13 @@ div.logo-container:nth-child(1)>img:nth-child(1) {
   background-color: #ececec !important;
 }
 
+.groups > .group > header a {
+  background-color: #bbe2ec !important;
+}
+.groups > .group > header > a small {
+  background-color: #bbe2ec !important;
+}
+
 span.value :not(.inc) {
   color: #000000;
 }
@@ -509,14 +516,21 @@ div.clan-line:hover {
   padding: 5px;
   margin-left: 2px;
 }
+.group header {
+  background-color: #fff0 !important;
+}
 
 .group>header a {
   padding: 5px;
   border-radius: 5px !important;
 }
 
-header a :not(.triangle-container *) {
+header a :not(.triangle-container *, .search-box *) {
   background-color: #ccf4ff !important;
+}
+
+.search-box > .content-box > main > .groups > .group > .items .item:hover {
+  background-color: var(--dimmed) !important;
 }
 
 .items>.item>.player-card>.player-rank * {
