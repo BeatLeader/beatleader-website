@@ -405,6 +405,19 @@
 					: []
 			)
 			.concat(
+				isRT
+					? [
+							{
+								type: 'prediction',
+								label: 'Prediction',
+								iconFa: 'fas fa-wand-magic-sparkles',
+								url: `/leaderboard/prediction/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
+			)
+			.concat(
 				country?.length
 					? [
 							{
@@ -866,8 +879,6 @@
 								</div>
 							{/each}
 						</div>
-					{:else}
-						<p transition:fade>No scores found.</p>
 					{/if}
 				{:else if currentType == 'graph'}
 					<MapScoresChart leaderboardId={currentLeaderboardId} {currentPlayerId} />
