@@ -139,7 +139,7 @@ span.main-value {
   margin-top: 10px;
   margin-right: 10px;
 }
-.search-box>.content-box>main>section input::placeholder {
+input::placeholder {
   color: #a2a2a2 !important;
 }
 
@@ -161,6 +161,12 @@ span.main-value {
 }
 
 .content-box label {
+  color: #757575 !important;
+}
+.content-box h2 {
+  color: #757575 !important;
+}
+.content-box span :not(span.value) {
   color: #757575 !important;
 }
 
@@ -283,7 +289,7 @@ div.logo-container:nth-child(1)>img:nth-child(1) {
 
 .search-box * :not(.close, .value, button *, .group > header > a *, footer *) {
   border: none;
-  background-color: #ececec;
+  background-color: #ececec00;
 }
 
 .search-button * {
@@ -543,6 +549,12 @@ header a :not(.triangle-container *, .search-box *) {
 
 .player-name {
   margin-left: 10px;
+}
+.avatar-cell > div > nav .button {
+  --bg-color: #ccf4ff !important;
+}
+.avatar-cell > div > nav > .button i {
+  color: #757575 !important;
 }
 
 input {
@@ -1085,6 +1097,10 @@ nav.ssr-page-container a,
 nav.ssr-page-container div {
   transition: all 0.1s;
   border-radius: 4px;
+}
+
+html body nav.ssr-page-container.flylight a[href="/signin"] {
+  color: #757575 !important;
 }
 
 html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
