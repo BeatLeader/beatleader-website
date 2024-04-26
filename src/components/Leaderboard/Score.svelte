@@ -91,7 +91,7 @@
 				</Badge>
 			</div>
 			<div class="player">
-				{#if $configStore?.leaderboardPreferences?.show?.hmd !== false && type !== 'accsaber'}
+				{#if $configStore?.leaderboardPreferences?.show?.hmd !== false}
 					<div class="hmd-image-container">
 						<img src={'/assets/' + headset?.icon} alt={headset?.name} {title} style={headsetStyle} />
 					</div>
