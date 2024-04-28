@@ -257,7 +257,7 @@
 		clientId = app?.clientId ?? '';
 		clientSecret = app?.clientSecret;
 		redirectUrls = app?.redirectUrls ? app?.redirectUrls : [];
-		iconUrl = app?.coverImageUrl ?? '/assets/default-oauth-icon.png';
+		iconUrl = app?.coverImageUrl ?? '/assets/default-oauth-icon.webp';
 		selectedScopes = app?.scopes ? app?.scopes : [];
 	}
 
