@@ -11,6 +11,7 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import ReplayDetails from '../Score/ReplayDetails.svelte';
 	import {modifiersToSpeed} from '../../utils/beatleader/format';
+	import ScoreHistoryGraph from '../Score/ScoreHistoryGraph.svelte';
 
 	export let playerId;
 	export let songScore;
@@ -138,6 +139,11 @@
 					withoutHeader={true}
 					{fixedBrowserTitle}
 					higlightedScore={score} />
+			</div>
+		{/if}
+		{#if $configStore?.scoreDetailsPreferences?.showHistory}
+			<div class="stats-grid">
+				<ScoreHistoryGraph {score} {leaderboard} />
 			</div>
 		{/if}
 	{/if}

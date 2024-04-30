@@ -133,6 +133,7 @@
 					showPredictedAcc: false,
 					showLeaderboard: true,
 					defaultAccChartIndex: 1,
+					showHistory: true,
 				},
 				visibleScoreIcons: {
 					pin: true,
@@ -286,6 +287,27 @@
 		currentScoreComparisonMethod = preset.settings.scoreComparison.method;
 	}
 
+	let isUpdating = false;
+	let showStatsPublic = false;
+
+	async function toggleHistoryPublic() {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+
+			await account.update({showStatsPublic: !showStatsPublic});
+		} finally {
+			isUpdating = null;
+		}
+	}
+
+	function updateProfileSettings(account) {
+		if (account?.player?.profileSettings) {
+			showStatsPublic = account.player.profileSettings.showStatsPublic;
+		}
+	}
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
 
@@ -305,6 +327,7 @@
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
 
 	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key !== 'delete');
+	$: updateProfileSettings($account);
 </script>
 
 <div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
@@ -346,6 +369,34 @@
 					{/each}
 				</div>
 			</section>
+			{#if $account?.player}
+				<section class="option full">
+					<label title="Wether to show and make public scores history">Score history:</label>
+					{#if isUpdating}
+						<Spinner />
+					{/if}
+					<div class="switches">
+						<div class="single" title="Display score history(all the attempts and clears) in the details">
+							<Switch
+								disabled={isUpdating}
+								value={scoreDetailsPreferences.showHistory}
+								label="Show history"
+								fontSize={12}
+								design="slider"
+								on:click={() => settempsetting('scoreDetailsPreferences', 'showHistory', !scoreDetailsPreferences.showHistory)} />
+						</div>
+						<div class="single" title="Make score history available for other players">
+							<Switch
+								disabled={isUpdating}
+								value={showStatsPublic}
+								label="Public history (auto-synced)"
+								fontSize={12}
+								design="slider"
+								on:click={() => toggleHistoryPublic()} />
+						</div>
+					</div>
+				</section>
+			{/if}
 			<section class="option full">
 				<label title="Determines which info should be displayed at score">Score info to show:</label>
 				<div class="switches">
@@ -366,7 +417,7 @@
 			<section class="option full">
 				<label title="Determines which data should be displayed in score details">Score details settings:</label>
 				<div class="switches">
-					{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex'].includes(k)) as key}
+					{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex', 'showHistory'].includes(k)) as key}
 						<Switch
 							value={scoreDetailsPreferences[key]}
 							label={scoreDetailsKeyDescription[key]}

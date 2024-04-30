@@ -992,8 +992,6 @@
 							<ReweightStatusRanked map={leaderboard} />
 						{/if}
 					{/if}
-				{:else}
-					<p transition:fade|global>No scores found.</p>
 				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>

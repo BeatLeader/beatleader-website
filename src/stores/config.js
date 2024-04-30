@@ -87,6 +87,7 @@ export const DEFAULT_CONFIG = {
 		showPredictedAcc: false,
 		showLeaderboard: true,
 		defaultAccChartIndex: 0,
+		showHistory: true,
 	},
 	leaderboardPreferences: {
 		badges: [
