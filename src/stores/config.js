@@ -144,6 +144,14 @@ export const DEFAULT_CONFIG = {
 		y7: true,
 		y8: true,
 	},
+	scoreHistoryLegend: {
+		y: true,
+		y1: true,
+		y2: true,
+		y3: true,
+		y4: true,
+		y5: true,
+	},
 	chartLegendVisible: {
 		y0: true,
 		y1: true,
