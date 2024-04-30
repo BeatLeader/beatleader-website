@@ -183,14 +183,6 @@
 			scaleLabel: {
 				display: false,
 			},
-			time: {
-				parser: 'MM/dd/yyyy',
-				tooltipFormat: 'MMM dd, yyyy',
-				unit: 'month',
-				displayFormats: {
-					month: 'M/yyyy',
-				},
-			},
 
 			grid: {
 				color: gridColor,

@@ -296,8 +296,8 @@
 
 		try {
 			isUpdating = true;
-
-			await account.update({showStatsPublic: !showStatsPublic});
+			showStatsPublic = !showStatsPublic;
+			await account.update({showStatsPublic});
 		} finally {
 			isUpdating = null;
 		}

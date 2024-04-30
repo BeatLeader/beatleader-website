@@ -253,8 +253,9 @@
 
 		try {
 			isUpdating = true;
+			showAllRatings = !showAllRatings;
 
-			await account.update({showAllRatings: !showAllRatings});
+			await account.update({showAllRatings});
 		} finally {
 			isUpdating = null;
 		}
