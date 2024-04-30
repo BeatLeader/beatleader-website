@@ -10,6 +10,7 @@
 	import DemoProfileScore from './DemoProfileScore.svelte';
 	import Select from './Select.svelte';
 	import BadgeEdit from './BadgeEdit.svelte';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let animationSign = 1;
 
