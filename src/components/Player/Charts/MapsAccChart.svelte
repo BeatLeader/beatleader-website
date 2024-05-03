@@ -11,10 +11,14 @@
 	import Spinner from '../../Common/Spinner.svelte';
 
 	import createPlaylistStore from '../../../stores/playlists';
+	import createAccountStore from '../../../stores/beatleader/account';
 	import {configStore} from '../../../stores/config';
 	import deepEqual from 'deep-equal';
+	import produce from 'immer';
 	import Button from '../../Common/Button.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
+	import Switch from '../../Common/Switch.svelte';
+	import {isAnySupporter} from '../Overlay/overlay';
 
 	export let playerId = null;
 	export let averageAcc = null;
@@ -27,6 +31,7 @@
 	const playlists = createPlaylistStore();
 	const {addNotification} = getNotificationsContext();
 	const dispatch = createEventDispatcher();
+	const account = createAccountStore();
 
 	const CHART_DEBOUNCE = 300;
 
@@ -456,23 +461,33 @@
 	let debouncedChartHash = null;
 	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
 
-	async function fetchPlayerScores(playerId) {
+	async function fetchPlayerScores(playerId, showUnrankedMapsOnGraph) {
 		if (!playerId?.length) return;
 
 		try {
 			isLoading = true;
-			playerScores = await playerService.fetchAccGraph(playerId, 'acc');
+			playerScores = await playerService.fetchAccGraph(playerId, 'acc', !showUnrankedMapsOnGraph);
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	$: fetchPlayerScores(playerId);
+	function boolflip(name) {
+		$configStore = produce($configStore, draft => {
+			draft.preferences[name] = !draft.preferences[name];
+		});
+	}
+
+	$: role = $account?.player?.playerInfo.role ?? '';
+	$: supporter = isAnySupporter(role);
+	$: showUnrankedMapsOnGraph = supporter && $configStore?.preferences?.showUnrankedMapsOnGraph;
+	$: fetchPlayerScores(playerId, showUnrankedMapsOnGraph);
 
 	$: height = $configStore.preferences.graphHeight;
 	$: chartHash = calcPlayerScoresHash(playerScores);
 	$: debounceChartHash(chartHash);
 	$: selectedPlaylistIndex = $configStore?.selectedPlaylist;
+
 	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
 	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, selectedPlaylist);
 </script>
@@ -482,6 +497,17 @@
 	{#if isLoading}
 		<Spinner width="10em" height="10em" />
 	{:else if !selectedPlaylist}
+		<div class="chart-toggle-unranked {supporter ? '' : 'disabled-toggle'}">
+			<Switch
+				value={showUnrankedMapsOnGraph}
+				label="Show unranked"
+				title={supporter ? 'Show all maps with stars on them' : 'Subscribe to BeatLeader Patreon to have ratings on all maps'}
+				fontSize={12}
+				design="slider"
+				on:click={() => {
+					if (supporter) boolflip('showUnrankedMapsOnGraph');
+				}} />
+		</div>
 		<Button
 			cls="chart-new-playlist"
 			iconFa="fas fa-plus-square"
@@ -516,8 +542,20 @@
 	}
 
 	:global(.chart-new-playlist) {
-		top: 0.4em;
-		right: 2%;
+		top: 0.3em;
+		right: 2.2%;
+		position: absolute !important;
+		font-size: 0.8em !important;
+		height: 1.5em;
+	}
+
+	.disabled-toggle {
+		opacity: 0.6;
+	}
+
+	.chart-toggle-unranked {
+		top: 0;
+		left: 0.4em;
 		position: absolute !important;
 		font-size: 0.8em !important;
 		height: 1.5em;
@@ -525,6 +563,10 @@
 
 	@media screen and (max-width: 650px) {
 		:global(.chart-new-playlist) {
+			display: none !important;
+		}
+
+		.chart-toggle-unranked {
 			display: none !important;
 		}
 	}

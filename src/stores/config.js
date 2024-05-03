@@ -47,6 +47,7 @@ export const DEFAULT_CONFIG = {
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
 		leaderboardShowPlaylists: true,
+		showUnrankedMapsOnGraph: false,
 
 		showFiltersOnRanking: true,
 		maps3D: true,

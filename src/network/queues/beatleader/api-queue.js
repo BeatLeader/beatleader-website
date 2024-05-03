@@ -82,7 +82,8 @@ export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}';
 export const BL_API_CLAN_KICK_URL = BL_API_URL + 'clan/kickplayer?player=${player}';
 export const BL_API_CLAN_INVITE_URL = BL_API_URL + 'clan/invite?player=${player}';
 export const BL_API_CLAN_CANCEL_INVITE_URL = BL_API_URL + 'clan/cancelinvite?player=${player}';
-export const BL_API_ACC_GRAPH_URL = BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&type=${type}';
+export const BL_API_ACC_GRAPH_URL =
+	BL_API_URL + 'player/${player}/accgraph?leaderboardContext=${leaderboardContext}&type=${type}&no_unranked_stars=${no_unranked_stars}';
 export const BL_API_FRIEND_ADD_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_FRIEND_REMOVE_URL = BL_API_URL + 'user/friend?playerId=${playerId}';
 export const BL_API_MINIRANKINGS_URL =
@@ -559,8 +560,12 @@ export default (options = {}) => {
 			return r;
 		});
 
-	const accGraph = async (playerId, type, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId, type}), {...options, credentials: 'include'}, priority);
+	const accGraph = async (playerId, type, no_unranked_stars, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(
+			substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId, type, no_unranked_stars}),
+			{...options, credentials: 'include'},
+			priority
+		);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(

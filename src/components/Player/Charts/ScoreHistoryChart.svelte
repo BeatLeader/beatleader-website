@@ -47,7 +47,6 @@
 
 		if (!justRefresh) {
 			const idx = legendItem.datasetIndex;
-			console.log(legendItem);
 			if (ci.isDatasetVisible(idx)) {
 				ci.hide(idx);
 				legendItem.hidden = true;
