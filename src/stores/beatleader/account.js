@@ -53,9 +53,6 @@ export default (refreshOnCreate = true) => {
 		data.append('action', 'login');
 		data.append('login', login);
 		data.append('password', password);
-		if (oauthState) {
-			data.append('oauthState', oauthState);
-		}
 
 		fetch(BL_API_URL + 'signinoculus', {
 			credentials: 'include',
@@ -66,6 +63,15 @@ export default (refreshOnCreate = true) => {
 			.then(data => {
 				if (data.length > 0) {
 					account.error = data;
+				} else if (oauthState) {
+					fetch(BL_API_URL + 'oauth2/authorize', {
+						credentials: 'include',
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+						},
+						body: oauthState.replace('?', ''),
+					});
 				} else {
 					account.error = null;
 					refresh(true);
