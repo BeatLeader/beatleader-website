@@ -35,6 +35,7 @@
 						bgColor={currentValue?.color ?? null}
 						notSelected={!((multi && Array.isArray(value) & value.includes(currentValue)) || (!multi && currentValue === value))}
 						url={currentValue.url}
+						disabled={currentValue.disabled}
 						cls={currentValue?.cls ?? ''}
 						on:click={() => onChange(currentValue)} />
 				{:else}

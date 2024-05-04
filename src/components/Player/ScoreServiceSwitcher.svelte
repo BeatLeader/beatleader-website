@@ -66,6 +66,16 @@
 							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/acc/1`},
 							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
 							{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/beatleader/stars/1`},
+							{
+								id: 'playCount',
+								label: 'Plays',
+								title: `Sort by attempt count${
+									player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''
+								}`,
+								iconFa: 'fa fa-repeat',
+								url: `/u/${playerId}/beatleader/playCount/1`,
+								disabled: player?.profileSettings?.showStatsPublic == false,
+							},
 							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/beatleader/pauses/1`},
 							{
 								id: 'maxStreak',

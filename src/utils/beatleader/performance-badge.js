@@ -145,6 +145,7 @@ const availableMetrics = [
 	{metric: 'passPP', name: 'Pass PP'},
 	{metric: 'accPP', name: 'Accuracy PP'},
 	{metric: 'techPP', name: 'Tech PP'},
+	{metric: 'playCount', name: 'Attempts count'},
 	{metric: 'improvedRank', name: 'Rank improved'},
 	{metric: 'improvedTotalRank', name: 'Total rank improved'},
 	{metric: 'replaysWatched', name: 'Replays watched', available: ['profile-score']},
@@ -361,6 +362,26 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} "115s" in a row`;
 			className = 'beatSavior';
 			icon = 'fa-solid fa-crosshairs';
+
+			componentProps = {
+				onlyLabel: true,
+				color: 'white',
+				bgColor: 'var(--dimmed)',
+				title,
+			};
+
+			slotComponentProps = {
+				value: score?.[metric],
+				inline: true,
+				digits: 0,
+				suffix: ``,
+			};
+			break;
+
+		case 'playCount':
+			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} attempts`;
+			className = 'beatSavior';
+			icon = 'fa-solid fa-repeat';
 
 			componentProps = {
 				onlyLabel: true,

@@ -68,7 +68,7 @@
 
 		if (
 			additionalStat &&
-			['pauses', 'maxStreak', 'replaysWatched', 'accPP', 'passPP', 'techPP'].includes(additionalStat) &&
+			['pauses', 'maxStreak', 'replaysWatched', 'accPP', 'passPP', 'techPP', 'playCount'].includes(additionalStat) &&
 			service === 'beatleader' &&
 			rows >= 2 &&
 			!config.some(row => row.some(col => col?.metric === additionalStat))
