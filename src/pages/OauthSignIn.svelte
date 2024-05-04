@@ -99,20 +99,26 @@
 		<Spinner />
 	{:else if !loggedInPlayer}
 		<div class="tips">Login with Steam or the account you created in game.</div>
-		<div class="input-container">
-			<div class="cat">Login</div>
-			<input bind:value={login} placeholder="Login (may differ from username)" />
-		</div>
-		<div class="input-container">
-			<div class="cat">Password</div>
-			<input type="password" bind:value={password} placeholder="Password" />
-		</div>
 
-		{#if error}
-			<p class="error">{error}</p>
-		{/if}
+		<form action={BL_API_URL + 'signinoculus'} method="post">
+			<div class="input-container">
+				<div class="cat">Login</div>
+				<input bind:value={login} name="login" placeholder="Login (may differ from username)" />
+			</div>
+			<div class="input-container">
+				<div class="cat">Password</div>
+				<input type="password" name="password" bind:value={password} placeholder="Password" />
+			</div>
+			<input type="hidden" name="oauthState" value={window.location.search} />
+			<input type="hidden" name="ReturnUrl" value={CURRENT_URL} />
+			<input type="hidden" name="action" value="login" />
 
-		<Button iconFa="fas fa-plus-square" label="Login" on:click={() => account.logIn(login, password, window.location.search)} />
+			{#if error}
+				<p class="error">{error}</p>
+			{/if}
+
+			<Button iconFa="fas fa-plus-square" label="Login" type="submit" />
+		</form>
 		<form action={BL_API_URL + 'signin'} method="post">
 			<input type="hidden" name="Provider" value="Steam" />
 			<input type="hidden" name="oauthState" value={window.location.search} />

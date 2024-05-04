@@ -63,15 +63,6 @@ export default (refreshOnCreate = true) => {
 			.then(data => {
 				if (data.length > 0) {
 					account.error = data;
-				} else if (oauthState) {
-					fetch(BL_API_URL + 'oauth2/authorize', {
-						credentials: 'include',
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-						},
-						body: oauthState.replace('?', ''),
-					});
 				} else {
 					account.error = null;
 					refresh(true);
