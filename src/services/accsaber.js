@@ -14,8 +14,6 @@ const HISTOGRAM_AP_PRECISION = 5;
 
 const ACCSABER_GRAPHQL_API = 'https://gql.accsaber.com/graphql';
 
-const CATEGORIES_ORDER = ['overall', 'true', 'standard', 'tech'];
-
 let service = null;
 export default () => {
 	if (service) return service;
@@ -46,48 +44,32 @@ export default () => {
 		}
 	};
 
-	let categoriesList = null;
-	const getCategories = async () => {
-		if (categoriesList) {
-			return categoriesList;
-		}
-		const jsonResponse = await fetchGraphQL(`
-		query GetCategories {
-		  categories {
-			nodes {
-			  categoryDisplayName
-			  categoryName
-			  countsTowardsOverall
-			  description
-			}
-		  }
-		}
-	  `);
-
-		const categories = jsonResponse.data.categories.nodes
-			.map(c => ({
-				name: c.categoryName,
-				displayName: c.categoryDisplayName,
-				countsTowardsOverall: c.countsTowardsOverall,
-				description: c.description,
-			}))
-			.concat([
-				{
-					name: 'overall',
-					displayName: 'Overall',
-					countsTowardsOverall: null,
-					description: 'Overall',
-				},
-			]);
-
-		const getIdx = category => {
-			const idx = CATEGORIES_ORDER.findIndex(v => v === category?.name);
-
-			return idx >= 0 ? idx : 100000;
-		};
-		categoriesList = categories.sort((a, b) => getIdx(a) - getIdx(b));
-		return categoriesList;
-	};
+	const getCategories = () => [
+		{
+			name: 'overall',
+			displayName: 'Overall',
+			countsTowardsOverall: null,
+			description: 'Overall',
+		},
+		{
+			displayName: 'True Acc',
+			name: 'true',
+			countsTowardsOverall: true,
+			description: 'True acc',
+		},
+		{
+			displayName: 'Standard Acc',
+			name: 'standard',
+			countsTowardsOverall: true,
+			description: 'Standard acc',
+		},
+		{
+			displayName: 'Tech Acc',
+			name: 'tech',
+			countsTowardsOverall: true,
+			description: 'Tech standard acc',
+		},
+	];
 
 	const getPlayer = async playerId => {
 		let result = [];
@@ -147,23 +129,20 @@ export default () => {
 
 	let playersMap = {};
 	const isDataForPlayerAvailable = async playerId => {
-		if (!configStore.get('preferences').showAccSaber) return false;
+		if (!playerId || !configStore.get('preferences').showAccSaber) return false;
 		if (playersMap[playerId] === undefined) {
-			playersMap[playerId] =
-				(
-					await fetchGraphQL(
-						`
+			playersMap[playerId] = fetchGraphQL(
+				`
 		query FindPlayer($playerId: BigInt) {
 			players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
 				totalCount
 			}
 		}
 		`,
-						{playerId}
-					)
-				).data.players.totalCount > 0;
+				{playerId}
+			).then(r => r.data.players.totalCount > 0);
 		}
-		return playersMap[playerId];
+		return await playersMap[playerId];
 	};
 
 	const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) =>
@@ -421,7 +400,7 @@ export default () => {
 		const query = `
 			query GetPlayerMiniRankingByCategory($offset: Int) {
 				players: ${category == 'overall' ? 'overall' : 'category'}AccSaberPlayers(orderBy: AP_DESC, first:5, offset: $offset${
-			category == 'overall' ? '' : ', categoryName: "' + category + '"'
+			category == 'overall' ? '' : ', condition: { categoryName: "' + category + '"}'
 		}) {
 					nodes {
 						playerId
