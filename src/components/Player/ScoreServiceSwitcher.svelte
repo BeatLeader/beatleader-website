@@ -1,6 +1,6 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
-	// import createAccSaberService from '../../services/accsaber';
+	import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
 	import Switcher from '../Common/Switcher.svelte';
 	import ScoreServiceFilters from './ScoreServiceFilters.svelte';
@@ -22,7 +22,7 @@
 	const SPECIAL_PLAYER_ID = 'user-friends';
 
 	const dispatch = createEventDispatcher();
-	// const accSaberService = createAccSaberService();
+	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
 
 	let availableServiceNames = ['beatleader'];
@@ -189,20 +189,17 @@
 		},
 	];
 
-	// async function updateAvailableServiceNames(playerId) {
-	// 	accSaberCategories = null;
+	async function updateAvailableServiceNames(playerId) {
+		accSaberCategories = null;
 
-	// 	const additionalServices = (
-	// 		await Promise.all([
-	// 			beatSaviorService.isDataForPlayerAvailable(playerId).then(r => (r ? 'beatsavior' : null)),
-	// 			accSaberService.isDataForPlayerAvailable(playerId).then(r => (r ? 'accsaber' : null)),
-	// 		])
-	// 	).filter(s => s);
+		const additionalServices = (
+			await Promise.all([accSaberService.isDataForPlayerAvailable(playerId).then(r => (r ? 'accsaber' : null))])
+		).filter(s => s);
 
-	// 	if (additionalServices?.length) availableServiceNames = ['beatleader'].concat(additionalServices);
+		if (additionalServices?.length) availableServiceNames = ['beatleader'].concat(additionalServices);
 
-	// 	if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
-	// }
+		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
+	}
 
 	function updateAvailableServices(
 		avaiableServiceNames,
@@ -216,66 +213,7 @@
 	) {
 		const sortingOrFilteringAppearance = (profileAppearance ?? []).filter(a => a.startsWith('ss-') || a.startsWith('sf-'));
 
-		const commonFilters = [
-			{
-				component: TextFilter,
-				props: {
-					id: 'search',
-					iconFa: 'fa fa-search',
-					title: 'Search by song/artist/mapper/hash',
-					placeholder: 'Enter song name...',
-				},
-			},
-			{
-				component: SelectFilter,
-				props: {
-					id: 'diff',
-					iconFa: 'fa fa-chart-line',
-					title: 'Filter by map difficulty',
-					values: [
-						{id: null, name: 'All'},
-						{id: 'easy', name: 'Easy'},
-						{id: 'normal', name: 'Normal'},
-						{id: 'hard', name: 'Hard'},
-						{id: 'expert', name: 'Expert'},
-						{id: 'expertplus', name: 'Expert+'},
-					],
-				},
-			},
-			{
-				component: SelectFilter,
-				props: {
-					id: 'mode',
-					iconFa: 'fa fa-compass',
-					title: 'Filter by map mode',
-					values: [{id: null, name: 'All'}].concat(
-						Object.entries(modeDescriptions).map(([key, type]) => {
-							return {
-								id: key.toLowerCase(),
-								name: modeDescriptions?.[key]?.title ?? 'Unknown',
-							};
-						})
-					),
-				},
-			},
-			{
-				component: SelectFilter,
-				props: {
-					id: 'requirements',
-					iconFa: 'fa fa-mountain-sun',
-					title: 'Filter by map feature',
-					values: [
-						{id: null, name: 'All'},
-						{id: requirementsMap.noodles, name: 'Noodle Extensions'},
-						{id: requirementsMap.chroma, name: 'Chroma'},
-						{id: requirementsMap.V3, name: 'V3'},
-						{id: requirementsMap.cinema, name: 'Cinema'},
-						{id: requirementsMap.mappingExtensions, name: 'Mapping Extensions'},
-						{id: requirementsMap.optionalProperties, name: 'Optional Properties'},
-					],
-				},
-			},
-		];
+		const commonFilters = [];
 
 		service = $editModel ? 'beatleader' : service;
 
@@ -292,7 +230,13 @@
 						...(c?.props?.values
 							? {
 									values: c.props.values
-										.filter(v => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`))
+										.filter(
+											v =>
+												!$account?.player ||
+												service != 'beatleader' ||
+												$editModel ||
+												sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`)
+										)
 										.map(v => ({
 											...v,
 											title: $editModel ? 'Click to toggle' : v.title,
@@ -321,6 +265,64 @@
 								}))
 
 								.concat([
+									{
+										component: TextFilter,
+										props: {
+											id: 'search',
+											iconFa: 'fa fa-search',
+											title: 'Search by song/artist/mapper/hash',
+											placeholder: 'Enter song name...',
+										},
+									},
+									{
+										component: SelectFilter,
+										props: {
+											id: 'diff',
+											iconFa: 'fa fa-chart-line',
+											title: 'Filter by map difficulty',
+											values: [
+												{id: null, name: 'All'},
+												{id: 'easy', name: 'Easy'},
+												{id: 'normal', name: 'Normal'},
+												{id: 'hard', name: 'Hard'},
+												{id: 'expert', name: 'Expert'},
+												{id: 'expertplus', name: 'Expert+'},
+											],
+										},
+									},
+									{
+										component: SelectFilter,
+										props: {
+											id: 'mode',
+											iconFa: 'fa fa-compass',
+											title: 'Filter by map mode',
+											values: [{id: null, name: 'All'}].concat(
+												Object.entries(modeDescriptions).map(([key, type]) => {
+													return {
+														id: key.toLowerCase(),
+														name: modeDescriptions?.[key]?.title ?? 'Unknown',
+													};
+												})
+											),
+										},
+									},
+									{
+										component: SelectFilter,
+										props: {
+											id: 'requirements',
+											iconFa: 'fa fa-mountain-sun',
+											title: 'Filter by map feature',
+											values: [
+												{id: null, name: 'All'},
+												{id: requirementsMap.noodles, name: 'Noodle Extensions'},
+												{id: requirementsMap.chroma, name: 'Chroma'},
+												{id: requirementsMap.V3, name: 'V3'},
+												{id: requirementsMap.cinema, name: 'Cinema'},
+												{id: requirementsMap.mappingExtensions, name: 'Mapping Extensions'},
+												{id: requirementsMap.optionalProperties, name: 'Optional Properties'},
+											],
+										},
+									},
 									{
 										component: SelectFilter,
 										props: {
@@ -466,7 +468,7 @@
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
-	// $: updateAvailableServiceNames(playerId);
+	$: updateAvailableServiceNames(playerId);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
 		service,

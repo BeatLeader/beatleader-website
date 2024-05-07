@@ -1,14 +1,14 @@
 <script>
-	// import createAccSaberService from '../../../services/accsaber';
+	import createAccSaberService from '../../../services/accsaber';
 	import MiniRankings from '../../Ranking/MiniRankings.svelte';
 	import AccSaberMiniRanking from '../../Ranking/AccSaberMini.svelte';
 
 	export let player = null;
 	export let selected = false;
 
-	// const accSaberService = createAccSaberService();
+	const accSaberService = createAccSaberService();
 
-	// $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player.playerId);
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player.playerId);
 
 	$: rank = player?.playerInfo.rank;
 	$: country = player?.playerInfo.countries[0].country;
@@ -19,7 +19,7 @@
 	<div class="mini-ranking">
 		<MiniRankings {rank} {country} {countryRank} on:height-changed />
 
-		<!-- {#await accSaberAvailable}
+		{#await accSaberAvailable}
 			Loading...
 		{:then accSaberAvailable}
 			{#if accSaberAvailable}
@@ -27,7 +27,7 @@
 					<AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} />
 				</div>
 			{/if}
-		{/await} -->
+		{/await}
 	</div>
 {/if}
 

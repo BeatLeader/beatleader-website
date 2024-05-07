@@ -3,7 +3,7 @@
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
-	// import createAccSaberService from '../services/accsaber';
+	import createAccSaberService from '../services/accsaber';
 	import createPinnedScoresStore from '../stores/beatleader/pinned-scores';
 	import createStatsHistoryStore from '../stores/beatleader/stats-history';
 	import editModel from '../stores/beatleader/profile-edit-model';
@@ -90,7 +90,7 @@
 		return {service, serviceParams};
 	}
 
-	// const accSaberService = createAccSaberService();
+	const accSaberService = createAccSaberService();
 
 	function onPageChanged(event) {
 		let newPage = event?.detail ?? null;
@@ -176,7 +176,7 @@
 
 		scoresPlayerId = currentPlayerId;
 	}
-	// $: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.countries[0].country;
@@ -265,7 +265,7 @@
 				</ContentBox>
 			{/if}
 
-			<!-- {#await accSaberAvailable}
+			{#await accSaberAvailable}
 				Loading...
 			{:then accSaberAvailable}
 				{#if accSaberAvailable}
@@ -273,7 +273,7 @@
 						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
 					</ContentBox>
 				{/if}
-			{/await} -->
+			{/await}
 		</aside>
 	{/if}
 </section>

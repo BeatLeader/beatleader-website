@@ -5,12 +5,12 @@
 	import {formatNumber} from '../../utils/format';
 	import blApiScoresHistogramClient from '../../network/clients/beatleader/scores/api-histogram';
 	import createScoresService from '../../services/beatleader/scores';
-	// import createAccSaberService from '../../services/accsaber';
+	import createAccSaberService from '../../services/accsaber';
 	import ChartBrowser from '../Common/ChartBrowser.svelte';
 	import Pager from '../Common/Pager.svelte';
 	import {debounce} from '../../utils/debounce';
 	import stringify from 'json-stable-stringify';
-	import { configStore } from '../../stores/config';
+	import {configStore} from '../../stores/config';
 
 	export let playerId = null;
 	export let service = null;
@@ -23,7 +23,7 @@
 	const DEBOUNCE_THRESHOLD = 1000;
 
 	const scoresService = createScoresService();
-	// const accSaberService = createAccSaberService();
+	const accSaberService = createAccSaberService();
 
 	let playerScores = null;
 	let groupedPlayerScores = null;
@@ -79,9 +79,9 @@
 				serviceObj = scoresService;
 				break;
 
-			// case 'accsaber':
-			// 	serviceObj = accSaberService;
-			// 	break;
+			case 'accsaber':
+				serviceObj = accSaberService;
+				break;
 		}
 
 		if (!serviceObj) return;
@@ -94,8 +94,7 @@
 			playerScoresHistogramBucketSizeHash = currentHistogramBucketSizeHash;
 		}
 
-		if (service === 'beatleader') playerScores = null;
-		else playerScores = (await serviceObj.getPlayerScores(playerId)).filter(playerScoresHistogram.filter).sort(playerScoresHistogram.sort);
+		playerScores = null;
 	}
 
 	let lastBlParams = null;
@@ -215,7 +214,8 @@
 
 	$: playerId, service, serviceParams, resetCurrentValues();
 	$: refreshAllPlayerServiceScores(playerId, service, serviceParams);
-	$: if ($configStore.profileParts.histogram) debouncedRefreshGroupedScores(playerScores, playerScoresHistogram, playerScoresHistogramBucketSize);
+	$: if ($configStore.profileParts.histogram)
+		debouncedRefreshGroupedScores(playerScores, playerScoresHistogram, playerScoresHistogramBucketSize);
 
 	$: itemsPerPage = fixedItemsPerPage
 		? fixedItemsPerPage

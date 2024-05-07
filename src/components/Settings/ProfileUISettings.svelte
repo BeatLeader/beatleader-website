@@ -186,6 +186,19 @@
 			</div>
 		</section>
 
+		<section class="option full">
+			<label title="Determines which parts of the profile to show">Other score sources:</label>
+			<div class="switches">
+				<Switch
+					value={$configStore.preferences.showAccSaber}
+					label="AccSaber"
+					title="Show AccSaber information on profiles"
+					fontSize={12}
+					design="slider"
+					on:click={() => settempsetting('showAccSaber', !$configStore.preferences.showAccSaber)} />
+			</div>
+		</section>
+
 		{#if $configStore.profileParts.graphs}
 			<section class="option">
 				<label title="How many days of history to show on the profile">Graph height(px):</label>

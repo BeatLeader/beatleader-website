@@ -7,7 +7,7 @@
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Carousel from '../Common/Carousel.svelte';
 	import {configStore} from '../../stores/config';
-	// import createAccSaberService from '../../services/accsaber';
+	import createAccSaberService from '../../services/accsaber';
 
 	export let twitchVideos = null;
 	export let playerId = null;
@@ -17,17 +17,17 @@
 	export let playerData = null;
 
 	const pageContainer = getContext('pageContainer');
-	// const accSaberService = createAccSaberService();
+	const accSaberService = createAccSaberService();
 
-	// let accSaberPlayerInfo = null;
-	// let accSaberCategories = null;
+	let accSaberPlayerInfo = null;
+	let accSaberCategories = null;
 
-	// async function updateAccSaberPlayerInfo(playerId) {
-	// 	if (!playerId) return;
+	async function updateAccSaberPlayerInfo(playerId) {
+		if (!playerId || !(await accSaberService.isDataForPlayerAvailable(playerId))) return;
 
-	// 	accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
-	// 	accSaberCategories = await accSaberService.getCategories();
-	// }
+		accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
+		accSaberCategories = await accSaberService.getCategories();
+	}
 
 	function generateScoresStats(stats) {
 		return stats && stats.length ? stats : [];
@@ -62,17 +62,17 @@
 							  ]
 							: []
 					)
-					// .concat(
-					// 	accSaberCategories && accSaberPlayerInfo && accSaberCategories.length && accSaberPlayerInfo.length
-					// 		? [
-					// 				{
-					// 					name: `accsaber-${playerId}`,
-					// 					component: AccSaberSwipeCard,
-					// 					props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
-					// 				},
-					// 		  ]
-					// 		: []
-					// )
+					.concat(
+						$configStore.preferences.showAccSaber && accSaberCategories && accSaberPlayerInfo
+							? [
+									{
+										name: `accsaber-${playerId}`,
+										component: AccSaberSwipeCard,
+										props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
+									},
+							  ]
+							: []
+					)
 					.concat(
 						$pageContainer.name !== 'xxl' && twitchVideos && twitchVideos.length
 							? [
@@ -89,7 +89,7 @@
 
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 
-	// $: updateAccSaberPlayerInfo(playerId);
+	$: updateAccSaberPlayerInfo(playerId);
 </script>
 
 <ContentBox>
