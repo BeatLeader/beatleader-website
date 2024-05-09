@@ -173,7 +173,7 @@
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.35'}
-								label="Download for PC 1.35+"
+								label="Download for PC 1.35-1.36.2"
 								url={BL_API_URL + 'reesabersversion?version=1.35.0'}
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
@@ -183,7 +183,7 @@
 								title={!loggedInPlayer || !isSupporter
 									? 'Log in on the top of the Page and Link Patreon'
 									: 'Download PC Reesabers for 1.27-1.29'}
-								label="Download for PC 1.27-1.29"
+								label="Download for PC 1.27-1.29.1"
 								url={BL_API_URL + 'reesabersversion?version=1.29.1'}
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
@@ -210,7 +210,7 @@
 						</div>
 					</div>
 
-					<!-- {#if loggedInPlayer && isSupporter}
+					{#if loggedInPlayer && isSupporter}
 						<div class="versions-list">
 							<span
 								class="beat-savior-reveal clickable"
@@ -228,11 +228,10 @@
 							</span>
 
 							{#if showOtherVersions}
-								<a href={BL_API_URL + 'reesabersversion?version=1.33.0'}> Version for 1.33.0</a>
-								<a href={BL_API_URL + 'reesabersversion?version=1.31.0'}> Version for 1.31.0</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.34.0'}> Version for 1.34.2 (v0.3.8)</a>
 							{/if}
 						</div>
-					{/if} -->
+					{/if}
 				{/if}
 			{/if}
 		</ContentBox>
