@@ -348,6 +348,11 @@ chartjs-adapter-luxon@^1.1.0:
   resolved "https://registry.yarnpkg.com/chartjs-adapter-luxon/-/chartjs-adapter-luxon-1.3.1.tgz#8ad8be7cc1521bacd6cd2ff4b013669d4dd49364"
   integrity sha512-yxHov3X8y+reIibl1o+j18xzrcdddCLqsXhriV2+aQ4hCR66IYFchlRXUvrJVoxglJ380pgytU7YWtoqdIgqhg==
 
+chartjs-plugin-trendline@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/chartjs-plugin-trendline/-/chartjs-plugin-trendline-2.1.0.tgz#2c03c1bec329ff990b5b60de69e7de6ed631821b"
+  integrity sha512-AxVW1/rekllvNmz0Ef+Z88LQ+T2C4poRlOVizi6Z6PsWH3kieugPGO34dthfiGxuG5llKnwle1VDKEHHB8mlyw==
+
 chartjs-plugin-zoom@^1.1.1:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/chartjs-plugin-zoom/-/chartjs-plugin-zoom-1.3.0.tgz#3dc525a59e9ca34c5823ba543b32218ccefabac9"

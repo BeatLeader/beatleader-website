@@ -366,7 +366,7 @@
 					: []
 			)
 			.concat(
-				isRanked && showGraphOption
+				showGraphOption
 					? [
 							{
 								type: 'graph',
@@ -761,10 +761,12 @@
 				{#if leaderboardShowSorting && currentType != 'clanranking'}
 					<nav class="switcher-nav" transition:fade|global>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-						<div style="display: flex;">
-							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
-							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
-						</div>
+						{#if currentType != 'graph'}
+							<div style="display: flex;">
+								<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
+								<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+							</div>
+						{/if}
 					</nav>
 				{/if}
 
@@ -881,7 +883,11 @@
 						</div>
 					{/if}
 				{:else if currentType == 'graph'}
-					<MapScoresChart leaderboardId={currentLeaderboardId} {currentPlayerId} />
+					<MapScoresChart
+						leaderboardId={currentLeaderboardId}
+						sortBy={currentFilters.sortBy}
+						order={currentFilters.order}
+						{currentPlayerId} />
 				{:else if clanRankingList?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}

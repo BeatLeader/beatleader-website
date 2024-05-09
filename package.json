@@ -49,6 +49,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.6",
     "atropos": "^1.0.2",
+    "chartjs-plugin-trendline": "^2.1.0",
     "custom-protocol-check": "https://github.com/claap-app/custom-protocol-check.git",
     "d3": "^7.8.5",
     "deep-equal": "^2.2.0",
