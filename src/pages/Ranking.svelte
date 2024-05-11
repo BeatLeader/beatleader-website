@@ -367,14 +367,14 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/48')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/49')}>
 			<div class="event-container">
 				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/75058-event.png" />
 				<div class="event-text-container">
-					<span class="event-title">Ranked weeks #77-81!</span>
+					<span class="event-title">Ranked weeks #87-91!</span>
 					<span class="event-text">Check out what was ranked in April and compete for a badge.</span>
 				</div>
-				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/48')} />
+				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/49')} />
 			</div>
 		</ContentBox>
 
