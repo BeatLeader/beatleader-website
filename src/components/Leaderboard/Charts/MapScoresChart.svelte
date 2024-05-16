@@ -211,7 +211,7 @@
 			},
 		];
 
-		if (sortBy != 'date') {
+		if (sortBy != 'date' && sortBy != 'maxStreak') {
 			datasets[0].trendlineLinear = {
 				colorMin: 'red',
 				colorMax: 'green',
