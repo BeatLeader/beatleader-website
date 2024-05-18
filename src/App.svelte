@@ -167,7 +167,7 @@
 {/if} -->
 {#if $rewindTimer && $configStore.preferences.ccWinterHighlights24}
 	<div class="rewindbanner">
-		<a class="reelink" href="https://youtu.be/bbwJkCF4xp0" />
+		<a class="reelink" href="https://www.youtube.com/watch?v=9dr-M1hfCLo" />
 		<div class="banner-spacer" />
 		<img class="cc-cover-1" src="/assets/cc-logo-left.webp" />
 
@@ -414,7 +414,7 @@
 	}
 
 	.rewindbanner {
-		background-color: #2e0d51;
+		background-color: #355870;
 		color: white;
 		font-size: large;
 		height: 3em;
