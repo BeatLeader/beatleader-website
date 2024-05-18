@@ -165,6 +165,52 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
+{#if $rewindTimer && $configStore.preferences.rewindbanner}
+	<div class="rewindbanner">
+		<a class="reelink" href="https://youtu.be/bbwJkCF4xp0" />
+		<div class="banner-spacer" />
+		<img class="cc-cover-1" src="/assets/cc-logo-left.webp" />
+
+		<div class="rewind-text-and-timer">
+			{#if $rewindTimer.seconds > 0}
+				<span class="replayed-link-text desktop-only">2023 Cube Community Rewind in</span>
+				<span class="replayed-link-text mobile-only">2023 CC Rewind in</span>
+
+				<div class="timer">
+					<div class="rewind-time">
+						<span>{padNumber($rewindTimer.hours)}</span>
+						<label class="desktop-only">Hours</label>
+						<label class="mobile-only">H</label>
+					</div>
+
+					<div class="rewind-time">
+						<span>{padNumber($rewindTimer.minutes)}</span>
+						<label class="desktop-only">Minutes</label>
+						<label class="mobile-only">M</label>
+					</div>
+
+					<div class="rewind-time">
+						<span>{padNumber(parseInt($rewindTimer.seconds, 10))}</span>
+						<label class="desktop-only">Seconds!</label>
+						<label class="mobile-only">S!</label>
+					</div>
+				</div>
+			{:else}
+				<span class="replayed-link-text">2023 Cube Community Rewind NOW! 🔴</span>
+			{/if}
+		</div>
+		<img class="cc-cover-2" src="/assets/cc-logo-right.webp" />
+
+		<button
+			class="close-banner"
+			title="Hide banner"
+			on:click|preventDefault|stopPropagation={() => {
+				$configStore = produce($configStore, draft => {
+					draft.preferences.rewindbanner = false;
+				});
+			}}><i class="fas fa-xmark" /></button>
+	</div>
+{/if}
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
@@ -529,6 +575,20 @@
 		z-index: 100;
 	}
 
+	.cc-cover-1 {
+		height: 3.5em;
+		position: absolute;
+		left: 14%;
+		z-index: 100;
+	}
+
+	.cc-cover-2 {
+		height: 3.5em;
+		position: absolute;
+		right: 14%;
+		z-index: 100;
+	}
+
 	:global(.notifications) {
 		position: fixed;
 		z-index: 10000;
@@ -554,6 +614,20 @@
 
 	main {
 		margin-top: 1em;
+	}
+	.mobile-only {
+		display: none;
+	}
+	@media (max-width: 1000px) {
+		.rewind-text-and-timer {
+			flex-direction: column;
+			align-items: center;
+			gap: 0;
+		}
+
+		.timer {
+			margin-top: -0.3em;
+		}
 	}
 	.mobile-only {
 		display: none;
@@ -607,6 +681,27 @@
 			color: white;
 			text-shadow: 3px 3px black;
 			margin-bottom: 0.2em;
+		}
+
+		.rewind-text-and-timer {
+			max-width: 60%;
+			text-align: center;
+			flex-wrap: wrap;
+		}
+
+		.cc-cover-1 {
+			left: 10%;
+		}
+
+		.cc-cover-2 {
+			right: 10%;
+		}
+
+		.mobile-only {
+			display: block;
+		}
+		.desktop-only {
+			display: none;
 		}
 
 		.rewind-text-and-timer {
