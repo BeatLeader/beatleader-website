@@ -18,6 +18,17 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'Cube Community Winter Highlights',
+				body: '',
+				imageUrl: '/assets/Discover/cc-winter-highlights.webp',
+				targetUrl: 'https://www.youtube.com/watch?v=9dr-M1hfCLo',
+				linkName: 'YouTube',
+				forcedColor: 'rgb(23 27 46)',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Latest Map Of The Week',
 				body: 'No map of the week found :( Check back later',
 				imageUrl: '/assets/Main/landing.webp',
