@@ -165,7 +165,7 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-{#if $rewindTimer && $configStore.preferences.rewindbanner}
+{#if $rewindTimer && $configStore.preferences.ccWinterHighlights24}
 	<div class="rewindbanner">
 		<a class="reelink" href="https://youtu.be/bbwJkCF4xp0" />
 		<div class="banner-spacer" />
@@ -173,8 +173,8 @@
 
 		<div class="rewind-text-and-timer">
 			{#if $rewindTimer.seconds > 0}
-				<span class="replayed-link-text desktop-only">2023 Cube Community Rewind in</span>
-				<span class="replayed-link-text mobile-only">2023 CC Rewind in</span>
+				<span class="replayed-link-text desktop-only">Cube Community Winter Highlights in</span>
+				<span class="replayed-link-text mobile-only">CC Winter Highlights in</span>
 
 				<div class="timer">
 					<div class="rewind-time">
@@ -196,7 +196,7 @@
 					</div>
 				</div>
 			{:else}
-				<span class="replayed-link-text">2023 Cube Community Rewind NOW! 🔴</span>
+				<span class="replayed-link-text">Cube Community Winter Highlights NOW! 🔴</span>
 			{/if}
 		</div>
 		<img class="cc-cover-2" src="/assets/cc-logo-right.webp" />
@@ -206,7 +206,7 @@
 			title="Hide banner"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.rewindbanner = false;
+					draft.preferences.ccWinterHighlights24 = false;
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>

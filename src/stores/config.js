@@ -60,6 +60,7 @@ export const DEFAULT_CONFIG = {
 		rewindbanner: true,
 		beastiesbanner: true,
 		ostbanner: true,
+		ccWinterHighlights24: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,

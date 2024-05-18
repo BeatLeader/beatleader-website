@@ -54,28 +54,6 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'BS European Championship',
-				body: "BSEUC's 2024 EU Championship is starting playoffs on April 20th at 15:00 UTC!",
-				imageUrl: '/assets/Discover/bseuc_banner.webp',
-				targetUrl: 'https://bseuc.eu/',
-				linkName: "BSEUC's website",
-				forcedColor: 'rgb(20 20 20)',
-				buttons: [
-					{
-						text: 'Twitter',
-						type: 'primary',
-						url: 'https://twitter.com/bseuchampion',
-					},
-					{
-						text: 'Schedule',
-						url: 'https://bseuc.eu/schedule',
-					},
-				],
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
 				title: 'Beat Saber Parents Tournament',
 				body: 'Beat Saber Parents Tournament is now accepting signups for Season 3! Watch their video to learn more.',
 				imageUrl: '/assets/Discover/bspt_2024_banner.webp',
