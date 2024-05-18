@@ -165,7 +165,7 @@
 			}}><i class="fas fa-xmark" /></button>
 	</div>
 {/if} -->
-{#if $rewindTimer && $configStore.preferences.ccWinterHighlights24}
+<!--{#if $rewindTimer && $configStore.preferences.ccWinterHighlights24}
 	<div class="rewindbanner">
 		<a class="reelink" href="https://www.youtube.com/watch?v=9dr-M1hfCLo" />
 		<div class="banner-spacer" />
@@ -210,7 +210,7 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if}-->
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
