@@ -271,6 +271,13 @@
 					</div>
 				{/if}
 			</div>
+
+			{#if playerInfo?.clans?.filter(cl => cl.tag == 'BTM').length}
+				<div style="position: relative; width: 100%; height: 100%; display: flex; justify-content: center;">
+					<img src="/assets/collar.webp" style="position: absolute; bottom: -16px; z-index: 100;" alt="" />
+				</div>
+			{/if}
+
 			{#if roles}
 				<div class="role-icons {$editModel ? 'editing' : ''}">
 					{#each roles as role, idx}
