@@ -376,6 +376,8 @@
 			<a href="https://discord.gg/2RG5YVqtG6">Discord</a>
 			|
 			<a href="https://patreon.com/BeatLeader">Patreon</a>
+			|
+			<a href="https://beatleader.xyz/supporting-project/link">Claim rewards</a>
 		</p>
 	</ContentBox>
 </footer>
