@@ -345,7 +345,7 @@
 											title: 'Filter by map stars',
 											hidden: !sortingOrFilteringAppearance.includes(`sf-stars`),
 											minValue: 0,
-											maxValue: 15,
+											maxValue: 30,
 											step: 0.1,
 										},
 									},

@@ -39,6 +39,8 @@
 	const debouncedOnToChanged = debounce(onToChanged, DEBOUNCE_MS);
 
 	$: if (open && filterEl) filterEl.focus();
+	$: if (open) debouncedOnFromChanged();
+	$: if (open) debouncedOnToChanged();
 </script>
 
 <span class="flex">
