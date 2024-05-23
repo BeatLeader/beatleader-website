@@ -214,7 +214,7 @@
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
-		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0}}>
+		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
 					<Route path="/">
