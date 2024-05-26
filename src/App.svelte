@@ -126,23 +126,20 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-<!-- {#if $configStore.preferences.reebanner}
+{#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
-		<a class="reelink" href="https://www.patreon.com/posts/reesabers-on-92302764" />
-		<div class="banner-spacer" />
-		<img class="reesaber-red" src="/assets/reesaber-red.webp" />
-		<span class="link-text">ReeSabers are finally on QUEST!</span>
-		<img class="reesaber-blue" src="/assets/reesaber-blue.webp" />
+		<a class="reelink" href="/settings#profile" />
+		<span class="link-text">Followers will be public, adjust your preferences!</span>
 		<button
 			class="close-banner"
 			title="Hide banner"
 			on:click|preventDefault|stopPropagation={() => {
 				$configStore = produce($configStore, draft => {
-					draft.preferences.reebanner = false;
+					draft.preferences.followersBecomingPublic = false;
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if} -->
+{/if}
 <!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
@@ -384,13 +381,13 @@
 
 <style>
 	.reebanner {
-		background-color: black;
+		background-color: rgb(48, 23, 23);
 		color: white;
 		font-size: large;
 		height: 3em;
 		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		justify-items: center;
 		align-items: center;
 		margin-bottom: -0.1em;
@@ -676,7 +673,7 @@
 		.link-text {
 			color: white;
 			text-shadow: 3px 3px black;
-			margin-bottom: 0.2em;
+			padding: 0.6em;
 		}
 
 		.replayed-link-text {

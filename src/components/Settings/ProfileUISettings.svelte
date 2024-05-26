@@ -15,6 +15,7 @@
 	import PinnedScores from '../Player/PinnedScores.svelte';
 	import Achievements from '../Player/Achievements.svelte';
 	import {debounce} from '../../utils/debounce';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let animationSign = 1;
 
@@ -76,6 +77,29 @@
 		}
 	}
 
+	let isUpdating = false;
+	let followersPublic = true;
+
+	async function toggleFollowersPublic() {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+			followersPublic = !followersPublic;
+			fetch(`${BL_API_URL}user/friends?is_public=${followersPublic}`, {method: 'PATCH', credentials: 'include'}).then(() => {
+				isUpdating = false;
+			});
+		} finally {
+			isUpdating = null;
+		}
+	}
+
+	function updateProfileSettings(account) {
+		if (account) {
+			followersPublic = !account.hideFriends;
+		}
+	}
+
 	function onCurrentDaysToCompareChange(event) {
 		currentDaysToCompare = event.detail.values[0];
 	}
@@ -111,6 +135,7 @@
 	$: playerData = $playerStore;
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
+	$: updateProfileSettings($account);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 	$: profileParts = Object.keys($configStore.profileParts);
 	$: graphLegends = Object.keys($configStore.chartLegendVisible);
@@ -132,6 +157,25 @@
 	</div>
 
 	<div class="options">
+		{#if $account?.player}
+			<section class="option full">
+				<label title="Wether to show and make public followers">Followers:</label>
+				{#if isUpdating}
+					<Spinner />
+				{/if}
+				<div class="switches">
+					<div class="single" title="Make public followers and players you follow on your profile">
+						<Switch
+							disabled={isUpdating}
+							value={followersPublic}
+							label="Public followers and following (incoming change, auto-saved)"
+							fontSize={12}
+							design="slider"
+							on:click={() => toggleFollowersPublic()} />
+					</div>
+				</div>
+			</section>
+		{/if}
 		<section class="option">
 			<label title="Determines when to show icons on player avatars">Icons on avatars</label>
 			<Select bind:value={currentAvatarIcons} options={avatarIcons} />
