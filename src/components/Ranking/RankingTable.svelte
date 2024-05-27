@@ -26,6 +26,7 @@
 	export let meta = false;
 	export let editing = false;
 	export let animationSign = 1;
+	export let playersPerPage = PLAYERS_PER_PAGE;
 
 	let currentFilters = filters;
 
@@ -258,9 +259,9 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		if (eventId) {
-			rankingStore.fetch(newType, newPage, eventId, {...newFilters}, true);
+			rankingStore.fetch(newType, playersPerPage, newPage, eventId, {...newFilters}, true);
 		} else {
-			rankingStore.fetch(newType, newPage, {...newFilters}, true);
+			rankingStore.fetch(newType, playersPerPage, newPage, {...newFilters}, true);
 		}
 	}
 
@@ -413,7 +414,7 @@
 
 	<Pager
 		totalItems={numOfPlayers}
-		itemsPerPage={PLAYERS_PER_PAGE}
+		itemsPerPage={playersPerPage}
 		itemsPerPageValues={null}
 		currentPage={page - 1}
 		loadingPage={$pending && $pending.page ? $pending.page - 1 : null}

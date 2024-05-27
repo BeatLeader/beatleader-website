@@ -40,6 +40,7 @@
 			type="followed"
 			{page}
 			{filters}
+			playersPerPage={10}
 			noIcons={true}
 			useInternalFilters={true}
 			showTypeSwitcher={false}

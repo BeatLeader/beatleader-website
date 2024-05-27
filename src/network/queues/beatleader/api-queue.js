@@ -366,15 +366,19 @@ export default (options = {}) => {
 			priority
 		);
 
-	const rankingGlobal = async (page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
-		return fetchJson(substituteVars(BL_API_RANKING_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
+	const rankingGlobal = async (count = 50, page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
+		return fetchJson(
+			substituteVars(BL_API_RANKING_URL, {page, count, ...filters}, true, true),
+			{...options, credentials: 'include'},
+			priority
+		);
 	};
 
-	const rankingCountry = async (countries, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
-		rankingGlobal(page, {...filters, countries}, priority, options);
+	const rankingCountry = async (count = 50, countries, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
+		rankingGlobal(count, page, {...filters, countries}, priority, options);
 
-	const rankingFollowed = async (page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
-		rankingGlobal(page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
+	const rankingFollowed = async (count = 50, page = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) =>
+		rankingGlobal(count, page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
 	const rankingEventGlobal = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(substituteVars(BL_API_EVENT_RANKING_URL, {page, eventId, ...filters}, true, true), options, priority);

@@ -11,14 +11,14 @@ export default () => {
 
 	const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
-	const fetchGlobal = async (page = 1, filters, priority = PRIORITY.FG_LOW, signal = null) =>
+	const fetchGlobal = async (count = 50, page = 1, filters, priority = PRIORITY.FG_LOW, signal = null) =>
 		resolvePromiseOrWaitForPending(`apiClient/ranking/global/${page}`, () =>
-			playersGlobalRankingApiClient.getProcessed({page, filters, signal, priority})
+			playersGlobalRankingApiClient.getProcessed({count, page, filters, signal, priority})
 		);
 
-	const fetchFollowed = async (page = 1, filters, priority = PRIORITY.FG_LOW, signal = null) =>
+	const fetchFollowed = async (count = 50, page = 1, filters, priority = PRIORITY.FG_LOW, signal = null) =>
 		resolvePromiseOrWaitForPending(`pageClient/ranking/followed/${page}`, () =>
-			playersFollowedRankingApiClient.getProcessed({page, filters, signal, priority})
+			playersFollowedRankingApiClient.getProcessed({count, page, filters, signal, priority})
 		);
 
 	const fetchMiniRanking = async (rank, country, countryRank, priority = PRIORITY.FG_LOW, signal = null) =>
