@@ -163,16 +163,14 @@
 				{#if isUpdating}
 					<Spinner />
 				{/if}
-				<div class="switches">
-					<div class="single" title="Make public followers and players you follow on your profile">
-						<Switch
-							disabled={isUpdating}
-							value={followersPublic}
-							label="Public followers and following (incoming change, auto-saved)"
-							fontSize={12}
-							design="slider"
-							on:click={() => toggleFollowersPublic()} />
-					</div>
+				<div class="followers-switches">
+					<Switch
+						disabled={isUpdating}
+						value={followersPublic}
+						label="Public followers and following (incoming change, auto-saved)"
+						fontSize={12}
+						design="slider"
+						on:click={() => toggleFollowersPublic()} />
 				</div>
 			</section>
 		{/if}
@@ -343,6 +341,13 @@
 		margin-bottom: 0.25em;
 	}
 	.switches {
+		display: flex;
+		grid-gap: 1em;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+		padding: 0.5em;
+	}
+	.followers-switches {
 		display: flex;
 		grid-gap: 1em;
 		flex-wrap: wrap;
