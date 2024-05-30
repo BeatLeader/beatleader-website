@@ -259,7 +259,7 @@
 		if (isNaN(newPage)) newPage = 1;
 
 		if (eventId) {
-			rankingStore.fetch(newType, playersPerPage, newPage, eventId, {...newFilters}, true);
+			rankingStore.fetch(newType, newPage, eventId, {...newFilters}, true);
 		} else {
 			rankingStore.fetch(newType, playersPerPage, newPage, {...newFilters}, true);
 		}
