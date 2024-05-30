@@ -22,7 +22,7 @@ export default () => {
 		if (!playerData) return;
 
 		return resolvePromiseOrWaitForPending(`player/${playerData.playerId}/history/${count}`, () =>
-			fetch(BL_API_URL + `player/${playerData.playerId}/history?count=${count}&leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
+			fetch(BL_API_URL + `player/${playerData.playerId}/history/compact?count=${count}&leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
 				.then(response => response.json())
 				.then(data => {
 					var processedStatsHistory = {};
