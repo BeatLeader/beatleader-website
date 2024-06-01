@@ -27,10 +27,11 @@
 		return string.charAt(0).toLowerCase() + string.slice(1);
 	}
 
-	async function updateSongKey(mapHash) {
+	async function updateSongKey(mapHash, refresh) {
 		songInfo = null;
 
-		const songInfoValue = await leaderboardsService.byHashWithScore(mapHash);
+		const mapResponse = await leaderboardsService.byHashWithScore(mapHash, refresh);
+		const songInfoValue = mapResponse.info;
 		if (songInfoValue && songInfoValue.song.id && songInfoValue.song.hash.toLowerCase() == hash.toLowerCase()) {
 			songInfo = songInfoValue.song;
 			leaderboards = songInfoValue.leaderboards;
@@ -38,6 +39,10 @@
 
 			showDiffIcons = leaderboards.some(el => el.difficulty.modeName != 'Standard');
 			leaderboardUrl = `/leaderboard/global/${leaderboards[0].id}/1`;
+
+			if (!refresh && mapResponse.cached) {
+				updateSongKey(mapHash, true);
+			}
 		}
 	}
 

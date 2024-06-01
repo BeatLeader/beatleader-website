@@ -19,12 +19,14 @@ export default () => {
 		hash = hash.toLowerCase();
 
 		var mapperInfo = await keyValueRepository().get('leaderboards-score-' + hash);
+		var cached = true;
 		if (!cacheOnly && (forceUpdate || !mapperInfo)) {
 			mapperInfo = await leaderboardsApiClient.getProcessed({hash, my_scores: true, signal, priority});
 			keyValueRepository().set(mapperInfo, 'leaderboards-score-' + hash);
+			cached = false;
 		}
 
-		return mapperInfo;
+		return {info: mapperInfo, cached};
 	};
 
 	return {
