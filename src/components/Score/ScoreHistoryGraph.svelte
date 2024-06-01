@@ -22,7 +22,7 @@
 				var scoresList = scores.filter(s => {
 					return scoreHistoryLegend['y' + (s.type > 1 ? s.type - 1 : '')];
 				});
-				if (!scoresList.find(s => s.score == score.score)) {
+				if (!scoresList.find(s => s.modifiedScore == score.score)) {
 					scoresList.push({
 						...score,
 						type: 1,
@@ -33,7 +33,7 @@
 					});
 				}
 
-				if (score.scoreImprovement && !scoresList.find(s => s.score == score.score - score.scoreImprovement.score)) {
+				if (score.scoreImprovement && !scoresList.find(s => s.modifiedScore == score.score - score.scoreImprovement.score)) {
 					const improvement = score.scoreImprovement;
 					scoresList.push({
 						type: 1,
