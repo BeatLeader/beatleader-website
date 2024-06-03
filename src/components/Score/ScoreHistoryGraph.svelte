@@ -22,6 +22,11 @@
 				var scoresList = scores.filter(s => {
 					return scoreHistoryLegend['y' + (s.type > 1 ? s.type - 1 : '')];
 				});
+				scoresList.forEach(element => {
+					if (!element.replay && element.replayCopy) {
+						element.replay = element.replayCopy;
+					}
+				});
 				if (!scoresList.find(s => s.modifiedScore == score.score)) {
 					scoresList.push({
 						...score,
