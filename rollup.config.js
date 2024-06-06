@@ -14,13 +14,13 @@ import less from 'rollup-plugin-less';
 
 const production = !process.env.ROLLUP_WATCH;
 
-const buildVersion = execSync('git rev-parse --short HEAD').toString();
+// const buildVersion = execSync('git rev-parse --short HEAD').toString();
 fs.writeFileSync(
 	'build-info.js',
 	'export default ' +
 		JSON.stringify({
 			buildDate: new Date().toISOString().substr(0, 19).replace('T', ' ') + ' UTC',
-			buildVersion,
+			buildVersion: '',
 		})
 );
 
