@@ -1,5 +1,5 @@
 <script>
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import {dateFromUnix, formatDate, formatDateRelative, getTimeStringColor} from '../../utils/date';
 	import Button from '../Common/Button.svelte';
 	import {configStore} from '../../stores/config';
@@ -198,14 +198,14 @@
 										url={`${
 											$configStore.preferences.webPlayer == 'arcviewer'
 												? 'https://allpoland.github.io/ArcViewer/?replayURL='
-												: 'https://replay.beatleader.xyz/?link='
+												: `${BL_REPLAYS_URL}?link=`
 										}${score?.replay}`}
 										on:click={() =>
 											showPreview(
 												`${
 													$configStore.preferences.webPlayer == 'arcviewer'
 														? 'https://allpoland.github.io/ArcViewer/?replayURL='
-														: 'https://replay.beatleader.xyz/?link='
+														: `${BL_REPLAYS_URL}?link=`
 												}${score?.replay}`
 											)}
 										cls="replay-button-alt"

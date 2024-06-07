@@ -8,7 +8,7 @@
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import {capitalize, opt} from '../../utils/js';
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
@@ -114,9 +114,9 @@
 			}
 		} else {
 			if (replayLink?.length) {
-				return `https://replay.beatleader.xyz/?link=${replayLink}`;
+				return `${BL_REPLAYS_URL}?link=${replayLink}`;
 			} else if (scoreId) {
-				return `https://replay.beatleader.xyz/?scoreId=${scoreId}`;
+				return `${BL_REPLAYS_URL}?scoreId=${scoreId}`;
 			}
 		}
 		return null;

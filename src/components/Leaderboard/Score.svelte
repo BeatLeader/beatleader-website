@@ -13,6 +13,7 @@
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import {describePlatform, getControllerForEnum, getHeadsetForHMD} from '../../utils/beatleader/format';
+	import {BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let leaderboardId = null;
 	export let score = null;
@@ -180,14 +181,14 @@
 								url={`${
 									$configStore.preferences.webPlayer == 'arcviewer'
 										? 'https://allpoland.github.io/ArcViewer/?scoreID='
-										: 'https://replay.beatleader.xyz/?scoreId='
+										: `${BL_REPLAYS_URL}?scoreId=`
 								}${score?.score.id}`}
 								on:click={() =>
 									showPreview(
 										`${
 											$configStore.preferences.webPlayer == 'arcviewer'
 												? 'https://allpoland.github.io/ArcViewer/?scoreID='
-												: 'https://replay.beatleader.xyz/?scoreId='
+												: `${BL_REPLAYS_URL}?scoreId=`
 										}${score?.score.id}`
 									)}
 								cls="replay-button-alt"

@@ -17,6 +17,15 @@ export const BL_API_URL = (() => {
 		return '/cors/blapi/';
 	}
 })();
+export const BL_REPLAYS_URL = (() => {
+	if (location.host.includes('stage')) {
+		return 'https://stage.replay.beatleader.net/';
+	} else if (location.host.includes('beatleader.net')) {
+		return 'https://replay.beatleader.net/';
+	} else {
+		return 'https://replay.beatleader.xyz/';
+	}
+})();
 export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
