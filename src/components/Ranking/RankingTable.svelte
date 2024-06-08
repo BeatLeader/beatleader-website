@@ -391,7 +391,10 @@
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div
-				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''} {type}-rating"
+				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''} {eventId == 50 &&
+				(player.playerInfo.rank == 1 || player.playerInfo.rank == 10 || player.playerInfo.rank == 50)
+					? 'event-winner'
+					: ''} {type}-rating"
 				in:fly|global={{delay: idx * 10, x: animationSign * 100}}>
 				<PlayerCard
 					{player}
@@ -514,6 +517,10 @@
 	.edit-enabled :global(.score-filters .filter.hidden:hover) {
 		filter: none;
 		opacity: 0.5 !important;
+	}
+
+	:global(.ranking-grid-row.event-winner .player-card) {
+		background-color: #61082c !important;
 	}
 
 	@media screen and (max-width: 500px) {

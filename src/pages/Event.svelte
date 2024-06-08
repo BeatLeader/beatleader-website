@@ -158,9 +158,13 @@
 	}
 
 	let topPlayerId;
+	let tenthPlayerId;
+	let fifteethPlayerId;
 	function onPlayersFetched(event) {
-		if (event.detail && event.detail.length) {
+		if (event.detail && event.detail.length && currentFilters.countries.length == 0 && currentFilters.search.length == 0) {
 			topPlayerId = event.detail[0].playerId;
+			tenthPlayerId = event.detail.length > 10 ? event.detail[9].playerId : null;
+			fifteethPlayerId = event.detail.length > 50 ? event.detail[49].playerId : null;
 		}
 	}
 
@@ -294,6 +298,11 @@
 				</span>
 			</ContentBox>
 		{/if}
+		{#if eventId == 50}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span> This event had 3 champions: first, 10th and 50th player! </span>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
@@ -334,7 +343,7 @@
 		</ContentBox>
 	</article>
 
-	{#if mainPlayerId && topPlayerId && mainPlayerId == topPlayerId && currentEvent && Date.now() / 1000 < currentEvent.endDate + WEEKSECONDS}
+	{#if mainPlayerId && topPlayerId && (mainPlayerId == topPlayerId || (eventId == 50 && (mainPlayerId == tenthPlayerId || mainPlayerId == fifteethPlayerId))) && currentEvent && Date.now() / 1000 < currentEvent.endDate + WEEKSECONDS}
 		<div class="confetti">
 			<Confetti x={[-5, 5]} y={[0, 0.1]} delay={[500, 2000]} size="20" infinite duration="5000" amount="200" fallDistance="100vh" />
 		</div>

@@ -59,7 +59,7 @@ body {
         .player-card {
             padding: 0.4rem .8rem;
             margin: 0 !important;
-            background: rgba(50, 50, 50, 0) !important;
+            background: rgba(50, 50, 50, 0);
             border-radius: 0;
             font-size: .8rem;
             border: none !important;
@@ -110,6 +110,10 @@ body {
                     content: "";
                 }
             }
+        }
+
+        .player-card:hover {
+            background-color: transparent;
         }
 
         .fa-user-plus {
