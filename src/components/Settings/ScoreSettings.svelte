@@ -290,14 +290,24 @@
 
 	let isUpdating = false;
 	let showStatsPublic = false;
+	let showStatsPublicPinned = true;
 
 	async function toggleHistoryPublic() {
 		if (isUpdating) return;
 
 		try {
 			isUpdating = true;
-			showStatsPublic = !showStatsPublic;
 			await account.update({showStatsPublic});
+		} finally {
+			isUpdating = null;
+		}
+	}
+	async function togglePinnedHistoryPublic() {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+			await account.update({showStatsPublicPinned});
 		} finally {
 			isUpdating = null;
 		}
@@ -306,6 +316,7 @@
 	function updateProfileSettings(account) {
 		if (account?.player?.profileSettings) {
 			showStatsPublic = account.player.profileSettings.showStatsPublic;
+			showStatsPublicPinned = account.player.profileSettings.showStatsPublicPinned;
 		}
 	}
 
@@ -374,7 +385,9 @@
 				<section class="option full">
 					<label title="Wether to show and make public scores history">Score history:</label>
 					{#if isUpdating}
-						<Spinner />
+						<div class="spinner-container">
+							<Spinner />
+						</div>
 					{/if}
 					<div class="switches">
 						<div class="single" title="Display score history(all the attempts and clears) in the details">
@@ -394,6 +407,15 @@
 								fontSize={12}
 								design="slider"
 								on:click={() => toggleHistoryPublic()} />
+						</div>
+						<div class="single" title="Make play count viewable on pinned scores">
+							<Switch
+								disabled={isUpdating}
+								value={showStatsPublicPinned}
+								label="Public play count for pinned scores (auto-synced)"
+								fontSize={12}
+								design="slider"
+								on:click={() => togglePinnedHistoryPublic()} />
 						</div>
 					</div>
 				</section>
@@ -463,6 +485,9 @@
 		display: flex;
 		flex-direction: column;
 	}
+	.option {
+		position: relative;
+	}
 	.options {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
@@ -470,6 +495,11 @@
 		align-items: start;
 		justify-items: start;
 		margin-top: 1rem;
+	}
+	.spinner-container {
+		position: absolute;
+		top: 50%;
+		left: 50%;
 	}
 	* :global(.option) {
 		display: flex;
