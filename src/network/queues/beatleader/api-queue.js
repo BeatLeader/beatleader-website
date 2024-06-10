@@ -26,6 +26,7 @@ export const BL_REPLAYS_URL = (() => {
 		return 'https://replay.beatleader.xyz/';
 	}
 })();
+export const BL_RENDERER_API_URL = 'https://render.beatleader.xyz/';
 export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';

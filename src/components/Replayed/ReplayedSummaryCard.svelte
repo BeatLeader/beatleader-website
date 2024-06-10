@@ -7,7 +7,7 @@
 	import {onMount} from 'svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
-	import {BL_API_URL, CURRENT_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_RENDERER_API_URL, CURRENT_URL} from '../../network/queues/beatleader/api-queue';
 	import {MetaTags} from 'svelte-meta-tags';
 	import ssrConfig from '../../ssr-config';
 
@@ -72,7 +72,9 @@
 		try {
 			screenshoting = true;
 			const blob = await fetch(
-				`${BL_API_URL}screenshot/464x800/replayed/general/replayed${summaryType === 'mapper' ? '/mapper' : ''}?color=${colorStartIndex}`,
+				`${BL_RENDERER_API_URL}screenshot/464x800/replayed/general/replayed${
+					summaryType === 'mapper' ? '/mapper' : ''
+				}?color=${colorStartIndex}`,
 				{credentials: 'include'}
 			).then(response => response.blob());
 
