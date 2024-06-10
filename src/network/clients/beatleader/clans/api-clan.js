@@ -39,7 +39,7 @@ const process = response => {
 					lastWeekPp,
 					lastWeekRank,
 					lastWeekCountryRank,
-					clanOrder
+					clanOrder,
 				},
 				others: {
 					difference,
@@ -69,7 +69,18 @@ const create = async ({
 	fullResponse = false,
 	...queueOptions
 } = {}) => {
-	const response = await queue.BEATLEADER_API.clanCreate(name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority, queueOptions);
+	const response = await queue.BEATLEADER_API.clanCreate(
+		name,
+		tag,
+		description,
+		bio,
+		color,
+		icon,
+		playerChangesCallback,
+		clanRankingDiscordHook,
+		priority,
+		queueOptions
+	);
 
 	return fullResponse ? response : getResponseBody(response);
 };
@@ -87,7 +98,45 @@ const update = async ({
 	fullResponse = false,
 	...queueOptions
 } = {}) => {
-	const response = await queue.BEATLEADER_API.clanUpdate(name, tag, description, bio, color, icon, playerChangesCallback, clanRankingDiscordHook, priority, queueOptions);
+	const response = await queue.BEATLEADER_API.clanUpdate(
+		name,
+		tag,
+		description,
+		bio,
+		color,
+		icon,
+		playerChangesCallback,
+		clanRankingDiscordHook,
+		priority,
+		queueOptions
+	);
+
+	return fullResponse ? response : getResponseBody(response);
+};
+
+const editRichBio = async ({value, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+	const response = await queue.BEATLEADER_API.clanEditRichBio(value, priority, queueOptions);
+
+	return fullResponse ? response : getResponseBody(response);
+};
+
+const updatePlaylist = async ({
+	id,
+	title,
+	link,
+	description,
+	icon,
+	priority = queue.PRIORITY.FG_HIGH,
+	fullResponse = false,
+	...queueOptions
+} = {}) => {
+	const response = await queue.BEATLEADER_API.clanUpdatePlaylist(id, title, link, description, icon, priority, queueOptions);
+
+	return fullResponse ? response : getResponseBody(response);
+};
+
+const deletePlaylist = async ({id, priority = queue.PRIORITY.FG_HIGH, fullResponse = false, ...queueOptions} = {}) => {
+	const response = await queue.BEATLEADER_API.clanDeletePlaylist(id, priority, queueOptions);
 
 	return fullResponse ? response : getResponseBody(response);
 };
@@ -148,6 +197,9 @@ const createClanClient = () => {
 		getWithMaps,
 		create,
 		update,
+		editRichBio,
+		updatePlaylist,
+		deletePlaylist,
 		accept,
 		reject,
 		remove,

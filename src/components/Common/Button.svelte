@@ -20,10 +20,12 @@
 	export let loading = false;
 	export let url = null;
 	export let onlyurl = false;
+	export let urltarget = '_self';
 	export let square = false,
 		squareSize = '0';
 	export let preventDefault = false;
 	export let animated = false;
+	export let animationOpacity = 0.6;
 
 	if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -162,12 +164,14 @@
 {#if url && url.length}
 	<a
 		href={url}
+		target={urltarget}
 		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}; {square
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
-			--hovered-scale:{hoveredScale};"
+			--hovered-scale:{hoveredScale};
+			--animation-opacity:{animationOpacity};"
 		on:mousedown={HandleMouseDown}
 		on:mouseup={HandleMouseUp}
 		on:mouseleave={HandleMouseUp}
@@ -196,7 +200,8 @@
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
-			--hovered-scale:{hoveredScale};"
+			--hovered-scale:{hoveredScale};
+			--animation-opacity:{animationOpacity};"
 		on:mousedown={HandleMouseDown}
 		on:mouseup={HandleMouseUp}
 		on:mouseleave={HandleMouseUp}
@@ -247,16 +252,20 @@
 		border-color: var(--active-border, #b5b5b5);
 	}
 
+	.button.animated {
+		transition: opacity ease 0.2s;
+		opacity: var(--animation-opacity);
+		transform: scale(100%);
+	}
+
 	.button.animated:hover {
 		transform: scale(var(--hovered-scale));
+		opacity: 1;
+		background: var(--bg-color, #3273dc) linear-gradient(0deg, transparent, #ffffff66) !important;
 	}
 
 	.button:active {
 		background-color: var(--active-bg-color, #fff);
-	}
-
-	a.button[disabled] {
-		opacity: 1;
 	}
 
 	button[disabled],

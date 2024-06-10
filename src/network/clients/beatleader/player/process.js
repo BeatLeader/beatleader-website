@@ -5,6 +5,7 @@ export default response => {
 	const {
 		id: playerId,
 		name,
+		alias,
 		country,
 		countryRank,
 		badges,
@@ -18,6 +19,7 @@ export default response => {
 		lastWeekPp,
 		lastWeekRank,
 		lastWeekCountryRank,
+		richBioTimeset,
 		banned,
 		bot,
 		banDescription,
@@ -34,9 +36,6 @@ export default response => {
 	} = response;
 
 	let profilePicture = avatar;
-	let externalProfileCorsUrl = externalProfileUrl
-		? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/')
-		: null;
 
 	if (scoreStats) {
 		[
@@ -54,6 +53,7 @@ export default response => {
 	}
 
 	if (scoreStats?.topHMD) {
+		scoreStats.rawTopHMD = scoreStats.topHMD;
 		scoreStats.topHMD = getHeadsetForHMD(scoreStats.topHMD)?.name ?? '';
 	}
 
@@ -95,11 +95,11 @@ export default response => {
 	return {
 		playerId,
 		name,
+		alias,
 		role,
 		playerInfo: {
 			avatar: profilePicture,
 			externalProfileUrl,
-			externalProfileCorsUrl,
 			countries: [{country, rank: countryRank}],
 			pp,
 			accPp,
@@ -113,6 +113,7 @@ export default response => {
 			lastWeekPp,
 			lastWeekRank,
 			lastWeekCountryRank,
+			richBioTimeset,
 			badges,
 			role,
 			sponsor,

@@ -12,7 +12,6 @@
 	export let twitchVideos = null;
 	export let playerId = null;
 	export let scoresStats = null;
-	export let ssBadges = null;
 	export let playerInfo = null;
 	export let playerData = null;
 
@@ -43,7 +42,6 @@
 							playerId,
 							playerInfo,
 							scoresStats: scoresStatsFinal,
-							ssBadges,
 						},
 						delay: 500,
 					},

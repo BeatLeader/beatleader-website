@@ -25,6 +25,7 @@
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
 	import RandomRain from '../components/Common/RandomRain.svelte';
+	import Bio from '../components/Player/Bio/Bio.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -161,6 +162,7 @@
 		.join(' / ')} - ${ssrConfig.name}`;
 
 	$: playerData = $playerStore;
+	$: console.log(playerData);
 	$: playerId = playerData?.playerId ?? null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
 
@@ -215,9 +217,11 @@
 				fixedBrowserTitle={browserTitle}
 				startEditing={editing} />
 
+			<Bio {playerId} {playerData} {playerInfo} {ssBadges} {scoresStats} edit={$editModel} />
+
 			{#if !$editModel}
 				{#if $configStore.profileParts.graphs}
-					<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {playerData} />
+					<CardsCarousel {playerId} {playerInfo} {scoresStats} {playerData} />
 				{/if}
 				{#if $configStore.profileParts.pinnedScores}
 					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />

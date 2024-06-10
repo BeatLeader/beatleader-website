@@ -75,7 +75,9 @@
 		}
 	}
 
-	$: $account?.player?.profileSettings?.starredFriends, (starredFollowedIds = $account?.player?.profileSettings?.starredFriends ?? []);
+	$: console.log($account?.player?.profileSettings?.starredFriends);
+	$: $account?.player?.profileSettings?.starredFriends,
+		(starredFollowedIds = $account?.player?.profileSettings?.starredFriends?.filter(id => id.length) ?? []);
 	$: followedSorted =
 		(sortBy,
 		($followed ?? [])

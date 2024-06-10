@@ -11,6 +11,7 @@ export default response => {
 				country,
 				countryRank,
 				id: playerId,
+				alias,
 				name,
 				pp,
 				accPp,
@@ -33,6 +34,7 @@ export default response => {
 			return {
 				playerId,
 				name,
+				alias,
 				playerInfo: {
 					avatar,
 					countries: [{country, rank: countryRank, lastWeekCountryRank}],

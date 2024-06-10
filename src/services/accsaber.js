@@ -140,7 +140,10 @@ export default () => {
 		}
 		`,
 				{playerId}
-			).then(r => r.data.players.totalCount > 0);
+			).then(r => {
+				console.log(r);
+				return r.data.players.totalCount > 0;
+			});
 		}
 		return await playersMap[playerId];
 	};

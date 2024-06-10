@@ -73,7 +73,7 @@
 		{/if}
 	</div>
 	{#if hiddenScoresStats?.length || hiddenAccStats?.length}
-		<div style="margin: 0; padding: 0;">
+		<div style="margin: 0; padding: 0; margin-top: 0.2em; margin-left: 0.3em;">
 			<span
 				class="reveal clickable"
 				class:opened={showHidden}
@@ -89,10 +89,6 @@
 	.wrapper {
 		display: flex;
 		align-items: flex-start;
-	}
-
-	.beatleader-summary {
-		flex-grow: 1;
 	}
 
 	.reveal {

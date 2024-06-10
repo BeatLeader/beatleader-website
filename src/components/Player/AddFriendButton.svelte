@@ -1,6 +1,7 @@
 <script>
 	import createAccountStore from '../../stores/beatleader/account';
 	import followed from '../../stores/beatleader/followed';
+	import Button from '../Common/Button.svelte';
 	import Spinner from '../Common/Spinner.svelte';
 
 	export let playerId = null;
@@ -36,11 +37,16 @@
 	<div class="fas fa-home icon main-profile" title="This is your profile" />
 {:else if operationInProgress}
 	<Spinner />
+{:else if isFollowed}
+	<Button
+		type="danger"
+		square={true}
+		animated={true}
+		title="Remove from Followed"
+		iconFa="fas fa-user-minus"
+		on:click={() => onClick('remove')} />
 {:else}
-	<div
-		class={isFollowed ? 'fas fa-user-minus icon remove-followed' : 'fas fa-user-plus icon add-followed'}
-		on:click={() => onClick(isFollowed ? 'remove' : 'add')}
-		title={isFollowed ? 'Remove from Followed' : 'Add to Followed'} />
+	<Button type="primary" square={true} animated={true} title="Add to Followed" iconFa="fas fa-user-plus" on:click={() => onClick('add')} />
 {/if}
 
 <style>
@@ -54,23 +60,5 @@
 
 	.icon.main-profile {
 		background: var(--faded);
-	}
-
-	.icon.remove-followed {
-		background: var(--decrease);
-		cursor: pointer;
-	}
-
-	.icon.remove-followed:hover {
-		background: var(--decrease) linear-gradient(0deg, transparent, #ffffff66);
-	}
-
-	.icon.add-followed {
-		background: var(--alternate);
-		cursor: pointer;
-	}
-
-	.icon.add-followed:hover {
-		background: var(--alternate) linear-gradient(0deg, transparent, #ffffff66);
 	}
 </style>

@@ -23,7 +23,7 @@
 
 	import Spinner from '../Common/Spinner.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_RENDERER_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let playerData;
 	export let isLoading = false;
@@ -144,8 +144,8 @@
 	async function takeScreenshot() {
 		try {
 			screenshoting = true;
-			const blob = await fetch(`${BL_API_URL}screenshot/800x600/myprofile/${GLOBAL_LEADERBOARD_TYPE}/u/${playerId}`).then(response =>
-				response.blob()
+			const blob = await fetch(`${BL_RENDERER_API_URL}screenshot/800x600/myprofile/${GLOBAL_LEADERBOARD_TYPE}/u/${playerId}`).then(
+				response => response.blob()
 			);
 			try {
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
@@ -239,13 +239,19 @@
 	{/if}
 	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
 	<div style="margin: 0; padding: 0;">
-		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
+		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" animated={true} on:click={copyUrl} />
 	</div>
 	<div style="margin: 0; padding: 0;">
 		{#if screenshoting}
 			<div class="screenshotSpinner"><Spinner /></div>
 		{:else}
-			<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+			<Button
+				type="text"
+				title="Screenshot profile"
+				iconFa="fas fa-camera"
+				cls="screenshotButton"
+				animated={true}
+				on:click={takeScreenshot} />
 		{/if}
 	</div>
 
@@ -318,6 +324,7 @@
 						label="Save"
 						iconFa="fas fa-check"
 						noMargin={true}
+						animated={true}
 						on:click={onSaveEditModel} />
 					<Button
 						disabled={$editModel.isSaving}
@@ -325,6 +332,7 @@
 						label="Cancel"
 						iconFa="fas fa-times"
 						noMargin={true}
+						animated={true}
 						on:click={onCancelEditModel} />
 				</div>
 			{/if}
@@ -367,10 +375,6 @@
 		align-items: center;
 		margin-top: 0.5rem;
 		width: 100%;
-		min-height: 1.5rem;
-	}
-
-	.role-icons.editing {
 	}
 
 	.avatar-and-roles {

@@ -49,6 +49,7 @@
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
+	import AdminPage from './pages/Admin.svelte';
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
@@ -224,6 +225,11 @@
 					<Route path="/u/:initialPlayerId/*initialParams" let:params let:location>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
 					</Route>
+
+					<Route path="/admin/:type" let:params let:location>
+						<AdminPage initialType={params.type} {location} />
+					</Route>
+
 					<Route path="/staff" let:location>
 						<StaffDashboard {location} />
 					</Route>

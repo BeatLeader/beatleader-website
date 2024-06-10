@@ -26,14 +26,14 @@ export const BL_REPLAYS_URL = (() => {
 		return 'https://replay.beatleader.xyz/';
 	}
 })();
+export const BL_RENDERER_API_URL = 'https://render.beatleader.xyz/';
 export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
-export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}&keepOriginalId=true';
-export const BL_API_PLAYER_SAVER_INFO_URL =
-	BL_API_URL + 'player/beatsaver/${playerId}?leaderboardContext=${leaderboardContext}&keepOriginalId=true';
+export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}';
+export const BL_API_PLAYER_SAVER_INFO_URL = BL_API_URL + 'player/beatsaver/${playerId}?leaderboardContext=${leaderboardContext}';
 export const BL_API_SCORES_URL =
 	BL_API_URL +
 	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
@@ -85,6 +85,8 @@ export const BL_API_CLAN_UPDATE_URL =
 	'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
 export const BL_API_CLAN_ACCEPT_URL = BL_API_URL + 'clan/accept?id=${id}';
 export const BL_API_CLAN_REJECT_URL = BL_API_URL + 'clan/reject?id=${id}&ban=${ban}';
+export const BL_API_CLAN_EDIT_BIO = BL_API_URL + 'clan/richbio';
+export const BL_API_CLAN_UPDATE_PLAYLIST_URL = BL_API_URL + 'clan/playlist?id=${id}&title=${title}&description=${description}&link=${link}';
 export const BL_API_CLAN_REMOVE_URL = BL_API_URL + 'clan';
 export const BL_API_CLAN_LEAVE_URL = BL_API_URL + 'clan/leave?id=${id}';
 export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}';
@@ -495,6 +497,40 @@ export default (options = {}) => {
 			priority
 		);
 
+	const clanEditRichBio = async (value, priority = PRIORITY.FG_HIGH, options = {}) =>
+		fetchHtml(
+			BL_API_CLAN_EDIT_BIO,
+			{...options, body: value, retries: 0, method: 'PUT', credentials: 'include', maxAge: 1, cacheTtl: null},
+			priority
+		);
+
+	const clanUpdatePlaylist = async (id, title, link, description, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
+		fetchHtml(
+			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id, title, link, description}, true, true, encodeURIComponent),
+			{
+				body: icon instanceof ArrayBuffer ? icon : null,
+				...options,
+				retries: 0,
+				method: 'PUT',
+				credentials: 'include',
+				maxAge: 1,
+				cacheTtl: null,
+			},
+			priority
+		);
+	const clanDeletePlaylist = async (id, priority = PRIORITY.FG_HIGH, options = {}) =>
+		fetchHtml(
+			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id}, true, true, encodeURIComponent),
+			{
+				...options,
+				retries: 0,
+				method: 'DELETE',
+				credentials: 'include',
+				maxAge: 1,
+				cacheTtl: null,
+			},
+			priority
+		);
 	const clanAccept = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
 			substituteVars(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true, encodeURIComponent),
@@ -579,6 +615,9 @@ export default (options = {}) => {
 			{...options, credentials: 'include'},
 			priority
 		);
+
+	const rankGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_RANK_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
@@ -670,6 +709,9 @@ export default (options = {}) => {
 		clanRankingScores,
 		clanCreate,
 		clanUpdate,
+		clanEditRichBio,
+		clanUpdatePlaylist,
+		clanDeletePlaylist,
 		clanAccept,
 		clanReject,
 		clanRemove,
@@ -679,6 +721,7 @@ export default (options = {}) => {
 		clanInvite,
 		clanCancelInvite,
 		accGraph,
+		rankGraph,
 		addFollowed,
 		removeFollowed,
 		minirankings,

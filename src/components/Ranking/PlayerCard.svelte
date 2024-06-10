@@ -30,10 +30,10 @@
 
 	const dispatch = createEventDispatcher();
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function navigateToPlayer(player) {
+		if (!player) return;
 
-		navigate(`/u/${playerId}?${playerClickFilter ?? ''}`);
+		navigate(`/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`);
 	}
 
 	function onPlayerClick(event, player) {
@@ -49,7 +49,7 @@
 
 		if (!player) return;
 
-		navigateToPlayer(player.playerId);
+		navigateToPlayer(player);
 	}
 
 	function onCountryClick(player) {

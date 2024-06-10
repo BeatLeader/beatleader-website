@@ -114,4 +114,9 @@
 	.mods:empty {
 		display: none !important;
 	}
+
+	:global(*:not(.compare) > .badge.nominated-pp) {
+		border: 2px dashed #ffffffb3;
+		--badge-color: transparent !important;
+	}
 </style>

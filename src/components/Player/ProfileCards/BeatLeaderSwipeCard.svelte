@@ -1,6 +1,5 @@
 <script>
 	import BlChart from '../Charts/BlChart.svelte';
-	import BlBadges from '../BlBadges.svelte';
 	import AccHistoryChart from '../Charts/AccHistoryChart.svelte';
 	import Switcher from '../../Common/Switcher.svelte';
 	import SkillTriangleChart from '../Charts/SkillTriangleChart.svelte';
@@ -8,7 +7,6 @@
 
 	export let playerId = null;
 	export let scoresStats = null;
-	export let ssBadges = null;
 	export let playerInfo = null;
 
 	const allSwitcherOptions = [
@@ -61,9 +59,6 @@
 </script>
 
 <div class="beatleader-swipe-card">
-	{#if ssBadges}
-		<BlBadges badges={ssBadges} />
-	{/if}
 	{#if selectedOption}
 		<div class="chart">
 			<svelte:component this={chartComponent} {...chartComponentProps} on:height-changed />

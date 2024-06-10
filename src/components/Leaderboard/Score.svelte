@@ -42,10 +42,10 @@
 		}
 	};
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function navigateToPlayer(player) {
+		if (!player) return;
 
-		navigate(`/u/${playerId}`);
+		navigate(`/u/${player.alias ?? player.playerId}`);
 	}
 
 	$: priorityModifiers = Object.keys(modifiers ?? {})
@@ -115,7 +115,7 @@
 					player={score.player}
 					type={type === 'accsaber' ? 'accsaber/date' : null}
 					hideFlag={$configStore?.leaderboardPreferences?.show?.country === false || isBot}
-					on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
+					on:click={score.player ? () => navigateToPlayer(score.player) : null} />
 
 				{#if !hideClans && $configStore?.leaderboardPreferences?.show?.clans !== false}
 					<ClanBadges player={score.player} />

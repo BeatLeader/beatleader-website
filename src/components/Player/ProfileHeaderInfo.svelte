@@ -15,6 +15,7 @@
 	import ClanBadges from './ClanBadges.svelte';
 	import BanForm from './BanForm.svelte';
 	import ProfileChange from './ProfileChange.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let name;
 	export let playerInfo;
@@ -75,6 +76,32 @@
 		return result;
 	}
 
+	function formatAliasRequestStatus(status) {
+		switch (status) {
+			case 1:
+				return 'Open';
+			case 2:
+				return 'Accepted';
+			case 3:
+				return 'Rejected';
+		}
+
+		return 'Unknown';
+	}
+
+	function formatAliasRequestStatusColor(status) {
+		switch (status) {
+			case 1:
+				return 'yellow';
+			case 2:
+				return 'green';
+			case 3:
+				return 'red';
+		}
+
+		return 'Unknown';
+	}
+
 	let showBanForm = false;
 	let showChanges = false;
 
@@ -85,7 +112,7 @@
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: canRedact = showRedact && ((isMain && loggedInPlayer === playerId) || isAdmin);
-	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(",");
+	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(',');
 
 	function getIndex(array) {
 		if (!array || array.length == 1) {
@@ -109,7 +136,33 @@
 		}
 	}
 
+	let alias = null;
+	let aliasRequest = null;
+	let aliasRequestError = null;
+
+	function fetchAliasRequest(account) {
+		aliasRequest = account.aliasRequest;
+	}
+	function sendAliasRequest() {
+		aliasRequestError = null;
+		fetch(`${BL_API_URL}alias/request?alias=${alias}`, {method: 'POST', credentials: 'include'})
+			.then(r => {
+				console.log(r);
+				if (r.responseCode == 200) {
+					return r.json();
+				} else {
+					return r.text();
+				}
+			})
+			.then(ar => {
+				if (ar.status) {
+					aliasRequest = ar;
+				} else [(aliasRequestError = ar)];
+			});
+	}
+
 	$: history = $historyStore[playerId];
+	$: fetchAliasRequest($account);
 	$: prevLabel = getPrevLabel();
 	$: prevRank = history?.rank ? history.rank[getIndex(history.rank)] : playerInfo?.rank;
 	$: prevPp = history?.pp ? history.pp[getIndex(history.pp)] : playerInfo?.pp;
@@ -125,24 +178,12 @@
 			{#if name}
 				{#if editModel?.data}
 					<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
-				{:else if playerInfo.externalProfileUrl && showRedact}
-					<a
-						class="nickname"
-						href={playerInfo.externalProfileUrl}
-						on:click={e => {
-							e.preventDefault();
-							showProfile(playerInfo.externalProfileCorsUrl);
-						}}
-						target="_blank"
-						rel="noreferrer">
-						{name}
-					</a>
 				{:else}
 					<span class="nickname">{name}</span>
 				{/if}
 
 				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
-					<span class="clan-badges"><ClanBadges player={playerInfo} highlightMain={true} bind:editModel={editModel} /></span>
+					<span class="clan-badges"><ClanBadges player={playerInfo} highlightMain={true} bind:editModel /></span>
 				{/if}
 
 				{#if !editModel && changes && changes.length}
@@ -263,7 +304,34 @@
 		{/if}
 
 		{#if editModel?.data?.clanOrder && editModel?.data?.clanOrder !== clanOrder}
-			<span class="warning">Your contribution in the Clan Wars will only apply to your main(first) clan. You can change order only once a week.</span>
+			<span class="warning"
+				>Your contribution in the Clan Wars will only apply to your main(first) clan. You can change order only once a week.</span>
+		{/if}
+
+		{#if editModel}
+			{#if aliasRequest}
+				<div class="alias-status">
+					<span
+						>Alias request sent! Current status is <span style="color: {formatAliasRequestStatusColor(aliasRequest.status)}"
+							>{formatAliasRequestStatus(aliasRequest.status)}</span
+						></span>
+				</div>
+			{:else}
+				<div class="alias-editor">
+					<div class="prefix-and-alias-input">
+						<span class="alias-prefix">/u/</span>
+						<input type="text" class="alias-input" bind:value={alias} placeholder={$account?.player.alias ?? playerId} />
+					</div>
+
+					<span>You can change your profile link.</span>
+					<span>Submit a change request and admin will review it in 1-4 days.</span>
+
+					{#if aliasRequestError}
+						<span style="color: red;">{aliasRequestError}</span>
+					{/if}
+					<Button disabled={!(alias?.length > 2 && alias?.length < 15)} label="Submit" on:click={() => sendAliasRequest()} />
+				</div>
+			{/if}
 		{/if}
 
 		{#if error}
@@ -292,12 +360,23 @@
 	.player-nickname {
 		display: flex;
 		flex-wrap: wrap;
-		color: var(--alternate);
-		font-size: 2em;
+		font-size: 3em;
 		font-weight: bold;
-		margin: -0.2em 0em;
 		align-items: baseline;
 		margin-right: 3em;
+	}
+
+	.alias-input {
+		background-color: transparent;
+		color: white;
+		font-size: larger;
+		border-right: none;
+		margin-left: -0.2em;
+	}
+
+	.alias-prefix {
+		font-size: larger;
+		font-weight: bold;
 	}
 
 	.player-nickname.rainbow {

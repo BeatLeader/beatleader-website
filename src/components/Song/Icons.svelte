@@ -235,15 +235,25 @@
 			{/if}
 
 			{#if shownIcons.includes('bs')}
-				<a href="https://beatsaver.com/maps/{songKey}" target="_blank" rel="noreferrer">
-					<Button icon={beatSaverSvg} title="Go to Beat Saver" animated={true} noMargin={true} />
-				</a>
+				<Button
+					url="https://beatsaver.com/maps/{songKey}"
+					urltarget="_blank"
+					onlyurl={true}
+					icon={beatSaverSvg}
+					title="Go to Beat Saver"
+					animated={true}
+					noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('mapcheck')}
-				<a href="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}" target="_blank" rel="noreferrer">
-					<Button iconFa="fas fa-magnifying-glass-location" title="Check the map" animated={true} noMargin={true} />
-				</a>
+				<Button
+					url="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}"
+					urltarget="_blank"
+					onlyurl={true}
+					iconFa="fas fa-magnifying-glass-location"
+					title="Check the map"
+					animated={true}
+					noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('oneclick')}

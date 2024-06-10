@@ -527,7 +527,7 @@
 	<section class="align-content">
 		<article class="page-content" transition:fade|global>
 			<ContentBox cls="maps-box" bind:box={boxEl}>
-				<h1 class="title is-5">Hello, Loloppe! ❤️</h1>
+				<h1 class="title is-5">Loloppe! ❤️</h1>
 				{#if leaderboardsPage?.length}
 					<div class="songs">
 						{#each leaderboardsPage as map, idx (map.id)}

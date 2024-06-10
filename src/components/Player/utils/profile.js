@@ -55,8 +55,6 @@ function updateScoresStats(playerData) {
 				},
 				{key: 'peakRank', title: 'Highest achieved ranking position', label: 'Peak rank', bgColor: 'var(--ppColour)'},
 				{key: 'averageRank', label: 'Average rank', title: 'Average rank', digits: 2, prefix: '#', bgColor: 'var(--selected)'},
-				{key: 'topPlatform', label: 'Platform', title: 'Last 50 scores top platform', bgColor: 'var(--selected)'},
-				{key: 'topHMD', label: 'Headset', title: 'Last 50 scores top headset', bgColor: 'var(--selected)'},
 				{
 					key: 'rankedTop1Score',
 					title: 'Score sum from ranked podium scores(#1 - 5, #2 - 3, #3 - 1)',
@@ -67,8 +65,6 @@ function updateScoresStats(playerData) {
 				{key: 'top1Count', title: 'Top 1 plays count', label: "#1's", bgColor: 'var(--ppColour)'},
 				{key: 'topPercentile', label: 'Global', bgColor: 'var(--selected)', digits: 1, prefix: 'Top ', suffix: '% of players'},
 				{key: 'countryTopPercentile', label: 'Country', bgColor: 'var(--selected)', digits: 1, prefix: 'Top ', suffix: '% of players'},
-				{key: 'authorizedReplayWatched', label: 'My replays watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
-				{key: 'watchedReplays', label: 'Replays I watched', bgColor: 'var(--selected)', digits: 0, suffix: ''},
 		  ]
 		: [];
 

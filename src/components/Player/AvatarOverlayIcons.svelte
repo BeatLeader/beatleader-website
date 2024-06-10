@@ -20,27 +20,6 @@
 	const account = createAccountStore();
 	const clanService = createClanService();
 
-	let operationInProgress = false;
-	async function onFollowedChange(op) {
-		if (!playerId || !op) return;
-
-		try {
-			operationInProgress = true;
-
-			switch (op) {
-				case 'add':
-					await account.addFollowed(playerId);
-					break;
-				case 'remove':
-					await account.removeFollowed(playerId);
-					break;
-			}
-		} catch (err) {
-		} finally {
-			operationInProgress = false;
-		}
-	}
-
 	let invitationConfirmationType = null;
 	let invitingError = null;
 	async function onInvite(playerId) {
@@ -81,25 +60,7 @@
 		}
 	}
 
-	function setIndexes(twitchSocial, twitterSocial, discordSocial, beatsaverSocial, youtubeSocial) {
-		[youtubeSocial, twitchSocial, discordSocial, twitterSocial, beatsaverSocial]
-			.filter(s => s)
-			.forEach((s, index) => {
-				s.index = index;
-			});
-	}
-
 	$: isMain = playerId && $account?.id === playerId;
-	$: loggedInPlayer = $account?.id;
-	$: isFollowed = playerId && !!$followed?.find(f => f?.playerId === playerId);
-	$: showAvatarIcons = $configStore?.preferences?.iconsOnAvatars ?? 'only-when-needed';
-
-	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
-	$: twitterSocial = playerInfo.socials?.find(s => s?.service === 'Twitter');
-	$: discordSocial = playerInfo.socials?.find(s => s?.service === 'Discord');
-	$: beatsaverSocial = playerInfo.socials?.find(s => s?.service === 'BeatSaver');
-	$: youtubeSocial = playerInfo.socials?.find(s => s?.service === 'YouTube');
-	$: setIndexes(twitchSocial, twitterSocial, discordSocial, beatsaverSocial, youtubeSocial);
 
 	$: isUserFounderOfTheClan = !!$account?.clan;
 	$: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
@@ -131,18 +92,6 @@
 	{/if}
 
 	<nav class:main={isMain}>
-		{#if loggedInPlayer && !isMain && (showAvatarIcons === 'show' || (showAvatarIcons === 'only-when-needed' && !isFollowed))}
-			<Button
-				square={true}
-				squareSize="1.7rem"
-				title={isFollowed ? 'Remove from Followed' : 'Add to Followed'}
-				iconFa={isFollowed ? 'fas fa-user-minus' : 'fas fa-user-plus'}
-				type={isFollowed ? 'danger' : 'primary'}
-				loading={operationInProgress}
-				disabled={operationInProgress}
-				on:click={() => onFollowedChange(isFollowed ? 'remove' : 'add')} />
-		{/if}
-
 		{#if isUserFounderOfTheClan}
 			{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
 				<Button
@@ -157,56 +106,6 @@
 					title="Cancel invitation to the clan"
 					on:click={() => (invitationConfirmationType = 'cancel')} />
 			{/if}
-		{/if}
-
-		{#if discordSocial}
-			<Button
-				cls="button-n-{discordSocial.index}"
-				url={discordSocial.link}
-				onlyurl={true}
-				type="blurple"
-				iconFa="fab fa-discord"
-				title="{discordSocial.user} friend" />
-		{/if}
-
-		{#if twitchSocial}
-			<Button
-				cls="button-n-{twitchSocial.index}"
-				url={twitchSocial.link}
-				onlyurl={true}
-				type="twitch"
-				iconFa="fab fa-twitch"
-				title="{twitchSocial.user} streamer" />
-		{/if}
-
-		{#if twitterSocial}
-			<Button
-				cls="button-n-{twitterSocial.index}"
-				url={twitterSocial.link}
-				onlyurl={true}
-				type="twitter"
-				iconFa="fab fa-twitter"
-				title="{twitterSocial.user} drama starter" />
-		{/if}
-
-		{#if youtubeSocial}
-			<Button
-				cls="button-n-{youtubeSocial.index}"
-				url={youtubeSocial.link}
-				onlyurl={true}
-				type="danger"
-				iconFa="fab fa-youtube"
-				title="{youtubeSocial.user} influencer" />
-		{/if}
-
-		{#if beatsaverSocial}
-			<Button
-				cls="button-n-{beatsaverSocial.index}"
-				url={beatsaverSocial.link}
-				onlyurl={true}
-				type="purple"
-				icon="<img src='https://beatsaver.com/static/favicon/apple-touch-icon.png' />"
-				title="{beatsaverSocial.user} mapper" />
 		{/if}
 	</nav>
 

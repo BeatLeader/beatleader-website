@@ -19,11 +19,11 @@
 
 	$: country = opt(player, 'playerInfo.countries.0.country') ?? player?.country;
 	$: name = player?.name;
-	$: playerId = player?.playerId ?? player?.id;
+	$: playerId = player?.alias ?? player?.playerId ?? player?.id;
 </script>
 
 <a
-	href={`/u/${playerId}${type ? '/' + type : ''}/1?${playerClickFilter ?? ''}`}
+	href={`/u/${playerId}${type ? '/' + type : ''}/1${playerClickFilter ? '?' + playerClickFilter : ''}`}
 	class="player-name clickable has-pointer-events"
 	title={name}
 	bind:this={referenceElement}

@@ -27,10 +27,10 @@
 	let settingsNotificationBadge = null;
 	let clansNotification = null;
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function navigateToPlayer(player) {
+		if (!player) return;
 
-		navigate(`/u/${playerId}`);
+		navigate(`/u/${player.alias ?? player.playerId}`);
 	}
 
 	let accountMenuShown = false;
@@ -120,7 +120,7 @@
 	function calculateSignUpOptions(loggedInUser) {
 		signupOptions =
 			isTouchDevice() && player
-				? [{component: LinkMenuItem, props: {label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}}]
+				? [{component: LinkMenuItem, props: {label: 'My profile', url: `/u/${player.alias ?? player.playerId}`, class: 'touch-only'}}]
 				: [];
 
 		const isStaff = $account?.player?.playerInfo?.role
@@ -302,9 +302,9 @@
 	{#if player}
 		<div class="me nav-button">
 			<a
-				href={`/u/${player.playerId}`}
+				href={`/u/${player.alias ?? player.playerId}`}
 				on:click|preventDefault={() => {
-					if (!isTouchDevice()) navigateToPlayer(player.playerId);
+					if (!isTouchDevice()) navigateToPlayer(player);
 				}}
 				use:mobileTouch={() => (accountMenuShown = !accountMenuShown)}>
 				{#if opt(player, 'playerInfo.avatar')}

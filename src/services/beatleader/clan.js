@@ -5,7 +5,7 @@ import {PRIORITY} from '../../network/queues/http-queue';
 import {CLANS_PER_PAGE} from '../../utils/beatleader/consts';
 import {MINUTE, SECOND} from '../../utils/date';
 import createAccountStore from '../../stores/beatleader/account';
-import { processLeaderboard } from '../../network/queues/beatleader/api-queue';
+import {processLeaderboard} from '../../network/queues/beatleader/api-queue';
 
 let service = null;
 export default () => {
@@ -50,13 +50,10 @@ export default () => {
 			if (!element.leaderboard.diffInfo) {
 				element.leaderboard = processLeaderboard(element.leaderboard.id, page, {body: element.leaderboard}).leaderboard;
 			}
-			
 		});
 
-		
-
 		return response.body;
-	}
+	};
 
 	const create = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
 		if (!clan?.name || !clan.tag || !clan.color || !clan?.icon) throw new Error('Fill in all required fields');
@@ -76,6 +73,26 @@ export default () => {
 		account.setPlayerClan(clan);
 
 		return clan;
+	};
+
+	const editRichBio = async (value, priority = PRIORITY.FG_HIGH, signal = null) => {
+		await clanApiClient.editRichBio({value, signal, priority});
+
+		account.setPlayerClan(clan);
+
+		return clan;
+	};
+
+	const updatePlaylist = async (playlist, priority = PRIORITY.FG_HIGH, signal = null) => {
+		await clanApiClient.updatePlaylist({...playlist, signal, priority});
+
+		return playlist;
+	};
+
+	const deletePlaylist = async (playlist, priority = PRIORITY.FG_HIGH, signal = null) => {
+		await clanApiClient.deletePlaylist({...playlist, signal, priority});
+
+		return playlist;
 	};
 
 	const accept = async (clan, priority = PRIORITY.FG_HIGH, signal = null) => {
@@ -160,6 +177,9 @@ export default () => {
 		fetchClanPageWithMaps,
 		create,
 		update,
+		editRichBio,
+		updatePlaylist,
+		deletePlaylist,
 		accept,
 		reject,
 		remove,

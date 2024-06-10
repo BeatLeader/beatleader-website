@@ -42,6 +42,11 @@
 			link: '#leaderboard',
 			icon: 'fas fa-list',
 		},
+		{
+			name: 'April Fools',
+			link: '#aprilfools',
+			icon: 'fas fa-calendar-days',
+		},
 	];
 	var selectedNavigationIndex = navigationItems.findIndex(el => el.link == window.location.hash);
 	if (selectedNavigationIndex == -1) {
@@ -116,6 +121,8 @@
 						{:else if selectedNavigationIndex == 4}
 							<LeaderboardSettings {animationSign} />
 						{:else if selectedNavigationIndex == 5}
+							<LeaderboardSettings {animationSign} />
+						{:else if selectedNavigationIndex == 6}
 							<AccountSettings {animationSign} />
 						{/if}
 					</div>
