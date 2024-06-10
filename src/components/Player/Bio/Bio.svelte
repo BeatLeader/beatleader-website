@@ -57,11 +57,6 @@
 	$: playerInfo && getRichBioId(playerInfo);
 </script>
 
-{#if ssBadges?.length}
-	<ContentBox cls="badges-box">
-		<BlBadges badges={ssBadges} />
-	</ContentBox>
-{/if}
 {#if showDelete}
 	<Dialog
 		type="confirm"
@@ -77,7 +72,11 @@
 {/if}
 {#if playerId}
 	<ContentBox cls="bio-box">
-		<div class="bio-and-left {!richBioID ? 'bio-only-left' : ''}">
+		{#if ssBadges?.length}
+			<BlBadges badges={ssBadges} />
+		{/if}
+
+		<div class="bio-only {richBioID ? 'bottom-divider' : ''} {ssBadges?.length ? 'top-divider' : ''}">
 			{#if richBioID || edit}
 				<PlayerRichBio
 					{edit}
@@ -88,45 +87,48 @@
 					on:edit={e => onRichTextEdit(e)}
 					on:delete={e => onRichTextDelete(e)} />
 			{/if}
-
-			<div class="left-part {!richBioID ? 'left-part-only' : ''}">
-				{#if playerData}
-					<HeadsetAndPlatform {playerData} />
-				{/if}
-				<div>
-					{#if playerInfo.mapperId}
-						<RankedMapper mapperId={playerInfo.mapperId} />
-					{/if}
-					<ClanFounder {playerId} />
-				</div>
-			</div>
 		</div>
 
-		<Followers {playerId} />
+		<div class="cards-list">
+			{#if playerData}
+				<HeadsetAndPlatform {playerData} />
+			{/if}
+			{#if playerInfo.mapperId}
+				<RankedMapper mapperId={playerInfo.mapperId} />
+			{/if}
+			<ClanFounder {playerId} />
+		</div>
 
-		{#if playerInfo}
-			<div class="socials-list">
+		<div class="social-list">
+			<Followers {playerId} />
+
+			{#if playerInfo}
 				<Socials {playerInfo} />
-			</div>
-		{/if}
+			{/if}
+		</div>
 	</ContentBox>
 {/if}
 
 <style>
-	.bio-and-left {
-		display: grid;
-		grid-template-columns: 50% 50%;
-	}
-
-	.bio-only-left {
+	.bio-only {
 		display: flex;
 		gap: 1em;
+		margin-top: 0.75em;
+		border-width: 0;
+		width: 100%;
+		margin-bottom: 1em;
+	}
+
+	.top-divider {
+		border-top: 1px solid var(--row-separator);
+	}
+	.bottom-divider {
+		border-bottom: 1px solid var(--row-separator);
 	}
 
 	.left-part {
 		display: flex;
 		flex-direction: column;
-		padding: 1em 0.6em;
 		gap: 0.5em;
 	}
 
@@ -140,17 +142,30 @@
 		flex-direction: column;
 	}
 
-	.socials-list {
+	.cards-list {
 		display: flex;
+		flex-direction: row;
+		gap: 0.75em;
+		flex-wrap: wrap;
 		justify-content: center;
-		gap: 0.6em;
-		margin-bottom: -1em;
+		align-items: center;
+		width: 100%;
 	}
 
-	:global(.bio-and-left .message-body) {
+	.social-list {
+		display: flex;
+		flex-direction: row;
+		gap: 0.5em 1em;
+		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		margin-top: 1em;
+	}
+
+	:global(.bio-only .message-body) {
 		border-left: none;
 		border-radius: 0;
-		border-right: 3px solid white;
+		border-width: 0;
 	}
 
 	:global(.bio-box) {

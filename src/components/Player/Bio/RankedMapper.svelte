@@ -74,6 +74,21 @@
 {/if}
 
 <style>
+	.leader-container {
+		display: flex;
+		padding: 0.5em;
+		background-color: #3f0078;
+		border-radius: 1em;
+		max-height: 6em;
+		max-width: 28em;
+		min-width: min(28em, 100%);
+	}
+
+	@media screen and (max-width: 450px) {
+		.leader-container {
+			max-height: none;
+		}
+	}
 	.align-content {
 		display: flex;
 		align-items: flex-start !important;
@@ -195,13 +210,6 @@
 		display: flex;
 		align-items: center;
 		position: relative;
-	}
-
-	.leader-container {
-		display: flex;
-		padding: 0.5em;
-		background-color: #3f0078;
-		border-radius: 20px;
 	}
 
 	.clanImage {

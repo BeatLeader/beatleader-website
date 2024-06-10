@@ -13,80 +13,93 @@
 	$: youtubeSocial = playerInfo.socials?.find(s => s?.service === 'YouTube');
 </script>
 
-{#if steamLink}
-	<Button
-		url={steamLink}
-		cls="socials-btn"
-		onlyurl={true}
-		animated={true}
-		animationOpacity={0.8}
-		type="gray"
-		icon={steamSvg}
-		title="{playerInfo.name} gamer" />
-{/if}
+<div class="socials-container">
+	{#if steamLink}
+		<Button
+			url={steamLink}
+			cls="socials-btn"
+			onlyurl={true}
+			animated={true}
+			animationOpacity={0.8}
+			type="gray"
+			icon={steamSvg}
+			title="Steam profile" />
+	{/if}
 
-{#if discordSocial}
-	<Button
-		url={discordSocial.link}
-		cls="socials-btn"
-		onlyurl={true}
-		animated={true}
-		animationOpacity={0.8}
-		type="blurple"
-		iconFa="fab fa-discord"
-		title="{discordSocial.user} friend" />
-{/if}
+	{#if discordSocial}
+		<Button
+			url={discordSocial.link}
+			cls="socials-btn"
+			onlyurl={true}
+			animated={true}
+			animationOpacity={0.8}
+			type="blurple"
+			iconFa="fab fa-discord"
+			title="Discord profile" />
+	{/if}
 
-{#if twitchSocial}
-	<Button
-		url={twitchSocial.link}
-		cls="socials-btn"
-		onlyurl={true}
-		animated={true}
-		animationOpacity={0.8}
-		type="twitch"
-		iconFa="fab fa-twitch"
-		title="{twitchSocial.user} streamer" />
-{/if}
+	{#if twitchSocial}
+		<Button
+			url={twitchSocial.link}
+			cls="socials-btn"
+			onlyurl={true}
+			animated={true}
+			animationOpacity={0.8}
+			type="twitch"
+			iconFa="fab fa-twitch"
+			title="Twitch profile" />
+	{/if}
 
-{#if twitterSocial}
-	<Button
-		url={twitterSocial.link}
-		cls="socials-btn"
-		onlyurl={true}
-		animated={true}
-		animationOpacity={0.8}
-		type="twitter"
-		iconFa="fab fa-twitter"
-		title="{twitterSocial.user} drama starter" />
-{/if}
+	{#if twitterSocial}
+		<Button
+			url={twitterSocial.link}
+			cls="socials-btn"
+			onlyurl={true}
+			animated={true}
+			animationOpacity={0.8}
+			type="twitter"
+			iconFa="fab fa-twitter"
+			title="Twitter profile" />
+	{/if}
 
-{#if youtubeSocial}
-	<Button
-		url={youtubeSocial.link}
-		cls="socials-btn"
-		onlyurl={true}
-		animated={true}
-		animationOpacity={0.8}
-		type="danger"
-		iconFa="fab fa-youtube"
-		title="{youtubeSocial.user} influencer" />
-{/if}
+	{#if youtubeSocial}
+		<Button
+			url={youtubeSocial.link}
+			cls="socials-btn"
+			onlyurl={true}
+			animated={true}
+			animationOpacity={0.8}
+			type="danger"
+			iconFa="fab fa-youtube"
+			title="Youtube profile" />
+	{/if}
 
-{#if beatsaverSocial}
-	<Button
-		url={beatsaverSocial.link}
-		cls="socials-btn"
-		onlyurl={true}
-		animated={true}
-		animationOpacity={0.8}
-		type="purple"
-		icon="<img src='https://beatsaver.com/static/favicon/apple-touch-icon.png' />"
-		title="{beatsaverSocial.user} mapper" />
-{/if}
+	{#if beatsaverSocial}
+		<Button
+			url={beatsaverSocial.link}
+			cls="socials-btn"
+			onlyurl={true}
+			animated={true}
+			animationOpacity={0.8}
+			type="purple"
+			icon="<img src='https://beatsaver.com/static/favicon/apple-touch-icon.png' />"
+			title="BeatSaver profile" />
+	{/if}
+</div>
 
 <style>
+	.socials-container {
+		display: flex;
+		justify-content: center;
+		gap: 0.6em;
+		background-color: black;
+		padding: 0.6em;
+		border-radius: 0.5em;
+		width: fit-content;
+	}
+
 	:global(.socials-btn) {
 		height: 2em !important;
+		margin: 0 !important;
 	}
 </style>

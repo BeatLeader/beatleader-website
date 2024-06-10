@@ -101,9 +101,8 @@
 		justify-items: center;
 		background-color: black;
 		padding: 0.6em;
-		border-radius: 2em;
+		border-radius: 0.5em;
 		width: fit-content;
-		margin-bottom: 0.4em;
 	}
 	.title-and-followers {
 		display: flex;

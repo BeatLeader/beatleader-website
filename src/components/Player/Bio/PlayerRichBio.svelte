@@ -85,6 +85,9 @@
 {/if}
 
 <style>
+	.bio-container {
+		width: 100%;
+	}
 	.message-header {
 		display: flex;
 	}
@@ -110,7 +113,7 @@
 		color: white;
 		font-family: inherit;
 		max-height: 30em;
-		max-width: 40em;
+		max-width: calc(100vw - 32px);
 		overflow: auto;
 	}
 
