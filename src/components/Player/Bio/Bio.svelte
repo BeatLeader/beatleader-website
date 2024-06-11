@@ -107,6 +107,7 @@
 
 	.push-next-row {
 		width: 100%;
+		flex-direction: row !important;
 	}
 
 	.bio-only-cards {
