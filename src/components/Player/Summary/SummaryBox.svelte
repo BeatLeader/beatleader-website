@@ -6,6 +6,7 @@
 	import createStatsHistoryStore from '../../../stores/beatleader/stats-history';
 	import {configStore} from '../../../stores/config';
 	import Value from '../../Common/Value.svelte';
+	import BlBadges from '../Bio/BlBadges.svelte';
 
 	const historyStore = createStatsHistoryStore();
 
@@ -17,6 +18,7 @@
 	export let profileAppearance;
 	export let editModel = null;
 	export let overrideVisibleStats = null;
+	export let ssBadges = null;
 
 	function getPrevLabel() {
 		switch ($configStore.preferences.daysToCompare) {
@@ -65,10 +67,25 @@
 
 			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel />
 		</div>
+		<div class="badges-footer">
+			<BlBadges badges={ssBadges} />
+		</div>
 	</ContentBox>
 {/if}
 
 <style>
+	.badges-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-left: -0.5em;
+		margin-right: -0.5em;
+		margin-bottom: -0.5em;
+		background-color: #0000004f;
+		margin-top: 0.5em;
+		border-radius: 0 0 12px 12px;
+	}
+
 	.stats-and-summary {
 		display: flex;
 	}

@@ -247,31 +247,6 @@
 	{#if playerInfo}
 		<div class="player-nickname {showRainbow(playerInfo) ? 'rainbow' : ''}">
 			{#if name}
-				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
-					<div class="clan-badges">
-						<ClanBadges player={playerInfo} highlightMain={true} bind:editModel />
-
-						{#if isUserFounderOfTheClan}
-							{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
-								<Button
-									animated={true}
-									type="primary"
-									iconFa="fas fa-users"
-									title="Invite player to the clan"
-									cls="invite-to-clan"
-									on:click={() => (invitationConfirmationType = 'invite')} />
-							{:else if hasPlayerPendingInvitation}
-								<Button
-									animated={true}
-									type="danger"
-									iconFa="fas fa-users-slash"
-									title="Cancel invitation to the clan"
-									cls="invite-to-clan"
-									on:click={() => (invitationConfirmationType = 'cancel')} />
-							{/if}
-						{/if}
-					</div>
-				{/if}
 				<div style="display: flex;">
 					{#if !editModel && changes && changes.length}
 						<div class="score-options-section">
@@ -366,6 +341,32 @@
 						{/if}
 					</a>
 				{/each}
+			{/if}
+
+			{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
+				<div class="clan-badges">
+					<ClanBadges player={playerInfo} highlightMain={true} bind:editModel />
+
+					{#if isUserFounderOfTheClan}
+						{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
+							<Button
+								animated={true}
+								type="primary"
+								iconFa="fas fa-users"
+								title="Invite player to the clan"
+								cls="invite-to-clan"
+								on:click={() => (invitationConfirmationType = 'invite')} />
+						{:else if hasPlayerPendingInvitation}
+							<Button
+								animated={true}
+								type="danger"
+								iconFa="fas fa-users-slash"
+								title="Cancel invitation to the clan"
+								cls="invite-to-clan"
+								on:click={() => (invitationConfirmationType = 'cancel')} />
+						{/if}
+					{/if}
+				</div>
 			{/if}
 
 			{#if showRedact && isAdmin && loggedInPlayer != playerId}

@@ -196,7 +196,7 @@
 
 <svelte:window bind:innerWidth bind:innerHeight />
 
-{#if playerInfo?.clans?.filter(cl => cl.tag == 'SOUP').length}
+{#if playerInfo?.clans?.filter(cl => cl.tag == 'SOUP').length && false}
 	<RandomRain />
 {/if}
 

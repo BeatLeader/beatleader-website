@@ -93,6 +93,7 @@
 		background-color: #3d3d3d;
 		border-radius: 8px;
 		margin-left: 0.5em;
+		width: 100%;
 	}
 
 	.acc-badges {
