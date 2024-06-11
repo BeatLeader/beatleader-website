@@ -105,11 +105,6 @@
 		flex-grow: 1;
 	}
 
-	.push-next-row {
-		width: 100%;
-		flex-direction: row !important;
-	}
-
 	.bio-only-cards {
 		display: flex;
 		gap: 1em;
@@ -121,6 +116,13 @@
 		flex-wrap: wrap;
 		gap: 0.5em;
 		min-width: 50%;
+		align-content: flex-start;
+	}
+
+	.push-next-row {
+		width: 100%;
+		flex-direction: row;
+		align-content: flex-start;
 	}
 
 	.cards-part-only {
