@@ -152,6 +152,6 @@
 		align-items: center;
 		padding: 0.5em !important;
 		border-radius: 12px !important;
-		max-width: calc(100vw - 1em);
+		max-width: 100vw;
 	}
 </style>

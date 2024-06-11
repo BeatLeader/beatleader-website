@@ -88,6 +88,7 @@
 
 	.stats-and-summary {
 		display: flex;
+		gap: 0.5em 0.5em;
 	}
 	.pp {
 		font-size: 1.4em !important;
@@ -109,5 +110,15 @@
 	:global(.stats-and-summary-box) {
 		padding: 0.5em !important;
 		border-radius: 12px !important;
+	}
+
+	@media screen and (max-width: 600px) {
+		.stats-and-summary {
+			flex-wrap: wrap;
+		}
+
+		:global(.player-data) {
+			max-width: 100% !important;
+		}
 	}
 </style>
