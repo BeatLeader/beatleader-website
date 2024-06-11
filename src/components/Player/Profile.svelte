@@ -432,7 +432,7 @@
 		height: 100%;
 		z-index: -1;
 		width: 100%;
-		border-radius: 0.75em;
+		border-radius: 12px;
 		mask-type: alpha;
 		-webkit-mask-image: linear-gradient(180deg, white, white 40%, rgb(255 255 255 / 40%));
 		mask-image: linear-gradient(180deg, white, white 40%, rgb(255 255 255 / 40%));
@@ -447,6 +447,7 @@
 
 	.followers-and-socials {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: center;
 		justify-content: space-between;
 		margin-left: -1em;
@@ -514,6 +515,10 @@
 		.rank-and-stats-cell {
 			align-items: center;
 			align-self: center;
+		}
+
+		.followers-and-socials {
+			justify-content: space-evenly;
 		}
 	}
 </style>
