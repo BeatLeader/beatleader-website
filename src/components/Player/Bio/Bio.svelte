@@ -47,6 +47,9 @@
 				showDelete = false;
 			});
 	}
+
+	let fullWidthBio = false;
+
 	$: playerInfo && getRichBioId(playerInfo);
 </script>
 
@@ -67,23 +70,23 @@
 	<ContentBox cls="bio-box">
 		<div class="bio-and-left {!richBioID ? 'bio-only-left' : ''}">
 			{#if richBioID || edit}
-				<PlayerRichBio
-					{edit}
-					{playerId}
-					{richBioID}
-					patron={isAnySupporter(playerInfo.role)}
-					isFounder={true}
-					on:edit={e => onRichTextEdit(e)}
-					on:delete={e => onRichTextDelete(e)} />
+				<div class="bio-limiter">
+					<PlayerRichBio
+						{edit}
+						{playerId}
+						{richBioID}
+						patron={isAnySupporter(playerInfo.role)}
+						isFounder={true}
+						on:edit={e => onRichTextEdit(e)}
+						on:delete={e => onRichTextDelete(e)} />
+				</div>
 			{/if}
 
-			<div class="left-part {!richBioID ? 'left-part-only' : ''}">
-				<div>
-					{#if playerInfo.mapperId}
-						<RankedMapper mapperId={playerInfo.mapperId} />
-					{/if}
-					<ClanFounder {playerId} />
-				</div>
+			<div class="left-part {!richBioID ? 'left-part-only' : ''}" class:push-next-row={fullWidthBio}>
+				{#if playerInfo.mapperId}
+					<RankedMapper mapperId={playerInfo.mapperId} />
+				{/if}
+				<ClanFounder {playerId} />
 			</div>
 		</div>
 	</ContentBox>
@@ -91,8 +94,18 @@
 
 <style>
 	.bio-and-left {
-		display: grid;
-		grid-template-columns: 50% 50%;
+		display: flex;
+		flex-wrap: wrap;
+		width: 100%;
+		gap: 1em 0.5em;
+	}
+
+	.bio-limiter {
+		width: 45%;
+		flex-grow: 1;
+	}
+
+	.push-next-row {
 		width: 100%;
 	}
 
@@ -104,12 +117,15 @@
 	.left-part {
 		display: flex;
 		flex-direction: column;
-		padding: 1em 0.6em;
+		flex-wrap: wrap;
 		gap: 0.5em;
+		min-width: 50%;
 	}
 
 	.left-part-only {
 		flex-direction: row;
+		padding-left: 0;
+		padding-top: 1em;
 		gap: 0.5em;
 	}
 
@@ -136,5 +152,6 @@
 		align-items: center;
 		padding: 0.5em !important;
 		border-radius: 12px !important;
+		max-width: calc(100vw - 1em);
 	}
 </style>
