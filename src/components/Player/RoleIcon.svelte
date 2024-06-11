@@ -149,19 +149,27 @@
 			<i class={roleIconClass} title={editModel ? 'Click to toggle' : roleDescription} />
 		</div>
 	{/if}
+	{#if cls === 'player-role'}
+		<div class="player-role-margin" />
+	{/if}
 {/if}
 
 <style>
 	.player-role {
 		position: absolute;
 		top: -2.5em;
-		left: 2em;
+		left: 20%;
 		width: 6em;
-		display: block;
+		/*margin-bottom: -3.5em;*/
+	}
+
+	.player-role-margin {
+		position: relative;
+		margin-bottom: 1.7em;
 	}
 
 	.player-role.edit {
-		top: 2em;
+		top: 1.2em;
 		height: 6em;
 	}
 

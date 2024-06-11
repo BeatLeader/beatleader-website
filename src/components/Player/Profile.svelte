@@ -26,7 +26,6 @@
 	import SummaryBox from './Summary/SummaryBox.svelte';
 	import Followers from './Bio/Followers.svelte';
 	import Socials from './Bio/Socials.svelte';
-	import BlBadges from './Bio/BlBadges.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -184,6 +183,24 @@
 	}
 	let modalShown;
 
+	let rolesShown = false;
+	function anyRolesShown(profileAppearance) {
+		if (!profileAppearance) return false;
+		const roleIconStrings = [
+			'mapper',
+			'rankedteam',
+			'juniorrankedteam',
+			'qualityteam',
+			'creator',
+			'booster',
+			'tipper',
+			'supporter',
+			'sponsor',
+		];
+		console.log(roles);
+		return roleIconStrings.some(str => profileAppearance.includes(str) && roles?.includes(str));
+	}
+
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
@@ -192,6 +209,7 @@
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = !$editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? $editModel?.data?.profileCover);
+	$: rolesShown = anyRolesShown(profileAppearance);
 
 	$: if (startEditing) onEnableEditModel();
 
@@ -226,17 +244,19 @@
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
 			{#if $editModel}
-				{#if $editModel.data.profileCoverData}
-					<Button type="danger" cls="remove-cover-button" iconFa="far fa-xmark" label="Remove cover" on:click={() => resetCover()} />
-				{/if}
-				<Button
-					type="primary"
-					cls="edit-cover-button"
-					iconFa="far fa-image"
-					label={$editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
-					on:click={() => fileinput.click()}>
-					<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
-				</Button>
+				<div class="cover-edit-buttons">
+					{#if $editModel.data.profileCoverData}
+						<Button type="danger" cls="remove-cover-button" iconFa="fa fa-xmark" label="Remove cover" on:click={() => resetCover()} />
+					{/if}
+					<Button
+						type="primary"
+						cls="edit-cover-button"
+						iconFa="far fa-image"
+						label={$editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
+						on:click={() => fileinput.click()}>
+						<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
+					</Button>
+				</div>
 			{/if}
 		</div>
 	{/if}
@@ -302,7 +322,7 @@
 			{/if}
 		</div>
 
-		<div class="rank-and-stats-cell">
+		<div class="rank-and-stats-cell" class:with-roles={rolesShown}>
 			{#if editError}
 				<Error error={editError} />
 			{/if}
@@ -316,8 +336,6 @@
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-
-			<BlBadges badges={ssBadges} />
 
 			{#if $editModel}
 				<div class="edit-buttons">
@@ -357,7 +375,7 @@
 	</div>
 </ContentBox>
 
-<SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel={$editModel} />
+<SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} {ssBadges} bind:editModel={$editModel} />
 
 <style>
 	.player-general-info {
@@ -378,8 +396,14 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		grid-gap: 0.4em;
+		grid-gap: 0em;
 		flex-grow: 1;
+		align-self: flex-end;
+		margin-bottom: 1em;
+	}
+
+	.with-roles {
+		margin-bottom: 2.4em;
 	}
 
 	.role-icons {
@@ -405,14 +429,20 @@
 		background-position: 50%;
 		top: 0;
 		left: 0;
-		height: 12.5em;
+		height: 100%;
 		z-index: -1;
 		width: 100%;
-		flex-direction: column-reverse;
 		border-radius: 6px 6px 0 0;
 		mask-type: alpha;
 		-webkit-mask-image: linear-gradient(180deg, white, white 40%, transparent);
 		mask-image: linear-gradient(180deg, white, white 40%, transparent);
+	}
+
+	.cover-edit-buttons {
+		display: flex;
+		justify-content: flex-start;
+		margin: 1em;
+		gap: 1.5em;
 	}
 
 	.followers-and-socials {
@@ -467,15 +497,10 @@
 	}
 	:global(.edit-cover-button) {
 		width: 10em;
-		margin-left: 1em !important;
-		margin-bottom: 9em !important;
 	}
 
 	:global(.remove-cover-button) {
 		width: 10em;
-		position: absolute !important;
-		left: 1em;
-		top: 4em;
 	}
 
 	@media screen and (max-width: 767px) {
@@ -487,6 +512,7 @@
 
 		.rank-and-stats-cell {
 			align-items: center;
+			align-self: center;
 		}
 	}
 </style>
