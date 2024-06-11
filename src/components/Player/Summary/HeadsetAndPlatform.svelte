@@ -57,7 +57,7 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.1em;
-		background-color: #3d3d3d;
+		background-color: #121212;
 		max-width: 18em;
 		min-width: 13em;
 		padding: 0.5em;

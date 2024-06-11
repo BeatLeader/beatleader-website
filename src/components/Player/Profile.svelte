@@ -432,10 +432,10 @@
 		height: 100%;
 		z-index: -1;
 		width: 100%;
-		border-radius: 6px 6px 0 0;
+		border-radius: 0.75em;
 		mask-type: alpha;
-		-webkit-mask-image: linear-gradient(180deg, white, white 40%, transparent);
-		mask-image: linear-gradient(180deg, white, white 40%, transparent);
+		-webkit-mask-image: linear-gradient(180deg, white, white 40%, rgb(255 255 255 / 40%));
+		mask-image: linear-gradient(180deg, white, white 40%, rgb(255 255 255 / 40%));
 	}
 
 	.cover-edit-buttons {
@@ -455,6 +455,7 @@
 		background-color: #0000004f;
 		margin-top: 0.5em;
 		border-radius: 0 0 12px 12px;
+		backdrop-filter: blur(10px);
 	}
 
 	.socials-list {

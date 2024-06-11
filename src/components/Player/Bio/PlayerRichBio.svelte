@@ -86,7 +86,7 @@
 
 <style>
 	.bio-container {
-		background-color: #3d3d3d;
+		background-color: #121212;
 		border-radius: 8px;
 		overflow: auto;
 		height: min-content;

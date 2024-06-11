@@ -21,7 +21,7 @@
 <style>
 	.bl-badges {
 		display: flex;
-		gap: 0.05em 0.5em;
+		gap: 0.5em 0.5em;
 		margin: 0.5em 0;
 		justify-content: center;
 		width: 100%;

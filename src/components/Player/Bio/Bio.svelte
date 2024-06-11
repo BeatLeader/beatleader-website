@@ -68,7 +68,7 @@
 {/if}
 {#if playerId}
 	<ContentBox cls="bio-box">
-		<div class="bio-and-left {!richBioID ? 'bio-only-left' : ''}">
+		<div class="bio-and-cards {!richBioID ? 'bio-only-cards' : ''}">
 			{#if richBioID || edit}
 				<div class="bio-limiter">
 					<PlayerRichBio
@@ -82,7 +82,7 @@
 				</div>
 			{/if}
 
-			<div class="left-part {!richBioID ? 'left-part-only' : ''}" class:push-next-row={fullWidthBio}>
+			<div class="cards-part {!richBioID ? 'cards-part-only' : ''}" class:push-next-row={fullWidthBio}>
 				{#if playerInfo.mapperId}
 					<RankedMapper mapperId={playerInfo.mapperId} />
 				{/if}
@@ -93,7 +93,7 @@
 {/if}
 
 <style>
-	.bio-and-left {
+	.bio-and-cards {
 		display: flex;
 		flex-wrap: wrap;
 		width: 100%;
@@ -109,12 +109,12 @@
 		width: 100%;
 	}
 
-	.bio-only-left {
+	.bio-only-cards {
 		display: flex;
 		gap: 1em;
 	}
 
-	.left-part {
+	.cards-part {
 		display: flex;
 		flex-direction: column;
 		flex-wrap: wrap;
@@ -122,11 +122,11 @@
 		min-width: 50%;
 	}
 
-	.left-part-only {
+	.cards-part-only {
 		flex-direction: row;
-		padding-left: 0;
-		padding-top: 1em;
 		gap: 0.5em;
+		justify-content: center;
+		width: 100%;
 	}
 
 	.player-data {
