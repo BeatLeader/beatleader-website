@@ -16,6 +16,9 @@
 	import BanForm from './BanForm.svelte';
 	import ProfileChange from './ProfileChange.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import Dialog from '../Common/Dialog.svelte';
+	import {SsrHttpResponseError} from '../../network/errors';
+	import createClanService from '../../services/beatleader/clan';
 
 	export let name;
 	export let playerInfo;
@@ -161,42 +164,132 @@
 			});
 	}
 
+	const clanService = createClanService();
+
+	let invitationConfirmationType = null;
+	let invitingError = null;
+	async function onInvite(playerId) {
+		if (!playerId?.length) return;
+
+		try {
+			invitingError = null;
+
+			await clanService.invite(playerId);
+
+			invitationConfirmationType = null;
+		} catch (err) {
+			if (err instanceof SsrHttpResponseError) {
+				const htmlError = await err.getResponse().text();
+				invitingError = htmlError?.length ? htmlError : err;
+			} else {
+				invitingError = err;
+			}
+		}
+	}
+
+	async function onCancelInvite(playerId) {
+		if (!playerId?.length) return;
+
+		try {
+			invitingError = null;
+
+			await clanService.cancelInvite(playerId);
+
+			invitationConfirmationType = null;
+		} catch (err) {
+			if (err instanceof SsrHttpResponseError) {
+				const htmlError = await err.getResponse().text();
+				invitingError = htmlError?.length ? htmlError : err;
+			} else {
+				invitingError = err;
+			}
+		}
+	}
+
+	$: isUserFounderOfTheClan = !!$account?.clan;
+	$: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
+	$: hasPlayerPendingInvitation =
+		isUserFounderOfTheClan && !isPlayerClanMember && !!$account?.clan?.pendingInvites?.find(pId => pId === playerId);
+
 	$: history = $historyStore[playerId];
 	$: fetchAliasRequest($account);
 	$: prevLabel = getPrevLabel();
 	$: prevRank = history?.rank ? history.rank[getIndex(history.rank)] : playerInfo?.rank;
-	$: prevPp = history?.pp ? history.pp[getIndex(history.pp)] : playerInfo?.pp;
+
 	$: prevCountryRank = history?.countryRank ? history.countryRank[getIndex(history.countryRank)] : playerInfo?.countryRank;
 </script>
 
 {#if showBanForm}
 	<BanForm {playerId} accountStore={account} on:finished={() => (showBanForm = false)} />
 {/if}
+{#if invitationConfirmationType}
+	<Dialog
+		type="confirm"
+		title="Are you sure?"
+		okButton="Yeah!"
+		cancelButton="Hell no!"
+		on:confirm={() => (invitationConfirmationType === 'invite' ? onInvite(playerId) : onCancelInvite(playerId))}
+		on:cancel={() => (invitationConfirmationType = false)}>
+		<div slot="content">
+			{#if invitationConfirmationType === 'invite'}
+				<div>An invitation will be sent to the player to join the clan.</div>
+			{:else}
+				<div>The player's invitation to the clan will be cancelled.</div>
+			{/if}
+
+			{#if invitingError}
+				<Error error={invitingError} />
+			{/if}
+		</div>
+	</Dialog>
+{/if}
 <div class="profile-header-info">
 	{#if playerInfo}
 		<div class="player-nickname {showRainbow(playerInfo) ? 'rainbow' : ''}">
 			{#if name}
-				{#if editModel?.data}
-					<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
-				{:else}
-					<span class="nickname">{name}</span>
-				{/if}
-
 				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
-					<span class="clan-badges"><ClanBadges player={playerInfo} highlightMain={true} bind:editModel /></span>
-				{/if}
+					<div class="clan-badges">
+						<ClanBadges player={playerInfo} highlightMain={true} bind:editModel />
 
-				{#if !editModel && changes && changes.length}
-					<div class="score-options-section">
-						<span
-							class="beat-savior-reveal clickable"
-							class:opened={showChanges}
-							on:click={() => (showChanges = !showChanges)}
-							title={showChanges ? 'Hide profile changelog' : 'Show profile changelog'}>
-							<i class="fas fa-chevron-down" />
-						</span>
+						{#if isUserFounderOfTheClan}
+							{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
+								<Button
+									animated={true}
+									type="primary"
+									iconFa="fas fa-users"
+									title="Invite player to the clan"
+									cls="invite-to-clan"
+									on:click={() => (invitationConfirmationType = 'invite')} />
+							{:else if hasPlayerPendingInvitation}
+								<Button
+									animated={true}
+									type="danger"
+									iconFa="fas fa-users-slash"
+									title="Cancel invitation to the clan"
+									cls="invite-to-clan"
+									on:click={() => (invitationConfirmationType = 'cancel')} />
+							{/if}
+						{/if}
 					</div>
 				{/if}
+				<div style="display: flex;">
+					{#if !editModel && changes && changes.length}
+						<div class="score-options-section">
+							<span
+								class="beat-savior-reveal clickable"
+								class:opened={showChanges}
+								on:click={() => (showChanges = !showChanges)}
+								title={showChanges ? 'Hide profile changelog' : 'Show profile changelog'}>
+								<i class="fas fa-chevron-down" />
+							</span>
+						</div>
+					{/if}
+					{#if editModel?.data}
+						<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
+					{:else}
+						<span class="nickname">{name}</span>
+					{/if}
+				</div>
 			{/if}
 		</div>
 
@@ -275,16 +368,6 @@
 				{/each}
 			{/if}
 
-			<span class="pp">
-				<Value
-					value={playerInfo?.pp}
-					suffix="pp"
-					prevValue={$configStore.profileParts.changes ? prevPp : undefined}
-					{prevLabel}
-					inline={true}
-					zero="0pp" />
-			</span>
-
 			{#if showRedact && isAdmin && loggedInPlayer != playerId}
 				{#if playerInfo?.banned}
 					<Button
@@ -359,11 +442,15 @@
 
 	.player-nickname {
 		display: flex;
-		flex-wrap: wrap;
+		flex-direction: column;
 		font-size: 3em;
 		font-weight: bold;
 		align-items: baseline;
 		margin-right: 3em;
+	}
+
+	:global(.clan-badges .clan-badges) {
+		margin-left: -0.3em;
 	}
 
 	.alias-input {
@@ -388,12 +475,6 @@
 		animation: rainbow 0.9s infinite linear;
 	}
 
-	.clan-badges {
-		margin-left: 0.5rem;
-		position: relative;
-		top: -0.125em;
-	}
-
 	.status {
 		font-size: smaller;
 	}
@@ -407,6 +488,10 @@
 		align-items: center;
 	}
 
+	.player-ranking a {
+		color: #fddbff !important;
+	}
+
 	.nickname {
 		overflow-wrap: anywhere;
 	}
@@ -414,7 +499,7 @@
 	.edit-button {
 		position: absolute;
 		right: 0.2em;
-		bottom: 0.2em;
+		bottom: 1.6em;
 		font-size: 2em;
 	}
 
@@ -422,8 +507,11 @@
 		margin: 1rem 0;
 	}
 
-	.pp {
-		color: var(--ppColour) !important;
+	:global(.invite-to-clan) {
+		width: 2em;
+		height: 2em;
+		font-size: 12px !important;
+		border-radius: 1em !important;
 	}
 
 	.sponsor-message {

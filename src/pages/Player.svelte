@@ -217,7 +217,7 @@
 				fixedBrowserTitle={browserTitle}
 				startEditing={editing} />
 
-			<Bio {playerId} {playerData} {playerInfo} {ssBadges} {scoresStats} edit={$editModel} />
+			<Bio {playerId} {playerInfo} edit={$editModel} />
 
 			{#if !$editModel}
 				{#if $configStore.profileParts.graphs}

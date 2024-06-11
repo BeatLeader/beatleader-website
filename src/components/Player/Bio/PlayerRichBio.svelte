@@ -85,6 +85,10 @@
 {/if}
 
 <style>
+	.bio-container {
+		background-color: #3d3d3d;
+		border-radius: 8px;
+	}
 	.message-header {
 		display: flex;
 	}

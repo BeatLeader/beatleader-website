@@ -99,11 +99,10 @@
 		align-items: center;
 		justify-content: center;
 		justify-items: center;
-		background-color: black;
 		padding: 0.6em;
+		padding-left: 1em;
 		border-radius: 2em;
 		width: fit-content;
-		margin-bottom: 0.4em;
 	}
 	.title-and-followers {
 		display: flex;

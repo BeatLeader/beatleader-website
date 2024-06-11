@@ -10,7 +10,6 @@
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
 
-	import BeatLeaderSummary from './BeatLeaderSummary.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
@@ -24,6 +23,10 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {BL_RENDERER_API_URL} from '../../network/queues/beatleader/api-queue';
+	import SummaryBox from './Summary/SummaryBox.svelte';
+	import Followers from './Bio/Followers.svelte';
+	import Socials from './Bio/Socials.svelte';
+	import BlBadges from './Bio/BlBadges.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -219,7 +222,7 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel={$editModel} {roles} />
-<ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
+<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
 			{#if $editModel}
@@ -313,7 +316,8 @@
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel={$editModel} />
+
+			<BlBadges badges={ssBadges} />
 
 			{#if $editModel}
 				<div class="edit-buttons">
@@ -342,7 +346,18 @@
 			{/if}
 		</div>
 	</div>
+	<div class="followers-and-socials">
+		<Followers {playerId} />
+
+		{#if playerInfo}
+			<div class="socials-list">
+				<Socials {playerInfo} />
+			</div>
+		{/if}
+	</div>
 </ContentBox>
+
+<SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel={$editModel} />
 
 <style>
 	.player-general-info {
@@ -400,6 +415,26 @@
 		mask-image: linear-gradient(180deg, white, white 40%, transparent);
 	}
 
+	.followers-and-socials {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-left: -1em;
+		margin-right: -1em;
+		margin-bottom: -1em;
+		background-color: #0000004f;
+		margin-top: 0.5em;
+		border-radius: 0 0 12px 12px;
+	}
+
+	.socials-list {
+		display: flex;
+		justify-content: center;
+		gap: 0.6em;
+		margin-bottom: -0.4em;
+		margin-right: 0.8em;
+	}
+
 	:global(.shareButton) {
 		font-size: 1.5em !important;
 		position: absolute !important;
@@ -426,6 +461,9 @@
 	}
 	:global(.profile-container) {
 		padding-top: 8em !important;
+	}
+	:global(.profile-box) {
+		border-radius: 12px !important;
 	}
 	:global(.edit-cover-button) {
 		width: 10em;

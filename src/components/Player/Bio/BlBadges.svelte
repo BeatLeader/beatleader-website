@@ -22,8 +22,11 @@
 	.bl-badges {
 		display: flex;
 		gap: 0.5em;
-		justify-content: center;
-		flex-wrap: wrap;
+		justify-content: start;
+		flex-direction: row-reverse;
+		overflow: hidden;
+		max-width: 95%;
+		mask-image: linear-gradient(90deg, white 0, white 70%, transparent);
 	}
 
 	.bl-badges img {

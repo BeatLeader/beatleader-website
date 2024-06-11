@@ -6564,8 +6564,6 @@ a.dropdown-item.is-active {
 .message-body {
 	border-color: #dbdbdb;
 	border-radius: 4px;
-	border-style: solid;
-	border-width: 0 0 0 4px;
 	color: #4a4a4a;
 	padding: 1.25em 1.5em;
 }

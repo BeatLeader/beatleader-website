@@ -3,7 +3,6 @@
 	import Avatar from './Avatar.svelte';
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
-	import BeatLeaderSummary from './BeatLeaderSummary.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import RoleIcon from './RoleIcon.svelte';
 	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
@@ -65,12 +64,6 @@
 
 		<div class="rank-and-stats-cell">
 			<ProfileHeaderInfo {error} {name} {playerInfo} {playerId} showRedact={false} />
-			<BeatLeaderSummary
-				{playerId}
-				{scoresStats}
-				{accBadges}
-				{profileAppearance}
-				overrideVisibleStats={['topPp', 'averageRankedAccuracy', 'topPlatform', 'topHMD']} />
 		</div>
 	</div>
 </ContentBox>

@@ -3,20 +3,13 @@
 	import ContentBox from '../../Common/ContentBox.svelte';
 	import Dialog from '../../Common/Dialog.svelte';
 	import {isAnySupporter} from '../Overlay/overlay';
-	import BlBadges from './BlBadges.svelte';
 	import ClanFounder from './ClanFounder.svelte';
-	import Followers from './Followers.svelte';
-	import HeadsetAndPlatform from './HeadsetAndPlatform.svelte';
 	import PlayerRichBio from './PlayerRichBio.svelte';
 	import RankedMapper from './RankedMapper.svelte';
-	import Socials from './Socials.svelte';
 
 	export let playerId = null;
-	export let scoresStats = null;
-	export let ssBadges = null;
 	export let playerInfo = null;
 	export let edit = false;
-	export let playerData = null;
 
 	let richBioID = null;
 	let richBioError = null;
@@ -57,11 +50,6 @@
 	$: playerInfo && getRichBioId(playerInfo);
 </script>
 
-{#if ssBadges?.length}
-	<ContentBox cls="badges-box">
-		<BlBadges badges={ssBadges} />
-	</ContentBox>
-{/if}
 {#if showDelete}
 	<Dialog
 		type="confirm"
@@ -90,9 +78,6 @@
 			{/if}
 
 			<div class="left-part {!richBioID ? 'left-part-only' : ''}">
-				{#if playerData}
-					<HeadsetAndPlatform {playerData} />
-				{/if}
 				<div>
 					{#if playerInfo.mapperId}
 						<RankedMapper mapperId={playerInfo.mapperId} />
@@ -101,14 +86,6 @@
 				</div>
 			</div>
 		</div>
-
-		<Followers {playerId} />
-
-		{#if playerInfo}
-			<div class="socials-list">
-				<Socials {playerInfo} />
-			</div>
-		{/if}
 	</ContentBox>
 {/if}
 
@@ -116,6 +93,7 @@
 	.bio-and-left {
 		display: grid;
 		grid-template-columns: 50% 50%;
+		width: 100%;
 	}
 
 	.bio-only-left {
@@ -150,16 +128,13 @@
 	:global(.bio-and-left .message-body) {
 		border-left: none;
 		border-radius: 0;
-		border-right: 3px solid white;
 	}
 
 	:global(.bio-box) {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-	}
-
-	:global(.badges-box) {
 		padding: 0.5em !important;
+		border-radius: 12px !important;
 	}
 </style>

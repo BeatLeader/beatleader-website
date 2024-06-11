@@ -10,7 +10,7 @@
 	$: topPlatform = scoresStats.topPlatform;
 	$: topHeadset = scoresStats.rawTopHMD;
 	$: headset = getHeadsetForHMD(topHeadset);
-	$: headsetStyle = `width: 1.2em; height: 1.2em; filter: ${headset?.color}`;
+	$: headsetStyle = `width: 1.2em; height: 1.2em; margin-bottom: -0.2em; filter: ${headset?.color}`;
 	$: topController = scoresStats.topController;
 	$: controllerDescription = topController && getControllerForEnum(topController).length > 0 ? getControllerForEnum(topController) : '';
 
@@ -26,8 +26,13 @@
 		</div>
 		<div class="platform-entry">
 			<span class="platform-title" title="Last 50 scores top headset">Headset</span>
-			<div class="hmd-image-container">
-				<img src={'/assets/' + headset?.icon} alt={headset?.name} style={headsetStyle} />
+			<div class="hmd-container">
+				<div class="hmd-image-container">
+					<img src={'/assets/' + headset?.icon} alt={headset?.name} style={headsetStyle} />
+				</div>
+				<span>
+					{headset?.name}
+				</span>
 			</div>
 		</div>
 		{#if controllerDescription.length}
@@ -51,11 +56,17 @@
 	.player-data {
 		display: flex;
 		flex-wrap: wrap;
-		border: 2px solid;
+		gap: 0.1em;
+		background-color: #3d3d3d;
 		max-width: 18em;
+		min-width: 13em;
 		padding: 0.5em;
-		border-radius: 20px;
+		border-radius: 8px;
 		justify-content: space-between;
+	}
+	.hmd-container {
+		display: flex;
+		gap: 0.4em;
 	}
 	.platform-title {
 		font-size: small;
@@ -64,7 +75,10 @@
 	}
 	.platform-entry {
 		display: flex;
-		flex-direction: column;
-		min-width: 8em;
+		min-width: 4em;
+		gap: 0.4em;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
 	}
 </style>
