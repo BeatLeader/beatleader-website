@@ -85,7 +85,7 @@
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: canRedact = showRedact && ((isMain && loggedInPlayer === playerId) || isAdmin);
-	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(",");
+	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(',');
 
 	function getIndex(array) {
 		if (!array || array.length == 1) {
@@ -126,15 +126,7 @@
 				{#if editModel?.data}
 					<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
 				{:else if playerInfo.externalProfileUrl && showRedact}
-					<a
-						class="nickname"
-						href={playerInfo.externalProfileUrl}
-						on:click={e => {
-							e.preventDefault();
-							showProfile(playerInfo.externalProfileCorsUrl);
-						}}
-						target="_blank"
-						rel="noreferrer">
+					<a class="nickname" href={playerInfo.externalProfileUrl} target="_blank" rel="noreferrer">
 						{name}
 					</a>
 				{:else}
@@ -142,7 +134,7 @@
 				{/if}
 
 				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
-					<span class="clan-badges"><ClanBadges player={playerInfo} highlightMain={true} bind:editModel={editModel} /></span>
+					<span class="clan-badges"><ClanBadges player={playerInfo} highlightMain={true} bind:editModel /></span>
 				{/if}
 
 				{#if !editModel && changes && changes.length}
@@ -263,7 +255,8 @@
 		{/if}
 
 		{#if editModel?.data?.clanOrder && editModel?.data?.clanOrder !== clanOrder}
-			<span class="warning">Your contribution in the Clan Wars will only apply to your main(first) clan. You can change order only once a week.</span>
+			<span class="warning"
+				>Your contribution in the Clan Wars will only apply to your main(first) clan. You can change order only once a week.</span>
 		{/if}
 
 		{#if error}

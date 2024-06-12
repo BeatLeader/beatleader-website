@@ -34,9 +34,6 @@ export default response => {
 	} = response;
 
 	let profilePicture = avatar;
-	let externalProfileCorsUrl = externalProfileUrl
-		? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/')
-		: null;
 
 	if (scoreStats) {
 		[
@@ -99,7 +96,6 @@ export default response => {
 		playerInfo: {
 			avatar: profilePicture,
 			externalProfileUrl,
-			externalProfileCorsUrl,
 			countries: [{country, rank: countryRank}],
 			pp,
 			accPp,
