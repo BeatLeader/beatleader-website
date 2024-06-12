@@ -90,9 +90,9 @@
 		display: flex;
 		align-items: flex-start;
 		padding: 0.5em;
-		background-color: #3d3d3d;
+		background-color: #121212;
 		border-radius: 8px;
-		margin-left: 0.5em;
+		width: 100%;
 	}
 
 	.acc-badges {

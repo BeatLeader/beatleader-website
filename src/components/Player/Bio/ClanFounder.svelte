@@ -198,6 +198,7 @@
 		background-color: #881f1f;
 		border-radius: 20px;
 		color: white !important;
+		width: fit-content;
 	}
 
 	.clanImage {

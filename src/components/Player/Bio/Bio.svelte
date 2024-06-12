@@ -47,6 +47,9 @@
 				showDelete = false;
 			});
 	}
+
+	let fullWidthBio = false;
+
 	$: playerInfo && getRichBioId(playerInfo);
 </script>
 
@@ -65,52 +68,68 @@
 {/if}
 {#if playerId}
 	<ContentBox cls="bio-box">
-		<div class="bio-and-left {!richBioID ? 'bio-only-left' : ''}">
+		<div class="bio-and-cards {!richBioID ? 'bio-only-cards' : ''}">
 			{#if richBioID || edit}
-				<PlayerRichBio
-					{edit}
-					{playerId}
-					{richBioID}
-					patron={isAnySupporter(playerInfo.role)}
-					isFounder={true}
-					on:edit={e => onRichTextEdit(e)}
-					on:delete={e => onRichTextDelete(e)} />
+				<div class="bio-limiter">
+					<PlayerRichBio
+						{edit}
+						{playerId}
+						{richBioID}
+						patron={isAnySupporter(playerInfo.role)}
+						isFounder={true}
+						on:edit={e => onRichTextEdit(e)}
+						on:delete={e => onRichTextDelete(e)} />
+				</div>
 			{/if}
 
-			<div class="left-part {!richBioID ? 'left-part-only' : ''}">
-				<div>
-					{#if playerInfo.mapperId}
-						<RankedMapper mapperId={playerInfo.mapperId} />
-					{/if}
-					<ClanFounder {playerId} />
-				</div>
+			<div class="cards-part {!richBioID ? 'cards-part-only' : ''}" class:push-next-row={fullWidthBio}>
+				{#if playerInfo.mapperId}
+					<RankedMapper mapperId={playerInfo.mapperId} />
+				{/if}
+				<ClanFounder {playerId} />
 			</div>
 		</div>
 	</ContentBox>
 {/if}
 
 <style>
-	.bio-and-left {
-		display: grid;
-		grid-template-columns: 50% 50%;
+	.bio-and-cards {
+		display: flex;
+		flex-wrap: wrap;
 		width: 100%;
+		gap: 1em 0.5em;
 	}
 
-	.bio-only-left {
+	.bio-limiter {
+		width: 45%;
+		flex-grow: 1;
+	}
+
+	.bio-only-cards {
 		display: flex;
 		gap: 1em;
 	}
 
-	.left-part {
+	.cards-part {
 		display: flex;
 		flex-direction: column;
-		padding: 1em 0.6em;
+		flex-wrap: wrap;
 		gap: 0.5em;
+		min-width: 50%;
+		align-content: flex-start;
 	}
 
-	.left-part-only {
+	.push-next-row {
+		width: 100%;
+		flex-direction: row;
+		align-content: flex-start;
+	}
+
+	.cards-part-only {
 		flex-direction: row;
 		gap: 0.5em;
+		justify-content: center;
+		width: 100%;
 	}
 
 	.player-data {
@@ -136,5 +155,6 @@
 		align-items: center;
 		padding: 0.5em !important;
 		border-radius: 12px !important;
+		max-width: 100vw;
 	}
 </style>

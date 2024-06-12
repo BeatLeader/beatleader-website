@@ -86,8 +86,10 @@
 
 <style>
 	.bio-container {
-		background-color: #3d3d3d;
+		background-color: #121212;
 		border-radius: 8px;
+		overflow: auto;
+		height: min-content;
 	}
 	.message-header {
 		display: flex;
@@ -114,7 +116,7 @@
 		color: white;
 		font-family: inherit;
 		max-height: 30em;
-		max-width: 40em;
+		max-width: 100%;
 		overflow: auto;
 	}
 
