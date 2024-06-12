@@ -463,8 +463,9 @@
 		display: flex;
 		justify-content: center;
 		gap: 0.6em;
-		margin-bottom: -0.4em;
 		margin-right: 0.8em;
+		margin-left: 0.8em;
+		margin-top: 0.5em;
 	}
 
 	:global(.shareButton) {

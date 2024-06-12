@@ -89,6 +89,7 @@
 	.wrapper {
 		display: flex;
 		align-items: flex-start;
+		justify-content: space-between;
 		padding: 0.5em;
 		background-color: #121212;
 		border-radius: 8px;
