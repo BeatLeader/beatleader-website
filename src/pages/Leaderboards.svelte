@@ -81,6 +81,7 @@
 		{key: 'mapRequirements', default: null, process: processIntFilter},
 		{key: 'songStatus', default: null, process: processIntFilter},
 		{key: 'allRequirements', default: 0, process: processIntFilter},
+		{key: 'mapper', default: null, process: processIntFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {

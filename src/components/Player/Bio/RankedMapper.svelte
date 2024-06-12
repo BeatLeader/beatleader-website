@@ -47,7 +47,7 @@
 </script>
 
 {#if rankedmaps}
-	<div class="leader-container">
+	<a href="/leaderboards?mapper={mapperId}" class="leader-container">
 		<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
 
 		<div class="map-info-container">
@@ -70,7 +70,7 @@
 				<span>and {rankedmaps.totalMapCount - 1} more...</span>
 			</div>
 		{/if}
-	</div>
+	</a>
 {/if}
 
 <style>
@@ -203,6 +203,7 @@
 		background-color: #3f0078;
 		border-radius: 20px;
 		width: fit-content;
+		color: white !important;
 	}
 
 	.clanImage {
