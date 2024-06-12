@@ -2002,6 +2002,11 @@ svelte@^4.0.0:
     magic-string "^0.30.0"
     periscopic "^3.1.0"
 
+svrollbar@^0.12.0:
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/svrollbar/-/svrollbar-0.12.0.tgz#b690905ae35bd1993e17b8a051e3317f452f805f"
+  integrity sha512-okH0sz8bGtw+tgOfN1mpEtbveifxROcE3mbUMBJ1RQz8Q+1rVr+nVG7EAJ9b0G80cGDu7dskjAWuzj3iru0k5g==
+
 terser@^5.0.0:
   version "5.19.2"
   resolved "https://registry.yarnpkg.com/terser/-/terser-5.19.2.tgz#bdb8017a9a4a8de4663a7983f45c506534f9234e"

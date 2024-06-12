@@ -1,5 +1,6 @@
 <script>
 	import {createEventDispatcher, onMount} from 'svelte';
+	import {Svrollbar} from 'svrollbar';
 	import {fetchHtml} from '../../../network/fetch';
 	import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 	import Button from '../../Common/Button.svelte';
@@ -34,6 +35,7 @@
 	}
 
 	let edititing = false;
+	let viewport;
 
 	$: richBioID && fetchBioFile(richBioID);
 </script>
@@ -43,7 +45,7 @@
 		{#if richBio?.length || edititing}
 			<div class="message">
 				{#if !edititing}
-					<div class="message-body sun-editor-editable">
+					<div bind:this={viewport} class="message-body sun-editor-editable">
 						{@html richBio ?? 'Add rich bio'}
 					</div>
 				{:else}
@@ -55,6 +57,7 @@
 						on:cancel={() => (edititing = false)}
 						on:post={editComment} />
 				{/if}
+				<Svrollbar {viewport} />
 			</div>
 		{/if}
 
@@ -109,6 +112,7 @@
 
 	.message {
 		background-color: transparent;
+		position: relative;
 	}
 
 	.message-body {
@@ -118,6 +122,12 @@
 		max-height: 30em;
 		max-width: 100%;
 		overflow: auto;
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.message-body::-webkit-scrollbar {
+		display: none;
 	}
 
 	.sample-bio {
