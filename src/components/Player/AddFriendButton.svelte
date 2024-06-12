@@ -39,6 +39,7 @@
 	<Spinner />
 {:else if isFollowed}
 	<Button
+		cls="ranking-friends-button"
 		type="danger"
 		square={true}
 		animated={true}
@@ -46,7 +47,14 @@
 		iconFa="fas fa-user-minus"
 		on:click={() => onClick('remove')} />
 {:else}
-	<Button type="primary" square={true} animated={true} title="Add to Followed" iconFa="fas fa-user-plus" on:click={() => onClick('add')} />
+	<Button
+		cls="ranking-friends-button"
+		type="primary"
+		square={true}
+		animated={true}
+		title="Add to Followed"
+		iconFa="fas fa-user-plus"
+		on:click={() => onClick('add')} />
 {/if}
 
 <style>
@@ -60,5 +68,13 @@
 
 	.icon.main-profile {
 		background: var(--faded);
+	}
+
+	:global(.ranking-friends-button) {
+		width: 2em !important;
+		height: 2em !important;
+		border-radius: 100% !important;
+		padding-left: 0.5em !important;
+		margin-bottom: -0.1em !important;
 	}
 </style>

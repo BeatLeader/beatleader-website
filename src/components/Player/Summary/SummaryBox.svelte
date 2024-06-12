@@ -49,7 +49,7 @@
 
 {#if scoresStats}
 	<ContentBox cls="stats-and-summary-box">
-		<div class="stats-and-summary">
+		<div class="stats-and-summary" class:edit-enabled={!!editModel}>
 			<div class="pp-and-platform">
 				<div class="pp-container">
 					<span class="pp">
