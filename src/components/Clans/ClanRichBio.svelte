@@ -7,6 +7,7 @@
 	import {createEventDispatcher, onMount} from 'svelte';
 	import Button from '../Common/Button.svelte';
 	import RichTextRedactor from '../Common/RichTextRedactor.svelte';
+	import {BL_ASSETS_CDN} from '../../network/queues/beatleader/page-queue';
 
 	export let clan;
 	export let isFounder;
