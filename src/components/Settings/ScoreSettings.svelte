@@ -295,20 +295,24 @@
 	async function toggleHistoryPublic() {
 		if (isUpdating) return;
 
+		const newValue = !showStatsPublic;
 		try {
 			isUpdating = true;
-			await account.update({showStatsPublic});
+			await account.update({showStatsPublic: newValue});
 		} finally {
+			showStatsPublic = newValue;
 			isUpdating = null;
 		}
 	}
 	async function togglePinnedHistoryPublic() {
 		if (isUpdating) return;
 
+		const newValue = !showStatsPublicPinned;
 		try {
 			isUpdating = true;
-			await account.update({showStatsPublicPinned});
+			await account.update({showStatsPublicPinned: newValue});
 		} finally {
+			showStatsPublicPinned = newValue;
 			isUpdating = null;
 		}
 	}
