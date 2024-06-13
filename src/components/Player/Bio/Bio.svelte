@@ -101,7 +101,7 @@
 	}
 
 	.bio-limiter {
-		width: 45%;
+		width: 100%;
 		flex-grow: 1;
 	}
 

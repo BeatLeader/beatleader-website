@@ -4,6 +4,7 @@
 	import {fetchHtml} from '../../../network/fetch';
 	import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 	import Button from '../../Common/Button.svelte';
+	import RichTextEditor2 from '../../Common/RichTextEditor2.svelte';
 	import RichTextRedactor from '../../Common/RichTextRedactor.svelte';
 	import {defaultBio} from './placeholder_bio';
 
@@ -45,17 +46,18 @@
 		{#if richBio?.length || edititing}
 			<div class="message">
 				{#if !edititing}
-					<div bind:this={viewport} class="message-body sun-editor-editable">
+					<div bind:this={viewport} class="message-body">
 						{@html richBio ?? 'Add rich bio'}
 					</div>
 				{:else}
-					<RichTextRedactor
+					<RichTextEditor2 initialValue={richBio} on:cancel={() => (edititing = false)} on:post={editComment} />
+					<!-- <RichTextRedactor
 						initialValue={richBio}
 						buttonName="Save"
 						iconFa="fas fa-check"
 						cancel={true}
 						on:cancel={() => (edititing = false)}
-						on:post={editComment} />
+						on:post={editComment} /> -->
 				{/if}
 				<Svrollbar {viewport} />
 			</div>
@@ -124,6 +126,10 @@
 		overflow: auto;
 		-ms-overflow-style: none;
 		scrollbar-width: none;
+		position: relative;
+		padding: 0;
+		width: 100%;
+		min-height: 6em;
 	}
 
 	.message-body::-webkit-scrollbar {
