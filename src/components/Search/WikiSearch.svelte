@@ -33,7 +33,7 @@
 	}
 
 	async function fetchPage(filters, page = 1, itemsPerPage = ITEMS_PER_PAGE) {
-		return await fetch('/cors/blwiki/', {
+		return await fetch('https://beatleader.wiki/graphql', {
 			body: `{"query": "{pages {search(query: \\\"${filters.search}\\\") {results {path title}}}}"}`,
 			method: 'post',
 			headers: {
