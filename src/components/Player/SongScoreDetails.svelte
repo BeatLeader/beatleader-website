@@ -2,6 +2,7 @@
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
 	import {configStore} from '../../stores/config';
+	import {slide} from 'svelte/transition';
 	import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic';
 	import createStarGeneratorStore from '../../stores/beatleader/star-generator';
 	import {computeModifiedRating, getPPFromAcc} from '../../utils/beatleader/pp';
@@ -71,16 +72,23 @@
 		inBuiltLeaderboardPage = Math.floor((rank - 1) / scoresPerPage) + 1;
 	}
 
+	let beatSavior = null;
+	function fetchBeatSavior(songScore) {
+		scoreStatisticEnhancer(songScore).then(result => {
+			beatSavior = result;
+		});
+	}
+
 	const starGeneratorStore = createStarGeneratorStore();
 
 	$: leaderboard = songScore?.leaderboard ?? null;
 	$: score = songScore?.score ?? null;
-	$: beatSaviorPromise = scoreStatisticEnhancer(songScore);
+	$: fetchBeatSavior(songScore);
 
 	$: hash = leaderboard?.song?.hash;
 	$: downloadUrl = leaderboard?.song?.downloadUrl;
 	$: diffInfo = leaderboard?.diffInfo;
-	$: showPredictions = $configStore?.scoreDetailsPreferences?.showPredictedAcc;
+	$: showPredictions = !noSsLeaderboard && $configStore?.scoreDetailsPreferences?.showPredictedAcc;
 	$: scale = modifiersToSpeed(score.mods);
 	$: exmachinadata = showPredictions && $starGeneratorStore[hash + diffInfo?.diff + diffInfo?.type + scale];
 	$: !exmachinadata && showPredictions && starGeneratorStore.fetchExMachina(hash, downloadUrl, diffInfo?.diff, diffInfo?.type, scale);
@@ -92,28 +100,25 @@
 	);
 </script>
 
-<section class="details">
-	{#if songScore}
-		{#if $configStore?.scoreDetailsPreferences?.showMapInfo}
-			<div class="tab">
-				<LeaderboardStats {leaderboard} />
+{#if songScore}
+	<section class="details">
+		{#if beatSavior}
+			{#if $configStore?.scoreDetailsPreferences?.showMapInfo}
+				<div class="tab" transition:slide>
+					<LeaderboardStats {leaderboard} />
+				</div>
+			{/if}
+			<div class="stats-grid" transition:slide>
+				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} />
+
+				{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}
+					<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
+				{/if}
 			</div>
 		{/if}
 
-		<div class="stats-grid">
-			{#await beatSaviorPromise}
-				<Spinner />
-			{:then beatSavior}
-				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} />
-			{/await}
-
-			{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}
-				<ReplayDetails {score} on:replay-was-processed={handleReplayWasProcessed} />
-			{/if}
-		</div>
-
 		{#if showAccSaberLeaderboard}
-			<div class="tab">
+			<div class="tab" transition:slide>
 				<LeaderboardPage
 					leaderboardId={leaderboard.leaderboardId}
 					type="accsaber"
@@ -127,7 +132,7 @@
 					higlightedScore={score} />
 			</div>
 		{:else if !noSsLeaderboard && $configStore?.scoreDetailsPreferences?.showLeaderboard}
-			<div class="tab">
+			<div class="tab" transition:slide>
 				<LeaderboardPage
 					leaderboardId={leaderboard.leaderboardId}
 					type="global"
@@ -141,13 +146,13 @@
 					higlightedScore={score} />
 			</div>
 		{/if}
-		{#if $configStore?.scoreDetailsPreferences?.showHistory}
-			<div class="stats-grid">
+		{#if $configStore?.scoreDetailsPreferences?.showHistory && !noSsLeaderboard}
+			<div class="stats-grid" transition:slide>
 				<ScoreHistoryGraph {score} {leaderboard} />
 			</div>
 		{/if}
-	{/if}
-</section>
+	</section>
+{/if}
 
 <style>
 	.details {
