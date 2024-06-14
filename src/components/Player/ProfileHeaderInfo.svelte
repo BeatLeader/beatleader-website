@@ -613,5 +613,9 @@
 		.nickname {
 			text-align: center;
 		}
+
+		.edit-button {
+			bottom: 3.3em;
+		}
 	}
 </style>

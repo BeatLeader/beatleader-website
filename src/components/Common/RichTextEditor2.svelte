@@ -9,8 +9,6 @@
 
 	const plugins = [
 		'gjs-blocks-basic',
-		'grapesjs-plugin-forms',
-		'grapesjs-component-countdown',
 		'grapesjs-tabs',
 		'grapesjs-touch',
 		'grapesjs-parser-postcss',
@@ -67,6 +65,10 @@
 				// Open block manager
 				const openBlocksBtn = editor.Panels.getButton('views', 'open-blocks');
 				openBlocksBtn?.set('active', true);
+
+				const sm = editor.StyleManager;
+				const fontFamilyProp = sm.getProperty('typography', 'font-family');
+				fontFamilyProp.set('options', [{value: '"Noto Sans", sans-serif', name: 'Noto Sans'}, ...fontFamilyProp.get('options')]);
 			});
 		},
 	];
@@ -99,13 +101,6 @@
 					'type-speed': 40,
 					strings: ['Text row one', 'Text row two', 'Text row three'],
 				},
-			},
-		},
-		'grapesjs-preset-webpage': {
-			modalImportTitle: 'Import Template',
-			modalImportLabel: '<div style="margin-bottom: 10px; font-size: 13px;">Paste here your HTML/CSS and click Import</div>',
-			modalImportContent(editor) {
-				return editor.getHtml() + '<style>' + editor.getCss() + '</style>';
 			},
 		},
 	};
@@ -150,7 +145,17 @@
 				dispatch('cancel', '');
 			},
 		});
+
+		const optionButtons = panelManager.getPanel('options').get('buttons');
+
+		optionButtons.set(optionButtons.filter(b => b.id != 'gjs-open-import-webpage'));
 	}
+
+	localStorage.removeItem('gjs-components');
+	localStorage.removeItem('gjs-styles');
+	localStorage.removeItem('gjs-html');
+	localStorage.removeItem('gjs-css');
+	localStorage.removeItem('gjsProject');
 
 	let textArea;
 
@@ -159,6 +164,7 @@
 		grapesjs.init({
 			height: '100vh',
 			container: '#gjs',
+			fromElement: false,
 			components: initialValue,
 			showOffsets: true,
 			assetManager: {

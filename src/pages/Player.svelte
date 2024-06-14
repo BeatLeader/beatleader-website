@@ -25,7 +25,8 @@
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
 	import RandomRain from '../components/Common/RandomRain.svelte';
-	import Bio from '../components/Player/Bio/Bio.svelte';
+	import BioCarousel from '../components/Player/Bio/BioCarousel.svelte';
+	import PlayerCards from '../components/Player/Bio/PlayerCards.svelte';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -140,6 +141,15 @@
 		}
 	}
 
+	let horizontalRichBio = false;
+	function updateHorizontalRichBio(value) {
+		console.log(value);
+		horizontalRichBio = value;
+		if ($editModel) {
+			$editModel.data.horizontalRichBio = value;
+		}
+	}
+
 	let innerWidth = 0;
 	let innerHeight = 0;
 
@@ -179,6 +189,7 @@
 		scoresPlayerId = currentPlayerId;
 	}
 	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
+	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.countries[0].country;
@@ -217,7 +228,13 @@
 				fixedBrowserTitle={browserTitle}
 				startEditing={editing} />
 
-			<Bio {playerId} {playerInfo} edit={$editModel} />
+			<BioCarousel
+				{playerId}
+				{playerInfo}
+				edit={$editModel}
+				on:horizontalRichBio-changed={event => {
+					updateHorizontalRichBio(event.detail);
+				}} />
 
 			{#if !$editModel}
 				{#if $configStore.profileParts.graphs}
@@ -225,9 +242,6 @@
 				{/if}
 				{#if $configStore.profileParts.pinnedScores}
 					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
-				{/if}
-				{#if $configStore.profileParts.achievements}
-					<Achievements {playerId} />
 				{/if}
 			{/if}
 
@@ -254,6 +268,26 @@
 		<aside>
 			<MiniRankings {rank} {country} {countryRank} box={true} />
 
+			{#await accSaberAvailable}
+				Loading...
+			{:then accSaberAvailable}
+				{#if accSaberAvailable}
+					<ContentBox>
+						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
+					</ContentBox>
+				{/if}
+			{/await}
+			{#if horizontalRichBio}
+				<ContentBox>
+					<PlayerCards {playerId} {playerInfo} />
+				</ContentBox>
+			{/if}
+			{#if $configStore.profileParts.achievements}
+				<ContentBox>
+					<Achievements {playerId} />
+				</ContentBox>
+			{/if}
+
 			{#if playerInfo?.clans?.filter(cl => cl.tag == 'FELA').length}
 				<ContentBox>
 					<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
@@ -268,16 +302,6 @@
 					</div>
 				</ContentBox>
 			{/if}
-
-			{#await accSaberAvailable}
-				Loading...
-			{:then accSaberAvailable}
-				{#if accSaberAvailable}
-					<ContentBox>
-						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
-					</ContentBox>
-				{/if}
-			{/await}
 		</aside>
 	{/if}
 </section>

@@ -1,21 +1,35 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
-	import ContentBox from '../../Common/ContentBox.svelte';
+
+	import Button from '../../Common/Button.svelte';
 	import Dialog from '../../Common/Dialog.svelte';
 	import {isAnySupporter} from '../Overlay/overlay';
-	import ClanFounder from './ClanFounder.svelte';
+	import PlayerCards from './PlayerCards.svelte';
+
 	import PlayerRichBio from './PlayerRichBio.svelte';
-	import RankedMapper from './RankedMapper.svelte';
 
 	export let playerId = null;
 	export let playerInfo = null;
 	export let edit = false;
+	export let onHorizontalChanged = () => {};
+
+	const dispatch = createEventDispatcher();
 
 	let richBioID = null;
+	let horizontalRichBio = playerInfo?.horizontalRichBio;
 	let richBioError = null;
 
 	function getRichBioId(playerInfo) {
 		richBioID = playerInfo?.richBioTimeset;
+	}
+
+	function toggleHorizontal() {
+		horizontalRichBio = !horizontalRichBio;
+		onHorizontalChanged(horizontalRichBio);
+		setTimeout(() => {
+			dispatch('height-changed');
+		}, 1000);
 	}
 
 	async function onRichTextEdit(event) {
@@ -48,8 +62,6 @@
 			});
 	}
 
-	let fullWidthBio = false;
-
 	$: playerInfo && getRichBioId(playerInfo);
 </script>
 
@@ -66,43 +78,61 @@
 		</div>
 	</Dialog>
 {/if}
-{#if playerId}
-	<ContentBox cls="bio-box">
-		<div class="bio-and-cards {!richBioID ? 'bio-only-cards' : ''}">
-			{#if richBioID || edit}
-				<div class="bio-limiter">
-					<PlayerRichBio
-						{edit}
-						{playerId}
-						{richBioID}
-						patron={isAnySupporter(playerInfo.role)}
-						isFounder={true}
-						on:edit={e => onRichTextEdit(e)}
-						on:delete={e => onRichTextDelete(e)} />
-				</div>
-			{/if}
 
-			<div class="cards-part {!richBioID ? 'cards-part-only' : ''}" class:push-next-row={fullWidthBio}>
-				{#if playerInfo.mapperId}
-					<RankedMapper mapperId={playerInfo.mapperId} />
+<div class="bio-and-cards {!richBioID ? 'bio-only-cards' : ''}">
+	{#if playerId}
+		{#if richBioID || edit}
+			<div class="bio-limiter {horizontalRichBio ? 'horizontal' : ''}">
+				<PlayerRichBio
+					{edit}
+					{playerId}
+					{richBioID}
+					patron={isAnySupporter(playerInfo.role)}
+					isFounder={true}
+					on:height-changed
+					on:edit={e => onRichTextEdit(e)}
+					on:delete={e => onRichTextDelete(e)} />
+				{#if edit}
+					<div class="orientation-buttons">
+						<div>
+							<Button
+								type={horizontalRichBio ? 'default' : 'primary'}
+								title="Half width"
+								iconFa="fas fa-table-columns"
+								on:click={() => toggleHorizontal()} />
+							<Button
+								type={horizontalRichBio ? 'primary' : 'default'}
+								title="Full width"
+								iconFa="fas fa-square"
+								on:click={() => toggleHorizontal()} />
+						</div>
+					</div>
 				{/if}
-				<ClanFounder {playerId} />
 			</div>
-		</div>
-	</ContentBox>
-{/if}
+		{/if}
+
+		{#if !horizontalRichBio}
+			<div class="cards-part {!richBioID ? 'cards-part-only' : ''}">
+				<PlayerCards {playerInfo} {playerId} />
+			</div>
+		{/if}
+	{/if}
+</div>
 
 <style>
 	.bio-and-cards {
 		display: flex;
-		flex-wrap: wrap;
 		width: 100%;
 		gap: 1em 0.5em;
 	}
 
 	.bio-limiter {
-		width: 100%;
+		width: 50%;
 		flex-grow: 1;
+	}
+
+	.bio-limiter.horizontal {
+		width: 100%;
 	}
 
 	.bio-only-cards {
@@ -137,6 +167,12 @@
 		flex-direction: column;
 	}
 
+	.orientation-buttons {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: -2.6em;
+	}
+
 	.socials-list {
 		display: flex;
 		justify-content: center;
@@ -147,14 +183,5 @@
 	:global(.bio-and-left .message-body) {
 		border-left: none;
 		border-radius: 0;
-	}
-
-	:global(.bio-box) {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: 0.5em !important;
-		border-radius: 12px !important;
-		max-width: 100vw;
 	}
 </style>

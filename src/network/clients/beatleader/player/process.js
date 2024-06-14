@@ -123,6 +123,7 @@ export default response => {
 			changes,
 			clans,
 			clanOrder,
+			horizontalRichBio: profileSettings?.horizontalRichBio,
 		},
 		profileSettings: profileSettings
 			? {

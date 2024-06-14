@@ -1,11 +1,9 @@
 <script>
-	import {createEventDispatcher, onMount} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	import {Svrollbar} from 'svrollbar';
-	import {fetchHtml} from '../../../network/fetch';
 	import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 	import Button from '../../Common/Button.svelte';
 	import RichTextEditor2 from '../../Common/RichTextEditor2.svelte';
-	import RichTextRedactor from '../../Common/RichTextRedactor.svelte';
 	import {defaultBio} from './placeholder_bio';
 
 	export let richBioID;
@@ -31,6 +29,7 @@
 		fetch(`${BL_ASSETS_CDN}/player-${playerId}-richbio-${richBioID}.html`)
 			.then(d => d.text())
 			.then(bio => {
+				dispatch('height-changed');
 				richBio = bio;
 			});
 	}
@@ -45,19 +44,12 @@
 	<div class="bio-container">
 		{#if richBio?.length || edititing}
 			<div class="message">
-				{#if !edititing}
+				{#if !edititing || !edit}
 					<div bind:this={viewport} class="message-body">
 						{@html richBio ?? 'Add rich bio'}
 					</div>
 				{:else}
 					<RichTextEditor2 initialValue={richBio} on:cancel={() => (edititing = false)} on:post={editComment} />
-					<!-- <RichTextRedactor
-						initialValue={richBio}
-						buttonName="Save"
-						iconFa="fas fa-check"
-						cancel={true}
-						on:cancel={() => (edititing = false)}
-						on:post={editComment} /> -->
 				{/if}
 				<Svrollbar {viewport} />
 			</div>
@@ -66,24 +58,26 @@
 		{#if !edititing && edit}
 			{#if !richBio?.length}
 				<div class="sample-bio">
-					<RichTextRedactor initialValue={defaultBio} buttonName={null} cancelButtonName={null} iconFa="fas fa-check" cancel={true} />
+					<RichTextEditor2 initialValue={defaultBio} />
 				</div>
 			{/if}
 			{#if !patron}
 				<span> Support us on <a href="https://patreon.com/beatleader">Patreon</a></span>
 			{/if}
 			<div class="action-buttons">
-				{#if richBio?.length}
-					<Button type="danger" title="Delete" iconFa="fas fa-trash" on:click={deleteComment} />
-					<Button type="primary" title="Edit" disabled={!patron} iconFa="fas fa-edit" on:click={() => (edititing = !edititing)} />
-				{:else}
-					<Button
-						type="primary"
-						disabled={!patron}
-						label="Add bio"
-						iconFa="fas fa-file-signature"
-						on:click={() => (edititing = !edititing)} />
-				{/if}
+				<div>
+					{#if richBio?.length}
+						<Button type="danger" title="Delete" iconFa="fas fa-trash" on:click={deleteComment} />
+						<Button type="primary" title="Edit" disabled={!patron} iconFa="fas fa-edit" on:click={() => (edititing = !edititing)} />
+					{:else}
+						<Button
+							type="primary"
+							disabled={!patron}
+							label="Add bio"
+							iconFa="fas fa-file-signature"
+							on:click={() => (edititing = !edititing)} />
+					{/if}
+				</div>
 			</div>
 		{/if}
 	</div>
