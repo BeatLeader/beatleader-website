@@ -173,13 +173,6 @@
 		margin-top: -2.6em;
 	}
 
-	.socials-list {
-		display: flex;
-		justify-content: center;
-		gap: 0.6em;
-		margin-bottom: -1em;
-	}
-
 	:global(.bio-and-left .message-body) {
 		border-left: none;
 		border-radius: 0;

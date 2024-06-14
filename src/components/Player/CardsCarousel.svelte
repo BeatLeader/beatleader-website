@@ -90,10 +90,22 @@
 	$: updateAccSaberPlayerInfo(playerId);
 </script>
 
-<ContentBox>
+<ContentBox cls="charts-box">
 	<div class="columns">
 		<div class="column">
 			<Carousel cards={swipeCards} />
 		</div>
 	</div>
 </ContentBox>
+
+<style>
+	:global(.charts-box) {
+		padding: 0.5em !important;
+		border-radius: 12px !important;
+	}
+
+	:global(.charts-box .cards-wrapper) {
+		background-color: #121212;
+		border-radius: 8px;
+	}
+</style>

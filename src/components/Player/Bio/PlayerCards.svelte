@@ -7,8 +7,17 @@
 </script>
 
 {#if playerInfo}
-	{#if playerInfo.mapperId}
-		<RankedMapper mapperId={playerInfo.mapperId} />
-	{/if}
-	<ClanFounder {playerId} />
+	<div class="cards-container">
+		{#if playerInfo.mapperId}
+			<RankedMapper mapperId={playerInfo.mapperId} />
+		{/if}
+		<ClanFounder {playerId} />
+	</div>
 {/if}
+
+<style>
+	.cards-container {
+		display: flex;
+		justify-content: center;
+	}
+</style>

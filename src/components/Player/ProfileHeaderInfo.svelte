@@ -448,6 +448,7 @@
 		font-weight: bold;
 		align-items: baseline;
 		margin-right: 3em;
+		text-shadow: 1px 1px 5px #000;
 	}
 
 	:global(.clan-badges .clan-badges) {
@@ -490,7 +491,8 @@
 	}
 
 	.player-ranking a {
-		color: #fddbff !important;
+		color: #fafafad1 !important;
+		text-shadow: 1px 1px 5px #000;
 	}
 
 	.nickname {

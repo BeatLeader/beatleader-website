@@ -224,8 +224,7 @@
 
 	.maps-title {
 		font-size: small;
-		font-weight: 600;
-		text-decoration-line: underline;
+		font-weight: 700;
 	}
 
 	.other-maps {

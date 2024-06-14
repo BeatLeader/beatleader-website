@@ -64,6 +64,9 @@
 </ContentBox>
 
 <style>
+	.columns {
+		width: 100%;
+	}
 	:global(.bio-box) {
 		display: flex;
 		flex-direction: column;
@@ -71,10 +74,5 @@
 		padding: 0.5em !important;
 		border-radius: 12px !important;
 		max-width: 100vw;
-	}
-
-	:global(.bio-box .carousel) {
-		grid-gap: 0 !important;
-		margin-top: -0.2em;
 	}
 </style>

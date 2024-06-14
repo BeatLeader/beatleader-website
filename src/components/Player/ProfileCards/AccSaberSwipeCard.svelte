@@ -166,6 +166,7 @@
 		display: flex;
 		flex-direction: column;
 		grid-gap: 0.6em;
+		padding: 0.5em;
 	}
 
 	h3 {

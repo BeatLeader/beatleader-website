@@ -463,7 +463,7 @@
 		display: flex;
 		justify-content: center;
 		gap: 0.6em;
-		margin-right: 0.8em;
+		margin-right: 0.6em;
 		margin-left: 0.8em;
 		margin-top: 0.5em;
 	}

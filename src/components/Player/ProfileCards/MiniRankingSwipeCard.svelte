@@ -36,6 +36,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		grid-gap: 1rem;
+		padding: 0.5em;
 	}
 
 	.mini-ranking :global(section) {

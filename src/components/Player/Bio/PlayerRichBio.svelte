@@ -29,12 +29,17 @@
 		fetch(`${BL_ASSETS_CDN}/player-${playerId}-richbio-${richBioID}.html`)
 			.then(d => d.text())
 			.then(bio => {
-				dispatch('height-changed');
 				richBio = bio;
+				dispatch('height-changed');
 			});
 	}
 
 	let edititing = false;
+	function updateEditing(newValue) {
+		edititing = newValue;
+		dispatch('height-changed');
+	}
+
 	let viewport;
 
 	$: richBioID && fetchBioFile(richBioID);
@@ -49,7 +54,7 @@
 						{@html richBio ?? 'Add rich bio'}
 					</div>
 				{:else}
-					<RichTextEditor2 initialValue={richBio} on:cancel={() => (edititing = false)} on:post={editComment} />
+					<RichTextEditor2 initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
 				{/if}
 				<Svrollbar {viewport} />
 			</div>
@@ -68,14 +73,14 @@
 				<div>
 					{#if richBio?.length}
 						<Button type="danger" title="Delete" iconFa="fas fa-trash" on:click={deleteComment} />
-						<Button type="primary" title="Edit" disabled={!patron} iconFa="fas fa-edit" on:click={() => (edititing = !edititing)} />
+						<Button type="primary" title="Edit" disabled={!patron} iconFa="fas fa-edit" on:click={() => updateEditing(!edititing)} />
 					{:else}
 						<Button
 							type="primary"
 							disabled={!patron}
 							label="Add bio"
 							iconFa="fas fa-file-signature"
-							on:click={() => (edititing = !edititing)} />
+							on:click={() => updateEditing(!edititing)} />
 					{/if}
 				</div>
 			</div>
