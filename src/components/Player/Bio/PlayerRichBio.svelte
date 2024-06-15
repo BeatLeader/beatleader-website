@@ -44,7 +44,7 @@
 	let viewport;
 
 	window.addEventListener('message', function (event) {
-		if (event.origin === location.origin) {
+		if (event.origin === 'https://bio.beatleader.wiki') {
 			var newHeight = event.data.frameHeight;
 			viewport.style.height = Math.min(newHeight, 420) + 'px';
 			dispatch('height-changed');
@@ -63,43 +63,19 @@
 		resizeObserver.observe(container);
 	}
 
-	$: richBioID && fetchBioFile(richBioID);
+	$: richBioID && edit && fetchBioFile(richBioID);
 	$: container && subscribeToContainer(container);
 </script>
 
-{#if richBio?.length || edititing || edit}
+{#if richBioID || edititing || edit}
 	<div class="bio-container">
-		{#if richBio?.length || edititing}
+		{#if richBioID || edititing}
 			<div class="message" bind:this={container}>
 				{#if !edititing || !edit}
 					<iframe
 						bind:this={viewport}
 						class="message-body"
-						srcdoc={`<html>
-							<style>
-								html {
-									overflow-x: hidden;
-									overflow-y: auto;
-									-ms-overflow-style: none;
-									scrollbar-width: none;
-									width: ${width}px;
-								}
-								html::-webkit-scrollbar {
-									display: none;
-								}
-							</style>
-							<script>function sendHeight() {
-								var height = document.body.clientHeight;
-								window.parent.postMessage({
-									'frameHeight': height
-								}, '*');
-							}
-							
-							window.onload = sendHeight;  // Send initial height
-							window.onresize = sendHeight;  // Update height on resize
-						</script>
-					${richBio}
-           			</html>`} />
+						src={`https://bio.beatleader.wiki/?player=${playerId}&timeset=${richBioID}&width=${width}`} />
 				{:else}
 					<RichTextEditor2 initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
 				{/if}
@@ -108,7 +84,7 @@
 		{/if}
 
 		{#if !edititing && edit}
-			{#if !richBio?.length}
+			{#if !richBioID}
 				<div class="sample-bio">
 					<RichTextEditor2 initialValue={defaultBio} />
 				</div>
@@ -118,7 +94,7 @@
 			{/if}
 			<div class="action-buttons">
 				<div>
-					{#if richBio?.length}
+					{#if richBioID}
 						<Button type="danger" title="Delete" iconFa="fas fa-trash" on:click={deleteComment} />
 						<Button type="primary" title="Edit" disabled={!patron} iconFa="fas fa-edit" on:click={() => updateEditing(!edititing)} />
 					{:else}

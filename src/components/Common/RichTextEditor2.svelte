@@ -145,10 +145,6 @@
 				dispatch('cancel', '');
 			},
 		});
-
-		const optionButtons = panelManager.getPanel('options').get('buttons');
-
-		optionButtons.set(optionButtons.filter(b => b.id != 'gjs-open-import-webpage'));
 	}
 
 	localStorage.removeItem('gjs-components');
