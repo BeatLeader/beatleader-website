@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, onMount} from 'svelte';
 	import {Svrollbar} from 'svrollbar';
 	import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 	import Button from '../../Common/Button.svelte';
@@ -40,19 +40,66 @@
 		dispatch('height-changed');
 	}
 
+	let container;
 	let viewport;
 
+	window.addEventListener('message', function (event) {
+		if (event.origin === location.origin) {
+			var newHeight = event.data.frameHeight;
+			viewport.style.height = Math.min(newHeight, 420) + 'px';
+			dispatch('height-changed');
+		}
+	});
+
+	let width = 0;
+
+	function subscribeToContainer(container) {
+		const resizeObserver = new ResizeObserver(entries => {
+			for (let entry of entries) {
+				width = entry.contentRect.width;
+			}
+		});
+
+		resizeObserver.observe(container);
+	}
+
 	$: richBioID && fetchBioFile(richBioID);
+	$: container && subscribeToContainer(container);
 </script>
 
 {#if richBio?.length || edititing || edit}
 	<div class="bio-container">
 		{#if richBio?.length || edititing}
-			<div class="message">
+			<div class="message" bind:this={container}>
 				{#if !edititing || !edit}
-					<div bind:this={viewport} class="message-body">
-						{@html richBio ?? 'Add rich bio'}
-					</div>
+					<iframe
+						bind:this={viewport}
+						class="message-body"
+						srcdoc={`<html>
+							<style>
+								html {
+									overflow-x: hidden;
+									overflow-y: auto;
+									-ms-overflow-style: none;
+									scrollbar-width: none;
+									width: ${width}px;
+								}
+								html::-webkit-scrollbar {
+									display: none;
+								}
+							</style>
+							<script>function sendHeight() {
+								var height = document.body.clientHeight;
+								window.parent.postMessage({
+									'frameHeight': height
+								}, '*');
+							}
+							
+							window.onload = sendHeight;  // Send initial height
+							window.onresize = sendHeight;  // Update height on resize
+						</script>
+					${richBio}
+           			</html>`} />
 				{:else}
 					<RichTextEditor2 initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
 				{/if}
@@ -120,19 +167,12 @@
 		background-color: transparent;
 		color: white;
 		font-family: inherit;
-		max-height: 30em;
 		max-width: 100%;
-		overflow: auto;
-		-ms-overflow-style: none;
-		scrollbar-width: none;
+
 		position: relative;
 		padding: 0;
 		width: 100%;
 		min-height: 6em;
-	}
-
-	.message-body::-webkit-scrollbar {
-		display: none;
 	}
 
 	.sample-bio {
