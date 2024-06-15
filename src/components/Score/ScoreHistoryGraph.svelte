@@ -26,6 +26,9 @@
 					if (!element.replay && element.replayCopy) {
 						element.replay = element.replayCopy;
 					}
+					if (element.modifiers === null) {
+						element.strippedMistakes = true;
+					}
 				});
 				if (!scoresList.find(s => s.modifiedScore == score.score)) {
 					scoresList.push({
