@@ -1,35 +1,19 @@
 <script>
-	import {fetchJson} from '../../network/fetch';
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import AchievementCompact from '../Common/Achievements/AchievementCompact.svelte';
 
-	export let playerId;
-
-	let achievements = [];
-
-	function fetchAchievements(playerId) {
-		fetchJson(BL_API_URL + `player/${playerId}/achievements`)
-			.then(clientInfo => {
-				achievements = clientInfo.body;
-			})
-			.catch(err => {
-				achievementError = err;
-			});
-	}
-
-	$: playerId && fetchAchievements(playerId);
+	export let achievements;
 </script>
 
-{#if achievements.length > 0}
-	<section class="achievements-section">
+<div class="achievements-section">
+	{#if achievements?.length > 0}
 		<h2>Achievements</h2>
 		<div class="achievements-list">
 			{#each achievements as achievement}
 				<AchievementCompact {achievement} />
 			{/each}
 		</div>
-	</section>
-{/if}
+	{/if}
+</div>
 
 <style>
 	.achievements-list {

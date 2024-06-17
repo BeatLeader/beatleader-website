@@ -27,6 +27,8 @@
 	import RandomRain from '../components/Common/RandomRain.svelte';
 	import BioCarousel from '../components/Player/Bio/BioCarousel.svelte';
 	import PlayerCards from '../components/Player/Bio/PlayerCards.svelte';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {fetchJson} from '../network/fetch';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -141,9 +143,17 @@
 		}
 	}
 
+	let achievements = [];
+	function fetchAchievements(playerId) {
+		fetchJson(BL_API_URL + `player/${playerId}/achievements`)
+			.then(clientInfo => {
+				achievements = clientInfo.body;
+			})
+			.catch(() => {});
+	}
+
 	let horizontalRichBio = false;
 	function updateHorizontalRichBio(value) {
-		console.log(value);
 		horizontalRichBio = value;
 		if ($editModel) {
 			$editModel.data.horizontalRichBio = value;
@@ -195,6 +205,7 @@
 	$: country = $playerStore?.playerInfo.countries[0].country;
 	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
 
+	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
@@ -277,14 +288,14 @@
 					</ContentBox>
 				{/if}
 			{/await}
-			{#if horizontalRichBio}
-				<ContentBox>
+			{#if (!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio}
+				<ContentBox cls="player-cards-box">
 					<PlayerCards {playerId} {playerInfo} />
 				</ContentBox>
 			{/if}
-			{#if $configStore.profileParts.achievements}
+			{#if achievements?.length && $configStore.profileParts.achievements}
 				<ContentBox>
-					<Achievements {playerId} />
+					<Achievements {achievements} />
 				</ContentBox>
 			{/if}
 
@@ -337,6 +348,10 @@
 		cursor: pointer;
 		min-width: 2rem;
 		margin-right: 0.5rem;
+	}
+
+	:global(.player-cards-box:has(.cards-container:empty)) {
+		display: none;
 	}
 
 	@media screen and (max-width: 1749px) {

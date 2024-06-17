@@ -6,6 +6,8 @@
 	import Bio from './Bio.svelte';
 	import PlayerCards from './PlayerCards.svelte';
 	import Achievements from '../Achievements.svelte';
+	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
+	import {fetchJson} from '../../../network/fetch';
 
 	export let playerId = null;
 	export let playerInfo = null;
@@ -22,7 +24,10 @@
 		dispatch('horizontalRichBio-changed', horizontalRichBio);
 	}
 
-	function updateSwipeCards(playerId, playerInfo, edit, pageContainer, horizontalRichBio) {
+	let emptyMaps = false;
+	let emptyClan = false;
+
+	function updateSwipeCards(playerId, playerInfo, edit, pageContainer, horizontalRichBio, achievements, noMaps, noClan) {
 		var cards = [];
 		if (playerInfo?.richBioTimeset || edit) {
 			cards.push({
@@ -32,27 +37,49 @@
 			});
 		}
 
-		if (pageContainer.name !== 'xxl' && ((!playerInfo?.richBioTimeset && !edit) || horizontalRichBio)) {
+		if (pageContainer.name !== 'xxl' && !(noMaps && noClan) && ((!playerInfo?.richBioTimeset && !edit) || horizontalRichBio)) {
 			cards.push({
 				name: `cards-${playerId}`,
 				component: PlayerCards,
-				props: {playerId, playerInfo},
+				props: {
+					playerId,
+					playerInfo,
+					onEmptyClan: () => {
+						emptyClan = true;
+					},
+					onEmptyMaps: () => {
+						emptyMaps = true;
+					},
+				},
 			});
 		}
 
-		if (pageContainer.name !== 'xxl') {
+		if (pageContainer.name !== 'xxl' && achievements?.length) {
 			cards.push({
 				name: `achievements-${playerId}`,
 				component: Achievements,
-				props: {playerId},
+				props: {achievements},
 			});
 		}
 
 		swipeCards = cards;
 	}
 
+	let achievements = [];
+
+	function fetchAchievements(playerId) {
+		emptyMaps = false;
+		fetchJson(BL_API_URL + `player/${playerId}/achievements`)
+			.then(clientInfo => {
+				achievements = clientInfo.body;
+			})
+			.catch(() => {});
+	}
+
+	$: playerId && fetchAchievements(playerId);
+
 	$: onHorizontalChanged(playerInfo?.horizontalRichBio);
-	$: updateSwipeCards(playerId, playerInfo, edit, $pageContainer, horizontalRichBio);
+	$: updateSwipeCards(playerId, playerInfo, edit, $pageContainer, horizontalRichBio, achievements, emptyMaps, emptyClan);
 </script>
 
 <ContentBox cls="bio-box">
@@ -74,5 +101,16 @@
 		padding: 0.5em !important;
 		border-radius: 12px !important;
 		max-width: 100vw;
+	}
+
+	:global(.bio-box:has(.bio-and-cards)) {
+		display: block !important;
+	}
+
+	:global(.bio-box:has(.achievements-section:empty):has(.cards-container:empty)) {
+		display: none;
+	}
+	:global(.bio-box:has(.column:empty)) {
+		display: none;
 	}
 </style>

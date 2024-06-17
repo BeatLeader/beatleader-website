@@ -463,4 +463,8 @@
 	:global(.gjs-pn-btn .fa .fa-times) {
 		color: red;
 	}
+
+	:global(.gjs-one-bg) {
+		background-color: transparent !important;
+	}
 </style>

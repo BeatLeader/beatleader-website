@@ -79,10 +79,10 @@
 	</Dialog>
 {/if}
 
-<div class="bio-and-cards {!richBioID ? 'bio-only-cards' : ''}">
+<div class="bio-and-cards {!(richBioID || edit) || horizontalRichBio ? 'only-one' : ''}">
 	{#if playerId}
 		{#if richBioID || edit}
-			<div class="bio-limiter {horizontalRichBio ? 'horizontal' : ''}">
+			<div class="bio-limiter">
 				<PlayerRichBio
 					{edit}
 					{playerId}
@@ -121,23 +121,24 @@
 
 <style>
 	.bio-and-cards {
-		display: flex;
+		display: grid;
+		grid-template-columns: 50% 50%;
 		width: 100%;
-		gap: 1em 0.5em;
+		gap: 0.5em;
 	}
 
-	.bio-limiter {
-		width: 50%;
-		flex-grow: 1;
+	.bio-and-cards.only-one {
+		grid-template-columns: 100%;
+		gap: 0;
 	}
 
-	.bio-limiter.horizontal {
-		width: 100%;
+	.bio-and-cards:has(.cards-container:empty) {
+		grid-template-columns: 100%;
+		gap: 0;
 	}
 
-	.bio-only-cards {
-		display: flex;
-		gap: 1em;
+	.bio-and-cards:has(.cards-container:empty) .orientation-buttons {
+		display: none;
 	}
 
 	.cards-part {
@@ -171,6 +172,7 @@
 		display: flex;
 		justify-content: flex-end;
 		margin-top: -2.6em;
+		margin-right: 0.5em;
 	}
 
 	:global(.bio-and-left .message-body) {

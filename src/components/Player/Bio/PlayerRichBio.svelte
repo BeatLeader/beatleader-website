@@ -1,6 +1,5 @@
 <script>
-	import {createEventDispatcher, onMount} from 'svelte';
-	import {Svrollbar} from 'svrollbar';
+	import {createEventDispatcher} from 'svelte';
 	import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 	import Button from '../../Common/Button.svelte';
 	import RichTextEditor2 from '../../Common/RichTextEditor2.svelte';
@@ -70,17 +69,15 @@
 {#if richBioID || edititing || edit}
 	<div class="bio-container">
 		{#if richBioID || edititing}
-			<div class="message" bind:this={container}>
-				{#if !edititing || !edit}
-					<iframe
-						bind:this={viewport}
-						class="message-body"
-						src={`https://bio.beatleader.wiki/?player=${playerId}&timeset=${richBioID}&width=${width}`} />
-				{:else}
-					<RichTextEditor2 initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
-				{/if}
-				<Svrollbar {viewport} />
-			</div>
+			{#if !edititing || !edit}
+				<iframe
+					bind:this={viewport}
+					class="message-body"
+					allow="fullscreen;"
+					src={`https://bio.beatleader.wiki/?player=${playerId}&timeset=${richBioID}&width=${width}`} />
+			{:else}
+				<RichTextEditor2 initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
+			{/if}
 		{/if}
 
 		{#if !edititing && edit}
@@ -90,7 +87,7 @@
 				</div>
 			{/if}
 			{#if !patron}
-				<span> Support us on <a href="https://patreon.com/beatleader">Patreon</a></span>
+				<span class="patreon-line"> Support us on <a href="https://patreon.com/beatleader">Patreon</a></span>
 			{/if}
 			<div class="action-buttons">
 				<div>
@@ -115,7 +112,7 @@
 	.bio-container {
 		background-color: #121212;
 		border-radius: 8px;
-		overflow: auto;
+		overflow: hidden;
 		height: min-content;
 	}
 	.message-header {
@@ -134,11 +131,6 @@
 		display: block;
 	}
 
-	.message {
-		background-color: transparent;
-		position: relative;
-	}
-
 	.message-body {
 		background-color: transparent;
 		color: white;
@@ -149,36 +141,22 @@
 		padding: 0;
 		width: 100%;
 		min-height: 6em;
+		margin-bottom: -0.5em;
 	}
 
 	.sample-bio {
-		opacity: 0.6;
+		opacity: 0.3;
 		pointer-events: none;
+		height: 15em;
+		overflow: hidden;
+		margin-bottom: 0.5em;
 	}
 
-	:global(.message-header .button) {
-		width: 2em !important;
-		height: 2em !important;
-		margin-bottom: -0.3em !important;
-		margin-top: -0.4em !important;
+	.patreon-line {
+		margin-left: 0.5em;
 	}
 
-	:global(.se-btn-group) {
-		background-color: black !important;
-	}
-	:global(.se-input-control) {
-		background-color: black !important;
-	}
-	:global(.se-wrapper-inner) {
-		background-color: transparent !important;
-		color: white !important;
-	}
-	:global(.se-resizing-bar) {
-		background-color: black !important;
-	}
-
-	:global(.sample-bio .se-wrapper-inner) {
-		height: auto !important;
-		background-color: transparent !important;
+	.action-buttons {
+		margin-left: 0.5em;
 	}
 </style>

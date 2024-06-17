@@ -1,12 +1,10 @@
 <script>
 	import {fade} from 'svelte/transition';
-	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
 	import {playersTitle} from '../../../utils/clans';
 
-	export let playerId;
+	export let clan;
 
 	let tag = null;
-
 	let name = '';
 	let color = '';
 	let description = '';
@@ -15,6 +13,7 @@
 	let rankedPoolPercent = 0;
 
 	function updateFields(clan) {
+		tag = clan?.tag;
 		name = clan?.name ?? '';
 		tag = clan?.tag;
 		color = clan?.color ?? '#ff0000';
@@ -25,20 +24,7 @@
 		rankedPoolPercent = clan?.rankedPoolPercentCaptured ? clan.rankedPoolPercentCaptured * 100 : 0;
 	}
 
-	function fetchClan(playerId) {
-		if (!playerId) return;
-		try {
-			fetch(`${BL_API_URL}player/${playerId}/foundedClan`, {credentials: 'include'})
-				.then(r => r.json())
-				.then(clan => {
-					updateFields(clan);
-				});
-		} catch {
-			tag = null;
-		}
-	}
-
-	$: fetchClan(playerId);
+	$: updateFields(clan);
 </script>
 
 {#if tag}

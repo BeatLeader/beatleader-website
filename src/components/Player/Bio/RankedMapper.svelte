@@ -1,49 +1,7 @@
 <script>
-	import {navigate} from 'svelte-routing';
-	import createClanStore from '../../../stores/http/http-clan-store';
-	import createClanWithMapsStore from '../../../stores/http/http-clan-with-maps-store';
-	import Spinner from '../../Common/Spinner.svelte';
-	import ContentBox from '../../Common/ContentBox.svelte';
-	import ClanInfo from '../../Clans/ClanInfo.svelte';
-	import Rain from '../../Common/Rain.svelte';
-	import RandomRain from '../../Common/RandomRain.svelte';
-	import ClanInfoSmaller from '../../Clans/ClanInfoSmaller.svelte';
-	import {fade} from 'svelte/transition';
-	import {
-		playersTitle,
-		rankLabel,
-		accLabel,
-		ppLabel,
-		capturesLabel,
-		rankedPoolPercentLabel,
-		rankValue,
-		accValue,
-		ppValue,
-		capturesValue,
-		rankedPoolPercentValue,
-		ppIcon,
-	} from '../../../utils/clans';
-	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
-
 	export let mapperId;
-
-	let rankedmaps = null;
-	let topmap = null;
-
-	function fetchRankedMapper(mapperId) {
-		try {
-			fetch(`${BL_API_URL}player/${mapperId}/rankedmaps`)
-				.then(r => r.json())
-				.then(response => {
-					rankedmaps = response;
-					topmap = rankedmaps.maps[0];
-				});
-		} catch {
-			rankedmaps = null;
-		}
-	}
-
-	$: fetchRankedMapper(mapperId);
+	export let rankedmaps = null;
+	export let topmap = null;
 </script>
 
 {#if rankedmaps}
