@@ -18,10 +18,10 @@
 
 {#if item}
 	<a
-		href={`/u/${item?.playerId}`}
+		href={`/u/${item?.alias ?? item?.playerId}`}
 		class="player-card"
 		on:click|preventDefault|stopPropagation={() => {
-			navigate(`/u/${item?.playerId}`);
+			navigate(`/u/${item?.alias ?? item?.playerId}`);
 			dispatch('close');
 		}}>
 		<div class="player-rank">

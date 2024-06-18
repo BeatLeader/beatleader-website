@@ -27,7 +27,7 @@
 		switch (message?.type) {
 			case 'select':
 				if (message?.value?.playerId) {
-					navigate(`/u/${message.value.playerId}`);
+					navigate(`/u/${message.value.alias ?? message.value.playerId}`);
 					dispatch('close');
 				}
 				break;

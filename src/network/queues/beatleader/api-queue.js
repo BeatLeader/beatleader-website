@@ -118,13 +118,13 @@ export const processLeaderboardScore = s => {
 	ret.player.playerInfo.countries.push({country, rank: player.countryRank});
 	ret.player.playerInfo.avatar = player.avatar;
 	ret.player.playerInfo.bot = player.bot;
-	ret.player.playerInfo.lastTwoWeekTime = player.lastTwoWeekTime;
 	ret.player.playerInfo.pp = player.pp;
 	ret.player.playerInfo.rank = player.rank;
 
 	ret.player.name = player.name;
 	ret.player.name = ret.player.name ? ret.player.name.trim().replace('&#039;', "'") : null;
 	ret.player.playerId = player.id;
+	ret.player.alias = player.alias;
 	ret.player.playerId = ret.player.playerId ? ret.player.playerId.trim() : null;
 
 	ret.player.clans = player?.clans ?? null;

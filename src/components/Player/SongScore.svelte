@@ -141,7 +141,7 @@
 								<PlayerNameWithFlag
 									player={songScore.player}
 									type={service === 'accsaber' ? 'accsaber/date' : null}
-									on:click={() => navigateToPlayer(songScore.player.playerId)} />
+									on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
 							</div>
 						{/if}
 
