@@ -3,20 +3,48 @@
 	import 'grapesjs/dist/css/grapes.min.css';
 	import grapesjs from 'grapesjs';
 
+	import gjsBlocksBasic from 'grapesjs-blocks-basic';
+	import grapesjsBlocksFlexbox from 'grapesjs-blocks-flexbox';
+	import grapesjsTabs from 'grapesjs-tabs';
+	import grapesjsCustomCode from 'grapesjs-custom-code';
+	import grapesjsPluginExport from 'grapesjs-plugin-export';
+	import grapesjsPluginForms from 'grapesjs-plugin-forms';
+	import grapesjsTouch from 'grapesjs-touch';
+	import grapesjsParserPostcss from 'grapesjs-parser-postcss';
+	import grapesjsTooltip from 'grapesjs-tooltip';
+	import grapesjsTuiImageEditor from 'grapesjs-tui-image-editor';
+	import grapesjsStyleGradient from 'grapesjs-style-gradient';
+	import grapesjsTyped from 'grapesjs-typed';
+	import grapesjsStyleBg from 'grapesjs-style-bg';
+	import grapesjsPresetWebpage from 'grapesjs-preset-webpage';
+	import grapesjsFloat from 'grapesjs-float';
+	import grapesjsPluginCkeditor from 'grapesjs-plugin-ckeditor';
+	import grapesjsFonts from '@silexlabs/grapesjs-fonts';
+	import grapesjsClasses from 'grapesjs-ui-suggest-classes';
+
 	import {createEventDispatcher, onMount} from 'svelte';
 
 	const dispatch = createEventDispatcher();
 
 	const plugins = [
-		'gjs-blocks-basic',
-		'grapesjs-tabs',
-		'grapesjs-touch',
-		'grapesjs-parser-postcss',
-		'grapesjs-tooltip',
-		'grapesjs-tui-image-editor',
-		'grapesjs-typed',
-		'grapesjs-style-bg',
-		'grapesjs-preset-webpage',
+		gjsBlocksBasic,
+		grapesjsBlocksFlexbox,
+		grapesjsTabs,
+		grapesjsCustomCode,
+		grapesjsPluginExport,
+		grapesjsPluginForms,
+		grapesjsTouch,
+		grapesjsParserPostcss,
+		grapesjsTooltip,
+		grapesjsTuiImageEditor,
+		grapesjsStyleGradient,
+		grapesjsTyped,
+		grapesjsStyleBg,
+		grapesjsPresetWebpage,
+		grapesjsPluginCkeditor,
+		grapesjsFloat,
+		grapesjsFonts,
+		grapesjsClasses,
 		editor => {
 			editor.I18n.addMessages({
 				en: {
@@ -68,16 +96,36 @@
 
 				const sm = editor.StyleManager;
 				const fontFamilyProp = sm.getProperty('typography', 'font-family');
-				fontFamilyProp.set('options', [{value: '"Noto Sans", sans-serif', name: 'Noto Sans'}, ...fontFamilyProp.get('options')]);
+				fontFamilyProp.set('options', [{id: '"Noto Sans", sans-serif', label: 'Noto Sans'}, ...fontFamilyProp.get('options')]);
+
+				const css = 'body { background-color: transparent !important; color: white; }'; // Set to transparent or any other color
+				const style = document.createElement('style');
+				style.type = 'text/css';
+				style.appendChild(document.createTextNode(css));
+
+				// Access the iframe document and append the style
+				const frameHead = editor.Canvas.getFrameEl().contentDocument.head;
+				frameHead.appendChild(style);
+
+				const typographySection = editor.Panels.getPanel('views-container').view.el.querySelectorAll('.gjs-sm-properties')[5];
+
+				// Create the button element
+				const addButton = document.createElement('button');
+				addButton.innerHTML = '<i class="fa fa-font"></i> Add Font';
+				addButton.className = 'gjs-btn-prim gjs-btn-add-font'; // Use GrapesJS button styles
+				addButton.onclick = () => editor.runCommand('open-fonts');
+
+				// Append the button to the Typography section
+				typographySection.appendChild(addButton);
 			});
 		},
 	];
 
 	const pluginsOpts = {
-		'gjs-blocks-basic': {
+		[gjsBlocksBasic]: {
 			flexGrid: true,
 		},
-		'grapesjs-tui-image-editor': {
+		[grapesjsTuiImageEditor]: {
 			script: [
 				'https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js',
 				'https://uicdn.toast.com/tui-color-picker/v2.2.7/tui-color-picker.min.js',
@@ -88,12 +136,12 @@
 				'https://uicdn.toast.com/tui-image-editor/v3.15.2/tui-image-editor.min.css',
 			],
 		},
-		'grapesjs-tabs': {
+		[grapesjsTabs]: {
 			tabsBlock: {
 				category: 'Extra',
 			},
 		},
-		'grapesjs-typed': {
+		[grapesjsTyped]: {
 			block: {
 				category: 'Extra',
 				content: {
@@ -102,6 +150,16 @@
 					strings: ['Text row one', 'Text row two', 'Text row three'],
 				},
 			},
+		},
+		[grapesjsPresetWebpage]: {
+			modalImportTitle: 'Import Template',
+			modalImportLabel: '<div style="margin-bottom: 10px; font-size: 13px;">Paste here your HTML/CSS and click Import</div>',
+			modalImportContent(editor) {
+				return editor.getHtml() + '<style>' + editor.getCss() + '</style>';
+			},
+		},
+		[grapesjsFonts]: {
+			api_key: 'AIzaSyBzbSzqgQF3RbtgwFk-3WFsQUrgR7sfPgk',
 		},
 	};
 
@@ -130,12 +188,21 @@
 			run: function (editor, sender) {
 				const html = editor.getHtml();
 				const css = editor.getCss();
-				const completeContent = `<html>
-                                    <head>
-                                        <style>${css}</style>
-                                    </head>
-                                    <body>${html}</body>
-                                </html>`;
+				const fonts = editor
+					.runCommand('get-fonts-html')
+					.replace(
+						'<link href="https://fonts.googleapis.com" rel="preconnect" ><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin ><link href="https://fonts.googleapis.com/css',
+						"@import url('https://fonts.googleapis.com/css2"
+					)
+					.replace('" rel="stylesheet" >', "');");
+				const completeContent = `<style>
+					${fonts}
+					body {
+						color: white;
+					}
+					${css}
+					</style>
+                    ${html}`;
 				dispatch('post', completeContent);
 			},
 		});
@@ -145,6 +212,101 @@
 				dispatch('cancel', '');
 			},
 		});
+
+		editor.Commands.add('open-code', {
+			codeViewer: null,
+			styleViewer: null,
+			container: null,
+
+			run(editor) {
+				const codeViewer = this.getCodeViewer();
+				// const styleViewer = this.getStyleViewer();
+				const elementStyle = editor.getSelected().getStyle();
+				editor.Modal.open({
+					title: 'Edit HTML',
+					content: this.getContainer(),
+				}).onceClose(() => {
+					editor.getSelected().replaceWith(codeViewer.getContent().trim());
+					editor.getSelected().setStyle(elementStyle);
+					editor.stopCommand('open-code');
+				});
+				codeViewer.setContent(editor.getSelected().toHTML());
+				codeViewer.refresh();
+				setTimeout(() => codeViewer.focus(), 0);
+			},
+
+			stop() {
+				editor.Modal.close();
+			},
+
+			getContainer() {
+				if (!this.container) {
+					const codeViewer = this.getCodeViewer();
+					// const styleViewer = this.getStyleViewer();
+					const container = document.createElement('div');
+					container.className = `import-container`;
+
+					container.appendChild(codeViewer.getElement());
+					// container.appendChild(styleViewer.getElement());
+
+					this.container = container;
+				}
+
+				return this.container;
+			},
+
+			/**
+			 * Return the code viewer instance
+			 * @returns {CodeViewer}
+			 */
+			getCodeViewer() {
+				if (!this.codeViewer) {
+					this.codeViewer = editor.CodeManager.createViewer({
+						codeName: 'htmlmixed',
+						theme: 'hopscotch',
+						readOnly: false,
+					});
+				}
+
+				return this.codeViewer;
+			},
+
+			getStyleViewer() {
+				if (!this.styleViewer) {
+					this.styleViewer = editor.CodeManager.createViewer({
+						codeName: 'htmlmixed',
+						theme: 'hopscotch',
+						readOnly: false,
+					});
+				}
+				return this.styleViewer;
+			},
+		});
+
+		// const panel = editor.Panels.getPanel('options');
+		// panel.get('buttons').add([
+		// 	{
+		// 		id: 'open-code-button',
+		// 		className: 'fa fa-code',
+		// 		command: 'open-code',
+		// 		active: false,
+		// 		attributes: {title: 'Open Code Editor'},
+		// 	},
+		// ]);
+
+		editor.CssComposer.addRules(`
+		.mobile-only {
+			display: none;
+		}
+		@media screen and (max-width: 767px) {
+			.mobile-only {
+				display: inherit;
+			}
+			.desktop-only {
+				display: none;
+			}
+		}
+		`);
 	}
 
 	localStorage.removeItem('gjs-components');
@@ -456,15 +618,15 @@
 <div id="gjs" bind:this={textArea} />
 
 <style>
-	:global(.gjs-pn-btn .fa .fa-save) {
+	:global(.gjs-pn-btn.fa-save) {
 		color: green;
 	}
 
-	:global(.gjs-pn-btn .fa .fa-times) {
+	:global(.gjs-pn-btn.fa-times) {
 		color: red;
 	}
 
-	:global(.gjs-one-bg) {
+	:global(.gjs-editor) {
 		background-color: transparent !important;
 	}
 </style>

@@ -5,7 +5,7 @@
 </script>
 
 {#if rankedmaps}
-	<a href="/leaderboards?mapper={mapperId}" class="leader-container">
+	<a href="/leaderboards?mappers={mapperId}" class="leader-container">
 		<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
 
 		<div class="map-info-container">
