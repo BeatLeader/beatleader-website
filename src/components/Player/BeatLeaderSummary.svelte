@@ -45,6 +45,7 @@
 		} else editModel.data.profileAppearance = [...editModel.data?.profileAppearance, key];
 	}
 
+	$: editModel && (showHidden = false);
 	$: ({visible: visibleScoresStats, hidden: hiddenScoresStats} = processStats(
 		scoresStats,
 		editModel?.data?.profileAppearance ?? profileAppearance,
