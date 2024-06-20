@@ -14,7 +14,7 @@ import less from 'rollup-plugin-less';
 
 const production = !process.env.ROLLUP_WATCH;
 
-const buildVersion = execSync('git rev-parse --short HEAD').toString();
+const buildVersion = '';
 fs.writeFileSync(
 	'build-info.js',
 	'export default ' +
