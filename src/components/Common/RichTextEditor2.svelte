@@ -1,5 +1,4 @@
 <script>
-	export let initialValue = null;
 	import 'grapesjs/dist/css/grapes.min.css';
 	import grapesjs from 'grapesjs';
 
@@ -22,9 +21,58 @@
 	import grapesjsFonts from '@silexlabs/grapesjs-fonts';
 	import grapesjsClasses from 'grapesjs-ui-suggest-classes';
 
+	export let initialValue = null;
+
 	import {createEventDispatcher, onMount} from 'svelte';
 
 	const dispatch = createEventDispatcher();
+
+	export function getHtml(fonts, attr = '') {
+		let fontServer = 'https://fonts.googleapis.com';
+		const preconnect = `<link href="${fontServer}" rel="preconnect" ${attr}><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin ${attr}>`;
+		const links = fonts
+			.map(f => {
+				const prefix = f.variants.length ? ':' : '';
+				const variants =
+					prefix +
+					f.variants
+						.map(v => v.replace(/\d+/g, ''))
+						.filter(v => !!v)
+						.join(',');
+				return `<link href="${fontServer}/css?family=${f.name.replace(/ /g, '+')}${variants}&display=swap" rel="stylesheet" ${attr}>`;
+			})
+			.join('');
+
+		return preconnect + links;
+	}
+	function parseAndAddFontsFromHTML(html, editor) {
+		const importRegex = /@import url\("https:\/\/fonts\.googleapis\.com\/css2\?family=([^&]+)&display=swap"\);/g;
+
+		let match;
+		let fonts = [];
+		while ((match = importRegex.exec(html)) !== null) {
+			const fontFamilyQuery = decodeURIComponent(match[1]);
+			const fontFamily = fontFamilyQuery.replace(/\+/g, ' ');
+
+			const font = {
+				family: fontFamily,
+				category: 'sans-serif', // Defaulting to 'sans-serif' as category is not part of the URL
+			};
+			fonts.push({name: fontFamily, id: fontFamily, value: `"${font.family}", ${font.category}`, variants: []});
+		}
+
+		const model = editor.getModel();
+		model.set('fonts', fonts);
+
+		const doc = editor.Canvas.getDocument();
+		const fontshtml = getHtml(fonts, 'data-silex-gstatic');
+		doc.head.insertAdjacentHTML('beforeend', fontshtml);
+
+		const styleManager = editor.StyleManager;
+		const fontProperty = styleManager.getProperty('typography', 'font-family');
+		const newFonts = editor.StyleManager.getBuiltIn('font-family').options.concat(fonts);
+		fontProperty.setOptions(newFonts.sort((a, b) => a.id.localeCompare(b.id)));
+	}
 
 	const plugins = [
 		gjsBlocksBasic,
@@ -94,9 +142,7 @@
 				const openBlocksBtn = editor.Panels.getButton('views', 'open-blocks');
 				openBlocksBtn?.set('active', true);
 
-				const sm = editor.StyleManager;
-				const fontFamilyProp = sm.getProperty('typography', 'font-family');
-				fontFamilyProp.set('options', [{id: '"Noto Sans", sans-serif', label: 'Noto Sans'}, ...fontFamilyProp.get('options')]);
+				parseAndAddFontsFromHTML(initialValue, editor);
 
 				const css = 'body { background-color: transparent !important; color: white; }'; // Set to transparent or any other color
 				const style = document.createElement('style');
@@ -191,10 +237,11 @@
 				const fonts = editor
 					.runCommand('get-fonts-html')
 					.replace(
-						'<link href="https://fonts.googleapis.com" rel="preconnect" ><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin ><link href="https://fonts.googleapis.com/css',
-						"@import url('https://fonts.googleapis.com/css2"
+						'<link href="https://fonts.googleapis.com" rel="preconnect" ><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin >',
+						''
 					)
-					.replace('" rel="stylesheet" >', "');");
+					.replaceAll('<link href="https://fonts.googleapis.com/css', "@import url('https://fonts.googleapis.com/css2")
+					.replaceAll('" rel="stylesheet" >', "');");
 				const completeContent = `<style>
 					${fonts}
 					body {
@@ -628,5 +675,14 @@
 
 	:global(.gjs-editor) {
 		background-color: transparent !important;
+	}
+
+	:global(.silex-bar input::placeholder) {
+		color: black !important;
+		opacity: 1;
+	}
+
+	:global(.silex-bar input::-ms-input-placeholder) {
+		color: black !important;
 	}
 </style>

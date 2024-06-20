@@ -180,10 +180,9 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
-"@silexlabs/grapesjs-fonts@^1.0.20":
+"@silexlabs/grapesjs-fonts@https://github.com/NSGolova/grapesjs-fonts.git":
   version "1.0.20"
-  resolved "https://registry.yarnpkg.com/@silexlabs/grapesjs-fonts/-/grapesjs-fonts-1.0.20.tgz#b375efcb383fc2451234e473c2dae79bc5e2cef6"
-  integrity sha512-QO/pLFGXjxRw9XQcmnuPwZdSIioiqRjS2oIMLR8j7MpA2tv4+CJ0JgVzPde+9zLfWtDIYuwl84lNcMEfe6l7SA==
+  resolved "https://github.com/NSGolova/grapesjs-fonts.git#ae4dd566f7df615aecbbfcbc8c9945e595829c74"
   dependencies:
     backbone "^1.6.0"
     grapesjs "^0.21.10"
