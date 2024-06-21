@@ -100,7 +100,7 @@ export default response => {
 		playerInfo: {
 			avatar: profilePicture,
 			externalProfileUrl,
-			countries: [{country, rank: countryRank}],
+			country: {country, rank: countryRank},
 			pp,
 			accPp,
 			techPp,

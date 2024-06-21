@@ -11,8 +11,6 @@
 	const dispatch = createEventDispatcher();
 
 	$: rank = item?.playerInfo?.rank ?? null;
-	$: country = item?.playerInfo?.countries?.[0]?.country ?? null;
-	$: countryRank = item?.playerInfo?.countries?.[0]?.rank ?? null;
 	$: pp = item?.playerInfo?.pp ?? 0;
 </script>
 

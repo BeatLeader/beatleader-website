@@ -37,7 +37,7 @@ export default response => {
 				alias,
 				playerInfo: {
 					avatar,
-					countries: [{country, rank: countryRank, lastWeekCountryRank}],
+					country: {country, rank: countryRank, lastWeekCountryRank},
 					pp,
 					accPp,
 					techPp,

@@ -182,7 +182,6 @@
 		.join(' / ')} - ${ssrConfig.name}`;
 
 	$: playerData = $playerStore;
-	$: console.log(playerData);
 	$: playerId = playerData?.playerId ?? null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
 
@@ -202,8 +201,8 @@
 	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
 
 	$: rank = $playerStore?.playerInfo.rank;
-	$: country = $playerStore?.playerInfo.countries[0].country;
-	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
+	$: country = $playerStore?.playerInfo.country.country;
+	$: countryRank = $playerStore?.playerInfo.country.rank;
 
 	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
@@ -252,7 +251,7 @@
 					<CardsCarousel {playerId} {playerInfo} {scoresStats} {playerData} />
 				{/if}
 				{#if $configStore.profileParts.pinnedScores}
-					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
+					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} scoresStats={playerData?.scoreStats} />
 				{/if}
 			{/if}
 

@@ -56,9 +56,9 @@
 		if (!player) return;
 
 		if (currentFilters) {
-			currentFilters.countries = player?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '';
+			currentFilters.countries = player?.playerInfo?.country?.country?.toLowerCase() ?? '';
 
-			const currentPage = Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1;
+			const currentPage = Math.floor((player.playerInfo.country.rank - 1) / PLAYERS_PER_PAGE) + 1;
 
 			dispatch('filters-updated', {currentFilters, currentPage});
 		}
@@ -85,7 +85,7 @@
 
 	var pp = player?.playerInfo?.pp;
 	var rank = player?.playerInfo?.rank;
-	var countryRank = player?.playerInfo?.countries[0].rank;
+	var countryRank = player?.playerInfo?.country.rank;
 
 	function hoverStats() {
 		if (player && player.playerInfo && (selectedClanTag || player.clans)) {
@@ -138,7 +138,7 @@
 				on:click={e => onCountryClick(player)}
 				on:keypress={e => onGlobalClick(e, player)}>
 				#<Value value={countryRank} digits={0} zero="?" />
-				<Flag country={opt(player, 'playerInfo.countries.0.country')} />
+				<Flag country={opt(player, 'playerInfo.country.country')} />
 			</div>
 		{/if}
 		{#if $configStore.rankingList.ppToTheLeft}

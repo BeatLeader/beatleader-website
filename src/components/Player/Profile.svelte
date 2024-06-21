@@ -56,7 +56,7 @@
 		$editModel = {
 			data: {
 				name: playerData?.name ?? '',
-				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
+				country: playerData?.playerInfo?.country?.country?.toLowerCase() ?? '',
 				avatar: null,
 				message: playerData?.profileSettings?.message ?? '',
 				profileAppearance: playerData?.profileSettings?.profileAppearance ?? null,
@@ -95,8 +95,7 @@
 		let {profileAppearance, country, avatar, message, ...data} = $editModel?.data ?? {};
 
 		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : '';
-		country =
-			country?.length && (country !== playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
+		country = country?.length && (country !== playerData?.playerInfo?.country?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
 
 		data = {...data, profileAppearance};
 		if (country) data.country = country;
@@ -399,11 +398,11 @@
 		grid-gap: 0em;
 		flex-grow: 1;
 		align-self: flex-end;
-		margin-bottom: 1em;
+		margin-bottom: 1.6em;
 	}
 
 	.with-roles {
-		margin-bottom: 2.4em;
+		margin-bottom: 3em;
 	}
 
 	.role-icons {

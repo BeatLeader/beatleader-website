@@ -20,7 +20,7 @@
 	const sortOptions = [
 		{key: 'name', label: 'Sort by Name', type: 'string'},
 		{key: 'playerInfo.rank', label: 'Sort by Global Rank'},
-		{key: 'playerInfo.countries.0.rank', label: 'Sort by Country Rank'},
+		{key: 'playerInfo.country.rank', label: 'Sort by Country Rank'},
 	];
 	let sortBy = sortOptions[0];
 
@@ -48,15 +48,6 @@
 		navigate(`/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`);
 	}
 
-	function getPlayerCountries(playerInfo) {
-		if (!playerInfo?.countries) return [];
-
-		return playerInfo.countries.map(c => ({
-			...c,
-			prevRank: playerInfo?.lastWeekCountryRank,
-		}));
-	}
-
 	async function toggleStar(player) {
 		if (isUpdating || !player?.playerId) return;
 
@@ -75,7 +66,6 @@
 		}
 	}
 
-	$: console.log($account?.player?.profileSettings?.starredFriends);
 	$: $account?.player?.profileSettings?.starredFriends,
 		(starredFollowedIds = $account?.player?.profileSettings?.starredFriends?.filter(id => id.length) ?? []);
 	$: followedSorted =
@@ -163,23 +153,23 @@
 												<Value value={f?.playerInfo?.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
 											</a>
 
-											{#each getPlayerCountries(f?.playerInfo) as country}
-												<a
-													style="flex: none"
-													href={getCountryRankingUrl(country)}
-													on:click|preventDefault={() => navigateToCountryRanking(country)}
-													title="Go to country ranking"
-													class="clickable">
-													<img
-														src={`/assets/flags/${
-															country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''
-														}.png`}
-														class="countryIcon"
-														alt={country?.country} />
+											<a
+												style="flex: none"
+												href={getCountryRankingUrl(f?.playerInfo.country)}
+												on:click|preventDefault={() => navigateToCountryRanking(f?.playerInfo.country)}
+												title="Go to country ranking"
+												class="clickable">
+												<img
+													src={`/assets/flags/${
+														f?.playerInfo.country && f?.playerInfo.country.country && f?.playerInfo.country.country.toLowerCase
+															? f?.playerInfo.country.country.toLowerCase()
+															: ''
+													}.png`}
+													class="countryIcon"
+													alt={f?.playerInfo.country?.country} />
 
-													<Value value={country.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
-												</a>
-											{/each}
+												<Value value={f?.playerInfo.country.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
+											</a>
 
 											<span class="pp">
 												<Value value={f?.playerInfo?.pp} suffix="pp" inline={true} zero="0pp" />

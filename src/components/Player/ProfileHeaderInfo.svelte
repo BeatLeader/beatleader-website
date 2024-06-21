@@ -1,16 +1,11 @@
 <script>
-	import {navigate} from 'svelte-routing';
-	import {createEventDispatcher, getContext} from 'svelte';
+	import {createEventDispatcher} from 'svelte';
 	import createAccountStore from '../../stores/beatleader/account';
-	import createStatsHistoryStore from '../../stores/beatleader/stats-history';
 	import {configStore} from '../../stores/config';
-	import {PLAYERS_PER_PAGE} from '../../utils/beatleader/consts';
 
-	import Value from '../Common/Value.svelte';
 	import Status from './Status.svelte';
 	import Error from '../Common/Error.svelte';
 	import Button from '../Common/Button.svelte';
-	import Preview from '../Common/Preview.svelte';
 	import CountryPicker from '../Common/CountryPickerSingle.svelte';
 	import ClanBadges from './ClanBadges.svelte';
 	import BanForm from './BanForm.svelte';
@@ -30,43 +25,6 @@
 	const dispatch = createEventDispatcher();
 
 	const account = createAccountStore();
-	const historyStore = createStatsHistoryStore();
-
-	function getCountryRankingUrl(countryObj) {
-		const rank = countryObj?.rankValue ?? countryObj?.rank ?? null;
-		if (!rank) return null;
-
-		const country = countryObj?.country ?? null;
-		if (!country) return null;
-
-		return `/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}?countries=${country.toLowerCase()}`;
-	}
-
-	function navigateToCountryRanking(countryObj) {
-		const url = getCountryRankingUrl(countryObj);
-
-		if (url && url.length) navigate(url);
-	}
-
-	function navigateToGlobalRanking(rank) {
-		if (!rank) return;
-
-		navigate(`/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`);
-	}
-
-	function getPlayerCountries(playerInfo) {
-		if (!playerInfo?.countries) return [];
-
-		return playerInfo.countries.map(c => ({
-			...c,
-			prevRank: playerInfo?.lastWeekCountryRank,
-		}));
-	}
-
-	const {open} = getContext('simple-modal');
-	const showProfile = profileLink => {
-		open(Preview, {previewLink: profileLink});
-	};
 
 	function showRainbow(player) {
 		var result = false;
@@ -108,36 +66,12 @@
 	let showBanForm = false;
 	let showChanges = false;
 
-	$: rank = playerInfo ? (playerInfo.rankValue ? playerInfo.rankValue : playerInfo.rank) : null;
 	$: changes = playerInfo?.changes;
-	$: countries = getPlayerCountries(playerInfo);
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: canRedact = showRedact && ((isMain && loggedInPlayer === playerId) || isAdmin);
 	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(',');
-
-	function getIndex(array) {
-		if (!array || array.length == 1) {
-			return 0;
-		} else {
-			return array.length - Math.min($configStore.preferences.daysToCompare, array.length) - 1;
-		}
-	}
-
-	function getPrevLabel() {
-		switch ($configStore.preferences.daysToCompare) {
-			case 1:
-				return 'Yesterday';
-			case 7:
-				return 'Last week';
-			case 30:
-				return 'Last month';
-
-			default:
-				return `${$configStore.preferences.daysToCompare} days ago`;
-		}
-	}
 
 	let alias = null;
 	let aliasRequest = null;
@@ -210,13 +144,7 @@
 	$: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
 	$: hasPlayerPendingInvitation =
 		isUserFounderOfTheClan && !isPlayerClanMember && !!$account?.clan?.pendingInvites?.find(pId => pId === playerId);
-
-	$: history = $historyStore[playerId];
 	$: fetchAliasRequest($account);
-	$: prevLabel = getPrevLabel();
-	$: prevRank = history?.rank ? history.rank[getIndex(history.rank)] : playerInfo?.rank;
-
-	$: prevCountryRank = history?.countryRank ? history.countryRank[getIndex(history.countryRank)] : playerInfo?.countryRank;
 </script>
 
 {#if showBanForm}
@@ -290,57 +218,10 @@
 		{/if}
 
 		<div class="player-ranking">
-			<a
-				style="flex: none"
-				href={`/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`}
-				on:click|preventDefault={() => navigateToGlobalRanking(rank)}
-				title="Go to global ranking"
-				class="clickable">
-				<i class="fas fa-globe-americas" />
-
-				<Value
-					value={playerInfo?.rank}
-					prevValue={$configStore.profileParts.changes ? prevRank : undefined}
-					{prevLabel}
-					prefix="#"
-					digits={0}
-					zero="#0"
-					inline={true}
-					reversePrevSign={true} />
-			</a>
-
 			{#if canRedact && editModel?.data}
 				<div class="pickerContainer">
 					<CountryPicker selected={editModel.data.country} on:select={e => (editModel.data.country = e.detail.value)} />
 				</div>
-			{:else}
-				{#each countries as country}
-					<a
-						style="flex: none"
-						href={getCountryRankingUrl(country)}
-						on:click|preventDefault={() => navigateToCountryRanking(country)}
-						title="Go to country ranking"
-						class="clickable">
-						<img
-							src={`/assets/flags/${country && country.country && country.country.toLowerCase ? country.country.toLowerCase() : ''}.png`}
-							class="countryIcon"
-							alt={country?.country} />
-
-						<Value
-							value={country.rank}
-							prevValue={$configStore.profileParts.changes ? prevCountryRank : undefined}
-							{prevLabel}
-							prefix="#"
-							digits={0}
-							zero="#0"
-							inline={true}
-							reversePrevSign={true} />
-
-						{#if country.subRank && country.subRank !== country.rankValue}
-							<small>(#{country.subRank})</small>
-						{/if}
-					</a>
-				{/each}
 			{/if}
 
 			{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
@@ -383,7 +264,7 @@
 			{/if}
 		</div>
 
-		{#if editModel?.data && editModel?.data?.country?.toUpperCase() !== playerInfo?.countries?.[0]?.country}
+		{#if editModel?.data && editModel?.data?.country?.toUpperCase() !== playerInfo?.country?.country}
 			<span class="warning">Make sure you selected right country. You can change it only every 30 days.</span>
 		{/if}
 
@@ -444,11 +325,19 @@
 	.player-nickname {
 		display: flex;
 		flex-direction: column;
-		font-size: 3em;
+		font-size: 3.4em;
 		font-weight: bold;
 		align-items: baseline;
-		margin-right: 3em;
-		text-shadow: 1px 1px 5px #000;
+		text-shadow: 1px 1px 5px #252525cc;
+	}
+
+	.player-ranking {
+		display: flex;
+		flex-wrap: wrap;
+		grid-gap: 0.7em;
+		font-size: 1.25em;
+		font-weight: 500;
+		align-items: center;
 	}
 
 	:global(.clan-badges .clan-badges) {
@@ -479,20 +368,6 @@
 
 	.status {
 		font-size: smaller;
-	}
-
-	.player-ranking {
-		display: flex;
-		flex-wrap: wrap;
-		grid-gap: 0.7em;
-		font-size: 1.25em;
-		font-weight: 500;
-		align-items: center;
-	}
-
-	.player-ranking a {
-		color: #fafafad1 !important;
-		text-shadow: 1px 1px 5px #000;
 	}
 
 	.nickname {
@@ -531,10 +406,6 @@
 		border: none;
 		border-bottom: solid 1px var(--dimmed);
 		outline: none;
-	}
-
-	.countryIcon {
-		width: 1.2em;
 	}
 
 	.input-reset {

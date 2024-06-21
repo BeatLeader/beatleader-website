@@ -11,8 +11,8 @@
 	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player.playerId);
 
 	$: rank = player?.playerInfo.rank;
-	$: country = player?.playerInfo.countries[0].country;
-	$: countryRank = player?.playerInfo.countries[0].rank;
+	$: country = player?.playerInfo.country.country;
+	$: countryRank = player?.playerInfo.country.rank;
 </script>
 
 {#if selected}

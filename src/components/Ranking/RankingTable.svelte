@@ -361,7 +361,7 @@
 	$: dispatch('players-fetched', $rankingStore?.data);
 
 	$: maxRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.rank)) : 0;
-	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.countries[0].rank)) : 0;
+	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
 	$: refreshSortValues(allSortValues, currentFilters, $configStore.rankingPreferences);

@@ -218,7 +218,7 @@
 	$: playersPage = $clanStore?.data ?? [];
 
 	$: maxRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.rank)) : 0;
-	$: maxCountryRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.countries[0].rank)) : 0;
+	$: maxCountryRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: clanLeaderId = clan?.leaderID ?? null;
 	$: isFounder = clan?.id && clanLeaderId === $account?.player?.playerId;

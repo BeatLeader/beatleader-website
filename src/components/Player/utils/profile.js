@@ -155,17 +155,16 @@ export default playerData => {
 		}
 	});
 
-	const firstCountryRank = playerInfo?.countries?.[0]?.rank;
-	if (Number.isFinite(firstCountryRank)) {
-		playerInfo.countries = playerInfo.countries.map(c => ({...c}));
+	const countryRank = playerInfo?.country?.rank;
+	if (Number.isFinite(countryRank)) {
 		const key = 'countryRank';
-		const value = playerInfo.countries[0].rank;
+		const value = playerInfo.country.rank;
 
 		if (!playerInfoTweened.hasOwnProperty(key)) playerInfoTweened[key] = tweened(value, TWEEN_DURATION);
 		else playerInfoTweened[key].set(value);
 
-		playerInfo.countries[0].rankValue = value;
-		playerInfo.countries[0].rank = playerInfoTweened[key];
+		playerInfo.country.rankValue = value;
+		playerInfo.country.rank = playerInfoTweened[key];
 	}
 
 	return {

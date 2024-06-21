@@ -103,6 +103,7 @@
 		padding-left: 1em;
 		border-radius: 2em;
 		width: fit-content;
+		gap: 1em;
 	}
 	.title-and-followers {
 		display: flex;
@@ -111,6 +112,7 @@
 
 	.followers-title {
 		color: white;
+		margin-top: 0.1em;
 	}
 
 	.followers-list {

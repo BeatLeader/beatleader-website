@@ -7,8 +7,8 @@
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: pp = $playerStore?.playerInfo.pp;
-	$: country = $playerStore?.playerInfo.countries[0].country;
-	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
+	$: country = $playerStore?.playerInfo.country.country;
+	$: countryRank = $playerStore?.playerInfo.country.rank;
 
 	function fillWithSpaces(value, length) {
 		while (value.length < length) {
