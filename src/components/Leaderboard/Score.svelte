@@ -18,7 +18,6 @@
 	export let leaderboardId = null;
 	export let score = null;
 	export let type = 'beatleader';
-	export let opened = false;
 	export let highlight = false;
 	export let sortBy = 'rank';
 	export let fixedBrowserTitle = null;
@@ -47,6 +46,8 @@
 
 		navigate(`/u/${player.alias ?? player.playerId}`);
 	}
+
+	let opened = false;
 
 	$: priorityModifiers = Object.keys(modifiers ?? {})
 		.filter(m => m !== 'modifierId' && (modifiers?.[m] ?? 0) !== 0)
@@ -197,7 +198,7 @@
 								noMargin={true} />
 						{/if}
 
-						<span class="beat-savior-reveal clickable" class:opened on:click={() => dispatch('toggle-details')} title="Show details">
+						<span class="beat-savior-reveal clickable" class:opened on:click={() => (opened = !opened)} title="Show details">
 							<i class="fas fa-chevron-down" />
 						</span>
 					{/if}
@@ -209,14 +210,12 @@
 	</div>
 
 	{#if opened}
-		<div>
-			<SongScoreDetails
-				playerId={score?.player?.playerId}
-				songScore={score}
-				{fixedBrowserTitle}
-				noSsLeaderboard={true}
-				showAccSaberLeaderboard={false} />
-		</div>
+		<SongScoreDetails
+			playerId={score?.player?.playerId}
+			songScore={score}
+			{fixedBrowserTitle}
+			noSsLeaderboard={true}
+			showAccSaberLeaderboard={false} />
 	{/if}
 {/if}
 

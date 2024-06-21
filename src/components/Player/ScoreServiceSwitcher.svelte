@@ -201,6 +201,15 @@
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
 	}
 
+	function processStars(stars) {
+		if (stars.from !== undefined) {
+			return stars;
+		} else {
+			const list = stars.split(',').map(s => parseFloat(s));
+			return {from: list[0], to: list[1]};
+		}
+	}
+
 	function updateAvailableServices(
 		avaiableServiceNames,
 		service,
@@ -271,6 +280,8 @@
 											id: 'search',
 											iconFa: 'fa fa-search',
 											title: 'Search by song/artist/mapper/hash',
+											open: !!serviceParams?.filters?.search,
+											value: serviceParams?.filters?.search ?? null,
 											placeholder: 'Enter song name...',
 										},
 									},
@@ -280,6 +291,8 @@
 											id: 'diff',
 											iconFa: 'fa fa-chart-line',
 											title: 'Filter by map difficulty',
+											open: !!serviceParams?.filters?.diff,
+											defaultValue: serviceParams?.filters?.diff ?? null,
 											values: [
 												{id: null, name: 'All'},
 												{id: 'easy', name: 'Easy'},
@@ -296,6 +309,8 @@
 											id: 'mode',
 											iconFa: 'fa fa-compass',
 											title: 'Filter by map mode',
+											open: !!serviceParams?.filters?.mode,
+											defaultValue: serviceParams?.filters?.mode ?? null,
 											values: [{id: null, name: 'All'}].concat(
 												Object.entries(modeDescriptions).map(([key, type]) => {
 													return {
@@ -312,6 +327,8 @@
 											id: 'requirements',
 											iconFa: 'fa fa-mountain-sun',
 											title: 'Filter by map feature',
+											open: !!serviceParams?.filters?.requirements,
+											defaultValue: serviceParams?.filters?.requirements ? parseInt(serviceParams?.filters?.requirements) : null,
 											values: [
 												{id: null, name: 'All'},
 												{id: requirementsMap.noodles, name: 'Noodle Extensions'},
@@ -330,6 +347,8 @@
 											iconFa: 'fa fa-cubes',
 											title: 'Filter by map type',
 											hidden: !sortingOrFilteringAppearance.includes(`sf-songType`),
+											open: !!serviceParams?.filters?.songType,
+											defaultValue: serviceParams?.filters?.songType ?? null,
 											values: [
 												{id: null, name: 'All'},
 												{id: 'ranked', name: 'Ranked only'},
@@ -343,6 +362,8 @@
 											id: 'stars',
 											iconFa: 'fa fa-star',
 											title: 'Filter by map stars',
+											open: !!serviceParams?.filters?.stars,
+											defaultValue: serviceParams?.filters?.stars ? processStars(serviceParams.filters.stars) : null,
 											hidden: !sortingOrFilteringAppearance.includes(`sf-stars`),
 											minValue: 0,
 											maxValue: 30,

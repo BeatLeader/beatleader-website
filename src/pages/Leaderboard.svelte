@@ -164,8 +164,6 @@
 		modifiedTech = leaderboard?.stats?.techRating;
 	}
 
-	let openedDetails = [];
-
 	let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 
 	let availableTypeOptions = [
@@ -533,16 +531,6 @@
 		window.open(link, '_blank');
 	}
 
-	function toggleOpen(scoreId) {
-		if (!scoreId) return;
-
-		if (openedDetails.includes(scoreId)) {
-			openedDetails = openedDetails.filter(id => id !== scoreId);
-		} else {
-			openedDetails = [...openedDetails, scoreId];
-		}
-	}
-
 	let userScore = null;
 	let userScoreHash = null;
 	async function fetchUserScore(playerId, hash, diff, type, userScoreOnCurrentPage = null) {
@@ -759,7 +747,7 @@
 				{/if}
 
 				{#if leaderboardShowSorting && currentType != 'clanranking'}
-					<nav class="switcher-nav" transition:fade|global>
+					<nav class="switcher-nav" transition:slide>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 						{#if currentType != 'graph'}
 							<div style="display: flex;">
@@ -801,8 +789,6 @@
 										{battleRoyaleDraft}
 										{battleRoyaleDraftList}
 										sortBy={currentFilters.sortBy}
-										opened={openedDetails.includes(score?.score?.id)}
-										on:toggle-details={() => toggleOpen(score?.score?.id)}
 										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 
@@ -1009,7 +995,7 @@
 			{#if qualification && !isRanked}
 				<ContentBox>
 					{#if !commentaryShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
 								<i class="fas fa-comments" />
 
@@ -1017,7 +1003,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
 									<i class="fas fa-chevron-left" />
@@ -1037,7 +1023,7 @@
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
 				<ContentBox
 					>{#if !qualificationInfoShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span
 								class="beat-savior-reveal clickable"
 								on:click={() => boolflip('qualificationInfoShown')}
@@ -1048,7 +1034,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span
 									class="beat-savior-reveal clickable"
@@ -1075,7 +1061,7 @@
 			{#if featuredPlaylists && featuredPlaylists.length}
 				<ContentBox>
 					{#if !leaderboardShowPlaylists}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Show map details">
 								<i class="fas fa-compact-disc" />
 
@@ -1083,7 +1069,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Hide map details">
 									<i class="fas fa-chevron-left" />
@@ -1105,7 +1091,7 @@
 			{#if showStats}
 				<ContentBox>
 					{#if !leaderboardStatsShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
 								<i class="fas fa-magnifying-glass" />
 
@@ -1113,7 +1099,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
 									<i class="fas fa-chevron-left" />
@@ -1142,7 +1128,7 @@
 				{#if qualification.criteriaCheck}
 					<ContentBox>
 						{#if !criteriaInfoShown}
-							<div class="score-options-section">
+							<div class="score-options-section" transition:fade>
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Show criteria check">
 									<i class="fas fa-triangle-exclamation" />
 
@@ -1150,7 +1136,7 @@
 								</span>
 							</div>
 						{:else}
-							<div class="box-with-left-arrow">
+							<div class="box-with-left-arrow" transition:slide>
 								<div class="score-options-section to-the-left">
 									<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Hide criteria details">
 										<i class="fas fa-chevron-left" />
@@ -1167,14 +1153,14 @@
 			{#if showCurve && leaderboard?.stats?.stars}
 				<ContentBox>
 					{#if !curveShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
 								<i class="fas fa-bezier-curve" />
 								<i class="fas fa-chevron-right" />
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
 									<i class="fas fa-chevron-left" />

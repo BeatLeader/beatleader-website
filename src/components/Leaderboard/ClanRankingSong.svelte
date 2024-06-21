@@ -94,17 +94,6 @@
 		showClanRankingScores = !showClanRankingScores;
 	}
 
-	let openedDetails = [];
-	function toggleOpen(scoreId) {
-		if (!scoreId) return;
-
-		if (openedDetails.includes(scoreId)) {
-			openedDetails = openedDetails.filter(id => id !== scoreId);
-		} else {
-			openedDetails = [...openedDetails, scoreId];
-		}
-	}
-
 	let showClanRankingScores = false;
 
 	$: leaderboard = opt(cr, 'leaderboard', null);
@@ -199,14 +188,7 @@
 			<div class="scores-subgrid grid-transition-helper">
 				{#each scores as score, idx (opt(score, 'score.id', '') + opt(score, 'player.playerId', ''))}
 					<div in:fly={{x: 200, delay: idx * 20, duration: 300}} out:fade={{duration: 300}} animate:flip={{duration: 300}}>
-						<Score
-							leaderboardId={cr.leaderboard.leaderboardId}
-							{score}
-							{fixedBrowserTitle}
-							{sortBy}
-							opened={openedDetails.includes(score?.score?.id)}
-							on:toggle-details={() => toggleOpen(score?.score?.id)}
-							hideClans={true} />
+						<Score leaderboardId={cr.leaderboard.leaderboardId} {score} {fixedBrowserTitle} {sortBy} hideClans={true} />
 					</div>
 				{/each}
 				<div class="clan-pager">

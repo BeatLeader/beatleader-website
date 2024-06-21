@@ -964,6 +964,11 @@
 		justify-content: flex-start;
 	}
 
+	aside :global(.switch-types .icon) {
+		width: 1.8em !important;
+		margin-left: -0.4em !important;
+	}
+
 	aside h2:not(:first-of-type) {
 		margin-top: 1.5em;
 	}

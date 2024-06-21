@@ -4,6 +4,7 @@
 	import {importFonts, setGlobalCSSValue} from '../../utils/color';
 	import ColorPicker from '../Common/ColorPicker.svelte';
 	import {fly, fade} from 'svelte/transition';
+	import {debounce} from '../../utils/debounce';
 
 	export let animationSign = 1;
 
@@ -59,6 +60,11 @@
 		importFonts(fontNames);
 	}
 
+	const debounceCurrentBGColor = debounce(rgba => (currentBGColor = rgba.detail), 100);
+	const debounceCurrentHeaderColor = debounce(rgba => (currentHeaderColor = rgba.detail), 100);
+	const debounceCurrentFontNames = debounce(event => (currentFontNames = event.srcElement.value), 500);
+	const debounceCurrentBGImage = debounce(event => (currentBGImage = event.srcElement.value), 500);
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
 	$: bgColorCallback(currentBGColor);
@@ -76,24 +82,24 @@
 	{#if currentTheme != 'default' && currentTheme != 'ree-dark'}
 		<section class="option">
 			<label title="Input url of the background image you want">Background Image</label>
-			<input type="url" bind:value={currentBGImage} />
+			<input type="url" value={currentBGImage} on:input={debounceCurrentBGImage} />
 			<span style="cursor: pointer; font-size: x-small;" on:click={() => (currentBGImage = '/assets/background.jpg')}
 				><u>Reset to default</u></span>
 		</section>
 
 		<section class="option">
 			<label title="Select color for the backgrounds of the elements">Main Color</label>
-			<ColorPicker on:colorChange={rgba => (currentBGColor = rgba.detail)} startColor={currentBGColor} />
+			<ColorPicker on:colorChange={debounceCurrentBGColor} startColor={currentBGColor} />
 		</section>
 
 		<section class="option">
 			<label title="Select color for the backgrounds of the elements">Header Color</label>
-			<ColorPicker on:colorChange={rgba => (currentHeaderColor = rgba.detail)} startColor={currentHeaderColor} />
+			<ColorPicker on:colorChange={debounceCurrentHeaderColor} startColor={currentHeaderColor} />
 		</section>
 
 		<section class="option">
 			<label title="Input url of the background image you want">Fonts (Google Fonts or System)</label>
-			<input type="text" bind:value={currentFontNames} />
+			<input type="text" value={currentFontNames} on:input={debounceCurrentFontNames} />
 			<span
 				style="cursor: pointer; font-size: x-small;"
 				on:click={() => (currentFontNames = 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif')}><u>Reset to default</u></span>

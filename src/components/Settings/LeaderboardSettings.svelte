@@ -239,11 +239,13 @@
 	async function toggleBots() {
 		if (isUpdating) return;
 
+		const newValue = !showBots;
 		try {
 			isUpdating = true;
 
-			await account.update({showBots: !showBots});
+			await account.update({showBots: newValue});
 		} finally {
+			showBots = newValue;
 			isUpdating = null;
 		}
 	}
@@ -251,12 +253,13 @@
 	async function toggleAllRatings() {
 		if (isUpdating) return;
 
+		const newValue = !showAllRatings;
 		try {
 			isUpdating = true;
-			showAllRatings = !showAllRatings;
 
-			await account.update({showAllRatings});
+			await account.update({showAllRatings: newValue});
 		} finally {
+			showAllRatings = newValue;
 			isUpdating = null;
 		}
 	}
