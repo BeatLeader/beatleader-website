@@ -47,7 +47,7 @@
 	async function changeParams(newPlayerId, service, newServiceParams) {
 		if (!newPlayerId) return;
 		serviceParams = newServiceParams;
-		if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
+		if (!playerStore || newPlayerId !== playerStore.getPlayerId() || service !== playerStore.getService()) {
 			document.body.scrollIntoView({behavior: 'smooth'});
 			playerStore.fetch(newPlayerId, service, newServiceParams);
 		} else {
@@ -93,6 +93,7 @@
 	const accSaberService = createAccSaberService();
 
 	function updateUrl() {
+		changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
 		window.history.pushState({}, '', `/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
 	}
 
@@ -103,7 +104,6 @@
 		if (!Number.isFinite(newPage)) newPage = 1;
 
 		serviceParamsManager.update({page: newPage});
-
 		updateUrl();
 	}
 
@@ -114,7 +114,6 @@
 		if (newService !== serviceParamsManager.getService()) serviceParamsManager.clearServiceParams();
 
 		serviceParamsManager.update({}, newService);
-
 		updateUrl();
 	}
 
@@ -123,9 +122,6 @@
 		if (!newServiceParams) return;
 
 		serviceParamsManager.update(newServiceParams);
-
-		changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
-
 		updateUrl();
 	}
 
