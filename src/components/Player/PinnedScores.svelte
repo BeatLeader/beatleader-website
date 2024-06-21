@@ -27,7 +27,7 @@
 		{#if scoresStats}
 			<div class="views">
 				<div class="platform-entry">
-					<span class="platform-title" title="How many times other players watched my replays">My replays:</span>
+					<span class="platform-title" title="How many times other players watched my replays">Total:</span>
 					{myreplays} views
 				</div>
 				<div class="platform-entry">
@@ -57,7 +57,7 @@
 		display: flex;
 		justify-content: center;
 		gap: 1em;
-		background: black;
+		background: #121212;
 		margin: 0 -1em -1em -1em;
 		padding: 0.5em;
 		border-radius: 0 0 12px 12px;

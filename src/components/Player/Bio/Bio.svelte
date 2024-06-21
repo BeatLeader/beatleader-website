@@ -4,6 +4,7 @@
 
 	import Button from '../../Common/Button.svelte';
 	import Dialog from '../../Common/Dialog.svelte';
+	import Spinner from '../../Common/Spinner.svelte';
 	import {isAnySupporter} from '../Overlay/overlay';
 	import PlayerCards from './PlayerCards.svelte';
 
@@ -17,6 +18,7 @@
 	const dispatch = createEventDispatcher();
 
 	let richBioID = null;
+	let updating = false;
 	let horizontalRichBio = playerInfo?.horizontalRichBio;
 	let richBioError = null;
 
@@ -34,18 +36,22 @@
 
 	async function onRichTextEdit(event) {
 		try {
+			updating = true;
 			fetch(`${BL_API_URL}user/richbio?id=${playerId}`, {body: event.detail.value, retries: 0, method: 'PUT', credentials: 'include'})
 				.then(r => r.text())
 				.then(timeset => {
 					if (parseInt(timeset)) {
 						richBioID = timeset;
+						playerInfo.richBioTimeset = timeset;
 					} else {
 						richBioID = null;
 						richBioError = timeset;
 					}
+					updating = false;
 				});
 		} catch {
 			richBioID = null;
+			updating = false;
 		}
 	}
 
@@ -83,30 +89,34 @@
 	{#if playerId}
 		{#if richBioID || edit}
 			<div class="bio-limiter">
-				<PlayerRichBio
-					{edit}
-					{playerId}
-					{richBioID}
-					patron={isAnySupporter(playerInfo.role)}
-					isFounder={true}
-					on:height-changed
-					on:edit={e => onRichTextEdit(e)}
-					on:delete={e => onRichTextDelete(e)} />
-				{#if edit}
-					<div class="orientation-buttons">
-						<div>
-							<Button
-								type={horizontalRichBio ? 'default' : 'primary'}
-								title="Half width"
-								iconFa="fas fa-table-columns"
-								on:click={() => toggleHorizontal()} />
-							<Button
-								type={horizontalRichBio ? 'primary' : 'default'}
-								title="Full width"
-								iconFa="fas fa-square"
-								on:click={() => toggleHorizontal()} />
+				{#if updating}
+					<Spinner />
+				{:else}
+					<PlayerRichBio
+						{edit}
+						{playerId}
+						{richBioID}
+						patron={isAnySupporter(playerInfo.role)}
+						isFounder={true}
+						on:height-changed
+						on:edit={e => onRichTextEdit(e)}
+						on:delete={e => onRichTextDelete(e)} />
+					{#if edit}
+						<div class="orientation-buttons">
+							<div>
+								<Button
+									type={horizontalRichBio ? 'default' : 'primary'}
+									title="Half width"
+									iconFa="fas fa-table-columns"
+									on:click={() => toggleHorizontal()} />
+								<Button
+									type={horizontalRichBio ? 'primary' : 'default'}
+									title="Full width"
+									iconFa="fas fa-square"
+									on:click={() => toggleHorizontal()} />
+							</div>
 						</div>
-					</div>
+					{/if}
 				{/if}
 			</div>
 		{/if}

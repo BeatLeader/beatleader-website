@@ -78,7 +78,7 @@
 <div>
 	<div class="player-data">
 		<div class="platform-entry">
-			<span class="platform-title" title="How many times other players watched my replays">Global</span>
+			<span class="platform-title" title="Global ranking place">Global</span>
 			<a
 				style="flex: none"
 				href={`/ranking/${Math.floor((rank - 1) / PLAYERS_PER_PAGE) + 1}`}
@@ -99,7 +99,7 @@
 			</a>
 		</div>
 		<div class="platform-entry">
-			<span class="platform-title" title="How many times other players watched my replays">Country</span>
+			<span class="platform-title" title="Country ranking place">Country</span>
 			<a
 				style="flex: none"
 				href={getCountryRankingUrl(country)}
