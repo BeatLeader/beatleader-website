@@ -92,6 +92,10 @@
 
 	const accSaberService = createAccSaberService();
 
+	function updateUrl() {
+		window.history.pushState({}, '', `/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+	}
+
 	function onPageChanged(event) {
 		let newPage = event?.detail ?? null;
 		if (!newPage) return;
@@ -100,7 +104,7 @@
 
 		serviceParamsManager.update({page: newPage});
 
-		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
+		updateUrl();
 	}
 
 	function onServiceChanged(event) {
@@ -111,22 +115,18 @@
 
 		serviceParamsManager.update({}, newService);
 
-		navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
+		updateUrl();
 	}
 
 	function onServiceParamsChanged(event) {
 		const newServiceParams = event?.detail ?? null;
 		if (!newServiceParams) return;
 
-		const oldServiceUrl = serviceParamsManager.getCurrentServiceUrl();
-
 		serviceParamsManager.update(newServiceParams);
 
-		if (oldServiceUrl !== serviceParamsManager.getCurrentServiceUrl()) {
-			navigate(`/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`, {preserveScroll: true});
-		} else {
-			changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
-		}
+		changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
+
+		updateUrl();
 	}
 
 	let avatarHash = '';
