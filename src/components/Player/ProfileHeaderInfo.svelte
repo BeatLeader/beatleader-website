@@ -14,6 +14,7 @@
 	import Dialog from '../Common/Dialog.svelte';
 	import {SsrHttpResponseError} from '../../network/errors';
 	import createClanService from '../../services/beatleader/clan';
+	import ContentBox from '../Common/ContentBox.svelte';
 
 	export let name;
 	export let playerInfo;
@@ -282,20 +283,36 @@
 						></span>
 				</div>
 			{:else}
-				<div class="alias-editor">
-					<div class="prefix-and-alias-input">
-						<span class="alias-prefix">/u/</span>
-						<input type="text" class="alias-input" bind:value={alias} placeholder={$account?.player.alias ?? playerId} />
+				<ContentBox>
+					<div class="alias-editor">
+						<div class="prefix-and-alias-input">
+							<span class="alias-prefix">/u/</span>
+							<input type="text" class="alias-input" bind:value={alias} placeholder={$account?.player.alias ?? playerId} />
+						</div>
+
+						<span>You can change your profile link.</span>
+						<span>Submit a change request and admin will review it in 1-4 days.</span>
+
+						{#if $account?.player?.ids?.length || ($account?.player.alias && $account?.player.alias != playerId)}
+							<div class="ids-shortcuts">
+								<span>Old ID(s):</span>
+								{#each $account?.ids?.length ? $account?.ids : [playerId] as id}
+									{#if id != $account?.player.alias}
+										<div class="id-shortcut" on:click={() => (alias = id)}>{id}</div>
+									{/if}
+								{/each}
+							</div>
+						{/if}
+
+						{#if aliasRequestError}
+							<span style="color: red;display: block;width: 100%;">{aliasRequestError}</span>
+						{/if}
+						<Button
+							disabled={!((alias?.length > 2 && alias?.length < 15) || $account?.ids?.includes(alias))}
+							label="Submit"
+							on:click={() => sendAliasRequest()} />
 					</div>
-
-					<span>You can change your profile link.</span>
-					<span>Submit a change request and admin will review it in 1-4 days.</span>
-
-					{#if aliasRequestError}
-						<span style="color: red;">{aliasRequestError}</span>
-					{/if}
-					<Button disabled={!(alias?.length > 2 && alias?.length < 15)} label="Submit" on:click={() => sendAliasRequest()} />
-				</div>
+				</ContentBox>
 			{/if}
 		{/if}
 
@@ -466,6 +483,17 @@
 
 	.warning {
 		color: yellow;
+	}
+
+	.ids-shortcuts {
+		display: flex;
+		gap: 0.5em;
+	}
+
+	.id-shortcut {
+		text-decoration: underline;
+		cursor: pointer;
+		color: lightblue;
 	}
 
 	@media screen and (max-width: 767px) {
