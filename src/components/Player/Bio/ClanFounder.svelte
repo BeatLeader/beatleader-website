@@ -185,6 +185,8 @@
 		border-radius: 20px;
 		color: white !important;
 		width: fit-content;
+		flex: 1;
+		max-width: 28em;
 	}
 
 	.clanImage {

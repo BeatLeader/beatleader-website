@@ -32,17 +32,20 @@
 		align-items: center;
 		gap: 0.5em;
 		background-color: purple;
-		padding: 0.4em 0.8em;
-		border-radius: 3em;
-		box-shadow: 1px 1px 5px #252525cc;
+		padding: 0.2em 0.4em;
+		border-radius: 6px;
+		box-shadow: 1px 1px 5px #00000069;
 		width: fit-content;
-		margin-top: 0.8em;
+		margin-top: 0.2em;
+		margin-bottom: 0.2em;
 		font-weight: 600;
+		font-size: 0.8em;
+		margin-left: 0.3em;
 	}
 
 	.separator {
 		background-color: #eeeeeed1;
-		width: 0.1em;
+		width: 0.12em;
 		height: 1.2em;
 	}
 </style>

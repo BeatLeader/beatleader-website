@@ -199,9 +199,11 @@
 			{/if}
 		</div>
 
-		<span class="status">
-			<Status {playerInfo} />
-		</span>
+		{#if playerInfo.inactive || playerInfo.banned}
+			<span class="status">
+				<Status {playerInfo} />
+			</span>
+		{/if}
 
 		{#if showChanges}
 			{#each changes as change, idx}
@@ -349,7 +351,7 @@
 		font-size: 3.4em;
 		font-weight: bold;
 		align-items: baseline;
-		text-shadow: 1px 1px 5px #252525cc;
+		text-shadow: 1px 1px 5px #00000069;
 	}
 
 	.player-ranking {
@@ -359,6 +361,10 @@
 		font-size: 1.25em;
 		font-weight: 500;
 		align-items: center;
+	}
+
+	.player-ranking:empty {
+		display: none;
 	}
 
 	:global(.clan-badges .clan-badges) {

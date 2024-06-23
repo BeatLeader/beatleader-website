@@ -34,9 +34,11 @@
 			{/if}
 		</div>
 
-		<span class="status">
-			<Status {playerInfo} />
-		</span>
+		{#if playerInfo.inactive || playerInfo.banned}
+			<span class="status">
+				<Status {playerInfo} />
+			</span>
+		{/if}
 
 		<div class="player-ranking">
 			{#if playerInfo?.clans?.length}
@@ -60,11 +62,12 @@
 	.player-nickname {
 		display: flex;
 		flex-direction: column;
-		font-size: 3.4em;
+		font-size: 3em;
 		font-weight: bold;
 		align-items: baseline;
-		text-shadow: 1px 1px 5px #252525cc;
-		margin-bottom: -0.45em;
+		text-shadow: 1px 1px 5px #00000069;
+		margin-bottom: -0.3em;
+		margin-top: 0.1em;
 	}
 
 	.player-ranking {
@@ -74,6 +77,10 @@
 		font-size: 1.25em;
 		font-weight: 500;
 		align-items: center;
+	}
+
+	.player-ranking:empty {
+		display: none;
 	}
 
 	:global(.clan-badges .clan-badges) {

@@ -373,6 +373,7 @@
 		flex-wrap: nowrap;
 		grid-gap: 1.5em;
 		align-items: flex-start;
+		margin-bottom: 1em;
 	}
 
 	.avatar-cell {
