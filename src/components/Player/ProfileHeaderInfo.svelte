@@ -15,6 +15,7 @@
 	import {SsrHttpResponseError} from '../../network/errors';
 	import createClanService from '../../services/beatleader/clan';
 	import ContentBox from '../Common/ContentBox.svelte';
+	import RolesBadge from './RolesBadge.svelte';
 
 	export let name;
 	export let playerInfo;
@@ -22,6 +23,8 @@
 	export let error = null;
 	export let editModel = null;
 	export let showRedact = true;
+	export let roles = null;
+	export let profileAppearance;
 
 	const dispatch = createEventDispatcher();
 
@@ -316,6 +319,8 @@
 			{/if}
 		{/if}
 
+		<RolesBadge {profileAppearance} {roles} bind:editModel />
+
 		{#if error}
 			<div>
 				<Error {error} />
@@ -407,6 +412,7 @@
 		height: 2em;
 		font-size: 12px !important;
 		border-radius: 1em !important;
+		margin-bottom: -1em !important;
 	}
 
 	.sponsor-message {

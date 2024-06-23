@@ -11,11 +11,11 @@
 	let items = [];
 
 	async function fetchMappers(ids, search) {
-		let url = '/cors/beatsaver/api/users/list/0';
+		let url = 'https://api.beatsaver.com/users/list/0';
 		if (ids?.length) {
-			url = `/cors/beatsaver/api/users/ids/${ids.join(',')}`;
+			url = `https://api.beatsaver.com/users/ids/${ids.join(',')}`;
 		} else if (search?.length) {
-			url = `/cors/beatsaver/api/users/search?q=${search}`;
+			url = `https://api.beatsaver.com/users/search?q=${search}`;
 		}
 		const response = await fetch(url);
 		const mappers = await response.json();

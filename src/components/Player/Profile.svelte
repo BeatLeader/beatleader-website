@@ -185,18 +185,7 @@
 	let rolesShown = false;
 	function anyRolesShown(profileAppearance) {
 		if (!profileAppearance) return false;
-		const roleIconStrings = [
-			'mapper',
-			'rankedteam',
-			'juniorrankedteam',
-			'qualityteam',
-			'creator',
-			'booster',
-			'tipper',
-			'supporter',
-			'sponsor',
-		];
-		console.log(roles);
+		const roleIconStrings = ['booster', 'tipper', 'supporter', 'sponsor'];
 		return roleIconStrings.some(str => profileAppearance.includes(str) && roles?.includes(str));
 	}
 
@@ -331,6 +320,8 @@
 				{name}
 				{playerInfo}
 				{playerId}
+				{roles}
+				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
 				bind:editModel={$editModel}
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
@@ -397,8 +388,7 @@
 		justify-content: center;
 		grid-gap: 0em;
 		flex-grow: 1;
-		align-self: flex-end;
-		margin-bottom: 1.6em;
+		align-self: center;
 	}
 
 	.with-roles {

@@ -30,7 +30,6 @@
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
 
-	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = playerData?.profileSettings?.profileCover;
 </script>
 
@@ -63,7 +62,14 @@
 		</div>
 
 		<div class="rank-and-stats-cell">
-			<ProfileHeaderInfo {error} {name} {playerInfo} {playerId} showRedact={false} />
+			<ProfileHeaderInfo
+				{error}
+				{name}
+				{roles}
+				{playerInfo}
+				{playerId}
+				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
+				showRedact={false} />
 		</div>
 	</div>
 </ContentBox>
