@@ -405,6 +405,10 @@
 		width: 100%;
 	}
 
+	.role-icons:empty {
+		display: none;
+	}
+
 	.avatar-and-roles {
 		display: flex;
 		flex-direction: column;

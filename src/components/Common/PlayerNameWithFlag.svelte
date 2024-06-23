@@ -4,7 +4,7 @@
 	import Flag from './Flag.svelte';
 	import Popover from './Popover.svelte';
 	import {fade} from 'svelte/transition';
-	import MiniProfile from '../Player/MiniProfile.svelte';
+	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
 
 	export let player;
 	export let type = null;
@@ -36,7 +36,7 @@
 </a>
 
 {#if !disablePopover && player && player.playerInfo}
-	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="auto" spaceAway={10}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
 		</div>
@@ -66,6 +66,6 @@
 	}
 
 	.popover-contents {
-		width: 40em;
+		max-width: 40em;
 	}
 </style>

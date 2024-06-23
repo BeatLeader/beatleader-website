@@ -12,7 +12,7 @@
 	import {rankValue, ppValue, changingValuesClan} from '../../utils/clans';
 	import {buildSearchFromFilters} from '../../utils/filters';
 	import {createEventDispatcher} from 'svelte';
-	import MiniProfile from '../Player/MiniProfile.svelte';
+	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
 	import Popover from '../Common/Popover.svelte';
 	import {configStore} from '../../stores/config';
 
@@ -181,7 +181,7 @@
 </div>
 
 {#if player && player.playerInfo}
-	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="auto" spaceAway={10}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
 		</div>
@@ -325,7 +325,7 @@
 	}
 
 	.popover-contents {
-		width: 40em;
+		max-width: 40em;
 	}
 
 	@media screen and (max-width: 768px) {

@@ -22,7 +22,6 @@
 	export let playerId;
 	export let error = null;
 	export let editModel = null;
-	export let showRedact = true;
 	export let roles = null;
 	export let profileAppearance;
 
@@ -74,7 +73,7 @@
 	$: loggedInPlayer = $account?.id;
 	$: isMain = playerId && $account?.id === playerId;
 	$: isAdmin = $account?.player?.role?.includes('admin');
-	$: canRedact = showRedact && ((isMain && loggedInPlayer === playerId) || isAdmin);
+	$: canRedact = (isMain && loggedInPlayer === playerId) || isAdmin;
 	$: clanOrder = playerInfo?.clans?.map(c => c.tag).join(',');
 
 	let alias = null;
@@ -254,7 +253,7 @@
 				</div>
 			{/if}
 
-			{#if showRedact && isAdmin && loggedInPlayer != playerId}
+			{#if isAdmin && loggedInPlayer != playerId}
 				{#if playerInfo?.banned}
 					<Button
 						cls="banButton"
