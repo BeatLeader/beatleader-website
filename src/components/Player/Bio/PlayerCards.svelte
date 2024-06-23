@@ -6,6 +6,8 @@
 
 	export let playerId = null;
 	export let playerInfo = null;
+	export let editModel = null;
+	export let profileSettings = null;
 
 	export let onEmptyClan = () => {};
 	export let onEmptyMaps = () => {};
@@ -31,8 +33,12 @@
 	let rankedmaps = null;
 	let topmap = null;
 
-	function fetchRankedMapper(mapperId) {
-		fetch(`${BL_API_URL}player/${mapperId}/rankedmaps`)
+	function fetchRankedMapper(mapperId, profileSettings, editModel) {
+		fetch(
+			`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${
+				editModel ? editModel?.data?.rankedMapperSort : profileSettings?.rankedMapperSort
+			}`
+		)
 			.then(r => r.json())
 			.then(response => {
 				rankedmaps = response;
@@ -46,7 +52,7 @@
 			});
 	}
 
-	$: playerInfo?.mapperId && fetchRankedMapper(playerInfo?.mapperId);
+	$: playerInfo?.mapperId && fetchRankedMapper(playerInfo?.mapperId, profileSettings, editModel);
 	$: playerId && fetchClan(playerId);
 </script>
 
@@ -54,7 +60,7 @@
 	<div class="cards-container">
 		{#if rankedmaps || clan}
 			{#if rankedmaps}
-				<RankedMapper mapperId={playerInfo.mapperId} {rankedmaps} {topmap} />
+				<RankedMapper mapperId={playerInfo.mapperId} {rankedmaps} {topmap} bind:editModel />
 			{/if}
 			{#if clan}
 				<ClanFounder {clan} />
@@ -67,5 +73,7 @@
 	.cards-container {
 		display: flex;
 		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.5em;
 	}
 </style>

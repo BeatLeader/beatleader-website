@@ -11,7 +11,8 @@
 
 	export let playerId = null;
 	export let playerInfo = null;
-	export let edit = false;
+	export let editModel = false;
+	export let profileSettings = null;
 
 	const pageContainer = getContext('pageContainer');
 	const dispatch = createEventDispatcher();
@@ -27,23 +28,25 @@
 	let emptyMaps = false;
 	let emptyClan = false;
 
-	function updateSwipeCards(playerId, playerInfo, edit, pageContainer, horizontalRichBio, achievements, noMaps, noClan) {
+	function updateSwipeCards(playerId, playerInfo, editModel, pageContainer, horizontalRichBio, achievements, noMaps, noClan) {
 		var cards = [];
-		if (playerInfo?.richBioTimeset || edit) {
+		if (playerInfo?.richBioTimeset || editModel) {
 			cards.push({
 				name: `richbio-${playerId}`,
 				component: Bio,
-				props: {playerId, playerInfo, edit, onHorizontalChanged},
+				props: {playerId, playerInfo, editModel, onHorizontalChanged},
 			});
 		}
 
-		if (pageContainer.name !== 'xxl' && !(noMaps && noClan) && ((!playerInfo?.richBioTimeset && !edit) || horizontalRichBio)) {
+		if (pageContainer.name !== 'xxl' && !(noMaps && noClan) && ((!playerInfo?.richBioTimeset && !editModel) || horizontalRichBio)) {
 			cards.push({
 				name: `cards-${playerId}`,
 				component: PlayerCards,
 				props: {
 					playerId,
 					playerInfo,
+					editModel,
+					profileSettings,
 					onEmptyClan: () => {
 						emptyClan = true;
 					},
@@ -79,7 +82,7 @@
 	$: playerId && fetchAchievements(playerId);
 
 	$: onHorizontalChanged(playerInfo?.horizontalRichBio);
-	$: updateSwipeCards(playerId, playerInfo, edit, $pageContainer, horizontalRichBio, achievements, emptyMaps, emptyClan);
+	$: updateSwipeCards(playerId, playerInfo, editModel, $pageContainer, horizontalRichBio, achievements, emptyMaps, emptyClan);
 </script>
 
 <ContentBox cls="bio-box">

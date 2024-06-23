@@ -237,7 +237,8 @@
 			<BioCarousel
 				{playerId}
 				{playerInfo}
-				edit={$editModel}
+				profileSettings={playerData?.profileSettings}
+				bind:editModel={$editModel}
 				on:horizontalRichBio-changed={event => {
 					updateHorizontalRichBio(event.detail);
 				}} />
@@ -285,7 +286,7 @@
 			{/await}
 			{#if (!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio}
 				<ContentBox cls="player-cards-box">
-					<PlayerCards {playerId} {playerInfo} />
+					<PlayerCards {playerId} {playerInfo} profileSettings={playerData?.profileSettings} bind:editModel={$editModel} />
 				</ContentBox>
 			{/if}
 			{#if achievements?.length && $configStore.profileParts.achievements}

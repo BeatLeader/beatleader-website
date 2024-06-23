@@ -4,6 +4,7 @@
 	import followed from '../../../stores/beatleader/followed';
 	import Button from '../../Common/Button.svelte';
 	import Spinner from '../../Common/Spinner.svelte';
+	import {slide} from 'svelte/transition';
 
 	export let playerId;
 	export let thisPlayer;
@@ -34,6 +35,9 @@
 		}
 	}
 
+	let opened = false;
+	let openedFollowing = false;
+
 	let followers = null;
 
 	function fetchFollowers(playerId) {
@@ -53,27 +57,40 @@
 	$: fetchFollowers(playerId);
 </script>
 
-<div class="followers-container">
+<div class="followers-container" class:opened transition:slide>
 	{#if followers}
 		{#if followers.followingCount}
-			<div class="title-and-followers left-follower">
+			<div
+				class="title-and-followers left-follower"
+				class:opened
+				transition:slide
+				on:click={() => {
+					opened = !opened;
+				}}>
 				<span class="followers-title">{followers.followingCount} Following</span>
-				<div class="followers-list">
+				<div class="followers-list" class:opened transition:slide>
 					{#each followers.following as follower, idx}
-						<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower.avatar} />
+						<div class="follower" class:opened>
+							<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower.avatar} />
+							{#if opened}
+								<span>{follower.name}</span>
+							{/if}
+						</div>
 					{/each}
 				</div>
 			</div>
 		{/if}
-		{#if followers.followersCount}
-			<div class="title-and-followers">
-				<span class="followers-title">{followers.followersCount} Followers</span>
-				<div class="followers-list">
-					{#each followers.followers as follower, idx}
-						<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower.avatar} />
-					{/each}
+		{#if !opened || openedFollowing}
+			{#if followers.followersCount}
+				<div class="title-and-followers">
+					<span class="followers-title">{followers.followersCount} Followers</span>
+					<div class="followers-list">
+						{#each followers.followers as follower, idx}
+							<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower.avatar} />
+						{/each}
+					</div>
 				</div>
-			</div>
+			{/if}
 		{/if}
 		{#if loggedInPlayer && !isMain}
 			<Button
@@ -93,6 +110,15 @@
 </div>
 
 <style>
+	.followers-top-container {
+		display: contents;
+	}
+	.followers-top-container.opened {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 40em;
+	}
 	.followers-container {
 		display: flex;
 		align-content: center;
@@ -104,10 +130,41 @@
 		border-radius: 2em;
 		width: fit-content;
 		gap: 1em;
+		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 	}
+
+	.followers-list.opened {
+		flex-direction: column;
+		mask-image: none;
+	}
+
+	.title-and-followers.opened {
+		flex-direction: column;
+	}
+
+	.follower {
+		display: contents;
+	}
+
+	.follower.opened {
+		display: flex;
+		justify-content: start;
+		align-items: center;
+		gap: 1em;
+	}
+
 	.title-and-followers {
 		display: flex;
 		align-items: center;
+		cursor: pointer;
+		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+	}
+
+	.title-and-followers:hover {
+		background-color: rgba(0, 0, 0, 0.459);
+		border-radius: 2em;
+		padding: 0.4em;
+		margin: -0.4em;
 	}
 
 	.followers-title {
@@ -119,6 +176,7 @@
 		display: flex;
 		margin-left: 1em;
 		mask-image: linear-gradient(90deg, white, transparent);
+		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 	}
 
 	.left-followers {

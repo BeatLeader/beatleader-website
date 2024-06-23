@@ -2,33 +2,76 @@
 	export let mapperId;
 	export let rankedmaps = null;
 	export let topmap = null;
+	export let editModel;
+
+	const availableSortings = [
+		{
+			id: 'recent',
+			label: 'Recent',
+			title: 'Sort by the rank date',
+		},
+		{
+			id: 'top-stars',
+			label: 'Stars',
+			title: 'Sort by the top stars',
+		},
+		{
+			id: 'top-grinded',
+			label: 'Grinded',
+			title: 'Sort by the amount of PP grinded',
+		},
+		{
+			id: 'top-played',
+			label: 'Played',
+			title: 'Sort by playcount',
+		},
+	];
 </script>
 
 {#if rankedmaps}
-	<a href="/leaderboards?mappers={mapperId}" class="leader-container">
-		<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
-
-		<div class="map-info-container">
-			<span class="maps-title">Ranked mapper</span>
-			<span class="map-name">{topmap.name}</span>
-			<section class="title is-7">
-				{rankedmaps.playersCount.toLocaleString('en-US', {maximumFractionDigits: 0})} players grinded {rankedmaps.totalPp.toLocaleString(
-					'en-US',
-					{maximumFractionDigits: 0}
-				)}pp
-			</section>
-		</div>
-		{#if rankedmaps.maps.length > 1}
-			<div class="other-maps">
-				<div class="other-maps-covers">
-					{#each rankedmaps.maps.slice(1) as map}
-						<img class="other-maps-cover" src={map.cover} alt="Other ranked maps covers" />
+	<div class="edit-container" class:editModel>
+		{#if editModel}
+			<div class="select-sort">
+				<span>Sort maps by:</span>
+				<select
+					class="group-select"
+					value={editModel.data?.rankedMapperSort ?? 'recent'}
+					on:change={e => {
+						editModel.data.rankedMapperSort = e.target.value;
+					}}>
+					{#each availableSortings as option (option.id)}
+						<option class="group-option" value={option.id} title={option.title}>
+							{option.label}
+						</option>
 					{/each}
-				</div>
-				<span>and {rankedmaps.totalMapCount - 1} more...</span>
+				</select>
 			</div>
 		{/if}
-	</a>
+		<a href="/leaderboards?mappers={mapperId}" class="leader-container">
+			<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
+
+			<div class="map-info-container">
+				<span class="maps-title">Ranked mapper</span>
+
+				<span class="map-name">{topmap.name}</span>
+				<section class="title is-7">
+					{rankedmaps.totalPp.toLocaleString('en-US', {maximumFractionDigits: 0})}pp for {rankedmaps.playersCount.toLocaleString('en-US', {
+						maximumFractionDigits: 0,
+					})} players in total
+				</section>
+			</div>
+			{#if rankedmaps.maps.length > 1}
+				<div class="other-maps">
+					<div class="other-maps-covers">
+						{#each rankedmaps.maps.slice(1) as map}
+							<img class="other-maps-cover" src={map.cover} alt="Other ranked maps covers" />
+						{/each}
+					</div>
+					<span>and {rankedmaps.totalMapCount - 1} more...</span>
+				</div>
+			{/if}
+		</a>
+	</div>
 {/if}
 
 <style>
@@ -59,6 +102,42 @@
 	.players {
 		margin-top: 1rem;
 		grid-gap: 0.5em;
+	}
+
+	.edit-container {
+		display: contents;
+	}
+
+	.edit-container.editModel {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.select-sort {
+		display: flex;
+		gap: 0.5em;
+	}
+
+	.group-select {
+		height: fit-content;
+		padding: 0.175rem;
+		text-align: center;
+		white-space: nowrap;
+		border: 0;
+		border-radius: 0.2em;
+		cursor: pointer;
+		color: var(--color, #363636);
+		background-color: #dbdbdb;
+		box-shadow: none;
+		opacity: 0.35;
+		font-family: inherit;
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.group-option {
+		color: black;
+		font-family: inherit;
 	}
 
 	.players:not(.with-icons) .ranking-grid-row {
@@ -162,6 +241,8 @@
 		border-radius: 20px;
 		width: fit-content;
 		color: white !important;
+		flex: 1;
+		max-width: 28em;
 	}
 
 	.clanImage {
@@ -173,6 +254,7 @@
 	.map-info-container {
 		display: flex;
 		flex-direction: column;
+		justify-content: space-between;
 		margin-left: 0.5em;
 	}
 
