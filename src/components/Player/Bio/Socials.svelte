@@ -4,6 +4,7 @@
 
 	export let playerId = null;
 	export let playerInfo = null;
+	export let name;
 
 	$: steamLink = playerInfo.externalProfileUrl;
 	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
@@ -22,7 +23,7 @@
 		animationOpacity={0.8}
 		type="gray"
 		icon={steamSvg}
-		title="{playerInfo.name} gamer" />
+		title="{name} gamer" />
 {/if}
 
 {#if discordSocial}

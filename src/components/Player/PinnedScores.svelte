@@ -16,7 +16,7 @@
 </script>
 
 {#if sortedPinnedScores?.length}
-	<ContentBox>
+	<ContentBox cls="pinned-scores-box">
 		<section class="pinned-scores">
 			<h2>Pinned scores</h2>
 
@@ -66,5 +66,9 @@
 	.platform-title {
 		font-size: small;
 		font-weight: 700;
+	}
+
+	:global(.pinned-scores-box) {
+		border-radius: 12px !important;
 	}
 </style>
