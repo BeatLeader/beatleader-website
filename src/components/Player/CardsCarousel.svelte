@@ -108,4 +108,10 @@
 		background-color: #121212;
 		border-radius: 8px;
 	}
+
+	@media screen and (max-width: 767px) {
+		:global(.charts-box) {
+			border-radius: 0 !important;
+		}
+	}
 </style>

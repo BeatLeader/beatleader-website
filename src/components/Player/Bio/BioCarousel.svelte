@@ -116,4 +116,10 @@
 	:global(.bio-box:has(.column:empty)) {
 		display: none;
 	}
+
+	@media screen and (max-width: 767px) {
+		:global(.bio-box) {
+			border-radius: 0 !important;
+		}
+	}
 </style>

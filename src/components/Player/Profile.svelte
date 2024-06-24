@@ -515,5 +515,17 @@
 		.followers-and-socials {
 			justify-content: space-evenly;
 		}
+
+		.cover-image {
+			border-radius: 0;
+		}
+
+		:global(.profile-box) {
+			border-radius: 0 !important;
+		}
+
+		.followers-and-socials {
+			border-radius: 0;
+		}
 	}
 </style>

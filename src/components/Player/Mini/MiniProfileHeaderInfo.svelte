@@ -125,13 +125,6 @@
 		overflow-wrap: anywhere;
 	}
 
-	.edit-button {
-		position: absolute;
-		right: 0.2em;
-		bottom: 1.6em;
-		font-size: 2em;
-	}
-
 	:global(.edit-enabled) .player-ranking {
 		margin: 1rem 0;
 	}
@@ -248,10 +241,6 @@
 
 		.nickname {
 			text-align: center;
-		}
-
-		.edit-button {
-			bottom: 3.3em;
 		}
 	}
 </style>

@@ -685,4 +685,31 @@
 	:global(.silex-bar input::-ms-input-placeholder) {
 		color: black !important;
 	}
+
+	@media screen and (max-width: 767px) {
+		:global(.gjs-pn-panel.gjs-pn-views-container) {
+			height: 400px;
+			width: 100%;
+			bottom: 0;
+			left: 0;
+		}
+
+		:global(.gjs-pn-views) {
+			left: 0;
+			bottom: 358px;
+			width: 100% !important;
+		}
+
+		:global(.gjs-cv-canvas) {
+			width: 100% !important;
+		}
+
+		:global(.gjs-pn-commands) {
+			width: 100% !important;
+		}
+
+		:global(.gjs-pn-options) {
+			right: 0 !important;
+		}
+	}
 </style>

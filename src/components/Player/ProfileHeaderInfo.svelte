@@ -531,7 +531,8 @@
 		}
 
 		.edit-button {
-			bottom: 3.3em;
+			top: 0;
+			left: 0.2em;
 		}
 	}
 </style>

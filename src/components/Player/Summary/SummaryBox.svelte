@@ -121,4 +121,10 @@
 			max-width: 100% !important;
 		}
 	}
+
+	@media screen and (max-width: 767px) {
+		:global(.stats-and-summary-box) {
+			border-radius: 0 !important;
+		}
+	}
 </style>
