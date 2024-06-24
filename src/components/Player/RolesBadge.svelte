@@ -9,7 +9,7 @@
 	let filteredRoles = [];
 
 	function filterRoles(roles, profileAppearance, editModel) {
-		filteredRoles = roles.filter(role => CREATOR.includes(role) && (editModel || profileAppearance.includes(role)));
+		filteredRoles = CREATOR.filter(role => roles.includes(role) && (editModel || profileAppearance.includes(role)));
 	}
 
 	$: filterRoles(roles, editModel?.data?.profileAppearance ?? profileAppearance, editModel);

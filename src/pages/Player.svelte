@@ -350,6 +350,10 @@
 		display: none;
 	}
 
+	:global(.player-cards-box .cards-container) {
+		flex-direction: column;
+	}
+
 	@media screen and (max-width: 1749px) {
 		article {
 			width: 100%;

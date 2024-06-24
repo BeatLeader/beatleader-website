@@ -237,9 +237,8 @@
 	.leader-container {
 		display: flex;
 		padding: 0.5em;
-		background-color: #3f0078;
+		background-color: #3f0078b8;
 		border-radius: 20px;
-		width: fit-content;
 		color: white !important;
 		flex: 1;
 		max-width: 28em;

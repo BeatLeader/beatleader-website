@@ -17,6 +17,7 @@
 	let clan = null;
 
 	function fetchClan(playerId) {
+		clan = null;
 		fetch(`${BL_API_URL}player/${playerId}/foundedClan`, {credentials: 'include'})
 			.then(r => r.json())
 			.then(result => {
@@ -26,6 +27,7 @@
 			})
 			.catch(e => {
 				onEmptyClan();
+
 				clan = null;
 			});
 	}

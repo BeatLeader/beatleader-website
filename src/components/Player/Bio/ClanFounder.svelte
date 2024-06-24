@@ -32,12 +32,12 @@
 		<img class="clanImage" src={iconUrl} alt="ClanIcon" />
 
 		<div class="clan-info-container {tag == 'GAY' ? 'rainbow' : ''}" transition:fade|global>
-			<div>
-				<span class="clans-title">Leader of clan</span>
-				<div class="map-name">
-					<span style="--clan-color: {color}" class="clanTag">{tag}</span>
-					<span class="clanName">{name}</span>
-				</div>
+			<div class="clans-title-container">
+				<span class="clans-title"> Leader of clan: </span>
+				<span style="--clan-color: {color}" class="clanTag">{tag}</span>
+			</div>
+			<div class="map-name">
+				<span class="clanName">{name}</span>
 			</div>
 			<section class="title is-7">
 				{#if rankedPoolPercent}
@@ -181,10 +181,9 @@
 	.leader-container {
 		display: flex;
 		padding: 0.5em;
-		background-color: #881f1f;
+		background-color: #00ffbe6e;
 		border-radius: 20px;
 		color: white !important;
-		width: fit-content;
 		flex: 1;
 		max-width: 28em;
 	}
@@ -199,6 +198,13 @@
 		display: flex;
 		flex-direction: column;
 		margin-left: 0.5em;
+		justify-content: space-between;
+	}
+
+	.clans-title-container {
+		display: flex;
+		gap: 0.4em;
+		align-items: center;
 	}
 
 	.map-info-container {

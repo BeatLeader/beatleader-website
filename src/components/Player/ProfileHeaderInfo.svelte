@@ -367,6 +367,10 @@
 		display: none;
 	}
 
+	.clan-badges {
+		margin-bottom: 0.5em;
+	}
+
 	:global(.clan-badges .clan-badges) {
 		margin-left: -0.3em;
 	}

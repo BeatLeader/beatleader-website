@@ -154,7 +154,7 @@
 							e?.preventDefault();
 							e?.stopPropagation();
 							accountMenuShown = false;
-							navigateToPlayer(player.playerId);
+							navigateToPlayer(player);
 						},
 					})),
 				];
