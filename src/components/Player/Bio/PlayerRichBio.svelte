@@ -7,7 +7,7 @@
 
 	export let richBioID;
 	export let playerId;
-	export let edit;
+	export let editModel;
 	export let patron;
 
 	const dispatch = createEventDispatcher();
@@ -62,14 +62,14 @@
 		resizeObserver.observe(container);
 	}
 
-	$: richBioID && edit && fetchBioFile(richBioID);
+	$: richBioID && editModel && fetchBioFile(richBioID);
 	$: container && subscribeToContainer(container);
 </script>
 
-{#if richBioID || edititing || edit}
+{#if richBioID || edititing || editModel}
 	<div class="bio-container">
 		{#if richBioID || edititing}
-			{#if !edititing || !edit}
+			{#if !edititing || !editModel}
 				<iframe
 					bind:this={viewport}
 					class="message-body"
@@ -80,7 +80,7 @@
 			{/if}
 		{/if}
 
-		{#if !edititing && edit}
+		{#if !edititing && editModel}
 			{#if !richBioID}
 				<div class="sample-bio">
 					<RichTextEditor2 initialValue={defaultBio} />

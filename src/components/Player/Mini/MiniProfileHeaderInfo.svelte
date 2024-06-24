@@ -50,7 +50,11 @@
 
 		<RolesBadge {profileAppearance} {roles} />
 
-		<div class="summary"><MiniHeadsetAndPlatform {playerData} /></div>
+		<div class="summary">
+			{#if playerData?.scoreStats}
+				<MiniHeadsetAndPlatform {playerData} />
+			{/if}
+		</div>
 	{/if}
 </div>
 

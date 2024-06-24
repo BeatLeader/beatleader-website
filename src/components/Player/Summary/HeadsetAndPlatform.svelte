@@ -122,27 +122,31 @@
 					reversePrevSign={true} />
 			</a>
 		</div>
-		<div class="platform-entry">
-			<span class="platform-title" title="Last 50 scores top headset">Headset</span>
-			<div class="hmd-container">
-				<div class="hmd-image-container">
-					<img src={'/assets/' + headset?.icon} alt={headset?.name} style={headsetStyle} />
+		{#if headset}
+			<div class="platform-entry">
+				<span class="platform-title" title="Last 50 scores top headset">Headset</span>
+				<div class="hmd-container">
+					<div class="hmd-image-container">
+						<img src={'/assets/' + headset.icon} alt={headset.name} style={headsetStyle} />
+					</div>
+					<span>
+						{headset.name}
+					</span>
 				</div>
-				<span>
-					{headset?.name}
-				</span>
 			</div>
-		</div>
+		{/if}
 		{#if controllerDescription.length}
 			<div class="platform-entry">
 				<span class="platform-title" title="Last 50 scores top controllers">Controllers</span>
 				{controllerDescription}
 			</div>
 		{/if}
-		<div class="platform-entry">
-			<span class="platform-title" title="Last 50 scores top platform">Platform</span>
-			{topPlatform}
-		</div>
+		{#if topPlatform}
+			<div class="platform-entry">
+				<span class="platform-title" title="Last 50 scores top platform">Platform</span>
+				{topPlatform}
+			</div>
+		{/if}
 	</div>
 </div>
 

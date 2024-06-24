@@ -12,7 +12,7 @@
 
 	export let playerId = null;
 	export let playerInfo = null;
-	export let edit = false;
+	export let editModel = false;
 	export let onHorizontalChanged = () => {};
 
 	const dispatch = createEventDispatcher();
@@ -85,15 +85,15 @@
 	</Dialog>
 {/if}
 
-<div class="bio-and-cards {!(richBioID || edit) || horizontalRichBio ? 'only-one' : ''}">
+<div class="bio-and-cards {!(richBioID || editModel) || horizontalRichBio ? 'only-one' : ''}">
 	{#if playerId}
-		{#if richBioID || edit}
+		{#if richBioID || editModel}
 			<div class="bio-limiter">
 				{#if updating}
 					<Spinner />
 				{:else}
 					<PlayerRichBio
-						{edit}
+						{editModel}
 						{playerId}
 						{richBioID}
 						patron={isAnySupporter(playerInfo.role)}
@@ -101,7 +101,7 @@
 						on:height-changed
 						on:edit={e => onRichTextEdit(e)}
 						on:delete={e => onRichTextDelete(e)} />
-					{#if edit}
+					{#if editModel}
 						<div class="orientation-buttons">
 							<div>
 								<Button
