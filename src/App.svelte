@@ -127,7 +127,7 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-{#if $account?.player && $configStore.preferences.followersBecomingPublic}
+<!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
 		<a class="reelink" href="/settings#profile" />
 		<span class="link-text">Followers will be public, adjust your preferences!</span>
@@ -140,7 +140,7 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
