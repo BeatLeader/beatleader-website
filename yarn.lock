@@ -1104,8 +1104,8 @@ grapesjs-preset-webpage@^1.0.3:
   integrity sha512-C0VOKLAdhv0j1f81c6F2uk3JpJvxgXl5DeHUtDa5qGf/HZzaCmQxsvd8Re3Oh5Cah4uUCqoi9uB5FYx3hLND2w==
 
 "grapesjs-style-bg@https://github.com/NSGolova/style-bg.git":
-  version "2.0.5"
-  resolved "https://github.com/NSGolova/style-bg.git#d4e45fcfdf301adf42350fb7f16174bbd2d6f674"
+  version "2.0.6"
+  resolved "https://github.com/NSGolova/style-bg.git#e6ac2906d35a3399fa52e0d7857e805a2e2f090c"
   dependencies:
     grapesjs-style-gradient "^3.0.1"
 
