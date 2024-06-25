@@ -17,7 +17,7 @@
 {#if steamLink}
 	<Button
 		url={steamLink}
-		cls="socials-btn"
+		cls="socials-btn steam"
 		onlyurl={true}
 		animated={true}
 		animationOpacity={0.8}
@@ -89,5 +89,9 @@
 <style>
 	:global(.socials-btn) {
 		height: 2em !important;
+	}
+
+	:global(.socials-btn.steam .icon) {
+		display: block !important;
 	}
 </style>

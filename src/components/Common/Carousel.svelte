@@ -79,7 +79,7 @@
 	<section
 		bind:this={mainEl}
 		class="carousel"
-		style="--cards-cnt: {cards.length}; --width: {nodeWidth}px; --height: {carouselHeight}px; --item:{currentItem}"
+		style="--cards-cnt: {cards.length}; width: {nodeWidth}px; --width: {nodeWidth}px; --height: {carouselHeight}px; --item:{currentItem}"
 		data-swipe-threshold="50">
 		{#if cards.length > 1}
 			<div class="bullets">
