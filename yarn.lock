@@ -1103,10 +1103,9 @@ grapesjs-preset-webpage@^1.0.3:
   resolved "https://registry.yarnpkg.com/grapesjs-preset-webpage/-/grapesjs-preset-webpage-1.0.3.tgz#87c19779f0615b8b4b986782112e9c48727589ef"
   integrity sha512-C0VOKLAdhv0j1f81c6F2uk3JpJvxgXl5DeHUtDa5qGf/HZzaCmQxsvd8Re3Oh5Cah4uUCqoi9uB5FYx3hLND2w==
 
-grapesjs-style-bg@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/grapesjs-style-bg/-/grapesjs-style-bg-2.0.2.tgz#845b6a1464a6e5bb15cac9883397845a190ac2b3"
-  integrity sha512-LFPRjWeGpnwW6WbbxvbQIG6F52RAFuHyO5L7Rov39rltvERlyrE1n/xaZW8arFAF4yxylPHQ/hhxJaVlILf2Iw==
+"grapesjs-style-bg@https://github.com/NSGolova/style-bg.git":
+  version "2.0.5"
+  resolved "https://github.com/NSGolova/style-bg.git#d4e45fcfdf301adf42350fb7f16174bbd2d6f674"
   dependencies:
     grapesjs-style-gradient "^3.0.1"
 

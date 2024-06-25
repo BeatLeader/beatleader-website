@@ -1,10 +1,12 @@
 <script>
+	import {getContext} from 'svelte';
+	const {open, close} = getContext('simple-modal');
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
 	import createAccountStore from '../../../stores/beatleader/account';
 	import followed from '../../../stores/beatleader/followed';
 	import Button from '../../Common/Button.svelte';
 	import Spinner from '../../Common/Spinner.svelte';
-	import {slide} from 'svelte/transition';
+	import FollowersPopupContent from './FollowersPopupContent.svelte';
 
 	export let playerId;
 	export let thisPlayer;
@@ -35,9 +37,6 @@
 		}
 	}
 
-	let opened = false;
-	let openedFollowing = false;
-
 	let followers = null;
 
 	function fetchFollowers(playerId) {
@@ -50,6 +49,16 @@
 			});
 	}
 
+	function openFull(type) {
+		open(FollowersPopupContent, {
+			tab: type,
+			playerId,
+			account,
+			followingCount: followers.followingCount,
+			followersCount: followers.followersCount,
+		});
+	}
+
 	$: isMain = playerId && $account?.id === playerId;
 	$: loggedInPlayer = $account?.id;
 	$: isFollowed = playerId && !!$followed?.find(f => f?.playerId === playerId);
@@ -57,40 +66,27 @@
 	$: fetchFollowers(playerId);
 </script>
 
-<div class="followers-container" class:opened transition:slide>
+<div class="followers-container">
 	{#if followers}
 		{#if followers.followingCount}
-			<div
-				class="title-and-followers left-follower"
-				class:opened
-				transition:slide
-				on:click={() => {
-					opened = !opened;
-				}}>
+			<div class="title-and-followers left-follower" on:click={() => openFull(0)}>
 				<span class="followers-title">{followers.followingCount} Following</span>
-				<div class="followers-list" class:opened transition:slide>
+				<div class="followers-list">
 					{#each followers.following as follower, idx}
-						<div class="follower" class:opened>
-							<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower.avatar} />
-							{#if opened}
-								<span>{follower.name}</span>
-							{/if}
-						</div>
+						<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower} />
 					{/each}
 				</div>
 			</div>
 		{/if}
-		{#if !opened || openedFollowing}
-			{#if followers.followersCount}
-				<div class="title-and-followers">
-					<span class="followers-title">{followers.followersCount} Followers</span>
-					<div class="followers-list">
-						{#each followers.followers as follower, idx}
-							<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower.avatar} />
-						{/each}
-					</div>
+		{#if followers.followersCount}
+			<div class="title-and-followers" on:click={() => openFull(1)}>
+				<span class="followers-title">{followers.followersCount} Followers</span>
+				<div class="followers-list">
+					{#each followers.followers as follower, idx}
+						<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower} />
+					{/each}
 				</div>
-			{/if}
+			</div>
 		{/if}
 		{#if loggedInPlayer && !isMain}
 			<Button
@@ -110,15 +106,6 @@
 </div>
 
 <style>
-	.followers-top-container {
-		display: contents;
-	}
-	.followers-top-container.opened {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 40em;
-	}
 	.followers-container {
 		display: flex;
 		align-content: center;
@@ -130,33 +117,10 @@
 		border-radius: 2em;
 		width: fit-content;
 		gap: 1em;
-		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 	}
-
-	.followers-list.opened {
-		flex-direction: column;
-		mask-image: none;
-	}
-
-	.title-and-followers.opened {
-		flex-direction: column;
-	}
-
-	.follower {
-		display: contents;
-	}
-
-	.follower.opened {
-		display: flex;
-		justify-content: start;
-		align-items: center;
-		gap: 1em;
-	}
-
 	.title-and-followers {
 		display: flex;
 		align-items: center;
-		cursor: pointer;
 		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 	}
 
@@ -176,7 +140,6 @@
 		display: flex;
 		margin-left: 1em;
 		mask-image: linear-gradient(90deg, white, transparent);
-		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
 	}
 
 	.left-followers {
