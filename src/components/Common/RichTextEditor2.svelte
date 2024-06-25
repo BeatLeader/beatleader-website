@@ -161,8 +161,31 @@
 				addButton.className = 'gjs-btn-prim gjs-btn-add-font'; // Use GrapesJS button styles
 				addButton.onclick = () => editor.runCommand('open-fonts');
 
-				// Append the button to the Typography section
 				typographySection.appendChild(addButton);
+
+				editor.Commands.add('switch-drag-mode', {
+					run: function (editor) {
+						editor.setDragMode('absolute');
+					},
+					stop: function (editor) {
+						editor.setDragMode('translate');
+					},
+				});
+
+				const panel = editor.Panels.getPanel('options');
+
+				const optionsButtons = panel.get('buttons');
+
+				const customButton = editor.Panels.addButton('options', {
+					id: 'switch-drag-mode-button',
+					className: 'fa fa-anchor',
+					command: 'switch-drag-mode',
+					active: true,
+					attributes: {title: 'Switch drag-drop style (absolute/flexible)'},
+				});
+
+				optionsButtons.remove(customButton);
+				optionsButtons.unshift(customButton);
 			});
 		},
 	];
@@ -330,7 +353,6 @@
 			},
 		});
 
-		// const panel = editor.Panels.getPanel('options');
 		// panel.get('buttons').add([
 		// 	{
 		// 		id: 'open-code-button',
@@ -686,7 +708,26 @@
 		color: black !important;
 	}
 
+	:global(.gjs-layer-vis-on) {
+		height: 13px;
+	}
+	:global(.gjs-layer-vis-off) {
+		height: 13px;
+	}
+	:global(.gjs-layer-caret) {
+		height: 15px;
+	}
+	:global(.gjs-layer-move) {
+		height: 15px;
+	}
+
 	@media screen and (max-width: 767px) {
+		:global(.gjs-cv-canvas) {
+			width: 100% !important;
+			height: calc(50% - var(--gjs-canvas-top)) !important;
+			bottom: inherit !important;
+		}
+
 		:global(.gjs-pn-panel.gjs-pn-views-container) {
 			height: 400px;
 			width: 100%;
@@ -697,10 +738,6 @@
 		:global(.gjs-pn-views) {
 			left: 0;
 			bottom: 358px;
-			width: 100% !important;
-		}
-
-		:global(.gjs-cv-canvas) {
 			width: 100% !important;
 		}
 
