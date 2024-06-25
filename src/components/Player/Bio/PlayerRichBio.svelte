@@ -43,7 +43,7 @@
 	let viewport;
 
 	window.addEventListener('message', function (event) {
-		if (event.origin === 'https://bio.beatleader.wiki') {
+		if (event.origin === 'https://bio.beatleader.pro') {
 			var newHeight = event.data.frameHeight;
 			viewport.style.height = Math.min(newHeight, 420) + 'px';
 			dispatch('height-changed');
@@ -74,7 +74,7 @@
 					bind:this={viewport}
 					class="message-body"
 					allow="fullscreen;"
-					src={`https://bio.beatleader.wiki/?player=${playerId}&timeset=${richBioID}&width=${width}`} />
+					src={`https://bio.beatleader.pro/?player=${playerId}&timeset=${richBioID}&width=${width}`} />
 			{:else}
 				<RichTextEditor2 initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
 			{/if}
