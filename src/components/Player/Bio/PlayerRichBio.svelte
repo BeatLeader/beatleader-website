@@ -2,7 +2,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 	import Button from '../../Common/Button.svelte';
-	import RichTextEditor2 from '../../Common/RichTextEditor2.svelte';
+	import Editor from '../../Common/GrapesJS/Editor.svelte';
 	import {defaultBio} from './placeholder_bio';
 
 	export let richBioID;
@@ -76,14 +76,14 @@
 					allow="fullscreen;"
 					src={`https://bio.beatleader.pro/?player=${playerId}&timeset=${richBioID}&width=${width}`} />
 			{:else}
-				<RichTextEditor2 initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
+				<Editor initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
 			{/if}
 		{/if}
 
 		{#if !edititing && editModel}
 			{#if !richBioID}
 				<div class="sample-bio">
-					<RichTextEditor2 initialValue={defaultBio} />
+					<Editor initialValue={defaultBio} />
 				</div>
 			{/if}
 			{#if !patron}

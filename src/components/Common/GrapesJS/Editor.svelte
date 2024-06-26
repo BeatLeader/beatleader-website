@@ -24,6 +24,8 @@
 	export let initialValue = null;
 
 	import {createEventDispatcher, onMount} from 'svelte';
+	import {mapBlock} from './Blocks/MapBlock';
+	import {replayBlock} from './Blocks/ReplayBlock';
 
 	const dispatch = createEventDispatcher();
 
@@ -107,6 +109,33 @@
 				},
 			});
 
+			editor.Commands.add('switch-drag-mode', {
+				run: function (editor) {
+					editor.setDragMode('absolute');
+				},
+				stop: function (editor) {
+					editor.setDragMode('translate');
+				},
+			});
+
+			const panel = editor.Panels.getPanel('options');
+
+			const optionsButtons = panel.get('buttons');
+
+			const customButton = editor.Panels.addButton('options', {
+				id: 'switch-drag-mode-button',
+				className: 'fa fa-anchor',
+				command: 'switch-drag-mode',
+				active: true,
+				attributes: {title: 'Switch drag-drop style (absolute/flexible)'},
+			});
+
+			optionsButtons.remove(customButton);
+			optionsButtons.unshift(customButton);
+
+			mapBlock(editor);
+			replayBlock(editor);
+
 			editor.onReady(() => {
 				const pn = editor.Panels;
 
@@ -162,30 +191,6 @@
 				addButton.onclick = () => editor.runCommand('open-fonts');
 
 				typographySection.appendChild(addButton);
-
-				editor.Commands.add('switch-drag-mode', {
-					run: function (editor) {
-						editor.setDragMode('absolute');
-					},
-					stop: function (editor) {
-						editor.setDragMode('translate');
-					},
-				});
-
-				const panel = editor.Panels.getPanel('options');
-
-				const optionsButtons = panel.get('buttons');
-
-				const customButton = editor.Panels.addButton('options', {
-					id: 'switch-drag-mode-button',
-					className: 'fa fa-anchor',
-					command: 'switch-drag-mode',
-					active: true,
-					attributes: {title: 'Switch drag-drop style (absolute/flexible)'},
-				});
-
-				optionsButtons.remove(customButton);
-				optionsButtons.unshift(customButton);
 			});
 		},
 	];
@@ -193,6 +198,7 @@
 	const pluginsOpts = {
 		[gjsBlocksBasic]: {
 			flexGrid: true,
+			blocks: ['column1', 'column2', 'column3', 'column3-7', 'text', 'link', 'image', 'video'],
 		},
 		[grapesjsTuiImageEditor]: {
 			script: [
