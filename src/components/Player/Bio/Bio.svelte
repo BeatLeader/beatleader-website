@@ -189,4 +189,10 @@
 		border-left: none;
 		border-radius: 0;
 	}
+
+	@media screen and (max-width: 767px) {
+		.bio-and-cards {
+			grid-template-columns: 100%;
+		}
+	}
 </style>

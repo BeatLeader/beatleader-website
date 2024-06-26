@@ -31,7 +31,7 @@
 	$: cover = playerData?.profileSettings?.profileCover;
 </script>
 
-<ContentBox cls="mini-profile-box" zIndex="3">
+<ContentBox cls="mini-profile-box">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})" />
 	{/if}
@@ -88,6 +88,11 @@
 		top: -31px !important;
 		left: -31px !important;
 	}
+
+	:global(.svelte-easy-popover) {
+		--z-index: 4;
+	}
+
 	.avatar-cell {
 		position: relative;
 		width: 150px;

@@ -1,5 +1,5 @@
 <script>
-	import {getControllerForEnum, getHeadsetForHMD} from '../../../utils/beatleader/format';
+	import {getControllerForEnum, getHeadsetForHMD, platformDescription} from '../../../utils/beatleader/format';
 
 	import {navigate} from 'svelte-routing';
 	import {configStore} from '../../../stores/config';
@@ -56,9 +56,8 @@
 	}
 
 	$: scoresStats = playerData.scoreStats;
-	$: topPlatform = scoresStats.topPlatform;
-	$: topHeadset = scoresStats.rawTopHMD;
-	$: headset = getHeadsetForHMD(topHeadset);
+	$: topPlatform = scoresStats.topPlatform && platformDescription[scoresStats.topPlatform];
+	$: headset = scoresStats.topHMD && getHeadsetForHMD(scoresStats.topHMD);
 	$: headsetStyle = `width: 1.2em; height: 1.2em; margin-bottom: -0.2em; filter: ${headset?.color}`;
 	$: topController = scoresStats.topController;
 	$: controllerDescription = topController && getControllerForEnum(topController).length > 0 ? getControllerForEnum(topController) : '';

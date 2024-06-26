@@ -15,9 +15,13 @@
 	const dispatch = createEventDispatcher();
 
 	let clan = null;
+	let cachedPlayerId = null;
 
 	function fetchClan(playerId) {
 		clan = null;
+
+		if (!playerId || playerId == cachedPlayerId) return;
+		cachedPlayerId = playerId;
 		fetch(`${BL_API_URL}player/${playerId}/foundedClan`, {credentials: 'include'})
 			.then(r => r.json())
 			.then(result => {
@@ -34,8 +38,14 @@
 
 	let rankedmaps = null;
 	let topmap = null;
+	let cachedMapperId = null;
 
 	function fetchRankedMapper(mapperId, profileSettings, editModel) {
+		rankedmaps = null;
+		topmap = null;
+
+		if (!mapperId || cachedMapperId == mapperId) return;
+		cachedMapperId = mapperId;
 		fetch(
 			`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${
 				editModel ? editModel?.data?.rankedMapperSort : profileSettings?.rankedMapperSort
@@ -54,8 +64,8 @@
 			});
 	}
 
-	$: playerInfo?.mapperId && fetchRankedMapper(playerInfo?.mapperId, profileSettings, editModel);
-	$: playerId && fetchClan(playerId);
+	$: fetchRankedMapper(playerInfo?.mapperId, profileSettings, editModel);
+	$: fetchClan(playerId);
 </script>
 
 {#if playerInfo}

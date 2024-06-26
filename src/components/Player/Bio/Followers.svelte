@@ -122,6 +122,7 @@
 		display: flex;
 		align-items: center;
 		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+		cursor: pointer;
 	}
 
 	.title-and-followers:hover {

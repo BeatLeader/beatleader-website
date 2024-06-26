@@ -10,9 +10,8 @@
 	$: sortedPinnedScores = $pinnedScoresStore[playerId]?.sort(
 		(a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0)
 	);
-	$: console.log(scoresStats);
 	$: mywatched = scoresStats?.watchedReplays;
-	$: myreplays = scoresStats?.authorizedReplayWatched;
+	$: myreplays = scoresStats?.authorizedReplayWatched + scoresStats?.anonimusReplayWatched;
 </script>
 
 {#if sortedPinnedScores?.length}

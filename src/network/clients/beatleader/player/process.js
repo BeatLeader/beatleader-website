@@ -52,16 +52,6 @@ export default response => {
 		});
 	}
 
-	if (scoreStats?.topHMD) {
-		scoreStats.rawTopHMD = scoreStats.topHMD;
-		scoreStats.topHMD = getHeadsetForHMD(scoreStats.topHMD)?.name ?? '';
-	}
-
-	if (scoreStats?.topPlatform) {
-		const platformParts = (scoreStats?.topPlatform ?? '').split(',');
-		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? '';
-	}
-
 	let sponsor = role?.includes('sponsor');
 
 	let profileAppearance = profileSettings?.profileAppearance ? profileSettings.profileAppearance.split(',') : [];
