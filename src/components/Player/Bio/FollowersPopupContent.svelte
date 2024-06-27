@@ -62,7 +62,7 @@
 	$: fetchFollowers(playerId, tab, page);
 </script>
 
-<div class="followers-popup-container">
+<div class="followers-popup-container darkened-background">
 	<div class="tab-title-container">
 		<span
 			class="tab-title"
@@ -134,7 +134,6 @@
 		flex-direction: column;
 		padding: 0.5em;
 		margin: 0.5em;
-		background-color: #121212;
 		border-radius: 12px;
 		margin-bottom: 1em;
 		max-width: 30em;

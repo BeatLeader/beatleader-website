@@ -60,7 +60,7 @@
 	));
 </script>
 
-<div class="wrapper">
+<div class="wrapper darkened-background">
 	<div class="beatleader-summary">
 		{#if scoresStats || skeleton}
 			{#if scoresStats}
@@ -92,7 +92,6 @@
 		align-items: flex-start;
 		justify-content: space-between;
 		padding: 0.5em;
-		background-color: #121212;
 		border-radius: 8px;
 		width: 100%;
 	}

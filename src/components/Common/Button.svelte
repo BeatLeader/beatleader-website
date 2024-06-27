@@ -39,9 +39,9 @@
 			activeBorder: 'transparent',
 		},
 		primary: {
-			color: '#dbdbdb',
+			color: 'var(--color)',
 			activeColor: '#fff',
-			bgColor: '#3273db',
+			bgColor: 'var(--bg-color)',
 			activeBgColor: '#2366d1',
 			border: 'transparent',
 			activeBorder: 'transparent',
@@ -165,7 +165,7 @@
 	<a
 		href={url}
 		target={urltarget}
-		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
+		style="--btn-color:{color ? color : selectedType.color}; --btn-bg-color: {bgColor
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}; {square
 			? `width:${squareSize};height:${squareSize};`
@@ -195,7 +195,7 @@
 	</a>
 {:else}
 	<button
-		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
+		style="--btn-color:{color ? color : selectedType.color}; --btn-bg-color: {bgColor
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
@@ -241,8 +241,8 @@
 		border-radius: 0.2em;
 		font-size: inherit;
 		cursor: pointer;
-		color: var(--color, #363636) !important;
-		background-color: var(--bg-color, #3273dc) !important;
+		color: var(--btn-color, #363636) !important;
+		background-color: var(--btn-bg-color, #3273dc) !important;
 		outline: none !important;
 		box-shadow: none;
 	}
@@ -261,7 +261,7 @@
 	.button.animated:hover {
 		transform: scale(var(--hovered-scale));
 		opacity: 1;
-		background: var(--bg-color, #3273dc) linear-gradient(0deg, transparent, #ffffff66) !important;
+		background: var(--btn-bg-color, #3273dc) linear-gradient(0deg, transparent, #ffffff66) !important;
 	}
 
 	.button:active {
@@ -273,7 +273,7 @@
 		cursor: not-allowed;
 		opacity: 0.35;
 		color: var(--active-color, white);
-		background-color: var(--bg-color, #3273dc);
+		background-color: var(--btn-bg-color, #3273dc);
 	}
 
 	.button .icon:first-child:not(:last-child),

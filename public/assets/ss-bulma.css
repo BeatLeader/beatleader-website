@@ -5,7 +5,7 @@
 	--background: #222;
 	--foreground: #252525;
 	--textColor: #eee;
-	--ppColour: #8992e8;
+	--ppColour: rgba(253, 219, 255, 1);
 	--capturedColor: #b49600;
 	--rankedPoolColor: #3eb489;
 	--alternate: #72a8ff;
@@ -11340,7 +11340,7 @@ label.panel-block:hover {
 	--foreground: #252525;
 	--textColor: #eee;
 
-	--ppColour: #8992e8;
+	--ppColour: rgba(253, 219, 255, 1);
 	--alternate: #72a8ff;
 }
 

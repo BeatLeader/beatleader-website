@@ -75,7 +75,7 @@
 </script>
 
 <div>
-	<div class="player-data">
+	<div class="player-data darkened-background">
 		<div class="platform-entry">
 			<span class="platform-title" title="Global ranking place">Global</span>
 			<a
@@ -154,7 +154,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.1em;
-		background-color: #121212;
 		max-width: 18em;
 		min-width: 13em;
 		padding: 0.5em;

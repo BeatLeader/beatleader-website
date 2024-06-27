@@ -21,16 +21,27 @@
 
 	let currentTheme = DEFAULT_THEME;
 	let currentBGImage = '';
-	let currentBGColor = 'rgba(131, 131, 131, 0.082)';
-	let currentHeaderColor = 'rgba(92, 92, 92, 0.281)';
+
 	let currentFontNames = 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif';
+
+	let currentBGColor = 'rgba(17, 17, 17, 0.3682)';
+	let currentHeaderColor = 'rgba(0, 0, 0, 0.4152)';
+
+	let currentButtonColor = 'rgba(50, 115, 219, 1.0)';
+	let currentLabelColor = 'rgba(219, 219, 219, 1.0)';
+	let currentPpColor = 'rgba(253, 219, 255, 1.0)';
 
 	function onConfigUpdated(config) {
 		if (config?.preferences?.theme != currentTheme) currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
 		if (config?.preferences?.bgimage != currentBGImage) currentBGImage = config?.preferences?.bgimage ?? '';
+		if (config?.preferences?.fontNames != currentFontNames) currentFontNames = config?.preferences?.fontNames ?? '';
+
 		if (config?.preferences?.bgColor != currentBGColor) currentBGColor = config?.preferences?.bgColor ?? '';
 		if (config?.preferences?.headerColor != currentHeaderColor) currentHeaderColor = config?.preferences?.headerColor ?? '';
-		if (config?.preferences?.fontNames != currentFontNames) currentFontNames = config?.preferences?.fontNames ?? '';
+
+		if (config?.preferences?.buttonColor != currentButtonColor) currentButtonColor = config?.preferences?.buttonColor ?? '';
+		if (config?.preferences?.labelColor != currentLabelColor) currentLabelColor = config?.preferences?.labelColor ?? '';
+		if (config?.preferences?.ppColor != currentPpColor) currentPpColor = config?.preferences?.ppColor ?? '';
 	}
 
 	async function settempsetting(key, value) {
@@ -48,6 +59,19 @@
 		await settempsetting('headerColor', headerColor);
 	}
 
+	async function buttonColorCallback(color) {
+		setGlobalCSSValue('bg-color', color);
+		await settempsetting('buttonColor', color);
+	}
+	async function labelColorCallback(color) {
+		setGlobalCSSValue('color', color);
+		await settempsetting('labelColor', color);
+	}
+	async function ppColorCallback(color) {
+		setGlobalCSSValue('ppColour', color);
+		await settempsetting('ppColor', color);
+	}
+
 	async function bgimagecallback(bgimage) {
 		setGlobalCSSValue('background-image', 'url(' + bgimage + ')');
 		await settempsetting('bgimage', bgimage);
@@ -62,6 +86,11 @@
 
 	const debounceCurrentBGColor = debounce(rgba => (currentBGColor = rgba.detail), 100);
 	const debounceCurrentHeaderColor = debounce(rgba => (currentHeaderColor = rgba.detail), 100);
+
+	const debounceCurrentButtonColor = debounce(rgba => (currentButtonColor = rgba.detail), 100);
+	const debounceCurrentLabelColor = debounce(rgba => (currentLabelColor = rgba.detail), 100);
+	const debounceCurrentPpColor = debounce(rgba => (currentPpColor = rgba.detail), 100);
+
 	const debounceCurrentFontNames = debounce(event => (currentFontNames = event.srcElement.value), 500);
 	const debounceCurrentBGImage = debounce(event => (currentBGImage = event.srcElement.value), 500);
 
@@ -70,6 +99,9 @@
 	$: bgColorCallback(currentBGColor);
 	$: headerColorCallback(currentHeaderColor);
 	$: bgimagecallback(currentBGImage);
+	$: buttonColorCallback(currentButtonColor);
+	$: labelColorCallback(currentLabelColor);
+	$: ppColorCallback(currentPpColor);
 	$: fontNamesCallback(currentFontNames);
 	$: settempsetting('theme', currentTheme);
 </script>
@@ -95,6 +127,21 @@
 		<section class="option">
 			<label title="Select color for the backgrounds of the elements">Header Color</label>
 			<ColorPicker on:colorChange={debounceCurrentHeaderColor} startColor={currentHeaderColor} />
+		</section>
+
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">Button Color</label>
+			<ColorPicker on:colorChange={debounceCurrentButtonColor} startColor={currentButtonColor} />
+		</section>
+
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">Label Color</label>
+			<ColorPicker on:colorChange={debounceCurrentLabelColor} startColor={currentLabelColor} />
+		</section>
+
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">PP Color</label>
+			<ColorPicker on:colorChange={debounceCurrentPpColor} startColor={currentPpColor} />
 		</section>
 
 		<section class="option">

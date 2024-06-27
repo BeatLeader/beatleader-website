@@ -67,7 +67,7 @@
 </script>
 
 {#if richBioID || edititing || editModel}
-	<div class="bio-container">
+	<div class="bio-container darkened-background">
 		{#if richBioID || edititing}
 			{#if !edititing || !editModel}
 				<iframe
@@ -110,7 +110,6 @@
 
 <style>
 	.bio-container {
-		background-color: #121212;
 		border-radius: 8px;
 		overflow: hidden;
 		height: min-content;

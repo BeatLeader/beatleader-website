@@ -93,7 +93,7 @@
 <ContentBox cls="charts-box">
 	<div class="columns">
 		<div class="column">
-			<Carousel cards={swipeCards} />
+			<Carousel cards={swipeCards} wrapperCls="darkened-background" />
 		</div>
 	</div>
 </ContentBox>
@@ -105,7 +105,6 @@
 	}
 
 	:global(.charts-box .cards-wrapper) {
-		background-color: #121212;
 		border-radius: 8px;
 	}
 

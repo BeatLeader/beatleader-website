@@ -93,7 +93,7 @@
 	.pp {
 		font-size: 1.4em !important;
 		font-weight: 700 !important;
-		color: #fddbff !important;
+		color: var(--ppColour) !important;
 	}
 
 	.pp-container {

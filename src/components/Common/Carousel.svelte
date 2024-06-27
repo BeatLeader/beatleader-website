@@ -3,6 +3,7 @@
 	import {onMount} from 'svelte';
 
 	export let cards = null;
+	export let wrapperCls = null;
 
 	let mainEl = null;
 	let swipeHandlersBinded = false;
@@ -89,7 +90,7 @@
 			</div>
 		{/if}
 
-		<div class="cards-wrapper">
+		<div class={`cards-wrapper ${wrapperCls ?? ''}`}>
 			{#each cards as card, cardIdx (card.name)}
 				{#key card.name}
 					<div>

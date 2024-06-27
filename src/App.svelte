@@ -113,10 +113,15 @@
 
 	$: if (mainEl) containerStore.observe(mainEl);
 
-	if ($configStore.preferences.theme != 'default') {
+	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'ree-dark') {
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
+
+		setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
+		setGlobalCSSValue('color', $configStore.preferences.labelColor);
+		setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
+
 		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
 
 		if ($configStore.preferences.theme == 'mirror') {
