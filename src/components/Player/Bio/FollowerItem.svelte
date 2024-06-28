@@ -86,42 +86,6 @@
 {/if} -->
 
 <style>
-	.followers-popup-container {
-		display: flex;
-		flex-direction: column;
-		padding: 0.5em;
-		margin: 0.5em;
-		border-radius: 12px;
-		margin-bottom: 1em;
-		max-width: 30em;
-		min-width: 20em;
-		overflow: hidden;
-	}
-
-	.tab-title-container {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	.tab-title {
-		cursor: pointer;
-		color: white;
-		font-size: 1.4em;
-		opacity: 0.6;
-		transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
-	}
-
-	.tab-title.active {
-		opacity: 1;
-	}
-
-	.followers-container {
-		display: flex;
-		flex-direction: column;
-		gap: 0.4em;
-		color: white;
-	}
-
 	.name-and-buttons {
 		display: flex;
 		justify-content: space-between;
@@ -162,9 +126,5 @@
 		align-items: center;
 		border-radius: 1.5em;
 		background-color: #6f6f6f;
-	}
-
-	:global(.wrap .window:has(.followers-popup-container)) {
-		border-radius: 18px !important;
 	}
 </style>

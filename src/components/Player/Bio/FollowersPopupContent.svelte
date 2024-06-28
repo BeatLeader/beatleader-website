@@ -90,6 +90,7 @@
 		margin-bottom: 1em;
 		max-width: 30em;
 		min-width: 20em;
+		overflow: hidden;
 	}
 
 	.tab-title-container {
@@ -114,38 +115,6 @@
 		flex-direction: column;
 		gap: 0.4em;
 		color: white;
-	}
-
-	.name-and-buttons {
-		display: flex;
-		justify-content: space-between;
-		flex: 1;
-		align-items: center;
-	}
-
-	.name-and-status {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.name {
-		font-weight: bold;
-	}
-
-	.player-container {
-		display: flex;
-		gap: 1em;
-		align-items: center;
-		color: white;
-		padding: 0.5em;
-		background-color: #242424;
-		border-radius: 2em;
-	}
-
-	.avatar {
-		width: 3em;
-		height: 3em;
-		border-radius: 1.5em;
 	}
 
 	:global(.wrap .window:has(.followers-popup-container)) {
