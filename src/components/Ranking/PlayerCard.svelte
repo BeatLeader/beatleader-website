@@ -283,6 +283,11 @@
 		background-color: saddlebrown;
 	}
 
+	.player-card :global(.player-name-and-rank .clan-badges) {
+		margin-left: 0.3em;
+		margin-top: 0.1em;
+	}
+
 	.player-card .player-rank {
 		display: flex;
 		justify-content: space-between;

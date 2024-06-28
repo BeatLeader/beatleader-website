@@ -1,6 +1,7 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
 	import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
+	import {configStore} from '../../../stores/config';
 	import Button from '../../Common/Button.svelte';
 	import Editor from '../../Common/GrapesJS/Editor.svelte';
 	import {defaultBio} from './placeholder_bio';
@@ -62,19 +63,26 @@
 		resizeObserver.observe(container);
 	}
 
+	let iframeUrl = '';
+
+	function formIframeUrl(playerId, richBioID, width, preferences) {
+		let base = `https://bio.beatleader.pro/?player=${playerId}&timeset=${richBioID}&width=${width}`;
+		['theme', 'bgColor', 'headerColor', 'buttonColor', 'labelColor', 'ppColor', 'selectedColor'].forEach(key => {
+			base += `&${key}=${preferences[key]}`;
+		});
+		iframeUrl = base;
+	}
+
 	$: richBioID && editModel && fetchBioFile(richBioID);
+	$: formIframeUrl(playerId, richBioID, width, $configStore.preferences);
 	$: container && subscribeToContainer(container);
 </script>
 
 {#if richBioID || edititing || editModel}
-	<div class="bio-container darkened-background">
+	<div class="bio-container">
 		{#if richBioID || edititing}
 			{#if !edititing || !editModel}
-				<iframe
-					bind:this={viewport}
-					class="message-body"
-					allow="fullscreen;"
-					src={`https://bio.beatleader.pro/?player=${playerId}&timeset=${richBioID}&width=${width}`} />
+				<iframe bind:this={viewport} class="message-body" allow="fullscreen;" src={iframeUrl} />
 			{:else}
 				<Editor initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
 			{/if}

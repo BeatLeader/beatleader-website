@@ -7,6 +7,7 @@ import createAccountStore from './stores/beatleader/account';
 import createPlayerService from './services/beatleader/player';
 import {enablePatches, setAutoFreeze} from 'immer';
 import ErrorComponent from './components/Common/Error.svelte';
+import './themes/default.less';
 import './themes/mirror.less';
 import './themes/mirror-low.less';
 import './themes/ree-dark.less';

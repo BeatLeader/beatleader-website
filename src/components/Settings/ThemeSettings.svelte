@@ -30,6 +30,7 @@
 	let currentButtonColor = 'rgba(50, 115, 219, 1.0)';
 	let currentLabelColor = 'rgba(219, 219, 219, 1.0)';
 	let currentPpColor = 'rgba(253, 219, 255, 1.0)';
+	let currentSelectedColor = 'rgba(50, 115, 220, 1.0)';
 
 	function onConfigUpdated(config) {
 		if (config?.preferences?.theme != currentTheme) currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
@@ -42,6 +43,7 @@
 		if (config?.preferences?.buttonColor != currentButtonColor) currentButtonColor = config?.preferences?.buttonColor ?? '';
 		if (config?.preferences?.labelColor != currentLabelColor) currentLabelColor = config?.preferences?.labelColor ?? '';
 		if (config?.preferences?.ppColor != currentPpColor) currentPpColor = config?.preferences?.ppColor ?? '';
+		if (config?.preferences?.selectedColor != currentSelectedColor) currentSelectedColor = config?.preferences?.selectedColor ?? '';
 	}
 
 	async function settempsetting(key, value) {
@@ -71,6 +73,10 @@
 		setGlobalCSSValue('ppColour', color);
 		await settempsetting('ppColor', color);
 	}
+	async function selectedColorCallback(color) {
+		setGlobalCSSValue('selected', color);
+		await settempsetting('selectedColor', color);
+	}
 
 	async function bgimagecallback(bgimage) {
 		setGlobalCSSValue('background-image', 'url(' + bgimage + ')');
@@ -90,6 +96,7 @@
 	const debounceCurrentButtonColor = debounce(rgba => (currentButtonColor = rgba.detail), 100);
 	const debounceCurrentLabelColor = debounce(rgba => (currentLabelColor = rgba.detail), 100);
 	const debounceCurrentPpColor = debounce(rgba => (currentPpColor = rgba.detail), 100);
+	const debounceCurrentSelectedColor = debounce(rgba => (currentSelectedColor = rgba.detail), 100);
 
 	const debounceCurrentFontNames = debounce(event => (currentFontNames = event.srcElement.value), 500);
 	const debounceCurrentBGImage = debounce(event => (currentBGImage = event.srcElement.value), 500);
@@ -102,6 +109,8 @@
 	$: buttonColorCallback(currentButtonColor);
 	$: labelColorCallback(currentLabelColor);
 	$: ppColorCallback(currentPpColor);
+	$: selectedColorCallback(currentSelectedColor);
+
 	$: fontNamesCallback(currentFontNames);
 	$: settempsetting('theme', currentTheme);
 </script>
@@ -137,6 +146,10 @@
 		<section class="option">
 			<label title="Select color for the backgrounds of the elements">Label Color</label>
 			<ColorPicker on:colorChange={debounceCurrentLabelColor} startColor={currentLabelColor} />
+		</section>
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">Selected Color</label>
+			<ColorPicker on:colorChange={debounceCurrentSelectedColor} startColor={currentSelectedColor} />
 		</section>
 
 		<section class="option">

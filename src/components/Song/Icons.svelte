@@ -338,6 +338,6 @@
 	}
 
 	:global(.replay-button-alt) {
-		--bg-color: transparent !important;
+		--btn-bg-color: transparent !important;
 	}
 </style>

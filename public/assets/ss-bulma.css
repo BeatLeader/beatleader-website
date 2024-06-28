@@ -754,7 +754,6 @@ body {
 }
 
 a {
-	color: #3273dc;
 	cursor: pointer;
 	text-decoration: none;
 }
@@ -11353,7 +11352,7 @@ html {
 }
 
 a {
-	color: var(--alternate) !important;
+	color: var(--textColor) !important;
 }
 
 a.navbar-item {

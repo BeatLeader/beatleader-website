@@ -118,13 +118,14 @@
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
 
-		setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
-		setGlobalCSSValue('color', $configStore.preferences.labelColor);
-		setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
-
 		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
 
 		if ($configStore.preferences.theme == 'mirror') {
+			setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
+			setGlobalCSSValue('color', $configStore.preferences.labelColor);
+			setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
+			setGlobalCSSValue('selected', $configStore.preferences.selectedColor);
+
 			importFonts($configStore.preferences.fontNames);
 		}
 	}
