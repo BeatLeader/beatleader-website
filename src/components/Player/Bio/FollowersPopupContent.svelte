@@ -1,9 +1,11 @@
 <script>
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
-	import Button from '../../Common/Button.svelte';
+
 	import Pager from '../../Common/Pager.svelte';
 	import Spinner from '../../Common/Spinner.svelte';
 	import followed from '../../../stores/beatleader/followed';
+
+	import FollowerItem from './FollowerItem.svelte';
 
 	export let playerId;
 	export let account;
@@ -12,14 +14,14 @@
 	export let tab = 0;
 
 	let page = 1;
+	let previousPage = 0;
 	let loading = false;
-	let operationInProgress = false;
+
 	let list = [];
 	let count = 0;
 
 	function fetchFollowers(playerId, tab, page) {
 		loading = true;
-		list = [];
 		fetch(BL_API_URL + `player/${playerId}/followers?type=${tab}&count=10&page=${page}`, {credentials: 'include'})
 			.then(r => r.json())
 			.then(result => {
@@ -30,32 +32,8 @@
 
 	function updateCount(followingCount, followersCount, tab) {
 		page = 1;
+		previousPage = 0;
 		count = tab == 0 ? followingCount : followersCount;
-	}
-
-	async function onFollowedChange(op, follower) {
-		if (!playerId || !op) return;
-
-		try {
-			operationInProgress = true;
-
-			switch (op) {
-				case 'add':
-					await account.addFollowed(follower.id);
-					follower.count = followers.followersCount + 1;
-					if (account.id == playerId && tab == 1) {
-						fetchFollowers(playerId, tab, page);
-					}
-					break;
-				case 'remove':
-					await account.removeFollowed(follower.id);
-					follower.count = followers.followersCount - 1;
-					break;
-			}
-		} catch (err) {
-		} finally {
-			operationInProgress = false;
-		}
 	}
 
 	$: updateCount(followingCount, followersCount, tab);
@@ -82,35 +60,8 @@
 
 	<div class="followers-container">
 		{#if list.length}
-			{#each list as follower}
-				<div class="player-container">
-					<a style="display: contents;" href={`/u/${follower.alias ?? follower.id}`}>
-						<img class="avatar" src={follower.avatar} />
-					</a>
-					<div class="name-and-buttons">
-						<div class="name-and-status">
-							<span class="name">{follower.name}</span>
-							{#if follower.count}
-								<span class="status">{follower.count} {tab == 0 ? 'Total Followers' : 'Mutuals'}</span>
-							{/if}
-						</div>
-						{#if account && $account.player.playerId != follower.id}
-							{@const isFollowed = !!$followed?.find(f => f?.playerId === follower.id)}
-							<Button
-								square={true}
-								animated={true}
-								cls="add-follower-btn"
-								title={isFollowed ? 'Stop following' : 'Follow'}
-								iconFa={isFollowed ? 'fas fa-user-minus' : 'fas fa-user-plus'}
-								type={isFollowed ? 'danger' : 'primary'}
-								loading={operationInProgress}
-								disabled={operationInProgress}
-								on:click={() => onFollowedChange(isFollowed ? 'remove' : 'add', follower)} />
-						{:else}
-							<div />
-						{/if}
-					</div>
-				</div>
+			{#each list as follower, idx (follower?.id)}
+				<FollowerItem {follower} {account} {followed} {loading} {tab} {idx} animationSign={page >= previousPage ? 1 : -1} />
 			{/each}
 			<Pager
 				totalItems={count}
@@ -118,6 +69,7 @@
 				itemsPerPageValues={null}
 				currentPage={page - 1}
 				on:page-changed={e => {
+					previousPage = page;
 					page = (e?.detail?.page ?? 0) + 1;
 				}} />
 		{:else if loading}

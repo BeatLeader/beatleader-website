@@ -181,7 +181,7 @@
 </div>
 
 {#if player && player.playerInfo}
-	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="auto" spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="bottom" spaceAway={10}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
 		</div>
