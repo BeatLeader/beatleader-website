@@ -25,6 +25,5 @@
 	:global(.wrap .window) {
 		width: auto !important;
 		height: auto !important;
-		background-color: black !important;
 	}
 </style>

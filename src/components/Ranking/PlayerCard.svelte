@@ -12,7 +12,7 @@
 	import {rankValue, ppValue, changingValuesClan} from '../../utils/clans';
 	import {buildSearchFromFilters} from '../../utils/filters';
 	import {createEventDispatcher} from 'svelte';
-	import MiniProfile from '../Player/MiniProfile.svelte';
+	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
 	import Popover from '../Common/Popover.svelte';
 	import {configStore} from '../../stores/config';
 
@@ -30,10 +30,10 @@
 
 	const dispatch = createEventDispatcher();
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function navigateToPlayer(player) {
+		if (!player) return;
 
-		navigate(`/u/${playerId}?${playerClickFilter ?? ''}`);
+		navigate(`/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`);
 	}
 
 	function onPlayerClick(event, player) {
@@ -49,16 +49,16 @@
 
 		if (!player) return;
 
-		navigateToPlayer(player.playerId);
+		navigateToPlayer(player);
 	}
 
 	function onCountryClick(player) {
 		if (!player) return;
 
 		if (currentFilters) {
-			currentFilters.countries = player?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '';
+			currentFilters.countries = player?.playerInfo?.country?.country?.toLowerCase() ?? '';
 
-			const currentPage = Math.floor((player.playerInfo.countries[0].rank - 1) / PLAYERS_PER_PAGE) + 1;
+			const currentPage = Math.floor((player.playerInfo.country.rank - 1) / PLAYERS_PER_PAGE) + 1;
 
 			dispatch('filters-updated', {currentFilters, currentPage});
 		}
@@ -85,7 +85,7 @@
 
 	var pp = player?.playerInfo?.pp;
 	var rank = player?.playerInfo?.rank;
-	var countryRank = player?.playerInfo?.countries[0].rank;
+	var countryRank = player?.playerInfo?.country.rankValue ?? player?.playerInfo?.country.rank;
 
 	function hoverStats() {
 		if (player && player.playerInfo && (selectedClanTag || player.clans)) {
@@ -138,7 +138,7 @@
 				on:click={e => onCountryClick(player)}
 				on:keypress={e => onGlobalClick(e, player)}>
 				#<Value value={countryRank} digits={0} zero="?" />
-				<Flag country={opt(player, 'playerInfo.countries.0.country')} />
+				<Flag country={opt(player, 'playerInfo.country.country')} />
 			</div>
 		{/if}
 		{#if $configStore.rankingList.ppToTheLeft}
@@ -181,7 +181,7 @@
 </div>
 
 {#if player && player.playerInfo}
-	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="bottom" spaceAway={10}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
 		</div>
@@ -283,6 +283,11 @@
 		background-color: saddlebrown;
 	}
 
+	.player-card :global(.player-name-and-rank .clan-badges) {
+		margin-left: 0.3em;
+		margin-top: 0.1em;
+	}
+
 	.player-card .player-rank {
 		display: flex;
 		justify-content: space-between;
@@ -325,7 +330,7 @@
 	}
 
 	.popover-contents {
-		width: 40em;
+		max-width: 40em;
 	}
 
 	@media screen and (max-width: 768px) {

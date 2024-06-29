@@ -1,17 +1,14 @@
 <script>
-	import processPlayerData from './utils/mini-profile';
-	import Avatar from './Avatar.svelte';
-	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
-	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
-	import BeatLeaderSummary from './BeatLeaderSummary.svelte';
-	import ContentBox from '../Common/ContentBox.svelte';
-	import RoleIcon from './RoleIcon.svelte';
-	import AvatarOverlay from './Overlay/AvatarOverlay.svelte';
-	import createPlayerInfoWithScoresStore from '../../stores/http/http-player-with-scores-store';
+	import processPlayerData from '../utils/mini-profile';
+	import Avatar from '../Avatar.svelte';
+	import AvatarOverlayIcons from '../AvatarOverlayIcons.svelte';
+	import ProfileHeaderInfo from './MiniProfileHeaderInfo.svelte';
+	import ContentBox from '../../Common/ContentBox.svelte';
+	import RoleIcon from '../RoleIcon.svelte';
+	import AvatarOverlay from '../Overlay/AvatarOverlay.svelte';
+	import createPlayerInfoWithScoresStore from '../../../stores/http/http-player-with-scores-store';
 
 	export let player;
-	export let isLoading = false;
-	export let error = null;
 
 	let playerStore = player && player.playerId ? createPlayerInfoWithScoresStore(player && player.playerId) : null;
 
@@ -31,11 +28,10 @@
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
 	$: updateRoles(playerInfo?.role ?? null);
 
-	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = playerData?.profileSettings?.profileCover;
 </script>
 
-<ContentBox zIndex="3">
+<ContentBox cls="mini-profile-box">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})" />
 	{/if}
@@ -44,9 +40,9 @@
 	<div class="player-general-info">
 		<div class="avatar-and-roles">
 			<div class="avatar-cell">
-				<Avatar {isLoading} {playerInfo} />
+				<Avatar {playerInfo} />
 
-				{#if playerInfo && !isLoading}
+				{#if playerInfo}
 					<AvatarOverlayIcons {playerData} />
 				{/if}
 			</div>
@@ -64,13 +60,13 @@
 		</div>
 
 		<div class="rank-and-stats-cell">
-			<ProfileHeaderInfo {error} {name} {playerInfo} {playerId} showRedact={false} />
-			<BeatLeaderSummary
+			<ProfileHeaderInfo
+				{name}
+				{roles}
+				{playerInfo}
 				{playerId}
-				{scoresStats}
-				{accBadges}
-				{profileAppearance}
-				overrideVisibleStats={['topPp', 'averageRankedAccuracy', 'topPlatform', 'topHMD']} />
+				{playerData}
+				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null} />
 		</div>
 	</div>
 </ContentBox>
@@ -79,8 +75,22 @@
 	.player-general-info {
 		display: flex;
 		flex-wrap: nowrap;
-		grid-gap: 1.5em;
+		grid-gap: 0.5em;
 		align-items: flex-start;
+	}
+
+	:global(.mini-profile-box) {
+		padding: 0.4em !important;
+		border-radius: 12px !important;
+	}
+
+	:global(.mini-profile-box .avatar-overlay) {
+		top: -31px !important;
+		left: -31px !important;
+	}
+
+	:global(.svelte-easy-popover) {
+		--z-index: 4;
 	}
 
 	.avatar-cell {
@@ -96,6 +106,7 @@
 		justify-content: center;
 		grid-gap: 0.4em;
 		flex-grow: 1;
+		margin-top: -1.25em;
 	}
 
 	.role-icons {
@@ -107,6 +118,10 @@
 		margin-top: 0.5rem;
 		width: 100%;
 		min-height: 1.5rem;
+	}
+
+	.role-icons:empty {
+		display: none;
 	}
 
 	.avatar-and-roles {
@@ -126,10 +141,11 @@
 		z-index: -1;
 		width: 100%;
 		flex-direction: column-reverse;
-		border-radius: 6px;
-		mask-type: alpha;
-		-webkit-mask-image: linear-gradient(180deg, transparent, rgba(0 0 0 / 10%) 30%, rgb(0, 0, 0));
-		mask-image: linear-gradient(180deg, transparent, rgba(0 0 0 / 10%) 30%, rgb(0, 0, 0));
+		border-radius: 12px;
+	}
+
+	.summary {
+		margin: -1em;
 	}
 
 	@media screen and (max-width: 767px) {

@@ -8,7 +8,7 @@
 	<div class="bl-badges" transition:fade|global={{duration: 500}}>
 		{#each badges as badge (badge.src)}
 			{#if badge.link}
-				<a href={badge.link}>
+				<a class="badge-link" href={badge.link}>
 					<img class="clickable" src={badge.src} alt={badge.title} title={badge.title} />
 				</a>
 			{:else}
@@ -21,19 +21,23 @@
 <style>
 	.bl-badges {
 		display: flex;
-		flex-wrap: wrap;
+		gap: 0.5em 0.5em;
+		margin: 0.5em 0;
 		justify-content: center;
+		width: 100%;
+		flex-wrap: wrap;
 	}
 
 	.bl-badges img {
-		margin-right: 0.5rem;
-		margin-bottom: 0.25rem;
 		height: 41px;
+	}
+
+	.badge-link {
+		display: contents;
 	}
 
 	@media (max-width: 768px) {
 		.bl-badges {
-			margin-top: 0.5rem;
 			justify-content: center;
 		}
 	}

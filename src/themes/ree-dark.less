@@ -10,6 +10,7 @@
 
 :root {
   --row-separator: #2e2e2e !important;
+  --ppColour: rgba(207, 138, 251, 1.0);
 }
 
 //endregion
@@ -23,13 +24,16 @@
   background-size: cover !important;
 }
 
+.darkened-background {
+  background: #121212;
+}
+
 // Navigator
 nav.ssr-page-container {
   padding: .5rem;
   height: 4rem !important;
   border-bottom: none !important;
   background: rgb(26 26 26) !important;
-  max-width: none !important;
 
   a,
   div {
@@ -82,7 +86,7 @@ nav.ssr-page-container {
 
   > a {
     margin: 0 -0.2em;
-    opacity: 0.2;
+    opacity: 0.6;
     transition: opacity ease 0.2s;
 
     > span {
@@ -92,7 +96,11 @@ nav.ssr-page-container {
   }
 
   > a.main-clan {
-    opacity: 0.8;
+    opacity: 1;
+  }
+
+  > .main-clan .badge {
+    box-shadow: 1px 1px 5px #00000069;
   }
 
   > a:hover {
@@ -170,18 +178,21 @@ border-radius: 0.15em !important;
     }
 }
 
+.pp-container .pp {
+  color: #fddbff !important;
+}
+
 //endregion
 
 //region Profile chart
 
 .beatleader-swipe-card {
   div.chart {
-    border-top: 1px solid var(--row-separator);
-    border-bottom: 1px solid var(--row-separator);
     border-radius: 0em !important;
     margin: 0em !important;
     box-shadow: none !important;
     background: none !important;
+    grid-gap: 0 !important;
   }
 
   section.chart {

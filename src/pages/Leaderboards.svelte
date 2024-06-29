@@ -46,6 +46,7 @@
 	import produce from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
+	import Mappers from '../components/Leaderboard/Mappers.svelte';
 
 	export let page = 1;
 	export let location;
@@ -81,6 +82,7 @@
 		{key: 'mapRequirements', default: null, process: processIntFilter},
 		{key: 'songStatus', default: null, process: processIntFilter},
 		{key: 'allRequirements', default: 0, process: processIntFilter},
+		{key: 'mappers', default: null, process: processStringFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -241,6 +243,8 @@
 
 		if (setUrl) {
 			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			console.log(currentFilters);
+			console.log(query);
 			const url = `/leaderboards/${currentPage}${query.length ? '?' + query : ''}`;
 			if (replace) {
 				window.history.replaceState({}, '', url);
@@ -423,6 +427,13 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onMappersChange(event) {
+		console.log(event);
+		currentFilters.mappers = event.detail.join(',');
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	var showAllRatings = false;
 
 	function updateProfileSettings(account) {
@@ -562,7 +573,7 @@
 			<h2 class="title is-5">Filters</h2>
 
 			<section class="filter">
-				<label>Song/Author/Mapper/Hash</label>
+				<label>Song/Author/Hash</label>
 
 				<input
 					on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
@@ -570,6 +581,10 @@
 					class="search"
 					placeholder="Search for a map..."
 					value={currentFilters.search} />
+			</section>
+
+			<section class="filter">
+				<Mappers mapperIds={currentFilters.mappers?.split(',').map(id => parseInt(id)) ?? []} on:change={e => onMappersChange(e)} />
 			</section>
 
 			<section class="filter">

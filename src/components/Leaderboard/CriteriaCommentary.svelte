@@ -2,7 +2,7 @@
 	import 'suneditor/dist/css/suneditor.min.css';
 	import Comment from './Comments/Comment.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
-	import CommentRedactor from './Comments/CommentRedactor.svelte';
+	import CommentRedactor from '../Common/RichTextRedactor.svelte';
 	import Button from '../Common/Button.svelte';
 
 	export let qualification;

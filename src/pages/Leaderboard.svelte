@@ -634,7 +634,7 @@
 
 	$: currentPlayerId = $account?.id;
 	$: higlightedPlayerId = higlightedScore?.playerId ?? currentPlayerId;
-	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
+	$: mainPlayerCountry = $account?.player?.playerInfo?.country?.country ?? null;
 
 	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
 

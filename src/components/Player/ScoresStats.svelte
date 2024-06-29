@@ -10,7 +10,7 @@
 </script>
 
 {#if stats}
-	<div class="badges has-text-centered-mobile">
+	<div class="badges">
 		{#each stats as stat}
 			{#key stat.label}
 				<Badge {...stat} on:click={() => dispatch('click', stat)} />
@@ -18,7 +18,7 @@
 		{/each}
 	</div>
 {:else if skeleton}
-	<div class="badges has-text-centered-mobile skeleton">
+	<div class="badges skeleton">
 		{#each Array(5).fill(0) as stat}
 			<span class="badge"><Skeleton height="1.5em" /></span>
 		{/each}
@@ -36,5 +36,11 @@
 	.badges :global(.badge .value .prev.inc),
 	.badges :global(.badge .value .prev.dec) {
 		color: inherit !important;
+	}
+
+	@media screen and (max-width: 600px) {
+		.badges {
+			text-align: center !important;
+		}
 	}
 </style>

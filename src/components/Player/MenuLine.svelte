@@ -6,7 +6,6 @@
 	export let withRank = true;
 
 	$: rank = opt(player, 'playerInfo.rank');
-	$: country = opt(player, 'playerInfo.countries.0.country');
 </script>
 
 {#if player}

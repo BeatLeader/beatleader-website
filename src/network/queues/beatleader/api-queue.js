@@ -32,9 +32,8 @@ export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
-export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}&keepOriginalId=true';
-export const BL_API_PLAYER_SAVER_INFO_URL =
-	BL_API_URL + 'player/beatsaver/${playerId}?leaderboardContext=${leaderboardContext}&keepOriginalId=true';
+export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}';
+export const BL_API_PLAYER_SAVER_INFO_URL = BL_API_URL + 'player/beatsaver/${playerId}?leaderboardContext=${leaderboardContext}';
 export const BL_API_SCORES_URL =
 	BL_API_URL +
 	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
@@ -66,7 +65,7 @@ export const BL_API_LEADERBOARD_URL =
 	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&prediction=${prediction}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
-	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
+	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}&mappers=${mappers}';
 export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
@@ -86,6 +85,8 @@ export const BL_API_CLAN_UPDATE_URL =
 	'clan?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';
 export const BL_API_CLAN_ACCEPT_URL = BL_API_URL + 'clan/accept?id=${id}';
 export const BL_API_CLAN_REJECT_URL = BL_API_URL + 'clan/reject?id=${id}&ban=${ban}';
+export const BL_API_CLAN_EDIT_BIO = BL_API_URL + 'clan/richbio';
+export const BL_API_CLAN_UPDATE_PLAYLIST_URL = BL_API_URL + 'clan/playlist?id=${id}&title=${title}&description=${description}&link=${link}';
 export const BL_API_CLAN_REMOVE_URL = BL_API_URL + 'clan';
 export const BL_API_CLAN_LEAVE_URL = BL_API_URL + 'clan/leave?id=${id}';
 export const BL_API_CLAN_UNBAN_URL = BL_API_URL + 'clan/unban?id=${id}';
@@ -117,13 +118,13 @@ export const processLeaderboardScore = s => {
 	ret.player.playerInfo.countries.push({country, rank: player.countryRank});
 	ret.player.playerInfo.avatar = player.avatar;
 	ret.player.playerInfo.bot = player.bot;
-	ret.player.playerInfo.lastTwoWeekTime = player.lastTwoWeekTime;
 	ret.player.playerInfo.pp = player.pp;
 	ret.player.playerInfo.rank = player.rank;
 
 	ret.player.name = player.name;
 	ret.player.name = ret.player.name ? ret.player.name.trim().replace('&#039;', "'") : null;
 	ret.player.playerId = player.id;
+	ret.player.alias = player.alias;
 	ret.player.playerId = ret.player.playerId ? ret.player.playerId.trim() : null;
 
 	ret.player.clans = player?.clans ?? null;
@@ -496,6 +497,40 @@ export default (options = {}) => {
 			priority
 		);
 
+	const clanEditRichBio = async (value, priority = PRIORITY.FG_HIGH, options = {}) =>
+		fetchHtml(
+			BL_API_CLAN_EDIT_BIO,
+			{...options, body: value, retries: 0, method: 'PUT', credentials: 'include', maxAge: 1, cacheTtl: null},
+			priority
+		);
+
+	const clanUpdatePlaylist = async (id, title, link, description, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
+		fetchHtml(
+			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id, title, link, description}, true, true, encodeURIComponent),
+			{
+				body: icon instanceof ArrayBuffer ? icon : null,
+				...options,
+				retries: 0,
+				method: 'PUT',
+				credentials: 'include',
+				maxAge: 1,
+				cacheTtl: null,
+			},
+			priority
+		);
+	const clanDeletePlaylist = async (id, priority = PRIORITY.FG_HIGH, options = {}) =>
+		fetchHtml(
+			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id}, true, true, encodeURIComponent),
+			{
+				...options,
+				retries: 0,
+				method: 'DELETE',
+				credentials: 'include',
+				maxAge: 1,
+				cacheTtl: null,
+			},
+			priority
+		);
 	const clanAccept = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
 			substituteVars(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true, encodeURIComponent),
@@ -580,6 +615,9 @@ export default (options = {}) => {
 			{...options, credentials: 'include'},
 			priority
 		);
+
+	const rankGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
+		fetchJson(substituteVars(BL_API_RANK_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
@@ -671,6 +709,9 @@ export default (options = {}) => {
 		clanRankingScores,
 		clanCreate,
 		clanUpdate,
+		clanEditRichBio,
+		clanUpdatePlaylist,
+		clanDeletePlaylist,
 		clanAccept,
 		clanReject,
 		clanRemove,
@@ -680,6 +721,7 @@ export default (options = {}) => {
 		clanInvite,
 		clanCancelInvite,
 		accGraph,
+		rankGraph,
 		addFollowed,
 		removeFollowed,
 		minirankings,

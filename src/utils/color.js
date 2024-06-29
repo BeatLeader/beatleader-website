@@ -45,6 +45,11 @@ export function setGlobalCSSValue(name, value) {
 	r.style.setProperty('--' + name, value);
 }
 
+export function removeGlobalCSSValue(name) {
+	var r = document.querySelector(':root');
+	r.style.removeProperty('--' + name);
+}
+
 export function importFonts(fontNames) {
 	fontNames.split(',').forEach(name => {
 		var link = document.createElement('link');

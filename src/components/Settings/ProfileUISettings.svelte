@@ -13,7 +13,6 @@
 	import CardsCarousel from '../Player/CardsCarousel.svelte';
 	import {describeGraphAxis, describeProfilePart} from '../../utils/beatleader/format';
 	import PinnedScores from '../Player/PinnedScores.svelte';
-	import Achievements from '../Player/Achievements.svelte';
 	import {debounce} from '../../utils/debounce';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
@@ -150,9 +149,6 @@
 		{/if}
 		{#if $configStore.profileParts.pinnedScores}
 			<PinnedScores {pinnedScoresStore} {playerId} />
-		{/if}
-		{#if $configStore.profileParts.achievements}
-			<Achievements {playerId} />
 		{/if}
 	</div>
 

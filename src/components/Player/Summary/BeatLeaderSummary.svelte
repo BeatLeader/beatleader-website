@@ -1,6 +1,6 @@
 <script>
-	import ScoresStats from './ScoresStats.svelte';
 	import {createEventDispatcher} from 'svelte';
+	import ScoresStats from '../ScoresStats.svelte';
 
 	export let playerId = null;
 	export let scoresStats = null;
@@ -60,13 +60,13 @@
 	));
 </script>
 
-<div class="wrapper">
+<div class="wrapper darkened-background">
 	<div class="beatleader-summary">
 		{#if scoresStats || skeleton}
 			{#if scoresStats}
 				<ScoresStats stats={showHidden ? scoresStats : visibleScoresStats} {skeleton} on:click={e => onToggleStat(e?.detail?.key)} />
 			{/if}
-			<div>
+			<div class="acc-badges">
 				{#if accBadges}
 					<ScoresStats stats={showHidden ? accBadges : visibleAccStats} on:click={e => onToggleStat(e?.detail?.key)} />
 				{/if}
@@ -74,7 +74,7 @@
 		{/if}
 	</div>
 	{#if hiddenScoresStats?.length || hiddenAccStats?.length}
-		<div style="margin: 0; padding: 0;">
+		<div style="margin: -0.1em 0.2em 0 0.3em; padding: 0;">
 			<span
 				class="reveal clickable"
 				class:opened={showHidden}
@@ -90,10 +90,21 @@
 	.wrapper {
 		display: flex;
 		align-items: flex-start;
+		justify-content: space-between;
+		padding: 0.5em;
+		border-radius: 8px;
+		width: 100%;
+	}
+
+	.acc-badges {
+		margin-bottom: -0.5em;
 	}
 
 	.beatleader-summary {
-		flex-grow: 1;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		justify-content: space-between;
 	}
 
 	.reveal {

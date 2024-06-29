@@ -12,7 +12,6 @@
 	export let twitchVideos = null;
 	export let playerId = null;
 	export let scoresStats = null;
-	export let ssBadges = null;
 	export let playerInfo = null;
 	export let playerData = null;
 
@@ -43,7 +42,6 @@
 							playerId,
 							playerInfo,
 							scoresStats: scoresStatsFinal,
-							ssBadges,
 						},
 						delay: 500,
 					},
@@ -92,10 +90,27 @@
 	$: updateAccSaberPlayerInfo(playerId);
 </script>
 
-<ContentBox>
+<ContentBox cls="charts-box">
 	<div class="columns">
 		<div class="column">
-			<Carousel cards={swipeCards} />
+			<Carousel cards={swipeCards} wrapperCls="darkened-background" />
 		</div>
 	</div>
 </ContentBox>
+
+<style>
+	:global(.charts-box) {
+		padding: 0.5em !important;
+		border-radius: 12px !important;
+	}
+
+	:global(.charts-box .cards-wrapper) {
+		border-radius: 8px;
+	}
+
+	@media screen and (max-width: 767px) {
+		:global(.charts-box) {
+			border-radius: 0 !important;
+		}
+	}
+</style>

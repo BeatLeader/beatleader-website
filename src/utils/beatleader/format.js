@@ -379,7 +379,7 @@ const platformColors = {
 };
 
 export const platformDescription = {
-	oculus: 'Quest',
+	oculus: 'Quest Native',
 	steam: 'PC Steam',
 	oculuspc: 'PC Oculus',
 };

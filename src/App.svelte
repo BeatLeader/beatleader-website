@@ -49,6 +49,7 @@
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
+	import AdminPage from './pages/Admin.svelte';
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
@@ -112,21 +113,25 @@
 
 	$: if (mainEl) containerStore.observe(mainEl);
 
-	if ($configStore.preferences.theme != 'default') {
+	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'ree-dark') {
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
+
 		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
 
-		if ($configStore.preferences.theme == 'mirror') {
-			importFonts($configStore.preferences.fontNames);
-		}
+		setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
+		setGlobalCSSValue('color', $configStore.preferences.labelColor);
+		setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
+		setGlobalCSSValue('selected', $configStore.preferences.selectedColor);
+
+		importFonts($configStore.preferences.fontNames);
 	}
 </script>
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-{#if $account?.player && $configStore.preferences.followersBecomingPublic}
+<!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
 		<a class="reelink" href="/settings#profile" />
 		<span class="link-text">Followers will be public, adjust your preferences!</span>
@@ -139,7 +144,7 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
@@ -224,6 +229,11 @@
 					<Route path="/u/:initialPlayerId/*initialParams" let:params let:location>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
 					</Route>
+
+					<Route path="/admin/:type" let:params let:location>
+						<AdminPage initialType={params.type} {location} />
+					</Route>
+
 					<Route path="/staff" let:location>
 						<StaffDashboard {location} />
 					</Route>

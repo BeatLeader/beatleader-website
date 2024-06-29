@@ -53,7 +53,7 @@ export default () => {
 							}
 						});
 						processedStatsHistory['timestamp'].push(toBlMidnight(new Date()).getTime() / 1000 + 60 * 60 * 24);
-						processedStatsHistory['countryRank'].push(playerData.playerInfo.countries[0].rank);
+						processedStatsHistory['countryRank'].push(playerData.playerInfo.country.rank);
 					}
 
 					['totalPlayCount', 'rankedPlayCount', 'unrankedPlayCount', 'unrankedImprovementsCount', 'rankedImprovementsCount'].forEach(

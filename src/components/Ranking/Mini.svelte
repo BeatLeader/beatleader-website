@@ -64,7 +64,7 @@
 						<Value value={country ? player.countryRank : player.rank} zero="" digits={0} prefix="#" />
 					</div>
 
-					<PlayerNameWithFlag {player} on:click={() => navigate(`/u/${player.id}`)} />
+					<PlayerNameWithFlag {player} on:click={() => navigate(`/u/${player.alias ?? player.id}`)} />
 
 					<div class="pp">
 						<Value value={player.pp} prevValue={comparePp} zero="" suffix="pp" {prevTitle} />

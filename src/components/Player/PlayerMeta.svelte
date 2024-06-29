@@ -7,23 +7,15 @@
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: pp = $playerStore?.playerInfo.pp;
-	$: country = $playerStore?.playerInfo.countries[0].country;
-	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
-
-	function fillWithSpaces(value, length) {
-		while (value.length < length) {
-			value += ' ';
-		}
-		return value;
-	}
+	$: country = $playerStore?.playerInfo.country.country;
+	$: countryRank = $playerStore?.playerInfo.country.rankValue ?? $playerStore?.playerInfo.country.rank;
 
 	let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
 	$: countryName = country == 'not set' ? country : regionNames.of((country ?? 'AD').toUpperCase());
 	$: description = `
-  	${fillWithSpaces('#' + formatNumber(rank, 0), 7)}Beat Saber player 🌐
-	${fillWithSpaces('#' + formatNumber(countryRank, 0), 7)}in ${countryName}
-	${fillWithSpaces('' + formatNumber(pp, 0), 7)}pp (performance points) 
-	${fillWithSpaces(Math.round($playerStore?.scoreStats?.averageRankedAccuracy ?? 0, 2) + '%', 7)}average accuracy
+  	Top ${'#' + formatNumber(rank, 0)} global🌐/${'#' + formatNumber(countryRank, 0)} ${countryName}
+	${formatNumber(pp, 0)}pp 
+	${Math.round($playerStore?.scoreStats?.averageRankedAccuracy ?? 0, 2)}% average accuracy
 	`;
 </script>
 
@@ -34,7 +26,7 @@
 		title: $playerStore?.name,
 		description,
 		images: [{url: $playerStore?.playerInfo.avatar}],
-		siteName: ssrConfig.name,
+		siteName: 'Player Profile - ' + ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

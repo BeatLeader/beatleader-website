@@ -10,7 +10,6 @@
 	import AvatarOverlayIcons from './AvatarOverlayIcons.svelte';
 	import ProfileHeaderInfo from './ProfileHeaderInfo.svelte';
 
-	import BeatLeaderSummary from './BeatLeaderSummary.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Error from '../Common/Error.svelte';
 	import RoleIcon from './RoleIcon.svelte';
@@ -24,6 +23,9 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 	import {BL_RENDERER_API_URL} from '../../network/queues/beatleader/api-queue';
+	import SummaryBox from './Summary/SummaryBox.svelte';
+	import Followers from './Bio/Followers.svelte';
+	import Socials from './Bio/Socials.svelte';
 
 	export let playerData;
 	export let isLoading = false;
@@ -54,7 +56,7 @@
 		$editModel = {
 			data: {
 				name: playerData?.name ?? '',
-				country: playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '',
+				country: playerData?.playerInfo?.country?.country?.toLowerCase() ?? '',
 				avatar: null,
 				message: playerData?.profileSettings?.message ?? '',
 				profileAppearance: playerData?.profileSettings?.profileAppearance ?? null,
@@ -93,8 +95,7 @@
 		let {profileAppearance, country, avatar, message, ...data} = $editModel?.data ?? {};
 
 		profileAppearance = profileAppearance?.length ? profileAppearance?.join(',') : '';
-		country =
-			country?.length && (country !== playerData?.playerInfo?.countries?.[0]?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
+		country = country?.length && (country !== playerData?.playerInfo?.country?.country?.toLowerCase() ?? '') ? country.toUpperCase() : null;
 
 		data = {...data, profileAppearance};
 		if (country) data.country = country;
@@ -181,6 +182,13 @@
 	}
 	let modalShown;
 
+	let rolesShown = false;
+	function anyRolesShown(profileAppearance) {
+		if (!profileAppearance) return false;
+		const roleIconStrings = ['booster', 'tipper', 'supporter', 'sponsor'];
+		return roleIconStrings.some(str => profileAppearance.includes(str) && roles?.includes(str));
+	}
+
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
@@ -189,6 +197,7 @@
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
 	$: cover = !$editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? $editModel?.data?.profileCover);
+	$: rolesShown = anyRolesShown(profileAppearance);
 
 	$: if (startEditing) onEnableEditModel();
 
@@ -219,33 +228,41 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel={$editModel} {roles} />
-<ContentBox cls="{cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
+<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
 		<div class="cover-image" style="background-image: url({cover})">
 			{#if $editModel}
-				{#if $editModel.data.profileCoverData}
-					<Button type="danger" cls="remove-cover-button" iconFa="far fa-xmark" label="Remove cover" on:click={() => resetCover()} />
-				{/if}
-				<Button
-					type="primary"
-					cls="edit-cover-button"
-					iconFa="far fa-image"
-					label={$editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
-					on:click={() => fileinput.click()}>
-					<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
-				</Button>
+				<div class="cover-edit-buttons">
+					{#if $editModel.data.profileCoverData}
+						<Button type="danger" cls="remove-cover-button" iconFa="fa fa-xmark" label="Remove cover" on:click={() => resetCover()} />
+					{/if}
+					<Button
+						type="primary"
+						cls="edit-cover-button"
+						iconFa="far fa-image"
+						label={$editModel.data.profileCoverData ? 'Change cover' : 'Set cover'}
+						on:click={() => fileinput.click()}>
+						<input style="display:none" type="file" accept=".jpg, .jpeg, .png, .gif" on:change={changeCover} bind:this={fileinput} />
+					</Button>
+				</div>
 			{/if}
 		</div>
 	{/if}
 	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
 	<div style="margin: 0; padding: 0;">
-		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
+		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" animated={true} on:click={copyUrl} />
 	</div>
 	<div style="margin: 0; padding: 0;">
 		{#if screenshoting}
 			<div class="screenshotSpinner"><Spinner /></div>
 		{:else}
-			<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
+			<Button
+				type="text"
+				title="Screenshot profile"
+				iconFa="fas fa-camera"
+				cls="screenshotButton"
+				animated={true}
+				on:click={takeScreenshot} />
 		{/if}
 	</div>
 
@@ -293,7 +310,7 @@
 			{/if}
 		</div>
 
-		<div class="rank-and-stats-cell">
+		<div class="rank-and-stats-cell" class:with-roles={rolesShown}>
 			{#if editError}
 				<Error error={editError} />
 			{/if}
@@ -303,11 +320,12 @@
 				{name}
 				{playerInfo}
 				{playerId}
+				{roles}
+				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
 				bind:editModel={$editModel}
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
-			<BeatLeaderSummary {playerId} {scoresStats} {accBadges} {skeleton} {profileAppearance} bind:editModel={$editModel} />
 
 			{#if $editModel}
 				<div class="edit-buttons">
@@ -318,6 +336,7 @@
 						label="Save"
 						iconFa="fas fa-check"
 						noMargin={true}
+						animated={true}
 						on:click={onSaveEditModel} />
 					<Button
 						disabled={$editModel.isSaving}
@@ -325,6 +344,7 @@
 						label="Cancel"
 						iconFa="fas fa-times"
 						noMargin={true}
+						animated={true}
 						on:click={onCancelEditModel} />
 				</div>
 			{/if}
@@ -334,7 +354,18 @@
 			{/if}
 		</div>
 	</div>
+	<div class="followers-and-socials">
+		<Followers {playerId} />
+
+		{#if playerInfo}
+			<div class="socials-list">
+				<Socials {name} {playerInfo} />
+			</div>
+		{/if}
+	</div>
 </ContentBox>
+
+<SummaryBox {playerId} {playerData} {scoresStats} {accBadges} {skeleton} {profileAppearance} {ssBadges} bind:editModel={$editModel} />
 
 <style>
 	.player-general-info {
@@ -342,6 +373,7 @@
 		flex-wrap: nowrap;
 		grid-gap: 1.5em;
 		align-items: flex-start;
+		margin-bottom: 1em;
 	}
 
 	.avatar-cell {
@@ -355,8 +387,13 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		grid-gap: 0.4em;
+		grid-gap: 0em;
 		flex-grow: 1;
+		align-self: center;
+	}
+
+	.with-roles {
+		margin-bottom: 3em;
 	}
 
 	.role-icons {
@@ -367,10 +404,10 @@
 		align-items: center;
 		margin-top: 0.5rem;
 		width: 100%;
-		min-height: 1.5rem;
 	}
 
-	.role-icons.editing {
+	.role-icons:empty {
+		display: none;
 	}
 
 	.avatar-and-roles {
@@ -386,14 +423,43 @@
 		background-position: 50%;
 		top: 0;
 		left: 0;
-		height: 12.5em;
+		height: 100%;
 		z-index: -1;
 		width: 100%;
-		flex-direction: column-reverse;
-		border-radius: 6px 6px 0 0;
+		border-radius: 12px;
 		mask-type: alpha;
-		-webkit-mask-image: linear-gradient(180deg, white, white 40%, transparent);
-		mask-image: linear-gradient(180deg, white, white 40%, transparent);
+		-webkit-mask-image: linear-gradient(180deg, white, white 40%, rgb(255 255 255 / 40%));
+		mask-image: linear-gradient(180deg, white, white 40%, rgb(255 255 255 / 40%));
+	}
+
+	.cover-edit-buttons {
+		display: flex;
+		justify-content: flex-start;
+		margin: 1em;
+		gap: 1.5em;
+	}
+
+	.followers-and-socials {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		margin-left: -1em;
+		margin-right: -1em;
+		margin-bottom: -1em;
+		background-color: #0000004f;
+		margin-top: 0.5em;
+		border-radius: 0 0 12px 12px;
+		backdrop-filter: blur(10px);
+	}
+
+	.socials-list {
+		display: flex;
+		justify-content: center;
+		gap: 0.6em;
+		margin-right: 0.6em;
+		margin-left: 0.8em;
+		margin-top: 0.5em;
 	}
 
 	:global(.shareButton) {
@@ -423,17 +489,15 @@
 	:global(.profile-container) {
 		padding-top: 8em !important;
 	}
+	:global(.profile-box) {
+		border-radius: 12px !important;
+	}
 	:global(.edit-cover-button) {
 		width: 10em;
-		margin-left: 1em !important;
-		margin-bottom: 9em !important;
 	}
 
 	:global(.remove-cover-button) {
 		width: 10em;
-		position: absolute !important;
-		left: 1em;
-		top: 4em;
 	}
 
 	@media screen and (max-width: 767px) {
@@ -445,6 +509,23 @@
 
 		.rank-and-stats-cell {
 			align-items: center;
+			align-self: center;
+		}
+
+		.followers-and-socials {
+			justify-content: space-evenly;
+		}
+
+		.cover-image {
+			border-radius: 0;
+		}
+
+		:global(.profile-box) {
+			border-radius: 0 !important;
+		}
+
+		.followers-and-socials {
+			border-radius: 0;
 		}
 	}
 </style>
