@@ -10,6 +10,7 @@
 	export let playerId;
 	export let editModel;
 	export let patron;
+	export let vertical;
 
 	const dispatch = createEventDispatcher();
 
@@ -84,7 +85,7 @@
 			{#if !edititing || !editModel}
 				<iframe bind:this={viewport} class="message-body" allow="fullscreen;" src={iframeUrl} />
 			{:else}
-				<Editor initialValue={richBio} on:cancel={() => updateEditing(false)} on:post={editComment} />
+				<Editor initialValue={richBio} {vertical} on:cancel={() => updateEditing(false)} on:post={editComment} />
 			{/if}
 		{/if}
 

@@ -22,6 +22,7 @@
 	import grapesjsClasses from 'grapesjs-ui-suggest-classes';
 
 	export let initialValue = null;
+	export let vertical = false;
 
 	import {createEventDispatcher, onMount} from 'svelte';
 	import {mapBlock} from './Blocks/MapBlock';
@@ -126,7 +127,7 @@
 				id: 'switch-drag-mode-button',
 				className: 'fa fa-anchor',
 				command: 'switch-drag-mode',
-				active: true,
+				active: false,
 				attributes: {title: 'Switch drag-drop style (absolute/flexible)'},
 			});
 
@@ -690,9 +691,13 @@
 	$: editor && addButtons(editor);
 </script>
 
-<div id="gjs" bind:this={textArea} />
+<div id="gjs" class:vertical bind:this={textArea} />
 
 <style>
+	#gjs.vertical {
+		max-height: 56em;
+	}
+
 	:global(.gjs-pn-btn.fa-save) {
 		color: green;
 	}
@@ -725,6 +730,37 @@
 	}
 	:global(.gjs-layer-move) {
 		height: 15px;
+	}
+
+	:global(.vertical .gjs-editor) {
+		max-height: 70em;
+	}
+
+	:global(.vertical .gjs-cv-canvas) {
+		width: 100% !important;
+		height: calc(50% - var(--gjs-canvas-top)) !important;
+		bottom: inherit !important;
+	}
+
+	:global(.vertical .gjs-pn-panel.gjs-pn-views-container) {
+		height: 400px;
+		width: 100%;
+		bottom: 0;
+		left: 0;
+	}
+
+	:global(.vertical .gjs-pn-views) {
+		left: 0;
+		bottom: 358px;
+		width: 100% !important;
+	}
+
+	:global(.vertical .gjs-pn-commands) {
+		width: 100% !important;
+	}
+
+	:global(.vertical .gjs-pn-options) {
+		right: 0 !important;
 	}
 
 	@media screen and (max-width: 767px) {

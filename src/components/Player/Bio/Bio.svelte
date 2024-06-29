@@ -96,6 +96,7 @@
 						{editModel}
 						{playerId}
 						{richBioID}
+						vertical={!horizontalRichBio}
 						patron={isAnySupporter(playerInfo.role)}
 						isFounder={true}
 						on:height-changed
