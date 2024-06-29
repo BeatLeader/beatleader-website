@@ -32,7 +32,6 @@ nav.ssr-page-container {
     background: var(--customizable-color-2) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    max-width: none !important;
 
     a,
     div {
@@ -364,9 +363,8 @@ select {
 }
 
 .darkened-background {
-    backdrop-filter: blur(10px);
     box-shadow: inset 0 0 7px 0px #00000029;
-    background-color: #0000000f;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .clan-badges .clan-badges {

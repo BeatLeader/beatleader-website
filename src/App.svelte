@@ -120,14 +120,12 @@
 
 		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
 
-		if ($configStore.preferences.theme == 'mirror') {
-			setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
-			setGlobalCSSValue('color', $configStore.preferences.labelColor);
-			setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
-			setGlobalCSSValue('selected', $configStore.preferences.selectedColor);
+		setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
+		setGlobalCSSValue('color', $configStore.preferences.labelColor);
+		setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
+		setGlobalCSSValue('selected', $configStore.preferences.selectedColor);
 
-			importFonts($configStore.preferences.fontNames);
-		}
+		importFonts($configStore.preferences.fontNames);
 	}
 </script>
 
