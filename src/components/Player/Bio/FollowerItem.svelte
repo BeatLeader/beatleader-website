@@ -1,5 +1,6 @@
 <script>
 	import {fly, fade} from 'svelte/transition';
+	import {navigate} from 'svelte-routing';
 	import Button from '../../Common/Button.svelte';
 	import Popover from '../../Common/Popover.svelte';
 	import Spinner from '../../Common/Spinner.svelte';
@@ -17,7 +18,7 @@
 	let referenceElement;
 
 	async function onFollowedChange(op, follower) {
-		if (!playerId || !op) return;
+		if (!follower) return;
 
 		try {
 			operationInProgress = true;
@@ -45,6 +46,7 @@
 	href={`/u/${follower.alias ?? follower.id}`}
 	class="player-container"
 	bind:this={referenceElement}
+	on:click|preventDefault|stopPropagation={() => navigate(`/u/${follower.alias ?? follower.id}`)}
 	in:fly|global={{delay: idx * 10, x: animationSign * 100}}>
 	{#if !loading}
 		<img class="avatar" src={follower.avatar} />
@@ -70,6 +72,7 @@
 				type={isFollowed ? 'danger' : 'primary'}
 				loading={operationInProgress}
 				disabled={operationInProgress}
+				preventDefault={true}
 				on:click={() => onFollowedChange(isFollowed ? 'remove' : 'add', follower)} />
 		{:else}
 			<div />
