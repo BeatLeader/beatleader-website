@@ -180,4 +180,8 @@
 	.countryIcon {
 		width: 1.2em;
 	}
+
+	.platform-entry a {
+		color: var(--textColor) !important;
+	}
 </style>

@@ -160,6 +160,10 @@
 		width: 100%;
 	}
 
+	.platform-entry a {
+		color: var(--textColor) !important;
+	}
+
 	.countryIcon {
 		width: 1.2em;
 	}
