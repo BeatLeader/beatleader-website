@@ -198,7 +198,7 @@
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.country.country;
-	$: countryRank = $playerStore?.playerInfo.country.rank;
+	$: countryRank = $playerStore?.playerInfo.country.rankValue ?? $playerStore?.playerInfo.country.rank;
 
 	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
@@ -284,7 +284,8 @@
 					</ContentBox>
 				{/if}
 			{/await}
-			{#if (!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio}
+			<!-- `serviceParams` here is just to force Svelte always update this block -->
+			{#if serviceParams && ((!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio)}
 				<ContentBox cls="player-cards-box">
 					<PlayerCards {playerId} {playerInfo} profileSettings={playerData?.profileSettings} bind:editModel={$editModel} />
 				</ContentBox>
