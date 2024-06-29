@@ -303,6 +303,39 @@
 				<span> This event had 3 champions: first, 10th and 50th player! </span>
 			</ContentBox>
 		{/if}
+
+		{#if eventId == 52}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" />
+				<div class="bswcbgblur" />
+				<div class="bswc-container">
+					<span>
+						<b>Beat Saber World Cup 2024 has started!</b> Make a reminder for a match of your favorite team and while waiting try your own
+						skill on the maps for champions.<br /><br />
+					</span>
+					<span style="margin-bottom: 0.5em;">
+						On the first week of the tournament 16 teams from different countries will fight for the place in the next round.
+					</span>
+
+					<div class="downloadButtons">
+						<a href="https://www.twitch.tv/CubeCommunity" target="_blank" rel="noreferrer">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span>
+						<br />
+						<b>Good luck to the teams! Let the strongest win and everyone have fun! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
@@ -381,8 +414,44 @@
 		pointer-events: none;
 	}
 
+	.bswcbg {
+		background-image: url(https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp) !important;
+		background-size: cover !important;
+		background-position: center !important;
+		z-index: 1;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		border-radius: 8px;
+		left: 0;
+	}
+
+	.bswcbgblur {
+		backdrop-filter: blur(10px);
+		filter: brightness(0.5);
+		z-index: 2;
+		width: 100%;
+		position: absolute;
+		height: 100%;
+		top: 0;
+		left: 0;
+		border-radius: 8px;
+	}
+
+	.bswc-container {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		z-index: 3;
+	}
+
 	:global(.inner-modal) {
 		z-index: 10;
+		position: relative;
+	}
+
+	:global(.bswc-box) {
 		position: relative;
 	}
 
