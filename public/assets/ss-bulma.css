@@ -5,6 +5,8 @@
 	--background: #222;
 	--foreground: #252525;
 	--textColor: #eee;
+	--linkColor: #72a8ff;
+	--linkHoverColor: #72a8ff;
 	--ppColour: rgba(253, 219, 255, 1);
 	--capturedColor: #b49600;
 	--rankedPoolColor: #3eb489;
@@ -11337,9 +11339,6 @@ label.panel-block:hover {
 :root {
 	--background: #222;
 	--foreground: #252525;
-	--textColor: #eee;
-
-	--ppColour: rgba(253, 219, 255, 1);
 	--alternate: #72a8ff;
 }
 
@@ -11352,7 +11351,11 @@ html {
 }
 
 a {
-	color: var(--textColor) !important;
+	color: var(--linkColor);
+}
+
+a:hover {
+	color: var(--linkHoverColor);
 }
 
 a.navbar-item {
