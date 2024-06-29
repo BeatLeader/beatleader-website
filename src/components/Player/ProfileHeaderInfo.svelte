@@ -87,8 +87,7 @@
 		aliasRequestError = null;
 		fetch(`${BL_API_URL}alias/request?alias=${alias}`, {method: 'POST', credentials: 'include'})
 			.then(r => {
-				console.log(r);
-				if (r.responseCode == 200) {
+				if (r.status == 200) {
 					return r.json();
 				} else {
 					return r.text();

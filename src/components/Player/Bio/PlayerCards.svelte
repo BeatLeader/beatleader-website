@@ -18,8 +18,6 @@
 	let cachedPlayerId = null;
 
 	function fetchClan(playerId) {
-		clan = null;
-
 		if (!playerId || playerId == cachedPlayerId) return;
 		cachedPlayerId = playerId;
 		fetch(`${BL_API_URL}player/${playerId}/foundedClan`, {credentials: 'include'})
@@ -41,9 +39,6 @@
 	let cachedMapperId = null;
 
 	function fetchRankedMapper(mapperId, profileSettings, editModel) {
-		rankedmaps = null;
-		topmap = null;
-
 		if (!mapperId || cachedMapperId == mapperId) return;
 		cachedMapperId = mapperId;
 		fetch(

@@ -163,7 +163,7 @@
 					<Switch
 						disabled={isUpdating}
 						value={followersPublic}
-						label="Public followers and following (incoming change, auto-saved)"
+						label="Public followers and following (auto-saved)"
 						fontSize={12}
 						design="slider"
 						on:click={() => toggleFollowersPublic()} />
