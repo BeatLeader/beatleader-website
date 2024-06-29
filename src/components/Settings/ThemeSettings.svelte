@@ -1,7 +1,7 @@
 <script>
 	import {configStore} from '../../stores/config';
 	import Select from '../Settings/Select.svelte';
-	import {importFonts, setGlobalCSSValue} from '../../utils/color';
+	import {importFonts, setGlobalCSSValue, removeGlobalCSSValue} from '../../utils/color';
 	import ColorPicker from '../Common/ColorPicker.svelte';
 	import {fly, fade} from 'svelte/transition';
 	import {debounce} from '../../utils/debounce';
@@ -52,29 +52,37 @@
 		await configStore.setForKey('preferences', preferences, false);
 	}
 
+	function setCssValue(key, value) {
+		if (currentTheme != 'default' && currentTheme != 'ree-dark') {
+			setGlobalCSSValue(key, value);
+		} else {
+			removeGlobalCSSValue(key);
+		}
+	}
+
 	async function bgColorCallback(bgColor) {
-		setGlobalCSSValue('customizable-color-1', bgColor);
+		setCssValue('customizable-color-1', bgColor);
 		await settempsetting('bgColor', bgColor);
 	}
 	async function headerColorCallback(headerColor) {
-		setGlobalCSSValue('customizable-color-2', headerColor);
+		setCssValue('customizable-color-2', headerColor);
 		await settempsetting('headerColor', headerColor);
 	}
 
 	async function buttonColorCallback(color) {
-		setGlobalCSSValue('bg-color', color);
+		setCssValue('bg-color', color);
 		await settempsetting('buttonColor', color);
 	}
 	async function labelColorCallback(color) {
-		setGlobalCSSValue('color', color);
+		setCssValue('color', color);
 		await settempsetting('labelColor', color);
 	}
 	async function ppColorCallback(color) {
-		setGlobalCSSValue('ppColour', color);
+		setCssValue('ppColour', color);
 		await settempsetting('ppColor', color);
 	}
 	async function selectedColorCallback(color) {
-		setGlobalCSSValue('selected', color);
+		setCssValue('selected', color);
 		await settempsetting('selectedColor', color);
 	}
 
@@ -103,13 +111,13 @@
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
-	$: bgColorCallback(currentBGColor);
-	$: headerColorCallback(currentHeaderColor);
+	$: currentTheme && bgColorCallback(currentBGColor);
+	$: currentTheme && headerColorCallback(currentHeaderColor);
 	$: bgimagecallback(currentBGImage);
-	$: buttonColorCallback(currentButtonColor);
-	$: labelColorCallback(currentLabelColor);
-	$: ppColorCallback(currentPpColor);
-	$: selectedColorCallback(currentSelectedColor);
+	$: currentTheme && buttonColorCallback(currentButtonColor);
+	$: currentTheme && labelColorCallback(currentLabelColor);
+	$: currentTheme && ppColorCallback(currentPpColor);
+	$: currentTheme && selectedColorCallback(currentSelectedColor);
 
 	$: fontNamesCallback(currentFontNames);
 	$: settempsetting('theme', currentTheme);
