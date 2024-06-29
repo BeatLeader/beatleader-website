@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher, getContext} from 'svelte';
+	import {createEventDispatcher, getContext, onDestroy, onMount} from 'svelte';
 	import {globalHistory} from 'svelte-routing/src/history';
 	import processPlayerData from './utils/profile';
 
@@ -220,6 +220,21 @@
 		$editModel.data.profileCoverData = null;
 		playerData.profileSettings.profileCover = null;
 	};
+
+	function handleBeforeUnload(event) {
+		if ($editModel) {
+			event.preventDefault();
+			event.returnValue = ''; // Required for Chrome
+		}
+	}
+
+	onMount(() => {
+		window.addEventListener('beforeunload', handleBeforeUnload);
+
+		onDestroy(() => {
+			window.removeEventListener('beforeunload', handleBeforeUnload);
+		});
+	});
 </script>
 
 <svelte:window on:keyup={onKeyUp} />
