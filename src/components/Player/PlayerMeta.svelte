@@ -8,7 +8,7 @@
 	$: rank = $playerStore?.playerInfo.rank;
 	$: pp = $playerStore?.playerInfo.pp;
 	$: country = $playerStore?.playerInfo.country.country;
-	$: countryRank = $playerStore?.playerInfo.country.rank;
+	$: countryRank = $playerStore?.playerInfo.country.rankValue ?? $playerStore?.playerInfo.country.rank;
 
 	let regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
 	$: countryName = country == 'not set' ? country : regionNames.of((country ?? 'AD').toUpperCase());

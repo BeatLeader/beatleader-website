@@ -22,9 +22,6 @@
 	import ClanRankingSong from '../components/Leaderboard/ClanRankingSong.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import {processBoolFilter} from '../utils/filters';
-	import ClanRichBio from '../components/Clans/ClanRichBio.svelte';
-	import ClanFeaturedPlaylist from '../components/Clans/ClanFeaturedPlaylist.svelte';
-	import ClanDiscordInvite from '../components/Clans/ClanDiscordInvite.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -162,10 +159,6 @@
 				kickingError = err;
 			}
 		}
-	}
-
-	async function onRichTextEdit(event) {
-		await clanService.editRichBio(event.detail.value);
 	}
 
 	const clanOptions = [
@@ -352,35 +345,6 @@
 			</ContentBox>
 		{/if}
 	</article>
-	{#if isFounder || clan?.discordInvite || clan?.richBioTimeset || clan?.featuredPlaylists}
-		<aside>
-			{#if isFounder || clan?.discordInvite?.length}
-				<ContentBox>
-					{#if clan?.discordInvite?.length}
-						<ClanDiscordInvite {clan} {isFounder} />
-					{:else if isFounder}
-						<ClanDiscordInvite {clan} {isFounder} enableCreateMode={true} />
-					{/if}
-				</ContentBox>
-			{/if}
-			{#if isFounder || clan?.richBioTimeset}
-				<ContentBox>
-					<ClanRichBio {clan} {isFounder} on:edit={e => onRichTextEdit(e)} />
-				</ContentBox>
-			{/if}
-			{#if isFounder || clan?.featuredPlaylists}
-				<ContentBox>
-					{#if isFounder && !clan?.featuredPlaylists}
-						<ClanFeaturedPlaylist {clan} enableCreateMode={true} />
-					{:else}
-						{#each clan?.featuredPlaylists as playlist}
-							<ClanFeaturedPlaylist {clan} {playlist} />
-						{/each}
-					{/if}
-				</ContentBox>
-			{/if}
-		</aside>
-	{/if}
 </section>
 
 <style>
@@ -430,58 +394,5 @@
 	:global(.primary-clan-button) {
 		width: auto !important;
 		margin-top: 0.3em !important;
-	}
-
-	aside {
-		width: 35em;
-	}
-
-	aside .filter {
-		margin-bottom: 1.5rem;
-		transition: opacity 300ms;
-	}
-
-	aside .filter.disabled {
-		opacity: 0.25;
-	}
-
-	aside label {
-		display: block;
-		font-weight: 500;
-		margin-bottom: 1rem;
-	}
-
-	aside .filter.disabled label {
-		cursor: help;
-	}
-
-	aside label span {
-		color: var(--beatleader-primary);
-	}
-
-	aside input {
-		width: 100%;
-		font-size: 1em;
-		color: var(--beatleader-primary);
-		background-color: var(--foreground);
-		border: none;
-		border-bottom: 1px solid var(--faded);
-		outline: none;
-	}
-
-	aside :global(.switch-types) {
-		justify-content: flex-start;
-	}
-
-	@media screen and (max-width: 1275px) {
-		.align-content {
-			flex-direction: column;
-			align-items: center;
-		}
-
-		aside {
-			width: 100%;
-			max-width: 65em;
-		}
 	}
 </style>

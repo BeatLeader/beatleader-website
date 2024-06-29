@@ -85,7 +85,7 @@
 
 	var pp = player?.playerInfo?.pp;
 	var rank = player?.playerInfo?.rank;
-	var countryRank = player?.playerInfo?.country.rank;
+	var countryRank = player?.playerInfo?.country.rankValue ?? player?.playerInfo?.country.rank;
 
 	function hoverStats() {
 		if (player && player.playerInfo && (selectedClanTag || player.clans)) {
