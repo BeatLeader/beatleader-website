@@ -22,6 +22,9 @@
 	let horizontalRichBio = playerInfo?.horizontalRichBio;
 	let richBioError = null;
 
+	let emptyMaps = false;
+	let emptyClan = false;
+
 	function getRichBioId(playerInfo) {
 		richBioID = playerInfo?.richBioTimeset;
 	}
@@ -96,7 +99,7 @@
 						{editModel}
 						{playerId}
 						{richBioID}
-						vertical={!horizontalRichBio}
+						vertical={!horizontalRichBio && (!emptyClan || !emptyMaps)}
 						patron={isAnySupporter(playerInfo.role)}
 						isFounder={true}
 						on:height-changed
@@ -124,7 +127,7 @@
 
 		{#if !horizontalRichBio}
 			<div class="cards-part {!richBioID ? 'cards-part-only' : ''}">
-				<PlayerCards {playerInfo} {playerId} />
+				<PlayerCards {playerInfo} {playerId} onEmptyClan={() => (emptyClan = true)} onEmptyMaps={() => (emptyMaps = true)} />
 			</div>
 		{/if}
 	{/if}
