@@ -228,31 +228,31 @@
 				</div>
 			{/if}
 
-			{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
-				<div class="clan-badges">
+			<div class="clan-badges">
+				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
 					<ClanBadges player={playerInfo} highlightMain={true} bind:editModel />
+				{/if}
 
-					{#if isUserFounderOfTheClan}
-						{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
-							<Button
-								animated={true}
-								type="primary"
-								iconFa="fas fa-users"
-								title="Invite player to the clan"
-								cls="invite-to-clan"
-								on:click={() => (invitationConfirmationType = 'invite')} />
-						{:else if hasPlayerPendingInvitation}
-							<Button
-								animated={true}
-								type="danger"
-								iconFa="fas fa-users-slash"
-								title="Cancel invitation to the clan"
-								cls="invite-to-clan"
-								on:click={() => (invitationConfirmationType = 'cancel')} />
-						{/if}
+				{#if isUserFounderOfTheClan}
+					{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
+						<Button
+							animated={true}
+							type="primary"
+							iconFa="fas fa-users"
+							title="Invite player to the clan"
+							cls="invite-to-clan"
+							on:click={() => (invitationConfirmationType = 'invite')} />
+					{:else if hasPlayerPendingInvitation}
+						<Button
+							animated={true}
+							type="danger"
+							iconFa="fas fa-users-slash"
+							title="Cancel invitation to the clan"
+							cls="invite-to-clan"
+							on:click={() => (invitationConfirmationType = 'cancel')} />
 					{/if}
-				</div>
-			{/if}
+				{/if}
+			</div>
 
 			{#if isAdmin && loggedInPlayer != playerId}
 				{#if playerInfo?.banned}

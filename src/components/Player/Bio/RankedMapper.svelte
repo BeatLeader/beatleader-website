@@ -126,7 +126,7 @@
 		border: 0;
 		border-radius: 0.2em;
 		cursor: pointer;
-		color: var(--color, #363636);
+		color: #363636;
 		background-color: #dbdbdb;
 		box-shadow: none;
 		opacity: 0.35;
@@ -242,6 +242,7 @@
 		color: white !important;
 		flex: 1;
 		max-width: 28em;
+		min-width: 20em;
 	}
 
 	.clanImage {

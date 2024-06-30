@@ -280,7 +280,7 @@
 		border: 0;
 		border-radius: 0.2em;
 		cursor: pointer;
-		color: var(--color, #363636);
+		color: #363636;
 		background-color: #dbdbdb;
 		box-shadow: none;
 		opacity: 0.35;
