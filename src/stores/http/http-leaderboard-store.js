@@ -2,7 +2,7 @@ import createHttpStore from './http-store';
 import createLeaderboardPageProvider from './providers/api-leaderboard';
 import {writable} from 'svelte/store';
 import {debounce} from '../../utils/debounce';
-import produce, {applyPatches} from 'immer';
+import {produce, applyPatches} from 'immer';
 import stringify from 'json-stable-stringify';
 
 export default (leaderboardId, type = 'global', page = 1, filters = {}, initialState = null, initialStateType = 'initial') => {

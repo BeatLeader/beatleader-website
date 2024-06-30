@@ -248,6 +248,9 @@
 				data: {labels, datasets},
 				options: {
 					responsive: true,
+					animation: {
+						duration: 0,
+					},
 					maintainAspectRatio: false,
 					interaction: {
 						mode: 'index',

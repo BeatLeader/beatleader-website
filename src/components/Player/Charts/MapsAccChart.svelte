@@ -14,7 +14,7 @@
 	import createAccountStore from '../../../stores/beatleader/account';
 	import {configStore} from '../../../stores/config';
 	import deepEqual from 'deep-equal';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Button from '../../Common/Button.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Switch from '../../Common/Switch.svelte';

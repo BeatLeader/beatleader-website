@@ -1,7 +1,7 @@
 <script>
 	import Chart from 'chart.js/auto';
 	import zoomPlugin from 'chartjs-plugin-zoom';
-	import chartTrendline from 'chartjs-plugin-trendline';
+	// import chartTrendline from 'chartjs-plugin-trendline';
 
 	import {formatNumber, roundToPrecision} from '../../../utils/format';
 	import {formatDate, formatDateRelative, getTimeStringColor} from '../../../utils/date';
@@ -18,7 +18,7 @@
 	export let type = 'accuracy'; // or percentage
 
 	Chart.register(zoomPlugin);
-	Chart.register(chartTrendline);
+	// Chart.register(chartTrendline);
 
 	const CHART_DEBOUNCE = 300;
 
@@ -333,6 +333,9 @@
 		if (!chart) {
 			chart = new Chart(canvas, {
 				type: 'scatter',
+				animation: {
+					duration: 0,
+				},
 				data: {
 					datasets,
 				},

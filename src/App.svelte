@@ -41,7 +41,7 @@
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
 	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';

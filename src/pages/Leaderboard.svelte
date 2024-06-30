@@ -43,7 +43,7 @@
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import {configStore} from '../stores/config';
 	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
 

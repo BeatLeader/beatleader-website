@@ -43,7 +43,7 @@
 	import BackToTop from '../components/Common/BackToTop.svelte';
 	import MapCard from '../components/Leaderboards/MapCard.svelte';
 	import {configStore} from '../stores/config';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
 	import Mappers from '../components/Leaderboard/Mappers.svelte';

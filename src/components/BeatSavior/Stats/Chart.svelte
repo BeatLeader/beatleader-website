@@ -4,7 +4,6 @@
 	import {opt} from '../../../utils/js';
 	import {configStore} from '../../../stores/config';
 
-
 	export let beatSavior = null;
 	export let name = null;
 	export let compareTo = null;
@@ -16,12 +15,12 @@
 
 	let themeName = 'darkss';
 	let theme = null;
-	let textColor = ''
-			
+	let textColor = '';
+
 	if ($configStore.preferences.theme != 'flylight') {
-			textColor = '#fff';
+		textColor = '#fff';
 	} else {
-			textColor = '#757575';
+		textColor = '#757575';
 	}
 
 	function average(arr) {
@@ -109,6 +108,9 @@
 				data: {labels, datasets},
 				options: {
 					responsive: true,
+					animation: {
+						duration: 0,
+					},
 					maintainAspectRatio: false,
 					interaction: {
 						mode: 'index',
