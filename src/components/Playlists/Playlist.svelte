@@ -383,7 +383,7 @@
 		{/if}
 		{#if songList}
 			<div
-				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true}}
+				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true, dragDisabled: sharedPlaylistId}}
 				on:consider={handleDndConsider}
 				on:finalize={handleDndFinalize}
 				class="tab">
