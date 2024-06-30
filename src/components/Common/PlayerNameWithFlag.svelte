@@ -17,7 +17,7 @@
 
 	let referenceElement;
 
-	$: country = opt(player, 'playerInfo.country.country') ?? player?.country;
+	$: country = opt(player, 'playerInfo.country') ?? player?.country;
 	$: name = player?.name;
 	$: playerId = player?.alias ?? player?.playerId ?? player?.id;
 </script>
