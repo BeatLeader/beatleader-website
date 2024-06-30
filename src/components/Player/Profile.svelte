@@ -309,6 +309,11 @@
 					<img src="/assets/collar.webp" style="position: absolute; bottom: -16px; z-index: 100;" alt="" />
 				</div>
 			{/if}
+			{#if playerInfo?.clans?.filter(cl => cl.tag == 'THUP').length}
+				<div style="position: relative; width: 100%; height: 100%; display: flex; justify-content: center;">
+					<div style="position: absolute; z-index: 100; right: -0.6em; top: -1.3em; font-size: 4em;">👍</div>
+				</div>
+			{/if}
 
 			{#if roles}
 				<div class="role-icons {$editModel ? 'editing' : ''}">
