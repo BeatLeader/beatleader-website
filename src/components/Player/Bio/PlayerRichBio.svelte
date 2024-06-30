@@ -77,6 +77,9 @@
 	$: richBioID && editModel && fetchBioFile(richBioID);
 	$: formIframeUrl(playerId, richBioID, width, $configStore.preferences);
 	$: container && subscribeToContainer(container);
+	$: setTimeout(() => {
+		dispatch('height-changed');
+	}, 400);
 </script>
 
 {#if richBioID || edititing || editModel}

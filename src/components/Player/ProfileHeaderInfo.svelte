@@ -178,6 +178,11 @@
 		<div class="player-nickname {showRainbow(playerInfo) ? 'rainbow' : ''}">
 			{#if name}
 				<div style="display: flex;">
+					{#if editModel?.data}
+						<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
+					{:else}
+						<span class="nickname">{name}</span>
+					{/if}
 					{#if !editModel && changes && changes.length}
 						<div class="score-options-section">
 							<span
@@ -188,11 +193,6 @@
 								<i class="fas fa-chevron-down" />
 							</span>
 						</div>
-					{/if}
-					{#if editModel?.data}
-						<input type="text" bind:value={editModel.data.name} placeholder="Your name" class="input-reset" />
-					{:else}
-						<span class="nickname">{name}</span>
 					{/if}
 				</div>
 			{/if}
@@ -205,9 +205,11 @@
 		{/if}
 
 		{#if showChanges}
-			{#each changes as change, idx}
-				<ProfileChange {change} />
-			{/each}
+			<ContentBox>
+				{#each changes as change, idx}
+					<ProfileChange {change} />
+				{/each}
+			</ContentBox>
 		{/if}
 
 		{#if playerInfo.sponsor}
@@ -409,6 +411,11 @@
 		right: 0.2em;
 		bottom: 1.6em;
 		font-size: 2em;
+		text-shadow: 1px 1px 5px #00000069;
+	}
+
+	.edit-button:hover {
+		scale: 1.1;
 	}
 
 	:global(.edit-enabled) .player-ranking {
@@ -532,6 +539,8 @@
 		.edit-button {
 			top: 0;
 			left: 0.2em;
+			bottom: unset;
+			right: unset;
 		}
 	}
 </style>

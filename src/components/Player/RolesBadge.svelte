@@ -16,14 +16,14 @@
 </script>
 
 {#if filteredRoles?.length}
-	<div class="roles-badge {editModel ? 'editing' : ''}">
+	<a href="/about" class="roles-badge {editModel ? 'editing' : ''}">
 		{#each filteredRoles as role, idx}
 			{#if idx > 0}
 				<div class="separator" />
 			{/if}
 			<RolesBadgePart {role} index={idx} allRoles={roles} {profileAppearance} bind:editModel />
 		{/each}
-	</div>
+	</a>
 {/if}
 
 <style>
@@ -41,6 +41,7 @@
 		font-weight: 600;
 		font-size: 0.8em;
 		margin-left: 0.3em;
+		color: var(--textColor);
 	}
 
 	.separator {

@@ -265,19 +265,13 @@
 	{/if}
 	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
 	<div style="margin: 0; padding: 0;">
-		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" animated={true} on:click={copyUrl} />
+		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
 	<div style="margin: 0; padding: 0;">
 		{#if screenshoting}
 			<div class="screenshotSpinner"><Spinner /></div>
 		{:else}
-			<Button
-				type="text"
-				title="Screenshot profile"
-				iconFa="fas fa-camera"
-				cls="screenshotButton"
-				animated={true}
-				on:click={takeScreenshot} />
+			<Button type="text" title="Screenshot profile" iconFa="fas fa-camera" cls="screenshotButton" on:click={takeScreenshot} />
 		{/if}
 	</div>
 
@@ -488,14 +482,24 @@
 		right: 2em;
 		top: 0em;
 		z-index: 5;
+		text-shadow: 1px 1px 5px #00000069;
 	}
+	:global(.shareButton:hover) {
+		scale: 1.1;
+	}
+
 	:global(.screenshotButton) {
 		font-size: 1.5em !important;
 		position: absolute !important;
 		right: 0.4em;
 		top: 0em;
 		z-index: 5;
+		text-shadow: 1px 1px 5px #00000069;
 	}
+	:global(.screenshotButton:hover) {
+		scale: 1.1;
+	}
+
 	:global(.screenshotSpinner) {
 		position: absolute !important;
 		right: 1.2em;
