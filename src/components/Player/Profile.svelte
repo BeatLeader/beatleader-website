@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher, getContext, onMount} from 'svelte';
+	import {createEventDispatcher, getContext, onDestroy, onMount} from 'svelte';
 	import {globalHistory} from 'svelte-routing/src/history';
 	import processPlayerData from './utils/profile';
 
@@ -230,10 +230,10 @@
 
 	onMount(() => {
 		window.addEventListener('beforeunload', handleBeforeUnload);
+	});
 
-		return () => {
-			window.removeEventListener('beforeunload', handleBeforeUnload);
-		};
+	onDestroy(() => {
+		window.removeEventListener('beforeunload', handleBeforeUnload);
 	});
 </script>
 
