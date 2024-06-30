@@ -186,6 +186,7 @@
 		color: white !important;
 		flex: 1;
 		max-width: 28em;
+		min-width: 20em;
 	}
 
 	.clanImage {
