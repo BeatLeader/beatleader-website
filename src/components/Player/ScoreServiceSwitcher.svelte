@@ -280,6 +280,7 @@
 											id: 'search',
 											iconFa: 'fa fa-search',
 											title: 'Search by song/artist/mapper/hash',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-search`),
 											open: !!serviceParams?.filters?.search,
 											value: serviceParams?.filters?.search ?? null,
 											placeholder: 'Enter song name...',
@@ -291,6 +292,7 @@
 											id: 'diff',
 											iconFa: 'fa fa-chart-line',
 											title: 'Filter by map difficulty',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-diff`),
 											open: !!serviceParams?.filters?.diff,
 											defaultValue: serviceParams?.filters?.diff ?? null,
 											values: [
@@ -309,6 +311,7 @@
 											id: 'mode',
 											iconFa: 'fa fa-compass',
 											title: 'Filter by map mode',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-mode`),
 											open: !!serviceParams?.filters?.mode,
 											defaultValue: serviceParams?.filters?.mode ?? null,
 											values: [{id: null, name: 'All'}].concat(
@@ -327,6 +330,7 @@
 											id: 'requirements',
 											iconFa: 'fa fa-mountain-sun',
 											title: 'Filter by map feature',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-requirements`),
 											open: !!serviceParams?.filters?.requirements,
 											defaultValue: serviceParams?.filters?.requirements ? parseInt(serviceParams?.filters?.requirements) : null,
 											values: [
