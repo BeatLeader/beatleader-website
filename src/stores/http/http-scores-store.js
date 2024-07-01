@@ -3,7 +3,7 @@ import beatMapsEnhancer from './enhancers/common/beatmaps';
 import ppAttributionEnhancer from './enhancers/scores/pp-attribution';
 import {debounce} from '../../utils/debounce';
 import createApiScoresProvider from './providers/api-scores';
-import produce, {applyPatches} from 'immer';
+import {produce, applyPatches} from 'immer';
 import stringify from 'json-stable-stringify';
 
 export default (
