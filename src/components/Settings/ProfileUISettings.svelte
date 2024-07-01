@@ -9,7 +9,6 @@
 	import createPlayerInfoWithScoresStore from '../../stores/http/http-player-with-scores-store';
 	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
-	import {fly, fade} from 'svelte/transition';
 	import CardsCarousel from '../Player/CardsCarousel.svelte';
 	import {describeGraphAxis, describeProfilePart} from '../../utils/beatleader/format';
 	import PinnedScores from '../Player/PinnedScores.svelte';
@@ -17,6 +16,7 @@
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_SORT_VALUE = 'last';
@@ -140,7 +140,7 @@
 	$: graphLegends = Object.keys($configStore.chartLegendVisible);
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile">
 		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" clanEffects={false} />
 
@@ -271,8 +271,12 @@
 
 <style>
 	.main-container {
-		display: flex;
+		display: none;
 		flex-direction: column;
+	}
+
+	.main-container.visible {
+		display: flex;
 	}
 
 	.profile {

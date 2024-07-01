@@ -5,6 +5,7 @@
 	import Switch from '../Common/Switch.svelte';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	let currentShowClans = true;
 	let currentShowDifference = true;
@@ -39,7 +40,7 @@
 	$: settempsetting('ppToTheLeft', currentPPToTheLeft);
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile">
 		<RankingTable page={1} meta={false} editing={true} />
 	</div>
@@ -89,8 +90,12 @@
 
 <style>
 	.main-container {
-		display: flex;
+		display: none;
 		flex-direction: column;
+	}
+
+	.main-container.visible {
+		display: flex;
 	}
 
 	.profile {

@@ -179,6 +179,7 @@
 	:global(.editNameButton) {
 		margin-bottom: -1em !important;
 		font-size: 0.75em !important;
+		text-shadow: 1px 1px 5px #00000069;
 	}
 	:global(.banButton) {
 		padding: 0 !important;
