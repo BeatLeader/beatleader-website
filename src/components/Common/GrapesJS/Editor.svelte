@@ -763,6 +763,14 @@
 		right: 0 !important;
 	}
 
+	:global(.cke_notifications_area) {
+		display: none;
+	}
+
+	:global(.cke_dialog_contents) {
+		background-color: #3d3d3d !important;
+	}
+
 	@media screen and (max-width: 767px) {
 		:global(.gjs-cv-canvas) {
 			width: 100% !important;

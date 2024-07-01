@@ -9,12 +9,12 @@
     "validate": "svelte-check"
   },
   "devDependencies": {
+    "chart.js": "^3.5.0",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
     "@tsconfig/svelte": "^5.0.4",
     "broadcast-channel": "^7.0.0",
-    "chart.js": "^4.4.3",
     "chartjs-adapter-luxon": "^1.1.0",
     "chartjs-plugin-zoom": "^2.0.1",
     "comlink": "^4.3.1",
@@ -76,11 +76,11 @@
     "grapesjs-tui-image-editor": "^1.0.2",
     "grapesjs-typed": "^2.0.1",
     "grapesjs-ui-suggest-classes": "^1.0.19",
+    "svelte-select": "^4.4.7",
     "sirv-cli": "^2.0.2",
     "suneditor": "^2.46.3",
     "svelte-chartjs": "^3.1.5",
     "svelte-confetti": "^2.0.1",
-    "svelte-select": "^5.8.3",
     "svelte-simple-modal": "1.6.2",
     "svrollbar": "^0.12.0"
   }
