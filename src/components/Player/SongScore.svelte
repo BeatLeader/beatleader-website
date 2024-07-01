@@ -231,14 +231,12 @@
 		</div>
 
 		{#if showDetails}
-			<div transition:slide|global>
-				<SongScoreDetails
-					{playerId}
-					{songScore}
-					{fixedBrowserTitle}
-					noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
-					showAccSaberLeaderboard={'accsaber' === service} />
-			</div>
+			<SongScoreDetails
+				{playerId}
+				{songScore}
+				{fixedBrowserTitle}
+				noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
+				showAccSaberLeaderboard={'accsaber' === service} />
 		{/if}
 	</div>
 {/if}

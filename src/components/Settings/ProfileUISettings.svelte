@@ -9,6 +9,7 @@
 	import createPlayerInfoWithScoresStore from '../../stores/http/http-player-with-scores-store';
 	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
+	import {fly, fade} from 'svelte/transition';
 	import CardsCarousel from '../Player/CardsCarousel.svelte';
 	import {describeGraphAxis, describeProfilePart} from '../../utils/beatleader/format';
 	import PinnedScores from '../Player/PinnedScores.svelte';

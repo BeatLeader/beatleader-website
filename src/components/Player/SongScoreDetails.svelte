@@ -2,14 +2,12 @@
 	import {LEADERBOARD_SCORES_PER_PAGE} from '../../utils/beatleader/consts';
 	import {LEADERBOARD_SCORES_PER_PAGE as ACCSABER_LEADERBOARD_SCORES_PER_PAGE} from '../../utils/accsaber/consts';
 	import {configStore} from '../../stores/config';
-	import {slide} from 'svelte/transition';
 	import scoreStatisticEnhancer from '../../stores/http/enhancers/scores/scoreStatistic';
 	import createStarGeneratorStore from '../../stores/beatleader/star-generator';
 	import {computeModifiedRating, getPPFromAcc} from '../../utils/beatleader/pp';
 	import BeatSaviorDetails from '../BeatSavior/Details.svelte';
 	import LeaderboardPage from '../../pages/Leaderboard.svelte';
 	import LeaderboardStats from '../Leaderboard/LeaderboardStats.svelte';
-	import Spinner from '../Common/Spinner.svelte';
 	import ReplayDetails from '../Score/ReplayDetails.svelte';
 	import {modifiersToSpeed} from '../../utils/beatleader/format';
 	import ScoreHistoryGraph from '../Score/ScoreHistoryGraph.svelte';
@@ -104,11 +102,11 @@
 	<section class="details">
 		{#if beatSavior}
 			{#if $configStore?.scoreDetailsPreferences?.showMapInfo}
-				<div class="tab" transition:slide>
+				<div class="tab">
 					<LeaderboardStats {leaderboard} />
 				</div>
 			{/if}
-			<div class="stats-grid" transition:slide>
+			<div class="stats-grid">
 				<BeatSaviorDetails {beatSavior} showGrid={score?.replay == null} {replayAccGraphs} {underswingsData} {notes} />
 
 				{#if score?.replay && ($configStore?.scoreDetailsPreferences?.showAccChart || $configStore?.scoreDetailsPreferences?.showSliceDetails || $configStore?.scoreDetailsPreferences?.showAccSpreadChart)}
@@ -118,7 +116,7 @@
 		{/if}
 
 		{#if showAccSaberLeaderboard}
-			<div class="tab" transition:slide>
+			<div class="tab">
 				<LeaderboardPage
 					leaderboardId={leaderboard.leaderboardId}
 					type="accsaber"
@@ -132,7 +130,7 @@
 					higlightedScore={score} />
 			</div>
 		{:else if !noSsLeaderboard && $configStore?.scoreDetailsPreferences?.showLeaderboard}
-			<div class="tab" transition:slide>
+			<div class="tab">
 				<LeaderboardPage
 					leaderboardId={leaderboard.leaderboardId}
 					type="global"
@@ -147,7 +145,7 @@
 			</div>
 		{/if}
 		{#if $configStore?.scoreDetailsPreferences?.showHistory && !noSsLeaderboard}
-			<div class="stats-grid" transition:slide>
+			<div class="stats-grid">
 				<ScoreHistoryGraph {score} {leaderboard} />
 			</div>
 		{/if}
