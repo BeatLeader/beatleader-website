@@ -56,10 +56,10 @@
 	}
 
 	$: scoresStats = playerData.scoreStats;
-	$: topPlatform = scoresStats.topPlatform && platformDescription[scoresStats.topPlatform];
-	$: headset = scoresStats.topHMD && getHeadsetForHMD(scoresStats.topHMD);
+	$: topPlatform = scoresStats?.topPlatform && platformDescription[scoresStats.topPlatform];
+	$: headset = scoresStats?.topHMD && getHeadsetForHMD(scoresStats.topHMD);
 	$: headsetStyle = `width: 1.2em; height: 1.2em; margin-bottom: -0.2em; filter: ${headset?.color}`;
-	$: topController = scoresStats.topController;
+	$: topController = scoresStats?.topController;
 	$: controllerDescription = topController && getControllerForEnum(topController).length > 0 ? getControllerForEnum(topController) : '';
 
 	$: playerInfo = playerData?.playerInfo;
