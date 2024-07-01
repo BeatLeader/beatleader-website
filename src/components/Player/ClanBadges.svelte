@@ -37,29 +37,36 @@
 			on:finalize={handleDndFinalize}
 			class="clan-badges">
 			{#each clans as clan, idx (clan.id)}
-				<a class="change-wobble clan-tag {idx == 0 ? 'main-clan' : ''}" href={`/clan/${clan?.tag}`} animate:flip={{duration: 300}} on:click|stopPropagation>
+				<a
+					class="change-wobble clan-tag {idx == 0 ? 'main-clan' : ''}"
+					href={`/clan/${clan?.tag}`}
+					animate:flip={{duration: 300}}
+					on:click|stopPropagation>
 					<Badge
-						label={(highlightMain && idx == 0 ? "🏠" : "") + clan?.tag ?? '???'}
+						label={(highlightMain && idx == 0 ? '🏠' : '') + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
 						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
 						bgColor={clan?.color ?? 'var(--dimmed)'}
 						style="animation-delay: -.{Math.round(Math.random() * 40)}s; animation-duration: .{20 + Math.round(Math.random() * 30)}s"
-						title={(highlightMain && idx == 0 ? "Main clan. " : "") + "Change clan order"} />
+						title={(highlightMain && idx == 0 ? 'Main clan. ' : '') + 'Change clan order'} />
 				</a>
 			{/each}
 		</span>
 	{:else}
 		<span class="clan-badges">
 			{#each clans as clan, idx (clan.tag)}
-				<a class="clan-tag {idx == 0 ? 'main-clan' : ''}" href={`/clan/${clan?.tag}`} on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
+				<a
+					class="clan-tag {idx == 0 ? 'main-clan' : ''}"
+					href={`/clan/${clan?.tag}`}
+					on:click|stopPropagation={() => navigate(`/clan/${clan?.tag}`)}>
 					<Badge
-						label={(highlightMain && idx == 0 ? "🏠" : "") + clan?.tag ?? '???'}
+						label={(highlightMain && idx == 0 ? '🏠' : '') + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
 						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
 						bgColor={clan?.color ?? 'var(--dimmed)'}
-						title={(highlightMain && idx == 0 ? "Main clan. " : "") + "Go to clan profile"} />
+						title={(highlightMain && idx == 0 ? 'Main clan. ' : '') + 'Go to clan profile'} />
 				</a>
 			{/each}
 		</span>
@@ -78,10 +85,8 @@
 	</span>
 {/if}
 
-
 <style>
 	.clan-badges {
-		margin-left: 0.5em;
 		font-size: 1rem;
 		padding: 0 !important;
 		font-weight: bold;

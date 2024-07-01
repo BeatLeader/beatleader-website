@@ -94,16 +94,42 @@ export default () => {
 					if (!isNaN(eventId)) update({filters: {eventId}});
 				}
 
+				const filters = {};
+				for (const [key, value] of urlParams.entries()) {
+					filters[key] = value;
+				}
+
 				return update(
 					{
 						sort: paramsArr[1] ?? serviceDefaultParams?.sort,
 						order: paramsArr[2] ?? serviceDefaultParams?.order,
 						page: paramsArr[3] ?? serviceDefaultParams?.page,
+						filters,
 					},
 					service,
 					true
 				);
 		}
+	};
+
+	const buildSearchFromFilters = (params, filters) => {
+		if (!filters) return '';
+
+		const searchParams = new URLSearchParams();
+		Object.entries(filters).forEach(([key, value]) => {
+			if (value && key != 'stars') {
+				searchParams.append(key, value);
+			}
+		});
+
+		const stars = filters['stars'];
+		if (stars) {
+			searchParams.append('stars', `${stars.from},${stars.to}`);
+		}
+
+		const result = searchParams.toString();
+
+		return result.length ? '?' + result : result;
 	};
 
 	const getUrl = (service, params = {}, noPage = false) => {
@@ -123,7 +149,7 @@ export default () => {
 			case 'beatleader':
 				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.order ?? serviceDefaultParams?.order}${
 					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
-				}`;
+				}${params?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, params?.filters) : ''}`;
 		}
 	};
 

@@ -3,19 +3,20 @@
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
-	// import createAccSaberService from '../services/accsaber';
+	import createAccSaberService from '../services/accsaber';
 	import createPinnedScoresStore from '../stores/beatleader/pinned-scores';
 	import createStatsHistoryStore from '../stores/beatleader/stats-history';
 	import editModel from '../stores/beatleader/profile-edit-model';
 	import {configStore} from '../stores/config';
 	import {capitalize} from '../utils/js';
 	import ssrConfig from '../ssr-config';
-	import processPlayerData from '../components/Player/utils/profile';
 	import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors';
 	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
 	import eventBus from '../utils/broadcast-channel-pubsub';
 	import Profile from '../components/Player/Profile.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {fetchJson} from '../network/fetch';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -38,7 +39,7 @@
 	async function changeParams(newPlayerId, service, newServiceParams) {
 		if (!newPlayerId) return;
 		serviceParams = newServiceParams;
-		if (!playerStore || newPlayerId !== playerStore.getPlayerId()) {
+		if (!playerStore || newPlayerId !== playerStore.getPlayerId() || service !== playerStore.getService()) {
 			document.body.scrollIntoView({behavior: 'smooth'});
 			playerStore.fetch(newPlayerId, service, newServiceParams);
 		} else {
@@ -88,6 +89,23 @@
 
 			// force refresh avatar url
 			avatarHash = (Math.random() * 100000).toString();
+		}
+	}
+
+	let achievements = [];
+	function fetchAchievements(playerId) {
+		fetchJson(BL_API_URL + `player/${playerId}/achievements`)
+			.then(clientInfo => {
+				achievements = clientInfo.body;
+			})
+			.catch(() => {});
+	}
+
+	let horizontalRichBio = false;
+	function updateHorizontalRichBio(value) {
+		horizontalRichBio = value;
+		if ($editModel) {
+			$editModel.data.horizontalRichBio = value;
 		}
 	}
 
@@ -161,6 +179,7 @@
 	.align-content {
 		display: flex;
 		justify-content: center;
+		height: fit-content;
 	}
 
 	.page-content {
@@ -187,6 +206,14 @@
 		cursor: pointer;
 		min-width: 2rem;
 		margin-right: 0.5rem;
+	}
+
+	:global(.player-cards-box:has(.cards-container:empty)) {
+		display: none;
+	}
+
+	:global(.player-cards-box .cards-container) {
+		flex-direction: column;
 	}
 
 	@media screen and (max-width: 1749px) {

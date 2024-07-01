@@ -46,9 +46,9 @@
 	}
 
 	function moveToPosition(index, noCheck = false) {
-		if (currentCenteredIndex === cards.length - 1 && index === 0 && !noCheck) {
+		if (currentCenteredIndex === cards.length - 1 && index === 0 && !noCheck && showFillerCards) {
 			handleInfToStartTransition();
-		} else if (currentCenteredIndex === 0 && index === cards.length - 1 && !noCheck) {
+		} else if (currentCenteredIndex === 0 && index === cards.length - 1 && !noCheck && showFillerCards) {
 			handleInfToEndTransition();
 		} else {
 			interruptMotion();

@@ -145,6 +145,7 @@ const availableMetrics = [
 	{metric: 'passPP', name: 'Pass PP'},
 	{metric: 'accPP', name: 'Accuracy PP'},
 	{metric: 'techPP', name: 'Tech PP'},
+	{metric: 'playCount', name: 'Attempts count'},
 	{metric: 'improvedRank', name: 'Rank improved'},
 	{metric: 'improvedTotalRank', name: 'Total rank improved'},
 	{metric: 'replaysWatched', name: 'Replays watched', available: ['profile-score']},
@@ -222,10 +223,15 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : null;
 			className = 'acc';
 
+			if (!isDemo && score.mods?.includes('NF')) {
+				title = 'No Fail scores do not count into any statistic';
+			}
+
 			component = Accuracy;
 			componentProps = {
 				score,
 				modifiers,
+				styling: score.mods?.includes('NF') ? 'nominated-pp' : '',
 				showMods: !!def?.withMods,
 				secondary: def?.secondary ?? null,
 			};
@@ -235,10 +241,15 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : null;
 			className = 'score';
 
+			if (!isDemo && score.mods?.includes('NF')) {
+				title = 'No Fail scores do not count into any statistic';
+			}
+
 			componentProps = {
 				onlyLabel: true,
 				color: 'white',
 				bgColor: 'var(--dimmed)',
+				styling: score.mods?.includes('NF') ? 'nominated-pp' : '',
 				title,
 			};
 
@@ -325,7 +336,7 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			className = 'beatSavior';
 			icon = 'icon-mistakes';
 
-			if (Number.isFinite(beatSavior?.stats?.miss)) {
+			if (Number.isFinite(beatSavior?.stats?.miss) && !score?.strippedMistakes) {
 				component = Mistakes;
 				componentProps = {
 					beatSavior,
@@ -361,6 +372,26 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} "115s" in a row`;
 			className = 'beatSavior';
 			icon = 'fa-solid fa-crosshairs';
+
+			componentProps = {
+				onlyLabel: true,
+				color: 'white',
+				bgColor: 'var(--dimmed)',
+				title,
+			};
+
+			slotComponentProps = {
+				value: score?.[metric],
+				inline: true,
+				digits: 0,
+				suffix: ``,
+			};
+			break;
+
+		case 'playCount':
+			title = isDemo ? 'Click to setup' : `${score?.[metric] ?? 0} attempts`;
+			className = 'beatSavior';
+			icon = 'fa-solid fa-repeat';
 
 			componentProps = {
 				onlyLabel: true,

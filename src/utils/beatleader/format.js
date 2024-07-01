@@ -379,7 +379,7 @@ const platformColors = {
 };
 
 export const platformDescription = {
-	oculus: 'Quest',
+	oculus: 'Quest Native',
 	steam: 'PC Steam',
 	oculuspc: 'PC Oculus',
 };
@@ -452,7 +452,7 @@ export const modeDescriptions = {
 		textColor: 'white',
 	},
 	HorizontalStandard: {
-		title: 'Horisontal Standard (Chirality mod)',
+		title: 'Horizontal Standard (Chirality mod)',
 		icon: 'horizontalstandard-icon',
 		color: 'purple',
 		textColor: 'white',

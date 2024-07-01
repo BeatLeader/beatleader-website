@@ -11,10 +11,14 @@
 	import Spinner from '../../Common/Spinner.svelte';
 
 	import createPlaylistStore from '../../../stores/playlists';
+	import createAccountStore from '../../../stores/beatleader/account';
 	import {configStore} from '../../../stores/config';
 	import deepEqual from 'deep-equal';
+	import {produce} from 'immer';
 	import Button from '../../Common/Button.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
+	import Switch from '../../Common/Switch.svelte';
+	import {isAnySupporter} from '../Overlay/overlay';
 
 	export let playerId = null;
 	export let averageAcc = null;
@@ -27,6 +31,7 @@
 	const playlists = createPlaylistStore();
 	const {addNotification} = getNotificationsContext();
 	const dispatch = createEventDispatcher();
+	const account = createAccountStore();
 
 	const CHART_DEBOUNCE = 300;
 
@@ -46,14 +51,28 @@
 
 	async function setupChart(hash, canvas, selectedPlaylist) {
 		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
+		
+		if ($configStore.preferences.theme != 'flylight') {
+			var mapBorderColor = '#003e54';
+			var ssPlusColor = 'rgba(143,72,219, .4)';
+			var ssColor = 'rgba(190,42,66, .4)';
+			var sPlusColor = 'rgba(255,99,71, .4)';
+			var sColor = 'rgba(89,176,244, .4)';
+			var aColor = 'rgba(60,179,113, .4)';
+			var averageLinesColor = 'rgba(255,255,255,.35)';
 
-		const mapBorderColor = '#003e54';
-		const ssPlusColor = 'rgba(143,72,219, .4)';
-		const ssColor = 'rgba(190,42,66, .4)';
-		const sPlusColor = 'rgba(255,99,71, .4)';
-		const sColor = 'rgba(89,176,244, .4)';
-		const aColor = 'rgba(60,179,113, .4)';
-		const averageLinesColor = 'rgba(255,255,255,.35)';
+			Chart.defaults.color = '#fff';
+		} else {
+			var mapBorderColor = '#dadadaaf';
+			var ssPlusColor = 'rgba(143,72,219, .4)';
+			var ssColor = 'rgba(190,42,66, .4)';
+			var sPlusColor = 'rgba(255,99,71, .4)';
+			var sColor = 'rgba(89,176,244, .4)';
+			var aColor = 'rgba(60,179,113, .4)';
+			var averageLinesColor = 'rgba(255,255,255,.35)';
+
+			Chart.defaults.color = '#757575';
+		}
 
 		lastHistoryHash = chartHash;
 		const refreshOptions = (!selectedPlaylist && lastPlaylist) || (selectedPlaylist && !lastPlaylist);
@@ -442,23 +461,33 @@
 	let debouncedChartHash = null;
 	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
 
-	async function fetchPlayerScores(playerId) {
+	async function fetchPlayerScores(playerId, showUnrankedMapsOnGraph) {
 		if (!playerId?.length) return;
 
 		try {
 			isLoading = true;
-			playerScores = await playerService.fetchAccGraph(playerId, 'acc');
+			playerScores = await playerService.fetchAccGraph(playerId, 'acc', !showUnrankedMapsOnGraph);
 		} finally {
 			isLoading = false;
 		}
 	}
 
-	$: fetchPlayerScores(playerId);
+	function boolflip(name) {
+		$configStore = produce($configStore, draft => {
+			draft.preferences[name] = !draft.preferences[name];
+		});
+	}
+
+	$: role = $account?.player?.playerInfo.role ?? '';
+	$: supporter = isAnySupporter(role);
+	$: showUnrankedMapsOnGraph = supporter && $configStore?.preferences?.showUnrankedMapsOnGraph;
+	$: fetchPlayerScores(playerId, showUnrankedMapsOnGraph);
 
 	$: height = $configStore.preferences.graphHeight;
 	$: chartHash = calcPlayerScoresHash(playerScores);
 	$: debounceChartHash(chartHash);
 	$: selectedPlaylistIndex = $configStore?.selectedPlaylist;
+
 	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
 	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, selectedPlaylist);
 </script>
@@ -468,6 +497,17 @@
 	{#if isLoading}
 		<Spinner width="10em" height="10em" />
 	{:else if !selectedPlaylist}
+		<div class="chart-toggle-unranked {supporter ? '' : 'disabled-toggle'}">
+			<Switch
+				value={showUnrankedMapsOnGraph}
+				label="Show unranked"
+				title={supporter ? 'Show all maps with stars on them' : 'Subscribe to BeatLeader Patreon to have ratings on all maps'}
+				fontSize={12}
+				design="slider"
+				on:click={() => {
+					if (supporter) boolflip('showUnrankedMapsOnGraph');
+				}} />
+		</div>
 		<Button
 			cls="chart-new-playlist"
 			iconFa="fas fa-plus-square"
@@ -502,8 +542,20 @@
 	}
 
 	:global(.chart-new-playlist) {
-		top: 0.4em;
-		right: 2%;
+		top: 0.3em;
+		right: 2.2%;
+		position: absolute !important;
+		font-size: 0.8em !important;
+		height: 1.5em;
+	}
+
+	.disabled-toggle {
+		opacity: 0.6;
+	}
+
+	.chart-toggle-unranked {
+		top: 0;
+		left: 0.4em;
 		position: absolute !important;
 		font-size: 0.8em !important;
 		height: 1.5em;
@@ -511,6 +563,10 @@
 
 	@media screen and (max-width: 650px) {
 		:global(.chart-new-playlist) {
+			display: none !important;
+		}
+
+		.chart-toggle-unranked {
 			display: none !important;
 		}
 	}

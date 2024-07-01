@@ -2,21 +2,37 @@
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import ssrConfig from '../ssr-config';
-	import {scrollToTargetAdjusted} from '../utils/browser';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import createAccountStore from '../stores/beatleader/account';
-	import createRankingStore from '../stores/http/http-ranking-store';
 	import {BL_ASSETS_CDN} from '../network/queues/beatleader/page-queue';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
-	const rankingStore = createRankingStore('global', 1, {role: 'sponsor,supporter,tipper', count: 100});
 	const account = createAccountStore();
 
 	document.body.classList.add('slim');
 	document.body.scrollIntoView({behavior: 'smooth'});
 
 	let articleEl = null;
+	var supporters = [];
 
-	$: rankingStore.fetch('global', 1, {role: 'sponsor,supporter,tipper', count: 100}, true);
+	function fetchSupporters(page) {
+		fetch(`
+${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supporter%2Ctipper%2Csponsor`)
+			.then(p => p.json())
+			.then(d => {
+				d.data.forEach(element => {
+					if (!supporters.find(s => s.id == element.id)) {
+						supporters.push(element);
+					}
+				});
+				supporters = supporters;
+				if (d.data.length == 100) {
+					fetchSupporters(page + 1);
+				}
+			});
+	}
+
+	$: fetchSupporters(1);
 </script>
 
 <svelte:head>
@@ -213,17 +229,16 @@
 			</div>
 		</section>
 
-		{#if $rankingStore?.data?.length}
+		{#if supporters.length}
 			<div class="role-container">
 				<h1 class="title is-4">Sponsors</h1>
 				<img src={BL_ASSETS_CDN + '/patreon3.webp'} alt="Sponsors" />
 			</div>
 
 			<section class="content center">
-				{#each $rankingStore.data.filter(p => p.playerInfo.role.includes('sponsor')) as player, idx (player?.playerId)}
+				{#each supporters.filter(p => p.role.includes('sponsor')) as player, idx (player?.id)}
 					<div class="member">
-						<img src={player.playerInfo.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.playerId}"
-							>{player.name}</a>
+						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.id}">{player.name}</a>
 					</div>
 				{/each}
 			</section>
@@ -232,10 +247,9 @@
 				<img src={BL_ASSETS_CDN + '/patreon2.webp'} alt="Supporters" />
 			</div>
 			<section class="content center">
-				{#each $rankingStore.data.filter(p => p.playerInfo.role.includes('supporter')) as player, idx (player?.playerId)}
+				{#each supporters.filter(p => p.role.includes('supporter')) as player, idx (player?.id)}
 					<div class="member">
-						<img src={player.playerInfo.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.playerId}"
-							>{player.name}</a>
+						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.id}">{player.name}</a>
 					</div>
 				{/each}
 			</section>
@@ -244,10 +258,9 @@
 				<img src={BL_ASSETS_CDN + '/patreon1.webp'} alt="Tippers" />
 			</div>
 			<section class="content center">
-				{#each $rankingStore.data.filter(p => p.playerInfo.role.includes('tipper')) as player, idx (player?.playerId)}
+				{#each supporters.filter(p => p.role.includes('tipper')) as player, idx (player?.id)}
 					<div class="member">
-						<img src={player.playerInfo.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.playerId}"
-							>{player.name}</a>
+						<img src={player.avatar} alt={player.name} /><a href="https://www.beatleader.xyz/u/{player.id}">{player.name}</a>
 					</div>
 				{/each}
 			</section>

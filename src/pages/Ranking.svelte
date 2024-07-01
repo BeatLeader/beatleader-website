@@ -20,7 +20,7 @@
 	import BackToTop from '../components/Common/BackToTop.svelte';
 	import {configStore} from '../stores/config';
 
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Button from '../components/Common/Button.svelte';
 
 	export let page = 1;
@@ -367,14 +367,14 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/44')}>
+		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/49')}>
 			<div class="event-container">
-				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/71875-event-s.png" />
+				<img alt="Event banner" class="event-image" src="https://cdn.assets.beatleader.xyz/75058-event.png" />
 				<div class="event-text-container">
-					<span class="event-title">Ranked early 2024!</span>
-					<span class="event-text">Check out what was ranked and compete for a badge.</span>
+					<span class="event-title">Ranked weeks #87-91!</span>
+					<span class="event-text">Check out what was ranked in April and compete for a badge.</span>
 				</div>
-				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/44')} />
+				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/49')} />
 			</div>
 		</ContentBox> -->
 
@@ -534,8 +534,6 @@
 		padding: 0.3em;
 		border-radius: 0.5em;
 		cursor: pointer;
-		background: linear-gradient(rgb(26 26 26 / 65%), rgb(16 16 16 / 79%)),
-			center / cover no-repeat url(https://cdn.assets.beatleader.xyz/71875-event-s.webp) !important;
 	}
 
 	:global(.show-filters-box) {
@@ -622,6 +620,8 @@
 
 		.event-text-container {
 			margin-bottom: 1em;
+			align-items: center;
+			text-align: center;
 		}
 
 		.event-image {

@@ -33,8 +33,12 @@ export const DEFAULT_CONFIG = {
 		oneclick: 'modassistant',
 		webPlayer: 'beatleader',
 		bgimage: '/assets/background.jpg',
-		bgColor: 'rgba(29, 7, 34, 0.6284)',
-		headerColor: 'rgba(53, 0, 70, 0.2)',
+		bgColor: 'rgba(17, 17, 17, 0.3682)',
+		headerColor: 'rgba(0, 0, 0, 0.4152)',
+		buttonColor: 'rgba(38, 38, 38, 0.8273)',
+		labelColor: 'rgba(219, 219, 219, 1.0)',
+		ppColor: 'rgba(253, 219, 255, 1.0)',
+		selectedColor: 'rgba(236, 84, 0, 0.4636)',
 		fontNames: 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif',
 		daysToCompare: 1,
 		daysOfHistory: 30,
@@ -47,6 +51,9 @@ export const DEFAULT_CONFIG = {
 		criteriaInfoShown: false,
 		leaderboardShowSorting: false,
 		leaderboardShowPlaylists: true,
+		showUnrankedMapsOnGraph: false,
+
+		showAccSaber: true,
 
 		showFiltersOnRanking: true,
 		maps3D: true,
@@ -57,6 +64,8 @@ export const DEFAULT_CONFIG = {
 		rewindbanner: true,
 		beastiesbanner: true,
 		ostbanner: true,
+		ccWinterHighlights24: true,
+		followersBecomingPublic: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,
@@ -87,6 +96,7 @@ export const DEFAULT_CONFIG = {
 		showPredictedAcc: false,
 		showLeaderboard: true,
 		defaultAccChartIndex: 0,
+		showHistory: true,
 	},
 	leaderboardPreferences: {
 		badges: [
@@ -142,6 +152,14 @@ export const DEFAULT_CONFIG = {
 		y6: true,
 		y7: true,
 		y8: true,
+	},
+	scoreHistoryLegend: {
+		y: true,
+		y1: true,
+		y2: true,
+		y3: true,
+		y4: true,
+		y5: true,
 	},
 	chartLegendVisible: {
 		y0: true,
@@ -200,7 +218,6 @@ export default async () => {
 
 	const storeConfig = async newConfig => {
 		await keyValueRepository().set(newConfig, STORE_CONFIG_KEY);
-		fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(newConfig)});
 	};
 
 	const get = key => (key ? currentConfig[key] : currentConfig);
@@ -299,20 +316,6 @@ export default async () => {
 		await set(savedConfig, false);
 	}
 
-	const syncFromServer = () => {
-		fetch(BL_API_URL + 'user/config/link', {credentials: 'include'}).then(async response => {
-			if (response.status == 404 && savedConfig) {
-				await fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(savedConfig)});
-			} else if (response.status == 200) {
-				const cloudConfig = await fetch(await response.text()).then(r => r.json());
-				await set(cloudConfig, false);
-				dbConfig = cloudConfig;
-				settingsChanged = false;
-				await keyValueRepository().set(cloudConfig, STORE_CONFIG_KEY);
-			}
-		});
-	};
-	syncFromServer();
 	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
 	configStore = {
@@ -326,7 +329,6 @@ export default async () => {
 		getSettingsChanged: () => settingsChanged,
 		persist,
 		reset,
-		syncFromServer,
 	};
 
 	return configStore;

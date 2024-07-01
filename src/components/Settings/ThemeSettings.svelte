@@ -1,11 +1,13 @@
 <script>
 	import {configStore} from '../../stores/config';
 	import Select from '../Settings/Select.svelte';
-	import {importFonts, setGlobalCSSValue} from '../../utils/color';
+	import {importFonts, setGlobalCSSValue, removeGlobalCSSValue} from '../../utils/color';
 	import ColorPicker from '../Common/ColorPicker.svelte';
 	import {fly, fade} from 'svelte/transition';
+	import {debounce} from '../../utils/debounce';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	const DEFAULT_THEME = 'mirror';
 
@@ -15,20 +17,34 @@
 		{name: 'Mirror(Low) - MicroBlock', value: 'mirror-low'},
 		{name: 'Unbounded - MicroBlock', value: 'unbounded'},
 		{name: 'ReeDark', value: 'ree-dark'},
+		{name: 'FlyLight', value: 'flylight'},
 	];
 
 	let currentTheme = DEFAULT_THEME;
 	let currentBGImage = '';
-	let currentBGColor = 'rgba(131, 131, 131, 0.082)';
-	let currentHeaderColor = 'rgba(92, 92, 92, 0.281)';
+
 	let currentFontNames = 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif';
+
+	let currentBGColor = 'rgba(17, 17, 17, 0.3682)';
+	let currentHeaderColor = 'rgba(0, 0, 0, 0.4152)';
+
+	let currentButtonColor = 'rgba(50, 115, 219, 1.0)';
+	let currentLabelColor = 'rgba(219, 219, 219, 1.0)';
+	let currentPpColor = 'rgba(253, 219, 255, 1.0)';
+	let currentSelectedColor = 'rgba(50, 115, 220, 1.0)';
 
 	function onConfigUpdated(config) {
 		if (config?.preferences?.theme != currentTheme) currentTheme = config?.preferences?.theme ?? DEFAULT_THEME;
 		if (config?.preferences?.bgimage != currentBGImage) currentBGImage = config?.preferences?.bgimage ?? '';
+		if (config?.preferences?.fontNames != currentFontNames) currentFontNames = config?.preferences?.fontNames ?? '';
+
 		if (config?.preferences?.bgColor != currentBGColor) currentBGColor = config?.preferences?.bgColor ?? '';
 		if (config?.preferences?.headerColor != currentHeaderColor) currentHeaderColor = config?.preferences?.headerColor ?? '';
-		if (config?.preferences?.fontNames != currentFontNames) currentFontNames = config?.preferences?.fontNames ?? '';
+
+		if (config?.preferences?.buttonColor != currentButtonColor) currentButtonColor = config?.preferences?.buttonColor ?? '';
+		if (config?.preferences?.labelColor != currentLabelColor) currentLabelColor = config?.preferences?.labelColor ?? '';
+		if (config?.preferences?.ppColor != currentPpColor) currentPpColor = config?.preferences?.ppColor ?? '';
+		if (config?.preferences?.selectedColor != currentSelectedColor) currentSelectedColor = config?.preferences?.selectedColor ?? '';
 	}
 
 	async function settempsetting(key, value) {
@@ -37,13 +53,38 @@
 		await configStore.setForKey('preferences', preferences, false);
 	}
 
+	function setCssValue(key, value) {
+		if (currentTheme != 'default' && currentTheme != 'ree-dark') {
+			setGlobalCSSValue(key, value);
+		} else {
+			removeGlobalCSSValue(key);
+		}
+	}
+
 	async function bgColorCallback(bgColor) {
-		setGlobalCSSValue('customizable-color-1', bgColor);
+		setCssValue('customizable-color-1', bgColor);
 		await settempsetting('bgColor', bgColor);
 	}
 	async function headerColorCallback(headerColor) {
-		setGlobalCSSValue('customizable-color-2', headerColor);
+		setCssValue('customizable-color-2', headerColor);
 		await settempsetting('headerColor', headerColor);
+	}
+
+	async function buttonColorCallback(color) {
+		setCssValue('bg-color', color);
+		await settempsetting('buttonColor', color);
+	}
+	async function labelColorCallback(color) {
+		setCssValue('color', color);
+		await settempsetting('labelColor', color);
+	}
+	async function ppColorCallback(color) {
+		setCssValue('ppColour', color);
+		await settempsetting('ppColor', color);
+	}
+	async function selectedColorCallback(color) {
+		setCssValue('selected', color);
+		await settempsetting('selectedColor', color);
 	}
 
 	async function bgimagecallback(bgimage) {
@@ -58,16 +99,32 @@
 		importFonts(fontNames);
 	}
 
+	const debounceCurrentBGColor = debounce(rgba => (currentBGColor = rgba.detail), 100);
+	const debounceCurrentHeaderColor = debounce(rgba => (currentHeaderColor = rgba.detail), 100);
+
+	const debounceCurrentButtonColor = debounce(rgba => (currentButtonColor = rgba.detail), 100);
+	const debounceCurrentLabelColor = debounce(rgba => (currentLabelColor = rgba.detail), 100);
+	const debounceCurrentPpColor = debounce(rgba => (currentPpColor = rgba.detail), 100);
+	const debounceCurrentSelectedColor = debounce(rgba => (currentSelectedColor = rgba.detail), 100);
+
+	const debounceCurrentFontNames = debounce(event => (currentFontNames = event.srcElement.value), 500);
+	const debounceCurrentBGImage = debounce(event => (currentBGImage = event.srcElement.value), 500);
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
-	$: bgColorCallback(currentBGColor);
-	$: headerColorCallback(currentHeaderColor);
+	$: currentTheme && bgColorCallback(currentBGColor);
+	$: currentTheme && headerColorCallback(currentHeaderColor);
 	$: bgimagecallback(currentBGImage);
+	$: currentTheme && buttonColorCallback(currentButtonColor);
+	$: currentTheme && labelColorCallback(currentLabelColor);
+	$: currentTheme && ppColorCallback(currentPpColor);
+	$: currentTheme && selectedColorCallback(currentSelectedColor);
+
 	$: fontNamesCallback(currentFontNames);
 	$: settempsetting('theme', currentTheme);
 </script>
 
-<div class="options" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="options" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<section class="option">
 		<label title="Choose the theme you want">Theme</label>
 		<Select bind:value={currentTheme} options={themes} />
@@ -75,24 +132,43 @@
 	{#if currentTheme != 'default' && currentTheme != 'ree-dark'}
 		<section class="option">
 			<label title="Input url of the background image you want">Background Image</label>
-			<input type="url" bind:value={currentBGImage} />
+			<input type="url" value={currentBGImage} on:input={debounceCurrentBGImage} />
 			<span style="cursor: pointer; font-size: x-small;" on:click={() => (currentBGImage = '/assets/background.jpg')}
 				><u>Reset to default</u></span>
 		</section>
 
 		<section class="option">
 			<label title="Select color for the backgrounds of the elements">Main Color</label>
-			<ColorPicker on:colorChange={rgba => (currentBGColor = rgba.detail)} startColor={currentBGColor} />
+			<ColorPicker on:colorChange={debounceCurrentBGColor} startColor={currentBGColor} />
 		</section>
 
 		<section class="option">
 			<label title="Select color for the backgrounds of the elements">Header Color</label>
-			<ColorPicker on:colorChange={rgba => (currentHeaderColor = rgba.detail)} startColor={currentHeaderColor} />
+			<ColorPicker on:colorChange={debounceCurrentHeaderColor} startColor={currentHeaderColor} />
+		</section>
+
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">Button Color</label>
+			<ColorPicker on:colorChange={debounceCurrentButtonColor} startColor={currentButtonColor} />
+		</section>
+
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">Label Color</label>
+			<ColorPicker on:colorChange={debounceCurrentLabelColor} startColor={currentLabelColor} />
+		</section>
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">Selected Color</label>
+			<ColorPicker on:colorChange={debounceCurrentSelectedColor} startColor={currentSelectedColor} />
+		</section>
+
+		<section class="option">
+			<label title="Select color for the backgrounds of the elements">PP Color</label>
+			<ColorPicker on:colorChange={debounceCurrentPpColor} startColor={currentPpColor} />
 		</section>
 
 		<section class="option">
 			<label title="Input url of the background image you want">Fonts (Google Fonts or System)</label>
-			<input type="text" bind:value={currentFontNames} />
+			<input type="text" value={currentFontNames} on:input={debounceCurrentFontNames} />
 			<span
 				style="cursor: pointer; font-size: x-small;"
 				on:click={() => (currentFontNames = 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif')}><u>Reset to default</u></span>
@@ -102,11 +178,15 @@
 
 <style>
 	.options {
-		display: grid;
+		display: none;
 		grid-template-columns: repeat(2, 1fr);
 		grid-gap: 1em;
 		align-items: start;
 		justify-items: start;
+	}
+
+	.options.visible {
+		display: grid;
 	}
 
 	.option {

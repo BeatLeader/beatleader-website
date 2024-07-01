@@ -8,6 +8,7 @@ export default () => {
 
 	const getProcessed = async ({
 		type = 'global',
+		count = 50,
 		page = 1,
 		filters = {},
 		priority = queue.PRIORITY.FG_HIGH,
@@ -20,11 +21,11 @@ export default () => {
 		let data = null;
 		switch (type) {
 			case 'followed':
-				data = await rankingService.getFollowed(page, filters, priority, signal, force);
+				data = await rankingService.getFollowed(count, page, filters, priority, signal, force);
 				break;
 
 			default:
-				data = await rankingService.getGlobal(page, filters, priority, signal, force);
+				data = await rankingService.getGlobal(count, page, filters, priority, signal, force);
 		}
 
 		return {total: data?.metadata?.total ?? null, data: data?.data ?? []};

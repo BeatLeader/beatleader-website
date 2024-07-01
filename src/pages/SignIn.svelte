@@ -38,6 +38,8 @@
 		}
 	}
 
+	let oculusPcAction = 'signup';
+
 	$: loggedInPlayer = opt($account, 'id');
 	$: socials = opt($account, 'player.playerInfo.socials');
 	$: error = opt($account, 'error') ?? $oculus?.error;
@@ -326,8 +328,9 @@
 				<b>Login and password.</b>
 				New login and password just for this website.<br />
 				Your ID will remain the same.<br />
+				Or if you have existing Quest account.<br />
 				<form action={BL_API_URL + 'signinoculus/oculuspc'} method="post">
-					<input type="hidden" name="action" value="signup" />
+					<input type="hidden" name="action" value={oculusPcAction} />
 					<input type="hidden" name="Token" value={token} />
 					<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
 					<div class="input-container">
@@ -339,7 +342,22 @@
 						<input name="password" type="password" bind:value={password} placeholder="Password" />
 					</div>
 					<div class="button-container">
-						<Button iconFa="fas fa-plus-square" label="Sign up" type="submit" />
+						<Button
+							iconFa="fas fa-plus-square"
+							label="Sign up"
+							type="submit"
+							on:click={() => {
+								oculusPcAction = 'signup';
+							}} />
+					</div>
+					<div class="button-container">
+						<Button
+							iconFa="fas fa-right-to-bracket"
+							label="Log in with Quest"
+							type="submit"
+							on:click={() => {
+								oculusPcAction = 'login';
+							}} />
 					</div>
 				</form>
 			{:else}

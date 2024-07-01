@@ -17,6 +17,7 @@
 	import LeaderboardHeader from '../Leaderboard/LeaderboardHeader.svelte';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	const isDemo = writable(true);
 	setContext('isDemo', isDemo);
@@ -239,11 +240,13 @@
 	async function toggleBots() {
 		if (isUpdating) return;
 
+		const newValue = !showBots;
 		try {
 			isUpdating = true;
 
-			await account.update({showBots: !showBots});
+			await account.update({showBots: newValue});
 		} finally {
+			showBots = newValue;
 			isUpdating = null;
 		}
 	}
@@ -251,11 +254,13 @@
 	async function toggleAllRatings() {
 		if (isUpdating) return;
 
+		const newValue = !showAllRatings;
 		try {
 			isUpdating = true;
 
-			await account.update({showAllRatings: !showAllRatings});
+			await account.update({showAllRatings: newValue});
 		} finally {
+			showAllRatings = newValue;
 			isUpdating = null;
 		}
 	}
@@ -295,7 +300,7 @@
 	$: updateProfileSettings($account);
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<DemoLeaderboardScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
 		<section class="option full">
@@ -419,8 +424,11 @@
 
 <style>
 	.main-container {
-		display: flex;
+		display: none;
 		flex-direction: column;
+	}
+	.main-container.visible {
+		display: flex;
 	}
 	.options {
 		display: grid;

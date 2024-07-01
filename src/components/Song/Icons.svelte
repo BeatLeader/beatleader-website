@@ -8,7 +8,7 @@
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import {capitalize, opt} from '../../utils/js';
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
@@ -114,9 +114,9 @@
 			}
 		} else {
 			if (replayLink?.length) {
-				return `https://replay.beatleader.xyz/?link=${replayLink}`;
+				return `${BL_REPLAYS_URL}?link=${replayLink}`;
 			} else if (scoreId) {
-				return `https://replay.beatleader.xyz/?scoreId=${scoreId}`;
+				return `${BL_REPLAYS_URL}?scoreId=${scoreId}`;
 			}
 		}
 		return null;
@@ -235,15 +235,25 @@
 			{/if}
 
 			{#if shownIcons.includes('bs')}
-				<a href="https://beatsaver.com/maps/{songKey}" target="_blank" rel="noreferrer">
-					<Button icon={beatSaverSvg} title="Go to Beat Saver" animated={true} noMargin={true} />
-				</a>
+				<Button
+					url="https://beatsaver.com/maps/{songKey}"
+					urltarget="_blank"
+					onlyurl={true}
+					icon={beatSaverSvg}
+					title="Go to Beat Saver"
+					animated={true}
+					noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('mapcheck')}
-				<a href="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}" target="_blank" rel="noreferrer">
-					<Button iconFa="fas fa-magnifying-glass-location" title="Check the map" animated={true} noMargin={true} />
-				</a>
+				<Button
+					url="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}"
+					urltarget="_blank"
+					onlyurl={true}
+					iconFa="fas fa-magnifying-glass-location"
+					title="Check the map"
+					animated={true}
+					noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('oneclick')}
@@ -328,6 +338,6 @@
 	}
 
 	:global(.replay-button-alt) {
-		--bg-color: transparent !important;
+		--btn-bg-color: transparent !important;
 	}
 </style>

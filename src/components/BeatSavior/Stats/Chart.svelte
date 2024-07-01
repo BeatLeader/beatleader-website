@@ -2,6 +2,7 @@
 	import Chart from 'chart.js/auto';
 	import {formatNumber} from '../../../utils/format';
 	import {opt} from '../../../utils/js';
+	import {configStore} from '../../../stores/config';
 
 	export let beatSavior = null;
 	export let name = null;
@@ -14,6 +15,13 @@
 
 	let themeName = 'darkss';
 	let theme = null;
+	let textColor = '';
+
+	if ($configStore.preferences.theme != 'flylight') {
+		textColor = '#fff';
+	} else {
+		textColor = '#757575';
+	}
 
 	function average(arr) {
 		return arr.reduce((p, c) => p + c, 0) / arr.length;
@@ -100,6 +108,9 @@
 				data: {labels, datasets},
 				options: {
 					responsive: true,
+					animation: {
+						duration: 0,
+					},
 					maintainAspectRatio: false,
 					interaction: {
 						mode: 'index',
@@ -125,7 +136,7 @@
 							ticks: {
 								autoSkip: true,
 								autoSkipPadding: 4,
-								color: 'white',
+								color: textColor,
 							},
 						},
 						y: {
@@ -135,7 +146,7 @@
 								callback: function (val) {
 									return val + '%';
 								},
-								color: 'white',
+								color: textColor,
 							},
 						},
 					},

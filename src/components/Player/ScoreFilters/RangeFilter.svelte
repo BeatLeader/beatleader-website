@@ -8,12 +8,13 @@
 	export let minValue = 0;
 	export let maxValue = 15;
 	export let step = 0.1;
+	export let defaultValue = null;
 
 	const dispatch = createEventDispatcher();
 
 	let filterEl = null;
-	let from = minValue;
-	let to = maxValue;
+	let from = defaultValue ? defaultValue.from : minValue;
+	let to = defaultValue ? defaultValue.to : maxValue;
 
 	async function onFromChanged() {
 		await tick();
@@ -39,6 +40,8 @@
 	const debouncedOnToChanged = debounce(onToChanged, DEBOUNCE_MS);
 
 	$: if (open && filterEl) filterEl.focus();
+	$: if (open) debouncedOnFromChanged();
+	$: if (open) debouncedOnToChanged();
 </script>
 
 <span class="flex">

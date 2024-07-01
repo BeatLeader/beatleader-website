@@ -58,7 +58,7 @@
 	<section>
 		<h3 style="display: flex;" class="title is-6">
 			<div style="width: 20px; height: 20px" class="accsaber-icon" />
-			<span>{capitalize(currentCategoryName)} accuracy ranking</span>
+			<span>{capitalize(currentCategoryName)} acc ranking</span>
 			{#if isLoading}
 				<Spinner />
 			{/if}

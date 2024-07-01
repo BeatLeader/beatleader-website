@@ -13,10 +13,11 @@
 	import CardsCarousel from '../Player/CardsCarousel.svelte';
 	import {describeGraphAxis, describeProfilePart} from '../../utils/beatleader/format';
 	import PinnedScores from '../Player/PinnedScores.svelte';
-	import Achievements from '../Player/Achievements.svelte';
 	import {debounce} from '../../utils/debounce';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_SORT_VALUE = 'last';
@@ -76,6 +77,29 @@
 		}
 	}
 
+	let isUpdating = false;
+	let followersPublic = true;
+
+	async function toggleFollowersPublic() {
+		if (isUpdating) return;
+
+		try {
+			isUpdating = true;
+			followersPublic = !followersPublic;
+			fetch(`${BL_API_URL}user/friends?is_public=${followersPublic}`, {method: 'PATCH', credentials: 'include'}).then(() => {
+				isUpdating = false;
+			});
+		} finally {
+			isUpdating = null;
+		}
+	}
+
+	function updateProfileSettings(account) {
+		if (account) {
+			followersPublic = !account.hideFriends;
+		}
+	}
+
 	function onCurrentDaysToCompareChange(event) {
 		currentDaysToCompare = event.detail.values[0];
 	}
@@ -111,12 +135,13 @@
 	$: playerData = $playerStore;
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
+	$: updateProfileSettings($account);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 	$: profileParts = Object.keys($configStore.profileParts);
 	$: graphLegends = Object.keys($configStore.chartLegendVisible);
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile">
 		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" clanEffects={false} />
 
@@ -126,12 +151,26 @@
 		{#if $configStore.profileParts.pinnedScores}
 			<PinnedScores {pinnedScoresStore} {playerId} />
 		{/if}
-		{#if $configStore.profileParts.achievements}
-			<Achievements {playerId} />
-		{/if}
 	</div>
 
 	<div class="options">
+		{#if $account?.player}
+			<section class="option full">
+				<label title="Wether to show and make public followers">Followers:</label>
+				{#if isUpdating}
+					<Spinner />
+				{/if}
+				<div class="followers-switches">
+					<Switch
+						disabled={isUpdating}
+						value={followersPublic}
+						label="Public followers and following (auto-saved)"
+						fontSize={12}
+						design="slider"
+						on:click={() => toggleFollowersPublic()} />
+				</div>
+			</section>
+		{/if}
 		<section class="option">
 			<label title="Determines when to show icons on player avatars">Icons on avatars</label>
 			<Select bind:value={currentAvatarIcons} options={avatarIcons} />
@@ -186,6 +225,19 @@
 			</div>
 		</section>
 
+		<section class="option full">
+			<label title="Determines which parts of the profile to show">Other score sources:</label>
+			<div class="switches">
+				<Switch
+					value={$configStore.preferences.showAccSaber}
+					label="AccSaber"
+					title="Show AccSaber information on profiles"
+					fontSize={12}
+					design="slider"
+					on:click={() => settempsetting('showAccSaber', !$configStore.preferences.showAccSaber)} />
+			</div>
+		</section>
+
 		{#if $configStore.profileParts.graphs}
 			<section class="option">
 				<label title="How many days of history to show on the profile">Graph height(px):</label>
@@ -220,8 +272,12 @@
 
 <style>
 	.main-container {
-		display: flex;
+		display: none;
 		flex-direction: column;
+	}
+
+	.main-container.visible {
+		display: flex;
 	}
 
 	.profile {
@@ -286,6 +342,13 @@
 		margin-bottom: 0.25em;
 	}
 	.switches {
+		display: flex;
+		grid-gap: 1em;
+		flex-wrap: wrap;
+		justify-content: space-evenly;
+		padding: 0.5em;
+	}
+	.followers-switches {
 		display: flex;
 		grid-gap: 1em;
 		flex-wrap: wrap;

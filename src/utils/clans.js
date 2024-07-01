@@ -1,14 +1,14 @@
 export function playersTitle(tag, count) {
 	switch (tag) {
 		case 'DUH':
-			return 'prayer' + (count ? 's' : '');
+			return 'prayer' + (count > 1 ? 's' : '');
 		case 'JML':
-			return 'jamal' + (count ? 's' : '');
+			return 'jamal' + (count > 1 ? 's' : '');
 		case 'OOTK':
-			return 'varma' + (count ? 'a' : '');
+			return 'varma' + (count > 1 ? 'a' : '');
 
 		default:
-			return 'player' + (count ? 's' : '');
+			return 'player' + (count > 1 ? 's' : '');
 	}
 }
 

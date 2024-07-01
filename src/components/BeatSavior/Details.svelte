@@ -39,7 +39,7 @@
 </script>
 
 {#if beatSavior}
-	<section class="beat-savior" transition:fade|global>
+	<section class="beat-savior">
 		{#if !graphOnly && ($configStore?.scoreDetailsPreferences?.showScoreMetrics || $configStore?.scoreDetailsPreferences?.showHandsAcc || (showGrid && $configStore?.scoreDetailsPreferences?.showSliceDetails))}
 			<DetailsBox cls="details-and-hands">
 				{#if $configStore?.scoreDetailsPreferences?.showScoreMetrics}

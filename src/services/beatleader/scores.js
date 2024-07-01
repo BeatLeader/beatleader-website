@@ -143,6 +143,16 @@ export default () => {
 				round = 0;
 				suffixLong = ` views`;
 				break;
+			case 'playCount':
+				valFunc = s => parseInt(s, 10);
+				type = 'linear';
+				bucketSize = 5;
+				minBucketSize = 1;
+				maxBucketSize = 100;
+				bucketSizeStep = 0.1;
+				round = 0;
+				suffixLong = ` attempts`;
+				break;
 
 			case 'acc':
 				(valFunc = s => parseFloat(s) * 100), (filterFunc = s => (valFunc(s) ?? 0) > 0 && commonFilterFunc(s));

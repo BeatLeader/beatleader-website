@@ -87,7 +87,7 @@ export default () => {
 	const fetchPlayerOrGetFromCache = async (playerId, refreshInterval = MINUTE, priority = PRIORITY.FG_LOW, signal = null, force = false) =>
 		fetchPlayer(playerId, priority, {signal, cacheTtl: MINUTE, maxAge: force ? 0 : refreshInterval});
 
-	const fetchAccGraph = async (playerId, type, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
+	const fetchAccGraph = async (playerId, type, no_unranked_stars, priority = PRIORITY.BG_NORMAL, throwErrors = false) => {
 		try {
 			log.trace(`Starting fetching player "${playerId}" acc graph...`, 'PlayerService');
 
@@ -97,8 +97,8 @@ export default () => {
 				return null;
 			}
 
-			const accGraph = resolvePromiseOrWaitForPending(`apiClient/accgraph/${type}/${playerId}`, () =>
-				playerAccGraphApiClient.getProcessed({playerId, type, priority})
+			const accGraph = resolvePromiseOrWaitForPending(`apiClient/accgraph/${type}/${playerId}/${no_unranked_stars}`, () =>
+				playerAccGraphApiClient.getProcessed({playerId, type, no_unranked_stars, priority})
 			);
 
 			log.debug(`Player acc graph fetched.`, 'PlayerService', accGraph);

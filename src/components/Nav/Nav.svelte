@@ -27,10 +27,10 @@
 	let settingsNotificationBadge = null;
 	let clansNotification = null;
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function navigateToPlayer(player) {
+		if (!player) return;
 
-		navigate(`/u/${playerId}`);
+		navigate(`/u/${player.alias ?? player.playerId}`);
 	}
 
 	let accountMenuShown = false;
@@ -120,7 +120,7 @@
 	function calculateSignUpOptions(loggedInUser) {
 		signupOptions =
 			isTouchDevice() && player
-				? [{component: LinkMenuItem, props: {label: 'My profile', url: `/u/${player.playerId}`, class: 'touch-only'}}]
+				? [{component: LinkMenuItem, props: {label: 'My profile', url: `/u/${player.alias ?? player.playerId}`, class: 'touch-only'}}]
 				: [];
 
 		const isStaff = $account?.player?.playerInfo?.role
@@ -154,7 +154,7 @@
 							e?.preventDefault();
 							e?.stopPropagation();
 							accountMenuShown = false;
-							navigateToPlayer(player.playerId);
+							navigateToPlayer(player);
 						},
 					})),
 				];
@@ -302,9 +302,10 @@
 	{#if player}
 		<div class="me nav-button">
 			<a
-				href={`/u/${player.playerId}`}
+				href={`/u/${player.alias ?? player.playerId}`}
+				aria-label="My profile"
 				on:click|preventDefault={() => {
-					if (!isTouchDevice()) navigateToPlayer(player.playerId);
+					if (!isTouchDevice()) navigateToPlayer(player);
 				}}
 				use:mobileTouch={() => (accountMenuShown = !accountMenuShown)}>
 				{#if opt(player, 'playerInfo.avatar')}
@@ -340,7 +341,7 @@
 			</Dropdown>
 		</div>
 	{:else}
-		<a href={`/signin`}>
+		<a href={`/signin`} aria-label="Sign In">
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path
 					stroke-linecap="round"
@@ -353,7 +354,7 @@
 		</a>
 	{/if}
 
-	<a href="/ranking/1" on:click|preventDefault={() => navigate('/ranking/1')}>
+	<a href="/ranking/1" aria-label="Ranking" on:click|preventDefault={() => navigate('/ranking/1')}>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
 			<path
 				fill-rule="evenodd"
@@ -364,7 +365,7 @@
 		Ranking
 	</a>
 
-	<a href="#" on:click|preventDefault={() => ($search = true)} class="mobile-only">
+	<a href="#" aria-label="Search" on:click|preventDefault={() => ($search = true)} class="mobile-only">
 		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 		</svg>
@@ -384,7 +385,7 @@
 			use:clickOutside={{callback: () => (mobileMenuShown = false), parent: '.nav-button'}}>
 			<div class="dropdown-content">
 				<div class="dropdown-item">
-					<a href="/clans" title={clanInviteBadgeTitle} on:click|preventDefault={() => navigate('/clans')}>
+					<a href="/clans" aria-label="Clans" title={clanInviteBadgeTitle} on:click|preventDefault={() => navigate('/clans')}>
 						<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512">
 							<path
 								d="M184 88C184 118.9 158.9 144 128 144C97.07 144 72 118.9 72 88C72 57.07 97.07 32 128 32C158.9 32 184 57.07 184 88zM208.4 196.3C178.7 222.7 160 261.2 160 304C160 338.3 171.1 369.8 192 394.5V416C192 433.7 177.7 448 160 448H96C78.33 448 64 433.7 64 416V389.2C26.16 371.2 0 332.7 0 288C0 226.1 50.14 176 112 176H144C167.1 176 190.2 183.5 208.4 196.3V196.3zM64 245.7C54.04 256.9 48 271.8 48 288C48 304.2 54.04 319.1 64 330.3V245.7zM448 416V394.5C468 369.8 480 338.3 480 304C480 261.2 461.3 222.7 431.6 196.3C449.8 183.5 472 176 496 176H528C589.9 176 640 226.1 640 288C640 332.7 613.8 371.2 576 389.2V416C576 433.7 561.7 448 544 448H480C462.3 448 448 433.7 448 416zM576 330.3C585.1 319.1 592 304.2 592 288C592 271.8 585.1 256.9 576 245.7V330.3zM568 88C568 118.9 542.9 144 512 144C481.1 144 456 118.9 456 88C456 57.07 481.1 32 512 32C542.9 32 568 57.07 568 88zM256 96C256 60.65 284.7 32 320 32C355.3 32 384 60.65 384 96C384 131.3 355.3 160 320 160C284.7 160 256 131.3 256 96zM448 304C448 348.7 421.8 387.2 384 405.2V448C384 465.7 369.7 480 352 480H288C270.3 480 256 465.7 256 448V405.2C218.2 387.2 192 348.7 192 304C192 242.1 242.1 192 304 192H336C397.9 192 448 242.1 448 304zM256 346.3V261.7C246 272.9 240 287.8 240 304C240 320.2 246 335.1 256 346.3zM384 261.7V346.3C393.1 335 400 320.2 400 304C400 287.8 393.1 272.9 384 261.7z" />
@@ -398,10 +399,35 @@
 				<div class="dropdown-item">
 					<a
 						href="/maps"
+						aria-label="Maps"
 						on:click|preventDefault={() => {
 							navigate('/maps');
 						}}>
-						<img class="maps-icon" src="/assets/maps-icon.webp" />
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink"
+							version="1.1"
+							style="width: 1.4em; height: 1.4em"
+							fill="currentColor"
+							viewBox="0 -0.000021333333336315263 256 242.00004266666667"
+							xml:space="preserve">
+							<desc>Created with Fabric.js 5.3.0</desc>
+							<defs />
+							<g transform="matrix(1.1048905253 0 0 1.1048905253 129.000001 121)" id="Hv0Mln4rOQt0RfN4JTAED">
+								<path
+									style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero;"
+									transform=" translate(-129.4592048269, -121.9449386269)"
+									d="M 45.000389 178.985321 C 45.00045 137.992767 45.189491 97.496063 44.861656 57.003548 C 44.784096 47.424049 54.241299 37.780491 64.001831 37.855831 C 107.327415 38.19025 150.658096 38.15852 193.98439 37.873428 C 203.12883 37.813251 212.811661 45.977306 212.993591 55.486298 C 213.339569 73.568573 213.811829 91.650421 213.935333 109.734474 C 214.098083 133.563858 214.114029 157.39653 213.883713 181.224792 C 213.821442 187.665894 213.30394 194.314758 208.5121 199.491562 C 205.003296 203.282211 201.02977 206.04187 195.477585 206.03447 C 151.149612 205.975357 106.821526 206.00708 62.493473 205.996414 C 53.822044 205.994339 45.304428 197.709274 45.017761 188.980713 C 44.913883 185.817917 45.000626 182.64888 45.000389 178.985321 M 61.998081 74.501007 C 61.998142 110.818878 62.069172 147.13707 61.905449 183.454208 C 61.885727 187.828964 63.081978 189.114273 67.51033 189.096863 C 108.492271 188.935852 149.475342 188.938278 190.457321 189.094498 C 194.831314 189.11116 196.114288 187.925613 196.096756 183.494614 C 195.934601 142.51268 195.937805 101.52961 196.09346 60.547623 C 196.110046 56.177303 194.930069 54.872513 190.494385 54.900955 C 161.174728 55.088959 131.853287 54.998047 102.532417 54.998112 C 90.537514 54.998138 78.541191 55.101215 66.548607 54.934402 C 63.07354 54.886063 61.755344 55.97451 61.939281 59.510906 C 62.181255 64.162987 61.998314 68.837181 61.998081 74.501007 z"
+									stroke-linecap="round" />
+							</g>
+							<g transform="matrix(1.1048905253 0 0 1.1048905253 127.9964442239 91.1615548049)" id="BtC5zti8rEr_z2OL_M3iq">
+								<path
+									style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero;"
+									transform=" translate(-128.5509186636, -94.9391452814)"
+									d="M 90.715462 98.248207 C 88.056625 96.918488 85.791435 95.59008 83.360916 94.727562 C 76.309387 92.225159 74.808846 84.376251 79.059593 77.598518 C 80.176155 75.818184 83.098114 74.17614 85.203873 74.160065 C 114.335274 73.937668 143.469437 73.941101 172.600922 74.158386 C 174.653503 74.173698 177.382858 75.808907 178.605759 77.535141 C 182.406235 82.899879 179.884796 91.398643 173.976761 94.333504 C 160.161194 101.196495 146.240448 107.852715 132.522049 114.903503 C 127.989937 117.232849 124.640701 114.898148 121.093513 113.207054 C 111.019943 108.404556 101.046471 103.392128 90.715462 98.248207 z"
+									stroke-linecap="round" />
+							</g>
+						</svg>
 
 						Maps
 					</a>
@@ -410,6 +436,7 @@
 				<div class="dropdown-item">
 					<a
 						href="/events"
+						aria-label="Events"
 						on:click|preventDefault={() => {
 							navigate('/events');
 						}}>
@@ -425,7 +452,7 @@
 				</div>
 
 				<div class="dropdown-item">
-					<a href="/settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
+					<a href="/settings" aria-label="Settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path
 								stroke-linecap="round"
@@ -445,7 +472,7 @@
 	</div>
 
 	<div class="right">
-		<a href="#" on:click|preventDefault={() => ($search = true)} class="search-button">
+		<a href="#" aria-label="Search" on:click|preventDefault={() => ($search = true)} class="search-button">
 			<div class="search-box">
 				<div>
 					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -461,16 +488,42 @@
 
 		<a
 			href="/maps"
+			aria-label="Maps"
 			on:click|preventDefault={() => {
 				navigate('/maps');
 			}}>
-			<img class="maps-icon" src="/assets/maps-icon.webp" />
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				xmlns:xlink="http://www.w3.org/1999/xlink"
+				version="1.1"
+				style="width: 1.4em; height: 1.4em"
+				fill="currentColor"
+				viewBox="0 -0.000021333333336315263 256 242.00004266666667"
+				xml:space="preserve">
+				<desc>Created with Fabric.js 5.3.0</desc>
+				<defs />
+				<g transform="matrix(1.1048905253 0 0 1.1048905253 129.000001 121)" id="Hv0Mln4rOQt0RfN4JTAED">
+					<path
+						style="stroke: none; stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero;"
+						transform=" translate(-129.4592048269, -121.9449386269)"
+						d="M 45.000389 178.985321 C 45.00045 137.992767 45.189491 97.496063 44.861656 57.003548 C 44.784096 47.424049 54.241299 37.780491 64.001831 37.855831 C 107.327415 38.19025 150.658096 38.15852 193.98439 37.873428 C 203.12883 37.813251 212.811661 45.977306 212.993591 55.486298 C 213.339569 73.568573 213.811829 91.650421 213.935333 109.734474 C 214.098083 133.563858 214.114029 157.39653 213.883713 181.224792 C 213.821442 187.665894 213.30394 194.314758 208.5121 199.491562 C 205.003296 203.282211 201.02977 206.04187 195.477585 206.03447 C 151.149612 205.975357 106.821526 206.00708 62.493473 205.996414 C 53.822044 205.994339 45.304428 197.709274 45.017761 188.980713 C 44.913883 185.817917 45.000626 182.64888 45.000389 178.985321 M 61.998081 74.501007 C 61.998142 110.818878 62.069172 147.13707 61.905449 183.454208 C 61.885727 187.828964 63.081978 189.114273 67.51033 189.096863 C 108.492271 188.935852 149.475342 188.938278 190.457321 189.094498 C 194.831314 189.11116 196.114288 187.925613 196.096756 183.494614 C 195.934601 142.51268 195.937805 101.52961 196.09346 60.547623 C 196.110046 56.177303 194.930069 54.872513 190.494385 54.900955 C 161.174728 55.088959 131.853287 54.998047 102.532417 54.998112 C 90.537514 54.998138 78.541191 55.101215 66.548607 54.934402 C 63.07354 54.886063 61.755344 55.97451 61.939281 59.510906 C 62.181255 64.162987 61.998314 68.837181 61.998081 74.501007 z"
+						stroke-linecap="round" />
+				</g>
+				<g transform="matrix(1.1048905253 0 0 1.1048905253 127.9964442239 91.1615548049)" id="BtC5zti8rEr_z2OL_M3iq">
+					<path
+						style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero;"
+						transform=" translate(-128.5509186636, -94.9391452814)"
+						d="M 90.715462 98.248207 C 88.056625 96.918488 85.791435 95.59008 83.360916 94.727562 C 76.309387 92.225159 74.808846 84.376251 79.059593 77.598518 C 80.176155 75.818184 83.098114 74.17614 85.203873 74.160065 C 114.335274 73.937668 143.469437 73.941101 172.600922 74.158386 C 174.653503 74.173698 177.382858 75.808907 178.605759 77.535141 C 182.406235 82.899879 179.884796 91.398643 173.976761 94.333504 C 160.161194 101.196495 146.240448 107.852715 132.522049 114.903503 C 127.989937 117.232849 124.640701 114.898148 121.093513 113.207054 C 111.019943 108.404556 101.046471 103.392128 90.715462 98.248207 z"
+						stroke-linecap="round" />
+				</g>
+			</svg>
 
 			Maps
 		</a>
 
 		<a
 			href="/events"
+			aria-label="Events"
 			on:click|preventDefault={() => {
 				navigate('/events');
 			}}>
@@ -484,7 +537,12 @@
 			Events
 		</a>
 
-		<a href="/clans" title={clanInviteBadgeTitle} on:click|preventDefault={() => navigate('/clans')} class="tablet-and-up">
+		<a
+			href="/clans"
+			aria-label="Clans"
+			title={clanInviteBadgeTitle}
+			on:click|preventDefault={() => navigate('/clans')}
+			class="tablet-and-up">
 			<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"
 				><path
 					d="M184 88C184 118.9 158.9 144 128 144C97.07 144 72 118.9 72 88C72 57.07 97.07 32 128 32C158.9 32 184 57.07 184 88zM208.4 196.3C178.7 222.7 160 261.2 160 304C160 338.3 171.1 369.8 192 394.5V416C192 433.7 177.7 448 160 448H96C78.33 448 64 433.7 64 416V389.2C26.16 371.2 0 332.7 0 288C0 226.1 50.14 176 112 176H144C167.1 176 190.2 183.5 208.4 196.3V196.3zM64 245.7C54.04 256.9 48 271.8 48 288C48 304.2 54.04 319.1 64 330.3V245.7zM448 416V394.5C468 369.8 480 338.3 480 304C480 261.2 461.3 222.7 431.6 196.3C449.8 183.5 472 176 496 176H528C589.9 176 640 226.1 640 288C640 332.7 613.8 371.2 576 389.2V416C576 433.7 561.7 448 544 448H480C462.3 448 448 433.7 448 416zM576 330.3C585.1 319.1 592 304.2 592 288C592 271.8 585.1 256.9 576 245.7V330.3zM568 88C568 118.9 542.9 144 512 144C481.1 144 456 118.9 456 88C456 57.07 481.1 32 512 32C542.9 32 568 57.07 568 88zM256 96C256 60.65 284.7 32 320 32C355.3 32 384 60.65 384 96C384 131.3 355.3 160 320 160C284.7 160 256 131.3 256 96zM448 304C448 348.7 421.8 387.2 384 405.2V448C384 465.7 369.7 480 352 480H288C270.3 480 256 465.7 256 448V405.2C218.2 387.2 192 348.7 192 304C192 242.1 242.1 192 304 192H336C397.9 192 448 242.1 448 304zM256 346.3V261.7C246 272.9 240 287.8 240 304C240 320.2 246 335.1 256 346.3zM384 261.7V346.3C393.1 335 400 320.2 400 304C400 287.8 393.1 272.9 384 261.7z" /></svg>
@@ -493,7 +551,7 @@
 			{#if clansNotification}<div class="notification-badge" />{/if}
 		</a>
 
-		<a href="/settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
+		<a href="/settings" aria-label="Settings" title={notificationBadgeTitle} on:click|preventDefault={() => navigate('/settings')}>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path
 					stroke-linecap="round"
@@ -521,6 +579,7 @@
 		background-color: var(--foreground);
 		border-bottom: 1px solid var(--dimmed);
 		z-index: 50;
+		max-width: none;
 		box-shadow: 0 8px 10px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
 	}
 
@@ -706,11 +765,6 @@
 
 	.search-hint {
 		display: none !important;
-	}
-
-	.maps-icon {
-		width: 1.5em;
-		margin-right: 0.4em;
 	}
 
 	@media (pointer: coarse) {

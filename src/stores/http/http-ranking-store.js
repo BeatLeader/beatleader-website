@@ -27,7 +27,7 @@ export default (type = 'global', page = 1, filters = {}, initialState = null, in
 		initialStateType
 	);
 
-	const fetch = async (type = currentType, page = currentPage, filters = currentFilters, force = false) => {
+	const fetch = async (type = currentType, count, page = currentPage, filters = currentFilters, force = false) => {
 		if (
 			(!type || type === currentType) &&
 			(!page || page === currentPage) &&
@@ -36,7 +36,7 @@ export default (type = 'global', page = 1, filters = {}, initialState = null, in
 		)
 			return false;
 
-		return httpStore.fetch({type, page, filters}, force, provider);
+		return httpStore.fetch({type, count, page, filters}, force, provider);
 	};
 
 	const refresh = async () => fetch(currentType, currentPage, currentFilters, true);

@@ -13,11 +13,11 @@
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import {describePlatform, getControllerForEnum, getHeadsetForHMD} from '../../utils/beatleader/format';
+	import {BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let leaderboardId = null;
 	export let score = null;
 	export let type = 'beatleader';
-	export let opened = false;
 	export let highlight = false;
 	export let sortBy = 'rank';
 	export let fixedBrowserTitle = null;
@@ -41,11 +41,13 @@
 		}
 	};
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function navigateToPlayer(player) {
+		if (!player) return;
 
-		navigate(`/u/${playerId}`);
+		navigate(`/u/${player.alias ?? player.playerId}`);
 	}
+
+	let opened = false;
 
 	$: priorityModifiers = Object.keys(modifiers ?? {})
 		.filter(m => m !== 'modifierId' && (modifiers?.[m] ?? 0) !== 0)
@@ -91,7 +93,7 @@
 				</Badge>
 			</div>
 			<div class="player">
-				{#if $configStore?.leaderboardPreferences?.show?.hmd !== false}
+				{#if $configStore?.leaderboardPreferences?.show?.hmd !== false && type !== 'accsaber'}
 					<div class="hmd-image-container">
 						<img src={'/assets/' + headset?.icon} alt={headset?.name} {title} style={headsetStyle} />
 					</div>
@@ -114,7 +116,7 @@
 					player={score.player}
 					type={type === 'accsaber' ? 'accsaber/date' : null}
 					hideFlag={$configStore?.leaderboardPreferences?.show?.country === false || isBot}
-					on:click={score.player ? () => navigateToPlayer(score.player.playerId) : null} />
+					on:click={score.player ? () => navigateToPlayer(score.player) : null} />
 
 				{#if !hideClans && $configStore?.leaderboardPreferences?.show?.clans !== false}
 					<ClanBadges player={score.player} />
@@ -180,14 +182,14 @@
 								url={`${
 									$configStore.preferences.webPlayer == 'arcviewer'
 										? 'https://allpoland.github.io/ArcViewer/?scoreID='
-										: 'https://replay.beatleader.xyz/?scoreId='
+										: `${BL_REPLAYS_URL}?scoreId=`
 								}${score?.score.id}`}
 								on:click={() =>
 									showPreview(
 										`${
 											$configStore.preferences.webPlayer == 'arcviewer'
 												? 'https://allpoland.github.io/ArcViewer/?scoreID='
-												: 'https://replay.beatleader.xyz/?scoreId='
+												: `${BL_REPLAYS_URL}?scoreId=`
 										}${score?.score.id}`
 									)}
 								cls="replay-button-alt"
@@ -196,7 +198,7 @@
 								noMargin={true} />
 						{/if}
 
-						<span class="beat-savior-reveal clickable" class:opened on:click={() => dispatch('toggle-details')} title="Show details">
+						<span class="beat-savior-reveal clickable" class:opened on:click={() => (opened = !opened)} title="Show details">
 							<i class="fas fa-chevron-down" />
 						</span>
 					{/if}
@@ -208,14 +210,12 @@
 	</div>
 
 	{#if opened}
-		<div>
-			<SongScoreDetails
-				playerId={score?.player?.playerId}
-				songScore={score}
-				{fixedBrowserTitle}
-				noSsLeaderboard={true}
-				showAccSaberLeaderboard={false} />
-		</div>
+		<SongScoreDetails
+			playerId={score?.player?.playerId}
+			songScore={score}
+			{fixedBrowserTitle}
+			noSsLeaderboard={true}
+			showAccSaberLeaderboard={false} />
 	{/if}
 {/if}
 

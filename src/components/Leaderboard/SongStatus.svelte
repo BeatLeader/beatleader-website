@@ -6,10 +6,10 @@
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
 	import Avatar from '../Common/Avatar.svelte';
 
-	function navigateToPlayer(playerId) {
-		if (!playerId) return;
+	function navigateToPlayer(player) {
+		if (!player) return;
 
-		navigate(`/u/${playerId}`);
+		navigate(`/u/${player.alias ?? player.playerId}`);
 	}
 
 	export let songStatus = null;
@@ -49,7 +49,7 @@
 <div class="song-status" style="border: solid 2px {color}; background: {gradient}, center / cover no-repeat url({iconFile})">
 	{#if player}
 		<div class="player-info">
-			<Avatar {player} title={player.name} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
+			<Avatar {player} title={player.name} on:click={player ? () => navigateToPlayer(player) : null} />
 		</div>
 	{:else if responsible}
 		<a href="https://beatsaver.com/profile/{responsible.id}" class="image is-24x24" title={responsible.name}>

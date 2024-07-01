@@ -5,6 +5,7 @@ export default response => {
 	const {
 		id: playerId,
 		name,
+		alias,
 		country,
 		countryRank,
 		badges,
@@ -18,6 +19,7 @@ export default response => {
 		lastWeekPp,
 		lastWeekRank,
 		lastWeekCountryRank,
+		richBioTimeset,
 		banned,
 		bot,
 		banDescription,
@@ -34,9 +36,6 @@ export default response => {
 	} = response;
 
 	let profilePicture = avatar;
-	let externalProfileCorsUrl = externalProfileUrl
-		? externalProfileUrl.replace('https://steamcommunity.com/', '/cors/steamcommunity/')
-		: null;
 
 	if (scoreStats) {
 		[
@@ -51,15 +50,6 @@ export default response => {
 		].forEach(k => {
 			if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
 		});
-	}
-
-	if (scoreStats?.topHMD) {
-		scoreStats.topHMD = getHeadsetForHMD(scoreStats.topHMD)?.name ?? '';
-	}
-
-	if (scoreStats?.topPlatform) {
-		const platformParts = (scoreStats?.topPlatform ?? '').split(',');
-		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? '';
 	}
 
 	let sponsor = role?.includes('sponsor');
@@ -95,12 +85,12 @@ export default response => {
 	return {
 		playerId,
 		name,
+		alias,
 		role,
 		playerInfo: {
 			avatar: profilePicture,
 			externalProfileUrl,
-			externalProfileCorsUrl,
-			countries: [{country, rank: countryRank}],
+			country: {country, rank: countryRank},
 			pp,
 			accPp,
 			techPp,
@@ -113,6 +103,7 @@ export default response => {
 			lastWeekPp,
 			lastWeekRank,
 			lastWeekCountryRank,
+			richBioTimeset,
 			badges,
 			role,
 			sponsor,
@@ -122,6 +113,7 @@ export default response => {
 			changes,
 			clans,
 			clanOrder,
+			horizontalRichBio: profileSettings?.horizontalRichBio,
 		},
 		profileSettings: profileSettings
 			? {

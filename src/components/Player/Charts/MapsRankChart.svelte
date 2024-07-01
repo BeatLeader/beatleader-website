@@ -42,7 +42,15 @@
 	async function setupChart(hash, canvas, selectedPlaylist) {
 		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
 
-		const mapBorderColor = '#003e54';
+		if ($configStore.preferences.theme != 'flylight') {
+			var mapBorderColor = '#003e54';
+
+			Chart.defaults.color = '#fff';
+		} else {
+			var mapBorderColor = '#dadadaaf';
+
+			Chart.defaults.color = '#757575';
+		}
 
 		lastHistoryHash = chartHash;
 		const refreshOptions = (!selectedPlaylist && lastPlaylist) || (selectedPlaylist && !lastPlaylist);
@@ -92,8 +100,6 @@
 
 				return result;
 			});
-
-		console.log(maxPp);
 
 		const avgData = Object.entries(
 			chartData.reduce((cum, point) => {

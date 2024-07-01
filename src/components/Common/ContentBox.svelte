@@ -18,7 +18,7 @@
 		background-color: var(--box-background, var(--foreground));
 
 		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-		margin: 4px 10px 18px;
+		margin: 0.5em;
 		border-radius: 6px;
 		padding: 1rem;
 		position: relative;

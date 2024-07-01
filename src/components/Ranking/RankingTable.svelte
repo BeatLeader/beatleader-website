@@ -26,6 +26,7 @@
 	export let meta = false;
 	export let editing = false;
 	export let animationSign = 1;
+	export let playersPerPage = PLAYERS_PER_PAGE;
 
 	let currentFilters = filters;
 
@@ -260,7 +261,7 @@
 		if (eventId) {
 			rankingStore.fetch(newType, newPage, eventId, {...newFilters}, true);
 		} else {
-			rankingStore.fetch(newType, newPage, {...newFilters}, true);
+			rankingStore.fetch(newType, playersPerPage, newPage, {...newFilters}, true);
 		}
 	}
 
@@ -360,7 +361,7 @@
 	$: dispatch('players-fetched', $rankingStore?.data);
 
 	$: maxRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.rank)) : 0;
-	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.countries[0].rank)) : 0;
+	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
 	$: refreshSortValues(allSortValues, currentFilters, $configStore.rankingPreferences);
@@ -390,7 +391,10 @@
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
 			<div
-				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''} {type}-rating"
+				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''} {eventId == 50 &&
+				(player.playerInfo.rank == 1 || player.playerInfo.rank == 10 || player.playerInfo.rank == 50)
+					? 'event-winner'
+					: ''} {type}-rating"
 				in:fly|global={{delay: idx * 10, x: animationSign * 100}}>
 				<PlayerCard
 					{player}
@@ -400,7 +404,9 @@
 					value={sortValue?.value(player)}
 					{maxRank}
 					{maxCountryRank}
-					valueProps={eventId == 32 ? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0} : sortValue?.props ?? {}}
+					valueProps={eventId == 32 || eventId == 48
+						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
+						: sortValue?.props ?? {}}
 					on:filters-updated />
 				{#if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />
@@ -411,7 +417,7 @@
 
 	<Pager
 		totalItems={numOfPlayers}
-		itemsPerPage={PLAYERS_PER_PAGE}
+		itemsPerPage={playersPerPage}
 		itemsPerPageValues={null}
 		currentPage={page - 1}
 		loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
@@ -511,6 +517,10 @@
 	.edit-enabled :global(.score-filters .filter.hidden:hover) {
 		filter: none;
 		opacity: 0.5 !important;
+	}
+
+	:global(.ranking-grid-row.event-winner .player-card) {
+		background-color: #61082c !important;
 	}
 
 	@media screen and (max-width: 500px) {

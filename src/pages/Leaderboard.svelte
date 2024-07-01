@@ -43,7 +43,7 @@
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import {configStore} from '../stores/config';
 	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
 
@@ -115,6 +115,7 @@
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
 
 	let currentPage = 1;
+	let initialPage = page;
 
 	function updateFilters(newFilters) {
 		currentFilters = newFilters;
@@ -163,8 +164,6 @@
 		modifiedAcc = leaderboard?.stats?.accRating;
 		modifiedTech = leaderboard?.stats?.techRating;
 	}
-
-	let openedDetails = [];
 
 	let itemsPerPage = type === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 
@@ -293,6 +292,7 @@
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
 		const newPage = event.detail.page + 1;
+		initialPage = undefined;
 
 		changeParams(currentLeaderboardId, currentType, newPage, currentFilters, !dontNavigate, false);
 	}
@@ -366,7 +366,7 @@
 					: []
 			)
 			.concat(
-				isRanked && showGraphOption
+				showGraphOption
 					? [
 							{
 								type: 'graph',
@@ -399,6 +399,19 @@
 								label: 'Voters',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/voters/${currentLeaderboardId}/1`,
+								filters: {countries: ''},
+							},
+					  ]
+					: []
+			)
+			.concat(
+				isRT
+					? [
+							{
+								type: 'prediction',
+								label: 'Prediction',
+								iconFa: 'fas fa-wand-magic-sparkles',
+								url: `/leaderboard/prediction/${currentLeaderboardId}/1`,
 								filters: {countries: ''},
 							},
 					  ]
@@ -520,16 +533,6 @@
 		window.open(link, '_blank');
 	}
 
-	function toggleOpen(scoreId) {
-		if (!scoreId) return;
-
-		if (openedDetails.includes(scoreId)) {
-			openedDetails = openedDetails.filter(id => id !== scoreId);
-		} else {
-			openedDetails = [...openedDetails, scoreId];
-		}
-	}
-
 	let userScore = null;
 	let userScoreHash = null;
 	async function fetchUserScore(playerId, hash, diff, type, userScoreOnCurrentPage = null) {
@@ -593,6 +596,12 @@
 				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
 			} else if (orderingFunctions[1](userScore.score[key], scores[scores.length - 1]?.score[key])) {
 				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+			} else if (userScore.score[key] == scores[0].score[key]) {
+				scoresWithUser = [{...userScore, isUserScore: true, userScoreTop: true}].concat(scores);
+				scoresWithUser[scores.length].score.rank -= 1;
+			} else if (userScore.score[key] == scores[scores.length - 1]?.score[key]) {
+				scoresWithUser = scores.concat([{...userScore, isUserScore: true, userScoreTop: false}]);
+				scoresWithUser[scores.length].score.rank += 1;
 			}
 		}
 	}
@@ -627,7 +636,7 @@
 
 	$: currentPlayerId = $account?.id;
 	$: higlightedPlayerId = higlightedScore?.playerId ?? currentPlayerId;
-	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
+	$: mainPlayerCountry = $account?.player?.playerInfo?.country?.country ?? null;
 
 	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
 
@@ -740,12 +749,14 @@
 				{/if}
 
 				{#if leaderboardShowSorting && currentType != 'clanranking'}
-					<nav class="switcher-nav" transition:fade|global>
+					<nav class="switcher-nav" transition:slide>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-						<div style="display: flex;">
-							<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
-							<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
-						</div>
+						{#if currentType != 'graph'}
+							<div style="display: flex;">
+								<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
+								<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
+							</div>
+						{/if}
 					</nav>
 				{/if}
 
@@ -768,7 +779,11 @@
 									class={`row-${idx}`}
 									class:user-score={score?.isUserScore}
 									class:user-score-top={score?.userScoreTop}
-									in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+									in:fly|global={initialPage == currentPage
+										? {}
+										: !score?.isUserScore
+										? {x: 200, delay: idx * 20, duration: 500}
+										: {duration: 300}}
 									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
 									<Score
 										{leaderboardId}
@@ -780,8 +795,6 @@
 										{battleRoyaleDraft}
 										{battleRoyaleDraftList}
 										sortBy={currentFilters.sortBy}
-										opened={openedDetails.includes(score?.score?.id)}
-										on:toggle-details={() => toggleOpen(score?.score?.id)}
 										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
 										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
 
@@ -860,11 +873,13 @@
 								</div>
 							{/each}
 						</div>
-					{:else}
-						<p transition:fade>No scores found.</p>
 					{/if}
 				{:else if currentType == 'graph'}
-					<MapScoresChart leaderboardId={currentLeaderboardId} {currentPlayerId} />
+					<MapScoresChart
+						leaderboardId={currentLeaderboardId}
+						sortBy={currentFilters.sortBy}
+						order={currentFilters.order}
+						{currentPlayerId} />
 				{:else if clanRankingList?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}
@@ -975,8 +990,6 @@
 							<ReweightStatusRanked map={leaderboard} />
 						{/if}
 					{/if}
-				{:else}
-					<p transition:fade|global>No scores found.</p>
 				{/if}
 			{:else if !$isLoading}
 				<p>Leaderboard not found.</p>
@@ -988,7 +1001,7 @@
 			{#if qualification && !isRanked}
 				<ContentBox>
 					{#if !commentaryShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
 								<i class="fas fa-comments" />
 
@@ -996,7 +1009,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
 									<i class="fas fa-chevron-left" />
@@ -1016,7 +1029,7 @@
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
 				<ContentBox
 					>{#if !qualificationInfoShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span
 								class="beat-savior-reveal clickable"
 								on:click={() => boolflip('qualificationInfoShown')}
@@ -1027,7 +1040,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span
 									class="beat-savior-reveal clickable"
@@ -1054,7 +1067,7 @@
 			{#if featuredPlaylists && featuredPlaylists.length}
 				<ContentBox>
 					{#if !leaderboardShowPlaylists}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Show map details">
 								<i class="fas fa-compact-disc" />
 
@@ -1062,7 +1075,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Hide map details">
 									<i class="fas fa-chevron-left" />
@@ -1084,7 +1097,7 @@
 			{#if showStats}
 				<ContentBox>
 					{#if !leaderboardStatsShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
 								<i class="fas fa-magnifying-glass" />
 
@@ -1092,7 +1105,7 @@
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
 									<i class="fas fa-chevron-left" />
@@ -1121,7 +1134,7 @@
 				{#if qualification.criteriaCheck}
 					<ContentBox>
 						{#if !criteriaInfoShown}
-							<div class="score-options-section">
+							<div class="score-options-section" transition:fade>
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Show criteria check">
 									<i class="fas fa-triangle-exclamation" />
 
@@ -1129,7 +1142,7 @@
 								</span>
 							</div>
 						{:else}
-							<div class="box-with-left-arrow">
+							<div class="box-with-left-arrow" transition:slide>
 								<div class="score-options-section to-the-left">
 									<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Hide criteria details">
 										<i class="fas fa-chevron-left" />
@@ -1146,14 +1159,14 @@
 			{#if showCurve && leaderboard?.stats?.stars}
 				<ContentBox>
 					{#if !curveShown}
-						<div class="score-options-section">
+						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
 								<i class="fas fa-bezier-curve" />
 								<i class="fas fa-chevron-right" />
 							</span>
 						</div>
 					{:else}
-						<div class="box-with-left-arrow">
+						<div class="box-with-left-arrow" transition:slide>
 							<div class="score-options-section to-the-left">
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
 									<i class="fas fa-chevron-left" />

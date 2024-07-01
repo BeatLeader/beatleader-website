@@ -3,24 +3,21 @@
 	import createScoresStore from '../../stores/http/http-scores-store.js';
 	import createAccountStore from '../../stores/beatleader/account';
 	import createPlaylistStore from '../../stores/playlists';
-	import createFailedScoresStore from '../../stores/beatleader/failed-scores';
 	import {navigate} from 'svelte-routing';
 	import {opt} from '../../utils/js';
 	import {getContext} from 'svelte';
 	import {scrollToTargetAdjusted} from '../../utils/browser';
 	import SongScore from './SongScore.svelte';
-	import FailedScore from './FailedScore.svelte';
 	import Error from '../Common/Error.svelte';
 	import ScoreServiceSwitcher from './ScoreServiceSwitcher.svelte';
 	import ScoresPager from './ScoresPager.svelte';
 	import stringify from 'json-stable-stringify';
-	import Pager from '../Common/Pager.svelte';
 	import Button from '../Common/Button.svelte';
 	import Spinner from '../Common/Spinner.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import OpDeletionDialog from './OPDeletionDialog.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue.js';
-	import { configStore } from '../../stores/config.js';
+	import {configStore} from '../../stores/config.js';
 
 	const dispatch = createEventDispatcher();
 	const {open, close} = getContext('simple-modal');
@@ -107,14 +104,6 @@
 		lastServiceParams = newServiceParams;
 	}
 
-	function onFailedScoresPageChange(event) {
-		const page = (event?.detail?.page ?? 0) + 1;
-
-		failedScores.fetchScores(page);
-	}
-
-	const failedScores = createFailedScoresStore();
-
 	let searchToPlaylist = false;
 	let makingPlaylist = false;
 	let mapCount = 100;
@@ -137,12 +126,6 @@
 	$: pending = scoresStore ? scoresStore.pending : null;
 	$: error = scoresStore ? scoresStore.error : null;
 	$: isMain = playerId && $account?.id === playerId;
-	$: isMain ? failedScores.refresh() : null;
-	$: isAdmin = $account?.player?.playerInfo?.role?.includes('admin');
-
-	$: failedScoresPage = opt($failedScores, 'metadata.page');
-	$: totalFailedScores = opt($failedScores, 'metadata.total');
-	$: failedScoresArray = opt($failedScores, 'scores');
 
 	$: scoresStore && scoresStore.fetch(currentServiceParams, currentService);
 	$: pagerTotalScores = totalScores !== null && totalScores !== undefined ? totalScores : numOfScores;
@@ -266,22 +249,6 @@
 			<Spinner />
 		{:else}
 			<Button label="Remove OP scores" type="danger" iconFa="fas fa-trash-alt" on:click={showRemoveOP} />
-		{/if}
-	{/if}
-
-	{#if isMain && failedScoresArray && failedScoresArray.length}
-		<div class="song-scores failed-scores grid-transition-helper">
-			{#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
-				<FailedScore store={failedScores} {playerId} {songScore} {fixedBrowserTitle} {idx} service={currentService} {isAdmin} />
-			{/each}
-		</div>
-		{#if Number.isFinite(failedScoresPage) && (!Number.isFinite(totalFailedScores) || totalFailedScores > 0)}
-			<Pager
-				totalItems={totalFailedScores}
-				itemsPerPage={3}
-				itemsPerPageValues={null}
-				currentPage={failedScoresPage - 1}
-				on:page-changed={onFailedScoresPageChange} />
 		{/if}
 	{/if}
 </div>

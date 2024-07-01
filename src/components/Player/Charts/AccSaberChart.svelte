@@ -44,7 +44,7 @@
 
 		isLoading = true;
 
-		const playerHistoryPromises = await Promise.all([accSaberService.fetchPlayerRankHistory(playerId).catch(e => null), playerHistory]);
+		const playerHistoryPromises = await Promise.all([accSaberService.getPlayerHistory(playerId).catch(e => null), playerHistory]);
 
 		const theOldestChartHistory = addToDate(-49 * DAY, toAccSaberMidnight(new Date()));
 		const dbHistory = (playerHistoryPromises?.[1] ?? []).filter(h => h.accSaberDate >= theOldestChartHistory);
@@ -90,11 +90,23 @@
 
 		const category = selectedCategory?.label?.toLowerCase();
 
-		const gridColor = '#2a2a2a';
-		const rankColor = '#3e95cd';
-		const ppColor = '#007100';
-		const accColor = '#3273dc';
-		const rankedPlayCountColor = '#3e3e3e';
+		if ($configStore.preferences.theme != 'flylight') {
+			var gridColor = '#2a2a2a';
+			var rankColor = '#3e95cd';
+			var ppColor = '#007100';
+			var accColor = '#3273dc';
+			var rankedPlayCountColor = '#3e3e3e';
+
+			Chart.defaults.color = '#fff';
+		} else {
+			var gridColor = '#dadadaaf';
+			var rankColor = '#3e95cd';
+			var ppColor = '#007100';
+			var accColor = '#3273dc';
+			var rankedPlayCountColor = '#3e3e3e';
+
+			Chart.defaults.color = '#757575';
+		}
 
 		const dtAccSaberToday = DateTime.fromJSDate(toAccSaberMidnight(new Date()));
 		const dayTimestamps = Array(CHART_DAYS)
@@ -318,7 +330,7 @@
 	let debouncedChartHash = null;
 	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
 
-	$: refreshPlayerRankHistory(playerId, playerHistory);
+	// $: refreshPlayerRankHistory(playerId, playerHistory);
 
 	$: selectedCategory = availableCategories?.find(c => c.label === capitalize(category)) ?? null;
 

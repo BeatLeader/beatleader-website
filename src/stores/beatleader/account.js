@@ -53,9 +53,6 @@ export default (refreshOnCreate = true) => {
 		data.append('action', 'login');
 		data.append('login', login);
 		data.append('password', password);
-		if (oauthState) {
-			data.append('oauthState', oauthState);
-		}
 
 		fetch(BL_API_URL + 'signinoculus', {
 			credentials: 'include',

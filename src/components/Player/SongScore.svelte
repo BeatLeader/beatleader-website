@@ -141,7 +141,7 @@
 								<PlayerNameWithFlag
 									player={songScore.player}
 									type={service === 'accsaber' ? 'accsaber/date' : null}
-									on:click={() => navigateToPlayer(songScore.player.playerId)} />
+									on:click={() => navigateToPlayer(songScore.player.alias ?? songScore.player.playerId)} />
 							</div>
 						{/if}
 
@@ -231,14 +231,12 @@
 		</div>
 
 		{#if showDetails}
-			<div transition:slide|global>
-				<SongScoreDetails
-					{playerId}
-					{songScore}
-					{fixedBrowserTitle}
-					noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
-					showAccSaberLeaderboard={'accsaber' === service} />
-			</div>
+			<SongScoreDetails
+				{playerId}
+				{songScore}
+				{fixedBrowserTitle}
+				noSsLeaderboard={['beatsavior', 'accsaber'].includes(service)}
+				showAccSaberLeaderboard={'accsaber' === service} />
 		{/if}
 	</div>
 {/if}

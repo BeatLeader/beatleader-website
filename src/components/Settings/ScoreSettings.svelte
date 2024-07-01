@@ -10,8 +10,10 @@
 	import DemoProfileScore from './DemoProfileScore.svelte';
 	import Select from './Select.svelte';
 	import BadgeEdit from './BadgeEdit.svelte';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	const isDemo = writable(true);
 	setContext('isDemo', isDemo);
@@ -133,6 +135,7 @@
 					showPredictedAcc: false,
 					showLeaderboard: true,
 					defaultAccChartIndex: 1,
+					showHistory: true,
 				},
 				visibleScoreIcons: {
 					pin: true,
@@ -286,6 +289,42 @@
 		currentScoreComparisonMethod = preset.settings.scoreComparison.method;
 	}
 
+	let isUpdating = false;
+	let showStatsPublic = false;
+	let showStatsPublicPinned = true;
+
+	async function toggleHistoryPublic() {
+		if (isUpdating) return;
+
+		const newValue = !showStatsPublic;
+		try {
+			isUpdating = true;
+			await account.update({showStatsPublic: newValue});
+		} finally {
+			showStatsPublic = newValue;
+			isUpdating = null;
+		}
+	}
+	async function togglePinnedHistoryPublic() {
+		if (isUpdating) return;
+
+		const newValue = !showStatsPublicPinned;
+		try {
+			isUpdating = true;
+			await account.update({showStatsPublicPinned: newValue});
+		} finally {
+			showStatsPublicPinned = newValue;
+			isUpdating = null;
+		}
+	}
+
+	function updateProfileSettings(account) {
+		if (account?.player?.profileSettings) {
+			showStatsPublic = account.player.profileSettings.showStatsPublic;
+			showStatsPublicPinned = account.player.profileSettings.showStatsPublicPinned;
+		}
+	}
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
 
@@ -305,9 +344,10 @@
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
 
 	$: scoreIcons = Object.keys(visibleScoreIcons).filter(key => key !== 'delete');
+	$: updateProfileSettings($account);
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<DemoProfileScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
 		<section class="option full">
@@ -346,6 +386,45 @@
 					{/each}
 				</div>
 			</section>
+			{#if $account?.player}
+				<section class="option full">
+					<label title="Wether to show and make public scores history">Score history:</label>
+					{#if isUpdating}
+						<div class="spinner-container">
+							<Spinner />
+						</div>
+					{/if}
+					<div class="switches">
+						<div class="single" title="Display score history(all the attempts and clears) in the details">
+							<Switch
+								disabled={isUpdating}
+								value={scoreDetailsPreferences.showHistory}
+								label="Show history"
+								fontSize={12}
+								design="slider"
+								on:click={() => settempsetting('scoreDetailsPreferences', 'showHistory', !scoreDetailsPreferences.showHistory)} />
+						</div>
+						<div class="single" title="Make score history available for other players">
+							<Switch
+								disabled={isUpdating}
+								value={showStatsPublic}
+								label="Public history (auto-synced)"
+								fontSize={12}
+								design="slider"
+								on:click={() => toggleHistoryPublic()} />
+						</div>
+						<div class="single" title="Make play count viewable on pinned scores">
+							<Switch
+								disabled={isUpdating}
+								value={showStatsPublicPinned}
+								label="Public play count for pinned scores (auto-synced)"
+								fontSize={12}
+								design="slider"
+								on:click={() => togglePinnedHistoryPublic()} />
+						</div>
+					</div>
+				</section>
+			{/if}
 			<section class="option full">
 				<label title="Determines which info should be displayed at score">Score info to show:</label>
 				<div class="switches">
@@ -366,7 +445,7 @@
 			<section class="option full">
 				<label title="Determines which data should be displayed in score details">Score details settings:</label>
 				<div class="switches">
-					{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex'].includes(k)) as key}
+					{#each Object.keys(scoreDetailsPreferences).filter(k => !['defaultAccChartIndex', 'showHistory'].includes(k)) as key}
 						<Switch
 							value={scoreDetailsPreferences[key]}
 							label={scoreDetailsKeyDescription[key]}
@@ -408,8 +487,14 @@
 
 <style>
 	.main-container {
-		display: flex;
+		display: none;
 		flex-direction: column;
+	}
+	.main-container.visible {
+		display: flex;
+	}
+	.option {
+		position: relative;
 	}
 	.options {
 		display: grid;
@@ -418,6 +503,11 @@
 		align-items: start;
 		justify-items: start;
 		margin-top: 1rem;
+	}
+	.spinner-container {
+		position: absolute;
+		top: 50%;
+		left: 50%;
 	}
 	* :global(.option) {
 		display: flex;

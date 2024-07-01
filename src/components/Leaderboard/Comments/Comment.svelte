@@ -6,7 +6,7 @@
 	import {navigate} from 'svelte-routing';
 	import {createEventDispatcher, onMount} from 'svelte';
 	import Button from '../../Common/Button.svelte';
-	import CommentRedactor from './CommentRedactor.svelte';
+	import CommentRedactor from '../../Common/RichTextRedactor.svelte';
 
 	export let comment;
 	export let currentPlayerId;

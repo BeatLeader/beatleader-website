@@ -5,9 +5,11 @@
 	--background: #222;
 	--foreground: #252525;
 	--textColor: #eee;
-	--ppColour: #8992e8;
+	--linkColor: #72a8ff;
+	--linkHoverColor: #72a8ff;
+	--ppColour: rgba(253, 219, 255, 1);
 	--capturedColor: #b49600;
-	--rankedPoolColor: #3EB489;
+	--rankedPoolColor: #3eb489;
 	--alternate: #72a8ff;
 	--selected: #3273dc;
 	--hover: #333;
@@ -754,7 +756,6 @@ body {
 }
 
 a {
-	color: #3273dc;
 	cursor: pointer;
 	text-decoration: none;
 }
@@ -1075,12 +1076,6 @@ table th {
 
 .has-text-right {
 	text-align: right !important;
-}
-
-@media screen and (max-width: 768px) {
-	.has-text-centered-mobile {
-		text-align: center !important;
-	}
 }
 
 @media screen and (min-width: 769px), print {
@@ -3087,7 +3082,6 @@ a.box:active {
 	background-color: white;
 	border-color: #dbdbdb;
 	box-shadow: none;
-	opacity: 0.5;
 }
 
 .button.is-fullwidth {
@@ -6565,8 +6559,6 @@ a.dropdown-item.is-active {
 .message-body {
 	border-color: #dbdbdb;
 	border-radius: 4px;
-	border-style: solid;
-	border-width: 0 0 0 4px;
 	color: #4a4a4a;
 	padding: 1.25em 1.5em;
 }
@@ -11347,9 +11339,6 @@ label.panel-block:hover {
 :root {
 	--background: #222;
 	--foreground: #252525;
-	--textColor: #eee;
-
-	--ppColour: #8992e8;
 	--alternate: #72a8ff;
 }
 
@@ -11366,7 +11355,11 @@ body {
 }
 
 a {
-	color: var(--alternate) !important;
+	color: var(--linkColor);
+}
+
+a:hover {
+	color: var(--linkHoverColor);
 }
 
 a.navbar-item {

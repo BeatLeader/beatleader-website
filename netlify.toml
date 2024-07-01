@@ -19,6 +19,13 @@
     headers = {X-From = "Netlify"}
 
 [[redirects]]
+    from = "/cors/beatsaver/*"
+    to = "https://beatsaver.com/:splat"
+    status = 200
+    force = true
+    headers = {X-From = "Netlify"}
+
+[[redirects]]
     from = "/cors/cdn-assets-bl/*"
     to = "https://cdn.assets.beatleader.xyz/:splat"
     status = 200
@@ -42,13 +49,6 @@
 [[redirects]]
     from = "/cors/blapi/*"
     to = "https://api.beatleader.xyz/:splat"
-    status = 200
-    force = true
-    headers = {X-From = "Netlify"}
-
-[[redirects]]
-    from = "/cors/blwiki/*"
-    to = "https://beatleader.wiki/graphql"
     status = 200
     force = true
     headers = {X-From = "Netlify"}

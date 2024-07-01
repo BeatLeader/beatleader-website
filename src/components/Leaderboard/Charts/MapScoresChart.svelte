@@ -1,18 +1,24 @@
 <script>
 	import Chart from 'chart.js/auto';
 	import zoomPlugin from 'chartjs-plugin-zoom';
+	// import chartTrendline from 'chartjs-plugin-trendline';
+
 	import {formatNumber, roundToPrecision} from '../../../utils/format';
-	import {formatDateRelative, getTimeStringColor} from '../../../utils/date';
+	import {formatDate, formatDateRelative, getTimeStringColor} from '../../../utils/date';
 	import {debounce} from '../../../utils/debounce';
 	import Spinner from '../../Common/Spinner.svelte';
 	import {configStore} from '../../../stores/config';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
 
 	export let leaderboardId = null;
+	export let sortBy = null;
+	export let order = null;
+
 	export let currentPlayerId = null;
 	export let type = 'accuracy'; // or percentage
 
 	Chart.register(zoomPlugin);
+	// Chart.register(chartTrendline);
 
 	const CHART_DEBOUNCE = 300;
 
@@ -24,40 +30,140 @@
 
 	let isLoading = false;
 
-	const calcleaderboardScoresHash = (leaderboardScores, currentPlayerId) => {
-		return leaderboardScores?.length ?? 0 + currentPlayerId?.length ?? 0;
+	const calcleaderboardScoresHash = (leaderboardScores, currentPlayerId, sortBy, order) => {
+		return (leaderboardScores?.length ?? '') + (currentPlayerId ?? '') + (sortBy ?? '') + (order ?? '');
 	};
 
-	async function setupChart(hash, canvas) {
+	function valueFromSortBy(score, sortBy) {
+		if (!score) return null;
+		switch (sortBy) {
+			case 'date':
+				return score.timepost ? new Date(score.timepost * 1000) : null;
+			case 'pp':
+				return score.pp;
+			case 'acc':
+				return score.acc;
+			case 'pauses':
+				return score.pauses;
+			case 'rank':
+				return score.rank;
+			case 'maxStreak':
+				return score.maxStreak;
+			case 'mistakes':
+				return score.mistakes;
+			case 'weight':
+				return score.weight * 100;
+			case 'weightedPp':
+				return score.weight * score.pp;
+		}
+		return null;
+	}
+
+	function sortByToNullable(sortBy) {
+		switch (sortBy) {
+			case 'date':
+			case 'pp':
+			case 'acc':
+			case 'rank':
+			case 'weight':
+			case 'weightedPp':
+				return false;
+		}
+		return true;
+	}
+
+	function sortByToAxisName(sortBy) {
+		switch (sortBy) {
+			case 'date':
+				return 'Date';
+			case 'pp':
+				return 'Pp';
+			case 'acc':
+				return 'Accuracy';
+			case 'pauses':
+				return 'Pause Count';
+			case 'rank':
+				return 'Leaderboard Rank';
+			case 'maxStreak':
+				return 'Streak length';
+			case 'mistakes':
+				return 'Mistake Count';
+			case 'weight':
+				return 'PP Weight';
+			case 'weightedPp':
+				return 'Weighted PP';
+		}
+		return null;
+	}
+
+	function sortByToTicks(sortBy) {
+		switch (sortBy) {
+			case 'date':
+				return {
+					autoSkip: true,
+					major: {
+						enabled: true,
+					},
+					timecallback: val => formatDate(val),
+				};
+			case 'pp':
+				return {
+					callback: val => formatNumber(val, 2) + 'pp',
+				};
+			case 'acc':
+				return {
+					max: 100,
+					callback: val => formatNumber(val, 0) + '%',
+				};
+			case 'rank':
+				return {
+					callback: val => '#' + formatNumber(val, 0),
+				};
+			case 'pauses':
+			case 'maxStreak':
+			case 'mistakes':
+				return {
+					callback: val => formatNumber(val, 0),
+				};
+
+			case 'weight':
+				return {
+					max: 100,
+					callback: val => formatNumber(val, 0) + '%',
+				};
+			case 'weightedPp':
+				return {
+					max: 100,
+					callback: val => formatNumber(val, 2) + 'pp',
+				};
+		}
+		return null;
+	}
+
+	async function setupChart(hash, canvas, sortBy, order) {
 		if (!hash || !canvas || !leaderboardScores?.length || chartHash === lastHistoryHash) return;
 
 		const mapBorderColor = '#003e54';
 
 		lastHistoryHash = chartHash;
 
-		let maxStars = 0;
-		let minAcc = 100;
+		const isNullable = sortByToNullable(sortBy);
 		const chartData = leaderboardScores
-			.filter(s => !!s?.weight && !!s?.rank)
+			.filter(s => !!s?.playerRank)
 			.map(s => {
-				const weight = s.weight;
-
-				if (s.rank > maxStars) maxStars = s.rank;
-				if (weight < minAcc) minAcc = weight;
+				const weight = valueFromSortBy(s, sortBy);
+				if (!weight && !isNullable) return null;
 
 				var result = {
-					x: s.rank,
+					x: s.playerRank,
 					y: weight,
-					playerId: s.playerId ?? null,
-					avatar: s.avatar,
-					timeSet: s.timeset,
-					acc: s.acc,
-					name: s.name,
 					mods: s?.modifiers?.length ? s.modifiers.split(',') : null,
+					...s,
 				};
 
 				return result;
-			});
+			})
+			.filter(s => s !== null);
 
 		const avgData = Object.entries(
 			chartData.reduce((cum, point) => {
@@ -88,18 +194,15 @@
 
 		Object.keys(avgData).forEach(key => (avgData[key] = avgData[key].sort((a, b) => a.x - b.x)));
 
-		maxStars = roundToPrecision(maxStars, 0.5) + 0.5;
-		minAcc = Math.floor(minAcc - 1);
-		if (minAcc < 0) minAcc = 0;
-
 		const datasets = [
 			{
 				label: '',
 				borderColor: mapBorderColor,
 				backgroundColor: element => {
 					const item = element.raw;
-					return currentPlayerId && item.playerId == currentPlayerId ? 'yellow' : getTimeStringColor(item.timeSet);
+					return currentPlayerId && item.playerId == currentPlayerId ? 'yellow' : getTimeStringColor(new Date(item.timepost * 1000));
 				},
+
 				fill: false,
 				pointRadius: 3,
 				pointHoverRadius: 4,
@@ -107,6 +210,16 @@
 				order: 4,
 			},
 		];
+
+		if (sortBy != 'date' && sortBy != 'maxStreak') {
+			datasets[0].trendlineLinear = {
+				colorMin: 'red',
+				colorMax: 'green',
+				lineStyle: 'dotted',
+				width: 2,
+				projection: true,
+			};
+		}
 
 		const options = {
 			responsive: true,
@@ -138,8 +251,8 @@
 
 							const song = ctx.dataset.data[ctx.dataIndex];
 							if (song) {
-								ret.push(formatDateRelative(song.timeSet));
-								ret.push(`${song.name} - #${formatNumber(song.x, 0)}`);
+								ret.push(formatDateRelative(new Date(song.timepost * 1000)));
+								ret.push(`${song.playerName} - #${formatNumber(song.x, 0)}`);
 							}
 
 							return ret;
@@ -149,9 +262,11 @@
 
 							const mods = ctx[0].raw?.mods ?? null;
 							const acc = formatNumber(ctx[0].raw?.acc ?? 0, 2);
-							const weight = formatNumber(ctx[0].raw?.y ?? 0, 0);
+							const weight = ctx[0].raw?.y ?? 0;
 
-							return `Weight: ${weight}% | Acc: ${acc}% ${mods?.length ? ' (' + mods.join(', ') + ')' : ''}`;
+							return `${sortByToAxisName(sortBy)}: ${(sortByToTicks(sortBy).callback ?? sortByToTicks(sortBy).timecallback)(
+								weight
+							)} | Acc: ${acc}% ${mods?.length ? ' (' + mods.join(', ') + ')' : ''}`;
 						},
 					},
 				},
@@ -169,10 +284,6 @@
 						},
 						mode: 'xy',
 					},
-					limits: {
-						x: {min: 0, max: maxStars},
-						y: {min: minAcc, max: 100},
-					},
 				},
 			},
 			scales: {
@@ -187,25 +298,21 @@
 						stepSize: 1000,
 						callback: val => '#' + formatNumber(val, 0),
 					},
-					max: maxStars,
 				},
 				y: {
-					type: 'linear',
+					type: sortBy == 'date' ? 'time' : 'linear',
+					reverse: order == 'asc',
 					title: {
 						display: true,
-						text: 'PP Weight',
+						text: sortByToAxisName(sortBy),
 					},
-					ticks: {
-						max: 100,
-						callback: val => formatNumber(val, 0) + '%',
-					},
+					ticks: sortByToTicks(sortBy),
 					grid: {
 						color: 'rgba(0,0,0,0.1)',
 						display: true,
 						drawBorder: true,
 						drawOnChartArea: true,
 					},
-					min: minAcc,
 				},
 			},
 			onHover(e, item, chart) {
@@ -226,6 +333,9 @@
 		if (!chart) {
 			chart = new Chart(canvas, {
 				type: 'scatter',
+				animation: {
+					duration: 0,
+				},
 				data: {
 					datasets,
 				},
@@ -234,6 +344,7 @@
 			});
 		} else {
 			chart.data = {datasets};
+			chart.options = options;
 			chart.update();
 		}
 	}
@@ -246,18 +357,14 @@
 
 		try {
 			isLoading = true;
-			fetch(BL_API_URL + `leaderboard/${leaderboardId}/scoregraph`)
+			fetch(`${BL_API_URL}leaderboard/${leaderboardId}/scoregraph`)
 				.then(d => d.json())
 				.then(g => {
 					leaderboardScores = g
 						.map(m => {
-							const timeset = m?.timepost;
-
 							return {
 								...m,
-								weight: m.weight * 100,
-								acc: m.accuracy * 100,
-								timeset: new Date(timeset * 1000),
+								acc: m.accuracy,
 							};
 						})
 						.filter(m => m);
@@ -271,9 +378,9 @@
 
 	$: height = $configStore.preferences.graphHeight;
 	$: currentPlayerId && chart && chart.update();
-	$: chartHash = calcleaderboardScoresHash(leaderboardScores, currentPlayerId);
+	$: chartHash = calcleaderboardScoresHash(leaderboardScores, currentPlayerId, sortBy, order);
 	$: debounceChartHash(chartHash);
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas);
+	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, sortBy, order);
 </script>
 
 <section class="chart" style="--height: {height}px">

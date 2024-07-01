@@ -10,7 +10,7 @@
 /* Theme colors */
 :root,
 html[data-theme='light'] {
-	--bg-color: #fff;
+	--mbg-color: #fff;
 	--bg-hover-color: #d9e1e8;
 	--line-gray-color: #c0cdd9;
 	--content-text: #000;
@@ -18,7 +18,7 @@ html[data-theme='light'] {
 	--error-text-color: #8b0000;
 }
 html[data-theme='dark'] {
-	--bg-color: #282c37;
+	--mbg-color: #282c37;
 	--bg-hover-color: #313543;
 	--line-gray-color: #393f4f;
 	--content-text: #fff;
@@ -31,7 +31,7 @@ html[data-theme='dark'] {
 	height: 100%;
 	overflow-y: auto;
 	position: relative;
-	background: var(--bg-color);
+	background: var(--mbg-color);
 	scrollbar-color: var(--bg-hover-color) rgba(0, 0, 0, 0.1);
 	border-radius: 0.6em;
 	max-height: 36em;
@@ -106,7 +106,7 @@ html[data-theme='dark'] {
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
 	background-size: contain;
-	background-color: var(--bg-color);
+	background-color: var(--mbg-color);
 	border-radius: 5px;
 }
 .mt-avatar-boosted {

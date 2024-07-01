@@ -4,7 +4,7 @@
 	import Flag from './Flag.svelte';
 	import Popover from './Popover.svelte';
 	import {fade} from 'svelte/transition';
-	import MiniProfile from '../Player/MiniProfile.svelte';
+	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
 
 	export let player;
 	export let type = null;
@@ -17,15 +17,14 @@
 
 	let referenceElement;
 
-	$: country = opt(player, 'playerInfo.countries.0.country') ?? player?.country;
+	$: country = opt(player, 'playerInfo.country') ?? player?.country;
 	$: name = player?.name;
-	$: playerId = player?.playerId ?? player?.id;
+	$: playerId = player?.alias ?? player?.playerId ?? player?.id;
 </script>
 
 <a
-	href={`/u/${playerId}${type ? '/' + type : ''}/1?${playerClickFilter ?? ''}`}
+	href={`/u/${playerId}${type ? '/' + type : ''}/1${playerClickFilter ? '?' + playerClickFilter : ''}`}
 	class="player-name clickable has-pointer-events"
-	title={name}
 	bind:this={referenceElement}
 	on:click|preventDefault>
 	{#if !hideFlag}
@@ -36,7 +35,7 @@
 </a>
 
 {#if !disablePopover && player && player.playerInfo}
-	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="auto" spaceAway={10}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
 		</div>
@@ -66,6 +65,6 @@
 	}
 
 	.popover-contents {
-		width: 40em;
+		max-width: 40em;
 	}
 </style>

@@ -274,7 +274,7 @@
 		width: 10em;
 	}
 	:global(.listContainer) {
-		background-color: darkslategray !important;
+		background-color: #242424 !important;
 		z-index: 8 !important;
 	}
 	:global(.selectContainer input) {

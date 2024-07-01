@@ -1,5 +1,5 @@
 import createScoresService from '../../../../services/beatleader/scores';
-// import createAccSaberService from '../../../../services/accsaber';
+import createAccSaberService from '../../../../services/accsaber';
 import {capitalize} from '../../../../utils/js';
 import {BL_API_URL} from '../../../../network/queues/beatleader/api-queue';
 import {processScore} from '../../../../network/clients/beatleader/scores/utils/processScore';
@@ -11,15 +11,14 @@ import {GLOBAL_LEADERBOARD_TYPE} from '../../../../utils/format';
 let scoreFetcher = null;
 
 let blScoresService = null;
-// let accSaberService = null;
-
+let accSaberService = null;
 const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
 export default () => {
 	if (scoreFetcher) return scoreFetcher;
 
 	blScoresService = createScoresService();
-	// accSaberService = createAccSaberService();
+	accSaberService = createAccSaberService();
 
 	const processServiceParamsFilters = serviceParams => {
 		if (!serviceParams) return serviceParams;
@@ -53,8 +52,8 @@ export default () => {
 					otherParams?.signal,
 					otherParams?.force
 				);
-			// case 'accsaber':
-			// 	return accSaberService.getPlayerScoresPage(player?.playerId, processedServiceParams);
+			case 'accsaber':
+				return accSaberService.getPlayerScoresPage(playerId, processedServiceParams);
 			case 'beatleader':
 			default:
 				return blScoresService.fetchScoresPageOrGetFromCache(

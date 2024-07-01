@@ -20,10 +20,12 @@
 	export let loading = false;
 	export let url = null;
 	export let onlyurl = false;
+	export let urltarget = '_self';
 	export let square = false,
 		squareSize = '0';
 	export let preventDefault = false;
 	export let animated = false;
+	export let animationOpacity = 0.6;
 
 	if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -37,9 +39,9 @@
 			activeBorder: 'transparent',
 		},
 		primary: {
-			color: '#dbdbdb',
+			color: 'var(--color)',
 			activeColor: '#fff',
-			bgColor: '#3273db',
+			bgColor: 'var(--bg-color)',
 			activeBgColor: '#2366d1',
 			border: 'transparent',
 			activeBorder: 'transparent',
@@ -162,12 +164,14 @@
 {#if url && url.length}
 	<a
 		href={url}
-		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
+		target={urltarget}
+		style="--btn-color:{color ? color : selectedType.color}; --btn-bg-color: {bgColor
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin}; {square
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
-			--hovered-scale:{hoveredScale};"
+			--hovered-scale:{hoveredScale};
+			--animation-opacity:{animationOpacity};"
 		on:mousedown={HandleMouseDown}
 		on:mouseup={HandleMouseUp}
 		on:mouseleave={HandleMouseUp}
@@ -191,12 +195,13 @@
 	</a>
 {:else}
 	<button
-		style="--color:{color ? color : selectedType.color}; --bg-color: {bgColor
+		style="--btn-color:{color ? color : selectedType.color}; --btn-bg-color: {bgColor
 			? bgColor
 			: selectedType.bgColor}; --border:{selectedType.border};--active-color: {selectedType.activeColor}; --active-bg-color: {selectedType.activeBgColor}; --active-border: {selectedType.activeBorder}; --margin: {margin}; --btn-padding: {btnPadding}; --btn-margin: {btnMargin};{square
 			? `width:${squareSize};height:${squareSize};`
 			: ''};
-			--hovered-scale:{hoveredScale};"
+			--hovered-scale:{hoveredScale};
+			--animation-opacity:{animationOpacity};"
 		on:mousedown={HandleMouseDown}
 		on:mouseup={HandleMouseUp}
 		on:mouseleave={HandleMouseUp}
@@ -236,10 +241,10 @@
 		border-radius: 0.2em;
 		font-size: inherit;
 		cursor: pointer;
-		color: var(--color, #363636) !important;
-		background-color: var(--bg-color, #3273dc) !important;
+		color: var(--btn-color, #363636) !important;
+		background-color: var(--btn-bg-color, #3273dc) !important;
 		outline: none !important;
-		box-shadow: none !important;
+		box-shadow: none;
 	}
 
 	.button:hover {
@@ -247,16 +252,20 @@
 		border-color: var(--active-border, #b5b5b5);
 	}
 
+	.button.animated {
+		transition: opacity ease 0.2s;
+		opacity: var(--animation-opacity);
+		transform: scale(100%);
+	}
+
 	.button.animated:hover {
 		transform: scale(var(--hovered-scale));
+		opacity: 1;
+		background: var(--btn-bg-color, #3273dc) linear-gradient(0deg, transparent, #ffffff66) !important;
 	}
 
 	.button:active {
 		background-color: var(--active-bg-color, #fff);
-	}
-
-	a.button[disabled] {
-		opacity: 1;
 	}
 
 	button[disabled],
@@ -264,7 +273,7 @@
 		cursor: not-allowed;
 		opacity: 0.35;
 		color: var(--active-color, white);
-		background-color: var(--bg-color, #3273dc);
+		background-color: var(--btn-bg-color, #3273dc);
 	}
 
 	.button .icon:first-child:not(:last-child),

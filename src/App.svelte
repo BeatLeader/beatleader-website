@@ -41,7 +41,7 @@
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
 	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
@@ -49,6 +49,7 @@
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
+	import AdminPage from './pages/Admin.svelte';
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
@@ -113,15 +114,19 @@
 
 	$: if (mainEl) containerStore.observe(mainEl);
 
-	if ($configStore.preferences.theme != 'default') {
+	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'ree-dark') {
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
+
 		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
 
-		if ($configStore.preferences.theme == 'mirror') {
-			importFonts($configStore.preferences.fontNames);
-		}
+		setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
+		setGlobalCSSValue('color', $configStore.preferences.labelColor);
+		setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
+		setGlobalCSSValue('selected', $configStore.preferences.selectedColor);
+
+		importFonts($configStore.preferences.fontNames);
 	}
 </script>
 
@@ -142,6 +147,11 @@
 					<Route path="/u/:initialPlayerId/*initialParams" let:params let:location>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
 					</Route>
+
+					<Route path="/admin/:type" let:params let:location>
+						<AdminPage initialType={params.type} {location} />
+					</Route>
+
 					<Route path="/staff" let:location>
 						<StaffDashboard {location} />
 					</Route>
@@ -278,15 +288,17 @@
 	</Notifications>
 </Router>
 
+<link rel="stylesheet" href="/build/themes/{$configStore.preferences.theme}.css" />
+
 <style>
 	.reebanner {
-		background-color: black;
+		background-color: rgb(48, 23, 23);
 		color: white;
 		font-size: large;
 		height: 3em;
 		width: 100%;
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		justify-items: center;
 		align-items: center;
 		margin-bottom: -0.1em;
@@ -312,7 +324,7 @@
 	}
 
 	.rewindbanner {
-		background-color: #2e0d51;
+		background-color: #355870;
 		color: white;
 		font-size: large;
 		height: 3em;
@@ -361,24 +373,7 @@
 	.replayed-link-text {
 		z-index: 101;
 		font-weight: 800;
-		color: #ffffff;
-		text-shadow: 0 0 3px #000000;
-	}
-
-	.ostbanner {
-		background-color: rgb(0 113 198);
-		color: white;
-		font-size: large;
-		height: 3em;
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		justify-items: center;
-		align-items: center;
-		margin-bottom: -0.1em;
-
-		overflow: visible;
-		pointer-events: none;
+		color: #20a0ee;
 	}
 
 	.banner-spacer {
@@ -418,7 +413,7 @@
 		transform: rotateZ(7deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-2 {
@@ -429,7 +424,7 @@
 		transform: rotateZ(350deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-3 {
@@ -440,7 +435,7 @@
 		transform: rotateZ(3deg);
 		z-index: 100;
 		border-radius: 6px;
-		box-shadow: 1px 5px 7px #000000d7;
+		box-shadow: 1px 5px 7px #0000007a;
 	}
 
 	.cover-4 {
@@ -451,7 +446,7 @@
 		transform: rotateZ(4deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-5 {
@@ -462,7 +457,7 @@
 		transform: rotateZ(10deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
 	.cover-6 {
@@ -473,29 +468,21 @@
 		transform: rotateZ(349deg);
 		z-index: 100;
 		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		box-shadow: 2px 11px 7px #0000007a;
 	}
 
-	.cover-7 {
-		height: 2.4em;
+	.cc-cover-1 {
+		height: 3.5em;
 		position: absolute;
-		left: 3%;
-		top: 0.5em;
-		transform: rotateZ(356deg);
-		z-index: 80;
-		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		left: 14%;
+		z-index: 100;
 	}
 
-	.cover-8 {
-		height: 3em;
+	.cc-cover-2 {
+		height: 3.5em;
 		position: absolute;
-		right: 15%;
-		top: -1.5em;
-		transform: rotateZ(350deg);
-		z-index: 60;
-		border-radius: 8px;
-		box-shadow: 2px 11px 7px #000000d7;
+		right: 14%;
+		z-index: 100;
 	}
 
 	.cc-cover-1 {
@@ -552,6 +539,20 @@
 			margin-top: -0.3em;
 		}
 	}
+	.mobile-only {
+		display: none;
+	}
+	@media (max-width: 1000px) {
+		.rewind-text-and-timer {
+			flex-direction: column;
+			align-items: center;
+			gap: 0;
+		}
+
+		.timer {
+			margin-top: -0.3em;
+		}
+	}
 	@media (max-width: 600px) {
 		main {
 			margin-top: 0;
@@ -580,22 +581,37 @@
 		.cover-6 {
 			display: none;
 		}
-		.cover-7 {
-			display: none;
-		}
-		.cover-8 {
-			display: none;
-		}
 		.link-text {
 			color: white;
 			text-shadow: 3px 3px black;
-			margin-bottom: 0.2em;
+			padding: 0.6em;
 		}
 
 		.replayed-link-text {
 			color: white;
 			text-shadow: 3px 3px black;
 			margin-bottom: 0.2em;
+		}
+
+		.rewind-text-and-timer {
+			max-width: 60%;
+			text-align: center;
+			flex-wrap: wrap;
+		}
+
+		.cc-cover-1 {
+			left: 10%;
+		}
+
+		.cc-cover-2 {
+			right: 10%;
+		}
+
+		.mobile-only {
+			display: block;
+		}
+		.desktop-only {
+			display: none;
 		}
 
 		.rewind-text-and-timer {
