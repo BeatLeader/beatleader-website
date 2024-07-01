@@ -233,9 +233,8 @@
 			<div class="clan-badges">
 				{#if $configStore.profileParts.clans && playerInfo?.clans?.length}
 					<ClanBadges player={playerInfo} highlightMain={true} bind:editModel />
-				{/if}
-
-				{#if isUserFounderOfTheClan}
+					<!-- Condition in one line on purpose, otherwise Svelte preserves space and prevents :empty from working -->
+				{/if}{#if isUserFounderOfTheClan}
 					{#if !isPlayerClanMember && !hasPlayerPendingInvitation}
 						<Button
 							animated={true}
@@ -370,6 +369,10 @@
 
 	.clan-badges {
 		margin-bottom: 0.5em;
+	}
+
+	.clan-badges:empty {
+		display: none;
 	}
 
 	:global(.clan-badges .clan-badges) {
