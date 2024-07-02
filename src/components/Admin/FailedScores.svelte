@@ -13,17 +13,17 @@
 	const failedScores = createFailedScoresStore();
 	const account = createAccountStore();
 
-	$: isMain ? failedScores.refresh() : null;
+	$: failedScores.refresh();
 	$: isAdmin = $account?.player?.playerInfo?.role?.includes('admin');
 
-	$: failedScoresPage = $failedScores?.metadata.page;
-	$: totalFailedScores = $failedScores?.metadata.total;
+	$: failedScoresPage = $failedScores?.metadata?.page;
+	$: totalFailedScores = $failedScores?.metadata?.total;
 	$: failedScoresArray = $failedScores?.scores;
 </script>
 
-{#if isMain && failedScoresArray && failedScoresArray.length}
+{#if failedScoresArray && failedScoresArray.length}
 	<div class="song-scores failed-scores grid-transition-helper">
-		{#each failedScoresArray as songScore, idx (opt(songScore, 'score.id'))}
+		{#each failedScoresArray as songScore, idx (songScore?.score?.id)}
 			<FailedScore store={failedScores} {songScore} {idx} {isAdmin} />
 		{/each}
 	</div>

@@ -17,7 +17,7 @@
 	let type;
 
 	function getCurrentType(initialType) {
-		type = initialType ?? 'failedScores';
+		type = initialType?.length ? initialType : 'failedScores';
 		sortValue = sortValues.find(v => v.id == type);
 	}
 
@@ -31,6 +31,7 @@
 
 	function onSortChange(event) {
 		type = event?.detail?.id;
+		sortValue = sortValues.find(v => v.id == type);
 	}
 
 	$: getCurrentType(initialType);

@@ -1,65 +1,40 @@
 <script>
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
-	import Button from '../Common/Button.svelte';
+	import Pager from '../Common/Pager.svelte';
+	import AliasRequest from './AliasRequest.svelte';
 
 	let requests;
+	let page = 1;
+	let total = 0;
 
-	function fetchAliasRequest() {
-		fetch(`${BL_API_URL}alias/requests`, {credentials: 'include'})
+	function fetchAliasRequest(page) {
+		fetch(`${BL_API_URL}alias/requests?page=${page}`, {credentials: 'include'})
 			.then(r => r.json())
 			.then(array => {
 				requests = array.data;
+				total = array.metadata.total;
 			});
 	}
 
-	function approveRequest(id) {
-		fetch(`${BL_API_URL}alias/request/${id}/resolve?status=2`, {credentials: 'include', method: 'POST'})
-			.then(r => r.json())
-			.then(array => {
-				fetchAliasRequest();
-			});
+	function onPageChange(event) {
+		page = (event?.detail?.page ?? 0) + 1;
+
+		fetchAliasRequest(page);
 	}
 
-	function declineRequest(id) {
-		fetch(`${BL_API_URL}alias/request/${id}/resolve?status=3`, {credentials: 'include', method: 'POST'})
-			.then(r => r.json())
-			.then(array => {
-				fetchAliasRequest();
-			});
-	}
-
-	$: fetchAliasRequest();
+	$: fetchAliasRequest(page);
 </script>
 
 {#if requests}
 	{#each requests as request}
-		<div class="request-container">
-			<div class="id-and-alias">
-				<span>{request.playerId}</span>
-				<span>/u/{request.value}</span>
-			</div>
-			<div>
-				<Button
-					type="green"
-					label="Approve"
-					on:click={() => {
-						approveRequest(request.id);
-					}} />
-				<Button
-					type="yellow"
-					label="Decline"
-					on:click={() => {
-						declineRequest(request.id);
-					}} />
-			</div>
-		</div>
+		<AliasRequest
+			{request}
+			on:modified={() => {
+				fetchAliasRequest(page);
+			}} />
 	{/each}
-{/if}
 
-<style>
-	.id-and-alias {
-		display: flex;
-		gap: 0.5em;
-		margin-bottom: 0.5em;
-	}
-</style>
+	{#if Number.isFinite(page) && (!Number.isFinite(total) || total > 0)}
+		<Pager totalItems={total} itemsPerPage={3} itemsPerPageValues={null} currentPage={page - 1} on:page-changed={onPageChange} />
+	{/if}
+{/if}

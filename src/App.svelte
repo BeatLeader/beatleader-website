@@ -230,7 +230,7 @@
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
 					</Route>
 
-					<Route path="/admin/:type" let:params let:location>
+					<Route path="/admin/*type" let:params let:location>
 						<AdminPage initialType={params.type} {location} />
 					</Route>
 
