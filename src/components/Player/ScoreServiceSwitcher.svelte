@@ -283,6 +283,7 @@
 											hidden: !sortingOrFilteringAppearance.includes(`sf-search`),
 											open: !!serviceParams?.filters?.search,
 											value: serviceParams?.filters?.search ?? null,
+											debounce: true,
 											placeholder: 'Enter song name...',
 										},
 									},

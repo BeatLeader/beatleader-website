@@ -35,6 +35,6 @@
 	{/each}
 
 	{#if Number.isFinite(page) && (!Number.isFinite(total) || total > 0)}
-		<Pager totalItems={total} itemsPerPage={3} itemsPerPageValues={null} currentPage={page - 1} on:page-changed={onPageChange} />
+		<Pager totalItems={total} itemsPerPage={10} itemsPerPageValues={null} currentPage={page - 1} on:page-changed={onPageChange} />
 	{/if}
 {/if}

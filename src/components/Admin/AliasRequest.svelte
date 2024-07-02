@@ -5,6 +5,7 @@
 	import {dateFromUnix, formatDateRelative, getTimeStringColor} from '../../utils/date';
 	import Avatar from '../Common/Avatar.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let request;
 
@@ -24,7 +25,6 @@
 		const playerService = createPlayerService();
 		player = await playerService.fetchPlayerOrGetFromCache(request.playerId);
 	}
-
 	function approveRequest(id) {
 		fetch(`${BL_API_URL}alias/request/${id}/resolve?status=2`, {credentials: 'include', method: 'POST'})
 			.then(r => r.json())
