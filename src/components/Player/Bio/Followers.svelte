@@ -163,4 +163,9 @@
 		margin-top: -0.2em !important;
 		margin-bottom: -0.2em !important;
 	}
+
+	:global(.add-follower-btn i) {
+		margin-bottom: -0.15em;
+		margin-left: 0.15em;
+	}
 </style>

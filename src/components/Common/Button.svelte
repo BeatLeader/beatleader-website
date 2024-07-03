@@ -190,7 +190,7 @@
 		{#if icon && !loading}<span class="icon">{@html icon}</span>{/if}
 		{#if iconFa && !loading}<i class={iconFa} />{/if}
 		{#if loading}<i><Spinner /></i>{/if}
-		<span>{label}</span>
+		{#if label?.length}<span>{label}</span>{/if}
 		<slot />
 	</a>
 {:else}
@@ -216,7 +216,7 @@
 		{#if icon}<span class="icon">{@html icon}</span>{/if}
 		{#if iconFa && !loading}<i class={iconFa} />{/if}
 		{#if loading}<i><Spinner /></i>{/if}
-		<span>{label}</span>
+		{#if label?.length}<span>{label}</span>{/if}
 		<slot />
 	</button>
 {/if}
@@ -262,6 +262,7 @@
 		transform: scale(var(--hovered-scale));
 		opacity: 1;
 		background: var(--btn-bg-color, #3273dc) linear-gradient(0deg, transparent, #ffffff66) !important;
+		border: none;
 	}
 
 	.button:active {

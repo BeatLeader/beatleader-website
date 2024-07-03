@@ -66,7 +66,7 @@
 			<Button
 				square={true}
 				animated={true}
-				cls="add-follower-btn"
+				cls="list-add-follower-btn"
 				title={isFollowed ? 'Stop following' : 'Follow'}
 				iconFa={isFollowed ? 'fas fa-user-minus' : 'fas fa-user-plus'}
 				type={isFollowed ? 'danger' : 'primary'}
@@ -129,5 +129,19 @@
 		align-items: center;
 		border-radius: 1.5em;
 		background-color: #6f6f6f;
+	}
+
+	:global(.list-add-follower-btn) {
+		width: 2.3rem !important;
+		height: 2.3rem !important;
+		border-radius: 2em !important;
+		margin-top: -0.2em !important;
+		margin-bottom: -0.2em !important;
+		margin-right: 0.4em !important;
+	}
+
+	:global(.list-add-follower-btn i) {
+		margin-bottom: -0.2em;
+		margin-left: 0.15em;
 	}
 </style>

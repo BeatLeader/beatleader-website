@@ -543,6 +543,16 @@
 		margin-right: 0;
 	}
 
+	:global(.filter-btn.fa-mountain-sun:before) {
+		margin-left: -0.15em;
+	}
+	:global(.filter-btn.fa-cubes:before) {
+		margin-left: -0.08em;
+	}
+	:global(.filter-btn.fa-star:before) {
+		margin-left: -0.07em;
+	}
+
 	.edit-enabled :global(.service) {
 		opacity: 0.2 !important;
 	}

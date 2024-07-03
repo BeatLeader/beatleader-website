@@ -339,5 +339,6 @@
 
 	:global(.replay-button-alt) {
 		--btn-bg-color: transparent !important;
+		margin-left: 0.3em !important;
 	}
 </style>

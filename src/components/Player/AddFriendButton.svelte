@@ -74,7 +74,6 @@
 		width: 2em !important;
 		height: 2em !important;
 		border-radius: 100% !important;
-		padding-left: 0.5em !important;
 		margin-bottom: -0.1em !important;
 	}
 </style>

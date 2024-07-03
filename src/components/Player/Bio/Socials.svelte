@@ -89,6 +89,7 @@
 <style>
 	:global(.socials-btn) {
 		height: 2em !important;
+		width: 2em !important;
 	}
 
 	:global(.socials-btn.steam .icon) {
