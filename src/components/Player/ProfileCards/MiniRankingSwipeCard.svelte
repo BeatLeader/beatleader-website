@@ -12,7 +12,7 @@
 
 	$: rank = player?.playerInfo.rank;
 	$: country = player?.playerInfo.country.country;
-	$: countryRank = player?.playerInfo.country.rank;
+	$: countryRank = player?.playerInfo.country.rankValue;
 </script>
 
 {#if selected}
