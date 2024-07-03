@@ -39,7 +39,11 @@
 	let cachedMapperId = null;
 
 	function fetchRankedMapper(mapperId, profileSettings, editModel) {
-		if (!mapperId || cachedMapperId == mapperId) return;
+		if (!mapperId) {
+			onEmptyMaps();
+			return;
+		}
+		if (cachedMapperId == mapperId) return;
 		cachedMapperId = mapperId;
 		fetch(
 			`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${
