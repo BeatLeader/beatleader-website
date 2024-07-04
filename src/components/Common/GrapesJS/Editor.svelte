@@ -730,6 +730,7 @@
 	}
 	:global(.gjs-layer-move) {
 		height: 15px;
+		width: 15px;
 	}
 
 	:global(.vertical .gjs-editor) {
