@@ -43,7 +43,8 @@
 		type="danger"
 		square={true}
 		animated={true}
-		title="Remove from Followed"
+		disabled={operationInProgress}
+		title="Unfollow"
 		iconFa="fas fa-user-minus"
 		on:click={() => onClick('remove')} />
 {:else}
@@ -52,7 +53,8 @@
 		type="primary"
 		square={true}
 		animated={true}
-		title="Add to Followed"
+		disabled={operationInProgress || $followed.length >= 250}
+		title={$followed.length >= 250 ? 'More than 250 following is not supported at the moment. Please unfollow someone first.' : 'Follow'}
 		iconFa="fas fa-user-plus"
 		on:click={() => onClick('add')} />
 {/if}

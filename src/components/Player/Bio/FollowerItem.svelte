@@ -67,11 +67,15 @@
 				square={true}
 				animated={true}
 				cls="list-add-follower-btn"
-				title={isFollowed ? 'Stop following' : 'Follow'}
+				title={isFollowed
+					? 'Stop following'
+					: $followed.length >= 250
+					? 'More than 250 following is not supported at the moment. Please unfollow someone first.'
+					: 'Follow'}
 				iconFa={isFollowed ? 'fas fa-user-minus' : 'fas fa-user-plus'}
 				type={isFollowed ? 'danger' : 'primary'}
 				loading={operationInProgress}
-				disabled={operationInProgress}
+				disabled={operationInProgress || (!isFollowed && $followed.length >= 250)}
 				preventDefault={true}
 				on:click={() => onFollowedChange(isFollowed ? 'remove' : 'add', follower)} />
 		{:else}
