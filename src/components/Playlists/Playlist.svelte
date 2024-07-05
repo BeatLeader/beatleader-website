@@ -312,13 +312,15 @@
 					<span class="songs">{playlist.songs.length} songs</span>
 				</div>
 
-				<div>
+				<div class="buttons-container">
 					{#if !playlist.oneclick}
 						{#if !sharedPlaylistId || canModify}
 							<Button
+								cls="playlist-delete"
 								iconFa="fas fa-trash-alt"
 								title="Delete playlist"
 								noMargin={true}
+								animated={true}
 								type="danger"
 								on:click={() => deletePlaylist(localPlaylistId)} />
 						{/if}
@@ -327,16 +329,20 @@
 								{#if playlist.customData?.id}
 									{#if playlist.customData?.shared}
 										<Button
+											cls="playlist-share"
 											iconFa="fas fa-share"
 											title="Stop sharing playlist"
 											noMargin={true}
+											animated={true}
 											type="lessdanger"
 											on:click={() => sharePlaylist(localPlaylistId, false)} />
 									{:else}
 										<Button
+											cls="playlist-share"
 											iconFa="fas fa-share"
 											title="Share playlist"
 											noMargin={true}
+											animated={true}
 											type="primary"
 											on:click={() => sharePlaylist(localPlaylistId, true)} />
 									{/if}
@@ -352,8 +358,10 @@
 								<Spinner />
 							{:else}
 								<Button
+									cls="one-click"
 									url="bsplaylist://playlist/https://api.beatleader.xyz/playlist/{playlistId}"
 									noMargin={true}
+									animated={true}
 									type="green"
 									iconFa="far fa-hand-pointer"
 									title="One click install"
@@ -364,6 +372,7 @@
 							iconFa="fas fa-download"
 							title="Download playlist"
 							noMargin={true}
+							animated={true}
 							type="primary"
 							on:click={() => store.download(playlist)} />
 					{/if}
@@ -537,5 +546,28 @@
 	.oneclick-title {
 		font-size: 0.8em;
 		color: blueviolet;
+	}
+
+	.buttons-container {
+		display: flex;
+		gap: 0.4em;
+	}
+
+	:global(.one-click .fa-hand-pointer) {
+		width: 1.3em;
+	}
+
+	:global(.playlist-share .fas) {
+		margin-top: 0.3em;
+	}
+
+	:global(.playlist-delete .fas) {
+		margin-top: 0.3em;
+	}
+
+	@media screen and (max-width: 768px) {
+		.titleAndButtons {
+			flex-direction: column;
+		}
 	}
 </style>

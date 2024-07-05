@@ -171,9 +171,13 @@
 
 	<span slot="default_buttons">
 		{#if shownIcons.includes('pin-service') && serviceIcon?.link?.length && serviceIcon?.linkServiceIcon?.length}
-			<a href={serviceIcon.link} target="_blank" rel="noreferrer">
-				<Button icon={`<i class="service-icon"><img src="${serviceIcon.linkServiceIcon}" /></i>`} animated={true} noMargin={true} />
-			</a>
+			<Button
+				icon={`<i class="service-icon" style="width: 1.2em;height: 1.2em;"><img src="${serviceIcon.linkServiceIcon}" /></i>`}
+				url={serviceIcon.link}
+				urltarget="_blank"
+				onlyurl={true}
+				animated={true}
+				noMargin={true} />
 		{/if}
 
 		{#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}

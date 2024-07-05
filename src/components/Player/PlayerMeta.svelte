@@ -19,21 +19,23 @@
 	`;
 </script>
 
-<MetaTags
-	title={$playerStore?.name}
-	{description}
-	openGraph={{
-		title: $playerStore?.name,
-		description,
-		images: [{url: $playerStore?.playerInfo.avatar}],
-		siteName: 'Player Profile - ' + ssrConfig.name,
-	}}
-	twitter={{
-		handle: '@handle',
-		site: '@beatleader_',
-		cardType: 'summary',
-		title: $playerStore?.name,
-		description,
-		image: $playerStore?.playerInfo.avatar,
-		imageAlt: $playerStore?.name + ' profile picture',
-	}} />
+{#if $playerStore}
+	<MetaTags
+		title={$playerStore?.name}
+		{description}
+		openGraph={{
+			title: $playerStore?.name,
+			description,
+			images: [{url: $playerStore?.playerInfo.avatar}],
+			siteName: 'Player Profile - ' + ssrConfig.name,
+		}}
+		twitter={{
+			handle: '@handle',
+			site: '@beatleader_',
+			cardType: 'summary',
+			title: $playerStore?.name,
+			description,
+			image: $playerStore?.playerInfo.avatar,
+			imageAlt: $playerStore?.name + ' profile picture',
+		}} />
+{/if}
