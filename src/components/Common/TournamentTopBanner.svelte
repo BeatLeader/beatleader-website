@@ -14,23 +14,14 @@
 	function getOngoing() {
 		fetchJson(`https://api.cube.community/rest/bracket/ongoing?tournamentId=${tournamentId}`)
 			.then(response => {
-				if (response.body?.live || true) {
+				if (response.body?.live) {
 					ongoing = response.body;
-					ongoing = {
-						matchId: "testing2",
-						live: true,
-						team1: "test 1",
-						team2: "test 2",
-						currRound: "round of testing"
-					}
 				}
 				else {
 					ongoing = null;
 				}
 			})
 	}
-	
-	console.log($configStore.preferences);
 	
 	$: getOngoing();
 </script>
@@ -163,6 +154,4 @@
 			display: flex;
 		}
 	}
-
-	
 </style>
