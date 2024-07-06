@@ -103,7 +103,6 @@
 	.banner-center-text {
 		display: flex;
 		gap: 0.3em;
-		margin-right: 0.8em;
 		justify-content: center;
 		cursor: pointer;
 		height: 100%;
@@ -143,7 +142,7 @@
 		}
 		
 		.close-all-future {
-			font-size: 0.7em;
+			font-size: 0.5em;
 		}
 
 		.replayed-link-text-desktop {
