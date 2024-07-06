@@ -53,6 +53,7 @@
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
+	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
 
 	export let url = '';
 
@@ -131,6 +132,7 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
+<TournamentTopBanner />
 <!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
 		<a class="reelink" href="/settings#profile" />
@@ -173,7 +175,7 @@
 		<div class="banner-spacer" />
 		<img class="cc-cover-1" src="/assets/cc-logo-left.webp" />
 
-		<div class="rewind-text-and-timer">
+		<div class="banner-center-text">
 			{#if $rewindTimer.seconds > 0}
 				<span class="replayed-link-text desktop-only">Cube Community Winter Highlights in</span>
 				<span class="replayed-link-text mobile-only">CC Winter Highlights in</span>
@@ -443,7 +445,7 @@
 		gap: 0.3em;
 	}
 
-	.rewind-text-and-timer {
+	.banner-center-text {
 		display: flex;
 		gap: 0.3em;
 		margin-right: 0.8em;
@@ -628,7 +630,7 @@
 		display: none;
 	}
 	@media (max-width: 1000px) {
-		.rewind-text-and-timer {
+		.banner-center-text {
 			flex-direction: column;
 			align-items: center;
 			gap: 0;
@@ -642,7 +644,7 @@
 		display: none;
 	}
 	@media (max-width: 1000px) {
-		.rewind-text-and-timer {
+		.banner-center-text {
 			flex-direction: column;
 			align-items: center;
 			gap: 0;
@@ -692,7 +694,7 @@
 			margin-bottom: 0.2em;
 		}
 
-		.rewind-text-and-timer {
+		.banner-center-text {
 			max-width: 60%;
 			text-align: center;
 			flex-wrap: wrap;
@@ -713,7 +715,7 @@
 			display: none;
 		}
 
-		.rewind-text-and-timer {
+		.banner-center-text {
 			max-width: 60%;
 			text-align: center;
 			flex-wrap: wrap;
