@@ -40,7 +40,7 @@
 	
 		<div class="banner-center-text">
 			<img class="bswc-logo" src="/assets/bswc-2024-logo.svg" alt="" />
-			<a class="center-content-in-a" href="https://www.twitch.tv/cubecommunity">
+			<a class="center-content-in-a" href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader">
 				<span class="replayed-link-text-desktop">{tournamentName} {ongoing.currRound} - {ongoing.team1} vs. {ongoing.team2} is Live! 🔴</span>
 				<span class="replayed-link-text-mobile">{tournamentName} {ongoing.currRound}</span>
 				<span class="replayed-link-text-mobile">{ongoing.team1} vs. {ongoing.team2} is Live! 🔴</span>
