@@ -14,6 +14,8 @@
 	import RankingMeta from './RankingMeta.svelte';
 	import Select from '../Settings/Select.svelte';
 	import {configStore} from '../../stores/config';
+	import { participants } from '../../others/bswc2024';
+	import player from '../../services/beatleader/player';
 
 	export let type = 'global';
 	export let page = 1;
@@ -408,7 +410,12 @@
 						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
 						: sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if !noIcons && $configStore.rankingList.showFriendsButton}
+				{#if eventId == 52}
+					{@const team = participants.find(t => t.players.find(p => p.player.user.playableAccounts.find(pa => pa.id == player?.playerId || pa.avatar.includes("cdn.assets.beatleader.xyz/" + player?.playerId))))}
+					{#if team}
+						<img class="bswc-country-icon" src={team.image} title={"Team " + team.name}/>
+					{/if}
+				{:else if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />
 				{/if}
 			</div>
@@ -521,6 +528,10 @@
 
 	:global(.ranking-grid-row.event-winner .player-card) {
 		background-color: #61082c !important;
+	}
+
+	:global(.ranking-grid-row:has(.bswc-country-icon) .player-card) {
+		opacity: 0.6 !important;
 	}
 
 	@media screen and (max-width: 500px) {

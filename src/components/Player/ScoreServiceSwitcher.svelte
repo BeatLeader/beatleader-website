@@ -399,7 +399,7 @@
 												hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`),
 												values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
 												open: !!serviceParams?.filters?.eventId,
-												defaultValue: serviceParams?.filters?.eventId ?? null,
+												defaultValue: serviceParams?.filters?.eventId ? parseInt(serviceParams?.filters?.eventId) : null,
 											},
 										},
 									])

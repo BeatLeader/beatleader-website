@@ -446,6 +446,10 @@
 		z-index: 3;
 	}
 
+	input::placeholder {
+		color: var(--faded) !important;
+	}
+
 	:global(.inner-modal) {
 		z-index: 10;
 		position: relative;
