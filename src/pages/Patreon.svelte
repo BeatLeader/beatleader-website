@@ -159,9 +159,9 @@
 							type="green" />
 						<Button
 							iconFa="fas fa-download"
-							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.35'}
-							label="Download for Quest 1.35"
-							url={BL_API_URL + `questreesabersversion?version=1.35.0`}
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
+							label="Download for Quest 1.37"
+							url={BL_API_URL + `questreesabersversion?version=1.37.0`}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
