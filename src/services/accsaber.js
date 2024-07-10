@@ -129,16 +129,16 @@ export default () => {
 
 	let playersMap = {};
 	const isDataForPlayerAvailable = async playerId => {
-		if (!playerId || !configStore.get('preferences').showAccSaber) return false;
+		if (!playerId || !parseInt(playerId) || !configStore.get('preferences').showAccSaber) return false;
 		if (playersMap[playerId] === undefined) {
 			playersMap[playerId] = fetchGraphQL(
 				`
-		query FindPlayer($playerId: BigInt) {
-			players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
-				totalCount
-			}
-		}
-		`,
+				query FindPlayer($playerId: BigInt) {
+					players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
+						totalCount
+					}
+				}
+				`,
 				{playerId}
 			).then(r => r.data.players.totalCount > 0);
 		}
@@ -400,8 +400,8 @@ export default () => {
 		const query = `
 			query GetPlayerMiniRankingByCategory($offset: Int) {
 				players: ${category == 'overall' ? 'overall' : 'category'}AccSaberPlayers(orderBy: AP_DESC, first:5, offset: $offset${
-			category == 'overall' ? '' : ', condition: { categoryName: "' + category + '"}'
-		}) {
+					category == 'overall' ? '' : ', condition: { categoryName: "' + category + '"}'
+				}) {
 					nodes {
 						playerId
 						ap

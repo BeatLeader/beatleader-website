@@ -193,7 +193,7 @@
 
 		scoresPlayerId = currentPlayerId;
 	}
-	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(playerId);
 	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
 
 	$: rank = $playerStore?.playerInfo.rank;
@@ -252,10 +252,10 @@
 				{/if}
 			{/if}
 
-			{#if scoresPlayerId}
+			{#if playerId}
 				<ContentBox>
 					<Scores
-						playerId={scoresPlayerId}
+						{playerId}
 						player={$playerStore}
 						initialState={scoresState}
 						initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
@@ -280,7 +280,7 @@
 			{:then accSaberAvailable}
 				{#if accSaberAvailable}
 					<ContentBox>
-						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
+						<AccSaberMiniRanking {playerId} category="overall" numOfPlayers={5} />
 					</ContentBox>
 				{/if}
 			{/await}

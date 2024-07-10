@@ -22,7 +22,11 @@
 	let accSaberCategories = null;
 
 	async function updateAccSaberPlayerInfo(playerId) {
-		if (!playerId || !(await accSaberService.isDataForPlayerAvailable(playerId))) return;
+		if (!playerId || !(await accSaberService.isDataForPlayerAvailable(playerId))) { 
+			accSaberPlayerInfo = null;
+			accSaberCategories = null;
+			return; 
+		}
 
 		accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
 		accSaberCategories = await accSaberService.getCategories();

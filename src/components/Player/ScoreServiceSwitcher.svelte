@@ -196,7 +196,11 @@
 			await Promise.all([accSaberService.isDataForPlayerAvailable(playerId).then(r => (r ? 'accsaber' : null))])
 		).filter(s => s);
 
-		if (additionalServices?.length) availableServiceNames = ['beatleader'].concat(additionalServices);
+		if (additionalServices?.length) { 
+			availableServiceNames = ['beatleader'].concat(additionalServices);
+		} else if (availableServiceNames?.length > 1) {
+			availableServiceNames = ['beatleader']
+		}
 
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
 	}
