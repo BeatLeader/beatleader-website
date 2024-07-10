@@ -1205,7 +1205,7 @@
 	{/if}
 </section>
 
-{#if separatePage}
+{#if separatePage && leaderboard && song}
 	<LeaderboardMeta {leaderboard} {song} />
 {/if}
 
