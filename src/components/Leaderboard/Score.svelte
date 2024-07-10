@@ -34,7 +34,7 @@
 
 	const {open} = getContext('simple-modal');
 	const showPreview = previewLink => {
-		if (document.body.clientWidth < 800) {
+		if (document.body.clientWidth < 800 || $configStore.preferences.linkOption == 'newtab') {
 			window.open(previewLink, '_blank');
 		} else {
 			open(Preview, {previewLink});

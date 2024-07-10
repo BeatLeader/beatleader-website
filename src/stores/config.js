@@ -32,6 +32,7 @@ export const DEFAULT_CONFIG = {
 		theme: 'ree-dark',
 		oneclick: 'modassistant',
 		webPlayer: 'beatleader',
+		linkOption: 'thistab',
 		bgimage: '/assets/background.jpg',
 		bgColor: 'rgba(17, 17, 17, 0.3682)',
 		headerColor: 'rgba(0, 0, 0, 0.4152)',

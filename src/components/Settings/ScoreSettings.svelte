@@ -23,6 +23,7 @@
 	const DEFAULT_ONECLICK_VALUE = 'modassistant';
 	const DEFAULT_WEB_PLAYER = 'beatleader';
 	const DEFAULT_TIME_FORMAT = 'relative';
+	const DEFAULT_LINK_OPTION = 'thistab';
 
 	const scoreComparisonMethods = [
 		{name: 'No comparison', value: 'none'},
@@ -195,6 +196,11 @@
 		{name: 'ArcViewer', value: 'arcviewer'},
 	];
 
+	const linkOptions = [
+		{name: 'Popup', value: DEFAULT_LINK_OPTION},
+		{name: 'New tab', value: 'newtab'},
+	];
+
 	let currentLocale = DEFAULT_LOCALE;
 	let currentScoreBadges = null;
 	let currentScoreBadgeSelected = null;
@@ -205,6 +211,7 @@
 	let currentScoreComparisonMethod = DEFAULT_SCORE_COMPARISON_METHOD;
 	let currentOneclick = DEFAULT_ONECLICK_VALUE;
 	let currentWebPlayer = DEFAULT_WEB_PLAYER;
+	let currentLinkOption = DEFAULT_LINK_OPTION;
 	let currentTimeFormat = DEFAULT_TIME_FORMAT;
 	let currentShowHmd = true;
 	let currentShowTriangle = true;
@@ -230,6 +237,7 @@
 			currentScoreComparisonMethod = config?.scoreComparison?.method ?? DEFAULT_SCORE_COMPARISON_METHOD;
 		if (config?.preferences?.oneclick != currentOneclick) currentOneclick = config?.preferences?.oneclick ?? DEFAULT_ONECLICK_VALUE;
 		if (config?.preferences?.webPlayer != currentWebPlayer) currentWebPlayer = config?.preferences?.webPlayer ?? DEFAULT_WEB_PLAYER;
+		if (config?.preferences?.linkOption != currentLinkOption) currentLinkOption = config?.preferences?.linkOption ?? DEFAULT_LINK_OPTION;
 		if (config?.scorePreferences?.dateFormat != currentTimeFormat)
 			currentTimeFormat = config?.scorePreferences?.dateFormat ?? DEFAULT_TIME_FORMAT;
 		if (config?.scorePreferences?.showHmd != currentShowHmd) currentShowHmd = config?.scorePreferences?.showHmd ?? true;
@@ -333,6 +341,7 @@
 	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
 	$: settempsetting('preferences', 'oneclick', currentOneclick);
 	$: settempsetting('preferences', 'webPlayer', currentWebPlayer);
+	$: settempsetting('preferences', 'linkOption', currentLinkOption);
 	$: settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
 	$: settempsetting('scorePreferences', 'showHmd', currentShowHmd);
 	$: settempsetting('scorePreferences', 'showTriangle', currentShowTriangle);
@@ -477,6 +486,10 @@
 		<section class="option">
 			<label title="Which web replay player to use">Web replays</label>
 			<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
+		</section>
+		<section class="option">
+			<label title="Show web replays/previews on PC in a popup or open in the new tab">Open replays/previews in</label>
+			<Select bind:value={currentLinkOption} options={linkOptions} />
 		</section>
 		<section class="option">
 			<label title="How to show time for the score">Date Format</label>
