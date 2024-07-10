@@ -22,6 +22,7 @@
 	import ClanRankingSong from '../components/Leaderboard/ClanRankingSong.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import {processBoolFilter} from '../utils/filters';
+	import ClanMeta from '../components/Clans/ClanMeta.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -346,6 +347,10 @@
 		{/if}
 	</article>
 </section>
+
+{#if clan}
+	<ClanMeta {clan} />
+{/if}
 
 <style>
 	.align-content {
