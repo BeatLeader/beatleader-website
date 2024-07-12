@@ -159,6 +159,21 @@
 	.title {
 		margin-top: 1em;
 	}
+	.details-and-confetti {
+		position: relative;
+		display: flex;
+	}
+	.confetti-container {
+		position: absolute;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 1;
+	}
 
 	:global(.week100-box) {
 		max-width: 60%;
