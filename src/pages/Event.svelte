@@ -318,13 +318,13 @@
 					</span>
 
 					<div class="downloadButtons">
-						<a href="https://www.twitch.tv/CubeCommunity" target="_blank" rel="noreferrer">
+						<a href="https://www.twitch.tv/CubeCommunity" target="_blank">
 							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
 						</a>
-						<a href="https://cube.community/tournaments/bswc-2024" target="_blank" rel="noreferrer">
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank">
 							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
 						</a>
-						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank" rel="noreferrer">
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank">
 							<Button iconFa="fas fa-diagram-project" label="Bracket" />
 						</a>
 					</div>
@@ -350,13 +350,13 @@
 					</span>
 
 					<div class="downloadButtons">
-						<a href="https://www.twitch.tv/CubeCommunity" target="_blank" rel="noreferrer">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
 							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
 						</a>
-						<a href="https://cube.community/tournaments/bswc-2024" target="_blank" rel="noreferrer">
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank">
 							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
 						</a>
-						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank" rel="noreferrer">
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank">
 							<Button iconFa="fas fa-diagram-project" label="Bracket" />
 						</a>
 					</div>
