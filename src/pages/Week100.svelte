@@ -123,9 +123,10 @@
 	}
 	.week100-title {
 		font-size: 3em;
+		text-align: center;
 	}
 	img {
-		height: 30em;
+		max-width: 30em;
 	}
 	.error {
 		color: red;
@@ -180,11 +181,16 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		gap: 0.3em;
 	}
 
 	@media screen and (max-width: 768px) {
 		:global(.week100-box) {
 			max-width: unset;
+		}
+
+		img {
+			max-width: 100%;
 		}
 	}
 </style>
