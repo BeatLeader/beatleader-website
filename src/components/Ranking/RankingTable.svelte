@@ -14,7 +14,7 @@
 	import RankingMeta from './RankingMeta.svelte';
 	import Select from '../Settings/Select.svelte';
 	import {configStore} from '../../stores/config';
-	import { participants } from '../../others/bswc2024';
+	import {participants} from '../../others/bswc2024';
 	import player from '../../services/beatleader/player';
 
 	export let type = 'global';
@@ -314,6 +314,25 @@
 		refreshSortValues(allSortValues, filters);
 	}
 
+	function checkEligible(eventId, team) {
+		if (eventId == 52) return '';
+
+		const teamNames = [
+			'Sweden',
+			'Switzerland',
+			'Argentina',
+			'Staff',
+			'Czechia',
+			'Slovakia',
+			'Latvia',
+			'South Africa',
+			'Saudi Arabia',
+			'Hungary',
+		];
+
+		return teamNames.includes(team.name) ? '-eligible' : '';
+	}
+
 	onMount(() => {
 		dispatch('loading', true);
 	});
@@ -410,10 +429,16 @@
 						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
 						: sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if eventId == 52}
-					{@const team = participants.find(t => t.players.find(p => p.player.user.playableAccounts.find(pa => pa.id == player?.playerId || pa.avatar.includes("cdn.assets.beatleader.xyz/" + player?.playerId))))}
+				{#if eventId == 52 || eventId == 53}
+					{@const team = participants.find(t =>
+						t.players.find(p =>
+							p.player.user.playableAccounts.find(
+								pa => pa.id == player?.playerId || pa.avatar.includes('cdn.assets.beatleader.xyz/' + player?.playerId)
+							)
+						)
+					)}
 					{#if team}
-						<img class="bswc-country-icon" src={team.image} title={"Team " + team.name}/>
+						<img class={'bswc-country-icon' + checkEligible(eventId, team)} src={team.image} title={'Team ' + team.name} />
 					{/if}
 				{:else if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />

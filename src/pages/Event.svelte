@@ -82,8 +82,8 @@
 				filters[p.key] = p.multi
 					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
 					: filters?.[p.key]?.length
-					? filters[p.key]
-					: p?.default ?? '';
+						? filters[p.key]
+						: p?.default ?? '';
 
 				p.value = p.multi
 					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
@@ -332,6 +332,37 @@
 					<span>
 						<br />
 						<b>Good luck to the teams! Let the strongest win and everyone have fun! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
+		{#if eventId == 53}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" />
+				<div class="bswcbgblur" />
+				<div class="bswc-container">
+					<span>
+						<b>Week 2 of BSWC 2024 is here!</b> It features quarter finals for those in the winners bracket, and the first round for those
+						in the losers bracket.<br />
+						Try your skill on the maps, make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings
+						from the last week on the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons">
+						<a href="https://www.twitch.tv/CubeCommunity" target="_blank" rel="noreferrer">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Good luck to the teams! And good luck in our fan event! </b>
 					</span>
 				</div>
 			</ContentBox>
