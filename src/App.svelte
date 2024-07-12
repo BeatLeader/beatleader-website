@@ -50,6 +50,7 @@
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
 	import AdminPage from './pages/Admin.svelte';
+	import Week100Page from './pages/Week100.svelte';
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
@@ -245,6 +246,7 @@
 					<Route path="/settings" component={Settings} />
 					<Route path="/followed" component={FollowedPage} />
 					<Route path="/census2023" component={CensusPage} />
+					<Route path="/week100" component={Week100Page} />
 					<Route path="/survey/achievement" component={SurveyAchievementPage} />
 					<Route path="/supporting-project/link">
 						<PatreonPage action="linkPatreon" />
