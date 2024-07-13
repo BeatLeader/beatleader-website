@@ -2467,10 +2467,10 @@ svelte-check@^3.8.4:
     svelte-preprocess "^5.1.3"
     typescript "^5.0.3"
 
-svelte-confetti@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/svelte-confetti/-/svelte-confetti-2.0.1.tgz#c7890faf3a7d79bcc05dc70d3254b3910bcb24d5"
-  integrity sha512-o8jQ9GD6riVqQj7ndcdJFXoYIYw21AAnVKoQSxY1FgXoT1uTgJvsTdrDadlkjGmHNpg8Y5Ya0AzZfkESOGpcuQ==
+svelte-confetti@^1.2.2:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/svelte-confetti/-/svelte-confetti-1.4.0.tgz#29e8ebfbbf689629671caef52ba7f53cfa71593f"
+  integrity sha512-B0woNwpsFGwhkEoP48BIDQgvW0bMxPhavLVD+E+tsTWevlpr1aiz1S2wA8ArIXX957BiaZWHRHKmI5/pFRDbdg==
 
 svelte-dnd-action@^0.9.49:
   version "0.9.49"
