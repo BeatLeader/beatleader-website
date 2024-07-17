@@ -243,5 +243,9 @@
 		.nickname {
 			text-align: center;
 		}
+
+		.summary {
+			margin-left: 0;
+		}
 	}
 </style>

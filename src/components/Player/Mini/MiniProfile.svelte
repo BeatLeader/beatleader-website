@@ -158,5 +158,9 @@
 		.rank-and-stats-cell {
 			align-items: center;
 		}
+
+		:global(.mini-profile-box .avatar-overlay) {
+			left: calc(50% - 112px) !important;
+		}
 	}
 </style>

@@ -75,7 +75,7 @@
 	 * When the `triggerEvents` is `hover`, we ensure that hovering over the popover element itself does
 	 * not cause it to hide. If this is undesireable, it can be overridden here.
 	 */
-	export let remainOpenOnPopoverHover: boolean = true;
+	export let remainOpenOnPopoverHover: boolean = false;
 
 	/**
 	 * When the `triggerEvents` is `focus`, we ensure that focusing on the popover element itself does
