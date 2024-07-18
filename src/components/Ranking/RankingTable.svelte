@@ -429,7 +429,7 @@
 						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
 						: sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if eventId == 52 || eventId == 53}
+				{#if eventId == 52 || eventId == 53 || eventId == 54}
 					{@const team = participants.find(t =>
 						t.players.find(p =>
 							p.player.user.playableAccounts.find(

@@ -367,6 +367,38 @@
 				</div>
 			</ContentBox>
 		{/if}
+		{#if eventId == 54}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" />
+				<div class="bswcbgblur" />
+				<div class="bswc-container">
+					<span>
+						<b>Week 3 of BSWC 2024 is here!*</b> US vs Denmark and UK vs Canada in a semi-final! I hope you saved some points to bet on
+						matches this week, because it's going to be close.<br />
+						No need to spend points in our events, only your kilocalories in exchange for fun and a badge for the champion.<br />
+						Make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings from the last week on
+						the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Good luck to the teams! And good luck in our fan event! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
@@ -405,6 +437,14 @@
 				on:loading={e => (isLoading = !!e?.detail)}
 				on:pending={e => (pending = e?.detail)} />
 		</ContentBox>
+		{#if eventId == 54}
+			<span class="star-message">
+				* The BSWC Team is not responsible for any damages to controllers that occur while using "cheatreal". If you use "cheatreal" and
+				your controller is damaged, you are solely responsible for the cost of repair or replacement. The BSWC Team will not reimburse you
+				for any damages to your controller, regardless of the cause. By using "cheatreal", you agree to the terms of this disclaimer. If you
+				do not agree to the terms of this disclaimer, you should not use "cheatreal".
+			</span>
+		{/if}
 	</article>
 
 	{#if mainPlayerId && topPlayerId && (mainPlayerId == topPlayerId || (eventId == 50 && (mainPlayerId == tenthPlayerId || mainPlayerId == fifteethPlayerId))) && currentEvent && Date.now() / 1000 < currentEvent.endDate + WEEKSECONDS}
@@ -479,6 +519,13 @@
 
 	input::placeholder {
 		color: var(--faded) !important;
+	}
+
+	.star-message {
+		font-size: 0.875em;
+		color: var(--faded);
+		margin: 1em;
+		display: block;
 	}
 
 	:global(.inner-modal) {
