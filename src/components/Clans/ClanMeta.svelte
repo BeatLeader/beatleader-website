@@ -5,19 +5,17 @@
 	export let clan;
 
 	$: image = clan?.icon ?? '';
-
-	$: title = clan?.name + ' | Beat Saber clan';
-	$: description =
-		`
+	$: title = clan?.name;
+	$: description = `
         ${clan?.tag}
   	    ${clan?.description}
-        ${clan?.playersCount} player${clan?.playersCount > 1 ? "s" : "" }
-	`
+        ${clan?.playersCount} player${clan?.playersCount > 1 ? 's' : ''}
+	`;
 </script>
 
 <svelte:head>
-    <meta name="msapplication-TileColor" content={clan?.color}>
-    <meta name="theme-color" content={clan?.color}>
+	<meta name="msapplication-TileColor" content={clan?.color} />
+	<meta name="theme-color" content={clan?.color} />
 </svelte:head>
 
 <MetaTags
@@ -27,7 +25,7 @@
 		title,
 		description,
 		images: [{url: image}],
-		siteName: ssrConfig.name,
+		siteName: 'Clan Page - ' + ssrConfig.name,
 	}}
 	twitter={{
 		handle: '@handle',

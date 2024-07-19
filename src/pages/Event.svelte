@@ -17,6 +17,7 @@
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Event from '../components/Event/Event.svelte';
 	import {Confetti} from 'svelte-confetti';
+	import EventMeta from '../components/Event/EventMeta.svelte';
 
 	export let page = 1;
 	export let location;
@@ -453,6 +454,10 @@
 		</div>
 	{/if}
 </section>
+
+{#if currentEvent}
+	<EventMeta event={currentEvent} />
+{/if}
 
 <style>
 	.align-content {
