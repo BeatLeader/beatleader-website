@@ -374,7 +374,7 @@
 			|
 			<a href="https://beatleader.wiki/">Wiki</a>
 			|
-			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
+			<a href="https://github.com/BeatLeader">Source</a>
 			|
 			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
 			|
