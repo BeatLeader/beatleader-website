@@ -193,7 +193,7 @@
 
 		scoresPlayerId = currentPlayerId;
 	}
-	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(playerId);
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(playerData);
 	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
 
 	$: rank = $playerStore?.playerInfo.rank;

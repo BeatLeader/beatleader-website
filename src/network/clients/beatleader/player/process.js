@@ -27,6 +27,7 @@ export default response => {
 		mapperId,
 		scoreStats,
 		externalProfileUrl,
+		linkedIds,
 		clans,
 		patreonFeatures,
 		socials,
@@ -87,6 +88,7 @@ export default response => {
 		name,
 		alias,
 		role,
+		linkedIds,
 		playerInfo: {
 			avatar: profilePicture,
 			externalProfileUrl,
@@ -120,10 +122,10 @@ export default response => {
 					...profileSettings,
 					profileAppearance,
 					starredFriends: profileSettings?.starredFriends?.split(',') ?? null,
-			  }
+				}
 			: {
 					profileAppearance,
-			  },
+				},
 		scoreStats: scoreStats ? scoreStats : null,
 	};
 };

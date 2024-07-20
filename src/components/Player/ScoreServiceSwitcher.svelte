@@ -189,17 +189,17 @@
 		},
 	];
 
-	async function updateAvailableServiceNames(playerId) {
+	async function updateAvailableServiceNames(player) {
 		accSaberCategories = null;
 
 		const additionalServices = (
-			await Promise.all([accSaberService.isDataForPlayerAvailable(playerId).then(r => (r ? 'accsaber' : null))])
+			await Promise.all([accSaberService.isDataForPlayerAvailable(player).then(r => (r ? 'accsaber' : null))])
 		).filter(s => s);
 
-		if (additionalServices?.length) { 
+		if (additionalServices?.length) {
 			availableServiceNames = ['beatleader'].concat(additionalServices);
 		} else if (availableServiceNames?.length > 1) {
-			availableServiceNames = ['beatleader']
+			availableServiceNames = ['beatleader'];
 		}
 
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
@@ -255,7 +255,7 @@
 											title: $editModel ? 'Click to toggle' : v.title,
 											cls: !sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`) ? 'hidden' : '',
 										})),
-							  }
+								}
 							: null),
 					},
 				}));
@@ -498,7 +498,7 @@
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
-	$: updateAvailableServiceNames(playerId);
+	$: updateAvailableServiceNames(player);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
 		service,

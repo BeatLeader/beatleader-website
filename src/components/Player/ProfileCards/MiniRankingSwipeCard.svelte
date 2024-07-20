@@ -8,7 +8,7 @@
 
 	const accSaberService = createAccSaberService();
 
-	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player.playerId);
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player);
 
 	$: rank = player?.playerInfo.rank;
 	$: country = player?.playerInfo.country.country;

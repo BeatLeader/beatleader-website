@@ -21,11 +21,11 @@
 	let accSaberPlayerInfo = null;
 	let accSaberCategories = null;
 
-	async function updateAccSaberPlayerInfo(playerId) {
-		if (!playerId || !(await accSaberService.isDataForPlayerAvailable(playerId))) { 
+	async function updateAccSaberPlayerInfo(playerId, playerData) {
+		if (!playerData || !(await accSaberService.isDataForPlayerAvailable(playerData))) {
 			accSaberPlayerInfo = null;
 			accSaberCategories = null;
-			return; 
+			return;
 		}
 
 		accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
@@ -49,7 +49,7 @@
 						},
 						delay: 500,
 					},
-			  ]
+				]
 					.concat(
 						$pageContainer.name !== 'xxl' &&
 							($configStore.profileParts.friendsMiniRanking ||
@@ -61,7 +61,7 @@
 										component: MiniRankingSwipeCard,
 										props: {player: playerData},
 									},
-							  ]
+								]
 							: []
 					)
 					.concat(
@@ -72,7 +72,7 @@
 										component: AccSaberSwipeCard,
 										props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
 									},
-							  ]
+								]
 							: []
 					)
 					.concat(
@@ -83,7 +83,7 @@
 										component: TwitchVideosSwipeCard,
 										props: {videos: twitchVideos},
 									},
-							  ]
+								]
 							: []
 					)
 			: []
@@ -91,7 +91,7 @@
 
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 
-	$: updateAccSaberPlayerInfo(playerId);
+	$: updateAccSaberPlayerInfo(playerId, playerData);
 </script>
 
 <ContentBox cls="charts-box">
