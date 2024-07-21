@@ -59,11 +59,11 @@
 		align-items: center;
 		font-size: 0.75rem;
 		text-align: center;
+		gap: 0.125rem;
 	}
 
 	.switch-types :global(.button) {
 		font-weight: 500;
-		margin-right: 0.125rem !important;
 		margin-bottom: 0.125rem !important;
 	}
 

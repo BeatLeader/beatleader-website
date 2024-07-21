@@ -239,7 +239,7 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 			let leaderboardId = led.song.id + '' + a.value + '' + a.mode;
 			let diffAndType = {diff: a.difficultyName, type: a.modeName};
 			let color = getDiffColor(diffAndType);
-			return {name: diffAndType.diff.replace('Plus', '+'), type: diffAndType.type, leaderboardId, color};
+			return {name: diffAndType.diff.replace('Plus', '+'), type: diffAndType.type, leaderboardId, color, stars: a.stars};
 		}) ?? null;
 
 	const currentDiff = led.difficulty;

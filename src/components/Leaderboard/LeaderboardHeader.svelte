@@ -8,7 +8,7 @@
 	import Value from '../Common/Value.svelte';
 	import Badge from '../Common/Badge.svelte';
 	import Icons from '../Song/Icons.svelte';
-	import {formatDiffStatus, DifficultyStatus} from '../../utils/beatleader/format';
+	import {formatDiffStatus, DifficultyStatus, wrapBLStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
 	import LeaderboardDisplayCaptureStatus from './LeaderboardDisplayCaptureStatus.svelte';
@@ -17,6 +17,7 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import SongStatus from './SongStatus.svelte';
 	import HashDisplay from '../Common/HashDisplay.svelte';
+	import LeaderboardDisplayCaptureCorner from './LeaderboardDisplayCaptureCorner.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -61,93 +62,107 @@
 </script>
 
 {#if leaderboard}
-	<header
-		class="header"
-		style={coverUrl
-			? `background: linear-gradient(#303030a2, #303030a2), url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
-			: ''}
-		transition:fade|global>
+	<header class="header" transition:fade|global>
 		<div class="cinematics">
 			<div class="cinematics-canvas">
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 			</div>
 		</div>
+		<div
+			class="map-cover"
+			style={coverUrl
+				? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
+				: ''}>
+		</div>
 
-		<div class="header-container">
-			<h1 class="title is-4">
-				<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
-				{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
-					<span class="subname">{song.subName}</span>
-				{/if}
-			</h1>
-
-			<div class="title-container">
-				<span class="author" title="Song author name">{song.authorName}</span>
-				<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
-				<div class="status-and-type">
-					{#if leaderboard.categoryDisplayName}
-						<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
-							<span slot="label">
-								{leaderboard.categoryDisplayName}
-								{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
-							</span>
-						</Badge>
+		<div class="main-container">
+			<div class="header-container">
+				<h1 class="title is-4">
+					<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
+					{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+						<span class="subname">{song.subName}</span>
 					{/if}
+				</h1>
 
-					{#if leaderboard.stats}<span class="diff-status">{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-					{#if leaderboard?.stats?.type}
-						<MapTypeDescription type={leaderboard?.stats.type} />
+				<div class="title-container">
+					<span class="author" title="Song author name">{song.authorName}</span>
+					<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
+					<div class="status-and-type">
+						{#if leaderboard.categoryDisplayName}
+							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+								<span slot="label">
+									{leaderboard.categoryDisplayName}
+									{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
+								</span>
+							</Badge>
+						{/if}
+
+						{#if leaderboard?.stats?.type}
+							<MapTypeDescription type={leaderboard?.stats.type} />
+						{/if}
+					</div>
+
+					{#if song.externalStatuses}
+						<div class="song-statuses">
+							{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
+								<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
+							{/if}
+							{#each leaderboard.song.externalStatuses as songStatus}
+								<SongStatus {songStatus} />
+							{/each}
+						</div>
+					{/if}
+					{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
+						<LeaderboardStats {leaderboard} />
+					{/if}
+					{#if $configStore?.leaderboardPreferences?.showHashInHeader}
+						<HashDisplay {song} />
 					{/if}
 				</div>
-				{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
-					<LeaderboardDisplayCaptureStatus
-						leaderboardId={leaderboard?.leaderboardId}
-						clan={leaderboardCaptor}
-						clanRankingContested={leaderboard?.clanRankingContested} />
-				{/if}
-				{#if song.externalStatuses}
-					<div class="song-statuses">
-						{#each leaderboard.song.externalStatuses as songStatus}
-							<SongStatus {songStatus} />
-						{/each}
+			</div>
+			<div class="title-and-buttons">
+				<h2 class="title is-6" style="display: contents;">
+					{#if leaderboard.stats && leaderboard.stats.passRating}
+						<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
+					{/if}
+				</h2>
+				{#if leaderboard?.stats?.requirements}
+					<div class="requirements">
+						<MapRequirementDescription type={leaderboard?.stats.requirements} />
 					</div>
 				{/if}
-				{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
-					<LeaderboardStats {leaderboard} />
-				{/if}
-				{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-					<HashDisplay {song} />
-				{/if}
 			</div>
-
-			<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
 		</div>
 
-		<div class="title-and-buttons">
-			<h2 class="title is-6" style="display: contents;">
-				{#if leaderboard.stats && leaderboard.stats.passRating}
-					<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
-				{/if}
-			</h2>
-			{#if leaderboard?.stats?.requirements}
-				<div class="requirements">
-					<MapRequirementDescription type={leaderboard?.stats.requirements} />
+		<div class="buttons-container">
+			<div class="icons-container">
+				<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
+			</div>
+			{#if leaderboardGroup && leaderboardGroup.length > 1}
+				<div class="version-selector-container">
+					<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
+						{#each leaderboardGroup as option (option.id)}
+							<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
+								{#if option.timestamp}
+									{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
+								{:else}
+									{formatDiffStatus(option.status)}
+								{/if}
+							</option>
+						{/each}
+					</select>
 				</div>
 			{/if}
-			{#if leaderboardGroup && leaderboardGroup.length > 1}
-				<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
-					{#each leaderboardGroup as option (option.id)}
-						<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
-							{#if option.timestamp}
-								{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
-							{:else}
-								{formatDiffStatus(option.status)}
-							{/if}
-						</option>
-					{/each}
-				</select>
-			{/if}
 		</div>
+
+		{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
+			<div class="capture-status">
+				<LeaderboardDisplayCaptureCorner
+					leaderboardId={leaderboard?.leaderboardId}
+					clan={leaderboardCaptor}
+					clanRankingContested={leaderboard?.clanRankingContested} />
+			</div>
+		{/if}
 	</header>
 {/if}
 
@@ -157,8 +172,9 @@
 		border-radius: 0.4em;
 		color: var(--alternate);
 		display: flex;
-		align-items: center;
-		justify-content: space-between !important;
+		align-items: flex-start;
+		justify-content: start !important;
+		gap: 1em;
 		margin-bottom: 1.2em;
 	}
 
@@ -175,6 +191,34 @@
 		pointer-events: none;
 	}
 
+	.main-container {
+		display: flex;
+		justify-content: space-between;
+		flex: 1;
+	}
+
+	.buttons-container {
+		position: absolute;
+		bottom: 0;
+		margin-left: -0.6em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		background-color: #0000004f;
+		padding: 0.6em;
+		border-radius: 0 0 12px 12px;
+	}
+
+	.icons-container {
+		transform: scale(1.15);
+		margin-left: 17.9em;
+	}
+
+	.version-selector-container {
+		transform: scale(1.15);
+		margin-right: 2em;
+	}
+
 	header .title {
 		color: inherit !important;
 		margin-left: -0.15em;
@@ -185,15 +229,22 @@
 	}
 
 	header h1 span.name {
-		color: #ffffffab !important;
+		color: #ffffffcc !important;
+	}
+
+	.map-cover {
+		width: 16em;
+		aspect-ratio: 1;
+		border-radius: 8px;
+		z-index: 1;
 	}
 
 	.name-long {
-		font-size: 1.5em;
+		font-size: 1.2em;
 	}
 
 	.name-short {
-		font-size: 2.5em;
+		font-size: 1.8em;
 	}
 
 	.subname {
@@ -203,14 +254,25 @@
 
 	.author {
 		color: #ffffffa3;
+		font-size: 1.2em;
 	}
 
 	.level-author {
 		color: var(--alternate);
+		font-size: 1.1em;
 	}
 
 	.diff-status {
 		color: white;
+	}
+
+	.capture-status {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 6em;
+		overflow: hidden;
+		z-index: 2;
 	}
 
 	header h2.title {
@@ -222,14 +284,14 @@
 
 	.header-container {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		flex-direction: column;
 		min-height: 14em;
 	}
 
 	.title-container {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		flex-direction: column;
 		grid-gap: 0.2em;
 	}
@@ -288,6 +350,7 @@
 		font-size: 0.875rem;
 		font-weight: 500;
 		width: 100%;
+		margin-bottom: -0.6em;
 	}
 
 	.group-option {
@@ -328,11 +391,11 @@
 	.title-and-buttons {
 		display: flex;
 		align-items: center;
-		margin-top: 0.8em;
 		align-self: stretch;
-		justify-content: space-between;
+		justify-content: center;
 		flex-wrap: wrap;
 		flex-direction: column;
+		padding: 0.5em;
 		min-width: fit-content;
 	}
 
@@ -388,9 +451,6 @@
 	}
 
 	@media screen and (max-width: 520px) {
-		.cinematics {
-			display: none;
-		}
 		header {
 			flex-direction: column;
 		}
