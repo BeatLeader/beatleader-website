@@ -20,9 +20,9 @@
 	let list = [];
 	let count = 0;
 
-	function fetchFollowers(playerId, tab, page) {
+	function fetchFollowers(playerId, playerCount, tab, page) {
 		loading = true;
-		fetch(BL_API_URL + `player/${playerId}/followers?type=${tab}&count=10&page=${page}`, {credentials: 'include'})
+		fetch(BL_API_URL + `player/${playerId}/followers?type=${tab}&count=${playerCount}&page=${page}`, {credentials: 'include'})
 			.then(r => r.json())
 			.then(result => {
 				loading = false;
@@ -37,7 +37,8 @@
 	}
 
 	$: updateCount(followingCount, followersCount, tab);
-	$: fetchFollowers(playerId, tab, page);
+	$: playerCount = Math.min(Math.round(window.screen.height / 100), 10);
+	$: fetchFollowers(playerId, playerCount, tab, page);
 </script>
 
 <div class="followers-popup-container darkened-background">
@@ -65,7 +66,7 @@
 			{/each}
 			<Pager
 				totalItems={count}
-				itemsPerPage={10}
+				itemsPerPage={playerCount}
 				itemsPerPageValues={null}
 				currentPage={page - 1}
 				on:page-changed={e => {
