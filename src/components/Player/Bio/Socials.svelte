@@ -12,6 +12,7 @@
 	$: discordSocial = playerInfo.socials?.find(s => s?.service === 'Discord');
 	$: beatsaverSocial = playerInfo.socials?.find(s => s?.service === 'BeatSaver');
 	$: youtubeSocial = playerInfo.socials?.find(s => s?.service === 'YouTube');
+	$: githubSocial = playerInfo.socials?.find(s => s?.service === 'GitHub');
 </script>
 
 {#if steamLink}
@@ -86,10 +87,26 @@
 		title="{beatsaverSocial.user} mapper" />
 {/if}
 
+{#if githubSocial}
+	<Button
+		url={githubSocial.link}
+		cls="socials-btn"
+		onlyurl={true}
+		animated={true}
+		animationOpacity={0.8}
+		type="github"
+		iconFa="fab fa-github"
+		title="{githubSocial.user} bugmaker" />
+{/if}
+
 <style>
 	:global(.socials-btn) {
 		height: 2em !important;
 		width: 2em !important;
+	}
+
+	:global(.socials-btn .fab.fa-github) {
+		font-size: 1.3em;
 	}
 
 	:global(.socials-btn.steam .icon) {

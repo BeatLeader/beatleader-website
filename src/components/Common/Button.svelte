@@ -86,6 +86,14 @@
 			border: 'transparent',
 			activeBorder: 'transparent',
 		},
+		github: {
+			color: '#010409',
+			activeColor: '#fff',
+			bgColor: '#cccccc',
+			activeBgColor: '#1DA1F2',
+			border: 'transparent',
+			activeBorder: 'transparent',
+		},
 		gray: {
 			color: '#dbdbdb',
 			activeColor: '#fff',

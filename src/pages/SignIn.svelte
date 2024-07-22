@@ -266,6 +266,21 @@
 				<Button type="twitter" iconFa="fab fa-twitter" label="Link Twitter" />
 			</form>
 		{/if}
+		{#if socials && socials.find(s => s.service == 'GitHub')}
+			<form action={BL_API_URL + 'user/unlink'} method="post">
+				<input type="hidden" name="Provider" value="GitHub" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button iconFa="fab fa-github" label="Unlink GitHub" type="danger" />
+			</form>
+		{:else}
+			<form class="github" action={BL_API_URL + 'signin'} method="post">
+				<input type="hidden" name="Provider" value="GitHub" />
+				<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/signin/addHome'} />
+
+				<Button type="github" iconFa="fab fa-github" label="Link GitHub" />
+			</form>
+		{/if}
 	{:else if action == 'mylogin'}
 		<span>
 			Your current login is: <b>{$account.login}</b><br />

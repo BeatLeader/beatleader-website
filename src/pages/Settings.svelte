@@ -69,6 +69,19 @@
 		}
 	}
 
+	let animationIsOver = false;
+
+	function checkPlayerPage() {
+		animationIsOver = false;
+		if (document.getElementsByClassName('player-page').length) {
+			setTimeout(() => {
+				animationIsOver = true;
+			}, 450);
+		} else {
+			animationIsOver = true;
+		}
+	}
+
 	$: settingsChanged = $configStore ? configStore.getSettingsChanged() : undefined;
 	$: animationSign = previousIndex == undefined ? 0 : selectedNavigationIndex >= previousIndex ? 1 : -1;
 	$: if ($account?.player && !navigationItems.find(i => i.link === '#account')) {
@@ -81,6 +94,8 @@
 			},
 		];
 	}
+
+	$: checkPlayerPage();
 </script>
 
 <svelte:head>
@@ -88,8 +103,8 @@
 </svelte:head>
 
 <section class="align-content">
-	<article class="page-content" transition:fade|global>
-		{#if configStore && $configStore}
+	<article class="page-content">
+		{#if configStore && $configStore && animationIsOver}
 			<ContentBox>
 				<h1 class="header-title">Settings</h1>
 				<div class="settings-container">
