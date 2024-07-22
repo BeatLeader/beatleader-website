@@ -22,6 +22,7 @@
 	import ClanRankingSong from '../components/Leaderboard/ClanRankingSong.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
 	import {processBoolFilter} from '../utils/filters';
+	import ClanMeta from '../components/Clans/ClanMeta.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -211,7 +212,7 @@
 	$: playersPage = $clanStore?.data ?? [];
 
 	$: maxRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.rank)) : 0;
-	$: maxCountryRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.countries[0].rank)) : 0;
+	$: maxCountryRank = playersPage && !maps ? Math.max(...playersPage.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: clanLeaderId = clan?.leaderID ?? null;
 	$: isFounder = clan?.id && clanLeaderId === $account?.player?.playerId;
@@ -346,6 +347,10 @@
 		{/if}
 	</article>
 </section>
+
+{#if clan}
+	<ClanMeta {clan} />
+{/if}
 
 <style>
 	.align-content {

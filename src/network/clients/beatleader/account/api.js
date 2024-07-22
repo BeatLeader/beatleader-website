@@ -4,10 +4,12 @@ import processPlayer from '../player/process';
 
 const process = response => {
 	const followed = response?.friends?.map(f => processPlayer(f)) ?? [];
+	const ids = response?.ids?.filter(id => id.length);
 
 	return {
 		...response,
 		followed,
+		ids,
 		player: processPlayer(response?.player),
 	};
 };

@@ -72,13 +72,5 @@
 		justify-content: center !important;
 		align-items: center !important;
 		text-align: center !important;
-
-		transition: opacity ease 0.2s;
-		opacity: 0.4 !important;
-		transform: scale(100%);
-	}
-
-	:global(.buttons-container > span > *):hover {
-		opacity: 1 !important;
 	}
 </style>

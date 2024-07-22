@@ -8,11 +8,11 @@
 
 	const accSaberService = createAccSaberService();
 
-	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player.playerId);
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(player);
 
 	$: rank = player?.playerInfo.rank;
-	$: country = player?.playerInfo.countries[0].country;
-	$: countryRank = player?.playerInfo.countries[0].rank;
+	$: country = player?.playerInfo.country.country;
+	$: countryRank = player?.playerInfo.country.rankValue;
 </script>
 
 {#if selected}
@@ -24,7 +24,7 @@
 		{:then accSaberAvailable}
 			{#if accSaberAvailable}
 				<div>
-					<AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} />
+					<AccSaberMiniRanking playerId={player.playerId} category="overall" numOfPlayers={5} on:height-changed />
 				</div>
 			{/if}
 		{/await}
@@ -36,6 +36,7 @@
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		grid-gap: 1rem;
+		padding: 0.5em;
 	}
 
 	.mini-ranking :global(section) {

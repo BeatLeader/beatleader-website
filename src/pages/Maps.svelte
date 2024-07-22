@@ -65,17 +65,17 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Beat Saber Parents Tournament',
-				body: 'Beat Saber Parents Tournament is now accepting signups for Season 3! Watch their video to learn more.',
-				imageUrl: '/assets/Discover/bspt_2024_banner.webp',
-				targetUrl: 'https://youtu.be/vfY3DvhP10E',
-				linkName: 'YouTube',
-				forcedColor: 'rgb(123 123 123)',
+				title: 'BSWC 2024',
+				body: 'Beat Saber World Cup 2024 is currently ongoing! Be sure not to miss the matches, and compete on the map pools yourself with our BSWC events!',
+				imageUrl: 'https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp',
+				targetUrl: 'https://cube.community/tournaments/bswc-2024',
+				forcedColor: 'rgb(165 35 195)',
+				linkName: 'Official Website',
 				buttons: [
 					{
-						text: 'Discord',
+						text: 'Events',
 						type: 'primary',
-						url: 'https://discord.gg/UWefgEzPFJ',
+						url: '/events',
 					},
 				],
 			},

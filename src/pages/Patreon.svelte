@@ -159,9 +159,9 @@
 							type="green" />
 						<Button
 							iconFa="fas fa-download"
-							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.35'}
-							label="Download for Quest 1.35"
-							url={BL_API_URL + `questreesabersversion?version=1.35.0`}
+							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
+							label="Download for Quest 1.37"
+							url={BL_API_URL + `questreesabersversion?version=1.37.0`}
 							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
 							type="green" />
@@ -193,9 +193,9 @@
 							<span>QUEST (v0.3.9):</span>
 							<Button
 								iconFa="fas fa-download"
-								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.35'}
-								label="Download for Quest 1.35"
-								url={BL_API_URL + `questreesabersversion?version=1.35.0`}
+								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
+								label="Download for Quest 1.37"
+								url={BL_API_URL + `questreesabersversion?version=1.37.0`}
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green" />
@@ -228,7 +228,8 @@
 							</span>
 
 							{#if showOtherVersions}
-								<a href={BL_API_URL + 'reesabersversion?version=1.34.0'}> Version for 1.34.2 (v0.3.8)</a>
+								<a href={BL_API_URL + 'reesabersversion?version=1.34.0'}> Version for PC 1.34.2 (v0.3.8)</a>
+								<a href={BL_API_URL + 'questreesabersversion?version=1.35.0'}> Version for Quest 1.35.0 (v0.3.9)</a>
 							{/if}
 						</div>
 					{/if}

@@ -37,8 +37,17 @@
 			leaderboards = songInfoValue.leaderboards;
 			coverUrl = songInfo.coverImage;
 
+			let selectedLeaderboard = leaderboards[0];
+			if (difficulties.length) {
+				selectedLeaderboard = leaderboards.find(
+					el =>
+						el.difficulty.modeName == difficulties[0].characteristic &&
+						decapitalizeFirstLetter(el.difficulty.difficultyName) == difficulties[0].name
+				);
+			}
+
 			showDiffIcons = leaderboards.some(el => el.difficulty.modeName != 'Standard');
-			leaderboardUrl = `/leaderboard/global/${leaderboards[0].id}/1`;
+			leaderboardUrl = `/leaderboard/global/${selectedLeaderboard.id}/1`;
 
 			if (!refresh && mapResponse.cached) {
 				updateSongKey(mapHash, true);
@@ -96,7 +105,7 @@
 										el =>
 											el.name == decapitalizeFirstLetter(leaderboard.difficulty.difficultyName) &&
 											el.characteristic == leaderboard.difficulty.modeName
-								  )
+									)
 								: true}
 							on:click={() => toggleDifficulty(leaderboard.difficulty)} />
 						{#if leaderboard.myScore}

@@ -33,13 +33,13 @@ const process = response => {
 				name,
 				playerInfo: {
 					avatar,
-					countries: [{country, rank: countryRank, lastWeekCountryRank}],
+					country: {country, rank: countryRank, lastWeekCountryRank},
 					pp,
 					rank,
 					lastWeekPp,
 					lastWeekRank,
 					lastWeekCountryRank,
-					clanOrder
+					clanOrder,
 				},
 				others: {
 					difference,

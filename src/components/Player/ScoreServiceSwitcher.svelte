@@ -189,14 +189,18 @@
 		},
 	];
 
-	async function updateAvailableServiceNames(playerId) {
+	async function updateAvailableServiceNames(player) {
 		accSaberCategories = null;
 
 		const additionalServices = (
-			await Promise.all([accSaberService.isDataForPlayerAvailable(playerId).then(r => (r ? 'accsaber' : null))])
+			await Promise.all([accSaberService.isDataForPlayerAvailable(player).then(r => (r ? 'accsaber' : null))])
 		).filter(s => s);
 
-		if (additionalServices?.length) availableServiceNames = ['beatleader'].concat(additionalServices);
+		if (additionalServices?.length) {
+			availableServiceNames = ['beatleader'].concat(additionalServices);
+		} else if (availableServiceNames?.length > 1) {
+			availableServiceNames = ['beatleader'];
+		}
 
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
 	}
@@ -251,7 +255,7 @@
 											title: $editModel ? 'Click to toggle' : v.title,
 											cls: !sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`) ? 'hidden' : '',
 										})),
-							  }
+								}
 							: null),
 					},
 				}));
@@ -280,8 +284,10 @@
 											id: 'search',
 											iconFa: 'fa fa-search',
 											title: 'Search by song/artist/mapper/hash',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-search`),
 											open: !!serviceParams?.filters?.search,
 											value: serviceParams?.filters?.search ?? null,
+											debounce: true,
 											placeholder: 'Enter song name...',
 										},
 									},
@@ -291,6 +297,7 @@
 											id: 'diff',
 											iconFa: 'fa fa-chart-line',
 											title: 'Filter by map difficulty',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-diff`),
 											open: !!serviceParams?.filters?.diff,
 											defaultValue: serviceParams?.filters?.diff ?? null,
 											values: [
@@ -309,6 +316,7 @@
 											id: 'mode',
 											iconFa: 'fa fa-compass',
 											title: 'Filter by map mode',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-mode`),
 											open: !!serviceParams?.filters?.mode,
 											defaultValue: serviceParams?.filters?.mode ?? null,
 											values: [{id: null, name: 'All'}].concat(
@@ -327,6 +335,7 @@
 											id: 'requirements',
 											iconFa: 'fa fa-mountain-sun',
 											title: 'Filter by map feature',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-requirements`),
 											open: !!serviceParams?.filters?.requirements,
 											defaultValue: serviceParams?.filters?.requirements ? parseInt(serviceParams?.filters?.requirements) : null,
 											values: [
@@ -394,7 +403,7 @@
 												hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`),
 												values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
 												open: !!serviceParams?.filters?.eventId,
-												defaultValue: serviceParams?.filters?.eventId ?? null,
+												defaultValue: serviceParams?.filters?.eventId ? parseInt(serviceParams?.filters?.eventId) : null,
 											},
 										},
 									])
@@ -489,7 +498,7 @@
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
-	$: updateAvailableServiceNames(playerId);
+	$: updateAvailableServiceNames(player);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
 		service,
@@ -536,6 +545,16 @@
 
 	nav :global(> *:last-child) {
 		margin-right: 0;
+	}
+
+	:global(.filter-btn.fa-mountain-sun:before) {
+		margin-left: -0.15em;
+	}
+	:global(.filter-btn.fa-cubes:before) {
+		margin-left: -0.08em;
+	}
+	:global(.filter-btn.fa-star:before) {
+		margin-left: -0.07em;
 	}
 
 	.edit-enabled :global(.service) {

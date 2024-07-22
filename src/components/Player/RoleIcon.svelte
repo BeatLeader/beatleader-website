@@ -38,35 +38,6 @@
 		show = false;
 
 		switch (role) {
-			case 'mapper':
-				show = !profileAppearance || profileAppearance.includes('mapper');
-				verifyMapper(mapperId);
-				break;
-			case 'rankedteam':
-				show = !profileAppearance || profileAppearance.includes('rankedteam');
-				roleIconClass = 'fas fa-balance-scale-right';
-				roleDescription = 'Ranking team member';
-				break;
-			case 'qualityteam':
-				show = !profileAppearance || profileAppearance.includes('qualityteam');
-				roleIconClass = 'fas fa-microscope';
-				roleDescription = 'Nomination Quality Team member';
-				break;
-			case 'juniorrankedteam':
-				show = !profileAppearance || profileAppearance.includes('juniorrankedteam');
-				roleIconClass = 'fas fa-balance-scale';
-				roleDescription = 'Junior Ranking team member';
-				break;
-			case 'creator':
-				show = !profileAppearance || profileAppearance.includes('creator');
-				roleIconClass = 'fas fa-tools';
-				roleDescription = 'BL creator';
-				break;
-			case 'admin':
-				show = !profileAppearance || profileAppearance.includes('admin');
-				roleIconClass = 'fas fa-user-shield';
-				roleDescription = 'Administrator';
-				break;
 			case 'booster':
 				show = profileAppearance && profileAppearance.includes('booster');
 				roleIcon = BL_ASSETS_CDN + '/boostericon.webp';
@@ -149,19 +120,27 @@
 			<i class={roleIconClass} title={editModel ? 'Click to toggle' : roleDescription} />
 		</div>
 	{/if}
+	{#if cls === 'player-role'}
+		<div class="player-role-margin" />
+	{/if}
 {/if}
 
 <style>
 	.player-role {
 		position: absolute;
 		top: -2.5em;
-		left: 2em;
+		left: 20%;
 		width: 6em;
-		display: block;
+		/*margin-bottom: -3.5em;*/
+	}
+
+	.player-role-margin {
+		position: relative;
+		margin-bottom: 1.7em;
 	}
 
 	.player-role.edit {
-		top: 2em;
+		top: 1.2em;
 		height: 6em;
 	}
 

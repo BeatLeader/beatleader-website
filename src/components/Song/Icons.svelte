@@ -30,7 +30,7 @@
 
 	const {open} = getContext('simple-modal');
 	const showPreview = previewLink => {
-		if (document.body.clientWidth < 800) {
+		if (document.body.clientWidth < 800 || $configStore.preferences.linkOption == 'newtab') {
 			window.open(previewLink, '_blank');
 		} else {
 			open(Preview, {previewLink: previewLink});
@@ -171,9 +171,13 @@
 
 	<span slot="default_buttons">
 		{#if shownIcons.includes('pin-service') && serviceIcon?.link?.length && serviceIcon?.linkServiceIcon?.length}
-			<a href={serviceIcon.link} target="_blank" rel="noreferrer">
-				<Button icon={`<i class="service-icon"><img src="${serviceIcon.linkServiceIcon}" /></i>`} animated={true} noMargin={true} />
-			</a>
+			<Button
+				icon={`<i class="service-icon" style="width: 1.2em;height: 1.2em;"><img src="${serviceIcon.linkServiceIcon}" /></i>`}
+				url={serviceIcon.link}
+				urltarget="_blank"
+				onlyurl={true}
+				animated={true}
+				noMargin={true} />
 		{/if}
 
 		{#if shownIcons.includes('twitch') && twitchUrl && twitchUrl.length}
@@ -235,15 +239,25 @@
 			{/if}
 
 			{#if shownIcons.includes('bs')}
-				<a href="https://beatsaver.com/maps/{songKey}" target="_blank" rel="noreferrer">
-					<Button icon={beatSaverSvg} title="Go to Beat Saver" animated={true} noMargin={true} />
-				</a>
+				<Button
+					url="https://beatsaver.com/maps/{songKey}"
+					urltarget="_blank"
+					onlyurl={true}
+					icon={beatSaverSvg}
+					title="Go to Beat Saver"
+					animated={true}
+					noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('mapcheck')}
-				<a href="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}" target="_blank" rel="noreferrer">
-					<Button iconFa="fas fa-magnifying-glass-location" title="Check the map" animated={true} noMargin={true} />
-				</a>
+				<Button
+					url="https://kivalevan.me/BeatSaber-MapCheck/?id={songKey}"
+					urltarget="_blank"
+					onlyurl={true}
+					iconFa="fas fa-magnifying-glass-location"
+					title="Check the map"
+					animated={true}
+					noMargin={true} />
 			{/if}
 
 			{#if shownIcons.includes('oneclick')}
@@ -328,6 +342,7 @@
 	}
 
 	:global(.replay-button-alt) {
-		--bg-color: transparent !important;
+		--btn-bg-color: transparent !important;
+		margin-left: 0.3em !important;
 	}
 </style>

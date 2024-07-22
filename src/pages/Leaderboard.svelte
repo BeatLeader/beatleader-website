@@ -43,7 +43,7 @@
 	import ReweightStatus from '../components/Leaderboard/ReweightStatus.svelte';
 	import ReweightStatusRanked from '../components/Leaderboard/ReweightStatusRanked.svelte';
 	import LeaderboardMeta from '../components/Leaderboard/LeaderboardMeta.svelte';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import {configStore} from '../stores/config';
 	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
 
@@ -115,6 +115,7 @@
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
 
 	let currentPage = 1;
+	let initialPage = page;
 
 	function updateFilters(newFilters) {
 		currentFilters = newFilters;
@@ -291,6 +292,7 @@
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
 		const newPage = event.detail.page + 1;
+		initialPage = undefined;
 
 		changeParams(currentLeaderboardId, currentType, newPage, currentFilters, !dontNavigate, false);
 	}
@@ -634,7 +636,7 @@
 
 	$: currentPlayerId = $account?.id;
 	$: higlightedPlayerId = higlightedScore?.playerId ?? currentPlayerId;
-	$: mainPlayerCountry = $account?.player?.playerInfo?.countries?.[0]?.country ?? null;
+	$: mainPlayerCountry = $account?.player?.playerInfo?.country?.country ?? null;
 
 	$: makeComplexFilters(buildFiltersFromLocation(location), mainPlayerCountry);
 
@@ -777,7 +779,11 @@
 									class={`row-${idx}`}
 									class:user-score={score?.isUserScore}
 									class:user-score-top={score?.userScoreTop}
-									in:fly|global={!score?.isUserScore ? {x: 200, delay: idx * 20, duration: 500} : {duration: 300}}
+									in:fly|global={initialPage == currentPage
+										? {}
+										: !score?.isUserScore
+										? {x: 200, delay: idx * 20, duration: 500}
+										: {duration: 300}}
 									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
 									<Score
 										{leaderboardId}
@@ -1199,7 +1205,7 @@
 	{/if}
 </section>
 
-{#if separatePage}
+{#if separatePage && leaderboard && song}
 	<LeaderboardMeta {leaderboard} {song} />
 {/if}
 

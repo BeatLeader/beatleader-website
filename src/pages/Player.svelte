@@ -25,6 +25,10 @@
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
 	import RandomRain from '../components/Common/RandomRain.svelte';
+	import BioCarousel from '../components/Player/Bio/BioCarousel.svelte';
+	import PlayerCards from '../components/Player/Bio/PlayerCards.svelte';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {fetchJson} from '../network/fetch';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -135,6 +139,23 @@
 		}
 	}
 
+	let achievements = [];
+	function fetchAchievements(playerId) {
+		fetchJson(BL_API_URL + `player/${playerId}/achievements`)
+			.then(clientInfo => {
+				achievements = clientInfo.body;
+			})
+			.catch(() => {});
+	}
+
+	let horizontalRichBio = false;
+	function updateHorizontalRichBio(value) {
+		horizontalRichBio = value;
+		if ($editModel) {
+			$editModel.data.horizontalRichBio = value;
+		}
+	}
+
 	let innerWidth = 0;
 	let innerHeight = 0;
 
@@ -172,12 +193,14 @@
 
 		scoresPlayerId = currentPlayerId;
 	}
-	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(scoresPlayerId);
+	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(playerData);
+	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
 
 	$: rank = $playerStore?.playerInfo.rank;
-	$: country = $playerStore?.playerInfo.countries[0].country;
-	$: countryRank = $playerStore?.playerInfo.countries[0].rank;
+	$: country = $playerStore?.playerInfo.country.country;
+	$: countryRank = $playerStore?.playerInfo.country.rankValue ?? $playerStore?.playerInfo.country.rank;
 
+	$: playerId && fetchAchievements(playerId);
 	$: pinnedScoresStore.fetchScores(playerData?.playerId);
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
@@ -211,22 +234,28 @@
 				fixedBrowserTitle={browserTitle}
 				startEditing={editing} />
 
+			<BioCarousel
+				{playerId}
+				{playerInfo}
+				profileSettings={playerData?.profileSettings}
+				bind:editModel={$editModel}
+				on:horizontalRichBio-changed={event => {
+					updateHorizontalRichBio(event.detail);
+				}} />
+
 			{#if !$editModel}
 				{#if $configStore.profileParts.graphs}
-					<CardsCarousel {playerId} {playerInfo} {scoresStats} {ssBadges} {playerData} />
+					<CardsCarousel {playerId} {playerInfo} {scoresStats} {playerData} />
 				{/if}
 				{#if $configStore.profileParts.pinnedScores}
-					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} />
-				{/if}
-				{#if $configStore.profileParts.achievements}
-					<Achievements {playerId} />
+					<PinnedScores {pinnedScoresStore} {playerId} fixedBrowserTitle={browserTitle} scoresStats={playerData?.scoreStats} />
 				{/if}
 			{/if}
 
-			{#if scoresPlayerId}
+			{#if playerId}
 				<ContentBox>
 					<Scores
-						playerId={scoresPlayerId}
+						{playerId}
 						player={$playerStore}
 						initialState={scoresState}
 						initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}
@@ -246,6 +275,27 @@
 		<aside>
 			<MiniRankings {rank} {country} {countryRank} box={true} />
 
+			{#await accSaberAvailable}
+				Loading...
+			{:then accSaberAvailable}
+				{#if accSaberAvailable}
+					<ContentBox>
+						<AccSaberMiniRanking {playerId} category="overall" numOfPlayers={5} />
+					</ContentBox>
+				{/if}
+			{/await}
+			<!-- `serviceParams` here is just to force Svelte always update this block -->
+			{#if serviceParams && ((!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio)}
+				<ContentBox cls="player-cards-box">
+					<PlayerCards {playerId} {playerInfo} profileSettings={playerData?.profileSettings} bind:editModel={$editModel} />
+				</ContentBox>
+			{/if}
+			{#if achievements?.length && $configStore.profileParts.achievements}
+				<ContentBox>
+					<Achievements {achievements} />
+				</ContentBox>
+			{/if}
+
 			{#if playerInfo?.clans?.filter(cl => cl.tag == 'FELA').length}
 				<ContentBox>
 					<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
@@ -260,16 +310,6 @@
 					</div>
 				</ContentBox>
 			{/if}
-
-			{#await accSaberAvailable}
-				Loading...
-			{:then accSaberAvailable}
-				{#if accSaberAvailable}
-					<ContentBox>
-						<AccSaberMiniRanking playerId={scoresPlayerId} category="overall" numOfPlayers={5} />
-					</ContentBox>
-				{/if}
-			{/await}
 		</aside>
 	{/if}
 </section>
@@ -305,6 +345,14 @@
 		cursor: pointer;
 		min-width: 2rem;
 		margin-right: 0.5rem;
+	}
+
+	:global(.player-cards-box:has(.cards-container:empty)) {
+		display: none;
+	}
+
+	:global(.player-cards-box .cards-container) {
+		flex-direction: column;
 	}
 
 	@media screen and (max-width: 1749px) {

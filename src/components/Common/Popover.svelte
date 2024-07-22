@@ -30,7 +30,7 @@
 	// Popper requires you do replace the process.env.NODE_ENV variable. I think this is
 	// unnecessary to handle: https://github.com/popperjs/popper-core/issues/933
 	import {createPopper} from '@popperjs/core/dist/esm/popper';
-	import {createEventDispatcher, onDestroy} from 'svelte';
+	import {createEventDispatcher, onDestroy, onMount} from 'svelte';
 	import {setGlobalCSSValue} from '../../utils/color';
 
 	/**
@@ -75,7 +75,7 @@
 	 * When the `triggerEvents` is `hover`, we ensure that hovering over the popover element itself does
 	 * not cause it to hide. If this is undesireable, it can be overridden here.
 	 */
-	export let remainOpenOnPopoverHover: boolean = true;
+	export let remainOpenOnPopoverHover: boolean = false;
 
 	/**
 	 * When the `triggerEvents` is `focus`, we ensure that focusing on the popover element itself does
@@ -438,7 +438,12 @@
 		listeners = [];
 	}
 
+	$: popoverElement && document.body.appendChild(popoverElement);
+
 	onDestroy(() => {
+		if (popoverElement && popoverElement.parentNode) {
+			popoverElement.parentNode.removeChild(popoverElement);
+		}
 		destroyInstance();
 		removeListeners();
 	});

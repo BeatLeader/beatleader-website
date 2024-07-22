@@ -1,7 +1,7 @@
 import {BL_ASSETS_CDN} from '../../../network/queues/beatleader/page-queue';
 
 const BOOSTER = ['booster'];
-const CREATOR = ['rankedteam', 'qualityteam', 'juniorrankedteam', 'creator', 'admin'];
+export const CREATOR = ['rankedteam', 'qualityteam', 'juniorrankedteam', 'creator', 'admin'];
 const SPONSOR = ['sponsor', ...CREATOR];
 const SUPPORTER = ['supporter', ...SPONSOR];
 const TIPPER = ['tipper', ...SUPPORTER];

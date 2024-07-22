@@ -5,6 +5,7 @@ export default response => {
 	const {
 		id: playerId,
 		name,
+		alias,
 		country,
 		countryRank,
 		badges,
@@ -18,6 +19,7 @@ export default response => {
 		lastWeekPp,
 		lastWeekRank,
 		lastWeekCountryRank,
+		richBioTimeset,
 		banned,
 		bot,
 		banDescription,
@@ -25,6 +27,7 @@ export default response => {
 		mapperId,
 		scoreStats,
 		externalProfileUrl,
+		linkedIds,
 		clans,
 		patreonFeatures,
 		socials,
@@ -48,15 +51,6 @@ export default response => {
 		].forEach(k => {
 			if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
 		});
-	}
-
-	if (scoreStats?.topHMD) {
-		scoreStats.topHMD = getHeadsetForHMD(scoreStats.topHMD)?.name ?? '';
-	}
-
-	if (scoreStats?.topPlatform) {
-		const platformParts = (scoreStats?.topPlatform ?? '').split(',');
-		scoreStats.topPlatform = platformDescription?.[platformParts?.[0] ?? ''] ?? '';
 	}
 
 	let sponsor = role?.includes('sponsor');
@@ -92,11 +86,13 @@ export default response => {
 	return {
 		playerId,
 		name,
+		alias,
 		role,
+		linkedIds,
 		playerInfo: {
 			avatar: profilePicture,
 			externalProfileUrl,
-			countries: [{country, rank: countryRank}],
+			country: {country, rank: countryRank},
 			pp,
 			accPp,
 			techPp,
@@ -109,6 +105,7 @@ export default response => {
 			lastWeekPp,
 			lastWeekRank,
 			lastWeekCountryRank,
+			richBioTimeset,
 			badges,
 			role,
 			sponsor,
@@ -118,16 +115,17 @@ export default response => {
 			changes,
 			clans,
 			clanOrder,
+			horizontalRichBio: profileSettings?.horizontalRichBio,
 		},
 		profileSettings: profileSettings
 			? {
 					...profileSettings,
 					profileAppearance,
 					starredFriends: profileSettings?.starredFriends?.split(',') ?? null,
-			  }
+				}
 			: {
 					profileAppearance,
-			  },
+				},
 		scoreStats: scoreStats ? scoreStats : null,
 	};
 };

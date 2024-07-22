@@ -364,7 +364,7 @@
 			(spoiler
 				? '<button class="spoiler-link" onclick="this.parentNode.classList.remove(\'toot-media-spoiler\')">Show content</button>'
 				: '') +
-			'<img onload="removeSpinner(this)" onerror="removeSpinner(this)" src="' +
+			'<img src="' +
 			m.preview_url +
 			'" alt="" loading="lazy" />' +
 			'</div>';
@@ -382,16 +382,6 @@
 
 		return displayDate;
 	};
-
-	// Loading spinner
-	function removeSpinner(e) {
-		const spinnerCSS = 'loading-spinner';
-		// Find closest parent container (1st, 2nd or 3rd level)
-		let spinnerContainer = e.closest('.' + spinnerCSS);
-		if (spinnerContainer) {
-			spinnerContainer.classList.remove(spinnerCSS);
-		}
-	}
 
 	var mapi = null;
 	var container_body_id = 'mt-body' + (Math.random() * 1000).toFixed(0);

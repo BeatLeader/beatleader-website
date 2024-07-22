@@ -4,12 +4,14 @@
 	const {open, close} = getContext('simple-modal');
 	import suneditor from 'suneditor';
 	import plugins from 'suneditor/src/plugins';
-	import Button from '../../Common/Button.svelte';
-	import CommentRedactor from './CommentRedactor.svelte';
+	import Button from './Button.svelte';
+	import RichTextRedactor from './RichTextRedactor.svelte';
 	import {createEventDispatcher, onMount} from 'svelte';
 
 	export let initialValue = null;
 	export let buttonName = 'Post';
+	export let cancelButtonName = 'Cancel';
+	export let iconFa = 'fas fa-paper-plane';
 	export let fullscreen = false;
 	export let fullscreenExit = null;
 
@@ -42,15 +44,16 @@
 			return fullscreen;
 		},
 		action: function () {
-			modal = open(CommentRedactor, {
+			modal = open(RichTextRedactor, {
 				initialValue: value,
 				fullscreen: true,
 				buttonName,
 				fullscreenExit: value => {
-					close();
+					console.log(value);
 					if (value) {
 						editor.setContents(value);
 					}
+					close();
 				},
 			});
 		},
@@ -70,15 +73,22 @@
 				'/', // Line break
 				['outdent', 'indent'],
 				['align', 'horizontalRule', 'list', 'lineHeight'],
-				['table', 'link', 'image' /** 'video', 'audio' ,'math' */], // You must add the 'katex' library at options to use the 'math' plugin.
+				['table', 'link', 'image', 'video', 'audio' /** ,'math' */], // You must add the 'katex' library at options to use the 'math' plugin.
 				/** ['imageGallery'] */ // You must add the "imageGalleryUrl".
 				fullscreen ? ['showBlocks', 'codeView'] : ['showBlocks', 'codeView', 'customfullscreen'],
 				/** ['dir', 'dir_ltr', 'dir_rtl'] */ // "dir": Toggle text direction, "dir_ltr": Right to Left, "dir_rtl": Left to Right
 			],
 		});
+	let autoPostTimer;
 	$: if (editor)
 		editor.onChange = function (contents, core) {
 			value = contents;
+			if (!buttonName) {
+				clearTimeout(autoPostTimer);
+				autoPostTimer = setTimeout(() => {
+					postComment();
+				}, 500);
+			}
 		};
 </script>
 
@@ -88,8 +98,12 @@
 		<Button label="Done" on:click={() => fullscreenExit(value)} />
 	{:else}
 		<div class="post-button">
-			<Button label="Cancel" on:click={() => onCancel()} />
-			<Button label={buttonName} type="green" iconFa="fas fa-paper-plane" on:click={() => postComment()} />
+			{#if cancelButtonName}
+				<Button label={cancelButtonName} on:click={() => onCancel()} />
+			{/if}
+			{#if buttonName}
+				<Button label={buttonName} type="green" {iconFa} on:click={() => postComment()} />
+			{/if}
 		</div>
 	{/if}
 </div>

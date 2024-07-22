@@ -223,10 +223,15 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : null;
 			className = 'acc';
 
+			if (!isDemo && score.mods?.includes('NF')) {
+				title = 'No Fail scores do not count into any statistic';
+			}
+
 			component = Accuracy;
 			componentProps = {
 				score,
 				modifiers,
+				styling: score.mods?.includes('NF') ? 'nominated-pp' : '',
 				showMods: !!def?.withMods,
 				secondary: def?.secondary ?? null,
 			};
@@ -236,10 +241,15 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo ? 'Click to setup' : null;
 			className = 'score';
 
+			if (!isDemo && score.mods?.includes('NF')) {
+				title = 'No Fail scores do not count into any statistic';
+			}
+
 			componentProps = {
 				onlyLabel: true,
 				color: 'white',
 				bgColor: 'var(--dimmed)',
+				styling: score.mods?.includes('NF') ? 'nominated-pp' : '',
 				title,
 			};
 

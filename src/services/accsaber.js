@@ -71,6 +71,8 @@ export default () => {
 		},
 	];
 
+	let playersMap = {};
+	let playerLinkMap = {};
 	const getPlayer = async playerId => {
 		let result = [];
 
@@ -99,7 +101,7 @@ export default () => {
 		  }
 			
 		  `,
-			{playerId}
+			{playerId: playerLinkMap[playerId]}
 		);
 
 		rankingResponse.data.categoryAccSaberPlayers.nodes.forEach(element => {
@@ -127,22 +129,34 @@ export default () => {
 		}
 	};
 
-	let playersMap = {};
-	const isDataForPlayerAvailable = async playerId => {
-		if (!playerId || !configStore.get('preferences').showAccSaber) return false;
-		if (playersMap[playerId] === undefined) {
-			playersMap[playerId] = fetchGraphQL(
-				`
-		query FindPlayer($playerId: BigInt) {
-			players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
-				totalCount
+	const isDataForPlayerAvailable = async playerData => {
+		console.log(playerData);
+		if (!playerData?.playerId || !parseInt(playerData.playerId) || !configStore.get('preferences').showAccSaber) return false;
+		if (playersMap[playerData.playerId] === undefined) {
+			const ids = playerData.linkedIds?.oculusPCId?.length
+				? [playerData.linkedIds.steamId, playerData.linkedIds.oculusPCId]
+				: [playerData.playerId];
+			for (let i = 0; i < ids.length; i++) {
+				const playerId = ids[i];
+				const available = await fetchGraphQL(
+					`
+			query FindPlayer($playerId: BigInt) {
+				players: overallAccSaberPlayers(condition: {playerId: $playerId}) {
+					totalCount
+				}
+			}
+			`,
+					{playerId}
+				).then(r => r.data.players.totalCount > 0);
+
+				if (available) {
+					playersMap[playerData.playerId] = true;
+					playerLinkMap[playerData.playerId] = playerId;
+					break;
+				}
 			}
 		}
-		`,
-				{playerId}
-			).then(r => r.data.players.totalCount > 0);
-		}
-		return await playersMap[playerId];
+		return await playersMap[playerData.playerId];
 	};
 
 	const getPlayerGain = (playerHistory, daysAgo = 1, maxDaysAgo = 7) =>
@@ -307,7 +321,7 @@ export default () => {
 			}	
 			`,
 				{
-					playerId,
+					playerId: playerLinkMap[playerId],
 					category,
 					count: PLAYER_SCORES_PER_PAGE,
 					offset: PLAYER_SCORES_PER_PAGE * (page - 1),
@@ -400,8 +414,8 @@ export default () => {
 		const query = `
 			query GetPlayerMiniRankingByCategory($offset: Int) {
 				players: ${category == 'overall' ? 'overall' : 'category'}AccSaberPlayers(orderBy: AP_DESC, first:5, offset: $offset${
-			category == 'overall' ? '' : ', condition: { categoryName: "' + category + '"}'
-		}) {
+					category == 'overall' ? '' : ', condition: { categoryName: "' + category + '"}'
+				}) {
 					nodes {
 						playerId
 						ap

@@ -3,6 +3,7 @@
 	import {onMount} from 'svelte';
 
 	export let cards = null;
+	export let wrapperCls = null;
 
 	let mainEl = null;
 	let swipeHandlersBinded = false;
@@ -89,7 +90,7 @@
 			</div>
 		{/if}
 
-		<div class="cards-wrapper">
+		<div class={`cards-wrapper ${wrapperCls ?? ''}`}>
 			{#each cards as card, cardIdx (card.name)}
 				{#key card.name}
 					<div>
@@ -110,7 +111,6 @@
 	.carousel {
 		display: flex;
 		flex-direction: column;
-		grid-gap: 0.6em;
 		overflow: hidden;
 	}
 
@@ -130,6 +130,10 @@
 		transition-timing-function: ease-out;
 		transform: translate3d(calc(var(--width, 0) * var(--item, 0) * -1), 0, 0);
 		overflow: hidden;
+	}
+
+	.carousel:has(.bullets) {
+		margin-top: -0.2em;
 	}
 
 	.bullets {

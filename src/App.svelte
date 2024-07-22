@@ -41,7 +41,7 @@
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
 	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Maps from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
@@ -49,9 +49,12 @@
 	import NotificationComponent from './components/Common/NotificationComponent.svelte';
 	import SongSuggestMap from './pages/SongSuggestMap.svelte';
 	import GigaMap from './pages/GigaMap.svelte';
+	import AdminPage from './pages/Admin.svelte';
+	import Week100Page from './pages/Week100.svelte';
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
+	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
 
 	export let url = '';
 
@@ -112,21 +115,26 @@
 
 	$: if (mainEl) containerStore.observe(mainEl);
 
-	if ($configStore.preferences.theme != 'default') {
+	if ($configStore.preferences.theme != 'default' && $configStore.preferences.theme != 'ree-dark') {
 		setGlobalCSSValue('background-image', 'url(' + $configStore.preferences.bgimage + ')');
 		setGlobalCSSValue('customizable-color-1', $configStore.preferences.bgColor);
 		setGlobalCSSValue('customizable-color-2', $configStore.preferences.headerColor);
+
 		setGlobalCSSValue('font-names', $configStore.preferences.fontNames);
 
-		if ($configStore.preferences.theme == 'mirror') {
-			importFonts($configStore.preferences.fontNames);
-		}
+		setGlobalCSSValue('bg-color', $configStore.preferences.buttonColor);
+		setGlobalCSSValue('color', $configStore.preferences.labelColor);
+		setGlobalCSSValue('ppColour', $configStore.preferences.ppColor);
+		setGlobalCSSValue('selected', $configStore.preferences.selectedColor);
+
+		importFonts($configStore.preferences.fontNames);
 	}
 </script>
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-{#if $account?.player && $configStore.preferences.followersBecomingPublic}
+<TournamentTopBanner />
+<!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
 		<a class="reelink" href="/settings#profile" />
 		<span class="link-text">Followers will be public, adjust your preferences!</span>
@@ -139,7 +147,7 @@
 				});
 			}}><i class="fas fa-xmark" /></button>
 	</div>
-{/if}
+{/if} -->
 <!-- {#if $configStore.preferences.replayedbanner}
 	<div class="replayedbanner">
 		<a class="reelink" href="/replayed" />
@@ -168,7 +176,7 @@
 		<div class="banner-spacer" />
 		<img class="cc-cover-1" src="/assets/cc-logo-left.webp" />
 
-		<div class="rewind-text-and-timer">
+		<div class="banner-center-text">
 			{#if $rewindTimer.seconds > 0}
 				<span class="replayed-link-text desktop-only">Cube Community Winter Highlights in</span>
 				<span class="replayed-link-text mobile-only">CC Winter Highlights in</span>
@@ -224,6 +232,11 @@
 					<Route path="/u/:initialPlayerId/*initialParams" let:params let:location>
 						<PlayerPage initialPlayerId={params.initialPlayerId} initialParams={params.initialParams} {location} />
 					</Route>
+
+					<Route path="/admin/*type" let:params let:location>
+						<AdminPage initialType={params.type} {location} />
+					</Route>
+
 					<Route path="/staff" let:location>
 						<StaffDashboard {location} />
 					</Route>
@@ -233,6 +246,7 @@
 					<Route path="/settings" component={Settings} />
 					<Route path="/followed" component={FollowedPage} />
 					<Route path="/census2023" component={CensusPage} />
+					<Route path="/week100" component={Week100Page} />
 					<Route path="/survey/achievement" component={SurveyAchievementPage} />
 					<Route path="/supporting-project/link">
 						<PatreonPage action="linkPatreon" />
@@ -360,7 +374,7 @@
 			|
 			<a href="https://beatleader.wiki/">Wiki</a>
 			|
-			<a href="https://github.com/BeatLeader/beatleader-website">Source</a>
+			<a href="https://github.com/BeatLeader">Source</a>
 			|
 			<a href="/privacy" on:click|preventDefault={() => navigate('/privacy')}>Privacy policy</a>
 			|
@@ -433,7 +447,7 @@
 		gap: 0.3em;
 	}
 
-	.rewind-text-and-timer {
+	.banner-center-text {
 		display: flex;
 		gap: 0.3em;
 		margin-right: 0.8em;
@@ -618,7 +632,7 @@
 		display: none;
 	}
 	@media (max-width: 1000px) {
-		.rewind-text-and-timer {
+		.banner-center-text {
 			flex-direction: column;
 			align-items: center;
 			gap: 0;
@@ -632,7 +646,7 @@
 		display: none;
 	}
 	@media (max-width: 1000px) {
-		.rewind-text-and-timer {
+		.banner-center-text {
 			flex-direction: column;
 			align-items: center;
 			gap: 0;
@@ -682,7 +696,7 @@
 			margin-bottom: 0.2em;
 		}
 
-		.rewind-text-and-timer {
+		.banner-center-text {
 			max-width: 60%;
 			text-align: center;
 			flex-wrap: wrap;
@@ -703,7 +717,7 @@
 			display: none;
 		}
 
-		.rewind-text-and-timer {
+		.banner-center-text {
 			max-width: 60%;
 			text-align: center;
 			flex-wrap: wrap;

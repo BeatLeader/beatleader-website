@@ -12,7 +12,6 @@
 	export let twitchVideos = null;
 	export let playerId = null;
 	export let scoresStats = null;
-	export let ssBadges = null;
 	export let playerInfo = null;
 	export let playerData = null;
 
@@ -22,8 +21,12 @@
 	let accSaberPlayerInfo = null;
 	let accSaberCategories = null;
 
-	async function updateAccSaberPlayerInfo(playerId) {
-		if (!playerId || !(await accSaberService.isDataForPlayerAvailable(playerId))) return;
+	async function updateAccSaberPlayerInfo(playerId, playerData) {
+		if (!playerData || !(await accSaberService.isDataForPlayerAvailable(playerData))) {
+			accSaberPlayerInfo = null;
+			accSaberCategories = null;
+			return;
+		}
 
 		accSaberPlayerInfo = await accSaberService.getPlayer(playerId);
 		accSaberCategories = await accSaberService.getCategories();
@@ -43,11 +46,10 @@
 							playerId,
 							playerInfo,
 							scoresStats: scoresStatsFinal,
-							ssBadges,
 						},
 						delay: 500,
 					},
-			  ]
+				]
 					.concat(
 						$pageContainer.name !== 'xxl' &&
 							($configStore.profileParts.friendsMiniRanking ||
@@ -59,7 +61,7 @@
 										component: MiniRankingSwipeCard,
 										props: {player: playerData},
 									},
-							  ]
+								]
 							: []
 					)
 					.concat(
@@ -70,7 +72,7 @@
 										component: AccSaberSwipeCard,
 										props: {categories: accSaberCategories, playerInfo: accSaberPlayerInfo},
 									},
-							  ]
+								]
 							: []
 					)
 					.concat(
@@ -81,7 +83,7 @@
 										component: TwitchVideosSwipeCard,
 										props: {videos: twitchVideos},
 									},
-							  ]
+								]
 							: []
 					)
 			: []
@@ -89,13 +91,30 @@
 
 	$: scoresStatsFinal = generateScoresStats(scoresStats);
 
-	$: updateAccSaberPlayerInfo(playerId);
+	$: updateAccSaberPlayerInfo(playerId, playerData);
 </script>
 
-<ContentBox>
+<ContentBox cls="charts-box">
 	<div class="columns">
 		<div class="column">
-			<Carousel cards={swipeCards} />
+			<Carousel cards={swipeCards} wrapperCls="darkened-background" />
 		</div>
 	</div>
 </ContentBox>
+
+<style>
+	:global(.charts-box) {
+		padding: 0.5em !important;
+		border-radius: 12px !important;
+	}
+
+	:global(.charts-box .cards-wrapper) {
+		border-radius: 8px;
+	}
+
+	@media screen and (max-width: 767px) {
+		:global(.charts-box) {
+			border-radius: 0 !important;
+		}
+	}
+</style>

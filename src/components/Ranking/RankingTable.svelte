@@ -14,6 +14,8 @@
 	import RankingMeta from './RankingMeta.svelte';
 	import Select from '../Settings/Select.svelte';
 	import {configStore} from '../../stores/config';
+	import {participants} from '../../others/bswc2024';
+	import player from '../../services/beatleader/player';
 
 	export let type = 'global';
 	export let page = 1;
@@ -312,6 +314,25 @@
 		refreshSortValues(allSortValues, filters);
 	}
 
+	function checkEligible(eventId, team) {
+		if (eventId == 52) return '';
+
+		const teamNames = [
+			'Sweden',
+			'Switzerland',
+			'Argentina',
+			'Staff',
+			'Czechia',
+			'Slovakia',
+			'Latvia',
+			'South Africa',
+			'Saudi Arabia',
+			'Hungary',
+		];
+
+		return teamNames.includes(team.name) ? '-eligible' : '';
+	}
+
 	onMount(() => {
 		dispatch('loading', true);
 	});
@@ -361,7 +382,7 @@
 	$: dispatch('players-fetched', $rankingStore?.data);
 
 	$: maxRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.rank)) : 0;
-	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.countries[0].rank)) : 0;
+	$: maxCountryRank = $rankingStore?.data ? Math.max(...$rankingStore.data.map(p => p.playerInfo?.country.rank)) : 0;
 
 	$: if (!$isLoading && $rankingStore?.data) currentFilters = deepClone(filters);
 	$: refreshSortValues(allSortValues, currentFilters, $configStore.rankingPreferences);
@@ -408,7 +429,18 @@
 						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
 						: sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if !noIcons && $configStore.rankingList.showFriendsButton}
+				{#if eventId == 52 || eventId == 53 || eventId == 54}
+					{@const team = participants.find(t =>
+						t.players.find(p =>
+							p.player.user.playableAccounts.find(
+								pa => pa.id == player?.playerId || pa.avatar.includes('cdn.assets.beatleader.xyz/' + player?.playerId)
+							)
+						)
+					)}
+					{#if team}
+						<img class={'bswc-country-icon' + checkEligible(eventId, team)} src={team.image} title={'Team ' + team.name} />
+					{/if}
+				{:else if !noIcons && $configStore.rankingList.showFriendsButton}
 					<AddFriendButton playerId={player.playerId} />
 				{/if}
 			</div>
@@ -521,6 +553,10 @@
 
 	:global(.ranking-grid-row.event-winner .player-card) {
 		background-color: #61082c !important;
+	}
+
+	:global(.ranking-grid-row:has(.bswc-country-icon) .player-card) {
+		opacity: 0.6 !important;
 	}
 
 	@media screen and (max-width: 500px) {

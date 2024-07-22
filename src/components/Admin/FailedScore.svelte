@@ -2,14 +2,14 @@
 	import {fade, fly, slide} from 'svelte/transition';
 	import {opt} from '../../utils/js';
 	import {navigate} from 'svelte-routing';
-	import SongInfo from './SongInfo.svelte';
+	import SongInfo from '../Player/SongInfo.svelte';
 	import FormattedDate from '../Common/FormattedDate.svelte';
-	import SongScoreDetails from './SongScoreDetails.svelte';
+	import SongScoreDetails from '../Player/SongScoreDetails.svelte';
 	import Icons from '../Song/Icons.svelte';
-	import PlayerPerformance from './PlayerPerformance.svelte';
+	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import Button from '../Common/Button.svelte';
-	import ScoreRank from './ScoreRank.svelte';
+	import ScoreRank from '../Player/ScoreRank.svelte';
 
 	export let playerId = null;
 	export let songScore = null;

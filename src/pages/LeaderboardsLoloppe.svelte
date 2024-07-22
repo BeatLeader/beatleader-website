@@ -43,7 +43,7 @@
 	import BackToTop from '../components/Common/BackToTop.svelte';
 	import MapCard from '../components/Leaderboards/MapCard.svelte';
 	import {configStore} from '../stores/config';
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
 	import MapCardContent from '../components/Leaderboards/MapCardContentLoloppe.svelte';
@@ -527,7 +527,7 @@
 	<section class="align-content">
 		<article class="page-content" transition:fade|global>
 			<ContentBox cls="maps-box" bind:box={boxEl}>
-				<h1 class="title is-5">Hello, Loloppe! ❤️</h1>
+				<h1 class="title is-5">Loloppe! ❤️</h1>
 				{#if leaderboardsPage?.length}
 					<div class="songs">
 						{#each leaderboardsPage as map, idx (map.id)}

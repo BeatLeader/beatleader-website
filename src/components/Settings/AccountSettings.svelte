@@ -4,11 +4,12 @@
 	import createAccountStore from '../../stores/beatleader/account';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	const account = createAccountStore();
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	{#if $account?.player}
 		{#if ($account?.player?.playerId < 30000000 || $account?.player?.playerId > 1000000000000000) && !$account?.migrated}
 			<a href="/signin" on:click|preventDefault|stopPropagation={() => navigate('/signin')}>Migrate</a>
@@ -38,8 +39,12 @@
 
 <style>
 	.main-container {
-		display: flex;
+		display: none;
 		flex-direction: column;
 		gap: 0.5rem;
+	}
+
+	.main-container.visible {
+		display: flex;
 	}
 </style>

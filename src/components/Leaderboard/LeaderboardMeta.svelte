@@ -9,7 +9,7 @@
 	$: diffInfo = leaderboard?.diffInfo ? getHumanDiffInfo(leaderboard.diffInfo) : null;
 	$: image = song?.imageUrl ?? '';
 
-	$: title = song?.name + ' | ' + (diffInfo?.type !== 'Standard' ? diffInfo?.name : diffInfo?.fullName) + ' | Beat Saber leaderboard';
+	$: title = song?.name + ' | ' + diffInfo?.fullName + ' | Beat Saber leaderboard';
 	$: description =
 		`
     Author: ${song?.authorName}

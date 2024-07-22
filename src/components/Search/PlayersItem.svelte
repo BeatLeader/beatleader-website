@@ -11,17 +11,15 @@
 	const dispatch = createEventDispatcher();
 
 	$: rank = item?.playerInfo?.rank ?? null;
-	$: country = item?.playerInfo?.countries?.[0]?.country ?? null;
-	$: countryRank = item?.playerInfo?.countries?.[0]?.rank ?? null;
 	$: pp = item?.playerInfo?.pp ?? 0;
 </script>
 
 {#if item}
 	<a
-		href={`/u/${item?.playerId}`}
+		href={`/u/${item?.alias ?? item?.playerId}`}
 		class="player-card"
 		on:click|preventDefault|stopPropagation={() => {
-			navigate(`/u/${item?.playerId}`);
+			navigate(`/u/${item?.alias ?? item?.playerId}`);
 			dispatch('close');
 		}}>
 		<div class="player-rank">

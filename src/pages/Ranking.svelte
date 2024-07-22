@@ -20,7 +20,7 @@
 	import BackToTop from '../components/Common/BackToTop.svelte';
 	import {configStore} from '../stores/config';
 
-	import produce from 'immer';
+	import {produce} from 'immer';
 	import Button from '../components/Common/Button.svelte';
 
 	export let page = 1;

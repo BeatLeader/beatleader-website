@@ -1,6 +1,7 @@
 <script>
 	import {createEventDispatcher} from 'svelte';
 	import editModel from '../../../stores/beatleader/profile-edit-model';
+	import {debounce} from '../../../utils/debounce';
 
 	export let filter;
 
@@ -29,13 +30,19 @@
 		if (!filterOpen) dispatchValue(null);
 	}
 
+	const debouncedOnFilterChanged = debounce(onFilterChanged, 500);
+
 	$: if (!!$editModel) filterOpen = false;
 </script>
 
 {#if filter?.component && filter?.props}
 	<div class="filter" class:hidden={filter?.props?.hidden} class:open={filterOpen} title={filter?.props?.title}>
 		<span class="filter-component">
-			<svelte:component this={filter.component} {...filter.props} open={filterOpen} on:change={onFilterChanged} />
+			<svelte:component
+				this={filter.component}
+				{...filter.props}
+				open={filterOpen}
+				on:change={filter.props.debounce ? debouncedOnFilterChanged : onFilterChanged} />
 		</span>
 
 		<i

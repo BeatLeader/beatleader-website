@@ -12,6 +12,9 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
 	import PlaylistDeleteConfirm from './PlaylistDeleteConfirm.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {configStore} from '../../stores/config';
+	import createAccountStore from '../../stores/beatleader/account';
 
 	export let playlistExport;
 	export let sharedPlaylistId = null;
@@ -23,6 +26,7 @@
 
 	const {addNotification} = getNotificationsContext();
 	const {open, close} = getContext('simple-modal');
+	const account = createAccountStore();
 
 	let playlist = null;
 	let detailsOpened;
@@ -155,6 +159,37 @@
 		);
 	}
 
+	let playlistsToInstall = '';
+
+	function installQuestOneClick(id) {
+		fetch(BL_API_URL + `user/playlist/${id}/toInstall`, {
+			method: playlistsToInstall.includes(id) ? 'DELETE' : 'POST',
+			credentials: 'include',
+		}).then(r => {
+			if (playlistsToInstall.includes(id)) {
+				playlistsToInstall = playlistsToInstall.replace(id, '');
+				addNotification({
+					html: "Playlist won't be installed on the game start.",
+					position: 'top-right',
+					type: 'success',
+					removeAfter: 4000,
+				});
+			} else {
+				playlistsToInstall = playlistsToInstall + ',' + id;
+				addNotification({
+					html: 'Playlist will be installed on the game start. Please use PlaylistManager mod to download songs in it.',
+					position: 'top-right',
+					type: 'success',
+					removeAfter: 4000,
+				});
+			}
+		});
+	}
+
+	function updatePlaylistsToInstall(account) {
+		playlistsToInstall = account?.playlistsToInstall ?? '';
+	}
+
 	const deletePlaylist = async localPlaylistId => {
 		open(PlaylistDeleteConfirm, {
 			playlistName: playlist.playlistTitle,
@@ -239,6 +274,7 @@
 	$: updateSongList(songs, page);
 	$: retrieveOwner(playlist, currentPlayerId);
 	$: updateExpanded(expanded);
+	$: updatePlaylistsToInstall($account);
 	$: playlistId = sharedPlaylistId ?? playlist?.customData?.id;
 </script>
 
@@ -312,13 +348,15 @@
 					<span class="songs">{playlist.songs.length} songs</span>
 				</div>
 
-				<div>
+				<div class="buttons-container">
 					{#if !playlist.oneclick}
 						{#if !sharedPlaylistId || canModify}
 							<Button
+								cls="playlist-delete"
 								iconFa="fas fa-trash-alt"
 								title="Delete playlist"
 								noMargin={true}
+								animated={true}
 								type="danger"
 								on:click={() => deletePlaylist(localPlaylistId)} />
 						{/if}
@@ -327,16 +365,20 @@
 								{#if playlist.customData?.id}
 									{#if playlist.customData?.shared}
 										<Button
+											cls="playlist-share"
 											iconFa="fas fa-share"
 											title="Stop sharing playlist"
 											noMargin={true}
+											animated={true}
 											type="lessdanger"
 											on:click={() => sharePlaylist(localPlaylistId, false)} />
 									{:else}
 										<Button
+											cls="playlist-share"
 											iconFa="fas fa-share"
 											title="Share playlist"
 											noMargin={true}
+											animated={true}
 											type="primary"
 											on:click={() => sharePlaylist(localPlaylistId, true)} />
 									{/if}
@@ -350,10 +392,23 @@
 						{#if playlistId}
 							{#if thinking}
 								<Spinner />
+							{:else if $configStore?.preferences?.oneclick == 'playlist'}
+								<Button
+									cls="one-click"
+									noMargin={true}
+									animated={true}
+									type={playlistsToInstall.includes(playlistId) ? 'danger' : 'purple'}
+									iconFa="far fa-hand-pointer"
+									title={playlistsToInstall.includes(playlistId)
+										? 'Do not one-click install this playlist'
+										: 'Quest one click install (Mod version 0.8.1+).'}
+									on:click={() => installQuestOneClick(playlistId)} />
 							{:else}
 								<Button
+									cls="one-click"
 									url="bsplaylist://playlist/https://api.beatleader.xyz/playlist/{playlistId}"
 									noMargin={true}
+									animated={true}
 									type="green"
 									iconFa="far fa-hand-pointer"
 									title="One click install"
@@ -364,6 +419,7 @@
 							iconFa="fas fa-download"
 							title="Download playlist"
 							noMargin={true}
+							animated={true}
 							type="primary"
 							on:click={() => store.download(playlist)} />
 					{/if}
@@ -383,7 +439,7 @@
 		{/if}
 		{#if songList}
 			<div
-				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true}}
+				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true, dragDisabled: sharedPlaylistId}}
 				on:consider={handleDndConsider}
 				on:finalize={handleDndFinalize}
 				class="tab">
@@ -537,5 +593,28 @@
 	.oneclick-title {
 		font-size: 0.8em;
 		color: blueviolet;
+	}
+
+	.buttons-container {
+		display: flex;
+		gap: 0.4em;
+	}
+
+	:global(.one-click .fa-hand-pointer) {
+		width: 1.3em;
+	}
+
+	:global(.playlist-share .fas) {
+		margin-top: 0.3em;
+	}
+
+	:global(.playlist-delete .fas) {
+		margin-top: 0.3em;
+	}
+
+	@media screen and (max-width: 768px) {
+		.titleAndButtons {
+			flex-direction: column;
+		}
 	}
 </style>

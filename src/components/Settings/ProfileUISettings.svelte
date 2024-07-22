@@ -13,11 +13,11 @@
 	import CardsCarousel from '../Player/CardsCarousel.svelte';
 	import {describeGraphAxis, describeProfilePart} from '../../utils/beatleader/format';
 	import PinnedScores from '../Player/PinnedScores.svelte';
-	import Achievements from '../Player/Achievements.svelte';
 	import {debounce} from '../../utils/debounce';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let animationSign = 1;
+	export let visible = false;
 
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_SORT_VALUE = 'last';
@@ -141,7 +141,7 @@
 	$: graphLegends = Object.keys($configStore.chartLegendVisible);
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile">
 		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" clanEffects={false} />
 
@@ -150,9 +150,6 @@
 		{/if}
 		{#if $configStore.profileParts.pinnedScores}
 			<PinnedScores {pinnedScoresStore} {playerId} />
-		{/if}
-		{#if $configStore.profileParts.achievements}
-			<Achievements {playerId} />
 		{/if}
 	</div>
 
@@ -167,7 +164,7 @@
 					<Switch
 						disabled={isUpdating}
 						value={followersPublic}
-						label="Public followers and following (incoming change, auto-saved)"
+						label="Public followers and following (auto-saved)"
 						fontSize={12}
 						design="slider"
 						on:click={() => toggleFollowersPublic()} />
@@ -275,8 +272,12 @@
 
 <style>
 	.main-container {
-		display: flex;
+		display: none;
 		flex-direction: column;
+	}
+
+	.main-container.visible {
+		display: flex;
 	}
 
 	.profile {

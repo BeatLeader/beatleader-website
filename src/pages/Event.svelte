@@ -17,6 +17,7 @@
 	import Countries from '../components/Ranking/Countries.svelte';
 	import Event from '../components/Event/Event.svelte';
 	import {Confetti} from 'svelte-confetti';
+	import EventMeta from '../components/Event/EventMeta.svelte';
 
 	export let page = 1;
 	export let location;
@@ -82,8 +83,8 @@
 				filters[p.key] = p.multi
 					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
 					: filters?.[p.key]?.length
-					? filters[p.key]
-					: p?.default ?? '';
+						? filters[p.key]
+						: p?.default ?? '';
 
 				p.value = p.multi
 					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
@@ -303,6 +304,102 @@
 				<span> This event had 3 champions: first, 10th and 50th player! </span>
 			</ContentBox>
 		{/if}
+
+		{#if eventId == 52}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" />
+				<div class="bswcbgblur" />
+				<div class="bswc-container">
+					<span>
+						<b>Beat Saber World Cup 2024 has started!</b> Make a reminder for a match of your favorite team and while waiting try your own
+						skill on the maps for champions.<br /><br />
+					</span>
+					<span style="margin-bottom: 0.5em;">
+						On the first week of the tournament 16 teams from different countries will fight for the place in the next round.
+					</span>
+
+					<div class="downloadButtons">
+						<a href="https://www.twitch.tv/CubeCommunity" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span>
+						<br />
+						<b>Good luck to the teams! Let the strongest win and everyone have fun! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
+		{#if eventId == 53}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" />
+				<div class="bswcbgblur" />
+				<div class="bswc-container">
+					<span>
+						<b>Week 2 of BSWC 2024 is here!</b> It features quarter finals for those in the winners bracket, and the first round for those
+						in the losers bracket.<br />
+						Try your skill on the maps, make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings
+						from the last week on the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Good luck to the teams! And good luck in our fan event! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
+		{#if eventId == 54}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" />
+				<div class="bswcbgblur" />
+				<div class="bswc-container">
+					<span>
+						<b>Week 3 of BSWC 2024 is here!*</b> US vs Denmark and UK vs Canada in a semi-final! I hope you saved some points to bet on
+						matches this week, because it's going to be close.<br />
+						No need to spend points in our events, only your kilocalories in exchange for fun and a badge for the champion.<br />
+						Make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings from the last week on
+						the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024" target="_blank">
+							<Button iconFa="fas fa-circle-info" label="BSWC Info" />
+						</a>
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Good luck to the teams! And good luck in our fan event! </b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
@@ -341,6 +438,14 @@
 				on:loading={e => (isLoading = !!e?.detail)}
 				on:pending={e => (pending = e?.detail)} />
 		</ContentBox>
+		{#if eventId == 54}
+			<span class="star-message">
+				* The BSWC Team is not responsible for any damages to controllers that occur while using "cheatreal". If you use "cheatreal" and
+				your controller is damaged, you are solely responsible for the cost of repair or replacement. The BSWC Team will not reimburse you
+				for any damages to your controller, regardless of the cause. By using "cheatreal", you agree to the terms of this disclaimer. If you
+				do not agree to the terms of this disclaimer, you should not use "cheatreal".
+			</span>
+		{/if}
 	</article>
 
 	{#if mainPlayerId && topPlayerId && (mainPlayerId == topPlayerId || (eventId == 50 && (mainPlayerId == tenthPlayerId || mainPlayerId == fifteethPlayerId))) && currentEvent && Date.now() / 1000 < currentEvent.endDate + WEEKSECONDS}
@@ -349,6 +454,10 @@
 		</div>
 	{/if}
 </section>
+
+{#if currentEvent}
+	<EventMeta event={currentEvent} />
+{/if}
 
 <style>
 	.align-content {
@@ -381,8 +490,55 @@
 		pointer-events: none;
 	}
 
+	.bswcbg {
+		background-image: url(https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp) !important;
+		background-size: cover !important;
+		background-position: center !important;
+		z-index: 1;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		border-radius: 8px;
+		left: 0;
+	}
+
+	.bswcbgblur {
+		backdrop-filter: blur(10px);
+		filter: brightness(0.5);
+		z-index: 2;
+		width: 100%;
+		position: absolute;
+		height: 100%;
+		top: 0;
+		left: 0;
+		border-radius: 8px;
+	}
+
+	.bswc-container {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		z-index: 3;
+	}
+
+	input::placeholder {
+		color: var(--faded) !important;
+	}
+
+	.star-message {
+		font-size: 0.875em;
+		color: var(--faded);
+		margin: 1em;
+		display: block;
+	}
+
 	:global(.inner-modal) {
 		z-index: 10;
+		position: relative;
+	}
+
+	:global(.bswc-box) {
 		position: relative;
 	}
 

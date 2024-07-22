@@ -47,7 +47,10 @@
 		y: 86.6 - (gypL - normalizedAccPp * gypL) / 2,
 	};
 	$: corner3 = {x: 50, y: (86.6 - gypL / 2) * (1 - normalizedPassPp)};
-	$: dispatch('height-changed');
+	$: playerInfo &&
+		setTimeout(() => {
+			dispatch('height-changed');
+		}, 200);
 </script>
 
 {#if playerInfo}

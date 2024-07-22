@@ -7,6 +7,8 @@
 	import Spinner from '../components/Common/Spinner.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Event from '../components/Event/Event.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 
 	export let page = 1;
 	export let location;
@@ -71,6 +73,7 @@
 	$: changePageAndFilters(page, location, shouldBeForceRefreshed);
 
 	$: eventsPage = $eventsStore?.data ?? [];
+	$: metaDescription = 'Competitions, ranked weeks and special occasions';
 </script>
 
 <svelte:head>
@@ -121,6 +124,25 @@
 		</ContentBox>
 	</article>
 </section>
+
+<MetaTags
+	title="Beat Saber events"
+	description={metaDescription}
+	openGraph={{
+		title: 'Beat Saber events',
+		description: metaDescription,
+		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary',
+		title: 'Beat Saber events',
+		description: metaDescription,
+		image: CURRENT_URL + '/assets/logo-small.png',
+		imageAlt: ssrConfig.name + "'s logo",
+	}} />
 
 <style>
 	.align-content {
