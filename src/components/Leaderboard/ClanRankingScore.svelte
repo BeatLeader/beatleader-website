@@ -59,11 +59,22 @@
 		showClanRankingScores = !showClanRankingScores;
 	}
 
+	function refreshOnLeaderboardChange(cr) {
+		if (showClanRankingScores && cr?.id) {
+			scores = [];
+			setTimeout(() => {
+				changeParams(1);
+				associatedScoresPage = 1;
+			}, 200);
+		}
+	}
+
 	let showClanRankingScores = false;
 	let clanRank = (page - 1) * 10 + idx + 1;
 
 	$: scores = $clanRankingStore?.clanRanking?.scores ?? [];
 	$: totalItems = $clanRankingStore?.totalItems ?? 0;
+	$: refreshOnLeaderboardChange(cr);
 
 	$: isLoading = clanRankingStore.isLoading;
 	$: pending = clanRankingStore.pending;
@@ -79,12 +90,12 @@
 					bgColor={clanRank === 1
 						? 'darkgoldenrod'
 						: clanRank === 2
-						? '#888'
-						: clanRank === 3
-						? 'saddlebrown'
-						: clanRank >= 10000
-						? 'small'
-						: 'var(--dimmed)'}>
+							? '#888'
+							: clanRank === 3
+								? 'saddlebrown'
+								: clanRank >= 10000
+									? 'small'
+									: 'var(--dimmed)'}>
 					<span slot="label">
 						#<Value value={cr.rank} digits={0} zero="?" />
 					</span>
