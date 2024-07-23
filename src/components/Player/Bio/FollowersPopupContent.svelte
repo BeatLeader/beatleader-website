@@ -62,7 +62,37 @@
 	<div class="followers-container">
 		{#if list.length}
 			{#each list as follower, idx (follower?.id)}
-				<FollowerItem {follower} {account} {followed} {loading} {tab} {idx} animationSign={page >= previousPage ? 1 : -1} />
+				<FollowerItem
+					{playerId}
+					{follower}
+					{account}
+					{followed}
+					{loading}
+					{tab}
+					{idx}
+					animationSign={page >= previousPage ? 1 : -1}
+					on:followed={() => {
+						if (tab == 0) {
+							follower.count++;
+							if (playerId == $account?.player?.playerId) {
+								followingCount++;
+							}
+						}
+						if (tab == 1 && playerId == $account?.player?.playerId) {
+							followingCount++;
+						}
+					}}
+					on:unfollowed={() => {
+						if (tab == 0) {
+							follower.count--;
+							if (playerId == $account?.player?.playerId) {
+								followingCount--;
+							}
+						}
+						if (tab == 1 && playerId == $account?.player?.playerId) {
+							followingCount--;
+						}
+					}} />
 			{/each}
 			<Pager
 				totalItems={count}

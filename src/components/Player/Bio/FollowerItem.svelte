@@ -1,6 +1,7 @@
 <script>
 	import {fly, fade} from 'svelte/transition';
 	import {navigate} from 'svelte-routing';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import Button from '../../Common/Button.svelte';
 	import Popover from '../../Common/Popover.svelte';
 	import Spinner from '../../Common/Spinner.svelte';
@@ -9,37 +10,58 @@
 	export let follower;
 	export let followed;
 	export let account;
+	export let playerId;
 	export let loading;
 	export let tab;
 	export let idx;
 	export let animationSign;
 
+	const dispatch = createEventDispatcher();
+
 	let operationInProgress = false;
 	let referenceElement;
 
-	async function onFollowedChange(op, follower) {
+	let mutual = false;
+	let originalMutual = false;
+	let fetchedMutual = false;
+	function refreshMutual(follower) {
+		if (fetchedMutual) return;
+		mutual = follower.mutual;
+		originalMutual = follower.mutual;
+		fetchedMutual = true;
+	}
+
+	function onFollowedChange(op, follower) {
 		if (!follower) return;
 
-		try {
-			operationInProgress = true;
+		operationInProgress = true;
 
-			switch (op) {
-				case 'add':
-					await account.addFollowed(follower.id);
-					follower.count = followers.followersCount + 1;
-					break;
-				case 'remove':
-					await account.removeFollowed(follower.id);
-					follower.count = followers.followersCount - 1;
-					break;
-			}
-		} catch (err) {
-		} finally {
-			operationInProgress = false;
+		switch (op) {
+			case 'add':
+				account.addFollowed(follower.id).then(_ => {
+					dispatch('followed');
+					if ($account?.player?.playerId == playerId) {
+						mutual = tab == 1 || originalMutual;
+					}
+					operationInProgress = false;
+				});
+
+				break;
+			case 'remove':
+				account.removeFollowed(follower.id).then(_ => {
+					dispatch('unfollowed');
+					if ($account?.player?.playerId == playerId) {
+						mutual = false;
+					}
+					operationInProgress = false;
+				});
+
+				break;
 		}
 	}
 
 	$: isFollowed = !!$followed?.find(f => f?.playerId === follower.id);
+	$: follower && refreshMutual(follower);
 </script>
 
 <a
@@ -54,6 +76,9 @@
 		<div class="avatar-placeholder">
 			<Spinner />
 		</div>
+	{/if}
+	{#if mutual}
+		<i class="fas fa-handshake-angle" title="Mutually follows you!" />
 	{/if}
 	<div class="name-and-buttons">
 		<div class="name-and-status">
@@ -70,8 +95,8 @@
 				title={isFollowed
 					? 'Stop following'
 					: $followed.length >= 250
-					? 'More than 250 following is not supported at the moment. Please unfollow someone first.'
-					: 'Follow'}
+						? 'More than 250 following is not supported at the moment. Please unfollow someone first.'
+						: 'Follow'}
 				iconFa={isFollowed ? 'fas fa-user-minus' : 'fas fa-user-plus'}
 				type={isFollowed ? 'danger' : 'primary'}
 				loading={operationInProgress}
@@ -110,6 +135,7 @@
 	}
 
 	.player-container {
+		position: relative;
 		display: flex;
 		gap: 1em;
 		align-items: center;
@@ -117,6 +143,17 @@
 		padding: 0.5em;
 		background-color: #242424;
 		border-radius: 2em;
+	}
+
+	.fa-handshake-angle {
+		position: absolute;
+		transition: all 0.3s;
+		bottom: 0.5em;
+		left: 2.8em;
+		background-color: #0000008a;
+		font-size: 0.8em;
+		padding: 0.3em 0.2em;
+		border-radius: 1em;
 	}
 
 	.avatar {
