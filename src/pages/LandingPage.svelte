@@ -44,98 +44,102 @@
 			</div>
 			<div class="title-and-buttons">
 				<h1 class="big-title audiowide">Hello, future BeatLeader!</h1>
-				<h3 class="big-description">This is Beat Saber leaderboard!</h3>
+				<h3 class="big-description">Welcome to the most extensive Beat Saber leaderboard!</h3>
 
 				<div class="downloadButtons">
 					<a class="pc-download-button" href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" label="Download PC mod" />
+						<Button iconFa="fas fa-download" type="green" label="Download PC mod" />
 					</a>
 					<a class="quest-download-button" href="https://github.com/BeatLeader/beatleader-qmod/releases" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" label="Download Quest mod" />
+						<Button iconFa="fas fa-download" type="green" label="Download Quest mod" />
 					</a>
+				</div>
+				<div class="mod-beatsaber">
+					<span><strong>Never modded Beat Saber? <a href="https://bsmg.wiki/pc-modding.html">It's easy!</a></strong></span>
 				</div>
 			</div>
 		</div>
-		<ContentBox>
-			<h3 class="description"><b>Start posting your scores to compete with others on more than 100,000 different maps.</b></h3>
+		<ContentBox cls="landing-box">
+			<div class="container-element darkened-background">
+				<h3 class="description"><b>Start posting your scores to compete with others on more than 100,000 different maps.</b></h3>
 
-			<div class="features">
-				<div class="feature">
-					<img src="/assets/leaderboard-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, 22deg);" />
-					<h3 class="feature-description">In-game leaderboards<br />for custom maps!</h3>
+				<div class="features">
+					<div class="feature">
+						<img src="/assets/leaderboard-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, 22deg);" />
+						<h3 class="feature-description">In-game leaderboards<br />for custom maps!</h3>
+					</div>
+					<div class="feature">
+						<img src="/assets/webreplays-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, -22deg);" />
+						<h3 class="feature-description">Gameplay replays!</h3>
+					</div>
 				</div>
-				<div class="feature">
-					<img src="/assets/webreplays-landing.webp" class="feature-image" style="transform: rotate3d(0, 1, 0, -22deg);" />
-					<h3 class="feature-description">Gameplay replays!</h3>
+
+				<ul>
+					<li>Fully open-source project and community</li>
+					<li>Complexity ratings for all maps</li>
+					<li>Ranked maps to earn Performance Points</li>
+
+					<li>Detailed statistics for every score</li>
+					<li>Clans, events, and many more!</li>
+				</ul>
+				<div class="global-ranking-call">
+					<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
 				</div>
-			</div>
-
-			<ul>
-				<li>Fully open-source project and community</li>
-				<li>Complexity ratings for all maps</li>
-				<li>Ranked maps to earn Performance Points</li>
-
-				<li>Detailed statistics for every score</li>
-				<li>Clans, events, and many more!</li>
-			</ul>
-			<div class="global-ranking-call">
-				<h3><strong>Check out <a href="/ranking/1">the global rankings</a> to find the best players</strong></h3>
 			</div>
 		</ContentBox>
-		<ContentBox>
-			<h3 class="description">We aggregate the data from other cool projects to help you play better:</h3>
-			<div class="sources">
-				<div class="source">
-					<h3 class="title is-6">
-						<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-							<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
-						</a>
-					</h3>
-					<a href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
+		<ContentBox cls="landing-box">
+			<div class="container-element darkened-background">
+				<h3 class="description">We aggregate the data from other cool projects to help you play better:</h3>
+				<div class="sources">
+					<div class="source">
+						<h3 class="title is-6">
+							<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
+								<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
+							</a>
+						</h3>
+						<a href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
+					</div>
+					<div class="source">
+						<h3 class="title is-6">
+							<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
+								<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
+							</a>
+						</h3>
+						<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
+					</div>
+					<div class="source">
+						<h3 class="title is-6">
+							<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
+								<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
+							</a>
+						</h3>
+						<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
+					</div>
+					<div class="source">
+						<h3 class="title is-6">
+							<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
+								<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
+							</a>
+						</h3>
+						<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
+					</div>
+					<div class="source">
+						<h3 class="title is-6">
+							<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
+								<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
+							</a>
+						</h3>
+						<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>
+					</div>
+					<div class="source">
+						<h3 class="title is-6">
+							<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
+								<span class="icon beatsavior-icon" title="BeatSavior" />
+							</a>
+						</h3>
+						<a href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
+					</div>
 				</div>
-				<div class="source">
-					<h3 class="title is-6">
-						<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
-							<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
-						</a>
-					</h3>
-					<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
-				</div>
-				<div class="source">
-					<h3 class="title is-6">
-						<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-							<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
-						</a>
-					</h3>
-					<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
-				</div>
-				<div class="source">
-					<h3 class="title is-6">
-						<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
-							<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
-						</a>
-					</h3>
-					<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
-				</div>
-				<div class="source">
-					<h3 class="title is-6">
-						<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
-							<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
-						</a>
-					</h3>
-					<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>
-				</div>
-				<div class="source">
-					<h3 class="title is-6">
-						<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
-							<span class="icon beatsavior-icon" title="BeatSavior" />
-						</a>
-					</h3>
-					<a href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
-				</div>
-			</div>
-			<div class="global-ranking-call">
-				<h3><strong>Never modded Beat Saber? <a href="https://bsmg.wiki/pc-modding.html">It's easy!</a></strong></h3>
 			</div>
 		</ContentBox>
 	</div>
@@ -169,10 +173,24 @@
 		display: flex;
 		justify-content: flex-start;
 		margin: 4px 10px 18px;
-		border-radius: 6px;
+		border-radius: 12px;
 		padding: 1rem;
 		position: relative;
 		z-index: var(--z-index);
+	}
+
+	.container-element {
+		border-radius: 8px;
+		padding: 1.5em;
+	}
+
+	:global(.landing-box) {
+		border-radius: 12px !important;
+		padding: 0.5em !important;
+	}
+
+	.mod-beatsaber {
+		margin-left: 0.3em;
 	}
 
 	.big-title {
