@@ -38,7 +38,7 @@ export default response => {
 
 	let profilePicture = avatar;
 
-	if (scoreStats) {
+	if (scoreStats && !scoreStats.percentsProcessed) {
 		[
 			'averageAccuracy',
 			'averageRankedAccuracy',
@@ -49,8 +49,9 @@ export default response => {
 			'topPercentile',
 			'countryTopPercentile',
 		].forEach(k => {
-			if (scoreStats[k] && Number.isFinite(scoreStats[k]) && scoreStats[k] < 2) scoreStats[k] *= 100;
+			if (scoreStats[k] && Number.isFinite(scoreStats[k])) scoreStats[k] *= 100;
 		});
+		scoreStats.percentsProcessed = true;
 	}
 
 	let sponsor = role?.includes('sponsor');
