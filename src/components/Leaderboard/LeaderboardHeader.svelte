@@ -120,7 +120,7 @@
 				{/if}
 			</div>
 
-			<Icons {hash} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
+			<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
 		</div>
 
 		<div class="title-and-buttons">

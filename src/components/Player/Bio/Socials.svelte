@@ -83,7 +83,7 @@
 		animated={true}
 		animationOpacity={0.8}
 		type="purple"
-		icon="<img src='https://beatsaver.com/static/favicon/apple-touch-icon.png' />"
+		icon="<img src='/assets/beatsaver-icon.png' />"
 		title="{beatsaverSocial.user} mapper" />
 {/if}
 

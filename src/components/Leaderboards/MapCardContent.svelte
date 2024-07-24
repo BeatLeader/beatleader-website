@@ -109,7 +109,7 @@
 				{/if}
 
 				{#if map?.song?.hash?.length}
-					<Icons hash={map.song.hash} diffInfo={map?.diffInfo} />
+					<Icons song={map.song} diffInfo={map?.diffInfo} />
 				{/if}
 			</div>
 

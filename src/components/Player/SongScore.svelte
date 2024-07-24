@@ -95,7 +95,8 @@
 	$: score = opt(songScore, 'score', null);
 	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
 	$: beatSavior = opt(songScore, 'beatSavior', null);
-	$: hash = opt(leaderboard, 'song.hash');
+	$: song = opt(leaderboard, 'song');
+	$: hash = opt(song, 'hash');
 	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
@@ -149,7 +150,7 @@
 							{leaderboard}
 							{score}
 							rank={score.rank}
-							{hash}
+							{song}
 							{twitchUrl}
 							notClickable={['beatsavior'].includes(service)}
 							{noIcons}
@@ -166,7 +167,7 @@
 				<div class="up-to-tablet icons">
 					<Icons
 						layoutType="large"
-						{hash}
+						{song}
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
@@ -178,7 +179,7 @@
 				<div class="mobile-only icons">
 					<Icons
 						layoutType="flat"
-						{hash}
+						{song}
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}

@@ -4,8 +4,18 @@ import processPlayer from '../../player/process';
 export const processScore = s => {
 	if (!s) return null;
 
-	const {hash, name, subName, author: authorName, mapper: levelAuthorName, duration, coverImage, bpm} = s?.leaderboard?.song ?? {};
-	const song = {hash, name, subName, authorName, levelAuthorName, duration, coverImage, bpm};
+	const {
+		hash,
+		name,
+		subName,
+		author: authorName,
+		id: songId,
+		mapper: levelAuthorName,
+		duration,
+		coverImage,
+		bpm,
+	} = s?.leaderboard?.song ?? {};
+	const song = {hash, name, subName, authorName, id: songId, levelAuthorName, duration, coverImage, bpm};
 
 	const {id: leaderboardId} = s?.leaderboard ?? {};
 
@@ -63,7 +73,7 @@ export const processScore = s => {
 						...s.scoreImprovement,
 						accuracy: (improvedAcc ?? 0) * 100,
 						timeSet: improvedTime ? dateFromUnix(improvedTime) : null,
-				  }
+					}
 				: null,
 		},
 		fetchedAt: new Date(),

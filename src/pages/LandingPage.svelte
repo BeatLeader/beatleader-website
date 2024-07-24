@@ -94,7 +94,7 @@
 					<div class="source">
 						<h3 class="title is-6">
 							<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-								<img src="https://beatsaver.com/static/favicon/apple-touch-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
+								<img src="/assets/beatsaver-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
 							</a>
 						</h3>
 						<a href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>

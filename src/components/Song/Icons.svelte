@@ -14,7 +14,7 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 
 	export let layoutType = 'flat';
-	export let hash;
+	export let song;
 	export let diffInfo = null;
 	export let twitchUrl = null;
 	export let icons = false;
@@ -38,6 +38,7 @@
 	};
 	const {addNotification} = getNotificationsContext();
 
+	let hash;
 	let songKey;
 	let songName;
 	let levelAuthorName;
@@ -61,17 +62,17 @@
 		return string.charAt(0).toLowerCase() + string.slice(1);
 	}
 
-	async function updateSongKey(hash) {
-		if (!hash) {
+	function updateSongKey(song) {
+		if (!song) {
 			songKey = null;
 			return;
 		}
 
-		const songInfoValue = await beatSaverService.byHash(hash);
-		if (songInfoValue && songInfoValue.key) {
-			songKey = songInfoValue.key;
-			songName = songInfoValue.name;
-			levelAuthorName = songInfoValue.uploader.name;
+		if (song.id) {
+			hash = song.hash;
+			songKey = song.id.replaceAll('x', '');
+			songName = song.name;
+			levelAuthorName = song.mapper;
 		}
 	}
 
@@ -123,7 +124,7 @@
 	}
 
 	$: updateIcons(icons);
-	$: updateSongKey(hash);
+	$: updateSongKey(song);
 	$: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : '';
 	$: charName = diffInfo && diffInfo.type ? diffInfo.type : '';
 

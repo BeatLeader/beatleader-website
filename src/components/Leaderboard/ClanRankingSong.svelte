@@ -97,7 +97,8 @@
 	let showClanRankingScores = false;
 
 	$: leaderboard = opt(cr, 'leaderboard', null);
-	$: hash = leaderboard?.song?.hash;
+	$: song = leaderboard?.song;
+	$: hash = song?.hash;
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 
 	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
@@ -134,7 +135,7 @@
 
 		{#if !noIcons}
 			<div class="up-to-tablet icons">
-				<Icons layoutType="large" {hash} {diffInfo} icons={selectedIcons} noPin={true} />
+				<Icons layoutType="large" {song} {diffInfo} icons={selectedIcons} noPin={true} />
 			</div>
 			<div class="mobile-only icons">
 				<span class="rank">
@@ -144,7 +145,7 @@
 				<span class="timeset">
 					<FormattedDate date={cr.lastUpdateTimeNumber} />
 				</span>
-				<Icons layoutType="flat" {hash} {diffInfo} icons={selectedIcons} noPin={true} />
+				<Icons layoutType="flat" {song} {diffInfo} icons={selectedIcons} noPin={true} />
 			</div>
 		{/if}
 

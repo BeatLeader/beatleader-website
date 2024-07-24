@@ -6,12 +6,12 @@
 	import Icons from '../Song/Icons.svelte';
 	import Badge from '../Common/Badge.svelte';
 	import SongCover from './SongCover.svelte';
-	import { configStore } from '../../stores/config';
+	import {configStore} from '../../stores/config';
 
 	export let leaderboard = null;
 	export let score = null;
 	export let rank = null;
-	export let hash = null;
+	export let song = null;
 	export let twitchUrl = null;
 	export let notClickable = false;
 	export let replayLink = false;
@@ -54,11 +54,11 @@
 			{/if}
 		</div>
 
-		{#if !noIcons && hash && hash.length}
+		{#if !noIcons && song}
 			<div class="desktop-and-up">
 				<Icons
 					layoutType="large"
-					{hash}
+					{song}
 					{twitchUrl}
 					{diffInfo}
 					scoreId={score.id}

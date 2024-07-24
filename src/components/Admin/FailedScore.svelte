@@ -31,7 +31,8 @@
 	$: score = opt(songScore, 'score', null);
 	$: prevScore = opt(songScore, 'prevScore', null);
 	$: beatSavior = opt(songScore, 'beatSavior', null);
-	$: hash = opt(leaderboard, 'song.hash');
+	$: song = opt(leaderboard, 'song');
+	$: hash = opt(song, 'hash');
 	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 	$: modifiers = songScore?.leaderboard?.difficultyBl?.modifierValues ?? null;
@@ -44,7 +45,7 @@
 		out:fade|global={{duration: 100}}
 		class:with-details={showDetails}>
 		<div class="icons up-to-tablet">
-			<Icons {hash} {twitchUrl} {diffInfo} replayLink={score.replay} altReplay={true} />
+			<Icons {song} {twitchUrl} {diffInfo} replayLink={score.replay} altReplay={true} />
 		</div>
 
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
