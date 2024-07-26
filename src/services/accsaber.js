@@ -101,7 +101,7 @@ export default () => {
 		  }
 			
 		  `,
-			{playerId: playerLinkMap[playerId]}
+			{playerId: playerLinkMap[playerId] ?? playerId}
 		);
 
 		rankingResponse.data.categoryAccSaberPlayers.nodes.forEach(element => {
@@ -321,7 +321,7 @@ export default () => {
 			}	
 			`,
 				{
-					playerId: playerLinkMap[playerId],
+					playerId: playerLinkMap[playerId] ?? playerId,
 					category,
 					count: PLAYER_SCORES_PER_PAGE,
 					offset: PLAYER_SCORES_PER_PAGE * (page - 1),

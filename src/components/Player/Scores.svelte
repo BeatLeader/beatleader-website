@@ -180,7 +180,7 @@
 
 	{#if $scoresStore && $scoresStore.length}
 		<div class="song-scores grid-transition-helper">
-			{#each $scoresStore as songScore, idx ((songScore?.id ?? '') + (songScore?.score?.id ?? ''))}
+			{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + currentService + (songScore?.timeSet ?? ''))}
 				<SongScore
 					{playerId}
 					{songScore}
