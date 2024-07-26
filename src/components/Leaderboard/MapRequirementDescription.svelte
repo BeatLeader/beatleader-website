@@ -29,7 +29,6 @@
 		min-width: 1.5em;
 		max-height: 1.5em;
 		border-radius: 4px;
-		margin-right: 0.5em;
 		padding-right: 0.3em;
 		height: 2em;
 		align-items: center;

@@ -1,7 +1,6 @@
 <script>
 	import MapTypeDescription from './MapTypeDescription.svelte';
 	import MapTriangle from '../Common/MapTriangle.svelte';
-	import {opt} from '../../utils/js';
 	import {createEventDispatcher} from 'svelte';
 	import {fade} from 'svelte/transition';
 
@@ -11,10 +10,8 @@
 	import {formatDiffStatus, DifficultyStatus, wrapBLStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
-	import LeaderboardDisplayCaptureStatus from './LeaderboardDisplayCaptureStatus.svelte';
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../stores/config';
-	import Spinner from '../Common/Spinner.svelte';
 	import SongStatus from './SongStatus.svelte';
 	import HashDisplay from '../Common/HashDisplay.svelte';
 	import LeaderboardDisplayCaptureCorner from './LeaderboardDisplayCaptureCorner.svelte';
@@ -77,83 +74,91 @@
 
 		<div class="main-container">
 			<div class="header-container">
-				<h1 class="title is-4">
-					<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
-					{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
-						<span class="subname">{song.subName}</span>
-					{/if}
-				</h1>
-
-				<div class="title-container">
-					<span class="author" title="Song author name">{song.authorName}</span>
-					<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
-					<div class="status-and-type">
-						{#if leaderboard.categoryDisplayName}
-							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
-								<span slot="label">
-									{leaderboard.categoryDisplayName}
-									{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
-								</span>
-							</Badge>
+				<div class="header-top-part">
+					<h1 class="title is-4">
+						<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
+						{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+							<span class="subname">{song.subName}</span>
 						{/if}
+					</h1>
 
-						{#if leaderboard?.stats?.type}
-							<MapTypeDescription type={leaderboard?.stats.type} />
+					<div class="title-container">
+						<span class="author" title="Song author name">{song.authorName}</span>
+						<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
+						<div class="status-and-type">
+							{#if leaderboard.categoryDisplayName}
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+									<span slot="label">
+										{leaderboard.categoryDisplayName}
+										{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
+									</span>
+								</Badge>
+							{/if}
+						</div>
+
+						{#if song.externalStatuses}
+							<div class="song-statuses">
+								{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
+									<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
+								{/if}
+								{#each leaderboard.song.externalStatuses as songStatus}
+									<SongStatus {songStatus} />
+								{/each}
+							</div>
+						{/if}
+						{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
+							<LeaderboardStats {leaderboard} />
+						{/if}
+						{#if $configStore?.leaderboardPreferences?.showHashInHeader}
+							<HashDisplay {song} />
 						{/if}
 					</div>
-
-					{#if song.externalStatuses}
-						<div class="song-statuses">
-							{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
-								<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
-							{/if}
-							{#each leaderboard.song.externalStatuses as songStatus}
-								<SongStatus {songStatus} />
-							{/each}
-						</div>
-					{/if}
-					{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
-						<LeaderboardStats {leaderboard} />
-					{/if}
-					{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-						<HashDisplay {song} />
-					{/if}
+				</div>
+				<div class="header-bottom-part">
+					<div class="icons-container">
+						<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
+					</div>
 				</div>
 			</div>
 			<div class="title-and-buttons">
-				<h2 class="title is-6" style="display: contents;">
-					{#if leaderboard.stats && leaderboard.stats.passRating}
-						<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
+				<div class="header-top-part">
+					<h2 class="title is-6" style="display: contents;">
+						{#if leaderboard.stats && leaderboard.stats.passRating}
+							<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
+						{/if}
+					</h2>
+					{#if leaderboard?.stats?.requirements || leaderboard?.stats?.type}
+						<div class="requirements">
+							{#if leaderboard?.stats?.type}
+								<MapTypeDescription type={leaderboard?.stats.type} />
+							{/if}
+							{#if leaderboard?.stats?.requirements}
+								<MapRequirementDescription type={leaderboard?.stats.requirements} />
+							{/if}
+						</div>
 					{/if}
-				</h2>
-				{#if leaderboard?.stats?.requirements}
-					<div class="requirements">
-						<MapRequirementDescription type={leaderboard?.stats.requirements} />
-					</div>
-				{/if}
+				</div>
+				<div class="header-bottom-part">
+					{#if leaderboardGroup && leaderboardGroup.length > 1}
+						<div class="version-selector-container">
+							<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
+								{#each leaderboardGroup as option (option.id)}
+									<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
+										{#if option.timestamp}
+											{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
+										{:else}
+											{formatDiffStatus(option.status)}
+										{/if}
+									</option>
+								{/each}
+							</select>
+						</div>
+					{/if}
+				</div>
 			</div>
 		</div>
 
-		<div class="buttons-container">
-			<div class="icons-container">
-				<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
-			</div>
-			{#if leaderboardGroup && leaderboardGroup.length > 1}
-				<div class="version-selector-container">
-					<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
-						{#each leaderboardGroup as option (option.id)}
-							<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
-								{#if option.timestamp}
-									{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
-								{:else}
-									{formatDiffStatus(option.status)}
-								{/if}
-							</option>
-						{/each}
-					</select>
-				</div>
-			{/if}
-		</div>
+		<div class="buttons-container"></div>
 
 		{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
 			<div class="capture-status">
@@ -195,11 +200,13 @@
 		display: flex;
 		justify-content: space-between;
 		flex: 1;
+		min-height: 16em;
 	}
 
 	.buttons-container {
 		position: absolute;
 		bottom: 0;
+		height: 2.7em;
 		margin-left: -0.6em;
 		width: 100%;
 		display: flex;
@@ -211,12 +218,14 @@
 
 	.icons-container {
 		transform: scale(1.15);
-		margin-left: 17.9em;
+		width: fit-content;
+		margin-left: 0.8em;
+		margin-bottom: 0.1em;
 	}
 
 	.version-selector-container {
 		transform: scale(1.15);
-		margin-right: 2em;
+		margin-bottom: -0.5em;
 	}
 
 	header .title {
@@ -249,7 +258,7 @@
 
 	.subname {
 		color: #ffffff93;
-		font-size: 1em;
+		font-size: 0.8em;
 	}
 
 	.author {
@@ -284,9 +293,22 @@
 
 	.header-container {
 		display: flex;
-		justify-content: center;
+		justify-content: space-between;
 		flex-direction: column;
 		min-height: 14em;
+		gap: 1em;
+	}
+
+	.header-top-part {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		flex: 1;
+		z-index: 1;
+	}
+
+	.header-bottom-part {
+		z-index: 1;
 	}
 
 	.title-container {
@@ -340,7 +362,7 @@
 		text-align: center;
 		white-space: nowrap;
 		border: 0;
-		border-radius: 0.2em;
+		border-radius: 6px;
 		cursor: pointer;
 		color: #363636;
 		background-color: #dbdbdb;
@@ -361,6 +383,9 @@
 	.requirements {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 0.2em;
 		row-gap: 0.5em;
 		padding-top: 0.7em;
 		padding-bottom: 0.7em;
