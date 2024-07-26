@@ -271,19 +271,21 @@
 		{/if}
 	</article>
 
-	{#if innerWidth > 1749 && ($configStore.profileParts.globalMiniRanking || $configStore.profileParts.countryMiniRanking || $configStore.profileParts.friendsMiniRanking)}
+	{#if innerWidth > 1749 && ($configStore.profileParts.globalMiniRanking || $configStore.profileParts.countryMiniRanking || $configStore.profileParts.friendsMiniRanking || $configStore.profileParts.achievements)}
 		<aside>
 			<MiniRankings {rank} {country} {countryRank} box={true} />
 
-			{#await accSaberAvailable}
-				Loading...
-			{:then accSaberAvailable}
-				{#if accSaberAvailable}
-					<ContentBox>
-						<AccSaberMiniRanking {playerId} category="overall" numOfPlayers={5} />
-					</ContentBox>
-				{/if}
-			{/await}
+			{#if $configStore.profileParts.globalMiniRanking || $configStore.profileParts.countryMiniRanking}
+				{#await accSaberAvailable}
+					Loading...
+				{:then accSaberAvailable}
+					{#if accSaberAvailable}
+						<ContentBox>
+							<AccSaberMiniRanking {playerId} category="overall" numOfPlayers={5} />
+						</ContentBox>
+					{/if}
+				{/await}
+			{/if}
 			<!-- `serviceParams` here is just to force Svelte always update this block -->
 			{#if serviceParams && ((!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio)}
 				<ContentBox cls="player-cards-box">

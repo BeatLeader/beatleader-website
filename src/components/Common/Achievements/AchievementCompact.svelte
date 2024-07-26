@@ -29,7 +29,7 @@
 	<img src={level.image} title={level.name} alt={level.name} />
 </div>
 
-<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" spaceAway={10}>
+<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="top" remainOpenOnPopoverHover={true} spaceAway={10}>
 	<div class="popover-contents" transition:fade|global={{duration: 250}}>
 		<AchievementDetails {achievement} />
 	</div>
@@ -55,10 +55,18 @@
 	}
 
 	.gold {
-		box-shadow: 1px 1px 0px 1px #ffd700, -1px -1px 0px 1px #ffcc00, 2px 1px 0px 2px #ffac00, -1px -1px 0px 2px #ff8c00;
+		box-shadow:
+			1px 1px 0px 1px #ffd700,
+			-1px -1px 0px 1px #ffcc00,
+			2px 1px 0px 2px #ffac00,
+			-1px -1px 0px 2px #ff8c00;
 	}
 
 	.silver {
-		box-shadow: 1px 1px 0px 1px #eeeeee, -1px -1px 0px 1px #dcdcdc, 2px 1px 0px 2px #c0c0c0, -2px -1px 0px 2px #a9a9a9;
+		box-shadow:
+			1px 1px 0px 1px #eeeeee,
+			-1px -1px 0px 1px #dcdcdc,
+			2px 1px 0px 2px #c0c0c0,
+			-2px -1px 0px 2px #a9a9a9;
 	}
 </style>
