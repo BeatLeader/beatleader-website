@@ -318,8 +318,8 @@ export default async () => {
 		await set(savedConfig, false);
 	}
 
-	const syncFromServer = () => {
-		fetch(BL_API_URL + 'user/config/link', {credentials: 'include'}).then(async response => {
+	const syncFromServer = async () => {
+		await fetch(BL_API_URL + 'user/config/link', {credentials: 'include'}).then(async response => {
 			if (response.status == 404 && savedConfig) {
 				await fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(savedConfig)});
 			} else if (response.status == 200) {
@@ -331,7 +331,7 @@ export default async () => {
 			}
 		});
 	};
-	syncFromServer();
+
 	newSettingsAvailable = newSettings && newSettings.length ? newSettings : undefined;
 
 	configStore = {
@@ -347,6 +347,8 @@ export default async () => {
 		reset,
 		syncFromServer,
 	};
+
+	await syncFromServer();
 
 	return configStore;
 };
