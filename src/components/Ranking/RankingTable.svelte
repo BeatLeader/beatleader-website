@@ -268,7 +268,7 @@
 	}
 
 	async function settempsetting(key, value) {
-		var preferences = configStore.get('rankingPreferences');
+		var preferences = deepClone(configStore.get('rankingPreferences'));
 		preferences[key] = value;
 		await configStore.setForKey('rankingPreferences', preferences, false);
 	}

@@ -15,6 +15,7 @@
 	import PinnedScores from '../Player/PinnedScores.svelte';
 	import {debounce} from '../../utils/debounce';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {deepClone} from '../../utils/js';
 
 	export let animationSign = 1;
 	export let visible = false;
@@ -62,14 +63,14 @@
 	}
 
 	async function settempsetting(key, value) {
-		var preferences = configStore.get('preferences');
+		var preferences = deepClone(configStore.get('preferences'));
 		preferences[key] = value;
 		await configStore.setForKey('preferences', preferences, false);
 	}
 
 	async function setroottempsetting(key, subkey, value) {
 		if (subkey) {
-			var preferences = configStore.get(key);
+			var preferences = deepClone(configStore.get(key));
 			preferences[subkey] = value;
 			await configStore.setForKey(key, preferences, false);
 		} else {

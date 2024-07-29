@@ -3,6 +3,7 @@
 	import {fly, fade} from 'svelte/transition';
 	import RankingTable from '../Ranking/RankingTable.svelte';
 	import Switch from '../Common/Switch.svelte';
+	import {deepClone} from '../../utils/js';
 
 	export let animationSign = 1;
 	export let visible = false;
@@ -25,7 +26,7 @@
 	}
 
 	async function settempsetting(key, value) {
-		var rankingList = configStore.get('rankingList');
+		var rankingList = deepClone(configStore.get('rankingList'));
 		rankingList[key] = value;
 		await configStore.setForKey('rankingList', rankingList, false);
 	}

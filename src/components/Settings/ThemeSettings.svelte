@@ -5,6 +5,7 @@
 	import ColorPicker from '../Common/ColorPicker.svelte';
 	import {fly, fade} from 'svelte/transition';
 	import {debounce} from '../../utils/debounce';
+	import {deepClone} from '../../utils/js';
 
 	export let animationSign = 1;
 	export let visible = false;
@@ -48,7 +49,7 @@
 	}
 
 	async function settempsetting(key, value) {
-		var preferences = configStore.get('preferences');
+		var preferences = deepClone(configStore.get('preferences'));
 		preferences[key] = value;
 		await configStore.setForKey('preferences', preferences, false);
 	}

@@ -255,16 +255,6 @@
 				badgeLayouts.find(b => b.value === config?.scoreComparison?.badgeRows ?? 1)?.value ?? badgeLayouts[0].value;
 	}
 
-	async function settempsetting(key, subkey, value) {
-		if (subkey) {
-			var preferences = configStore.get(key);
-			preferences[subkey] = value;
-			await configStore.setForKey(key, preferences, false);
-		} else {
-			await configStore.setForKey(key, value, false);
-		}
-	}
-
 	function onBadgeClick(e) {
 		if (!$isDemo || !Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
 
@@ -283,11 +273,11 @@
 	}
 
 	function onBadgePresetChange(preset) {
-		settempsetting('scoreComparison', null, deepClone(preset.settings.scoreComparison));
-		settempsetting('scorePreferences', 'badgeRows', deepClone(preset.settings.scorePreferences.badgeRows));
-		settempsetting('scoreBadges', null, deepClone(preset.settings.scoreBadges));
-		settempsetting('scoreDetailsPreferences', null, deepClone(preset.settings.scoreDetailsPreferences));
-		settempsetting('visibleScoreIcons', null, deepClone(preset.settings.visibleScoreIcons));
+		configStore.settempsetting('scoreComparison', null, deepClone(preset.settings.scoreComparison));
+		configStore.settempsetting('scorePreferences', 'badgeRows', deepClone(preset.settings.scorePreferences.badgeRows));
+		configStore.settempsetting('scoreBadges', null, deepClone(preset.settings.scoreBadges));
+		configStore.settempsetting('scoreDetailsPreferences', null, deepClone(preset.settings.scoreDetailsPreferences));
+		configStore.settempsetting('visibleScoreIcons', null, deepClone(preset.settings.visibleScoreIcons));
 		$isDemo = preset.customizable;
 
 		currentScoreBadgeSelected = null;
@@ -336,18 +326,18 @@
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
 
-	$: settempsetting('locale', null, currentLocale);
-	$: settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
-	$: settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
-	$: settempsetting('preferences', 'oneclick', currentOneclick);
-	$: settempsetting('preferences', 'webPlayer', currentWebPlayer);
-	$: settempsetting('preferences', 'linkOption', currentLinkOption);
-	$: settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
-	$: settempsetting('scorePreferences', 'showHmd', currentShowHmd);
-	$: settempsetting('scorePreferences', 'showTriangle', currentShowTriangle);
-	$: settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
-	$: settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
-	$: settempsetting('scoreBadges', null, currentScoreBadges);
+	$: configStore.settempsetting('locale', null, currentLocale);
+	$: configStore.settempsetting('scoreDetailsPreferences', 'defaultAccChartIndex', currentAccChartIndex);
+	$: configStore.settempsetting('scoreComparison', 'method', currentScoreComparisonMethod);
+	$: configStore.settempsetting('preferences', 'oneclick', currentOneclick);
+	$: configStore.settempsetting('preferences', 'webPlayer', currentWebPlayer);
+	$: configStore.settempsetting('preferences', 'linkOption', currentLinkOption);
+	$: configStore.settempsetting('scorePreferences', 'dateFormat', currentTimeFormat);
+	$: configStore.settempsetting('scorePreferences', 'showHmd', currentShowHmd);
+	$: configStore.settempsetting('scorePreferences', 'showTriangle', currentShowTriangle);
+	$: configStore.settempsetting('scorePreferences', 'badgeRows', currentBadgeLayout);
+	$: configStore.settempsetting('scoreComparison', 'badgeRows', currentComparisonBadgeLayout);
+	$: configStore.settempsetting('scoreBadges', null, currentScoreBadges);
 
 	$: scoreDetailsPreferences = $configStore.scoreDetailsPreferences ?? {};
 	$: visibleScoreIcons = $configStore.visibleScoreIcons;
@@ -391,7 +381,7 @@
 							label={key}
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
+							on:click={() => configStore.settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
 					{/each}
 				</div>
 			</section>
@@ -411,7 +401,8 @@
 								label="Show history"
 								fontSize={12}
 								design="slider"
-								on:click={() => settempsetting('scoreDetailsPreferences', 'showHistory', !scoreDetailsPreferences.showHistory)} />
+								on:click={() =>
+									configStore.settempsetting('scoreDetailsPreferences', 'showHistory', !scoreDetailsPreferences.showHistory)} />
 						</div>
 						<div class="single" title="Make score history available for other players">
 							<Switch
@@ -460,7 +451,7 @@
 							label={scoreDetailsKeyDescription[key]}
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('scoreDetailsPreferences', key, !scoreDetailsPreferences[key])} />
+							on:click={() => configStore.settempsetting('scoreDetailsPreferences', key, !scoreDetailsPreferences[key])} />
 					{/each}
 				</div>
 			</section>

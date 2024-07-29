@@ -195,16 +195,6 @@
 				badgeLayouts.find(b => b.value === config?.leaderboardPreferences?.badgeRows ?? 1)?.value ?? badgeLayouts[0].value;
 	}
 
-	async function settempsetting(key, subkey, value) {
-		if (subkey) {
-			const preferences = configStore.get(key);
-			optSet(preferences, subkey, value);
-			await configStore.setForKey(key, preferences, false);
-		} else {
-			await configStore.setForKey(key, value, false);
-		}
-	}
-
 	function onBadgeClick(e) {
 		if (!$isDemo || !Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
 
@@ -223,7 +213,7 @@
 	}
 
 	function onBadgePresetChange(preset) {
-		settempsetting('leaderboardPreferences', null, deepClone(preset.settings.leaderboardPreferences));
+		configStore.settempsetting('leaderboardPreferences', null, deepClone(preset.settings.leaderboardPreferences));
 		$isDemo = preset.customizable;
 
 		currentScoreBadgeSelected = null;
@@ -285,8 +275,8 @@
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
 
-	$: settempsetting('leaderboardPreferences', 'badgeRows', currentBadgeLayout);
-	$: settempsetting('leaderboardPreferences', 'badges', currentScoreBadges);
+	$: configStore.settempsetting('leaderboardPreferences', 'badgeRows', currentBadgeLayout);
+	$: configStore.settempsetting('leaderboardPreferences', 'badges', currentScoreBadges);
 
 	$: scoreDetailsPreferences = $configStore?.leaderboardPreferences?.show ?? {};
 	$: showSubtitle = $configStore?.leaderboardPreferences?.showSubtitleInHeader ?? false;
@@ -333,7 +323,7 @@
 							label={scoreDetailsKeyDescription[key]}
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'show.' + key, !scoreDetailsPreferences[key])} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'show.' + key, !scoreDetailsPreferences[key])} />
 					{/each}
 				</div>
 			</section>
@@ -374,7 +364,7 @@
 							label="Show song subtitle"
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'showSubtitleInHeader', !showSubtitle)} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showSubtitleInHeader', !showSubtitle)} />
 					</div>
 					<div title="Show map stats">
 						<Switch
@@ -382,7 +372,7 @@
 							label="Show map stats"
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'showStatsInHeader', !showStats)} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showStatsInHeader', !showStats)} />
 					</div>
 					<div title="Show map hash">
 						<Switch
@@ -390,7 +380,7 @@
 							label="Show hash"
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'showHashInHeader', !showHash)} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showHashInHeader', !showHash)} />
 					</div>
 					<div title="Show scores weight graph on ranked maps in the tab options">
 						<Switch
@@ -398,7 +388,7 @@
 							label="Show scores graph"
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'showGraphOption', !showGraph)} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showGraphOption', !showGraph)} />
 					</div>
 					<div title="Show clan captured">
 						<Switch
@@ -406,7 +396,7 @@
 							label="Show clan in header"
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'showClanCaptureInHeader', !showClanInHeader)} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showClanCaptureInHeader', !showClanInHeader)} />
 					</div>
 					<div title="Show clan captured in the list">
 						<Switch
@@ -414,7 +404,7 @@
 							label="Show clan in list"
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'showClanCaptureInList', !showClanInList)} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showClanCaptureInList', !showClanInList)} />
 					</div>
 				</div>
 			</section>

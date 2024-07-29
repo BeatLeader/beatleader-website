@@ -194,16 +194,6 @@
 				badgeLayouts.find(b => b.value === config?.leaderboardPreferences?.badgeRows ?? 1)?.value ?? badgeLayouts[0].value;
 	}
 
-	async function settempsetting(key, subkey, value) {
-		if (subkey) {
-			const preferences = configStore.get(key);
-			optSet(preferences, subkey, value);
-			await configStore.setForKey(key, preferences, false);
-		} else {
-			await configStore.setForKey(key, value, false);
-		}
-	}
-
 	function onBadgeClick(e) {
 		if (!$isDemo || !Number.isFinite(e?.detail?.row) || !Number.isFinite(e?.detail?.col)) return;
 

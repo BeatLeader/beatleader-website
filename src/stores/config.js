@@ -1,7 +1,7 @@
 import {writable} from 'svelte/store';
 import deepEqual from 'deep-equal';
 import keyValueRepository from '../db/repository/key-value';
-import {deepClone, opt} from '../utils/js';
+import {deepClone, opt, optSet} from '../utils/js';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 const STORE_CONFIG_KEY = 'config';
@@ -265,7 +265,10 @@ export default async () => {
 	const update = fn => set(fn(currentConfig));
 
 	const setForKey = async (key, value, persist = true) => {
-		currentConfig[key] = value;
+		const newConfig = deepClone(currentConfig);
+
+		newConfig[key] = value;
+		currentConfig = newConfig;
 
 		if (persist) {
 			await storeConfig(currentConfig);
@@ -276,6 +279,16 @@ export default async () => {
 		storeSet(currentConfig);
 
 		return currentConfig;
+	};
+
+	const settempsetting = async (key, subkey, value) => {
+		if (subkey) {
+			const preferences = deepClone(get(key));
+			optSet(preferences, subkey, value);
+			await setForKey(key, preferences, false);
+		} else {
+			await setForKey(key, value, false);
+		}
 	};
 
 	const persist = async () => {
@@ -324,8 +337,9 @@ export default async () => {
 				await fetch(BL_API_URL + 'user/config', {method: 'POST', credentials: 'include', body: JSON.stringify(savedConfig)});
 			} else if (response.status == 200) {
 				const cloudConfig = await fetch(await response.text()).then(r => r.json());
-				await set(cloudConfig, false);
 				dbConfig = cloudConfig;
+				await set(cloudConfig, false);
+
 				settingsChanged = false;
 				await keyValueRepository().set(cloudConfig, STORE_CONFIG_KEY);
 			}
@@ -341,6 +355,7 @@ export default async () => {
 		get,
 		getLocale,
 		setForKey,
+		settempsetting,
 		getNewSettingsAvailable: () => newSettingsAvailable,
 		getSettingsChanged: () => settingsChanged,
 		persist,
