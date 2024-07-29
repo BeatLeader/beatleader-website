@@ -58,7 +58,7 @@
 
 		function updateMinMax(values) {
 			if (!values) return;
-			const minV = Math.floor(Math.max(Math.floor(values.reduce((min, cur) => (cur < min ? cur : min), 100)), 0) * 0.99);
+			const minV = Math.floor(Math.max(Math.floor(values.reduce((min, cur) => (cur < min ? cur : min), 100)), 0));
 			const maxV = Math.ceil(Math.min(Math.ceil(values.reduce((max, cur) => (cur > max ? cur : max), 0)), 100));
 			if (minV < minValue) minValue = minV;
 			if (maxV > maxValue) maxValue = maxV;

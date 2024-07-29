@@ -52,16 +52,21 @@ export function processAccGraphs(replay) {
 			dividerBySaber[saberType] += weight;
 		}
 
-		result.times.push(time);
+		var ignoreTime = true;
 
 		['red', 'blue', 'total'].forEach(saberType => {
-			result.fullSwingBySaber[saberType].push(
-				dividerBySaber[saberType] === 0 ? 0.0 : sumsBySaber[saberType][0] / dividerBySaber[saberType]
-			);
-			result.realScoreBySaber[saberType].push(
-				dividerBySaber[saberType] === 0 ? 0.0 : sumsBySaber[saberType][1] / dividerBySaber[saberType]
-			);
+			if (dividerBySaber[saberType] !== 0) {
+				result.fullSwingBySaber[saberType].push(sumsBySaber[saberType][0] / dividerBySaber[saberType]);
+				ignoreTime = false;
+			}
+			if (dividerBySaber[saberType] !== 0) {
+				result.realScoreBySaber[saberType].push(sumsBySaber[saberType][1] / dividerBySaber[saberType]);
+			}
 		});
+
+		if (!ignoreTime) {
+			result.times.push(time);
+		}
 	}
 
 	return result;
