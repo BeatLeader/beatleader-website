@@ -2,7 +2,7 @@
 	import Button from '../../Common/Button.svelte';
 	import steamSvg from '../../../resources/steam.svg';
 	import {configStore} from '../../../stores/config';
-	import { fly } from 'svelte/transition';
+	import {fly} from 'svelte/transition';
 
 	export let playerId = null;
 	export let playerInfo = null;
@@ -18,13 +18,13 @@
 	$: githubSocial = playerInfo.socials?.find(s => s?.service === 'GitHub');
 	$: devInfo = {
 		playerId: playerData.playerId,
-		oculusPcId: playerData.linkedIds?.oculusPCID ?? "",
-		questId: playerData.linkedIds?.questId ?? "",
-		steamId: playerData.linkedIds?.steamId ?? "",
+		oculusPcId: playerData.linkedIds?.oculusPCID ?? '',
+		questId: playerData.linkedIds?.questId ?? '',
+		steamId: playerData.linkedIds?.steamId ?? '',
 		alias: playerData.alias,
 		roles: playerData.role,
 	};
-	console.log(playerData)
+	console.log(playerData);
 	let devInfoOpen = false;
 </script>
 
@@ -118,22 +118,22 @@
 		animated={true}
 		animationOpacity={0.8}
 		type="github"
-		iconFa="fa-solid fa-code"
+		iconFa="fab fa-hashtag"
 		title="Dev info"
-		on:click={() => devInfoOpen = !devInfoOpen}/>
+		on:click={() => (devInfoOpen = !devInfoOpen)} />
 {/if}
 
 {#if devInfoOpen}
 	<div class="dev-info" transition:fly={{y: 50, duration: 300}}>
-		Primary ID: <strong>{devInfo.playerId}</strong> <br>
-		Alias: <strong>{devInfo.alias ? devInfo.alias : "N/A"}</strong> <br>
-		<hr style="margin: 0.5em 0; height: 0px">
-		Linked IDs <br>
-		Steam ID: <strong>{devInfo.steamId !== "" ? devInfo.steamId : "N/A"}</strong> <br>
-		OculusPC ID: <strong>{devInfo.oculusPcId !== "" ? devInfo.oculusPcId : "N/A"}</strong> <br>
-		Quest ID: <strong>{devInfo.questId !== "" ? devInfo.questId : "N/A"}</strong> <br>
-		<hr style="margin: 0.5em 0; height: 0px">
-		Roles: <strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : "None"}</strong>
+		Primary ID: <strong>{devInfo.playerId}</strong> <br />
+		Alias: <strong>{devInfo.alias ? devInfo.alias : 'N/A'}</strong> <br />
+		<hr style="margin: 0.5em 0; height: 0px" />
+		Linked IDs<br />
+		Steam ID: <strong>{devInfo.steamId !== '' ? devInfo.steamId : 'N/A'}</strong> <br />
+		OculusPC ID: <strong>{devInfo.oculusPcId !== '' ? devInfo.oculusPcId : 'N/A'}</strong> <br />
+		Quest ID: <strong>{devInfo.questId !== '' ? devInfo.questId : 'N/A'}</strong> <br />
+		<hr style="margin: 0.5em 0; height: 0px" />
+		Roles:<strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
 	</div>
 {/if}
 
@@ -150,7 +150,7 @@
 	:global(.socials-btn.steam .icon) {
 		display: block !important;
 	}
-	
+
 	.dev-info {
 		position: absolute;
 		top: 3.75em;
