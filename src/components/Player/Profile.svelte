@@ -373,7 +373,7 @@
 
 		{#if playerInfo}
 			<div class="socials-list">
-				<Socials {name} {playerInfo} />
+				<Socials {name} {playerInfo} {playerData}/>
 			</div>
 		{/if}
 	</div>

@@ -1,10 +1,13 @@
 <script>
 	import Button from '../../Common/Button.svelte';
 	import steamSvg from '../../../resources/steam.svg';
+	import {configStore} from '../../../stores/config';
+	import {fly} from 'svelte/transition';
 
 	export let playerId = null;
 	export let playerInfo = null;
 	export let name;
+	export let playerData = null;
 
 	$: steamLink = playerInfo.externalProfileUrl;
 	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
@@ -13,6 +16,16 @@
 	$: beatsaverSocial = playerInfo.socials?.find(s => s?.service === 'BeatSaver');
 	$: youtubeSocial = playerInfo.socials?.find(s => s?.service === 'YouTube');
 	$: githubSocial = playerInfo.socials?.find(s => s?.service === 'GitHub');
+	$: devInfo = {
+		playerId: playerData.playerId,
+		oculusPcId: playerData.linkedIds?.oculusPCID ?? '',
+		questId: playerData.linkedIds?.questId ?? '',
+		steamId: playerData.linkedIds?.steamId ?? '',
+		alias: playerData.alias,
+		roles: playerData.role,
+	};
+	console.log(playerData);
+	let devInfoOpen = false;
 </script>
 
 {#if steamLink}
@@ -99,6 +112,31 @@
 		title="{githubSocial.user} bugmaker" />
 {/if}
 
+{#if devInfo && $configStore.profileParts?.devInfo === true}
+	<Button
+		cls="socials-btn"
+		animated={true}
+		animationOpacity={0.8}
+		type="github"
+		iconFa="fab fa-hashtag"
+		title="Dev info"
+		on:click={() => (devInfoOpen = !devInfoOpen)} />
+{/if}
+
+{#if devInfoOpen}
+	<div class="dev-info" transition:fly={{y: 50, duration: 300}}>
+		Primary ID: <strong>{devInfo.playerId}</strong> <br />
+		Alias: <strong>{devInfo.alias ? devInfo.alias : 'N/A'}</strong> <br />
+		<hr style="margin: 0.5em 0; height: 0px" />
+		Linked IDs<br />
+		Steam ID: <strong>{devInfo.steamId !== '' ? devInfo.steamId : 'N/A'}</strong> <br />
+		OculusPC ID: <strong>{devInfo.oculusPcId !== '' ? devInfo.oculusPcId : 'N/A'}</strong> <br />
+		Quest ID: <strong>{devInfo.questId !== '' ? devInfo.questId : 'N/A'}</strong> <br />
+		<hr style="margin: 0.5em 0; height: 0px" />
+		Roles:<strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
+	</div>
+{/if}
+
 <style>
 	:global(.socials-btn) {
 		height: 2em !important;
@@ -111,5 +149,22 @@
 
 	:global(.socials-btn.steam .icon) {
 		display: block !important;
+	}
+
+	.dev-info {
+		position: absolute;
+		top: 3.75em;
+		right: 0;
+		width: 20em;
+		height: fit-content;
+		background: #393939;
+		border-radius: 0.75em;
+		padding: 0.75em;
+	}
+
+	@media screen and (max-width: 767px) {
+		.dev-info {
+			top: 7.75em;
+		}
 	}
 </style>

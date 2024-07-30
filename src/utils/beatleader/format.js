@@ -1112,6 +1112,8 @@ export function describeProfilePart(part) {
 			return 'Country mini ranking';
 		case 'friendsMiniRanking':
 			return 'Friends mini ranking';
+		case 'devInfo':
+			return 'Dev info';
 	}
 
 	return 'Undefined';

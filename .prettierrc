@@ -6,6 +6,8 @@ bracketSpacing: false
 bracketSameLine: true
 arrowParens: "avoid"
 printWidth: 140
+plugins:
+  - "prettier-plugin-svelte"
 overrides:
 - files: "**/*.svelte"
   options:

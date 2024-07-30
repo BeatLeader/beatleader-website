@@ -184,6 +184,7 @@ export const DEFAULT_CONFIG = {
 		globalMiniRanking: true,
 		countryMiniRanking: true,
 		friendsMiniRanking: false,
+		devInfo: false,
 	},
 	visibleScoreIcons: {
 		pin: true,
