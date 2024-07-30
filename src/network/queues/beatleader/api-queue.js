@@ -287,7 +287,13 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 
 			return cum;
 		},
-		{imageUrl: led?.song?.coverImage, fullImageUrl: led?.song?.fullCoverImage, downloadUrl: led?.song?.downloadUrl, stats: {}}
+		{
+			imageUrl: led?.song?.coverImage,
+			mappers: led?.song?.mappers,
+			fullImageUrl: led?.song?.fullCoverImage,
+			downloadUrl: led?.song?.downloadUrl,
+			stats: {},
+		}
 	);
 
 	const leaderboardGroup = led?.leaderboardGroup?.sort((a, b) => b.timestamp - a.timestamp) ?? null;

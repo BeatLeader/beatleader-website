@@ -15,6 +15,7 @@
 	import SongStatus from './SongStatus.svelte';
 	import HashDisplay from '../Common/HashDisplay.svelte';
 	import LeaderboardDisplayCaptureCorner from './LeaderboardDisplayCaptureCorner.svelte';
+	import MapperList from './MapperList.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -84,7 +85,7 @@
 
 					<div class="title-container">
 						<span class="author" title="Song author name">{song.authorName}</span>
-						<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
+						<MapperList {song} />
 						<div class="status-and-type">
 							{#if leaderboard.categoryDisplayName}
 								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
@@ -264,11 +265,6 @@
 	.author {
 		color: #ffffffa3;
 		font-size: 1.2em;
-	}
-
-	.level-author {
-		color: var(--alternate);
-		font-size: 1.1em;
 	}
 
 	.diff-status {
