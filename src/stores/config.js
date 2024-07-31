@@ -112,6 +112,7 @@ export const DEFAULT_CONFIG = {
 		showGraphOption: false,
 		showClanCaptureInHeader: true,
 		showClanCaptureInList: true,
+		alwaysShowAuthorHint: false,
 
 		show: {
 			avatar: true,

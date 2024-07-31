@@ -97,16 +97,7 @@
 							{/if}
 						</div>
 
-						{#if song.externalStatuses}
-							<div class="song-statuses">
-								{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
-									<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
-								{/if}
-								{#each leaderboard.song.externalStatuses as songStatus}
-									<SongStatus {songStatus} />
-								{/each}
-							</div>
-						{/if}
+						
 						{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 							<LeaderboardStats {leaderboard} />
 						{/if}
@@ -115,6 +106,16 @@
 						{/if}
 					</div>
 				</div>
+				{#if song.externalStatuses}
+					<div class="song-statuses">
+						{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
+							<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
+						{/if}
+						{#each leaderboard.song.externalStatuses as songStatus}
+							<SongStatus {songStatus} />
+						{/each}
+					</div>
+				{/if}
 				<div class="header-bottom-part">
 					<div class="icons-container">
 						<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
@@ -232,6 +233,7 @@
 	header .title {
 		color: inherit !important;
 		margin-left: -0.15em;
+		margin-bottom: 0;
 	}
 
 	header h1 {
@@ -298,7 +300,7 @@
 	.header-top-part {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 		flex: 1;
 		z-index: 1;
 	}
