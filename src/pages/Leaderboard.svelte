@@ -321,7 +321,7 @@
 	}
 
 	function processDiffs(diffArray, song, leaderboardId) {
-		if (!diffArray || !song) return {};
+		if (!diffArray?.length || !song) return {};
 
 		const idLength = song?.id?.length;
 		diffArray = diffArray.sort(function (a, b) {
@@ -340,6 +340,10 @@
 		});
 
 		let currentDiff = diffArray.find(d => d.leaderboardId === leaderboardId);
+
+		if (!currentDiff) {
+			currentDiff = diffArray[0];
+		}
 
 		let modes = [];
 		diffArray.forEach(d => {
