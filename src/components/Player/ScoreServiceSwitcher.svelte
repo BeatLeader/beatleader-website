@@ -248,6 +248,7 @@
 												!$account?.player ||
 												service != 'beatleader' ||
 												$editModel ||
+												serviceParams?.sort == v.id ||
 												sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`)
 										)
 										.map(v => ({
@@ -284,7 +285,7 @@
 											id: 'search',
 											iconFa: 'fa fa-search',
 											title: 'Search by song/artist/mapper/hash',
-											hidden: !sortingOrFilteringAppearance.includes(`sf-search`),
+											hidden: !sortingOrFilteringAppearance.includes(`sf-search`) && !serviceParams?.filters?.search,
 											open: !!serviceParams?.filters?.search,
 											value: serviceParams?.filters?.search ?? null,
 											debounce: true,
@@ -297,7 +298,7 @@
 											id: 'diff',
 											iconFa: 'fa fa-chart-line',
 											title: 'Filter by map difficulty',
-											hidden: !sortingOrFilteringAppearance.includes(`sf-diff`),
+											hidden: !sortingOrFilteringAppearance.includes(`sf-diff`) && !serviceParams?.filters?.diff,
 											open: !!serviceParams?.filters?.diff,
 											defaultValue: serviceParams?.filters?.diff ?? null,
 											values: [
@@ -316,7 +317,7 @@
 											id: 'mode',
 											iconFa: 'fa fa-compass',
 											title: 'Filter by map mode',
-											hidden: !sortingOrFilteringAppearance.includes(`sf-mode`),
+											hidden: !sortingOrFilteringAppearance.includes(`sf-mode`) && !serviceParams?.filters?.mode,
 											open: !!serviceParams?.filters?.mode,
 											defaultValue: serviceParams?.filters?.mode ?? null,
 											values: [{id: null, name: 'All'}].concat(
@@ -335,7 +336,7 @@
 											id: 'requirements',
 											iconFa: 'fa fa-mountain-sun',
 											title: 'Filter by map feature',
-											hidden: !sortingOrFilteringAppearance.includes(`sf-requirements`),
+											hidden: !sortingOrFilteringAppearance.includes(`sf-requirements`) && !serviceParams?.filters?.requirements,
 											open: !!serviceParams?.filters?.requirements,
 											defaultValue: serviceParams?.filters?.requirements ? parseInt(serviceParams?.filters?.requirements) : null,
 											values: [
@@ -355,7 +356,7 @@
 											id: 'songType',
 											iconFa: 'fa fa-cubes',
 											title: 'Filter by map type',
-											hidden: !sortingOrFilteringAppearance.includes(`sf-songType`),
+											hidden: !sortingOrFilteringAppearance.includes(`sf-songType`) && !serviceParams?.filters?.songType,
 											open: !!serviceParams?.filters?.songType,
 											defaultValue: serviceParams?.filters?.songType ?? null,
 											values: [
@@ -373,7 +374,7 @@
 											title: 'Filter by map stars',
 											open: !!serviceParams?.filters?.stars,
 											defaultValue: serviceParams?.filters?.stars ? processStars(serviceParams.filters.stars) : null,
-											hidden: !sortingOrFilteringAppearance.includes(`sf-stars`),
+											hidden: !sortingOrFilteringAppearance.includes(`sf-stars`) && !serviceParams?.filters?.stars,
 											minValue: 0,
 											maxValue: 30,
 											step: 0.1,
@@ -384,12 +385,12 @@
 										asComponent: true,
 										props: {
 											id: 'modifiers',
-											hidden: !sortingOrFilteringAppearance.includes(`sf-modifiers`),
+											hidden: !sortingOrFilteringAppearance.includes(`sf-modifiers`) && !serviceParams?.filters?.modifiers,
 											selected: serviceParams?.filters?.modifiers,
 										},
 									},
 								])
-								.filter(f => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`));
+								.filter(f => !$account?.player || $editModel || !f?.props?.hidden);
 
 							if (eventsParticipating?.length)
 								serviceDef.filters = [...serviceDef.filters]
@@ -400,14 +401,14 @@
 												id: 'eventId',
 												iconFa: 'fa fa-calendar',
 												title: 'Filter by event',
-												hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`),
+												hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`) && !serviceParams?.filters?.eventId,
 												values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
 												open: !!serviceParams?.filters?.eventId,
 												defaultValue: serviceParams?.filters?.eventId ? parseInt(serviceParams?.filters?.eventId) : null,
 											},
 										},
 									])
-									.filter(f => !$account?.player || $editModel || sortingOrFilteringAppearance.includes(`sf-${f?.props?.id ?? ''}`));
+									.filter(f => !$account?.player || $editModel || !f?.props?.hidden);
 						}
 						break;
 

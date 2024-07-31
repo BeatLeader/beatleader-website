@@ -343,7 +343,11 @@
 	function refreshSortValues(allSortValues, filterValues, rankingPreferences) {
 		switcherSortValues = allSortValues
 			.filter(v => {
-				return editing || ((!v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType)) && rankingPreferences[v.id]);
+				return (
+					editing ||
+					filterValues?.sortBy == v.id ||
+					((!v.hideForTypes || !v.hideForTypes.includes(filterValues.mapsType)) && rankingPreferences[v.id])
+				);
 			})
 			.map(v => ({
 				...v,
@@ -394,7 +398,9 @@
 			<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
 			{#if showTypeSwitcher}
 				<div class="type-switcher">
-					<Select bind:value={currentTypeValue} options={allTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onTypeChanged} />
+					{#if sortValue?.id != 'replaysWatched'}
+						<Select bind:value={currentTypeValue} options={allTypeValues} fontSize={0.8} fontPadding={0.2} on:change={onTypeChanged} />
+					{/if}
 
 					{#if sortValue?.id == 'pp' || sortValue?.id == 'topPp'}
 						<Select
