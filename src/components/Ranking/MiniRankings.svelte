@@ -54,17 +54,17 @@
 	{/if}
 {:else}
 	{#if $configStore.profileParts.globalMiniRanking}
-		<ContentBox>
+		<ContentBox cls="mini-rainking-box">
 			<Mini {isLoading} players={globalRanking} {rank} on:height-changed />
 		</ContentBox>
 	{/if}
 	{#if $configStore.profileParts.countryMiniRanking}
-		<ContentBox>
+		<ContentBox cls="mini-rainking-box">
 			<Mini {isLoading} players={countryRanking} rank={countryRank} country={true} on:height-changed />
 		</ContentBox>
 	{/if}
 	{#if $configStore.profileParts.friendsMiniRanking}
-		<ContentBox>
+		<ContentBox cls="mini-rainking-box">
 			<Mini {isLoading} players={friendsRanking} {rank} friends={true} on:height-changed />
 		</ContentBox>
 	{/if}

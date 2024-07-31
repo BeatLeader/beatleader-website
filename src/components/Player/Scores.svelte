@@ -178,59 +178,61 @@
 		on:service-change={onServiceChanged}
 		on:service-params-change={onServiceParamsChanged} />
 
-	{#if $scoresStore && $scoresStore.length}
-		<div class="song-scores grid-transition-helper">
-			{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + currentService + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
-				<SongScore
-					{playerId}
-					{songScore}
-					{fixedBrowserTitle}
-					{idx}
-					service={currentService}
-					{withPlayers}
-					{noIcons}
-					animationSign={currentPage >= previousPage ? 1 : -1}
-					additionalStat={currentServiceParams?.sort} />
-			{/each}
-		</div>
-	{:else}
-		<p>No scores.</p>
-	{/if}
+	<div class="darkened-background scores-container">
+		{#if $scoresStore && $scoresStore.length}
+			<div class="song-scores grid-transition-helper">
+				{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + currentService + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
+					<SongScore
+						{playerId}
+						{songScore}
+						{fixedBrowserTitle}
+						{idx}
+						service={currentService}
+						{withPlayers}
+						{noIcons}
+						animationSign={currentPage >= previousPage ? 1 : -1}
+						additionalStat={currentServiceParams?.sort} />
+				{/each}
+			</div>
+		{:else}
+			<p>No scores.</p>
+		{/if}
 
-	{#if currentService == 'beatleader' && $configStore.profileParts.scoresToPlaylist}
-		<Button
-			cls={pagerTotalScores > itemsPerPage ? 'scores-playlist-button' : 'scores-playlist-button-relative'}
-			iconFa="fas fa-list"
-			type={searchToPlaylist ? 'danger' : 'default'}
-			label={searchToPlaylist ? 'Cancel' : 'To Playlist!'}
-			on:click={() => (searchToPlaylist = !searchToPlaylist)} />
-		{#if searchToPlaylist}
-			{#if makingPlaylist}
-				<Spinner />
-			{:else}
-				<span>Maps count:</span>
-				<RangeSlider
-					range
-					min={0}
-					max={1000}
-					step={1}
-					values={[mapCount]}
-					hoverable
-					float
-					pips
-					pipstep={100}
-					all="label"
-					on:change={event => {
-						mapCount = event.detail.values[0];
-					}} />
-				<div class="duplicateDiffsContainer">
-					<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
-					<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
-				</div>
-				<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
+		{#if currentService == 'beatleader' && $configStore.profileParts.scoresToPlaylist}
+			<Button
+				cls={pagerTotalScores > itemsPerPage ? 'scores-playlist-button' : 'scores-playlist-button-relative'}
+				iconFa="fas fa-list"
+				type={searchToPlaylist ? 'danger' : 'default'}
+				label={searchToPlaylist ? 'Cancel' : 'To Playlist!'}
+				on:click={() => (searchToPlaylist = !searchToPlaylist)} />
+			{#if searchToPlaylist}
+				{#if makingPlaylist}
+					<Spinner />
+				{:else}
+					<span>Maps count:</span>
+					<RangeSlider
+						range
+						min={0}
+						max={1000}
+						step={1}
+						values={[mapCount]}
+						hoverable
+						float
+						pips
+						pipstep={100}
+						all="label"
+						on:change={event => {
+							mapCount = event.detail.values[0];
+						}} />
+					<div class="duplicateDiffsContainer">
+						<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
+						<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+					</div>
+					<Button cls="playlist-button" iconFa="fas fa-wand-magic-sparkles" label="Generate playlist" on:click={() => generatePlaylist()} />
+				{/if}
 			{/if}
 		{/if}
-	{/if}
+	</div>
 
 	{#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
 		<ScoresPager
@@ -262,7 +264,7 @@
 		height: 1.6em;
 		position: absolute !important;
 		right: 1em;
-		margin-top: 0.6em !important;
+		margin-top: 1.1em !important;
 	}
 
 	:global(.scores-playlist-button-relative) {
@@ -272,6 +274,11 @@
 
 	.duplicateDiffsContainer {
 		display: flex;
+	}
+
+	.scores-container {
+		padding: 0.5em;
+		border-radius: 8px;
 	}
 
 	#duplicateDiffs {

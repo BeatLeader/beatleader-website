@@ -58,7 +58,7 @@
 		{#if isLoading}
 			<Spinner />
 		{:else if miniRanking}
-			<div class="players">
+			<div class="players darkened-background">
 				{#each miniRanking as player}
 					<div class="rank">
 						<Value value={country ? player.countryRank : player.rank} zero="" digits={0} prefix="#" />
@@ -85,7 +85,7 @@
 
 	h3 {
 		padding: 0.25em;
-		margin-bottom: 0.75em !important;
+		margin-bottom: 0.25em !important;
 	}
 
 	h3 > span {
@@ -96,11 +96,23 @@
 		display: grid;
 		grid-template-columns: auto 1fr auto;
 		grid-row-gap: 0.25em;
+		padding: 0.4em;
+		border-radius: 8px;
 	}
 
 	.players :global(> *) {
 		border-bottom: 1px solid var(--row-separator);
 		padding: 0.125em 0.25em;
+	}
+
+	.players :global(> *:nth-last-child(3)) {
+		border-bottom: none !important;
+	}
+	.players :global(> *:nth-last-child(2)) {
+		border-bottom: none !important;
+	}
+	.players :global(> *:nth-last-child(1)) {
+		border-bottom: none !important;
 	}
 
 	.rank {

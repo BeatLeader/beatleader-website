@@ -11,6 +11,7 @@
 	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
 	import editModel from '../../stores/beatleader/profile-edit-model';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import TabSwitcher from '../Common/TabSwitcher.svelte';
 
 	export let playerId = null;
 	export let player = null;
@@ -31,8 +32,9 @@
 	const allServices = [
 		{
 			id: 'beatleader',
-			label: 'BeatLeader',
+			label: 'Scores',
 			icon: '<div class="beatleader-icon"></div>',
+			cls: 'service-tab-button',
 			url: `/u/${playerId}`,
 			switcherComponents: [
 				{
@@ -126,6 +128,7 @@
 		{
 			id: 'beatsavior',
 			label: 'Beat Savior',
+			cls: 'mode-tab-button',
 			icon: '<div class="beatsavior-icon"></div>',
 			url: `/u/${playerId}/beatsavior/date/1`,
 			switcherComponents: [
@@ -153,6 +156,7 @@
 		{
 			id: 'accsaber',
 			label: 'AccSaber',
+			cls: 'service-tab-button',
 			icon: '<div class="accsaber-icon"></div>',
 			url: `/u/${playerId}/accsaber/date/1`,
 			switcherComponents: [
@@ -515,9 +519,17 @@
 	$: loadingServiceObj = availableServices.find(s => s.id === loadingService);
 </script>
 
+{#if availableServices?.length}
+	<div class="service-switcher">
+		<TabSwitcher
+			values={availableServices}
+			value={serviceObj}
+			on:change={onServiceChanged}
+			loadingValue={loadingServiceObj}
+			class="service" />
+	</div>
+{/if}
 <nav class:edit-enabled={!!$editModel}>
-	<Switcher values={availableServices} value={serviceObj} on:change={onServiceChanged} loadingValue={loadingServiceObj} class="service" />
-
 	{#if serviceObj?.switcherComponents?.length}
 		{#each serviceObj.switcherComponents as component (`${serviceObj?.id ?? ''}${component.key ?? 'sort'}`)}
 			<svelte:component this={component.component} {...component.props} on:change={component.onChange ?? null} />
@@ -556,6 +568,22 @@
 	}
 	:global(.filter-btn.fa-star:before) {
 		margin-left: -0.07em;
+	}
+
+	.service-switcher {
+		margin-top: -2.37em;
+		margin-bottom: 1.3em;
+	}
+
+	:global(.service-tab-button) {
+		margin-bottom: -0.5em !important;
+		height: 2.5em;
+		border-radius: 12px 12px 0 0 !important;
+	}
+
+	:global(.service-tab-button span) {
+		font-weight: 900;
+		font-size: 1.2em;
 	}
 
 	.edit-enabled :global(.service) {
