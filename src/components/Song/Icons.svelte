@@ -8,10 +8,11 @@
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import {capitalize, opt} from '../../utils/js';
-	import {BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_ANALYZER_URL, BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 	import PinIcon from '../Player/PinIcon.svelte';
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
+	import {isPatron} from '../Player/Overlay/overlay';
 
 	export let layoutType = 'flat';
 	export let song;
@@ -45,7 +46,7 @@
 	let shownIcons;
 
 	function updateIcons(icons) {
-		shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'oneclick', 'twitch', 'delete', 'pin'];
+		shownIcons = icons ? icons : ['playlist', 'bsr', 'bs', 'preview', 'replay', 'analyzer', 'oneclick', 'twitch', 'delete', 'pin'];
 		if (mapCheck) {
 			shownIcons.push('mapcheck');
 		}
@@ -123,6 +124,14 @@
 		return null;
 	}
 
+	function analyzerLink(replayLink, scoreId) {
+		if (replayLink?.length) {
+			return `${BL_ANALYZER_URL}?link=${replayLink}`;
+		} else if (scoreId) {
+			return `${BL_ANALYZER_URL}?scoreId=${scoreId}`;
+		}
+	}
+
 	$: updateIcons(icons);
 	$: updateSongKey(song);
 	$: diffName = diffInfo && diffInfo.diff ? capitalize(diffInfo.diff) : '';
@@ -145,6 +154,7 @@
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
 	$: replayUrl = webPlayerLink(replayLink, scoreId, $configStore.preferences.webPlayer);
+	$: analyzerUrl = analyzerLink(replayLink, scoreId);
 	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 		charName ? `&mode=${charName}` : ''
 	}`;
@@ -313,6 +323,17 @@
 					animated={true}
 					noMargin={true} />
 			{/if}
+		{/if}
+
+		{#if isPatron($account?.player?.playerInfo?.role) && shownIcons.includes('analyzer') && analyzerUrl?.length}
+			<Button
+				url={analyzerUrl}
+				on:click={() => showPreview(analyzerUrl)}
+				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
+				icon="<img src='/assets/analyzer.webp'>"
+				title="Replay analyzer"
+				animated={true}
+				noMargin={true} />
 		{/if}
 
 		{#if shownIcons.includes('replay') && replayUrl?.length}

@@ -195,6 +195,7 @@ export const DEFAULT_CONFIG = {
 		preview: false,
 		replay: true,
 		delete: true,
+		analyzer: true,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},

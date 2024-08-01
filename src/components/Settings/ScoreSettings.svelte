@@ -86,6 +86,7 @@
 					preview: false,
 					replay: true,
 					delete: true,
+					analyzer: true,
 				},
 			},
 		},
