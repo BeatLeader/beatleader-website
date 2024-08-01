@@ -45,7 +45,7 @@
 	let oculusPcAction = 'signup';
 
 	$: loggedInPlayer = opt($account, 'id');
-	$: playerLink = $account?.player.alias ?? loggedInPlayer;
+	$: playerLink = $account?.player?.alias ?? loggedInPlayer;
 	$: socials = opt($account, 'player.playerInfo.socials');
 	$: error = opt($account, 'error') ?? $oculus?.error;
 	$: message = opt($account, 'message');
