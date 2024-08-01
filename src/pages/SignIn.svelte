@@ -38,9 +38,14 @@
 		}
 	}
 
+	function navigateToProfile(url) {
+		window.location.replace(CURRENT_URL + url);
+	}
+
 	let oculusPcAction = 'signup';
 
 	$: loggedInPlayer = opt($account, 'id');
+	$: playerLink = $account?.player.alias ?? loggedInPlayer;
 	$: socials = opt($account, 'player.playerInfo.socials');
 	$: error = opt($account, 'error') ?? $oculus?.error;
 	$: message = opt($account, 'message');
@@ -110,7 +115,7 @@
 			{#if !$account.migrated}
 				<span>
 					If you are using the <b>Steam game</b> you are all set!<br />
-					Check <a class="inlineLink" href={'/u/' + loggedInPlayer}>your fancy profile </a>
+					Check <a class="inlineLink" href={'/u/' + playerLink}>your fancy profile </a>
 				</span>
 				<br />
 				<br />
@@ -131,14 +136,15 @@
 				</div>
 				<Button iconFa="fas fa-plus-square" label="Migrate" on:click={() => account.migrate(login, password)} />
 			{:else}
-				{navigate('/u/' + loggedInPlayer)}
+				Loading...
+				<span style="opacity: 0;">{navigateToProfile('/u/' + playerLink)}</span>
 			{/if}
 		{:else if loggedInPlayer < 30000000 || loggedInPlayer > 1000000000000000}
 			<span>
 				You can migrate this account to your Steam account.<br /><br />
 				Your current scores will migrate and<br />the new ones will be posted to the Steam account.<br /><br />
 				Or just use this account ¯\_(ツ)_/¯.<br />
-				You can change your avatar and name in <a class="inlineLink" href={'/u/' + loggedInPlayer}>your profile.</a>
+				You can change your avatar and name in <a class="inlineLink" href={'/u/' + playerLink}>your profile.</a>
 			</span>
 
 			<form action={BL_API_URL + 'signinmigrate'} method="post">
@@ -148,7 +154,8 @@
 				<Button iconFa="fas fa-plus-square" label="Migrate to Steam" type="submit" />
 			</form>
 		{:else}
-			{navigate('/u/' + loggedInPlayer)}
+			Loading...
+			<span style="opacity: 0;">{navigateToProfile('/u/' + playerLink)}</span>
 		{/if}
 	{:else if action == 'changePassword'}
 		{#if !$account.migrated}
@@ -376,7 +383,7 @@
 					</div>
 				</form>
 			{:else}
-				{navigate('/u/' + $oculus.migratedId)}
+				<span style="opacity: 0;">{navigateToProfile('/u/' + $oculus.migratedId)}</span>
 			{/if}
 		{:else}
 			Loading...
