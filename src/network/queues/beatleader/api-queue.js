@@ -351,7 +351,11 @@ export default (options = {}) => {
 
 	const scores = async (playerId, page = 1, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchScores(
-			substituteVars(playerId === 'user-friends' ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {...params, ...(params?.filters ?? {})}),
+			substituteVars(playerId === 'user-friends' ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {
+				...params,
+				...(params?.filters ?? {}),
+				search: params?.filters?.search ? encodeURIComponent(params?.filters?.search) : null,
+			}),
 			playerId,
 			page,
 			priority,
@@ -425,7 +429,7 @@ export default (options = {}) => {
 
 	const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(
-			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true),
+			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true, encodeURIComponent),
 			{...options, credentials: 'include'},
 			priority
 		);
@@ -443,7 +447,11 @@ export default (options = {}) => {
 		fetchJson(substituteVars(BL_API_LEADERBOARDS_BY_HASH_URL, {hash, my_scores}), {...options, credentials: 'include'}, priority);
 
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
+		fetchJson(
+			substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true, encodeURIComponent),
+			{...options, credentials: 'include'},
+			priority
+		);
 
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
@@ -684,7 +692,7 @@ export default (options = {}) => {
 		);
 
 	const events = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_EVENTS_URL, {page, ...filters}, true, true), options, priority);
+		fetchJson(substituteVars(BL_API_EVENTS_URL, {page, ...filters}, true, true, encodeURIComponent), options, priority);
 
 	return {
 		user,
