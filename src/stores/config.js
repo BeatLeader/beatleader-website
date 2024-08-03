@@ -119,6 +119,7 @@ export const DEFAULT_CONFIG = {
 			date: true,
 			replay: true,
 			hmd: false,
+			analyzer: false,
 		},
 	},
 	rankingPreferences: {

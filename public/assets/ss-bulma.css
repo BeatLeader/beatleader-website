@@ -11714,6 +11714,16 @@ select {
 	background-image: url('./replays.svg');
 }
 
+.analyzer-icon {
+	margin-left: -0.5em;
+	margin-bottom: 0.5em;
+	width: 95%;
+	height: 95%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./analyzer.webp');
+}
+
 .acc-icon {
 	width: 100% !important;
 	height: 100% !important;

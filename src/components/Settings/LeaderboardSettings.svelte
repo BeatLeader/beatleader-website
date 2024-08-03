@@ -41,6 +41,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
+						analyzer: false,
 					},
 				},
 			},
@@ -75,6 +76,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
+						analyzer: false,
 					},
 				},
 			},
@@ -97,6 +99,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
+						analyzer: false,
 					},
 				},
 			},
@@ -119,6 +122,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
+						analyzer: false,
 					},
 				},
 			},
@@ -141,6 +145,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
+						analyzer: false,
 					},
 				},
 			},
@@ -179,6 +184,7 @@
 		date: 'Date',
 		replay: 'Replay',
 		hmd: 'Headset',
+		analyzer: 'Reeplay analyzer',
 	};
 
 	const account = createAccountStore();

@@ -13,7 +13,7 @@
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import Preview from '../Common/Preview.svelte';
 	import {describePlatform, getControllerForEnum, getHeadsetForHMD} from '../../utils/beatleader/format';
-	import {BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_ANALYZER_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let leaderboardId = null;
 	export let score = null;
@@ -81,12 +81,12 @@
 					bgColor={score?.score?.rank === 1
 						? 'darkgoldenrod'
 						: score?.score?.rank === 2
-						? '#888'
-						: score?.score?.rank === 3
-						? 'saddlebrown'
-						: score?.score?.rank >= 10000
-						? 'small'
-						: 'var(--dimmed)'}>
+							? '#888'
+							: score?.score?.rank === 3
+								? 'saddlebrown'
+								: score?.score?.rank >= 10000
+									? 'small'
+									: 'var(--dimmed)'}>
 					<span slot="label">
 						#<Value value={score?.score?.rank} digits={0} zero="?" />
 					</span>
@@ -177,6 +177,15 @@
 								on:click={() => dispatch('royale-remove', score?.player?.playerId)} />
 						{/if}
 					{:else}
+						{#if $configStore?.leaderboardPreferences?.show?.analyzer !== false}
+							<Button
+								url={`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`}
+								on:click={() => showPreview(`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`)}
+								cls="replay-button-alt"
+								icon="<div class='analyzer-icon'></div>"
+								title="Reeplay Analyzer"
+								noMargin={true} />
+						{/if}
 						{#if $configStore?.leaderboardPreferences?.show?.replay !== false}
 							<Button
 								url={`${
