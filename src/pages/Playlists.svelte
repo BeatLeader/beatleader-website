@@ -26,14 +26,27 @@
 		page = event.detail.page;
 	}
 
+	function decapitalizeFirstLetter(string) {
+		return string.charAt(0).toLowerCase() + string.slice(1);
+	}
+
 	let fileinput;
 	const uploadPlaylist = e => {
 		let image = e.target.files[0];
 		let reader = new FileReader();
 		reader.readAsText(image);
 		reader.onload = e => {
-			const playlist = JSON.parse(e.target.result);
+			var playlist = JSON.parse(e.target.result);
 			if (playlist) {
+				if (playlist.songs) {
+					for (let i = 0; i < playlist.songs.length; i++) {
+						const song = playlist.songs[i];
+						for (let j = 0; j < song.difficulties.length; j++) {
+							var diff = song.difficulties[j];
+							diff.name = decapitalizeFirstLetter(diff.name);
+						}
+					}
+				}
 				playlists.create(null, playlist);
 			}
 		};

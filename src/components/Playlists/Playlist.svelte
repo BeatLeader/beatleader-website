@@ -229,6 +229,24 @@
 		});
 	}
 
+	function getImageUrl(base64String) {
+		let prefix;
+
+		if (base64String.startsWith('iVBORw0KGgo')) {
+			prefix = 'data:image/png;base64,';
+		} else if (base64String.startsWith('/9j/4')) {
+			prefix = 'data:image/jpeg;base64,';
+		} else if (base64String.startsWith('R0lGODlh')) {
+			prefix = 'data:image/gif;base64,';
+		} else if (base64String.startsWith('UklGR')) {
+			prefix = 'data:image/webp;base64,';
+		} else {
+			prefix = 'data:image/png;base64,';
+		}
+
+		return prefix + base64String;
+	}
+
 	function handleDndConsider(e) {
 		songList = filterUniqueHashes(e.detail.items.filter(s => s && !s.page && !s.playlist));
 	}
@@ -302,7 +320,7 @@
 					src={playlist.image
 						? playlist.image.startsWith('data')
 							? playlist.image
-							: 'data:image/png;base64,' + playlist.image
+							: getImageUrl(playlist.image.replace('base64,', ''))
 						: '/assets/song-default.png'}
 					alt="PlaylistImage" />
 				{#if canModify && !playlist.oneclick}

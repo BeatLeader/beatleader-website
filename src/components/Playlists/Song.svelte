@@ -47,7 +47,9 @@
 			}
 
 			showDiffIcons = leaderboards.some(el => el.difficulty.modeName != 'Standard');
-			leaderboardUrl = `/leaderboard/global/${selectedLeaderboard.id}/1`;
+			if (selectedLeaderboard) {
+				leaderboardUrl = `/leaderboard/global/${selectedLeaderboard.id}/1`;
+			}
 
 			if (!refresh && mapResponse.cached) {
 				updateSongKey(mapHash, true);
