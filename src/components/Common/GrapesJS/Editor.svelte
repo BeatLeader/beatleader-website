@@ -1,5 +1,6 @@
 <script>
 	import 'grapesjs/dist/css/grapes.min.css';
+	import 'grapick/dist/grapick.min.css';
 	import grapesjs from 'grapesjs';
 
 	import gjsBlocksBasic from 'grapesjs-blocks-basic';
