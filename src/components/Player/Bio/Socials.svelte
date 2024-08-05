@@ -18,7 +18,7 @@
 	$: githubSocial = playerInfo.socials?.find(s => s?.service === 'GitHub');
 	$: devInfo = {
 		playerId: playerData.playerId,
-		oculusPcId: playerData.linkedIds?.oculusPCID ?? '',
+		oculusPcId: playerData.linkedIds?.oculusPCId ?? '',
 		questId: playerData.linkedIds?.questId ?? '',
 		steamId: playerData.linkedIds?.steamId ?? '',
 		alias: playerData.alias,
@@ -133,7 +133,7 @@
 		OculusPC ID: <strong>{devInfo.oculusPcId !== '' ? devInfo.oculusPcId : 'N/A'}</strong> <br />
 		Quest ID: <strong>{devInfo.questId !== '' ? devInfo.questId : 'N/A'}</strong> <br />
 		<hr style="margin: 0.5em 0; height: 0px" />
-		Roles:<strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
+		Roles: <strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
 	</div>
 {/if}
 

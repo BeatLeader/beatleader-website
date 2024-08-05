@@ -405,6 +405,7 @@
 			assetManager: {
 				embedAsBase64: true,
 			},
+			colorPicker: {appendTo: '#gjs'},
 			selectorManager: {componentFirst: true},
 			styleManager: {
 				sectors: [
@@ -771,6 +772,10 @@
 
 	:global(.cke_dialog_contents) {
 		background-color: #3d3d3d !important;
+	}
+
+	:global(.sp-container.gjs-two-color) {
+		left: 60% !important;
 	}
 
 	@media screen and (max-width: 767px) {
