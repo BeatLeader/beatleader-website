@@ -68,7 +68,7 @@
 </script>
 
 {#if playerInfo}
-	<div class="cards-container">
+	<div id={playerId + '-player-cards'} class="cards-container">
 		{#if rankedmaps || clan}
 			{#if rankedmaps}
 				<RankedMapper mapperId={playerInfo.mapperId} {rankedmaps} {topmap} bind:editModel />

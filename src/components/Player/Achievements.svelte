@@ -8,7 +8,7 @@
 	{#if achievements?.length > 0}
 		<h2>Achievements</h2>
 		<div class="achievements-list">
-			{#each achievements as achievement}
+			{#each achievements as achievement, idx (achievement.id)}
 				<AchievementCompact {achievement} />
 			{/each}
 		</div>
