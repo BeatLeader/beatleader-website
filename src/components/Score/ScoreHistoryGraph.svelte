@@ -1,5 +1,5 @@
 <script>
-	import {BL_API_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, BL_REPLAYS_URL, BL_ANALYZER_URL} from '../../network/queues/beatleader/api-queue';
 	import {dateFromUnix, formatDate, formatDateRelative, getTimeStringColor} from '../../utils/date';
 	import Button from '../Common/Button.svelte';
 	import {configStore} from '../../stores/config';
@@ -197,24 +197,35 @@
 											on:click={() => (battleRoyaleDraftList = battleRoyaleDraftList.filter(link => link !== score.replay))} />
 									{/if}
 								{:else}
-									<Button
-										url={`${
-											$configStore.preferences.webPlayer == 'arcviewer'
-												? 'https://allpoland.github.io/ArcViewer/?replayURL='
-												: `${BL_REPLAYS_URL}?link=`
-										}${score?.replay}`}
-										on:click={() =>
-											showPreview(
-												`${
-													$configStore.preferences.webPlayer == 'arcviewer'
-														? 'https://allpoland.github.io/ArcViewer/?replayURL='
-														: `${BL_REPLAYS_URL}?link=`
-												}${score?.replay}`
-											)}
-										cls="replay-button-alt"
-										icon="<div class='replay-icon-alt'></div>"
-										title="Replay"
-										noMargin={true} />
+									<div>
+										{#if $configStore?.visibleScoreIcons?.analyzer !== false}
+											<Button
+												url={`${BL_ANALYZER_URL}?link=${score?.replay}`}
+												on:click={() => showPreview(`${BL_ANALYZER_URL}?link=${score?.replay}`)}
+												cls="replay-button-alt"
+												icon="<div class='analyzer-icon'></div>"
+												title="Reeplay Analyzer"
+												noMargin={true} />
+										{/if}
+										<Button
+											url={`${
+												$configStore.preferences.webPlayer == 'arcviewer'
+													? 'https://allpoland.github.io/ArcViewer/?replayURL='
+													: `${BL_REPLAYS_URL}?link=`
+											}${score?.replay}`}
+											on:click={() =>
+												showPreview(
+													`${
+														$configStore.preferences.webPlayer == 'arcviewer'
+															? 'https://allpoland.github.io/ArcViewer/?replayURL='
+															: `${BL_REPLAYS_URL}?link=`
+													}${score?.replay}`
+												)}
+											cls="replay-button-alt"
+											icon="<div class='replay-icon-alt'></div>"
+											title="Replay"
+											noMargin={true} />
+									</div>
 								{/if}
 							{/if}
 						</div>
