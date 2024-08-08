@@ -331,7 +331,7 @@
 				on:click={() => showPreview(analyzerUrl)}
 				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
 				icon="<img src='/assets/analyzer.webp'>"
-				title="Reeplay analyzer"
+				title="Reeplay Analyzer"
 				animated={true}
 				noMargin={true} />
 		{/if}
