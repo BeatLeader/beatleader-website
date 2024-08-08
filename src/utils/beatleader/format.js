@@ -1144,6 +1144,25 @@ export function describeGraphAxis(axis) {
 	return 'Undefined';
 }
 
+export let bestiesCategoriesNames = {
+	'Gen-OST': 'Best OST Map',
+	'Gen-Alternative': 'Alternative mode',
+	'Gen-FullSpread': 'Full spread',
+	'Mods-Lightshow': 'Best Lightshow Map',
+	'Mods-Modchart': 'Best Modchart',
+	'Mods-ArtMap': 'Art map (Chroma+Noodle)',
+	'Ranked-RankedMap': 'Best Ranked Map',
+	'Style-Balanced': 'Balanced Style Map',
+	'Style-Tech': 'Tech Style Map',
+	'Style-Speed': 'Speed Style Map',
+	'Style-Dance': 'Dance Style Map',
+	'Style-Fitness': 'Fitness Style Map',
+	'Style-Challenge': 'Challenge Style Map',
+	'Style-Acc': 'Acc Style Map',
+	'Style-Poodle': 'Poodle Style Map',
+	'Style-Gimmick': 'Gimmick Style Map',
+};
+
 export const all_countries = [
 	'ad',
 	'ae',

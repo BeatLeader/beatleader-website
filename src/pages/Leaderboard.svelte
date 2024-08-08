@@ -717,9 +717,7 @@
 			{#if $leaderboardStore}
 				{#if type !== 'accsaber'}
 					<nav class="diff-switch">
-						<div>
-							<LeaderboardActionButtons {account} {leaderboard} {votingStore} />
-						</div>
+						<LeaderboardActionButtons {account} {leaderboard} {votingStore} {diffs} />
 
 						{#if !withoutDiffSwitcher && diffs && diffs.length}
 							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />

@@ -67,6 +67,7 @@ export const DEFAULT_CONFIG = {
 		ostbanner: true,
 		ccWinterHighlights24: true,
 		followersBecomingPublic: true,
+		beastiesNominationsBanner: true,
 	},
 	scorePreferences: {
 		badgeRows: 2,
