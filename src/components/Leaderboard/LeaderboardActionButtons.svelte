@@ -226,7 +226,7 @@
 					cls="beastsButton {currentNominations?.length ? 'purple' : ''}"
 					title={currentNominations?.length
 						? 'You nominated this map for categories: ' + currentNominations.map(n => bestiesCategoriesNames[n.category]).join(', ')
-						: 'Nominate this map for Besties Awards!'}
+						: 'Nominate this map for Beasties Awards!'}
 					icon={beastsabericonthick}
 					on:click={() => {
 						openBestiesNomination();

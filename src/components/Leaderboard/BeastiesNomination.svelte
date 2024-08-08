@@ -112,7 +112,7 @@
 <div class="dialog-container">
 	<DialogContent
 		type="confirm"
-		title="Nominate map for Besties awards"
+		title="Nominate map for Beasties awards"
 		okButton="Nominate!"
 		okButtonType="green"
 		cancelButton="Cancel"
