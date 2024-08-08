@@ -317,20 +317,26 @@
 	function checkEligible(eventId, team) {
 		if (eventId == 52) return '';
 
-		const teamNames = [
-			'Sweden',
-			'Switzerland',
-			'Argentina',
-			'Staff',
-			'Czechia',
-			'Slovakia',
-			'Latvia',
-			'South Africa',
-			'Saudi Arabia',
-			'Hungary',
-		];
+		if (eventId < 55) {
+			const teamNames = [
+				'Sweden',
+				'Switzerland',
+				'Argentina',
+				'Staff',
+				'Czechia',
+				'Slovakia',
+				'Latvia',
+				'South Africa',
+				'Saudi Arabia',
+				'Hungary',
+			];
 
-		return teamNames.includes(team.name) ? '-eligible' : '';
+			return teamNames.includes(team.name) ? '-eligible' : '';
+		}
+
+		const teamNames = ['United States', 'United Kingdom', 'Denmark', 'Israel', 'Canada', 'Germany'];
+
+		return !teamNames.includes(team.name) ? '-eligible' : '';
 	}
 
 	onMount(() => {
@@ -435,7 +441,7 @@
 						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
 						: sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if eventId == 52 || eventId == 53 || eventId == 54}
+				{#if eventId == 52 || eventId == 53 || eventId == 54 || eventId == 55}
 					{@const team = participants.find(t =>
 						t.players.find(p =>
 							p.player.user.playableAccounts.find(
