@@ -36,13 +36,13 @@
 				});
 			}
 
-			if (leaderboard.stats.requirements & requirementsMap.noodles && leaderboard.stats.requirements & requirementsMap.chroma) {
+			if (leaderboard.stats.requirements & requirementsMap.noodles || leaderboard.stats.requirements & requirementsMap.chroma) {
 				applicapleCategories.push({
 					id: 'Mods-ArtMap',
 				});
 			}
 
-			if (diffs.find(d => d.type == '90Degree' || d.type == '360Degree' || d.type == 'OneSaber')) {
+			if (diffs.find(d => d.type == '90Degree' || d.type == '360Degree' || d.type == 'OneSaber' || d.type == 'NoArrows')) {
 				applicapleCategories.push({
 					id: 'Gen-Alternative',
 				});
