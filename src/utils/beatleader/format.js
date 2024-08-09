@@ -230,6 +230,12 @@ export const HMDs = {
 		color: '',
 		priority: 26,
 	},
+	71: {
+		name: 'MeganeX VG1',
+		icon: 'meganex.svg',
+		color: '',
+		priority: 26,
+	},
 	55: {
 		name: 'Huawei VR',
 		icon: 'huawei.webp',
