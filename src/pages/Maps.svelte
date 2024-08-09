@@ -18,12 +18,12 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Cube Community Winter Highlights',
+				title: 'Cube Community Spring Highlights',
 				body: '',
-				imageUrl: '/assets/Discover/cc-winter-highlights.webp',
-				targetUrl: 'https://www.youtube.com/watch?v=9dr-M1hfCLo',
+				imageUrl: '/assets/Discover/cc-spring-highlights.jpg',
+				targetUrl: 'https://youtu.be/OZCVt4jvNBc',
 				linkName: 'YouTube',
-				forcedColor: 'rgb(23 27 46)',
+				forcedColor: 'rgb(27 105 11)',
 			},
 		},
 		{
