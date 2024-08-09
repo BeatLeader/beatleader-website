@@ -79,6 +79,12 @@ export const HMDs = {
 		color: '',
 		priority: 6,
 	},
+	70: {
+		name: 'PS VR2',
+		icon: 'psvr2.svg',
+		color: '',
+		priority: 6,
+	},
 	8: {
 		name: 'Windows Mixed Reality',
 		icon: 'wmr.svg',
