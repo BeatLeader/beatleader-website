@@ -19,6 +19,14 @@ function updateScoresStats(playerData) {
 				{key: 'topPp', label: 'Top PP', bgColor: 'var(--ppColour)', digits: 2, suffix: 'pp'},
 				{key: 'replaysWatched', label: 'Replays watched', bgColor: 'var(--ppColour)'},
 				{key: 'topAccuracy', label: 'Best acc', title: 'Best accuracy', digits: 2, suffix: '%', bgColor: 'rgba(60,179,113,.75)'},
+				{
+					key: 'topRankedAccuracy',
+					label: 'Best ranked acc',
+					title: 'Best ranked accuracy',
+					digits: 2,
+					suffix: '%',
+					bgColor: 'rgba(60,179,113,.75)',
+				},
 				{key: 'averageAccuracy', label: 'Average acc', title: 'Average accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
 				{key: 'medianAccuracy', label: 'Median acc', title: 'Median accuracy', digits: 2, suffix: '%', bgColor: 'var(--selected)'},
 				{
@@ -65,7 +73,7 @@ function updateScoresStats(playerData) {
 				{key: 'top1Count', title: 'Top 1 plays count', label: "#1's", bgColor: 'var(--ppColour)'},
 				{key: 'topPercentile', label: 'Global', bgColor: 'var(--selected)', digits: 1, prefix: 'Top ', suffix: '% of players'},
 				{key: 'countryTopPercentile', label: 'Country', bgColor: 'var(--selected)', digits: 1, prefix: 'Top ', suffix: '% of players'},
-		  ]
+			]
 		: [];
 
 	return statsDef

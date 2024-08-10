@@ -46,6 +46,7 @@ export default response => {
 			'medianAccuracy',
 			'medianRankedAccuracy',
 			'topAccuracy',
+			'topRankedAccuracy',
 			'topPercentile',
 			'countryTopPercentile',
 		].forEach(k => {
