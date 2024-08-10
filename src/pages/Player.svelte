@@ -359,7 +359,7 @@
 
 	:global(.scores-box) {
 		margin-top: 4em !important;
-		border-radius: 0 0 12px 12px !important;
+		border-radius: 0 12px 12px 12px !important;
 		padding: 0.5em !important;
 	}
 

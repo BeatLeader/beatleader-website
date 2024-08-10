@@ -552,7 +552,7 @@
 	}
 
 	nav :global(> *) {
-		margin-bottom: 1rem;
+		margin-bottom: 0.4em;
 		margin-right: 0.75rem;
 	}
 
@@ -573,6 +573,7 @@
 	.service-switcher {
 		margin-top: -2.37em;
 		margin-bottom: 1.3em;
+		margin-left: -0.5em;
 	}
 
 	:global(.service-tab-button) {

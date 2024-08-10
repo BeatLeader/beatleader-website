@@ -1,16 +1,14 @@
 <script>
 	export let mapper;
-	console.log(mapper)
 </script>
 
 <div class="mapper-container" style="background-color: {mapper.curator ? '#00bc8c' : mapper.verifiedMapper ? '#7646af' : '#444'};">
 	{#if mapper.authorName}
-		<i class="fa-solid fa-circle-info map-name-info" title="Missing collaborators were detected. This is the map author name."/>
+		<i class="fa-solid fa-circle-info map-name-info" title="Missing collaborators were detected. This is the map author name." />
 	{:else}
 		<img class="mapper-avatar" src={mapper.avatar} />
 	{/if}
 	<span>{mapper.name}</span>
-	
 </div>
 
 <style>
