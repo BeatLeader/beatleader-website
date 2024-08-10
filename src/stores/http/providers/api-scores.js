@@ -1,6 +1,7 @@
 import createScoresFetcher from './utils/scores-fetch';
 import queue from '../../../network/queues/queues';
 import {MINUTE} from '../../../utils/date';
+import {SPECIAL_PLAYER_ID} from '../../../network/queues/beatleader/api-queue';
 
 let scoresFetcher = null;
 
@@ -15,7 +16,7 @@ export default () => {
 		signal = null,
 		force = false,
 	} = {}) => {
-		if (playerId === 'user-friends') {
+		if (playerId === SPECIAL_PLAYER_ID) {
 			return scoresFetcher.fetchLiveScores(null, playerId, serviceParams, {refreshInterval: MINUTE, priority, signal, force});
 		}
 

@@ -39,6 +39,7 @@ export const BL_RENDERER_API_URL = 'https://render.beatleader.xyz/';
 export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
+export const SPECIAL_PLAYER_ID = 'user-friends';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
 export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}';
@@ -357,7 +358,7 @@ export default (options = {}) => {
 
 	const scores = async (playerId, page = 1, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchScores(
-			substituteVars(playerId === 'user-friends' ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {
+			substituteVars(playerId === SPECIAL_PLAYER_ID ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {
 				...params,
 				...(params?.filters ?? {}),
 				search: params?.filters?.search ? encodeURIComponent(params?.filters?.search) : null,

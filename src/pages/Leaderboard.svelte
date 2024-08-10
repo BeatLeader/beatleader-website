@@ -738,16 +738,19 @@
 			</div>
 		{/if}
 		{#if type !== 'accsaber' && !withoutDiffSwitcher}
-			<div class="diff-and-mode-switch">
+			<div class="diff-and-mode-switch" style="--spacer-bg-color: {currentDiff?.color ?? 'transparent'}">
 				{#if diffs}
 					<TabSwitcher values={diffs} value={currentDiff} on:change={onDiffChange} />
 				{/if}
+				<div class="diff-and-mode-spacer"></div>
 				{#if modes}
 					<TabSwitcher values={modes} value={currentMode} on:change={onDiffChange} />
 				{/if}
 			</div>
 		{/if}
-		<div class="leaderboard-box" style="border: 2px solid {currentDiff?.color ?? 'transparent'};">
+		<div
+			class="leaderboard"
+			style={!withoutHeader ? `border: 2px solid ${currentDiff?.color ?? 'transparent'};` : 'margin: 0.4em; border-radius: 6px;'}>
 			{#if !$leaderboardStore && $isLoading}
 				<div class="align-spinner">
 					<Spinner />
@@ -1239,7 +1242,7 @@
 	.diff-and-mode-switch {
 		display: flex;
 		justify-content: space-between;
-		margin: 0 0.65em;
+		margin: 0 10px;
 	}
 
 	.diff-switch :global(> *:not(:last-child)) {
@@ -1251,7 +1254,7 @@
 		justify-items: center;
 	}
 
-	.leaderboard-box {
+	.leaderboard {
 		padding: 0.5em;
 		margin: 6px 10px 16px;
 		border-radius: 0 0 12px 12px;
@@ -1305,6 +1308,7 @@
 	:global(.leaderboard-aside-box) {
 		position: static !important;
 		border-radius: 12px !important;
+		margin-top: 0.36em !important;
 	}
 
 	.featured-playlists {
@@ -1453,13 +1457,13 @@
 	}
 
 	@media screen and (max-width: 1024px) {
-		.leaderboard-box {
+		.leaderboard {
 			margin-inline: 0;
 		}
 	}
 
 	@media screen and (max-width: 767px) {
-		.leaderboard-box {
+		.leaderboard {
 			margin-inline: 0;
 			max-width: 100vw;
 		}

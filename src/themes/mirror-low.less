@@ -147,6 +147,17 @@ body {
     box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.192) !important;
 }
 
+.leaderboard {
+    background: var(--customizable-color-1) !important;
+    border-top: none !important;
+}
+
+.leaderboard-header-box {
+    background: var(--customizable-color-1) !important;
+    backdrop-filter: none !important;
+    box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.192) !important;
+}
+
 // Badges
 .badge {
     font-size: 0.8rem !important;
@@ -212,7 +223,6 @@ body {
 }
 
 // Remove some strange backgrounds&shadows
-.leaderboard,
 .chart,
 .details-with-shadow {
     background: none !important;
@@ -317,4 +327,30 @@ input{
 
 .invite-to-clan {
     margin-top: 0.5em !important;
+}
+
+.mode-tab-button:not(.not-selected) {
+    background: var(--customizable-color-1) !important;
+    border: 2px solid var(--btn-bg-color, #3273dc) !important;
+    border-bottom: none !important;
+}
+.mode-tab-button.not-selected {
+    opacity: 0.8 !important;
+    border-bottom: 2px solid var(--spacer-bg-color, #8f48db) !important;
+}
+
+.diff-tab-button:not(.not-selected) {
+    background: var(--customizable-color-1) !important;
+    border: 2px solid var(--btn-bg-color, #3273dc) !important;
+    border-bottom: none !important;
+}
+.diff-tab-button.not-selected {
+    opacity: 0.8 !important;
+    border-bottom: 2px solid var(--spacer-bg-color, #8f48db) !important;
+}
+
+.diff-and-mode-spacer {
+    border-bottom: 2px solid var(--spacer-bg-color, #8f48db);
+    flex: 1;
+    margin-bottom: -6px;
 }

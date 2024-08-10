@@ -1,7 +1,6 @@
 <script>
 	import Mapper from './Mapper.svelte';
 	import {configStore} from '../../stores/config';
-	import {afterUpdate, onMount} from 'svelte';
 
 	export let song;
 	let lessInAuthorName = false;
@@ -15,8 +14,6 @@
 
 	function checkOverflow(badgeContainer) {
 		if (badgeContainer) {
-			console.log(badgeContainer.scrollHeight + '  ' + badgeContainer.clientHeight);
-
 			isOverflowing = badgeContainer.scrollHeight > badgeContainer.clientHeight + 10;
 		}
 	}

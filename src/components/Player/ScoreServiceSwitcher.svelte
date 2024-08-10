@@ -10,7 +10,7 @@
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
 	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
 	import editModel from '../../stores/beatleader/profile-edit-model';
-	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
 
 	export let playerId = null;
@@ -19,8 +19,6 @@
 	export let serviceParams = {sort: 'pp', order: 'desc'};
 	export let loadingService = null;
 	export let loadingServiceParams = null;
-
-	const SPECIAL_PLAYER_ID = 'user-friends';
 
 	const dispatch = createEventDispatcher();
 	const accSaberService = createAccSaberService();
