@@ -192,13 +192,6 @@
 		})
 	);
 
-	function addAdditionalFilters(mapper, rt) {
-		mytypeFilterOptions = [...baseMytypeFilterOptions];
-		if (mapper) {
-			mytypeFilterOptions.push({key: 'mymaps', label: 'My maps', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'});
-		}
-	}
-
 	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
 
 	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
@@ -469,8 +462,6 @@
 
 	$: updateProfileSettings($account);
 
-	$: addAdditionalFilters($account.player && $account.player.playerInfo.mapperId, isRT);
-
 	$: changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
 
 	$: starsKey =
@@ -584,7 +575,10 @@
 			</section>
 
 			<section class="filter">
-				<Mappers mapperIds={currentFilters.mappers?.split(',').map(id => parseInt(id)) ?? []} on:change={e => onMappersChange(e)} />
+				<Mappers
+					currentMapperId={$account.player && $account.player.playerInfo.mapperId}
+					mapperIds={currentFilters.mappers?.split(',').map(id => parseInt(id)) ?? []}
+					on:change={e => onMappersChange(e)} />
 			</section>
 
 			<section class="filter">

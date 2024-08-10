@@ -6,6 +6,7 @@
 	import MapperPickerItem from './MapperPickerItem.svelte';
 
 	export let mapperIds = [];
+	export let currentMapperId = null;
 
 	const dispatch = createEventDispatcher();
 	let items = [];
@@ -21,7 +22,7 @@
 		const mappers = await response.json();
 		return mappers.map(mapper => ({
 			value: mapper.id,
-			label: mapper.name,
+			label: currentMapperId && mapper.id == currentMapperId ? 'Me' : mapper.name,
 			...mapper,
 		}));
 	}
@@ -71,6 +72,7 @@
 		};
 	});
 
+	$: currentMapperId && addItems([currentMapperId]);
 	$: mapperIds?.length && addItems(mapperIds);
 	$: value = items.filter(i => (mapperIds ?? []).includes(i.value));
 </script>
