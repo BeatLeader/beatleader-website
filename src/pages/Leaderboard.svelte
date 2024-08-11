@@ -1473,6 +1473,10 @@
 			margin-bottom: 0.5em;
 		}
 
+		.diff-and-mode-switch {
+			margin: 1em 0 0;
+		}
+
 		.diff-switch {
 			gap: 0.1em;
 		}
@@ -1483,6 +1487,22 @@
 
 		:global(.player-performance-badges) {
 			min-width: 0 !important;
+		}
+
+		:global(.diff-tab-button) {
+			max-width: 4em;
+		}
+
+		:global(.diff-tab-button span) {
+			font-size: 0.85em;
+		}
+
+		:global(.mode-tab-button) {
+			width: 4em;
+		}
+
+		:global(.mode-tab-button span) {
+			font-size: 1.2em;
 		}
 	}
 

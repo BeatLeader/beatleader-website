@@ -16,6 +16,7 @@
 	import HashDisplay from '../Common/HashDisplay.svelte';
 	import LeaderboardDisplayCaptureCorner from './LeaderboardDisplayCaptureCorner.svelte';
 	import MapperList from './MapperList.svelte';
+	import MapTriangleSmall from './MapTriangleSmall.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -97,7 +98,6 @@
 							{/if}
 						</div>
 
-						
 						{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
 							<LeaderboardStats {leaderboard} />
 						{/if}
@@ -116,13 +116,13 @@
 						{/each}
 					</div>
 				{/if}
-				<div class="header-bottom-part">
+				<div class="header-bottom-part desktop-only">
 					<div class="icons-container">
 						<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
 					</div>
 				</div>
 			</div>
-			<div class="title-and-buttons">
+			<div class="title-and-buttons desktop-only">
 				<div class="header-top-part">
 					<h2 class="title is-6" style="display: contents;">
 						{#if leaderboard.stats && leaderboard.stats.passRating}
@@ -160,7 +160,13 @@
 			</div>
 		</div>
 
-		<div class="buttons-container"></div>
+		{#if leaderboard.stats && leaderboard.stats.passRating}
+			<div class="mobile-triangle mobile-only">
+				<MapTriangleSmall leaderboard={leaderboard.difficultyBl} />
+			</div>
+		{/if}
+
+		<div class="buttons-container desktop-only"></div>
 
 		{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
 			<div class="capture-status">
@@ -171,6 +177,27 @@
 			</div>
 		{/if}
 	</header>
+
+	<div class="buttons-container mobile-only">
+		<div class="icons-container">
+			<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
+		</div>
+		{#if leaderboardGroup && leaderboardGroup.length > 1}
+			<div class="version-selector-container">
+				<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
+					{#each leaderboardGroup as option (option.id)}
+						<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
+							{#if option.timestamp}
+								{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
+							{:else}
+								{formatDiffStatus(option.status)}
+							{/if}
+						</option>
+					{/each}
+				</select>
+			</div>
+		{/if}
+	</div>
 {/if}
 
 <style>
@@ -422,6 +449,17 @@
 		min-width: fit-content;
 	}
 
+	.mobile-triangle {
+		position: absolute;
+		left: 8em;
+		top: 8.4em;
+		z-index: 2;
+	}
+
+	.mobile-only {
+		display: none;
+	}
+
 	:global(.voteButton) {
 		margin-top: 0 !important;
 		height: 1.8em;
@@ -437,26 +475,46 @@
 		header {
 			margin-inline: 0;
 			max-width: 100vw;
+			padding: 0.4em 0.4em 0.15em 0.4em;
+			gap: 0.5em;
+		}
+
+		.desktop-only {
+			display: none;
+		}
+
+		.mobile-only {
+			display: flex;
+		}
+
+		.buttons-container {
+			position: relative;
+			margin-left: 0;
+			border-radius: 0;
+			justify-content: flex-start;
+			gap: 0.6em;
+			height: unset;
+		}
+
+		.icons-container {
+			margin-left: unset;
 		}
 
 		:global(.player .clan-badges) {
 			display: none;
 		}
 
-		.title-container {
-			text-align: center;
-		}
-
 		.header-container {
-			align-items: center;
-			min-height: 10em;
+			min-height: 11.2em;
+			gap: 0.3em;
 		}
 
-		.status-and-type {
-			justify-content: center;
+		.main-container {
+			min-height: unset;
 		}
-		:global(.title-container .stats) {
-			justify-content: center !important;
+
+		header .title {
+			margin-left: unset;
 		}
 
 		.header {
@@ -464,18 +522,37 @@
 			margin-bottom: 0;
 		}
 
-		:global(.leaderboard-header-box) {
-			margin: 0 !important;
+		.name-long {
+			font-size: 1em;
 		}
 
 		.song-statuses {
-			justify-content: center;
+			flex-wrap: wrap;
 		}
-	}
 
-	@media screen and (max-width: 520px) {
-		header {
-			flex-direction: column;
+		.name-short {
+			font-size: 1.2em;
+		}
+
+		.author {
+			font-size: 1em;
+		}
+
+		.map-cover {
+			width: 11em;
+		}
+
+		.icons-container {
+			transform: scale(1);
+		}
+
+		.version-selector-container {
+			transform: scale(1);
+		}
+
+		:global(.leaderboard-header-box) {
+			margin: 0.6em 0 0 !important;
+			border-radius: 0 !important;
 		}
 	}
 </style>
