@@ -1158,7 +1158,7 @@ export function describeGraphAxis(axis) {
 
 export let bestiesCategoriesNames = {
 	'Gen-OST': 'Best OST Map',
-	'Gen-Alternative': 'Alternative mode',
+	'Gen-Alternative': 'Non-Standard Mode',
 	'Gen-FullSpread': 'Full spread',
 	'Mods-Lightshow': 'Best Lightshow Map',
 	'Mods-Modchart': 'Best Modchart',
