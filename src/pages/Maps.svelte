@@ -308,6 +308,9 @@
 		padding: 0.6em;
 		background: #111111;
 		backdrop-filter: blur(10px) opacity(0.5);
+		--webkit-transofrm: translateZ(0);
+		--webkit-perspective: 1000;
+		--webkit-backface-visibility: hidden;
 		border-radius: 0.5em;
 	}
 

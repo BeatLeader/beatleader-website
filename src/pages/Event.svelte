@@ -544,6 +544,9 @@
 		top: 0;
 		left: 0;
 		border-radius: 8px;
+		--webkit-transofrm: translateZ(0);
+		--webkit-perspective: 1000;
+		--webkit-backface-visibility: hidden;
 	}
 
 	.bswc-container {

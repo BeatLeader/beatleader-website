@@ -32,6 +32,9 @@ nav.ssr-page-container {
     background: var(--customizable-color-2) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    --webkit-transofrm: translateZ(0);
+    --webkit-perspective: 1000;
+    --webkit-backface-visibility: hidden;
 
     a,
     div {
@@ -156,6 +159,9 @@ nav.ssr-page-container {
     background: var(--customizable-color-1) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    --webkit-transofrm: translateZ(0);
+    --webkit-perspective: 1000;
+    --webkit-backface-visibility: hidden;
     box-shadow: none !important;
 }
 
@@ -343,6 +349,9 @@ select {
     background-color: rgba(255, 255, 255, 0.2);
     border: none;
     border-radius: 0.4em;
+    --webkit-transofrm: translateZ(0);
+    --webkit-perspective: 1000;
+    --webkit-backface-visibility: hidden;
 }
 
 .dropdown-menu .dropdown-item:hover {

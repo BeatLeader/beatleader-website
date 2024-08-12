@@ -42,5 +42,8 @@
 		background-color: var(--customizable-color-1, var(--foreground)) !important;
 		opacity: 0.99;
 		backdrop-filter: blur(10px);
+		--webkit-transofrm: translateZ(0);
+		--webkit-perspective: 1000;
+		--webkit-backface-visibility: hidden;
 	}
 </style>
