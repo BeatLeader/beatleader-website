@@ -1,15 +1,45 @@
 <script>
+	import {navigate} from 'svelte-routing';
+	import {fly, fade} from 'svelte/transition';
+	import Popover from '../Common/Popover.svelte';
+	import MiniProfile from '../Player/Mini/MiniProfile.svelte';
+
 	export let mapper;
+
+	let referenceElement;
+
+	function navigateToPlayer(playerId) {
+		if (!playerId) return;
+
+		navigate(`/u/${playerId}`);
+	}
 </script>
 
-<div class="mapper-container" style="background-color: {mapper.curator ? '#00bc8c' : mapper.verifiedMapper ? '#7646af' : '#444'};">
-	{#if mapper.authorName}
-		<i class="fa-solid fa-circle-info map-name-info" title="Missing collaborators were detected. This is the map author name." />
-	{:else}
+{#if mapper.playerId}
+	<a
+		href="/u/{mapper.playerId}"
+		class="mapper-container"
+		bind:this={referenceElement}
+		on:click|preventDefault={() => navigateToPlayer(mapper.playerId)}
+		style="background-color: {mapper.curator ? '#00bc8c' : mapper.verifiedMapper ? '#7646af' : '#444'};">
 		<img class="mapper-avatar" src={mapper.avatar} />
-	{/if}
-	<span>{mapper.name}</span>
-</div>
+		<span>{mapper.name}</span>
+	</a>
+	<Popover triggerEvents={['hover', 'focus']} placement="top" {referenceElement} spaceAway={10}>
+		<div class="popover-contents" transition:fade|global={{duration: 250}}>
+			<MiniProfile player={{playerId: mapper.playerId, name: mapper.name, playerInfo: {}}} />
+		</div>
+	</Popover>
+{:else}
+	<div class="mapper-container" style="background-color: {mapper.curator ? '#00bc8c' : mapper.verifiedMapper ? '#7646af' : '#444'};">
+		{#if mapper.authorName}
+			<i class="fa-solid fa-circle-info map-name-info" title="Missing collaborators were detected. This is the map author name." />
+		{:else}
+			<img class="mapper-avatar" src={mapper.avatar} />
+		{/if}
+		<span>{mapper.name}</span>
+	</div>
+{/if}
 
 <style>
 	.mapper-container {

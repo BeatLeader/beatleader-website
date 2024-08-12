@@ -115,6 +115,7 @@
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
 
 	let currentPage = 1;
+	let previousPage = 0;
 	let initialPage = page;
 
 	function updateFilters(newFilters) {
@@ -269,6 +270,7 @@
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
+		previousPage = currentPage;
 		currentPage = parseInt(newPage, 10);
 		if (isNaN(currentPage)) currentPage = 1;
 
@@ -655,7 +657,6 @@
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
 	$: initRatings(leaderboard);
 
-	$: console.log($leaderboardStore);
 	$: ({diffs, modes, currentDiff, currentMode} = processDiffs($leaderboardStore?.diffs ?? [], song, currentLeaderboardId));
 
 	$: hash = opt($leaderboardStore, 'leaderboard.song.hash');
@@ -818,7 +819,7 @@
 									in:fly|global={initialPage == currentPage
 										? {}
 										: !score?.isUserScore
-											? {x: 200, delay: idx * 20, duration: 500}
+											? {x: currentPage >= previousPage ? 200 : -200, delay: idx * 20, duration: 500}
 											: {duration: 300}}
 									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
 									<Score
@@ -1290,7 +1291,7 @@
 	:global(.diff-tab-button span) {
 		font-weight: 900;
 		text-align: center;
-		text-wrap: wrap;
+		white-space: break-spaces;
 	}
 
 	:global(.mode-tab-button) {
@@ -1511,6 +1512,7 @@
 		border-radius: 12px;
 		background-color: black;
 		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
 		margin: 6px 10px 16px;
 	}
 

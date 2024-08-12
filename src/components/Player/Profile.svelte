@@ -395,7 +395,7 @@
 
 		{#if playerInfo}
 			<div class="socials-list">
-				<Socials {name} {playerInfo} {playerData}/>
+				<Socials {name} {playerInfo} {playerData} />
 			</div>
 		{/if}
 	</div>
@@ -487,6 +487,7 @@
 		margin-top: 0.5em;
 		border-radius: 0 0 12px 12px;
 		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
 	}
 
 	.socials-list {

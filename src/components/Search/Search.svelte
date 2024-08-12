@@ -42,5 +42,6 @@
 		background-color: var(--customizable-color-1, var(--foreground)) !important;
 		opacity: 0.99;
 		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
 	}
 </style>

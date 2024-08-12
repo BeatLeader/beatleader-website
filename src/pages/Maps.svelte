@@ -308,6 +308,7 @@
 		padding: 0.6em;
 		background: #111111;
 		backdrop-filter: blur(10px) opacity(0.5);
+		-webkit-backdrop-filter: blur(10px) opacity(0.5);
 		border-radius: 0.5em;
 	}
 

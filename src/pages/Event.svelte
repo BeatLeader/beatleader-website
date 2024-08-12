@@ -536,6 +536,7 @@
 
 	.bswcbgblur {
 		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
 		filter: brightness(0.5);
 		z-index: 2;
 		width: 100%;

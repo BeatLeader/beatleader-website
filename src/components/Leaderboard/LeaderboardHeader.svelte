@@ -1,7 +1,7 @@
 <script>
 	import MapTypeDescription from './MapTypeDescription.svelte';
 	import MapTriangle from '../Common/MapTriangle.svelte';
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {fade} from 'svelte/transition';
 
 	import Value from '../Common/Value.svelte';
@@ -17,6 +17,7 @@
 	import LeaderboardDisplayCaptureCorner from './LeaderboardDisplayCaptureCorner.svelte';
 	import MapperList from './MapperList.svelte';
 	import MapTriangleSmall from './MapTriangleSmall.svelte';
+	import TriangleMobilePopup from './TriangleMobilePopup.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -27,6 +28,7 @@
 	export let battleRoyaleDraft;
 
 	const dispatch = createEventDispatcher();
+	const {open, close} = getContext('simple-modal');
 
 	function onSelectedGroupEntryChanged() {
 		dispatch('group-changed');
@@ -46,6 +48,13 @@
 			};
 			cover.src = coverUrl;
 		}
+	}
+
+	function showTrianglePopup(leaderboard) {
+		open(TriangleMobilePopup, {
+			leaderboard,
+			ratings,
+		});
 	}
 
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
@@ -161,7 +170,7 @@
 		</div>
 
 		{#if leaderboard.stats && leaderboard.stats.passRating}
-			<div class="mobile-triangle mobile-only">
+			<div class="mobile-triangle mobile-only" on:click|preventDefault|stopPropagation={() => showTrianglePopup(leaderboard)}>
 				<MapTriangleSmall leaderboard={leaderboard.difficultyBl} />
 			</div>
 		{/if}
@@ -202,6 +211,7 @@
 
 <style>
 	header {
+		position: relative;
 		padding: 0.6em;
 		border-radius: 0.4em;
 		color: var(--alternate);
@@ -385,6 +395,7 @@
 		height: fit-content;
 		padding: 0.175rem;
 		text-align: center;
+		text-align-last: center;
 		white-space: nowrap;
 		border: 0;
 		border-radius: 6px;
