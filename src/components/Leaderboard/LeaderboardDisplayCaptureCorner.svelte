@@ -1,25 +1,22 @@
 <script>
 	import {navigate} from 'svelte-routing';
-	import Badge from '../Common/Badge.svelte';
-	import createBadgeUtils from '../Common/utils/badge';
+	import {invertColor} from '../Common/utils/badge';
 
 	export let clan = null;
 	export let clanRankingContested = null;
 	export let leaderboardId = null;
-
-	const badgeUtils = createBadgeUtils();
 </script>
 
 <div class="status-and-type">
 	{#if clanRankingContested}
 		<div
-			style=" --clan-color: #000000; color: {badgeUtils.invertColor('#000000')}; background-color: 'var(--dimmed)'"
+			style=" --clan-color: #000000; color: {invertColor('#000000')}; background-color: 'var(--dimmed)'"
 			class="captor-clan captor-clan-outline">
 			<span title="Set a score on this map to break the tie and capture it for your clan!">&#9876 CONTESTED &#9876</span>
 		</div>
 	{:else if (clan ?? null) === null}
 		<div
-			style=" --clan-color: #000000; color: {badgeUtils.invertColor('#000000')}; background-color: 'var(--dimmed)'"
+			style=" --clan-color: #000000; color: {invertColor('#000000')}; background-color: 'var(--dimmed)'"
 			class="captor-clan captor-clan-outline">
 			<span title="Set a score on this map to capture it for your clan!">UNCAPTURED</span>
 		</div>
@@ -28,7 +25,7 @@
 			style=" --clan-color: {clan ?? '#000000'}; background-color: {clan?.color ?? 'var(--dimmed)'}"
 			class="captor-clan captor-clan-outline">
 			<a
-				style="color: {badgeUtils.invertColor(clan?.color ?? '#000000')};"
+				style="color: {invertColor(clan?.color ?? '#000000')};"
 				href={`/clansmap/leaderboard/${leaderboardId}`}
 				on:click|preventDefault|stopPropagation={() => navigate(`/clansmap/leaderboard/${leaderboardId}`)}>
 				<span title="Set a score on this map to help capture it for your clan!">{clan?.tag ?? '???'}</span>

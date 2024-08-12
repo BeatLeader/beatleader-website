@@ -3,14 +3,12 @@
 	import {navigate} from 'svelte-routing';
 	import {flip} from 'svelte/animate';
 	import Badge from '../Common/Badge.svelte';
-	import createBadgeUtils from '../Common/utils/badge';
+	import {invertColor} from '../Common/utils/badge';
 
 	export let player = null;
 	export let clan = null;
 	export let editModel = null;
 	export let highlightMain = false;
-
-	const badgeUtils = createBadgeUtils();
 
 	var clans = null;
 
@@ -46,7 +44,7 @@
 						label={(highlightMain && idx == 0 ? '🏠' : '') + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
-						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
+						color={invertColor(clan?.color ?? '#000000')}
 						bgColor={clan?.color ?? 'var(--dimmed)'}
 						style="animation-delay: -.{Math.round(Math.random() * 40)}s; animation-duration: .{20 + Math.round(Math.random() * 30)}s"
 						title={(highlightMain && idx == 0 ? 'Main clan. ' : '') + 'Change clan order'} />
@@ -64,7 +62,7 @@
 						label={(highlightMain && idx == 0 ? '🏠' : '') + clan?.tag ?? '???'}
 						onlyLabel={true}
 						fluid={true}
-						color={badgeUtils.invertColor(clan?.color ?? '#000000')}
+						color={invertColor(clan?.color ?? '#000000')}
 						bgColor={clan?.color ?? 'var(--dimmed)'}
 						title={(highlightMain && idx == 0 ? 'Main clan. ' : '') + 'Go to clan profile'} />
 				</a>
@@ -78,7 +76,7 @@
 				label={clan.tag ?? '???'}
 				onlyLabel={true}
 				fluid={true}
-				color={badgeUtils.invertColor(clan.color ?? '#000000')}
+				color={invertColor(clan.color ?? '#000000')}
 				bgColor={clan?.color ?? 'var(--dimmed)'}
 				title="Set a score on this map to help capture it for your clan!" />
 		</a>

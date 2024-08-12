@@ -1,14 +1,12 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import Badge from '../Common/Badge.svelte';
-	import createBadgeUtils from '../Common/utils/badge';
+	import {invertColor} from '../Common/utils/badge';
 
 	export let clan = null;
 	export let clanRankingContested = null;
 	export let withTitle = true;
 	export let leaderboardId = null;
-
-	const badgeUtils = createBadgeUtils();
 </script>
 
 <div class="status-and-type">
@@ -21,7 +19,7 @@
 				label="&#9876 CONTESTED &#9876"
 				onlyLabel={true}
 				fluid={true}
-				color={badgeUtils.invertColor('#000000')}
+				color={invertColor('#000000')}
 				bgColor={'var(--dimmed)'}
 				title="Set a score on this map to break the tie and capture it for your clan!" />
 		</div>
@@ -34,7 +32,7 @@
 				label="UNCAPTURED"
 				onlyLabel={true}
 				fluid={true}
-				color={badgeUtils.invertColor('#000000')}
+				color={invertColor('#000000')}
 				bgColor={'var(--dimmed)'}
 				title="Set a score on this map to capture it for your clan!" />
 		</div>
@@ -50,7 +48,7 @@
 					label={clan?.tag ?? '???'}
 					onlyLabel={true}
 					fluid={true}
-					color={badgeUtils.invertColor(clan?.color ?? '#000000')}
+					color={invertColor(clan?.color ?? '#000000')}
 					bgColor={clan?.color ?? 'var(--dimmed)'}
 					title="Set a score on this map to help capture it for your clan!" />
 			</a>

@@ -59,6 +59,7 @@
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
 	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
 	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
+	import {invertColor} from '../components/Common/utils/badge';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -87,6 +88,11 @@
 	const params = [
 		{
 			key: 'countries',
+			default: '',
+			process: processStringFilter,
+		},
+		{
+			key: 'clanTag',
 			default: '',
 			process: processStringFilter,
 		},
@@ -174,7 +180,7 @@
 			label: 'Global',
 			iconFa: 'fas fa-globe-americas',
 			url: `/leaderboard/global/${currentLeaderboardId}/1`,
-			filters: {countries: ''},
+			filters: {countries: '', clanTag: ''},
 		},
 	].concat(
 		type === 'accsaber'
@@ -184,7 +190,7 @@
 						label: 'AccSaber',
 						icon: '<div class="accsaber-icon">',
 						url: `/leaderboard/accsaber/${currentLeaderboardId}/1`,
-						filters: {countries: ''},
+						filters: {countries: '', clanTag: ''},
 					},
 				]
 			: []
@@ -395,7 +401,7 @@
 								label: 'Clan Ranking',
 								iconFa: 'fas fa-flag',
 								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -408,7 +414,7 @@
 								label: 'Graph',
 								iconFa: 'fas fa-chart-line',
 								url: `/leaderboard/graph/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -421,7 +427,7 @@
 								label: 'Followed',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/followed/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -434,7 +440,7 @@
 								label: 'Voters',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/voters/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -447,7 +453,20 @@
 								label: 'Prediction',
 								iconFa: 'fas fa-wand-magic-sparkles',
 								url: `/leaderboard/prediction/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
+							},
+						]
+					: []
+			)
+			.concat(
+				$account?.player?.playerInfo?.clans?.length
+					? [
+							{
+								type: 'clans',
+								label: 'My Clans',
+								iconFa: 'fas fa-people-group',
+								url: `/leaderboard/clans/${currentLeaderboardId}/1`,
+								filters: {countries: '', clanTag: $account.player.playerInfo.clans[0].tag},
 							},
 						]
 					: []
@@ -460,7 +479,7 @@
 								label: 'Country',
 								icon: `<img src="/assets/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
 								url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
-								filters: {countries: country},
+								filters: {countries: country, clanTag: ''},
 							},
 						]
 					: []
@@ -556,6 +575,12 @@
 		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
+	function onClanTagChanged(event) {
+		currentFilters.clanTag = event?.detail?.id ?? '';
+
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
+	}
+
 	let battleRoyaleDraft = false;
 	let battleRoyaleDraftList = [];
 
@@ -610,6 +635,27 @@
 
 			scoresWithUser = scoresWithUser;
 		});
+	}
+
+	let clanOptions = [];
+	let selectedClan = null;
+
+	function updateClanOptions(account) {
+		clanOptions = [];
+
+		if (!account?.player?.playerInfo?.clans?.length) return;
+		clanOptions = account?.player?.playerInfo?.clans.map(c => {
+			return {
+				id: c.tag,
+				label: c.tag,
+				color: c.color ?? '#000000',
+				textColor: invertColor(c.color ?? '#000000'),
+			};
+		});
+	}
+
+	function updateSelectedClan(clanOptions, clanTag) {
+		selectedClan = clanOptions.find(c => c.id == clanTag);
 	}
 
 	let scoresWithUser;
@@ -699,6 +745,9 @@
 		});
 	}
 
+	$: currentType == 'clans' && updateClanOptions($account);
+	$: currentType == 'clans' && currentFilters.clanTag?.length && updateSelectedClan(clanOptions, currentFilters.clanTag);
+
 	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
 	$: curveShown = $configStore?.preferences?.curveShown;
 	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
@@ -783,6 +832,10 @@
 							</div>
 						{/if}
 					</nav>
+				{/if}
+
+				{#if currentType == 'clans'}
+					<Switcher values={clanOptions} value={selectedClan} on:change={onClanTagChanged} />
 				{/if}
 
 				{#if leaderboardShowSorting && currentType != 'clanranking'}

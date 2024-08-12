@@ -20,6 +20,7 @@ export default () => {
 	} = {}) => {
 		switch (type) {
 			case 'global':
+			case 'clans':
 			case 'graph':
 				return await leaderboardService.fetchLeaderboardPage(leaderboardId, page, filters, priority, signal, force);
 			case 'clanranking':
