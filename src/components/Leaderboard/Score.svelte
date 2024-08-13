@@ -179,13 +179,13 @@
 								on:click={() => dispatch('royale-remove', {playerId: score.player.playerId, scoreId: score.score.id})} />
 						{/if}
 					{:else}
-						{#if isPatron(accountRoles) && $configStore?.leaderboardPreferences?.show?.analyzer !== false}
+						{#if $configStore?.leaderboardPreferences?.show?.analyzer !== false}
 							<Button
 								url={`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`}
 								on:click={() => showPreview(`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`)}
-								cls="replay-button-alt"
+								cls={'replay-button-alt' + (isPatron(accountRoles) ? '' : ' non-subscribed')}
 								icon="<div class='analyzer-icon'></div>"
-								title="Reeplay Analyzer"
+								title={'Reeplay Analyzer' + (isPatron(accountRoles) ? '' : ' (requires Patreon subscription)')}
 								noMargin={true} />
 						{/if}
 						{#if $configStore?.leaderboardPreferences?.show?.replay !== false}
@@ -387,6 +387,10 @@
 		justify-content: center;
 		align-items: center;
 		align-self: center;
+	}
+
+	:global(.non-subscribed) {
+		opacity: 0.5 !important;
 	}
 
 	:global(.bot-badge .badge) {

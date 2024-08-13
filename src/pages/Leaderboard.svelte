@@ -863,14 +863,14 @@
 					<div class="royale-title-container">
 						<span class="royale-title">Select score from the leaderboard to compare</span>
 						<div>
-							{#if isPatron($account?.player?.playerInfo?.role)}
-								<Button
-									type="twitter"
-									label="Analyze difference!"
-									title="Use the button to the right of timeset for every score to toggle player"
-									disabled={battleRoyaleDraftList?.length != 2}
-									on:click={() => startAnalysis()} />
-							{/if}
+							<Button
+								type="twitter"
+								label="Analyze difference!"
+								title={isPatron($account?.player?.playerInfo?.role)
+									? 'Use the button to the right of timeset for every score to toggle player'
+									: 'Requires Patreon subscription'}
+								disabled={battleRoyaleDraftList?.length != 2 || isPatron($account?.player?.playerInfo?.role)}
+								on:click={() => startAnalysis()} />
 							<Button
 								type="purple"
 								label="Watch replay comparison!"

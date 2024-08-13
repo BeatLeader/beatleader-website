@@ -161,17 +161,17 @@
 				{#if battleRoyaleDraft}
 					<div class="royale-title-container">
 						<span class="royale-title">Select scores to compare and click </span>
-						{#if isPatron($account?.player?.playerInfo?.role) && battleRoyaleDraftList.length < 3}
-							<div>
-								<Button
-									type="twitter"
-									iconFa="fas fa-play"
-									label="Analyze!"
-									title="Use the button to the right of timeset for every score to toggle score"
-									disabled={!battleRoyaleDraftList?.length}
-									on:click={() => startAnalysis()} />
-							</div>
-						{/if}
+						<div>
+							<Button
+								type="twitter"
+								iconFa="fas fa-play"
+								label="Analyze!"
+								title={isPatron($account?.player?.playerInfo?.role)
+									? 'Use the button to the right of timeset for every score to toggle score'
+									: 'Requires Patreon subscription'}
+								disabled={battleRoyaleDraftList?.length != 2 || !isPatron($account?.player?.playerInfo?.role)}
+								on:click={() => startAnalysis()} />
+						</div>
 						<div>
 							<Button
 								type="purple"
@@ -218,13 +218,14 @@
 									{/if}
 								{:else}
 									<div>
-										{#if isPatron($account?.player?.playerInfo?.role) && $configStore?.visibleScoreIcons?.analyzer !== false}
+										{#if $configStore?.visibleScoreIcons?.analyzer !== false}
 											<Button
 												url={`${BL_ANALYZER_URL}?link=${score?.replay}`}
 												on:click={() => showPreview(`${BL_ANALYZER_URL}?link=${score?.replay}`)}
-												cls="replay-button-alt"
+												cls="replay-button-alt{isPatron($account?.player?.playerInfo?.role) ? '' : ' non-subscribed'}"
 												icon="<div class='analyzer-icon'></div>"
-												title="Reeplay Analyzer"
+												title={'Reeplay Analyzer' +
+													(isPatron($account?.player?.playerInfo?.role) ? '' : ' (requires Patreon subscription)')}
 												noMargin={true} />
 										{/if}
 										<Button
@@ -308,5 +309,8 @@
 	}
 	:global(.white) {
 		color: white;
+	}
+	:global(.non-subscribed) {
+		opacity: 0.45 !important;
 	}
 </style>

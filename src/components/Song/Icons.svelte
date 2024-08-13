@@ -325,13 +325,13 @@
 			{/if}
 		{/if}
 
-		{#if isPatron($account?.player?.playerInfo?.role) && shownIcons.includes('analyzer') && analyzerUrl?.length}
+		{#if shownIcons.includes('analyzer') && analyzerUrl?.length}
 			<Button
 				url={analyzerUrl}
 				on:click={() => showPreview(analyzerUrl)}
-				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
+				cls={(altReplay ? 'replay-button-alt' : 'replay-button') + (isPatron($account?.player?.playerInfo?.role) ? '' : ' non-subscribed')}
 				icon="<img src='/assets/analyzer.webp'>"
-				title="Replay analyzer"
+				title={'Reeplay analyzer' + (isPatron($account?.player?.playerInfo?.role) ? '' : ' (requires Patreon subscription)')}
 				animated={true}
 				noMargin={true} />
 		{/if}
@@ -367,5 +367,9 @@
 	:global(.replay-button-alt) {
 		--btn-bg-color: transparent !important;
 		margin-left: 0.3em !important;
+	}
+
+	:global(.non-subscribed) {
+		opacity: 0.45 !important;
 	}
 </style>
