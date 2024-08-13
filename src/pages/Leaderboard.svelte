@@ -745,6 +745,12 @@
 		});
 	}
 
+	function curveboolflip(name) {
+		$configStore = produce($configStore, draft => {
+			draft.ppCurve[name] = !draft.ppCurve[name];
+		});
+	}
+
 	$: currentType == 'clans' && updateClanOptions($account);
 	$: currentType == 'clans' && currentFilters.clanTag?.length && updateSelectedClan(clanOptions, currentFilters.clanTag);
 
@@ -1233,15 +1239,40 @@
 								</span>
 							</div>
 							<div class="darkened-background">
-								<h2 class="title is-5">
-									PP curve (<Value
-										value={modifiedPass}
-										prevValue={leaderboard?.stats?.passRating ?? 0}
-										inline="true"
-										prefix="Pass "
-										suffix="*" />,
-									<Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="*" />,
-									<Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="*" />)
+								<h2 class="title is-5" style="text-align: center;">
+									PP curve (<span
+										on:click={() => curveboolflip('passPp')}
+										title="Click to show Pass PP curve"
+										class={$configStore?.ppCurve?.passPp ? 'higlighted-pp' : 'inactive-pp'}
+										><Value
+											value={modifiedPass}
+											prevValue={leaderboard?.stats?.passRating ?? 0}
+											inline="true"
+											prefix="Pass "
+											suffix="★" /></span
+									>,
+									<span
+										on:click={() => curveboolflip('accPp')}
+										title="Click to show Acc PP curve"
+										class={$configStore?.ppCurve?.accPp ? 'higlighted-pp' : 'inactive-pp'}
+										><Value
+											value={modifiedAcc}
+											prevValue={leaderboard?.stats?.accRating ?? 0}
+											inline="true"
+											prefix="Acc "
+											suffix="★" /></span
+									>,
+									<span
+										on:click={() => curveboolflip('techPp')}
+										title="Click to show Tech PP curve"
+										class={$configStore?.ppCurve?.techPp ? 'higlighted-pp' : 'inactive-pp'}
+										><Value
+											value={modifiedTech}
+											prevValue={leaderboard?.stats?.techRating ?? 0}
+											inline="true"
+											prefix="Tech "
+											suffix="★" /></span
+									>)
 								</h2>
 								<PpCurve
 									passRating={leaderboard?.stats?.passRating}
@@ -1497,6 +1528,15 @@
 
 	.pager-container {
 		margin: 0 0.8em;
+	}
+
+	.higlighted-pp {
+		opacity: 1;
+		cursor: pointer;
+	}
+	.inactive-pp {
+		opacity: 0.6;
+		cursor: pointer;
 	}
 
 	@media screen and (max-width: 1275px) {

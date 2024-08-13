@@ -200,6 +200,14 @@ export const DEFAULT_CONFIG = {
 		delete: true,
 		analyzer: true,
 	},
+	ppCurve: {
+		startAcc: 0.6,
+		endAcc: 1,
+
+		passPp: false,
+		accPp: false,
+		techPp: false,
+	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},
 };

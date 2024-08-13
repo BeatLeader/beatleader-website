@@ -125,7 +125,10 @@ export const buildCurve = (accuracy, passRating, accRating, techRating, golf) =>
 	}
 	var accPP = golf ? accuracy * accRating * 42 : Curve2(accuracy) * accRating * 34;
 	var techPP = Math.exp(1.9 * accuracy) * 1.08 * techRating;
-	return Inflate(passPP + accPP + techPP);
+	const totalPp = Inflate(passPP + accPP + techPP);
+	const inflation = totalPp / (passPP + accPP + techPP);
+
+	return [totalPp, passPP * inflation, accPP * inflation, techPP * inflation];
 };
 
 export const getPPFromAcc = (acc, passRating, accRating, techRating, mode) => {
