@@ -588,6 +588,10 @@
 			border-radius: 0;
 		}
 
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
+		}
+
 		:global(.profile-box) {
 			border-radius: 0 !important;
 		}

@@ -52,7 +52,6 @@
 <style>
 	.switch-types {
 		display: flex;
-		flex-wrap: wrap;
 		justify-content: start;
 		align-items: center;
 		font-size: 0.75rem;

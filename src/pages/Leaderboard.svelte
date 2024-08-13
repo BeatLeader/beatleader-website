@@ -373,7 +373,7 @@
 			if (!diffs.find(m => m.name == d.name) && d.type == currentDiff.type) {
 				diffs.push({
 					...d,
-					label: d.name + (d.stars ? ' ' + d.stars.toFixed(1) + '★' : ''),
+					label: d.name + (d.stars ? ' ' + d.stars.toFixed(1) + '★ ' : ' '),
 					cls: 'diff-tab-button',
 					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
 				});
@@ -1345,6 +1345,7 @@
 		font-weight: 900;
 		text-align: center;
 		white-space: break-spaces;
+		margin-right: -0.3em;
 	}
 
 	:global(.mode-tab-button) {
@@ -1535,6 +1536,10 @@
 			gap: 0.1em;
 		}
 
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
+		}
+
 		:global(.player-score .player-performance-badges .with-badge) {
 			min-width: 4em !important;
 		}
@@ -1552,7 +1557,14 @@
 		}
 
 		:global(.mode-tab-button) {
-			width: 4em;
+			max-width: 4em;
+			width: auto;
+			flex: 1;
+		}
+
+		:global(.switch-types:has(.mode-tab-button)) {
+			flex: 1;
+			justify-content: end !important;
 		}
 
 		:global(.mode-tab-button span) {

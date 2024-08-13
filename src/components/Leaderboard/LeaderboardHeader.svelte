@@ -507,6 +507,10 @@
 			height: unset;
 		}
 
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
+		}
+
 		.icons-container {
 			margin-left: unset;
 		}
