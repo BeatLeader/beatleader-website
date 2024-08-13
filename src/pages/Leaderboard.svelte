@@ -1,6 +1,5 @@
 <script>
-	import {createEventDispatcher, getContext} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {createEventDispatcher} from 'svelte';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
@@ -60,6 +59,7 @@
 	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
 	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
 	import {invertColor} from '../components/Common/utils/badge';
+	import {isPatron} from '../components/Player/Overlay/overlay';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -584,12 +584,15 @@
 	let battleRoyaleDraft = false;
 	let battleRoyaleDraftList = [];
 
-	const {open} = getContext('simple-modal');
-
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList.join(
-			','
-		)}`;
+		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList
+			.map(br => br.playerId)
+			.join(',')}`;
+		window.open(link, '_blank');
+	}
+
+	function startAnalysis() {
+		let link = `https://analyzer.beatleader.xyz/?scoreId=${battleRoyaleDraftList[0].scoreId}&scoreId2=${battleRoyaleDraftList[1].scoreId}`;
 		window.open(link, '_blank');
 	}
 
@@ -858,13 +861,23 @@
 
 				{#if battleRoyaleDraft}
 					<div class="royale-title-container">
-						<span class="royale-title">Select players from the leaderboard to join</span>
-						<Button
-							type="purple"
-							label="Let the battle begin!"
-							title="Use the button to the right of timeset for every score to toggle player"
-							disabled={!battleRoyaleDraftList?.length}
-							on:click={() => startBattleRoyale()} />
+						<span class="royale-title">Select score from the leaderboard to compare</span>
+						<div>
+							{#if isPatron($account?.player?.playerInfo?.role)}
+								<Button
+									type="twitter"
+									label="Analyze difference!"
+									title="Use the button to the right of timeset for every score to toggle player"
+									disabled={battleRoyaleDraftList?.length != 2}
+									on:click={() => startAnalysis()} />
+							{/if}
+							<Button
+								type="purple"
+								label="Watch replay comparison!"
+								title="Use the button to the right of timeset for every score to toggle player"
+								disabled={!(battleRoyaleDraftList?.length > 1)}
+								on:click={() => startBattleRoyale()} />
+						</div>
 					</div>
 				{/if}
 				{#if currentType != 'clanranking' && currentType != 'graph'}
@@ -890,9 +903,11 @@
 										{fixedBrowserTitle}
 										{battleRoyaleDraft}
 										{battleRoyaleDraftList}
+										accountRoles={$account?.player?.playerInfo?.role}
 										sortBy={currentFilters.sortBy}
 										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+										on:royale-remove={e =>
+											(battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId.playerId !== e.detail.playerId))} />
 
 									{#if separatePage && score.score.rankVoting}
 										<div class="rank-voting">
@@ -1000,7 +1015,8 @@
 									bind:battleRoyaleDraftList
 									sortBy={currentFilters.sortBy}
 									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+									on:royale-remove={e =>
+										(battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId.playerId !== e.detail.playerId))} />
 							</div>
 						{/each}
 					</div>

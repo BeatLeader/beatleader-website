@@ -349,8 +349,9 @@
 
 		{#if shownIcons.includes('batleRoyale')}
 			<Button
-				icon="<div class='battleroyale{battleRoyaleDraft ? 'stop' : ''}-icon'></div>"
-				title="{battleRoyaleDraft ? 'Stop' : 'Start'} drafting battle royal"
+				iconFa="fas fa-user-check"
+				type={battleRoyaleDraft ? 'danger' : 'default'}
+				title="{battleRoyaleDraft ? 'Stop' : 'Start'} selecting scores to compare"
 				noMargin={true}
 				animated={true}
 				on:click={() => (battleRoyaleDraft = !battleRoyaleDraft)} />

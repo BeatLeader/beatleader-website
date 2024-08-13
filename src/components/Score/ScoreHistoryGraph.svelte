@@ -8,9 +8,13 @@
 	import {createEventDispatcher, getContext} from 'svelte';
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import {processScore} from '../../network/clients/beatleader/scores/utils/processScore';
+	import createAccountStore from '../../stores/beatleader/account';
+	import {isPatron} from '../Player/Overlay/overlay';
 
 	export let score;
 	export let leaderboard;
+
+	const account = createAccountStore();
 
 	var history = [];
 	var canCompare = false;
@@ -131,6 +135,11 @@
 		window.open(link, '_blank');
 	}
 
+	function startAnalysis() {
+		let link = `https://analyzer.beatleader.xyz/?link=${battleRoyaleDraftList[0]}&link2=${battleRoyaleDraftList[1]}`;
+		window.open(link, '_blank');
+	}
+
 	$: score && fetchHistory(score, $configStore.scoreHistoryLegend);
 </script>
 
@@ -152,13 +161,24 @@
 				{#if battleRoyaleDraft}
 					<div class="royale-title-container">
 						<span class="royale-title">Select scores to compare and click </span>
+						{#if isPatron($account?.player?.playerInfo?.role) && battleRoyaleDraftList.length < 3}
+							<div>
+								<Button
+									type="twitter"
+									iconFa="fas fa-play"
+									label="Analyze!"
+									title="Use the button to the right of timeset for every score to toggle score"
+									disabled={!battleRoyaleDraftList?.length}
+									on:click={() => startAnalysis()} />
+							</div>
+						{/if}
 						<div>
 							<Button
 								type="purple"
 								iconFa="fas fa-play"
 								label="Compare!"
 								title="Use the button to the right of timeset for every score to toggle score"
-								disabled={!battleRoyaleDraftList?.length}
+								disabled={!(battleRoyaleDraftList?.length > 1)}
 								on:click={() => startBattleRoyale()} />
 						</div>
 					</div>
@@ -184,7 +204,7 @@
 									{#if !battleRoyaleDraftList.includes(score.replay) && battleRoyaleDraftList.length < 10}
 										<Button
 											cls="replay-button-alt"
-											iconFa="fa-regular fa-square"
+											iconFa="fa-regular fa-square white"
 											title="Add to comparison"
 											noMargin={true}
 											on:click={() => (battleRoyaleDraftList = [...battleRoyaleDraftList, score.replay])} />
@@ -198,7 +218,7 @@
 									{/if}
 								{:else}
 									<div>
-										{#if $configStore?.visibleScoreIcons?.analyzer !== false}
+										{#if isPatron($account?.player?.playerInfo?.role) && $configStore?.visibleScoreIcons?.analyzer !== false}
 											<Button
 												url={`${BL_ANALYZER_URL}?link=${score?.replay}`}
 												on:click={() => showPreview(`${BL_ANALYZER_URL}?link=${score?.replay}`)}
@@ -285,5 +305,8 @@
 	}
 	:global(.purple) {
 		color: rgb(255, 0, 208);
+	}
+	:global(.white) {
+		color: white;
 	}
 </style>
