@@ -180,5 +180,5 @@ export const computeModifiedRating = (rating, ratingName, modifiersRating, mods)
 
 export const computeStarRating = (passRating, accRating, techRating) =>
 	Number.isFinite(passRating) && Number.isFinite(accRating) && Number.isFinite(techRating)
-		? buildCurve(0.96, passRating, accRating, techRating) / 52
+		? buildCurve(0.96, passRating, accRating, techRating)[0] / 52
 		: null;
