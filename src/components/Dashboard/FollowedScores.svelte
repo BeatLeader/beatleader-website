@@ -2,15 +2,13 @@
 	import createServiceParamsManager from '../Player/utils/service-param-manager';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import Scores from '../Player/Scores.svelte';
+	import {SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 
 	export let browserTitle;
-
-	const SPECIAL_PLAYER_ID = 'user-friends';
-
 	const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
 
 	let serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {count: 5}};
-	serviceParamsManager.update(serviceParams, 'beatleader', true);
+	serviceParamsManager.update(serviceParams, 'scores', true);
 
 	function onScoresPageChanged(e) {
 		let newPage = e?.detail ?? null;

@@ -441,5 +441,9 @@
 			margin-bottom: -2em;
 			max-width: none;
 		}
+
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
+		}
 	}
 </style>

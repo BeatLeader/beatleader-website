@@ -30,7 +30,6 @@
 		max-height: 1.5em;
 		border-radius: 4px;
 		height: 2em;
-		margin-top: 0.2em;
 		align-items: center;
 	}
 

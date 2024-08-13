@@ -253,7 +253,7 @@
 			{/if}
 
 			{#if playerId}
-				<ContentBox>
+				<ContentBox cls="scores-box">
 					<Scores
 						{playerId}
 						player={$playerStore}
@@ -280,7 +280,7 @@
 					Loading...
 				{:then accSaberAvailable}
 					{#if accSaberAvailable}
-						<ContentBox>
+						<ContentBox cls="mini-rainking-box">
 							<AccSaberMiniRanking {playerId} category="overall" numOfPlayers={5} />
 						</ContentBox>
 					{/if}
@@ -355,6 +355,17 @@
 
 	:global(.player-cards-box .cards-container) {
 		flex-direction: column;
+	}
+
+	:global(.scores-box) {
+		margin-top: 4em !important;
+		border-radius: 0 12px 12px 12px !important;
+		padding: 0.5em !important;
+	}
+
+	:global(.mini-rainking-box) {
+		border-radius: 12px !important;
+		padding: 0.1em !important;
 	}
 
 	@media screen and (max-width: 1749px) {

@@ -236,8 +236,6 @@
 
 		if (setUrl) {
 			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
-			console.log(currentFilters);
-			console.log(query);
 			const url = `/leaderboards/${currentPage}${query.length ? '?' + query : ''}`;
 			if (replace) {
 				window.history.replaceState({}, '', url);
@@ -421,7 +419,6 @@
 	}
 
 	function onMappersChange(event) {
-		console.log(event);
 		currentFilters.mappers = event.detail.join(',');
 
 		navigateToCurrentPageAndFilters();

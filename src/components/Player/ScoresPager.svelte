@@ -75,7 +75,7 @@
 
 		let serviceObj = null;
 		switch (service) {
-			case 'beatleader':
+			case 'scores':
 				serviceObj = scoresService;
 				break;
 
@@ -110,7 +110,7 @@
 	function resetCurrentValues() {
 		playerScores = null;
 
-		if (service !== 'beatleader' || shouldRefreshBlHistogram()) {
+		if (service !== 'scores' || shouldRefreshBlHistogram()) {
 			groupedPlayerScores = null;
 			playerScoresHistogram = null;
 		}
@@ -148,7 +148,7 @@
 	}
 
 	function refreshGroupedScores() {
-		if (service === 'beatleader') {
+		if (service === 'scores') {
 			if (shouldRefreshBlHistogram()) {
 				lastBlParams = getCurrentServiceParamsHash();
 
@@ -164,7 +164,7 @@
 						playerScores,
 						playerScoresHistogram.getRoundedValue(playerScoresHistogramBucketSize),
 						playerScoresHistogram.order
-				  ).filter(playerScoresHistogram.histogramFilter)
+					).filter(playerScoresHistogram.histogramFilter)
 				: null;
 	}
 
@@ -220,8 +220,8 @@
 	$: itemsPerPage = fixedItemsPerPage
 		? fixedItemsPerPage
 		: service === 'accsaber'
-		? ACCSABER_PLAYER_SCORES_PER_PAGE
-		: PLAYER_SCORES_PER_PAGE;
+			? ACCSABER_PLAYER_SCORES_PER_PAGE
+			: PLAYER_SCORES_PER_PAGE;
 </script>
 
 <Pager

@@ -10,8 +10,8 @@
 	$: avatar = editModel?.avatar
 		? editModel.avatar
 		: playerInfo?.avatar
-		? playerInfo.avatar + (playerInfo.avatar.includes('beatleader') && hash?.length ? `?${hash}` : '')
-		: null;
+			? playerInfo.avatar + (playerInfo.avatar.includes('scores') && hash?.length ? `?${hash}` : '')
+			: null;
 </script>
 
 <span class="avatar-container" class:loading={isLoading} class:centered title={editModel ? 'Click to edit avatar' : null} on:click>

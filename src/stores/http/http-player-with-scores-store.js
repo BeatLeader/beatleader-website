@@ -8,7 +8,7 @@ import {writable} from 'svelte/store';
 
 export default (
 	playerId = null,
-	service = 'beatleader',
+	service = 'scores',
 	serviceParams = {type: 'date', page: 1},
 	initialState = null,
 	initialStateType = 'initial'

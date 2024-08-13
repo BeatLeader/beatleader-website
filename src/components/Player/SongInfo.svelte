@@ -16,7 +16,7 @@
 	export let notClickable = false;
 	export let replayLink = false;
 	export let category = null;
-	export let service = 'beatleader';
+	export let service = 'scores';
 	export let noIcons = false;
 	export let icons = null;
 

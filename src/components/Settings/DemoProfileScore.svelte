@@ -8,7 +8,7 @@
 	import {writable} from 'svelte/store';
 
 	export let playerId = null;
-	export let initialService = 'beatleader';
+	export let initialService = 'scores';
 	export let initialServiceParams = {sort: 'pp', page: 1, count: 1};
 	export let fixedBrowserTitle = null;
 	export let withPlayers = false;

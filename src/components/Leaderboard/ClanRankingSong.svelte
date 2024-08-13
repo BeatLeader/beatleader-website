@@ -175,7 +175,7 @@
 	</div>
 	<div class={`clan-map-my-score ${inList ? 'score-in-list' : ''}`}>
 		{#if cr.myScore}
-			<SongScoreCompact playerId={cr.myScore.playerId} songScore={processScore({leaderboard, ...cr.myScore})} service={'beatleader'} />
+			<SongScoreCompact playerId={cr.myScore.playerId} songScore={processScore({leaderboard, ...cr.myScore})} service={'scores'} />
 		{/if}
 	</div>
 

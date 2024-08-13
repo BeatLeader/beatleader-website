@@ -39,6 +39,7 @@ export const BL_RENDERER_API_URL = 'https://render.beatleader.xyz/';
 export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
+export const SPECIAL_PLAYER_ID = 'user-friends';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
 export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}';
@@ -71,7 +72,7 @@ export const BL_API_CLAN_RANKING_URL = BL_API_URL + 'leaderboard/clanRankings/${
 export const BL_API_CLAN_RANKING_SCORES_URL = BL_API_URL + 'leaderboard/clanRankings/${leaderboardId}/${clanRankingId}?page=${page}';
 export const BL_API_LEADERBOARD_URL =
 	BL_API_URL +
-	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&friends=${friends}&voters=${voters}&prediction=${prediction}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
+	'leaderboard/${leaderboardId}?leaderboardContext=${leaderboardContext}&page=${page}&countries=${countries}&clanTag=${clanTag}&friends=${friends}&voters=${voters}&prediction=${prediction}&sortBy=${sortBy}&order=${order}&search=${search}&modifiers=${modifiers}&count=${count}';
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
 	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}&mappers=${mappers}';
@@ -239,7 +240,7 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 			let leaderboardId = led.song.id + '' + a.value + '' + a.mode;
 			let diffAndType = {diff: a.difficultyName, type: a.modeName};
 			let color = getDiffColor(diffAndType);
-			return {name: diffAndType.diff.replace('Plus', '+'), type: diffAndType.type, leaderboardId, color};
+			return {name: diffAndType.diff.replace('Plus', '+'), type: diffAndType.type, leaderboardId, color, stars: a.stars};
 		}) ?? null;
 
 	const currentDiff = led.difficulty;
@@ -287,7 +288,13 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 
 			return cum;
 		},
-		{imageUrl: led?.song?.coverImage, fullImageUrl: led?.song?.fullCoverImage, downloadUrl: led?.song?.downloadUrl, stats: {}}
+		{
+			imageUrl: led?.song?.coverImage,
+			mappers: led?.song?.mappers,
+			fullImageUrl: led?.song?.fullCoverImage,
+			downloadUrl: led?.song?.downloadUrl,
+			stats: {},
+		}
 	);
 
 	const leaderboardGroup = led?.leaderboardGroup?.sort((a, b) => b.timestamp - a.timestamp) ?? null;
@@ -351,7 +358,7 @@ export default (options = {}) => {
 
 	const scores = async (playerId, page = 1, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchScores(
-			substituteVars(playerId === 'user-friends' ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {
+			substituteVars(playerId === SPECIAL_PLAYER_ID ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {
 				...params,
 				...(params?.filters ?? {}),
 				search: params?.filters?.search ? encodeURIComponent(params?.filters?.search) : null,

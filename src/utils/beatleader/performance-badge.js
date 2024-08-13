@@ -273,8 +273,8 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo
 				? 'Click to setup'
 				: beatSavior?.stats?.leftAverageCut
-				? `Left accuracy: ${beatSavior?.stats?.leftAverageCut ? beatSavior?.stats?.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`
-				: null;
+					? `Left accuracy: ${beatSavior?.stats?.leftAverageCut ? beatSavior?.stats?.leftAverageCut.map(v => formatNumber(v)).join('/') : ''}`
+					: null;
 			className = 'beatSavior';
 
 			componentProps = {
@@ -306,10 +306,10 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 			title = isDemo
 				? 'Click to setup'
 				: beatSavior?.stats?.rightAverageCut
-				? `Right accuracy: ${
-						beatSavior?.stats?.rightAverageCut ? beatSavior?.stats?.rightAverageCut.map(v => formatNumber(v)).join('/') : ''
-				  }`
-				: null;
+					? `Right accuracy: ${
+							beatSavior?.stats?.rightAverageCut ? beatSavior?.stats?.rightAverageCut.map(v => formatNumber(v)).join('/') : ''
+						}`
+					: null;
 			className = 'beatSavior';
 
 			componentProps = {
@@ -649,7 +649,7 @@ function getNominatedPPHoverTitle(score, beatSavior, modifiers) {
 		const modifiedPassRating = computeModifiedRating(diff?.passRating, 'PassRating', modifiersRating, modArr);
 		const modifiedAccRating = computeModifiedRating(diff?.accRating, 'AccRating', modifiersRating, modArr);
 		const modifiedTechRating = computeModifiedRating(diff?.techRating, 'TechRating', modifiersRating, modArr);
-		const pp = getPPFromAcc(fcAccuracy, modifiedPassRating, modifiedAccRating, modifiedTechRating);
+		const pp = getPPFromAcc(fcAccuracy, modifiedPassRating, modifiedAccRating, modifiedTechRating)[0];
 		const roundedPP = Math.round(pp * 100) / 100;
 		const fcPpTitle = getFCPPTitle(roundedPP, 'pp');
 		title += `\n${fcPpTitle}`;

@@ -14,10 +14,11 @@
 	import Preview from '../Common/Preview.svelte';
 	import {describePlatform, getControllerForEnum, getHeadsetForHMD} from '../../utils/beatleader/format';
 	import {BL_ANALYZER_URL, BL_REPLAYS_URL} from '../../network/queues/beatleader/api-queue';
+	import {isPatron} from '../Player/Overlay/overlay';
 
 	export let leaderboardId = null;
 	export let score = null;
-	export let type = 'beatleader';
+	export let type = 'scores';
 	export let highlight = false;
 	export let sortBy = 'rank';
 	export let fixedBrowserTitle = null;
@@ -27,6 +28,7 @@
 	export let battleRoyaleDraftList = [];
 	export let selectedMetric = null;
 	export let hideClans = false;
+	export let accountRoles = '';
 
 	const MAX_ROYALE_LIST_LENGTH = 10;
 
@@ -161,29 +163,29 @@
 			{#if !noReplayInLeaderboard && type !== 'accsaber'}
 				<div class="replay">
 					{#if battleRoyaleDraft && $configStore?.leaderboardPreferences?.show?.replay !== false}
-						{#if !battleRoyaleDraftList.includes(score?.player?.playerId) && battleRoyaleDraftList.length < MAX_ROYALE_LIST_LENGTH}
+						{#if !battleRoyaleDraftList.find(br => br.playerId == score?.player?.playerId) && battleRoyaleDraftList.length < MAX_ROYALE_LIST_LENGTH}
 							<Button
 								cls="replay-button-alt"
-								icon="<div class='battleroyalejoin-icon'></div>"
-								title="Join battle royal"
+								iconFa="fa-regular fa-square white"
+								title="Add score to comparison"
 								noMargin={true}
-								on:click={() => dispatch('royale-add', score.player.playerId)} />
-						{:else if battleRoyaleDraftList.includes(score?.player?.playerId)}
+								on:click={() => dispatch('royale-add', {playerId: score.player.playerId, scoreId: score.score.id})} />
+						{:else if battleRoyaleDraftList.find(br => br.playerId == score?.player?.playerId)}
 							<Button
 								cls="replay-button-alt"
-								icon="<div class='battleroyalestop-icon'></div>"
-								title="Remove from battle royal"
+								iconFa="fa fa-square-check purple"
+								title="Remove score from comparison"
 								noMargin={true}
-								on:click={() => dispatch('royale-remove', score?.player?.playerId)} />
+								on:click={() => dispatch('royale-remove', {playerId: score.player.playerId, scoreId: score.score.id})} />
 						{/if}
 					{:else}
 						{#if $configStore?.leaderboardPreferences?.show?.analyzer !== false}
 							<Button
 								url={`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`}
 								on:click={() => showPreview(`${BL_ANALYZER_URL}?scoreId=${score?.score.id}`)}
-								cls="replay-button-alt"
+								cls={'replay-button-alt' + (isPatron(accountRoles) ? '' : ' non-subscribed')}
 								icon="<div class='analyzer-icon'></div>"
-								title="Reeplay Analyzer"
+								title={'Reeplay Analyzer' + (isPatron(accountRoles) ? '' : ' (requires Patreon subscription)')}
 								noMargin={true} />
 						{/if}
 						{#if $configStore?.leaderboardPreferences?.show?.replay !== false}
@@ -387,10 +389,21 @@
 		align-self: center;
 	}
 
+	:global(.non-subscribed) {
+		opacity: 0.5 !important;
+	}
+
 	:global(.bot-badge .badge) {
 		margin: 0 !important;
 		height: 1.2em;
 		font-size: 0.9em !important;
+	}
+
+	:global(.purple) {
+		color: rgb(255, 0, 208);
+	}
+	:global(.white) {
+		color: white;
 	}
 
 	@media screen and (max-width: 767px) {

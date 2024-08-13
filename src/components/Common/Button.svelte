@@ -250,7 +250,7 @@
 		font-size: inherit;
 		cursor: pointer;
 		color: var(--btn-color, #363636) !important;
-		background-color: var(--btn-bg-color, #3273dc) !important;
+		background-color: var(--btn-bg-color, #3273dc);
 		outline: none !important;
 		box-shadow: none;
 	}
@@ -302,7 +302,7 @@
 	}
 
 	.not-selected {
-		opacity: 0.35 !important;
+		opacity: 0.35;
 	}
 
 	.not-selected:hover {

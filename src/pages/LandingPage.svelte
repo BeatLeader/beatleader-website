@@ -363,5 +363,9 @@
 			max-width: none;
 			margin-left: 0.125em;
 		}
+
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
+		}
 	}
 </style>

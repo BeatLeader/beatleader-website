@@ -41,7 +41,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
-						analyzer: false,
+						analyzer: true,
 					},
 				},
 			},
@@ -76,7 +76,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
-						analyzer: false,
+						analyzer: true,
 					},
 				},
 			},
@@ -99,7 +99,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
-						analyzer: false,
+						analyzer: true,
 					},
 				},
 			},
@@ -122,7 +122,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
-						analyzer: false,
+						analyzer: true,
 					},
 				},
 			},
@@ -145,7 +145,7 @@
 						date: true,
 						replay: true,
 						hmd: false,
-						analyzer: false,
+						analyzer: true,
 					},
 				},
 			},
@@ -289,6 +289,7 @@
 	$: showStats = $configStore?.leaderboardPreferences?.showStatsInHeader ?? false;
 	$: showHash = $configStore?.leaderboardPreferences?.showHashInHeader ?? false;
 	$: showGraph = $configStore?.leaderboardPreferences?.showGraphOption ?? false;
+	$: alwaysShowAuthorHint = $configStore?.leaderboardPreferences?.alwaysShowAuthorHint ?? false;
 
 	$: showClanInHeader = $configStore?.leaderboardPreferences?.showClanCaptureInHeader ?? false;
 	$: showClanInList = $configStore?.leaderboardPreferences?.showClanCaptureInList ?? false;
@@ -364,7 +365,7 @@
 					<LeaderboardHeader {leaderboard} {ratings} latestHash={true} />
 				</ContentBox>
 				<div class="switches">
-					<div title="Show map stats">
+					<div title="Show song subtitle">
 						<Switch
 							value={showSubtitle}
 							label="Show song subtitle"
@@ -379,6 +380,14 @@
 							fontSize={12}
 							design="slider"
 							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showStatsInHeader', !showStats)} />
+					</div>
+					<div title="Always show author name hint">
+						<Switch
+							value={alwaysShowAuthorHint}
+							label="Always show author name hint"
+							fontSize={12}
+							design="slider"
+							on:click={() => settempsetting('leaderboardPreferences', 'alwaysShowAuthorHint', !alwaysShowAuthorHint)} />
 					</div>
 					<div title="Show map hash">
 						<Switch

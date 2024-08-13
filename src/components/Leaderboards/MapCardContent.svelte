@@ -124,10 +124,7 @@
 			{/if}
 
 			{#if map?.myScore}
-				<SongScoreCompact
-					playerId={map.myScore.playerId}
-					songScore={processScore({leaderboard: map, ...map.myScore})}
-					service={'beatleader'} />
+				<SongScoreCompact playerId={map.myScore.playerId} songScore={processScore({leaderboard: map, ...map.myScore})} service={'scores'} />
 			{/if}
 		</div>
 	</div>

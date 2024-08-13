@@ -45,5 +45,6 @@
 		--webkit-transofrm: translateZ(0);
 		--webkit-perspective: 1000;
 		--webkit-backface-visibility: hidden;
+		-webkit-backdrop-filter: blur(10px);
 	}
 </style>

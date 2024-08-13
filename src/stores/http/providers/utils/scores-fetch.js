@@ -1,7 +1,7 @@
 import createScoresService from '../../../../services/beatleader/scores';
 import createAccSaberService from '../../../../services/accsaber';
 import {capitalize} from '../../../../utils/js';
-import {BL_API_URL} from '../../../../network/queues/beatleader/api-queue';
+import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../../../network/queues/beatleader/api-queue';
 import {processScore} from '../../../../network/clients/beatleader/scores/utils/processScore';
 import {fetchJson} from '../../../../network/fetch';
 import {getResponseBody} from '../../../../network/queues/queues';
@@ -44,7 +44,7 @@ export default () => {
 		const processedServiceParams = processServiceParamsFilters(serviceParams);
 
 		switch (service) {
-			case 'user-friends':
+			case SPECIAL_PLAYER_ID:
 				return blScoresService.fetchFollowedScores(
 					processedServiceParams,
 					otherParams?.refreshInterval,
@@ -54,7 +54,7 @@ export default () => {
 				);
 			case 'accsaber':
 				return accSaberService.getPlayerScoresPage(playerId, processedServiceParams);
-			case 'beatleader':
+			case 'scores':
 			default:
 				return blScoresService.fetchScoresPageOrGetFromCache(
 					playerId,

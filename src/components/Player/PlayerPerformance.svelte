@@ -69,7 +69,7 @@
 		if (
 			additionalStat &&
 			['pauses', 'maxStreak', 'replaysWatched', 'accPP', 'passPP', 'techPP', 'playCount'].includes(additionalStat) &&
-			service === 'beatleader' &&
+			service === 'scores' &&
 			rows >= 2 &&
 			!config.some(row => row.some(col => col?.metric === additionalStat))
 		) {
@@ -130,7 +130,7 @@
 					false,
 					songScore?.leaderboard?.difficultyBl?.status ?? 0,
 					modifiers
-			  )
+				)
 			: null;
 
 	$: scoreComparisonMethod = $configStore?.scoreComparison?.method ?? 'none';

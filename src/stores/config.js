@@ -112,6 +112,7 @@ export const DEFAULT_CONFIG = {
 		showGraphOption: false,
 		showClanCaptureInHeader: true,
 		showClanCaptureInList: true,
+		alwaysShowAuthorHint: false,
 
 		show: {
 			avatar: true,
@@ -120,7 +121,7 @@ export const DEFAULT_CONFIG = {
 			date: true,
 			replay: true,
 			hmd: false,
-			analyzer: false,
+			analyzer: true,
 		},
 	},
 	rankingPreferences: {
@@ -198,6 +199,14 @@ export const DEFAULT_CONFIG = {
 		replay: true,
 		delete: true,
 		analyzer: true,
+	},
+	ppCurve: {
+		startAcc: 0.6,
+		endAcc: 1,
+
+		passPp: false,
+		accPp: false,
+		techPp: false,
 	},
 	locale: DEFAULT_LOCALE,
 	selectedPlaylist: {},

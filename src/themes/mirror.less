@@ -165,6 +165,27 @@ nav.ssr-page-container {
     box-shadow: none !important;
 }
 
+.leaderboard {
+    background: var(--customizable-color-1) !important;
+    backdrop-filter: blur(10px);
+    --webkit-transofrm: translateZ(0);
+    --webkit-perspective: 1000;
+    --webkit-backface-visibility: hidden;
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: none !important;
+    border-top: none !important;
+}
+
+.leaderboard-header-box {
+    background: var(--customizable-color-1) !important;
+    backdrop-filter: blur(10px);
+    --webkit-transofrm: translateZ(0);
+    --webkit-perspective: 1000;
+    --webkit-backface-visibility: hidden;
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: none !important;
+}
+
 .content-box.festive {
     background-image: url(/assets/lights2.gif) !important;
     background-size: cover !important;
@@ -394,4 +415,40 @@ select {
 
 .invite-to-clan {
     margin-top: 0.5em !important;
+}
+
+.mode-tab-button:not(.not-selected) {
+    background: var(--customizable-color-1) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    --webkit-transofrm: translateZ(0);
+    --webkit-perspective: 1000;
+    --webkit-backface-visibility: hidden;
+    border: 2px solid var(--btn-bg-color, #3273dc) !important;
+    border-bottom: none !important;
+}
+.mode-tab-button.not-selected {
+    opacity: 0.8 !important;
+    border-bottom: 2px solid var(--spacer-bg-color, #8f48db) !important;
+}
+
+.diff-tab-button:not(.not-selected) {
+    background: var(--customizable-color-1) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    --webkit-transofrm: translateZ(0);
+    --webkit-perspective: 1000;
+    --webkit-backface-visibility: hidden;
+    border: 2px solid var(--btn-bg-color, #3273dc) !important;
+    border-bottom: none !important;
+}
+.diff-tab-button.not-selected {
+    opacity: 0.8 !important;
+    border-bottom: 2px solid var(--spacer-bg-color, #8f48db) !important;
+}
+
+.diff-and-mode-spacer {
+    border-bottom: 2px solid var(--spacer-bg-color, #8f48db);
+    flex: 1;
+    margin-bottom: -6px;
 }

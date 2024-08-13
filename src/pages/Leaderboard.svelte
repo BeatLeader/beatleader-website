@@ -1,6 +1,5 @@
 <script>
-	import {createEventDispatcher, getContext} from 'svelte';
-	import {navigate} from 'svelte-routing';
+	import {createEventDispatcher} from 'svelte';
 	import {fade, fly, slide} from 'svelte/transition';
 	import createAccountStore from '../stores/beatleader/account';
 	import createLeaderboardStore from '../stores/http/http-leaderboard-store';
@@ -16,12 +15,12 @@
 	import Badge from '../components/Common/Badge.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import Switcher from '../components/Common/Switcher.svelte';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 	import Button from '../components/Common/Button.svelte';
 	import Icons from '../components/Song/Icons.svelte';
 	import Commentary from '../components/Leaderboard/Commentary.svelte';
 	import CriteriaCommentary from '../components/Leaderboard/CriteriaCommentary.svelte';
 	import QualityVoting from '../components/Leaderboard/QualityVotes/QualityVoting.svelte';
-	import BeatSaviorDetails from '../components/BeatSavior/Details.svelte';
 
 	import {
 		getIconNameForDiff,
@@ -59,6 +58,8 @@
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
 	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
 	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
+	import {invertColor} from '../components/Common/utils/badge';
+	import {isPatron} from '../components/Player/Overlay/overlay';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -91,6 +92,11 @@
 			process: processStringFilter,
 		},
 		{
+			key: 'clanTag',
+			default: '',
+			process: processStringFilter,
+		},
+		{
 			key: 'sortBy',
 			default: 'rank',
 			process: processStringFilter,
@@ -115,6 +121,7 @@
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params);
 
 	let currentPage = 1;
+	let previousPage = 0;
 	let initialPage = page;
 
 	function updateFilters(newFilters) {
@@ -173,7 +180,7 @@
 			label: 'Global',
 			iconFa: 'fas fa-globe-americas',
 			url: `/leaderboard/global/${currentLeaderboardId}/1`,
-			filters: {countries: ''},
+			filters: {countries: '', clanTag: ''},
 		},
 	].concat(
 		type === 'accsaber'
@@ -183,7 +190,7 @@
 						label: 'AccSaber',
 						icon: '<div class="accsaber-icon">',
 						url: `/leaderboard/accsaber/${currentLeaderboardId}/1`,
-						filters: {countries: ''},
+						filters: {countries: '', clanTag: ''},
 					},
 				]
 			: []
@@ -269,6 +276,7 @@
 		currentLeaderboardId = newLeaderboardId;
 
 		currentType = newType;
+		previousPage = currentPage;
 		currentPage = parseInt(newPage, 10);
 		if (isNaN(currentPage)) currentPage = 1;
 
@@ -320,31 +328,64 @@
 		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, false);
 	}
 
-	function processDiffs(diffArray, song) {
-		if (song) {
-			const idLength = song?.id?.length;
-			diffArray = diffArray.sort(function (a, b) {
-				let diffNumA = parseInt(a.leaderboardId[idLength]);
-				let diffNumB = parseInt(b.leaderboardId[idLength]);
-				if (diffNumA < diffNumB) return -1;
-				if (diffNumA > diffNumB) return 1;
-				return 0;
-			});
-			diffArray = diffArray.sort(function (a, b) {
-				let diffNumA = parseInt(a.leaderboardId.substring(idLength + 1));
-				let diffNumB = parseInt(b.leaderboardId.substring(idLength + 1));
-				if (diffNumA < diffNumB) return -1;
-				if (diffNumA > diffNumB) return 1;
-				return 0;
-			});
+	function processDiffs(diffArray, song, leaderboardId) {
+		if (!diffArray?.length || !song) return {};
+
+		const idLength = song?.id?.length;
+		diffArray = diffArray.sort(function (a, b) {
+			let diffNumA = parseInt(a.leaderboardId[idLength]);
+			let diffNumB = parseInt(b.leaderboardId[idLength]);
+			if (diffNumA < diffNumB) return -1;
+			if (diffNumA > diffNumB) return 1;
+			return 0;
+		});
+		diffArray = diffArray.sort(function (a, b) {
+			let diffNumA = parseInt(a.leaderboardId.substring(idLength + 1));
+			let diffNumB = parseInt(b.leaderboardId.substring(idLength + 1));
+			if (diffNumA < diffNumB) return -1;
+			if (diffNumA > diffNumB) return 1;
+			return 0;
+		});
+
+		let currentDiff = diffArray.find(d => d.leaderboardId === leaderboardId);
+
+		if (!currentDiff) {
+			currentDiff = diffArray[0];
 		}
 
-		return diffArray.map(d => ({
-			...d,
-			label: d.name,
-			url: `/leaderboard/${currentType}/${d.leaderboardId}`,
-			icon: `<div class="${getIconNameForDiff(d)}" title="${getDescriptionForDiff(d)}">`,
-		}));
+		let modes = [];
+		diffArray.forEach(d => {
+			if (!modes.find(m => m.type == d.type)) {
+				if (d.name != currentDiff.name && diffArray.find(dd => dd.type == d.type && dd.name == currentDiff.name)) return;
+
+				modes.push({
+					...d,
+					label: getDescriptionForDiff(d).title,
+					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
+					cls: 'mode-tab-button',
+					icon: `<div class="${getIconNameForDiff(d)}" title="${getDescriptionForDiff(d)}">`,
+				});
+			}
+		});
+
+		let diffs = [];
+		diffArray.forEach(d => {
+			if (!diffs.find(m => m.name == d.name) && d.type == currentDiff.type) {
+				diffs.push({
+					...d,
+					label: d.name + (d.stars ? ' ' + d.stars.toFixed(1) + '★ ' : ' '),
+					cls: 'diff-tab-button',
+					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
+				});
+			}
+		});
+
+		return {
+			diffs,
+			modes,
+			currentDiff: diffs.find(d => d.leaderboardId === leaderboardId),
+			currentMode: modes.find(d => d.leaderboardId === leaderboardId),
+		};
 	}
 
 	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked, showGraphOption) {
@@ -360,7 +401,7 @@
 								label: 'Clan Ranking',
 								iconFa: 'fas fa-flag',
 								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -373,7 +414,7 @@
 								label: 'Graph',
 								iconFa: 'fas fa-chart-line',
 								url: `/leaderboard/graph/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -386,7 +427,7 @@
 								label: 'Followed',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/followed/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -399,7 +440,7 @@
 								label: 'Voters',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/voters/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
 							},
 						]
 					: []
@@ -412,7 +453,20 @@
 								label: 'Prediction',
 								iconFa: 'fas fa-wand-magic-sparkles',
 								url: `/leaderboard/prediction/${currentLeaderboardId}/1`,
-								filters: {countries: ''},
+								filters: {countries: '', clanTag: ''},
+							},
+						]
+					: []
+			)
+			.concat(
+				$account?.player?.playerInfo?.clans?.length
+					? [
+							{
+								type: 'clans',
+								label: 'My Clans',
+								iconFa: 'fas fa-people-group',
+								url: `/leaderboard/clans/${currentLeaderboardId}/1`,
+								filters: {countries: '', clanTag: $account.player.playerInfo.clans[0].tag},
 							},
 						]
 					: []
@@ -425,7 +479,7 @@
 								label: 'Country',
 								icon: `<img src="/assets/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
 								url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
-								filters: {countries: country},
+								filters: {countries: country, clanTag: ''},
 							},
 						]
 					: []
@@ -521,15 +575,24 @@
 		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
 
+	function onClanTagChanged(event) {
+		currentFilters.clanTag = event?.detail?.id ?? '';
+
+		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
+	}
+
 	let battleRoyaleDraft = false;
 	let battleRoyaleDraftList = [];
 
-	const {open} = getContext('simple-modal');
-
 	function startBattleRoyale() {
-		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList.join(
-			','
-		)}`;
+		let link = `https://royale.beatleader.xyz/?hash=${hash}&difficulty=${capitalize(diffInfo.diff)}&players=${battleRoyaleDraftList
+			.map(br => br.playerId)
+			.join(',')}`;
+		window.open(link, '_blank');
+	}
+
+	function startAnalysis() {
+		let link = `https://analyzer.beatleader.xyz/?scoreId=${battleRoyaleDraftList[0].scoreId}&scoreId2=${battleRoyaleDraftList[1].scoreId}`;
 		window.open(link, '_blank');
 	}
 
@@ -577,6 +640,27 @@
 		});
 	}
 
+	let clanOptions = [];
+	let selectedClan = null;
+
+	function updateClanOptions(account) {
+		clanOptions = [];
+
+		if (!account?.player?.playerInfo?.clans?.length) return;
+		clanOptions = account?.player?.playerInfo?.clans.map(c => {
+			return {
+				id: c.tag,
+				label: c.tag,
+				color: c.color ?? '#000000',
+				textColor: invertColor(c.color ?? '#000000'),
+			};
+		});
+	}
+
+	function updateSelectedClan(clanOptions, clanTag) {
+		selectedClan = clanOptions.find(c => c.id == clanTag);
+	}
+
 	let scoresWithUser;
 	let clanRankingList;
 
@@ -622,9 +706,8 @@
 	$: song = opt($leaderboardStore, 'leaderboard.song', null);
 	$: initRatings(leaderboard);
 
-	$: diffs = processDiffs(opt($leaderboardStore, 'diffs', []), song);
-	$: currentDiff = diffs ? diffs.find(d => d.leaderboardId === currentLeaderboardId) : null;
-	$: currentlyLoadedDiff = $pending && diffs ? diffs.find(d => d.leaderboardId === $pending.leaderboardId) : null;
+	$: ({diffs, modes, currentDiff, currentMode} = processDiffs($leaderboardStore?.diffs ?? [], song, currentLeaderboardId));
+
 	$: hash = opt($leaderboardStore, 'leaderboard.song.hash');
 	$: diffInfo = opt($leaderboardStore, 'leaderboard.diffInfo');
 
@@ -655,10 +738,6 @@
 	$: updateScoresWithUser(userScoreOnCurrentPage, scores, userScore);
 
 	$: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
-	$: if (separatePage && isRT) votingStore.fetchResults(leaderboardId);
-	$: votingStats = $votingStore[leaderboardId];
-
-	$: beatSaviorPromise = showAverageStats ? scoreStatisticEnhancer(leaderboard, leaderboard) : null;
 
 	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
 	$: featuredPlaylists = leaderboard?.stats?.featuredPlaylists;
@@ -668,6 +747,15 @@
 			draft.preferences[name] = !draft.preferences[name];
 		});
 	}
+
+	function curveboolflip(name) {
+		$configStore = produce($configStore, draft => {
+			draft.ppCurve[name] = !draft.ppCurve[name];
+		});
+	}
+
+	$: currentType == 'clans' && updateClanOptions($account);
+	$: currentType == 'clans' && currentFilters.clanTag?.length && updateSelectedClan(clanOptions, currentFilters.clanTag);
 
 	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
 	$: curveShown = $configStore?.preferences?.curveShown;
@@ -697,7 +785,7 @@
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
 		{#if leaderboard && song && !withoutHeader}
-			<ContentBox cls="leaderboard-header-box">
+			<div class="leaderboard-header-box">
 				<LeaderboardHeader
 					bind:currentLeaderboardId
 					bind:battleRoyaleDraft
@@ -706,9 +794,22 @@
 					{ratings}
 					batleRoyale={replayEnabled}
 					on:group-changed={onSelectedGroupEntryChanged} />
-			</ContentBox>
+			</div>
 		{/if}
-		<div class="leaderboard content-box">
+		{#if type !== 'accsaber' && !withoutDiffSwitcher}
+			<div class="diff-and-mode-switch" style="--spacer-bg-color: {currentDiff?.color ?? 'transparent'}">
+				{#if diffs}
+					<TabSwitcher values={diffs} value={currentDiff} on:change={onDiffChange} />
+				{/if}
+				<div class="diff-and-mode-spacer"></div>
+				{#if modes}
+					<TabSwitcher values={modes} value={currentMode} on:change={onDiffChange} />
+				{/if}
+			</div>
+		{/if}
+		<div
+			class="leaderboard"
+			style={!withoutHeader ? `border: 2px solid ${currentDiff?.color ?? 'transparent'};` : 'margin: 0.4em; border-radius: 6px;'}>
 			{#if !$leaderboardStore && $isLoading}
 				<div class="align-spinner">
 					<Spinner />
@@ -719,11 +820,7 @@
 					<nav class="diff-switch">
 						<LeaderboardActionButtons {account} {leaderboard} {votingStore} {diffs} />
 
-						{#if !withoutDiffSwitcher && diffs && diffs.length}
-							<Switcher values={diffs} value={currentDiff} on:change={onDiffChange} loadingValue={currentlyLoadedDiff} />
-						{/if}
-
-						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} loadingValue={currentlyLoadedDiff} />
+						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} />
 
 						{#if currentType != 'clanranking'}
 							<div class="sorting-options">
@@ -746,6 +843,10 @@
 					</nav>
 				{/if}
 
+				{#if currentType == 'clans'}
+					<Switcher values={clanOptions} value={selectedClan} on:change={onClanTagChanged} />
+				{/if}
+
 				{#if leaderboardShowSorting && currentType != 'clanranking'}
 					<nav class="switcher-nav" transition:slide>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
@@ -760,18 +861,28 @@
 
 				{#if battleRoyaleDraft}
 					<div class="royale-title-container">
-						<span class="royale-title">Select players from the leaderboard to join</span>
-						<Button
-							type="purple"
-							label="Let the battle begin!"
-							title="Use the button to the right of timeset for every score to toggle player"
-							disabled={!battleRoyaleDraftList?.length}
-							on:click={() => startBattleRoyale()} />
+						<span class="royale-title">Select score from the leaderboard to compare</span>
+						<div>
+							<Button
+								type="twitter"
+								label="Analyze difference!"
+								title={isPatron($account?.player?.playerInfo?.role)
+									? 'Use the button to the right of timeset for every score to toggle player'
+									: 'Requires Patreon subscription'}
+								disabled={battleRoyaleDraftList?.length != 2 || isPatron($account?.player?.playerInfo?.role)}
+								on:click={() => startAnalysis()} />
+							<Button
+								type="purple"
+								label="Watch replay comparison!"
+								title="Use the button to the right of timeset for every score to toggle player"
+								disabled={!(battleRoyaleDraftList?.length > 1)}
+								on:click={() => startBattleRoyale()} />
+						</div>
 					</div>
 				{/if}
 				{#if currentType != 'clanranking' && currentType != 'graph'}
 					{#if scoresWithUser?.length}
-						<div class="scores-grid grid-transition-helper">
+						<div class="scores-grid darkened-background grid-transition-helper">
 							{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
 								<div
 									class={`row-${idx}`}
@@ -780,7 +891,7 @@
 									in:fly|global={initialPage == currentPage
 										? {}
 										: !score?.isUserScore
-											? {x: 200, delay: idx * 20, duration: 500}
+											? {x: currentPage >= previousPage ? 200 : -200, delay: idx * 20, duration: 500}
 											: {duration: 300}}
 									out:fade|global={!score?.isUserScore ? {duration: 100} : {duration: 300}}>
 									<Score
@@ -792,9 +903,11 @@
 										{fixedBrowserTitle}
 										{battleRoyaleDraft}
 										{battleRoyaleDraftList}
+										accountRoles={$account?.player?.playerInfo?.role}
 										sortBy={currentFilters.sortBy}
 										on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-										on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+										on:royale-remove={e =>
+											(battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId.playerId !== e.detail.playerId))} />
 
 									{#if separatePage && score.score.rankVoting}
 										<div class="rank-voting">
@@ -871,6 +984,10 @@
 								</div>
 							{/each}
 						</div>
+					{:else}
+						<div class="scores-grid darkened-background grid-transition-helper">
+							<p transition:fade>Empty leaderboard.</p>
+						</div>
 					{/if}
 				{:else if currentType == 'graph'}
 					<MapScoresChart
@@ -898,50 +1015,26 @@
 									bind:battleRoyaleDraftList
 									sortBy={currentFilters.sortBy}
 									on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-									on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+									on:royale-remove={e =>
+										(battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId.playerId !== e.detail.playerId))} />
 							</div>
 						{/each}
 					</div>
 				{:else}
 					<p transition:fade>No clan ranking found.</p>
 				{/if}
-
-				{#if votingStats}
-					<div class="voting-result">
-						<span>Average: </span>
-						<div class="score with-badge">
-							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-								<span slot="label">
-									<Value title="Average rankability" value={votingStats.rankability} inline={false} digits={2} />
-								</span>
-							</Badge>
-						</div>
-						<div class="score with-badge">
-							<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-								<span slot="label">
-									<Value title="Average stars" value={votingStats.stars} inline={false} digits={2} />
-								</span>
-							</Badge>
-						</div>
-						{#if votingsForTypeStats(votingStats.type)}
-							<div class="score with-badge">
-								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)">
-									<span slot="label">
-										<small class="nowrap-label" title="Map type">{votingsForTypeStats(votingStats.type)}</small>
-									</span>
-								</Badge>
-							</div>
-						{/if}
+				{#if $leaderboardStore.totalItems}
+					<div class="pager-container">
+						<Pager
+							totalItems={$leaderboardStore.totalItems}
+							{itemsPerPage}
+							itemsPerPageValues={null}
+							currentPage={currentPage - 1}
+							loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+							mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
+							on:page-changed={onPageChanged} />
 					</div>
 				{/if}
-				<Pager
-					totalItems={$leaderboardStore.totalItems}
-					{itemsPerPage}
-					itemsPerPageValues={null}
-					currentPage={currentPage - 1}
-					loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
-					mode={$leaderboardStore.totalItems ? 'pages' : 'simple'}
-					on:page-changed={onPageChanged} />
 
 				{#if !separatePage}
 					{#if showStats && leaderboard?.stats}
@@ -955,7 +1048,7 @@
 					{/if}
 				{/if}
 
-				{#if separatePage && type !== 'accsaber'}
+				{#if separatePage && type !== 'accsaber' && ((!isNominated && leaderboard.qualification) || leaderboard.changes?.length)}
 					<div class="score-options-section">
 						<span
 							class="beat-savior-reveal clickable"
@@ -972,19 +1065,10 @@
 						</span>
 					</div>
 					{#if showAverageStats}
-						{#await beatSaviorPromise}
-							<div class="tab">
-								<Spinner />
-							</div>
-						{:then beatSavior}
-							<div transition:slide|global class="tab">
-								<BeatSaviorDetails {beatSavior} />
-							</div>
-						{/await}
 						{#if !isNominated && leaderboard.qualification}
 							<QualificationStatus qualification={leaderboard.qualification} {isRanked} />
 						{/if}
-						{#if leaderboard.changes}
+						{#if leaderboard.changes?.length}
 							<ReweightStatusRanked map={leaderboard} />
 						{/if}
 					{/if}
@@ -997,7 +1081,7 @@
 	{#if separatePage && type !== 'accsaber'}
 		<aside transition:fade|global>
 			{#if qualification && !isRanked}
-				<ContentBox>
+				<ContentBox cls="leaderboard-aside-box">
 					{#if !commentaryShown}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
@@ -1025,7 +1109,7 @@
 				</ContentBox>
 			{/if}
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-				<ContentBox
+				<ContentBox cls="leaderboard-aside-box"
 					>{#if !qualificationInfoShown}
 						<div class="score-options-section" transition:fade>
 							<span
@@ -1063,7 +1147,7 @@
 				</ContentBox>
 			{/if}
 			{#if featuredPlaylists && featuredPlaylists.length}
-				<ContentBox>
+				<ContentBox cls="leaderboard-aside-box">
 					{#if !leaderboardShowPlaylists}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Show map details">
@@ -1080,7 +1164,7 @@
 								</span>
 							</div>
 
-							<div class="featured-playlists">
+							<div class="featured-playlists darkened-background">
 								<span class="featured-playlist-headline">Featured in:</span>
 								{#each featuredPlaylists as featuredPlaylist}
 									<div class="stats-with-icons">
@@ -1093,7 +1177,7 @@
 				</ContentBox>
 			{/if}
 			{#if showStats}
-				<ContentBox>
+				<ContentBox cls="leaderboard-aside-box">
 					{#if !leaderboardStatsShown}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
@@ -1110,7 +1194,7 @@
 								</span>
 							</div>
 							{#if leaderboard?.stats}
-								<div class="stats-with-icons">
+								<div class="stats-with-icons darkened-background">
 									{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
 										<LeaderboardStats {leaderboard} />
 									{/if}
@@ -1130,7 +1214,7 @@
 			{/if}
 			{#if isNominated && qualification}
 				{#if qualification.criteriaCheck}
-					<ContentBox>
+					<ContentBox cls="leaderboard-aside-box">
 						{#if !criteriaInfoShown}
 							<div class="score-options-section" transition:fade>
 								<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Show criteria check">
@@ -1155,7 +1239,7 @@
 			{/if}
 
 			{#if showCurve && leaderboard?.stats?.stars}
-				<ContentBox>
+				<ContentBox cls="leaderboard-aside-box">
 					{#if !curveShown}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
@@ -1170,16 +1254,41 @@
 									<i class="fas fa-chevron-left" />
 								</span>
 							</div>
-							<div>
-								<h2 class="title is-5">
-									PP curve (<Value
-										value={modifiedPass}
-										prevValue={leaderboard?.stats?.passRating ?? 0}
-										inline="true"
-										prefix="Pass "
-										suffix="*" />,
-									<Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="*" />,
-									<Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="*" />)
+							<div class="darkened-background">
+								<h2 class="title is-5" style="text-align: center;">
+									PP curve (<span
+										on:click={() => curveboolflip('passPp')}
+										title="Click to show Pass PP curve"
+										class={$configStore?.ppCurve?.passPp ? 'higlighted-pp' : 'inactive-pp'}
+										><Value
+											value={modifiedPass}
+											prevValue={leaderboard?.stats?.passRating ?? 0}
+											inline="true"
+											prefix="Pass "
+											suffix="★" /></span
+									>,
+									<span
+										on:click={() => curveboolflip('accPp')}
+										title="Click to show Acc PP curve"
+										class={$configStore?.ppCurve?.accPp ? 'higlighted-pp' : 'inactive-pp'}
+										><Value
+											value={modifiedAcc}
+											prevValue={leaderboard?.stats?.accRating ?? 0}
+											inline="true"
+											prefix="Acc "
+											suffix="★" /></span
+									>,
+									<span
+										on:click={() => curveboolflip('techPp')}
+										title="Click to show Tech PP curve"
+										class={$configStore?.ppCurve?.techPp ? 'higlighted-pp' : 'inactive-pp'}
+										><Value
+											value={modifiedTech}
+											prevValue={leaderboard?.stats?.techRating ?? 0}
+											inline="true"
+											prefix="Tech "
+											suffix="★" /></span
+									>)
 								</h2>
 								<PpCurve
 									passRating={leaderboard?.stats?.passRating}
@@ -1231,6 +1340,12 @@
 		flex-wrap: wrap;
 	}
 
+	.diff-and-mode-switch {
+		display: flex;
+		justify-content: space-between;
+		margin: 0 10px;
+	}
+
 	.diff-switch :global(> *:not(:last-child)) {
 		margin-right: 1em;
 	}
@@ -1241,10 +1356,11 @@
 	}
 
 	.leaderboard {
-		padding: 0.4em 0.6em;
+		padding: 0.5em;
 		margin: 6px 10px 16px;
-		border-radius: 0.4em;
+		border-radius: 0 0 12px 12px;
 		box-shadow: 0 2px 10px rgb(0 0 0 / 33%);
+		background: rgb(26 26 26);
 	}
 
 	.leaderboard:before {
@@ -1260,6 +1376,43 @@
 		pointer-events: none;
 	}
 
+	.darkened-background {
+		padding: 0.7em;
+		border-radius: 8px;
+	}
+
+	:global(.diff-tab-button) {
+		margin-bottom: -0.5em !important;
+		height: 3.5em;
+		border-radius: 12px 12px 0 0 !important;
+		max-width: 7em;
+	}
+
+	:global(.diff-tab-button span) {
+		font-weight: 900;
+		text-align: center;
+		white-space: break-spaces;
+		margin-right: -0.3em;
+	}
+
+	:global(.mode-tab-button) {
+		margin-bottom: -0.5em !important;
+		height: 3.5em;
+		border-radius: 12px 12px 0 0 !important;
+		width: 4em;
+	}
+
+	:global(.mode-tab-button span) {
+		font-weight: 900;
+		font-size: 1.4em;
+	}
+
+	:global(.leaderboard-aside-box) {
+		position: static !important;
+		border-radius: 12px !important;
+		margin-top: 0.36em !important;
+	}
+
 	.featured-playlists {
 		display: flex;
 		flex-direction: column;
@@ -1270,62 +1423,13 @@
 		text-align: center;
 	}
 
-	header {
-		color: var(--alternate);
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		margin-bottom: 1.2em;
-		margin-top: 1em;
-	}
-
-	header .title {
-		color: inherit !important;
-	}
-
-	header h1 {
-		font-size: 1em !important;
-		margin-bottom: 0.5em;
-	}
-
-	header h1 span.name {
-		font-size: 1.8em;
-	}
-
-	header h2.title {
-		font-size: 1em !important;
-		color: var(--increase, #42b129) !important;
-		margin-top: 0.5em;
-		margin-bottom: 0.5em;
-	}
-
-	header h2.title.unranked {
-		color: var(--decrease, #f94022) !important;
-	}
-
-	header .icons {
-		font-size: 0.65em;
-	}
-
 	.stats-with-icons {
 		display: flex;
 		align-content: center;
 		justify-content: space-evenly;
 		flex-direction: column;
 		padding: 1em;
-	}
-
-	header small {
-		font-size: 0.75em;
-		color: var(--ppColour);
-	}
-
-	header .diff :global(.reversed) {
-		display: inline-block;
-		padding: 0.1em 0.25em 0.25em 0.25em;
-		margin-left: 0.5em;
-		margin-right: 0.5em;
-		border-radius: 0.25em;
+		border-radius: 8px;
 	}
 
 	.scores-grid {
@@ -1333,6 +1437,8 @@
 		grid-template-columns: 1fr;
 		max-width: 100%;
 		position: relative;
+		border-radius: 8px;
+		padding: 0.5em 0.6em 0.4em 0.6em;
 	}
 
 	.scores-grid > * {
@@ -1409,7 +1515,7 @@
 	}
 
 	.to-the-left {
-		margin-left: -0.5em !important;
+		margin-left: -0.4em !important;
 	}
 
 	.box-with-left-arrow {
@@ -1434,6 +1540,19 @@
 		font-size: 120%;
 		font-weight: bolder;
 		padding-bottom: 0.4em;
+	}
+
+	.pager-container {
+		margin: 0 0.8em;
+	}
+
+	.higlighted-pp {
+		opacity: 1;
+		cursor: pointer;
+	}
+	.inactive-pp {
+		opacity: 0.6;
+		cursor: pointer;
 	}
 
 	@media screen and (max-width: 1275px) {
@@ -1465,8 +1584,16 @@
 			margin-bottom: 0.5em;
 		}
 
+		.diff-and-mode-switch {
+			margin: 1em 0 0;
+		}
+
 		.diff-switch {
 			gap: 0.1em;
+		}
+
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
 		}
 
 		:global(.player-score .player-performance-badges .with-badge) {
@@ -1476,10 +1603,41 @@
 		:global(.player-performance-badges) {
 			min-width: 0 !important;
 		}
+
+		:global(.diff-tab-button) {
+			max-width: 4em;
+		}
+
+		:global(.diff-tab-button span) {
+			font-size: 0.85em;
+		}
+
+		:global(.mode-tab-button) {
+			max-width: 4em;
+			width: auto;
+			flex: 1;
+		}
+
+		:global(.switch-types:has(.mode-tab-button)) {
+			flex: 1;
+			justify-content: end !important;
+		}
+
+		:global(.mode-tab-button span) {
+			font-size: 1.2em;
+		}
 	}
 
 	:global(.leaderboard-header-box) {
-		padding: 0 !important;
+		padding: 0;
+		border-radius: 12px;
+		background-color: black;
+		backdrop-filter: blur(10px);
+		--webkit-transofrm: translateZ(0);
+		--webkit-perspective: 1000;
+		--webkit-backface-visibility: hidden;
+		-webkit-backdrop-filter: blur(10px);
+		margin: 6px 10px 16px;
 	}
 
 	.beat-savior-reveal {
@@ -1499,7 +1657,6 @@
 	.score-options-section {
 		display: grid;
 		justify-items: center;
-		margin: 0.3em;
 	}
 
 	.box-with-left-arrow {

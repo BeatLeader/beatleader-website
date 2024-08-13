@@ -189,6 +189,21 @@
 		return roleIconStrings.some(str => profileAppearance.includes(str) && roles?.includes(str));
 	}
 
+	let cinematicsCanvas;
+
+	function drawCinematics(cinematicsCanvas, coverUrl) {
+		if (coverUrl && cinematicsCanvas) {
+			cinematicsCanvas.style.opacity = 1;
+			const context = cinematicsCanvas.getContext('2d');
+
+			const cover = new Image();
+			cover.onload = function () {
+				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
+			};
+			cover.src = coverUrl;
+		}
+	}
+
 	$: playerId = playerData && playerData.playerId ? playerData.playerId : null;
 	$: name = playerData && playerData.name ? playerData.name : null;
 	$: ({playerInfo, scoresStats, accBadges, ssBadges} = processPlayerData(playerData));
@@ -228,6 +243,8 @@
 		}
 	}
 
+	$: cover && drawCinematics(cinematicsCanvas, cover);
+
 	onMount(() => {
 		window.addEventListener('beforeunload', handleBeforeUnload);
 	});
@@ -245,6 +262,11 @@
 <AvatarOverlayEditor bind:editModel={$editModel} {roles} />
 <ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
 	{#if cover}
+		<div class="cinematics">
+			<div class="cinematics-canvas">
+				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+			</div>
+		</div>
 		<div class="cover-image" style="background-image: url({cover})">
 			{#if $editModel}
 				<div class="cover-edit-buttons">
@@ -468,6 +490,7 @@
 		--webkit-transofrm: translateZ(0);
 		--webkit-perspective: 1000;
 		--webkit-backface-visibility: hidden;
+		-webkit-backdrop-filter: blur(10px);
 	}
 
 	.socials-list {
@@ -477,6 +500,27 @@
 		margin-right: 0.6em;
 		margin-left: 0.8em;
 		margin-top: 0.5em;
+	}
+
+	.cinematics {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	.cinematics-canvas {
+		filter: blur(5em) opacity(0.4) saturate(250%);
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: scale(1.1) translateZ(0);
+		width: 100%;
+		z-index: -1;
+		height: 100%;
 	}
 
 	:global(.shareButton) {
@@ -545,6 +589,10 @@
 
 		.cover-image {
 			border-radius: 0;
+		}
+
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
 		}
 
 		:global(.profile-box) {

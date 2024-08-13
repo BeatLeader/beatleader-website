@@ -8,6 +8,8 @@
 	import {getPPFromAcc, computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {debounce} from '../../utils/debounce';
+	import {configStore} from '../../stores/config';
+	import {produce} from 'immer';
 
 	export let passRating = 5;
 	export let accRating = 5;
@@ -44,23 +46,39 @@
 		FS: ['SF', 'SS'],
 		SF: ['FS', 'SS'],
 	};
+
+	function fetchLimitsFromConfig(configStore) {
+		startAcc = configStore.ppCurve.startAcc;
+		endAcc = configStore.ppCurve.endAcc;
+	}
+
 	let selectedModifiers = [];
 
-	async function setupChart(canvas, passRating, accRating, techRating, logarithmic, startAcc, endAcc) {
+	function updateSelected(modifiers) {
+		selectedModifiers = selectedModifiers.map(sm => modifiers.find(m => m.name == sm.name));
+	}
+
+	async function setupChart(canvas, configStore, passRating, accRating, techRating, logarithmic, startAcc, endAcc) {
 		if (!canvas) return;
 
 		const gridColor = '#2a2a2a';
 		const mainColor = '#eb008c';
 		const annotationColor = '#aaa';
 
-		let minPp = 70000;
 		let annotations = [];
-		const data = [];
+		const totalPPData = [];
+		const passPPData = [];
+		const accPPData = [];
+		const techPPData = [];
 		for (let acc = startAcc; acc < endAcc; acc += 0.0001) {
-			const pp = getPPFromAcc(acc, passRating, accRating, techRating, mode);
-			data.push({x: logarithmic ? 1 - acc : acc, y: pp});
+			const ppParts = getPPFromAcc(acc, passRating, accRating, techRating, mode);
+			const pp = ppParts[0];
 
-			if (pp < minPp) minPp = pp;
+			totalPPData.push({x: logarithmic ? 1 - acc : acc, y: pp});
+
+			passPPData.push({x: logarithmic ? 1 - acc : acc, y: ppParts[1]});
+			accPPData.push({x: logarithmic ? 1 - acc : acc, y: ppParts[2]});
+			techPPData.push({x: logarithmic ? 1 - acc : acc, y: ppParts[3]});
 
 			if (acc > startAcc && (acc * 100) % Math.round(((maxAcc - startAcc) * 100) / 8) < 0.001)
 				if (pp)
@@ -75,7 +93,7 @@
 
 		const datasets = [
 			{
-				data,
+				data: totalPPData,
 				borderColor: mainColor,
 				borderWidth: 2,
 				pointRadius: 0,
@@ -84,6 +102,40 @@
 				label: 'PP',
 			},
 		];
+
+		if (configStore.ppCurve.passPp) {
+			datasets.push({
+				data: passPPData,
+				borderColor: 'orange',
+				borderWidth: 2,
+				pointRadius: 0,
+				tension: 0.4,
+				type: 'line',
+				label: 'Pass PP',
+			});
+		}
+		if (configStore.ppCurve.accPp) {
+			datasets.push({
+				data: accPPData,
+				borderColor: 'purple',
+				borderWidth: 2,
+				pointRadius: 0,
+				tension: 0.4,
+				type: 'line',
+				label: 'Acc PP',
+			});
+		}
+		if (configStore.ppCurve.techPp) {
+			datasets.push({
+				data: techPPData,
+				borderColor: 'red',
+				borderWidth: 2,
+				pointRadius: 0,
+				tension: 0.4,
+				type: 'line',
+				label: 'Tech PP',
+			});
+		}
 
 		const xAxis = {
 			type: logarithmic ? 'logarithmic' : 'linear',
@@ -121,7 +173,6 @@
 			grid: {
 				color: gridColor,
 			},
-			min: Math.floor(minPp * 0.9),
 		};
 
 		if (!chart) {
@@ -158,7 +209,7 @@
 									return `acc: ${formatNumber(logarithmic ? 100 - accuracy : accuracy, 3)}%`;
 								},
 								label(ctx) {
-									return `${formatNumber(ctx.parsed.y, ctx.dataset.round)}pp`;
+									return `${formatNumber(ctx.parsed.y, ctx.dataset.round)} ${ctx.dataset.label}`;
 								},
 							},
 						},
@@ -191,6 +242,11 @@
 		startAcc = event.detail.values[0] / 100;
 		endAcc = event.detail.values[1] / 100;
 
+		$configStore = produce($configStore, draft => {
+			draft.ppCurve.startAcc = startAcc;
+			draft.ppCurve.endAcc = endAcc;
+		});
+
 		if (startAcc - minAcc < 0.05 && minAcc >= 0.05) {
 			minAcc -= 0.05;
 		} else if (startAcc - minAcc > 0.1) {
@@ -200,6 +256,7 @@
 
 	const debouncedOnRangeChange = debounce(onRangeChange, 100);
 
+	$: fetchLimitsFromConfig($configStore);
 	$: modifiersArr = Object.entries(modifiers ?? {})
 		?.filter(m => m?.[0] !== 'modifierId')
 		?.map(m => ({
@@ -219,7 +276,7 @@
 		selectedModifiers?.length && (passRating !== modifiedPassRating || accRating !== modifiedAccRating || techRating !== modifiedTechRating)
 			? computeStarRating(modifiedPassRating, modifiedAccRating, modifiedTechRating)
 			: null;
-	$: setupChart(canvas, modifiedPassRating, modifiedAccRating, modifiedTechRating, logarithmic, startAcc, endAcc);
+	$: setupChart(canvas, $configStore, modifiedPassRating, modifiedAccRating, modifiedTechRating, logarithmic, startAcc, endAcc);
 
 	$: dispatch('modified-stars', {
 		passRating: modifiedPassRating,
@@ -227,6 +284,7 @@
 		techRating: modifiedTechRating,
 		stars: modifiedStars,
 	});
+	$: modifiersArr && updateSelected(modifiersArr);
 </script>
 
 <section class="chart" style="--height: {height}">

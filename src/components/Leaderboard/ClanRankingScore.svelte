@@ -171,7 +171,7 @@
 							{sortBy}
 							hideClans={true}
 							on:royale-add={e => (battleRoyaleDraftList = [...battleRoyaleDraftList, e.detail])}
-							on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId !== e.detail))} />
+							on:royale-remove={e => (battleRoyaleDraftList = battleRoyaleDraftList.filter(pId => pId.playerId !== e.detail.playerId))} />
 					</div>
 				{/each}
 				<div class="clan-pager">

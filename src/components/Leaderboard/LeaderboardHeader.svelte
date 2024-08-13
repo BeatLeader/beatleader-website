@@ -1,22 +1,23 @@
 <script>
 	import MapTypeDescription from './MapTypeDescription.svelte';
 	import MapTriangle from '../Common/MapTriangle.svelte';
-	import {opt} from '../../utils/js';
-	import {createEventDispatcher} from 'svelte';
+	import {createEventDispatcher, getContext} from 'svelte';
 	import {fade} from 'svelte/transition';
 
 	import Value from '../Common/Value.svelte';
 	import Badge from '../Common/Badge.svelte';
 	import Icons from '../Song/Icons.svelte';
-	import {formatDiffStatus, DifficultyStatus} from '../../utils/beatleader/format';
+	import {formatDiffStatus, DifficultyStatus, wrapBLStatus} from '../../utils/beatleader/format';
 	import {dateFromUnix, formatDate, formatDateRelative} from '../../utils/date';
 	import MapRequirementDescription from './MapRequirementDescription.svelte';
-	import LeaderboardDisplayCaptureStatus from './LeaderboardDisplayCaptureStatus.svelte';
 	import LeaderboardStats from './LeaderboardStats.svelte';
 	import {configStore} from '../../stores/config';
-	import Spinner from '../Common/Spinner.svelte';
 	import SongStatus from './SongStatus.svelte';
 	import HashDisplay from '../Common/HashDisplay.svelte';
+	import LeaderboardDisplayCaptureCorner from './LeaderboardDisplayCaptureCorner.svelte';
+	import MapperList from './MapperList.svelte';
+	import MapTriangleSmall from './MapTriangleSmall.svelte';
+	import TriangleMobilePopup from './TriangleMobilePopup.svelte';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -27,6 +28,7 @@
 	export let battleRoyaleDraft;
 
 	const dispatch = createEventDispatcher();
+	const {open, close} = getContext('simple-modal');
 
 	function onSelectedGroupEntryChanged() {
 		dispatch('group-changed');
@@ -48,6 +50,13 @@
 		}
 	}
 
+	function showTrianglePopup(leaderboard) {
+		open(TriangleMobilePopup, {
+			leaderboard,
+			ratings,
+		});
+	}
+
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
 	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
@@ -61,80 +70,129 @@
 </script>
 
 {#if leaderboard}
-	<header
-		class="header"
-		style={coverUrl
-			? `background: linear-gradient(#303030a2, #303030a2), url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
-			: ''}
-		transition:fade|global>
+	<header class="header" transition:fade|global>
 		<div class="cinematics">
 			<div class="cinematics-canvas">
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 			</div>
 		</div>
+		<div
+			class="map-cover"
+			style={coverUrl
+				? `background: url(${coverUrl}); background-repeat: no-repeat; background-size: cover; background-position: center;`
+				: ''}>
+		</div>
 
-		<div class="header-container">
-			<h1 class="title is-4">
-				<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
-				{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
-					<span class="subname">{song.subName}</span>
-				{/if}
-			</h1>
+		<div class="main-container">
+			<div class="header-container">
+				<div class="header-top-part">
+					<h1 class="title is-4">
+						<span class="name {name.length > 40 ? 'name-long' : 'name-short'}" title="Song name">{name} </span>
+						{#if $configStore?.leaderboardPreferences?.showSubtitleInHeader && song.subName}
+							<span class="subname">{song.subName}</span>
+						{/if}
+					</h1>
 
-			<div class="title-container">
-				<span class="author" title="Song author name">{song.authorName}</span>
-				<small class="level-author" title="Mapper">Mapped by: {song.levelAuthorName}</small>
-				<div class="status-and-type">
-					{#if leaderboard.categoryDisplayName}
-						<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
-							<span slot="label">
-								{leaderboard.categoryDisplayName}
-								{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
-							</span>
-						</Badge>
-					{/if}
+					<div class="title-container">
+						<span class="author" title="Song author name">{song.authorName}</span>
+						<MapperList {song} />
+						<div class="status-and-type">
+							{#if leaderboard.categoryDisplayName}
+								<Badge onlyLabel={true} color="white" bgColor="var(--dimmed)" fluid={true}>
+									<span slot="label">
+										{leaderboard.categoryDisplayName}
+										{#if leaderboard.complexity}<Value value={leaderboard.complexity} digits={2} zero="" suffix="★" />{/if}
+									</span>
+								</Badge>
+							{/if}
+						</div>
 
-					{#if leaderboard.stats}<span class="diff-status">{formatDiffStatus(leaderboard.stats.status)}</span>{/if}
-					{#if leaderboard?.stats?.type}
-						<MapTypeDescription type={leaderboard?.stats.type} />
-					{/if}
+						{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
+							<LeaderboardStats {leaderboard} />
+						{/if}
+						{#if $configStore?.leaderboardPreferences?.showHashInHeader}
+							<HashDisplay {song} />
+						{/if}
+					</div>
 				</div>
-				{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
-					<LeaderboardDisplayCaptureStatus
-						leaderboardId={leaderboard?.leaderboardId}
-						clan={leaderboardCaptor}
-						clanRankingContested={leaderboard?.clanRankingContested} />
-				{/if}
 				{#if song.externalStatuses}
 					<div class="song-statuses">
+						{#if leaderboard.stats && leaderboard.stats.status != DifficultyStatus.unranked}
+							<SongStatus songStatus={wrapBLStatus(leaderboard.stats.status)} />
+						{/if}
 						{#each leaderboard.song.externalStatuses as songStatus}
 							<SongStatus {songStatus} />
 						{/each}
 					</div>
 				{/if}
-				{#if $configStore?.leaderboardPreferences?.showStatsInHeader}
-					<LeaderboardStats {leaderboard} />
-				{/if}
-				{#if $configStore?.leaderboardPreferences?.showHashInHeader}
-					<HashDisplay {song} />
-				{/if}
+				<div class="header-bottom-part desktop-only">
+					<div class="icons-container">
+						<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
+					</div>
+				</div>
 			</div>
-
-			<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
+			<div class="title-and-buttons desktop-only">
+				<div class="header-top-part">
+					<h2 class="title is-6" style="display: contents;">
+						{#if leaderboard.stats && leaderboard.stats.passRating}
+							<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
+						{/if}
+					</h2>
+					{#if leaderboard?.stats?.requirements || leaderboard?.stats?.type}
+						<div class="requirements">
+							{#if leaderboard?.stats?.type}
+								<MapTypeDescription type={leaderboard?.stats.type} />
+							{/if}
+							{#if leaderboard?.stats?.requirements}
+								<MapRequirementDescription type={leaderboard?.stats.requirements} />
+							{/if}
+						</div>
+					{/if}
+				</div>
+				<div class="header-bottom-part">
+					{#if leaderboardGroup && leaderboardGroup.length > 1}
+						<div class="version-selector-container">
+							<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
+								{#each leaderboardGroup as option (option.id)}
+									<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
+										{#if option.timestamp}
+											{formatDateRelative(dateFromUnix(option.timestamp))} - {formatDiffStatus(option.status)}
+										{:else}
+											{formatDiffStatus(option.status)}
+										{/if}
+									</option>
+								{/each}
+							</select>
+						</div>
+					{/if}
+				</div>
+			</div>
 		</div>
 
-		<div class="title-and-buttons">
-			<h2 class="title is-6" style="display: contents;">
-				{#if leaderboard.stats && leaderboard.stats.passRating}
-					<MapTriangle width="8em" height="8em" mapRating={ratings ?? leaderboard.stats} showRatings={true} />
-				{/if}
-			</h2>
-			{#if leaderboard?.stats?.requirements}
-				<div class="requirements">
-					<MapRequirementDescription type={leaderboard?.stats.requirements} />
-				</div>
-			{/if}
-			{#if leaderboardGroup && leaderboardGroup.length > 1}
+		{#if leaderboard.stats && leaderboard.stats.passRating}
+			<div class="mobile-triangle mobile-only" on:click|preventDefault|stopPropagation={() => showTrianglePopup(leaderboard)}>
+				<MapTriangleSmall leaderboard={leaderboard.difficultyBl} />
+			</div>
+		{/if}
+
+		<div class="buttons-container desktop-only"></div>
+
+		{#if $configStore?.leaderboardPreferences?.showClanCaptureInHeader && isRanked}
+			<div class="capture-status">
+				<LeaderboardDisplayCaptureCorner
+					leaderboardId={leaderboard?.leaderboardId}
+					clan={leaderboardCaptor}
+					clanRankingContested={leaderboard?.clanRankingContested} />
+			</div>
+		{/if}
+	</header>
+
+	<div class="buttons-container mobile-only">
+		<div class="icons-container">
+			<Icons {song} {diffInfo} mapCheck={true} {batleRoyale} bind:battleRoyaleDraft />
+		</div>
+		{#if leaderboardGroup && leaderboardGroup.length > 1}
+			<div class="version-selector-container">
 				<select class="group-select" bind:value={currentLeaderboardId} on:change={onSelectedGroupEntryChanged}>
 					{#each leaderboardGroup as option (option.id)}
 						<option class="group-option" value={option.id} title={formatDate(dateFromUnix(option.timestamp))}>
@@ -146,19 +204,21 @@
 						</option>
 					{/each}
 				</select>
-			{/if}
-		</div>
-	</header>
+			</div>
+		{/if}
+	</div>
 {/if}
 
 <style>
 	header {
+		position: relative;
 		padding: 0.6em;
 		border-radius: 0.4em;
 		color: var(--alternate);
 		display: flex;
-		align-items: center;
-		justify-content: space-between !important;
+		align-items: flex-start;
+		justify-content: start !important;
+		gap: 1em;
 		margin-bottom: 1.2em;
 	}
 
@@ -175,9 +235,42 @@
 		pointer-events: none;
 	}
 
+	.main-container {
+		display: flex;
+		justify-content: space-between;
+		flex: 1;
+		min-height: 16em;
+	}
+
+	.buttons-container {
+		position: absolute;
+		bottom: 0;
+		height: 2.7em;
+		margin-left: -0.6em;
+		width: 100%;
+		display: flex;
+		justify-content: space-between;
+		background-color: #0000004f;
+		padding: 0.6em;
+		border-radius: 0 0 12px 12px;
+	}
+
+	.icons-container {
+		transform: scale(1.15);
+		width: fit-content;
+		margin-left: 0.8em;
+		margin-bottom: 0.1em;
+	}
+
+	.version-selector-container {
+		transform: scale(1.15);
+		margin-bottom: -0.5em;
+	}
+
 	header .title {
 		color: inherit !important;
 		margin-left: -0.15em;
+		margin-bottom: 0;
 	}
 
 	header h1 {
@@ -185,32 +278,45 @@
 	}
 
 	header h1 span.name {
-		color: #ffffffab !important;
+		color: #ffffffcc !important;
+	}
+
+	.map-cover {
+		width: 16em;
+		aspect-ratio: 1;
+		border-radius: 8px;
+		z-index: 1;
 	}
 
 	.name-long {
-		font-size: 1.5em;
+		font-size: 1.2em;
 	}
 
 	.name-short {
-		font-size: 2.5em;
+		font-size: 1.8em;
 	}
 
 	.subname {
 		color: #ffffff93;
-		font-size: 1em;
+		font-size: 0.8em;
 	}
 
 	.author {
 		color: #ffffffa3;
-	}
-
-	.level-author {
-		color: var(--alternate);
+		font-size: 1.2em;
 	}
 
 	.diff-status {
 		color: white;
+	}
+
+	.capture-status {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 6em;
+		overflow: hidden;
+		z-index: 2;
 	}
 
 	header h2.title {
@@ -225,11 +331,24 @@
 		justify-content: space-between;
 		flex-direction: column;
 		min-height: 14em;
+		gap: 1em;
+	}
+
+	.header-top-part {
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		flex: 1;
+		z-index: 1;
+	}
+
+	.header-bottom-part {
+		z-index: 1;
 	}
 
 	.title-container {
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		flex-direction: column;
 		grid-gap: 0.2em;
 	}
@@ -276,9 +395,10 @@
 		height: fit-content;
 		padding: 0.175rem;
 		text-align: center;
+		text-align-last: center;
 		white-space: nowrap;
 		border: 0;
-		border-radius: 0.2em;
+		border-radius: 6px;
 		cursor: pointer;
 		color: #363636;
 		background-color: #dbdbdb;
@@ -288,6 +408,7 @@
 		font-size: 0.875rem;
 		font-weight: 500;
 		width: 100%;
+		margin-bottom: -0.6em;
 	}
 
 	.group-option {
@@ -298,6 +419,9 @@
 	.requirements {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: center;
+		align-items: center;
+		gap: 0.2em;
 		row-gap: 0.5em;
 		padding-top: 0.7em;
 		padding-bottom: 0.7em;
@@ -328,12 +452,23 @@
 	.title-and-buttons {
 		display: flex;
 		align-items: center;
-		margin-top: 0.8em;
 		align-self: stretch;
-		justify-content: space-between;
+		justify-content: center;
 		flex-wrap: wrap;
 		flex-direction: column;
+		padding: 0.5em;
 		min-width: fit-content;
+	}
+
+	.mobile-triangle {
+		position: absolute;
+		left: 8em;
+		top: 8.4em;
+		z-index: 2;
+	}
+
+	.mobile-only {
+		display: none;
 	}
 
 	:global(.voteButton) {
@@ -351,26 +486,50 @@
 		header {
 			margin-inline: 0;
 			max-width: 100vw;
+			padding: 0.4em 0.4em 0.15em 0.4em;
+			gap: 0.5em;
+		}
+
+		.desktop-only {
+			display: none;
+		}
+
+		.mobile-only {
+			display: flex;
+		}
+
+		.buttons-container {
+			position: relative;
+			margin-left: 0;
+			border-radius: 0;
+			justify-content: flex-start;
+			gap: 0.6em;
+			height: unset;
+		}
+
+		.cinematics-canvas {
+			transform: scaleY(1.2) translateZ(0);
+		}
+
+		.icons-container {
+			margin-left: unset;
 		}
 
 		:global(.player .clan-badges) {
 			display: none;
 		}
 
-		.title-container {
-			text-align: center;
-		}
-
 		.header-container {
-			align-items: center;
-			min-height: 10em;
+			min-height: 11.2em;
+			gap: 0.3em;
 		}
 
-		.status-and-type {
-			justify-content: center;
+		.main-container {
+			min-height: unset;
 		}
-		:global(.title-container .stats) {
-			justify-content: center !important;
+
+		header .title {
+			margin-left: unset;
 		}
 
 		.header {
@@ -378,21 +537,37 @@
 			margin-bottom: 0;
 		}
 
-		:global(.leaderboard-header-box) {
-			margin: 0 !important;
+		.name-long {
+			font-size: 1em;
 		}
 
 		.song-statuses {
-			justify-content: center;
+			flex-wrap: wrap;
 		}
-	}
 
-	@media screen and (max-width: 520px) {
-		.cinematics {
-			display: none;
+		.name-short {
+			font-size: 1.2em;
 		}
-		header {
-			flex-direction: column;
+
+		.author {
+			font-size: 1em;
+		}
+
+		.map-cover {
+			width: 11em;
+		}
+
+		.icons-container {
+			transform: scale(1);
+		}
+
+		.version-selector-container {
+			transform: scale(1);
+		}
+
+		:global(.leaderboard-header-box) {
+			margin: 0.6em 0 0 !important;
+			border-radius: 0 !important;
 		}
 	}
 </style>

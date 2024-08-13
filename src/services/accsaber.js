@@ -130,7 +130,6 @@ export default () => {
 	};
 
 	const isDataForPlayerAvailable = async playerData => {
-		console.log(playerData);
 		if (!playerData?.playerId || !parseInt(playerData.playerId) || !configStore.get('preferences').showAccSaber) return false;
 		if (playersMap[playerData.playerId] === undefined) {
 			const ids = playerData.linkedIds?.oculusPCId?.length

@@ -32,7 +32,7 @@
 		}
 	}
 
-	$: status = Object.entries(songStatusesMap).find(map => map[1] == songStatus.status)[0];
+	$: status = songStatus.blstatus ?? Object.entries(songStatusesMap).find(map => map[1] == songStatus.status)[0];
 	$: fetchResponsible(songStatus);
 	$: label = songStatusesDescription?.[status]?.name ?? songStatus.title ?? status;
 	$: iconFile = songStatusesDescription?.[status]?.iconFile ?? `${status}-icon`;

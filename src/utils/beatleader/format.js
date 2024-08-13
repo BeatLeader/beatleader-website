@@ -1,3 +1,4 @@
+import {CURRENT_URL} from '../../network/queues/beatleader/api-queue';
 import {formatNumber} from '../format';
 import {capitalize, opt} from '../js';
 
@@ -716,6 +717,14 @@ export function formatDiffStatus(status) {
 	}
 }
 
+export function wrapBLStatus(status) {
+	const statusId = Object.entries(DifficultyStatus).find(map => map[1] == status)[0];
+	return {
+		blstatus: statusId,
+		link: CURRENT_URL + '/leaderboards/1?type=' + statusId,
+	};
+}
+
 export const votingTypes = ['acc', 'tech', 'midspeed', 'speed'];
 export const typesMap = {
 	acc: 1,
@@ -1009,6 +1018,38 @@ export const songStatusesDescription = {
 		gradient: 'linear-gradient(rgb(26 26 26 / 8%), rgb(16 16 16 / 12%))',
 		color: 'yellow',
 		textColor: 'yellow',
+	},
+	ranked: {
+		title: 'Ranked map, gives PP!',
+		name: 'Ranked',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/logo-small.png',
+		color: 'yellow',
+		textColor: 'white',
+	},
+	qualified: {
+		title: 'Qualified map, as part of the ranking process.',
+		name: 'Qualified',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/logo-small.png',
+		color: 'yellow',
+		textColor: 'white',
+	},
+	nominated: {
+		title: 'Nominated map, as part of the ranking process.',
+		name: 'Nominated',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/logo-small.png',
+		color: 'yellow',
+		textColor: 'white',
+	},
+	inevent: {
+		title: 'Map is featured in the event',
+		name: 'In Event',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/logo-small.png',
+		color: 'yellow',
+		textColor: 'white',
 	},
 };
 
