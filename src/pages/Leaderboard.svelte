@@ -869,7 +869,7 @@
 								title={isPatron($account?.player?.playerInfo?.role)
 									? 'Use the button to the right of timeset for every score to toggle player'
 									: 'Requires Patreon subscription'}
-								disabled={battleRoyaleDraftList?.length != 2 || isPatron($account?.player?.playerInfo?.role)}
+								disabled={battleRoyaleDraftList?.length != 2 || !isPatron($account?.player?.playerInfo?.role)}
 								on:click={() => startAnalysis()} />
 							<Button
 								type="purple"
