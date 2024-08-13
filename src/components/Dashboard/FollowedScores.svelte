@@ -8,7 +8,7 @@
 	const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
 
 	let serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {count: 5}};
-	serviceParamsManager.update(serviceParams, 'beatleader', true);
+	serviceParamsManager.update(serviceParams, 'scores', true);
 
 	function onScoresPageChanged(e) {
 		let newPage = e?.detail ?? null;

@@ -5,7 +5,7 @@ export default () => {
 	let currentService = null;
 	let currentServiceParams = {};
 
-	const getAllServices = () => ['beatleader', 'beatsavior', 'accsaber'];
+	const getAllServices = () => ['scores', 'beatsavior', 'accsaber'];
 
 	const get = () => ({service: currentService, params: currentServiceParams});
 
@@ -23,7 +23,7 @@ export default () => {
 
 	const update = (serviceParams = {}, service = currentService, init = false) => {
 		const availableServices = getAllServices();
-		if (!availableServices.includes(service)) service = availableServices?.[0] ?? 'beatleader';
+		if (!availableServices.includes(service)) service = availableServices?.[0] ?? 'scores';
 
 		const defaultServiceParams = getDefaultParams(service);
 
@@ -42,7 +42,7 @@ export default () => {
 		currentService = service;
 		currentServiceParams = {...defaultServiceParams, ...currentServiceParams, ...serviceParams};
 
-		if (!init && currentService === 'beatleader') {
+		if (!init && currentService === 'scores') {
 			localStorage.setItem(STORE_SORTING_KEY, currentServiceParams.sort);
 			localStorage.setItem(STORE_ORDER_KEY, currentServiceParams.order);
 		}
@@ -54,10 +54,10 @@ export default () => {
 
 	const initFromUrl = (url = null) => {
 		const availableServices = getAllServices();
-		const defaultService = availableServices?.[0] ?? 'beatleader';
+		const defaultService = availableServices?.[0] ?? 'scores';
 		const paramsArr = url ? url.split('/') : [defaultService];
 
-		const service = paramsArr[0] ?? 'beatleader';
+		const service = paramsArr[0] ?? 'scores';
 
 		const serviceDefaultParams = getDefaultParams(service);
 
@@ -85,7 +85,7 @@ export default () => {
 					true
 				);
 
-			case 'beatleader':
+			case 'scores':
 			default:
 				const urlParams = new URLSearchParams(window?.location?.search);
 				let eventId = urlParams.get('eventId') ?? null;
@@ -146,7 +146,7 @@ export default () => {
 					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
 				}`;
 
-			case 'beatleader':
+			case 'scores':
 				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.order ?? serviceDefaultParams?.order}${
 					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
 				}${params?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, params?.filters) : ''}`;

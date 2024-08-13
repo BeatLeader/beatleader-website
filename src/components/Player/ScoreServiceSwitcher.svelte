@@ -15,7 +15,7 @@
 
 	export let playerId = null;
 	export let player = null;
-	export let service = 'beatleader';
+	export let service = 'scores';
 	export let serviceParams = {sort: 'pp', order: 'desc'};
 	export let loadingService = null;
 	export let loadingServiceParams = null;
@@ -24,12 +24,12 @@
 	const accSaberService = createAccSaberService();
 	const account = createAccountStore();
 
-	let availableServiceNames = ['beatleader'];
+	let availableServiceNames = ['scores'];
 	let accSaberCategories = null;
 
 	const allServices = [
 		{
-			id: 'beatleader',
+			id: 'scores',
 			label: 'Scores',
 			icon: '<div class="beatleader-icon"></div>',
 			cls: 'service-tab-button',
@@ -40,32 +40,32 @@
 					props: {
 						class: 'score-sorting',
 						values: [
-							{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/beatleader/pp/1`},
+							{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scores/pp/1`},
 							{
 								id: 'accPP',
 								label: 'Acc PP',
 								title: 'Sort by acc PP',
 								iconFa: 'fa fa-arrows-to-dot',
-								url: `/u/${playerId}/beatleader/accPP/1`,
+								url: `/u/${playerId}/scores/accPP/1`,
 							},
 							{
 								id: 'passPP',
 								label: 'Pass PP',
 								title: 'Sort by pass PP',
 								iconFa: 'fa fa-person-walking-dashed-line-arrow-right',
-								url: `/u/${playerId}/beatleader/passPP/1`,
+								url: `/u/${playerId}/scores/passPP/1`,
 							},
 							{
 								id: 'techPP',
 								label: 'Tech PP',
 								title: 'Sort by tech PP',
 								iconFa: 'fa fa-arrows-split-up-and-left',
-								url: `/u/${playerId}/beatleader/techPP/1`,
+								url: `/u/${playerId}/scores/techPP/1`,
 							},
-							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatleader/date/1`},
-							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatleader/acc/1`},
-							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/beatleader/rank/1`},
-							{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/beatleader/stars/1`},
+							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/scores/date/1`},
+							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/scores/acc/1`},
+							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/scores/rank/1`},
+							{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/scores/stars/1`},
 							{
 								id: 'playCount',
 								label: 'Plays',
@@ -73,30 +73,30 @@
 									player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''
 								}`,
 								iconFa: 'fa fa-repeat',
-								url: `/u/${playerId}/beatleader/playCount/1`,
+								url: `/u/${playerId}/scores/playCount/1`,
 								disabled: player?.profileSettings?.showStatsPublic == false,
 							},
-							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/beatleader/pauses/1`},
+							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/scores/pauses/1`},
 							{
 								id: 'maxStreak',
 								label: 'Streak',
 								title: 'Sort by 115 streak',
 								iconFa: 'icon115s',
-								url: `/u/${playerId}/beatleader/maxStreak/1`,
+								url: `/u/${playerId}/scores/maxStreak/1`,
 							},
 							{
 								id: 'replaysWatched',
 								label: 'Watched',
 								title: 'Sort by replay watched',
 								iconFa: 'fa fa-eye',
-								url: `/u/${playerId}/beatleader/replaysWatched/1`,
+								url: `/u/${playerId}/scores/replaysWatched/1`,
 							},
 							{
 								id: 'mistakes',
 								label: 'Mistakes',
 								title: 'Sort by mistakes',
 								iconFa: 'icon-mistakes',
-								url: `/u/${playerId}/beatleader/mistakes/1`,
+								url: `/u/${playerId}/scores/mistakes/1`,
 							},
 						],
 					},
@@ -199,9 +199,9 @@
 		).filter(s => s);
 
 		if (additionalServices?.length) {
-			availableServiceNames = ['beatleader'].concat(additionalServices);
+			availableServiceNames = ['scores'].concat(additionalServices);
 		} else if (availableServiceNames?.length > 1) {
-			availableServiceNames = ['beatleader'];
+			availableServiceNames = ['scores'];
 		}
 
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
@@ -230,7 +230,7 @@
 
 		const commonFilters = [];
 
-		service = $editModel ? 'beatleader' : service;
+		service = $editModel ? 'scores' : service;
 
 		return allServices
 			.filter(s => availableServiceNames.includes(s?.id))
@@ -248,7 +248,7 @@
 										.filter(
 											v =>
 												!$account?.player ||
-												service != 'beatleader' ||
+												service != 'scores' ||
 												$editModel ||
 												serviceParams?.sort == v.id ||
 												sortingOrFilteringAppearance.includes(`ss-${v?.id ?? ''}`)
@@ -271,8 +271,8 @@
 				}
 
 				switch (service) {
-					case 'beatleader':
-						if (availableServiceNames.includes('beatleader')) {
+					case 'scores':
+						if (availableServiceNames.includes('scores')) {
 							serviceDef.filters = commonFilters
 								.filter(f => f.props.id != 'search' || playerId != SPECIAL_PLAYER_ID)
 								.map(f => ({
@@ -513,7 +513,7 @@
 		profileAppearance
 	);
 
-	$: serviceObj = availableServices.find(s => ($editModel && s.id === 'beatleader') || s.id === service);
+	$: serviceObj = availableServices.find(s => ($editModel && s.id === 'scores') || s.id === service);
 	$: loadingServiceObj = availableServices.find(s => s.id === loadingService);
 </script>
 

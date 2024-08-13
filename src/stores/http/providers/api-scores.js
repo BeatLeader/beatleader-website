@@ -10,7 +10,7 @@ export default () => {
 
 	const getProcessed = async ({
 		playerId,
-		service = 'beatleader',
+		service = 'scores',
 		serviceParams = {sort: 'date', order: 'desc', page: 1},
 		priority = queue.PRIORITY.FG_HIGH,
 		signal = null,

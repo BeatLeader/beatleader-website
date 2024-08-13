@@ -54,7 +54,7 @@ export default () => {
 				);
 			case 'accsaber':
 				return accSaberService.getPlayerScoresPage(playerId, processedServiceParams);
-			case 'beatleader':
+			case 'scores':
 			default:
 				return blScoresService.fetchScoresPageOrGetFromCache(
 					playerId,

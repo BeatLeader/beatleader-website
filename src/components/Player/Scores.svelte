@@ -26,7 +26,7 @@
 	export let player = null;
 	export let initialState = null;
 	export let initialStateType = null;
-	export let initialService = 'beatleader';
+	export let initialService = 'scores';
 	export let initialServiceParams = {};
 	export let numOfScores = null;
 	export let fixedBrowserTitle = null;
@@ -200,7 +200,7 @@
 			<p>No scores.</p>
 		{/if}
 
-		{#if currentService == 'beatleader' && $configStore.profileParts.scoresToPlaylist}
+		{#if currentService == 'scores' && $configStore.profileParts.scoresToPlaylist}
 			<Button
 				cls={pagerTotalScores > itemsPerPage ? 'scores-playlist-button' : 'scores-playlist-button-relative'}
 				iconFa="fas fa-list"

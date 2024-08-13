@@ -16,7 +16,7 @@
 	// const serviceParamsManager = createServiceParamsManager(SPECIAL_PLAYER_ID);
 
 	// let serviceParams = {sort: 'date', order: 'desc', page: 1, filters: {count: 5}};
-	// serviceParamsManager.update(serviceParams, 'beatleader', true);
+	// serviceParamsManager.update(serviceParams, 'scores', true);
 
 	function onRankingPageChanged(e) {
 		if (e.detail.initial || !Number.isFinite(e.detail.page)) return;

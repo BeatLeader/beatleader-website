@@ -17,7 +17,7 @@
 
 	export let leaderboardId = null;
 	export let score = null;
-	export let type = 'beatleader';
+	export let type = 'scores';
 	export let highlight = false;
 	export let sortBy = 'rank';
 	export let fixedBrowserTitle = null;

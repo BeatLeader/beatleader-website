@@ -15,7 +15,7 @@ export default () => {
 	const fetchPlayerAndScores = async ({
 		playerId,
 		priority = queue.PRIORITY.FG_HIGH,
-		service = 'beatleader',
+		service = 'scores',
 		serviceParams = {sort: 'date', order: 'desc', page: 1},
 		signal = null,
 		force = false,

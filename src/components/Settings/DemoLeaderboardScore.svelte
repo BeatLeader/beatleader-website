@@ -10,7 +10,7 @@
 	import Score from '../Leaderboard/Score.svelte';
 
 	export let playerId = null;
-	export let initialService = 'beatleader';
+	export let initialService = 'scores';
 	export let initialServiceParams = {sort: 'pp', page: 1, count: 1};
 	export let numOfScores = 1;
 	export let fixedBrowserTitle = null;
@@ -85,7 +85,7 @@
 						mods: ['TE', 'ST'],
 					},
 					leaderboard: $leaderboardStore.leaderboard,
-			  }))
+				}))
 			: null;
 </script>
 

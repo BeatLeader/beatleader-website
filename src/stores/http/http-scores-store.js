@@ -8,7 +8,7 @@ import stringify from 'json-stable-stringify';
 
 export default (
 	playerId = null,
-	service = 'beatleader',
+	service = 'scores',
 	serviceParams = {type: 'pp', page: 1},
 	initialState = null,
 	initialStateType = 'initial'

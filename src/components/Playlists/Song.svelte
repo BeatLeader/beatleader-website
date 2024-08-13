@@ -114,7 +114,7 @@
 							<SongScoreCompact
 								playerId={leaderboard.myScore.player.id}
 								songScore={processScore({leaderboard: leaderboard, ...leaderboard.myScore})}
-								service={'beatleader'}
+								service={'scores'}
 								shortdate={true} />
 						{/if}
 					</div>
