@@ -60,4 +60,10 @@
 		display: inline-block;
 		cursor: pointer !important;
 	}
+
+	@media screen and (max-width: 767px) {
+		.hash-container {
+			font-size: 0.8em;
+		}
+	}
 </style>
