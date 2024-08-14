@@ -19,6 +19,7 @@
 	export let mode = 'pages';
 	export let dnd = false;
 	export let loadingPage = null;
+	export let vertical = false;
 
 	let displayStart = false;
 	let displayEnd = false;
@@ -83,7 +84,7 @@
 		const minPositionWidth = 8.5 * 16;
 		const itemWidth = 51.85;
 
-		const pagerWidth = opt(navEl.getBoundingClientRect(), 'width', null);
+		const pagerWidth = vertical ? navEl.getBoundingClientRect()?.height : navEl.getBoundingClientRect()?.width;
 		if (!pagerWidth) return;
 
 		const numOfPagesThatWillFit = Math.floor((pagerWidth - minPositionWidth) / itemWidth) - 4;
@@ -134,12 +135,20 @@
 </script>
 
 {#if (pagesTotal > 1 || currentMode === 'simple') && !hide}
-	<nav class="pagination" class:simple={currentMode === 'simple'} bind:this={navEl} class:no-items-per-page={!itemsPerPageValues}>
-		<div class="position">
-			{startItem} - {endItem}
-			{#if totalItems} / {totalItems}{/if}
-		</div>
-		<ul class="pagination-list">
+	<nav
+		class="pagination"
+		class:simple={currentMode === 'simple'}
+		class:vertical
+		bind:this={navEl}
+		class:no-items-per-page={!itemsPerPageValues}>
+		{#if !vertical}
+			<div class="position">
+				{startItem} - {endItem}
+				{#if totalItems}
+					/ {totalItems}{/if}
+			</div>
+		{/if}
+		<ul class="pagination-list" class:vertical>
 			{#if currentMode === 'simple'}
 				{#if currentPage !== 0}
 					<li>
@@ -278,6 +287,11 @@
 		{#if currentMode === 'pages'}
 			<div class="spacer" />
 		{/if}
+		{#if vertical && totalItems}
+			<div class="position" style="text-align: center; order: 1; margin-bottom: 3em;">
+				{totalItems}
+			</div>
+		{/if}
 		{#if itemsPerPageValues && itemsPerPageValues.length}
 			<div class="items-per-page">
 				<select bind:value={itemsPerPage} on:change={onItemsPerPageChanged}>
@@ -349,6 +363,14 @@
 	.pagination.simple .pagination-list button i {
 		position: relative;
 		top: 2px;
+	}
+
+	.pagination.vertical {
+		flex-direction: column;
+	}
+
+	.pagination-list.vertical {
+		flex-direction: column;
 	}
 
 	span.pagination-link {

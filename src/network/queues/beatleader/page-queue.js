@@ -16,7 +16,7 @@ export default (options = {}) => {
 
 		var result = data
 			.map(s => {
-				const {id, hash, name, subName, author: authorName, mapper: levelAuthorName, image: imageUrl} = s;
+				const {id, hash, name, subName, author, mapper, image: imageUrl} = s;
 				return s.difficulties.map(difficulty => {
 					const {stars, difficultyName: diff, modeName: type} = difficulty;
 
@@ -27,8 +27,8 @@ export default (options = {}) => {
 						hash,
 						name,
 						subName,
-						authorName,
-						levelAuthorName,
+						author,
+						mapper,
 						imageUrl,
 						stars,
 						diff,

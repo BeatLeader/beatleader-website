@@ -41,8 +41,8 @@
 	import SurveyAchievementPage from './pages/SurveyAchievement.svelte';
 	import PatreonPage from './pages/Patreon.svelte';
 	import DeveloperPortalPage from './pages/DeveloperPortal.svelte';
-	import {produce} from 'immer';
-	import Maps from './pages/Maps.svelte';
+	import MapsPortal from './pages/MapsPortal.svelte';
+	import MapsPage from './pages/Maps.svelte';
 	import Replayed from './pages/Replayed.svelte';
 	import ReplayedLanding from './pages/ReplayedLanding.svelte';
 	import ClansMap from './pages/ClansMap.svelte';
@@ -284,7 +284,10 @@
 					</Route>
 
 					<Route path="/maps">
-						<Maps />
+						<MapsPortal />
+					</Route>
+					<Route path="/maps/:type/*page" let:params let:location>
+						<MapsPage page={params.page} type={params.type} {location} />
 					</Route>
 					<Route path="/replayed">
 						<ReplayedLanding />

@@ -39,11 +39,11 @@
 		<div class="songinfo">
 			{#if notClickable}
 				<span class="name">{song.name} {song.subName}</span>
-				<div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+				<div class="author">{song.author} <small>{song.mapper}</small></div>
 			{:else}
 				<a href={leaderboardUrl} on:click|preventDefault={() => navigate(leaderboardUrl)}>
 					<span class="name">{song.name} {song.subName}</span>
-					<div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+					<div class="author">{song.author} <small>{song.mapper}</small></div>
 
 					{#if category}
 						<span class="category">

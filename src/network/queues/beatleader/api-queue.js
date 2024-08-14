@@ -76,6 +76,10 @@ export const BL_API_LEADERBOARD_URL =
 export const BL_API_LEADERBOARDS_URL =
 	BL_API_URL +
 	'leaderboards?leaderboardContext=${leaderboardContext}&page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}&mappers=${mappers}';
+
+export const BL_API_MAPS_URL =
+	BL_API_URL +
+	'maps?leaderboardContext=${leaderboardContext}&page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}&mappers=${mappers}';
 export const BL_API_LEADERBOARDS_GROUPPED_URL =
 	BL_API_URL +
 	'leaderboards/groupped?page=${page}&type=${type}&search=${search}&stars_from=${stars_from}&stars_to=${stars_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&count=${count}&mapType=${mapType}&mode=${mode}&difficulty=${difficulty}&allTypes=${allTypes}&songStatus=${songStatus}&mapRequirements=${mapRequirements}&allRequirements=${allRequirements}';
@@ -267,10 +271,10 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 		{id: 'predictedAcc', value: currentDiff?.predictedAcc ?? null},
 		{id: 'requirements', value: currentDiff?.requirements ?? null},
 		{id: 'type', value: currentDiff?.type},
-		{id: 'levelAuthorName', value: led?.song?.mapper},
+		{id: 'mapper', value: led?.song?.mapper},
 		{id: 'externalStatuses', value: led?.song?.externalStatuses},
 		{id: 'featuredPlaylists', value: led?.featuredPlaylists},
-		{id: 'authorName', value: led?.song?.author},
+		{id: 'author', value: led?.song?.author},
 		{id: 'duration', value: led?.song?.duration},
 		{id: 'mapperId', value: led?.song?.mapperId},
 		{id: 'name', value: led?.song?.name ?? ''},
@@ -437,6 +441,14 @@ export default (options = {}) => {
 	const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(
 			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true, encodeURIComponent),
+			{...options, credentials: 'include'},
+			priority
+		);
+	};
+
+	const maps = async (page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
+		return fetchJson(
+			substituteVars(BL_API_MAPS_URL, {page, count: 12, type, ...filters}, true, true, encodeURIComponent),
 			{...options, credentials: 'include'},
 			priority
 		);
@@ -725,6 +737,7 @@ export default (options = {}) => {
 		leaderboardsGrouped,
 		leaderboard,
 		leaderboardsByHash,
+		maps,
 
 		clans,
 		clan,

@@ -40,13 +40,16 @@
 	$: gradient =
 		songStatusesDescription?.[status]?.gradient ?? songStatus.gradient ?? 'linear-gradient(rgb(26 26 26 / 65%), rgb(16 16 16 / 79%))';
 	$: textColor = songStatusesDescription?.[status]?.textColor ?? null;
+	$: showIcon = songStatusesDescription?.[status]?.showIcon ?? null;
 	$: title = (songStatusesDescription?.[status]?.title ?? songStatus.details ?? '').replace(
 		'DATE',
 		songStatus?.timeset ? formatDateRelative(dateFromUnix(songStatus?.timeset)) : ''
 	);
 </script>
 
-<div class="song-status" style="border: solid 2px {color}; background: {gradient}, center / cover no-repeat url({iconFile})">
+<div
+	class="song-status"
+	style="border: solid 2px {color}; background: {gradient} {showIcon ? '' : `, center / cover no-repeat url(${iconFile})`}">
 	{#if player}
 		<div class="player-info">
 			<Avatar {player} title={player.name} on:click={player ? () => navigateToPlayer(player) : null} />
@@ -55,6 +58,8 @@
 		<a href="https://beatsaver.com/profile/{responsible.id}" class="image is-24x24" title={responsible.name}>
 			<img src={responsible.avatar} alt="" />
 		</a>
+	{:else if showIcon}
+		<img class="image" src={iconFile} style="width: 24px; color: {color}" />
 	{/if}
 	{#if songStatus.link}
 		<a class="status-label" href={songStatus.link} {title} style="color: aliceblue !important;">{label}</a>

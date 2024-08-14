@@ -1,231 +1,971 @@
 <script>
-	import {onDestroy, onMount} from 'svelte';
-	import ContentBox from '../components/Common/ContentBox.svelte';
-	import CarouselCard from '../components/Maps/CarouselCard.svelte';
-	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
-	import MapsCategoryCard from '../components/Maps/MapsCategoryCard.svelte';
-	import {fade} from 'svelte/transition';
-	import HeaderCard from '../components/Maps/HeaderCard.svelte';
-	import {fetchJson} from '../network/fetch';
-	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
-	import _Context from 'suneditor/src/lib/context';
-	import BigButton from '../components/Maps/BigButton.svelte';
-	import EventCard from '../components/Maps/EventCard.svelte';
-	import {MetaTags} from 'svelte-meta-tags';
+	import {tick} from 'svelte';
+	import {navigate} from 'svelte-routing';
+	import {fade, fly} from 'svelte/transition';
+	import createMapsStore from '../stores/http/http-maps-store';
+	import createAccountStore from '../stores/beatleader/account';
+	import createPlaylistStore from '../stores/playlists';
 	import ssrConfig from '../ssr-config';
+	import Pager from '../components/Common/Pager.svelte';
+	import Spinner from '../components/Common/Spinner.svelte';
+	import ContentBox from '../components/Common/ContentBox.svelte';
+	import RangeSlider from 'svelte-range-slider-pips';
+	import {debounce} from '../utils/debounce';
+	import {formatNumber} from '../utils/format';
+	import Switcher from '../components/Common/Switcher.svelte';
+	import {
+		createBuildFiltersFromLocation,
+		buildSearchFromFiltersWithDefaults,
+		processFloatFilter,
+		processStringFilter,
+		processIntFilter,
+		processBoolFilter,
+	} from '../utils/filters';
+	import Button from '../components/Common/Button.svelte';
+	import DateRange from '../components/Common/DateRange.svelte';
+	import {dateFromUnix, DAY} from '../utils/date';
+	import {
+		typesDescription,
+		requirementsDescription,
+		typesMap,
+		DifficultyStatus,
+		requirementsMap,
+		modeDescriptions,
+		difficultyDescriptions,
+		songStatusesFilterMap,
+		songStatusesDescription,
+	} from '../utils/beatleader/format';
+	import {capitalize} from '../utils/js';
+	import RankedTimer from '../components/Common/RankedTimer.svelte';
+	import {Ranked_Const, Unranked_Const} from './../utils/beatleader/consts';
+	import {MetaTags} from 'svelte-meta-tags';
+	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import BackToTop from '../components/Common/BackToTop.svelte';
+	import {configStore} from '../stores/config';
+	import {produce} from 'immer';
+	import Switch from '../components/Common/Switch.svelte';
+	import Select from '../components/Settings/Select.svelte';
+	import Mappers from '../components/Leaderboard/Mappers.svelte';
+	import MapCard from '../components/Maps/List/MapCard.svelte';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
+	import {Svrollbar} from 'svrollbar';
 
-	let cards = [
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Cube Community Spring Highlights',
-				body: '',
-				imageUrl: '/assets/Discover/cc-spring-highlights.jpg',
-				targetUrl: 'https://youtu.be/OZCVt4jvNBc',
-				linkName: 'YouTube',
-				forcedColor: 'rgb(27 105 11)',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Latest Map Of The Week',
-				body: 'No map of the week found :( Check back later',
-				imageUrl: '/assets/Main/landing.webp',
-				targetUrl: undefined,
-				linkName: 'Leaderboard',
-				forcedColor: 'rgba(0, 0, 0, 0)',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Latest Noodle Map Monday',
-				body: 'No noodle map monday found :( Check back later',
-				imageUrl: '/assets/Main/landing.webp',
-				targetUrl: undefined,
-				linkName: 'Leaderboard',
-				forcedColor: 'rgba(0, 0, 0, 0)',
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Extra Sensory 2 Reveal Trailer',
-				body: '',
-				imageUrl: '/assets/Discover/extra_sensory_thumbnail.webp',
-				targetUrl: 'https://www.youtube.com/watch?v=gDIOShFXePo',
-				linkName: 'YouTube',
-				forcedColor: 'rgb(23 27 46)',
-			},
-		},
+	export let page = 1;
+	export let type = 'ranked';
+	export let location;
+
+	const FILTERS_DEBOUNCE_MS = 500;
+
+	document.body.classList.remove('slim');
+
+	const account = createAccountStore();
+
+	const playlists = createPlaylistStore();
+
+	const params = [
+		{key: 'search', default: '', process: processStringFilter},
+		{key: 'mytype', default: '', process: processStringFilter},
+		{key: 'stars_from', default: undefined, process: processFloatFilter},
+		{key: 'stars_to', default: undefined, process: processFloatFilter},
+		{key: 'accrating_from', default: undefined, process: processFloatFilter},
+		{key: 'accrating_to', default: undefined, process: processFloatFilter},
+		{key: 'passrating_from', default: undefined, process: processFloatFilter},
+		{key: 'passrating_to', default: undefined, process: processFloatFilter},
+		{key: 'techrating_from', default: undefined, process: processFloatFilter},
+		{key: 'techrating_to', default: undefined, process: processFloatFilter},
+		{key: 'date_from', default: null, process: processIntFilter},
+		{key: 'date_to', default: null, process: processIntFilter},
+		{key: 'sortBy', default: 'timestamp', process: processStringFilter},
+		{key: 'order', default: 'desc', process: processStringFilter},
+		{key: 'mode', default: null, process: processStringFilter},
+		{key: 'difficulty', default: null, process: processStringFilter},
+		{key: 'mapType', default: null, process: processIntFilter},
+		{key: 'allTypes', default: 0, process: processIntFilter},
+		{key: 'mapRequirements', default: null, process: processIntFilter},
+		{key: 'songStatus', default: null, process: processIntFilter},
+		{key: 'allRequirements', default: 0, process: processIntFilter},
+		{key: 'mappers', default: null, process: processStringFilter},
 	];
 
-	let tournamentCards = [
-		{
-			component: CarouselCard,
-			props: {
-				title: 'BSWC 2024',
-				body: 'Beat Saber World Cup 2024 is currently ongoing! Be sure not to miss the matches, and compete on the map pools yourself with our BSWC events!',
-				imageUrl: 'https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp',
-				targetUrl: 'https://cube.community/tournaments/bswc-2024',
-				forcedColor: 'rgb(165 35 195)',
-				linkName: 'Official Website',
-				buttons: [
-					{
-						text: 'Events',
-						type: 'primary',
-						url: '/events',
-					},
-				],
-			},
-		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Beat Saber Events Feed',
-				body: 'BeatKhana has created a twitter account to keep you updated on all the latest Beat Saber events, Follow them now!',
-				imageUrl: '/assets/Discover/BSEF_banner.webp',
-				targetUrl: 'https://twitter.com/beatsaberevents',
-				linkName: 'Twitter',
-				forcedColor: undefined,
-			},
-		},
+	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
+		if (filters.stars_from > filters.stars_to) {
+			const tmp = filters.stars_from;
+			filters.stars_from = filters.stars_to;
+			filters.stars_to = tmp;
+		}
+
+		if (!filters?.sortBy?.length) filters.sortBy = 'timestamp';
+		if (!filters?.order?.length) filters.order = 'desc';
+
+		if (!filters.mapType) filters.mapType = null;
+
+		return filters;
+	});
+
+	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
+	if (!page || isNaN(page) || page <= 0) page = 1;
+
+	let previousPage = 1;
+	let currentPage = page;
+	let currentType = type;
+	let currentFilters = buildFiltersFromLocation(location);
+	let boxEl = null;
+
+	const typeFilterOptions = [
+		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'ost', label: 'OST', iconFa: 'fa fa-compact-disc', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
 	];
 
-	async function getLatestMapOfTheWeek() {
-		let map;
-		let image;
-		let leaderboardLink;
-		let description;
+	const baseMytypeFilterOptions = [
+		{key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
+		{key: 'played', label: 'Played', iconFa: 'fa fa-user', color: 'var(--beatleader-primary)'},
+		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-times', color: 'var(--beatleader-primary)'},
+	];
 
-		await fetchJson(
-			BL_API_URL +
-				'leaderboards' +
-				'?leaderboardContext=general&page=1&count=1&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=4&allRequirements=0'
-		).then(response => {
-			map = response.body.data[0];
-			image = map?.song?.fullCoverImage ?? map?.song?.coverImage;
-			leaderboardLink = `/leaderboard/global/${map.id}`;
-			let mapper = map?.song?.mapper;
-			let songName = map?.song?.name + ' ' + map?.song?.subName;
-			let author = map?.song?.author;
-			description = `${author.trim()} - ${songName.trim()} \n Mapped by ${mapper.trim()}`;
+	let mytypeFilterOptions = baseMytypeFilterOptions;
+
+	const categoryFilterOptions = Object.entries(typesMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(typesDescription?.[key]?.name ?? key),
+			icon: `<span class="${typesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: typesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: typesDescription?.[key]?.textColor ?? null,
+		};
+	});
+
+	const requirementFilterOptions = Object.entries(requirementsMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(requirementsDescription?.[key]?.name ?? key),
+			icon: `<span class="${requirementsDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: requirementsDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: requirementsDescription?.[key]?.textColor ?? null,
+			title: requirementsDescription?.[key]?.title ?? null,
+		};
+	});
+
+	const songStatusOptions = Object.entries(songStatusesFilterMap).map(([key, type]) => {
+		return {
+			key: type,
+			label: capitalize(songStatusesDescription?.[key]?.name ?? key),
+			icon: `<span class="${songStatusesDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
+			color: songStatusesDescription?.[key]?.color ?? 'var(--beatleader-primary',
+			textColor: songStatusesDescription?.[key]?.textColor ?? null,
+			title: songStatusesDescription?.[key]?.title ?? null,
+		};
+	});
+
+	const modeNullPlaceholder = 'Any mode';
+	const modeFilterOptions = [
+		{
+			key: null,
+			label: modeNullPlaceholder,
+		},
+	].concat(
+		Object.entries(modeDescriptions).map(([key, type]) => {
+			return {
+				key,
+				label: capitalize(modeDescriptions?.[key]?.title ?? key),
+				icon: `<span class="${modeDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
+				color: modeDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
+				textColor: modeDescriptions?.[key]?.textColor ?? null,
+			};
+		})
+	);
+
+	const difficultyNullPlaceholder = 'Any diff';
+	const difficultyFilterOptions = [
+		{
+			key: null,
+			label: difficultyNullPlaceholder,
+		},
+	].concat(
+		Object.entries(difficultyDescriptions).map(([key, type]) => {
+			return {
+				key,
+				label: capitalize(difficultyDescriptions?.[key]?.title ?? key),
+				icon: `<span class="${difficultyDescriptions?.[key]?.icon ?? `${key}-icon`}"></span>`,
+				color: difficultyDescriptions?.[key]?.color ?? 'var(--beatleader-primary',
+				textColor: difficultyDescriptions?.[key]?.textColor ?? null,
+			};
+		})
+	);
+
+	const mapsStore = createMapsStore(page, currentFilters);
+	const placeholderMaps = (() => {
+		let result = [];
+		for (let i = 0; i < 10; i++) {
+			result.push({
+				id: i,
+				name: 'Placeholder Map',
+				artist: 'Unknown Artist',
+				hash: '00000000000000000000000000000000',
+				cover: 'https://via.placeholder.com/150',
+				placeholder: true,
+			});
+		}
+		return result;
+	})();
+	const placeholderMaps2 = (() => {
+		let result = [];
+		for (let i = 10; i < 20; i++) {
+			result.push({
+				id: i,
+				name: 'Placeholder Map',
+				artist: 'Unknown Artist',
+				hash: '00000000000000000000000000000000',
+				cover: 'https://via.placeholder.com/150',
+				placeholder: true,
+			});
+		}
+		return result;
+	})();
+
+	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
+		currentFilters = newFilters;
+
+		sortValues = sortValues1.map(v => {
+			let result = {...v};
+			if (result.id == currentFilters.sortBy) {
+				result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
+				sortValue = result;
+			}
+
+			if (result.id == 'timestamp') {
+				switch (currentType) {
+					case 'ranked':
+						result.label = 'Rank date';
+						result.title = 'Sort by the date map become ranked';
+						break;
+					case 'qualified':
+						result.label = 'Qualification date';
+						result.title = 'Sort by the map qualification date';
+						break;
+					case 'nominated':
+						result.label = 'Nomination date';
+						result.title = 'Sort by the map nomination date';
+						break;
+
+					default:
+						result.label = 'Upload date';
+						result.title = 'Sort by the map upload date';
+						break;
+				}
+			}
+
+			return result;
 		});
 
-		let cardIndex = cards.findIndex(card => card.props.title === 'Latest Map Of The Week');
-		let card = cards[cardIndex];
-		card.props.imageUrl = image;
-		card.props.targetUrl = leaderboardLink;
-		card.props.body = description;
-		card.props.forcedColor = undefined;
-		cards[cardIndex] = card;
+		newPage = parseInt(newPage, 10);
+		if (isNaN(newPage)) newPage = 1;
+
+		if (newPage < previousPage) {
+			nextPageMaps = [...mapsList, ...nextPageMaps].slice(0, 8);
+
+			previousPageMaps = [];
+			mapsList = placeholderMaps;
+		} else if (newPage > previousPage) {
+			console.log(mapsList);
+
+			previousPageMaps = [...previousPageMaps, ...(mapsList ?? placeholderMaps2)].slice(-8);
+			nextPageMaps = [];
+			mapsList = placeholderMaps;
+		}
+
+		currentPage = newPage;
+
+		if (setUrl) {
+			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
+			const url = `/maps/${currentType}/${currentPage}${query.length ? '?' + query : ''}`;
+			if (replace) {
+				window.history.replaceState({}, '', url);
+			} else {
+				window.history.pushState({}, '', url);
+			}
+		}
+
+		mapsStore.fetch(currentPage, currentType, {...currentFilters});
 	}
 
-	async function getLatestNoodleMapMonday() {
-		let map;
-		let image;
-		let leaderboardLink;
-		let description;
-
-		await fetchJson(
-			BL_API_URL +
-				'leaderboards' +
-				'?leaderboardContext=general&page=1&count=1&type=all&sortBy=timestamp&order=desc&allTypes=0&songStatus=8&allRequirements=0'
-		).then(response => {
-			map = response.body.data[0];
-			image = map?.song?.fullCoverImage ?? map?.song?.coverImage;
-			leaderboardLink = `/leaderboard/global/${map.id}`;
-			let mapper = map?.song?.mapper;
-			let songName = map?.song?.name + ' ' + map?.song?.subName;
-			let author = map?.song?.author;
-			description = `${author.trim()} - ${songName.trim()} \n Mapped by ${mapper.trim()}`;
-		});
-
-		let cardIndex = cards.findIndex(card => card.props.title === 'Latest Noodle Map Monday');
-		let card = cards[cardIndex];
-		card.props.imageUrl = image;
-		card.props.targetUrl = leaderboardLink;
-		card.props.body = description;
-		card.props.forcedColor = undefined;
-		cards[cardIndex] = card;
+	function navigateToCurrentPageAndFilters(replaceState) {
+		changePageAndFilters(currentPage, currentFilters, replaceState);
 	}
 
-	let cardWidthRatio = 0.5;
-	let carouselHeight = '43em';
+	function onPageChanged(event) {
+		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
-	function updateCardWidthRatio() {
-		if (window.innerWidth < 950) {
-			cardWidthRatio = 0.8;
+		previousPage = currentPage;
+		currentPage = event.detail.page + 1;
+
+		navigateToCurrentPageAndFilters(true);
+	}
+
+	function onSearchChanged(e) {
+		var search = e.target.value ?? '';
+
+		if (search.length > 0 && search.length < 2) return;
+
+		currentFilters.search = search;
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onTypeChanged(event) {
+		if (!event?.detail) return;
+
+		currentType = event.detail.key ?? '';
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	async function onCategoryModeChanged() {
+		await tick();
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onCategoryChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.mapType) currentFilters.mapType = 0;
+
+		if (currentFilters.mapType & event.detail.key) currentFilters.mapType &= currentFilters.mapType ^ event.detail.key;
+		else currentFilters.mapType |= event.detail.key;
+
+		if (!currentFilters.mapType) currentFilters.mapType = null;
+
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onRequirementsChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = 0;
+
+		if (currentFilters.mapRequirements & event.detail.key)
+			currentFilters.mapRequirements &= currentFilters.mapRequirements ^ event.detail.key;
+		else currentFilters.mapRequirements |= event.detail.key;
+
+		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = null;
+
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onSongStatusChanged(event) {
+		if (!event?.detail?.key) return;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = 0;
+
+		if (currentFilters.songStatus & event.detail.key) currentFilters.songStatus &= currentFilters.songStatus ^ event.detail.key;
+		else currentFilters.songStatus |= event.detail.key;
+
+		if (!currentFilters.songStatus) currentFilters.songStatus = null;
+
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onMyTypeChanged(event) {
+		if (!event?.detail) return;
+
+		currentFilters.mytype = event.detail.key ?? '';
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	async function onModeChanged(event) {
+		await tick();
+
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	async function onDifficultyChanged(event) {
+		await tick();
+
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function starsChanged() {
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onStarsChanged(event, ratingType) {
+		if (!Array.isArray(event?.detail?.values) || event.detail.values.length !== 2) return;
+
+		if (sliderLimits.MIN_STARS != event.detail.values[0] || Number.isFinite(currentFilters[ratingType + '_from'])) {
+			currentFilters[ratingType + '_from'] = Number.isFinite(event.detail.values[0]) ? event.detail.values[0] : undefined;
+		}
+
+		if (sliderLimits.MAX_STARS != event.detail.values[1] || Number.isFinite(currentFilters[ratingType + '_to'])) {
+			currentFilters[ratingType + '_to'] = Number.isFinite(event.detail.values[1]) ? event.detail.values[1] : undefined;
+		}
+		starsChanged();
+	}
+	const debouncedOnStarsChanged = debounce(onStarsChanged, FILTERS_DEBOUNCE_MS);
+
+	let sortValues1 = [
+		{id: 'stars', label: 'Star', title: 'Sort by stars', iconFa: 'fa fa-star'},
+		{id: 'accRating', label: 'Accability', title: 'Sort by acc rating', iconFa: 'fa fa-star'},
+		{id: 'passRating', label: 'Passability', title: 'Sort by pass rating', iconFa: 'fa fa-star'},
+		{id: 'techRating', label: 'Tech', title: 'Sort by tech rating', iconFa: 'fa fa-star'},
+		{id: 'name', label: 'Name', title: 'Sort by name', iconFa: 'fa fa-a'},
+		{id: 'timestamp', label: 'Map date', title: 'Sort by the map date', iconFa: 'fas fa-map'},
+		{id: 'voting', label: 'Voting', title: 'Sort by positive minus negative vote count', iconFa: 'fas fa-vote-yea'},
+		{id: 'voteratio', label: 'Vote ratio', title: 'Sort by vote ratio', iconFa: 'far fa-smile-beam'},
+		{id: 'votecount', label: 'Vote count', title: 'Sort by amount of votes for the map', iconFa: 'fa fa-calculator'},
+		{id: 'playcount', label: 'Plays', title: 'Sort by play count', iconFa: 'fa fa-user'},
+		{id: 'scoreTime', label: 'Newest score', title: 'Sort by the last made score', iconFa: 'fa fa-leaf'},
+	];
+	let sortValues = sortValues1;
+	let sortValue = sortValues[0];
+
+	function onSortChange(event) {
+		if (!event?.detail?.id) return null;
+
+		if (currentFilters.sortBy == event.detail.id) {
+			currentFilters.order = currentFilters.order === 'asc' ? 'desc' : 'asc';
 		} else {
-			cardWidthRatio = 0.6;
+			currentFilters.sortBy = event.detail.id;
+		}
+
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onDateRangeChange(event) {
+		if (!event?.detail) return;
+
+		currentFilters.date_from = event.detail?.from ? event.detail.from.getTime() / 1000 : null;
+		currentFilters.date_to = event.detail?.to ? (event.detail.to.getTime() + DAY) / 1000 : null;
+
+		previousPage = 1;
+		currentPage = 1;
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	function onMappersChange(event) {
+		currentFilters.mappers = event.detail.join(',');
+
+		navigateToCurrentPageAndFilters();
+	}
+
+	var showAllRatings = false;
+
+	function updateProfileSettings(account) {
+		if (account?.player?.profileSettings) {
+			showAllRatings = account.player.profileSettings.showAllRatings;
 		}
 	}
 
-	onMount(() => {
-		updateCardWidthRatio();
-		window.addEventListener('resize', updateCardWidthRatio);
-	});
+	const debouncedOnDateRangeChanged = debounce(onDateRangeChange, FILTERS_DEBOUNCE_MS);
 
-	onDestroy(() => {
-		window.removeEventListener('resize', updateCardWidthRatio);
-	});
+	let searchToPlaylist = false;
+	let makingPlaylist = false;
+	let mapCount = 100;
+	let duplicateDiffs = false;
+	let playlistTitle = 'Search result';
+	function generatePlaylist() {
+		makingPlaylist = true;
+		playlists.generatePlaylist(mapCount, {...currentFilters, duplicateDiffs, playlistTitle}, () => {
+			navigate('/playlists');
+		});
+	}
 
-	$: getLatestMapOfTheWeek();
-	$: getLatestNoodleMapMonday();
-	$: metaDescription = 'Discover custom maps for Beat Saber: trending, ranked and featured by the community';
+	$: document.body.scrollIntoView({behavior: 'smooth'});
+
+	$: isLoading = mapsStore.isLoading;
+	$: pending = mapsStore.pending;
+	$: numOfMaps = $mapsStore ? $mapsStore?.metadata?.total : null;
+	$: itemsPerPage = $mapsStore ? $mapsStore?.metadata?.itemsPerPage : 12;
+	$: isRT =
+		$account.player &&
+		$account.player.playerInfo.role &&
+		($account.player.playerInfo.role.includes('admin') || $account.player.playerInfo.role.includes('rankedteam'));
+
+	$: updateProfileSettings($account);
+
+	$: changePageAndFilters(page, buildFiltersFromLocation(location), false, false);
+
+	$: starsKey =
+		currentFilters.sortBy == 'accRating' || currentFilters.sortBy == 'passRating' || currentFilters.sortBy == 'techRating'
+			? currentFilters.sortBy
+			: 'stars';
+
+	$: mapsList = $mapsStore?.data ?? placeholderMaps;
+	$: metaDescription = currentType === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps';
+	$: hasRatingsByDefault = currentType === 'ranked' || currentType === 'nominated' || currentType === 'qualified';
+	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
+	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
+
+	let topAnchor;
+	let bottomAnchor;
+	let previousPageMaps = [];
+	let nextPageMaps = [];
+	let scrollContainer;
+	let filtersContainer;
+	let scrolling = false;
+
+	function handleIntersection(entries) {
+		if (scrolling) {
+			scrolling = false;
+			return;
+		}
+		if (!mapsList || mapsList.find(map => map.placeholder)) return;
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				if (entry.target === topAnchor && currentPage > 1) {
+					onPageChanged({detail: {page: currentPage - 2}});
+					scrolling = true;
+					scrollToBottom(100);
+				} else if (entry.target === bottomAnchor && currentPage < Math.ceil(numOfMaps / itemsPerPage)) {
+					onPageChanged({detail: {page: currentPage}});
+					// scrollToTop();
+				}
+			}
+		});
+	}
+
+	function scrollToTop() {
+		if (scrollContainer) {
+			scrollContainer.scrollTo({
+				top: 0,
+				behavior: 'smooth',
+			});
+		}
+	}
+
+	function scrollToBottom(offset = 0) {
+		if (scrollContainer) {
+			scrollContainer.scrollTo({
+				top: scrollContainer.scrollHeight - offset,
+				behavior: 'smooth',
+			});
+		}
+	}
+
+	let observer;
+
+	$: if (topAnchor && bottomAnchor) {
+		if (observer) observer.disconnect();
+		observer = new IntersectionObserver(handleIntersection, {
+			threshold: 0.1,
+			rootMargin: '100px',
+		});
+		observer.observe(topAnchor);
+		observer.observe(bottomAnchor);
+	}
+
+	$: displayMaps = mapsList ? [...previousPageMaps, ...mapsList, ...nextPageMaps] : [];
+	$: console.log(displayMaps);
 </script>
 
 <svelte:head>
-	<title>Maps</title>
+	<title>Maps / {currentPage} - {ssrConfig.name}</title>
 </svelte:head>
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
-		<ContentBox class="main-content">
-			<h1 class="header">MAPS</h1>
-
-			<div class="categories">
-				<MapsCategoryCard categoryName="Ranked" showRankedCounter bgColor="#2d0c1f" redirectUrl={'/leaderboards'} />
-				<MapsCategoryCard categoryName="Trending" bgColor="#292823" />
-				<MapsCategoryCard categoryName="Curated" bgColor="#15261D" redirectUrl={'/leaderboards/1?type=all&songStatus=6'} />
+		<section class="filter">
+			<TabSwitcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentType)} on:change={onTypeChanged} />
+		</section>
+		<ContentBox cls="maps-box" bind:box={boxEl}>
+			<div class="switchers-container">
+				<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
 			</div>
-
-			<div class="buttons-container">
-				<div class="buttons">
-					<BigButton label="Leaderboards" destination="/leaderboards/1?type=all" />
-					<BigButton label="Events" destination="/events" />
-					<BigButton label="Nominated" destination="/leaderboards/1?type=nominated" />
+			{#if displayMaps?.length}
+				<div class="songs-container">
+					<div class="pager-container">
+						<Pager
+							totalItems={numOfMaps}
+							{itemsPerPage}
+							itemsPerPageValues={null}
+							currentPage={currentPage - 1}
+							loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+							mode={numOfMaps ? 'pages' : 'simple'}
+							vertical={true}
+							on:page-changed={onPageChanged} />
+					</div>
+					<div class="songs-list">
+						<div class="songs" bind:this={scrollContainer}>
+							<div class="top-anchor" bind:this={topAnchor}></div>
+							{#each displayMaps as song, idx (song.id)}
+								<MapCard {idx} {song} {starsKey} />
+							{/each}
+							<div class="bottom-anchor" bind:this={bottomAnchor}></div>
+						</div>
+						<Svrollbar viewport={scrollContainer} />
+					</div>
 				</div>
-			</div>
-
-			<div class="items">
-				<HeaderCard text="Discover" />
-				<FeaturedCarousel {cards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
-				<div style="margin-bottom: -2.5em;" />
-				<!--<EventCard
-					text="Early 2024 Ranked event!"
-					body="Check out what was ranked and compete for a badge."
-					image="/assets/Main/landing.webp"
-					button={{url: '/event/44', label: 'Event', icon: 'fas fa-rocket'}} />-->
-				<div style="margin-bottom: 1em;" />
-				<HeaderCard text="Tournaments" />
-				<FeaturedCarousel cards={tournamentCards} {cardWidthRatio} height={carouselHeight} autoMoveInterval="8000" showBigButtons />
-				<div style="margin-bottom: 0.5em;" />
-				<EventCard
-					text="Got something to share?"
-					body="DM Light Ai on Discord to get your map packs, events, tournaments, or announcement featured here!"
-					image="/assets/Main/landing.webp" />
-			</div>
+			{:else if $isLoading}
+				<Spinner />
+			{:else}
+				<p>No maps found.</p>
+			{/if}
 		</ContentBox>
 	</article>
+
+	<aside>
+		<ContentBox cls="maps-filters-box">
+			<div class="maps-filters-container" bind:this={filtersContainer}>
+				<section class="filter">
+					<label>Song/Author/Hash</label>
+
+					<input
+						on:input={debounce(onSearchChanged, FILTERS_DEBOUNCE_MS)}
+						type="text"
+						class="search"
+						placeholder="Search for a map..."
+						value={currentFilters.search} />
+				</section>
+
+				<section class="filter">
+					<Mappers
+						currentMapperId={$account.player && $account.player.playerInfo.mapperId}
+						mapperIds={currentFilters.mappers?.split(',').map(id => parseInt(id)) ?? []}
+						on:change={e => onMappersChange(e)} />
+				</section>
+
+				{#if $account.id}
+					<section class="filter">
+						<Switcher
+							values={mytypeFilterOptions}
+							value={mytypeFilterOptions.find(o => o.key === currentFilters.mytype)}
+							on:change={onMyTypeChanged} />
+					</section>
+				{/if}
+
+				<section class="filter">
+					<Switcher
+						values={songStatusOptions}
+						value={songStatusOptions.filter(c => currentFilters.songStatus & c.key)}
+						multi={true}
+						on:change={onSongStatusChanged} />
+				</section>
+
+				<div style="margin-bottom: 0.1em">
+					<Select
+						bind:value={currentFilters.allTypes}
+						on:change={() => onCategoryModeChanged()}
+						fontSize="0.8"
+						options={[
+							{name: 'ANY category', value: 0},
+							{name: 'ALL categories', value: 1},
+							{name: 'NO categories', value: 2},
+						]} />
+				</div>
+
+				<section class="filter">
+					<Switcher
+						values={categoryFilterOptions}
+						value={categoryFilterOptions.filter(c => currentFilters.mapType & c.key)}
+						multi={true}
+						on:change={onCategoryChanged} />
+				</section>
+
+				<div style="margin-bottom: 0.1em">
+					<Select
+						bind:value={currentFilters.allRequirements}
+						on:change={() => onCategoryModeChanged()}
+						fontSize="0.8"
+						options={[
+							{name: 'ANY map feature', value: 0},
+							{name: 'ALL map features', value: 1},
+							{name: 'NO map features', value: 2},
+						]} />
+				</div>
+
+				<section class="filter">
+					<Switcher
+						values={requirementFilterOptions}
+						value={requirementFilterOptions.filter(c => currentFilters.mapRequirements & c.key)}
+						multi={true}
+						on:change={onRequirementsChanged} />
+				</section>
+
+				<section
+					class="filter"
+					class:disabled={starFiltersDisabled}
+					title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+					<label>
+						Stars
+						<span>{formatNumber(currentFilters.stars_from, 2, false, 'Any')}<sup>★</sup></span> to
+						<span>{formatNumber(currentFilters.stars_to, 2, false, 'Any')}<sup>★</sup></span>
+						{#if currentFilters.stars_from || currentFilters.stars_to}
+							<button
+								class="remove-type"
+								title="Remove"
+								on:click={() => {
+									currentFilters.stars_from = null;
+									currentFilters.stars_to = null;
+									starsChanged();
+								}}><i class="fas fa-xmark" /></button>
+						{/if}
+					</label>
+					<RangeSlider
+						range
+						min={sliderLimits.MIN_STARS}
+						max={sliderLimits.MAX_STARS}
+						step={sliderLimits.STAR_GRANULARITY}
+						values={[
+							Number.isFinite(currentFilters.stars_from) ? currentFilters.stars_from : Number.NEGATIVE_INFINITY,
+							Number.isFinite(currentFilters.stars_to) ? currentFilters.stars_to : Number.POSITIVE_INFINITY,
+						]}
+						float
+						hoverable
+						pips
+						pipstep={sliderLimits.STAR_STEP}
+						all="label"
+						on:change={e => debouncedOnStarsChanged(e, 'stars')}
+						disabled={starFiltersDisabled} />
+				</section>
+
+				<section
+					class="filter"
+					class:disabled={starFiltersDisabled}
+					title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+					<label>
+						Acc rating
+						<span>{formatNumber(currentFilters.accrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+						<span>{formatNumber(currentFilters.accrating_to, 2, false, 'Any')}<sup>★</sup></span>
+						{#if currentFilters.accrating_from || currentFilters.accrating_to}
+							<button
+								class="remove-type"
+								title="Remove"
+								on:click={() => {
+									currentFilters.accrating_from = null;
+									currentFilters.accrating_to = null;
+									starsChanged();
+								}}><i class="fas fa-xmark" /></button>
+						{/if}
+					</label>
+					<RangeSlider
+						range
+						min={sliderLimits.MIN_STARS}
+						max={sliderLimits.MAX_STARS}
+						step={sliderLimits.STAR_GRANULARITY}
+						values={[
+							Number.isFinite(currentFilters.accrating_from) ? currentFilters.accrating_from : Number.NEGATIVE_INFINITY,
+							Number.isFinite(currentFilters.accrating_to) ? currentFilters.accrating_to : Number.POSITIVE_INFINITY,
+						]}
+						float
+						hoverable
+						pips
+						pipstep={sliderLimits.STAR_STEP}
+						all="label"
+						on:change={e => debouncedOnStarsChanged(e, 'accrating')}
+						disabled={starFiltersDisabled} />
+				</section>
+
+				<section
+					class="filter"
+					class:disabled={starFiltersDisabled}
+					title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+					<label>
+						Pass rating
+						<span>{formatNumber(currentFilters.passrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+						<span>{formatNumber(currentFilters.passrating_to, 2, false, 'Any')}<sup>★</sup></span>
+						{#if currentFilters.passrating_from || currentFilters.passrating_to}
+							<button
+								class="remove-type"
+								title="Remove"
+								on:click={() => {
+									currentFilters.passrating_from = null;
+									currentFilters.passrating_to = null;
+									starsChanged();
+								}}><i class="fas fa-xmark" /></button>
+						{/if}
+					</label>
+					<RangeSlider
+						range
+						min={sliderLimits.MIN_STARS}
+						max={sliderLimits.MAX_STARS}
+						step={sliderLimits.STAR_GRANULARITY}
+						values={[
+							Number.isFinite(currentFilters.passrating_from) ? currentFilters.passrating_from : Number.NEGATIVE_INFINITY,
+							Number.isFinite(currentFilters.passrating_to) ? currentFilters.passrating_to : Number.POSITIVE_INFINITY,
+						]}
+						float
+						hoverable
+						pips
+						pipstep={sliderLimits.STAR_STEP}
+						all="label"
+						on:change={e => debouncedOnStarsChanged(e, 'passrating')}
+						disabled={starFiltersDisabled} />
+				</section>
+
+				<section
+					class="filter"
+					class:disabled={starFiltersDisabled}
+					title={starFiltersDisabled ? 'Filter only available for maps with stars' : null}>
+					<label>
+						Tech rating
+						<span>{formatNumber(currentFilters.techrating_from, 2, false, 'Any')}<sup>★</sup></span> to
+						<span>{formatNumber(currentFilters.techrating_to, 2, false, 'Any')}<sup>★</sup></span>
+						{#if currentFilters.techrating_from || currentFilters.techrating_to}
+							<button
+								class="remove-type"
+								title="Remove"
+								on:click={() => {
+									currentFilters.techrating_from = null;
+									currentFilters.techrating_to = null;
+									starsChanged();
+								}}><i class="fas fa-xmark" /></button>
+						{/if}
+					</label>
+					<RangeSlider
+						range
+						min={sliderLimits.MIN_STARS}
+						max={sliderLimits.MAX_STARS}
+						step={sliderLimits.STAR_GRANULARITY}
+						values={[
+							Number.isFinite(currentFilters.techrating_from) ? currentFilters.techrating_from : Number.NEGATIVE_INFINITY,
+							Number.isFinite(currentFilters.techrating_to) ? currentFilters.techrating_to : Number.POSITIVE_INFINITY,
+						]}
+						float
+						hoverable
+						pips
+						pipstep={sliderLimits.STAR_STEP}
+						all="label"
+						on:change={e => debouncedOnStarsChanged(e, 'techrating')}
+						disabled={starFiltersDisabled} />
+				</section>
+
+				<section class="filter">
+					<label>Date range</label>
+
+					<DateRange
+						type="date"
+						dateFrom={dateFromUnix(currentFilters.date_from)}
+						dateTo={dateFromUnix(currentFilters.date_to)}
+						on:change={debouncedOnDateRangeChanged} />
+				</section>
+
+				<section class="filter">
+					<div class="mode-and-diff">
+						<div>
+							<label>Has diff</label>
+							<Select
+								bind:value={currentFilters.difficulty}
+								on:change={onDifficultyChanged}
+								options={difficultyFilterOptions}
+								nullPlaceholder={difficultyNullPlaceholder}
+								nameSelector={x => x.label}
+								valueSelector={x => x.key} />
+						</div>
+						<div>
+							<label>Has mode</label>
+							<Select
+								bind:value={currentFilters.mode}
+								on:change={onModeChanged}
+								options={modeFilterOptions}
+								nullPlaceholder={modeNullPlaceholder}
+								nameSelector={x => x.label}
+								valueSelector={x => x.key} />
+						</div>
+					</div>
+				</section>
+
+				<h2 class="title is-5">Playlists</h2>
+				<div class="playlist-buttons">
+					<Button
+						cls="playlist-button"
+						iconFa="fas fa-cubes"
+						label="Ranked"
+						bgColor="var(--beatleader-primary)"
+						color="white"
+						on:click={() => navigate('/playlist/ranked')} />
+					<Button
+						cls="playlist-button"
+						iconFa="fas fa-check"
+						label="Qualified"
+						type="primary"
+						on:click={() => navigate('/playlist/qualified')} />
+					<Button cls="playlist-button" iconFa="fas fa-rocket" label="Nominated" on:click={() => navigate('/playlist/nominated')} />
+					<Button
+						cls="playlist-button"
+						iconFa="fas fa-list"
+						type={searchToPlaylist ? 'danger' : 'default'}
+						label={searchToPlaylist ? 'Cancel' : 'Playlist from search'}
+						on:click={() => (searchToPlaylist = !searchToPlaylist)} />
+				</div>
+				{#if searchToPlaylist}
+					{#if makingPlaylist}
+						<Spinner />
+					{:else}
+						<span>Maps count:</span>
+						<RangeSlider
+							range
+							min={0}
+							max={1000}
+							step={1}
+							values={[mapCount]}
+							hoverable
+							float
+							pips
+							pipstep={100}
+							all="label"
+							on:change={event => {
+								mapCount = event.detail.values[0];
+							}} />
+						<div class="duplicateDiffsContainer">
+							<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
+							<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+						</div>
+						<div class="playlistTitleContainer">
+							<label for="playlistTitle" title="Name of the playlist" style="margin: 0;">Title</label>
+							<input type="text" id="playlistTitle" label="Title" bind:value={playlistTitle} />
+						</div>
+						<Button
+							cls="playlist-button"
+							iconFa="fas fa-wand-magic-sparkles"
+							label="Generate playlist"
+							on:click={() => generatePlaylist()} />
+					{/if}
+				{/if}
+			</div>
+			<Svrollbar viewport={filtersContainer} />
+		</ContentBox>
+	</aside>
 </section>
 
+<BackToTop />
+
 <MetaTags
-	title={ssrConfig.name + ' - Maps'}
+	title={ssrConfig.name + ' - Leaderboards'}
 	description={metaDescription}
 	openGraph={{
-		title: ssrConfig.name + ' - Maps',
+		title: ssrConfig.name + ' - Leaderboards',
 		description: metaDescription,
 		images: [{url: CURRENT_URL + '/assets/logo-small.png'}],
 		siteName: ssrConfig.name,
@@ -234,7 +974,7 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: ssrConfig.name + ' - Maps',
+		title: ssrConfig.name + ' - Leaderboards',
 		description: metaDescription,
 		image: CURRENT_URL + '/assets/logo-small.png',
 		imageAlt: ssrConfig.name + "'s logo",
@@ -243,106 +983,282 @@
 <style>
 	.align-content {
 		display: flex;
-		justify-content: center !important;
+		justify-content: flex-end !important;
+		position: fixed;
+		height: 100%;
 	}
 
 	.page-content {
 		max-width: 75em;
 		width: 100%;
-		overflow: hidden;
-		font-size: 1em;
+		height: 100%;
+	}
+
+	.filter {
+		margin-left: 0.7em;
 	}
 
 	article {
-		width: 100%;
+		width: calc(100% - 25em);
 		overflow-x: hidden;
 	}
 
-	.header {
-		position: absolute;
-		left: 50%;
-		top: -0.375em;
-		transform: translateX(-50%);
-
-		color: rgba(255, 255, 255, 0.5) !important;
-		font-family: Audiowide;
-		font-size: 150px;
-		font-style: normal;
-		font-weight: 400;
-		line-height: normal;
+	aside {
+		width: 25em;
 	}
 
-	.categories {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-between;
-		gap: 3.25em;
-		margin: 3.25em;
-		margin-top: 4.25em;
+	aside .filter {
+		margin-bottom: 1.5rem;
+		transition: opacity 300ms;
+	}
+
+	aside .filter.disabled {
+		opacity: 0.25;
+	}
+
+	aside label {
+		display: block;
+		font-weight: 500;
+		margin: 0.75rem 0;
+	}
+
+	aside .filter.disabled label {
+		cursor: help;
+	}
+
+	aside label span {
+		color: var(--beatleader-primary);
+	}
+
+	aside select {
+		border-radius: 0.2em;
+		padding: 0.4em 0.2em 0.4em 0.6em;
+		margin-bottom: 0.25em;
+		appearance: menulist-button;
+	}
+
+	aside select option {
+		color: var(--textColor);
+		background-color: var(--background);
+	}
+
+	aside input {
+		width: 100%;
 		font-size: 1em;
+		color: var(--beatleader-primary);
+		background-color: var(--foreground);
+		border: none;
+		border-bottom: 1px solid var(--faded);
+		outline: none;
 	}
 
-	.items {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		gap: 1.5em;
-		margin: 3.25em;
+	aside :global(.switch-types) {
+		justify-content: flex-start;
 	}
 
-	.buttons-container {
+	aside :global(.switch-types .icon) {
+		width: 1.8em !important;
+		margin-left: -0.4em !important;
+	}
+
+	aside h2:not(:first-of-type) {
+		margin-top: 1.5em;
+	}
+
+	aside :global(.rangeSlider.pip-labels) {
+		margin-top: 1.5em;
+		margin-bottom: 4em;
+	}
+
+	input::placeholder {
+		color: var(--faded) !important;
+	}
+
+	.songs-container {
 		display: flex;
-		flex-direction: column;
+		height: calc(100% + 2.7em);
+		margin-top: -2.7em;
+	}
+
+	.pager-container {
+		display: flex;
+		width: 2em;
+		margin-left: -2.5em;
+		margin-right: 4em;
+	}
+
+	.switchers-container {
+		margin-left: 3.4em;
+		position: relative;
+		z-index: 10;
+	}
+
+	.songs {
+		display: flex;
+		flex-wrap: wrap;
+		column-gap: 2em;
+		row-gap: 0.8em;
 		justify-content: center;
-		gap: 1.25em;
-		margin: 3.25em;
-		align-items: center;
+		position: relative;
+		margin-left: -1em;
+		margin-right: -1em;
+		height: 100%;
+		overflow: scroll;
+
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
 	}
 
-	.buttons {
+	.songs::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
+	}
+
+	.maps-filters-container {
+		height: 100%;
+		overflow: scroll;
+
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.maps-filters-container::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
+	}
+
+	.top-anchor {
+		margin-right: -2em;
+		width: 100%;
+		margin-top: 3em;
+	}
+
+	.bottom-anchor {
+		position: static;
+		margin-left: -2em;
+		bottom: 0;
+	}
+
+	.pager-and-switch {
 		display: flex;
-		width: fit-content;
-		flex-direction: row;
-		justify-content: center;
-		gap: 0.6em;
-		padding: 0.6em;
-		background: #111111;
-		backdrop-filter: blur(10px) opacity(0.5);
-		--webkit-transofrm: translateZ(0);
-		--webkit-perspective: 1000;
-		--webkit-backface-visibility: hidden;
-		-webkit-backdrop-filter: blur(10px) opacity(0.5);
-		border-radius: 0.5em;
+		align-items: baseline;
 	}
 
-	@media screen and (max-width: 1920px) {
-		.page-content {
-			font-size: 0.9em;
-		}
+	.table-switches {
+		display: flex;
+		gap: 0.5em;
 	}
 
-	@media screen and (max-width: 950px) {
-		.page-content {
-			font-size: 0.8em;
-		}
+	.mode-and-diff {
+		display: flex;
+		gap: 1em;
+		flex-wrap: wrap;
+	}
 
-		.categories {
+	:global(.pager-and-switch .pagination) {
+		flex-grow: 1;
+	}
+
+	:global(.maps-box) {
+		overflow: hidden;
+		height: 86.5%;
+	}
+
+	:global(.maps-filters-box) {
+		position: fixed;
+		height: 89%;
+		overflow: auto;
+	}
+
+	.playlist-buttons {
+		display: flex;
+		margin-top: 1em;
+		column-gap: 0.5em;
+		flex-wrap: wrap;
+	}
+
+	.duplicateDiffsContainer {
+		display: flex;
+	}
+
+	.playlistTitleContainer {
+		margin-bottom: 1em;
+	}
+
+	#duplicateDiffs {
+		width: auto;
+	}
+
+	:global(.playlist-button) {
+		height: 1.6em;
+	}
+
+	.remove-type {
+		border: none;
+		color: rgb(255, 0, 0);
+		background-color: transparent;
+		cursor: pointer;
+		transform: translate(-7px, -2px);
+	}
+
+	:global(.maps-type-button) {
+		margin-bottom: -0.5em !important;
+		height: 3.5em;
+		border-radius: 12px 12px 0 0 !important;
+		width: 7em;
+		flex-direction: column;
+		align-items: center !important;
+		justify-content: center !important;
+	}
+
+	:global(.maps-type-button span) {
+		font-weight: 900;
+	}
+
+	:global(.maps-type-button i) {
+		margin-right: 0 !important;
+	}
+
+	@media screen and (max-width: 1275px) {
+		.align-content {
 			flex-direction: column;
-			gap: 1.5em;
-			margin-top: 6.25em;
-			font-size: 0.75em;
+			align-items: center;
 		}
 
-		.items {
+		aside {
+			width: 100%;
+			max-width: 65em;
+		}
+	}
+
+	@media screen and (max-width: 767px) {
+		.icons {
+			margin-bottom: 0.5em;
+			width: 100%;
+		}
+
+		.playlist-buttons {
+			flex-direction: column;
+		}
+
+		.table-switches {
+			flex-direction: column-reverse;
+		}
+	}
+
+	@media screen and (max-width: 520px) {
+		.song-line .main {
 			display: flex;
 			flex-direction: column;
-			justify-content: space-between;
-			gap: 1.5em;
-			margin: 0.25em;
+			align-items: center;
+			justify-content: center;
+			grid-column-gap: 0.75em;
 		}
 
-		.buttons-container {
-			margin: 3.25em 0.25em;
+		.songinfo {
+			text-align: center;
 		}
 	}
 </style>

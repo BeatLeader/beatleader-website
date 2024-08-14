@@ -48,11 +48,11 @@
 
 		authorNameMockMapper = {
 			authorName: true,
-			name: song.levelAuthorName,
+			name: song.mapper,
 		};
 	}
 
-	$: determineMismatches(song.levelAuthorName);
+	$: determineMismatches(song.mapper);
 	$: badgeContainer &&
 		setTimeout(() => {
 			checkOverflow(badgeContainer);
@@ -71,7 +71,7 @@
 			<i
 				class="fa-solid fa-circle-info map-name-info"
 				class:higher-opacity={lessInAuthorName && !isVariousMappers}
-				title="Mapped by: {song.levelAuthorName}" />
+				title="Mapped by: {song.mapper}" />
 		{/if}
 		{#if isOverflowing || isExpanded}
 			<div class="expand-button" class:inverse={isExpanded} on:click={toggleExpansion}>
@@ -80,7 +80,7 @@
 		{/if}
 	</div>
 {:else}
-	<small class="level-author" title="Mapper">{song.levelAuthorName}</small>
+	<small class="level-author" title="Mapper">{song.mapper}</small>
 {/if}
 
 <style>
