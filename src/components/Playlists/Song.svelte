@@ -38,7 +38,7 @@
 			coverUrl = songInfo.coverImage;
 
 			let selectedLeaderboard = leaderboards[0];
-			if (difficulties.length) {
+			if (difficulties?.length) {
 				selectedLeaderboard = leaderboards.find(
 					el =>
 						el.difficulty.modeName == difficulties[0].characteristic &&
