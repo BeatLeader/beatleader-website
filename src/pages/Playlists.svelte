@@ -41,6 +41,7 @@
 				if (playlist.songs) {
 					for (let i = 0; i < playlist.songs.length; i++) {
 						const song = playlist.songs[i];
+						if (!song.difficulties) continue;
 						for (let j = 0; j < song.difficulties.length; j++) {
 							var diff = song.difficulties[j];
 							diff.name = decapitalizeFirstLetter(diff.name);
