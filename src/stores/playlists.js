@@ -72,7 +72,7 @@ export default () => {
 					playlistAuthor: 'BeatLeader',
 					songs: song ? [song] : [],
 					image: await toDataURL('/assets/defaultplaylisticon.png'),
-			  };
+				};
 
 		if (!playlist.playlistTitle || !playlist.songs) {
 			return;
@@ -434,6 +434,9 @@ export default () => {
 		let index = playlistIndex != null ? playlistIndex : await configStore.get('selectedPlaylist');
 
 		let song = playlists[index].songs.find(el => el.hash == hash);
+		if (!song.difficulties) {
+			song.difficulties = [];
+		}
 		song.difficulties.push({name: decapitalizeFirstLetter(diffInfo.diff), characteristic: diffInfo.type});
 
 		await set(playlists, true);

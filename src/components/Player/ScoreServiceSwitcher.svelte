@@ -517,7 +517,7 @@
 	$: loadingServiceObj = availableServices.find(s => s.id === loadingService);
 </script>
 
-{#if availableServices?.length}
+{#if playerId != SPECIAL_PLAYER_ID && availableServices?.length}
 	<div class="service-switcher">
 		<TabSwitcher
 			values={availableServices}

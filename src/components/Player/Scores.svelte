@@ -16,7 +16,7 @@
 	import Spinner from '../Common/Spinner.svelte';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import OpDeletionDialog from './OPDeletionDialog.svelte';
-	import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue.js';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue.js';
 	import {configStore} from '../../stores/config.js';
 
 	const dispatch = createEventDispatcher();
@@ -168,17 +168,15 @@
 		<div><Error error={$error} /></div>
 	{/if}
 
-	{#if playerId != SPECIAL_PLAYER_ID}
-		<ScoreServiceSwitcher
-			{playerId}
-			{player}
-			service={currentService}
-			serviceParams={currentServiceParams}
-			loadingService={$pending?.service}
-			loadingServiceParams={$pending?.serviceParams}
-			on:service-change={onServiceChanged}
-			on:service-params-change={onServiceParamsChanged} />
-	{/if}
+	<ScoreServiceSwitcher
+		{playerId}
+		{player}
+		service={currentService}
+		serviceParams={currentServiceParams}
+		loadingService={$pending?.service}
+		loadingServiceParams={$pending?.serviceParams}
+		on:service-change={onServiceChanged}
+		on:service-params-change={onServiceParamsChanged} />
 
 	<div class="darkened-background scores-container">
 		{#if $scoresStore && $scoresStore.length}

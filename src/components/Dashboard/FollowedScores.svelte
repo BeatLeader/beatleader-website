@@ -39,7 +39,7 @@
 
 	<Scores
 		playerId={SPECIAL_PLAYER_ID}
-		initialService="beatleader"
+		initialService="scores"
 		initialServiceParams={serviceParams}
 		on:page-changed={onScoresPageChanged}
 		on:service-params-changed={onScoresParamsChanged}
