@@ -120,12 +120,19 @@
 						{/each}
 					</div>
 					<div class="tabs-container">
-						<ThemeSettings {animationSign} visible={selectedNavigationIndex == 0} />
-						<ProfileUiSettings {animationSign} visible={selectedNavigationIndex == 1} />
-						<RankingSettings {animationSign} visible={selectedNavigationIndex == 2} />
-						<ScoreSettings {animationSign} visible={selectedNavigationIndex == 3} />
-						<LeaderboardSettings {animationSign} visible={selectedNavigationIndex == 4} />
-						<AccountSettings {animationSign} visible={selectedNavigationIndex == 5} />
+						{#if selectedNavigationIndex == 0}
+							<ThemeSettings {animationSign} />
+						{:else if selectedNavigationIndex == 1}
+							<ProfileUiSettings {animationSign} />
+						{:else if selectedNavigationIndex == 2}
+							<RankingSettings {animationSign} />
+						{:else if selectedNavigationIndex == 3}
+							<ScoreSettings {animationSign} />
+						{:else if selectedNavigationIndex == 4}
+							<LeaderboardSettings {animationSign} />
+						{:else if selectedNavigationIndex == 5}
+							<AccountSettings {animationSign} />
+						{/if}
 					</div>
 				</div>
 			</ContentBox>

@@ -8,7 +8,6 @@
 	import {deepClone} from '../../utils/js';
 
 	export let animationSign = 1;
-	export let visible = false;
 
 	const DEFAULT_THEME = 'mirror';
 
@@ -125,7 +124,7 @@
 	$: settempsetting('theme', currentTheme);
 </script>
 
-<div class="options" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="options" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<section class="option">
 		<label title="Choose the theme you want">Theme</label>
 		<Select bind:value={currentTheme} options={themes} />
@@ -179,15 +178,11 @@
 
 <style>
 	.options {
-		display: none;
+		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		grid-gap: 1em;
 		align-items: start;
 		justify-items: start;
-	}
-
-	.options.visible {
-		display: grid;
 	}
 
 	.option {

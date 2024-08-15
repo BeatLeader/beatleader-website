@@ -18,7 +18,6 @@
 	import {deepClone} from '../../utils/js';
 
 	export let animationSign = 1;
-	export let visible = false;
 
 	const DEFAULT_AVATAR_ICONS = 'show';
 	const DEFAULT_SORT_VALUE = 'last';
@@ -142,7 +141,7 @@
 	$: graphLegends = Object.keys($configStore.chartLegendVisible);
 </script>
 
-<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<div class="profile">
 		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" clanEffects={false} />
 
@@ -273,12 +272,8 @@
 
 <style>
 	.main-container {
-		display: none;
-		flex-direction: column;
-	}
-
-	.main-container.visible {
 		display: flex;
+		flex-direction: column;
 	}
 
 	.profile {

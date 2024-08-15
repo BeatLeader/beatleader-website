@@ -13,7 +13,6 @@
 	import Spinner from '../Common/Spinner.svelte';
 
 	export let animationSign = 1;
-	export let visible = false;
 
 	const isDemo = writable(true);
 	setContext('isDemo', isDemo);
@@ -347,7 +346,7 @@
 	$: updateProfileSettings($account);
 </script>
 
-<div class="main-container" class:visible in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
 	<DemoProfileScore playerId={$account?.player?.playerId} selectedMetric={currentScoreBadgeSelected} on:badge-click={onBadgeClick} />
 	<div class="options">
 		<section class="option full">
@@ -492,11 +491,8 @@
 
 <style>
 	.main-container {
-		display: none;
-		flex-direction: column;
-	}
-	.main-container.visible {
 		display: flex;
+		flex-direction: column;
 	}
 	.option {
 		position: relative;
