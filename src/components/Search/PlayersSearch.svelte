@@ -40,8 +40,8 @@
 			cacheTtl: MINUTE,
 			page,
 			count: itemsPerPage,
-			sortBy: 'name',
-			order: 'asc',
+			sortBy: 'pp',
+			order: 'desc',
 		});
 
 	$: if (value?.length) filters.search = value;
