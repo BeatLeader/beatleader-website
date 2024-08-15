@@ -26,7 +26,7 @@
 </script>
 
 <ContentBox>
-	<div class="ranking leaderboard">
+	<div class="ranking">
 		<header>
 			<h2 class="title is-5">
 				Ranking of Followed
