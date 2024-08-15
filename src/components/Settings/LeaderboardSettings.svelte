@@ -361,9 +361,9 @@
 		{#if leaderboard}
 			<section class="option full">
 				<label>Header:</label>
-				<ContentBox cls="leaderboard-header-box">
+				<div class="leaderboard-header-box">
 					<LeaderboardHeader {leaderboard} {ratings} latestHash={true} />
-				</ContentBox>
+				</div>
 				<div class="switches">
 					<div title="Show song subtitle">
 						<Switch
@@ -387,7 +387,7 @@
 							label="Always show author name hint"
 							fontSize={12}
 							design="slider"
-							on:click={() => settempsetting('leaderboardPreferences', 'alwaysShowAuthorHint', !alwaysShowAuthorHint)} />
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'alwaysShowAuthorHint', !alwaysShowAuthorHint)} />
 					</div>
 					<div title="Show map hash">
 						<Switch
@@ -442,6 +442,20 @@
 		align-items: start;
 		justify-items: start;
 		margin-top: 1rem;
+	}
+	.leaderboard-header-box {
+		padding: 0;
+		border-radius: 12px;
+		background-color: black;
+		backdrop-filter: blur(10px);
+		--webkit-transofrm: translateZ(0);
+		--webkit-perspective: 1000;
+		--webkit-backface-visibility: hidden;
+		-webkit-backdrop-filter: blur(10px);
+		margin: 6px 10px 16px;
+	}
+	:global(.option .leaderboard-header-box .header) {
+		margin-bottom: 0 !important;
 	}
 	* :global(.option) {
 		display: flex;

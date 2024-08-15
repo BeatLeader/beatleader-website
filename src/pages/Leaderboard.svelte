@@ -1628,7 +1628,7 @@
 		}
 	}
 
-	:global(.leaderboard-header-box) {
+	.leaderboard-header-box {
 		padding: 0;
 		border-radius: 12px;
 		background-color: black;
