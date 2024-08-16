@@ -25,7 +25,7 @@
 		<img class="mapper-avatar" src={mapper.avatar} />
 		<span>{mapper.name}</span>
 	</a>
-	<Popover triggerEvents={['hover', 'focus']} placement="top" {referenceElement} spaceAway={10}>
+	<Popover triggerEvents={['hover', 'focus']} placement="bottom" {referenceElement} spaceAway={10}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile player={{playerId: mapper.playerId, name: mapper.name, playerInfo: {}}} />
 		</div>

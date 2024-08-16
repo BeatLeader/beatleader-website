@@ -1051,6 +1051,12 @@ export const songStatusesDescription = {
 		color: 'yellow',
 		textColor: 'white',
 	},
+	outdated: {
+		title: 'Old version or map was deleted from BeatSaver',
+		name: 'Outdated',
+		color: 'grey',
+		textColor: 'white',
+	},
 };
 
 export function songStatusesListFromMask(type) {
