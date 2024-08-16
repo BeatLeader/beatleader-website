@@ -228,11 +228,11 @@
 		-webkit-backdrop-filter: blur(10px);
 		filter: brightness(0.5);
 		z-index: 2;
-		width: 100%;
+		width: 102%;
 		position: absolute;
-		height: 100%;
-		top: 0;
-		left: 0;
+		height: 102%;
+		top: -1%;
+		left: -1%;
 		border-radius: 8px;
 		--webkit-transofrm: translateZ(0);
 		--webkit-perspective: 1000;
