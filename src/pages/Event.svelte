@@ -431,6 +431,40 @@
 				</div>
 			</ContentBox>
 		{/if}
+		{#if eventId == 56}
+			<ContentBox cls={(modalShown ? 'inner-modal' : '') + 'bswc-box'}>
+				<div class="bswcbg" />
+				<div class="bswcbgblur" />
+				<div class="bswc-container">
+					<span>
+						<b>Grand Finals!</b> This week decides - <b>US, UK or Canada</b> will become the champion of 2024.<br />
+
+						Team members from previous weeks are elegible for this fan event. Have fun!<br />
+						Make a reminder for matches and keep an eye out for the banner on top when they go live. Or check recordings from the last week on
+						the BSWC website.
+						<br /><br />
+					</span>
+
+					<div class="downloadButtons">
+						<a href="https://www.twitch.tv/cubecommunity?utm_source=BeatLeader" target="_blank">
+							<Button iconFa="fab fa-twitch" type="twitch" label="Watch matches" />
+						</a>
+
+						<a href="https://cube.community/tournaments/bswc-2024/bracket" target="_blank">
+							<Button iconFa="fas fa-diagram-project" label="Bracket" />
+						</a>
+
+						<a href="https://cube.community/tournaments/bswc-2024/donate" target="_blank">
+							<Button iconFa="fas fa-money-bill-trend-up" type="patreon" label="Add to the prize!" />
+						</a>
+					</div>
+
+					<span style="margin-top: 0.5em">
+						<b>Meeting in chat at the Final!🍿</b>
+					</span>
+				</div>
+			</ContentBox>
+		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>
 			{#each params as param}
 				{#if param.type}
@@ -574,7 +608,7 @@
 	}
 
 	:global(.bswc-box) {
-		position: relative;
+		position: relative !important;
 	}
 
 	@media screen and (max-width: 1275px) {

@@ -63,7 +63,24 @@
 		navigate(`/events/${event.detail.page + 1}?${buildSearchFromFilters(currentFilters)}`, {preserveScroll: true});
 	}
 
+	let cinematicsCanvas;
+
+	function drawCinematics(cinematicsCanvas, coverUrl) {
+		if (coverUrl && cinematicsCanvas) {
+			cinematicsCanvas.style.opacity = 1;
+			const context = cinematicsCanvas.getContext('2d');
+
+			const cover = new Image();
+			cover.onload = function () {
+				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
+			};
+			cover.src = coverUrl;
+		}
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
+
+	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, 'https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp');
 
 	$: isLoading = eventsStore.isLoading;
 	$: pending = eventsStore.pending;
@@ -103,7 +120,16 @@
 							class="event-box"
 							class:finished={Date.now() / 1000 > event?.endDate}
 							in:fade|global={{delay: idx * 10}}>
-							<ContentBox cls={event.id == 23 ? 'festive' : ''}>
+							<ContentBox cls={event.id == 23 ? 'festive' : event.id == 56 ? 'bswc-box' : ''}>
+								{#if event.id == 56 && !(Date.now() / 1000 > event?.endDate)}
+									<div class="cinematics">
+										<div class="cinematics-canvas">
+											<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+										</div>
+									</div>
+									<div class="bswcbg" />
+									<div class="bswcbgblur" />
+								{/if}
 								<Event {event} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
 							</ContentBox>
 						</a>
@@ -154,6 +180,7 @@
 	.page-content {
 		max-width: 65em;
 		width: 100%;
+		overflow: visible;
 	}
 
 	article {
@@ -181,6 +208,75 @@
 	.event-box.finished:hover {
 		filter: none;
 		opacity: 1;
+	}
+
+	.bswcbg {
+		background-image: url(https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp) !important;
+		background-size: cover !important;
+		background-position: center !important;
+		z-index: 1;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		border-radius: 8px;
+		left: 0;
+	}
+
+	.bswcbgblur {
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		filter: brightness(0.5);
+		z-index: 2;
+		width: 100%;
+		position: absolute;
+		height: 100%;
+		top: 0;
+		left: 0;
+		border-radius: 8px;
+		--webkit-transofrm: translateZ(0);
+		--webkit-perspective: 1000;
+		--webkit-backface-visibility: hidden;
+	}
+
+	.cinematics {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	.cinematics-canvas {
+		filter: blur(5em) opacity(0.5) saturate(250%);
+		left: 0;
+		opacity: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: scale(0.85) translateZ(0);
+		width: 100%;
+		z-index: -1;
+		height: 100%;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	:global(.bswc-box .event) {
+		position: relative;
+		z-index: 2;
+	}
+
+	:global(.bswc-box) {
+		transition: scale 0.2s ease-in-out;
+	}
+
+	:global(.bswc-box:hover .cinematics-canvas) {
+		opacity: 1;
+	}
+
+	:global(.bswc-box:has(.event):hover) {
+		scale: 1.015;
 	}
 
 	@media screen and (max-width: 1023px) {
