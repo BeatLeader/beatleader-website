@@ -429,9 +429,11 @@
 
 	<section class="ranking-grid">
 		{#each $rankingStore.data as player, idx (player?.playerId)}
+			{@const showFlags = eventId == 52 || eventId == 53 || eventId == 54 || eventId == 55 || eventId == 56}
 			<div
-				class="ranking-grid-row {!noIcons && $configStore.rankingList.showFriendsButton ? 'with-friends-button' : ''} {eventId == 50 &&
-				(player.playerInfo.rank == 1 || player.playerInfo.rank == 10 || player.playerInfo.rank == 50)
+				class="ranking-grid-row {showFlags || (!noIcons && $configStore.rankingList.showFriendsButton)
+					? 'with-friends-button'
+					: ''} {eventId == 50 && (player.playerInfo.rank == 1 || player.playerInfo.rank == 10 || player.playerInfo.rank == 50)
 					? 'event-winner'
 					: ''} {type}-rating"
 				in:fly|global={{delay: idx * 10, x: animationSign * 100}}>
@@ -447,7 +449,7 @@
 						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
 						: sortValue?.props ?? {}}
 					on:filters-updated />
-				{#if eventId == 52 || eventId == 53 || eventId == 54 || eventId == 55 || eventId == 56}
+				{#if showFlags}
 					{@const team = participants.find(t =>
 						t.players.find(p =>
 							p.player.user.playableAccounts.find(
