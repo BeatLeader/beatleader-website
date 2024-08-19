@@ -255,10 +255,11 @@
 	}
 
 	const debouncedOnRangeChange = debounce(onRangeChange, 100);
+	const hiddenModifiers = ['ez', 'ohp', 'op', 'smc', 'hd'];
 
 	$: fetchLimitsFromConfig($configStore);
 	$: modifiersArr = Object.entries(modifiers ?? {})
-		?.filter(m => m?.[0] !== 'modifierId')
+		?.filter(m => m?.[0] !== 'modifierId' && !hiddenModifiers.includes(m[0]))
 		?.map(m => ({
 			name: m[0]?.toUpperCase() ?? null,
 			value: m[1] ?? null,
