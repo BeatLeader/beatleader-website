@@ -49,6 +49,7 @@
   },
   "dependencies": {
     "@floating-ui/dom": "^1.6.7",
+    "@lottiefiles/svelte-lottie-player": "^0.3.1",
     "@popperjs/core": "^2.11.6",
     "@silexlabs/grapesjs-fonts": "https://github.com/NSGolova/grapesjs-fonts.git",
     "atropos": "^1.0.2",

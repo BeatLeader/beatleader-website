@@ -11,6 +11,7 @@
 	export let okButtonType = 'primary';
 	export let okButtonDisabled = false;
 	export let cancelButton = 'Cancel';
+	export let cancelButtonDisabled = false;
 	export let deleteButton = 'Delete';
 </script>
 
@@ -41,7 +42,7 @@
 					<Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')} />
 				{:else if type === 'confirm' || type === 'update'}
 					<Button label={okButton} type={okButtonType} disabled={okButtonDisabled} on:click={() => dispatch('confirm')} />
-					<Button label={cancelButton} type="default" on:click={() => dispatch('cancel')} />
+					<Button label={cancelButton} type="default" disabled={cancelButtonDisabled} on:click={() => dispatch('cancel')} />
 				{/if}
 			</slot></span>
 	</slot>

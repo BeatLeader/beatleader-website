@@ -1,5 +1,6 @@
 <script>
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import {LottiePlayer} from '@lottiefiles/svelte-lottie-player';
 	import {bestiesCategoriesNames, DifficultyStatus, requirementsMap} from '../../utils/beatleader/format';
 	import DialogContent from '../Common/DialogContent.svelte';
 	import Select from '../Settings/Select.svelte';
@@ -83,6 +84,7 @@
 	let nominating = false;
 	let nominated = false;
 	let error = null;
+	let animationPlayer = null;
 	function nominate() {
 		nominating = true;
 		error = null;
@@ -107,6 +109,8 @@
 	}
 
 	$: filterCategories(leaderboard);
+
+	$: animationPlayer && animationPlayer.play();
 </script>
 
 <div class="dialog-container">
@@ -116,13 +120,15 @@
 		okButton="Nominate!"
 		okButtonType="green"
 		cancelButton="Cancel"
-		okButtonDisabled={!applicapleCategories.length || nominating}
+		okButtonDisabled={!applicapleCategories.length || nominating || nominated}
+		cancelButtonDisabled={nominating || nominated}
 		on:confirm={() => {
 			nominate();
 		}}
 		on:cancel={cancel}>
 		<div slot="content">
 			{#if nominated}
+				<LottiePlayer width="7em" height="7em" speed="2.1" controls={false} bind:this={animationPlayer} src="/assets/beastiesRoket.json" />
 				<span style="color: green;">Map sucessfully nominated!</span>
 			{:else}
 				<div class="description-and-select">
