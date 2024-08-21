@@ -249,15 +249,19 @@
 					iconFa="fas fa-angle-left"
 					square={true}
 					squareSize="1.5em"
-					disabled={page == 1}
+					disabled={$pending?.serviceParams?.page || page == 1}
 					on:click={() => unconstrainedPageChanged(page - 1)} />
-				{currentPage}
+				{#if $pending?.serviceParams?.page}
+					<Spinner />
+				{:else}
+					{page}
+				{/if}
 				<Button
 					type="primary"
 					square={true}
 					squareSize="1.5em"
 					iconFa="fas fa-angle-right"
-					disabled={!$scoresStore || $scoresStore.length < itemsPerPage}
+					disabled={$pending?.serviceParams?.page || !$scoresStore || $scoresStore.length < itemsPerPage}
 					on:click={() => unconstrainedPageChanged(page + 1)} />
 			</div>
 		{/if}
