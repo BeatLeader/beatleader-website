@@ -32,6 +32,7 @@
 	export let fixedBrowserTitle = null;
 	export let withPlayers = false;
 	export let noIcons = false;
+	export let unconstrainedPager = false;
 
 	let scoresStore = createScoresStore(playerId, initialService, initialServiceParams, initialState, initialStateType);
 
@@ -48,8 +49,8 @@
 		return {playerId: newPlayerId, service: newService, serviceParams: newServiceParams};
 	}
 
-	let currentPage = 0;
-	let previousPage = 0;
+	let currentPage = 1;
+	let previousPage = 1;
 
 	function onPageChanged(event) {
 		if (!(event?.detail?.initial ?? false)) scrollToTop();
@@ -62,6 +63,12 @@
 		if (!(event?.detail?.initial ?? false)) {
 			dispatch('page-changed', page);
 		}
+	}
+
+	function unconstrainedPageChanged(newPage) {
+		previousPage = currentPage;
+		currentPage = newPage;
+		dispatch('page-changed', newPage);
 	}
 
 	function onServiceParamsChanged(event) {
@@ -234,7 +241,27 @@
 		{/if}
 	</div>
 
-	{#if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
+	{#if unconstrainedPager}
+		{#if Number.isFinite(page)}
+			<div class="unconstrained-pager">
+				<Button
+					type="primary"
+					iconFa="fas fa-angle-left"
+					square={true}
+					squareSize="1.5em"
+					disabled={page == 1}
+					on:click={() => unconstrainedPageChanged(page - 1)} />
+				{currentPage}
+				<Button
+					type="primary"
+					square={true}
+					squareSize="1.5em"
+					iconFa="fas fa-angle-right"
+					disabled={!$scoresStore || $scoresStore.length < itemsPerPage}
+					on:click={() => unconstrainedPageChanged(page + 1)} />
+			</div>
+		{/if}
+	{:else if Number.isFinite(page) && (!Number.isFinite(pagerTotalScores) || pagerTotalScores > 0)}
 		<ScoresPager
 			{playerId}
 			service={currentService}
@@ -279,6 +306,17 @@
 	.scores-container {
 		padding: 0.5em;
 		border-radius: 8px;
+	}
+
+	.unconstrained-pager {
+		display: flex;
+		gap: 0.5em;
+		margin-top: 0.5em;
+		margin-bottom: -0.6em;
+	}
+
+	:global(.unconstrained-pager .fas) {
+		margin-top: -0.4em;
 	}
 
 	#duplicateDiffs {

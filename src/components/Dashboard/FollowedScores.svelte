@@ -45,5 +45,6 @@
 		on:service-params-changed={onScoresParamsChanged}
 		fixedBrowserTitle={browserTitle}
 		withPlayers={true}
+		unconstrainedPager={true}
 		noIcons={true} />
 </ContentBox>
