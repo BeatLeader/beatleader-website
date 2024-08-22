@@ -178,6 +178,52 @@
 		{#if !noPin && shownIcons.includes('pin')}
 			<PinIcon {scoreId} on:score-pinned />
 		{/if}
+		{#if songKey && songKey.length && shownIcons.includes('playlist')}
+			{#if selectedPlaylist != null}
+				{#if playlistSong}
+					{#if playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
+						<Button
+							iconFa="fas fa-list-ul"
+							title="Remove from the {selectedPlaylist.playlistTitle}"
+							animated={true}
+							noMargin={true}
+							type="danger"
+							on:click={() => playlists.remove(hash)} />
+					{:else if playlistEntries.length == 1 || !playlistEntries.includes(playlistKey)}
+						<Button
+							iconFa="fas fa-list-ul"
+							title="Add this diff to the {selectedPlaylist.playlistTitle}"
+							animated={true}
+							noMargin={true}
+							on:click={() => playlists.addDiff(hash, diffInfo)} />
+					{:else}
+						<Button
+							iconFa="fas fa-list-ul"
+							title="Remove this diff from the {selectedPlaylist.playlistTitle}"
+							animated={true}
+							noMargin={true}
+							type="lessdanger"
+							on:click={() => playlists.removeDiff(hash, diffInfo)} />
+					{/if}
+				{:else}
+					<Button
+						iconFa="fas fa-list-ul"
+						title="Add to the {selectedPlaylist.playlistTitle}"
+						animated={true}
+						noMargin={true}
+						on:click={() => {
+							playlists.add(getSongInfo());
+						}} />
+				{/if}
+			{:else}
+				<Button
+					iconFa="fas fa-list-ul"
+					title="Create new playlist with this song"
+					animated={true}
+					noMargin={true}
+					on:click={() => playlists.create(getSongInfo())} />
+			{/if}
+		{/if}
 	</span>
 
 	<span slot="default_buttons">
@@ -198,53 +244,6 @@
 		{/if}
 
 		{#if songKey && songKey.length}
-			{#if shownIcons.includes('playlist')}
-				{#if selectedPlaylist != null}
-					{#if playlistSong}
-						{#if playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
-							<Button
-								iconFa="fas fa-list-ul"
-								title="Remove from the {selectedPlaylist.playlistTitle}"
-								animated={true}
-								noMargin={true}
-								type="danger"
-								on:click={() => playlists.remove(hash)} />
-						{:else if playlistEntries.length == 1 || !playlistEntries.includes(playlistKey)}
-							<Button
-								iconFa="fas fa-list-ul"
-								title="Add this diff to the {selectedPlaylist.playlistTitle}"
-								animated={true}
-								noMargin={true}
-								on:click={() => playlists.addDiff(hash, diffInfo)} />
-						{:else}
-							<Button
-								iconFa="fas fa-list-ul"
-								title="Remove this diff from the {selectedPlaylist.playlistTitle}"
-								animated={true}
-								noMargin={true}
-								type="lessdanger"
-								on:click={() => playlists.removeDiff(hash, diffInfo)} />
-						{/if}
-					{:else}
-						<Button
-							iconFa="fas fa-list-ul"
-							title="Add to the {selectedPlaylist.playlistTitle}"
-							animated={true}
-							noMargin={true}
-							on:click={() => {
-								playlists.add(getSongInfo());
-							}} />
-					{/if}
-				{:else}
-					<Button
-						iconFa="fas fa-list-ul"
-						title="Create new playlist with this song"
-						animated={true}
-						noMargin={true}
-						on:click={() => playlists.create(getSongInfo())} />
-				{/if}
-			{/if}
-
 			{#if shownIcons.includes('bsr')}
 				<Button iconFa="fas fa-exclamation" title="Copy !bsr" animated={true} noMargin={true} on:click={() => copyBsr()} />
 			{/if}

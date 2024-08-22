@@ -236,7 +236,7 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 	let led = respons.body;
 
 	const diffs =
-		led?.song?.difficulties.map(a => {
+		led?.song?.difficulties?.map(a => {
 			let leaderboardId = led.song.id + '' + a.value + '' + a.mode;
 			let diffAndType = {diff: a.difficultyName, type: a.modeName};
 			let color = getDiffColor(diffAndType);
