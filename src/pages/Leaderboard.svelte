@@ -738,7 +738,8 @@
 
 	$: votingStore.fetchStatus(hash, diffInfo?.diff, diffInfo?.type);
 
-	$: modifiers = $leaderboardStore?.leaderboard?.difficultyBl?.modifierValues ?? null;
+	$: modifiers = {bfs: 0.1, bsf: 0.1, ...$leaderboardStore?.leaderboard?.difficultyBl?.modifierValues} ?? null;
+
 	$: featuredPlaylists = leaderboard?.stats?.featuredPlaylists;
 
 	function boolflip(name) {

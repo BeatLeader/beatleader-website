@@ -42,9 +42,11 @@
 		NA: ['DA'],
 		GN: ['DA'],
 		DA: ['GN', 'NA'],
-		SS: ['FS', 'SF'],
-		FS: ['SF', 'SS'],
-		SF: ['FS', 'SS'],
+		SS: ['FS', 'SF', 'BFS', 'BSF'],
+		FS: ['SF', 'SS', 'BFS', 'BSF'],
+		SF: ['FS', 'SS', 'BFS', 'BSF'],
+		BFS: ['FS', 'SF', 'SS', 'BSF'],
+		BSF: ['FS', 'SF', 'SS', 'BFS'],
 	};
 
 	function fetchLimitsFromConfig(configStore) {
