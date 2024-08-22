@@ -7,7 +7,6 @@
 	import {votingTypes, mapTypeFromMask} from '../../utils/beatleader/format';
 	import ModifiersUpdate from './ModifiersUpdate.svelte';
 	import {deepClone, shallowEqual} from '../../utils/js';
-	import CriteriaCheck from './CriteriaCheck.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -196,7 +195,6 @@
 						<ModifiersUpdate {modifiers} on:modifiersUpdated={e => modifiersUpdated(e.detail)} />
 					{/if}
 				</div>
-				<CriteriaCheck songId={leaderboard.song.id} />
 			{/if}
 		</div>
 	</Dialog>

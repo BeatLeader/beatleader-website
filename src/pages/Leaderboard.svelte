@@ -48,7 +48,6 @@
 
 	import TextFilter from '../components/Player/ScoreFilters/TextFilter.svelte';
 	import ModifiersFilter from '../components/Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
-	import CriteriaCheck from '../components/Leaderboard/CriteriaCheck.svelte';
 	import LeaderboardActionButtons from '../components/Leaderboard/LeaderboardActionButtons.svelte';
 	import LeaderboardHeader from '../components/Leaderboard/LeaderboardHeader.svelte';
 	import Score from '../components/Leaderboard/Score.svelte';
@@ -760,7 +759,6 @@
 	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
 	$: curveShown = $configStore?.preferences?.curveShown;
 	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
-	$: criteriaInfoShown = $configStore?.preferences?.criteriaInfoShown;
 	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
 	$: leaderboardShowPlaylists = $configStore?.preferences?.leaderboardShowPlaylists;
@@ -1211,31 +1209,6 @@
 						</div>
 					{/if}
 				</ContentBox>
-			{/if}
-			{#if isNominated && qualification}
-				{#if qualification.criteriaCheck}
-					<ContentBox cls="leaderboard-aside-box">
-						{#if !criteriaInfoShown}
-							<div class="score-options-section" transition:fade>
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Show criteria check">
-									<i class="fas fa-triangle-exclamation" />
-
-									<i class="fas fa-chevron-right" />
-								</span>
-							</div>
-						{:else}
-							<div class="box-with-left-arrow" transition:slide>
-								<div class="score-options-section to-the-left">
-									<span class="beat-savior-reveal clickable" on:click={() => boolflip('criteriaInfoShown')} title="Hide criteria details">
-										<i class="fas fa-chevron-left" />
-									</span>
-								</div>
-
-								<CriteriaCheck songId={song?.id} criteriaCheck={JSON.parse(qualification.criteriaCheck)} />
-							</div>
-						{/if}
-					</ContentBox>
-				{/if}
 			{/if}
 
 			{#if showCurve && leaderboard?.stats?.stars}
