@@ -1,6 +1,7 @@
 <script>
 	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
+	import Atropos from 'atropos/svelte';
 	import {
 		createBuildFiltersFromLocation,
 		processStringFilter,
@@ -225,8 +226,8 @@
 				filters[p.key] = p.multi
 					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
 					: filters?.[p.key]?.length
-					? filters[p.key]
-					: p?.default ?? '';
+						? filters[p.key]
+						: p?.default ?? '';
 
 				p.value = p.multi
 					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
@@ -355,8 +356,24 @@
 		});
 	}
 
+	let cinematicsCanvas;
+
+	function drawCinematics(cinematicsCanvas, coverUrl) {
+		if (coverUrl && cinematicsCanvas) {
+			cinematicsCanvas.style.opacity = 1;
+			const context = cinematicsCanvas.getContext('2d');
+
+			const cover = new Image();
+			cover.onload = function () {
+				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
+			};
+			cover.src = coverUrl;
+		}
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, buildFiltersFromLocation(location), false, false);
+	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/week106_bg.webp');
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 </script>
@@ -377,6 +394,30 @@
 				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/49')} />
 			</div>
 		</ContentBox> -->
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/57')}>
+			<div class="cinematics">
+				<div class="cinematics-canvas">
+					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+				</div>
+			</div>
+
+			<div class="event-container">
+				<Atropos rotateXMax={1} rotateYMax={1} highlight="false" shadow="false" rotateTouch="scroll-y">
+					<div class="cover-bg" data-atropos-offset="-2" />
+					<div class="cover-girls" data-atropos-offset="1" />
+					<div class="cover-hands" data-atropos-offset="3" />
+				</Atropos>
+
+				<div class="event-text-and-button">
+					<div class="event-text-container">
+						<span class="event-title"></span>
+					</div>
+					<div>
+						<Button label="Event" cls="event-cover-btn" iconFa="fas fa-rocket" on:click={() => navigate('/event/57')} />
+					</div>
+				</div>
+			</div>
+		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -531,7 +572,7 @@
 		grid-gap: 1em;
 		justify-content: center;
 		margin: 0.6em;
-		padding: 0.3em;
+		padding: 0 !important;
 		border-radius: 0.5em;
 		cursor: pointer;
 	}
@@ -546,6 +587,30 @@
 		height: 100%;
 		display: flex;
 		justify-content: space-around;
+		position: relative;
+		height: 12em;
+		justify-content: flex-end;
+		flex-direction: column;
+		align-items: center;
+		overflow: hidden;
+		border-radius: 0.5em;
+	}
+	:global(.content-box.event-banner .atropos) {
+		width: 100%;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+	:global(.content-box.event-banner .atropos-highlight) {
+		display: none;
+	}
+	:global(.content-box.event-banner .atropos-shadow) {
+		display: none;
+	}
+	.event-text-and-button {
+		display: flex;
+		flex-direction: column;
+		z-index: 2;
 		align-items: center;
 	}
 
@@ -560,11 +625,75 @@
 		margin-right: 1em;
 	}
 
+	:global(.event-cover-btn) {
+		box-shadow: 1px 1px black !important;
+	}
+	.cover-bg {
+		position: absolute;
+		display: block;
+		background: url(/assets/week106_bg.webp) !important;
+		background-size: cover !important;
+		background-position-y: 50% !important;
+		bottom: -10%;
+		left: -10%;
+		height: 120%;
+		width: 120%;
+	}
+	.cover-girls {
+		position: absolute;
+		display: block;
+		background: url(/assets/week106_girls.webp) !important;
+		background-size: cover !important;
+		background-position-y: 50% !important;
+		height: 28em;
+		left: calc(50% - 14em);
+		top: calc(50% - 8em);
+		width: 28em;
+	}
+	.cover-hands {
+		position: absolute;
+		display: block;
+		background: url(/assets/week106_numbers.webp) !important;
+		background-size: cover !important;
+		background-position-y: 50% !important;
+		width: 22em;
+		height: 22em;
+		left: calc(50% - 11em);
+		top: calc(50% - 7em);
+	}
+	.cinematics {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	.cinematics-canvas {
+		filter: blur(5em) opacity(0.5) saturate(250%);
+		left: 0;
+		opacity: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: scale(1.1) translateZ(0);
+		width: 100%;
+		z-index: -1;
+		height: 100%;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	:global(.content-box.event-banner:hover .cinematics-canvas) {
+		opacity: 1;
+	}
+
 	.event-title {
 		color: var(--text-color);
 		font-size: x-large;
 		font-weight: 800;
 		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+		text-shadow: 1px 1px 11px #000000e8;
 	}
 
 	.event-text {
@@ -603,6 +732,12 @@
 		transform: translate(-7px, -2px);
 	}
 
+	@media screen and (max-width: 512px) {
+		.cover-hands {
+			background-position-y: 0.2em !important;
+		}
+	}
+
 	@media screen and (max-width: 1275px) {
 		.align-content {
 			flex-direction: column;
@@ -612,10 +747,6 @@
 		aside {
 			width: 100%;
 			max-width: 65em;
-		}
-
-		.event-container {
-			flex-direction: column;
 		}
 
 		.event-text-container {
