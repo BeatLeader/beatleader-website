@@ -12,7 +12,7 @@
 	let clansData;
 	let canvas, context, currentZoom, width, height;
 
-	const defaultScale = 0.25;
+	const defaultScale = 0.15;
 	var zoom;
 	let currentScale = defaultScale;
 	const hoverRadius = 38;
@@ -26,7 +26,7 @@
 	var clans = [];
 
 	let transitionProgress = 0;
-	const transitionDuration = 10000;
+	const transitionDuration = 400000;
 	let transitionStartTime;
 	let transitionCache;
 	let finishClansData;
@@ -65,15 +65,17 @@
 		fetch(`https://cdn.assets.beatleader.xyz/clansmap-globalcache-${startTimeset}.json`)
 			.then(r => r.json())
 			.then(cache => {
-				processData(cache);
+				setTimeout(() => {
+					processData(cache);
 
-				// Initialize canvas elements and interactions
-				initializeCanvas();
-				if (finishTimeset) {
-					getFinishData(finishTimeset);
-				} else {
-					renderCanvas();
-				}
+					// Initialize canvas elements and interactions
+					initializeCanvas();
+					if (finishTimeset) {
+						getFinishData(finishTimeset);
+					} else {
+						renderCanvas();
+					}
+				}, 900);
 			});
 	}
 
@@ -435,7 +437,7 @@
 			});
 
 		d3.select(canvas).call(zoom);
-		const initialTransform = d3.zoomIdentity.translate(346.64996337890625, 303.4814766674457).scale(defaultScale);
+		const initialTransform = d3.zoomIdentity.translate(226.64996337890625, 203.4814766674457).scale(defaultScale);
 		d3.select(canvas).call(zoom.transform, initialTransform);
 	}
 
