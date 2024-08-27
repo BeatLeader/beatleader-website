@@ -23,6 +23,7 @@
 	import Switcher from '../components/Common/Switcher.svelte';
 	import {processBoolFilter} from '../utils/filters';
 	import ClanMeta from '../components/Clans/ClanMeta.svelte';
+	import ClanChart from '../components/Clans/ClanChart.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -332,6 +333,14 @@
 				mode={numOfItems ? 'pages' : 'simple'}
 				on:page-changed={onPageChanged} />
 		</ContentBox>
+		{#if clan?.captureLeaderboardsCount > 0}
+			<ContentBox cls="chart-container-box">
+				<h3 class="chart-title">Global Map History</h3>
+				<div class="darkened-background chart-container">
+					<ClanChart clanId={clan.id} />
+				</div>
+			</ContentBox>
+		{/if}
 		{#if clan?.tag == 'FELA'}
 			<ContentBox>
 				<div style="display: flex; width: 100%; height: 100%; justify-content: center;">
@@ -396,6 +405,20 @@
 		justify-content: center;
 	}
 
+	.chart-container {
+		padding: 1em;
+		border-radius: 8px;
+	}
+
+	.chart-title {
+		text-align: center;
+		margin-bottom: 0.2em;
+	}
+
+	:global(.chart-container-box) {
+		padding: 0.4em !important;
+		border-radius: 12px !important;
+	}
 	:global(.primary-clan-button) {
 		width: auto !important;
 		margin-top: 0.3em !important;
