@@ -3,6 +3,7 @@
 	import {debounce} from '../../utils/debounce';
 	import Button from '../Common/Button.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
+	import {searchValue} from '../../stores/search';
 
 	const dispatch = createEventDispatcher();
 
@@ -11,8 +12,6 @@
 	let handleKeyDown = true;
 	let handleMouseOver = false;
 
-	let value = '';
-	let searchValue = '';
 	let placeholder = 'Enter at least 3 characters...';
 
 	let groups = [];
@@ -157,7 +156,7 @@
 					type: 'select',
 					value: selected.item,
 					...(item?.onClick ? item.onClick() : null),
-			  })
+				})
 			: null;
 	}
 
@@ -308,8 +307,8 @@
 	function onSearchChanged(e) {
 		var search = e.target.value ?? '';
 
-		if (search.length >= 3 && value !== search) {
-			value = search;
+		if (search.length >= 3 && $searchValue !== search) {
+			$searchValue = search;
 		}
 	}
 
@@ -321,7 +320,7 @@
 <svelte:body on:keydown={e => onKeyDown(e)} on:keyup={() => (handleKeyDown = true)} />
 
 <article class="search-box">
-	<slot {value} />
+	<slot value={$searchValue} />
 
 	<ContentBox>
 		<main>
@@ -335,18 +334,18 @@
 				<input
 					type="search"
 					bind:this={inputEl}
-					bind:value={searchValue}
+					value={$searchValue}
 					on:input={debounce(onSearchChanged, 400)}
 					{placeholder}
 					autofocus="true"
 					autocomplete="off" />
 
 				<span class="button-cont">
-					<Button iconFa="fas fa-search" type="text" noMargin={true} on:click={() => (value = searchValue)} />
+					<Button iconFa="fas fa-search" type="text" noMargin={true} />
 				</span>
 			</section>
 
-			{#if value?.length}
+			{#if $searchValue?.length}
 				<section class="groups" bind:this={groupsEl} on:mousemove={() => (handleMouseOver = true)}>
 					{#each groups as group}
 						<section class="group" class:selected={group === selected?.group}>

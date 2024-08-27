@@ -1,5 +1,5 @@
 <script>
-	import {search} from '../../stores/search';
+	import {search, searchValue} from '../../stores/search';
 	import SearchBox from './SearchBox.svelte';
 	import PlayersSearch from './PlayersSearch.svelte';
 	import MapsSearch from './MapsSearch.svelte';
@@ -10,6 +10,7 @@
 
 	function onClose() {
 		$search = false;
+		$searchValue = '';
 	}
 
 	onMount(() => {
@@ -21,12 +22,12 @@
 
 <main>
 	<div class="bg" on:click={onClose} />
-	<SearchBox let:value on:close={onClose}>
-		<PlayersSearch {value} on:close={onClose} />
-		<MapsSearch {value} on:close={onClose} />
-		<ClansSearch {value} on:close={onClose} />
-		<EventsSearch {value} on:close={onClose} />
-		<WikiSearch {value} on:close={onClose} />
+	<SearchBox on:close={onClose}>
+		<PlayersSearch value={$searchValue} on:close={onClose} />
+		<MapsSearch value={$searchValue} on:close={onClose} />
+		<ClansSearch value={$searchValue} on:close={onClose} />
+		<EventsSearch value={$searchValue} on:close={onClose} />
+		<WikiSearch value={$searchValue} on:close={onClose} />
 	</SearchBox>
 </main>
 

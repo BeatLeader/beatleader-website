@@ -7,6 +7,8 @@
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
+	import {search, searchValue} from '../../stores/search';
+
 	export let request;
 
 	const dispatch = createEventDispatcher();
@@ -55,6 +57,16 @@
 			<Avatar {player} />
 			<PlayerNameWithFlag {player} hideFlag={true} on:click={player ? () => navigateToPlayer(player.playerId) : null} />
 		</div>
+	</div>
+	<div class="search-button">
+		<Button
+			type="primary"
+			label="Search"
+			iconFa="fas fa-search"
+			on:click={() => {
+				$searchValue = request.value;
+				$search = true;
+			}} />
 	</div>
 	<div>
 		<Button
