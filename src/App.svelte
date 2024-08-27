@@ -54,6 +54,7 @@
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
 	import SongScoreDetailsStandalone from './components/Player/SongScoreDetailsStandalone.svelte';
+	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
 
 	export let url = '';
 
@@ -242,6 +243,12 @@
 					</Route>
 					<Route path="/clansmap/save" let:params let:location>
 						<ClansMap save={true} {location} />
+					</Route>
+					<Route path="/clansmap/history/*startTimeset" let:params let:location>
+						<GlobalClansMapHistory
+							startTimeset={params.startTimeset.includes('/') ? params.startTimeset.split('/')[0] : params.startTimeset}
+							finishTimeset={params.startTimeset.includes('/') ? params.startTimeset.split('/')[1] : null}
+							{location} />
 					</Route>
 					<Route path="/clansmap" let:location>
 						<ClansMap {location} />
