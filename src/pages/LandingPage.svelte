@@ -231,7 +231,6 @@
 	}
 
 	.feature-image {
-		width: 25em;
 		height: 25em;
 	}
 
@@ -358,8 +357,8 @@
 		}
 
 		.title-and-buttons {
-			margin-top: 18em;
-			margin-bottom: -2em;
+			margin-top: 8em;
+			margin-bottom: 0em;
 			max-width: none;
 			margin-left: 0.125em;
 		}
