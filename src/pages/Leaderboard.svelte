@@ -29,6 +29,7 @@
 		votingsForTypeStats,
 		DifficultyStatus,
 		formatDiffStatus,
+		modeDescriptions,
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
@@ -363,6 +364,7 @@
 					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
 					cls: 'mode-tab-button',
 					icon: `<div class="${getIconNameForDiff(d)}" title="${getDescriptionForDiff(d)}">`,
+					projectLink: modeDescriptions[d.type]?.projectLink,
 				});
 			}
 		});
@@ -1034,6 +1036,12 @@
 					</div>
 				{/if}
 
+				{#if currentMode.projectLink}
+					<div class="custom-mode-info">
+						<span> This is a leaderboard for modded difficulty. <a href={currentMode.projectLink}>Check here for more info!</a> </span>
+					</div>
+				{/if}
+
 				{#if !separatePage}
 					{#if showStats && leaderboard?.stats}
 						<div class="stats-with-icons">
@@ -1526,6 +1534,13 @@
 	.inactive-pp {
 		opacity: 0.6;
 		cursor: pointer;
+	}
+
+	.custom-mode-info {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: 0.3em;
 	}
 
 	@media screen and (max-width: 1275px) {

@@ -12,7 +12,7 @@
 	let any = false;
 	let none = false;
 	let not = false;
-	let modifiers = deepClone(ModifiersList);
+	let modifiers = deepClone(ModifiersList.filter(m => !m.hideInFilter));
 
 	function selectDefault(selected) {
 		if (!selected) return;

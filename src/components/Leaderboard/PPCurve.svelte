@@ -4,12 +4,13 @@
 	import Chart from 'chart.js/auto';
 	import regionsPlugin from './utils/regions-plugin';
 	import {formatNumber, GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
-	import {userDescriptionForModifier} from '../../utils/beatleader/format';
+	import {ModifiersList, userDescriptionForModifier} from '../../utils/beatleader/format';
 	import {getPPFromAcc, computeModifiedRating, computeStarRating} from '../../utils/beatleader/pp';
 	import RangeSlider from 'svelte-range-slider-pips';
 	import {debounce} from '../../utils/debounce';
 	import {configStore} from '../../stores/config';
 	import {produce} from 'immer';
+	import ModifiersFilter from './ModifiersPicker/ModifiersFilter.svelte';
 
 	export let passRating = 5;
 	export let accRating = 5;
@@ -255,7 +256,7 @@
 	}
 
 	const debouncedOnRangeChange = debounce(onRangeChange, 100);
-	const hiddenModifiers = ['ez', 'ohp', 'op', 'smc', 'hd'];
+	const hiddenModifiers = ModifiersList.filter(m => m.hideInFilter).map(m => m.id.toLowerCase());
 
 	$: fetchLimitsFromConfig($configStore);
 	$: modifiersArr = Object.entries(modifiers ?? {})

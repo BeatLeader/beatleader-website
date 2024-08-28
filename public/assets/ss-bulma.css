@@ -737,8 +737,20 @@ button,
 input,
 select,
 textarea {
-	font-family: BlinkMacSystemFont, -apple-system, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-		'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+	font-family:
+		BlinkMacSystemFont,
+		-apple-system,
+		'Segoe UI',
+		'Roboto',
+		'Oxygen',
+		'Ubuntu',
+		'Cantarell',
+		'Fira Sans',
+		'Droid Sans',
+		'Helvetica Neue',
+		'Helvetica',
+		'Arial',
+		sans-serif;
 }
 
 code,
@@ -1958,7 +1970,9 @@ a.has-text-danger:focus {
 .box {
 	background-color: white;
 	border-radius: 6px;
-	box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+	box-shadow:
+		0 2px 3px rgba(10, 10, 10, 0.1),
+		0 0 0 1px rgba(10, 10, 10, 0.1);
 	color: #4a4a4a;
 	display: block;
 	padding: 1.25rem;
@@ -1966,11 +1980,15 @@ a.has-text-danger:focus {
 
 a.box:hover,
 a.box:focus {
-	box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px #3273dc;
+	box-shadow:
+		0 2px 3px rgba(10, 10, 10, 0.1),
+		0 0 0 1px #3273dc;
 }
 
 a.box:active {
-	box-shadow: inset 0 1px 2px rgba(10, 10, 10, 0.2), 0 0 0 1px #3273dc;
+	box-shadow:
+		inset 0 1px 2px rgba(10, 10, 10, 0.2),
+		0 0 0 1px #3273dc;
 }
 
 .button {
@@ -5980,7 +5998,9 @@ a.tag:hover {
 
 .card {
 	background-color: white;
-	box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+	box-shadow:
+		0 2px 3px rgba(10, 10, 10, 0.1),
+		0 0 0 1px rgba(10, 10, 10, 0.1);
 	color: #4a4a4a;
 	max-width: 100%;
 	position: relative;
@@ -6085,7 +6105,9 @@ a.tag:hover {
 .dropdown-content {
 	background-color: white;
 	border-radius: 4px;
-	box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+	box-shadow:
+		0 2px 3px rgba(10, 10, 10, 0.1),
+		0 0 0 1px rgba(10, 10, 10, 0.1);
 	padding-bottom: 0.5rem;
 	padding-top: 0.5rem;
 }
@@ -7692,7 +7714,9 @@ a.navbar-item.is-active,
 	.navbar-dropdown.is-boxed {
 		border-radius: 6px;
 		border-top: none;
-		box-shadow: 0 8px 8px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+		box-shadow:
+			0 8px 8px rgba(10, 10, 10, 0.1),
+			0 0 0 1px rgba(10, 10, 10, 0.1);
 		display: block;
 		opacity: 0;
 		pointer-events: none;
@@ -11591,6 +11615,21 @@ select {
 	background-repeat: no-repeat;
 	background-image: url('./90degree.svg');
 }
+.generateddegree360-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./generated360degree.svg');
+}
+
+.generateddegree90-icon {
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./generated90degree.svg');
+}
 
 .horizontalstandard-icon {
 	margin-left: 1px;
@@ -11687,6 +11726,16 @@ select {
 	background-size: cover;
 	background-repeat: no-repeat;
 	background-image: url('./onesaber-controllable-icon.webp');
+}
+
+.rebeatstandard-icon {
+	margin-left: 1px;
+	margin-top: 2px;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./rebeatstandard.webp');
 }
 
 .content-box.festive {
