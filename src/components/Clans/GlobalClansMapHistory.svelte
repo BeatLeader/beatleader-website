@@ -198,7 +198,6 @@
 		const endMatch = end.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)/);
 
 		if (!startMatch || !endMatch) {
-			console.log(start + ' ' + end);
 			return start;
 		}
 
@@ -213,12 +212,10 @@
 	function animateUpdate(timestamp) {
 		const elapsed = timestamp - transitionStartTime;
 		transitionProgress = elapsed / transitionDuration;
-		console.log(transitionProgress);
 
 		if (transitionProgress < 0.2) {
 			requestAnimationFrame(animateUpdate);
 		} else {
-			console.log('processData');
 			clansData = finishClansData;
 			processData(transitionCache);
 			renderCanvas();
@@ -758,5 +755,13 @@
 
 	.timeline-label.selected {
 		color: red;
+	}
+
+	@media screen and (max-width: 768px) {
+		.timeline-container {
+			transform: rotate(270deg) translateX(58%);
+			width: 160%;
+			left: 15%;
+		}
 	}
 </style>

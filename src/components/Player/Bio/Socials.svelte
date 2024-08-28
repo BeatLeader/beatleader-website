@@ -24,7 +24,6 @@
 		alias: playerData.alias,
 		roles: playerData.role,
 	};
-	console.log(playerData);
 	let devInfoOpen = false;
 </script>
 
@@ -133,7 +132,7 @@
 		OculusPC ID: <strong>{devInfo.oculusPcId !== '' ? devInfo.oculusPcId : 'N/A'}</strong> <br />
 		Quest ID: <strong>{devInfo.questId !== '' ? devInfo.questId : 'N/A'}</strong> <br />
 		<hr style="margin: 0.5em 0; height: 0px" />
-		Roles: <strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
+		Roles:<strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
 	</div>
 {/if}
 

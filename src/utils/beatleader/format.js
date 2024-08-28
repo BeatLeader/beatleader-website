@@ -463,7 +463,7 @@ export const modeDescriptions = {
 		icon: 'rebeatstandard-icon',
 		color: 'purple',
 		textColor: 'white',
-		projectLink: 'https://docs.google.com/document/d/1NOXeaHTuBqXsBhfZotij5uaVAbPQ9TNhjvckuuCdR_M',
+		projectLink: 'https://github.com/Inscolosus/ReBeat',
 	},
 	Legacy: {
 		title: 'Legacy',
