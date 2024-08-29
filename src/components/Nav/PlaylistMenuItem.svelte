@@ -10,7 +10,8 @@
 				? playlist.image
 				: 'data:image/png;base64,' + playlist.image
 			: '/assets/song-default.png'}
-		alt="PlaylistImage" />
+		alt="PlaylistImage"
+		loading="lazy" />
 	<span class="playlistTitle">{playlist?.playlistTitle} - {playlist?.songs?.length} song(s)</span>
 </section>
 

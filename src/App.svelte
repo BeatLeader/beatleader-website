@@ -51,11 +51,10 @@
 	import GigaMap from './pages/GigaMap.svelte';
 	import AdminPage from './pages/Admin.svelte';
 	import Week100Page from './pages/Week100.svelte';
+	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
-	import TournamentTopBanner from './components/Common/TournamentTopBanner.svelte';
-	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
 
 	export let url = '';
 
@@ -134,7 +133,7 @@
 
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
-<TournamentTopBanner />
+<!-- <TournamentTopBanner /> -->
 <!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
 		<a class="reelink" href="/settings#profile" />
