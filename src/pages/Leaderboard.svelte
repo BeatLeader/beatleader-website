@@ -1036,7 +1036,7 @@
 					</div>
 				{/if}
 
-				{#if currentMode.projectLink}
+				{#if currentMode?.projectLink}
 					<div class="custom-mode-info">
 						<span> This is a leaderboard for modded difficulty. <a href={currentMode.projectLink}>Check here for more info!</a> </span>
 					</div>

@@ -55,19 +55,25 @@
 				cls = 'player-role';
 				break;
 			case 'tipper':
-				show = !profileAppearance || (profileAppearance.includes('tipper') && (!profileAppearance.includes('booster') || edit));
+				show =
+					!profileAppearance ||
+					(profileAppearance.includes('tipper') && (!profileAppearance.includes('booster') || !allRoles.includes('booster') || edit));
 				roleIcon = BL_ASSETS_CDN + '/patreon1.webp';
 				roleDescription = 'Tier 1 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'supporter':
-				show = !profileAppearance || (profileAppearance.includes('supporter') && (!profileAppearance.includes('booster') || edit));
+				show =
+					!profileAppearance ||
+					(profileAppearance.includes('supporter') && (!profileAppearance.includes('booster') || !allRoles.includes('booster') || edit));
 				roleIcon = BL_ASSETS_CDN + '/patreon2.webp';
 				roleDescription = 'Tier 2 Patreon supporter.';
 				cls = 'player-role';
 				break;
 			case 'sponsor':
-				show = !profileAppearance || (profileAppearance.includes('sponsor') && (!profileAppearance.includes('booster') || edit));
+				show =
+					!profileAppearance ||
+					(profileAppearance.includes('sponsor') && (!profileAppearance.includes('booster') || !allRoles.includes('booster') || edit));
 				roleIcon = BL_ASSETS_CDN + '/patreon3.webp';
 				roleDescription = 'Highest tier Patreon supporter. Crypto godge';
 				cls = 'player-role';
