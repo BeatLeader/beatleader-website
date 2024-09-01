@@ -52,6 +52,7 @@
 	import AdminPage from './pages/Admin.svelte';
 	import Week100Page from './pages/Week100.svelte';
 	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
+	import TibytesPresets from './pages/TibytesPresets.svelte';
 
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
@@ -251,6 +252,7 @@
 					<Route path="/supporting-project/link">
 						<PatreonPage action="linkPatreon" />
 					</Route>
+					<Route path="/tibytes-presets" component={TibytesPresets} />
 					<Route path="/supporting-project" component={PatreonPage} />
 					<Route path="/ranking/*page" let:params let:location>
 						<RankingPage page={params.page} {location} />
