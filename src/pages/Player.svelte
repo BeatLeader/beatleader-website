@@ -203,7 +203,7 @@
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
-	$: playerPage && playerInfo?.clans?.filter(cl => cl.tag == 'SABA') && addRandomImageOnHover(playerPage);
+	$: playerPage && playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length && addRandomImageOnHover(playerPage);
 </script>
 
 <svelte:head>
