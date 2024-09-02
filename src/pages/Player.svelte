@@ -1,6 +1,4 @@
 <script>
-	import {onMount} from 'svelte';
-	import {navigate} from 'svelte-routing';
 	import {fade} from 'svelte/transition';
 	import createPlayerInfoWithScoresStore from '../stores/http/http-player-with-scores-store';
 	import createAccSaberService from '../services/accsaber';
@@ -13,7 +11,6 @@
 	import processPlayerData from '../components/Player/utils/profile';
 	import {SsrHttpNotFoundError, SsrHttpUnprocessableEntityError} from '../network/errors';
 	import createServiceParamsManager from '../components/Player/utils/service-param-manager';
-	import eventBus from '../utils/broadcast-channel-pubsub';
 	import Profile from '../components/Player/Profile.svelte';
 	import Scores from '../components/Player/Scores.svelte';
 	import MiniRankings from '../components/Ranking/MiniRankings.svelte';
@@ -21,7 +18,6 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import CardsCarousel from '../components/Player/CardsCarousel.svelte';
 	import PinnedScores from '../components/Player/PinnedScores.svelte';
-	import keyValueRepository from '../db/repository/key-value';
 	import PlayerMeta from '../components/Player/PlayerMeta.svelte';
 	import Achievements from '../components/Player/Achievements.svelte';
 	import RandomRain from '../components/Common/RandomRain.svelte';
@@ -29,6 +25,7 @@
 	import PlayerCards from '../components/Player/Bio/PlayerCards.svelte';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import {fetchJson} from '../network/fetch';
+	import {addRandomImageOnHover} from '../utils/clans';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -158,6 +155,7 @@
 
 	let innerWidth = 0;
 	let innerHeight = 0;
+	let playerPage = null;
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
@@ -205,6 +203,7 @@
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
+	$: playerPage && playerInfo?.clans?.filter(cl => cl.tag == 'SABA') && addRandomImageOnHover(playerPage);
 </script>
 
 <svelte:head>
@@ -218,7 +217,7 @@
 {/if}
 
 <section class="align-content player-page" transition:fade|global>
-	<article class="page-content">
+	<article class="page-content" bind:this={playerPage}>
 		{#if $playerError && ($playerError instanceof SsrHttpNotFoundError || $playerError instanceof SsrHttpUnprocessableEntityError)}
 			<ContentBox>
 				<p class="error">Player not found.</p>
