@@ -101,7 +101,7 @@
 	$: hash = song?.hash;
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 
-	$: selectedIcons = icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons));
+	$: selectedIcons = (icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons)))?.filter(i => i != 'analyzer');
 
 	$: scores = $clanRankingStore?.clanRanking?.scores ?? [];
 	$: totalItems = $clanRankingStore?.totalItems ?? 0;
