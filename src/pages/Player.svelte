@@ -25,7 +25,7 @@
 	import PlayerCards from '../components/Player/Bio/PlayerCards.svelte';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import {fetchJson} from '../network/fetch';
-	import {addRandomImageOnHover} from '../utils/clans';
+	import {toggleRandomImageOnHover} from '../utils/clans';
 
 	const STORE_SORTING_KEY = 'PlayerScoreSorting';
 	const STORE_ORDER_KEY = 'PlayerScoreOrder';
@@ -203,7 +203,7 @@
 	$: statsHistoryStore.fetchStats(playerData, $configStore.preferences.daysOfHistory);
 
 	$: editing = new URLSearchParams(location?.search).get('edit') ?? null;
-	$: playerPage && playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length && addRandomImageOnHover(playerPage);
+	$: playerPage && toggleRandomImageOnHover(playerPage, playerInfo?.clans?.filter(cl => cl.tag == 'SABA').length);
 </script>
 
 <svelte:head>

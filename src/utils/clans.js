@@ -122,25 +122,53 @@ export function rankedPoolPercentValue(tag, value) {
 	}
 }
 
-export function addRandomImageOnHover(playerPage) {
-	const observer = new MutationObserver(() => {
+export function toggleRandomImageOnHover(playerPage, enable) {
+	const onChange = () => {
 		const contentBoxes = playerPage.querySelectorAll('.content-box:not(.profile-box)');
 		contentBoxes.forEach(box => {
 			box.removeEventListener('mouseenter', handleMouseEnter);
 			box.removeEventListener('touchstart', handleTouchStart);
-			box.addEventListener('mouseenter', handleMouseEnter);
-			box.addEventListener('touchstart', handleTouchStart);
+			if (playerPage.imagesEnable) {
+				box.addEventListener('mouseenter', handleMouseEnter);
+				box.addEventListener('touchstart', handleTouchStart);
+			}
 		});
-	});
 
-	observer.observe(playerPage, {childList: true, subtree: true});
+		const fakeBoxes = playerPage.querySelectorAll('.saba-fake-box');
+		fakeBoxes.forEach(fakeBox => {
+			fakeBox.parentElement.removeChild(fakeBox);
+		});
+	};
+
+	if (!playerPage.observer) {
+		playerPage.observer = new MutationObserver(mutations => {
+			const shouldUpdate = mutations.some(
+				mutation =>
+					mutation.type === 'childList' &&
+					!Array.from(mutation.addedNodes)
+						.concat(Array.from(mutation.removedNodes))
+						.some(node => node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'svg')
+			);
+			if (shouldUpdate) {
+				onChange();
+			}
+		});
+
+		playerPage.observer.observe(playerPage, {childList: true, subtree: false});
+	}
+
+	playerPage.imagesEnable = enable;
 
 	function handleMouseEnter(event) {
-		showImage(event.currentTarget, false);
+		if (event.currentTarget.parentElement.imagesEnable) {
+			showImage(event.currentTarget, false);
+		}
 	}
 
 	function handleTouchStart(event) {
-		showImage(event.currentTarget, true);
+		if (event.currentTarget.parentElement.imagesEnable) {
+			showImage(event.currentTarget, true);
+		}
 	}
 
 	function showImage(box, isTouch) {
@@ -156,6 +184,7 @@ export function addRandomImageOnHover(playerPage) {
 		}
 		fakeBox.style.pointerEvents = 'none';
 		fakeBox.style.overflow = 'visible';
+		fakeBox.classList.add('saba-fake-box');
 
 		const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
 		mask.setAttribute('id', 'mask');
@@ -220,26 +249,45 @@ export function addRandomImageOnHover(playerPage) {
 		img.setAttribute('x', x);
 		img.setAttribute('y', y);
 
-		img.setAttribute('transform', `rotate(${angle} ${x + size / 2} ${y + size / 2}) translate(0 ${size})`);
-		img.style.transition = 'transform 0.3s ease';
+		let startTime;
+		const duration = 300;
 
-		requestAnimationFrame(() => {
-			img.setAttribute('transform', `rotate(${angle} ${x + size / 2} ${y + size / 2}) translate(0 0)`);
-		});
+		const animate = timestamp => {
+			if (!startTime) startTime = timestamp;
+			const progress = timestamp - startTime;
+			const easeProgress = Math.min(progress / duration, 1);
+			const translateY = (1 - easeProgress) * size;
+
+			img.setAttribute('transform', `rotate(${angle} ${x + size / 2} ${y + size / 2}) translate(0 ${translateY})`);
+
+			if (progress < duration) {
+				requestAnimationFrame(animate);
+			}
+		};
+
+		requestAnimationFrame(animate);
 
 		g.appendChild(img);
 		fakeBox.appendChild(g);
 		parentBox.appendChild(fakeBox);
 
 		const removeImage = () => {
-			img.setAttribute('transform', `rotate(${angle} ${x + size / 2} ${y + size / 2}) translate(0 ${size})`);
-			img.addEventListener(
-				'transitionend',
-				() => {
+			startTime = null;
+			requestAnimationFrame(function removeAnimate(timestamp) {
+				if (!startTime) startTime = timestamp;
+				const progress = timestamp - startTime;
+				const easeProgress = Math.min(progress / duration, 1);
+				const translateY = easeProgress * size;
+
+				img.setAttribute('transform', `rotate(${angle} ${x + size / 2} ${y + size / 2}) translate(0 ${translateY})`);
+
+				if (progress < duration) {
+					requestAnimationFrame(removeAnimate);
+				} else if (!fakeBox.removed) {
+					fakeBox.removed = true;
 					parentBox.removeChild(fakeBox);
-				},
-				{once: true}
-			);
+				}
+			});
 		};
 
 		if (isTouch) {
