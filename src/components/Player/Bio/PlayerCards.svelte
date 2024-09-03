@@ -3,6 +3,7 @@
 	import RankedMapper from './RankedMapper.svelte';
 	import ClanFounder from './ClanFounder.svelte';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
+	import Spinner from '../../Common/Spinner.svelte';
 
 	export let playerId = null;
 	export let playerInfo = null;
@@ -17,67 +18,62 @@
 	let clan = null;
 	let cachedPlayerId = null;
 
-	function fetchClan(playerId) {
+	async function fetchClan(playerId) {
 		if (!playerId || playerId == cachedPlayerId) return;
+
 		cachedPlayerId = playerId;
-		fetch(`${BL_API_URL}player/${playerId}/foundedClan`, {credentials: 'include'})
-			.then(r => r.json())
-			.then(result => {
-				clan = result;
 
-				dispatch('height-changed');
-			})
-			.catch(e => {
-				onEmptyClan();
+		const response = await fetch(`${BL_API_URL}player/${playerId}/foundedClan`, {credentials: 'include'});
+		clan = !response.ok ? null : await response.json();
+		if (!clan) {
+			onEmptyClan();
+		}
 
-				clan = null;
-			});
+		dispatch('height-changed');
 	}
 
 	let rankedmaps = null;
 	let topmap = null;
 	let cachedMapperId = null;
 
-	function fetchRankedMapper(mapperId, profileSettings, editModel) {
-		if (!mapperId) {
-			onEmptyMaps();
-			return;
-		}
+	async function fetchRankedMapper(mapperId, profileSettings, editModel) {
 		if (cachedMapperId == mapperId) return;
-		cachedMapperId = mapperId;
-		fetch(
-			`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${
-				editModel ? editModel?.data?.rankedMapperSort : profileSettings?.rankedMapperSort
-			}`
-		)
-			.then(r => r.json())
-			.then(response => {
-				rankedmaps = response;
-				topmap = rankedmaps.maps[0];
 
-				dispatch('height-changed');
-			})
-			.catch(e => {
-				onEmptyMaps();
-				rankedmaps = null;
-			});
+		cachedMapperId = mapperId;
+		const response = mapperId
+			? await fetch(
+					`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${
+						editModel ? editModel?.data?.rankedMapperSort : profileSettings?.rankedMapperSort
+					}`
+				)
+			: null;
+		rankedmaps = !response?.ok ? null : await response.json();
+		if (rankedmaps) {
+			topmap = rankedmaps.maps[0];
+		} else {
+			onEmptyMaps();
+		}
 	}
 
-	$: fetchRankedMapper(playerInfo?.mapperId, profileSettings, editModel);
-	$: fetchClan(playerId);
+	$: mapperPromise = fetchRankedMapper(playerInfo?.mapperId, profileSettings, editModel);
+	$: clanPromise = fetchClan(playerId);
 </script>
 
 {#if playerInfo}
-	<div id={playerId + '-player-cards'} class="cards-container">
-		{#if rankedmaps || clan}
-			{#if rankedmaps}
-				<RankedMapper mapperId={playerInfo.mapperId} {rankedmaps} {topmap} bind:editModel />
+	{#await Promise.all([clanPromise, mapperPromise])}
+		<Spinner />
+	{:then _}
+		<div id={playerId + '-player-cards'} class="cards-container">
+			{#if rankedmaps || clan}
+				{#if rankedmaps}
+					<RankedMapper mapperId={playerInfo.mapperId} {rankedmaps} {topmap} bind:editModel />
+				{/if}
+				{#if clan}
+					<ClanFounder {clan} />
+				{/if}
 			{/if}
-			{#if clan}
-				<ClanFounder {clan} />
-			{/if}
-		{/if}
-	</div>
+		</div>
+	{/await}
 {/if}
 
 <style>

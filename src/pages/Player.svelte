@@ -285,8 +285,7 @@
 					{/if}
 				{/await}
 			{/if}
-			<!-- `serviceParams` here is just to force Svelte always update this block -->
-			{#if serviceParams && ((!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio)}
+			{#if (!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio}
 				<ContentBox cls="player-cards-box">
 					<PlayerCards {playerId} {playerInfo} profileSettings={playerData?.profileSettings} bind:editModel={$editModel} />
 				</ContentBox>
