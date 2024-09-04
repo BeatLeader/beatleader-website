@@ -506,8 +506,15 @@ export const modeDescriptions = {
 		textColor: 'white',
 		projectLink: 'https://www.patreon.com/moddingpink',
 	},
+	ReBeat_OneSaber: {
+		title: 'One Saber (ReBeat Mod)',
+		icon: 'rebeatonesaber-icon',
+		color: 'purple',
+		textColor: 'white',
+		projectLink: 'https://github.com/Inscolosus/ReBeat',
+	},
 	'OneSaber-PinkPlay_Controllable': {
-		title: 'OneSaber (Controllable mod)',
+		title: 'One Saber (Controllable mod)',
 		icon: 'onesaber-controllable-icon',
 		color: 'purple',
 		textColor: 'white',
@@ -534,12 +541,45 @@ export const modeDescriptions = {
 		textColor: 'white',
 		projectLink: 'https://github.com/CodeStix/Beat-360fyer-Plugin',
 	},
+	ReBeat_NoArrows: {
+		title: 'No Arrows (ReBeat Mod)',
+		icon: 'rebeatnoarrows-icon',
+		color: 'purple',
+		textColor: 'white',
+		projectLink: 'https://github.com/Inscolosus/ReBeat',
+	},
+	ReBeat_90Degree: {
+		title: '90 Degree (ReBeat Mod)',
+		icon: 'rebeat90degree-icon',
+		color: 'purple',
+		textColor: 'white',
+		projectLink: 'https://github.com/Inscolosus/ReBeat',
+	},
+	ReBeat_360Degree: {
+		title: '360 Degree (ReBeat Mod)',
+		icon: 'rebeat360degree-icon',
+		color: 'purple',
+		textColor: 'white',
+		projectLink: 'https://github.com/Inscolosus/ReBeat',
+	},
+	ReBeat_Lawless: {
+		title: 'Lawless (ReBeat Mod)',
+		icon: 'rebeatlawless-icon',
+		color: 'purple',
+		textColor: 'white',
+	},
 	RhythmGameStandard: {
 		title: "It's a rhythm game!",
 		icon: 'rhythmgamestandard-icon',
 		color: 'purple',
 		textColor: 'white',
 		projectLink: 'https://beatleader.xyz/event/23',
+	},
+	ReBeat_Lightshow: {
+		title: 'Lightshow (ReBeat Mod)',
+		icon: 'rebeatlightshow-icon',
+		color: 'purple',
+		textColor: 'white',
 	},
 };
 

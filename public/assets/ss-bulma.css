@@ -11557,7 +11557,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./lawless.svg');
+	background-image: url('./Characteristics/lawless.svg');
 }
 
 .standard-icon {
@@ -11565,7 +11565,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./standard.svg');
+	background-image: url('./Characteristics/standard.svg');
 }
 
 .legacy-icon {
@@ -11573,7 +11573,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./legacy.svg');
+	background-image: url('./Characteristics/legacy.svg');
 }
 
 .onesaber-icon {
@@ -11581,7 +11581,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./onesaber.svg');
+	background-image: url('./Characteristics/onesaber.svg');
 }
 
 .noarrows-icon {
@@ -11589,7 +11589,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./noarrows.svg');
+	background-image: url('./Characteristics/noarrows.svg');
 }
 
 .lightshow-icon {
@@ -11597,7 +11597,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./lightshow.svg');
+	background-image: url('./Characteristics/lightshow.svg');
 }
 
 .degree360-icon {
@@ -11605,7 +11605,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./360degree.svg');
+	background-image: url('./Characteristics/360degree.svg');
 }
 
 .degree90-icon {
@@ -11613,14 +11613,14 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./90degree.svg');
+	background-image: url('./Characteristics/90degree.svg');
 }
 .generateddegree360-icon {
 	width: 100%;
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./generated360degree.svg');
+	background-image: url('./Characteristics/generated360degree.svg');
 }
 
 .generateddegree90-icon {
@@ -11628,7 +11628,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./generated90degree.svg');
+	background-image: url('./Characteristics/generated90degree.svg');
 }
 
 .horizontalstandard-icon {
@@ -11638,7 +11638,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./horizontalstandard.webp');
+	background-image: url('./Characteristics/horizontalstandard.webp');
 }
 
 .inversestandard-icon {
@@ -11648,7 +11648,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./inversestandard.webp');
+	background-image: url('./Characteristics/inversestandard.webp');
 }
 
 .invertedstandard-icon {
@@ -11658,7 +11658,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./invertedstandard.webp');
+	background-image: url('./Characteristics/invertedstandard.webp');
 }
 
 .verticalstandard-icon {
@@ -11668,7 +11668,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./verticalstandard.webp');
+	background-image: url('./Characteristics/verticalstandard.webp');
 }
 
 .rhythmgamestandard-icon {
@@ -11676,7 +11676,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./rhythmgamestandard.webp');
+	background-image: url('./Characteristics/rhythmgamestandard.webp');
 }
 
 .icon115s {
@@ -11709,7 +11709,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./lawless-controllable-icon.webp');
+	background-image: url('./Characteristics/lawless-controllable-icon.webp');
 }
 
 .standard-controllable-icon {
@@ -11717,7 +11717,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./standard-controllable-icon.webp');
+	background-image: url('./Characteristics/standard-controllable-icon.webp');
 }
 
 .onesaber-controllable-icon {
@@ -11725,7 +11725,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./onesaber-controllable-icon.webp');
+	background-image: url('./Characteristics/onesaber-controllable-icon.webp');
 }
 
 .rebeatstandard-icon {
@@ -11735,7 +11735,67 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./rebeatstandard.webp');
+	background-image: url('./Characteristics/rebeatstandard.webp');
+}
+
+.rebeatonesaber-icon {
+	margin-left: 1px;
+	margin-top: 2px;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./Characteristics/rebeatonesaber.webp');
+}
+
+.rebeat90degree-icon {
+	margin-left: 1px;
+	margin-top: 2px;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./Characteristics/rebeat90degree.webp');
+}
+
+.rebeat360degree-icon {
+	margin-left: 1px;
+	margin-top: 2px;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./Characteristics/rebeat360degree.webp');
+}
+
+.rebeatnoarrows-icon {
+	margin-left: 1px;
+	margin-top: 2px;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./Characteristics/rebeatnoarrows.webp');
+}
+
+.rebeatlawless-icon {
+	margin-left: 1px;
+	margin-top: 2px;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./Characteristics/rebeatlawless.webp');
+}
+
+.rebeatlightshow-icon {
+	margin-left: 1px;
+	margin-top: 2px;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-repeat: no-repeat;
+	background-image: url('./Characteristics/rebeatlightshow.webp');
 }
 
 .content-box.festive {
