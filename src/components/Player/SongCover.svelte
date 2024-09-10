@@ -43,7 +43,6 @@
 	$: hash = leaderboard?.song?.hash ?? null;
 	$: ssCoverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
 	$: beatSaverCoverUrl = leaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
-	
 	$: preloadImages([
 		{url: ssCoverUrl, priority: 10},
 		{url: beatSaverCoverUrl, priority: 5},
@@ -56,7 +55,7 @@
 	$: passRating = leaderboard?.difficultyBl?.passRating ?? null;
 	$: accRating = leaderboard?.difficultyBl?.accRating ?? null;
 	$: techRating = leaderboard?.difficultyBl?.techRating ?? null;
-	$: actualModifiers = mods?.map(m => ({name: m, value: modifiers[m.toLowerCase()]})) ?? null;
+	$: actualModifiers = mods?.map(m => ({name: m, value: modifiers ? modifiers[m.toLowerCase()] : 0})) ?? null;
 	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
 	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
 	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
