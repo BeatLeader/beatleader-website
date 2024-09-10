@@ -34,19 +34,16 @@
 
 	let rankedmaps = null;
 	let topmap = null;
+
 	let cachedMapperId = null;
 
-	async function fetchRankedMapper(mapperId, profileSettings, editModel) {
+	let sortBy = null;
+
+	async function fetchRankedMapper(mapperId, sortBy) {
 		if (cachedMapperId == mapperId) return;
 
 		cachedMapperId = mapperId;
-		const response = mapperId
-			? await fetch(
-					`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${
-						editModel ? editModel?.data?.rankedMapperSort : profileSettings?.rankedMapperSort
-					}`
-				)
-			: null;
+		const response = mapperId ? await fetch(`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${sortBy}`) : null;
 		rankedmaps = !response?.ok ? null : await response.json();
 		if (rankedmaps) {
 			topmap = rankedmaps.maps[0];
@@ -55,18 +52,34 @@
 		}
 	}
 
-	$: mapperPromise = fetchRankedMapper(playerInfo?.mapperId, profileSettings, editModel);
+	function updateSortBy(newSortBy) {
+		cachedMapperId = null;
+		sortBy = newSortBy;
+	}
+
+	$: updateSortBy(editModel ? editModel?.data?.rankedMapperSort : profileSettings?.rankedMapperSort);
+
+	$: mapperPromise = fetchRankedMapper(playerInfo?.mapperId, sortBy);
 	$: clanPromise = fetchClan(playerId);
+
+	$: promises = Promise.all([clanPromise, mapperPromise]);
 </script>
 
 {#if playerInfo}
-	{#await Promise.all([clanPromise, mapperPromise])}
+	{#await promises}
 		<Spinner />
 	{:then _}
 		<div id={playerId + '-player-cards'} class="cards-container">
 			{#if rankedmaps || clan}
 				{#if rankedmaps}
-					<RankedMapper mapperId={playerInfo.mapperId} {rankedmaps} {topmap} bind:editModel />
+					<RankedMapper
+						mapperId={playerInfo.mapperId}
+						{rankedmaps}
+						{topmap}
+						bind:editModel
+						on:sort-changed={e => {
+							updateSortBy(e.detail);
+						}} />
 				{/if}
 				{#if clan}
 					<ClanFounder {clan} />

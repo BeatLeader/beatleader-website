@@ -65,6 +65,7 @@
 				saturation: playerData?.profileSettings?.saturation ?? 1,
 				profileCover: playerData?.profileSettings?.profileCover ?? '/assets/defaultcover.jpg',
 				profileCoverData: playerData?.profileSettings?.profileCover,
+				rankedMapperSort: playerData?.profileSettings?.rankedMapperSort,
 			},
 			avatar: playerData?.playerInfo?.avatar
 				? playerData.playerInfo.avatar + (playerData.playerInfo.avatar.includes('beatleader') ? `?${avatarHash}` : '')

@@ -1,9 +1,12 @@
 <script>
+	import {createEventDispatcher} from 'svelte';
+
 	export let mapperId;
 	export let rankedmaps = null;
 	export let topmap = null;
 	export let editModel;
 
+	const dispatch = createEventDispatcher();
 	const availableSortings = [
 		{
 			id: 'recent',
@@ -38,6 +41,7 @@
 					value={editModel.data?.rankedMapperSort ?? 'recent'}
 					on:change={e => {
 						editModel.data.rankedMapperSort = e.target.value;
+						dispatch('sort-changed', e.target.value);
 					}}>
 					{#each availableSortings as option (option.id)}
 						<option class="group-option" value={option.id} title={option.title}>
