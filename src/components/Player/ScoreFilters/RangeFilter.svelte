@@ -21,7 +21,6 @@
 
 		if (from < minValue) from = minValue;
 		if (from > maxValue) from = maxValue;
-		if (from > to) from = to;
 
 		dispatch('change', {from, to});
 	}
@@ -31,7 +30,6 @@
 
 		if (to < minValue) to = minValue;
 		if (to > maxValue) to = maxValue;
-		if (to < from) to = from;
 
 		dispatch('change', {from, to});
 	}
