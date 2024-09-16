@@ -55,7 +55,7 @@
 	$: passRating = leaderboard?.difficultyBl?.passRating ?? null;
 	$: accRating = leaderboard?.difficultyBl?.accRating ?? null;
 	$: techRating = leaderboard?.difficultyBl?.techRating ?? null;
-	$: actualModifiers = mods?.map(m => ({name: m, value: modifiers ? modifiers[m.toLowerCase()] : 0})) ?? null;
+	$: actualModifiers = mods?.map(m => ({name: m, value: modifiers && m != 'NF' ? modifiers[m.toLowerCase()] : 0})) ?? null;
 	$: modifiedPassRating = computeModifiedRating(passRating, 'PassRating', modifiersRating, actualModifiers);
 	$: modifiedAccRating = computeModifiedRating(accRating, 'AccRating', modifiersRating, actualModifiers);
 	$: modifiedTechRating = computeModifiedRating(techRating, 'TechRating', modifiersRating, actualModifiers);
