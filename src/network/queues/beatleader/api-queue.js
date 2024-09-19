@@ -86,7 +86,7 @@ export const BL_API_CLAN_URL =
 	BL_API_URL + 'clan/${clanId}?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
 export const BL_API_CLAN_MAPS_URL =
 	BL_API_URL +
-	'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}';
+	'clan/${clanId}/maps?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sortBy}&order=${order}&primary=${primary}&playedStatus=${playedStatus}';
 export const BL_API_CLAN_CREATE_URL =
 	BL_API_URL +
 	'clan/create?name=${name}&tag=${tag}&description=${description}&bio=${bio}&color=${color}&playerChangesCallback=${playerChangesCallback}&clanRankingDiscordHook=${clanRankingDiscordHook}';

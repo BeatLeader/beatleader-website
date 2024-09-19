@@ -24,6 +24,8 @@
 	import {processBoolFilter} from '../utils/filters';
 	import ClanMeta from '../components/Clans/ClanMeta.svelte';
 	import ClanChart from '../components/Clans/ClanChart.svelte';
+	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
+	import SelectFilter from '../components/Player/ScoreFilters/SelectFilter.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -47,6 +49,7 @@
 		{key: 'sortBy', default: 'pp', process: processString},
 		{key: 'order', default: 'desc', process: processString},
 		{key: 'primary', default: false, process: processBoolFilter},
+		{key: 'playedStatus', default: null, process: processString},
 	];
 
 	const buildFiltersFromLocation = location => {
@@ -200,6 +203,35 @@
 		changePageAndFilters(maps, currentPage, currentFilters, false);
 	}
 
+	let availableFilters = $account?.player?.playerId
+		? [
+				{
+					component: SelectFilter,
+					props: {
+						id: 'playedStatus',
+						iconFa: 'fa fa-chart-line',
+						title: 'Filter by played status',
+						open: !!currentFilters?.playedStatus,
+						defaultValue: currentFilters?.playedStatus ?? null,
+						values: [
+							{id: null, name: 'All'},
+							{id: 'played', name: 'Played'},
+							{id: 'unplayed', name: 'Not Played'},
+						],
+					},
+				},
+			]
+		: [];
+
+	function onFiltersChanged(event) {
+		const newFilters = event?.detail ?? {};
+
+		currentFilters.playedStatus = newFilters.playedStatus ?? null;
+		currentPage = 1;
+
+		changePageAndFilters(maps, currentPage, currentFilters, false);
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = clanStore.isLoading;
@@ -272,6 +304,8 @@
 						cls="primary-clan-button"
 						squareSize="1.7rem"
 						on:click={() => onPrimaryToggle()} />
+				{:else}
+					<ScoreServiceFilters filters={availableFilters} on:change={onFiltersChanged} />
 				{/if}
 
 				<Switcher values={clanOptions} value={clanOptions.find(o => o.key == (maps ? 'maps' : 'players'))} on:change={onTypeChanged} />
