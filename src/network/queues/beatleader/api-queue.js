@@ -46,10 +46,10 @@ export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboa
 export const BL_API_PLAYER_SAVER_INFO_URL = BL_API_URL + 'player/beatsaver/${playerId}?leaderboardContext=${leaderboardContext}';
 export const BL_API_SCORES_URL =
 	BL_API_URL +
-	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
+	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
 export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
-	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
+	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
 export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.xyz/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
@@ -58,7 +58,7 @@ export const BL_API_LEADERBOARD_STATS_URL = BL_API_URL + 'leaderboard/statistic/
 export const BL_API_PLAYER_SCORE_URL = BL_API_URL + 'score/${playerId}/${hash}/${diff}/${type}?leaderboardContext=${leaderboardContext}';
 export const BL_API_SCORES_HISTOGRAM_URL =
 	BL_API_URL +
-	'player/${playerId}/histogram?leaderboardContext=${leaderboardContext}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}&eventId=${eventId}';
+	'player/${playerId}/histogram?leaderboardContext=${leaderboardContext}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&stars_from=${starsFrom}&stars_to=${starsTo}&batch=${batch}&count=${count}&eventId=${eventId}';
 export const BL_API_FIND_PLAYER_URL =
 	BL_API_URL +
 	'players?search=${query}&leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';

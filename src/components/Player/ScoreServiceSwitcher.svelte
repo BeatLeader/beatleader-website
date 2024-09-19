@@ -8,7 +8,7 @@
 	import SelectFilter from './ScoreFilters/SelectFilter.svelte';
 	import RangeFilter from './ScoreFilters/RangeFilter.svelte';
 	import ModifiersFilter from '../Leaderboard/ModifiersPicker/ModifiersFilter.svelte';
-	import {modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
+	import {HMDs, modeDescriptions, requirementsMap} from '../../utils/beatleader/format';
 	import editModel from '../../stores/beatleader/profile-edit-model';
 	import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
@@ -369,6 +369,26 @@
 										},
 									},
 									{
+										component: SelectFilter,
+										props: {
+											id: 'hmd',
+											iconFa: 'fa fa-vr-cardboard',
+											title: 'Filter by headset',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-hmd`) && !serviceParams?.filters?.hmd,
+											open: !!serviceParams?.filters?.hmd,
+											defaultValue: serviceParams?.filters?.hmd ?? null,
+											values: [
+												{id: null, name: 'All'},
+												...(player?.scoreStats?.allHMDs?.split(',') ?? Object.keys(HMDs)).map(id => {
+													return {
+														id: id,
+														name: HMDs[parseInt(id)].name,
+													};
+												}),
+											],
+										},
+									},
+									{
 										component: RangeFilter,
 										props: {
 											id: 'stars',
@@ -566,6 +586,9 @@
 	}
 	:global(.filter-btn.fa-star:before) {
 		margin-left: -0.07em;
+	}
+	:global(.filter-btn.fa-vr-cardboard:before) {
+		margin-left: -0.12em;
 	}
 
 	.service-switcher {
