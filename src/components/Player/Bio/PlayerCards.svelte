@@ -28,8 +28,6 @@
 		if (!clan) {
 			onEmptyClan();
 		}
-
-		dispatch('height-changed');
 	}
 
 	let rankedmaps = null;
@@ -69,6 +67,7 @@
 	{#await promises}
 		<Spinner />
 	{:then _}
+		{@const empty = dispatch('height-changed')}
 		<div id={playerId + '-player-cards'} class="cards-container">
 			{#if rankedmaps || clan}
 				{#if rankedmaps}
