@@ -573,7 +573,7 @@ export const modeDescriptions = {
 		icon: 'rhythmgamestandard-icon',
 		color: 'purple',
 		textColor: 'white',
-		projectLink: 'https://beatleader.xyz/event/23',
+		projectLink: '/event/23',
 	},
 	ReBeat_Lightshow: {
 		title: 'Lightshow (ReBeat Mod)',

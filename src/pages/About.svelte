@@ -167,15 +167,14 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<section class="content center">
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/7c0675ccbcbe39583c9ee0871293959af09495c9_full.jpg" alt="Blackjack" /><a
-					href="https://beatleader.xyz/u/blackjack">Blackjack</a>
+					href="/u/blackjack">Blackjack</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198831724075.png" alt="edgii" /><a
-					href="https://beatleader.xyz/u/edgii">edgii</a>
+				<img src="https://cdn.assets.beatleader.xyz/76561198831724075.png" alt="edgii" /><a href="/u/edgii">edgii</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/66b82be1c041733bbb4fdbfd79be8e3c3a02b989_full.jpg" alt="Jojobanana" /><a
-					href="https://beatleader.xyz/u/76561198294659898">Jojobanana</a>
+					href="/u/76561198294659898">Jojobanana</a>
 			</div>
 		</section>
 
@@ -223,10 +222,8 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="https://www.beatleader.xyz/u/76561198073989976">Loloppe</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561199108348236R27.png" alt="UglyApe" /><a
-					href="https://beatleader.xyz/u/uglyape">UglyApe</a>
+				<img src="https://cdn.assets.beatleader.xyz/76561199108348236R27.png" alt="UglyApe" /><a href="/u/uglyape">UglyApe</a>
 			</div>
-
 		</section>
 
 		{#if supporters.length}

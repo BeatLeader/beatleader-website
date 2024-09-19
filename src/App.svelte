@@ -396,7 +396,7 @@
 			|
 			<a href="https://patreon.com/BeatLeader">Patreon</a>
 			|
-			<a href="https://beatleader.xyz/supporting-project/link">Claim rewards</a>
+			<a href="/supporting-project/link">Claim rewards</a>
 		</p>
 	</ContentBox>
 </footer>
