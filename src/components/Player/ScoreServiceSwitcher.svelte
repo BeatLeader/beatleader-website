@@ -379,7 +379,7 @@
 											defaultValue: serviceParams?.filters?.hmd ?? null,
 											values: [
 												{id: null, name: 'All'},
-												...(player?.scoreStats?.allHMDs?.split(',') ?? Object.keys(HMDs)).map(id => {
+												...(player?.scoreStats?.allHMDs?.length ? player?.scoreStats?.allHMDs?.split(',') : Object.keys(HMDs)).map(id => {
 													return {
 														id: id,
 														name: HMDs[parseInt(id)].name,
