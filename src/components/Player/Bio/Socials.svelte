@@ -3,11 +3,14 @@
 	import steamSvg from '../../../resources/steam.svg';
 	import {configStore} from '../../../stores/config';
 	import {fly} from 'svelte/transition';
+	import Popover from '../../Common/Popover.svelte';
 
 	export let playerId = null;
 	export let playerInfo = null;
 	export let name;
 	export let playerData = null;
+
+	let devInfoButton;
 
 	$: steamLink = playerInfo.externalProfileUrl;
 	$: twitchSocial = playerInfo.socials?.find(s => s?.service === 'Twitch');
@@ -24,7 +27,6 @@
 		alias: playerData.alias,
 		roles: playerData.role,
 	};
-	let devInfoOpen = false;
 </script>
 
 {#if steamLink}
@@ -119,21 +121,23 @@
 		type="github"
 		iconFa="fab fa-hashtag"
 		title="Dev info"
-		on:click={() => (devInfoOpen = !devInfoOpen)} />
+		bind:buttonElement={devInfoButton} />
 {/if}
 
-{#if devInfoOpen}
-	<div class="dev-info" transition:fly={{y: 50, duration: 300}}>
-		Primary ID: <strong>{devInfo.playerId}</strong> <br />
-		Alias: <strong>{devInfo.alias ? devInfo.alias : 'N/A'}</strong> <br />
-		<hr style="margin: 0.5em 0; height: 0px" />
-		Linked IDs<br />
-		Steam ID: <strong>{devInfo.steamId !== '' ? devInfo.steamId : 'N/A'}</strong> <br />
-		OculusPC ID: <strong>{devInfo.oculusPcId !== '' ? devInfo.oculusPcId : 'N/A'}</strong> <br />
-		Quest ID: <strong>{devInfo.questId !== '' ? devInfo.questId : 'N/A'}</strong> <br />
-		<hr style="margin: 0.5em 0; height: 0px" />
-		Roles:<strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
-	</div>
+{#if devInfoButton}
+	<Popover triggerEvents={['click']} placement="bottom" referenceElement={devInfoButton} closeOnClickAway={false} spaceAway={4}>
+		<div class="dev-info" transition:fly={{y: 50, duration: 300}}>
+			Primary ID: <strong>{devInfo.playerId}</strong> <br />
+			Alias: <strong>{devInfo.alias ? devInfo.alias : 'N/A'}</strong> <br />
+			<hr style="margin: 0.5em 0; height: 0px" />
+			Linked IDs<br />
+			Steam ID: <strong>{devInfo.steamId !== '' ? devInfo.steamId : 'N/A'}</strong> <br />
+			OculusPC ID: <strong>{devInfo.oculusPcId !== '' ? devInfo.oculusPcId : 'N/A'}</strong> <br />
+			Quest ID: <strong>{devInfo.questId !== '' ? devInfo.questId : 'N/A'}</strong> <br />
+			<hr style="margin: 0.5em 0; height: 0px" />
+			Roles:<strong>{devInfo.roles.length > 0 ? devInfo.roles.replace(/^,/, '').replace(/,/g, ', ') : 'None'}</strong>
+		</div>
+	</Popover>
 {/if}
 
 <style>
@@ -151,19 +155,11 @@
 	}
 
 	.dev-info {
-		position: absolute;
-		top: 3.75em;
-		right: 0;
 		width: 20em;
 		height: fit-content;
 		background: #393939;
 		border-radius: 0.75em;
 		padding: 0.75em;
-	}
-
-	@media screen and (max-width: 767px) {
-		.dev-info {
-			top: 7.75em;
-		}
+		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 	}
 </style>

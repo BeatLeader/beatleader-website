@@ -26,6 +26,7 @@
 	export let preventDefault = false;
 	export let animated = false;
 	export let animationOpacity = 0.6;
+	export let buttonElement = null;
 
 	if (!selectedOption && options && Array.isArray(options) && options.length) selectedOption = options[0];
 
@@ -194,7 +195,8 @@
 		{title}
 		class={'button clickable ' + (type ? type : 'default') + (animated ? ' animated' : '') + ' ' + cls}
 		class:not-selected={notSelected}
-		class:disabled>
+		class:disabled
+		bind:this={buttonElement}>
 		{#if icon && !loading}<span class="icon">{@html icon}</span>{/if}
 		{#if iconFa && !loading}<i class={iconFa} />{/if}
 		{#if loading}<i><Spinner /></i>{/if}
@@ -220,7 +222,8 @@
 		{disabled}
 		{title}
 		class={'button clickable ' + (type ? type : 'default') + (animated ? ' animated' : '') + ' ' + cls}
-		class:not-selected={notSelected}>
+		class:not-selected={notSelected}
+		bind:this={buttonElement}>
 		{#if icon}<span class="icon">{@html icon}</span>{/if}
 		{#if iconFa && !loading}<i class={iconFa} />{/if}
 		{#if loading}<i><Spinner /></i>{/if}
