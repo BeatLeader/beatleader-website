@@ -26,6 +26,7 @@
 	import ClanChart from '../components/Clans/ClanChart.svelte';
 	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
 	import SelectFilter from '../components/Player/ScoreFilters/SelectFilter.svelte';
+	import ClanSkillTriangle from '../components/Clans/ClanSkillTriangle.svelte';
 
 	export let clanId;
 	export let page = 1;
@@ -177,6 +178,18 @@
 		currentPage = 1;
 
 		changePageAndFilters(event.detail.key == 'maps', currentPage, currentFilters, false);
+	}
+
+	const statOptions = [
+		{key: 'globalMap', label: 'Global Map History', iconFa: 'fa fa-chart-line', color: 'var(--beatleader-primary)'},
+		{key: 'triangle', label: 'Skill Triangle', iconFa: 'fa fa-location-dot', color: 'var(--beatleader-primary)'},
+	];
+
+	let currentStat = statOptions[0];
+	function onStatChanged(event) {
+		if (!event?.detail) return;
+
+		currentStat = event.detail;
 	}
 
 	let sortValues1 = [
@@ -367,11 +380,23 @@
 				mode={numOfItems ? 'pages' : 'simple'}
 				on:page-changed={onPageChanged} />
 		</ContentBox>
-		{#if clan?.captureLeaderboardsCount > 0}
+		{#if clan}
 			<ContentBox cls="chart-container-box">
-				<h3 class="chart-title">Global Map History</h3>
+				<Switcher values={statOptions} value={currentStat} on:change={onStatChanged} />
 				<div class="darkened-background chart-container">
-					<ClanChart clanId={clan.id} />
+					{#if currentStat.key == 'globalMap'}
+						{#if clan?.captureLeaderboardsCount > 0}
+							<ClanChart clanId={clan.id} />
+						{:else}
+							<span>Compete on <a href="/leaderboards">ranked maps</a> to see the global map history.</span>
+						{/if}
+					{:else if currentStat.key == 'triangle'}
+						{#if clan?.playersCount > 5}
+							<ClanSkillTriangle clanId={clan.id} />
+						{:else}
+							<span>Grow your clan to at least 5 players to see the combined skill triangle.</span>
+						{/if}
+					{/if}
 				</div>
 			</ContentBox>
 		{/if}
@@ -442,6 +467,7 @@
 	.chart-container {
 		padding: 1em;
 		border-radius: 8px;
+		overflow: hidden;
 	}
 
 	.chart-title {
