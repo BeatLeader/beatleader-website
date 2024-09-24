@@ -23,6 +23,7 @@
 	var links = [];
 
 	var clanMap = {};
+	var finishClanMap = {};
 	var clans = [];
 
 	let transitionProgress = 0;
@@ -45,6 +46,17 @@
 			.then(data => {
 				// Store the finish timeset data for later use in the transition
 				finishClansData = data;
+
+				for (let i = 0; i < finishClansData.clans.length; i++) {
+					var clan = finishClansData.clans[i];
+					clan.topCount = 0;
+					finishClanMap[clan.id] = clan;
+				}
+
+				for (let i = 0; i < finishClansData.points.length; i++) {
+					finishClanMap[finishClansData.points[i].clans[0].id].topCount++;
+				}
+
 				fetch(`https://cdn.assets.beatleader.xyz/clansmap-globalcache-${finishTimeset}.json`)
 					.then(r => r.json())
 					.then(update => {
@@ -200,7 +212,6 @@
 		const endMatch = end.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)/);
 
 		if (!startMatch || !endMatch) {
-			console.log(start + ' ' + end);
 			return start;
 		}
 
@@ -215,12 +226,10 @@
 	function animateUpdate(timestamp) {
 		const elapsed = timestamp - transitionStartTime;
 		transitionProgress = elapsed / transitionDuration;
-		console.log(transitionProgress);
 
 		if (transitionProgress < 0.2) {
 			requestAnimationFrame(animateUpdate);
 		} else {
-			console.log('processData');
 			clansData = finishClansData;
 			processData(transitionCache);
 			renderCanvas();
@@ -256,6 +265,15 @@
 				label.x = interpolate(label.x, (transitionCache.clans[label.id]?.x ?? 0) - lwidth / 2, transitionProgress);
 				label.y = interpolate(label.y, (transitionCache.clans[label.id]?.y ?? 0) + lheight / 4, transitionProgress);
 				// label.fontSize = interpolate(label.fontSize, Math.sqrt(clan.topCount) * 10, transitionProgress);
+
+				if (!label.addedDifference) {
+					const startClan = clanMap[label.id];
+					const finishClan = finishClanMap[label.id];
+					if (startClan && finishClan) {
+						label.topCountChange = finishClan.topCount - startClan.topCount;
+						label.addedDifference = true;
+					}
+				}
 			}
 		});
 
@@ -385,6 +403,16 @@
 		context.fillStyle = hovered ? 'white' : 'rgba(255, 255, 255, 0.6)'; // Example style
 		context.font = label.fontSize + 'px Arial'; // Example font, adjust as needed
 		context.fillText(label.label, label.x, label.y);
+
+		if (label.topCountChange) {
+			context.fillStyle = label.topCountChange > 0 ? 'green' : 'red';
+			context.font = label.fontSize + 10 + 'px Arial';
+			context.fillText(
+				`${label.topCountChange > 0 ? '+' : ''}${label.topCountChange}`,
+				label.x + label.label.length * (label.fontSize * 0.75),
+				label.y
+			);
+		}
 		// Additional drawing details for clans
 	}
 
