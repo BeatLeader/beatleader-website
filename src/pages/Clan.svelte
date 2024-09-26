@@ -391,7 +391,7 @@
 							<span>Compete on <a href="/leaderboards">ranked maps</a> to see the global map history.</span>
 						{/if}
 					{:else if currentStat.key == 'triangle'}
-						{#if clan?.playersCount > 5}
+						{#if clan?.playersCount >= 5}
 							<ClanSkillTriangle clanId={clan.id} />
 						{:else}
 							<span>Grow your clan to at least 5 players to see the combined skill triangle.</span>
