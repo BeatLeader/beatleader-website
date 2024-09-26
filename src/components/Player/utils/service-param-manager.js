@@ -147,9 +147,20 @@ export default () => {
 				}`;
 
 			case 'scores':
-				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.order ?? serviceDefaultParams?.order}${
-					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
-				}${params?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, params?.filters) : ''}`;
+				const sort = params?.sort ?? serviceDefaultParams?.sort;
+				const order = params?.order ?? serviceDefaultParams?.order;
+				const page = params?.page ?? serviceDefaultParams?.page;
+
+				let result = '';
+				if (
+					service != 'scores' ||
+					sort != serviceDefaultParams?.sort ||
+					order != serviceDefaultParams?.order ||
+					page != serviceDefaultParams?.page
+				) {
+					result = `${service}/${sort}/${order}${noPage ? '' : `/${page}`}`;
+				}
+				return `${result}${params?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, params?.filters) : ''}`;
 		}
 	};
 

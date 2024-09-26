@@ -93,9 +93,21 @@
 
 	const accSaberService = createAccSaberService();
 
+	function setUrlValue(replace) {
+		let prefix = '/u/' + playerAlias;
+		let servicePath = serviceParamsManager.getCurrentServiceUrl();
+
+		const url = servicePath.length ? `${prefix}/${servicePath}` : prefix;
+		if (replace) {
+			window.history.replaceState({}, '', url);
+		} else {
+			window.history.pushState({}, '', url);
+		}
+	}
+
 	function updateUrl() {
 		changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
-		window.history.pushState({}, '', `/u/${currentPlayerId}/${serviceParamsManager.getCurrentServiceUrl()}`);
+		setUrlValue();
 	}
 
 	function onPageChanged(event) {
@@ -176,6 +188,8 @@
 		.join(' / ')} - ${ssrConfig.name}`;
 
 	$: playerData = $playerStore;
+	$: playerAlias = playerData?.alias ?? playerData?.playerId;
+	$: playerAlias && setUrlValue(true);
 	$: playerId = playerData?.playerId ?? null;
 	$: ({playerInfo, scoresStats, _, ssBadges} = processPlayerData(playerData));
 
