@@ -1,6 +1,6 @@
 <script>
 	import {fade} from 'svelte/transition';
-
+	import ToolTip from '../../Common/ToolTip.svelte'
 	export let badges;
 </script>
 
@@ -9,10 +9,14 @@
 		{#each badges as badge (badge.src)}
 			{#if badge.link}
 				<a class="badge-link" href={badge.link}>
-					<img class="clickable" src={badge.src} alt={badge.title} title={badge.title} />
+					<ToolTip content={badge.title}>
+						<img class="clickable" src={badge.src} alt={badge.title} />
+					</ToolTip>
 				</a>
 			{:else}
-				<img src={badge.src} alt={badge.title} title={badge.title} />
+				<ToolTip content={badge.title}>
+					<img src={badge.src} alt={badge.title}/>
+				</ToolTip>
 			{/if}
 		{/each}
 	</div>
