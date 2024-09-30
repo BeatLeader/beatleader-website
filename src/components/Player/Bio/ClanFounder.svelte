@@ -24,11 +24,34 @@
 		rankedPoolPercent = clan?.rankedPoolPercentCaptured ? clan.rankedPoolPercentCaptured * 100 : 0;
 	}
 
+	let cinematicsCanvas;
+
+	function drawCinematics(cinematicsCanvas, coverUrl) {
+		if (coverUrl && cinematicsCanvas) {
+			cinematicsCanvas.style.opacity = 1;
+			const context = cinematicsCanvas.getContext('2d');
+
+			const cover = new Image();
+			cover.onload = function () {
+				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
+			};
+			cover.src = coverUrl;
+		}
+	}
+
+	$: drawCinematics(cinematicsCanvas, iconUrl);
+	
 	$: updateFields(clan);
+
 </script>
 
 {#if tag}
-	<a href="/clan/{tag}" class="leader-container">
+	<a href="/clan/{tag}" class="leader-container" style="--image: {iconUrl};">
+		<div class="cinematics">
+			<div class="cinematics-canvas">
+				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+			</div>
+		</div>
 		<img class="clanImage" src={iconUrl} alt="ClanIcon" />
 
 		<div class="clan-info-container {tag == 'GAY' ? 'rainbow' : ''}" transition:fade|global>
@@ -179,20 +202,53 @@
 	}
 
 	.leader-container {
+		position: relative;
 		display: flex;
 		padding: 0.5em;
-		background-color: #00ffbe6e;
 		border-radius: 20px;
 		color: white !important;
 		flex: 1;
 		max-width: 28em;
 		min-width: 20em;
+		z-index: 0;
+		overflow: hidden;
+		box-shadow: 0 2px 10px rgb(0 0 0 / 33%);
+	}
+
+	.leader-container:hover {
+		box-shadow: 0 2px 10px rgb(0 0 0 / 66%);
+	}
+
+	.cinematics {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	.cinematics-canvas {
+		filter: blur(5em) opacity(0.5) saturate(250%);
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: scale(1) translateZ(0);
+		width: 100%;
+		z-index: 0;
+		height: 100%;
+	}
+
+	.leader-container:hover .cinematics-canvas {
+		filter: blur(4em) opacity(0.6) saturate(200%);
 	}
 
 	.clanImage {
 		width: 5em;
 		height: 5em;
 		border-radius: 20%;
+		z-index: 1;
 	}
 
 	.clan-info-container {
@@ -200,6 +256,7 @@
 		flex-direction: column;
 		margin-left: 0.5em;
 		justify-content: space-between;
+		z-index: 1;
 	}
 
 	.clans-title-container {
