@@ -53,7 +53,7 @@
 	import Week100Page from './pages/Week100.svelte';
 	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
 	import TibytesPresets from './pages/TibytesPresets.svelte';
-
+	import BuildingBlocks2024 from './pages/BuildingBlocks2024.svelte';
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
 
@@ -294,6 +294,9 @@
 					</Route>
 					<Route path="/replayed/mapper/*id" let:params>
 						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
+					</Route>
+					<Route path="/event/building-blocks-2024">
+						<BuildingBlocks2024 />
 					</Route>
 					<Route path="/event/:eventId/*page" let:params let:location>
 						<EventPage eventId={params.eventId} page={params.page} {location} />

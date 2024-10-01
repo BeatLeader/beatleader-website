@@ -65,21 +65,39 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'BSWC 2024',
-				body: 'Beat Saber World Cup 2024 is currently ongoing! Be sure not to miss the matches, and compete on the map pools yourself with our BSWC events!',
-				imageUrl: 'https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp',
-				targetUrl: 'https://cube.community/tournaments/bswc-2024',
-				forcedColor: 'rgb(165 35 195)',
-				linkName: 'Official Website',
+				title: 'Building Blocks 2024',
+				body: 'Upcoming mapping contest with a prize pool and chance to get directly into ranked!',
+				imageUrl: '/assets/Discover/buildingblocks.png',
+				targetUrl: '/event/building-blocks-2024',
+				forcedColor: 'rgb(24 3 29 / 75%)',
+				linkName: 'contest info page',
 				buttons: [
 					{
-						text: 'Events',
+						text: 'More Info',
 						type: 'primary',
-						url: '/events',
+						url: '/event/building-blocks-2024',
 					},
 				],
 			},
 		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'BSWC 2024',
+		// 		body: 'Beat Saber World Cup 2024 is currently ongoing! Be sure not to miss the matches, and compete on the map pools yourself with our BSWC events!',
+		// 		imageUrl: 'https://cdn.cube.community/1706455892406-Artboard_1_copy_3.webp',
+		// 		targetUrl: 'https://cube.community/tournaments/bswc-2024',
+		// 		forcedColor: 'rgb(165 35 195)',
+		// 		linkName: 'Official Website',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Events',
+		// 				type: 'primary',
+		// 				url: '/events',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		{
 			component: CarouselCard,
 			props: {
