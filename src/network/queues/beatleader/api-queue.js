@@ -361,6 +361,7 @@ export default (options = {}) => {
 			substituteVars(playerId === SPECIAL_PLAYER_ID ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {
 				...params,
 				...(params?.filters ?? {}),
+				count: PLAYER_SCORES_PER_PAGE,
 				search: params?.filters?.search ? encodeURIComponent(params?.filters?.search) : null,
 			}),
 			playerId,

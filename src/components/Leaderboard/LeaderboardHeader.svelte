@@ -18,6 +18,7 @@
 	import MapperList from './MapperList.svelte';
 	import MapTriangleSmall from './MapTriangleSmall.svelte';
 	import TriangleMobilePopup from './TriangleMobilePopup.svelte';
+	import {BS_CDN} from '../../network/queues/beatleader/page-queue';
 
 	export let leaderboard;
 	export let leaderboardStore;
@@ -59,12 +60,12 @@
 
 	$: leaderboardGroup = leaderboard?.leaderboardGroup;
 	$: song = leaderboard?.song;
-	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? leaderboard?.beatMaps?.versions[0].coverURL;
+	$: hash = song?.hash;
+	$: coverUrl = song?.fullImageUrl ?? song?.imageUrl ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
 	$: leaderboardCaptor = leaderboard?.topClan;
 
 	$: drawCinematics(cinematicsCanvas, coverUrl);
 
-	$: hash = song?.hash;
 	$: name = song?.name;
 	$: diffInfo = leaderboard?.diffInfo;
 </script>

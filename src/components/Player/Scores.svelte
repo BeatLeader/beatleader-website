@@ -23,6 +23,7 @@
 	const {open, close} = getContext('simple-modal');
 
 	export let playerId = null;
+	export let playerAlias = null;
 	export let player = null;
 	export let initialState = null;
 	export let initialStateType = null;
@@ -177,6 +178,7 @@
 
 	<ScoreServiceSwitcher
 		{playerId}
+		{playerAlias}
 		{player}
 		service={currentService}
 		serviceParams={currentServiceParams}
@@ -188,7 +190,7 @@
 	<div class="darkened-background scores-container">
 		{#if $scoresStore && $scoresStore.length}
 			<div class="song-scores grid-transition-helper">
-				{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + currentService + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
+				{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + (songScore?.score?.timeset ?? songScore?.score?.timepost ?? '') + currentService + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
 					<SongScore
 						{playerId}
 						{songScore}

@@ -37,19 +37,28 @@
 	let service = null;
 	let serviceParams = null;
 
-	const serviceParamsManager = createServiceParamsManager(initialPlayerId);
+	const serviceParamsManager = createServiceParamsManager();
 	const pinnedScoresStore = createPinnedScoresStore();
 	const statsHistoryStore = createStatsHistoryStore();
 
-	processInitialParams(initialPlayerId, initialParams);
+	function processInitialParams(params) {
+		const serviceInfo = serviceParamsManager.initFromUrl(params);
+
+		if (!params || !params.length) {
+			refreshSavedParams();
+		}
+
+		service = serviceInfo.service;
+		serviceParams = serviceInfo.params;
+	}
+	processInitialParams(initialParams);
 
 	let playerStore = createPlayerInfoWithScoresStore(initialPlayerId, service, serviceParams);
 
 	async function changeParams(newPlayerId, service, newServiceParams) {
-		if (!newPlayerId) return;
+		if (!newPlayerId || !playerStore) return;
 		serviceParams = newServiceParams;
 		if (!playerStore || newPlayerId !== playerStore.getPlayerId() || service !== playerStore.getService()) {
-			document.body.scrollIntoView({behavior: 'smooth'});
 			playerStore.fetch(newPlayerId, service, newServiceParams);
 		} else {
 			playerStore.setService(service);
@@ -76,21 +85,6 @@
 		changeParams(currentPlayerId, serviceParamsManager.getService(), params);
 	}
 
-	function processInitialParams(playerId, params) {
-		if (playerId !== $playerStore?.playerId) serviceParamsManager.clearServiceParams();
-
-		const serviceInfo = serviceParamsManager.initFromUrl(params);
-
-		if (!params || !params.length) {
-			refreshSavedParams();
-		}
-
-		service = serviceInfo.service;
-		serviceParams = serviceInfo.params;
-
-		return {service, serviceParams};
-	}
-
 	const accSaberService = createAccSaberService();
 
 	function setUrlValue(replace) {
@@ -105,9 +99,17 @@
 		}
 	}
 
-	function updateUrl() {
+	function updateUrl(replace) {
 		changeParams(currentPlayerId, serviceParamsManager.getService(), serviceParamsManager.getParams());
-		setUrlValue();
+		setUrlValue(replace);
+	}
+
+	function onNewPlayerId(playerId) {
+		if (currentPlayerId === playerId) return;
+
+		currentPlayerId = playerId;
+		updateUrl(true);
+		document.body.scrollIntoView({behavior: 'smooth'});
 	}
 
 	function onPageChanged(event) {
@@ -169,14 +171,10 @@
 	let innerHeight = 0;
 	let playerPage = null;
 
-	$: document.body.scrollIntoView({behavior: 'smooth'});
-
-	$: processInitialParams(initialPlayerId, initialParams);
-	$: changeParams(initialPlayerId, service, serviceParams);
-
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
+	$: onNewPlayerId(initialPlayerId);
 
 	$: playerIsLoading = playerStore ? playerStore.isLoading : null;
 	$: playerError = playerStore ? playerStore.error : null;
@@ -203,8 +201,13 @@
 			scoresState = $playerStore?.scores ?? null;
 		}
 
+		if (playerId != currentPlayerId && $paramsStore.currentService == 'accsaber') {
+			scoresState = null;
+		}
+
 		scoresPlayerId = currentPlayerId;
 	}
+
 	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(playerData);
 	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
 
@@ -269,6 +272,7 @@
 				<ContentBox cls="scores-box">
 					<Scores
 						{playerId}
+						{playerAlias}
 						player={$playerStore}
 						initialState={scoresState}
 						initialStateType={playerStore && $playerStore ? playerStore.getStateType() : 'initial'}

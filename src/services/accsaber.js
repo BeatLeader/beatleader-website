@@ -146,14 +146,20 @@ export default () => {
 			}
 			`,
 					{playerId}
-				).then(r => r.data.players.totalCount > 0);
+				).then(r => r.data?.players?.totalCount > 0);
 
 				if (available) {
 					playersMap[playerData.playerId] = true;
 					playerLinkMap[playerData.playerId] = playerId;
+					if (playerData.alias) {
+						playerLinkMap[playerData.alias] = playerId;
+					}
 					break;
 				}
 			}
+		}
+		if (playerData.alias && playersMap[playerData.alias] === undefined) {
+			playerLinkMap[playerData.alias] = playerLinkMap[playerData.playerId];
 		}
 		return await playersMap[playerData.playerId];
 	};
@@ -276,10 +282,12 @@ export default () => {
 	};
 
 	const getPlayerScoresPage = async (playerId, serviceParams = {sort: 'date', order: 'desc', type: 'overall', page: 1}) => {
+		const NO_SCORES = {metadata: {total: 0}, data: []};
+		const playerIdToFetch = playerLinkMap[playerId] ?? playerId;
+
+		if (!parseInt(playerIdToFetch)) return NO_SCORES;
 		let page = serviceParams?.page ?? 1;
 		if (page < 1) page = 1;
-
-		const NO_SCORES = {metadata: {total: 0}, data: []};
 
 		let category = serviceParams.type;
 
@@ -320,7 +328,7 @@ export default () => {
 			}	
 			`,
 				{
-					playerId: playerLinkMap[playerId] ?? playerId,
+					playerId: playerIdToFetch,
 					category,
 					count: PLAYER_SCORES_PER_PAGE,
 					offset: PLAYER_SCORES_PER_PAGE * (page - 1),

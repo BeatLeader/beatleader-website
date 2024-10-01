@@ -45,7 +45,7 @@
 	let viewport;
 
 	window.addEventListener('message', function (event) {
-		if (event.origin === 'https://bio.beatleader.pro') {
+		if (event.origin === 'https://bio.beatleader.pro' && viewport) {
 			var newHeight = event.data.frameHeight;
 			viewport.style.height = Math.min(newHeight, 420) + 'px';
 			dispatch('height-changed');

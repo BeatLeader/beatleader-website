@@ -61,32 +61,6 @@ export default (leaderboardId, type = 'global', page = 1, filters = {}, initialS
 
 			return newState.scores[stateRowIdx];
 		};
-
-		// if (newState.leaderboard)
-		//   beatMapsEnhancer(newState)
-		//     .then(_ => {
-		//       const versions = newState?.leaderboard?.beatMaps?.versions ?? null
-		//       const versionsLastIdx = versions && Array.isArray(versions) && versions.length ? versions.length - 1 : 0;
-
-		//       const bpm = newState?.leaderboard?.beatMaps?.metadata?.bpm ?? null;
-		//       const bmStats = findDiffInfoWithDiffAndTypeFromBeatMaps(newState?.leaderboard?.beatMaps?.versions?.[versionsLastIdx]?.diffs, newState?.leaderboard?.diffInfo);
-		//       if (!bmStats) return null;
-
-		//       newState.leaderboard.stats = {...newState.leaderboard.stats, ...bmStats, bpm};
-
-		//       setEnhanced({leaderboardId, type, page, enhancedAt: new Date()})
-		//       debouncedSetState(enhanceTaskId, newState);
-
-		//       return newState.leaderboard.beatMaps;
-		//     })
-		//     .then(_ => {
-		//       if (!newState.scores || !newState.scores.length) return;
-
-		//       for (const scoreRow of newState.scores) {
-		//           stateProduce({...scoreRow, leaderboard: newState.leaderboard}, getPatchId(currentLeaderboardId, scoreRow), draft => ppAttributionEnhancer(draft, scoreRow?.player?.playerId, true))
-		//           .then(scoreRow => setStateRow(enhanceTaskId, scoreRow))
-		//       }
-		//     })
 	};
 
 	const provider = createLeaderboardPageProvider();

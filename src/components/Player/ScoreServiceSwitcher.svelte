@@ -14,6 +14,7 @@
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
 
 	export let playerId = null;
+	export let playerAlias = null;
 	export let player = null;
 	export let service = 'scores';
 	export let serviceParams = {sort: 'pp', order: 'desc'};
@@ -27,169 +28,172 @@
 	let availableServiceNames = ['scores'];
 	let accSaberCategories = null;
 
-	const allServices = [
-		{
-			id: 'scores',
-			label: 'Scores',
-			icon: '<div class="beatleader-icon"></div>',
-			cls: 'service-tab-button',
-			url: `/u/${playerId}`,
-			switcherComponents: [
-				{
-					component: Switcher,
-					props: {
-						class: 'score-sorting',
-						values: [
-							{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerId}/scores/pp/1`},
-							{
-								id: 'accPP',
-								label: 'Acc PP',
-								title: 'Sort by acc PP',
-								iconFa: 'fa fa-arrows-to-dot',
-								url: `/u/${playerId}/scores/accPP/1`,
-							},
-							{
-								id: 'passPP',
-								label: 'Pass PP',
-								title: 'Sort by pass PP',
-								iconFa: 'fa fa-person-walking-dashed-line-arrow-right',
-								url: `/u/${playerId}/scores/passPP/1`,
-							},
-							{
-								id: 'techPP',
-								label: 'Tech PP',
-								title: 'Sort by tech PP',
-								iconFa: 'fa fa-arrows-split-up-and-left',
-								url: `/u/${playerId}/scores/techPP/1`,
-							},
-							{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerId}/scores/date/1`},
-							{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/scores/acc/1`},
-							{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerId}/scores/rank/1`},
-							{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerId}/scores/stars/1`},
-							{
-								id: 'playCount',
-								label: 'Plays',
-								title: `Sort by attempt count${
-									player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''
-								}`,
-								iconFa: 'fa fa-repeat',
-								url: `/u/${playerId}/scores/playCount/1`,
-								disabled: player?.profileSettings?.showStatsPublic == false,
-							},
-							{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerId}/scores/pauses/1`},
-							{
-								id: 'maxStreak',
-								label: 'Streak',
-								title: 'Sort by 115 streak',
-								iconFa: 'icon115s',
-								url: `/u/${playerId}/scores/maxStreak/1`,
-							},
-							{
-								id: 'replaysWatched',
-								label: 'Watched',
-								title: 'Sort by replay watched',
-								iconFa: 'fa fa-eye',
-								url: `/u/${playerId}/scores/replaysWatched/1`,
-							},
-							{
-								id: 'mistakes',
-								label: 'Mistakes',
-								title: 'Sort by mistakes',
-								iconFa: 'icon-mistakes',
-								url: `/u/${playerId}/scores/mistakes/1`,
-							},
-						],
-					},
-					key: 'sort',
-					onChange: event => {
-						if (!event?.detail?.id) return null;
+	let allServices = [];
+	function updateAllServices(playerAlias) {
+		allServices = [
+			{
+				id: 'scores',
+				label: 'Scores',
+				icon: '<div class="beatleader-icon"></div>',
+				cls: 'service-tab-button',
+				url: `/u/${playerAlias}`,
+				switcherComponents: [
+					{
+						component: Switcher,
+						props: {
+							class: 'score-sorting',
+							values: [
+								{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerAlias}/scores/pp/1`},
+								{
+									id: 'accPP',
+									label: 'Acc PP',
+									title: 'Sort by acc PP',
+									iconFa: 'fa fa-arrows-to-dot',
+									url: `/u/${playerAlias}/scores/accPP/1`,
+								},
+								{
+									id: 'passPP',
+									label: 'Pass PP',
+									title: 'Sort by pass PP',
+									iconFa: 'fa fa-person-walking-dashed-line-arrow-right',
+									url: `/u/${playerAlias}/scores/passPP/1`,
+								},
+								{
+									id: 'techPP',
+									label: 'Tech PP',
+									title: 'Sort by tech PP',
+									iconFa: 'fa fa-arrows-split-up-and-left',
+									url: `/u/${playerAlias}/scores/techPP/1`,
+								},
+								{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerAlias}/scores/date/1`},
+								{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerAlias}/scores/acc/1`},
+								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerAlias}/scores/rank/1`},
+								{id: 'stars', label: 'Stars', title: 'Sort by song stars', iconFa: 'fa fa-star', url: `/u/${playerAlias}/scores/stars/1`},
+								{
+									id: 'playCount',
+									label: 'Plays',
+									title: `Sort by attempt count${
+										player?.profileSettings?.showStatsPublic == false ? ' (this player has attempts hidden)' : ''
+									}`,
+									iconFa: 'fa fa-repeat',
+									url: `/u/${playerAlias}/scores/playCount/1`,
+									disabled: player?.profileSettings?.showStatsPublic == false,
+								},
+								{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerAlias}/scores/pauses/1`},
+								{
+									id: 'maxStreak',
+									label: 'Streak',
+									title: 'Sort by 115 streak',
+									iconFa: 'icon115s',
+									url: `/u/${playerAlias}/scores/maxStreak/1`,
+								},
+								{
+									id: 'replaysWatched',
+									label: 'Watched',
+									title: 'Sort by replay watched',
+									iconFa: 'fa fa-eye',
+									url: `/u/${playerAlias}/scores/replaysWatched/1`,
+								},
+								{
+									id: 'mistakes',
+									label: 'Mistakes',
+									title: 'Sort by mistakes',
+									iconFa: 'icon-mistakes',
+									url: `/u/${playerAlias}/scores/mistakes/1`,
+								},
+							],
+						},
+						key: 'sort',
+						onChange: event => {
+							if (!event?.detail?.id) return null;
 
-						if ($editModel) {
-							if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
+							if ($editModel) {
+								if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
 
-							const filterName = `ss-${event.detail.id}`;
-							if ($editModel.data.profileAppearance.includes(filterName)) {
-								$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
-							} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
+								const filterName = `ss-${event.detail.id}`;
+								if ($editModel.data.profileAppearance.includes(filterName)) {
+									$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
+								} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
 
-							return null;
-						}
+								return null;
+							}
 
-						dispatch('service-params-change', {
-							sort: event.detail.id,
-							...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null),
-						});
+							dispatch('service-params-change', {
+								sort: event.detail.id,
+								...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null),
+							});
+						},
 					},
-				},
-			],
-		},
-		{
-			id: 'beatsavior',
-			label: 'Beat Savior',
-			cls: 'mode-tab-button',
-			icon: '<div class="beatsavior-icon"></div>',
-			url: `/u/${playerId}/beatsavior/date/1`,
-			switcherComponents: [
-				{
-					component: Switcher,
-					props: {
-						values: [
-							{id: 'date', label: 'Date', iconFa: 'fa fa-clock', url: `/u/${playerId}/beatsavior/date/1`},
-							{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs', url: `/u/${playerId}/beatsavior/acc/1`},
-							{id: 'mistakes', label: 'Mistakes', iconFa: 'fa fa-times', url: `/u/${playerId}/beatsavior/mistake/1`},
-						],
-					},
-					key: 'sort',
-					onChange: event => {
-						if (!event?.detail?.id) return null;
+				],
+			},
+			{
+				id: 'beatsavior',
+				label: 'Beat Savior',
+				cls: 'mode-tab-button',
+				icon: '<div class="beatsavior-icon"></div>',
+				url: `/u/${playerAlias}/beatsavior/date/1`,
+				switcherComponents: [
+					{
+						component: Switcher,
+						props: {
+							values: [
+								{id: 'date', label: 'Date', iconFa: 'fa fa-clock', url: `/u/${playerAlias}/beatsavior/date/1`},
+								{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs', url: `/u/${playerAlias}/beatsavior/acc/1`},
+								{id: 'mistakes', label: 'Mistakes', iconFa: 'fa fa-times', url: `/u/${playerAlias}/beatsavior/mistake/1`},
+							],
+						},
+						key: 'sort',
+						onChange: event => {
+							if (!event?.detail?.id) return null;
 
-						dispatch('service-params-change', {
-							sort: event.detail.id,
-							...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null),
-						});
+							dispatch('service-params-change', {
+								sort: event.detail.id,
+								...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null),
+							});
+						},
 					},
-				},
-			],
-		},
-		{
-			id: 'accsaber',
-			label: 'AccSaber',
-			cls: 'service-tab-button',
-			icon: '<div class="accsaber-icon"></div>',
-			url: `/u/${playerId}/accsaber/date/1`,
-			switcherComponents: [
-				{
-					component: Switcher,
-					key: 'type',
-					onChange: event => {
-						if (!event?.detail?.id) return null;
+				],
+			},
+			{
+				id: 'accsaber',
+				label: 'AccSaber',
+				cls: 'service-tab-button',
+				icon: '<div class="accsaber-icon"></div>',
+				url: `/u/${playerAlias}/accsaber/date/1`,
+				switcherComponents: [
+					{
+						component: Switcher,
+						key: 'type',
+						onChange: event => {
+							if (!event?.detail?.id) return null;
 
-						dispatch('service-params-change', {type: event?.detail?.id});
+							dispatch('service-params-change', {type: event?.detail?.id});
+						},
 					},
-				},
-				{
-					component: Switcher,
-					key: 'sort',
-					props: {
-						values: [
-							{id: 'ap', label: 'AP', iconFa: 'fa fa-cubes'},
-							{id: 'date', label: 'Date', iconFa: 'fa fa-clock'},
-							{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs'},
-							{id: 'rank', label: 'Rank', iconFa: 'fa fa-list-ol'},
-						],
-					},
-					onChange: event => {
-						if (!event?.detail?.id) return null;
+					{
+						component: Switcher,
+						key: 'sort',
+						props: {
+							values: [
+								{id: 'ap', label: 'AP', iconFa: 'fa fa-cubes'},
+								{id: 'date', label: 'Date', iconFa: 'fa fa-clock'},
+								{id: 'acc', label: 'Acc', iconFa: 'fa fa-crosshairs'},
+								{id: 'rank', label: 'Rank', iconFa: 'fa fa-list-ol'},
+							],
+						},
+						onChange: event => {
+							if (!event?.detail?.id) return null;
 
-						dispatch('service-params-change', {
-							sort: event.detail.id,
-							...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null),
-						});
+							dispatch('service-params-change', {
+								sort: event.detail.id,
+								...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null),
+							});
+						},
 					},
-				},
-			],
-		},
-	];
+				],
+			},
+		];
+	}
 
 	async function updateAvailableServiceNames(player) {
 		accSaberCategories = null;
@@ -217,7 +221,7 @@
 	}
 
 	function updateAvailableServices(
-		avaiableServiceNames,
+		availableServiceNames,
 		service,
 		loadingService,
 		serviceParams,
@@ -382,7 +386,7 @@
 												...(player?.scoreStats?.allHMDs?.length ? player?.scoreStats?.allHMDs?.split(',') : Object.keys(HMDs)).map(id => {
 													return {
 														id: id,
-														name: HMDs[parseInt(id)].name,
+														name: HMDs[parseInt(id)]?.name ?? 'Unknown headset',
 													};
 												}),
 											],
@@ -448,7 +452,7 @@
 									values: accSaberCategories.map(c => ({
 										id: c.name,
 										label: c.displayName ?? c.name,
-										url: `/u/${playerId}/${service}/${c.name}/date/1`,
+										url: `/u/${playerAlias}/${service}/${c.name}/date/1`,
 									})),
 								};
 						}
@@ -521,6 +525,7 @@
 
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
+	$: updateAllServices(playerAlias);
 	$: updateAvailableServiceNames(player);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,

@@ -42,11 +42,7 @@
 
 	$: hash = leaderboard?.song?.hash ?? null;
 	$: ssCoverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
-	$: beatSaverCoverUrl = leaderboard?.beatMaps?.versions?.[0]?.coverURL ?? null;
-	$: preloadImages([
-		{url: ssCoverUrl, priority: 10},
-		{url: beatSaverCoverUrl, priority: 5},
-	]);
+	$: preloadImages([{url: ssCoverUrl, priority: 10}]);
 
 	$: coverUrl = loadedImages.length ? loadedImages.sort((a, b) => a?.priority - b?.priority)[0].url : DEFAULT_IMG;
 
