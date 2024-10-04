@@ -54,7 +54,6 @@
     "@silexlabs/grapesjs-fonts": "https://github.com/NSGolova/grapesjs-fonts.git",
     "atropos": "^1.0.2",
     "chartjs-plugin-trendline": "^2.1.1",
-    "custom-protocol-check": "https://github.com/claap-app/custom-protocol-check.git",
     "d3": "^7.9.0",
     "deep-equal": "^2.2.3",
     "grapesjs": "^0.21.11",

@@ -672,10 +672,6 @@ css-tree@^2.3.1:
     mdn-data "2.0.30"
     source-map-js "^1.0.1"
 
-"custom-protocol-check@https://github.com/claap-app/custom-protocol-check.git":
-  version "1.4.0"
-  resolved "https://github.com/claap-app/custom-protocol-check.git#90d9ba85520039863b3a73fdde1393a6ca39db98"
-
 "d3-array@2 - 3", "d3-array@2.10.0 - 3", "d3-array@2.5.0 - 3", d3-array@3, d3-array@^3.2.0:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-3.2.4.tgz#15fec33b237f97ac5d7c986dc77da273a8ed0bb5"

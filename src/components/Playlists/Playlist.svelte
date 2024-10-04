@@ -8,7 +8,7 @@
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import createPlayerService from '../../services/beatleader/player';
 	import Song from './Song.svelte';
-	import customProtocolCheck from 'custom-protocol-check';
+	import customProtocolCheck from '../../utils/custom-protocol-check';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Spinner from '../Common/Spinner.svelte';
 	import PlaylistDeleteConfirm from './PlaylistDeleteConfirm.svelte';

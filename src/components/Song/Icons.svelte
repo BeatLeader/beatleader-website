@@ -4,6 +4,7 @@
 	import createPlaylistStore from '../../stores/playlists';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {configStore} from '../../stores/config';
+	import customProtocolCheck from '../../utils/custom-protocol-check';
 	import beatSaverSvg from '../../resources/beatsaver.svg';
 	import Button from '../Common/Button.svelte';
 	import Preview from '../Common/Preview.svelte';
@@ -13,6 +14,7 @@
 	import ScoreActionButtonsLayout from './ScoreActionButtonsLayout.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import {isPatron} from '../Player/Overlay/overlay';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let layoutType = 'flat';
 	export let song;
@@ -53,6 +55,34 @@
 		if (batleRoyale) {
 			shownIcons.push('batleRoyale');
 		}
+	}
+
+	let thinking = false;
+
+	function installOneClick() {
+		thinking = true;
+		customProtocolCheck(
+			`beatsaver://${songKey}`,
+			() => {
+				thinking = false;
+				addNotification({
+					html: 'Nothing happened? Check this instruction: <a href="https://beatleader.wiki/en/website/one-click-install">https://beatleader.wiki/en/website/one-click-install</a>',
+					position: 'top-right',
+					type: 'error',
+					removeAfter: 4000,
+				});
+			},
+			() => {
+				thinking = false;
+				addNotification({
+					text: 'Song install started!',
+					position: 'top-right',
+					type: 'success',
+					removeAfter: 2000,
+				});
+			},
+			3000
+		);
 	}
 
 	let beatSaverService = createBeatSaverService();
@@ -306,10 +336,16 @@
 							noMargin={true}
 							on:click={() => playlists.add(getSongInfo(), ocPlaylistIndex)} />
 					{/if}
+				{:else if thinking}
+					<Spinner />
 				{:else}
-					<a href="beatsaver://{songKey}">
-						<Button iconFa="far fa-hand-pointer" title="One click install" animated={true} noMargin={true} />
-					</a>
+					<Button
+						url="beatsaver://{songKey}"
+						iconFa="far fa-hand-pointer"
+						title="One click install"
+						animated={true}
+						noMargin={true}
+						on:click={() => installOneClick()} />
 				{/if}
 			{/if}
 
