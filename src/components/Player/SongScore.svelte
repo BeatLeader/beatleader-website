@@ -4,7 +4,6 @@
 	import createPinnedScoresStore from '../../stores/beatleader/pinned-scores';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {configStore} from '../../stores/config';
-	import {opt} from '../../utils/js';
 	import SongInfo from './SongInfo.svelte';
 	import ScoreRank from './ScoreRank.svelte';
 	import FormattedDate from '../Common/FormattedDate.svelte';
@@ -12,6 +11,7 @@
 	import Icons from '../Song/Icons.svelte';
 	import PlayerPerformance from './PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
+	import {colorForEndType, titleForEndType} from '../../utils/attempts';
 
 	export let playerId = null;
 	export let songScore = null;
@@ -77,6 +77,12 @@
 		}
 	}
 
+	function timeToLabel(time, prefix) {
+		const minutes = Math.floor(time / 60);
+		const seconds = Math.floor(time % 60);
+		return prefix + ' ' + minutes + ':' + seconds.toString().padStart(2, '0');
+	}
+
 	let showAnyDetails = true;
 
 	function checkShowAnyDetails(detailsPreferences) {
@@ -91,14 +97,12 @@
 		});
 	}
 
-	$: leaderboard = opt(songScore, 'leaderboard', null);
-	$: score = opt(songScore, 'score', null);
+	$: leaderboard = songScore?.leaderboard;
+	$: score = songScore?.score;
 	$: prevScore = score?.scoreImprovement?.timeset?.length && score?.scoreImprovement?.score ? score.scoreImprovement : null;
-	$: beatSavior = opt(songScore, 'beatSavior', null);
-	$: song = opt(leaderboard, 'song');
-	$: hash = opt(song, 'hash');
-	$: twitchUrl = opt(songScore, 'twitchVideo.url', null);
-	$: diffInfo = opt(leaderboard, 'diffInfo');
+	$: song = leaderboard?.song;
+	$: twitchUrl = songScore?.twitchVideo?.url;
+	$: diffInfo = leaderboard?.diffInfo;
 	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
 
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
@@ -117,9 +121,34 @@
 		in:maybe|global={{fn: fly, x: animationSign * 300, delay: idx * 30, duration: 300}}
 		out:maybe|global={{fn: fade, duration: 100}}
 		class:with-details={showDetails}>
+		{#if service == 'attempts'}
+			<header>
+				<h3 class="pin-description" title="Attempt number on this map">
+					Attempt #{score.attemptsCount}
+				</h3>
+				{#if score.endType}
+					<h3
+						class="pin-description"
+						title="Attempt end type"
+						style={score.endType ? `background-color: ${colorForEndType(score.endType, 0.2)}` : ''}>
+						{titleForEndType(score.endType)}
+					</h3>
+				{/if}
+				{#if score.endType > 1}
+					{#if score.startTime}
+						<h3 class="pin-description" title="Attempt start time">
+							{timeToLabel(score.startTime, 'from')}
+						</h3>
+					{/if}
+					<h3 class="pin-description" title="Attempt finish time">
+						{timeToLabel(score.time, 'at')}
+					</h3>
+				{/if}
+			</header>
+		{/if}
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
 			<span class="rank tablet-and-up">
-				{#if service !== 'beatsavior'}
+				{#if service !== 'beatsavior' && service !== 'attempts'}
 					<ScoreRank
 						rank={score.rank}
 						countryRank={score.ssplCountryRank}
@@ -158,6 +187,7 @@
 							{service}
 							{playerId}
 							icons={selectedIcons}
+							replayLink={score.id ? null : score.replay}
 							on:score-pinned={onScorePinned} />
 					{/if}
 				</div>
@@ -171,6 +201,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
+						replayLink={score.id ? null : score.replay}
 						icons={selectedIcons}
 						{serviceIcon}
 						noPin={!isPlayerScore}
@@ -183,6 +214,7 @@
 						{twitchUrl}
 						{diffInfo}
 						scoreId={score.id}
+						replayLink={score.id ? null : score.replay}
 						icons={selectedIcons}
 						{serviceIcon}
 						noPin={!isPlayerScore}
@@ -356,6 +388,36 @@
 
 	.beat-savior-reveal.opened {
 		transform: rotateZ(180deg);
+	}
+
+	.end-type {
+		border-radius: 6px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 0.4em 0 0.4em 0;
+	}
+
+	.attempts-count {
+		font-size: 0.6em;
+	}
+
+	header {
+		display: flex;
+		align-items: center;
+		grid-gap: 0;
+		font-size: 0.875em;
+		margin-top: -0.6em;
+		margin-bottom: 0.5em;
+	}
+
+	header > h3 {
+		width: fit-content;
+		border-bottom-left-radius: 0.5em;
+		border-bottom-right-radius: 0.5em;
+		background: var(--row-separator);
+		padding: 0 1em 0.2em;
 	}
 
 	h3 {

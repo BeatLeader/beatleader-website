@@ -1,4 +1,5 @@
 import createScoresService from '../../../../services/beatleader/scores';
+import createScoreAttemptsService from '../../../../services/beatleader/score-attempts';
 import createAccSaberService from '../../../../services/accsaber';
 import {capitalize} from '../../../../utils/js';
 import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../../../network/queues/beatleader/api-queue';
@@ -12,12 +13,15 @@ let scoreFetcher = null;
 
 let blScoresService = null;
 let accSaberService = null;
+let scoreAttemptsService = null;
+
 const resolvePromiseOrWaitForPending = makePendingPromisePool();
 
 export default () => {
 	if (scoreFetcher) return scoreFetcher;
 
 	blScoresService = createScoresService();
+	scoreAttemptsService = createScoreAttemptsService();
 	accSaberService = createAccSaberService();
 
 	const processServiceParamsFilters = serviceParams => {
@@ -54,6 +58,15 @@ export default () => {
 				);
 			case 'accsaber':
 				return accSaberService.getPlayerScoresPage(playerId, processedServiceParams);
+			case 'attempts':
+				return scoreAttemptsService.fetchScoresPageOrGetFromCache(
+					playerId,
+					processedServiceParams,
+					otherParams?.refreshInterval,
+					otherParams?.priority,
+					otherParams?.signal,
+					otherParams?.force
+				);
 			case 'scores':
 			default:
 				return blScoresService.fetchScoresPageOrGetFromCache(

@@ -47,6 +47,9 @@ export const BL_API_PLAYER_SAVER_INFO_URL = BL_API_URL + 'player/beatsaver/${pla
 export const BL_API_SCORES_URL =
 	BL_API_URL +
 	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
+export const BL_API_SCORE_ATTEMPTS_URL =
+	BL_API_URL +
+	'player/${playerId}/scoresstats?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&endType=${endType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
 export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
 	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
@@ -369,6 +372,14 @@ export default (options = {}) => {
 			priority,
 			options
 		);
+
+	const scoreAttempts = async (
+		playerId,
+		page = 1,
+		params = {sort: 'date', order: 'desc', filter: {}},
+		priority = PRIORITY.FG_LOW,
+		options = {}
+	) => fetchScores(substituteVars(BL_API_SCORE_ATTEMPTS_URL, {...params, ...(params?.filters ?? {})}), playerId, page, priority, options);
 
 	const scoresHistogram = async (playerId, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchScores(substituteVars(BL_API_SCORES_HISTOGRAM_URL, {...params, ...(params?.filters ?? {})}), playerId, priority, options);
@@ -718,6 +729,7 @@ export default (options = {}) => {
 		rankingEventCountry,
 		rankingEventFollowed,
 		scores,
+		scoreAttempts,
 		scoreStats,
 		leaderboardStats,
 		scoresHistogram,

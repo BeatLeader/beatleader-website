@@ -5,11 +5,14 @@
 	import {configStore} from '../../stores/config';
 	import Preview from '../Common/Preview.svelte';
 	import ScoreHistoryChart from '../Player/Charts/ScoreHistoryChart.svelte';
-	import {createEventDispatcher, getContext} from 'svelte';
+	import {getContext} from 'svelte';
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import {processScore} from '../../network/clients/beatleader/scores/utils/processScore';
 	import createAccountStore from '../../stores/beatleader/account';
 	import {isPatron} from '../Player/Overlay/overlay';
+	import {colorForEndType, titleForEndType} from '../../utils/attempts';
+	import CompactPagination from './CompactPagination.svelte';
+	import ScoreHistoryAccGraph from './ScoreHistoryAccGraph.svelte';
 
 	export let score;
 	export let leaderboard;
@@ -17,15 +20,14 @@
 	const account = createAccountStore();
 
 	var history = [];
+	var fullhistory = [];
 	var canCompare = false;
 
 	function fetchHistory(score, scoreHistoryLegend) {
 		fetch(`${BL_API_URL}map/scorestats?playerId=${score.playerId}&leaderboardId=${score.leaderboardId}`, {credentials: 'include'})
 			.then(d => d.json())
 			.then(scores => {
-				var scoresList = scores.filter(s => {
-					return scoreHistoryLegend['y' + (s.type > 1 ? s.type - 1 : '')];
-				});
+				var scoresList = scores;
 				scoresList.forEach(element => {
 					if (!element.replay && element.replayCopy) {
 						element.replay = element.replayCopy;
@@ -45,7 +47,11 @@
 					});
 				}
 
-				if (score.scoreImprovement && !scoresList.find(s => s.modifiedScore == score.score - score.scoreImprovement.score)) {
+				if (
+					score.scoreImprovement &&
+					score.scoreImprovement.score &&
+					!scoresList.find(s => s.modifiedScore == score.score - score.scoreImprovement.score)
+				) {
 					const improvement = score.scoreImprovement;
 					scoresList.push({
 						type: 1,
@@ -65,7 +71,10 @@
 					});
 				}
 
-				history = scoresList;
+				fullhistory = scoresList;
+				history = scoresList.filter(s => {
+					return scoreHistoryLegend['y' + (s.type > 1 ? s.type - 1 : '')];
+				});
 
 				var replayCount = 0;
 				for (let index = 0; index < history.length; index++) {
@@ -97,35 +106,13 @@
 		}
 	};
 
-	function titleForType(type) {
-		switch (type) {
-			case 1:
-				return 'Clear';
-			case 2:
-				return 'Fail';
-			case 3:
-				return 'Restart';
-			case 4:
-				return 'Quit';
-			case 5:
-				return 'Practice';
-		}
+	let graphPageIndex = 0;
+
+	function onGraphPaginationChange(event) {
+		graphPageIndex = event.detail.page;
 	}
 
-	function colorForType(type) {
-		switch (type) {
-			case 1:
-				return 'green';
-			case 2:
-				return 'red';
-			case 3:
-				return 'orange';
-			case 4:
-				return 'white';
-			case 5:
-				return 'yellow';
-		}
-	}
+	let hoveredAttempt = null;
 
 	let battleRoyaleDraft = false;
 	let battleRoyaleDraftList = [];
@@ -184,10 +171,14 @@
 					</div>
 				{/if}
 				{#each history.sort((a, b) => b.timeset - a.timeset) as score}
-					<div class="history-item" style="--type-color: {colorForType(score.type)}">
+					<div
+						class="history-item {score.id == hoveredAttempt?.id ? 'hovered-item' : ''}"
+						style="--type-color: {colorForEndType(score.type, 0.04)}; --hover-type-color: {colorForEndType(score.type, 0.4)}"
+						on:mouseenter={() => (hoveredAttempt = score)}
+						on:mouseleave={() => (hoveredAttempt = null)}>
 						<div class="history-item-meta">
 							<div>
-								<span class="history-item-type">{titleForType(score.type)} </span>
+								<span class="history-item-type">{titleForEndType(score.type)} </span>
 								{#if score.type > 1}
 									<span class="history-item-time">at {timeToLabel(score.time)} </span>
 								{/if}
@@ -256,23 +247,32 @@
 			</div>
 		</div>
 		<div class="details-box">
-			<ScoreHistoryChart {history} {leaderboard} />
+			{#if graphPageIndex == 0}
+				<ScoreHistoryChart {history} {leaderboard} bind:hoveredAttempt />
+			{:else}
+				<ScoreHistoryAccGraph {score} history={fullhistory} {leaderboard} {hoveredAttempt} />
+			{/if}
+			{#if canCompare}
+				<CompactPagination pageIndex={graphPageIndex} pagesCount={2} on:change={onGraphPaginationChange} />
+			{/if}
 		</div>
 	</div>
 {/if}
 
 <style>
 	.history-item {
-		border: solid 2px var(--type-color);
+		background-color: var(--type-color);
 		margin: 0.5em;
 		padding: 0.5em;
-		border-radius: 1em;
+		border-radius: 6px;
+		box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
+	}
+	.history-item.hovered-item {
+		background-color: var(--hover-type-color);
 	}
 	.history-item-meta {
 		display: flex;
 		justify-content: space-between;
-		margin-right: 1.2em;
-		margin-left: 1.2em;
 	}
 	.history-table {
 		max-height: 23.4em;
@@ -288,6 +288,7 @@
 		padding: 0.4em;
 		box-shadow: 0 2px 10px rgb(0 0 0 / 53%);
 		border-radius: 0.4em;
+		display: flex;
 		background: #000000d4;
 		overflow: hidden;
 	}
@@ -299,10 +300,12 @@
 	:global(.history-item .player-performance-badges) {
 		display: flex !important;
 		flex-wrap: wrap;
-		margin-left: 1.2em;
-		margin-right: 1.2em;
 		grid-column-gap: 0.1em !important;
 		grid-row-gap: 0.1em !important;
+	}
+
+	:global(.history-item .with-badge .badge) {
+		min-width: 6em;
 	}
 	:global(.purple) {
 		color: rgb(255, 0, 208);

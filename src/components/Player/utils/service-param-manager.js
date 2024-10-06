@@ -5,7 +5,7 @@ export default () => {
 	let currentService = null;
 	let currentServiceParams = {};
 
-	const getAllServices = () => ['scores', 'beatsavior', 'accsaber'];
+	const getAllServices = () => ['scores', 'attempts', 'beatsavior', 'accsaber'];
 
 	const get = () => ({service: currentService, params: currentServiceParams});
 
@@ -13,7 +13,8 @@ export default () => {
 		switch (service) {
 			case 'beatsavior':
 				return {sort: 'date', order: 'desc', page: 1, filters: {}};
-
+			case 'attempts':
+				return {sort: 'date', order: 'desc', page: 1, filters: {}};
 			case 'accsaber':
 				return {type: 'overall', order: 'desc', sort: 'ap', page: 1, filters: {}};
 			default:
@@ -161,6 +162,10 @@ export default () => {
 					result = `${service}/${sort}/${order}${noPage ? '' : `/${page}`}`;
 				}
 				return `${result}${params?.filters ? buildSearchFromFilters(getDefaultParams(service)?.filters, params?.filters) : ''}`;
+			case 'attempts':
+				return `${service}/${params?.sort ?? serviceDefaultParams?.sort}/${params?.order ?? serviceDefaultParams?.order}${
+					noPage ? '' : `/${params?.page ?? serviceDefaultParams?.page}`
+				}`;
 		}
 	};
 

@@ -4,30 +4,21 @@
 	import 'chartjs-adapter-luxon';
 	import {createEventDispatcher, getContext} from 'svelte';
 	import {formatNumber} from '../../../utils/format';
-	import createStatsHistoryStore from '../../../stores/beatleader/stats-history';
-	import {formatDate, formatDateWithOptions, toBlMidnight, dateFromUnix} from '../../../utils/date';
-	import {debounce} from '../../../utils/debounce';
-	import stringify from 'json-stable-stringify';
+	import {formatDate, dateFromUnix} from '../../../utils/date';
 	import {configStore} from '../../../stores/config';
+	import {ATTEMPT_END_TYPE, colorForEndType, titleForEndType} from '../../../utils/attempts';
+	import About from '../../../pages/About.svelte';
 
 	export let history = null;
 	export let leaderboard = null;
+	export let hoveredAttempt = null;
 	export let height = '12em';
 
-	const CHART_DEBOUNCE = 300;
-	const MAGIC_INACTIVITY_RANK = 999999;
-
 	const pageContainer = getContext('pageContainer');
-	const statsHistoryStore = createStatsHistoryStore();
 	const dispatch = createEventDispatcher();
 
 	let canvas = null;
 	let chart = null;
-
-	let lastHistoryHash = null;
-	let activityHistory = null;
-
-	const calcHistoryHash = statsHistory => stringify(statsHistory);
 
 	function timeToLabel(time) {
 		const minutes = Math.floor(time / 60);
@@ -107,10 +98,8 @@
 		// }
 	}
 
-	async function setupChart(hash, canvas, history, scoreHistoryLegend) {
-		if (!hash || !canvas || chartHash === lastHistoryHash) return;
-
-		lastHistoryHash = chartHash;
+	async function setupChart(canvas, currentHistory, scoreHistoryLegend, currentHoveredAttempt) {
+		if (!canvas) return;
 
 		const gridColor = '#2a2a2a';
 		const rankColor = '#3e95cd';
@@ -126,11 +115,12 @@
 
 		const songDuration = leaderboard.song.duration;
 
-		const pointList = history
+		const pointList = currentHistory
 			.filter(h => h.type == 1)
 			.map((h, idx) => ({
 				x: dateFromUnix(h.timeset),
 				y: h.accuracy * 100,
+				id: h.id,
 			}));
 
 		const data = [];
@@ -150,19 +140,19 @@
 		});
 		detached.forEach(element => {
 			if (accGoesUp) {
-				data.push({x: null, y: element.y});
-				data.push({x: null, y: element.y});
+				data.push({x: null, y: element.y, id: element.id});
+				data.push({x: null, y: element.y, id: element.id});
 			}
 			data.push(element);
 			if (accGoesUp) {
-				data.push({x: null, y: element.y});
-				data.push({x: null, y: element.y});
+				data.push({x: null, y: element.y, id: element.id});
+				data.push({x: null, y: element.y, id: element.id});
 			}
 		});
 
 		var attempts = [];
 		var attemptCounter = 0;
-		history
+		currentHistory
 			.sort((a, b) => a.timeset - b.timeset)
 			.filter(s => {
 				return scoreHistoryLegend['y' + (s.type > 1 ? s.type - 1 : '')];
@@ -187,24 +177,6 @@
 				color: gridColor,
 			},
 		};
-
-		const datasets = [
-			{
-				label: 'Clear',
-				data,
-				fill: false,
-				spanGaps: false,
-				borderColor: rankColor,
-				borderWidth: 3,
-				pointRadius: 2,
-				cubicInterpolationMode: 'monotone',
-				tension: 0.4,
-				round: 2,
-				type: 'line',
-				yAxisID: 'y',
-				hidden: !$configStore.scoreHistoryLegend.y,
-			},
-		];
 
 		const min = Math.min(...data.map(item => (item ? item.y : 0))) - 0.1;
 		const max = Math.max(...data.map(item => (item ? item.y : 0))) + 0.1;
@@ -237,20 +209,47 @@
 				},
 				grid: {
 					color: gridColor,
+					drawOnChartArea: false,
 				},
 			},
 		};
 
 		let lastYIdx = 0;
 
-		[
-			{key: 2, label: 'Fail', borderColor: 'rgba(255, 0, 0, '},
-			{key: 3, label: 'Restart', borderColor: 'rgba(255, 137, 10, '},
-			{key: 4, label: 'Quit', borderColor: 'rgba(255, 255, 255, '},
-			{key: 5, label: 'Practice', borderColor: 'rgba(255, 243, 10, '},
-		].forEach(obj => {
-			const {key, label, borderColor} = obj;
+		const datasets = [
+			{
+				label: titleForEndType(ATTEMPT_END_TYPE.Clear),
+				data,
+				fill: false,
+				spanGaps: false,
+				borderColor: element => {
+					if (element.raw) {
+						let opacity = 1;
+						if (currentHoveredAttempt) {
+							if (currentHoveredAttempt.id == element.raw.id) {
+								opacity = 1;
+							} else {
+								opacity = 0.4;
+							}
+						}
 
+						return colorForEndType(ATTEMPT_END_TYPE.Clear, opacity);
+					} else {
+						return colorForEndType(ATTEMPT_END_TYPE.Clear, currentHoveredAttempt ? 0.4 : 1);
+					}
+				},
+				borderWidth: 3,
+				pointRadius: 2,
+				cubicInterpolationMode: 'monotone',
+				tension: 0.4,
+				round: 2,
+				type: 'line',
+				yAxisID: 'y',
+				hidden: !$configStore.scoreHistoryLegend.y,
+			},
+		];
+
+		[ATTEMPT_END_TYPE.Fail, ATTEMPT_END_TYPE.Restart, ATTEMPT_END_TYPE.Quit, ATTEMPT_END_TYPE.Practice].forEach(type => {
 			lastYIdx++;
 			const axisKey = `y${lastYIdx}`;
 			// yAxes[axisKey] = {
@@ -269,30 +268,40 @@
 			// };
 
 			datasets.push({
-				label: label,
-				data: history
-					.filter(h => h.type == key)
+				label: titleForEndType(type),
+				data: currentHistory
+					.filter(h => h.type == type)
 					.map((h, idx) => ({
 						x: dateFromUnix(h.timeset),
 						y: h.accuracy * 100 <= min ? min : h.accuracy * 100 >= max ? max : h.accuracy * 100,
+						id: h.id,
 						time: h.time,
-						borderColor,
+						endType: type,
 						accuracy: h.accuracy * 100,
 					})),
 				borderColor: element => {
 					if (element.raw) {
-						return element.raw.borderColor + element.raw.time / songDuration + ')';
+						let opacity = element.raw.time / songDuration;
+						if (currentHoveredAttempt) {
+							if (currentHoveredAttempt.id == element.raw.id) {
+								opacity = 1;
+							} else {
+								opacity = 0.4;
+							}
+						}
+
+						return colorForEndType(element.raw.endType, opacity);
 					} else {
-						return element.dataset.labelBorderColor + '1)';
+						return colorForEndType(element.dataset.endType, currentHoveredAttempt ? 0.4 : 1);
 					}
 				},
 				borderWidth: 2,
 				pointRadius: 1,
-				labelBorderColor: borderColor,
 				round: 2,
 				type: 'line',
 				yAxisID: 'y',
 				showLine: false,
+				endType: type,
 				hidden: !$configStore.scoreHistoryLegend[axisKey],
 			});
 		});
@@ -356,44 +365,48 @@
 						...yAxes,
 					},
 					configStore,
+					onHover: (event, activeElements) => {
+						if (activeElements.length > 0) {
+							const datasetIndex = activeElements[0].datasetIndex;
+							const index = activeElements[0].index;
+							const hoveredData = chart.data.datasets[datasetIndex].data[index];
+							hoveredAttempt = history.find(h => h.id === hoveredData.id);
+						} else {
+							hoveredAttempt = null;
+						}
+					},
 				},
 			});
+			dispatch('height-changed');
+
+			canvas.addEventListener('mousemove', function (e) {
+				var rect = e.target.getBoundingClientRect();
+				var y = e.clientY - rect.top; //y position within the element.
+				if (y < 30) {
+					document.body.style.cursor = 'pointer';
+				} else {
+					document.body.style.cursor = 'default';
+				}
+			});
+
+			canvas.addEventListener('mouseout', function (e) {
+				document.body.style.cursor = 'default';
+			});
+
+			onLegendClick(null, null, chart.legend, true);
 		} else {
 			chart.data = {datasets};
 			chart.options.scales = {x: xAxis, ...yAxes};
 			chart.update();
 		}
-
-		dispatch('height-changed');
-
-		canvas.addEventListener('mousemove', function (e) {
-			var rect = e.target.getBoundingClientRect();
-			var y = e.clientY - rect.top; //y position within the element.
-			if (y < 30) {
-				document.body.style.cursor = 'pointer';
-			} else {
-				document.body.style.cursor = 'default';
-			}
-		});
-
-		canvas.addEventListener('mouseout', function (e) {
-			document.body.style.cursor = 'default';
-		});
-
-		onLegendClick(null, null, chart.legend, true);
 	}
 
-	let debouncedChartHash = null;
-	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
-
-	$: chartHash = calcHistoryHash(history);
-	$: debounceChartHash(chartHash);
 	$: height = $configStore.preferences.graphHeight;
-	$: if (debouncedChartHash || height) setupChart(debouncedChartHash, canvas, history, $configStore.scoreHistoryLegend);
+	$: if (height) setupChart(canvas, history, $configStore.scoreHistoryLegend, hoveredAttempt);
 	$: if ($configStore.chartLegendVisible && chart) chart.update();
 </script>
 
-<section class="chart" style="--height: {height}">
+<section class="chart" style="--height: {height}; width: 100%;">
 	<canvas class="chartjs" bind:this={canvas} {height} />
 </section>
 

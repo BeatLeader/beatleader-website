@@ -385,46 +385,7 @@
 					{/each}
 				</div>
 			</section>
-			{#if $account?.player}
-				<section class="option full">
-					<label title="Wether to show and make public scores history">Score history:</label>
-					{#if isUpdating}
-						<div class="spinner-container">
-							<Spinner />
-						</div>
-					{/if}
-					<div class="switches">
-						<div class="single" title="Display score history(all the attempts and clears) in the details">
-							<Switch
-								disabled={isUpdating}
-								value={scoreDetailsPreferences.showHistory}
-								label="Show history"
-								fontSize={12}
-								design="slider"
-								on:click={() =>
-									configStore.settempsetting('scoreDetailsPreferences', 'showHistory', !scoreDetailsPreferences.showHistory)} />
-						</div>
-						<div class="single" title="Make score history available for other players">
-							<Switch
-								disabled={isUpdating}
-								value={showStatsPublic}
-								label="Public history (auto-synced)"
-								fontSize={12}
-								design="slider"
-								on:click={() => toggleHistoryPublic()} />
-						</div>
-						<div class="single" title="Make play count viewable on pinned scores">
-							<Switch
-								disabled={isUpdating}
-								value={showStatsPublicPinned}
-								label="Public play count for pinned scores (auto-synced)"
-								fontSize={12}
-								design="slider"
-								on:click={() => togglePinnedHistoryPublic()} />
-						</div>
-					</div>
-				</section>
-			{/if}
+
 			<section class="option full">
 				<label title="Determines which info should be displayed at score">Score info to show:</label>
 				<div class="switches">
@@ -464,6 +425,45 @@
 					title="Comparison of a current player's score against the main player will be displayed either immediately or after expanding the details"
 					>Score comparison</label>
 				<Select bind:value={currentScoreComparisonMethod} options={scoreComparisonMethods} />
+			</section>
+		{/if}
+		{#if $account?.player}
+			<section class="option full">
+				<label title="Wether to show and make public scores history">Score history:</label>
+				{#if isUpdating}
+					<div class="spinner-container">
+						<Spinner />
+					</div>
+				{/if}
+				<div class="switches">
+					<div class="single" title="Display score history(all the attempts and clears) in the details">
+						<Switch
+							disabled={isUpdating}
+							value={scoreDetailsPreferences.showHistory}
+							label="Show history"
+							fontSize={12}
+							design="slider"
+							on:click={() => configStore.settempsetting('scoreDetailsPreferences', 'showHistory', !scoreDetailsPreferences.showHistory)} />
+					</div>
+					<div class="single" title="Make score history available for other players">
+						<Switch
+							disabled={isUpdating}
+							value={showStatsPublic}
+							label="Public history (auto-synced)"
+							fontSize={12}
+							design="slider"
+							on:click={() => toggleHistoryPublic()} />
+					</div>
+					<div class="single" title="Make play count viewable on pinned scores">
+						<Switch
+							disabled={isUpdating}
+							value={showStatsPublicPinned}
+							label="Public play count for pinned scores (auto-synced)"
+							fontSize={12}
+							design="slider"
+							on:click={() => togglePinnedHistoryPublic()} />
+					</div>
+				</div>
 			</section>
 		{/if}
 		<section class="option">

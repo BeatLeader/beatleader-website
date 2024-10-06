@@ -360,7 +360,7 @@
 			{/if}
 		{/if}
 
-		{#if shownIcons.includes('analyzer') && analyzerUrl?.length}
+		{#if shownIcons.includes('analyzer') && analyzerUrl && analyzerUrl.length}
 			<Button
 				url={analyzerUrl}
 				on:click={() => showPreview(analyzerUrl)}
@@ -371,7 +371,7 @@
 				noMargin={true} />
 		{/if}
 
-		{#if shownIcons.includes('replay') && replayUrl?.length}
+		{#if shownIcons.includes('replay') && replayUrl && replayUrl.length}
 			<Button
 				url={replayUrl}
 				on:click={() => showPreview(replayUrl)}

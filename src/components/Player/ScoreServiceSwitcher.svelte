@@ -2,6 +2,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import createAccSaberService from '../../services/accsaber';
 	import createAccountStore from '../../stores/beatleader/account';
+	import {configStore} from '../../stores/config';
 	import Switcher from '../Common/Switcher.svelte';
 	import ScoreServiceFilters from './ScoreServiceFilters.svelte';
 	import TextFilter from './ScoreFilters/TextFilter.svelte';
@@ -12,6 +13,7 @@
 	import editModel from '../../stores/beatleader/profile-edit-model';
 	import {BL_API_URL, SPECIAL_PLAYER_ID} from '../../network/queues/beatleader/api-queue';
 	import TabSwitcher from '../Common/TabSwitcher.svelte';
+	import {ATTEMPT_END_TYPE, titleForEndType} from '../../utils/attempts';
 
 	export let playerId = null;
 	export let playerAlias = null;
@@ -127,6 +129,69 @@
 				],
 			},
 			{
+				id: 'attempts',
+				label: 'Attempts',
+				icon: '<div class="beatleader-icon"></div>',
+				cls: 'service-tab-button',
+				url: `/u/${playerAlias}/attempts/date/1`,
+				switcherComponents: [
+					{
+						component: Switcher,
+						props: {
+							class: 'score-sorting',
+							values: [
+								{id: 'pp', label: 'PP', title: 'Sort by PP', iconFa: 'fa fa-cubes', url: `/u/${playerAlias}/attempts/pp/1`},
+								{id: 'date', label: 'Date', title: 'Sort by date', iconFa: 'fa fa-clock', url: `/u/${playerAlias}/attempts/date/1`},
+								{id: 'acc', label: 'Acc', title: 'Sort by accuracy', iconFa: 'fa fa-crosshairs', url: `/u/${playerAlias}/attempts/acc/1`},
+								{id: 'rank', label: 'Rank', title: 'Sort by rank', iconFa: 'fa fa-list-ol', url: `/u/${playerAlias}/attempts/rank/1`},
+								{
+									id: 'playCount',
+									label: 'Plays',
+									title: `Sort by attempt count`,
+									iconFa: 'fa fa-repeat',
+									url: `/u/${playerAlias}/attempts/playCount/1`,
+								},
+								{id: 'pauses', label: 'Pauses', title: 'Sort by pauses', iconFa: 'fa fa-pause', url: `/u/${playerAlias}/attempts/pauses/1`},
+								{
+									id: 'maxStreak',
+									label: 'Streak',
+									title: 'Sort by 115 streak',
+									iconFa: 'icon115s',
+									url: `/u/${playerAlias}/attempts/maxStreak/1`,
+								},
+								{
+									id: 'mistakes',
+									label: 'Mistakes',
+									title: 'Sort by mistakes',
+									iconFa: 'icon-mistakes',
+									url: `/u/${playerAlias}/attempts/mistakes/1`,
+								},
+							],
+						},
+						key: 'sort',
+						onChange: event => {
+							if (!event?.detail?.id) return null;
+
+							if ($editModel) {
+								if (!$editModel.data.profileAppearance) $editModel.data.profileAppearance = [];
+
+								const filterName = `ss-${event.detail.id}`;
+								if ($editModel.data.profileAppearance.includes(filterName)) {
+									$editModel.data.profileAppearance = $editModel.data.profileAppearance.filter(s => s !== filterName);
+								} else $editModel.data.profileAppearance = [...$editModel.data.profileAppearance, filterName];
+
+								return null;
+							}
+
+							dispatch('service-params-change', {
+								sort: event.detail.id,
+								...(serviceParams?.sort === event.detail.id ? {order: serviceParams?.order === 'asc' ? 'desc' : 'asc'} : null),
+							});
+						},
+					},
+				],
+			},
+			{
 				id: 'beatsavior',
 				label: 'Beat Savior',
 				cls: 'mode-tab-button',
@@ -208,6 +273,13 @@
 			availableServiceNames = ['scores'];
 		}
 
+		if (
+			player?.profileSettings?.showStatsPublic ||
+			($configStore?.scoreDetailsPreferences?.showHistory && $account?.playerId == player.id)
+		) {
+			availableServiceNames.push('attempts');
+		}
+
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
 	}
 
@@ -276,6 +348,7 @@
 
 				switch (service) {
 					case 'scores':
+					case 'attempts':
 						if (availableServiceNames.includes('scores')) {
 							serviceDef.filters = commonFilters
 								.filter(f => f.props.id != 'search' || playerId != SPECIAL_PLAYER_ID)
@@ -415,26 +488,49 @@
 											selected: serviceParams?.filters?.modifiers,
 										},
 									},
-								])
-								.filter(f => !$account?.player || $editModel || !f?.props?.hidden);
+								]);
 
-							if (eventsParticipating?.length)
-								serviceDef.filters = [...serviceDef.filters]
-									.concat([
-										{
-											component: SelectFilter,
-											props: {
-												id: 'eventId',
-												iconFa: 'fa fa-calendar',
-												title: 'Filter by event',
-												hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`) && !serviceParams?.filters?.eventId,
-												values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
-												open: !!serviceParams?.filters?.eventId,
-												defaultValue: serviceParams?.filters?.eventId ? parseInt(serviceParams?.filters?.eventId) : null,
-											},
+							if (eventsParticipating?.length) {
+								serviceDef.filters = [...serviceDef.filters].concat([
+									{
+										component: SelectFilter,
+										props: {
+											id: 'eventId',
+											iconFa: 'fa fa-calendar',
+											title: 'Filter by event',
+											hidden: !sortingOrFilteringAppearance.includes(`sf-eventId`) && !serviceParams?.filters?.eventId,
+											values: [{id: null, name: 'None'}].concat(eventsParticipating.map(e => ({id: e?.id, name: e?.name}))),
+											open: !!serviceParams?.filters?.eventId,
+											defaultValue: serviceParams?.filters?.eventId ? parseInt(serviceParams?.filters?.eventId) : null,
 										},
-									])
-									.filter(f => !$account?.player || $editModel || !f?.props?.hidden);
+									},
+								]);
+							}
+							if (service == 'attempts') {
+								serviceDef.filters = [...serviceDef.filters].concat([
+									{
+										component: SelectFilter,
+										props: {
+											id: 'endType',
+											iconFa: 'fa fa-flag-checkered',
+											title: 'Filter by attempt end type',
+											values: [
+												{id: null, name: 'All'},
+												{id: ATTEMPT_END_TYPE.Clear, name: titleForEndType(ATTEMPT_END_TYPE.Clear)},
+												{id: ATTEMPT_END_TYPE.Fail, name: titleForEndType(ATTEMPT_END_TYPE.Fail)},
+												{id: ATTEMPT_END_TYPE.Restart, name: titleForEndType(ATTEMPT_END_TYPE.Restart)},
+												{id: ATTEMPT_END_TYPE.Quit, name: titleForEndType(ATTEMPT_END_TYPE.Quit)},
+												{id: ATTEMPT_END_TYPE.Practice, name: titleForEndType(ATTEMPT_END_TYPE.Practice)},
+												,
+											],
+											open: !!serviceParams?.filters?.endType,
+											defaultValue: serviceParams?.filters?.endType ? parseInt(serviceParams?.filters?.endType) : null,
+										},
+									},
+								]);
+							}
+
+							serviceDef.filters = serviceDef.filters.filter(f => !$account?.player || $editModel || !f?.props?.hidden);
 						}
 						break;
 
