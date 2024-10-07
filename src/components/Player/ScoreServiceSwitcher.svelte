@@ -28,6 +28,7 @@
 	const account = createAccountStore();
 
 	let availableServiceNames = ['scores'];
+	let strictlyAvailableServiceNames = ['scores'];
 	let accSaberCategories = null;
 
 	let allServices = [];
@@ -134,6 +135,7 @@
 				icon: '<div class="beatleader-icon"></div>',
 				cls: 'service-tab-button',
 				url: `/u/${playerAlias}/attempts/date/1`,
+				availabilityTitle: `This player's attempts are private`,
 				switcherComponents: [
 					{
 						component: Switcher,
@@ -225,6 +227,7 @@
 				cls: 'service-tab-button',
 				icon: '<div class="accsaber-icon"></div>',
 				url: `/u/${playerAlias}/accsaber/date/1`,
+				availabilityTitle: `AccSaber info is not available for this player`,
 				switcherComponents: [
 					{
 						component: Switcher,
@@ -260,7 +263,7 @@
 		];
 	}
 
-	async function updateAvailableServiceNames(player, account) {
+	async function updateAvailableServiceNames(player, currentService, account) {
 		accSaberCategories = null;
 
 		const additionalServices = (
@@ -278,6 +281,12 @@
 			($configStore?.scoreDetailsPreferences?.showHistory && account?.id && player?.playerId && account?.id == player.playerId)
 		) {
 			newAvailableServiceNames.push('attempts');
+		}
+
+		strictlyAvailableServiceNames = [...newAvailableServiceNames];
+
+		if (!newAvailableServiceNames.includes(currentService)) {
+			newAvailableServiceNames.push(currentService);
 		}
 
 		availableServiceNames = newAvailableServiceNames;
@@ -340,6 +349,14 @@
 							: null),
 					},
 				}));
+
+				if (!strictlyAvailableServiceNames.includes(s?.id)) {
+					serviceDef.title = s.availabilityTitle;
+					serviceDef.disabled = true;
+				} else {
+					serviceDef.title = null;
+					serviceDef.disabled = false;
+				}
 
 				const currentSortButton = serviceDef.switcherComponents
 					.find(c => c.key === 'sort')
@@ -624,7 +641,7 @@
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
 	$: updateAllServices(playerAlias);
-	$: updateAvailableServiceNames(player, $account);
+	$: updateAvailableServiceNames(player, service, $account);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
 		service,
