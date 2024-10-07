@@ -29,7 +29,28 @@
 			title: 'Sort by playcount',
 		},
 	];
+
+
+	let cinematicsCanvas;
+
+	function drawCinematics(cinematicsCanvas, coverUrl) {
+		if (coverUrl && cinematicsCanvas) {
+			cinematicsCanvas.style.opacity = 1;
+			const context = cinematicsCanvas.getContext('2d');
+
+			const cover = new Image();
+			cover.onload = function () {
+				context.drawImage(cover, 0, 0, cinematicsCanvas.width, cinematicsCanvas.height);
+			};
+			cover.src = coverUrl;
+		}
+	}
+
+	$: drawCinematics(cinematicsCanvas, topmap.cover);
+
 </script>
+
+
 
 {#if rankedmaps}
 	<div class="edit-container" class:editModel>
@@ -51,29 +72,35 @@
 				</select>
 			</div>
 		{/if}
-		<a href="/leaderboards?mappers={mapperId}" class="leader-container">
-			<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
-
-			<div class="map-info-container">
-				<span class="maps-title">Ranked mapper</span>
-
-				<span class="map-name">{topmap.name}</span>
-				<section class="title is-7">
-					{rankedmaps.totalPp.toLocaleString('en-US', {maximumFractionDigits: 0})}pp for {rankedmaps.playersCount.toLocaleString('en-US', {
-						maximumFractionDigits: 0,
-					})} players in total
-				</section>
-			</div>
-			{#if rankedmaps.maps.length > 1}
-				<div class="other-maps">
-					<div class="other-maps-covers">
-						{#each rankedmaps.maps.slice(1) as map}
-							<img class="other-maps-cover" src={map.cover} alt="Other ranked maps covers" />
-						{/each}
+		<a href="/leaderboards?mappers={mapperId}" class="leader-container" style="--image: {topmap.cover};">
+				<div class="cinematics">
+					<div class="cinematics-canvas">
+						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 					</div>
-					<span>and {rankedmaps.totalMapCount - 1} more...</span>
 				</div>
-			{/if}
+
+				<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
+
+				<div class="map-info-container">
+					<span class="maps-title">Ranked mapper</span>
+
+					<span class="map-name">{topmap.name}</span>
+					<section class="title is-7">
+						{rankedmaps.totalPp.toLocaleString('en-US', {maximumFractionDigits: 0})}pp for {rankedmaps.playersCount.toLocaleString('en-US', {
+							maximumFractionDigits: 0,
+						})} players in total
+					</section>
+				</div>
+				{#if rankedmaps.maps.length > 1}
+					<div class="other-maps">
+						<div class="other-maps-covers">
+							{#each rankedmaps.maps.slice(1) as map}
+								<img class="other-maps-cover" src={map.cover} alt="Other ranked maps covers" />
+							{/each}
+						</div>
+						<span>and {rankedmaps.totalMapCount - 1} more...</span>
+					</div>
+				{/if}
 		</a>
 	</div>
 {/if}
@@ -239,20 +266,53 @@
 	}
 
 	.leader-container {
+		position: relative;
 		display: flex;
 		padding: 0.5em;
-		background-color: #3f0078b8;
 		border-radius: 20px;
 		color: white !important;
 		flex: 1;
 		max-width: 28em;
 		min-width: 20em;
+		z-index: 0;
+		overflow: hidden;
+		box-shadow: 0 2px 10px rgb(0 0 0 / 33%);
+	}
+
+	.leader-container:hover {
+		box-shadow: 0 2px 10px rgb(0 0 0 / 66%);
+	}
+
+	.cinematics {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		pointer-events: none;
+	}
+
+	.cinematics-canvas {
+		filter: blur(5em) opacity(0.5) saturate(250%);
+		left: 0;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		transform: scale(1) translateZ(0);
+		width: 100%;
+		z-index: 0;
+		height: 100%;
+	}
+
+	.leader-container:hover .cinematics-canvas {
+		filter: blur(4em) opacity(0.6) saturate(200%);
 	}
 
 	.clanImage {
 		width: 5em;
 		height: 5em;
 		border-radius: 20%;
+		z-index: 1;
 	}
 
 	.map-info-container {
@@ -260,6 +320,7 @@
 		flex-direction: column;
 		justify-content: space-between;
 		margin-left: 0.5em;
+		z-index: 1;
 	}
 
 	.map-name {
@@ -312,6 +373,7 @@
 		display: block;
 	}
 
+
 	@media screen and (max-width: 500px) {
 		.clanData {
 			flex-direction: column;
@@ -357,4 +419,5 @@
 			max-width: 65em;
 		}
 	}
+
 </style>
