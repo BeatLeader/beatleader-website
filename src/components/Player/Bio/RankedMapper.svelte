@@ -30,7 +30,6 @@
 		},
 	];
 
-
 	let cinematicsCanvas;
 
 	function drawCinematics(cinematicsCanvas, coverUrl) {
@@ -47,10 +46,7 @@
 	}
 
 	$: drawCinematics(cinematicsCanvas, topmap.cover);
-
 </script>
-
-
 
 {#if rankedmaps}
 	<div class="edit-container" class:editModel>
@@ -72,35 +68,37 @@
 				</select>
 			</div>
 		{/if}
+		<h3 class="title is-6" style="    margin: 0.2em;">
+			<i class="fa-solid fa-star"></i>
+			<span class="maps-title">Ranked Mapper</span>
+		</h3>
 		<a href="/leaderboards?mappers={mapperId}" class="leader-container" style="--image: {topmap.cover};">
-				<div class="cinematics">
-					<div class="cinematics-canvas">
-						<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
-					</div>
+			<div class="cinematics">
+				<div class="cinematics-canvas">
+					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
 				</div>
+			</div>
 
-				<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
+			<img class="clanImage" src={topmap.cover} alt="Recent ranked map cover" />
 
-				<div class="map-info-container">
-					<span class="maps-title">Ranked mapper</span>
-
-					<span class="map-name">{topmap.name}</span>
-					<section class="title is-7">
-						{rankedmaps.totalPp.toLocaleString('en-US', {maximumFractionDigits: 0})}pp for {rankedmaps.playersCount.toLocaleString('en-US', {
-							maximumFractionDigits: 0,
-						})} players in total
-					</section>
-				</div>
-				{#if rankedmaps.maps.length > 1}
-					<div class="other-maps">
-						<div class="other-maps-covers">
-							{#each rankedmaps.maps.slice(1) as map}
-								<img class="other-maps-cover" src={map.cover} alt="Other ranked maps covers" />
-							{/each}
-						</div>
-						<span>and {rankedmaps.totalMapCount - 1} more...</span>
+			<div class="map-info-container">
+				<span class="map-name">{topmap.name}</span>
+				<section class="title is-7">
+					{rankedmaps.totalPp.toLocaleString('en-US', {maximumFractionDigits: 0})}pp for {rankedmaps.playersCount.toLocaleString('en-US', {
+						maximumFractionDigits: 0,
+					})} players in total
+				</section>
+			</div>
+			{#if rankedmaps.maps.length > 1}
+				<div class="other-maps">
+					<div class="other-maps-covers">
+						{#each rankedmaps.maps.slice(1) as map}
+							<img class="other-maps-cover" src={map.cover} alt="Other ranked maps covers" />
+						{/each}
 					</div>
-				{/if}
+					<span>and {rankedmaps.totalMapCount - 1} more...</span>
+				</div>
+			{/if}
 		</a>
 	</div>
 {/if}
@@ -136,12 +134,9 @@
 	}
 
 	.edit-container {
-		display: contents;
-	}
-
-	.edit-container.editModel {
 		display: flex;
 		flex-direction: column;
+		gap: 0.4em;
 	}
 
 	.select-sort {
@@ -269,7 +264,7 @@
 		position: relative;
 		display: flex;
 		padding: 0.5em;
-		border-radius: 20px;
+		border-radius: 8px;
 		color: white !important;
 		flex: 1;
 		max-width: 28em;
@@ -311,7 +306,7 @@
 	.clanImage {
 		width: 5em;
 		height: 5em;
-		border-radius: 20%;
+		border-radius: 6px;
 		z-index: 1;
 	}
 
@@ -321,6 +316,7 @@
 		justify-content: space-between;
 		margin-left: 0.5em;
 		z-index: 1;
+		margin-top: -0.4em;
 	}
 
 	.map-name {
@@ -328,8 +324,10 @@
 	}
 
 	.maps-title {
-		font-size: small;
-		font-weight: 700;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.125;
+		margin-left: 0.2em;
 	}
 
 	.other-maps {
@@ -372,7 +370,6 @@
 	.desktop {
 		display: block;
 	}
-
 
 	@media screen and (max-width: 500px) {
 		.clanData {
@@ -419,5 +416,4 @@
 			max-width: 65em;
 		}
 	}
-
 </style>

@@ -40,41 +40,45 @@
 	}
 
 	$: drawCinematics(cinematicsCanvas, iconUrl);
-	
-	$: updateFields(clan);
 
+	$: updateFields(clan);
 </script>
 
 {#if tag}
-	<a href="/clan/{tag}" class="leader-container" style="--image: {iconUrl};">
-		<div class="cinematics">
-			<div class="cinematics-canvas">
-				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+	<div class="edit-container">
+		<h3 class="title is-6" style="    margin: 0.2em;">
+			<i class="fa-solid fa-crown"></i>
+			<span class="clans-title"> Clan Leader </span>
+		</h3>
+		<a href="/clan/{tag}" class="leader-container" style="--image: {iconUrl};">
+			<div class="cinematics">
+				<div class="cinematics-canvas">
+					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+				</div>
 			</div>
-		</div>
-		<img class="clanImage" src={iconUrl} alt="ClanIcon" />
+			<img class="clanImage" src={iconUrl} alt="ClanIcon" />
 
-		<div class="clan-info-container {tag == 'GAY' ? 'rainbow' : ''}" transition:fade|global>
-			<div class="clans-title-container">
-				<span class="clans-title"> Leader of clan: </span>
-				<span style="--clan-color: {color}" class="clanTag">{tag}</span>
+			<div class="clan-info-container {tag == 'GAY' ? 'rainbow' : ''}" transition:fade|global>
+				<div class="clans-title-container">
+					<span style="--clan-color: {color}" class="clanTag">{tag}</span>
+				</div>
+				<div class="map-name">
+					<span class="clanName">{name}</span>
+				</div>
+				<section class="title is-7">
+					{#if rankedPoolPercent}
+						Captured
+						{rankedPoolPercent.toFixed(2)}% of ranked pool with
+						{playersCount}
+						{playersTitle(tag, playersCount)}
+					{:else}
+						{playersCount}
+						{playersTitle(tag, playersCount)}
+					{/if}
+				</section>
 			</div>
-			<div class="map-name">
-				<span class="clanName">{name}</span>
-			</div>
-			<section class="title is-7">
-				{#if rankedPoolPercent}
-					Captured
-					{rankedPoolPercent.toFixed(2)}% of ranked pool with
-					{playersCount}
-					{playersTitle(tag, playersCount)}
-				{:else}
-					{playersCount}
-					{playersTitle(tag, playersCount)}
-				{/if}
-			</section>
-		</div>
-	</a>
+		</a>
+	</div>
 {/if}
 
 <style>
@@ -201,11 +205,17 @@
 		position: relative;
 	}
 
+	.edit-container {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4em;
+	}
+
 	.leader-container {
 		position: relative;
 		display: flex;
 		padding: 0.5em;
-		border-radius: 20px;
+		border-radius: 8px;
 		color: white !important;
 		flex: 1;
 		max-width: 28em;
@@ -247,7 +257,7 @@
 	.clanImage {
 		width: 5em;
 		height: 5em;
-		border-radius: 20%;
+		border-radius: 6px;
 		z-index: 1;
 	}
 
@@ -257,6 +267,7 @@
 		margin-left: 0.5em;
 		justify-content: space-between;
 		z-index: 1;
+		margin-top: -0.2em;
 	}
 
 	.clans-title-container {
@@ -273,11 +284,14 @@
 
 	.map-name {
 		font-size: 1.4em;
+		margin-top: -0.5em;
 	}
 
 	.clans-title {
-		font-size: small;
-		font-weight: 700;
+		font-size: 1rem;
+		font-weight: 600;
+		line-height: 1.125;
+		margin-left: 0.2em;
 	}
 
 	.clanTag {

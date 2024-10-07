@@ -365,6 +365,11 @@
 		margin-right: 0.5rem;
 	}
 
+	:global(.player-cards-box) {
+		border-radius: 12px !important;
+		padding: 0.5em !important;
+	}
+
 	:global(.player-cards-box:has(.cards-container:empty)) {
 		display: none;
 	}
