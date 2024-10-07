@@ -190,7 +190,7 @@
 	<div class="darkened-background scores-container">
 		{#if $scoresStore && $scoresStore.length}
 			<div class="song-scores grid-transition-helper">
-				{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + (songScore?.score?.timeset ?? songScore?.score?.timepost ?? '') + currentService + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
+				{#each $scoresStore as songScore, idx ((songScore?.id ?? songScore?.score?.leaderboardId ?? '') + (songScore?.score?.timeset ?? songScore?.score?.score ?? '') + (songScore?.score?.attemptsCount ?? '') + currentService + (songScore?.timeSet ?? songScore?.player?.playerId ?? ''))}
 					<SongScore
 						{playerId}
 						{songScore}

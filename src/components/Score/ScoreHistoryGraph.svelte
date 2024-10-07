@@ -13,6 +13,7 @@
 	import {colorForEndType, titleForEndType} from '../../utils/attempts';
 	import CompactPagination from './CompactPagination.svelte';
 	import ScoreHistoryAccGraph from './ScoreHistoryAccGraph.svelte';
+	import {Svrollbar} from 'svrollbar';
 
 	export let score;
 	export let leaderboard;
@@ -127,13 +128,15 @@
 		window.open(link, '_blank');
 	}
 
+	let scrollContainer;
+
 	$: score && fetchHistory(score, $configStore.scoreHistoryLegend);
 </script>
 
 {#if history?.length > 1}
 	<div class="history-container">
 		<div class="details-box history-box">
-			<div class="history-table">
+			<div class="history-table" bind:this={scrollContainer}>
 				{#if canCompare}
 					<div class="royale-title-container">
 						<div>
@@ -245,6 +248,7 @@
 					</div>
 				{/each}
 			</div>
+			<Svrollbar viewport={scrollContainer} />
 		</div>
 		<div class="details-box">
 			{#if graphPageIndex == 0}
@@ -276,13 +280,20 @@
 	}
 	.history-table {
 		max-height: 23.4em;
+		margin-top: -0.4em;
 		overflow-y: scroll;
-		margin-right: -1.8em;
-		padding-right: 0.3em;
 		width: 100%;
+		overflow: scroll;
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.history-table::-webkit-scrollbar {
+		display: none;
 	}
 	.details-box.history-box {
 		padding-bottom: 0;
+		position: relative;
 	}
 	.details-box {
 		margin: 0.4em 0.4em 0.6em;
@@ -297,6 +308,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		margin-top: 1em;
 	}
 	:global(.history-item .player-performance-badges) {
 		display: flex !important;

@@ -107,7 +107,7 @@
 				borderColor: colorForEndType(
 					score.type,
 					hoveredAttempt == null
-						? index / (chartData.scores.length - 1)
+						? 0.5 + 0.5 * (index / (chartData.scores.length - 1))
 						: hoveredAttempt.id == score.attemptId
 							? 1
 							: (index / (chartData.scores.length - 1)) * 0.6
