@@ -5,6 +5,7 @@
 	import {BL_API_URL, BL_REPLAYS_URL, BL_ANALYZER_URL} from '../../network/queues/beatleader/api-queue';
 	import {colorForEndType, endTypeForTitle, titleForEndType} from '../../utils/attempts';
 	import {dateFromUnix, formatDateRelative} from '../../utils/date';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let score = null;
 	export let leaderboard = null;
@@ -230,7 +231,12 @@
 </script>
 
 <section class="accuracy-chart" style="--height: {height}">
-	<canvas class="chartjs" bind:this={canvas} />
+	{#if data}
+		<canvas class="chartjs" bind:this={canvas} />
+	{:else}
+		<Spinner />
+		<span>Loading...</span>
+	{/if}
 </section>
 
 <style>

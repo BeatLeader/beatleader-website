@@ -260,25 +260,27 @@
 		];
 	}
 
-	async function updateAvailableServiceNames(player) {
+	async function updateAvailableServiceNames(player, account) {
 		accSaberCategories = null;
 
 		const additionalServices = (
 			await Promise.all([accSaberService.isDataForPlayerAvailable(player).then(r => (r ? 'accsaber' : null))])
 		).filter(s => s);
 
+		let newAvailableServiceNames = ['scores'];
+
 		if (additionalServices?.length) {
-			availableServiceNames = ['scores'].concat(additionalServices);
-		} else if (availableServiceNames?.length > 1) {
-			availableServiceNames = ['scores'];
+			newAvailableServiceNames = newAvailableServiceNames.concat(additionalServices);
 		}
 
 		if (
 			player?.profileSettings?.showStatsPublic ||
-			($configStore?.scoreDetailsPreferences?.showHistory && $account?.playerId == player.id)
+			($configStore?.scoreDetailsPreferences?.showHistory && account?.id && player?.playerId && account?.id == player.playerId)
 		) {
-			availableServiceNames.push('attempts');
+			newAvailableServiceNames.push('attempts');
 		}
+
+		availableServiceNames = newAvailableServiceNames;
 
 		if (additionalServices.includes('accsaber')) accSaberCategories = await accSaberService.getCategories();
 	}
@@ -622,7 +624,7 @@
 	$: profileAppearance = $editModel?.data?.profileAppearance ?? $account?.player?.profileSettings?.profileAppearance ?? null;
 
 	$: updateAllServices(playerAlias);
-	$: updateAvailableServiceNames(player);
+	$: updateAvailableServiceNames(player, $account);
 	$: availableServices = updateAvailableServices(
 		availableServiceNames,
 		service,

@@ -279,6 +279,7 @@
 		overflow-y: scroll;
 		margin-right: -1.8em;
 		padding-right: 0.3em;
+		width: 100%;
 	}
 	.details-box.history-box {
 		padding-bottom: 0;
