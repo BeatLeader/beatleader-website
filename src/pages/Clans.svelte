@@ -265,8 +265,9 @@
 
 			<Switcher values={sortValues} value={sortValue} on:change={onSortChange} />
 
+			<span class="globalmap-header">Today's changes on global map</span>
 			<a class="globalmap" href="/clansmap">
-				<img src="/assets/clan-map.webp" />
+				<img class="clansmap-image" src="https://cdn.assets.beatleader.xyz/clansmap-change-daily-latest.gif" />
 			</a>
 		</ContentBox>
 	</aside>
@@ -365,6 +366,19 @@
 
 	.clan-line .main > *:last-child {
 		margin-right: 0;
+	}
+
+	.clansmap-image {
+		border-radius: 6px;
+		margin-top: 1em;
+		margin-bottom: -0.2em;
+	}
+
+	.globalmap-header {
+		margin-top: 1em;
+		margin-bottom: -1em;
+		position: relative;
+		display: block;
 	}
 
 	@media screen and (max-width: 1275px) {
