@@ -10,6 +10,7 @@
 	import steamSvg from '../resources/steam.svg';
 	import ssrConfig from '../ssr-config';
 	import {isPatron} from '../components/Player/Overlay/overlay';
+	import {saveAs} from 'file-saver';
 
 	const account = createAccountStore();
 
@@ -22,6 +23,14 @@
 
 	let showBeatSaverLogin = false;
 	let showOtherVersions = false;
+
+	function downloadQmod(version) {
+		fetch(`${BL_API_URL}questreesabersversion?version=${version}`, {credentials: 'include'})
+			.then(r => r.blob())
+			.then(r => {
+				saveAs(r, 'ReeSabers.qmod');
+			});
+	}
 
 	$: loggedInPlayer = opt($account, 'id');
 	$: error = opt($account, 'error');
@@ -161,9 +170,10 @@
 							iconFa="fas fa-download"
 							title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
 							label="Download for Quest 1.37"
-							url={BL_API_URL + `questreesabersversion?version=1.37.0`}
-							onlyurl={true}
 							disabled={!loggedInPlayer || !isSupporter}
+							on:click={() => {
+								downloadQmod('1.37.0');
+							}}
 							type="green" />
 					</div>
 				{:else}
@@ -197,18 +207,20 @@
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.37'}
 								label="Download for Quest 1.37"
-								url={BL_API_URL + `questreesabersversion?version=1.37.0`}
-								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
-								type="green" />
+								type="green"
+								on:click={() => {
+									downloadQmod('1.37.0');
+								}} />
 							<Button
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter ? 'Log in on the top of the Page and Link Patreon' : 'Download Reesabers for 1.28'}
 								label="Download for Quest 1.28"
-								url={BL_API_URL + `questreesabersversion?version=1.28.0`}
-								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
-								type="green" />
+								type="green"
+								on:click={() => {
+									downloadQmod('1.28.0');
+								}} />
 						</div>
 					</div>
 
