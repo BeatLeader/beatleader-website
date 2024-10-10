@@ -239,7 +239,7 @@
 	}
 
 	.cinematics-canvas {
-		filter: blur(5em) opacity(0.5) saturate(250%);
+		filter: blur(4em) opacity(0.5) saturate(350%);
 		left: 0;
 		pointer-events: none;
 		position: absolute;
@@ -251,7 +251,7 @@
 	}
 
 	.leader-container:hover .cinematics-canvas {
-		filter: blur(4em) opacity(0.6) saturate(200%);
+		filter: blur(3em) opacity(0.6) saturate(500%);
 	}
 
 	.clanImage {
