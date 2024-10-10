@@ -28,7 +28,7 @@
 		fetch(`${BL_API_URL}questreesabersversion?version=${version}`, {credentials: 'include'})
 			.then(r => r.blob())
 			.then(r => {
-				saveAs(r, 'ReeSabers.qmod');
+				saveAs(r, `ReeSabers_${version}.qmod`);
 			});
 	}
 

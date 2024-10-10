@@ -5,72 +5,22 @@
 
 	import {formatNumber, roundToPrecision} from '../../../utils/format';
 	import {formatDate, formatDateRelative, getTimeStringColor} from '../../../utils/date';
-	import {debounce} from '../../../utils/debounce';
 	import Spinner from '../../Common/Spinner.svelte';
 	import {configStore} from '../../../stores/config';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
+	import Select from '../../Settings/Select.svelte';
 
 	export let leaderboardId = null;
 	export let sortBy = null;
 	export let order = null;
 
 	export let currentPlayerId = null;
-	export let type = 'accuracy'; // or percentage
 
 	Chart.register(zoomPlugin);
 	// Chart.register(chartTrendline);
 
-	const CHART_DEBOUNCE = 300;
-
 	let canvas = null;
 	let chart = null;
-
-	let lastHistoryHash = null;
-	let leaderboardScores = null;
-
-	let isLoading = false;
-
-	const calcleaderboardScoresHash = (leaderboardScores, currentPlayerId, sortBy, order) => {
-		return (leaderboardScores?.length ?? '') + (currentPlayerId ?? '') + (sortBy ?? '') + (order ?? '');
-	};
-
-	function valueFromSortBy(score, sortBy) {
-		if (!score) return null;
-		switch (sortBy) {
-			case 'date':
-				return score.timepost ? new Date(score.timepost * 1000) : null;
-			case 'pp':
-				return score.pp;
-			case 'acc':
-				return score.acc;
-			case 'pauses':
-				return score.pauses;
-			case 'rank':
-				return score.rank;
-			case 'maxStreak':
-				return score.maxStreak;
-			case 'mistakes':
-				return score.mistakes;
-			case 'weight':
-				return score.weight * 100;
-			case 'weightedPp':
-				return score.weight * score.pp;
-		}
-		return null;
-	}
-
-	function sortByToNullable(sortBy) {
-		switch (sortBy) {
-			case 'date':
-			case 'pp':
-			case 'acc':
-			case 'rank':
-			case 'weight':
-			case 'weightedPp':
-				return false;
-		}
-		return true;
-	}
 
 	function sortByToAxisName(sortBy) {
 		switch (sortBy) {
@@ -92,8 +42,58 @@
 				return 'PP Weight';
 			case 'weightedPp':
 				return 'Weighted PP';
+			case 'playerRank':
+				return 'Player Rank';
 		}
 		return null;
+	}
+
+	let availableXKeys = ['playerRank', 'date', 'pp', 'acc', 'pauses', 'rank', 'maxStreak', 'mistakes', 'weight', 'weightedPp'].map(id => {
+		return {id, name: sortByToAxisName(id)};
+	});
+	let currentXKey = availableXKeys[0];
+
+	let leaderboardScores = null;
+	let isLoading = false;
+
+	function valueFromSortBy(score, sortBy) {
+		if (!score) return null;
+		switch (sortBy) {
+			case 'date':
+				return score.timepost ? new Date(score.timepost * 1000) : null;
+			case 'pp':
+				return score.pp;
+			case 'acc':
+				return 100 - score.acc;
+			case 'pauses':
+				return score.pauses;
+			case 'rank':
+				return score.rank;
+			case 'maxStreak':
+				return score.maxStreak;
+			case 'mistakes':
+				return score.mistakes;
+			case 'weight':
+				return score.weight * 100;
+			case 'weightedPp':
+				return score.weight * score.pp;
+			case 'playerRank':
+				return score.playerRank;
+		}
+		return null;
+	}
+
+	function sortByToNullable(sortBy) {
+		switch (sortBy) {
+			case 'date':
+			case 'pp':
+			case 'acc':
+			case 'rank':
+			case 'weight':
+			case 'weightedPp':
+				return false;
+		}
+		return true;
 	}
 
 	function sortByToTicks(sortBy) {
@@ -113,7 +113,7 @@
 			case 'acc':
 				return {
 					max: 100,
-					callback: val => formatNumber(val, 0) + '%',
+					callback: val => formatNumber(100 - val, 2) + '%',
 				};
 			case 'rank':
 				return {
@@ -136,27 +136,34 @@
 					max: 100,
 					callback: val => formatNumber(val, 2) + 'pp',
 				};
+			case 'playerRank':
+				return {
+					min: 0,
+					stepSize: 1000,
+					callback: val => '#' + formatNumber(val, 0),
+				};
 		}
 		return null;
 	}
 
-	async function setupChart(hash, canvas, sortBy, order) {
-		if (!hash || !canvas || !leaderboardScores?.length || chartHash === lastHistoryHash) return;
+	async function setupChart(scores, canvas, sortBy, order, xkey) {
+		if (!canvas || !scores?.length) return;
 
 		const mapBorderColor = '#003e54';
 
-		lastHistoryHash = chartHash;
-
 		const isNullable = sortByToNullable(sortBy);
-		const chartData = leaderboardScores
+		const chartData = scores
 			.filter(s => !!s?.playerRank)
 			.map(s => {
-				const weight = valueFromSortBy(s, sortBy);
-				if (!weight && !isNullable) return null;
+				const yValue = valueFromSortBy(s, sortBy);
+				if (!yValue && !isNullable) return null;
+
+				const xValue = valueFromSortBy(s, xkey);
+				if (!xValue && !isNullable) return null;
 
 				var result = {
-					x: s.playerRank,
-					y: weight,
+					x: xValue,
+					y: yValue,
 					mods: s?.modifiers?.length ? s.modifiers.split(',') : null,
 					...s,
 				};
@@ -250,9 +257,10 @@
 							const ret = [];
 
 							const song = ctx.dataset.data[ctx.dataIndex];
+
 							if (song) {
 								ret.push(formatDateRelative(new Date(song.timepost * 1000)));
-								ret.push(`${song.playerName} - #${formatNumber(song.x, 0)}`);
+								ret.push(`${song.playerName} - #${formatNumber(song.playerRank, 0)}`);
 							}
 
 							return ret;
@@ -288,20 +296,16 @@
 			},
 			scales: {
 				x: {
-					type: 'logarithmic',
+					type: xkey == 'date' ? 'date' : 'logarithmic',
 					title: {
 						display: true,
-						text: 'Player Rank',
+						text: '',
 					},
-					ticks: {
-						min: 0,
-						stepSize: 1000,
-						callback: val => '#' + formatNumber(val, 0),
-					},
+					ticks: sortByToTicks(xkey),
 				},
 				y: {
-					type: sortBy == 'date' ? 'time' : 'linear',
-					reverse: order == 'asc',
+					type: sortBy == 'date' ? 'time' : sortBy == 'acc' ? 'logarithmic' : 'linear',
+					reverse: order == 'asc' || sortBy == 'acc',
 					title: {
 						display: true,
 						text: sortByToAxisName(sortBy),
@@ -349,9 +353,6 @@
 		}
 	}
 
-	let debouncedChartHash = null;
-	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
-
 	async function fetchScores(leaderboardId) {
 		if (!leaderboardId?.length) return;
 
@@ -378,13 +379,14 @@
 
 	$: height = $configStore.preferences.graphHeight;
 	$: currentPlayerId && chart && chart.update();
-	$: chartHash = calcleaderboardScoresHash(leaderboardScores, currentPlayerId, sortBy, order);
-	$: debounceChartHash(chartHash);
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, sortBy, order);
+	$: setupChart(leaderboardScores, canvas, sortBy, order, currentXKey.id);
 </script>
 
 <section class="chart" style="--height: {height}px">
 	<canvas class="chartjs" bind:this={canvas} {height} />
+	<div class="x-selector">
+		<Select bind:value={currentXKey} options={availableXKeys} valueSelector={x => x} fontSize={0.8} fontPadding={0.2} />
+	</div>
 	{#if isLoading}
 		<Spinner width="10em" height="10em" />
 	{/if}
@@ -405,6 +407,15 @@
 
 	canvas {
 		width: 100% !important;
+	}
+
+	.x-selector {
+		position: absolute;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		left: 1.5em;
+		bottom: 0;
 	}
 
 	:global(.chart-new-playlist) {
