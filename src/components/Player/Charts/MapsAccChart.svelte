@@ -4,7 +4,6 @@
 	import {formatNumber, roundToPrecision} from '../../../utils/format';
 	import {formatDateRelative, getTimeStringColor} from '../../../utils/date';
 	import {createEventDispatcher, getContext} from 'svelte';
-	import {debounce} from '../../../utils/debounce';
 	import regionsPlugin from './utils/regions-plugin';
 	import {deepClone, capitalize} from '../../../utils/js';
 	import createPlayerService from '../../../services/beatleader/player';
@@ -13,12 +12,12 @@
 	import createPlaylistStore from '../../../stores/playlists';
 	import createAccountStore from '../../../stores/beatleader/account';
 	import {configStore} from '../../../stores/config';
-	import deepEqual from 'deep-equal';
 	import {produce} from 'immer';
 	import Button from '../../Common/Button.svelte';
 	import {getNotificationsContext} from 'svelte-notifications';
 	import Switch from '../../Common/Switch.svelte';
 	import {isAnySupporter} from '../Overlay/overlay';
+	import Select from '../../Settings/Select.svelte';
 
 	export let playerId = null;
 	export let averageAcc = null;
@@ -33,25 +32,41 @@
 	const dispatch = createEventDispatcher();
 	const account = createAccountStore();
 
-	const CHART_DEBOUNCE = 300;
-
 	let canvas = null;
 	let chart = null;
 
-	let lastHistoryHash = null;
 	let lastPlaylist = null;
 	let playerScores = null;
 
 	let isLoading = false;
 
-	const calcPlayerScoresHash = playerScores => (playerScores?.length ?? 0) + averageAcc + medianAcc;
+	let availableXKeys = [
+		{
+			id: 'stars',
+			name: 'Stars',
+		},
+		{
+			id: 'accRating',
+			name: 'Acc Rating',
+		},
+		{
+			id: 'passRating',
+			name: 'Pass Rating',
+		},
+		{
+			id: 'techRating',
+			name: 'Tech Rating',
+		},
+	];
+	let currentXKey = availableXKeys[0];
+
 	function decapitalizeFirstLetter(string) {
 		return string.charAt(0).toLowerCase() + string.slice(1);
 	}
 
-	async function setupChart(hash, canvas, selectedPlaylist) {
-		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
-		
+	async function setupChart(canvas, scores, selectedPlaylist, xKey) {
+		if (!canvas || !scores?.length) return;
+
 		if ($configStore.preferences.theme != 'flylight') {
 			var mapBorderColor = '#003e54';
 			var ssPlusColor = 'rgba(143,72,219, .4)';
@@ -74,25 +89,20 @@
 			Chart.defaults.color = '#757575';
 		}
 
-		lastHistoryHash = chartHash;
 		const refreshOptions = (!selectedPlaylist && lastPlaylist) || (selectedPlaylist && !lastPlaylist);
 		lastPlaylist = selectedPlaylist ? deepClone(selectedPlaylist) : null;
 
 		const skipped = (ctx, value) => (ctx.p0.skip || ctx.p1.skip ? value : undefined);
 
-		let maxStars = 0;
-		let minAcc = 100;
-		const chartData = playerScores
-			.filter(s => !!s?.acc && !!s?.stars)
+		const chartData = scores
+			.filter(s => !!s?.acc && !!s[xKey])
 			.map(s => {
 				const acc = s.acc;
 
-				if (s.stars > maxStars) maxStars = s.stars;
-				if (acc < minAcc) minAcc = acc;
-
 				var result = {
-					x: s.stars,
+					x: s[xKey],
 					y: acc,
+					xKey,
 					leaderboardId: s?.leaderboardId ?? null,
 					name: s?.songName ?? '',
 					songAuthor: '',
@@ -152,10 +162,6 @@
 		);
 
 		Object.keys(avgData).forEach(key => (avgData[key] = avgData[key].sort((a, b) => a.x - b.x)));
-
-		maxStars = roundToPrecision(maxStars, 0.5) + 0.5;
-		minAcc = Math.floor(minAcc - 1);
-		if (minAcc < 0) minAcc = 0;
 
 		let averageLines = [];
 		if (averageAcc)
@@ -323,16 +329,17 @@
 							switch (ctx?.[0].dataset?.label) {
 								case 'Maps':
 									const mods = ctx[0].raw?.mods ?? null;
+									const xKeyValue = ctx[0].raw?.xKey ?? 'stars';
 									const stars = formatNumber(ctx[0].raw?.x ?? 0, 2);
 									const acc = formatNumber(ctx[0].raw?.y ?? 0, 2);
 
 									return type === 'percentage'
-										? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`
-										: `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | Stars: ${stars}★`;
+										? `Percentage: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | ${availableXKeys.find(k => k.id == xKeyValue).name}: ${stars}★`
+										: `Accuracy: ${acc}%${mods?.length ? ' (' + mods.join(', ') + ')' : ''} | ${availableXKeys.find(k => k.id == xKeyValue).name}: ${stars}★`;
 
 								default:
 									if (ctx && Array.isArray(ctx))
-										return [`Stars: ${ctx?.[0]?.raw?.x}★`].concat(
+										return [`${availableXKeys.find(k => k.id == xKey).name}: ${ctx?.[0]?.raw?.x}★`].concat(
 											ctx.map(d => `${d?.dataset?.label ?? ''}: ${formatNumber(d?.raw?.y ?? 0)}%`)
 										);
 							}
@@ -355,10 +362,6 @@
 						},
 						mode: 'xy',
 					},
-					limits: {
-						x: {min: 0, max: maxStars},
-						y: {min: minAcc, max: 100},
-					},
 				},
 				regions: {
 					regions: [
@@ -373,22 +376,21 @@
 			scales: {
 				x: {
 					type: 'linear',
-					scaleLabel: {
-						display: false,
-						labelString: 'Stars',
+					title: {
+						display: true,
+						text: '',
 					},
 					ticks: {
 						min: 0,
 						stepSize: 0.5,
 						callback: val => formatNumber(val, 1) + '★',
 					},
-					max: maxStars,
 				},
 				y: {
 					type: 'linear',
-					scaleLabel: {
+					title: {
 						display: true,
-						labelString: 'Acc',
+						text: 'Accuracy',
 					},
 					ticks: {
 						max: 100,
@@ -400,7 +402,6 @@
 						drawBorder: true,
 						drawOnChartArea: true,
 					},
-					min: minAcc,
 				},
 			},
 			onHover(e, item, chart) {
@@ -458,9 +459,6 @@
 		dispatch('height-changed');
 	}
 
-	let debouncedChartHash = null;
-	const debounceChartHash = debounce(chartHash => (debouncedChartHash = chartHash), CHART_DEBOUNCE);
-
 	async function fetchPlayerScores(playerId, showUnrankedMapsOnGraph) {
 		if (!playerId?.length) return;
 
@@ -484,12 +482,10 @@
 	$: fetchPlayerScores(playerId, showUnrankedMapsOnGraph);
 
 	$: height = $configStore.preferences.graphHeight;
-	$: chartHash = calcPlayerScoresHash(playerScores);
-	$: debounceChartHash(chartHash);
 	$: selectedPlaylistIndex = $configStore?.selectedPlaylist;
 
 	$: selectedPlaylist = $playlists[selectedPlaylistIndex];
-	$: if (debouncedChartHash) setupChart(debouncedChartHash, canvas, selectedPlaylist);
+	$: setupChart(canvas, playerScores, selectedPlaylist, currentXKey.id);
 </script>
 
 <section class="chart" style="--height: {height}px">
@@ -522,6 +518,9 @@
 				});
 			}} />
 	{/if}
+	<div class="x-selector">
+		<Select bind:value={currentXKey} options={availableXKeys} valueSelector={x => x} fontSize={0.8} fontPadding={0.2} />
+	</div>
 </section>
 
 <style>
@@ -559,6 +558,15 @@
 		position: absolute !important;
 		font-size: 0.8em !important;
 		height: 1.5em;
+	}
+
+	.x-selector {
+		position: absolute;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+		left: 1.5em;
+		bottom: 0;
 	}
 
 	@media screen and (max-width: 650px) {

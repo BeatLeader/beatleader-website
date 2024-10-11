@@ -160,18 +160,19 @@ export function toggleRandomImageOnHover(playerPage, enable) {
 	playerPage.imagesEnable = enable;
 
 	function handleMouseEnter(event) {
-		if (event.currentTarget.parentElement.imagesEnable) {
+		if (event.currentTarget.parentElement.imagesEnable && !event.currentTarget.showingImage) {
 			showImage(event.currentTarget, false);
 		}
 	}
 
 	function handleTouchStart(event) {
-		if (event.currentTarget.parentElement.imagesEnable) {
+		if (event.currentTarget.parentElement.imagesEnable && !event.currentTarget.showingImage) {
 			showImage(event.currentTarget, true);
 		}
 	}
 
 	function showImage(box, isTouch) {
+		box.showingImage = true;
 		const parentBox = box.parentElement;
 		const fakeBox = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		fakeBox.setAttribute('width', box.clientWidth);
@@ -285,6 +286,7 @@ export function toggleRandomImageOnHover(playerPage, enable) {
 					requestAnimationFrame(removeAnimate);
 				} else if (!fakeBox.removed) {
 					fakeBox.removed = true;
+					box.showingImage = false;
 					parentBox.removeChild(fakeBox);
 				}
 			});
