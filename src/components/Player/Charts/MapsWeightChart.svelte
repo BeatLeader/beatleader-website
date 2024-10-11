@@ -1,6 +1,7 @@
 <script>
 	import Chart from 'chart.js/auto';
 	import zoomPlugin from 'chartjs-plugin-zoom';
+	import annotationPlugin from 'chartjs-plugin-annotation';
 	import {formatNumber, roundToPrecision} from '../../../utils/format';
 	import {formatDateRelative, getTimeStringColor} from '../../../utils/date';
 	import {debounce} from '../../../utils/debounce';
@@ -18,6 +19,7 @@
 	export let type = 'accuracy'; // or percentage
 
 	Chart.register(zoomPlugin);
+	Chart.register(annotationPlugin);
 
 	const playerService = createPlayerService();
 	const playlists = createPlaylistStore();
@@ -48,16 +50,11 @@
 		const refreshOptions = (!selectedPlaylist && lastPlaylist) || (selectedPlaylist && !lastPlaylist);
 		lastPlaylist = selectedPlaylist ? deepClone(selectedPlaylist) : null;
 
-		const skipped = (ctx, value) => (ctx.p0.skip || ctx.p1.skip ? value : undefined);
-
-		let maxPp = 0;
 		const chartData = playerScores
-			.filter(s => !!s?.pp)
+			.filter(s => !!s?.pp && s.weight * s.pp > 0.1)
 			.map(s => {
-				if (s.pp > maxPp) maxPp = s.pp;
-
 				var result = {
-					x: s.weight,
+					x: s.weight * s.pp,
 					y: s.pp,
 					leaderboardId: s?.leaderboardId ?? null,
 					name: s?.songName ?? '',
@@ -90,6 +87,27 @@
 				return result;
 			});
 
+		const interpolatePoints = [1, 10, 100]
+			.map(targetX => {
+				const sortedData = chartData.sort((a, b) => a.x - b.x);
+				const lowerPoint = sortedData.find(point => point.x >= targetX);
+				const upperPoint = sortedData.findLast(point => point.x <= targetX);
+
+				if (!lowerPoint || !upperPoint) return null;
+
+				if (lowerPoint.x === upperPoint.x) {
+					return {x: targetX, y: lowerPoint.y};
+				}
+
+				const slope = (upperPoint.y - lowerPoint.y) / (upperPoint.x - lowerPoint.x);
+				const interpolatedY = lowerPoint.y + slope * (targetX - lowerPoint.x);
+
+				return {x: targetX, y: interpolatedY};
+			})
+			.filter(point => point !== null);
+
+		console.log(interpolatePoints);
+
 		const avgData = Object.entries(
 			chartData.reduce((cum, point) => {
 				const roundedStars = roundToPrecision(point.x, 0.5);
@@ -118,8 +136,6 @@
 		);
 
 		Object.keys(avgData).forEach(key => (avgData[key] = avgData[key].sort((a, b) => a.x - b.x)));
-
-		maxPp = roundToPrecision(maxPp, 0.5) + 0.5;
 
 		const datasets = [
 			{
@@ -242,23 +258,37 @@
 						},
 						mode: 'xy',
 					},
-					limits: {
-						x: {min: 0, max: 1},
-						y: {min: 0, max: maxPp},
-					},
+				},
+				annotation: {
+					annotations: Object.assign(
+						{},
+						...interpolatePoints.map((point, index) => ({
+							[`line${index + 1}`]: {
+								type: 'line',
+								yMin: point.y,
+								yMax: point.y,
+								borderColor: 'grey',
+								borderWidth: 2,
+								label: {
+									content: `${formatNumber(point.y, 2)} raw pp to get ${point.x}pp`,
+									display: true,
+									backgroundColor: 'transparent',
+								},
+							},
+						}))
+					),
 				},
 			},
 			scales: {
 				x: {
-					type: 'linear',
+					type: 'logarithmic',
 					title: {
 						display: true,
-						text: 'Weight',
+						text: 'Weighted PP',
 					},
 					ticks: {
-						min: 0,
-						stepSize: 0.1,
-						callback: val => formatNumber(val, 3),
+						max: 100,
+						callback: val => formatNumber(val, 1) + 'pp',
 					},
 				},
 				y: {
@@ -276,7 +306,6 @@
 						drawBorder: true,
 						drawOnChartArea: true,
 					},
-					max: maxPp,
 				},
 			},
 			onHover(e, item, chart) {

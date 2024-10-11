@@ -9,7 +9,7 @@
 
 	const allSwitcherOptions = [
 		{id: 'accmaps', label: 'Maps Acc', iconFa: 'fas fa-crosshairs'},
-		{id: 'weightmaps', label: 'Maps Weight', iconFa: 'fas fa-weight-hanging'},
+		{id: 'weightmaps', label: 'Weighted PP', iconFa: 'fas fa-weight-hanging'},
 		{id: 'rankmaps', label: 'Maps Rank', iconFa: 'fas fa-ranking-star'},
 	];
 
