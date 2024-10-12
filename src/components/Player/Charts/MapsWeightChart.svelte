@@ -87,22 +87,27 @@
 				return result;
 			});
 
+		const sortedChartData = chartData.sort((a, b) => b.y - a.y);
+		const currentWeightedSum = sortedChartData.reduce((sum, point, index) => sum + point.x, 0);
 		const interpolatePoints = [1, 10, 100]
-			.map(targetX => {
-				const sortedData = chartData.sort((a, b) => a.x - b.x);
-				const lowerPoint = sortedData.find(point => point.x >= targetX);
-				const upperPoint = sortedData.findLast(point => point.x <= targetX);
+			.map(targetIncrease => {
+				let newY = 0;
+				let index = 0;
+				let newWeightedSum;
 
-				if (!lowerPoint || !upperPoint) return null;
+				do {
+					newY += 0.1;
+					const newDataPoint = {y: newY};
+					const newSortedData = [...sortedChartData, newDataPoint].sort((a, b) => b.y - a.y);
+					index = newSortedData.indexOf(newDataPoint);
 
-				if (lowerPoint.x === upperPoint.x) {
-					return {x: targetX, y: lowerPoint.y};
-				}
+					newWeightedSum = newSortedData.reduce((sum, point, i) => {
+						const weight = Math.pow(0.965, i);
+						return sum + point.y * weight;
+					}, 0);
+				} while (newWeightedSum - currentWeightedSum < targetIncrease);
 
-				const slope = (upperPoint.y - lowerPoint.y) / (upperPoint.x - lowerPoint.x);
-				const interpolatedY = lowerPoint.y + slope * (targetX - lowerPoint.x);
-
-				return {x: targetX, y: interpolatedY};
+				return {x: targetIncrease, y: newY};
 			})
 			.filter(point => point !== null);
 
@@ -270,7 +275,7 @@
 								borderColor: 'grey',
 								borderWidth: 2,
 								label: {
-									content: `${formatNumber(point.y, 2)} raw pp to get ${point.x}pp`,
+									content: `new ${formatNumber(point.y, 2)}pp score to get +${point.x}pp`,
 									display: true,
 									backgroundColor: 'transparent',
 								},
