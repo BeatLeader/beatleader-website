@@ -56,6 +56,12 @@ export const HMDs = {
 		color: 'invert(81%) sepia(27%) saturate(6288%) hue-rotate(344deg) brightness(103%) contrast(103%)',
 		priority: 2,
 	},
+	513: {
+		name: 'Quest 3S',
+		icon: 'meta.svg',
+		color: 'invert(49%) sepia(26%) saturate(5619%) hue-rotate(125deg) brightness(93%) contrast(86%)',
+		priority: 2,
+	},
 	1: {
 		name: 'Rift CV1',
 		icon: 'oculus.svg',
