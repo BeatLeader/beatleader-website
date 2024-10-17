@@ -164,6 +164,7 @@
 	$: changePageAndFilters(page, buildFiltersFromLocation(location), shouldBeForceRefreshed, false, false);
 
 	$: clanRequests = $account?.clanRequest ?? [];
+	$: joinedClans = $account?.player?.playerInfo?.clans?.filter(c => c.id != $account?.clan?.id);
 
 	$: clansPage = $clansStore?.data ?? [];
 </script>
@@ -197,6 +198,18 @@
 						</section>
 					{/each}
 				</section>
+			</ContentBox>
+		{/if}
+
+		{#if !createMode && joinedClans?.length}
+			<ContentBox>
+				<h1 class="title is-5">Joined clans</h1>
+
+				{#each joinedClans as myClan}
+					<a href={`/clan/${myClan.tag}`} on:click|preventDefault={() => navigate(`/clan/${myClan.tag}`)}>
+						<ClanInfoSmall clanId={myClan.id} />
+					</a>
+				{/each}
 			</ContentBox>
 		{/if}
 

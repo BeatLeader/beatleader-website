@@ -1,9 +1,25 @@
 <script>
 	import {fade} from 'svelte/transition';
 	import Badge from '../Common/Badge.svelte';
-	import {playersTitle, rankLabel, accLabel, ppLabel, capturesLabel, rankedPoolPercentLabel, rankValue, accValue, ppValue, capturesValue, rankedPoolPercentValue, ppIcon} from '../../utils/clans';
+	import {
+		playersTitle,
+		rankLabel,
+		accLabel,
+		ppLabel,
+		capturesLabel,
+		rankedPoolPercentLabel,
+		rankValue,
+		accValue,
+		ppValue,
+		capturesValue,
+		rankedPoolPercentValue,
+		ppIcon,
+	} from '../../utils/clans';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
+	import Spinner from '../Common/Spinner.svelte';
 
 	export let clan;
+	export let clanId;
 
 	document.body.classList.remove('slim');
 
@@ -33,8 +49,18 @@
 		}
 	}
 
-	$: updateFields(clan);
+	function fetchClan(clanId) {
+		fetch(BL_API_URL + `clan/id/${clanId}`)
+			.then(r => r.json())
+			.then(r => {
+				clan = r.container;
+			});
+	}
+
+	$: clan && updateFields(clan);
 	$: playersCount = clan?.playersCount ?? 0;
+
+	$: !clan && clanId && fetchClan(clanId);
 
 	$: clanAverageAccuracy = clan?.averageAccuracy ? clan.averageAccuracy * 100 : null;
 	$: clanAverageRank = clan?.averageRank ?? null;
@@ -63,11 +89,45 @@
 
 					{#if clan}
 						<section class="clan-stats" on:pointerover={() => hoverStats()}>
-							<Badge label={rankedPoolPercentLabel(tag)} value={rankedPoolPercent} suffix="%" withZeroSuffix={true} digits={1} fluid={true} bgColor="var(--rankedPoolColor)" styling="clanInfo"/>
-							<Badge label={capturesLabel(tag)} value={clanCapturedMaps} digits={0} fluid={true} bgColor="var(--capturedColor)" styling="clanInfo"/>
-							<Badge label={rankLabel(tag)} value={clanAverageRank} prefix="#" digits={0} fluid={true} bgColor="var(--decrease)" styling="clanInfo"/>
-							<Badge label={accLabel(tag)} value={clanAverageAccuracy} suffix="%" fluid={true} bgColor="var(--selected)" styling="clanInfo"/>
-							<Badge label={ppLabel(tag)} iconClass={ppIcon(tag)} value={clanPp} suffix="pp" fluid={true} bgColor="var(--ppColour)" styling="clanInfo"/>
+							<Badge
+								label={rankedPoolPercentLabel(tag)}
+								value={rankedPoolPercent}
+								suffix="%"
+								withZeroSuffix={true}
+								digits={1}
+								fluid={true}
+								bgColor="var(--rankedPoolColor)"
+								styling="clanInfo" />
+							<Badge
+								label={capturesLabel(tag)}
+								value={clanCapturedMaps}
+								digits={0}
+								fluid={true}
+								bgColor="var(--capturedColor)"
+								styling="clanInfo" />
+							<Badge
+								label={rankLabel(tag)}
+								value={clanAverageRank}
+								prefix="#"
+								digits={0}
+								fluid={true}
+								bgColor="var(--decrease)"
+								styling="clanInfo" />
+							<Badge
+								label={accLabel(tag)}
+								value={clanAverageAccuracy}
+								suffix="%"
+								fluid={true}
+								bgColor="var(--selected)"
+								styling="clanInfo" />
+							<Badge
+								label={ppLabel(tag)}
+								iconClass={ppIcon(tag)}
+								value={clanPp}
+								suffix="pp"
+								fluid={true}
+								bgColor="var(--ppColour)"
+								styling="clanInfo" />
 						</section>
 					{/if}
 				</section>
@@ -81,6 +141,8 @@
 			</section>
 		</div>
 	</section>
+{:else}
+	<Spinner />
 {/if}
 
 <style>
