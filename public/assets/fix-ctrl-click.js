@@ -10,13 +10,13 @@
 		a.href = url;
 		a.setAttribute('target', '_blank');
 
-		let evt = new MouseEvent("click", {
+		let evt = new MouseEvent('click', {
 			bubbles: true,
 			cancelable: true,
 			view: window,
 			ctrlKey: true,
-			metaKey: true
-		  });
+			metaKey: true,
+		});
 		a.dispatchEvent(evt);
 	}
 
@@ -24,8 +24,13 @@
 		window.history.oldPushState = window.history.pushState;
 		window.history.pushState = (...args) => {
 			if (ctrlPressState) {
+				window.oldScrollTo = window.scrollTo;
+				window.scrollTo = (...args) => {};
 				openInBackground(args[2]);
 				ctrlPressState = false;
+				setTimeout(() => {
+					window.scrollTo = window.oldScrollTo;
+				}, 20);
 			} else {
 				window.history.oldPushState(...args);
 			}

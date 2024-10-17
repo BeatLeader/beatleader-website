@@ -97,17 +97,40 @@
 	}
 
 	let firstColumnWidth = '3.5em';
-	function updateFirstColumn(maxRank, maxCountryRank, showCountryRank) {
-		var result = 1.5;
-		if (showCountryRank) {
-			result += 4;
-			result += ((maxCountryRank + '').length - 1) * 0.6;
+	let firstColumnGridTemplate = '';
+
+	function updateFirstColumn(maxRank, maxCountryRank, showCountryRank, showDifference, showCountryDifference) {
+		let result = 1.5;
+		let gridParts = [];
+
+		function addPart(rank, showDiff, offset = 0) {
+			let width = offset + 1.4 + ((rank + '').length - 1) * 0.6;
+			result += width;
+			gridParts.push(width + 'em');
+			if (showDiff) {
+				let diffWidth = 1 + ((rank + '').length - 1) * 0.6;
+				result += diffWidth;
+				gridParts.push(diffWidth + 'em');
+			}
 		}
-		result += ((maxRank + '').length - 1) * 0.6;
+
+		addPart(maxRank, showDifference);
+
+		if (showCountryRank) {
+			addPart(maxCountryRank, showCountryDifference, 1.5);
+		}
 
 		firstColumnWidth = result + 'em';
+		firstColumnGridTemplate = gridParts.join(' ');
 	}
-	$: updateFirstColumn(maxRank, maxCountryRank, $configStore.rankingList.showCountryRank);
+
+	$: updateFirstColumn(
+		maxRank,
+		maxCountryRank,
+		$configStore.rankingList.showCountryRank,
+		$configStore.rankingList.showDifference,
+		$configStore.rankingList.showCountryDifference
+	);
 
 	let referenceElement;
 </script>
@@ -121,7 +144,7 @@
 	on:click={e => onPlayerClick(e, player)}
 	on:keypress={e => onPlayerClick(e, player)}
 	on:pointerover={() => hoverStats(player)}>
-	<div class="player-rank">
+	<div class="player-rank" style="grid-template-columns: {firstColumnGridTemplate}">
 		<div
 			class={`rank ${rank === 1 ? 'gold' : rank === 2 ? 'silver' : rank === 3 ? 'brown' : rank >= 10000 ? 'small' : ''}`}
 			title="Go to global ranking"
@@ -129,6 +152,11 @@
 			on:keypress={e => onGlobalClick(e, player)}>
 			#<Value value={rank} digits={0} zero="?" />
 		</div>
+		{#if $configStore.rankingList.showDifference}
+			<span class="change" title="Compared to the last week">
+				<Change value={opt(player, 'others.difference')} digits={0} />
+			</span>
+		{/if}
 		{#if $configStore.rankingList.showCountryRank}
 			<div
 				class={`rank ${$configStore.rankingList.showColorsForCountryRank ? '' : 'not'}${
@@ -140,6 +168,11 @@
 				#<Value value={countryRank} digits={0} zero="?" />
 				<Flag country={opt(player, 'playerInfo.country.country')} />
 			</div>
+		{/if}
+		{#if $configStore.rankingList.showCountryDifference}
+			<span class="change" title="Cuntry rank compared to the last week">
+				<Change value={opt(player, 'others.countryDifference')} digits={0} />
+			</span>
 		{/if}
 		{#if $configStore.rankingList.ppToTheLeft}
 			<div class="steam-and-pp">
@@ -158,11 +191,7 @@
 	</div>
 	<div class="player-name-and-rank">
 		<PlayerNameWithFlag {player} {playerClickFilter} hideFlag={true} {withCrown} disablePopover={true} />
-		{#if $configStore.rankingList.showDifference}
-			<span class="change">
-				<Change value={opt(player, 'others.difference')} digits={0} />
-			</span>
-		{/if}
+
 		{#if $configStore.rankingList.showClans}
 			<ClanBadges {player} />
 		{/if}
@@ -180,7 +209,7 @@
 	{/if}
 </div>
 
-{#if player && player.playerInfo}
+{#if player && player.playerInfo && $configStore.rankingList.openPlayerPopover}
 	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="bottom" spaceAway={10}>
 		<div class="popover-contents" transition:fade|global={{duration: 250}}>
 			<MiniProfile {player} />
@@ -242,6 +271,7 @@
 		margin-left: 0.25em;
 		cursor: pointer;
 		flex: none;
+		width: fit-content;
 	}
 
 	.player-card .player-name-and-rank {
@@ -289,7 +319,7 @@
 	}
 
 	.player-card .player-rank {
-		display: flex;
+		display: grid;
 		justify-content: space-between;
 		align-items: center;
 		font-size: 1.1em;
@@ -356,20 +386,9 @@
 			overflow-wrap: break-word;
 		}
 
-		.player-card .player-rank {
-			grid-column: 1;
-			grid-row: 2;
-			justify-content: flex-start;
-			font-size: 0.8em;
-		}
-
 		.player-card .steam-and-pp {
 			grid-column: 2;
 			grid-row: 2;
-		}
-
-		.player-card :global(.rank) {
-			font-size: 1em;
 		}
 	}
 

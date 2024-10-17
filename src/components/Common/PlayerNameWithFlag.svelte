@@ -1,6 +1,4 @@
 <script>
-	import {createEventDispatcher} from 'svelte';
-	import {opt} from '../../utils/js';
 	import Flag from './Flag.svelte';
 	import Popover from './Popover.svelte';
 	import {fade} from 'svelte/transition';
@@ -13,11 +11,9 @@
 	export let playerClickFilter = null;
 	export let disablePopover = false;
 
-	const dispatch = createEventDispatcher();
-
 	let referenceElement;
 
-	$: country = opt(player, 'playerInfo.country') ?? player?.country;
+	$: country = player?.playerInfo?.country?.country ?? player?.country;
 	$: name = player?.name;
 	$: playerId = player?.alias ?? player?.playerId ?? player?.id;
 </script>

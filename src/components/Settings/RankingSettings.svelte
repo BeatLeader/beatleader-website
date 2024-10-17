@@ -7,21 +7,25 @@
 
 	export let animationSign = 1;
 
-	let currentShowClans = true;
-	let currentShowDifference = true;
-	let currentShowFriendsButton = true;
-	let currentShowCountryRank = true;
-	let currentShowColorsForCountryRank = true;
-	let currentPPToTheLeft = false;
+	let rankingListKeys = [];
+	let currentSettings = {};
+	let labelMap = {
+		showFriendsButton: 'Add to friends button',
+		showClans: 'Clans',
+		showDifference: 'Rank Difference',
+		showCountryRank: 'Show Country',
+		showColorsForCountryRank: 'Podium rank colors',
+		showCountryDifference: 'Show Country Difference',
+		openPlayerPopover: 'Open player popover',
+	};
 
 	function onConfigUpdated(config) {
-		if (config?.rankingList?.showClans != currentShowClans) currentShowClans = config?.rankingList?.showClans ?? true;
-		if (config?.rankingList?.showFriendsButton != currentShowFriendsButton)
-			currentShowFriendsButton = config?.rankingList?.showFriendsButton ?? true;
-		if (config?.rankingList?.showDifference != currentShowDifference) currentShowDifference = config?.rankingList?.showDifference ?? true;
-		if (config?.rankingList?.showCountryRank != currentShowCountryRank)
-			currentShowCountryRank = config?.rankingList?.showCountryRank ?? true;
-		if (config?.rankingList?.ppToTheLeft != currentPPToTheLeft) currentPPToTheLeft = config?.rankingList?.ppToTheLeft ?? true;
+		if (config?.rankingList) {
+			rankingListKeys = Object.keys(config.rankingList);
+			rankingListKeys.forEach(key => {
+				currentSettings[key] = config.rankingList[key] ?? true;
+			});
+		}
 	}
 
 	async function settempsetting(key, value) {
@@ -32,12 +36,11 @@
 
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 
-	$: settempsetting('showFriendsButton', currentShowFriendsButton);
-	$: settempsetting('showClans', currentShowClans);
-	$: settempsetting('showDifference', currentShowDifference);
-	$: settempsetting('showCountryRank', currentShowCountryRank);
-	$: settempsetting('showColorsForCountryRank', currentShowColorsForCountryRank);
-	$: settempsetting('ppToTheLeft', currentPPToTheLeft);
+	$: {
+		Object.entries(currentSettings).forEach(([key, value]) => {
+			settempsetting(key, value);
+		});
+	}
 </script>
 
 <div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
@@ -48,42 +51,16 @@
 	<section class="option">
 		<label title="Determines when to show the buttons">Options</label>
 		<div class="switches">
-			<Switch
-				value={currentShowFriendsButton}
-				label="Add to friends button"
-				fontSize={12}
-				design="slider"
-				on:click={() => (currentShowFriendsButton = !currentShowFriendsButton)} />
-			<Switch
-				value={currentShowClans}
-				label="Clans"
-				fontSize={12}
-				design="slider"
-				on:click={() => (currentShowClans = !currentShowClans)} />
-			<Switch
-				value={currentShowDifference}
-				label="Rank Difference"
-				fontSize={12}
-				design="slider"
-				on:click={() => (currentShowDifference = !currentShowDifference)} />
-			<Switch
-				value={currentShowCountryRank}
-				label="Show Country"
-				fontSize={12}
-				design="slider"
-				on:click={() => (currentShowCountryRank = !currentShowCountryRank)} />
-			<Switch
-				value={currentShowColorsForCountryRank}
-				label="Podium rank colors"
-				fontSize={12}
-				design="slider"
-				on:click={() => (currentShowColorsForCountryRank = !currentShowColorsForCountryRank)} />
-			<!-- <Switch
-					value={currentPPToTheLeft}
-					label="PP on the left"
-					fontSize={12}
-					design="slider"
-					on:click={() => (currentPPToTheLeft = !currentPPToTheLeft)} /> -->
+			{#each rankingListKeys as key}
+				{#if labelMap[key]}
+					<Switch
+						value={currentSettings[key]}
+						label={labelMap[key] || key}
+						fontSize={12}
+						design="slider"
+						on:click={() => (currentSettings[key] = !currentSettings[key])} />
+				{/if}
+			{/each}
 		</div>
 	</section>
 </div>

@@ -144,7 +144,8 @@ export const DEFAULT_CONFIG = {
 		showFriendsButton: true,
 		showCountryRank: true,
 		showColorsForCountryRank: true,
-		ppToTheLeft: false,
+		showCountryDifference: false,
+		openPlayerPopover: true,
 	},
 	chartLegend: {
 		y: true,

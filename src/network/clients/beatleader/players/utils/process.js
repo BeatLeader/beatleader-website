@@ -26,7 +26,7 @@ export default response => {
 				role,
 			} = player;
 			const difference = lastWeekRank > 0 ? lastWeekRank - rank : null;
-
+			const countryDifference = lastWeekCountryRank > 0 ? lastWeekCountryRank - countryRank : null;
 			if (avatar && !avatar.startsWith('http')) {
 				avatar = `${queue.BEATLEADER_API.BL_API_URL}${!avatar.startsWith('/') ? '/' : ''}${avatar}`;
 			}
@@ -50,6 +50,7 @@ export default response => {
 				},
 				others: {
 					difference,
+					countryDifference,
 				},
 				clans,
 				scoreStats: player?.scoreStats ?? null,
