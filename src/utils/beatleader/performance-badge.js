@@ -192,8 +192,8 @@ export const getPerformanceBadge = (def, score, improvements, beatSavior, modifi
 				componentProps = {
 					onlyLabel: true,
 					color: 'white',
-					styling: status === 3 ? '' : 'nominated-pp',
-					bgColor: status === 3 ? 'var(--ppColour)' : 'transparent',
+					styling: status === 3 || status === 0 ? '' : 'nominated-pp',
+					bgColor: status === 3 || status === 0 ? 'var(--ppColour)' : 'transparent',
 				};
 
 				slotComponent = Pp;

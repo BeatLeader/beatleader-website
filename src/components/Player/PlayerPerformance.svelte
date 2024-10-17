@@ -99,7 +99,12 @@
 
 	$: beatSavior = songScore?.beatSavior ?? getBeatSaviorCompatibleStats(score);
 
-	$: configBadges = type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badges : $configStore?.scoreBadges;
+	$: configBadges =
+		type === 'leaderboard-score'
+			? $configStore?.leaderboardPreferences?.badges
+			: type === 'clan-ranking-score'
+				? [[{metric: 'pp', secondary: 'weighted'}, {metric: 'acc', secondary: 'mods', withMods: false}, {metric: 'score'}]]
+				: $configStore?.scoreBadges;
 	$: configBadgeRows =
 		type === 'leaderboard-score' ? $configStore?.leaderboardPreferences?.badgeRows : $configStore?.scorePreferences?.badgeRows ?? 2;
 	$: badgesDefinition = [...(Object.values(configBadges) ?? [])];

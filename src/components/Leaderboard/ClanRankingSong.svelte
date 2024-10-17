@@ -103,7 +103,11 @@
 
 	$: selectedIcons = (icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons)))?.filter(i => i != 'analyzer');
 
-	$: scores = $clanRankingStore?.clanRanking?.scores ?? [];
+	$: scores = ($clanRankingStore?.clanRanking?.scores ?? []).map((s, i) => {
+		s.score.weight = Math.pow(0.8, (associatedScoresPage != 0 ? associatedScoresPage - 1 : 1) * itemsPerPage + i);
+		s.score.ppWeighted = s.score.weight * s.score.pp;
+		return s;
+	});
 	$: totalItems = $clanRankingStore?.totalItems ?? 0;
 
 	$: isLoading = clanRankingStore.isLoading;
@@ -175,7 +179,11 @@
 	</div>
 	<div class={`clan-map-my-score ${inList ? 'score-in-list' : ''}`}>
 		{#if cr.myScore}
-			<SongScoreCompact playerId={cr.myScore.playerId} songScore={processScore({leaderboard, ...cr.myScore})} service={'scores'} />
+			<SongScoreCompact
+				playerId={cr.myScore.playerId}
+				songScore={processScore({leaderboard, ...cr.myScore})}
+				showDetails={true}
+				service={'scores'} />
 		{/if}
 	</div>
 
@@ -189,7 +197,13 @@
 			<div class="scores-subgrid grid-transition-helper">
 				{#each scores as score, idx (opt(score, 'score.id', '') + opt(score, 'player.playerId', ''))}
 					<div in:fly={{x: 200, delay: idx * 20, duration: 300}} out:fade={{duration: 300}} animate:flip={{duration: 300}}>
-						<Score leaderboardId={cr.leaderboard.leaderboardId} {score} {fixedBrowserTitle} {sortBy} hideClans={true} />
+						<Score
+							badgesType="clan-ranking-score"
+							leaderboardId={cr.leaderboard.leaderboardId}
+							{score}
+							{fixedBrowserTitle}
+							{sortBy}
+							hideClans={true} />
 					</div>
 				{/each}
 				<div class="clan-pager">
@@ -594,7 +608,7 @@
 	}
 
 	:global(.clan-map-my-score .song-score .main) {
-		max-width: 16em;
+		max-width: fit-content;
 		margin: 0.5em;
 		border: solid purple 2px;
 		border-radius: 6px;

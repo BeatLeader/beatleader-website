@@ -1,5 +1,4 @@
 <script>
-	import {opt} from '../../utils/js';
 	import FormattedDate from '../Common/FormattedDate.svelte';
 	import ScoreRank from '../Player/ScoreRank.svelte';
 
@@ -8,10 +7,12 @@
 	export let service = null;
 	export let shortdate = false;
 
-	$: score = opt(songScore, 'score', null);
+	export let showDetails = false;
+
+	$: score = songScore?.score;
 </script>
 
-{#if songScore}
+{#if score}
 	<div class={`song-score row-${idx}`}>
 		<div class="main" class:beat-savior={service === 'beatsavior'} class:accsaber={service === 'accsaber'}>
 			<span class="rank">
@@ -24,12 +25,18 @@
 				<FormattedDate date={score.timeSet} externalDateFormat={shortdate ? 'relativeshort' : null} />
 			</div>
 			<div class="score">
-				{#if songScore.score.pp}
-					<span style="color: var(--ppColour)">{songScore.score.pp.toFixed(2)}pp</span>
+				{#if score.pp}
+					<span style="color: var(--ppColour)">{score.pp.toFixed(2)}pp</span>
 				{:else}
-					<span style="color: var(--ppColour)">{songScore.score.acc.toFixed(2)}%</span>
+					<span style="color: var(--ppColour)">{score.acc.toFixed(2)}%</span>
 				{/if}
 			</div>
+			{#if showDetails}
+				<span style="color: white">{score.acc.toFixed(2)}%</span>
+				{#if score.mods?.length}
+					<span style="color: white">{score.mods}</span>
+				{/if}
+			{/if}
 		</div>
 	</div>
 {/if}

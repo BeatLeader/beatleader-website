@@ -29,6 +29,7 @@
 	export let selectedMetric = null;
 	export let hideClans = false;
 	export let accountRoles = '';
+	export let badgesType = 'leaderboard-score';
 
 	const MAX_ROYALE_LIST_LENGTH = 10;
 
@@ -216,7 +217,7 @@
 				</div>
 			{/if}
 
-			<PlayerPerformance type="leaderboard-score" service={type} songScore={score} {modifiers} {selectedMetric} on:badge-click />
+			<PlayerPerformance type={badgesType} service={type} songScore={score} {modifiers} {selectedMetric} on:badge-click />
 		</div>
 	</div>
 

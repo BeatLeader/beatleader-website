@@ -135,13 +135,14 @@
 	let referenceElement;
 </script>
 
-<div
+<a
+	href={`/u/${player.alias ?? player.playerId}${playerClickFilter ? '?' + playerClickFilter : ''}`}
 	class={`player-card ${$configStore.rankingList.ppToTheLeft ? 'with-pp-on-left' : ''} ${playerId == player.playerId ? 'current' : ''} ${
 		showRainbow(player) ? 'rainbow' : ''
 	}`}
 	bind:this={referenceElement}
 	style="grid-template-columns: {firstColumnWidth} 4em auto 1fr; opacity: {opacity}"
-	on:click={e => onPlayerClick(e, player)}
+	on:click|preventDefault={e => onPlayerClick(e, player)}
 	on:keypress={e => onPlayerClick(e, player)}
 	on:pointerover={() => hoverStats(player)}>
 	<div class="player-rank" style="grid-template-columns: {firstColumnGridTemplate}">
@@ -207,7 +208,7 @@
 			</div>
 		</div>
 	{/if}
-</div>
+</a>
 
 {#if player && player.playerInfo && $configStore.rankingList.openPlayerPopover}
 	<Popover triggerEvents={['hover', 'focus']} {referenceElement} placement="bottom" spaceAway={10}>
@@ -229,6 +230,7 @@
 		font-size: 1.12em;
 		align-items: center;
 		width: 100%;
+		color: unset;
 	}
 	.player-card.with-pp-on-left {
 		grid-template-columns: 12em 4em auto 1fr;
