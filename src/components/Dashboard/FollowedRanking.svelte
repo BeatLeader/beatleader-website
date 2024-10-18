@@ -140,35 +140,4 @@
 	.ranking :global(.steam-stats) {
 		display: none;
 	}
-
-	.imageLink {
-		width: 4em;
-		height: 4em;
-	}
-
-	.downloadButtons {
-		margin-top: 1.5em;
-		margin-left: 0.6em;
-		margin-bottom: 2em;
-		float: center;
-	}
-
-	.twitterEmbedMobile {
-		display: none;
-		width: 100%;
-	}
-
-	:global(.twitterBox) {
-		width: 100%;
-	}
-
-	@media screen and (max-width: 767px) {
-		.twitterEmbed {
-			display: none;
-		}
-
-		.twitterEmbedMobile {
-			display: flex;
-		}
-	}
 </style>

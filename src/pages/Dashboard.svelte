@@ -7,7 +7,7 @@
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import FollowedRanking from '../components/Dashboard/FollowedRanking.svelte';
 	import FollowedScores from '../components/Dashboard/FollowedScores.svelte';
-	import MastodonTimeline from '../components/Dashboard/MastodonTimeline/MastodonTimeline.svelte';
+	import BlueSkyTimeline from '../components/Dashboard/BlueSkyTimeline.svelte';
 
 	document.body.scrollIntoView({behavior: 'smooth'});
 
@@ -26,9 +26,7 @@
 		<div class="content column is-full is-two-fifths-fullhd">
 			<FollowedRanking />
 			<div class="twitterEmbed">
-				<ContentBox>
-					<MastodonTimeline />
-				</ContentBox>
+				<BlueSkyTimeline />
 			</div>
 			<div class="downloadButtons">
 				<a href="https://github.com/BeatLeader/beatleader-mod/releases" target="_blank" rel="noreferrer">
@@ -43,9 +41,7 @@
 			<FollowedScores {browserTitle} />
 		</div>
 		<div class="twitterEmbedMobile">
-			<ContentBox cls="twitterBox">
-				<MastodonTimeline />
-			</ContentBox>
+			<BlueSkyTimeline />
 		</div>
 	</div>
 </article>
@@ -87,11 +83,6 @@
 
 	.twitterEmbedMobile {
 		display: none;
-		width: 100%;
-	}
-
-	:global(.twitterBox) {
-		width: 100%;
 	}
 
 	@media screen and (max-width: 767px) {
@@ -101,6 +92,14 @@
 
 		.twitterEmbedMobile {
 			display: flex;
+		}
+
+		.columns {
+			width: unset;
+		}
+
+		.is-multiline {
+			margin-left: unset;
 		}
 	}
 </style>

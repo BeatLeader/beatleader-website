@@ -121,14 +121,12 @@ export const STEAM_API_GAME_INFO_URL = STEAM_API_URL + '/IPlayerService/GetRecen
 export const processLeaderboardScore = s => {
 	if (!s) return null;
 
-	let ret = {player: {playerInfo: {countries: []}}, score: {lastUpdated: new Date()}};
+	let ret = {player: {playerInfo: {}}, score: {lastUpdated: new Date()}};
 
 	ret.score.rank = s?.rank;
 
 	const player = s.player;
-	let country = player.country.toUpperCase();
-	ret.player.playerInfo.country = country;
-	ret.player.playerInfo.countries.push({country, rank: player.countryRank});
+	ret.player.playerInfo.country = {country: player.country.toUpperCase(), rank: player.countryRank};
 	ret.player.playerInfo.avatar = player.avatar;
 	ret.player.playerInfo.bot = player.bot;
 	ret.player.playerInfo.pp = player.pp;

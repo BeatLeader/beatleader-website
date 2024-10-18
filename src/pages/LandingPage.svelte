@@ -5,6 +5,7 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import BlueSkyTimeline from '../components/Dashboard/BlueSkyTimeline.svelte';
 
 	document.body.scrollIntoView({behavior: 'smooth'});
 
@@ -39,7 +40,7 @@
 		<div class="big-landing-box">
 			<div class="cinematics">
 				<div class="cinematics-canvas">
-					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 90%; height: 100%; opacity: 0" />
 				</div>
 			</div>
 			<div class="title-and-buttons">
@@ -87,61 +88,64 @@
 				</div>
 			</div>
 		</ContentBox>
-		<ContentBox cls="landing-box">
-			<div class="container-element darkened-background">
-				<h3 class="description">We aggregate the data from other cool projects to help you play better:</h3>
-				<div class="sources">
-					<div class="source">
-						<h3 class="title is-6">
-							<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
-								<img src="/assets/beatsaver-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
-							</a>
-						</h3>
-						<a href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
-					</div>
-					<div class="source">
-						<h3 class="title is-6">
-							<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
-								<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
-							</a>
-						</h3>
-						<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
-					</div>
-					<div class="source">
-						<h3 class="title is-6">
-							<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
-								<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
-							</a>
-						</h3>
-						<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
-					</div>
-					<div class="source">
-						<h3 class="title is-6">
-							<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
-								<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
-							</a>
-						</h3>
-						<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
-					</div>
-					<div class="source">
-						<h3 class="title is-6">
-							<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
-								<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
-							</a>
-						</h3>
-						<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>
-					</div>
-					<div class="source">
-						<h3 class="title is-6">
-							<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
-								<span class="icon beatsavior-icon" title="BeatSavior" />
-							</a>
-						</h3>
-						<a href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
+		<div class="two-boxes">
+			<ContentBox cls="landing-box">
+				<span class="box-headline">We aggregate the data from other cool projects to help you play better.</span>
+				<div class="container-element darkened-background">
+					<div class="sources">
+						<div class="source">
+							<h3 class="title is-6">
+								<a class="imageLink" href={`https://beatsaver.com/`} target="_blank" rel="noreferrer">
+									<img src="/assets/beatsaver-icon.png" class="icon" alt="BeatSaver" title="BeatSaver" />
+								</a>
+							</h3>
+							<a href="https://beatsaver.com/" target="_blank" rel="noreferrer"> BeatSaver </a>
+						</div>
+						<div class="source">
+							<h3 class="title is-6">
+								<a class="imageLink" href={`https://github.com/AllPoland/ArcViewer/`} target="_blank" rel="noreferrer">
+									<img src="/assets/ArcViewerIcon.webp" title="ArcViewer" class="icon" alt="ArcViewer Logo" />
+								</a>
+							</h3>
+							<a href="https://github.com/AllPoland/ArcViewer/" target="_blank" rel="noreferrer"> ArcViewer </a>
+						</div>
+						<div class="source">
+							<h3 class="title is-6">
+								<a class="imageLink" href={`https://accsaber.com/`} target="_blank" rel="noreferrer">
+									<img src="/assets/accsaber-logo.webp" title="AccSaber" class="icon" alt="AccSaber Logo" />
+								</a>
+							</h3>
+							<a href="https://accsaber.com/" target="_blank" rel="noreferrer"> AccSaber </a>
+						</div>
+						<div class="source">
+							<h3 class="title is-6">
+								<a class="imageLink" href={`https://bsaber.com/`} target="_blank" rel="noreferrer">
+									<img src="/assets/beastsabericonbig.webp" title="BeastSaber" class="icon" alt="BeastSaber Logo" />
+								</a>
+							</h3>
+							<a href="https://bsaber.com/" target="_blank" rel="noreferrer"> BeastSaber </a>
+						</div>
+						<div class="source">
+							<h3 class="title is-6">
+								<a class="imageLink" href={`https://cube.community/`} target="_blank" rel="noreferrer">
+									<img src="/assets/cubecommunitylogo.webp" title="CubeCommunity" class="icon" alt="CubeCommunity Logo" />
+								</a>
+							</h3>
+							<a href="https://cube.community/" target="_blank" rel="noreferrer"> CubeCommunity </a>
+						</div>
+						<div class="source">
+							<h3 class="title is-6">
+								<a class="imageLink" href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer">
+									<span class="icon beatsavior-icon" title="BeatSavior" />
+								</a>
+							</h3>
+							<a href="https://beat-savior.herokuapp.com/" target="_blank" rel="noreferrer"> BeatSavior </a>
+						</div>
 					</div>
 				</div>
-			</div>
-		</ContentBox>
+			</ContentBox>
+			<BlueSkyTimeline cls="landing-box" title={true} />
+		</div>
 	</div>
 </article>
 
@@ -182,15 +186,40 @@
 	.container-element {
 		border-radius: 8px;
 		padding: 1.5em;
+		flex: 1;
 	}
 
 	:global(.landing-box) {
 		border-radius: 12px !important;
 		padding: 0.5em !important;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	:global(.landing-box .v-scrollbar) {
+		margin-top: 4em !important;
+		margin-right: 0.8em !important;
 	}
 
 	.mod-beatsaber {
 		margin-left: 0.3em;
+	}
+
+	.two-boxes {
+		display: grid;
+		grid-template-columns: 50% 50%;
+	}
+
+	.box-headline {
+		margin-left: 0.3em;
+	}
+
+	.box-headline {
+		font-size: 1.2em;
+		padding-bottom: 0.5em;
+		padding-top: 0.5em;
+		padding-left: 0.1em;
 	}
 
 	.big-title {
@@ -365,6 +394,11 @@
 
 		.cinematics-canvas {
 			transform: scaleY(1.2) translateZ(0);
+		}
+
+		.two-boxes {
+			display: flex;
+			flex-wrap: wrap;
 		}
 	}
 </style>
