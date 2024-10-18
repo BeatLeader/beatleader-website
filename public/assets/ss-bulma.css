@@ -11533,7 +11533,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./favicon.svg');
+	background-image: url(./logo-small.webp);
 }
 
 .beatsavior-icon {

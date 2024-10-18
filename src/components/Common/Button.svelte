@@ -305,11 +305,26 @@
 	}
 
 	.not-selected {
-		opacity: 0.35;
+		position: relative; 
+		overflow: hidden; 
+		box-sizing: border-box;
+		border: none;
 	}
 
-	.not-selected:hover {
-		opacity: 1;
+	.not-selected::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.5); 
+		z-index: 1; 
+		pointer-events: none; 
+	}
+
+	.not-selected:hover::after {
+		background-color: rgba(0, 0, 0, 0); 
 	}
 
 	:global(.button.is-loading::after) {

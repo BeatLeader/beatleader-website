@@ -374,7 +374,7 @@
 			if (!diffs.find(m => m.name == d.name) && d.type == currentDiff.type) {
 				diffs.push({
 					...d,
-					label: d.name + (d.stars ? ' ' + d.stars.toFixed(1) + '★ ' : ' '),
+					label: d.name + (d.stars ? '\n' + d.stars.toFixed(1) + '★' : ''),
 					cls: 'diff-tab-button',
 					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
 				});
@@ -1366,6 +1366,7 @@
 		margin-bottom: -0.5em !important;
 		height: 3.5em;
 		border-radius: 12px 12px 0 0 !important;
+		min-width: 7em;
 		max-width: 7em;
 	}
 
