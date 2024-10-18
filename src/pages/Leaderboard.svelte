@@ -374,7 +374,7 @@
 			if (!diffs.find(m => m.name == d.name) && d.type == currentDiff.type) {
 				diffs.push({
 					...d,
-					label: d.name + (d.stars ? '\n' + d.stars.toFixed(1) + '★ ' : ' '),
+					label: d.name + (d.stars ? '\n' + d.stars.toFixed(1) + '★' : ''),
 					cls: 'diff-tab-button',
 					url: `/leaderboard/${currentType}/${d.leaderboardId}`,
 				});
