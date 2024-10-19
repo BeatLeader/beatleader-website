@@ -26,6 +26,7 @@
 	import PlayerPerformance from '../Player/PlayerPerformance.svelte';
 	import PlayerNameWithFlag from '../Common/PlayerNameWithFlag.svelte';
 	import SongScoreCompact from '../Leaderboards/SongScoreCompact.svelte';
+	import LeaderboardDisplayCaptureStatus from './LeaderboardDisplayCaptureStatus.svelte';
 
 	export let cr = null;
 	export let idx = null;
@@ -122,6 +123,14 @@
 			<div class="timeset">
 				<FormattedDate date={cr.lastUpdateTime} />
 			</div>
+
+			<div class="capture-status">
+				<LeaderboardDisplayCaptureStatus
+					clan={cr?.clan}
+					clanRankingContested={!cr?.clan}
+					leaderboardId={cr?.leaderboardId}
+					withTitle={false} />
+			</div>
 		</span>
 
 		<span class="song">
@@ -129,6 +138,7 @@
 				<SongInfo
 					{leaderboard}
 					score={cr}
+					service="clanranking"
 					rank={cr.rank}
 					{hash}
 					{noIcons}
@@ -224,7 +234,7 @@
 <style>
 	.score-in-list {
 		border-bottom: 1px solid var(--row-separator);
-		padding: 0.5em 0;
+		padding: 0.2em 0;
 	}
 
 	.song-score .up-to-tablet + .main {
@@ -500,7 +510,15 @@
 		font-size: 0.875em;
 		min-width: 2em;
 		flex: none;
-		margin-top: 0.8em;
+		margin-top: -0.2em;
+	}
+
+	.capture-status {
+		font-size: 0.8em;
+		display: flex;
+		justify-content: center;
+		margin-top: 0.4em;
+		margin-bottom: -1em;
 	}
 
 	.player-score .player {

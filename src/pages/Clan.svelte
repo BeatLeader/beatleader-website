@@ -432,6 +432,10 @@
 		width: 100%;
 	}
 
+	.scores-grid {
+		gap: 0.4em;
+	}
+
 	article {
 		width: calc(100% - 25em);
 		overflow-x: hidden;

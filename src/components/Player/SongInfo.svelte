@@ -22,12 +22,22 @@
 
 	const account = createAccountStore();
 
+	function mapServiceToLink(service) {
+		switch (service) {
+			case 'accsaber':
+			case 'clanranking':
+				return service;
+		}
+
+		return 'global';
+	}
+
 	$: song = leaderboard?.song ?? null;
 	$: scoresPerPage = service === 'accsaber' ? ACCSABER_LEADERBOARD_SCORES_PER_PAGE : LEADERBOARD_SCORES_PER_PAGE;
 	$: page = rank && Number.isFinite(rank) ? Math.floor((rank - 1) / scoresPerPage) + 1 : 1;
 	$: diffInfo = leaderboard?.diffInfo ?? null;
 	$: leaderboardId = leaderboard?.leaderboardId ?? '';
-	$: leaderboardUrl = `/leaderboard/${service === 'accsaber' ? 'accsaber' : 'global'}/${leaderboardId}/${page ?? ''}`;
+	$: leaderboardUrl = `/leaderboard/${mapServiceToLink(service)}/${leaderboardId}/${page ?? ''}`;
 	$: isPlayerScore = $account?.id && $account?.id === score?.playerId;
 	$: serviceIcon = score?.metadata ?? null;
 </script>
