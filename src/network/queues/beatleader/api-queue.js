@@ -67,7 +67,7 @@ export const BL_API_FIND_PLAYER_URL =
 	'players?search=${query}&leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&order=${order}';
 export const BL_API_RANKING_URL =
 	BL_API_URL +
-	'players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';
+	'players?leaderboardContext=${leaderboardContext}&page=${page}&count=${count}&sortBy=${sortBy}&mapsType=${mapsType}&ppType=${ppType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&firstScoreTime=${firstScoreTime}&recentScoreTime=${recentScoreTime}&pp_range=${pp_range}&score_range=${score_range}';
 export const BL_API_EVENT_RANKING_URL =
 	BL_API_URL +
 	'event/${eventId}/players?page=${page}&sortBy=${sortBy}&mapsType=${mapsType}&order=${order}&countries=${countries}&friends=${friends}&search=${search}&platform=${platform}&role=${role}&hmd=${hmd}&pp_range=${pp_range}&score_range=${score_range}';

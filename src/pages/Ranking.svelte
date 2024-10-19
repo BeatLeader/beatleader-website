@@ -7,6 +7,7 @@
 		processStringFilter,
 		processStringArrayFilter,
 		processIntArrayFilter,
+		processIntFilter,
 		buildSearchFromFiltersWithDefaults,
 	} from '../utils/filters';
 	import ssrConfig from '../ssr-config';
@@ -22,7 +23,8 @@
 	import {configStore} from '../stores/config';
 
 	import {produce} from 'immer';
-	import Button from '../components/Common/Button.svelte';
+	import {dateFromUnix} from '../utils/date';
+	import DatePicker from '../components/Common/DatePicker.svelte';
 
 	export let page = 1;
 	export let location;
@@ -33,13 +35,17 @@
 
 	const findParam = key => params.find(p => p.key === key);
 
-	const onInputChange = (e, key) => {
+	const onInputValueChange = (value, key) => {
 		const param = findParam(key);
 		if (param) {
-			param.value = e.target.value ?? '';
+			param.value = value;
 
 			updateCurrentFiltersFromParams();
 		}
+	};
+
+	const onInputChange = (e, key) => {
+		onInputValueChange(e.target.value ?? '', key);
 	};
 
 	const onMultiSwitchChange = (e, key) => {
@@ -209,6 +215,22 @@
 			process: processStringFilter,
 			type: null,
 		},
+		{
+			key: 'firstScoreTime',
+			label: 'Started playing after',
+			default: null,
+			type: 'date',
+			process: processIntFilter,
+			onChange: e => onInputValueChange(e.detail ? e.detail.getTime() / 1000 : null, 'firstScoreTime'),
+		},
+		{
+			key: 'recentScoreTime',
+			label: 'Most recent score after',
+			default: null,
+			type: 'date',
+			process: processIntFilter,
+			onChange: e => onInputValueChange(e.detail ? e.detail.getTime() / 1000 : null, 'recentScoreTime'),
+		},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -222,6 +244,8 @@
 			} else if (p.key === 'pp_range' || p.key === 'score_range') {
 				p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
 				filters[p.key] = filters[p.key] ?? 0;
+			} else if (p.type === 'date') {
+				p.value = filters[p.key] ? filters[p.key] : p?.default;
 			} else {
 				filters[p.key] = p.multi
 					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
@@ -505,6 +529,8 @@
 											pipstep={param.pipstep}
 											all="label"
 											on:change={param.onChange} />
+									{:else if param?.type === 'date'}
+										<DatePicker type="date" date={dateFromUnix(param.value)} on:change={param.onChange} />
 									{/if}
 								</section>
 							{/if}
