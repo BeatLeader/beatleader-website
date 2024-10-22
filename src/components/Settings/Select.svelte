@@ -104,9 +104,9 @@
 			<i class="fa fa-chevron-down dropdown-arrow {isOpened ? 'opened' : ''}" />
 		</div>
 	</div>
-	{#if isOpened && options?.length > 0}
+	{#if header && isOpened && options?.length > 0}
 		<PageOverlay target={header}>
-			<body
+			<div
 				bind:this={menu}
 				in:fly|global={{y: -5, duration: 200}}
 				out:fly|global={{y: -5, duration: 200}}
@@ -127,7 +127,7 @@
 						</div>
 					{/if}
 				{/each}
-			</body>
+			</div>
 		</PageOverlay>
 	{/if}
 </div>

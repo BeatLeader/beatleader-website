@@ -41,13 +41,11 @@
 
 	async function setupChart(hash, canvas, selectedPlaylist) {
 		if (!hash || !canvas || !playerScores?.length || (chartHash === lastHistoryHash && deepEqual(selectedPlaylist, lastPlaylist))) return;
+		var mapBorderColor = '#003e54';
 
-		if ($configStore.preferences.theme != 'flylight') {
-			var mapBorderColor = '#003e54';
-
-			Chart.defaults.color = '#fff';
-		} else {
-			var mapBorderColor = '#dadadaaf';
+		Chart.defaults.color = '#fff';
+		if ($configStore.preferences.theme == 'flylight') {
+			mapBorderColor = '#dadadaaf';
 
 			Chart.defaults.color = '#757575';
 		}

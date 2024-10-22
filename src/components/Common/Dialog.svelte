@@ -52,7 +52,7 @@
 </Modal>
 
 <style>
-	:global('.ss-modal') {
+	:global(.ss-modal) {
 		height: auto;
 	}
 

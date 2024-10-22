@@ -34,6 +34,7 @@
 		const maxTimeDeviation = Math.max(Math.ceil(chartData.maxTimeDeviation / 0.01) * 0.01, 0.02);
 
 		const xAxis = {
+			display: false,
 			scaleLabel: {
 				display: true,
 			},
