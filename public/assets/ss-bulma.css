@@ -12180,12 +12180,6 @@ input:focus {
 	}
 }
 
-@media screen and (min-width: 1750px) {
-	body:not(.slim) .ssr-page-container {
-		max-width: 1750px;
-	}
-}
-
 @media screen and (max-width: 767px) {
 	body {
 		padding: 0;

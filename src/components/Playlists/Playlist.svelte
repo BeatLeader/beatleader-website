@@ -308,12 +308,7 @@
 			on:finalize={handleDndFinalize}
 			class="playlistInfo"
 			on:click={() => onDetailsButtonClick()}>
-			<td class="col--details-btn">
-				<Button
-					type="text"
-					iconFa={detailsOpened ? 'fas fa-chevron-down' : 'fas fa-chevron-right'}
-					on:click={() => onDetailsButtonClick()} />
-			</td>
+			<Button type="text" iconFa={detailsOpened ? 'fas fa-chevron-down' : 'fas fa-chevron-right'} on:click={() => onDetailsButtonClick()} />
 			<div class="imageInput" on:click|stopPropagation={() => fileinput.click()}>
 				<img
 					class="playlistImage"

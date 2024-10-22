@@ -64,27 +64,25 @@
 		return string.charAt(0).toLowerCase() + string.slice(1);
 	}
 
-	async function setupChart(canvas, scores, selectedPlaylist, xKey) {
+	async function setupChart(hash, canvas, selectedPlaylist) {
 		if (!canvas || !scores?.length) return;
+		var mapBorderColor = '#003e54';
+		var ssPlusColor = 'rgba(143,72,219, .4)';
+		var ssColor = 'rgba(190,42,66, .4)';
+		var sPlusColor = 'rgba(255,99,71, .4)';
+		var sColor = 'rgba(89,176,244, .4)';
+		var aColor = 'rgba(60,179,113, .4)';
+		var averageLinesColor = 'rgba(255,255,255,.35)';
 
-		if ($configStore.preferences.theme != 'flylight') {
-			var mapBorderColor = '#003e54';
-			var ssPlusColor = 'rgba(143,72,219, .4)';
-			var ssColor = 'rgba(190,42,66, .4)';
-			var sPlusColor = 'rgba(255,99,71, .4)';
-			var sColor = 'rgba(89,176,244, .4)';
-			var aColor = 'rgba(60,179,113, .4)';
-			var averageLinesColor = 'rgba(255,255,255,.35)';
-
-			Chart.defaults.color = '#fff';
-		} else {
-			var mapBorderColor = '#dadadaaf';
-			var ssPlusColor = 'rgba(143,72,219, .4)';
-			var ssColor = 'rgba(190,42,66, .4)';
-			var sPlusColor = 'rgba(255,99,71, .4)';
-			var sColor = 'rgba(89,176,244, .4)';
-			var aColor = 'rgba(60,179,113, .4)';
-			var averageLinesColor = 'rgba(255,255,255,.35)';
+		Chart.defaults.color = '#fff';
+		if ($configStore.preferences.theme == 'flylight') {
+			mapBorderColor = '#dadadaaf';
+			ssPlusColor = 'rgba(143,72,219, .4)';
+			ssColor = 'rgba(190,42,66, .4)';
+			sPlusColor = 'rgba(255,99,71, .4)';
+			sColor = 'rgba(89,176,244, .4)';
+			aColor = 'rgba(60,179,113, .4)';
+			averageLinesColor = 'rgba(255,255,255,.35)';
 
 			Chart.defaults.color = '#757575';
 		}

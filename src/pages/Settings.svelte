@@ -141,8 +141,8 @@
 		{/if}
 
 		<div class="buttons">
-			<Button iconFa="fas fa-save" label="Save" type="primary" on:click={onSave} disabled={!settingsChanged} />
-			<Button label="Cancel" on:click={onCancel} disabled={!settingsChanged} />
+			<Button iconFa="fas fa-save" label="Save" type="primary" on:click={() => onSave()} disabled={!settingsChanged} />
+			<Button label="Cancel" on:click={() => onCancel()} disabled={!settingsChanged} />
 		</div>
 	</article>
 </section>

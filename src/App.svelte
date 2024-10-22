@@ -27,7 +27,6 @@
 	import OauthSignInPage from './pages/OauthSignIn.svelte';
 	import SupportPage from './pages/Support.svelte';
 	import Nav from './components/Nav/Nav.svelte';
-	import Modal from 'svelte-simple-modal';
 	import StaffDashboard from './pages/StaffDashboard.svelte';
 	import EventsPage from './pages/Events.svelte';
 	import Socket from './pages/Socket.svelte';
@@ -56,6 +55,7 @@
 	import BuildingBlocks2024 from './pages/BuildingBlocks2024.svelte';
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
+	import SimpleModal from './components/Common/SimpleModal.svelte';
 
 	export let url = '';
 
@@ -220,7 +220,7 @@
 <Router {url}>
 	<Nav class={$configStore?.preferences?.theme} />
 	<Notifications zIndex={10000} item={NotificationComponent}>
-		<Modal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}>
+		<SimpleModal closeButton={false} styleWindow={{width: '90vw', height: '65vh'}} styleContent={{padding: 0, 'margin-bottom': '-0.5em'}}>
 			<main bind:this={mainEl} class={$configStore?.preferences?.theme}>
 				<div class="ssr-page-container">
 					<Route path="/">
@@ -363,7 +363,7 @@
 					<Route path="/*" component={NotFoundPage} />
 				</div>
 			</main>
-		</Modal>
+		</SimpleModal>
 	</Notifications>
 </Router>
 

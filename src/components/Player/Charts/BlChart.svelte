@@ -35,32 +35,32 @@
 
 		lastHistoryHash = chartHash;
 
-		if ($configStore.preferences.theme != 'flylight') {
-			var gridColor = '#2a2a2a';
-			var rankColor = '#3e95cd';
-			var countryRankColor = '#8992e8';
-			var ppColor = '#007100';
-			var rankedPlayCountColor = '#3e3e3e';
-			var totalPlayCountColor = '#fff';
+		var gridColor = '#2a2a2a';
+		var rankColor = '#3e95cd';
+		var countryRankColor = '#8992e8';
+		var ppColor = '#007100';
+		var rankedPlayCountColor = '#3e3e3e';
+		var totalPlayCountColor = '#fff';
 
-			var activityColor = '#333';
-			var rankedActivityColor = '#eb008c';
-			var improvementsColor = '#474747';
-			var rankedImprovementsColor = '#f04dae';
+		var activityColor = '#333';
+		var rankedActivityColor = '#eb008c';
+		var improvementsColor = '#474747';
+		var rankedImprovementsColor = '#f04dae';
 
-			Chart.defaults.color = '#fff';
-		} else {
-			var gridColor = '#dadadaaf';
-			var rankColor = '#3e95cd';
-			var countryRankColor = '#8992e8';
-			var ppColor = '#007100';
-			var rankedPlayCountColor = '#3e3e3e';
-			var totalPlayCountColor = '#fff';
+		Chart.defaults.color = '#fff';
 
-			var activityColor = '#333';
-			var rankedActivityColor = '#eb008c';
-			var improvementsColor = '#474747';
-			var rankedImprovementsColor = '#f04dae';
+		if ($configStore.preferences.theme == 'flylight') {
+			gridColor = '#dadadaaf';
+			rankColor = '#3e95cd';
+			countryRankColor = '#8992e8';
+			ppColor = '#007100';
+			rankedPlayCountColor = '#3e3e3e';
+			totalPlayCountColor = '#fff';
+
+			activityColor = '#333';
+			rankedActivityColor = '#eb008c';
+			improvementsColor = '#474747';
+			rankedImprovementsColor = '#f04dae';
 
 			Chart.defaults.color = '#757575';
 		}

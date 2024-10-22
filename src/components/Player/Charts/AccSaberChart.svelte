@@ -90,20 +90,20 @@
 
 		const category = selectedCategory?.label?.toLowerCase();
 
-		if ($configStore.preferences.theme != 'flylight') {
-			var gridColor = '#2a2a2a';
-			var rankColor = '#3e95cd';
-			var ppColor = '#007100';
-			var accColor = '#3273dc';
-			var rankedPlayCountColor = '#3e3e3e';
+		var gridColor = '#2a2a2a';
+		var rankColor = '#3e95cd';
+		var ppColor = '#007100';
+		var accColor = '#3273dc';
+		var rankedPlayCountColor = '#3e3e3e';
 
-			Chart.defaults.color = '#fff';
-		} else {
-			var gridColor = '#dadadaaf';
-			var rankColor = '#3e95cd';
-			var ppColor = '#007100';
-			var accColor = '#3273dc';
-			var rankedPlayCountColor = '#3e3e3e';
+		Chart.defaults.color = '#fff';
+
+		if ($configStore.preferences.theme == 'flylight') {
+			gridColor = '#dadadaaf';
+			rankColor = '#3e95cd';
+			ppColor = '#007100';
+			accColor = '#3273dc';
+			rankedPlayCountColor = '#3e3e3e';
 
 			Chart.defaults.color = '#757575';
 		}
