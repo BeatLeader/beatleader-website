@@ -73,7 +73,7 @@
 				<span class="followers-title">{followers.followingCount} Following</span>
 				<div class="followers-list">
 					{#each followers.following as follower, idx}
-						<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower} />
+						<img loading="lazy" class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower} />
 					{/each}
 				</div>
 			</div>
@@ -83,7 +83,7 @@
 				<span class="followers-title">{followers.followersCount} Followers</span>
 				<div class="followers-list">
 					{#each followers.followers as follower, idx}
-						<img class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower} />
+						<img loading="lazy" class="follower-icon" style={idx == 0 ? 'margin-left: 0;' : ''} src={follower} />
 					{/each}
 				</div>
 			</div>
@@ -96,8 +96,8 @@
 				title={isFollowed
 					? 'Stop following'
 					: $followed.length >= 250
-					? 'More than 250 following is not supported at the moment. Please unfollow someone first.'
-					: 'Follow'}
+						? 'More than 250 following is not supported at the moment. Please unfollow someone first.'
+						: 'Follow'}
 				iconFa={isFollowed ? 'fas fa-user-minus' : 'fas fa-user-plus'}
 				type={isFollowed ? 'danger' : 'primary'}
 				loading={operationInProgress}

@@ -31,7 +31,7 @@
 			--saturation: ${data?.saturation ?? 1};
 			user-select: none
 			`}>
-		<img class="avatar-overlay {withCover ? 'with-cover' : ''}" src={overlayUrl} />
+		<img loading="lazy" class="avatar-overlay {withCover ? 'with-cover' : ''}" src={overlayUrl} />
 	</span>
 {/if}
 

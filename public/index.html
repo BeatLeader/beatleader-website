@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -29,13 +29,22 @@
 		<meta name="msapplication-square310x310logo" content="/assets/mstile-310x310.png" />
 		<meta name="theme-color" content="#ec018e" />
 
-		<link rel="stylesheet" href="/assets/ss-bulma.css" />
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" />
-		<link rel="stylesheet" href="/build/bundle.css" />
+		<link rel="preload" href="/assets/ss-bulma.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+		<link
+			rel="preload"
+			href="https://use.fontawesome.com/releases/v6.4.0/css/all.css"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'" />
+		<link rel="preload" href="/build/bundle.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+		<link
+			rel="preload"
+			href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'" />
 
-		<script src="/assets/swiped-events.min.js"></script>
+		<script src="/assets/swiped-events.min.js" defer></script>
 		<script defer src="/build/bundle.js"></script>
-		<script src="/assets/fix-ctrl-click.js"></script>
+		<script src="/assets/fix-ctrl-click.js" defer></script>
 	</head>
 
 	<body></body>

@@ -10,7 +10,6 @@
 	<img
 		alt={`${country ? country.toLowerCase() : ''} flag`}
 		src={`/assets/flags/${country ? country.toLowerCase() : ''}.png`}
-		loading="lazy"
 		class="country"
 		on:click|preventDefault={() => dispatch('flag-click', {country: country.toLowerCase()})} />
 {/if}

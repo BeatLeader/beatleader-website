@@ -64,10 +64,10 @@
 <div class="cover-difficulty">
 	{#if leaderboard}
 		{#if notClickable}
-			<img src={coverUrl} alt="" />
+			<img loading="lazy" src={coverUrl} alt="" />
 		{:else}
 			<a href={url} on:click|preventDefault={() => navigate(url)}>
-				<img src={coverUrl} alt="" />
+				<img loading="lazy" src={coverUrl} alt="" />
 			</a>
 		{/if}
 

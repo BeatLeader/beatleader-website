@@ -94,14 +94,6 @@
 		font-size: 0.85em;
 	}
 
-	.beatSavior.with-badge i {
-		font-size: 0.875em;
-	}
-
-	.beatSavior.with-badge :global(.label) {
-		font-size: 0.75em;
-	}
-
 	.pp {
 		min-width: 5em;
 	}
