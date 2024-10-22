@@ -88,7 +88,7 @@
 
 <div class="container row-${idx}">
 	{#if songInfo}
-		<img class="cover" src={coverUrl} alt="" />
+		<img loading="lazy" class="cover" src={coverUrl} alt="" />
 		<div style="display: grid; padding-left: 1em">
 			<a href={leaderboardUrl} class="name" on:click|preventDefault={() => navigate(leaderboardUrl)}>{songInfo.name}</a>
 			<div class="author">{songInfo.mapper}</div>
