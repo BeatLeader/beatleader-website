@@ -65,6 +65,23 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'BeatKhana RST 24!',
+				body: "BeatKhana returns with the biggest 1v1 tournament yet, with 128 players and a random map for every match! </br> Signups are open now, so what are you waiting for? Let's go gambling!",
+				imageUrl: '/assets/Discover/BK_RST-24_bg.webp',
+				targetUrl: 'https://youtu.be/9_UE3ZG8TgA',
+				linkName: 'contest info page',
+				buttons: [
+					{
+						text: 'Sign up!',
+						type: 'primary',
+						url: 'https://beatkhana.com/tournaments/rst2024/general',
+					},
+				],
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Building Blocks 2024',
 				body: 'Upcoming mapping contest with a prize pool and chance to get directly into ranked!',
 				imageUrl: '/assets/Discover/buildingblocks.png',
