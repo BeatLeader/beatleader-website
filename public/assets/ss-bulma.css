@@ -12048,6 +12048,11 @@ body::-webkit-scrollbar-track {
 	background: rgb(36 74 74 / 81%) !important;
 }
 
+.player-score .inc,
+.song-score .dec {
+	color: inherit;
+}
+
 .grid-transition-helper {
 	display: grid;
 	grid-template-columns: 1fr;
