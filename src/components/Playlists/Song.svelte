@@ -34,7 +34,14 @@
 		const songInfoValue = mapResponse.info;
 		if (songInfoValue && songInfoValue.song.id && songInfoValue.song.hash.toLowerCase() == hash.toLowerCase()) {
 			songInfo = songInfoValue.song;
-			leaderboards = songInfoValue.leaderboards;
+			leaderboards = songInfoValue.leaderboards.filter(
+				l =>
+					l.difficulty.mode < 7 ||
+					(difficulties?.length &&
+						difficulties.find(
+							el => l.difficulty.modeName == el.characteristic && decapitalizeFirstLetter(l.difficulty.difficultyName) == el.name
+						))
+			);
 			coverUrl = songInfo.coverImage;
 
 			let selectedLeaderboard = leaderboards[0];
