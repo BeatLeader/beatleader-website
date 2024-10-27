@@ -108,7 +108,7 @@
 											el.name == decapitalizeFirstLetter(leaderboard.difficulty.difficultyName) &&
 											el.characteristic == leaderboard.difficulty.modeName
 									)
-								: true}
+								: false}
 							on:click={() => toggleDifficulty(leaderboard.difficulty)} />
 						{#if leaderboard.myScore}
 							<SongScoreCompact

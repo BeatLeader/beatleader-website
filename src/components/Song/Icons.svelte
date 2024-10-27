@@ -211,7 +211,7 @@
 		{#if songKey && songKey.length && shownIcons.includes('playlist')}
 			{#if selectedPlaylist != null}
 				{#if playlistSong}
-					{#if playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
+					{#if playlistEntries && playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
 						<Button
 							iconFa="fas fa-list-ul"
 							title="Remove from the {selectedPlaylist.playlistTitle}"
@@ -219,7 +219,7 @@
 							noMargin={true}
 							type="danger"
 							on:click={() => playlists.remove(hash)} />
-					{:else if playlistEntries.length == 1 || !playlistEntries.includes(playlistKey)}
+					{:else if playlistEntries && (playlistEntries?.length == 1 || !playlistEntries.includes(playlistKey))}
 						<Button
 							iconFa="fas fa-list-ul"
 							title="Add this diff to the {selectedPlaylist.playlistTitle}"
