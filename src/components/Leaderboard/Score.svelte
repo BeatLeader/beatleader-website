@@ -332,11 +332,6 @@
 		margin-top: -2px;
 	}
 
-	.player-score :global(.inc),
-	.song-score :global(.dec) {
-		color: inherit;
-	}
-
 	.player-score .player :global(.player-name) {
 		cursor: pointer;
 	}
