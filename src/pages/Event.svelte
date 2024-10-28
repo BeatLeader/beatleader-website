@@ -77,18 +77,18 @@
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
 		params.forEach(p => {
 			if (p.key === 'countries') {
-				p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : p?.default ?? [];
+				p.value = Array.isArray(filters?.[p.key]) ? filters[p.key] : (p?.default ?? []);
 				filters[p.key] = filters[p.key] ?? [];
 			} else {
 				filters[p.key] = p.multi
-					? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
+					? ((p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? [])
 					: filters?.[p.key]?.length
 						? filters[p.key]
-						: p?.default ?? '';
+						: (p?.default ?? '');
 
 				p.value = p.multi
-					? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
-					: filters?.[p.key] ?? p?.default ?? '';
+					? (p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? [])
+					: (filters?.[p.key] ?? p?.default ?? '');
 			}
 		});
 
@@ -113,9 +113,9 @@
 	function updateCurrentFiltersFromParams(noScroll) {
 		params.forEach(p => {
 			if (p.key === 'countries') {
-				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : p?.value ?? '';
+				currentFilters[p.key] = p.multi ? (p?.value ?? []).join(',') : (p?.value ?? '');
 			} else {
-				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : p?.value ?? '';
+				currentFilters[p.key] = p.multi ? (p?.value ?? [])?.map(p => p.id)?.join(',') : (p?.value ?? '');
 			}
 		});
 
@@ -463,6 +463,33 @@
 						<b>Meeting in chat at the Final!🍿</b>
 					</span>
 				</div>
+			</ContentBox>
+		{/if}
+		{#if eventId == 59}
+			<ContentBox cls={modalShown ? 'inner-modal' : ''}>
+				<span>
+					Play in our Halloween "Inverted" event, install the Chirality mod, and try the newly generated "Inverted" characteristic.<br />
+					It inverts all notes in a map vertically and horizontally in direction. This makes maps more interesting and techy.<br />
+					The top 10 players will receive badges and the top 1 will also receive a sweatshirt!<br />
+				</span>
+				<div class="downloadButtons">
+					<a href="https://github.com/BeatLeader/Chirality/releases/tag/v4.0.900" target="_blank" rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download Chirality PC" color="#2d4150" />
+					</a>
+					<a
+						href="https://github.com/BeatLeader/Chirality/releases/download/v4.0.900/Chirality-Quest-1.37.0.qmod"
+						target="_blank"
+						rel="noreferrer">
+						<Button iconFa="fas fa-download" label="Download Chirality Quest (1.37)" color="#2d4150" />
+					</a>
+				</div>
+				<span>
+					<br />
+					Event consists of 10 beloved ranked maps, <a href="https://beatsaver.com/playlists/701888">Genres Of Halloween</a> from
+					TGMappingGroup, and a few new cool maps.<br />
+					Thank you, Zephyr for making Chirality mod and thanks to all the mappers making maps for the festive mood!❤️<br />
+					<b>Happy Halloween, have fun!</b>
+				</span>
 			</ContentBox>
 		{/if}
 		<ContentBox cls={modalShown ? 'inner-modal' : ''}>

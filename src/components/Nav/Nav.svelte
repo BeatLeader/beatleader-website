@@ -82,32 +82,22 @@
 		{
 			name: 'General',
 			id: '',
-			logoBig: '/assets/logo.webp',
-			logoSmall: '/assets/logo-small.webp',
 		},
 		{
 			name: 'No modifiers',
 			id: 'nomods',
-			logoBig: '/assets/logo-no-pause.webp',
-			logoSmall: '/assets/logo-small-no-pause.webp',
 		},
 		{
 			name: 'No pauses',
 			id: 'nopause',
-			logoBig: '/assets/logo.webp',
-			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'Golf',
 			id: 'golf',
-			logoBig: '/assets/logo.webp',
-			logoSmall: '/assets/favicon-96x96.webp',
 		},
 		{
 			name: 'SCPM',
 			id: 'scpm',
-			logoBig: '/assets/logo.webp',
-			logoSmall: '/assets/favicon-96x96.webp',
 		},
 	];
 
@@ -245,7 +235,7 @@
 			<div class="logo-container desktop-and-up">
 				<img src="/assets/logo.webp" class="logo" alt="" />
 				<div class="logo-name">
-					<span class="name">BEATLEADER</span>
+					<span class="name">BOOOLEADER</span>
 					{#if leaderboardType.id != ''}
 						<span class="leaderboard-type">{leaderboardType.name}</span>
 					{/if}
@@ -277,7 +267,7 @@
 							id: 'dashboard',
 						},
 						...leaderboardTypeOptions,
-				  ]
+					]
 				: leaderboardTypeOptions}
 			bind:shown={testMenuShown}>
 			<svelte:fragment slot="row" let:item>
@@ -337,7 +327,7 @@
 							? item.onClick
 							: () => {
 									accountMenuShown = false;
-							  }} />
+								}} />
 				</svelte:fragment>
 			</Dropdown>
 		</div>
@@ -581,7 +571,9 @@
 		border-bottom: 1px solid var(--dimmed);
 		z-index: 50;
 		max-width: none;
-		box-shadow: 0 8px 10px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
+		box-shadow:
+			0 8px 10px rgba(0, 0, 0, 0.23),
+			0 5px 15px rgba(0, 0, 0, 0.18);
 	}
 
 	nav > *:not(.right),
@@ -640,7 +632,7 @@
 	}
 
 	.name {
-		font-family: 'Audiowide';
+		font-family: 'Nosifer';
 		letter-spacing: 0.2em;
 		font-size: 0.9em;
 		margin-top: 0.3em;
