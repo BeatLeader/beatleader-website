@@ -56,7 +56,7 @@
 	let selectedModifiers = [];
 
 	function updateSelected(modifiers) {
-		selectedModifiers = selectedModifiers.map(sm => modifiers.find(m => m.name == sm.name));
+		selectedModifiers = selectedModifiers.map(sm => modifiers.find(m => m.name == sm.name)).filter(sm => !!sm);
 	}
 
 	async function setupChart(canvas, configStore, passRating, accRating, techRating, logarithmic, startAcc, endAcc) {
@@ -267,6 +267,8 @@
 		}))
 		.filter(m => m.name && m.value && m.name != 'NF')
 		.sort((a, b) => b.value - a.value);
+	$: updateSelected(modifiersArr);
+
 	$: excludedModifiers = selectedModifiers.reduce(
 		(all, mod) => (mutuallyExclusive[mod?.name] ? all.concat(mutuallyExclusive[mod.name]) : all),
 		[]
@@ -286,7 +288,6 @@
 		techRating: modifiedTechRating,
 		stars: modifiedStars,
 	});
-	$: modifiersArr && updateSelected(modifiersArr);
 </script>
 
 <section class="chart" style="--height: {height}">
