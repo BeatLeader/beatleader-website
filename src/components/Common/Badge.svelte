@@ -66,6 +66,7 @@
 		</span>
 	{/if}
 	{#if $$slots.additional}<slot name="additional" />{/if}
+	{#if $$slots.additionalCompare}<slot name="additionalCompare" />{/if}
 </span>
 
 <style>

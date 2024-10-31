@@ -47,6 +47,7 @@ export const processScore = s => {
 		timeset: improvedTimeset,
 		rank: improvedRank,
 		totalRank: improvedTotalRank,
+		modifiers: oldModifiers,
 	} = s?.scoreImprovement ?? {};
 	const improvedTime = improvedTimepost && improvedTimepost > 0 ? improvedTimepost : improvedTimeset;
 
@@ -73,6 +74,10 @@ export const processScore = s => {
 						...s.scoreImprovement,
 						accuracy: (improvedAcc ?? 0) * 100,
 						timeSet: improvedTime ? dateFromUnix(improvedTime) : null,
+						mods: oldModifiers
+							?.split(',')
+							.map(m => m.trim().toUpperCase())
+							.filter(m => m.length),
 					}
 				: null,
 		},

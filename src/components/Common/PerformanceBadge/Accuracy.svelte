@@ -51,8 +51,10 @@
 		secondary === 'improvement'
 			? value - (score?.scoreImprovement?.accuracy ?? 0)
 			: secondary === 'fcAccuracy' && score?.fcAccuracy
-			? score.fcAccuracy * 100
-			: null;
+				? score.fcAccuracy * 100
+				: null;
+	$: prevMods = score?.scoreImprovement?.mods;
+
 	$: prevAbsolute = secondary === 'fcAccuracy';
 	$: prevPrefix = secondary === 'fcAccuracy' ? '{ ' : null;
 	$: prevSuffix = secondary === 'fcAccuracy' ? '% }' : '%';
@@ -79,20 +81,37 @@
 			zero="-"
 			withZeroSuffix={false} />
 		{#if secondary === 'mods'}
-			<small title={$isDemo ? 'Click to setup' : mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
-				>{#if mods && mods.length}{`${mods.join(' ')}`}{/if}</small>
+			<small title={$isDemo ? 'Click to setup' : mods ? describeModifiersAndMultipliers(mods, modifiers) : null}>
+				{#if mods && mods.length}
+					{`${mods.join(' ')}`}
+				{/if}{#if prevMods && prevMods.length}
+					{`${prevMods.join(' ')}`}
+				{/if}
+			</small>
 		{/if}
 		<slot name="label-after" />
 	</span>
 	<small
 		class="mods"
 		slot="additional"
-		title={$isDemo ? 'Click to setup' : showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}
-		>{#if showMods && mods && mods.length}
+		title={$isDemo ? 'Click to setup' : showMods && mods ? describeModifiersAndMultipliers(mods, modifiers) : null}>
+		{#if showMods && mods && mods.length}
 			{#each mods as mod}
 				<span>{mod}</span>
 			{/each}
-		{/if}</small>
+		{/if}{#if showMods && prevMods && prevMods.length}
+			<small
+				class="compare-mods"
+				title={$isDemo
+					? 'Click to setup'
+					: showMods && prevMods
+						? describeModifiersAndMultipliers(prevMods, modifiers, 'Previous mods:')
+						: null}>
+				{#if !mods || !mods.length}<div class="mods-spacer"></div>{/if}
+				{#each prevMods as mod}<span>{mod}</span>{/each}
+			</small>
+		{/if}
+	</small>
 </Badge>
 
 <style>
@@ -113,6 +132,27 @@
 
 	.mods:empty {
 		display: none !important;
+	}
+
+	.compare-mods {
+		max-width: 3em;
+		min-width: 2em;
+		margin-bottom: -0.6em !important;
+		margin-top: 0.8em !important;
+		line-height: 1;
+		flex-wrap: wrap;
+		gap: 0.3em;
+		display: flex;
+		justify-content: center;
+	}
+
+	.compare-mods:empty {
+		display: none !important;
+	}
+
+	.mods-spacer {
+		width: 3em;
+		height: 1.4em;
 	}
 
 	:global(*:not(.compare) > .badge.nominated-pp) {

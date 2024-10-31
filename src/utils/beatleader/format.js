@@ -1176,9 +1176,9 @@ export function votingsForTypeStats(stats) {
 	return result.length ? result.substring(0, result.length - 2) : null;
 }
 
-export function describeModifiersAndMultipliers(modifiers, multipliers) {
+export function describeModifiersAndMultipliers(modifiers, multipliers, title = 'Mods:') {
 	if (modifiers && multipliers) {
-		let result = 'Mods:';
+		let result = title;
 		let total = 0;
 		modifiers.forEach(key => {
 			const value = multipliers[key.toLowerCase()] ?? 0;
