@@ -37,7 +37,7 @@
 	}
 
 	$: updateCount(followingCount, followersCount, tab);
-	$: playerCount = Math.min(Math.round(window.screen.height / 100), 10);
+	$: playerCount = Math.min(Math.round(window.screen.height / 120), 10);
 	$: fetchFollowers(playerId, playerCount, tab, page);
 </script>
 
@@ -150,5 +150,11 @@
 
 	:global(.wrap .window:has(.followers-popup-container)) {
 		border-radius: 18px !important;
+	}
+
+	@media screen and (max-width: 767px) {
+		:global(.wrap .window:has(.followers-popup-container)) {
+			margin-top: -1.4em;
+		}
 	}
 </style>

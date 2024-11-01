@@ -113,7 +113,7 @@
 	openGraph={{
 		title,
 		description: metaDescription,
-		images: [{url: CURRENT_URL + '/assets/census2023.png'}],
+		images: [{url: CURRENT_URL + '/assets/census2023.webp'}],
 		siteName: ssrConfig.name,
 	}}
 	twitter={{
@@ -122,7 +122,7 @@
 		cardType: 'summary_large_image',
 		title,
 		description: metaDescription,
-		image: CURRENT_URL + '/assets/census2023.png',
+		image: CURRENT_URL + '/assets/census2023.webp',
 		imageAlt: metaDescription,
 	}} />
 
