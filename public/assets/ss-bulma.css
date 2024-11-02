@@ -1,5 +1,5 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css2?family=Nosifer&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 
 :root {
 	--background: #222;
@@ -11533,7 +11533,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./favicon-196x196.png');
+	background-image: url(./logo-small.webp);
 }
 
 .beatsavior-icon {
@@ -11658,7 +11658,7 @@ select {
 	height: 100%;
 	background-size: cover;
 	background-repeat: no-repeat;
-	background-image: url('./Characteristics/invertedstandardevent.webp');
+	background-image: url('./Characteristics/invertedstandard.webp');
 }
 
 .verticalstandard-icon {

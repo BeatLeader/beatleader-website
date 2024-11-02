@@ -225,7 +225,8 @@
 	.big-title {
 		font-size: 4em;
 		line-height: 1.2em;
-		font-family: 'Nosifer';
+		font-family: 'Audiowide';
+		text-shadow: 2px 2px 4px black;
 	}
 
 	.big-description {
