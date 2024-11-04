@@ -445,6 +445,7 @@
 					value={sortValue?.value(player)}
 					{maxRank}
 					{maxCountryRank}
+					noImprovements={eventId}
 					valueProps={eventId == 32 || eventId == 48
 						? {prefix: '', suffix: ' scores', zero: 'Carbon positive', digits: 0}
 						: sortValue?.props ?? {}}

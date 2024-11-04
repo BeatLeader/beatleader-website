@@ -27,6 +27,7 @@
 	export let maxRank = 1;
 	export let maxCountryRank = 1;
 	export let opacity = '1.0';
+	export let noImprovements = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -128,8 +129,8 @@
 		maxRank,
 		maxCountryRank,
 		$configStore.rankingList.showCountryRank,
-		$configStore.rankingList.showDifference,
-		$configStore.rankingList.showCountryDifference
+		!noImprovements && $configStore.rankingList.showDifference,
+		!noImprovements && $configStore.rankingList.showCountryDifference
 	);
 
 	let referenceElement;
@@ -153,7 +154,7 @@
 			on:keypress={e => onGlobalClick(e, player)}>
 			#<Value value={rank} digits={0} zero="?" />
 		</div>
-		{#if $configStore.rankingList.showDifference}
+		{#if !noImprovements && $configStore.rankingList.showDifference}
 			<span class="change" title="Compared to the last week">
 				<Change value={opt(player, 'others.difference')} digits={0} />
 			</span>
@@ -170,7 +171,7 @@
 				<Flag country={opt(player, 'playerInfo.country.country')} />
 			</div>
 		{/if}
-		{#if $configStore.rankingList.showCountryDifference}
+		{#if !noImprovements && $configStore.rankingList.showCountryDifference}
 			<span class="change" title="Cuntry rank compared to the last week">
 				<Change value={opt(player, 'others.countryDifference')} digits={0} />
 			</span>

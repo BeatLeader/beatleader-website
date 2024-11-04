@@ -101,7 +101,7 @@
 			{/each}
 		{/if}{#if showMods && prevMods && prevMods.length}
 			<small
-				class="compare-mods"
+				class="compare-mods {prevMods.length > 1 && mods?.length > 1 ? 'double' : ''}"
 				title={$isDemo
 					? 'Click to setup'
 					: showMods && prevMods
@@ -144,6 +144,11 @@
 		gap: 0.3em;
 		display: flex;
 		justify-content: center;
+	}
+
+	.compare-mods.double {
+		max-width: unset;
+		margin-top: unset !important;
 	}
 
 	.compare-mods:empty {
