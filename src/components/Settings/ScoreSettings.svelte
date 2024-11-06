@@ -323,6 +323,19 @@
 		}
 	}
 
+	const scoreButtonsLabels = {
+		pin: 'Score Pin',
+		playlist: 'Playlist Management',
+		bsr: 'bsr!',
+		bs: 'BeatSaver',
+		oneclick: 'One-Click',
+		preview: 'Map Preview',
+		replay: 'Replay',
+		delete: 'Delete',
+		analyzer: 'Reeplay Analyzer',
+		altReplay: 'ArcViewer Replay',
+	};
+
 	$: onConfigUpdated(configStore && $configStore ? $configStore : null);
 	$: onBadgePresetChange(currentBadgePreset);
 
@@ -378,7 +391,7 @@
 					{#each scoreIcons as key}
 						<Switch
 							value={visibleScoreIcons[key]}
-							label={key}
+							label={scoreButtonsLabels[key]}
 							fontSize={12}
 							design="slider"
 							on:click={() => configStore.settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
@@ -474,10 +487,12 @@
 			<label title="How One-Click button will work">One-click installs</label>
 			<Select bind:value={currentOneclick} options={oneclickOptions} />
 		</section>
-		<section class="option">
-			<label title="Which web replay player to use">Web replays</label>
-			<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
-		</section>
+		{#if !visibleScoreIcons['altReplay']}
+			<section class="option">
+				<label title="Which web replay player to use">Web replays</label>
+				<Select bind:value={currentWebPlayer} options={webPlayerOptions} />
+			</section>
+		{/if}
 		<section class="option">
 			<label title="Show web replays/previews on PC in a popup or open in the new tab">Open replays/previews in</label>
 			<Select bind:value={currentLinkOption} options={linkOptions} />

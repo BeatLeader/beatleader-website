@@ -183,7 +183,8 @@
 	$: ocdifficulties = ocplaylistSong?.difficulties?.map(el => capitalize(el.name) + el.characteristic);
 
 	$: isAdmin = $account.player && $account.player.playerInfo.role && $account.player.playerInfo.role.includes('admin');
-	$: replayUrl = webPlayerLink(replayLink, scoreId, $configStore.preferences.webPlayer);
+	$: replayUrl = webPlayerLink(replayLink, scoreId, !shownIcons.includes('altReplay') && $configStore.preferences.webPlayer);
+	$: altReplayUrl = webPlayerLink(replayLink, scoreId, 'arcviewer');
 	$: analyzerUrl = analyzerLink(replayLink, scoreId);
 	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 		charName ? `&mode=${charName}` : ''
@@ -377,6 +378,17 @@
 				on:click={() => showPreview(replayUrl)}
 				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
 				icon="<img src='/assets/{altReplay ? `replays.svg` : `bs-pepe.gif`}'>"
+				title="Replay"
+				animated={true}
+				noMargin={true} />
+		{/if}
+
+		{#if shownIcons.includes('altReplay') && altReplayUrl && altReplayUrl.length}
+			<Button
+				url={altReplayUrl}
+				on:click={() => showPreview(altReplayUrl)}
+				cls={altReplay ? 'replay-button-alt' : 'replay-button'}
+				icon="<img src='/assets/ArcViewerIcon.webp'>"
 				title="Replay"
 				animated={true}
 				noMargin={true} />

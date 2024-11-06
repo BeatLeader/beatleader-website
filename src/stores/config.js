@@ -200,6 +200,7 @@ export const DEFAULT_CONFIG = {
 		replay: true,
 		delete: true,
 		analyzer: true,
+		altReplay: false,
 	},
 	ppCurve: {
 		startAcc: 0.6,
