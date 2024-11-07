@@ -55,6 +55,7 @@
 	import {padNumber} from './utils/format';
 	import SongScoreDetailsStandalone from './components/Player/SongScoreDetailsStandalone.svelte';
 	import GlobalClansMapHistory from './components/Clans/GlobalClansMapHistory.svelte';
+	import SkillTriangleChart from './components/Player/Charts/SkillTriangleChart.svelte';
 
 	export let url = '';
 
@@ -276,6 +277,9 @@
 					</Route>
 					<Route path="/playlist/:id" let:params>
 						<PlaylistPage id={params.id} />
+					</Route>
+					<Route path="/triangle/:id" let:params>
+						<SkillTriangleChart playerId={params.id} />
 					</Route>
 					<Route path="/help" component={SupportPage} />
 					<Route path="/dashboard" component={DashboardPage} />
