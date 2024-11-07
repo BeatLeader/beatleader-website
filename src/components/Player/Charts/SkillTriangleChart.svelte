@@ -14,10 +14,9 @@
 
 	const dispatch = createEventDispatcher();
 
-	const multiplier = 1100;
-	const DEFAULT_MAX_TECH_PP = 2 * multiplier;
-	const DEFAULT_MAX_ACC_PP = 24 * multiplier;
-	const DEFAULT_MAX_PASS_PP = 10 * multiplier;
+	const DEFAULT_MAX_TECH_PP = 1300;
+	const DEFAULT_MAX_ACC_PP = 15000;
+	const DEFAULT_MAX_PASS_PP = 6000;
 
 	const gypL = 57.74;
 
