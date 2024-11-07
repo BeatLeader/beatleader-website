@@ -40,7 +40,7 @@
 				break;
 			case 'triangle':
 				chartComponent = SkillTriangleChart;
-				chartComponentProps = {playerInfo};
+				chartComponentProps = {playerInfo, playerId};
 				break;
 
 			default:
