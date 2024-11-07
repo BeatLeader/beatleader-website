@@ -151,6 +151,7 @@
 				response => response.blob()
 			);
 			try {
+				window.focus();
 				await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 				successToast('Screenshot Copied to Clipboard');
 			} catch {

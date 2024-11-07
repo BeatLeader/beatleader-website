@@ -98,6 +98,7 @@
 					.query({name: 'clipboard-write'})
 					.then(async result => {
 						if (result.state === 'granted' || result.state === 'prompt') {
+							window.focus();
 							await navigator.clipboard.write([new ClipboardItem({'image/png': blob})]);
 							successToast('Screenshot Copied to Clipboard');
 						} else {

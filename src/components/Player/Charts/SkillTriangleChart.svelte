@@ -1,10 +1,14 @@
 <script>
-	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
+	import {BL_API_URL, BL_RENDERER_API_URL} from '../../../network/queues/beatleader/api-queue';
 	import {dateFromUnix, formatDate, formatDateCustom} from '../../../utils/date';
+	import createAccountStore from '../../../stores/beatleader/account';
 	import Value from '../../Common/Value.svelte';
 	import {createEventDispatcher} from 'svelte';
+	import {getNotificationsContext} from 'svelte-notifications';
 	import {tweened} from 'svelte/motion';
 	import {cubicOut} from 'svelte/easing';
+	import Button from '../../Common/Button.svelte';
+	import Spinner from '../../Common/Spinner.svelte';
 
 	export let playerInfo = null;
 	export let playerId = null;
@@ -13,6 +17,8 @@
 	export let showRatings = true;
 
 	const dispatch = createEventDispatcher();
+	const {addNotification} = getNotificationsContext();
+	const account = createAccountStore();
 
 	const DEFAULT_MAX_TECH_PP = 1300;
 	const DEFAULT_MAX_ACC_PP = 15000;
@@ -98,6 +104,52 @@
 	function handleTimelineChange(event) {
 		const newIndex = parseInt(event.target.value);
 		selectTimestamp(history[newIndex].timestamp);
+	}
+
+	function successToast(text) {
+		addNotification({
+			text: text,
+			position: 'top-right',
+			type: 'success',
+			removeAfter: 2000,
+		});
+	}
+
+	let screenshoting = false;
+	async function makeGif() {
+		try {
+			screenshoting = true;
+			const blob = await fetch(`${BL_RENDERER_API_URL}animatedloop/700x400/2/1.2/skill-triangle-history/general/triangle/${playerId}`).then(
+				response => response.blob()
+			);
+			try {
+				window.focus();
+				await navigator.clipboard.write([new ClipboardItem({'image/gif': blob})]);
+				successToast('Gif Copied to Clipboard');
+			} catch (e) {
+				console.log(e);
+
+				const anchor = document.createElement('a');
+				const objURL = URL.createObjectURL(blob);
+				anchor.href = objURL;
+				anchor.style.display = 'none';
+				anchor.download = 'skill-triangle-history.gif';
+				document.body.appendChild(anchor);
+				anchor.click();
+				document.body.removeChild(anchor);
+				URL.revokeObjectURL(objURL);
+				successToast('Gif Saved');
+			}
+		} catch (e) {
+			addNotification({
+				text: 'Gif Failed',
+				position: 'top-right',
+				type: 'error',
+				removeAfter: 4000,
+			});
+		} finally {
+			screenshoting = false;
+		}
 	}
 
 	$: playerId && fetchHistory(playerId);
@@ -247,6 +299,18 @@ Improvements: {data.improvements}"
 			</svg>
 		</div>
 	</div>
+	{#if history?.length > 1 && playerId == $account?.player?.playerId}
+		<div class="gif-container">
+			{#if screenshoting}
+				<div>
+					<Spinner />
+					<span>Recording history...</span>
+				</div>
+			{:else}
+				<Button type="primary" label="Create gif!" iconFa="fas fa-film" on:click={() => makeGif()} />
+			{/if}
+		</div>
+	{/if}
 {/if}
 
 <style>
@@ -302,12 +366,14 @@ Improvements: {data.improvements}"
 	.timeline-container {
 		display: flex;
 		gap: 1em;
+		min-width: 18em;
 	}
 
 	.timeline-labels {
 		display: flex;
 		flex-direction: column-reverse;
 		font-size: 0.8em;
+		min-width: 10em;
 	}
 
 	.timeline-label {
@@ -363,10 +429,18 @@ Improvements: {data.improvements}"
 		opacity: 1;
 	}
 
-	@media screen and (max-width: 500px) {
+	.gif-container {
+		display: flex;
+		justify-content: center;
+		scale: 0.8;
+		margin-top: 1em;
+	}
+
+	@media screen and (max-width: 1000px) {
 		.triangle-and-slider {
 			gap: 1em;
 			flex-direction: column-reverse;
+			align-items: center;
 		}
 	}
 </style>
