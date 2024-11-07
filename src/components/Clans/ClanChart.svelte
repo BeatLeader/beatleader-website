@@ -19,6 +19,7 @@
 		const response = await fetch(`${BL_API_URL}clan/${clanId}/history`);
 		const data = await response.json();
 		return data.map(item => ({
+			...item,
 			timestamp: dateFromUnix(item.timestamp),
 			globalMapCaptured: item.globalMapCaptured,
 		}));
@@ -45,6 +46,7 @@
 					{
 						label: 'Global % Map Captured',
 						data: clanHistory.map(item => ({
+							...item,
 							x: item.timestamp,
 							y: item.globalMapCaptured * 100,
 						})),
@@ -92,7 +94,11 @@
 								return formatDate(tooltipItems[0].parsed.x);
 							},
 							label: context => {
-								return `Global Map Captured: ${formatNumber(context.parsed.y)}%`;
+								return [
+									`Global Map Captured: ${formatNumber(context.parsed.y)}%`,
+									`Leaderboards: ${formatNumber(context.raw.captureLeaderboardsCount, 0)}`,
+									`Players: ${formatNumber(context.raw.playersCount, 0)}`,
+								];
 							},
 						},
 					},
