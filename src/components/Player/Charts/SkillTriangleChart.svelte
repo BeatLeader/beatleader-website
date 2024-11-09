@@ -119,7 +119,7 @@
 	async function makeGif() {
 		try {
 			screenshoting = true;
-			const blob = await fetch(`${BL_RENDERER_API_URL}animatedloop/700x400/2/1.2/skill-triangle-history/general/triangle/${playerId}`).then(
+			const blob = await fetch(`${BL_RENDERER_API_URL}animatedloop/700x340/2/1.2/skill-triangle-history/general/triangle/${playerId}`).then(
 				response => response.blob()
 			);
 			try {
