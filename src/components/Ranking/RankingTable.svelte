@@ -16,6 +16,7 @@
 	import {configStore} from '../../stores/config';
 	import {participants} from '../../others/bswc2024';
 	import player from '../../services/beatleader/player';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../utils/format';
 
 	export let type = 'global';
 	export let page = 1;
@@ -250,6 +251,18 @@
 			props: {digits: 0, prefix: '', suffix: ''},
 		},
 	];
+
+	if (GLOBAL_LEADERBOARD_TYPE == 'general') {
+		allSortValues.push({
+			id: 'allContextsPp',
+			label: 'All Contexts PP',
+			title: 'PP sum from all the leaderboard contexts (No Mods, Golf, SCPM...)',
+			iconFa: 'fa fa-infinity',
+			value: data => getStat(data, 'playerInfo.allContextsPp'),
+			props: {prefix: '', suffix: 'pp', zero: '-', digits: 2},
+			hideForTypes: ['unranked'],
+		});
+	}
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;

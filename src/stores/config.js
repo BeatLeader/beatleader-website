@@ -137,6 +137,7 @@ export const DEFAULT_CONFIG = {
 		replaysWatched: true,
 		top1Score: false,
 		top1Count: false,
+		allContextsPp: true,
 	},
 	rankingList: {
 		showClans: true,
