@@ -56,4 +56,10 @@
 			left: calc(50% - 112px);
 		}
 	}
+
+	@media screen and (max-width: 318px) {
+		.with-cover {
+			top: 83px !important;
+		}
+	}
 </style>
