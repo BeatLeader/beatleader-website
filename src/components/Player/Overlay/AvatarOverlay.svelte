@@ -57,7 +57,7 @@
 		}
 	}
 
-	@media screen and (max-width: 318px) {
+	@media screen and (max-width: 321px) {
 		.with-cover {
 			top: 83px !important;
 		}

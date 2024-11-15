@@ -23,6 +23,7 @@
 	import RandomRain from '../components/Common/RandomRain.svelte';
 	import BioCarousel from '../components/Player/Bio/BioCarousel.svelte';
 	import PlayerCards from '../components/Player/Bio/PlayerCards.svelte';
+	import createAccountStore from '../stores/beatleader/account';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import {fetchJson} from '../network/fetch';
 	import {toggleRandomImageOnHover} from '../utils/clans';
@@ -40,6 +41,7 @@
 	const serviceParamsManager = createServiceParamsManager();
 	const pinnedScoresStore = createPinnedScoresStore();
 	const statsHistoryStore = createStatsHistoryStore();
+	const account = createAccountStore();
 
 	function processInitialParams(params) {
 		const serviceInfo = serviceParamsManager.initFromUrl(params);
@@ -171,6 +173,16 @@
 	let innerHeight = 0;
 	let playerPage = null;
 
+	let legacy = false;
+	function fetchLegacyStatus() {
+		legacy = false;
+		fetch(`${BL_API_URL}player/legacygame`, {credentials: 'include'})
+			.then(d => d.text())
+			.then(r => {
+				legacy = r == 'true';
+			});
+	}
+
 	$: paramsStore = playerStore ? playerStore.params : null;
 
 	$: currentPlayerId = $paramsStore.currentPlayerId;
@@ -210,6 +222,8 @@
 
 	$: accSaberAvailable = accSaberService.isDataForPlayerAvailable(playerData);
 	$: $playerStore?.playerInfo && updateHorizontalRichBio($playerStore?.playerInfo.horizontalRichBio);
+	$: isMain = playerId && $account?.id === playerId;
+	$: isMain && fetchLegacyStatus();
 
 	$: rank = $playerStore?.playerInfo.rank;
 	$: country = $playerStore?.playerInfo.country.country;
@@ -269,6 +283,19 @@
 			{/if}
 
 			{#if playerId}
+				{#if isMain && legacy}
+					<ContentBox cls="legacy-warning">
+						<span
+							>Beat Saber 1.29.1 is now considered Legacy. Please update your game to get many bugfixes, performance improvements and mod
+							updates.</span
+						><br />
+						<span
+							>You can use <a href="https://github.com/Zagrios/bs-manager/releases">BSManager</a> to install separate game version. And
+							migrate your controller offsets with <a href="https://github.com/qe201020335/BeatSaberOffsetMigrator">OffsetMigrator mod</a>
+						</span>
+					</ContentBox>
+				{/if}
+
 				<ContentBox cls="scores-box">
 					<Scores
 						{playerId}
