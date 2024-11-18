@@ -89,14 +89,16 @@
 				<Value value={playerInfo?.rank} prefix="#" digits={0} zero="#0" inline={true} reversePrevSign={true} />
 				<i class="fas fa-globe-americas" />
 			</a>
-			<div class="hmd-container">
-				<div class="hmd-image-container">
-					<img src={'/assets/' + headset?.icon} alt={headset?.name} style={headsetStyle} />
+			{#if headset}
+				<div class="hmd-container">
+					<div class="hmd-image-container">
+						<img src={'/assets/' + headset?.icon} alt={headset?.name} style={headsetStyle} />
+					</div>
+					<span>
+						{headset?.name}
+					</span>
 				</div>
-				<span>
-					{headset?.name}
-				</span>
-			</div>
+			{/if}
 		</div>
 		<div class="platform-entry">
 			<a
@@ -111,9 +113,11 @@
 					class="countryIcon"
 					alt={country?.country} />
 			</a>
-			<div class="top-platform">
-				{topPlatform}
-			</div>
+			{#if topPlatform}
+				<div class="top-platform">
+					{topPlatform}
+				</div>
+			{/if}
 		</div>
 	</div>
 </div>

@@ -310,7 +310,10 @@
 						display: true,
 						text: sortByToAxisName(sortBy),
 					},
-					ticks: sortByToTicks(sortBy),
+					ticks: {
+						...sortByToTicks(sortBy),
+						precision: ['rank', 'pauses', 'maxStreak', 'mistakes', 'playerRank'].includes(sortBy) ? 0 : undefined,
+					},
 					grid: {
 						color: 'rgba(0,0,0,0.1)',
 						display: true,

@@ -141,7 +141,14 @@
 	$: graphLegends = Object.keys($configStore.chartLegendVisible);
 </script>
 
-<div class="main-container" in:fly|global={{y: animationSign * 200, duration: 400}} out:fade|global={{duration: 100}}>
+<div
+	class="main-container"
+	in:fly|global={{y: animationSign * 200, duration: 400, delay: 0}}
+	out:fade|global={{duration: 100}}
+	on:outroend={() => {
+		const el = document.querySelector('.main-container');
+		if (el) el.remove();
+	}}>
 	<div class="profile">
 		<Profile playerData={$playerStore} fixedBrowserTitle="Settings" clanEffects={false} />
 
