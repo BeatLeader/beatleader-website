@@ -129,16 +129,20 @@
 			} catch (e) {
 				console.log(e);
 
-				const anchor = document.createElement('a');
-				const objURL = URL.createObjectURL(blob);
-				anchor.href = objURL;
-				anchor.style.display = 'none';
-				anchor.download = 'skill-triangle-history.gif';
-				document.body.appendChild(anchor);
-				anchor.click();
-				document.body.removeChild(anchor);
-				URL.revokeObjectURL(objURL);
-				successToast('Gif Saved');
+				const reader = new FileReader();
+				reader.readAsDataURL(blob);
+				reader.onloadend = () => {
+					const base64data = reader.result;
+
+					const anchor = document.createElement('a');
+					anchor.href = base64data;
+					anchor.style.display = 'none';
+					anchor.download = 'skill-triangle-history.gif';
+					document.body.appendChild(anchor);
+					anchor.click();
+					document.body.removeChild(anchor);
+					successToast('Gif Saved');
+				};
 			}
 		} catch (e) {
 			addNotification({
