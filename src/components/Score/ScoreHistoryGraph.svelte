@@ -133,7 +133,7 @@
 	$: score && fetchHistory(score, $configStore.scoreHistoryLegend);
 </script>
 
-{#if history?.length > 1}
+{#if fullhistory?.length > 1}
 	<div class="history-container">
 		<div class="details-box history-box">
 			<div class="history-table" bind:this={scrollContainer}>

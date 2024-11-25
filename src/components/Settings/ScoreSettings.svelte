@@ -389,12 +389,14 @@
 				<label title="Determines which buttons should be displayed at score">Buttons to show:</label>
 				<div class="switches">
 					{#each scoreIcons as key}
-						<Switch
-							value={visibleScoreIcons[key]}
-							label={scoreButtonsLabels[key]}
-							fontSize={12}
-							design="slider"
-							on:click={() => configStore.settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
+						{#if scoreButtonsLabels[key]}
+							<Switch
+								value={visibleScoreIcons[key]}
+								label={scoreButtonsLabels[key]}
+								fontSize={12}
+								design="slider"
+								on:click={() => configStore.settempsetting('visibleScoreIcons', key, !visibleScoreIcons[key])} />
+						{/if}
 					{/each}
 				</div>
 			</section>
