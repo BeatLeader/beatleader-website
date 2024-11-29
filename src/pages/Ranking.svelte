@@ -25,6 +25,7 @@
 	import {produce} from 'immer';
 	import {dateFromUnix} from '../utils/date';
 	import DatePicker from '../components/Common/DatePicker.svelte';
+	import Button from '../components/Common/Button.svelte';
 
 	export let page = 1;
 	export let location;
@@ -397,7 +398,7 @@
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, buildFiltersFromLocation(location), false, false);
-	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/week106_bg.webp');
+	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/week120_bg.webp');
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 </script>
@@ -418,7 +419,7 @@
 				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/49')} />
 			</div>
 		</ContentBox> -->
-		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/57')}>
+		<ContentBox cls="event-banner" on:click={() => navigate('/event/60')}>
 			<div class="cinematics">
 				<div class="cinematics-canvas">
 					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -437,11 +438,11 @@
 						<span class="event-title"></span>
 					</div>
 					<div>
-						<Button label="Event" cls="event-cover-btn" iconFa="fas fa-rocket" on:click={() => navigate('/event/57')} />
+						<Button label="Event" cls="event-cover-btn" iconFa="fas fa-rocket" on:click={() => navigate('/event/60')} />
 					</div>
 				</div>
 			</div>
-		</ContentBox> -->
+		</ContentBox>
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -657,7 +658,7 @@
 	.cover-bg {
 		position: absolute;
 		display: block;
-		background: url(/assets/week106_bg.webp) !important;
+		background: url(/assets/week120_bg.webp) !important;
 		background-size: cover !important;
 		background-position-y: 50% !important;
 		bottom: -10%;
@@ -668,25 +669,27 @@
 	.cover-girls {
 		position: absolute;
 		display: block;
-		background: url(/assets/week106_girls.webp) !important;
+		background: url(/assets/week120_girl.webp) !important;
 		background-size: cover !important;
 		background-position-y: 50% !important;
-		height: 28em;
-		left: calc(50% - 14em);
+		height: 23em;
+		left: calc(50% - 10em);
 		top: calc(50% - 8em);
-		width: 28em;
+		width: 23em;
 	}
+
 	.cover-hands {
 		position: absolute;
 		display: block;
-		background: url(/assets/week106_numbers.webp) !important;
+		background: url(/assets/week120_numbers_big.webp) !important;
 		background-size: cover !important;
 		background-position-y: 50% !important;
-		width: 22em;
+		width: 43em;
 		height: 22em;
-		left: calc(50% - 11em);
-		top: calc(50% - 7em);
+		left: calc(50% - 23em);
+		top: calc(50% - 8.5em);
 	}
+
 	.cinematics {
 		position: absolute;
 		top: 0;
@@ -761,6 +764,20 @@
 	@media screen and (max-width: 512px) {
 		.cover-hands {
 			background-position-y: 0.2em !important;
+		}
+	}
+
+	@media screen and (max-width: 760px) {
+		.cover-hands {
+			position: absolute;
+			display: block;
+			background: url(/assets/week120_numbers.webp) !important;
+			background-size: cover !important;
+			background-position-y: 50% !important;
+			width: 27em;
+			height: 22em;
+			left: calc(50% - 14em);
+			top: calc(50% - 7em);
 		}
 	}
 
