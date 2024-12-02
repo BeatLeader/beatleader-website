@@ -46,6 +46,7 @@
 				autoSkipPadding: 4,
 				color: 'white',
 			},
+			offset: true, // Add offset to prevent bar clipping
 		};
 
 		const yAxes = {
@@ -90,6 +91,8 @@
 				type: 'bar',
 				backgroundColor: '#ee5555',
 				order: 4,
+				barPercentage: 0.9, // Adjust bar width
+				categoryPercentage: 0.8, // Adjust spacing between bars
 			},
 			{
 				yAxisID: 'count',
@@ -99,6 +102,8 @@
 				type: 'bar',
 				backgroundColor: '#5555ee',
 				order: 5,
+				barPercentage: 0.9, // Adjust bar width
+				categoryPercentage: 0.8, // Adjust spacing between bars
 			},
 			{
 				yAxisID: 'td',
