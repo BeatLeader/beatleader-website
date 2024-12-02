@@ -55,8 +55,8 @@
 				? `Lost by underswings: ${formatNumber(underswingsData.noUnderswingsScore - underswingsData.score, 0)}pts, ${formatNumber(
 						underswingsData.noUnderswingsAcc - underswingsData.acc,
 						2
-				  )}% acc` +
-				  (underswingsData?.noUnderswingsPp && underswingsData?.noUnderswingsPp > underswingsData?.pp
+					)}% acc` +
+					(underswingsData?.noUnderswingsPp && underswingsData?.noUnderswingsPp > underswingsData?.pp
 						? `, ${formatNumber(underswingsData.noUnderswingsPp - underswingsData.pp, 2)}pp`
 						: '')
 				: null;
@@ -107,6 +107,7 @@
 		}
 
 		const xAxis = {
+			display: false,
 			scaleLabel: {
 				display: true,
 			},

@@ -18,7 +18,7 @@
 
 {#if avatar}
 	<figure class="image is-24x24" {title} on:click>
-		<img src={avatar} alt="" />
+		<img src={avatar} loading="lazy" alt="" />
 		{#if overlayUrl}
 			<img
 				alt="Avatar overlay effect"
@@ -27,12 +27,13 @@
 				style:--hue={`${hue}deg`}
 				style:--saturation={saturation}
 				style:--size={overlaySize}
-				style:--offset={overlayOffset} />
+				style:--offset={overlayOffset}
+				loading="lazy" />
 		{/if}
 	</figure>
 {:else if clan}
 	<figure class="image is-24x24" on:click>
-		<img src={clanAvatar} alt="" />
+		<img src={clanAvatar} loading="lazy" alt="" />
 	</figure>
 {/if}
 

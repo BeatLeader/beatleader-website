@@ -1,5 +1,4 @@
 @charset "UTF-8";
-@import url('https://fonts.googleapis.com/css2?family=Audiowide&display=swap');
 
 :root {
 	--background: #222;
@@ -12049,6 +12048,11 @@ body::-webkit-scrollbar-track {
 	background: rgb(36 74 74 / 81%) !important;
 }
 
+.player-score .inc,
+.song-score .dec {
+	color: inherit;
+}
+
 .grid-transition-helper {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -12177,12 +12181,6 @@ input:focus {
 
 	.desktop-and-up {
 		display: none !important;
-	}
-}
-
-@media screen and (min-width: 1750px) {
-	body:not(.slim) .ssr-page-container {
-		max-width: 1750px;
 	}
 }
 

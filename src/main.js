@@ -1,3 +1,4 @@
+import {mount} from 'svelte';
 import App from './App.svelte';
 import log from './utils/logger';
 import initDb from './db/db';
@@ -42,7 +43,7 @@ let app = null;
 
 		log.info('Site initialized', 'Main');
 
-		app = new App({
+		app = mount(App, {
 			target: document.body,
 			props: {},
 		});
@@ -58,7 +59,7 @@ let app = null;
 		if (error instanceof DOMException && error.toString() === 'QuotaExceededError: The current transaction exceeded its quota limitations.')
 			error = new Error('Your device probably lacks free space for the website to operate.');
 
-		app = new ErrorComponent({
+		app = mount(ErrorComponent, {
 			target: document.body,
 			props: {error, withTrace: true},
 		});

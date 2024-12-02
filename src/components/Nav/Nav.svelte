@@ -277,7 +277,7 @@
 							id: 'dashboard',
 						},
 						...leaderboardTypeOptions,
-				  ]
+					]
 				: leaderboardTypeOptions}
 			bind:shown={testMenuShown}>
 			<svelte:fragment slot="row" let:item>
@@ -305,6 +305,7 @@
 			<a
 				href={`/u/${player.alias ?? player.playerId}`}
 				aria-label="My profile"
+				class="me-link"
 				on:click|preventDefault={() => {
 					if (!isTouchDevice()) navigateToPlayer(player);
 				}}
@@ -337,7 +338,7 @@
 							? item.onClick
 							: () => {
 									accountMenuShown = false;
-							  }} />
+								}} />
 				</svelte:fragment>
 			</Dropdown>
 		</div>
@@ -581,7 +582,9 @@
 		border-bottom: 1px solid var(--dimmed);
 		z-index: 50;
 		max-width: none;
-		box-shadow: 0 8px 10px rgba(0, 0, 0, 0.23), 0 5px 15px rgba(0, 0, 0, 0.18);
+		box-shadow:
+			0 8px 10px rgba(0, 0, 0, 0.23),
+			0 5px 15px rgba(0, 0, 0, 0.18);
 	}
 
 	nav > *:not(.right),
@@ -953,7 +956,7 @@
 	}
 
 	@media (pointer: fine) {
-		.nav-button:hover :global(> *) {
+		.nav-button:hover :global(> *:not(a)) {
 			display: block;
 		}
 	}
