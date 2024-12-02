@@ -1,5 +1,5 @@
 <script>
-	import {createEventDispatcher, setContext, tick} from 'svelte';
+	import {createEventDispatcher, setContext, tick, onMount} from 'svelte';
 	import {debounce} from '../../utils/debounce';
 	import Button from '../Common/Button.svelte';
 	import ContentBox from '../Common/ContentBox.svelte';
@@ -315,6 +315,10 @@
 	$: if (selected?.group?.onMessage && selected?.item) {
 		selected?.group.onMessage({source: 'item', type: 'hover', value: selected.item});
 	}
+
+	onMount(() => {
+		inputEl?.focus();
+	});
 </script>
 
 <svelte:body on:keydown={e => onKeyDown(e)} on:keyup={() => (handleKeyDown = true)} />
@@ -337,7 +341,6 @@
 					value={$searchValue}
 					on:input={debounce(onSearchChanged, 400)}
 					{placeholder}
-					autofocus="true"
 					autocomplete="off" />
 
 				<span class="button-cont">

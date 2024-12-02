@@ -34,12 +34,12 @@ export const DEFAULT_CONFIG = {
 		webPlayer: 'beatleader',
 		linkOption: 'thistab',
 		bgimage: '/assets/background.jpg',
-		bgColor: 'rgba(17, 17, 17, 0.3682)',
-		headerColor: 'rgba(0, 0, 0, 0.4152)',
+		bgColor: 'rgba(106, 114, 138, 0.4561)',
+		headerColor: 'rgba(77, 84, 97, 0.8)',
 		buttonColor: 'rgba(38, 38, 38, 0.8273)',
 		labelColor: 'rgba(219, 219, 219, 1.0)',
 		ppColor: 'rgba(253, 219, 255, 1.0)',
-		selectedColor: 'rgba(236, 84, 0, 0.4636)',
+		selectedColor: 'rgba(236, 0, 0, 0.4636)',
 		fontNames: 'Noto Sans, Noto Sans SC, Microsoft YaHei, sans-serif',
 		daysToCompare: 1,
 		daysOfHistory: 30,
@@ -319,7 +319,7 @@ export default async () => {
 	};
 
 	const getLocale = () =>
-		currentConfig?.locale === BROWSER_MAGIC_VALUE ? navigator.language ?? US_LOCALE : currentConfig?.locale ?? US_LOCALE;
+		currentConfig?.locale === BROWSER_MAGIC_VALUE ? (navigator.language ?? US_LOCALE) : (currentConfig?.locale ?? US_LOCALE);
 
 	const determineNewSettingsAvailable = dbConfig =>
 		Object.entries(newSettingsAvailableDefinition)

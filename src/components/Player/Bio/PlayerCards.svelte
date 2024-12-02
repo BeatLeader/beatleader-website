@@ -67,9 +67,9 @@
 	{#await promises}
 		<Spinner />
 	{:then _}
-		{@const empty = dispatch('height-changed')}
 		<div id={playerId + '-player-cards'} class="cards-container">
 			{#if rankedmaps || clan}
+				{@const empty = dispatch('height-changed')}
 				{#if rankedmaps}
 					<RankedMapper
 						mapperId={playerInfo.mapperId}

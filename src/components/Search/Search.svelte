@@ -40,7 +40,7 @@
 	.bg {
 		position: absolute;
 		inset: 0;
-		background-color: var(--customizable-color-1, var(--foreground)) !important;
+		background-color: #000000a6 !important;
 		opacity: 0.99;
 		backdrop-filter: blur(10px);
 		--webkit-transofrm: translateZ(0);
