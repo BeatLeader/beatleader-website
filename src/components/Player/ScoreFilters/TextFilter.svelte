@@ -29,8 +29,17 @@
 		dispatch('change', value);
 	}
 
-	$: if (open && filterEl) filterEl.focus();
-	$: if (!open && filterEl) filterEl.value = '';
+	function onOpen(filterEl, open) {
+		if (open) {
+			setTimeout(() => {
+				filterEl.focus();
+			}, 300);
+		} else {
+			filterEl.value = '';
+		}
+	}
+
+	$: open && filterEl && onOpen(filterEl, open);
 </script>
 
 <form on:submit={onSubmit}>

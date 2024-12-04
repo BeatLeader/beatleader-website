@@ -21,7 +21,9 @@
 {#if values?.length}
 	<select class:open bind:value on:change={onChanged}>
 		{#each values as option}
-			<option value={option.id}>{option.name}</option>
+			{#if option}
+				<option value={option.id}>{option.name}</option>
+			{/if}
 		{/each}
 	</select>
 {/if}
