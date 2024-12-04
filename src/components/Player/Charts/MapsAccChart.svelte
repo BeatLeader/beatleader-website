@@ -64,7 +64,7 @@
 		return string.charAt(0).toLowerCase() + string.slice(1);
 	}
 
-	async function setupChart(hash, canvas, selectedPlaylist) {
+	async function setupChart(canvas, scores, selectedPlaylist, xKey) {
 		if (!canvas || !scores?.length) return;
 		var mapBorderColor = '#003e54';
 		var ssPlusColor = 'rgba(143,72,219, .4)';
