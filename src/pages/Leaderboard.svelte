@@ -803,7 +803,7 @@
 				{/if}
 				<div class="diff-and-mode-spacer"></div>
 				{#if modes}
-					<TabSwitcher values={modes} value={currentMode} on:change={onDiffChange} />
+					<TabSwitcher class="mode-switcher" values={modes} value={currentMode} on:change={onDiffChange} />
 				{/if}
 			</div>
 		{/if}
@@ -1324,7 +1324,12 @@
 	.diff-and-mode-switch {
 		display: flex;
 		justify-content: space-between;
+		align-items: end;
 		margin: 0 10px;
+	}
+
+	:global(.mode-switcher.switch-types) {
+		flex-wrap: wrap;
 	}
 
 	.diff-switch :global(> *:not(:last-child)) {
@@ -1595,6 +1600,7 @@
 
 		:global(.diff-tab-button) {
 			max-width: 4em;
+			min-width: unset;
 		}
 
 		:global(.diff-tab-button span) {
@@ -1605,6 +1611,7 @@
 			max-width: 4em;
 			width: auto;
 			flex: 1;
+			min-width: 2em;
 		}
 
 		:global(.switch-types:has(.mode-tab-button)) {
