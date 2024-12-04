@@ -54,6 +54,31 @@ export default [
 			file: 'public/build/bundle.js',
 		},
 		plugins: [
+			{
+				name: 'log-bundle',
+				buildStart() {
+					if (!production) {
+						console.log('Build started...');
+					}
+				},
+				transform(code, id) {
+					if (!production) {
+						console.log('Processing:', id);
+					}
+					return null;
+				},
+				transformBundle(code, id) {
+					if (!production) {
+						console.log('Finished processing:', id);
+					}
+					return null;
+				},
+				buildEnd() {
+					if (!production) {
+						console.log('Build completed');
+					}
+				},
+			},
 			replace({
 				'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
 				preventAssignment: true,
