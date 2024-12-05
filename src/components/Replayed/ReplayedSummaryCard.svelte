@@ -21,6 +21,8 @@
 	export let nextAction;
 	export let summaryType;
 	export let colorStartIndex = 0;
+	export let frontCardId;
+	export let cardId;
 
 	let revealed = false;
 	let dominantColor = 'rgb(92, 120, 133)';
@@ -38,6 +40,7 @@
 
 	let cinematicsCanvas;
 	let screenshoting = false;
+	let gradientBg2024 = 'background: #4a4a4a';
 
 	const {addNotification} = getNotificationsContext();
 
@@ -181,9 +184,29 @@
 	onMount(() => (activeMounted = true));
 	setBackgroundColor(colorStartIndex);
 
+	function getGradientBg2024(cardId) {
+		let gradientBg = 'background: ';
+		if (cardId == '6') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#0065FF 0%, ';
+			gradientBg += '#b400a3 50%, ';
+			gradientBg += '#D91041 100%';
+		} else {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#4a4a4a 0%, ';
+			gradientBg += '#4a4a4a 15%, ';
+			gradientBg += '#4a4a4a 83%, ';
+			gradientBg += '#4a4a4a 100%';
+		}
+		gradientBg += ')';
+		return gradientBg;
+	}
+
 	$: revealed ? notifyReveal() : null;
 	$: active ? null : stopSong();
 	$: activeReady = activeMounted && active;
+	$: gradientBg2024 = getGradientBg2024(cardId);
+	$: cardsHaveIds = frontCardId != undefined;
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -196,10 +219,18 @@
 			</div>
 		</div>
 		<div class="background-container">
-			<div class="background" />
-			{#if revealed}
-				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} />
-				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} />
+			{#if !cardsHaveIds}
+				<div class="background" />
+				{#if revealed}
+					<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} />
+					<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} />
+				{/if}
+			{:else}
+				<div class="background2024" style={gradientBg2024} />
+				{#if revealed}
+					<!--<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
+					<!--<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
+				{/if}
 			{/if}
 		</div>
 
@@ -687,6 +718,17 @@
 		transform: scale(1.01);
 		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
 		filter: brightness(85%);
+	}
+
+	.background2024 {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #4a4a4a;
+		width: 100%;
+		height: 100%;
+		z-index: 0;
+		pointer-events: none;
 	}
 
 	.card.revealed .background {

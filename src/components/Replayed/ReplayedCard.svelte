@@ -22,6 +22,8 @@
 	export let nextAction;
 	export let forcedColor = null;
 	export let replayedType;
+	export let frontCardId;
+	export let cardId;
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -29,6 +31,7 @@
 	let activeMounted = false;
 	let activeReady = false;
 	let countries = [];
+	let gradientBg2024 = 'background: #4a4a4a';
 
 	buttons.push({
 		text: 'Replay',
@@ -181,6 +184,58 @@
 
 	onMount(() => (activeMounted = true));
 
+	function getGradientBg2024(cardId) {
+		let gradientBg = 'background: ';
+		if (cardId == '0') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#D400F1 0%, ';
+			gradientBg += '#D400F1 15%, ';
+			gradientBg += '#0765C5 83%, ';
+			gradientBg += '#0765C5 100%';
+		} else if (cardId == '1') {
+			gradientBg += 'linear-gradient(33deg, ';
+			gradientBg += '#D62B54 0%, ';
+			gradientBg += '#E6B749 100%';
+		} else if (cardId == '2') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#9700F1 0%, ';
+			gradientBg += '#9700F1 15%, ';
+			gradientBg += '#E6B749 83%, ';
+			gradientBg += '#E6B749 100%';
+		} else if (cardId == '3') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#9700F1 0%, ';
+			gradientBg += '#9700F1 15%, ';
+			gradientBg += '#D62B54 83%, ';
+			gradientBg += '#D62B54 100%';
+		} else if (cardId == '4') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#36C790 0%, ';
+			gradientBg += '#36C790 15%, ';
+			gradientBg += '#3374DE 83%, ';
+			gradientBg += '#3374DE 100%';
+		} else if (cardId == '5') {
+			gradientBg += 'linear-gradient(0deg, ';
+			gradientBg += '#889DC1 0%, ';
+			gradientBg += '#889DC1 15%, ';
+			gradientBg += '#3374DF 83%, ';
+			gradientBg += '#3374DF 100%';
+		} else if (cardId == '6') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#0065FF 0%, ';
+			gradientBg += '#b400a3 50%, ';
+			gradientBg += '#D91041 100%';
+		} else {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#4a4a4a 0%, ';
+			gradientBg += '#4a4a4a 15%, ';
+			gradientBg += '#4a4a4a 83%, ';
+			gradientBg += '#4a4a4a 100%';
+		}
+		gradientBg += ')';
+		return gradientBg;
+	}
+
 	$: revealed ? notifyReveal() : null;
 	$: active ? null : stopSong();
 	$: activeReady = activeMounted && active;
@@ -207,6 +262,8 @@
 			});
 		}
 	}
+	$: gradientBg2024 = getGradientBg2024(cardId);
+	$: cardsHaveIds = frontCardId != undefined;
 </script>
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -219,63 +276,120 @@
 			</div>
 		</div>
 		<div class="background-container">
-			<div class="background" style="background-image: url({imageUrl});" />
-			{#if revealed}
-				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} />
-				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} />
+			{#if !cardsHaveIds}
+				<div class="background" style="background-image: url({imageUrl});" />
+				{#if revealed}
+					<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} />
+					<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} />
+				{/if}
+			{:else}
+				<div class="background2024" style={gradientBg2024} />
+				{#if revealed}
+					<!--<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
+					<!--<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
+				{/if}
 			{/if}
 		</div>
 
 		{#if activeReady && !revealed}
-			<div class="intro-card-container">
-				<div class="intro-card" out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
-					<div class="intro-card-content">
-						<div class="header">
-							<h1 in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0}}>{title}</h1>
-							<p in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{subText}</p>
-						</div>
+			{#if frontCardId == '0'}
+				<!--this is the classic 2023 card-->
+				<div class="intro-card-container">
+					<div class="intro-card" out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
+						<div class="intro-card-content">
+							<div class="header">
+								<h1 in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0}}>{title}</h1>
+								<p in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{subText}</p>
+							</div>
 
-						{#if stats?.type === 'mapList'}
-							<img
-								src={mainStat.cover}
-								alt={mainStat.name}
-								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}}
-								on:introend={startSong} />
-							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
-							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
-							<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}} on:introend={startAutoRevealCount}>
-								{mainStat?.minutes ? mainStat.minutes.toFixed(2) + ' minutes played' : mainStat.count + ' times'}
-							</h4>
-						{:else if stats?.type === 'playerList'}
-							<img
-								src={mainStat.avatar}
-								alt={mainStat.name}
-								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
-							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
-							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
-								{mainStat.minutesPlayed.toFixed(2) + ' minutes played'}
-							</h3>
-							{#if mainStat.percentPlayers}
-								<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
-									{'top ' + mainStat.percentPlayers.toFixed(2) + '% of players'}
+							{#if stats?.type === 'mapList'}
+								<img
+									src={mainStat.cover}
+									alt={mainStat.name}
+									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}}
+									on:introend={startSong} />
+								<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
+								<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
+								<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}} on:introend={startAutoRevealCount}>
+									{mainStat?.minutes ? mainStat.minutes.toFixed(2) + ' minutes played' : mainStat.count + ' times'}
 								</h4>
+							{:else if stats?.type === 'playerList'}
+								<img
+									src={mainStat.avatar}
+									alt={mainStat.name}
+									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+								<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
+								<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
+									{mainStat.minutesPlayed.toFixed(2) + ' minutes played'}
+								</h3>
+								{#if mainStat.percentPlayers}
+									<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
+										{'top ' + mainStat.percentPlayers.toFixed(2) + '% of players'}
+									</h4>
+								{/if}
+							{:else if stats?.type === 'statList'}
+								<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>
+									{stats.entries[6]?.value ? stats.entries[6].name : mainStat.name}
+								</h2>
+								<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
+									{stats.entries[6]?.value ? stats.entries[6].value : mainStat.value}
+								</h3>
 							{/if}
-						{:else if stats?.type === 'statList'}
-							<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>
-								{stats.entries[6]?.value ? stats.entries[6].name : mainStat.name}
-							</h2>
-							<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
-								{stats.entries[6]?.value ? stats.entries[6].value : mainStat.value}
-							</h3>
-						{/if}
+						</div>
 					</div>
 				</div>
-			</div>
+			{:else if frontCardId == '1'}
+				<!--this is the 2024 general reveal card-->
+				<div class="intro-card-container">
+					<div class="intro-card-type1" style={gradientBg2024} out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
+						<div class="intro-card-content">
+							<div class="header">
+								<h1 in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0}}>{title}</h1>
+								<p in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{subText}</p>
+							</div>
+
+							{#if stats?.type === 'mapList'}
+								<img
+									src={mainStat.cover}
+									alt={mainStat.name}
+									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}}
+									on:introend={startSong} />
+								<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
+								<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}}>{mainStat.mapper}</h3>
+								<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}} on:introend={startAutoRevealCount}>
+									{mainStat?.minutes ? mainStat.minutes.toFixed(2) + ' minutes played' : mainStat.count + ' times'}
+								</h4>
+							{:else if stats?.type === 'playerList'}
+								<img
+									src={mainStat.avatar}
+									alt={mainStat.name}
+									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+								<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>{mainStat.name}</h2>
+								<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
+									{mainStat.minutesPlayed.toFixed(2) + ' minutes played'}
+								</h3>
+								{#if mainStat.percentPlayers}
+									<h4 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2350}}>
+										{'top ' + mainStat.percentPlayers.toFixed(2) + '% of players'}
+									</h4>
+								{/if}
+							{:else if stats?.type === 'statList'}
+								<h2 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1950}}>
+									{stats.entries[6]?.value ? stats.entries[6].name : mainStat.name}
+								</h2>
+								<h3 in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 2150}} on:introend={startAutoRevealCount}>
+									{stats.entries[6]?.value ? stats.entries[6].value : mainStat.value}
+								</h3>
+							{/if}
+						</div>
+					</div>
+				</div>
+			{/if}
 		{/if}
 
 		{#if revealed}
 			<div class="content">
-				<div class="header">
+				<div class={cardsHaveIds ? 'header2024' : 'header'}>
 					<h1 in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
 					<p in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
 				</div>
@@ -522,6 +636,11 @@
 		min-height: 20%;
 	}
 
+	.header2024 {
+		display: flex;
+		flex-direction: column;
+	}
+
 	.grid-item {
 		box-sizing: border-box;
 		display: flex;
@@ -550,6 +669,31 @@
 		padding: 1em;
 		z-index: 20;
 		background-color: var(--dominantColor);
+
+		color: white;
+		user-select: none;
+		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
+		font-size: 3.5vh;
+
+		font-style: normal;
+		line-height: normal;
+		text-align: center;
+	}
+
+	.intro-card-type1 {
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		position: absolute;
+		overflow: hidden;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		border-radius: 12px;
+		padding: 1em;
+		z-index: 20;
 
 		color: white;
 		user-select: none;
@@ -661,6 +805,21 @@
 		pointer-events: none;
 		filter: brightness(85%) blur(0.6vh);
 		transform: scale(1.01);
+	}
+
+	.background2024 {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #4a4a4a;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		width: 100%;
+		height: 100%;
+		transition: transform 2500ms ease-out;
+		z-index: 0;
+		pointer-events: none;
 	}
 
 	.card.revealed .background {

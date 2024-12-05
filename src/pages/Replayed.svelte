@@ -20,6 +20,8 @@
 
 	const account = createAccountStore();
 
+	playerId = '76561198075923914'; // TEMP
+
 	let cards;
 	let replayedNotAvailable = false;
 	let loggedInPlayer;
@@ -58,6 +60,8 @@
 				subText: 'This mapper was your favourite',
 				contentSubText: 'These are the top 5 mappers you played the most',
 				replayedType: 'player',
+				frontCardId: '1',
+				cardId: '0',
 				stats: {
 					type: 'playerList',
 					entries: data.topMappers.slice(0, 5),
@@ -71,6 +75,8 @@
 				subText: 'You were one of the top players for this mapper',
 				contentSubText: 'You were one of the top players for these 5 mappers',
 				replayedType: 'player',
+				frontCardId: '1',
+				cardId: '1',
 				stats: {
 					type: 'playerList',
 					entries: data.topMappersPercentage.slice(0, 5),
@@ -84,6 +90,8 @@
 				subText: 'This map was your favourite',
 				contentSubText: 'These are the 5 maps you played the most',
 				replayedType: 'player',
+				frontCardId: '1',
+				cardId: '2',
 				stats: {
 					type: 'mapList',
 					entries: data.topMaps.slice(0, 5),
@@ -98,6 +106,8 @@
 					subText: 'This map made you struggle the most',
 					contentSubText: 'These are the top 5 maps you failed the most',
 					replayedType: 'player',
+					frontCardId: '1',
+					cardId: '3',
 					stats: {
 						type: 'mapList',
 						entries: data.topFailed.slice(0, 5),
@@ -112,6 +122,8 @@
 					subText: 'You grinded this map a lot',
 					contentSubText: 'These are the top 5 maps you grinded the most times',
 					replayedType: 'player',
+					frontCardId: '1',
+					cardId: '4',
 					stats: {
 						type: 'mapList',
 						entries: data.topRestarted.slice(0, 5),
@@ -126,6 +138,8 @@
 				contentSubText: 'Some other stats about your year',
 				forcedColor: 'rgb(89, 111, 255)',
 				replayedType: 'player',
+				frontCardId: '1',
+				cardId: '5',
 				stats: {
 					type: 'statList',
 					entries: [
@@ -187,6 +201,8 @@
 				title: 'Your 2023 in Beat Saber',
 				subText: 'A year summarized',
 				summaryType: 'player',
+				frontCardId: '2',
+				cardId: '6',
 				stats: {
 					topMappers: data.topMappers.slice(0, 5),
 					topMaps: data.topMaps.slice(0, 5),
@@ -229,6 +245,8 @@
 				subText: 'This map was your most popular',
 				contentSubText: 'These are your 5 top played maps',
 				replayedType: 'mapper',
+				frontCardId: '1',
+				cardId: '7',
 				stats: {
 					type: 'mapList',
 					entries: data.topMaps.slice(0, 5),
@@ -243,6 +261,8 @@
 				contentSubText: 'For how many players were you in the top 1, 3, or 5 of most played mappers?',
 				forcedColor: 'rgb(89, 111, 255)',
 				replayedType: 'mapper',
+				frontCardId: '1',
+				cardId: '8',
 				stats: {
 					type: 'statList',
 					entries: [
@@ -269,6 +289,8 @@
 				subText: 'This player played your maps the most',
 				contentSubText: 'These players played your maps the most',
 				replayedType: 'mapper',
+				frontCardId: '1',
+				cardId: '9',
 				stats: {
 					type: 'playerList',
 					entries: data.topPlayers.slice(0, 5),
@@ -283,6 +305,8 @@
 				contentSubText: 'Some other stats about your year',
 				forcedColor: 'rgb(139, 52, 145)',
 				replayedType: 'mapper',
+				frontCardId: '1',
+				cardId: '10',
 				stats: {
 					type: 'statList',
 					entries: [
@@ -317,6 +341,8 @@
 				title: 'Your 2023 in Mapping',
 				subText: 'A year summarized',
 				summaryType: 'mapper',
+				frontCardId: '1',
+				cardId: '11',
 				colorStartIndex: 4,
 				stats: {
 					topMaps: data.topMaps.slice(0, 5),
@@ -354,7 +380,7 @@
 </script>
 
 <svelte:head>
-	<title>BeatLeader rePlayed 2023</title>
+	<title>BeatLeader rePlayed 2024</title>
 </svelte:head>
 
 <section class="align-content">
@@ -367,7 +393,7 @@
 				{:else if replayedNotAvailable}
 					{#if !loggedInPlayer}
 						<div class="login-form">
-							<div class="title">Please log in to view your<b>rePlayed 2023</b></div>
+							<div class="title">Please log in to view your<b>rePlayed 2024</b></div>
 							<form action={BL_API_URL + 'signin'} method="post">
 								<input type="hidden" name="Provider" value="Steam" />
 								<input type="hidden" name="ReturnUrl" value={CURRENT_URL + '/replayed'} />
