@@ -60,6 +60,16 @@
 			return;
 		}
 
+		if (parseInt(Number('0x' + leaderboard.song.id.replaceAll('x', '')), 10) >= 270435) {
+			ellegibleForNomination = false;
+			return;
+		}
+
+		if (Math.floor(Date.now() / 1000) >= 1734220740) {
+			ellegibleForNomination = false;
+			return;
+		}
+
 		ellegibleForNomination = true;
 
 		fetch(`${BL_API_URL}beasties/nominations?leaderboardId=${leaderboard.leaderboardId}`, {credentials: 'include'})
