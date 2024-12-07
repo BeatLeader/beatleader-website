@@ -419,7 +419,7 @@
 				<Button label="Event" iconFa="fas fa-rocket" on:click={() => navigate('/event/49')} />
 			</div>
 		</ContentBox> -->
-		<ContentBox cls="event-banner" on:click={() => navigate('/event/60')}>
+		<!-- <ContentBox cls="event-banner" on:click={() => navigate('/event/60')}>
 			<div class="cinematics">
 				<div class="cinematics-canvas">
 					<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
@@ -442,7 +442,7 @@
 					</div>
 				</div>
 			</div>
-		</ContentBox>
+		</ContentBox> -->
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
