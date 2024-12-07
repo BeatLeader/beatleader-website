@@ -256,9 +256,12 @@
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'Most Played Map',
 				title: 'Most Played Maps',
-				subText: 'This map was your most popular',
-				contentSubText: 'These are your 5 top played maps',
+				subText: data?.topMaps[0]?.author + ' - Mapped by ' + data?.topMaps[0]?.mapper,
+				contentSubText: 'Your 5 top played maps',
+				frontStatTitle: 'Minutes Played',
+				statSubtext: 'Your most popular map!',
 				replayedType: 'mapper',
 				frontCardId: '1',
 				cardId: '7',
@@ -271,12 +274,13 @@
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'Top x Mapper',
 				title: 'Top x Mapper',
 				subText: 'For how many players were you the top mapper?',
 				contentSubText: 'For how many players were you in the top 1, 3, or 5 of most played mappers?',
-				forcedColor: 'rgb(89, 111, 255)',
+				frontStatTitle: 'Top 1 mapper',
 				replayedType: 'mapper',
-				frontCardId: '1',
+				frontCardId: '4',
 				cardId: '8',
 				stats: {
 					type: 'statList',
@@ -300,9 +304,11 @@
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'Top Player',
 				title: 'Your Top Players',
-				subText: 'This player played your maps the most',
+				subText: 'They played your maps the most',
 				contentSubText: 'These players played your maps the most',
+				frontStatTitle: 'Minutes Played',
 				replayedType: 'mapper',
 				frontCardId: '1',
 				cardId: '9',
@@ -315,12 +321,13 @@
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'More about your maps',
 				title: 'Other Stats',
 				subText: 'How much were your maps played this year?',
 				contentSubText: 'Some other stats about your year',
-				forcedColor: 'rgb(139, 52, 145)',
+				frontStatTitle: 'Total Plays',
 				replayedType: 'mapper',
-				frontCardId: '1',
+				frontCardId: '3',
 				cardId: '10',
 				stats: {
 					type: 'statList',
@@ -351,9 +358,9 @@
 		});
 
 		_cards.push({
-			component: ReplayedSummaryCard,
+			component: ReplayedSummaryCard2024,
 			props: {
-				title: 'Your 2023 in Mapping',
+				title: 'Your 2024 in Mapping',
 				subText: 'A year summarized',
 				summaryType: 'mapper',
 				frontCardId: '1',

@@ -256,6 +256,14 @@
 				return stats?.entries[0]?.count.toFixed(0);
 			case '5':
 				return stats?.entries[6]?.value;
+			case '7':
+				return stats?.entries[0]?.minutes.toFixed(0);
+			case '8':
+				return stats?.entries[0]?.value;
+			case '9':
+				return stats?.entries[0]?.minutesPlayed.toFixed(0);
+			case '10':
+				return stats?.entries[0]?.value;
 			default:
 				return '';
 		}
@@ -266,6 +274,8 @@
 			case '0':
 				return 'Top ' + stats?.entries[0]?.percentPlayers.toFixed(2) + '% of players';
 			case '1':
+				return 'Top ' + stats?.entries[0]?.percentPlayers.toFixed(2) + '% of players';
+			case '9':
 				return 'Top ' + stats?.entries[0]?.percentPlayers.toFixed(2) + '% of players';
 			default:
 				return statSubtext;
@@ -432,11 +442,47 @@
 						</div>
 					</div>
 				</div>
+			{:else if frontCardId == '4'}
+				<!--reveal card for other stats-->
+				<div class="intro-card-container">
+					<div class="intro-card" style={gradientBg2024} out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
+						<div class="intro-card-content">
+							<div class="top-block">
+								<div class="header" style="align-self: flex-end;">
+									<h1 class="name" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
+									<p class="subtext" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>
+										{subText}
+									</p>
+								</div>
+							</div>
+
+							<div class="bottom-block">
+								<div class="stat-body">
+									<h2
+										class="stat-number"
+										style="margin-bottom: 0.2em;"
+										in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>
+										{frontStatTitle}
+									</h2>
+									<p class="stat-title" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1400}}>
+										{frontStat}
+									</p>
+									<p
+										class="stat-subtext"
+										in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1500}}
+										on:introend={startAutoRevealCount}>
+										{statSubtext}
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			{/if}
 		{/if}
 
 		{#if revealed}
-			{#if frontCardId == '1' || frontCardId == '3'}
+			{#if frontCardId != '2'}
 				<div class="content">
 					<div class={cardsHaveIds ? 'header2024' : 'header'}>
 						<h1 in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
