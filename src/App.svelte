@@ -56,7 +56,7 @@
 	import rewindTimer from './stores/rewind-timer';
 	import {padNumber} from './utils/format';
 	import SimpleModal from './components/Common/SimpleModal.svelte';
-
+	import BeatCancerTopBanner from './components/Common/BeatCancerTopBanner.svelte';
 	export let url = '';
 
 	let mainEl = null;
@@ -135,6 +135,7 @@
 <div bind:this={mobileTooltip} class="mobile-tooltip" />
 <div class="main-background" />
 <!-- <TournamentTopBanner /> -->
+<BeatCancerTopBanner />
 <!-- {#if $account?.player && $configStore.preferences.followersBecomingPublic}
 	<div class="reebanner">
 		<a class="reelink" href="/settings#profile" />
