@@ -431,37 +431,11 @@
 						</div>
 					</div>
 				</div>
-			{:else if frontCardId == '4'}
-				<!--reveal card for summary-->
-				<div class="intro-card-container" id="first-intro-container">
-					<div class="intro-card" id="first-intro-card" style={gradientBg2024} out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
-						<div class="intro-card-content">
-							<div class="top-block">
-								<div class="header" style="align-self: flex-end;">
-									<h1 class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>
-										Your 2024 in Beat Saber
-									</h1>
-									<p class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>Summarized</p>
-								</div>
-							</div>
-
-							<div class="bottom-block">
-								<img
-									src="/assets/replayed2024/summary.webp"
-									alt="Praise mapper"
-									style="width: 70%;"
-									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1800}}
-									on:introend={startAutoRevealCount} />
-								<!--set this to the bl chan emoji-->
-							</div>
-						</div>
-					</div>
-				</div>
 			{/if}
 		{/if}
 
 		{#if revealed}
-			{#if frontCardId == '1' || frontCardId == '3' || frontCardId == '4'}
+			{#if frontCardId == '1' || frontCardId == '3'}
 				<div class="content">
 					<div class={cardsHaveIds ? 'header2024' : 'header'}>
 						<h1 in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
@@ -613,7 +587,7 @@
 								<div
 									class="buttons"
 									class:active
-									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 3000}}
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 1500}}
 									on:introend={startAutoNextCount}>
 									{#each buttons as button}
 										<Button
