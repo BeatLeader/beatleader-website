@@ -311,36 +311,40 @@
 			{#if frontCardId == '1'}
 				<!--general reveal card-->
 				<div class="intro-card-container">
-					<div class="intro-card" style={gradientBg2024} out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
+					<div class="intro-card" style={gradientBg2024} out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
 						<div class="intro-card-content">
 							<div class="top-block">
 								{#if stats?.type === 'mapList'}
 									<img
 										src={mainStat.cover}
 										alt={mainStat.name}
-										in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}}
+										in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 800}}
 										on:introend={startSong} />
 								{:else if stats?.type === 'playerList'}
 									<img
 										src={mainStat.avatar}
 										alt={mainStat.name}
-										in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1750}} />
+										in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 800}} />
 								{/if}
 							</div>
 
 							<div class="bottom-block">
 								<div class="header">
-									<h1 class="title" in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0}}>{frontTitle}</h1>
-									<p class="name" in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{mainStat.name}</p>
-									<p class="subtext" in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{subText}</p>
+									<h1 class="title" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{frontTitle}</h1>
+									<p class="name" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 800}}>{mainStat.name}</p>
+									<p class="subtext" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>{subText}</p>
 								</div>
 
 								<div class="stat-body">
-									<h2 class="stat-title" in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{frontStatTitle}</h2>
-									<p class="stat-number" in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{frontStat}</p>
+									<h2 class="stat-title" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>
+										{frontStatTitle}
+									</h2>
+									<p class="stat-number" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1300}}>
+										{frontStat}
+									</p>
 									<p
 										class="stat-subtext"
-										in:fly={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}
+										in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1500}}
 										on:introend={startAutoRevealCount}>
 										{statSubtext}
 									</p>
