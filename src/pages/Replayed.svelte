@@ -5,6 +5,7 @@
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
 	import ReplayedCard2024 from '../components/Replayed/ReplayedCard2024.svelte';
 	import ReplayedSummaryCard from '../components/Replayed/ReplayedSummaryCard.svelte';
+	import ReplayedSummaryCard2024 from '../components/Replayed/ReplayedSummaryCard2024.svelte';
 	import {fetchJson} from '../network/fetch';
 	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
@@ -74,11 +75,13 @@
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'You were loyal to',
 				title: 'Your Top Mappers %',
-				subText: 'You were one of the top players for this mapper',
+				subText: 'You are one of the top players for this mapper',
 				contentSubText: 'You were one of the top players for these 5 mappers',
+				frontStatTitle: 'Minutes Played',
 				replayedType: 'player',
-				frontCardId: '1',
+				frontCardId: '2',
 				cardId: '1',
 				stats: {
 					type: 'playerList',
@@ -89,9 +92,12 @@
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'Your Most Played',
 				title: 'Your Most Played',
-				subText: 'This map was your favourite',
-				contentSubText: 'These are the 5 maps you played the most',
+				subText: data?.topMaps[0]?.author + ' - Mapped by ' + data?.topMaps[0]?.mapper,
+				contentSubText: 'The 5 maps you played the most',
+				frontStatTitle: 'Minutes Played',
+				statSubtext: 'One of your favourites?',
 				replayedType: 'player',
 				frontCardId: '1',
 				cardId: '2',
@@ -105,9 +111,12 @@
 			_cards.push({
 				component: ReplayedCard2024,
 				props: {
+					frontTitle: 'Your Most Failed',
 					title: 'Your Most Failed',
-					subText: 'This map made you struggle the most',
-					contentSubText: 'These are the top 5 maps you failed the most',
+					subText: data?.topFailed[0]?.author + ' - Mapped by ' + data?.topFailed[0]?.mapper,
+					contentSubText: 'The 5 maps you failed the most',
+					frontStatTitle: 'Fails',
+					statSubtext: 'Pushing your skills to the limit',
 					replayedType: 'player',
 					frontCardId: '1',
 					cardId: '3',
@@ -121,9 +130,12 @@
 			_cards.push({
 				component: ReplayedCard2024,
 				props: {
+					frontTitle: 'Your Most Restarted',
 					title: 'Your Most Restarted',
-					subText: 'You grinded this map a lot',
-					contentSubText: 'These are the top 5 maps you grinded the most times',
+					subText: data?.topRestarted[0]?.author + ' - Mapped by ' + data?.topRestarted[0]?.mapper,
+					contentSubText: 'The 5 maps you grinded the most',
+					frontStatTitle: 'Restarts',
+					statSubtext: 'You grinded this one a lot',
 					replayedType: 'player',
 					frontCardId: '1',
 					cardId: '4',
@@ -136,12 +148,13 @@
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'A bit about you',
 				title: 'Other Stats',
 				subText: 'How much did you play this year?',
-				contentSubText: 'Some other stats about your year',
-				forcedColor: 'rgb(89, 111, 255)',
+				contentSubText: 'Looking back on your year',
+				frontStatTitle: 'Minutes Played',
 				replayedType: 'player',
-				frontCardId: '1',
+				frontCardId: '3',
 				cardId: '5',
 				stats: {
 					type: 'statList',
@@ -175,7 +188,7 @@
 						},
 						{
 							name: 'Minutes played',
-							value: data.minutesPlayed.toFixed(2) + ' min',
+							value: data.minutesPlayed.toFixed(0) + ' min',
 						},
 						{
 							name: 'Top category',
@@ -199,12 +212,11 @@
 		);
 
 		_cards.push({
-			component: ReplayedSummaryCard,
+			component: ReplayedSummaryCard2024,
 			props: {
-				title: 'Your 2023 in Beat Saber',
+				title: 'Your 2024 in Beat Saber',
 				subText: 'A year summarized',
 				summaryType: 'player',
-				frontCardId: '2',
 				cardId: '6',
 				stats: {
 					topMappers: data.topMappers.slice(0, 5),

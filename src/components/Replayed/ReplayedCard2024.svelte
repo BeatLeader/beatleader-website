@@ -10,6 +10,7 @@
 	import {MetaTags} from 'svelte-meta-tags';
 	import {CURRENT_URL} from '../../network/queues/beatleader/api-queue';
 	import ssrConfig from '../../ssr-config';
+	import createAccountStore from '../../stores/beatleader/account';
 
 	export let title = '';
 	export let subText = '';
@@ -26,6 +27,7 @@
 	export let cardId;
 	export let frontTitle = '';
 	export let frontStatTitle = '';
+	export let statSubtext = '';
 
 	let mainStat = stats?.entries[0];
 	let revealed = false;
@@ -35,7 +37,6 @@
 	let countries = [];
 	let gradientBg2024 = 'background: #4a4a4a';
 	let frontStat = '';
-	let statSubtext = '';
 
 	buttons.push({
 		text: 'Replay',
@@ -51,6 +52,7 @@
 	let cinematicsCanvas;
 
 	const playerService = createPlayerService();
+	const account = createAccountStore();
 
 	async function retrievePlayerCountry(playerId) {
 		if (playerId === undefined) return;
@@ -241,20 +243,32 @@
 	}
 
 	function getFrontStat(stats) {
-		if (stats?.type === 'mapList') {
-			return stats?.entries[0]?.count + ' times';
-		} else if (stats?.type === 'playerList') {
-			return stats?.entries[0]?.minutesPlayed.toFixed(0);
-		} else if (stats?.type === 'statList') {
-			return stats?.entries[0]?.value;
+		switch (cardId) {
+			case '0':
+				return stats?.entries[0]?.minutesPlayed.toFixed(0);
+			case '1':
+				return stats?.entries[0]?.minutesPlayed.toFixed(0);
+			case '2':
+				return stats?.entries[0]?.minutes.toFixed(0);
+			case '3':
+				return stats?.entries[0]?.count.toFixed(0);
+			case '4':
+				return stats?.entries[0]?.count.toFixed(0);
+			case '5':
+				return stats?.entries[6]?.value;
+			default:
+				return '';
 		}
 	}
 
 	function getStatSubtext(stats) {
-		if (cardId == '0') {
-			return 'Top ' + stats?.entries[0]?.percentPlayers.toFixed(2) + '% of players';
-		} else {
-			return '';
+		switch (cardId) {
+			case '0':
+				return 'Top ' + stats?.entries[0]?.percentPlayers.toFixed(2) + '% of players';
+			case '1':
+				return 'Top ' + stats?.entries[0]?.percentPlayers.toFixed(2) + '% of players';
+			default:
+				return statSubtext;
 		}
 	}
 
@@ -353,79 +367,161 @@
 						</div>
 					</div>
 				</div>
+			{:else if frontCardId == '2'}
+				<!--reveal card for other stats-->
+				<div class="intro-card-container" id="first-intro-container">
+					<div class="intro-card" id="first-intro-card" style={gradientBg2024} out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
+						<div class="intro-card-content">
+							<div class="top-block">
+								<div class="header" style="align-self: flex-end;">
+									<h1 class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>
+										Your year was full of different mappers
+									</h1>
+									<p class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>
+										But you were extra loyal to one...
+									</p>
+								</div>
+							</div>
+
+							<div class="bottom-block">
+								<img
+									src="/assets/replayed2024/mapperPercent.webp"
+									alt="Praise mapper"
+									style="width: 70%;"
+									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1800}}
+									on:introend={startAutoRevealCount} />
+								<!--set this to the bl chan emoji-->
+							</div>
+						</div>
+					</div>
+				</div>
+			{:else if frontCardId == '3'}
+				<!--reveal card for other stats-->
+				<div class="intro-card-container">
+					<div class="intro-card" style={gradientBg2024} out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
+						<div class="intro-card-content">
+							<div class="top-block">
+								<img
+									src={$account.player.playerInfo.avatar}
+									alt={$account.player.name}
+									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 800}} />
+							</div>
+
+							<div class="bottom-block">
+								<div class="header">
+									<h1 class="name" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 800}}>{frontTitle}</h1>
+									<p class="subtext" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>{subText}</p>
+								</div>
+
+								<div class="stat-body">
+									<h2 class="stat-title" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>
+										{frontStatTitle}
+									</h2>
+									<p class="stat-number" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1300}}>
+										{frontStat}
+									</p>
+									<p
+										class="stat-subtext"
+										in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1500}}
+										on:introend={startAutoRevealCount}>
+										{statSubtext}
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			{:else if frontCardId == '4'}
+				<!--reveal card for summary-->
+				<div class="intro-card-container" id="first-intro-container">
+					<div class="intro-card" id="first-intro-card" style={gradientBg2024} out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
+						<div class="intro-card-content">
+							<div class="top-block">
+								<div class="header" style="align-self: flex-end;">
+									<h1 class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>
+										Your 2024 in Beat Saber
+									</h1>
+									<p class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>Summarized</p>
+								</div>
+							</div>
+
+							<div class="bottom-block">
+								<img
+									src="/assets/replayed2024/summary.webp"
+									alt="Praise mapper"
+									style="width: 70%;"
+									in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1800}}
+									on:introend={startAutoRevealCount} />
+								<!--set this to the bl chan emoji-->
+							</div>
+						</div>
+					</div>
+				</div>
 			{/if}
 		{/if}
 
 		{#if revealed}
-			<div class="content">
-				<div class={cardsHaveIds ? 'header2024' : 'header'}>
-					<h1 in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
-					<p in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
-				</div>
+			{#if frontCardId == '1' || frontCardId == '3' || frontCardId == '4'}
+				<div class="content">
+					<div class={cardsHaveIds ? 'header2024' : 'header'}>
+						<h1 in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{title}</h1>
+						<p in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>{contentSubText}</p>
+					</div>
 
-				<div class="data">
-					{#if stats?.type === 'mapList'}
-						{#each stats?.entries.slice(0, 5) as stat, index}
-							<div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
-								<h2 class="stat-number">{index + 1}</h2>
-								<img src={stat.cover} alt={stat.name} />
+					<div class="data">
+						{#if stats?.type === 'mapList'}
+							{#each stats?.entries.slice(0, 5) as stat, index}
+								<div
+									class="stat"
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+									<h2 class="stat-number">{index + 1}</h2>
+									<img src={stat.cover} alt={stat.name} />
 
-								<div class="stat-stacked-info">
-									<h2 class="truncated">{stat.name}</h2>
-
-									<div class="stat-stacked-subinfo">
-										<h3 class="truncated">{stat.mapper}</h3>
-										<i class="fa-solid fa-minus" />
-										<h3 class="minutes">{stat?.minutes ? stat.minutes.toFixed(2) + ' min' : stat.count + ' times'}</h3>
-									</div>
-								</div>
-							</div>
-						{/each}
-					{:else if stats?.type === 'playerList'}
-						{#each stats?.entries.slice(0, 5) as stat, index}
-							<div class="stat" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
-								<h2 class="stat-number">{index + 1}</h2>
-								<img src={stat.avatar} alt={stat.name} />
-								<div class="stat-stacked-info">
-									<div style="display: flex;">
+									<div class="stat-stacked-info">
 										<h2 class="truncated">{stat.name}</h2>
-										{#if title
-											.toLowerCase()
-											.includes('play') && countries.some(country => country.playerId === stat.beatLeaderId) && countries
-												.find(country => country.playerId === stat.beatLeaderId)
-												.country.toLowerCase() !== 'not set'}
-											<img
-												class="flag"
-												alt={`${countries.find(country => country.playerId === stat.beatLeaderId).country.toLowerCase()} flag`}
-												src={`/assets/flags/${countries.find(country => country.playerId === stat.beatLeaderId).country.toLowerCase()}.png`}
-												loading="lazy" />
-										{/if}
-									</div>
-									<h3 class="minutes">
-										{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers
-											? ', ' + 'top ' + stat.percentPlayers.toFixed(2) + '% of players'
-											: ''}
-									</h3>
-								</div>
-							</div>
-						{/each}
-					{:else if stats?.type === 'statList'}
-						<div class="data-columns">
-							<div class="data data-small" style={stats.entries.slice(5, 10).length ? 'width: 40%' : 'width: 100%'}>
-								{#each stats.entries.slice(0, 5) as stat, index}
-									<div
-										class="stat"
-										transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
-										<div class="stat-stacked-info">
-											<h2 class="truncated">{stat.name}</h2>
-											<h3 class="minutes">{stat.value}</h3>
+
+										<div class="stat-stacked-subinfo">
+											<h3 class="truncated">{stat.mapper}</h3>
+											<i class="fa-solid fa-minus" />
+											<h3 class="minutes">{stat?.minutes ? stat.minutes.toFixed(2) + ' min' : stat.count + ' times'}</h3>
 										</div>
 									</div>
-								{/each}
-							</div>
-							{#if stats.entries.slice(5, 10).length}
-								<div class="data data-small" style="width: 60%">
-									{#each stats.entries.slice(5, 10) as stat, index}
+								</div>
+							{/each}
+						{:else if stats?.type === 'playerList'}
+							{#each stats?.entries.slice(0, 5) as stat, index}
+								<div
+									class="stat"
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+									<h2 class="stat-number">{index + 1}</h2>
+									<img src={stat.avatar} alt={stat.name} />
+									<div class="stat-stacked-info">
+										<div style="display: flex;">
+											<h2 class="truncated">{stat.name}</h2>
+											{#if title
+												.toLowerCase()
+												.includes('play') && countries.some(country => country.playerId === stat.beatLeaderId) && countries
+													.find(country => country.playerId === stat.beatLeaderId)
+													.country.toLowerCase() !== 'not set'}
+												<img
+													class="flag"
+													alt={`${countries.find(country => country.playerId === stat.beatLeaderId).country.toLowerCase()} flag`}
+													src={`/assets/flags/${countries.find(country => country.playerId === stat.beatLeaderId).country.toLowerCase()}.png`}
+													loading="lazy" />
+											{/if}
+										</div>
+										<h3 class="minutes">
+											{stat.minutesPlayed.toFixed(2)} min{stat?.percentPlayers
+												? ', ' + 'top ' + stat.percentPlayers.toFixed(2) + '% of players'
+												: ''}
+										</h3>
+									</div>
+								</div>
+							{/each}
+						{:else if stats?.type === 'statList'}
+							<div class="data-columns">
+								<div class="data data-small" style={stats.entries.slice(5, 10).length ? 'width: 40%' : 'width: 100%'}>
+									{#each stats.entries.slice(0, 5) as stat, index}
 										<div
 											class="stat"
 											transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
@@ -436,33 +532,110 @@
 										</div>
 									{/each}
 								</div>
-							{/if}
+								{#if stats.entries.slice(5, 10).length}
+									<div class="data data-small" style="width: 60%">
+										{#each stats.entries.slice(5, 10) as stat, index}
+											<div
+												class="stat"
+												transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 200 * index + 500}}>
+												<div class="stat-stacked-info">
+													<h2 class="truncated">{stat.name}</h2>
+													<h3 class="minutes">{stat.value}</h3>
+												</div>
+											</div>
+										{/each}
+									</div>
+								{/if}
+							</div>
+						{/if}
+					</div>
+
+					<div
+						class="buttons"
+						class:active
+						transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 2500}}
+						on:introend={startAutoNextCount}>
+						{#each buttons as button}
+							<Button
+								label={button.text}
+								url={button.url}
+								type={button.type}
+								on:click={() => {
+									if (button.function) button.function();
+									if (button.url) navigate(button.url);
+								}} />
+						{/each}
+					</div>
+
+					<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
+						<img class="bottom-icon" src="/assets/favicon.svg" />
+						<span>beatleader.xyz/replayed</span>
+					</div>
+				</div>
+			{:else if frontCardId == '2'}
+				<div class="intro-card-container" id="second-intro-container">
+					<div class="intro-card" id="second-intro-card" out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
+						<div class="intro-card-content">
+							<div class="top-block">
+								{#if stats?.type === 'mapList'}
+									<img
+										src={mainStat.cover}
+										alt={mainStat.name}
+										in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 800}}
+										on:introend={startSong} />
+								{:else if stats?.type === 'playerList'}
+									<img
+										src={mainStat.avatar}
+										alt={mainStat.name}
+										in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 800}} />
+								{/if}
+							</div>
+
+							<div class="bottom-block">
+								<div class="header">
+									<h1 class="title" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 400}}>{frontTitle}</h1>
+									<p class="name" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 800}}>{mainStat.name}</p>
+									<p class="subtext" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>{subText}</p>
+								</div>
+
+								<div class="stat-body">
+									<h2 class="stat-title" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>
+										{frontStatTitle}
+									</h2>
+									<p class="stat-number" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1300}}>
+										{frontStat}
+									</p>
+									<p class="stat-subtext" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1500}}>
+										{statSubtext}
+									</p>
+								</div>
+
+								<div
+									class="buttons"
+									class:active
+									transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 3000}}
+									on:introend={startAutoNextCount}>
+									{#each buttons as button}
+										<Button
+											label={button.text}
+											url={button.url}
+											type={button.type}
+											on:click={() => {
+												if (button.function) button.function();
+												if (button.url) navigate(button.url);
+											}} />
+									{/each}
+								</div>
+
+								<div class="bottom-container" transition:fly|global={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 1500}}>
+									<img class="bottom-icon" src="/assets/favicon.svg" />
+									<span>beatleader.xyz/replayed</span>
+								</div>
+							</div>
 						</div>
-					{/if}
+					</div>
 				</div>
-
-				<div
-					class="buttons"
-					class:active
-					transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 2500}}
-					on:introend={startAutoNextCount}>
-					{#each buttons as button}
-						<Button
-							label={button.text}
-							url={button.url}
-							type={button.type}
-							on:click={() => {
-								if (button.function) button.function();
-								if (button.url) navigate(button.url);
-							}} />
-					{/each}
-				</div>
-
-				<div class="bottom-container" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
-					<img class="bottom-icon" src="/assets/favicon.svg" />
-					<span>beatleader.xyz/replayed</span>
-				</div>
-			</div>
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -642,6 +815,7 @@
 		line-height: normal;
 		text-align: center;
 		font-family: Arial, Helvetica, sans-serif;
+		padding: 0 0.25em;
 	}
 
 	.intro-card-container {
@@ -657,6 +831,13 @@
 	.title {
 		font-size: 50%;
 		font-weight: 600;
+		margin-bottom: 0.5em;
+		color: white !important;
+	}
+
+	.title2 {
+		font-size: 75%;
+		font-weight: 700;
 		margin-bottom: 0.5em;
 		color: white !important;
 	}
@@ -911,7 +1092,8 @@
 	}
 
 	.bottom-icon {
-		width: 2vh;
+		width: 2vh !important;
+		margin-bottom: 0em !important;
 	}
 
 	@media screen and (max-height: 780px) {
