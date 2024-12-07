@@ -99,7 +99,7 @@
 			{#each mods as mod}
 				<span>{mod}</span>
 			{/each}
-		{/if}{#if showMods && prevMods && prevMods.length}
+		{/if}{#if showMods && secondary === 'improvement' && prevMods && prevMods.length}
 			<small
 				class="compare-mods {prevMods.length > 1 && mods?.length > 1 ? 'double' : ''}"
 				title={$isDemo
