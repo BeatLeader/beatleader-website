@@ -3,6 +3,7 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
+	import ReplayedCard2024 from '../components/Replayed/ReplayedCard2024.svelte';
 	import ReplayedSummaryCard from '../components/Replayed/ReplayedSummaryCard.svelte';
 	import {fetchJson} from '../network/fetch';
 	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
@@ -54,11 +55,13 @@
 		let _cards = [];
 
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
+				frontTitle: 'Top Mapper',
 				title: 'Your Top Mappers',
-				subText: 'This mapper was your favourite',
-				contentSubText: 'These are the top 5 mappers you played the most',
+				subText: '',
+				contentSubText: 'The 5 mappers you played the most',
+				frontStatTitle: 'Minutes Played',
 				replayedType: 'player',
 				frontCardId: '1',
 				cardId: '0',
@@ -69,7 +72,7 @@
 			},
 		});
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
 				title: 'Your Top Mappers %',
 				subText: 'You were one of the top players for this mapper',
@@ -84,7 +87,7 @@
 			},
 		});
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
 				title: 'Your Most Played',
 				subText: 'This map was your favourite',
@@ -100,7 +103,7 @@
 		});
 		if (data.topFailed)
 			_cards.push({
-				component: ReplayedCard,
+				component: ReplayedCard2024,
 				props: {
 					title: 'Your Most Failed',
 					subText: 'This map made you struggle the most',
@@ -116,7 +119,7 @@
 			});
 		if (data.topRestarted)
 			_cards.push({
-				component: ReplayedCard,
+				component: ReplayedCard2024,
 				props: {
 					title: 'Your Most Restarted',
 					subText: 'You grinded this map a lot',
@@ -131,7 +134,7 @@
 				},
 			});
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
 				title: 'Other Stats',
 				subText: 'How much did you play this year?',
@@ -239,7 +242,7 @@
 		let _cards = [];
 
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
 				title: 'Most Played Maps',
 				subText: 'This map was your most popular',
@@ -254,7 +257,7 @@
 			},
 		});
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
 				title: 'Top x Mapper',
 				subText: 'For how many players were you the top mapper?',
@@ -283,7 +286,7 @@
 			},
 		});
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
 				title: 'Your Top Players',
 				subText: 'This player played your maps the most',
@@ -298,7 +301,7 @@
 			},
 		});
 		_cards.push({
-			component: ReplayedCard,
+			component: ReplayedCard2024,
 			props: {
 				title: 'Other Stats',
 				subText: 'How much were your maps played this year?',
