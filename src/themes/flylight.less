@@ -532,10 +532,6 @@ div.clan-line:hover {
   border-radius: 5px !important;
 }
 
-header a :not(.triangle-container *, .search-box *) {
-  background-color: #ccf4ff !important;
-}
-
 .search-box > .content-box > main > .groups > .group > .items .item:hover {
   background-color: var(--dimmed) !important;
 }
@@ -1117,6 +1113,9 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
   padding: 0 !important;
   border-radius: 0 !important;
 }
+.content-box.legacy-warning {
+  background-color: #863a00 !important;
+}
 
 .beatleader-summary .badge {
   background-color: #ececec !important;
@@ -1179,11 +1178,6 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
   border-radius: 5px;
   background: none !important;
   border: none;
-}
-
-.player-performance .player-performance-badges,
-.page-content.scores .player-performance-badges {
-  grid-column-gap: 0.2em;
 }
 
 .player-performance .player-score,
@@ -1292,6 +1286,16 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
   border-bottom: 1px solid var(--row-separator) !important;
 }
 
+.leaderboard {
+  background: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaderboard-header-box {
+  background: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
 .desktop-and-up .logo {
   margin-top: -0.25em !important;
 }
@@ -1317,5 +1321,23 @@ html body nav.ssr-page-container.flylight a[href="/ranking/1"] {
 }
 
 .platform-entry a {
+  color: black !important;
+}
+
+.buttons-container {
+  background-color: #a0a0a04f;
+}
+
+.mode-tab-button {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+  z-index: -1;
+}
+
+.diff-tab-button {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+  z-index: -1;
+}
+
+.dialog-container .description-and-select {
   color: black !important;
 }

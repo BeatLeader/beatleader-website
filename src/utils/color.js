@@ -51,13 +51,43 @@ export function removeGlobalCSSValue(name) {
 }
 
 export function importFonts(fontNames) {
+	// This is so we can avoid loading invalid google font API URLs for these generic font families:
+	const cssFamilies = {
+		serif: null,
+		'sans-serif': null,
+		monospace: null,
+		cursive: null,
+		fantasy: null, // Thar be dragons!
+		'system-ui': null,
+		'ui-serif': null,
+		'ui-sans-serif': null,
+		'ui-rounded': null,
+		emoji: null, // 👍
+		math: null, // It adds up
+		fangsong: null, // aka Simplified Chinese
+	};
 	fontNames.split(',').forEach(name => {
-		var link = document.createElement('link');
-		link.href = `https://fonts.googleapis.com/css2?family=${name
-			.trim()
-			.split(' ')
-			.join('+')}:wght@100;200;300;400;500;600;700;800;900&display=swap`;
-		link.rel = 'stylesheet';
-		document.head.appendChild(link);
+		name = name.trim(); // Remove trailing whitespace *once*
+		// Skip generic font family names
+		if (name in cssFamilies) {
+			return;
+		}
+		// Try loading the local version of the font (if present)
+		var font = new FontFace(name, `local("${name}")`);
+		document.fonts.add(font);
+		font.load().then(
+			() => {
+				// Font loaded successfully; nothing left to do
+			},
+			err => {
+				// Try loading the font via the google fonts API:
+				var link = document.createElement('link');
+				link.href = `https://fonts.googleapis.com/css2?family=${name
+					.split(' ')
+					.join('+')}:wght@100;200;300;400;500;600;700;800;900&display=swap`;
+				link.rel = 'stylesheet';
+				document.head.appendChild(link);
+			}
+		);
 	});
 }

@@ -215,10 +215,7 @@
 					<Route path="/clan/:clanId/*page" let:params>
 						<ClanPage clanId={params.clanId} page={params.page} />
 					</Route>
-					<Route path="/replayed">
-						<ReplayedLanding />
-					</Route>
-					<Route path="/replayed/player/*id" let:params>
+					<Route path="/replayed/*id" let:params>
 						<Replayed playerId={params.id ? params.id : null} />
 					</Route>
 					<Route path="/replayed/mapper/*id" let:params>

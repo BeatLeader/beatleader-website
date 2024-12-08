@@ -3,7 +3,9 @@
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import FeaturedCarousel from '../components/Maps/FeaturedCarousel.svelte';
 	import ReplayedCard from '../components/Replayed/ReplayedCard.svelte';
+	import ReplayedCard2024 from '../components/Replayed/ReplayedCard2024.svelte';
 	import ReplayedSummaryCard from '../components/Replayed/ReplayedSummaryCard.svelte';
+	import ReplayedSummaryCard2024 from '../components/Replayed/ReplayedSummaryCard2024.svelte';
 	import {fetchJson} from '../network/fetch';
 	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
@@ -11,6 +13,8 @@
 	export let replayedType = 'player';
 	export let playerId = null;
 	export let location = null;
+
+	playerId = '76561198075923914'; // TEMP
 
 	let cards;
 
@@ -30,13 +34,14 @@
 
 	function prepPlayerData(data) {
 		let _cards = [];
+
 		_cards.push({
-			component: ReplayedSummaryCard,
+			component: ReplayedSummaryCard2024,
 			props: {
-				title: 'Your 2023 in Beat Saber',
+				title: 'Your 2024 in Beat Saber',
 				subText: 'A year summarized',
 				summaryType: 'player',
-				colorStartIndex: color ? color : 0,
+				cardId: '6',
 				stats: {
 					topMappers: data.topMappers.slice(0, 5),
 					topMaps: data.topMaps.slice(0, 5),
@@ -72,12 +77,14 @@
 	function prepMapperData(data) {
 		let _cards = [];
 		_cards.push({
-			component: ReplayedSummaryCard,
+			component: ReplayedSummaryCard2024,
 			props: {
-				title: 'Your 2023 in Mapping',
+				title: 'Your 2024 in Mapping',
 				subText: 'A year summarized',
 				summaryType: 'mapper',
-				colorStartIndex: color ? color : 4,
+				frontCardId: '1',
+				cardId: '11',
+				colorStartIndex: 4,
 				stats: {
 					topMaps: data.topMaps.slice(0, 5),
 					extraStats: [

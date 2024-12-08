@@ -366,7 +366,9 @@
 		align-items: center;
 		display: flex;
 		justify-content: center;
-		transition: scale 150ms ease-in-out, transform 150ms ease-in-out;
+		transition:
+			scale 150ms ease-in-out,
+			transform 150ms ease-in-out;
 	}
 
 	.big-button:hover {
