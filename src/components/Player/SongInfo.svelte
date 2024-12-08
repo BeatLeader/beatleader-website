@@ -49,11 +49,11 @@
 		<div class="songinfo">
 			{#if notClickable}
 				<span class="name">{song.name} {song.subName}</span>
-				<div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+				<div class="author"><span class="author-name">{song.authorName}</span> <small>{song.levelAuthorName}</small></div>
 			{:else}
 				<a href={leaderboardUrl} on:click|preventDefault={() => navigate(leaderboardUrl)}>
 					<span class="name">{song.name} {song.subName}</span>
-					<div class="author">{song.authorName} <small>{song.levelAuthorName}</small></div>
+					<div class="author"><span class="author-name">{song.authorName}</span> <small>{song.levelAuthorName}</small></div>
 
 					{#if category}
 						<span class="category">
@@ -108,6 +108,10 @@
 	.songinfo small {
 		font-size: 0.75em;
 		color: var(--ppColour);
+	}
+
+	.author-name {
+		overflow-wrap: anywhere;
 	}
 
 	.category {
