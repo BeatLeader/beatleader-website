@@ -55,15 +55,18 @@
 	async function prepPlayerData(data) {
 		let _cards = [];
 
-		for (let i = 0; i < data.topMappers.length; i++) {
-			var mapper = data.topMappers[i];
+		if (data.topMappers) {
+			for (let i = 0; i < data.topMappers.length; i++) {
+				var mapper = data.topMappers[i];
 
-			if (mapper.beatSaverId && !mapper.name) {
-				const mapperData = await beatSaverService.getMapper(mapper.beatSaverId);
-				mapper.name = mapperData.name;
-				mapper.avatar = mapperData.avatar;
+				if (mapper.beatSaverId && !mapper.name) {
+					const mapperData = await beatSaverService.getMapper(mapper.beatSaverId);
+					mapper.name = mapperData.name;
+					mapper.avatar = mapperData.avatar;
+				}
 			}
 		}
+
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
@@ -259,8 +262,30 @@
 		cards = _cards;
 	}
 
-	function prepMapperData(data) {
+	async function prepMapperData(data) {
 		let _cards = [];
+
+		if (data.topPlayers) {
+			for (let i = 0; i < data.topPlayers.length; i++) {
+				var player = data.topPlayers[i];
+
+				if (player.beatLeaderId && !player.name) {
+					const playerData = await fetch(BL_API_URL + `player/${player.beatLeaderId}`).then(res => res.json());
+					var existingPlayer = data.topPlayers.find(p => p.beatLeaderId == playerData.id);
+					if (existingPlayer) {
+						existingPlayer.minutesPlayed += player.minutesPlayed;
+						// remove player from array
+						data.topPlayers.splice(i, 1);
+						i--;
+					} else {
+						player.name = playerData.name;
+						player.avatar = playerData.avatar;
+					}
+				}
+			}
+			// resort players by minutes played descending
+			data.topPlayers.sort((a, b) => b.minutesPlayed - a.minutesPlayed);
+		}
 
 		_cards.push({
 			component: ReplayedCard2024,
