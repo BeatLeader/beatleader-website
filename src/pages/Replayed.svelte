@@ -22,8 +22,6 @@
 
 	const account = createAccountStore();
 
-	playerId = '76561198075923914'; // TEMP
-
 	let cards;
 	let replayedNotAvailable = false;
 	let loggedInPlayer;
