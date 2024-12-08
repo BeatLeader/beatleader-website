@@ -76,7 +76,7 @@
 		try {
 			screenshoting = true;
 			const blob = await fetch(
-				`${BL_RENDERER_API_URL}screenshot/464x800/replayed/general/replayed${
+				`${BL_RENDERER_API_URL}screenshot/cropped/464x1050/10x10x444x780/replayed/general/replayed${
 					summaryType === 'mapper' ? '/mapper' : ''
 				}?color=${colorStartIndex}`,
 				{credentials: 'include'}
