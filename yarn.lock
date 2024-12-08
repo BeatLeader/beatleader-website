@@ -261,14 +261,6 @@
   resolved "https://registry.yarnpkg.com/@sec-ant/readable-stream/-/readable-stream-0.4.1.tgz#60de891bb126abfdc5410fdc6166aca065f10a0c"
   integrity sha512-831qok9r2t8AlxLko40y2ebgSDhenenCatLVeW/uBtnHPyhHOvG0C7TvfgecV+wHzIm5KUICgzmVpWS+IMEAeg==
 
-"@silexlabs/grapesjs-fonts@https://github.com/NSGolova/grapesjs-fonts.git":
-  version "1.0.20"
-  resolved "https://github.com/NSGolova/grapesjs-fonts.git#ae4dd566f7df615aecbbfcbc8c9945e595829c74"
-  dependencies:
-    backbone "^1.6.0"
-    grapesjs "^0.21.10"
-    lit-html "^3.1.2"
-
 "@sindresorhus/merge-streams@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/merge-streams/-/merge-streams-4.0.0.tgz#abb11d99aeb6d27f1b563c38147a72d50058e339"
@@ -279,10 +271,10 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/svelte/-/svelte-5.0.4.tgz#8bd0254472bd39a5e750f1b4a05ecb18c9f3bf80"
   integrity sha512-BV9NplVgLmSi4mwKzD8BD/NQ8erOY/nUE/GpgWe2ckx+wIQF5RyRirn/QsSSCPeulVpc3RA/iJt6DpfTIZps0Q==
 
-"@types/backbone@^1.4.15":
-  version "1.4.19"
-  resolved "https://registry.yarnpkg.com/@types/backbone/-/backbone-1.4.19.tgz#f6e8406fed40ca3fe224f6e59115142b62be76d6"
-  integrity sha512-byyn236JymGByOajKA7mi1k+/jKn162TIvArOB4SHgOGbVlFj8CSfJH4jekP0qo0vJwW5khrrsiiO1Jsos6ZvA==
+"@types/backbone@1.4.15":
+  version "1.4.15"
+  resolved "https://registry.yarnpkg.com/@types/backbone/-/backbone-1.4.15.tgz#505323ab8fea11ecaec74cb3f73d569a4e5eb779"
+  integrity sha512-WWeKtYlsIMtDyLbbhkb96taJMEbfQBnuz7yw1u0pkphCOtksemoWhIXhK74VRCY9hbjnsH3rsJu2uUiFtnsEYg==
   dependencies:
     "@types/jquery" "*"
     "@types/underscore" "*"
@@ -330,11 +322,6 @@
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.8.tgz#518609aefb797da19bf222feb199e8f653ff7627"
   integrity sha512-0vWLNK2D5MT9dg0iOo8GlKguPAU02QjmZitPEsXRuJXU/OGIOt9vT9Fc26wtYuavLxtO45v9PGleoL9Z0k1LHg==
-
-"@types/trusted-types@^2.0.2":
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.7.tgz#baccb07a970b91707df3a3e8ba6896c57ead2d11"
-  integrity sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==
 
 "@types/underscore@*":
   version "1.11.15"
@@ -425,7 +412,7 @@ babel-runtime@^6.26.0:
     core-js "^2.4.0"
     regenerator-runtime "^0.11.0"
 
-backbone-undo@^0.2.5:
+backbone-undo@0.2.6:
   version "0.2.6"
   resolved "https://registry.yarnpkg.com/backbone-undo/-/backbone-undo-0.2.6.tgz#00c4d78ab2425c18a76f2a96a1eee181560a5d8d"
   integrity sha512-AsfpNiljLXlk7TcffDUu3EAUq7CxWbyTNwARWrql5XTzN4vh6WzEEBZYaKK4kTTz+iW1tSzqUooaGRIwO83kWA==
@@ -440,7 +427,7 @@ backbone@1.4.1:
   dependencies:
     underscore ">=1.8.3"
 
-backbone@>=1.0.0, backbone@^1.6.0:
+backbone@>=1.0.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/backbone/-/backbone-1.6.0.tgz#5cdfa25257819b223109a77a74dde26d38995930"
   integrity sha512-13PUjmsgw/49EowNcQvfG4gmczz1ximTMhUktj0Jfrjth0MVaTxehpU+qYYX4MxnuIuhmvBLC6/ayxuAGnOhbA==
@@ -572,15 +559,15 @@ code-red@^1.0.3:
     estree-walker "^3.0.3"
     periscopic "^3.1.0"
 
-codemirror-formatting@^1.0.0:
+codemirror-formatting@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/codemirror-formatting/-/codemirror-formatting-1.0.0.tgz#879cc1fdd9018343c1d5511769ce5360d705ebf2"
   integrity sha512-br9yM6eJI3pJHekEnoyHaBEb1B7XxxDjju+vRyBe8QGLp5saTIXXkZ+eFCTqXSAtI8QEZDFVEX2/SOjH2sVWRQ==
 
-codemirror@^5.63.0:
-  version "5.65.16"
-  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.65.16.tgz#efc0661be6bf4988a6a1c2fe6893294638cdb334"
-  integrity sha512-br21LjYmSlVL0vFCPWPfhzUCT34FM/pAdK7rRIZwa0rrtrIdotvP4Oh4GUHsu2E3IrQMCfRkL/fN3ytMNxVQvg==
+codemirror@5.63.0:
+  version "5.63.0"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.63.0.tgz#070a699108badd9c118b7261ac2e9793acdbb149"
+  integrity sha512-KlLWRPggDg2rBD1Mx7/EqEhaBdy+ybBCVh/efgjBDsPpMeEu6MbTAJzIT4TuCzvmbTEgvKOGzVT6wdBTNusqrg==
 
 color-convert@^1.9.0:
   version "1.9.3"
@@ -1322,18 +1309,19 @@ grapesjs-ui-suggest-classes@^1.0.19:
   resolved "https://registry.yarnpkg.com/grapesjs-ui-suggest-classes/-/grapesjs-ui-suggest-classes-1.0.19.tgz#f5a07028f271d4a7bf347d24717edd9e4955d192"
   integrity sha512-npJINNDLIP7HtdHwMYVYRUdLg6TMV3N/QkstI9vRbS65Uf9K3YfaBlYd+S50+/vYo2NJMNTcIHDsX3rDmLCRpw==
 
-grapesjs@^0.21.10, grapesjs@^0.21.11:
-  version "0.21.11"
-  resolved "https://registry.yarnpkg.com/grapesjs/-/grapesjs-0.21.11.tgz#3557c905a87bbe2ae451fcdd89a1a763af110dd3"
-  integrity sha512-pYJqBjN+pA6MUtg/nDiWXRoxwD26cujyyRMiS1FyOkZidU7MuwLPXzqogRoRqA+8IkDCjk27ArHlrxF9X0LDPQ==
+grapesjs@^0.22.1:
+  version "0.22.4"
+  resolved "https://registry.yarnpkg.com/grapesjs/-/grapesjs-0.22.4.tgz#797179a780b6c9d8fa70ccf94dff1cb8ff99c47f"
+  integrity sha512-4ea7T5FguyPC2fLytpSBgPXcSGreRKKisknXUbsgHBCzv4G11Z0oBJNM5jRucupBr2CRxt/3U2zixeEHEisfbw==
   dependencies:
-    "@types/backbone" "^1.4.15"
+    "@types/backbone" "1.4.15"
     backbone "1.4.1"
-    backbone-undo "^0.2.5"
-    codemirror "^5.63.0"
-    codemirror-formatting "^1.0.0"
-    promise-polyfill "^8.1.3"
-    underscore "^1.13.1"
+    backbone-undo "0.2.6"
+    codemirror "5.63.0"
+    codemirror-formatting "1.0.0"
+    html-entities "~1.4.0"
+    promise-polyfill "8.3.0"
+    underscore "1.13.1"
 
 grapick@^0.1.13:
   version "0.1.13"
@@ -1395,6 +1383,11 @@ hasown@^2.0.0, hasown@^2.0.2:
   integrity sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==
   dependencies:
     function-bind "^1.1.2"
+
+html-entities@~1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/html-entities/-/html-entities-1.4.0.tgz#cfbd1b01d2afaf9adca1b10ae7dffab98c71d2dc"
+  integrity sha512-8nxjcBcd8wovbeKx7h3wTji4e6+rhaVuPNpMqwWgnHh+N9ToqsCs6XztWRBPQ+UtzsoMAdKZtUENoVzU/EMtZA==
 
 human-signals@^7.0.0:
   version "7.0.0"
@@ -1717,13 +1710,6 @@ less@^3.13.1:
     native-request "^1.0.5"
     source-map "~0.6.0"
 
-lit-html@^3.1.2:
-  version "3.1.4"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-3.1.4.tgz#30ad4f11467a61e2f08856de170e343184e9034e"
-  integrity sha512-yKKO2uVv7zYFHlWMfZmqc+4hkmSbFp8jgjdZY9vvR9jr4J8fH6FUMXhr+ljfELgmjpvlF7Z1SJ5n5/Jeqtc9YA==
-  dependencies:
-    "@types/trusted-types" "^2.0.2"
-
 livereload-js@^3.3.1:
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/livereload-js/-/livereload-js-3.4.1.tgz#ba90fbc708ed1b9a024bb89c4ee12c96ea03d66f"
@@ -2021,7 +2007,7 @@ pretty-ms@^9.0.0:
   dependencies:
     parse-ms "^4.0.0"
 
-promise-polyfill@^8.1.3:
+promise-polyfill@8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/promise-polyfill/-/promise-polyfill-8.3.0.tgz#9284810268138d103807b11f4e23d5e945a4db63"
   integrity sha512-H5oELycFml5yto/atYqmjyigJoAo3+OXwolYiH7OfQuYlAqhxNvTfiNMbV9hsC6Yp83yE5r2KTVmtrG6R9i6Pg==
@@ -2594,7 +2580,12 @@ typescript@^5.0.3, typescript@^5.5.2:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.5.2.tgz#c26f023cb0054e657ce04f72583ea2d85f8d0507"
   integrity sha512-NcRtPEOsPFFWjobJEtfihkLCZCXZt/os3zf8nTxjVH3RvTSxjrCamJpbExGvYOF+tFHc3pA65qpdwPbzjohhew==
 
-underscore@>=1.4.4, underscore@>=1.8.3, underscore@^1.13.1:
+underscore@1.13.1:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.1.tgz#0c1c6bd2df54b6b69f2314066d65b6cde6fcf9d1"
+  integrity sha512-hzSoAVtJF+3ZtiFX0VgfFPHEDRm7Y/QPjGyNo4TVdnDTdft3tr8hEkD25a1jC+TjTuE7tkHGKkhwCgs9dgBB2g==
+
+underscore@>=1.4.4, underscore@>=1.8.3:
   version "1.13.6"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.13.6.tgz#04786a1f589dc6c09f761fc5f45b89e935136441"
   integrity sha512-+A5Sja4HP1M08MaXya7p5LvjuM7K6q/2EaC0+iovj/wOcMsTzMvDFbasi/oSapiwOlt252IqsKqPjCl7huKS0A==
