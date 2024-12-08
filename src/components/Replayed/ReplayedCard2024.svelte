@@ -36,6 +36,7 @@
 	let activeReady = false;
 	let countries = [];
 	let gradientBg2024 = 'background: #4a4a4a';
+	let gradientBtmBg2024 = '';
 	let frontStat = '';
 
 	buttons.push({
@@ -192,80 +193,123 @@
 
 	function getGradientBg2024(cardId) {
 		let gradientBg = 'background: ';
+		let gradientBtmBg = 'background: linear-gradient(0deg, ';
 		if (cardId == '0') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#D400F1 0%, ';
 			gradientBg += '#D400F1 15%, ';
 			gradientBg += '#0765C5 83%, ';
 			gradientBg += '#0765C5 100%';
+
+			gradientBtmBg += '#D400F1 0%, ';
+			gradientBtmBg += '#D400F100 15%';
 		} else if (cardId == '1') {
 			gradientBg += 'linear-gradient(33deg, ';
 			gradientBg += '#D62B54 0%, ';
 			gradientBg += '#E6B749 100%';
+
+			gradientBtmBg += '#D62B54 0%, ';
+			gradientBtmBg += '#D62B5400 15%';
 		} else if (cardId == '2') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#9700F1 0%, ';
 			gradientBg += '#9700F1 15%, ';
 			gradientBg += '#E6B749 83%, ';
 			gradientBg += '#E6B749 100%';
+
+			gradientBtmBg += '#9700F1 0%, ';
+			gradientBtmBg += '#9700F100 15%';
 		} else if (cardId == '3') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#9700F1 0%, ';
 			gradientBg += '#9700F1 15%, ';
 			gradientBg += '#D62B54 83%, ';
 			gradientBg += '#D62B54 100%';
+
+			gradientBtmBg += '#9700F1 0%, ';
+			gradientBtmBg += '#9700F100 15%';
 		} else if (cardId == '4') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#36C790 0%, ';
 			gradientBg += '#36C790 15%, ';
 			gradientBg += '#3374DE 83%, ';
 			gradientBg += '#3374DE 100%';
+
+			gradientBtmBg += '#36C790 0%, ';
+			gradientBtmBg += '#36C79000 15%';
 		} else if (cardId == '5') {
 			gradientBg += 'linear-gradient(0deg, ';
 			gradientBg += '#889DC1 0%, ';
 			gradientBg += '#889DC1 15%, ';
 			gradientBg += '#3374DF 83%, ';
 			gradientBg += '#3374DF 100%';
+
+			gradientBtmBg += '#889DC1 0%, ';
+			gradientBtmBg += '#889DC100 15%';
 		} else if (cardId == '6') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#0065FF 0%, ';
 			gradientBg += '#b400a3 50%, ';
 			gradientBg += '#D91041 100%';
+
+			gradientBtmBg += '#0065FF 0%, ';
+			gradientBtmBg += '#0065FF00 15%';
 		} else if (cardId == '7') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#9700F1 0%, ';
 			gradientBg += '#9700F1 15%, ';
 			gradientBg += '#E6B749 83%, ';
 			gradientBg += '#E6B749 100%';
+
+			gradientBtmBg += '#9700F1 0%, ';
+			gradientBtmBg += '#9700F100 15%';
 		} else if (cardId == '8') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#9700F1 0%, ';
 			gradientBg += '#9700F1 15%, ';
 			gradientBg += '#3A41E3 83%, ';
 			gradientBg += '#3A41E3 100%';
+
+			gradientBtmBg += '#9700F1 0%, ';
+			gradientBtmBg += '#9700F100 15%';
 		} else if (cardId == '9') {
 			gradientBg += 'linear-gradient(33deg, ';
 			gradientBg += '#D62B54 0%, ';
 			gradientBg += '#E6B749 100%';
+
+			gradientBtmBg += '#D62B54 0%, ';
+			gradientBtmBg += '#D62B5400 15%';
 		} else if (cardId == '10') {
 			gradientBg += 'linear-gradient(0deg, ';
 			gradientBg += '#3374DF 0%, ';
 			gradientBg += '#3374DF 15%, ';
 			gradientBg += '#889DC1 83%, ';
 			gradientBg += '#889DC1 100%';
+
+			gradientBtmBg += '#3374DF 0%, ';
+			gradientBtmBg += '#3374DF00 15%';
 		} else if (cardId == '11') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#F84B48 0%, ';
 			gradientBg += '#FA9E5D 50%, ';
 			gradientBg += '#50A8F7 100%';
+
+			gradientBtmBg += '#F84B48 0%, ';
+			gradientBtmBg += '#F84B4800 15%';
 		} else {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#4a4a4a 0%, ';
 			gradientBg += '#4a4a4a 15%, ';
 			gradientBg += '#4a4a4a 83%, ';
 			gradientBg += '#4a4a4a 100%';
+
+			gradientBtmBg += '#4a4a4a 0%, ';
+			gradientBtmBg += '#4a4a4a00 15%';
 		}
 		gradientBg += ')';
+		gradientBtmBg += ')';
+		gradientBg2024 = gradientBg;
+		gradientBtmBg2024 = gradientBtmBg;
 		return gradientBg;
 	}
 
@@ -357,6 +401,7 @@
 				<!--<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
 				<!--<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
 			{/if}
+			<div class="btm-background2024" style={gradientBtmBg2024} />
 		</div>
 
 		{#if activeReady && !revealed}
@@ -1007,6 +1052,21 @@
 		pointer-events: none;
 	}
 
+	.btm-background2024 {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #ffffff00;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		width: 100%;
+		height: 100%;
+		transition: transform 2500ms ease-out;
+		z-index: 0;
+		pointer-events: none;
+	}
+
 	.card.revealed .background {
 		transform: scale(1.1);
 	}
@@ -1047,7 +1107,7 @@
 		max-width: 100%;
 		height: 100%;
 		overflow: hidden;
-		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
+		text-shadow: 2px 2px 6px rgb(0 0 0 / 50%);
 		border-radius: 12px;
 		position: relative;
 		font-size: 3.5vh;

@@ -41,6 +41,7 @@
 	let cinematicsCanvas;
 	let screenshoting = false;
 	let gradientBg2024 = 'background: #4a4a4a';
+	let gradientBtmBg2024 = '';
 
 	const {addNotification} = getNotificationsContext();
 
@@ -186,24 +187,37 @@
 
 	function getGradientBg2024(cardId) {
 		let gradientBg = 'background: ';
+		let gradientBtmBg = 'background: linear-gradient(0deg, ';
 		if (cardId == '6') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#0065FF 0%, ';
 			gradientBg += '#b400a3 50%, ';
 			gradientBg += '#D91041 100%';
+
+			gradientBtmBg += '#0065FF 0%, ';
+			gradientBtmBg += '#0065FF00 15%';
 		} else if (cardId == '11') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#F84B48 0%, ';
 			gradientBg += '#FA9E5D 50%, ';
 			gradientBg += '#50A8F7 100%';
+
+			gradientBtmBg += '#F84B48 0%, ';
+			gradientBtmBg += '#F84B4800 15%';
 		} else {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#4a4a4a 0%, ';
 			gradientBg += '#4a4a4a 15%, ';
 			gradientBg += '#4a4a4a 83%, ';
 			gradientBg += '#4a4a4a 100%';
+
+			gradientBtmBg += '#4a4a4a 0%, ';
+			gradientBtmBg += '#4a4a4a00 15%';
 		}
 		gradientBg += ')';
+		gradientBtmBg += ')';
+		gradientBg2024 = gradientBg;
+		gradientBtmBg2024 = gradientBtmBg;
 		return gradientBg;
 	}
 
@@ -227,9 +241,17 @@
 		<div class="background-container">
 			<div class="background2024" style={gradientBg2024} />
 			{#if revealed}
-				<!--<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
-				<!--<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
+				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}}></div>
+				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}}>
+					<img src="/assets/replayed2024/summary.webp" alt="" style="position: absolute; width: 35%; right: 10%; bottom: 30%;" />
+					<img
+						src="/assets/replayed2024/topMapper.webp"
+						alt=""
+						class="flipped"
+						style="position: absolute; width: 30%; left: 14%; bottom: 17%;" />
+				</div>
 			{/if}
+			<div class="btm-background2024" style={gradientBtmBg2024} />
 		</div>
 
 		{#if activeReady && !revealed}
@@ -731,6 +753,21 @@
 		pointer-events: none;
 	}
 
+	.btm-background2024 {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #ffffff00;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		width: 100%;
+		height: 100%;
+		transition: transform 2500ms ease-out;
+		z-index: 0;
+		pointer-events: none;
+	}
+
 	.card.revealed .background {
 		transform: scale(1.1);
 	}
@@ -741,28 +778,20 @@
 
 	.background-solid-top {
 		position: absolute;
-		top: -5%;
-		left: -10%;
-		width: 120%;
+		top: 0;
+		left: 0;
+		width: 100%;
 		height: 20%;
-		background-color: var(--dominantColor);
-		transform: rotate(-10deg);
-		border-radius: 12px;
-		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
-		box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.45);
+		background-color: #ffffff00;
 	}
 
 	.background-solid-bottom {
 		position: absolute;
-		bottom: -5%;
-		left: -10%;
-		width: 120%;
+		bottom: 0;
+		left: 0;
+		width: 100%;
 		height: 20%;
-		background-color: var(--dominantColor);
-		transform: rotate(-10deg);
-		border-radius: 12px;
-		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
-		box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45);
+		background-color: #ffffff00;
 	}
 
 	.content {
@@ -771,7 +800,7 @@
 		max-width: 100%;
 		height: 100%;
 		overflow: hidden;
-		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
+		text-shadow: 2px 2px 6px rgb(0 0 0 / 50%);
 		border-radius: 12px;
 		position: relative;
 		font-size: 3.5vh;
@@ -930,5 +959,10 @@
 		font-size: 1.25vh;
 		gap: 0.3em;
 		align-items: center;
+	}
+
+	.flipped {
+		-webkit-transform: scaleX(-1);
+		transform: scaleX(-1);
 	}
 </style>
