@@ -41,6 +41,7 @@
 	let cinematicsCanvas;
 	let screenshoting = false;
 	let gradientBg2024 = 'background: #4a4a4a';
+	let gradientBtmBg2024 = '';
 
 	const {addNotification} = getNotificationsContext();
 
@@ -75,7 +76,7 @@
 		try {
 			screenshoting = true;
 			const blob = await fetch(
-				`${BL_RENDERER_API_URL}screenshot/464x800/replayed/general/replayed${
+				`${BL_RENDERER_API_URL}screenshot/cropped/464x1050/10x10x444x780/replayed/general/replayed${
 					summaryType === 'mapper' ? '/mapper' : ''
 				}?color=${colorStartIndex}`,
 				{credentials: 'include'}
@@ -186,19 +187,37 @@
 
 	function getGradientBg2024(cardId) {
 		let gradientBg = 'background: ';
+		let gradientBtmBg = 'background: linear-gradient(0deg, ';
 		if (cardId == '6') {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#0065FF 0%, ';
 			gradientBg += '#b400a3 50%, ';
 			gradientBg += '#D91041 100%';
+
+			gradientBtmBg += '#0065FF 0%, ';
+			gradientBtmBg += '#0065FF00 15%';
+		} else if (cardId == '11') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#F84B48 0%, ';
+			gradientBg += '#FA9E5D 50%, ';
+			gradientBg += '#50A8F7 100%';
+
+			gradientBtmBg += '#F84B48 0%, ';
+			gradientBtmBg += '#F84B4800 15%';
 		} else {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#4a4a4a 0%, ';
 			gradientBg += '#4a4a4a 15%, ';
 			gradientBg += '#4a4a4a 83%, ';
 			gradientBg += '#4a4a4a 100%';
+
+			gradientBtmBg += '#4a4a4a 0%, ';
+			gradientBtmBg += '#4a4a4a00 15%';
 		}
 		gradientBg += ')';
+		gradientBtmBg += ')';
+		gradientBg2024 = gradientBg;
+		gradientBtmBg2024 = gradientBtmBg;
 		return gradientBg;
 	}
 
@@ -214,35 +233,49 @@
 <div class="grid-item" class:active transition:fly|global={{y: '25%', duration: 900, easing: cubicOut, opacity: 0}}>
 	<div class="card" on:click={handleCardClick} on:mouseenter class:active class:revealed style="--dominantColor: {dominantColor};">
 		<div class="cinematics">
-			<div class="cinematics-canvas" class:active={active && revealed}>
+			<div class="cinematics-canvas" class:active={active && revealed && false}>
+				<!--disabled this year-->
 				<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0; left: 0;" />
 			</div>
 		</div>
 		<div class="background-container">
-			{#if !cardsHaveIds}
-				<div class="background" />
-				{#if revealed}
-					<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} />
-					<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} />
-				{/if}
-			{:else}
-				<div class="background2024" style={gradientBg2024} />
-				{#if revealed}
-					<!--<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
-					<!--<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
-				{/if}
+			<div class="background2024" style={gradientBg2024} />
+			{#if revealed}
+				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}}></div>
+				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}}>
+					<img src="/assets/replayed2024/summary.webp" alt="" style="position: absolute; width: 35%; right: 10%; bottom: 30%;" />
+					<img
+						src="/assets/replayed2024/topMapper.webp"
+						alt=""
+						class="flipped"
+						style="position: absolute; width: 30%; left: 14%; bottom: 17%;" />
+				</div>
 			{/if}
+			<div class="btm-background2024" style={gradientBtmBg2024} />
 		</div>
 
 		{#if activeReady && !revealed}
+			<!--reveal card for summary-->
 			<div class="intro-card-container">
-				<div class="intro-card" out:scale={{duration: 1000, start: 1.5, opacity: 0}}>
+				<div class="intro-card" style={gradientBg2024} out:scale|global={{duration: 1000, start: 1.5, opacity: 0}}>
 					<div class="intro-card-content">
-						<div class="header">
-							<h1 in:fly={{y: '2em', duration: 1000, easing: cubicOut, opacity: 0}}>{title}</h1>
-							<p in:fly={{y: '2em', duration: 800, easing: cubicOut, opacity: 0, delay: 1100}} on:introend={startAutoRevealCount}>
-								{subText}
-							</p>
+						<div class="top-block">
+							<div class="header" style="align-self: flex-end;">
+								<h1 class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 600}}>
+									Your 2024 in Beat Saber
+								</h1>
+								<p class="title2" in:fly|global={{y: '2em', duration: 700, easing: cubicOut, opacity: 0, delay: 1200}}>Summarized</p>
+							</div>
+						</div>
+
+						<div class="bottom-block">
+							<img
+								src="/assets/replayed2024/summary.webp"
+								alt="Praise mapper"
+								style="width: 70%;"
+								in:fly|global={{y: '2em', duration: 900, easing: cubicOut, opacity: 0, delay: 1800}}
+								on:introend={startAutoRevealCount} />
+							<!--set this to the bl chan emoji-->
 						</div>
 					</div>
 				</div>
@@ -388,11 +421,11 @@
 							share
 						</div>
 					</div>
-					<div class="bullets">
+					<!--<div class="bullets">
 						{#each colors as color, index}
 							<span class:active={color === dominantColor} style="background-color: {color};" on:click={() => setBackgroundColor(index)} />
 						{/each}
-					</div>
+					</div>-->
 				</div>
 			</div>
 		{/if}
@@ -400,11 +433,11 @@
 </div>
 
 <MetaTags
-	title="BeatLeader rePlayed 2023"
-	description="View your BeatLeader mapper rePlayed 2023"
+	title="BeatLeader rePlayed 2024"
+	description="View your BeatLeader mapper rePlayed 2024"
 	openGraph={{
-		title: 'BeatLeader rePlayed 2023',
-		description: 'View your BeatLeader mapper rePlayed 2023',
+		title: 'BeatLeader rePlayed 2024',
+		description: 'View your BeatLeader mapper rePlayed 2024',
 		images: CURRENT_URL + '/assets/logo-small.png',
 		siteName: ssrConfig.name,
 	}}
@@ -412,10 +445,10 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: 'BeatLeader rePlayed 2023',
-		description: 'View your BeatLeader mapper rePlayed 2023',
+		title: 'BeatLeader rePlayed 2024',
+		description: 'View your BeatLeader mapper rePlayed 2024',
 		image: CURRENT_URL + '/assets/logo-small.png',
-		imageAlt: 'BeatLeader rePlayed 2023',
+		imageAlt: 'BeatLeader rePlayed 2024',
 	}} />
 
 <style>
@@ -607,18 +640,17 @@
 		flex-direction: column;
 		justify-content: center;
 		border-radius: 12px;
-		padding: 1em;
 		z-index: 20;
-		background-color: var(--dominantColor);
 
 		color: white;
 		user-select: none;
-		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
 		font-size: 3.5vh;
 
 		font-style: normal;
 		line-height: normal;
 		text-align: center;
+		font-family: Arial, Helvetica, sans-serif;
+		padding: 0 0.25em;
 	}
 
 	.intro-card-container {
@@ -631,40 +663,29 @@
 		border-radius: 12px;
 	}
 
-	.intro-card h1 {
-		font-size: 100%;
+	.title2 {
+		font-size: 75%;
 		font-weight: 700;
-	}
-
-	.intro-card h2 {
-		font-size: 80%;
-		font-weight: 700;
-	}
-
-	.intro-card h3 {
-		font-size: 60%;
-		font-weight: 600;
-	}
-
-	.intro-card h4 {
-		font-size: 50%;
-		font-weight: 500;
+		margin-bottom: 0.5em;
 		color: white !important;
-		margin-top: 0.5em;
 	}
 
-	.intro-card p {
-		margin-top: 0.5em;
-		font-size: 50%;
-		font-weight: 400;
+	.top-block {
+		width: 100%;
+		height: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.bottom-block {
+		width: 100%;
+		height: 50%;
 	}
 
 	.intro-card img {
-		width: 50%;
-		justify-content: center;
-		align-self: center;
+		width: 45%;
 		border-radius: 12px;
-		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85);
 		margin-bottom: 0.5em;
 	}
 
@@ -673,6 +694,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
+		height: 100%;
 	}
 
 	.intro-card .header {
@@ -680,7 +702,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		margin-bottom: 1em;
+		margin-bottom: 0.7em;
 	}
 
 	.card {
@@ -731,6 +753,21 @@
 		pointer-events: none;
 	}
 
+	.btm-background2024 {
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #ffffff00;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center;
+		width: 100%;
+		height: 100%;
+		transition: transform 2500ms ease-out;
+		z-index: 0;
+		pointer-events: none;
+	}
+
 	.card.revealed .background {
 		transform: scale(1.1);
 	}
@@ -741,28 +778,20 @@
 
 	.background-solid-top {
 		position: absolute;
-		top: -5%;
-		left: -10%;
-		width: 120%;
+		top: 0;
+		left: 0;
+		width: 100%;
 		height: 20%;
-		background-color: var(--dominantColor);
-		transform: rotate(-10deg);
-		border-radius: 12px;
-		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
-		box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.45);
+		background-color: #ffffff00;
 	}
 
 	.background-solid-bottom {
 		position: absolute;
-		bottom: -5%;
-		left: -10%;
-		width: 120%;
+		bottom: 0;
+		left: 0;
+		width: 100%;
 		height: 20%;
-		background-color: var(--dominantColor);
-		transform: rotate(-10deg);
-		border-radius: 12px;
-		transition: background-color cubic-bezier(0.215, 0.61, 0.355, 1) 1800ms;
-		box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45);
+		background-color: #ffffff00;
 	}
 
 	.content {
@@ -771,7 +800,7 @@
 		max-width: 100%;
 		height: 100%;
 		overflow: hidden;
-		text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.85);
+		text-shadow: 2px 2px 6px rgb(0 0 0 / 50%);
 		border-radius: 12px;
 		position: relative;
 		font-size: 3.5vh;
@@ -930,5 +959,10 @@
 		font-size: 1.25vh;
 		gap: 0.3em;
 		align-items: center;
+	}
+
+	.flipped {
+		-webkit-transform: scaleX(-1);
+		transform: scaleX(-1);
 	}
 </style>
