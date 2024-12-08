@@ -398,21 +398,86 @@
 		<div class="background-container">
 			<div class="background2024" style={gradientBg2024} />
 			{#if revealed}
-				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}}></div>
-				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}}>
+				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, delay: 800, easing: cubicOut, opacity: 0}}></div>
+				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, delay: 800, easing: cubicOut, opacity: 0}}>
 					{#if cardId == '0'}
-						<img src="/assets/replayed2024/summary.webp" alt="" style="position: absolute; width: 35%; right: 10%; bottom: 30%;" />
 						<img
-							src="/assets/replayed2024/topMapper.webp"
+							src={stats?.entries[2]?.avatar}
 							alt=""
-							class="flipped"
-							style="position: absolute; width: 30%; left: 14%; bottom: 17%;" />
+							class="image-card"
+							style="position: absolute; width: 26%; right: 69%; bottom: 40%; transform: rotate(-3deg);" />
+						<img
+							src={stats?.entries[1]?.avatar}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 30%; right: 48%; bottom: 52%; transform: rotate(10deg);" />
+						<img
+							src={stats?.entries[0]?.avatar}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 32%; right: 27%; bottom: 77%; transform: rotate(-5deg);" />
+						<img src="/assets/replayed2024/topMapper.webp" alt="" style="position: absolute; width: 45%; right: 0.5%; bottom: 35%;" />
 					{:else if cardId == '1'}
 						<img
 							src="/assets/replayed2024/mapperPercent.webp"
 							alt=""
 							class="flipped"
 							style="position: absolute; width: 35%; left: 3.5%; bottom: 37%;" />
+					{:else if cardId == '2'}
+						<img
+							src={stats?.entries[0]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 32%; right: 36%; bottom: 81%;" />
+						<img
+							src={stats?.entries[1]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 30%; right: 14%; bottom: 52%;" />
+						<img
+							src={stats?.entries[2]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 28%; right: -5%; bottom: 20%;" />
+
+						<img src="/assets/replayed2024/favoriteMap.webp" alt="" style="position: absolute; width: 50%; right: 57%; bottom: 65%;" />
+					{:else if cardId == '3'}
+						<img
+							src={stats?.entries[2]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 32%; right: 4.0%; bottom: 63%;" />
+						<img
+							src={stats?.entries[1]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 32%; right: 63%; bottom: 63%;" />
+						<img
+							src={stats?.entries[0]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 34%; right: 32%; bottom: 82%;" />
+						<img src="/assets/replayed2024/mostFailed.webp" alt="" style="position: absolute; width: 50%; right: 25%; bottom: 35%;" />
+					{:else if cardId == '4'}
+						<img
+							src={stats?.entries[0]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 32%; right: 30%; bottom: 76%; transform: rotate(5deg);" />
+						<img
+							src={stats?.entries[1]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 30%; right: 52%; bottom: 52%; transform: rotate(-2deg);" />
+						<img
+							src={stats?.entries[2]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 26%; right: 78%; bottom: 83%; transform: rotate(5deg);" />
+
+						<img src="/assets/replayed2024/mostRestarted.webp" alt="" style="position: absolute; width: 42%; right: -5.5%; bottom: 35%;" />
+					{:else if cardId == '5'}
+						<img src="/assets/replayed2024/bigStats.webp" alt="" style="position: absolute; width: 54%; right: 1%; bottom: 12%;" />
 					{/if}
 				</div>
 			{/if}
@@ -768,6 +833,11 @@
 	}} />
 
 <style>
+	.image-card {
+		border-radius: 15%;
+		outline: rgba(255, 255, 255, 0.5) solid 0.4vh;
+	}
+
 	.data-columns {
 		display: flex;
 		flex-direction: row;
