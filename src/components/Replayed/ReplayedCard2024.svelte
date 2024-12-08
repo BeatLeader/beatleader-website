@@ -398,8 +398,23 @@
 		<div class="background-container">
 			<div class="background2024" style={gradientBg2024} />
 			{#if revealed}
-				<!--<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
-				<!--<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}} /> these can be reused to place the extra art bits-->
+				<div class="background-solid-top" transition:fly={{y: '-100%', duration: 1800, easing: cubicOut, opacity: 0}}></div>
+				<div class="background-solid-bottom" transition:fly={{y: '100%', duration: 1800, easing: cubicOut, opacity: 0}}>
+					{#if cardId == '0'}
+						<img src="/assets/replayed2024/summary.webp" alt="" style="position: absolute; width: 35%; right: 10%; bottom: 30%;" />
+						<img
+							src="/assets/replayed2024/topMapper.webp"
+							alt=""
+							class="flipped"
+							style="position: absolute; width: 30%; left: 14%; bottom: 17%;" />
+					{:else if cardId == '1'}
+						<img
+							src="/assets/replayed2024/mapperPercent.webp"
+							alt=""
+							class="flipped"
+							style="position: absolute; width: 35%; left: 3.5%; bottom: 37%;" />
+					{/if}
+				</div>
 			{/if}
 			<div class="btm-background2024" style={gradientBtmBg2024} />
 		</div>
@@ -1077,28 +1092,20 @@
 
 	.background-solid-top {
 		position: absolute;
-		top: -5%;
-		left: -10%;
-		width: 120%;
+		top: 0;
+		left: 0;
+		width: 100%;
 		height: 20%;
-		background-color: var(--dominantColor);
-		opacity: 0.95;
-		transform: rotate(-10deg);
-		border-radius: 12px;
-		box-shadow: 2px 2px 1.5em rgba(0, 0, 0, 0.45);
+		background-color: #ffffff00;
 	}
 
 	.background-solid-bottom {
 		position: absolute;
-		bottom: -5%;
-		left: -10%;
-		width: 120%;
+		bottom: 0;
+		left: 0;
+		width: 100%;
 		height: 20%;
-		background-color: var(--dominantColor);
-		opacity: 0.95;
-		transform: rotate(-10deg);
-		border-radius: 12px;
-		box-shadow: -2px -2px 1.5em rgba(0, 0, 0, 0.45);
+		background-color: #ffffff00;
 	}
 
 	.content {
@@ -1221,5 +1228,10 @@
 		justify-content: center !important;
 		border-radius: 0px !important;
 		box-shadow: 0 2px 6px rgba(0, 0, 0, 0.85) !important;
+	}
+
+	.flipped {
+		-webkit-transform: scaleX(-1);
+		transform: scaleX(-1);
 	}
 </style>
