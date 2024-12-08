@@ -154,7 +154,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.1em;
-		max-width: 18em;
 		min-width: 13em;
 		padding: 0.5em;
 		border-radius: 8px;
@@ -163,10 +162,14 @@
 	.hmd-container {
 		display: flex;
 		gap: 0.4em;
+		white-space: nowrap;
 	}
 	.platform-title {
 		font-size: small;
 		font-weight: 700;
+	}
+	.hmd-image-container {
+		width: 1.2em;
 	}
 	.platform-entry {
 		display: flex;

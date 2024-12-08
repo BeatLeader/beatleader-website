@@ -107,6 +107,10 @@
 		width: fit-content;
 	}
 
+	.pp-and-platform {
+		flex: 0;
+	}
+
 	:global(.stats-and-summary-box) {
 		padding: 0.5em !important;
 		border-radius: 12px !important;
