@@ -367,11 +367,11 @@
 </div>
 
 <MetaTags
-	title="BeatLeader rePlayed 2023"
-	description="View your BeatLeader mapper rePlayed 2023"
+	title="BeatLeader rePlayed 2024"
+	description="View your BeatLeader mapper rePlayed 2024"
 	openGraph={{
-		title: 'BeatLeader rePlayed 2023',
-		description: 'View your BeatLeader mapper rePlayed 2023',
+		title: 'BeatLeader rePlayed 2024',
+		description: 'View your BeatLeader mapper rePlayed 2024',
 		images: CURRENT_URL + '/assets/logo-small.png',
 		siteName: ssrConfig.name,
 	}}
@@ -379,10 +379,10 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: 'BeatLeader rePlayed 2023',
-		description: 'View your BeatLeader mapper rePlayed 2023',
+		title: 'BeatLeader rePlayed 2024',
+		description: 'View your BeatLeader mapper rePlayed 2024',
 		image: CURRENT_URL + '/assets/logo-small.png',
-		imageAlt: 'BeatLeader rePlayed 2023',
+		imageAlt: 'BeatLeader rePlayed 2024',
 	}} />
 
 <style>

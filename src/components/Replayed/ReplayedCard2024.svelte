@@ -476,8 +476,54 @@
 							style="position: absolute; width: 26%; right: 78%; bottom: 83%; transform: rotate(5deg);" />
 
 						<img src="/assets/replayed2024/mostRestarted.webp" alt="" style="position: absolute; width: 42%; right: -5.5%; bottom: 35%;" />
-					{:else if cardId == '5'}
+					{:else if cardId == '5' || cardId == '10'}
 						<img src="/assets/replayed2024/bigStats.webp" alt="" style="position: absolute; width: 54%; right: 1%; bottom: 12%;" />
+					{:else if cardId == '7'}
+						<img
+							src={stats?.entries[2]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 26%; right: 69%; bottom: 40%; transform: rotate(-3deg);" />
+						<img
+							src={stats?.entries[1]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 30%; right: 48%; bottom: 52%; transform: rotate(10deg);" />
+						<img
+							src={stats?.entries[0]?.cover}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 32%; right: 27%; bottom: 77%; transform: rotate(-5deg);" />
+						<img src="/assets/replayed2024/topMapper.webp" alt="" style="position: absolute; width: 45%; right: 0.5%; bottom: 35%;" />
+					{:else if cardId == '8'}
+						<img
+							src="/assets/replayed2024/favoriteMap.webp"
+							alt=""
+							class="flipped"
+							style="position: absolute; width: 47%; right: 2%; bottom: 35%;" />
+						<img
+							src="/assets/replayed2024/bigStats.webp"
+							alt=""
+							class="flipped"
+							style="position: absolute; width: 40%; left: 5%; bottom: 22%;" />
+					{:else if cardId == '9'}
+						<img
+							src={stats?.entries[0]?.avatar}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 32%; right: 30%; bottom: 76%; transform: rotate(5deg);" />
+						<img
+							src={stats?.entries[1]?.avatar}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 30%; right: 52%; bottom: 52%; transform: rotate(-2deg);" />
+						<img
+							src={stats?.entries[2]?.avatar}
+							alt=""
+							class="image-card"
+							style="position: absolute; width: 26%; right: 78%; bottom: 83%; transform: rotate(5deg);" />
+
+						<img src="/assets/replayed2024/mostRestarted.webp" alt="" style="position: absolute; width: 42%; right: -5.5%; bottom: 35%;" />
 					{/if}
 				</div>
 			{/if}
@@ -814,11 +860,11 @@
 </div>
 
 <MetaTags
-	title="BeatLeader rePlayed 2023"
-	description="View your BeatLeader player rePlayed 2023"
+	title="BeatLeader rePlayed 2024"
+	description="View your BeatLeader player rePlayed 2024"
 	openGraph={{
-		title: 'BeatLeader rePlayed 2023',
-		description: 'View your BeatLeader player rePlayed 2023',
+		title: 'BeatLeader rePlayed 2024',
+		description: 'View your BeatLeader player rePlayed 2024',
 		images: CURRENT_URL + '/assets/logo-small.png',
 		siteName: ssrConfig.name,
 	}}
@@ -826,10 +872,10 @@
 		handle: '@handle',
 		site: '@beatleader_',
 		cardType: 'summary',
-		title: 'BeatLeader rePlayed 2023',
-		description: 'View your BeatLeader player rePlayed 2023',
+		title: 'BeatLeader rePlayed 2024',
+		description: 'View your BeatLeader player rePlayed 2024',
 		image: CURRENT_URL + '/assets/logo-small.png',
-		imageAlt: 'BeatLeader rePlayed 2023',
+		imageAlt: 'BeatLeader rePlayed 2024',
 	}} />
 
 <style>
