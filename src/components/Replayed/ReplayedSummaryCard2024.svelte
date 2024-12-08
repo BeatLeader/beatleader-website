@@ -239,17 +239,17 @@
 		</div>
 		<div class="background-container">
 			<div class="background2024" style={gradientBg2024} />
-			{#if revealed}
-				<div class="background-solid-top"></div>
-				<div class="background-solid-bottom">
-					<img src="/assets/replayed2024/summary.webp" alt="" style="position: absolute; width: 35%; right: 10%; bottom: 30%;" />
-					<img
-						src="/assets/replayed2024/topMapper.webp"
-						alt=""
-						class="flipped"
-						style="position: absolute; width: 30%; left: 14%; bottom: 17%;" />
-				</div>
-			{/if}
+
+			<div class="background-solid-top"></div>
+			<div class="background-solid-bottom">
+				<img src="/assets/replayed2024/summary.webp" alt="" style="position: absolute; width: 35%; right: 10%; bottom: 30%;" />
+				<img
+					src="/assets/replayed2024/topMapper.webp"
+					alt=""
+					class="flipped"
+					style="position: absolute; width: 30%; left: 14%; bottom: 17%;" />
+			</div>
+
 			<div class="btm-background2024" style={gradientBtmBg2024} />
 		</div>
 
@@ -546,7 +546,7 @@
 	.header {
 		display: flex;
 		flex-direction: column;
-		min-height: 17%;
+		min-height: 8%;
 	}
 
 	.grid-item {
