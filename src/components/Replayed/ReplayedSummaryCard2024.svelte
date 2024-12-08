@@ -191,6 +191,11 @@
 			gradientBg += '#0065FF 0%, ';
 			gradientBg += '#b400a3 50%, ';
 			gradientBg += '#D91041 100%';
+		} else if (cardId == '11') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#F84B48 0%, ';
+			gradientBg += '#FA9E5D 50%, ';
+			gradientBg += '#50A8F7 100%';
 		} else {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#4a4a4a 0%, ';

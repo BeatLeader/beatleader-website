@@ -231,6 +231,33 @@
 			gradientBg += '#0065FF 0%, ';
 			gradientBg += '#b400a3 50%, ';
 			gradientBg += '#D91041 100%';
+		} else if (cardId == '7') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#9700F1 0%, ';
+			gradientBg += '#9700F1 15%, ';
+			gradientBg += '#E6B749 83%, ';
+			gradientBg += '#E6B749 100%';
+		} else if (cardId == '8') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#9700F1 0%, ';
+			gradientBg += '#9700F1 15%, ';
+			gradientBg += '#3A41E3 83%, ';
+			gradientBg += '#3A41E3 100%';
+		} else if (cardId == '9') {
+			gradientBg += 'linear-gradient(33deg, ';
+			gradientBg += '#D62B54 0%, ';
+			gradientBg += '#E6B749 100%';
+		} else if (cardId == '10') {
+			gradientBg += 'linear-gradient(0deg, ';
+			gradientBg += '#3374DF 0%, ';
+			gradientBg += '#3374DF 15%, ';
+			gradientBg += '#889DC1 83%, ';
+			gradientBg += '#889DC1 100%';
+		} else if (cardId == '11') {
+			gradientBg += 'linear-gradient(332deg, ';
+			gradientBg += '#F84B48 0%, ';
+			gradientBg += '#FA9E5D 50%, ';
+			gradientBg += '#50A8F7 100%';
 		} else {
 			gradientBg += 'linear-gradient(332deg, ';
 			gradientBg += '#4a4a4a 0%, ';
