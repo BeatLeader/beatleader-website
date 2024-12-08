@@ -14,8 +14,6 @@
 	export let playerId = null;
 	export let location = null;
 
-	playerId = '76561198075923914'; // TEMP
-
 	let cards;
 
 	function fetchReplayed() {
