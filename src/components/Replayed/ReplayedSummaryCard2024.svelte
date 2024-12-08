@@ -410,7 +410,7 @@
 					<img class="bottom-icon" src="/assets/favicon.svg" />
 					<span>beatleader.xyz/replayed</span>
 				</div>
-				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
+				<!-- <div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<div class="share-button" on:click={takeScreenshot}>
 						<div>
 							{#if screenshoting}
@@ -421,12 +421,7 @@
 							share
 						</div>
 					</div>
-					<!--<div class="bullets">
-						{#each colors as color, index}
-							<span class:active={color === dominantColor} style="background-color: {color};" on:click={() => setBackgroundColor(index)} />
-						{/each}
-					</div>-->
-				</div>
+				</div> -->
 			</div>
 		{/if}
 	</div>
