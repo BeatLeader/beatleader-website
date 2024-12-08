@@ -11,6 +11,7 @@
 	import SoundMotionController from '../components/Replayed/SoundMotionController.svelte';
 	import createAccountStore from '../stores/beatleader/account';
 	import beatSaverSvg from '../resources/beatsaver.svg';
+	import createBeatSaverService from '../services/beatmaps';
 	import steamSvg from '../resources/steam.svg';
 	import Button from '../components/Common/Button.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -21,6 +22,7 @@
 	export let playerId = null;
 
 	const account = createAccountStore();
+	let beatSaverService = createBeatSaverService();
 
 	let cards;
 	let replayedNotAvailable = false;
@@ -38,9 +40,9 @@
 		})
 			.then(async response => {
 				if (replayedType === 'player' && response.body.player != null) {
-					prepPlayerData(response.body.player);
+					await prepPlayerData(response.body.player);
 				} else if (replayedType === 'mapper' && response.body.mapper != null) {
-					prepMapperData(response.body.mapper);
+					await prepMapperData(response.body.mapper);
 				} else {
 					replayedNotAvailable = true;
 				}
@@ -50,9 +52,18 @@
 			});
 	}
 
-	function prepPlayerData(data) {
+	async function prepPlayerData(data) {
 		let _cards = [];
 
+		for (let i = 0; i < data.topMappers.length; i++) {
+			var mapper = data.topMappers[i];
+
+			if (mapper.beatSaverId && !mapper.name) {
+				const mapperData = await beatSaverService.getMapper(mapper.beatSaverId);
+				mapper.name = mapperData.name;
+				mapper.avatar = mapperData.avatar;
+			}
+		}
 		_cards.push({
 			component: ReplayedCard2024,
 			props: {
@@ -473,7 +484,7 @@
 									Looks like your mapping year was quiet.<br /><br />But it's always a good time to<br />map something for rePlayed 2024!
 								</h3>
 							{:else}
-								<h3>Please link your BeatSaver account to view<br /><b>your Mapper rePlayed 2023</b></h3>
+								<h3>Please link your BeatSaver account to view<br /><b>your Mapper rePlayed 2024</b></h3>
 
 								<form action={BL_API_URL + 'signin'} method="post">
 									<input type="hidden" name="Provider" value="BeatSaver" />
