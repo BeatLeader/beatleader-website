@@ -55,7 +55,7 @@ export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboa
 export const BL_API_PLAYER_SAVER_INFO_URL = BL_API_URL + 'player/beatsaver/${playerId}?leaderboardContext=${leaderboardContext}';
 export const BL_API_SCORES_URL =
 	BL_API_URL +
-	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
+	'player/${playerId}/scores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}&includeIO=true';
 export const BL_API_SCORE_ATTEMPTS_URL =
 	BL_API_URL +
 	'player/${playerId}/scoresstats?page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&mode=${mode}&requirements=${requirements}&type=${songType}&endType=${endType}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&count=${count}';
