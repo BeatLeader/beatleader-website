@@ -23,6 +23,7 @@
 	export let colorStartIndex = 0;
 	export let frontCardId;
 	export let cardId;
+	export let playerId;
 
 	let revealed = false;
 	let dominantColor = 'rgb(92, 120, 133)';
@@ -76,7 +77,7 @@
 		try {
 			screenshoting = true;
 			const blob = await fetch(
-				`${BL_RENDERER_API_URL}screenshot/cropped/464x1050/10x10x444x780/replayed/general/replayed${
+				`${BL_RENDERER_API_URL}screenshot/cropped/464x1050/10x10x444x780/replayed-2024-${playerId}-${summaryType}/general/replayed${
 					summaryType === 'mapper' ? '/mapper' : ''
 				}?color=${colorStartIndex}`,
 				{credentials: 'include'}
@@ -410,7 +411,7 @@
 					<img class="bottom-icon" src="/assets/favicon.svg" />
 					<span>beatleader.xyz/replayed</span>
 				</div>
-				<!-- <div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
+				<div class="bottom-container-right" transition:fly={{y: '100%', duration: 900, easing: cubicOut, opacity: 0, delay: 400}}>
 					<div class="share-button" on:click={takeScreenshot}>
 						<div>
 							{#if screenshoting}
@@ -421,7 +422,7 @@
 							share
 						</div>
 					</div>
-				</div> -->
+				</div>
 			</div>
 		{/if}
 	</div>

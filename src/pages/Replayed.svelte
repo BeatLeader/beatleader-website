@@ -40,9 +40,9 @@
 		})
 			.then(async response => {
 				if (replayedType === 'player' && response.body.player != null) {
-					await prepPlayerData(response.body.player);
+					await prepPlayerData(response.body.player, currentPlayerID);
 				} else if (replayedType === 'mapper' && response.body.mapper != null) {
-					await prepMapperData(response.body.mapper);
+					await prepMapperData(response.body.mapper, currentPlayerID);
 				} else {
 					replayedNotAvailable = true;
 				}
@@ -52,7 +52,7 @@
 			});
 	}
 
-	async function prepPlayerData(data) {
+	async function prepPlayerData(data, currentPlayerID) {
 		let _cards = [];
 
 		if (data.topMappers) {
@@ -230,6 +230,7 @@
 				subText: 'A year summarized',
 				summaryType: 'player',
 				cardId: '6',
+				playerId: currentPlayerID,
 				stats: {
 					topMappers: data.topMappers.slice(0, 5),
 					topMaps: data.topMaps.slice(0, 5),
@@ -262,7 +263,7 @@
 		cards = _cards;
 	}
 
-	async function prepMapperData(data) {
+	async function prepMapperData(data, currentPlayerID) {
 		let _cards = [];
 
 		if (data.topPlayers) {
@@ -399,6 +400,7 @@
 				summaryType: 'mapper',
 				frontCardId: '1',
 				cardId: '11',
+				playerId: currentPlayerID,
 				colorStartIndex: 4,
 				stats: {
 					topMaps: data.topMaps.slice(0, 5),
