@@ -232,7 +232,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="https://www.beatleader.xyz/u/76561198390456206">ob1cb</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198390456206R34.png" alt="Poochy" /><a
+				<img src="https://cdn.assets.beatleader.xyz/5374R44.png" alt="Poochy" /><a
 					href="https://www.beatleader.xyz/u/5374">Poochy</a>
 			</div>
 			<div class="member">
