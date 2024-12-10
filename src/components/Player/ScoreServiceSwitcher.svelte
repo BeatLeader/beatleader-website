@@ -445,6 +445,7 @@
 												{id: requirementsMap.cinema, name: 'Cinema'},
 												{id: requirementsMap.mappingExtensions, name: 'Mapping Extensions'},
 												{id: requirementsMap.optionalProperties, name: 'Optional Properties'},
+												{id: requirementsMap.vnjs, name: 'VNJS'},
 											],
 										},
 									},

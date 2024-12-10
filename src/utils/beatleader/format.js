@@ -1019,6 +1019,7 @@ export const requirementsMap = {
 	cinema: 1 << 4,
 	V3: 1 << 5,
 	optionalProperties: 1 << 6,
+	vnjs: 1 << 7,
 };
 
 export const requirementsDescription = {
@@ -1061,6 +1062,13 @@ export const requirementsDescription = {
 		title: 'v3.3 Map with optional properties for elements. May not work on Quest',
 		name: 'Optional Properties',
 		icon: 'fas fa-file',
+		color: 'grey',
+		textColor: 'white',
+	},
+	vnjs: {
+		title: 'v4.1 Map with variable note speed. Works only on Beat Saber 1.40+',
+		name: 'VNJS',
+		icon: 'fas fa-chart-simple',
 		color: 'grey',
 		textColor: 'white',
 	},
