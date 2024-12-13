@@ -14,37 +14,8 @@
 
 	const DEFAULT_IMG = '/assets/song-default.webp';
 
-	let preloadCache = {};
-	let loadedImages = [];
-
-	function preloadImages(images) {
-		if (!images.some(img => img?.url?.length)) return;
-
-		loadedImages = [];
-		images.forEach(imgObj => {
-			if (!imgObj?.url?.length) return;
-			if (preloadCache[imgObj?.url]) {
-				loadedImages = [...loadedImages, imgObj];
-				return;
-			}
-
-			const url = imgObj.url;
-
-			preloadCache[url] = imgObj;
-
-			const img = new Image();
-			img.src = url;
-			img.onload = e => {
-				if (preloadCache[url]) loadedImages = [...loadedImages, imgObj];
-			};
-		});
-	}
-
 	$: hash = leaderboard?.song?.hash ?? null;
-	$: ssCoverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : null);
-	$: preloadImages([{url: ssCoverUrl, priority: 10}]);
-
-	$: coverUrl = loadedImages.length ? loadedImages.sort((a, b) => a?.priority - b?.priority)[0].url : DEFAULT_IMG;
+	$: coverUrl = leaderboard?.song?.coverImage ?? (hash ? `${BS_CDN}/${encodeURIComponent(hash.toLowerCase())}.jpg` : DEFAULT_IMG);
 
 	$: modifiers = leaderboard?.difficultyBl?.modifierValues ?? null;
 	$: modifiersRating = leaderboard?.difficultyBl?.modifiersRating ?? null;
