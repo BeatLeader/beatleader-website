@@ -102,7 +102,9 @@
 	$: hash = song?.hash;
 	$: diffInfo = opt(leaderboard, 'diffInfo');
 
-	$: selectedIcons = (icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons)))?.filter(i => i != 'analyzer');
+	$: selectedIcons = (icons ?? ($configStore && visibleScoreIcons($configStore.visibleScoreIcons)))?.filter(
+		i => i != 'analyzer' && i != 'altReplay'
+	);
 
 	$: scores = ($clanRankingStore?.clanRanking?.scores ?? []).map((s, i) => {
 		s.score.weight = Math.pow(0.8, (associatedScoresPage != 0 ? associatedScoresPage - 1 : 1) * itemsPerPage + i);
