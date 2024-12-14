@@ -130,5 +130,9 @@
 		:global(.stats-and-summary-box) {
 			border-radius: 0 !important;
 		}
+
+		.pp-and-platform {
+			flex: 1;
+		}
 	}
 </style>
