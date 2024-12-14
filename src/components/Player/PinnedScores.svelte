@@ -2,16 +2,23 @@
 	import ContentBox from '../Common/ContentBox.svelte';
 	import PinnedScore from './PinnedScore.svelte';
 
-	export let playerId;
-	export let fixedBrowserTitle = null;
-	export let pinnedScoresStore;
-	export let scoresStats = null;
+	/**
+	 * @typedef {Object} Props
+	 * @property {any} playerId
+	 * @property {any} [fixedBrowserTitle]
+	 * @property {any} pinnedScoresStore
+	 * @property {any} [scoresStats]
+	 */
 
-	$: sortedPinnedScores = $pinnedScoresStore[playerId]?.sort(
-		(a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0)
+	/** @type {Props} */
+	let {playerId, fixedBrowserTitle = null, pinnedScoresStore, scoresStats = null} = $props();
+
+	let sortedPinnedScores = $derived(
+		$pinnedScoresStore[playerId]?.sort((a, b) => (a?.score?.metadata?.priority ?? 0) - (b?.score?.metadata?.priority ?? 0)) ?? []
 	);
-	$: mywatched = scoresStats?.watchedReplays;
-	$: myreplays = scoresStats?.authorizedReplayWatched + scoresStats?.anonimusReplayWatched;
+
+	let mywatched = $derived(scoresStats?.watchedReplays);
+	let myreplays = $derived(scoresStats?.authorizedReplayWatched + scoresStats?.anonimusReplayWatched);
 </script>
 
 {#if sortedPinnedScores?.length}
