@@ -13,6 +13,8 @@ export const BL_API_URL = (() => {
 		return 'https://stage.api.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://api.beatleader.net/';
+	} else if (location.host.includes('beatleader.com')) {
+		return 'https://api.beatleader.com/';
 	} else {
 		return '/cors/blapi/';
 	}
@@ -22,6 +24,8 @@ export const BL_REPLAYS_URL = (() => {
 		return 'https://stage.replay.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://replay.beatleader.net/';
+	} else if (location.host.includes('beatleader.com')) {
+		return 'https://replay.beatleader.com/';
 	} else {
 		return 'https://replay.beatleader.xyz/';
 	}
@@ -31,6 +35,8 @@ export const BL_ANALYZER_URL = (() => {
 		return 'https://stage.analyzer.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://analyzer.beatleader.net/';
+	} else if (location.host.includes('beatleader.com')) {
+		return 'https://analyzer.beatleader.com/';
 	} else {
 		return 'https://analyzer.beatleader.xyz/';
 	}
@@ -41,6 +47,8 @@ export const BL_RENDERER_API_URL = (() => {
 		return 'https://stage.render.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://render.beatleader.net/';
+	} else if (location.host.includes('beatleader.com')) {
+		return 'https://render.beatleader.com/';
 	} else {
 		return 'https://render.beatleader.xyz/';
 	}
