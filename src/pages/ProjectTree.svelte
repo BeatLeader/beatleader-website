@@ -1,10 +1,12 @@
 <script>
 	import {fade} from 'svelte/transition';
-	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
+	import {BL_API_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
 	import {dateFromUnix, formatDate} from '../utils/date';
 	import Button from '../components/Common/Button.svelte';
+	import {MetaTags} from 'svelte-meta-tags';
+	import ssrConfig from '../ssr-config';
 
 	let treeData = null;
 	let error = null;
@@ -67,6 +69,9 @@
 	}
 
 	loadTreeData();
+
+	let title = 'Project Tree 2024';
+	let metaDescription = '12 days of jolly maps from various mappers!';
 </script>
 
 <div class="project-tree" transition:fade>
@@ -155,6 +160,25 @@
 		</ContentBox>
 	{/if}
 </div>
+
+<MetaTags
+	{title}
+	description={metaDescription}
+	openGraph={{
+		title,
+		description: metaDescription,
+		images: [{url: CURRENT_URL + '/assets/project-tree.webp'}],
+		siteName: ssrConfig.name,
+	}}
+	twitter={{
+		handle: '@handle',
+		site: '@beatleader_',
+		cardType: 'summary_large_image',
+		title,
+		description: metaDescription,
+		image: CURRENT_URL + '/assets/project-tree.webp',
+		imageAlt: metaDescription,
+	}} />
 
 <style>
 	h1 {
