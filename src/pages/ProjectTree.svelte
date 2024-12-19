@@ -131,7 +131,7 @@
 					Receive a unique Christmas tree ornament for a pass and decorate the tree in the mod!
 				</p>
 				<div class="buttons-container">
-					<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.29" target="_blank" rel="noreferrer">
+					<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.30" target="_blank" rel="noreferrer">
 						<Button iconFa="fas fa-download" label="Download PC mod" color="blue" />
 					</a>
 					<a class="disabled" href="https://github.com/BeatLeader/beatleader-qmod/releases/tag/v0.8.6" target="_blank" rel="noreferrer">
