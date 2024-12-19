@@ -4,7 +4,7 @@
 
 ## Users
 
-Just go to [beatleader.xyz](https://beatleader.xyz)
+Just go to [beatleader.com](https://beatleader.com)
 
 ## Community
 

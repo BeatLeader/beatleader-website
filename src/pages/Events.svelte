@@ -111,28 +111,53 @@
 			{#if eventsPage?.length}
 				<div class="events">
 					{#each eventsPage as event, idx (event.id)}
-						<a
-							href={`/event/${event.id}`}
-							on:click={e => {
-								navigate(`/event/${event.id}`);
-								e.preventDefault();
-							}}
-							class="event-box"
-							class:finished={Date.now() / 1000 > event?.endDate}
-							in:fade|global={{delay: idx * 10}}>
-							<ContentBox cls={event.id == 23 ? 'festive' : event.id == 56 ? 'bswc-box' : ''}>
-								{#if event.id == 56 && !(Date.now() / 1000 > event?.endDate)}
-									<div class="cinematics">
-										<div class="cinematics-canvas">
-											<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+						{#if event.id == 62}
+							<a
+								href={`/event/project-tree`}
+								on:click={e => {
+									navigate(`/event/project-tree`);
+									e.preventDefault();
+								}}
+								class="event-box"
+								class:finished={Date.now() / 1000 > event?.endDate}
+								in:fade|global={{delay: idx * 10}}>
+								<ContentBox>
+									{#if event.id == 56 && !(Date.now() / 1000 > event?.endDate)}
+										<div class="cinematics">
+											<div class="cinematics-canvas">
+												<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+											</div>
 										</div>
-									</div>
-									<div class="bswcbg" />
-									<div class="bswcbgblur" />
-								{/if}
-								<Event {event} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
-							</ContentBox>
-						</a>
+										<div class="bswcbg" />
+										<div class="bswcbgblur" />
+									{/if}
+									<Event {event} withLeader={false} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
+								</ContentBox>
+							</a>
+						{:else}
+							<a
+								href={`/event/${event.id}`}
+								on:click={e => {
+									navigate(`/event/${event.id}`);
+									e.preventDefault();
+								}}
+								class="event-box"
+								class:finished={Date.now() / 1000 > event?.endDate}
+								in:fade|global={{delay: idx * 10}}>
+								<ContentBox cls={event.id == 23 ? 'festive' : event.id == 56 ? 'bswc-box' : ''}>
+									{#if event.id == 56 && !(Date.now() / 1000 > event?.endDate)}
+										<div class="cinematics">
+											<div class="cinematics-canvas">
+												<canvas bind:this={cinematicsCanvas} style="position: absolute; width: 100%; height: 100%; opacity: 0" />
+											</div>
+										</div>
+										<div class="bswcbg" />
+										<div class="bswcbgblur" />
+									{/if}
+									<Event {event} on:show-playlist={e => navigate('/playlist/' + e?.detail?.playlistId)} />
+								</ContentBox>
+							</a>
+						{/if}
 					{/each}
 				</div>
 

@@ -57,6 +57,7 @@
 	import {padNumber} from './utils/format';
 	import SimpleModal from './components/Common/SimpleModal.svelte';
 	import BeatCancerTopBanner from './components/Common/BeatCancerTopBanner.svelte';
+	import ProjectTree from './pages/ProjectTree.svelte';
 	export let url = '';
 
 	let mainEl = null;
@@ -295,6 +296,9 @@
 					</Route>
 					<Route path="/replayed/mapper/*id" let:params>
 						<Replayed replayedType="mapper" playerId={params.id ? params.id : null} />
+					</Route>
+					<Route path="/event/project-tree">
+						<ProjectTree />
 					</Route>
 					<Route path="/event/building-blocks-2024">
 						<BuildingBlocks2024 />

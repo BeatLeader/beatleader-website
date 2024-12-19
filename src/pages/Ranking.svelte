@@ -21,6 +21,7 @@
 	import Headsets from '../components/Ranking/Headsets.svelte';
 	import BackToTop from '../components/Common/BackToTop.svelte';
 	import {configStore} from '../stores/config';
+	import {BL_API_URL} from '../network/queues/beatleader/api-queue';
 
 	import {produce} from 'immer';
 	import {dateFromUnix} from '../utils/date';
@@ -398,9 +399,22 @@
 		}
 	}
 
+	let todayMap = null;
+
+	function loadTreeData() {
+		try {
+			fetch(`${BL_API_URL}projecttree/status`, {credentials: 'include'})
+				.then(res => res.json())
+				.then(data => {
+					todayMap = data.today.song;
+				});
+		} catch (err) {}
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, buildFiltersFromLocation(location), false, false);
 	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/week120_bg.webp');
+	$: loadTreeData();
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 </script>
@@ -445,6 +459,20 @@
 				</div>
 			</div>
 		</ContentBox> -->
+
+		{#if todayMap}
+			<ContentBox cls="event-banner" on:click={() => navigate('/event/project-tree')}>
+				<div class="event-container">
+					<img alt="Event banner" class="event-image" src={todayMap.coverImage} />
+					<div class="event-text-container">
+						<span class="event-title-desktop">Project Tree!</span>
+						<span class="event-title-mobile">Project Tree 🎄</span>
+						<span class="event-text">Today's map: <b>{todayMap.name}</b> from <b>{todayMap.mapper}</b></span>
+					</div>
+					<Button label="Event🎄" cls="event-cover-btn" on:click={() => navigate('/event/project-tree')} />
+				</div>
+			</ContentBox>
+		{/if}
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
@@ -617,9 +645,7 @@
 		display: flex;
 		justify-content: space-around;
 		position: relative;
-		height: 12em;
-		justify-content: flex-end;
-		flex-direction: column;
+		height: 9em;
 		align-items: center;
 		overflow: hidden;
 		border-radius: 0.5em;
@@ -636,6 +662,12 @@
 	:global(.content-box.event-banner .atropos-shadow) {
 		display: none;
 	}
+	.event-title-mobile {
+		display: none;
+	}
+	.event-title-desktop {
+		color: #4caf50 !important;
+	}
 	.event-text-and-button {
 		display: flex;
 		flex-direction: column;
@@ -649,9 +681,10 @@
 	}
 
 	.event-image {
-		width: 6em;
-		height: 6em;
+		width: 7em;
+		height: 7em;
 		margin-right: 1em;
+		border-radius: 18px;
 	}
 
 	:global(.event-cover-btn) {
@@ -730,7 +763,6 @@
 	.event-text {
 		color: var(--text-color);
 		font-size: larger;
-		font-weight: 600;
 		text-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 	}
 
@@ -780,6 +812,18 @@
 			height: 22em;
 			left: calc(50% - 14em);
 			top: calc(50% - 7em);
+		}
+
+		.event-title-desktop {
+			display: none;
+		}
+		.event-title-mobile {
+			display: block;
+			color: #4caf50 !important;
+		}
+
+		:global(.event-cover-btn) {
+			display: none !important;
 		}
 	}
 
