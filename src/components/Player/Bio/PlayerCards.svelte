@@ -69,7 +69,7 @@
 	{:then _}
 		<div id={playerId + '-player-cards'} class="cards-container">
 			{#if rankedmaps || clan}
-				{@const empty = dispatch('height-changed')}
+				{@const empty = setInterval(() => dispatch('height-changed'), 400)}
 				{#if rankedmaps}
 					<RankedMapper
 						mapperId={playerInfo.mapperId}
