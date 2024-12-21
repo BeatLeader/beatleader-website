@@ -18,12 +18,23 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Cube Community Spring Highlights',
+				title: 'Extra Sensory 2 Release Date',
 				body: '',
-				imageUrl: '/assets/Discover/cc-spring-highlights.jpg',
-				targetUrl: 'https://youtu.be/OZCVt4jvNBc',
+				imageUrl: '/assets/Discover/extra_sensory_thumbnail_2.webp',
+				targetUrl: 'https://www.youtube.com/watch?v=ilXgDkORxl4',
 				linkName: 'YouTube',
-				forcedColor: 'rgb(27 105 11)',
+				forcedColor: 'rgb(23 27 46)',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
+				title: 'Cube Community Summer Highlights',
+				body: '',
+				imageUrl: '/assets/Discover/cc-summer-highlights.jpg',
+				targetUrl: 'https://youtu.be/QjkEkZTn9y0',
+				linkName: 'YouTube',
+				forcedColor: 'rgb(199, 133, 32)',
 			},
 		},
 		{
@@ -48,37 +59,26 @@
 				forcedColor: 'rgba(0, 0, 0, 0)',
 			},
 		},
-		{
-			component: CarouselCard,
-			props: {
-				title: 'Extra Sensory 2 Reveal Trailer',
-				body: '',
-				imageUrl: '/assets/Discover/extra_sensory_thumbnail.webp',
-				targetUrl: 'https://www.youtube.com/watch?v=gDIOShFXePo',
-				linkName: 'YouTube',
-				forcedColor: 'rgb(23 27 46)',
-			},
-		},
 	];
 
 	let tournamentCards = [
-		{
-			component: CarouselCard,
-			props: {
-				title: 'BeatKhana RST 24!',
-				body: "BeatKhana returns with the biggest 1v1 tournament yet, with 128 players and a random map for every match! \nSignups are open now, so what are you waiting for? Let's go gambling!",
-				imageUrl: '/assets/Discover/BK_RST-24_bg.webp',
-				targetUrl: 'https://youtu.be/9_UE3ZG8TgA',
-				linkName: 'contest info page',
-				buttons: [
-					{
-						text: 'Sign up!',
-						type: 'primary',
-						url: 'https://beatkhana.com/tournaments/rst2024/general',
-					},
-				],
-			},
-		},
+		// {
+		// 	component: CarouselCard,
+		// 	props: {
+		// 		title: 'BeatKhana RST 24!',
+		// 		body: "BeatKhana returns with the biggest 1v1 tournament yet, with 128 players and a random map for every match! \nSignups are open now, so what are you waiting for? Let's go gambling!",
+		// 		imageUrl: '/assets/Discover/BK_RST-24_bg.webp',
+		// 		targetUrl: 'https://youtu.be/9_UE3ZG8TgA',
+		// 		linkName: 'contest info page',
+		// 		buttons: [
+		// 			{
+		// 				text: 'Sign up!',
+		// 				type: 'primary',
+		// 				url: 'https://beatkhana.com/tournaments/rst2024/general',
+		// 			},
+		// 		],
+		// 	},
+		// },
 		{
 			component: CarouselCard,
 			props: {
