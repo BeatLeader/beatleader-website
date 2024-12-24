@@ -660,6 +660,23 @@ export function diffForDiffName(diffName) {
 	return 0;
 }
 
+export function diffNameForDiff(diff) {
+	switch (diff) {
+		case 1:
+			return 'Easy';
+		case 3:
+			return 'Normal';
+		case 5:
+			return 'Hard';
+		case 7:
+			return 'Expert';
+		case 9:
+			return 'ExpertPlus';
+	}
+
+	return 'ExpertPlus';
+}
+
 export const ModifiersList = [
 	{
 		id: 'NF',

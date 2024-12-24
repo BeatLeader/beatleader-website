@@ -7,8 +7,11 @@
 	import Button from '../components/Common/Button.svelte';
 	import {MetaTags} from 'svelte-meta-tags';
 	import ssrConfig from '../ssr-config';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
+	import {getDiffNameColor, diffNameForDiff} from '../utils/beatleader/format';
 
 	let treeData = null;
+	let players = null;
 	let error = null;
 	let loading = true;
 	let calendar = [];
@@ -61,6 +64,10 @@
 			treeData = await response.json();
 			generateCalendarDays();
 			populateCalendar();
+
+			const playersResponse = await fetch(`${BL_API_URL}projecttree/players`, {credentials: 'include'});
+			if (!playersResponse.ok) throw new Error('Failed to load Project Tree players');
+			players = await playersResponse.json();
 		} catch (err) {
 			error = err.message;
 		} finally {
@@ -69,6 +76,16 @@
 	}
 
 	loadTreeData();
+
+	let modes = [
+		{label: 'Calendar', value: 'calendar', iconFa: 'fas fa-calendar-alt'},
+		{label: 'Leaderboard', value: 'leaderboard', iconFa: 'fas fa-trophy'},
+	];
+	let currentMode = modes[0];
+
+	function onTypeChange(e) {
+		currentMode = e.detail;
+	}
 
 	let title = 'Project Tree 2024';
 	let metaDescription = '12 days of jolly maps from various mappers!';
@@ -80,84 +97,130 @@
 	{:else if error}
 		<p class="error">{error}</p>
 	{:else}
-		<ContentBox>
-			<h1>Project Tree!</h1>
-			<div class="calendar">
-				{#each calendar as day, index}
-					<a
-						href={day.song ? `/leaderboard/global/${day.song.id}` : null}
-						class="calendar-day {day.today ? 'today' : ''} {day.song ? 'has-song' : 'empty'}">
-						<div class="date">{day.date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</div>
-						{#if day.song}
-							<div class="song-card">
-								<img src={day.song.coverImage} alt={day.song.name} />
-								<div class="song-info">
-									<h3>{day.song.name}</h3>
-									<p class="mapper">by {day.song.mapper}</p>
-									{#if day.score}
-										<p class="score">{(day.score.accuracy * 100).toFixed(2)}%</p>
+		<div class="project-tree-container">
+			<ContentBox>
+				<h1>Project Tree!</h1>
+				<div class="switcher-container">
+					<TabSwitcher class="event-type-switcher" values={modes} value={currentMode} on:change={onTypeChange} />
+				</div>
+				<div class="content-container">
+					{#if currentMode.value == 'calendar'}
+						<div class="calendar">
+							{#each calendar as day, index}
+								<a
+									href={day.song
+										? `/leaderboard/global/${day.song.id}${day.song.difficulties[0].value}${day.song.difficulties[0].mode}`
+										: null}
+									class="calendar-day {day.today ? 'today' : ''} {day.song ? 'has-song' : 'empty'}">
+									<div class="date">{day.date.toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}</div>
+									{#if day.song}
+										<div class="song-card">
+											<img src={day.song.coverImage} alt={day.song.name} />
+											<div class="song-info">
+												<h3>{day.song.name}</h3>
+												<p class="mapper">by {day.song.mapper}</p>
+												{#if day.score}
+													<p class="score">{(day.score.accuracy * 100).toFixed(2)}%</p>
+												{/if}
+											</div>
+										</div>
+										<div class="ornament-preview">
+											{#if day.score}
+												<img
+													title="Decorate your tree in the mods!"
+													src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${day.bundleId}_preview_unblured.png`}
+													alt={day.song.name} />
+											{:else}
+												<img
+													title="Pass this map to get ornament!"
+													src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${day.bundleId}_preview.png`}
+													alt={day.song.name} />
+											{/if}
+										</div>
+									{:else}
+										<div class="placeholder">
+											<span>{index == 6 ? '⭐' : '🎄'}</span>
+										</div>
 									{/if}
+								</a>
+							{/each}
+						</div>
+					{:else if currentMode.value == 'leaderboard'}
+						{#if players}
+							<div class="leaderboard">
+								<div class="leaderboard-title">
+									<span>Compete every day on a map and get a point for being the best! Any diff counts, but only once a day.</span>
 								</div>
-							</div>
-							<div class="ornament-preview">
-								{#if day.score}
-									<img
-										title="Decorate your tree in the mods!"
-										src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${day.bundleId}_preview_unblured.png`}
-										alt={day.song.name} />
-								{:else}
-									<img
-										title="Pass this map to get ornament!"
-										src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${day.bundleId}_preview.png`}
-										alt={day.song.name} />
-								{/if}
-							</div>
-						{:else}
-							<div class="placeholder">
-								<span>{index == 6 ? '⭐' : '🎄'}</span>
+								{#each players as player, index}
+									<a class="player" href={`/u/${player.id}`}>
+										<div class="player-data">
+											<p class="player-rank">#{index + 1}</p>
+											<img src={player.avatar} alt={player.name} />
+											<p>{player.name}</p>
+										</div>
+										<div class="player-days">
+											{#each player.days as day, index}
+												<div class="day-container">
+													<div class="day-score">
+														<p title={`Champion on ${calendar[day.day].song.name}`}>{18 + day.day}</p>
+													</div>
+													<div class="day-diffs">
+														{#each day.diffs.reverse() as diff, index}
+															<div
+																title={`Top 1 on ${diffNameForDiff(diff)}`}
+																class="day-diff"
+																style="background-color: {getDiffNameColor(diffNameForDiff(diff))}">
+															</div>
+														{/each}
+													</div>
+												</div>
+											{/each}
+										</div>
+									</a>
+								{/each}
 							</div>
 						{/if}
-					</a>
-				{/each}
-			</div>
-
-			<div class="description">
-				<p>
-					12 days of jolly maps from various mappers! <img
-						src="https://cdn.discordapp.com/emojis/1181077135201402940.webp?size=80&animated=true"
-						alt="Christmas emoji"
-						style="display: inline; vertical-align: middle; height: 1em;" /> <br />
-					Tune in every day from today to the end of the year for a new Christmas-themed map. <br />
-					Receive a unique Christmas tree ornament for a pass and decorate the tree in the mod!
-				</p>
-				<div class="buttons-container">
-					<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.30" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" label="Download PC mod" color="blue" />
-					</a>
-					<a class="disabled" href="https://github.com/BeatLeader/beatleader-qmod/releases/tag/v0.8.6" target="_blank" rel="noreferrer">
-						<Button iconFa="fas fa-download" title="Coming soon(1-2 days)!" label="Download Quest mod" color="blue" disabled={true} />
-					</a>
+					{/if}
 				</div>
-				<p>Player with the most top 1s on the day end will receive a badge and prize!</p>
-			</div>
 
-			{#if treeData.bonusOrnaments?.length}
-				<div class="bonus-ornaments">
-					<h2>Your Bonus Ornaments</h2>
-					<div class="ornaments-grid">
-						{#each treeData.bonusOrnaments as ornament, index}
-							<div class="ornament">
-								<img
-									class="ornament-icon"
-									src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${ornament.bundleId}_preview_unblured.png`}
-									alt={`${index + 1} ornament`} />
-								<p>{ornament.description}</p>
-							</div>
-						{/each}
+				<div class="description">
+					<p>
+						12 days of jolly maps from various mappers! <img
+							src="https://cdn.discordapp.com/emojis/1181077135201402940.webp?size=80&animated=true"
+							alt="Christmas emoji"
+							style="display: inline; vertical-align: middle; height: 1em;" /> <br />
+						Tune in every day from today to the end of the year for a new Christmas-themed map. <br />
+						Receive a unique Christmas tree ornament for a pass and decorate the tree in the mod!
+					</p>
+					<div class="buttons-container">
+						<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.30" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-download" label="Download PC mod" color="blue" />
+						</a>
+						<a class="disabled" href="https://github.com/BeatLeader/beatleader-qmod/releases/tag/v0.8.6" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-download" title="Coming soon(1-2 days)!" label="Download Quest mod" color="blue" disabled={true} />
+						</a>
 					</div>
+					<p>Player with the most top 1s on the day end will receive a badge and prize!</p>
 				</div>
-			{/if}
-		</ContentBox>
+
+				{#if treeData.bonusOrnaments?.length}
+					<div class="bonus-ornaments">
+						<h2>Your Bonus Ornaments</h2>
+						<div class="ornaments-grid">
+							{#each treeData.bonusOrnaments as ornament, index}
+								<div class="ornament">
+									<img
+										class="ornament-icon"
+										src={`https://cdn.assets.beatleader.xyz/project_tree_ornament_${ornament.bundleId}_preview_unblured.png`}
+										alt={`${index + 1} ornament`} />
+									<p>{ornament.description}</p>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			</ContentBox>
+		</div>
 	{/if}
 </div>
 
@@ -187,6 +250,12 @@
 		font-size: 28px;
 		text-align: center;
 		font-weight: bold;
+	}
+
+	.switcher-container {
+		display: flex;
+		justify-content: center;
+		margin-top: 0.5em;
 	}
 
 	.calendar {
@@ -321,5 +390,111 @@
 		color: #ff4444;
 		text-align: center;
 		padding: 20px;
+	}
+
+	.leaderboard {
+		width: 100%;
+		margin-top: 20px;
+	}
+
+	.leaderboard-title {
+		margin-bottom: 10px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.player {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 10px;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 8px;
+		margin: 10px 18px;
+	}
+
+	.player:hover {
+		transform: translateY(-2px);
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.player-rank {
+		margin: 0;
+		font-size: 1.1em;
+		color: #4caf50;
+	}
+
+	.player-data {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+	}
+
+	.player-data img {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+
+	.player-data p {
+		margin: 0;
+		font-size: 1.1em;
+	}
+
+	.player-days {
+		display: flex;
+		gap: 10px;
+	}
+
+	.day-container {
+		position: relative;
+	}
+
+	.day-score {
+		position: absolute;
+		left: 53%;
+		top: 8%;
+		color: white;
+		font-weight: bold;
+	}
+
+	.day-diff {
+		width: 30px;
+		height: 30px;
+		border-radius: 50%;
+		margin-left: -21px;
+	}
+
+	.day-diffs {
+		display: flex;
+	}
+
+	.day-diffs > :first-child {
+		margin-left: 21px;
+	}
+
+	.player-score {
+		display: flex;
+		gap: 20px;
+	}
+
+	.player-score p {
+		margin: 0;
+		font-size: 1.1em;
+		color: #4caf50;
+	}
+
+	@media (max-width: 768px) {
+		.player {
+			align-items: baseline;
+			flex-direction: column;
+			gap: 0.6em;
+		}
+
+		.day-container {
+			margin-left: -22px;
+		}
 	}
 </style>
