@@ -80,6 +80,7 @@
 	let modes = [
 		{label: 'Calendar', value: 'calendar', iconFa: 'fas fa-calendar-alt'},
 		{label: 'Leaderboard', value: 'leaderboard', iconFa: 'fas fa-trophy'},
+		{label: 'FAQ', value: 'faq', iconFa: 'fas fa-question-circle'},
 	];
 	let currentMode = modes[0];
 
@@ -162,7 +163,7 @@
 											{#each player.days as day, index}
 												<div class="day-container">
 													<div class="day-score">
-														<p title={`Champion on ${calendar[day.day].song.name}`}>{18 + day.day}</p>
+														<p title={`Champion on ${calendar[day.day - 1].song.name}`}>{18 + day.day}</p>
 													</div>
 													<div class="day-diffs">
 														{#each day.diffs.reverse() as diff, index}
@@ -180,6 +181,40 @@
 								{/each}
 							</div>
 						{/if}
+					{:else if currentMode.value == 'faq'}
+						<div class="faq">
+							<h2>FAQ</h2>
+							<p>
+								<b>What is the Project Tree?</b> <br />
+								The Project Tree is a 12-day event where we celebrate the holiday season with a series of maps from various mappers. Each day,
+								we'll unveil a new map, and you'll have the chance to compete for points by being the best on that map.
+							</p>
+							<p>
+								<b>How do I get points?</b> <br />
+								You can get points by being the best on a map. Any diff counts, but only once a day.
+							</p>
+							<p>
+								<b>What are the prizes?</b> <br />
+								Players with the most points at the end of the event will receive a special badge and prize.
+							</p>
+							<p>
+								<b>How do I get the ornament?</b> <br />
+								You can get the ornament by passing a map at any difficulty and any day.
+							</p>
+							<p>
+								<b>How do I move the tree?</b> <br />
+								Click the tree, click the position icon in the menu that will show up (bottom right) and drag the tree by the white sphere above
+								it. You may also scale the tree to make it as big or as small as you'd like (to some extent)
+							</p>
+							<p>
+								<b>How do I decorate the tree?</b> <br />
+								Click the tree, click the tree icon in the mid-right of the menu that will show up. Then click and hold the decorations that
+								you have and they'll pop up in your hand, put your hand to the tree and let go and they'll be there! You can have multiple of
+								the same decoration on your tree. To rotate it, grab the white sphere above it and get spinning! Once you're done with your lovely
+								(or disgusting) tree, hit save on the right hand side and then cancel to get back to the menu. And voilà, your masterpiece is
+								done!
+							</p>
+						</div>
 					{/if}
 				</div>
 
@@ -196,8 +231,8 @@
 						<a href="https://github.com/BeatLeader/beatleader-mod/releases/tag/v0.9.30" target="_blank" rel="noreferrer">
 							<Button iconFa="fas fa-download" label="Download PC mod" color="blue" />
 						</a>
-						<a class="disabled" href="https://github.com/BeatLeader/beatleader-qmod/releases/tag/v0.8.6" target="_blank" rel="noreferrer">
-							<Button iconFa="fas fa-download" title="Coming soon(1-2 days)!" label="Download Quest mod" color="blue" disabled={true} />
+						<a href="https://github.com/BeatLeader/beatleader-qmod/releases/tag/v0.8.30" target="_blank" rel="noreferrer">
+							<Button iconFa="fas fa-download" label="Download Quest mod" color="blue" />
 						</a>
 					</div>
 					<p>Player with the most top 1s on the day end will receive a badge and prize!</p>
@@ -484,6 +519,26 @@
 		margin: 0;
 		font-size: 1.1em;
 		color: #4caf50;
+	}
+
+	.faq {
+		margin: 0 20px;
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 8px;
+		padding: 15px;
+		text-align: center;
+	}
+
+	.faq p {
+		margin: 0;
+	}
+
+	.faq b {
+		font-weight: bold;
+	}
+
+	.faq p:not(:last-child) {
+		margin-bottom: 10px;
 	}
 
 	@media (max-width: 768px) {

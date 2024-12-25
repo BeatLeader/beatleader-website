@@ -184,9 +184,9 @@
 								iconFa="fas fa-download"
 								title={!loggedInPlayer || !isSupporter
 									? 'Log in on the top of the Page and Link Patreon'
-									: 'Download Reesabers for game version 1.38-1.39'}
-								label="Download for PC 1.38-1.39"
-								url={BL_API_URL + 'reesabersversion?version=1.38.0'}
+									: 'Download Reesabers for game version 1.38-1.40'}
+								label="Download for PC 1.38-1.40"
+								url={BL_API_URL + 'reesabersversion?version=1.40.0'}
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green" />
