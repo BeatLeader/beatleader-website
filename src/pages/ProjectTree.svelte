@@ -17,7 +17,7 @@
 	let calendar = [];
 
 	const START_DATE = 1734566400; // December 19th
-	const DAYS = 12;
+	const DAYS = 13;
 
 	function generateCalendarDays() {
 		calendar = [];
@@ -145,6 +145,7 @@
 									{/if}
 								</a>
 							{/each}
+							<span class="bonus-text"> Bonus day! Happy New Year! </span>
 						</div>
 					{:else if currentMode.value == 'leaderboard'}
 						{#if players}
@@ -220,7 +221,8 @@
 
 				<div class="description">
 					<p>
-						12 days of jolly maps from various mappers! <img
+						<s>12</s> 13 days of jolly maps from various mappers!
+						<img
 							src="https://cdn.discordapp.com/emojis/1181077135201402940.webp?size=80&animated=true"
 							alt="Christmas emoji"
 							style="display: inline; vertical-align: middle; height: 1em;" /> <br />
@@ -284,6 +286,12 @@
 		color: #4caf50 !important;
 		font-size: 28px;
 		text-align: center;
+		font-weight: bold;
+	}
+
+	.bonus-text {
+		font-size: 18px;
+		color: #4caf50;
 		font-weight: bold;
 	}
 
