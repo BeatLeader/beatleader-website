@@ -305,6 +305,7 @@
 	.author {
 		color: #ffffffa3;
 		font-size: 1.2em;
+		line-break: anywhere;
 	}
 
 	.diff-status {

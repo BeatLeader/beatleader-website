@@ -13,7 +13,7 @@
 				...item,
 				diffInfo: {diff: item?.difficulty?.difficultyName, type: item?.difficulty?.modeName},
 				stars: item?.difficulty?.stars ?? null,
-		  }
+			}
 		: null;
 	$: leaderboardId = leaderboard?.id ?? '';
 	$: leaderboardUrl = `/leaderboard/global/${leaderboardId}/1`;
@@ -52,6 +52,9 @@
 	.author {
 		grid-area: author;
 		color: var(--alternate) !important;
+		text-overflow: ellipsis;
+		width: 100%;
+		overflow: hidden;
 	}
 	.author small {
 		font-size: 0.75em;

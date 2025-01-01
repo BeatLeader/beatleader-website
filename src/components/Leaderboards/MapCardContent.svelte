@@ -213,6 +213,9 @@
 
 	.author {
 		font-size: small;
+		text-overflow: ellipsis;
+		width: 100%;
+		overflow: hidden;
 	}
 
 	.type {
