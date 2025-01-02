@@ -4,23 +4,25 @@
 	import {createEventDispatcher} from 'svelte';
 	import MapperPickerMultiItem from './MapperPickerMultiItem.svelte';
 	import MapperPickerItem from './MapperPickerItem.svelte';
+	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 
 	export let mapperIds = [];
 	export let currentMapperId = null;
 
 	const dispatch = createEventDispatcher();
 	let items = [];
+	let page = 1;
 
 	async function fetchMappers(ids, search) {
-		let url = '/cors/beatsaver/api/users/list/0';
+		let url = `${BL_API_URL}mappers?page=${page}`;
 		if (ids?.length) {
-			url = `/cors/beatsaver/api/users/ids/${ids.join(',')}`;
+			url += `&ids=${ids.join(',')}`;
 		} else if (search?.length) {
-			url = `/cors/beatsaver/api/users/search?q=${search}`;
+			url += `&search=${search}`;
 		}
 		const response = await fetch(url);
 		const mappers = await response.json();
-		return mappers.map(mapper => ({
+		return mappers.data.map(mapper => ({
 			value: mapper.id,
 			label: currentMapperId && mapper.id == currentMapperId ? 'Me' : mapper.name,
 			...mapper,
@@ -57,6 +59,7 @@
 	}
 
 	async function loadOptions(filterText) {
+		page = 1;
 		return fetchMappers(null, filterText);
 	}
 

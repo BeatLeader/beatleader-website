@@ -4,23 +4,10 @@
 [functions]
     directory = "functions"
 
-[[redirects]]
-    from = "/cors/beat-savior/*"
-    to = "https://beat-savior.herokuapp.com/api/livescores/player/:splat"
-    status = 200
-    force = true
-    headers = {X-From = "Netlify"}
 
 [[redirects]]
     from = "/cors/cdnbeatsaver/*"
     to = "https://cdn.beatsaver.com/:splat"
-    status = 200
-    force = true
-    headers = {X-From = "Netlify"}
-
-[[redirects]]
-    from = "/cors/beatsaver/*"
-    to = "https://beatsaver.com/:splat"
     status = 200
     force = true
     headers = {X-From = "Netlify"}
