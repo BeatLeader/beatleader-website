@@ -399,22 +399,9 @@
 		}
 	}
 
-	let todayMap = null;
-
-	function loadTreeData() {
-		try {
-			fetch(`${BL_API_URL}projecttree/status`, {credentials: 'include'})
-				.then(res => res.json())
-				.then(data => {
-					todayMap = data.today.song;
-				});
-		} catch (err) {}
-	}
-
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: changeParams(page, buildFiltersFromLocation(location), false, false);
 	$: cinematicsCanvas && drawCinematics(cinematicsCanvas, '/assets/week120_bg.webp');
-	$: loadTreeData();
 
 	$: showFilters = $configStore.preferences.showFiltersOnRanking;
 </script>
@@ -459,20 +446,6 @@
 				</div>
 			</div>
 		</ContentBox> -->
-
-		{#if todayMap}
-			<ContentBox cls="event-banner" on:click={() => navigate('/event/project-tree')}>
-				<div class="event-container">
-					<img alt="Event banner" class="event-image" src={todayMap.coverImage} />
-					<div class="event-text-container">
-						<span class="event-title-desktop">Project Tree!</span>
-						<span class="event-title-mobile">Project Tree 🎄</span>
-						<span class="event-text">Today's map: <b>{todayMap.name}</b> from <b>{todayMap.mapper}</b></span>
-					</div>
-					<Button label="Event🎄" cls="event-cover-btn" on:click={() => navigate('/event/project-tree')} />
-				</div>
-			</ContentBox>
-		{/if}
 
 		<ContentBox bind:box={boxEl}>
 			<h1 class="title is-5">
