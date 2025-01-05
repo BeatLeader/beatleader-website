@@ -29,6 +29,17 @@
 		{
 			component: CarouselCard,
 			props: {
+				title: 'Voting for 2024 Beasties Open',
+				body: '',
+				imageUrl: '/assets/Discover/beastiesvotingopenBL.png',
+				targetUrl: 'https://mappingawards.saeraphinx.dev/finalists',
+				linkName: 'Beasties Voting',
+				forcedColor: 'rgb(0, 0, 0, 0)',
+			},
+		},
+		{
+			component: CarouselCard,
+			props: {
 				title: 'Cube Community Summer Highlights',
 				body: '',
 				imageUrl: '/assets/Discover/cc-summer-highlights.jpg',
