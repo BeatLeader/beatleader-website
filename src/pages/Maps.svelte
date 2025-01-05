@@ -29,7 +29,7 @@
 		{
 			component: CarouselCard,
 			props: {
-				title: 'Voting for 2024 Beasties Open',
+				title: 'Voting for 2024 Beasties Is Open',
 				body: '',
 				imageUrl: '/assets/Discover/beastiesvotingopenBL.png',
 				targetUrl: 'https://mappingawards.saeraphinx.dev/finalists',
