@@ -3,12 +3,14 @@
 	export let background = 'var(--foreground)';
 	export let cls = null;
 	export let zIndex = 1;
+	export let id = null;
 </script>
 
 <div
 	class="content-box {cls ?? ''}"
 	bind:this={box}
 	style="--box-background: {background}; {zIndex != 1 ? 'z-index: ' + zIndex : ''}"
+	{id}
 	on:click>
 	<slot />
 </div>

@@ -94,7 +94,7 @@
 			component: CarouselCard,
 			props: {
 				title: 'Building Blocks 2024',
-				body: 'Upcoming mapping contest with a prize pool and chance to get directly into ranked!',
+				body: 'Ongoing mapping contest with a prize pool and chance to get directly into ranked!',
 				imageUrl: '/assets/Discover/buildingblocks.png',
 				targetUrl: '/event/building-blocks-2024',
 				forcedColor: 'rgb(24 3 29 / 75%)',

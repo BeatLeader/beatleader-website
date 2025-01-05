@@ -61,6 +61,9 @@
 	$: clanPromise = fetchClan(playerId);
 
 	$: promises = Promise.all([clanPromise, mapperPromise]);
+	$: promises?.then(() => {
+		setInterval(() => dispatch('height-changed'), 400);
+	});
 </script>
 
 {#if playerInfo}
@@ -69,7 +72,6 @@
 	{:then _}
 		<div id={playerId + '-player-cards'} class="cards-container">
 			{#if rankedmaps || clan}
-				{@const empty = setInterval(() => dispatch('height-changed'), 400)}
 				{#if rankedmaps}
 					<RankedMapper
 						mapperId={playerInfo.mapperId}
