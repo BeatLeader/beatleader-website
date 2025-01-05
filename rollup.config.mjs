@@ -51,6 +51,11 @@ function copyAndRenameBulma() {
 	return {
 		name: 'copy-bulma',
 		writeBundle() {
+			// Ensure assets directory exists
+			if (!fs.existsSync('public/assets')) {
+				fs.mkdirSync('public/assets', {recursive: true});
+			}
+
 			const source = 'public/assets/ss-bulma.css';
 			const dest = `public/assets/ss-bulma.${buildTimestamp}.css`;
 
@@ -173,6 +178,14 @@ export default [
 			{
 				name: 'clean-old-assets',
 				buildStart() {
+					// Create directories if they don't exist
+					['public/build', 'public/build/themes'].forEach(dir => {
+						if (!fs.existsSync(dir)) {
+							fs.mkdirSync(dir, {recursive: true});
+						}
+					});
+
+					// Clean up old files
 					const files = fs.readdirSync('public/build');
 					files.forEach(file => {
 						if (file.match(/bundle\.\d+\.(js|css)/) && !file.includes(buildTimestamp)) {

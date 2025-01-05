@@ -2,6 +2,8 @@
 .vscode
 node_modules
 public/build
+public/index.html
+public/assets/ss-bulma.*.css
 build-info.js
 .yarn
 .yarnrc.yml
