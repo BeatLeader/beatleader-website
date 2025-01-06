@@ -81,6 +81,8 @@
 	}
 
 	onDestroy(() => {
+		var overlay = document.getElementById('overlay-wrapper');
+		if (overlay) overlay.remove();
 		window.removeEventListener('resize', onResize);
 	});
 </script>

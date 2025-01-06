@@ -57,6 +57,7 @@
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
 	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
+	import ScoresAccGraph from '../components/Leaderboard/ScoresAccGraph.svelte';
 	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
 	import {invertColor} from '../components/Common/utils/badge';
 	import {isPatron} from '../components/Player/Overlay/overlay';
@@ -389,7 +390,7 @@
 		};
 	}
 
-	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked, showGraphOption) {
+	function updateTypeOptions(country, playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph) {
 		//if (!country?.length && !playerIsFollowingSomeone) return;
 
 		typeOptions = availableTypeOptions
@@ -415,6 +416,19 @@
 								label: 'Graph',
 								iconFa: 'fas fa-chart-line',
 								url: `/leaderboard/graph/${currentLeaderboardId}/1`,
+								filters: {countries: '', clanTag: ''},
+							},
+						]
+					: []
+			)
+			.concat(
+				showAccGraph
+					? [
+							{
+								type: 'accgraph',
+								label: 'Acc Graph',
+								iconFa: 'fas fa-arrow-trend-up',
+								url: `/leaderboard/accgraph/${currentLeaderboardId}/1`,
 								filters: {countries: '', clanTag: ''},
 							},
 						]
@@ -730,7 +744,8 @@
 
 	$: playerIsFollowingSomeone = !!$account?.followed?.length;
 	$: showGraphOption = $configStore?.leaderboardPreferences?.showGraphOption;
-	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked, showGraphOption);
+	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph;
+	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph);
 	$: refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
@@ -822,7 +837,7 @@
 
 						<Switcher values={typeOptions} value={currentTypeOption} on:change={onTypeChanged} />
 
-						{#if currentType != 'clanranking'}
+						{#if currentType != 'clanranking' && currentType != 'accgraph'}
 							<div class="sorting-options">
 								<span
 									class="beat-savior-reveal clickable"
@@ -850,7 +865,7 @@
 				{#if leaderboardShowSorting && currentType != 'clanranking'}
 					<nav class="switcher-nav" transition:slide>
 						<Switcher values={switcherSortValues} value={sortValue} on:change={onSwitcherChanged} />
-						{#if currentType != 'graph'}
+						{#if currentType != 'graph' && currentType != 'accgraph'}
 							<div style="display: flex;">
 								<ScoreServiceFilters filters={complexFilters} currentFilterValues={currentFilters} on:change={onFiltersChanged} />
 								<ModifiersFilter selected={currentFilters.modifiers} on:change={onModifiersChanged} />
@@ -880,7 +895,7 @@
 						</div>
 					</div>
 				{/if}
-				{#if currentType != 'clanranking' && currentType != 'graph'}
+				{#if currentType != 'clanranking' && currentType != 'graph' && currentType != 'accgraph'}
 					{#if scoresWithUser?.length}
 						<div class="scores-grid darkened-background grid-transition-helper">
 							{#each scoresWithUser as score, idx ((score?.score?.id ?? '') + (score?.player?.playerId ?? ''))}
@@ -994,7 +1009,10 @@
 						leaderboardId={currentLeaderboardId}
 						sortBy={currentFilters.sortBy}
 						order={currentFilters.order}
+						{leaderboard}
 						{currentPlayerId} />
+				{:else if currentType == 'accgraph'}
+					<ScoresAccGraph {leaderboard} page={currentPage} />
 				{:else if clanRankingList?.length}
 					<div class="scores-grid grid-transition-helper">
 						{#each clanRankingList as cr, idx (opt(cr, 'clan.tag', ''))}

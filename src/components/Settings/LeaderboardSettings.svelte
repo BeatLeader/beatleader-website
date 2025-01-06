@@ -288,6 +288,7 @@
 	$: showStats = $configStore?.leaderboardPreferences?.showStatsInHeader ?? false;
 	$: showHash = $configStore?.leaderboardPreferences?.showHashInHeader ?? false;
 	$: showGraph = $configStore?.leaderboardPreferences?.showGraphOption ?? false;
+	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph ?? false;
 	$: alwaysShowAuthorHint = $configStore?.leaderboardPreferences?.alwaysShowAuthorHint ?? false;
 
 	$: showClanInHeader = $configStore?.leaderboardPreferences?.showClanCaptureInHeader ?? false;
@@ -403,6 +404,14 @@
 							fontSize={12}
 							design="slider"
 							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showGraphOption', !showGraph)} />
+					</div>
+					<div title="Show accuracy graph">
+						<Switch
+							value={showAccGraph}
+							label="Show accuracy graph"
+							fontSize={12}
+							design="slider"
+							on:click={() => configStore.settempsetting('leaderboardPreferences', 'showAccGraph', !showAccGraph)} />
 					</div>
 					<div title="Show clan captured">
 						<Switch
