@@ -311,6 +311,7 @@ export const processLeaderboard = (leaderboardId, page, respons) => {
 			mappers: led?.song?.mappers,
 			fullImageUrl: led?.song?.fullCoverImage,
 			downloadUrl: led?.song?.downloadUrl,
+			explicity: led?.song?.explicity,
 			stats: {},
 		}
 	);

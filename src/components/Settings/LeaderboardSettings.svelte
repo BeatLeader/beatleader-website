@@ -231,6 +231,7 @@
 	let showBots = false;
 	let showAllRatings = false;
 	let anySupporter = false;
+	let showExplicitCovers = false;
 
 	async function toggleBots() {
 		if (isUpdating) return;
@@ -242,6 +243,20 @@
 			await account.update({showBots: newValue});
 		} finally {
 			showBots = newValue;
+			isUpdating = null;
+		}
+	}
+
+	async function toggleExplicitCovers() {
+		if (isUpdating) return;
+
+		const newValue = !showExplicitCovers;
+		try {
+			isUpdating = true;
+
+			await account.update({showExplicitCovers: newValue});
+		} finally {
+			showExplicitCovers = newValue;
 			isUpdating = null;
 		}
 	}
@@ -264,6 +279,7 @@
 		if (account?.player?.profileSettings) {
 			showBots = account.player.profileSettings.showBots;
 			showAllRatings = account.player.profileSettings.showAllRatings;
+			showExplicitCovers = account.player.profileSettings.showExplicitCovers;
 		}
 
 		anySupporter = isAnySupporter(account?.player?.playerInfo?.role);
@@ -355,6 +371,15 @@
 						fontSize={12}
 						design="slider"
 						on:click={() => toggleAllRatings()} />
+				</div>
+				<div class="single" title="Automatically unblur explicit covers">
+					<Switch
+						disabled={isUpdating}
+						value={showExplicitCovers}
+						label="Unblur explicit covers"
+						fontSize={12}
+						design="slider"
+						on:click={() => toggleExplicitCovers()} />
 				</div>
 			</section>
 		{/if}
