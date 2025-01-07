@@ -221,14 +221,14 @@
 		}
 
 		filters[param.key] = param.multi
-			? (param?.value ?? [])
+			? ((param?.value ?? [])
 					?.map(paramValue => (paramValue?.serializeParam ? paramValue.serializeParam(paramValue) : paramValue.id))
 					?.filter(v => v) ??
-			  param?.default ??
-			  []
+				param?.default ??
+				[])
 			: filters?.[param.key]?.length
-			? filters[param.key]
-			: param?.default ?? '';
+				? filters[param.key]
+				: (param?.default ?? '');
 	};
 
 	var params = [
@@ -433,7 +433,7 @@
 					break;
 
 				case p.key === 'star_range':
-					p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : p?.default ?? [];
+					p.values = Array.isArray(filters?.[p.key]) && filters[p.key].length ? filters[p.key] : (p?.default ?? []);
 					filters[p.key] = filters[p.key] ?? 0;
 					break;
 
@@ -444,14 +444,14 @@
 
 				default:
 					filters[p.key] = p.multi
-						? (p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? []
+						? ((p?.values ?? [])?.map(v => v?.id)?.filter(v => filters?.[p.key]?.includes(v)) ?? p?.default ?? [])
 						: filters?.[p.key]?.length
-						? filters[p.key]
-						: p?.default ?? '';
+							? filters[p.key]
+							: (p?.default ?? '');
 
 					p.value = p.multi
-						? p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? []
-						: filters?.[p.key] ?? p?.default ?? '';
+						? (p?.values?.filter(v => filters?.[p.key]?.includes(v.id)) ?? p?.default ?? [])
+						: (filters?.[p.key] ?? p?.default ?? '');
 			}
 
 			if (p.multi && p.withCondition) {
@@ -476,7 +476,7 @@
 				default:
 					currentFilters[p.key] = p.multi
 						? (p?.value ?? [])?.map(paramValue => (paramValue?.serializeParam ? paramValue.serializeParam(paramValue) : paramValue.id))
-						: p?.value ?? '';
+						: (p?.value ?? '');
 					break;
 			}
 
@@ -550,7 +550,9 @@
 					.reduce((carry, map) => {
 						const {difficulty, qualification, song, positiveVotes, negativeVotes, ...rest} = map;
 
-						song.difficulties = song?.difficulties ?? [];
+						song.difficulties = (song?.difficulties ?? []).filter(
+							d => d?.status == DifficultyStatus.nominated || d?.status == DifficultyStatus.qualified
+						);
 
 						if (song?.hash?.length && !carry[song.hash]) {
 							const minStars = song?.difficulties?.reduce(
@@ -661,10 +663,10 @@
 										diff?.qualification?.criteriaMet === 1
 											? 'Yes'
 											: diff?.qualification?.criteriaMet === 2
-											? 'Failed'
-											: diff?.qualification?.criteriaMet === 3
-											? 'On hold'
-											: 'No',
+												? 'Failed'
+												: diff?.qualification?.criteriaMet === 3
+													? 'On hold'
+													: 'No',
 									approved: diff?.qualification?.approved ? 'Yes' : 'No',
 									votes: diff?.qualification?.votes,
 								};
@@ -842,15 +844,15 @@
 									d?.qualification?.rtMember === playerId ||
 									d?.qualification?.mapperId === playerId ||
 									d?.qualification?.criteriaChecker === playerId
-						  )
+							)
 						: currentFilters?.mine === 'others'
-						? !!(s?.difficulties ?? [])?.every(
-								d =>
-									d?.qualification?.rtMember !== playerId &&
-									d?.qualification?.mapperId !== playerId &&
-									d?.qualification?.criteriaChecker !== playerId
-						  )
-						: true;
+							? !!(s?.difficulties ?? [])?.every(
+									d =>
+										d?.qualification?.rtMember !== playerId &&
+										d?.qualification?.mapperId !== playerId &&
+										d?.qualification?.criteriaChecker !== playerId
+								)
+							: true;
 
 				const statusCond = currentFilters?.status_cond ?? 'or';
 				result &&= currentFilters?.status?.length
@@ -900,7 +902,7 @@
 							}
 
 							return result;
-					  }, statusCond !== 'or')
+						}, statusCond !== 'or')
 					: true;
 
 				const statusNotCond = currentFilters?.status_not_cond ?? 'or';
@@ -950,7 +952,7 @@
 							}
 
 							return result;
-					  }, statusNotCond !== 'or')
+						}, statusNotCond !== 'or')
 					: true;
 
 				result &&= currentFilters?.mapper?.length
@@ -1119,7 +1121,7 @@
 											change?.[`new${field}`] !== diff?.qualification?.criteriaMet ||
 											change?.['timeset'] !== diff?.qualification?.criteriaTimeset,
 										notes: (field, change, diff) =>
-											change?.[`new${field}`] === 2 ? diff?.qualification?.criteriaCommentary ?? 'no description' : 'ok',
+											change?.[`new${field}`] === 2 ? (diff?.qualification?.criteriaCommentary ?? 'no description') : 'ok',
 										level: (field, change, diff) => (change?.[`new${field}`] === 2 ? 'error' : 'info'),
 									},
 									{
