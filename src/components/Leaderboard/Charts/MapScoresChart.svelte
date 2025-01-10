@@ -3,7 +3,7 @@
 	import zoomPlugin from 'chartjs-plugin-zoom';
 	// import chartTrendline from 'chartjs-plugin-trendline';
 
-	import {formatNumber, roundToPrecision} from '../../../utils/format';
+	import {formatNumber, GLOBAL_LEADERBOARD_TYPE, roundToPrecision} from '../../../utils/format';
 	import {formatDate, formatDateRelative, getTimeStringColor} from '../../../utils/date';
 	import Spinner from '../../Common/Spinner.svelte';
 	import {configStore} from '../../../stores/config';
@@ -376,7 +376,7 @@
 
 		try {
 			isLoading = true;
-			fetch(`${BL_API_URL}leaderboard/${leaderboardId}/scoregraph`)
+			fetch(`${BL_API_URL}leaderboard/${leaderboardId}/scoregraph?leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
 				.then(d => d.json())
 				.then(g => {
 					leaderboardScores = g
