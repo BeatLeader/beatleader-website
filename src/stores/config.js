@@ -108,6 +108,7 @@ export const DEFAULT_CONFIG = {
 		badgeRows: 1,
 
 		showStatsInHeader: false,
+		showRatingGraph: true,
 		showHashInHeader: false,
 		showGraphOption: true,
 		showAccGraph: false,

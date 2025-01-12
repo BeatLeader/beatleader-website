@@ -55,6 +55,7 @@
 	import ClanRankingScore from '../components/Leaderboard/ClanRankingScore.svelte';
 	import CountryFilter from '../components/Player/ScoreFilters/CountryFilter.svelte';
 	import PredictedAccGraph from '../components/Leaderboard/PredictedAccGraph.svelte';
+	import RatingsGraph from '../components/Leaderboard/RatingsGraph.svelte';
 	import HashDisplay from '../components/Common/HashDisplay.svelte';
 	import FeaturedPlaylist from '../components/Leaderboard/FeaturedPlaylist.svelte';
 	import ScoresAccGraph from '../components/Leaderboard/ScoresAccGraph.svelte';
@@ -1222,7 +1223,11 @@
 									{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
 										<LeaderboardStats {leaderboard} />
 									{/if}
-									<PredictedAccGraph {leaderboard} />
+									{#if $configStore?.leaderboardPreferences?.showRatingGraph}
+										<RatingsGraph {leaderboard} />
+									{:else}
+										<PredictedAccGraph {leaderboard} />
+									{/if}
 									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
 										<HashDisplay {song} />
 									{/if}
