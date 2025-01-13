@@ -487,4 +487,10 @@
 		width: auto !important;
 		margin-top: 0.3em !important;
 	}
+
+	@media screen and (max-width: 767px) {
+		.switchers {
+			flex-wrap: wrap;
+		}
+	}
 </style>
