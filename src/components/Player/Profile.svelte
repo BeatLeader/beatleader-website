@@ -263,7 +263,7 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel={$editModel} {roles} />
-<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="4">
+<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="0">
 	{#if cover}
 		<div class="cinematics">
 			<div class="cinematics-canvas">
@@ -521,9 +521,9 @@
 		position: absolute;
 		top: 0;
 		transform: scale(1.1) translateZ(0);
-		width: 100%;
+		width: 110%;
 		z-index: -1;
-		height: 100%;
+		height: 110%;
 	}
 
 	:global(.shareButton) {
@@ -572,6 +572,12 @@
 
 	:global(.remove-cover-button) {
 		width: 10em;
+	}
+
+	@media screen and (max-width: 1750px) {
+		.cinematics-canvas {
+			width: 100%;
+		}
 	}
 
 	@media screen and (max-width: 767px) {

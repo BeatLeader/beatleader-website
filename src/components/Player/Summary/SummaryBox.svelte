@@ -48,7 +48,7 @@
 </script>
 
 {#if scoresStats}
-	<ContentBox cls="stats-and-summary-box">
+	<ContentBox cls="stats-and-summary-box frosted">
 		<div class="stats-and-summary" class:edit-enabled={!!editModel}>
 			<div class="pp-and-platform">
 				<div class="pp-container">

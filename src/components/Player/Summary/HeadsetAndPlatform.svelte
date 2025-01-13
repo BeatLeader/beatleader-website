@@ -75,7 +75,7 @@
 </script>
 
 <div>
-	<div class="player-data darkened-background">
+	<div class="player-data darkened-background frosted">
 		<div class="platform-entry">
 			<span class="platform-title" title="Global ranking place">Global</span>
 			<a
