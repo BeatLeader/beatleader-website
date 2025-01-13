@@ -392,9 +392,9 @@
 		position: absolute;
 		top: 0;
 		transform: scale(1.1) translateZ(0);
-		width: 100%;
+		width: 110%;
 		z-index: -1;
-		height: 100%;
+		height: 110%;
 	}
 
 	.status-and-type {
@@ -491,6 +491,12 @@
 	:global(.voteButton) {
 		margin-top: 0 !important;
 		height: 1.8em;
+	}
+
+	@media screen and (max-width: 1275px) {
+		.cinematics-canvas {
+			width: 100%;
+		}
 	}
 
 	@media screen and (max-width: 1024px) {

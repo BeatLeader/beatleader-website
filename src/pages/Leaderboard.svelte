@@ -1106,7 +1106,7 @@
 	{#if separatePage && type !== 'accsaber'}
 		<aside transition:fade|global>
 			{#if qualification && !isRanked}
-				<ContentBox cls="leaderboard-aside-box">
+				<ContentBox cls="leaderboard-aside-box frosted">
 					{#if !commentaryShown}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
@@ -1134,7 +1134,7 @@
 				</ContentBox>
 			{/if}
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-				<ContentBox cls="leaderboard-aside-box"
+				<ContentBox cls="leaderboard-aside-box frosted"
 					>{#if !qualificationInfoShown}
 						<div class="score-options-section" transition:fade>
 							<span
@@ -1172,7 +1172,7 @@
 				</ContentBox>
 			{/if}
 			{#if featuredPlaylists && featuredPlaylists.length}
-				<ContentBox cls="leaderboard-aside-box">
+				<ContentBox cls="leaderboard-aside-box frosted">
 					{#if !leaderboardShowPlaylists}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Show map details">
@@ -1189,7 +1189,7 @@
 								</span>
 							</div>
 
-							<div class="featured-playlists darkened-background">
+							<div class="featured-playlists darkened-background frosted">
 								<span class="featured-playlist-headline">Featured in:</span>
 								{#each featuredPlaylists as featuredPlaylist}
 									<div class="stats-with-icons">
@@ -1202,7 +1202,7 @@
 				</ContentBox>
 			{/if}
 			{#if showStats}
-				<ContentBox cls="leaderboard-aside-box">
+				<ContentBox cls="leaderboard-aside-box frosted">
 					{#if !leaderboardStatsShown}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
@@ -1219,7 +1219,7 @@
 								</span>
 							</div>
 							{#if leaderboard?.stats}
-								<div class="stats-with-icons darkened-background">
+								<div class="stats-with-icons darkened-background frosted">
 									{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
 										<LeaderboardStats {leaderboard} />
 									{/if}
@@ -1239,7 +1239,7 @@
 			{/if}
 
 			{#if showCurve && leaderboard?.stats?.stars}
-				<ContentBox cls="leaderboard-aside-box">
+				<ContentBox cls="leaderboard-aside-box frosted">
 					{#if !curveShown}
 						<div class="score-options-section" transition:fade>
 							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
@@ -1254,7 +1254,7 @@
 									<i class="fas fa-chevron-left" />
 								</span>
 							</div>
-							<div class="darkened-background">
+							<div class="darkened-background frosted">
 								<h2 class="title is-5" style="text-align: center;">
 									PP curve (<span
 										on:click={() => curveboolflip('passPp')}
@@ -1653,6 +1653,8 @@
 		--webkit-backface-visibility: hidden;
 		-webkit-backdrop-filter: blur(10px);
 		margin: 6px 10px 16px;
+		z-index: 0;
+		position: relative;
 	}
 
 	.beat-savior-reveal {
