@@ -746,7 +746,8 @@
 	$: showGraphOption = $configStore?.leaderboardPreferences?.showGraphOption;
 	$: showAccGraph = $configStore?.leaderboardPreferences?.showAccGraph;
 	$: updateTypeOptions(mainPlayerCountry, playerIsFollowingSomeone, isRanked, showGraphOption, showAccGraph);
-	$: refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
+	$: leaderboard?.stats?.status !== undefined &&
+		refreshSortValues(allSortValues, currentFilters, formatDiffStatus(leaderboard?.stats?.status));
 	$: generalMapperId = song?.mapperId == $account?.player?.playerInfo.mapperId ? $account?.player?.playerInfo.mapperId : null;
 
 	$: userScoreOnCurrentPage = scores?.find(s => s?.player?.playerId === higlightedPlayerId);
