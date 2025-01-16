@@ -81,7 +81,7 @@
 	};
 	$: corner3 = {x: 50, y: (86.6 - gypL / 2) * (1 - normalizedPassPp)};
 
-	const formatter = new Intl.DateTimeFormat('en', {year: 'numeric', month: 'long'});
+	const formatter = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: 'long', timeZone: 'UTC'});
 
 	function fetchHistory(playerId) {
 		fetch(`${BL_API_URL}player/${playerId}/history/triangle`, {credentials: 'include'})
