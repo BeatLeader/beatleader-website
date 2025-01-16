@@ -200,6 +200,16 @@
 								onlyurl={true}
 								disabled={!loggedInPlayer || !isSupporter}
 								type="green" />
+							<Button
+								iconFa="fas fa-download"
+								title={!loggedInPlayer || !isSupporter
+									? 'Log in on the top of the Page and Link Patreon'
+									: 'Download Reesabers for game versions from 1.27 to 1.29.1'}
+								label="Download for PC 1.27-1.29.1"
+								url={BL_API_URL + 'reesabersversion?version=1.29.1'}
+								onlyurl={true}
+								disabled={!loggedInPlayer || !isSupporter}
+								type="green" />
 						</div>
 						<div class="benefit-button-container">
 							<span>QUEST (v0.3.11):</span>
@@ -235,7 +245,6 @@
 							{#if showOtherVersions}
 								<a href={BL_API_URL + 'reesabersversion?version=1.37.5'}> Version for PC 1.37.4-1.37.5 (v0.3.9)</a>
 								<a href={BL_API_URL + 'reesabersversion?version=1.34.0'}> Version for PC 1.34.2 (v0.3.8)</a>
-								<a href={BL_API_URL + 'reesabersversion?version=1.29.1'}> Version for PC 1.27-1.29.1 (v0.3.11)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.35.0'}> Version for Quest 1.35.0 (v0.3.9)</a>
 								<a href={BL_API_URL + 'questreesabersversion?version=1.28.0'}> Version for Quest 1.28.0 (v0.3.9)</a>
 							{/if}
