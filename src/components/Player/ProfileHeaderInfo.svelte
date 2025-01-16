@@ -24,6 +24,7 @@
 	export let editModel = null;
 	export let roles = null;
 	export let profileAppearance;
+	export let zIndex = 0;
 
 	const dispatch = createEventDispatcher();
 
@@ -142,11 +143,16 @@
 		}
 	}
 
+	function updateZIndex(invitationConfirmationType) {
+		zIndex = invitationConfirmationType ? 4 : 0;
+	}
+
 	$: isUserFounderOfTheClan = !!$account?.clan;
 	$: isPlayerClanMember = isUserFounderOfTheClan && !!$account?.clan?.players?.find(pId => pId === playerId);
 	$: hasPlayerPendingInvitation =
 		isUserFounderOfTheClan && !isPlayerClanMember && !!$account?.clan?.pendingInvites?.find(pId => pId === playerId);
 	$: fetchAliasRequest($account);
+	$: updateZIndex(invitationConfirmationType || showBanForm);
 </script>
 
 {#if showBanForm}

@@ -246,6 +246,8 @@
 		}
 	}
 
+	let zIndex = 0;
+
 	$: cover && drawCinematics(cinematicsCanvas, cover);
 
 	onMount(() => {
@@ -263,7 +265,7 @@
 {/if}
 
 <AvatarOverlayEditor bind:editModel={$editModel} {roles} />
-<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex="0">
+<ContentBox cls="profile-box {cover ? 'profile-container' : ''} {modalShown ? 'inner-modal' : ''}" zIndex={`${zIndex}`}>
 	{#if cover}
 		<div class="cinematics">
 			<div class="cinematics-canvas">
@@ -362,6 +364,7 @@
 				{roles}
 				profileAppearance={playerData?.profileSettings?.profileAppearance ?? null}
 				bind:editModel={$editModel}
+				bind:zIndex
 				on:edit-model-enable={onEnableEditModel}
 				on:modal-shown={() => (modalShown = true)}
 				on:modal-hidden={() => (modalShown = false)} />
