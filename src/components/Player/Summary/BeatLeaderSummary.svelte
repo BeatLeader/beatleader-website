@@ -60,7 +60,7 @@
 	));
 </script>
 
-<div class="wrapper darkened-background">
+<div class="wrapper darkened-background frosted">
 	<div class="beatleader-summary">
 		{#if scoresStats || skeleton}
 			{#if scoresStats}

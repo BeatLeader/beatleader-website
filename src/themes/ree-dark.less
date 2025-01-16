@@ -3,16 +3,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&display=swap');
 
 * {
-  font-family: 'Noto Sans', 'Noto Sans SC', "Microsoft YaHei", sans-serif;
+	font-family: 'Noto Sans', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
 }
 
 //region Constants
 
 :root {
-  --row-separator: #2e2e2e !important;
-  --bg-color: #3273dc;
-  --color: #eee;
-  --ppColour: rgba(207, 138, 251, 1.0);
+	--row-separator: #2e2e2e !important;
+	--bg-color: #3273dc;
+	--color: #eee;
+	--ppColour: rgba(207, 138, 251, 1);
 }
 
 //endregion
@@ -20,29 +20,33 @@
 //region Background
 
 .main-background {
-  position: fixed;
-    display: block;
-  background: #070707 url("/assets/ree-dark-bg.webp") !important;
-  background-size: cover !important;
+	position: fixed;
+	display: block;
+	background: #070707 url('/assets/ree-dark-bg.webp') !important;
+	background-size: cover !important;
 }
 
 .darkened-background {
-  background: #121212;
+	background: #121212;
+}
+
+.darkened-background.frosted {
+	background: rgba(18, 18, 18, 0.85) !important;
 }
 
 // Navigator
 nav.ssr-page-container {
-  padding: .5rem;
-  height: 4rem !important;
-  border-bottom: none !important;
-  background: rgb(26 26 26) !important;
+	padding: 0.5rem;
+	height: 4rem !important;
+	border-bottom: none !important;
+	background: rgb(26 26 26) !important;
 
-  a,
-  div {
-      transition: all 0.1s;
-      border-radius: 4px;
-      // margin: 5px;
-  }
+	a,
+	div {
+		transition: all 0.1s;
+		border-radius: 4px;
+		// margin: 5px;
+	}
 }
 
 //endregion
@@ -50,33 +54,40 @@ nav.ssr-page-container {
 //region Content box
 
 .content-box {
-  background: rgb(26 26 26) !important;
+	background: rgb(26 26 26) !important;
 
-  > div > header, > header {
-    justify-content: center !important;
-  }
+	> div > header,
+	> header {
+		justify-content: center !important;
+	}
+}
+
+.content-box.frosted {
+	background: rgba(26, 26, 26, 0.4) !important;
+	backdrop-filter: blur(30px);
 }
 
 .content-box.festive {
-  background-image: url(/assets/lights2.gif) !important;
-  background-size: cover !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
+	background-image: url(/assets/lights2.gif) !important;
+	background-size: cover !important;
+	padding: 0 !important;
+	border-radius: 0 !important;
 }
 
 .content-box.legacy-warning {
-  background-color: #863a00 !important;
+	background-color: #863a00 !important;
 }
 
 //endregion
 
 //region Summary Badges
 
-.beatleader-summary, .clan-info {
-  .badge {
-    background-color: #2c2c2c !important;
-    box-shadow: 0 0 6px #00000077;
-  }
+.beatleader-summary,
+.clan-info {
+	.badge {
+		background-color: #2c2c2c !important;
+		box-shadow: 0 0 6px #00000077;
+	}
 }
 
 //endregion
@@ -84,104 +95,101 @@ nav.ssr-page-container {
 //region Clan Badges
 
 .clan-badges {
-  display: flex;
+	display: flex;
 
-  .label {
-    font-weight: 900 !important;
-  }
+	.label {
+		font-weight: 900 !important;
+	}
 
-  > a {
-    margin: 0 -0.2em;
-    opacity: 0.6;
-    transition: opacity ease 0.2s;
+	> a {
+		margin: 0 -0.2em;
+		opacity: 0.6;
+		transition: opacity ease 0.2s;
 
-    > span {
-      width: 2em;
-      transform: scale(70%);
-    }
-  }
+		> span {
+			width: 2em;
+			transform: scale(70%);
+		}
+	}
 
-  > a.main-clan {
-    opacity: 1;
-  }
+	> a.main-clan {
+		opacity: 1;
+	}
 
-  > .main-clan .badge {
-    box-shadow: 1px 1px 5px #00000069;
-  }
+	> .main-clan .badge {
+		box-shadow: 1px 1px 5px #00000069;
+	}
 
-  > a:hover {
-    opacity: 1 !important;
+	> a:hover {
+		opacity: 1 !important;
 
-    > span {
-      transform: scale(90%);
-    }
-  }
+		> span {
+			transform: scale(90%);
+		}
+	}
 }
-
 
 .player-performance,
 .page-content.scores {
-    .compare-player-name {
-        * {
-            background: transparent !important;
-            color: white !important;
-            border: none !important;
-        }
-    }
+	.compare-player-name {
+		* {
+			background: transparent !important;
+			color: white !important;
+			border: none !important;
+		}
+	}
 
+	.hands-and-grid > *:nth-child(2) > span {
+		padding: 1.7rem !important;
+		background: rgba(255, 255, 255, 0.171) !important;
+	}
 
-    .hands-and-grid>*:nth-child(2)>span {
-        padding: 1.7rem !important;
-        background: rgba(255, 255, 255, 0.171) !important;
-    }
+	.badge {
+		font-size: 1em !important;
+		color: white !important;
+		background-color: color-mix(in srgb, var(--background-color) 40%, transparent) !important;
+		border-radius: 0.15em !important;
+	}
 
-    .badge {
-        font-size: 1em !important;
-        color: white !important;
-        background-color: 
-color-mix(in srgb, var(--background-color) 40%, transparent) !important;
-border-radius: 0.15em !important;
-    }
+	.rank {
+		.badge {
+			border-radius: 0;
+			background: none !important;
+			border: none;
+		}
+	}
 
-    .rank {
-        .badge {
-            border-radius: 0;
-            background: none !important;
-            border: none;
-        }
-    }
+	.player-score {
+		min-height: 3rem;
+		border: none !important;
 
-    .player-score {
-        min-height: 3rem;
-        border: none !important;
+		&.highlight {
+			background: #ffffff33;
+			margin: 0.4rem 0;
+			padding: 0;
 
-        &.highlight {
-            background: #ffffff33;
-            margin: .4rem 0;
-            padding: 0;
+			&.mobile-second-line {
+				.badge {
+					border: none;
+					background: none !important;
+				}
+			}
+		}
 
-            &.mobile-second-line {
-                .badge {
-                    border: none;
-                    background: none !important;
-                }
-            }
-        }
+		@media screen and (max-width: 767px) {
+			& {
+				height: unset !important;
 
-        @media screen and (max-width: 767px) {
-            & {
-                height: unset !important;
-
-                .clan-badges {
-                    display: none;
-                }
-            }
-        }
-    }
+				.clan-badges {
+					display: none;
+				}
+			}
+		}
+	}
 }
 
 .pp-container .pp {
-  color: #fddbff !important;
+	color: #fddbff !important;
 }
 
 //endregion
@@ -189,17 +197,17 @@ border-radius: 0.15em !important;
 //region Profile chart
 
 .beatleader-swipe-card {
-  div.chart {
-    border-radius: 0em !important;
-    margin: 0em !important;
-    box-shadow: none !important;
-    background: none !important;
-    grid-gap: 0 !important;
-  }
+	div.chart {
+		border-radius: 0em !important;
+		margin: 0em !important;
+		box-shadow: none !important;
+		background: none !important;
+		grid-gap: 0 !important;
+	}
 
-  section.chart {
-    margin: 0em !important;
-  }
+	section.chart {
+		margin: 0em !important;
+	}
 }
 
 //endregion
@@ -207,9 +215,9 @@ border-radius: 0.15em !important;
 //region Admin page tweaks
 
 .failed-scores {
-  margin-top: 1em;
-  padding-top: 1em;
-  border-top: 10px solid var(--row-separator);
+	margin-top: 1em;
+	padding-top: 1em;
+	border-top: 10px solid var(--row-separator);
 }
 
 //endregion
@@ -217,36 +225,38 @@ border-radius: 0.15em !important;
 //region Ranking
 
 .content-box:has(.ranking-grid-row) {
-  > h1 {
-    text-align: center;
-  }
+	> h1 {
+		text-align: center;
+	}
 
-  .players, .ranking-grid {
-    grid-gap: 4px !important;
+	.players,
+	.ranking-grid {
+		grid-gap: 4px !important;
 
-    .player-card {
-      transition: background-color ease 0.2s;
-      border: none !important;
-      background: #212121;
-      box-shadow: 0 4px 8px rgb(0 0 0 / 80%) !important;
-    }
+		.player-card {
+			transition: background-color ease 0.2s;
+			border: none !important;
+			background: #212121;
+			box-shadow: 0 4px 8px rgb(0 0 0 / 80%) !important;
+		}
 
-    .player-card:hover {
-      background: #313131 !important;
-      box-shadow: none !important;
-    }
-  }
+		.player-card:hover {
+			background: #313131 !important;
+			box-shadow: none !important;
+		}
+	}
 }
 
 //endregion
 
 //region Score Details
 
-.details .leaderboard, .details-box {
-    padding: .5em;
-    background: #151515 !important;
-    border: 1px solid var(--row-separator);
-    box-shadow: none !important;
+.details .leaderboard,
+.details-box {
+	padding: 0.5em;
+	background: #151515 !important;
+	border: 1px solid var(--row-separator);
+	box-shadow: none !important;
 }
 
 //endregion
@@ -254,32 +264,31 @@ border-radius: 0.15em !important;
 //region Leaderboard
 
 .leaderboard {
-  .player-score {
-    border: none !important;
-    margin-bottom: 0 !important;
+	.player-score {
+		border: none !important;
+		margin-bottom: 0 !important;
 
-    .rank > .badge {
-      background: none !important;
-    }
+		.rank > .badge {
+			background: none !important;
+		}
 
-    .country {
-      margin: 0 .4em 0.1em .4em !important;
-    }
-  }
+		.country {
+			margin: 0 0.4em 0.1em 0.4em !important;
+		}
+	}
 
-  .highlight {
-    overflow: visible !important;
-    background: #252525 !important;
-  }
+	.highlight {
+		overflow: visible !important;
+		background: #252525 !important;
+	}
 
-  > div > div:has(.player-score):not(:last-child) {
-    border-bottom: 1px solid var(--row-separator) !important;
-  }
+	> div > div:has(.player-score):not(:last-child) {
+		border-bottom: 1px solid var(--row-separator) !important;
+	}
 }
 
 .desktop-and-up .logo {
-  margin-top: -0.25em !important;
+	margin-top: -0.25em !important;
 }
 
 //endregion
-

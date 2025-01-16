@@ -331,7 +331,7 @@
 				{/await}
 			{/if}
 			{#if (!playerInfo?.richBioTimeset && !$editModel) || horizontalRichBio}
-				<ContentBox cls="player-cards-box">
+				<ContentBox cls="player-cards-box frosted">
 					<PlayerCards {playerId} {playerInfo} profileSettings={playerData?.profileSettings} bind:editModel={$editModel} />
 				</ContentBox>
 			{/if}
