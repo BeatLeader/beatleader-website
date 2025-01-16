@@ -180,12 +180,10 @@ export function toggleRandomImageOnHover(playerPage, enable) {
 		fakeBox.style.position = 'absolute';
 		fakeBox.style.top = `${box.offsetTop}px`;
 		fakeBox.style.left = `${box.offsetLeft}px`;
-		if (!isTouch) {
-			fakeBox.style.zIndex = '-1';
-		}
 		fakeBox.style.pointerEvents = 'none';
 		fakeBox.style.overflow = 'visible';
 		fakeBox.classList.add('saba-fake-box');
+		fakeBox.style.zIndex = '3';
 
 		const mask = document.createElementNS('http://www.w3.org/2000/svg', 'mask');
 		mask.setAttribute('id', 'mask');
