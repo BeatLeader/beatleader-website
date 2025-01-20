@@ -185,16 +185,6 @@
 		}
 	}
 
-	function fetchAI(leaderboard) {
-		fetch(`https://stage.api.beatleader.net/ppai2/${leaderboard?.song?.hash}/Standard/${leaderboard?.difficultyBl?.value}`)
-			.then(d => d.json())
-			.then(d => {
-				techRating = d.none.lack_map_calculation.balanced_tech * 10;
-				accRating = d.none.acc_rating;
-				passRating = d.none.lack_map_calculation.balanced_pass_diff;
-			});
-	}
-
 	let showModifiers = false;
 
 	$: updateStars(currentTechRating, currentAccRating, currentPassRating);
@@ -214,8 +204,6 @@
 		modifiers,
 		isQualified
 	);
-
-	$: if (!accRating && leaderboard) fetchAI(leaderboard);
 </script>
 
 <div class="ranking-voting {insideLeaderboard || showModifiers ? 'inside-leaderboard' : ''}">
