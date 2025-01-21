@@ -5,6 +5,7 @@
 	import createClanStore from '../stores/http/http-clan-store';
 	import createClanWithMapsStore from '../stores/http/http-clan-with-maps-store';
 	import createAccountStore from '../stores/beatleader/account';
+	import createPlaylistStore from '../stores/playlists';
 	import ssrConfig from '../ssr-config';
 	import Pager from '../components/Common/Pager.svelte';
 	import Spinner from '../components/Common/Spinner.svelte';
@@ -27,6 +28,7 @@
 	import ScoreServiceFilters from '../components/Player/ScoreServiceFilters.svelte';
 	import SelectFilter from '../components/Player/ScoreFilters/SelectFilter.svelte';
 	import ClanSkillTriangle from '../components/Clans/ClanSkillTriangle.svelte';
+	import RangeSlider from 'svelte-range-slider-pips';
 
 	export let clanId;
 	export let page = 1;
@@ -39,6 +41,7 @@
 	const account = createAccountStore();
 
 	const clanService = createClanService();
+	const playlists = createPlaylistStore();
 
 	if (page && !Number.isFinite(page)) page = parseInt(page, 10);
 	if (!page || isNaN(page) || page <= 0) page = 1;
@@ -245,6 +248,17 @@
 		changePageAndFilters(maps, currentPage, currentFilters, false);
 	}
 
+	let searchToPlaylist = false;
+	let makingPlaylist = false;
+	let ppLimit = 100;
+	let duplicateDiffs = false;
+	function generatePlaylist() {
+		makingPlaylist = true;
+		playlists.generateClanPlaylist(ppLimit, clan.id, currentFilters.sortBy, currentFilters.playedStatus, duplicateDiffs, () => {
+			navigate('/playlists');
+		});
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
 	$: isLoading = clanStore.isLoading;
@@ -322,7 +336,49 @@
 				{/if}
 
 				<Switcher values={clanOptions} value={clanOptions.find(o => o.key == (maps ? 'maps' : 'players'))} on:change={onTypeChanged} />
+
+				{#if maps && (currentFilters.sortBy == 'toconquer' || currentFilters.sortBy == 'tohold')}
+					<Button
+						cls="clan-maps-playlist-button"
+						iconFa="fas fa-list"
+						type={searchToPlaylist ? 'danger' : 'default'}
+						label={searchToPlaylist ? 'Cancel' : 'To Playlist!'}
+						on:click={() => (searchToPlaylist = !searchToPlaylist)} />
+				{/if}
 			</div>
+
+			{#if searchToPlaylist}
+				<div>
+					{#if makingPlaylist}
+						<Spinner />
+					{:else}
+						<span>Pp limit:</span>
+						<RangeSlider
+							range
+							min={0}
+							max={1000}
+							step={1}
+							values={[ppLimit]}
+							hoverable
+							float
+							pips
+							pipstep={100}
+							all="label"
+							on:change={event => {
+								ppLimit = event.detail.values[0];
+							}} />
+						<div class="duplicateDiffsContainer">
+							<input type="checkbox" id="duplicateDiffs" label="Duplicate map per diff" bind:checked={duplicateDiffs} />
+							<label for="duplicateDiffs" title="Will include every diff as a separate map entry">Duplicate map per diff</label>
+						</div>
+						<Button
+							cls="playlist-button"
+							iconFa="fas fa-wand-magic-sparkles"
+							label="Generate playlist"
+							on:click={() => generatePlaylist()} />
+					{/if}
+				</div>
+			{/if}
 
 			{#if maps}
 				<ContentBox>
@@ -486,6 +542,11 @@
 	:global(.primary-clan-button) {
 		width: auto !important;
 		margin-top: 0.3em !important;
+	}
+	:global(.clan-maps-playlist-button) {
+		height: 1.6em;
+		margin: 0 !important;
+		scale: 0.9;
 	}
 
 	@media screen and (max-width: 767px) {

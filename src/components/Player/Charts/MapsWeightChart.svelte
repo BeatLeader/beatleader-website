@@ -111,8 +111,6 @@
 			})
 			.filter(point => point !== null);
 
-		console.log(interpolatePoints);
-
 		const avgData = Object.entries(
 			chartData.reduce((cum, point) => {
 				const roundedStars = roundToPrecision(point.x, 0.5);

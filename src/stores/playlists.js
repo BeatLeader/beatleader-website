@@ -134,7 +134,7 @@ export default () => {
 
 		var remote = await fetch(
 			BL_API_URL +
-				`user/playlist?id=${playlist.customData?.id ?? ''}&shared=${shared !== undefined ? shared : playlist.customData?.shared ?? false}`,
+				`user/playlist?id=${playlist.customData?.id ?? ''}&shared=${shared !== undefined ? shared : (playlist.customData?.shared ?? false)}`,
 			{
 				credentials: 'include',
 				method: 'POST',
@@ -357,6 +357,38 @@ export default () => {
 			});
 	};
 
+	const generateClanPlaylist = (ppLimit, clanId, sortBy, playedStatus, duplicateDiffs, callback) => {
+		let url = substituteVars(
+			BL_API_URL +
+				'playlist/clan/generate?clanId=${clanId}&ppLimit=${ppLimit}&duplicate_diffs=${duplicateDiffs}&sortBy=${sortBy}&playedStatus=${playedStatus}',
+			{clanId, ppLimit, sortBy, playedStatus, duplicateDiffs},
+			true,
+			true
+		);
+
+		fetch(url, {
+			credentials: 'include',
+		})
+			.then(response => response.json())
+			.then(async playlist => {
+				if (!playlist.playlistTitle || !playlist.songs) {
+					return;
+				}
+
+				let playlists = await get();
+				if (playlists[0]?.oneclick) {
+					playlists.splice(1, 0, playlist);
+				} else {
+					playlists.unshift(playlist);
+				}
+
+				await set(playlists, true);
+				await select(playlist);
+
+				callback();
+			});
+	};
+
 	const deleteList = async index => {
 		let playlists = await get();
 		const playlist = playlists[index];
@@ -522,6 +554,7 @@ export default () => {
 		share,
 		generatePlaylist,
 		generatePlayerPlaylist,
+		generateClanPlaylist,
 		updateIcon,
 		updateTitle,
 		updateDescription,
