@@ -214,7 +214,7 @@
 
 	$: isAdmin = $account?.player?.role?.includes('admin');
 	$: profileAppearance = playerData?.profileSettings?.profileAppearance;
-	$: cover = !$editModel?.avatarOverlayEdit && (playerData?.profileSettings?.profileCover ?? $editModel?.data?.profileCover);
+	$: cover = !$editModel?.avatarOverlayEdit && ($editModel ? $editModel?.data?.profileCover : playerData?.profileSettings?.profileCover);
 	$: rolesShown = anyRolesShown(profileAppearance);
 
 	$: if (startEditing) onEnableEditModel();
@@ -230,13 +230,11 @@
 		});
 	const changeCover = async e => {
 		$editModel.data.profileCover = URL.createObjectURL(e.target.files[0]);
-		playerData.profileSettings.profileCover = $editModel.data.profileCover;
 		$editModel.data.profileCoverData = await readFile(e.target.files[0])?.catch(_ => _);
 	};
 	const resetCover = async e => {
 		$editModel.data.profileCover = '/assets/defaultcover.jpg';
 		$editModel.data.profileCoverData = null;
-		playerData.profileSettings.profileCover = null;
 	};
 
 	function handleBeforeUnload(event) {

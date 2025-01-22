@@ -12,8 +12,10 @@
 
 	var clans = null;
 
-	function initClans(player) {
-		clans = player?.clans ?? null;
+	function initClans(player, editModel) {
+		if (!clans || !editModel) {
+			clans = player?.clans ?? null;
+		}
 	}
 
 	function handleDndConsider(e) {
@@ -24,7 +26,7 @@
 		editModel.data.clanOrder = clans.map(c => c.tag).join(',');
 	}
 
-	$: initClans(player);
+	$: initClans(player, editModel);
 </script>
 
 {#if clans}
