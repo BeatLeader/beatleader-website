@@ -289,10 +289,10 @@
 		</div>
 	{/if}
 	<AvatarOverlay withCover={cover} data={$editModel?.data ?? playerData?.profileSettings} />
-	<div style="margin: 0; padding: 0;">
+	<div class="share-buttons-container" style="margin: 0; padding: 0;">
 		<Button type="text" title="Share profile link" iconFa="fas fa-share-from-square" cls="shareButton" on:click={copyUrl} />
 	</div>
-	<div style="margin: 0; padding: 0;">
+	<div class="share-buttons-container" style="margin: 0; padding: 0;">
 		{#if screenshoting}
 			<div class="screenshotSpinner"><Spinner /></div>
 		{:else}
