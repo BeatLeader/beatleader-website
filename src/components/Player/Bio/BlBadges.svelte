@@ -17,29 +17,33 @@
 	let isTouching = false;
 	let isHovered = false;
 
-	onMount(() => {
-		if (badges.find(badge => badge.id == 1755 || badge.id == 1756)) {
-			allElements = document.querySelectorAll(
-				'body *:not(script):not(style):not(meta):not(.avatar-overlay):not(.align-content):not(.page-content):not(.main-background):not(main):not(.avatar-overlay-container):not(.profile-box):not(.cinematics):not(.share-buttons-container):not(.cover-image):not(.ssr-page-container):not(.content-box)'
-			);
-			portalContainer = document.createElement('div');
-			portalContainer.style.position = 'absolute';
-			portalContainer.style.pointerEvents = 'none';
-			portalContainer.style.zIndex = '9999';
-			portalContainer.style.top = '0';
-			portalContainer.style.height = '100%';
-			portalContainer.style.width = '100%';
-			document.body.appendChild(portalContainer);
+	function fetchElements(badges) {
+		if (badges && badges.find(badge => badge.id == 1755 || badge.id == 1756)) {
+			setTimeout(() => {
+				allElements = document.querySelectorAll(
+					'body *:not(script):not(style):not(meta):not(.avatar-overlay):not(.align-content):not(.page-content):not(.main-background):not(main):not(.avatar-overlay-container):not(.profile-box):not(.cinematics):not(.share-buttons-container):not(.cover-image):not(.ssr-page-container):not(.content-box)'
+				);
+				if (!portalContainer) {
+					portalContainer = document.createElement('div');
+					portalContainer.style.position = 'absolute';
+					portalContainer.style.pointerEvents = 'none';
+					portalContainer.style.zIndex = '9999';
+					portalContainer.style.top = '0';
+					portalContainer.style.height = '100%';
+					portalContainer.style.width = '100%';
+					document.body.appendChild(portalContainer);
 
-			const fontLink = document.createElement('link');
-			fontLink.rel = 'preload';
-			fontLink.href = '/assets/EPTA-GLYPHS.ttf.woff';
-			fontLink.as = 'font';
-			fontLink.type = 'font/woff';
-			fontLink.crossOrigin = 'anonymous';
-			document.head.appendChild(fontLink);
+					const fontLink = document.createElement('link');
+					fontLink.rel = 'preload';
+					fontLink.href = '/assets/EPTA-GLYPHS.ttf.woff';
+					fontLink.as = 'font';
+					fontLink.type = 'font/woff';
+					fontLink.crossOrigin = 'anonymous';
+					document.head.appendChild(fontLink);
+				}
+			}, 1000);
 		}
-	});
+	}
 
 	onDestroy(() => {
 		isHovered = false;
@@ -47,6 +51,7 @@
 		clearInterval(glitchInterval);
 		clearTimeout(touchTimeout);
 		portalContainer?.remove();
+		portalContainer = null;
 	});
 
 	function getRandomDirection() {
@@ -197,6 +202,8 @@
 		clearTimeout(touchTimeout);
 		handleMouseLeave();
 	}
+
+	$: fetchElements(badges);
 </script>
 
 {#if badges}
