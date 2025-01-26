@@ -4,6 +4,7 @@
 	import {dndzone} from 'svelte-dnd-action';
 	import {debounce} from '../../utils/debounce';
 	import {opt} from '../../utils/js';
+	import Select from '../Settings/Select.svelte';
 
 	const dispatch = createEventDispatcher();
 
@@ -133,158 +134,165 @@
 	$: currentMode = !isTotalItemsAvailable || currentDisplayMax < MINIMUM_PAGES ? 'simple' : mode;
 </script>
 
-{#if (pagesTotal > 1 || currentMode === 'simple') && !hide}
+{#if !hide}
 	<nav class="pagination" class:simple={currentMode === 'simple'} bind:this={navEl} class:no-items-per-page={!itemsPerPageValues}>
 		<div class="position">
 			{startItem} - {endItem}
-			{#if totalItems} / {totalItems}{/if}
+			{#if totalItems}
+				/ {totalItems}{/if}
 		</div>
-		<ul class="pagination-list">
-			{#if currentMode === 'simple'}
-				{#if currentPage !== 0}
-					<li>
-						<button on:click={() => onPageChanged(0)} class="pagination-link">
-							{#if loadingPage === 0}
-								<Spinner />
-							{:else}
-								<i class="fas fa-step-backward" />
-							{/if}
-						</button>
-					</li>
-
-					<li>
-						<button on:click={() => onPageChanged(currentPage - 1)} class="pagination-link">
-							{#if loadingPage === currentPage - 1}
-								<Spinner />
-							{:else}
-								<i class="fas fa-chevron-left" />
-							{/if}
-						</button>
-					</li>
-				{:else}
-					<li><span class="pagination-link disabled"><i class="fas fa-step-backward" /></span></li>
-					<li><span class="pagination-link disabled"><i class="fas fa-chevron-left" /></span></li>
-				{/if}
-
-				{#if !isTotalItemsAvailable || currentPage !== pagesTotal - 1}
-					<li>
-						<button on:click={() => onPageChanged(currentPage + 1)} class="pagination-link">
-							{#if loadingPage === currentPage + 1}
-								<Spinner />
-							{:else}
-								<i class="fas fa-chevron-right" />
-							{/if}
-						</button>
-					</li>
-
-					{#if isTotalItemsAvailable}
+		{#if pagesTotal > 1 || currentMode === 'simple'}
+			<ul class="pagination-list">
+				{#if currentMode === 'simple'}
+					{#if currentPage !== 0}
 						<li>
-							<button on:click={() => onPageChanged(pagesTotal - 1)} class="pagination-link">
-								{#if loadingPage === pagesTotal - 1}
+							<button on:click={() => onPageChanged(0)} class="pagination-link">
+								{#if loadingPage === 0}
 									<Spinner />
 								{:else}
-									<i class="fas fa-step-forward" />
+									<i class="fas fa-step-backward" />
+								{/if}
+							</button>
+						</li>
+
+						<li>
+							<button on:click={() => onPageChanged(currentPage - 1)} class="pagination-link">
+								{#if loadingPage === currentPage - 1}
+									<Spinner />
+								{:else}
+									<i class="fas fa-chevron-left" />
 								{/if}
 							</button>
 						</li>
 					{:else}
+						<li><span class="pagination-link disabled"><i class="fas fa-step-backward" /></span></li>
+						<li><span class="pagination-link disabled"><i class="fas fa-chevron-left" /></span></li>
+					{/if}
+
+					{#if !isTotalItemsAvailable || currentPage !== pagesTotal - 1}
+						<li>
+							<button on:click={() => onPageChanged(currentPage + 1)} class="pagination-link">
+								{#if loadingPage === currentPage + 1}
+									<Spinner />
+								{:else}
+									<i class="fas fa-chevron-right" />
+								{/if}
+							</button>
+						</li>
+
+						{#if isTotalItemsAvailable}
+							<li>
+								<button on:click={() => onPageChanged(pagesTotal - 1)} class="pagination-link">
+									{#if loadingPage === pagesTotal - 1}
+										<Spinner />
+									{:else}
+										<i class="fas fa-step-forward" />
+									{/if}
+								</button>
+							</li>
+						{:else}
+							<li><span class="pagination-link disabled"><i class="fas fa-step-forward" /></span></li>
+						{/if}
+					{:else}
+						<li><span class="pagination-link disabled"><i class="fas fa-chevron-right" /></span></li>
 						<li><span class="pagination-link disabled"><i class="fas fa-step-forward" /></span></li>
 					{/if}
 				{:else}
-					<li><span class="pagination-link disabled"><i class="fas fa-chevron-right" /></span></li>
-					<li><span class="pagination-link disabled"><i class="fas fa-step-forward" /></span></li>
-				{/if}
-			{:else}
-				{#if displayStart}
+					{#if displayStart}
+						{#if dnd}
+							<li class:is-loading={loadingPage === 0}>
+								<button
+									on:click={() => onPageChanged(0)}
+									use:dndzone={{items: [{id: 'page1', page: true}], dragDisabled: true}}
+									on:consider={e => dropToPlaylist(e, 0)}
+									on:click={() => onPageChanged(0)}
+									class={'pagination-link' + (currentPage === 0 ? ' is-current' : '') + (consideredPage === 0 ? ' considered' : '')}>
+									<span class="spinner"><Spinner /></span>
+									<span class="page">1</span>
+								</button>
+							</li>
+							<li><span class="pagination-ellipsis">…</span></li>
+						{:else}
+							<li class:is-loading={loadingPage === 0}>
+								<button on:click={() => onPageChanged(0)} class={'pagination-link' + (currentPage === 0 ? ' is-current' : '')}>
+									<span class="spinner"><Spinner /></span>
+									<span class="page">1</span>
+								</button>
+							</li>
+							<li><span class="pagination-ellipsis">…</span></li>
+						{/if}
+					{/if}
+
 					{#if dnd}
-						<li class:is-loading={loadingPage === 0}>
-							<button
-								on:click={() => onPageChanged(0)}
-								use:dndzone={{items: [{id: 'page1', page: true}], dragDisabled: true}}
-								on:consider={e => dropToPlaylist(e, 0)}
-								on:click={() => onPageChanged(0)}
-								class={'pagination-link' + (currentPage === 0 ? ' is-current' : '') + (consideredPage === 0 ? ' considered' : '')}>
-								<span class="spinner"><Spinner /></span>
-								<span class="page">1</span>
-							</button>
-						</li>
-						<li><span class="pagination-ellipsis">…</span></li>
+						{#each displayedPages as page}
+							<li class:is-loading={loadingPage === page - 1}>
+								<button
+									use:dndzone={{items: [{id: 'page' + page, page: true}], dragDisabled: true}}
+									on:consider={e => dropToPlaylist(e, page - 1)}
+									on:click={() => onPageChanged(page - 1)}
+									class={'pagination-link' +
+										(currentPage === page - 1 ? ' is-current' : '') +
+										(consideredPage === page - 1 ? ' considered' : '')}>
+									<span class="spinner"><Spinner /></span>
+									<span class="page">{page}</span>
+								</button>
+							</li>
+						{/each}
 					{:else}
-						<li class:is-loading={loadingPage === 0}>
-							<button on:click={() => onPageChanged(0)} class={'pagination-link' + (currentPage === 0 ? ' is-current' : '')}>
-								<span class="spinner"><Spinner /></span>
-								<span class="page">1</span>
-							</button>
-						</li>
+						{#each displayedPages as page}
+							<li class:is-loading={loadingPage === page - 1}>
+								<button
+									on:click={() => onPageChanged(page - 1)}
+									class={'pagination-link' + (currentPage === page - 1 ? ' is-current' : '')}>
+									<span class="spinner"><Spinner /></span>
+									<span class="page">{page}</span>
+								</button>
+							</li>
+						{/each}
+					{/if}
+
+					{#if displayEnd}
 						<li><span class="pagination-ellipsis">…</span></li>
+						{#if dnd}
+							<li class:is-loading={loadingPage === pagesTotal - 1}>
+								<button
+									use:dndzone={{items: [{id: 'page' + pagesTotal, page: true}], dragDisabled: true}}
+									on:consider={e => dropToPlaylist(e, pagesTotal - 1)}
+									on:click={() => onPageChanged(pagesTotal - 1)}
+									on:click={() => onPageChanged(pagesTotal - 1)}
+									class={'pagination-link' +
+										(currentPage === pagesTotal - 1 ? ' is-current' : '') +
+										(consideredPage === pagesTotal - 1 ? ' considered' : '')}>
+									<span class="spinner"><Spinner /></span>
+									<span class="page">{pagesTotal}</span>
+								</button>
+							</li>
+						{:else}
+							<li class:is-loading={loadingPage === pagesTotal - 1}>
+								<button
+									on:click={() => onPageChanged(pagesTotal - 1)}
+									class={'pagination-link' + (currentPage === pagesTotal - 1 ? ' is-current' : '')}>
+									<span class="spinner"><Spinner /></span>
+									<span class="page">{pagesTotal}</span>
+								</button>
+							</li>
+						{/if}
 					{/if}
 				{/if}
-
-				{#if dnd}
-					{#each displayedPages as page}
-						<li class:is-loading={loadingPage === page - 1}>
-							<button
-								use:dndzone={{items: [{id: 'page' + page, page: true}], dragDisabled: true}}
-								on:consider={e => dropToPlaylist(e, page - 1)}
-								on:click={() => onPageChanged(page - 1)}
-								class={'pagination-link' +
-									(currentPage === page - 1 ? ' is-current' : '') +
-									(consideredPage === page - 1 ? ' considered' : '')}>
-								<span class="spinner"><Spinner /></span>
-								<span class="page">{page}</span>
-							</button>
-						</li>
-					{/each}
-				{:else}
-					{#each displayedPages as page}
-						<li class:is-loading={loadingPage === page - 1}>
-							<button on:click={() => onPageChanged(page - 1)} class={'pagination-link' + (currentPage === page - 1 ? ' is-current' : '')}>
-								<span class="spinner"><Spinner /></span>
-								<span class="page">{page}</span>
-							</button>
-						</li>
-					{/each}
-				{/if}
-
-				{#if displayEnd}
-					<li><span class="pagination-ellipsis">…</span></li>
-					{#if dnd}
-						<li class:is-loading={loadingPage === pagesTotal - 1}>
-							<button
-								use:dndzone={{items: [{id: 'page' + pagesTotal, page: true}], dragDisabled: true}}
-								on:consider={e => dropToPlaylist(e, pagesTotal - 1)}
-								on:click={() => onPageChanged(pagesTotal - 1)}
-								on:click={() => onPageChanged(pagesTotal - 1)}
-								class={'pagination-link' +
-									(currentPage === pagesTotal - 1 ? ' is-current' : '') +
-									(consideredPage === pagesTotal - 1 ? ' considered' : '')}>
-								<span class="spinner"><Spinner /></span>
-								<span class="page">{pagesTotal}</span>
-							</button>
-						</li>
-					{:else}
-						<li class:is-loading={loadingPage === pagesTotal - 1}>
-							<button
-								on:click={() => onPageChanged(pagesTotal - 1)}
-								class={'pagination-link' + (currentPage === pagesTotal - 1 ? ' is-current' : '')}>
-								<span class="spinner"><Spinner /></span>
-								<span class="page">{pagesTotal}</span>
-							</button>
-						</li>
-					{/if}
-				{/if}
-			{/if}
-		</ul>
+			</ul>
+		{/if}
 		{#if currentMode === 'pages'}
 			<div class="spacer" />
 		{/if}
 		{#if itemsPerPageValues && itemsPerPageValues.length}
 			<div class="items-per-page">
-				<select bind:value={itemsPerPage} on:change={onItemsPerPageChanged}>
-					{#each itemsPerPageValues as ipp}
-						<option value={ipp}>{ipp}</option>
-					{/each}
-				</select>
+				<Select
+					bind:value={itemsPerPage}
+					on:select={onItemsPerPageChanged}
+					valueSelector={x => x}
+					nameSelector={x => '' + x}
+					fontPadding={0.1}
+					options={itemsPerPageValues} />
 			</div>
 		{/if}
 	</nav>

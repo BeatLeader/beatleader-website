@@ -40,7 +40,7 @@
 
 	let page = 0;
 	let itemsPerPage = 5;
-	let itemsPerPageValues = [5, 10, 15];
+	let itemsPerPageValues = [5, 10, 25, 50];
 
 	function onPageChanged(event) {
 		page = event.detail.page;
@@ -204,7 +204,7 @@
 	};
 
 	let songList = [];
-	function updateSongList(songs, page) {
+	function updateSongList(songs, page, itemsPerPage) {
 		songList = songs
 			.slice(
 				totalItems > itemsPerPage ? page * itemsPerPage : 0,
@@ -256,8 +256,8 @@
 		const song = newList.find(s => s.id == songHash);
 		if (song) {
 			let index = newList.indexOf(song);
-			if (newList.length > 5) {
-				index -= newList.length - 5;
+			if (newList.length > itemsPerPage) {
+				index -= newList.length - itemsPerPage;
 			}
 			const objIndex = songs.findIndex(item => item.hash === songHash || item.id === songHash);
 			if (objIndex > (page + 1) * itemsPerPage) {
@@ -289,7 +289,7 @@
 	$: songs = playlist.songs;
 	$: totalItems = songs.length;
 	$: updatePage(songs.length);
-	$: updateSongList(songs, page);
+	$: updateSongList(songs, page, itemsPerPage);
 	$: retrieveOwner(playlist, currentPlayerId);
 	$: updateExpanded(expanded);
 	$: updatePlaylistsToInstall($account);
@@ -452,7 +452,7 @@
 		{/if}
 		{#if songList}
 			<div
-				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true, dragDisabled: sharedPlaylistId}}
+				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true, dragDisabled: sharedPlaylistId && !canModify}}
 				on:consider={handleDndConsider}
 				on:finalize={handleDndFinalize}
 				class="tab">
@@ -463,10 +463,8 @@
 				{/if}
 			</div>
 		{/if}
-		{#if detailsOpened && songList}
-			{#if songs && songs.length > itemsPerPage}
-				<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} dnd={true} />
-			{/if}
+		{#if detailsOpened && songList && songs}
+			<Pager bind:currentPage={page} bind:itemsPerPage {totalItems} {itemsPerPageValues} on:page-changed={onPageChanged} dnd={true} />
 		{/if}
 	</div>
 {/if}

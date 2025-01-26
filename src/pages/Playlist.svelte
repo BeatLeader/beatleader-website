@@ -15,11 +15,19 @@
 	var playlist = null;
 	var localPlaylistId = null;
 
+	function onPlaylistsRefresh(store, localPlaylistId) {
+		if (localPlaylistId !== null) {
+			playlist = store[localPlaylistId];
+		}
+	}
+
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 	$: playlists.getShared(id, (result, resultId) => {
 		playlist = result;
 		localPlaylistId = resultId;
 	});
+
+	$: onPlaylistsRefresh($playlists, localPlaylistId);
 	$: songs = playlist?.songs;
 	$: totalItems = songs?.length;
 
