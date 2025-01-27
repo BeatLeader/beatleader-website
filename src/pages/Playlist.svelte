@@ -16,7 +16,7 @@
 	var localPlaylistId = null;
 
 	function onPlaylistsRefresh(store, localPlaylistId) {
-		if (localPlaylistId !== null) {
+		if (localPlaylistId !== null && localPlaylistId !== undefined) {
 			playlist = store[localPlaylistId];
 		}
 	}
