@@ -186,7 +186,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<section class="content center">
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198143307741R49.png" alt="shrado" /><a
-					href="/u/76561198147746455">shrado</a> 
+					href="/u/shrado">shrado</a> 
 			</div>
 		</section>
 
@@ -245,6 +245,10 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561199108348236R26.png" alt="UglyApe" /><a 
 					href="/u/76561199108348236">UglyApe</a>
+			</div>
+                        <div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561199001767132R45.png" alt="ViSi" /><a
+					href="/u/visi">ViSi</a>
 			</div>
 		</section>
 
