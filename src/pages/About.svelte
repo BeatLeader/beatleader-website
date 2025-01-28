@@ -157,7 +157,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198307061479">Cratornugget</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198831724075R27.png" alt="edgii" /><a
+				<img src="https://cdn.assets.beatleader.com/76561198831724075R12.png" alt="edgii" /><a
 					href="/u/76561198831724075">edgii</a>
 			</div>
 			<div class="member">
@@ -207,7 +207,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198307061479">Cratornugget</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198831724075R27.png" alt="edgii" /><a
+				<img src="https://cdn.assets.beatleader.com/76561198831724075R12.png" alt="edgii" /><a
 					href="/u/76561198831724075">edgii</a>
 			</div>
 			<div class="member">
