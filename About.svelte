@@ -135,7 +135,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198075923914">GalaxyMaster</a> 
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R17.png" alt="Light Ai" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
 					href="/u/76561198051924392">Light Ai</a> 
 			</div>
 		</section>
@@ -157,8 +157,8 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="https://www.beatleader.xyz/u/76561198307061479">Cratornugget</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198831724075R27.png" alt="Edgii" /><a
-					href="https://www.beatleader.xyz/u/76561198831724075">Edgii</a>
+				<img src="https://cdn.assets.beatleader.xyz/76561198831724075R27.png" alt="edgii" /><a
+					href="https://www.beatleader.xyz/u/76561198831724075">edgii</a>
 			</div>
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198965889412.gif" alt="Emy" /><a
@@ -184,13 +184,20 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		</section>
 		<h1 class="title is-5">Junior RT</h1>
 		<section class="content center">
-			
+			<div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561198143307741R49.png" alt="shrado" /><a
+					href="/u/76561198147746455">shrado</a> 
+			</div>
 		</section>
 
 		<h1 class="title is-4">Nomination Quality Team</h1>
 
 		<h1 class="title is-5">Core NQT</h1>
 		<section class="content center">
+                        <div class="member">
+				<img src="https://cdn.assets.beatleader.xyz/76561199125063205R3.png" alt="azu" /><a
+					href="/u/76561199125063205">azu</a>
+                        </div>
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198147746455R10.png" alt="CookedChili" /><a
 					href="/u/76561198147746455">CookedChili</a> 
@@ -200,7 +207,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="https://www.beatleader.xyz/u/76561198307061479">Cratornugget</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198831724075.png" alt="edgii" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198831724075R27.png" alt="edgii" /><a
 					href="https://www.beatleader.xyz/u/76561198831724075">edgii</a>
 			</div>
 			<div class="member">
