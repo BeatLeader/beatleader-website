@@ -134,14 +134,14 @@
 		};
 	});
 
-	const requirementFilterOptions = Object.entries(requirementsMap).map(([key, type]) => {
+	const requirementFilterOptions = Object.entries(requirementsDescription).map(([key, description]) => {
 		return {
-			key: type,
-			label: capitalize(requirementsDescription?.[key]?.name ?? key),
-			icon: `<span class="${requirementsDescription?.[key]?.icon ?? `${key}-icon`}"></span>`,
-			color: requirementsDescription?.[key]?.color ?? 'var(--beatleader-primary',
-			textColor: requirementsDescription?.[key]?.textColor ?? null,
-			title: requirementsDescription?.[key]?.title ?? null,
+			key: requirementsMap[key],
+			label: capitalize(description?.name ?? key),
+			icon: `<span class="${description?.icon ?? `${key}-icon`}"></span>`,
+			color: description?.color ?? 'var(--beatleader-primary',
+			textColor: description?.textColor ?? null,
+			title: description?.title ?? null,
 		};
 	});
 
