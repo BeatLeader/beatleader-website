@@ -15,6 +15,7 @@
 	import {getNotificationsContext} from 'svelte-notifications';
 	import {isPatron} from '../Player/Overlay/overlay';
 	import Spinner from '../Common/Spinner.svelte';
+	import PlaylistPicker from '../Playlists/PlaylistPicker.svelte';
 
 	export let layoutType = 'flat';
 	export let song;
@@ -31,7 +32,7 @@
 	export let battleRoyaleDraft = false;
 	export let batleRoyale = false;
 
-	const {open} = getContext('simple-modal');
+	const {open, close} = getContext('simple-modal');
 	const showPreview = previewLink => {
 		if (document.body.clientWidth < 800 || $configStore.preferences.linkOption == 'newtab') {
 			window.open(previewLink, '_blank');
@@ -189,6 +190,19 @@
 	$: previewUrl = `https://allpoland.github.io/ArcViewer/?id=${songKey}${diffName ? `&difficulty=${diffName}` : ''}${
 		charName ? `&mode=${charName}` : ''
 	}`;
+
+	function handlePlaylistClick() {
+		open(PlaylistPicker, {
+			song,
+			diffInfo,
+			onchange: () => {
+				close();
+			},
+			oncancel: () => {
+				close();
+			},
+		});
+	}
 </script>
 
 <ScoreActionButtonsLayout type={layoutType}>
@@ -210,49 +224,53 @@
 			<PinIcon {scoreId} on:score-pinned />
 		{/if}
 		{#if songKey && songKey.length && shownIcons.includes('playlist')}
-			{#if selectedPlaylist != null}
-				{#if playlistSong}
-					{#if playlistEntries && playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
-						<Button
-							iconFa="fas fa-list-ul"
-							title="Remove from the {selectedPlaylist.playlistTitle}"
-							animated={true}
-							noMargin={true}
-							type="danger"
-							on:click={() => playlists.remove(hash)} />
-					{:else if playlistEntries && (playlistEntries?.length == 1 || !playlistEntries.includes(playlistKey))}
-						<Button
-							iconFa="fas fa-list-ul"
-							title="Add this diff to the {selectedPlaylist.playlistTitle}"
-							animated={true}
-							noMargin={true}
-							on:click={() => playlists.addDiff(hash, diffInfo)} />
+			{#if $configStore?.preferences?.playlistOption == 'selected'}
+				{#if selectedPlaylist != null}
+					{#if playlistSong}
+						{#if playlistEntries && playlistEntries.length == 1 && playlistEntries[0] == playlistKey}
+							<Button
+								iconFa="fas fa-list-ul"
+								title="Remove from the {selectedPlaylist.playlistTitle}"
+								animated={true}
+								noMargin={true}
+								type="danger"
+								on:click={() => playlists.remove(hash)} />
+						{:else if playlistEntries && (playlistEntries?.length == 1 || !playlistEntries.includes(playlistKey))}
+							<Button
+								iconFa="fas fa-list-ul"
+								title="Add this diff to the {selectedPlaylist.playlistTitle}"
+								animated={true}
+								noMargin={true}
+								on:click={() => playlists.addDiff(hash, diffInfo)} />
+						{:else}
+							<Button
+								iconFa="fas fa-list-ul"
+								title="Remove this diff from the {selectedPlaylist.playlistTitle}"
+								animated={true}
+								noMargin={true}
+								type="lessdanger"
+								on:click={() => playlists.removeDiff(hash, diffInfo)} />
+						{/if}
 					{:else}
 						<Button
 							iconFa="fas fa-list-ul"
-							title="Remove this diff from the {selectedPlaylist.playlistTitle}"
+							title="Add to the {selectedPlaylist.playlistTitle}"
 							animated={true}
 							noMargin={true}
-							type="lessdanger"
-							on:click={() => playlists.removeDiff(hash, diffInfo)} />
+							on:click={() => {
+								playlists.add(getSongInfo());
+							}} />
 					{/if}
 				{:else}
 					<Button
 						iconFa="fas fa-list-ul"
-						title="Add to the {selectedPlaylist.playlistTitle}"
+						title="Create new playlist with this song"
 						animated={true}
 						noMargin={true}
-						on:click={() => {
-							playlists.add(getSongInfo());
-						}} />
+						on:click={() => playlists.create(getSongInfo())} />
 				{/if}
 			{:else}
-				<Button
-					iconFa="fas fa-list-ul"
-					title="Create new playlist with this song"
-					animated={true}
-					noMargin={true}
-					on:click={() => playlists.create(getSongInfo())} />
+				<Button iconFa="fas fa-list-ul" title="Manage playlists" animated={true} noMargin={true} on:click={() => handlePlaylistClick()} />
 			{/if}
 		{/if}
 	</span>

@@ -191,7 +191,11 @@
 						},
 						class: idx === selectedPlaylist ? 'selected' : '',
 						onClick: () => {
-							playlists.select(idx === selectedPlaylist ? null : playlist);
+							if ($configStore?.preferences?.playlistOption == 'selected') {
+								playlists.select(idx === selectedPlaylist ? null : playlist);
+							} else {
+								navigate(`/playlists/${idx}`);
+							}
 						},
 					});
 				}

@@ -15,6 +15,7 @@
 	import {BL_API_URL} from '../../network/queues/beatleader/api-queue';
 	import {configStore} from '../../stores/config';
 	import createAccountStore from '../../stores/beatleader/account';
+	import {produce} from 'immer';
 
 	export let playlistExport;
 	export let sharedPlaylistId = null;
@@ -39,8 +40,16 @@
 	}
 
 	let page = 0;
-	let itemsPerPage = 5;
+	let itemsPerPage = $configStore?.playlist?.itemsPerPage ?? 5;
+	let savedItemsPerPage = $configStore?.playlist?.itemsPerPage;
 	let itemsPerPageValues = [5, 10, 25, 50];
+
+	function storeItemsPerPage(value) {
+		savedItemsPerPage = value;
+		$configStore = produce($configStore, draft => {
+			draft.playlist.itemsPerPage = value;
+		});
+	}
 
 	function onPageChanged(event) {
 		page = event.detail.page;
@@ -268,6 +277,20 @@
 		}
 	}
 
+	function moveUp(song) {
+		let index = songs.findIndex(item => item.hash === song.song.hash || item.id === song.song.hash);
+		if (index > 0) {
+			store.reorder(localPlaylistId, song.song.hash, index - 1, song.song);
+		}
+	}
+
+	function moveDown(song) {
+		let index = songs.findIndex(item => item.hash === song.song.hash || item.id === song.song.hash);
+		if (index < songs.length - 1) {
+			store.reorder(localPlaylistId, song.song.hash, index + 1, song.song);
+		}
+	}
+
 	let hoveredToDrop = false;
 	let timeout = null;
 
@@ -293,6 +316,7 @@
 	$: retrieveOwner(playlist, currentPlayerId);
 	$: updateExpanded(expanded);
 	$: updatePlaylistsToInstall($account);
+	$: if (itemsPerPage != savedItemsPerPage) storeItemsPerPage(itemsPerPage);
 	$: playlistId = sharedPlaylistId ?? playlist?.customData?.id;
 </script>
 
@@ -458,7 +482,13 @@
 				class="tab">
 				{#if detailsOpened}
 					{#each songList as song (song.id)}
-						<Song song={song.song} {canModify} {store} {localPlaylistId} />
+						<Song
+							song={song.song}
+							{canModify}
+							{store}
+							{localPlaylistId}
+							on:move-up={() => moveUp(song)}
+							on:move-down={() => moveDown(song)} />
 					{/each}
 				{/if}
 			</div>
