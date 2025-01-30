@@ -88,6 +88,9 @@
 				stats.acc += Number.isFinite(s?.trackers?.scoreTracker?.rawRatio) ? s?.trackers?.scoreTracker?.rawRatio * 100 : 0;
 
 				stats.pauses += Number.isFinite(s?.trackers?.winTracker?.nbOfPause) ? s?.trackers?.winTracker?.nbOfPause : 0;
+				stats.pauseDuration += Number.isFinite(s?.trackers?.winTracker?.totalPauseDuration)
+					? s?.trackers?.winTracker?.totalPauseDuration
+					: 0;
 
 				stats.badCuts += Number.isFinite(s?.trackers?.hitTracker?.badCuts) ? s?.trackers?.hitTracker?.badCuts : 0;
 				stats.missedNotes += Number.isFinite(s?.trackers?.hitTracker?.missedNotes) ? s?.trackers?.hitTracker?.missedNotes : 0;

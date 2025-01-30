@@ -42,7 +42,7 @@ const process = response => {
 						rightPreswing,
 						rightPostswing,
 					},
-					winTracker: {won, nbOfPause: pauses, rank},
+					winTracker: {won, nbOfPause: pauses, totalPauseDuration: pauseDuration, rank},
 					hitTracker: {bombHit, miss, missedNotes, badCuts, nbOfWallHit: wallHit, maxCombo},
 					scoreTracker: {score},
 				},
@@ -67,6 +67,7 @@ const process = response => {
 			const stats = {
 				won,
 				pauses,
+				pauseDuration,
 				rank,
 				miss,
 				missedNotes,
