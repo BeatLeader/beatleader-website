@@ -228,11 +228,13 @@
 			</svelte:fragment>
 		</Badge>
 
-		<Badge label="Paused for" color="white" bgColor="var(--dimmed)" fluid={true}>
-			<svelte:fragment slot="value">
-				<Duration value={stats.pauseDuration} />
-			</svelte:fragment>
-		</Badge>
+		{#if stats.pauseDuration > 0}
+			<Badge label="Paused for" color="white" bgColor="var(--dimmed)" fluid={true}>
+				<svelte:fragment slot="value">
+					<Duration value={stats.pauseDuration} />
+				</svelte:fragment>
+			</Badge>
+		{/if}
 
 		{#if stats?.fcAcc && !fc}
 			<Badge label="FC accuracy" color="white" bgColor="var(--dimmed)" fluid={true}>

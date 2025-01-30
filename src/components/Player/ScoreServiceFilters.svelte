@@ -40,3 +40,12 @@
 		{/each}
 	</section>
 {/if}
+
+<style>
+	.score-filters {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		row-gap: 0.3em;
+	}
+</style>

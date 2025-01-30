@@ -476,7 +476,12 @@
 		{/if}
 		{#if songList}
 			<div
-				use:dndzone={{items: songList, flipDurationMs: 300, centreDraggedOnCursor: true, dragDisabled: sharedPlaylistId && !canModify}}
+				use:dndzone={{
+					items: songList,
+					flipDurationMs: 300,
+					centreDraggedOnCursor: true,
+					dragDisabled: (sharedPlaylistId && !canModify) || ('ontouchstart' in window && window.matchMedia('(max-width: 768px)').matches),
+				}}
 				on:consider={handleDndConsider}
 				on:finalize={handleDndFinalize}
 				class="tab">

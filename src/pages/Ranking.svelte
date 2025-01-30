@@ -516,7 +516,7 @@
 									{:else if param?.type === 'countries'}
 										<Countries countries={param.value} on:change={param.onChange} />
 									{:else if param?.type === 'headsets'}
-										<Headsets headsets={param.value} on:change={param.onChange} />
+										<Headsets value={param.value} on:change={param.onChange} />
 									{:else if param?.type === 'slider'}
 										<RangeSlider
 											range

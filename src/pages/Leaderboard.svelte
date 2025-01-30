@@ -33,7 +33,12 @@
 	} from '../utils/beatleader/format';
 	import {dateFromUnix, formatDateRelative} from '../utils/date';
 	import LeaderboardStats from '../components/Leaderboard/LeaderboardStats.svelte';
-	import {buildSearchFromFiltersWithDefaults, createBuildFiltersFromLocation, processStringFilter} from '../utils/filters';
+	import {
+		buildSearchFromFiltersWithDefaults,
+		createBuildFiltersFromLocation,
+		processStringFilter,
+		processStringArrayFilter,
+	} from '../utils/filters';
 	import {flip} from 'svelte/animate';
 	import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score';
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
@@ -61,6 +66,7 @@
 	import MapScoresChart from '../components/Leaderboard/Charts/MapScoresChart.svelte';
 	import {invertColor} from '../components/Common/utils/badge';
 	import {isPatron} from '../components/Player/Overlay/overlay';
+	import Headsets from '../components/Ranking/Headsets.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -116,6 +122,11 @@
 			key: 'modifiers',
 			default: null,
 			process: processStringFilter,
+		},
+		{
+			key: 'hmds',
+			default: null,
+			process: processStringArrayFilter,
 		},
 	];
 
@@ -181,7 +192,7 @@
 			label: 'Global',
 			iconFa: 'fas fa-globe-americas',
 			url: `/leaderboard/global/${currentLeaderboardId}/1`,
-			filters: {countries: '', clanTag: ''},
+			filters: {countries: '', clanTag: '', hmds: ''},
 		},
 	].concat(
 		type === 'accsaber'
@@ -403,7 +414,7 @@
 								label: 'Clan Ranking',
 								iconFa: 'fas fa-flag',
 								url: `/leaderboard/clanranking/${currentLeaderboardId}/1`,
-								filters: {countries: '', clanTag: ''},
+								filters: {countries: '', clanTag: '', hmds: ''},
 							},
 						]
 					: []
@@ -416,7 +427,7 @@
 								label: 'Graph',
 								iconFa: 'fas fa-chart-line',
 								url: `/leaderboard/graph/${currentLeaderboardId}/1`,
-								filters: {countries: '', clanTag: ''},
+								filters: {countries: '', clanTag: '', hmds: ''},
 							},
 						]
 					: []
@@ -429,7 +440,7 @@
 								label: 'Acc Graph',
 								iconFa: 'fas fa-arrow-trend-up',
 								url: `/leaderboard/accgraph/${currentLeaderboardId}/1`,
-								filters: {countries: '', clanTag: ''},
+								filters: {countries: '', clanTag: '', hmds: ''},
 							},
 						]
 					: []
@@ -442,7 +453,7 @@
 								label: 'Followed',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/followed/${currentLeaderboardId}/1`,
-								filters: {countries: '', clanTag: ''},
+								filters: {countries: '', clanTag: '', hmds: ''},
 							},
 						]
 					: []
@@ -455,7 +466,7 @@
 								label: 'Voters',
 								iconFa: 'fas fa-user-friends',
 								url: `/leaderboard/voters/${currentLeaderboardId}/1`,
-								filters: {countries: '', clanTag: ''},
+								filters: {countries: '', clanTag: '', hmds: ''},
 							},
 						]
 					: []
@@ -468,7 +479,7 @@
 								label: 'Prediction',
 								iconFa: 'fas fa-wand-magic-sparkles',
 								url: `/leaderboard/prediction/${currentLeaderboardId}/1`,
-								filters: {countries: '', clanTag: ''},
+								filters: {countries: '', clanTag: '', hmds: ''},
 							},
 						]
 					: []
@@ -481,7 +492,7 @@
 								label: 'My Clans',
 								iconFa: 'fas fa-people-group',
 								url: `/leaderboard/clans/${currentLeaderboardId}/1`,
-								filters: {countries: '', clanTag: $account.player.playerInfo.clans[0].tag},
+								filters: {countries: '', clanTag: $account.player.playerInfo.clans[0].tag, hmds: ''},
 							},
 						]
 					: []
@@ -494,7 +505,7 @@
 								label: 'Country',
 								icon: `<img src="/assets/flags/${country.toLowerCase()}.png" loading="lazy" class="country">`,
 								url: `/leaderboard/global/${currentLeaderboardId}/1?countries=${country}`,
-								filters: {countries: country, clanTag: ''},
+								filters: {countries: country, clanTag: '', hmds: ''},
 							},
 						]
 					: []
@@ -572,6 +583,16 @@
 					open: currentFilters.countries?.length && currentFilters.countries?.toLowerCase() != mainPlayerCountry?.toLowerCase(),
 				},
 			},
+			{
+				component: Headsets,
+				props: {
+					id: 'hmds',
+					iconFa: 'fa fa-vr-cardboard',
+					title: 'Headsets',
+					value: currentFilters.hmds,
+					open: currentFilters.hmds?.length,
+				},
+			},
 		];
 	}
 
@@ -586,6 +607,7 @@
 
 		currentFilters.search = newFilters.search;
 		currentFilters.countries = newFilters.countries;
+		currentFilters.hmds = newFilters.hmds;
 
 		changeParams(currentLeaderboardId, currentType, 1, currentFilters, !dontNavigate, true);
 	}
