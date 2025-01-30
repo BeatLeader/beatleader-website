@@ -130,7 +130,8 @@
 				}
 
 				return result;
-			});
+			})
+			.sort((a, b) => a.timeSet - b.timeSet);
 
 		const avgData = Object.entries(
 			chartData.reduce((cum, point) => {
@@ -206,6 +207,7 @@
 				pointHoverRadius: 4,
 				data: chartData,
 				order: 4,
+				zIndex: 10,
 			},
 
 			{
