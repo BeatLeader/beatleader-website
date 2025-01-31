@@ -7,14 +7,14 @@ import {fetchUrl} from '../../fetch';
 
 export const CURRENT_URL = location.protocol + '//' + location.host;
 export const BL_API_URL = (() => {
-	if (location.host.includes('localhost') || location.host.includes('beatleader.xyz')) {
-		return 'https://api.beatleader.xyz/';
+	if (location.host.includes('localhost') || location.host.includes('beatleader.com')) {
+		return 'https://api.beatleader.com/';
 	} else if (location.host.includes('stage')) {
 		return 'https://stage.api.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://api.beatleader.net/';
-	} else if (location.host.includes('beatleader.com')) {
-		return 'https://api.beatleader.com/';
+	} else if (location.host.includes('beatleader.xyz')) {
+		return 'https://api.beatleader.xyz/';
 	} else {
 		return '/cors/blapi/';
 	}
@@ -24,10 +24,10 @@ export const BL_REPLAYS_URL = (() => {
 		return 'https://stage.replay.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://replay.beatleader.net/';
-	} else if (location.host.includes('beatleader.com')) {
-		return 'https://replay.beatleader.com/';
-	} else {
+	} else if (location.host.includes('beatleader.xyz')) {
 		return 'https://replay.beatleader.xyz/';
+	} else {
+		return 'https://replay.beatleader.com/';
 	}
 })();
 export const BL_ANALYZER_URL = (() => {
@@ -35,10 +35,10 @@ export const BL_ANALYZER_URL = (() => {
 		return 'https://stage.analyzer.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://analyzer.beatleader.net/';
-	} else if (location.host.includes('beatleader.com')) {
-		return 'https://analyzer.beatleader.com/';
-	} else {
+	} else if (location.host.includes('beatleader.xyz')) {
 		return 'https://analyzer.beatleader.xyz/';
+	} else {
+		return 'https://analyzer.beatleader.com/';
 	}
 })();
 
@@ -47,16 +47,18 @@ export const BL_RENDERER_API_URL = (() => {
 		return 'https://stage.render.beatleader.net/';
 	} else if (location.host.includes('beatleader.net')) {
 		return 'https://render.beatleader.net/';
-	} else if (location.host.includes('beatleader.com')) {
-		return 'https://render.beatleader.com/';
-	} else {
+	} else if (location.host.includes('beatleader.xyz')) {
 		return 'https://render.beatleader.xyz/';
+	} else {
+		return 'https://render.beatleader.com/';
 	}
 })();
 export const BL_SOCKET_URL = 'wss://sockets.api.beatleader.xyz/';
 export const STEAM_API_URL = '/cors/steamapi';
 export const STEAM_KEY = 'B0A7AF33E804D0ABBDE43BA9DD5DAB48';
+
 export const SPECIAL_PLAYER_ID = 'user-friends';
+export const ALL_SCORES_PLAYER_ID = 'all-scores';
 
 export const BL_API_USER_URL = `${BL_API_URL}user`;
 export const BL_API_PLAYER_INFO_URL = BL_API_URL + 'player/${playerId}?leaderboardContext=${leaderboardContext}';
@@ -70,6 +72,9 @@ export const BL_API_SCORE_ATTEMPTS_URL =
 export const BL_API_FRIENDS_SCORES_URL =
 	BL_API_URL +
 	'user/friendScores?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&stars_from=${starsFrom}&stars_to=${starsTo}&count=${count}';
+export const BL_API_ALL_SCORES_URL =
+	BL_API_URL +
+	'scores/all?leaderboardContext=${leaderboardContext}&page=${page}&sortBy=${sort}&order=${order}&search=${search}&mapRequirements=${mapRequirements}&date_from=${date_from}&date_to=${date_to}&diff=${diff}&mode=${mode}&type=${type}&mapType=${mapType}&allTypes=${allTypes}&hmd=${hmd}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&count=${count}&modifiers=${modifiers}&mappers=${mappers}&players=${players}';
 export const BL_API_SCORE_STATS_URL = 'https://cdn.scorestats.beatleader.xyz/${scoreId}.json';
 export const BL_API_SCORE_PIN_URL =
 	BL_API_URL +
@@ -377,18 +382,23 @@ export default (options = {}) => {
 
 	const scores = async (playerId, page = 1, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchScores(
-			substituteVars(playerId === SPECIAL_PLAYER_ID ? BL_API_FRIENDS_SCORES_URL : BL_API_SCORES_URL, {
-				...params,
-				...(params?.filters ?? {}),
-				count: PLAYER_SCORES_PER_PAGE,
-				search: params?.filters?.search ? encodeURIComponent(params?.filters?.search) : null,
-			}),
+			substituteVars(
+				playerId === SPECIAL_PLAYER_ID
+					? BL_API_FRIENDS_SCORES_URL
+					: playerId === ALL_SCORES_PLAYER_ID
+						? BL_API_ALL_SCORES_URL
+						: BL_API_SCORES_URL,
+				{
+					...params,
+					...(params?.filters ?? {}),
+					count: PLAYER_SCORES_PER_PAGE,
+				}
+			),
 			playerId,
 			page,
 			priority,
 			options
 		);
-
 	const scoreAttempts = async (
 		playerId,
 		page = 1,
@@ -401,13 +411,9 @@ export default (options = {}) => {
 		fetchScores(substituteVars(BL_API_SCORES_HISTOGRAM_URL, {...params, ...(params?.filters ?? {})}), playerId, priority, options);
 
 	const scoreStats = async (scoreId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_SCORE_STATS_URL, {scoreId: encodeURIComponent(scoreId)}), options, priority);
+		fetchJson(substituteVars(BL_API_SCORE_STATS_URL, {scoreId: scoreId}), options, priority);
 	const leaderboardStats = async (leaderboardId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(
-			substituteVars(BL_API_LEADERBOARD_STATS_URL, {leaderboardId: encodeURIComponent(leaderboardId)}),
-			{...options, credentials: 'include'},
-			priority
-		);
+		fetchJson(substituteVars(BL_API_LEADERBOARD_STATS_URL, {leaderboardId: leaderboardId}), {...options, credentials: 'include'}, priority);
 
 	const playerScore = async (playerId, hash, diff, type, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_PLAYER_SCORE_URL, {playerId, hash, diff, type}), options, priority);
@@ -415,7 +421,7 @@ export default (options = {}) => {
 	const findPlayer = async (query, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
 			substituteVars(BL_API_FIND_PLAYER_URL, {
-				query: encodeURIComponent(query),
+				query: query,
 				page: options?.page ?? 1,
 				count: options?.count ?? '',
 				sortBy: options?.sortBy ?? 'pp',
@@ -464,7 +470,7 @@ export default (options = {}) => {
 
 	const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(
-			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true, encodeURIComponent),
+			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		);
@@ -482,11 +488,7 @@ export default (options = {}) => {
 		fetchJson(substituteVars(BL_API_LEADERBOARDS_BY_HASH_URL, {hash, my_scores}), {...options, credentials: 'include'}, priority);
 
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(
-			substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true, encodeURIComponent),
-			{...options, credentials: 'include'},
-			priority
-		);
+		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
 
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
@@ -510,8 +512,7 @@ export default (options = {}) => {
 				BL_API_CLAN_CREATE_URL,
 				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
 				true,
-				true,
-				encodeURIComponent
+				true
 			),
 			{body: icon, ...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
@@ -534,8 +535,7 @@ export default (options = {}) => {
 				BL_API_CLAN_UPDATE_URL,
 				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
 				true,
-				true,
-				encodeURIComponent
+				true
 			),
 			{
 				body: icon instanceof ArrayBuffer ? icon : null,
@@ -558,7 +558,7 @@ export default (options = {}) => {
 
 	const clanUpdatePlaylist = async (id, title, link, description, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id, title, link, description}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id, title, link, description}, true, true),
 			{
 				body: icon instanceof ArrayBuffer ? icon : null,
 				...options,
@@ -572,7 +572,7 @@ export default (options = {}) => {
 		);
 	const clanDeletePlaylist = async (id, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id}, true, true),
 			{
 				...options,
 				retries: 0,
@@ -585,14 +585,14 @@ export default (options = {}) => {
 		);
 	const clanAccept = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanReject = async (clanId, ban = false, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_REJECT_URL, {id: clanId, ban: ban ? 'true' : 'false'}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_REJECT_URL, {id: clanId, ban: ban ? 'true' : 'false'}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
@@ -606,35 +606,35 @@ export default (options = {}) => {
 
 	const clanLeave = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_LEAVE_URL, {id: clanId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_LEAVE_URL, {id: clanId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanUnban = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UNBAN_URL, {id: clanId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_UNBAN_URL, {id: clanId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanKick = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_KICK_URL, {player: playerId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_KICK_URL, {player: playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_INVITE_URL, {player: playerId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_INVITE_URL, {player: playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanCancelInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_CANCEL_INVITE_URL, {player: playerId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_CLAN_CANCEL_INVITE_URL, {player: playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
@@ -684,14 +684,14 @@ export default (options = {}) => {
 
 	const addFollowed = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_FRIEND_ADD_URL, {playerId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_FRIEND_ADD_URL, {playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const removeFollowed = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_FRIEND_REMOVE_URL, {playerId}, true, true, encodeURIComponent),
+			substituteVars(BL_API_FRIEND_REMOVE_URL, {playerId}, true, true),
 			{...options, retries: 0, method: 'DELETE', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
@@ -707,13 +707,7 @@ export default (options = {}) => {
 		options = {}
 	) =>
 		fetchUrl(
-			substituteVars(
-				BL_API_SCORE_PIN_URL,
-				{scoreId, pin, description, link, service, priority: pinPriority},
-				true,
-				'null-only',
-				encodeURIComponent
-			),
+			substituteVars(BL_API_SCORE_PIN_URL, {scoreId, pin, description, link, service, priority: pinPriority}, true, 'null-only'),
 			{
 				body: null,
 				...options,
@@ -727,7 +721,7 @@ export default (options = {}) => {
 		);
 
 	const events = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_EVENTS_URL, {page, ...filters}, true, true, encodeURIComponent), options, priority);
+		fetchJson(substituteVars(BL_API_EVENTS_URL, {page, ...filters}, true, true), options, priority);
 
 	return {
 		user,

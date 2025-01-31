@@ -19,7 +19,10 @@ export function setLeaderboardType(newType) {
 export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery = false, process = v => v) => {
 	vars.leaderboardContext = GLOBAL_LEADERBOARD_TYPE;
 
-	let replaced = Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), process(vars[key] ?? '')), url);
+	let replaced = Object.keys(vars).reduce(
+		(cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), encodeURIComponent(process(vars[key] ?? ''))),
+		url
+	);
 
 	if (clearUnused) replaced = replaced.replace(new RegExp('\\${.*?}', 'gi'), '');
 
