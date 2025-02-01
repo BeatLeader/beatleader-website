@@ -1,6 +1,6 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
 import {BL_API_URL} from './api-queue';
-import {substituteVars} from '../../../utils/format';
+import {substituteVarsUrl} from '../../../utils/format';
 
 export const BL_ASSETS_CDN = 'https://cdn.assets.beatleader.xyz';
 export const BS_CDN = 'https://eu.cdn.beatsaver.com';
@@ -42,7 +42,7 @@ export default (options = {}) => {
 	};
 
 	const rankeds = async (page = 1, priority = PRIORITY.BG_NORMAL, options = {}) =>
-		fetchJson(substituteVars(RANKEDS_URL, {page}), options, priority).then(r => {
+		fetchJson(substituteVarsUrl(RANKEDS_URL, {page}), options, priority).then(r => {
 			r.body = processRankeds(r.body);
 
 			return r;

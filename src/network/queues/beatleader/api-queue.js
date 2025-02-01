@@ -1,5 +1,5 @@
 import {default as createQueue, PRIORITY} from '../http-queue';
-import {substituteVars} from '../../../utils/format';
+import {substituteVarsUrl} from '../../../utils/format';
 import {PLAYER_SCORES_PER_PAGE, PLAYERS_PER_PAGE} from '../../../utils/beatleader/consts';
 import {dateFromUnix, formatDateRelative, formatDateRelativeShort} from '../../../utils/date';
 import {getDiffColor} from '../../../utils/beatleader/format';
@@ -364,25 +364,25 @@ export default (options = {}) => {
 	const {fetchJson, fetchHtml, ...queueToReturn} = queue;
 
 	const fetchScores = async (baseUrl, playerId, page = 1, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(baseUrl, {playerId, page}, true), {...options, credentials: 'include'}, priority);
+		fetchJson(substituteVarsUrl(baseUrl, {playerId, page}, true), {...options, credentials: 'include'}, priority);
 
 	const user = async (priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchJson(BL_API_USER_URL, {...options, retries: 0, credentials: 'include', maxAge: 1, cacheTtl: null}, priority);
 
 	const player = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_PLAYER_INFO_URL, {playerId}), options, priority);
+		fetchJson(substituteVarsUrl(BL_API_PLAYER_INFO_URL, {playerId}), options, priority);
 
 	const playerBySaver = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_PLAYER_SAVER_INFO_URL, {playerId}), options, priority);
+		fetchJson(substituteVarsUrl(BL_API_PLAYER_SAVER_INFO_URL, {playerId}), options, priority);
 
 	const steamProfile = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(STEAM_API_PROFILE_URL, {steamKey: STEAM_KEY, playerId}), options, priority);
+		fetchJson(substituteVarsUrl(STEAM_API_PROFILE_URL, {steamKey: STEAM_KEY, playerId}), options, priority);
 	const gameInfo = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(STEAM_API_GAME_INFO_URL, {steamKey: STEAM_KEY, playerId}), options, priority);
+		fetchJson(substituteVarsUrl(STEAM_API_GAME_INFO_URL, {steamKey: STEAM_KEY, playerId}), options, priority);
 
 	const scores = async (playerId, page = 1, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchScores(
-			substituteVars(
+			substituteVarsUrl(
 				playerId === SPECIAL_PLAYER_ID
 					? BL_API_FRIENDS_SCORES_URL
 					: playerId === ALL_SCORES_PLAYER_ID
@@ -405,22 +405,27 @@ export default (options = {}) => {
 		params = {sort: 'date', order: 'desc', filter: {}},
 		priority = PRIORITY.FG_LOW,
 		options = {}
-	) => fetchScores(substituteVars(BL_API_SCORE_ATTEMPTS_URL, {...params, ...(params?.filters ?? {})}), playerId, page, priority, options);
+	) =>
+		fetchScores(substituteVarsUrl(BL_API_SCORE_ATTEMPTS_URL, {...params, ...(params?.filters ?? {})}), playerId, page, priority, options);
 
 	const scoresHistogram = async (playerId, params = {sort: 'date', order: 'desc', filter: {}}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchScores(substituteVars(BL_API_SCORES_HISTOGRAM_URL, {...params, ...(params?.filters ?? {})}), playerId, priority, options);
+		fetchScores(substituteVarsUrl(BL_API_SCORES_HISTOGRAM_URL, {...params, ...(params?.filters ?? {})}), playerId, priority, options);
 
 	const scoreStats = async (scoreId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_SCORE_STATS_URL, {scoreId: scoreId}), options, priority);
+		fetchJson(substituteVarsUrl(BL_API_SCORE_STATS_URL, {scoreId: scoreId}), options, priority);
 	const leaderboardStats = async (leaderboardId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_LEADERBOARD_STATS_URL, {leaderboardId: leaderboardId}), {...options, credentials: 'include'}, priority);
+		fetchJson(
+			substituteVarsUrl(BL_API_LEADERBOARD_STATS_URL, {leaderboardId: leaderboardId}),
+			{...options, credentials: 'include'},
+			priority
+		);
 
 	const playerScore = async (playerId, hash, diff, type, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_PLAYER_SCORE_URL, {playerId, hash, diff, type}), options, priority);
+		fetchJson(substituteVarsUrl(BL_API_PLAYER_SCORE_URL, {playerId, hash, diff, type}), options, priority);
 
 	const findPlayer = async (query, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
-			substituteVars(BL_API_FIND_PLAYER_URL, {
+			substituteVarsUrl(BL_API_FIND_PLAYER_URL, {
 				query: query,
 				page: options?.page ?? 1,
 				count: options?.count ?? '',
@@ -433,7 +438,7 @@ export default (options = {}) => {
 
 	const rankingGlobal = async (count = 50, page = 1, filters = {sortBy: 'pp', count: 50}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(
-			substituteVars(BL_API_RANKING_URL, {page, count, ...filters}, true, true),
+			substituteVarsUrl(BL_API_RANKING_URL, {page, count, ...filters}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		);
@@ -446,7 +451,7 @@ export default (options = {}) => {
 		rankingGlobal(count, page, {...filters, friends: 'true'}, priority, {...options, credentials: 'include'});
 
 	const rankingEventGlobal = async (page = 1, eventId = 1, filters = {sortBy: 'pp'}, priority = PRIORITY.FG_LOW, options = {}) => {
-		return fetchJson(substituteVars(BL_API_EVENT_RANKING_URL, {page, eventId, ...filters}, true, true), options, priority);
+		return fetchJson(substituteVarsUrl(BL_API_EVENT_RANKING_URL, {page, eventId, ...filters}, true, true), options, priority);
 	};
 
 	const rankingEventCountry = async (
@@ -463,14 +468,14 @@ export default (options = {}) => {
 
 	const minirankings = async (rank, country, countryRank, friends, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
-			substituteVars(BL_API_MINIRANKINGS_URL, {rank, country, countryRank, friends}),
+			substituteVarsUrl(BL_API_MINIRANKINGS_URL, {rank, country, countryRank, friends}),
 			{...options, credentials: 'include'},
 			priority
 		);
 
 	const leaderboards = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(
-			substituteVars(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true),
+			substituteVarsUrl(BL_API_LEADERBOARDS_URL, {page, count: 12, ...filters}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		);
@@ -478,22 +483,22 @@ export default (options = {}) => {
 
 	const leaderboardsGrouped = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) => {
 		return fetchJson(
-			substituteVars(BL_API_LEADERBOARDS_GROUPPED_URL, {page, ...filters}, true, true),
+			substituteVarsUrl(BL_API_LEADERBOARDS_GROUPPED_URL, {page, ...filters}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		);
 	};
 
 	const leaderboardsByHash = async (hash, my_scores, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_LEADERBOARDS_BY_HASH_URL, {hash, my_scores}), {...options, credentials: 'include'}, priority);
+		fetchJson(substituteVarsUrl(BL_API_LEADERBOARDS_BY_HASH_URL, {hash, my_scores}), {...options, credentials: 'include'}, priority);
 
 	const clans = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLANS_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
+		fetchJson(substituteVarsUrl(BL_API_CLANS_URL, {page, ...filters}, true, true), {...options, credentials: 'include'}, priority);
 
 	const clan = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLAN_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
+		fetchJson(substituteVarsUrl(BL_API_CLAN_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
 	const clanMaps = async (clanId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_CLAN_MAPS_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
+		fetchJson(substituteVarsUrl(BL_API_CLAN_MAPS_URL, {clanId, page, ...filters}), {...options, credentials: 'include'}, priority);
 
 	const clanCreate = async (
 		name,
@@ -508,7 +513,7 @@ export default (options = {}) => {
 		options = {}
 	) =>
 		fetchJson(
-			substituteVars(
+			substituteVarsUrl(
 				BL_API_CLAN_CREATE_URL,
 				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
 				true,
@@ -531,7 +536,7 @@ export default (options = {}) => {
 		options = {}
 	) =>
 		fetchHtml(
-			substituteVars(
+			substituteVarsUrl(
 				BL_API_CLAN_UPDATE_URL,
 				{name, tag, description, bio, color, playerChangesCallback, clanRankingDiscordHook},
 				true,
@@ -558,7 +563,7 @@ export default (options = {}) => {
 
 	const clanUpdatePlaylist = async (id, title, link, description, icon, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id, title, link, description}, true, true),
+			substituteVarsUrl(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id, title, link, description}, true, true),
 			{
 				body: icon instanceof ArrayBuffer ? icon : null,
 				...options,
@@ -572,7 +577,7 @@ export default (options = {}) => {
 		);
 	const clanDeletePlaylist = async (id, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id}, true, true),
+			substituteVarsUrl(BL_API_CLAN_UPDATE_PLAYLIST_URL, {id}, true, true),
 			{
 				...options,
 				retries: 0,
@@ -585,14 +590,14 @@ export default (options = {}) => {
 		);
 	const clanAccept = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true),
+			substituteVarsUrl(BL_API_CLAN_ACCEPT_URL, {id: clanId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanReject = async (clanId, ban = false, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_REJECT_URL, {id: clanId, ban: ban ? 'true' : 'false'}, true, true),
+			substituteVarsUrl(BL_API_CLAN_REJECT_URL, {id: clanId, ban: ban ? 'true' : 'false'}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
@@ -606,42 +611,42 @@ export default (options = {}) => {
 
 	const clanLeave = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_LEAVE_URL, {id: clanId}, true, true),
+			substituteVarsUrl(BL_API_CLAN_LEAVE_URL, {id: clanId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanUnban = async (clanId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_UNBAN_URL, {id: clanId}, true, true),
+			substituteVarsUrl(BL_API_CLAN_UNBAN_URL, {id: clanId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanKick = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_KICK_URL, {player: playerId}, true, true),
+			substituteVarsUrl(BL_API_CLAN_KICK_URL, {player: playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_INVITE_URL, {player: playerId}, true, true),
+			substituteVarsUrl(BL_API_CLAN_INVITE_URL, {player: playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanCancelInvite = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_CLAN_CANCEL_INVITE_URL, {player: playerId}, true, true),
+			substituteVarsUrl(BL_API_CLAN_CANCEL_INVITE_URL, {player: playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const clanRanking = async (leaderboardId, page = 1, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
-			substituteVars(BL_API_CLAN_RANKING_URL, {leaderboardId, page}, true, true),
+			substituteVarsUrl(BL_API_CLAN_RANKING_URL, {leaderboardId, page}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		).then(r => {
@@ -652,7 +657,7 @@ export default (options = {}) => {
 
 	const clanRankingScores = async (leaderboardId, clanRankingId, page = 1, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
-			substituteVars(BL_API_CLAN_RANKING_SCORES_URL, {leaderboardId, clanRankingId, page}, true, true),
+			substituteVarsUrl(BL_API_CLAN_RANKING_SCORES_URL, {leaderboardId, clanRankingId, page}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		).then(r => {
@@ -663,17 +668,17 @@ export default (options = {}) => {
 
 	const accGraph = async (playerId, type, no_unranked_stars, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
-			substituteVars(BL_API_ACC_GRAPH_URL, {player: playerId, type, no_unranked_stars}),
+			substituteVarsUrl(BL_API_ACC_GRAPH_URL, {player: playerId, type, no_unranked_stars}),
 			{...options, credentials: 'include'},
 			priority
 		);
 
 	const rankGraph = async (playerId, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_RANK_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
+		fetchJson(substituteVarsUrl(BL_API_RANK_GRAPH_URL, {player: playerId}), {...options, credentials: 'include'}, priority);
 
 	const leaderboard = async (leaderboardId, page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
 		fetchJson(
-			substituteVars(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true, true),
+			substituteVarsUrl(BL_API_LEADERBOARD_URL, {leaderboardId, page, ...filters}, true, true),
 			{...options, credentials: 'include'},
 			priority
 		).then(r => {
@@ -684,14 +689,14 @@ export default (options = {}) => {
 
 	const addFollowed = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_FRIEND_ADD_URL, {playerId}, true, true),
+			substituteVarsUrl(BL_API_FRIEND_ADD_URL, {playerId}, true, true),
 			{...options, retries: 0, method: 'POST', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
 
 	const removeFollowed = async (playerId, priority = PRIORITY.FG_HIGH, options = {}) =>
 		fetchHtml(
-			substituteVars(BL_API_FRIEND_REMOVE_URL, {playerId}, true, true),
+			substituteVarsUrl(BL_API_FRIEND_REMOVE_URL, {playerId}, true, true),
 			{...options, retries: 0, method: 'DELETE', credentials: 'include', maxAge: 1, cacheTtl: null},
 			priority
 		);
@@ -707,7 +712,7 @@ export default (options = {}) => {
 		options = {}
 	) =>
 		fetchUrl(
-			substituteVars(BL_API_SCORE_PIN_URL, {scoreId, pin, description, link, service, priority: pinPriority}, true, 'null-only'),
+			substituteVarsUrl(BL_API_SCORE_PIN_URL, {scoreId, pin, description, link, service, priority: pinPriority}, true, 'null-only'),
 			{
 				body: null,
 				...options,
@@ -721,7 +726,7 @@ export default (options = {}) => {
 		);
 
 	const events = async (page = 1, filters = {}, priority = PRIORITY.FG_LOW, options = {}) =>
-		fetchJson(substituteVars(BL_API_EVENTS_URL, {page, ...filters}, true, true), options, priority);
+		fetchJson(substituteVarsUrl(BL_API_EVENTS_URL, {page, ...filters}, true, true), options, priority);
 
 	return {
 		user,

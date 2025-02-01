@@ -16,7 +16,11 @@ export function setLeaderboardType(newType) {
 	GLOBAL_LEADERBOARD_TYPE = newType;
 }
 
-export const substituteVars = (url, vars, clearUnused = false, clearEmptyQuery = false, process = v => v) => {
+export const substituteVars = (input, vars, process = v => v) => {
+	return Object.keys(vars).reduce((cum, key) => cum.replace(new RegExp('\\${' + key + '}', 'gi'), process(vars[key] ?? '')), input);
+};
+
+export const substituteVarsUrl = (url, vars, clearUnused = false, clearEmptyQuery = false, process = v => v) => {
 	vars.leaderboardContext = GLOBAL_LEADERBOARD_TYPE;
 
 	let replaced = Object.keys(vars).reduce(

@@ -2,7 +2,7 @@ import {writable} from 'svelte/store';
 import keyValueRepository from '../db/repository/key-value';
 import {configStore} from './config';
 import {BL_API_URL} from '../network/queues/beatleader/api-queue';
-import {substituteVars} from '../utils/format';
+import {substituteVarsUrl} from '../utils/format';
 import deepEqual from 'deep-equal';
 
 const STORE_PLAYLISTS_KEY = 'playlists';
@@ -290,7 +290,7 @@ export default () => {
 			filters.order = 'desc';
 		}
 
-		let url = substituteVars(
+		let url = substituteVarsUrl(
 			BL_API_URL +
 				'playlist/generate?count=${count}&type=${type}&search=${search}&title=${playlistTitle}&stars_from=${stars_from}&stars_to=${stars_to}&accrating_from=${accrating_from}&accrating_to=${accrating_to}&passrating_from=${passrating_from}&passrating_to=${passrating_to}&techrating_from=${techrating_from}&techrating_to=${techrating_to}&date_from=${date_from}&date_to=${date_to}&sortBy=${sortBy}&order=${order}&mytype=${mytype}&mode=${mode}&difficulty=${difficulty}&count=${count}&mapType=${mapType}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}&mapRequirements=${mapRequirements}&songStatus=${songStatus}&allRequirements=${allRequirements}',
 			{count, ...filters},
@@ -326,7 +326,7 @@ export default () => {
 			filters.order = 'desc';
 		}
 
-		let url = substituteVars(
+		let url = substituteVarsUrl(
 			BL_API_URL +
 				'playlist/scores/generate?playerId=${playerId}&count=${count}&sortBy=${sortBy}&order=${order}&search=${search}&diff=${diff}&type=${songType}&hmd=${hmd}&modifiers=${modifiers}&stars_from=${starsFrom}&stars_to=${starsTo}&eventId=${eventId}&allTypes=${allTypes}&duplicate_diffs=${duplicateDiffs}',
 			{count, playerId, order: filters.order, sortBy: filters.sort, duplicateDiffs: filters.duplicateDiffs, ...filters.filters},
@@ -358,7 +358,7 @@ export default () => {
 	};
 
 	const generateClanPlaylist = (ppLimit, clanId, sortBy, playedStatus, duplicateDiffs, callback) => {
-		let url = substituteVars(
+		let url = substituteVarsUrl(
 			BL_API_URL +
 				'playlist/clan/generate?clanId=${clanId}&ppLimit=${ppLimit}&duplicate_diffs=${duplicateDiffs}&sortBy=${sortBy}&playedStatus=${playedStatus}',
 			{clanId, ppLimit, sortBy, playedStatus, duplicateDiffs},
