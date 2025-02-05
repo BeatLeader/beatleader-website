@@ -47,6 +47,7 @@
 	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
 	import Mappers from '../components/Leaderboard/Mappers.svelte';
+	import PlaylistPicker from '../components/Leaderboard/PlaylistPicker.svelte';
 
 	export let page = 1;
 	export let location;
@@ -83,6 +84,7 @@
 		{key: 'songStatus', default: null, process: processIntFilter},
 		{key: 'allRequirements', default: 0, process: processIntFilter},
 		{key: 'mappers', default: null, process: processStringFilter},
+		{key: 'playlistIds', default: null, process: processStringFilter},
 	];
 
 	const buildFiltersFromLocation = createBuildFiltersFromLocation(params, filters => {
@@ -424,6 +426,12 @@
 		navigateToCurrentPageAndFilters();
 	}
 
+	function onPlaylistIdsChange(event) {
+		currentFilters.playlistIds = event.detail.join(',');
+
+		navigateToCurrentPageAndFilters();
+	}
+
 	var showAllRatings = false;
 
 	function updateProfileSettings(account) {
@@ -576,6 +584,12 @@
 					currentMapperId={$account.player && $account.player.playerInfo.mapperId}
 					mapperIds={currentFilters.mappers?.split(',').map(id => parseInt(id)) ?? []}
 					on:change={e => onMappersChange(e)} />
+			</section>
+
+			<section class="filter">
+				<PlaylistPicker
+					playlistIds={(currentFilters.playlistIds?.length && currentFilters.playlistIds?.split(',')) ?? []}
+					on:change={e => onPlaylistIdsChange(e)} />
 			</section>
 
 			<section class="filter">
