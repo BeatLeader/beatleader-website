@@ -252,7 +252,6 @@
 		display: flex;
 		grid-gap: 0.4em;
 		align-items: center;
-		min-width: max-content;
 	}
 
 	.player-score.highlight {
@@ -402,7 +401,7 @@
 		color: white;
 	}
 
-	@media screen and (max-width: 767px) {
+	@media screen and (max-width: 1024px) {
 		.player-score {
 			flex-direction: column;
 		}

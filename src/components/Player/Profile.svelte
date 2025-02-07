@@ -595,6 +595,11 @@
 
 		.followers-and-socials {
 			justify-content: space-evenly;
+			margin-left: 0;
+			margin-left: -0.8em;
+			margin-right: -0.8em;
+			padding: 0 0.8em;
+			border-radius: 0;
 		}
 
 		.cover-image {
@@ -607,10 +612,6 @@
 
 		:global(.profile-box) {
 			border-radius: 0 !important;
-		}
-
-		.followers-and-socials {
-			border-radius: 0;
 		}
 	}
 </style>

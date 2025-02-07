@@ -159,7 +159,10 @@
 				{/if}
 
 				<div class="timeset">
-					<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null} />
+					<FormattedDate
+						date={score.timeSet}
+						prevPrefix="vs "
+						prevDate={scoreBadgesHaveImprovements ? (prevScore?.timeSet ?? null) : null} />
 				</div>
 			</span>
 
@@ -234,7 +237,7 @@
 			</span>
 
 			<span class="timeset mobile-only">
-				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? prevScore?.timeSet ?? null : null} />
+				<FormattedDate date={score.timeSet} prevPrefix="vs " prevDate={scoreBadgesHaveImprovements ? (prevScore?.timeSet ?? null) : null} />
 			</span>
 
 			{#if showAnyDetails}
@@ -405,7 +408,7 @@
 
 	header {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		grid-gap: 0;
 		font-size: 0.875em;
 		margin-top: -0.6em;

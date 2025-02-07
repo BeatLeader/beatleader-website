@@ -1602,13 +1602,13 @@
 		}
 	}
 
-	@media screen and (max-width: 1024px) {
-		.leaderboard {
-			margin-inline: 0;
+	@media screen and (min-width: 1024px) {
+		:global(.leaderboard .scores-grid .player-performance) {
+			max-width: 20em;
 		}
 	}
 
-	@media screen and (max-width: 767px) {
+	@media screen and (max-width: 1024px) {
 		.leaderboard {
 			margin-inline: 0;
 			max-width: 100vw;
@@ -1637,6 +1637,14 @@
 
 		:global(.player-performance-badges) {
 			min-width: 0 !important;
+		}
+
+		:global(.leaderboard .scores-grid .player-performance-badges .pp) {
+			font-size: 0.9em;
+		}
+
+		:global(.leaderboard .scores-grid .player-performance-badges .score) {
+			font-size: 0.8em;
 		}
 
 		:global(.diff-tab-button) {

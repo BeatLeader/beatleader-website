@@ -311,7 +311,9 @@
 
 	.scores-container {
 		padding: 0.5em;
+		padding-top: 0;
 		border-radius: 8px;
+		margin-top: 0.5em;
 	}
 
 	.unconstrained-pager {
