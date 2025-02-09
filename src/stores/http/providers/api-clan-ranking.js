@@ -13,9 +13,7 @@ export default () => {
 		priority = queue.PRIORITY.FG_HIGH,
 		signal = null,
 		force = false,
-	} = {}) => {
-        return await clanRankingService.fetchClanRankingScores(leaderboardId, clanRankingId, page, priority, signal, force);
-	};
+	} = {}) => clanRankingService.fetchClanRankingScores(leaderboardId, clanRankingId, page, priority, signal, force);
 
 	return {
 		getProcessed,

@@ -1095,7 +1095,7 @@
 					{/if}
 				{/if}
 
-				{#if separatePage && type !== 'accsaber' && ((!isNominated && leaderboard.qualification) || leaderboard.changes?.length)}
+				{#if separatePage && type !== 'accsaber' && ((!isNominated && leaderboard?.qualification) || leaderboard?.changes?.length)}
 					<div class="score-options-section">
 						<span
 							class="beat-savior-reveal clickable"
