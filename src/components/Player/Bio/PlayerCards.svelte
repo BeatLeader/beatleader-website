@@ -2,6 +2,7 @@
 	import {createEventDispatcher} from 'svelte';
 	import RankedMapper from './RankedMapper.svelte';
 	import ClanFounder from './ClanFounder.svelte';
+	import {GLOBAL_LEADERBOARD_TYPE} from '../../../utils/format';
 	import {BL_API_URL} from '../../../network/queues/beatleader/api-queue';
 	import Spinner from '../../Common/Spinner.svelte';
 
@@ -41,7 +42,9 @@
 		if (cachedMapperId == mapperId) return;
 
 		cachedMapperId = mapperId;
-		const response = mapperId ? await fetch(`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${sortBy}`) : null;
+		const response = mapperId
+			? await fetch(`${BL_API_URL}player/${mapperId}/rankedmaps?sortBy=${sortBy}&leaderboardContext=${GLOBAL_LEADERBOARD_TYPE}`)
+			: null;
 		rankedmaps = !response?.ok ? null : await response.json();
 		if (rankedmaps) {
 			topmap = rankedmaps.maps[0];
