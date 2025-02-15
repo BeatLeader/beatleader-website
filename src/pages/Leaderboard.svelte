@@ -42,6 +42,7 @@
 	import {flip} from 'svelte/animate';
 	import playerScoreApiClient from '../network/clients/beatleader/scores/api-player-score';
 	import PpCurve from '../components/Leaderboard/PPCurve.svelte';
+	import AttemptsGraph from '../components/Leaderboard/AttemptsGraph.svelte';
 	import ContentBox from '../components/Common/ContentBox.svelte';
 	import QualificationStatus from '../components/Leaderboard/QualificationStatus.svelte';
 
@@ -80,10 +81,12 @@
 	export let iconsInInfo = false;
 	export let noReplayInLeaderboard = false;
 	export let separatePage = false;
-	export let showCurve = false;
 
 	export let autoScrollToTop = true;
+
 	export let showStats = true;
+	export let showAttempts = true;
+	export let showCurve = false;
 
 	if (!dontNavigate) document.body.classList.add('slim');
 
@@ -798,6 +801,7 @@
 
 	$: leaderboardStatsShown = $configStore?.preferences?.leaderboardStatsShown;
 	$: curveShown = $configStore?.preferences?.curveShown;
+	$: attemptsShown = $configStore?.preferences?.attemptsShown;
 	$: qualificationInfoShown = $configStore?.preferences?.qualificationInfoShown;
 	$: commentaryShown = $configStore?.preferences?.commentaryShown;
 	$: leaderboardShowSorting = $configStore?.preferences?.leaderboardShowSorting;
@@ -1223,6 +1227,7 @@
 					{/if}
 				</ContentBox>
 			{/if}
+
 			{#if showStats}
 				<ContentBox cls="leaderboard-aside-box frosted">
 					{#if !leaderboardStatsShown}
@@ -1255,6 +1260,30 @@
 									{/if}
 								</div>
 							{/if}
+						</div>
+					{/if}
+				</ContentBox>
+			{/if}
+
+			{#if showAttempts}
+				<ContentBox cls="leaderboard-aside-box frosted">
+					{#if !attemptsShown}
+						<div class="score-options-section" transition:fade>
+							<span class="beat-savior-reveal clickable" on:click={() => boolflip('attemptsShown')} title="Show attempts">
+								<i class="fas fa-chart-simple" />
+								<i class="fas fa-chevron-right" />
+							</span>
+						</div>
+					{:else}
+						<div class="box-with-left-arrow" transition:slide>
+							<div class="score-options-section to-the-left">
+								<span class="beat-savior-reveal clickable" on:click={() => boolflip('attemptsShown')} title="Hide attempts">
+									<i class="fas fa-chevron-left" />
+								</span>
+							</div>
+							<div class="darkened-background frosted">
+								<AttemptsGraph leaderboardId={currentLeaderboardId} />
+							</div>
 						</div>
 					{/if}
 				</ContentBox>

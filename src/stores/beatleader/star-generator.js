@@ -15,7 +15,11 @@ export default () => {
 
 	const fetchExMachina = async (hash, link, diff, mode, scale = 1) => {
 		if (!hash || !diff || !mode) return;
-		fetch(`https://stage.api.beatleader.net/json/${hash.length >= 40 ? hash : "link"}/${mode}/${diffForDiffName(diff)}/full/time-scale/${scale}${hash.length >= 40 ? "" : "?link="+link}`)
+		starRatings.loading = true;
+		set(starRatings);
+		fetch(
+			`https://stage.api.beatleader.net/json/${hash.length >= 40 ? hash : 'link'}/${mode}/${diffForDiffName(diff)}/full/time-scale/${scale}${hash.length >= 40 ? '' : '?link=' + link}`
+		)
 			.then(async response => {
 				if (response.status == 200) {
 					const data = await response.json();
@@ -26,6 +30,7 @@ export default () => {
 					starRatings[hash + diff + mode + scale] = undefined;
 					set(starRatings);
 				}
+				starRatings.loading = false;
 			})
 			.catch(err => null);
 	};

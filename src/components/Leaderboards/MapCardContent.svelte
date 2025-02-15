@@ -88,24 +88,33 @@
 		<div class="other-details" data-atropos-offset="0.1">
 			<div class="details-and-icons">
 				{#if !nodetails}
-					{#if map?.plays}
-						<div class="map-details">
-							{map?.plays} plays.
-						</div>
-					{:else if Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
-						<div class="map-details">
+					<div class="map-details">
+						{#if currentFilters.sortBy === 'playcount' && map?.plays !== undefined}
+							{map.plays} play{map.plays !== 1 ? 's' : ''}
+						{:else if currentFilters.sortBy === 'voting' && Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
 							<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
-								{#if currentFilters.sortBy === 'voting'}
-									Rating: {map.positiveVotes - map.negativeVotes}
-								{:else if currentFilters.sortBy === 'voteratio'}
-									Ratio:
-									{formatNumber((map.positiveVotes / (map.positiveVotes + map.negativeVotes)) * 100)}%
-								{:else}
-									{map.positiveVotes + map.negativeVotes} vote{map.positiveVotes + map.negativeVotes > 1 ? 's' : ''}
-								{/if}
+								Rating: {map.positiveVotes - map.negativeVotes}
 							</span>
-						</div>
-					{/if}
+						{:else if currentFilters.sortBy === 'voteratio' && Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
+							<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
+								Ratio: {formatNumber((map.positiveVotes / (map.positiveVotes + map.negativeVotes)) * 100)}%
+							</span>
+						{:else if currentFilters.sortBy === 'votecount' && Number.isFinite(map?.positiveVotes) && Number.isFinite(map?.negativeVotes)}
+							<span title={`${map.positiveVotes} rankable / ${map.negativeVotes} unrankable`}>
+								{map.positiveVotes + map.negativeVotes} vote{map.positiveVotes + map.negativeVotes > 1 ? 's' : ''}
+							</span>
+						{:else if currentFilters.sortBy === 'duration' && map?.song?.duration}
+							{Math.floor(map.song.duration / 60)}:{(map.song.duration % 60).toString().padStart(2, '0')}
+						{:else if currentFilters.sortBy === 'bpm' && map?.song?.bpm}
+							{map.song.bpm} BPM
+						{:else if currentFilters.sortBy === 'scoreTime' && map?.scoreTime}
+							{new Date(map.scoreTime).toLocaleDateString()}
+						{:else if currentFilters.sortBy === 'timestamp' && map?.uploaded}
+							{new Date(map.uploaded).toLocaleDateString()}
+						{:else if map?.attempts !== undefined}
+							{map.attempts} attempt{map.attempts !== 1 ? 's' : ''}
+						{/if}
+					</div>
 				{/if}
 
 				{#if map?.song?.hash?.length}
