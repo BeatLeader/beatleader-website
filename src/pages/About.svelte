@@ -115,7 +115,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 				<p class="memberDescription">Map rating and review specialist</p>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R17.png" alt="Light Ai" /><a
 					href="/u/76561198051924392">Light Ai</a>
 				<p class="memberTitle">absolutely not a vocaloid addict</p>
 				<p class="memberDescription">Quality specialist and rePlayed creator</p>
@@ -135,7 +135,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198075923914">GalaxyMaster</a> 
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R17.png" alt="Light Ai" /><a
 					href="/u/76561198051924392">Light Ai</a> 
 			</div>
 		</section>
@@ -169,7 +169,7 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198072855418">LackWiz</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R17.png" alt="Light Ai" /><a
 					href="/u/76561198051924392">Light Ai</a>
 			</div>
 			<div class="member">
@@ -219,15 +219,11 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198075923914">GalaxyMaster</a>
 			</div>
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/66b82be1c041733bbb4fdbfd79be8e3c3a02b989_full.jpg" alt="Jojobanana" /><a
-					href="/u/76561198294659898">Jojobanana</a>
-			</div>
-			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198072855418R45.png" alt="LackWiz" /><a
 					href="/u/76561198072855418">LackWiz</a>
 			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R48.png" alt="Light Ai" /><a
+				<img src="https://cdn.assets.beatleader.xyz/76561198051924392R17.png" alt="Light Ai" /><a
 					href="/u/76561198051924392">Light Ai</a>
 			</div>
 			<div class="member">
@@ -241,6 +237,10 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/5374R44.png" alt="Poochy" /><a
 					href="/u/5374">Poochy</a>
+			</div>
+                        <div class="member">
+				<img src="https://cdn.assets.beatleader.com/76561198096273599R30.png" alt="Rusty" /><a
+					href="/u/rusty">Rusty</a>
 			</div>
 			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561199108348236R26.png" alt="UglyApe" /><a 
