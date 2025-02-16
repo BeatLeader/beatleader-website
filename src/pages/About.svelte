@@ -219,10 +219,6 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 					href="/u/76561198075923914">GalaxyMaster</a>
 			</div>
 			<div class="member">
-				<img src="https://avatars.akamai.steamstatic.com/66b82be1c041733bbb4fdbfd79be8e3c3a02b989_full.jpg" alt="Jojobanana" /><a
-					href="/u/76561198294659898">Jojobanana</a>
-			</div>
-			<div class="member">
 				<img src="https://cdn.assets.beatleader.xyz/76561198072855418R45.png" alt="LackWiz" /><a
 					href="/u/76561198072855418">LackWiz</a>
 			</div>
@@ -242,8 +238,12 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 				<img src="https://cdn.assets.beatleader.xyz/5374R44.png" alt="Poochy" /><a
 					href="/u/5374">Poochy</a>
 			</div>
+                        <div class="member">
+				<img src="https://cdn.assets.beatleader.com/76561198096273599R30.png" alt="Rusty" /><a
+					href="/u/rusty">Rusty</a>
+			</div>
 			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561199108348236R26.png" alt="UglyApe" /><a 
+				<img src="https://cdn.assets.beatleader.com/76561199108348236R2.png" alt="UglyApe" /><a 
 					href="/u/76561199108348236">UglyApe</a>
 			</div>
 			<div class="member">
@@ -365,9 +365,9 @@ ${BL_API_URL}players?leaderboardContext=general&page=${page}&count=100&role=supp
 		<h1 class="title is-5">Retired Staff</h1>
 
 		<section class="content center">
-			<div class="member">
-				<img src="https://cdn.assets.beatleader.xyz/76561198143307741.png" alt="shrado" /><a
-					href="https://www.beatleader.xyz/u/76561198143307741">shrado</a>
+                        <div class="member">
+				<img src="https://avatars.akamai.steamstatic.com/66b82be1c041733bbb4fdbfd79be8e3c3a02b989_full.jpg" alt="Jojobanana" /><a
+					href="/u/76561198294659898">Jojobanana</a>
 			</div>
 			<div class="member">
 				<img src="https://avatars.akamai.steamstatic.com/9f79be6c488ebc966eabc82bbdca1287499d551a_full.jpg" alt="FentonVR" /><a
