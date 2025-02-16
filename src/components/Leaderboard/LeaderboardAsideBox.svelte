@@ -1,5 +1,5 @@
 <script>
-	import {fade, slide} from 'svelte/transition';
+	import {slide, crossfade} from 'svelte/transition';
 	import ContentBox from '../Common/ContentBox.svelte';
 	import {configStore} from '../../stores/config';
 	import {produce} from 'immer';
@@ -8,6 +8,14 @@
 	export let title = 'box';
 	export let faicon = '';
 	export let boolname = null;
+	export let contentClass = '';
+
+	const [send, receive] = crossfade({
+		duration: 300,
+		fallback(node, params) {
+			return slide(node, {duration: 300});
+		},
+	});
 
 	function boolflip(name) {
 		if (name == null) {
@@ -21,26 +29,36 @@
 </script>
 
 <ContentBox cls="leaderboard-aside-box frosted">
-	{#if !opened}
-		<div class="box-toggle-section" transition:fade>
-			<span class="reveal-button clickable" on:click={() => boolflip(boolname)} title="Show {title}">
+	<div class="box-toggle-section">
+		{#if !opened}
+			<span
+				class="reveal-button clickable"
+				style="height: 1.5em;"
+				on:click={() => boolflip(boolname)}
+				title="Show {title}"
+				in:receive={{key: 'button'}}
+				out:send={{key: 'button'}}>
 				<i class={faicon} />
-
 				<i class="fas fa-chevron-right" />
 			</span>
-		</div>
-	{:else}
-		<div class="aside-box" transition:slide>
-			<div class="box-toggle-section">
-				<span class="reveal-button clickable" on:click={() => boolflip(boolname)} title="Hide {title}">
-					<i class="fas fa-chevron-left" />
-					<i class={faicon} />
-					<span>{title}</span>
-				</span>
-			</div>
+		{:else}
+			<span
+				class="reveal-button clickable"
+				on:click={() => boolflip(boolname)}
+				title="Hide {title}"
+				in:receive={{key: 'button'}}
+				out:send={{key: 'button'}}>
+				<i class="fas fa-chevron-left" />
+				<i class={faicon} />
+				<span>{title}</span>
+			</span>
+		{/if}
+	</div>
 
+	{#if opened}
+		<div class="aside-box" transition:slide>
 			<div class="darkened-background frosted">
-				<slot></slot>
+				<slot class={contentClass}></slot>
 			</div>
 		</div>
 	{/if}
@@ -49,17 +67,14 @@
 <style>
 	.box-toggle-section {
 		display: grid;
+		grid-template-areas: 'button'; /* Single grid area */
 		justify-items: center;
 		min-width: max-content;
-	}
-
-	.aside-box {
-		display: grid;
-		align-items: center;
 		gap: 0.25em;
 	}
 
 	.reveal-button {
+		grid-area: button; /* Assign to the same grid area */
 		align-self: end;
 		cursor: pointer;
 		display: flex;
@@ -67,13 +82,11 @@
 		gap: 0.5em;
 	}
 
-	.reveal-button > i {
-		transition: transform 500ms;
-		transform-origin: 0.42em 0.5em;
-	}
-
-	.reveal-button.opened > i {
-		transform: rotateZ(180deg);
+	.aside-box {
+		display: grid;
+		align-items: center;
+		gap: 0.25em;
+		margin-top: 0.25em;
 	}
 
 	.darkened-background {
