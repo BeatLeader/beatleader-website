@@ -68,6 +68,7 @@
 	import {invertColor} from '../components/Common/utils/badge';
 	import {isPatron} from '../components/Player/Overlay/overlay';
 	import Headsets from '../components/Ranking/Headsets.svelte';
+	import LeaderboardAsideBox from '../components/Leaderboard/LeaderboardAsideBox.svelte';
 
 	export let leaderboardId;
 	export let type = 'global';
@@ -1132,232 +1133,118 @@
 	{#if separatePage && type !== 'accsaber'}
 		<aside transition:fade|global>
 			{#if qualification && !isRanked}
-				<ContentBox cls="leaderboard-aside-box frosted">
-					{#if !commentaryShown}
-						<div class="score-options-section" transition:fade>
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Show criteria check">
-								<i class="fas fa-comments" />
-
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow" transition:slide>
-							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('commentaryShown')} title="Hide criteria details">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
-							<div>
-								<h1 class="status-header">Quality</h1>
-								<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
-								{#if isRT || isNQT || generalMapperId}
-									<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
-								{/if}
-							</div>
-						</div>
-					{/if}
-				</ContentBox>
+				<LeaderboardAsideBox opened={commentaryShown} title="Quality Votes" faicon="fas fa-comments" boolname="commentaryShown">
+					<div>
+						<QualityVoting {qualification} {isNQT} currentPlayerId={$account.id} />
+						{#if isRT || isNQT || generalMapperId}
+							<Commentary {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
+						{/if}
+					</div>
+				</LeaderboardAsideBox>
 			{/if}
 			{#if (isNominated && qualification) || (leaderboard?.reweight && !leaderboard?.reweight.finished)}
-				<ContentBox cls="leaderboard-aside-box frosted"
-					>{#if !qualificationInfoShown}
-						<div class="score-options-section" transition:fade>
-							<span
-								class="beat-savior-reveal clickable"
-								on:click={() => boolflip('qualificationInfoShown')}
-								title="Show qualification details">
-								<i class="fas fa-list-ul" />
+				<LeaderboardAsideBox
+					opened={qualificationInfoShown}
+					title="Criteria Votes"
+					faicon="fas fa-list-ul"
+					boolname="qualificationInfoShown">
+					<div>
+						{#if isNominated && qualification}
+							<QualificationStatus {qualification} {isRanked} />
+							<CriteriaCommentary {isRT} {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
+						{/if}
 
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow" transition:slide>
-							<div class="score-options-section to-the-left">
-								<span
-									class="beat-savior-reveal clickable"
-									on:click={() => boolflip('qualificationInfoShown')}
-									title="Hide qualification details">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
-							<div>
-								{#if isNominated && qualification}
-									<h1 class="status-header">Criteria</h1>
-									<QualificationStatus {qualification} {isRanked} />
-									<CriteriaCommentary {isRT} {isNQT} mapperId={generalMapperId} {qualification} currentPlayerId={$account.id} />
-								{/if}
-
-								{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
-									<ReweightStatus map={leaderboard} />
-								{/if}
-							</div>
-						</div>
-					{/if}
-				</ContentBox>
+						{#if leaderboard?.reweight && !leaderboard?.reweight.finished}
+							<ReweightStatus map={leaderboard} />
+						{/if}
+					</div>
+				</LeaderboardAsideBox>
 			{/if}
 			{#if featuredPlaylists && featuredPlaylists.length}
-				<ContentBox cls="leaderboard-aside-box frosted">
-					{#if !leaderboardShowPlaylists}
-						<div class="score-options-section" transition:fade>
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Show map details">
-								<i class="fas fa-compact-disc" />
-
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow" transition:slide>
-							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardShowPlaylists')} title="Hide map details">
-									<i class="fas fa-chevron-left" />
-								</span>
+				<LeaderboardAsideBox
+					opened={leaderboardShowPlaylists}
+					title="Featured Playlists"
+					faicon="fas fa-compact-disc"
+					boolname="leaderboardShowPlaylists">
+					<div class="featured-playlists">
+						<span class="featured-playlist-headline">Featured in:</span>
+						{#each featuredPlaylists as featuredPlaylist}
+							<div class="stats-with-icons">
+								<FeaturedPlaylist playlist={featuredPlaylist} />
 							</div>
-
-							<div class="featured-playlists darkened-background frosted">
-								<span class="featured-playlist-headline">Featured in:</span>
-								{#each featuredPlaylists as featuredPlaylist}
-									<div class="stats-with-icons">
-										<FeaturedPlaylist playlist={featuredPlaylist} />
-									</div>
-								{/each}
-							</div>
-						</div>
-					{/if}
-				</ContentBox>
+						{/each}
+					</div>
+				</LeaderboardAsideBox>
 			{/if}
 
 			{#if showStats}
-				<ContentBox cls="leaderboard-aside-box frosted">
-					{#if !leaderboardStatsShown}
-						<div class="score-options-section" transition:fade>
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Show map details">
-								<i class="fas fa-magnifying-glass" />
+				<LeaderboardAsideBox
+					opened={leaderboardStatsShown}
+					title="Map Details"
+					faicon="fas fa-magnifying-glass"
+					boolname="leaderboardStatsShown">
+					{#if leaderboard?.stats}
+						<div class="stats-with-icons">
+							{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
+								<LeaderboardStats {leaderboard} />
+							{/if}
+							<PredictedAccGraph {leaderboard} />
+							{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
+								<HashDisplay {song} />
+							{/if}
 
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow" transition:slide>
-							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('leaderboardStatsShown')} title="Hide map details">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
-							{#if leaderboard?.stats}
-								<div class="stats-with-icons darkened-background frosted">
-									{#if !$configStore?.leaderboardPreferences?.showStatsInHeader}
-										<LeaderboardStats {leaderboard} />
-									{/if}
-									<PredictedAccGraph {leaderboard} />
-									{#if !$configStore?.leaderboardPreferences?.showHashInHeader}
-										<HashDisplay {song} />
-									{/if}
-
-									{#if iconsInInfo}
-										<Icons {song} {diffInfo} mapCheck={true} />
-									{/if}
-								</div>
+							{#if iconsInInfo}
+								<Icons {song} {diffInfo} mapCheck={true} />
 							{/if}
 						</div>
 					{/if}
-				</ContentBox>
+				</LeaderboardAsideBox>
 			{/if}
 
 			{#if showAttempts}
-				<ContentBox cls="leaderboard-aside-box frosted">
-					{#if !attemptsShown}
-						<div class="score-options-section" transition:fade>
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('attemptsShown')} title="Show attempts">
-								<i class="fas fa-chart-simple" />
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow" transition:slide>
-							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('attemptsShown')} title="Hide attempts">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
-							<div class="darkened-background frosted">
-								<AttemptsGraph leaderboardId={currentLeaderboardId} />
-							</div>
-						</div>
+				<LeaderboardAsideBox opened={attemptsShown} title="Attempts" faicon="fas fa-chart-simple" boolname="attemptsShown">
+					{#if leaderboard?.stats?.stars}
+						<AttemptsGraph leaderboardId={currentLeaderboardId} />
 					{/if}
-				</ContentBox>
+				</LeaderboardAsideBox>
 			{/if}
 
 			{#if showCurve && leaderboard?.stats?.stars}
-				<ContentBox cls="leaderboard-aside-box frosted">
-					{#if !curveShown}
-						<div class="score-options-section" transition:fade>
-							<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Show pp curve">
-								<i class="fas fa-bezier-curve" />
-								<i class="fas fa-chevron-right" />
-							</span>
-						</div>
-					{:else}
-						<div class="box-with-left-arrow" transition:slide>
-							<div class="score-options-section to-the-left">
-								<span class="beat-savior-reveal clickable" on:click={() => boolflip('curveShown')} title="Hide pp curve">
-									<i class="fas fa-chevron-left" />
-								</span>
-							</div>
-							<div class="darkened-background frosted">
-								<h2 class="title is-5" style="text-align: center;">
-									PP curve (<span
-										on:click={() => curveboolflip('passPp')}
-										title="Click to show Pass PP curve"
-										class={$configStore?.ppCurve?.passPp ? 'higlighted-pp' : 'inactive-pp'}
-										><Value
-											value={modifiedPass}
-											prevValue={leaderboard?.stats?.passRating ?? 0}
-											inline="true"
-											prefix="Pass "
-											suffix="★" /></span
-									>,
-									<span
-										on:click={() => curveboolflip('accPp')}
-										title="Click to show Acc PP curve"
-										class={$configStore?.ppCurve?.accPp ? 'higlighted-pp' : 'inactive-pp'}
-										><Value
-											value={modifiedAcc}
-											prevValue={leaderboard?.stats?.accRating ?? 0}
-											inline="true"
-											prefix="Acc "
-											suffix="★" /></span
-									>,
-									<span
-										on:click={() => curveboolflip('techPp')}
-										title="Click to show Tech PP curve"
-										class={$configStore?.ppCurve?.techPp ? 'higlighted-pp' : 'inactive-pp'}
-										><Value
-											value={modifiedTech}
-											prevValue={leaderboard?.stats?.techRating ?? 0}
-											inline="true"
-											prefix="Tech "
-											suffix="★" /></span
-									>)
-								</h2>
-								<PpCurve
-									passRating={leaderboard?.stats?.passRating}
-									accRating={leaderboard?.stats?.accRating}
-									techRating={leaderboard?.stats?.techRating}
-									{modifiers}
-									modifiersRating={leaderboard?.difficultyBl?.modifiersRating}
-									mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
-									on:modified-stars={e => {
-										modifiedPass = e?.detail?.passRating ?? 0;
-										modifiedAcc = e?.detail?.accRating ?? 0;
-										modifiedTech = e?.detail?.techRating ?? 0;
-										modifiedStars = e?.detail?.stars ?? null;
-									}} />
-							</div>
-						</div>
-					{/if}
-				</ContentBox>
+				<LeaderboardAsideBox opened={curveShown} title="PP Curve" faicon="fas fa-bezier-curve" boolname="curveShown">
+					<h2 class="title is-5" style="text-align: center;">
+						PP curve (<span
+							on:click={() => curveboolflip('passPp')}
+							title="Click to show Pass PP curve"
+							class={$configStore?.ppCurve?.passPp ? 'higlighted-pp' : 'inactive-pp'}
+							><Value value={modifiedPass} prevValue={leaderboard?.stats?.passRating ?? 0} inline="true" prefix="Pass " suffix="★" /></span
+						>,
+						<span
+							on:click={() => curveboolflip('accPp')}
+							title="Click to show Acc PP curve"
+							class={$configStore?.ppCurve?.accPp ? 'higlighted-pp' : 'inactive-pp'}
+							><Value value={modifiedAcc} prevValue={leaderboard?.stats?.accRating ?? 0} inline="true" prefix="Acc " suffix="★" /></span
+						>,
+						<span
+							on:click={() => curveboolflip('techPp')}
+							title="Click to show Tech PP curve"
+							class={$configStore?.ppCurve?.techPp ? 'higlighted-pp' : 'inactive-pp'}
+							><Value value={modifiedTech} prevValue={leaderboard?.stats?.techRating ?? 0} inline="true" prefix="Tech " suffix="★" /></span
+						>)
+					</h2>
+					<PpCurve
+						passRating={leaderboard?.stats?.passRating}
+						accRating={leaderboard?.stats?.accRating}
+						techRating={leaderboard?.stats?.techRating}
+						{modifiers}
+						modifiersRating={leaderboard?.difficultyBl?.modifiersRating}
+						mode={leaderboard?.difficultyBl?.modeName.toLowerCase()}
+						on:modified-stars={e => {
+							modifiedPass = e?.detail?.passRating ?? 0;
+							modifiedAcc = e?.detail?.accRating ?? 0;
+							modifiedTech = e?.detail?.techRating ?? 0;
+							modifiedStars = e?.detail?.stars ?? null;
+						}} />
+				</LeaderboardAsideBox>
 			{/if}
 		</aside>
 	{/if}
@@ -1462,12 +1349,6 @@
 	:global(.mode-tab-button span) {
 		font-weight: 900;
 		font-size: 1.4em;
-	}
-
-	:global(.leaderboard-aside-box) {
-		position: static !important;
-		border-radius: 12px !important;
-		margin-top: 0.36em !important;
 	}
 
 	.featured-playlists {

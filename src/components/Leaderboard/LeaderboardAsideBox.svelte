@@ -65,6 +65,12 @@
 </ContentBox>
 
 <style>
+	:global(.leaderboard-aside-box) {
+		position: static !important;
+		border-radius: 12px !important;
+		margin-top: 0.36em !important;
+	}
+
 	.box-toggle-section {
 		display: grid;
 		grid-template-areas: 'button'; /* Single grid area */
