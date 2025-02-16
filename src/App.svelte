@@ -49,7 +49,8 @@
 		SurveyAchievementPage: () => import('./pages/SurveyAchievement.svelte'),
 		PatreonPage: () => import('./pages/Patreon.svelte'),
 		DeveloperPortalPage: () => import('./pages/DeveloperPortal.svelte'),
-		Maps: () => import('./pages/Maps.svelte'),
+		MapsPortal: () => import('./pages/MapsPortal.svelte'),
+		MapsPage: () => import('./pages/MapsList.svelte'),
 		Replayed: () => import('./pages/Replayed.svelte'),
 		ReplayedLanding: () => import('./pages/ReplayedLanding.svelte'),
 		ClansMap: () => import('./pages/ClansMap.svelte'),
@@ -405,8 +406,13 @@
 					</Route>
 
 					<Route path="/maps">
-						{#await pageImports.Maps() then module}
+						{#await pageImports.MapsPortal() then module}
 							<svelte:component this={module.default} />
+						{/await}
+					</Route>
+					<Route path="/maps/:type/*page" let:params let:location>
+						{#await pageImports.MapsPage() then module}
+							<svelte:component this={module.default} page={params.page} type={params.type} {location} />
 						{/await}
 					</Route>
 					<Route path="/replayed">

@@ -254,7 +254,7 @@
 			{#if graphPageIndex == 0}
 				<ScoreHistoryChart {history} {leaderboard} bind:hoveredAttempt />
 			{:else}
-				<ScoreHistoryAccGraph {score} history={fullhistory} {leaderboard} {hoveredAttempt} />
+				<ScoreHistoryAccGraph {score} history={fullhistory} {leaderboard} />
 			{/if}
 			{#if canCompare}
 				<CompactPagination pageIndex={graphPageIndex} pagesCount={2} on:change={onGraphPaginationChange} />

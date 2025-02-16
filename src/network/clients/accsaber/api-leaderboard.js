@@ -18,15 +18,15 @@ const process = response => {
 		songHash: hash,
 		songName: name,
 		songSubName: subName,
-		songAuthorName: authorName,
-		levelAuthorName,
+		songAuthorName: author,
+		levelAuthorName: mapper,
 		beatsaverKey,
 		complexity,
 		categoryDisplayName,
 		difficulty,
 	} = mapInfo;
 
-	const song = {hash, name, subName, authorName, levelAuthorName, beatsaverKey};
+	const song = {hash, name, subName, author, mapper, beatsaverKey};
 	const diffInfo = {type: 'Standard', diff: difficulty?.toLowerCase()?.replace('plus', 'Plus')};
 	const leaderboard = {leaderboardId, song, diffInfo, complexity, categoryDisplayName};
 

@@ -3,6 +3,9 @@
 	import {configStore} from '../../stores/config';
 
 	export let song;
+	export let maxHeight = '4.5em';
+	export let fontSize = '1em';
+
 	let lessInAuthorName = false;
 	let moreInAuthorName = false;
 	let isVariousMappers = false;
@@ -48,11 +51,11 @@
 
 		authorNameMockMapper = {
 			authorName: true,
-			name: song.levelAuthorName,
+			name: song.mapper,
 		};
 	}
 
-	$: determineMismatches(song.levelAuthorName);
+	$: determineMismatches(song.mapper ?? '');
 	$: badgeContainer &&
 		setTimeout(() => {
 			checkOverflow(badgeContainer);
@@ -60,7 +63,12 @@
 </script>
 
 {#if song.mappers?.length}
-	<div class="mappers-list" bind:this={badgeContainer} class:expanded={isExpanded} class:expandable={isOverflowing && !isExpanded}>
+	<div
+		class="mappers-list"
+		style="max-height: {maxHeight}; font-size: {fontSize}"
+		bind:this={badgeContainer}
+		class:expanded={isExpanded}
+		class:expandable={isOverflowing && !isExpanded}>
 		{#if moreInAuthorName && authorNameMockMapper}
 			<Mapper mapper={authorNameMockMapper} />
 		{/if}
@@ -71,7 +79,7 @@
 			<i
 				class="fa-solid fa-circle-info map-name-info"
 				class:higher-opacity={lessInAuthorName && !isVariousMappers}
-				title="Mapped by: {song.levelAuthorName}" />
+				title="Mapped by: {song.mapper}" />
 		{/if}
 		{#if isOverflowing || isExpanded}
 			<div class="expand-button" class:inverse={isExpanded} on:click={toggleExpansion}>
@@ -80,7 +88,7 @@
 		{/if}
 	</div>
 {:else}
-	<small class="level-author" title="Mapper">{song.levelAuthorName}</small>
+	<small class="level-author" title="Mapper">{song.mapper}</small>
 {/if}
 
 <style>
@@ -92,7 +100,6 @@
 		height: 100%;
 		gap: 0.3em;
 		flex-wrap: wrap;
-		max-height: 4.5em;
 		overflow-y: hidden;
 		padding-right: 1.25em;
 	}
@@ -109,10 +116,6 @@
 
 	.level-author {
 		color: var(--alternate);
-		font-size: 1.1em;
-	}
-	.mapper-title {
-		color: rgba(255, 255, 255, 0.797);
 		font-size: 1.1em;
 	}
 

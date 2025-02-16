@@ -2,7 +2,6 @@
 	import {tick} from 'svelte';
 	import {navigate} from 'svelte-routing';
 	import {fade, fly} from 'svelte/transition';
-	import createLeaderboardsStore from '../stores/http/http-leaderboards-store';
 	import createAccountStore from '../stores/beatleader/account';
 	import createPlaylistStore from '../stores/playlists';
 	import ssrConfig from '../ssr-config';
@@ -36,20 +35,26 @@
 		songStatusesDescription,
 	} from '../utils/beatleader/format';
 	import {capitalize} from '../utils/js';
+	import {substituteVarsUrl} from '../utils/format';
 	import RankedTimer from '../components/Common/RankedTimer.svelte';
 	import {Ranked_Const, Unranked_Const} from './../utils/beatleader/consts';
 	import {MetaTags} from 'svelte-meta-tags';
-	import {CURRENT_URL} from '../network/queues/beatleader/api-queue';
+	import {BL_API_MAPS_URL, CURRENT_URL} from '../network/queues/beatleader/api-queue';
 	import BackToTop from '../components/Common/BackToTop.svelte';
-	import MapCard from '../components/Leaderboards/MapCard.svelte';
 	import {configStore} from '../stores/config';
 	import {produce} from 'immer';
 	import Switch from '../components/Common/Switch.svelte';
 	import Select from '../components/Settings/Select.svelte';
 	import Mappers from '../components/Leaderboard/Mappers.svelte';
+	import MapCard from '../components/Maps/List/MapCard.svelte';
+	import TabSwitcher from '../components/Common/TabSwitcher.svelte';
 	import PlaylistPicker from '../components/Leaderboard/PlaylistPicker.svelte';
+	import {Svrollbar} from 'svrollbar';
+	import {PRIORITY} from '../utils/queue';
+	import {fetchJson} from '../network/fetch';
 
 	export let page = 1;
+	export let type = 'ranked';
 	export let location;
 
 	const FILTERS_DEBOUNCE_MS = 500;
@@ -97,7 +102,6 @@
 
 		if (!filters?.sortBy?.length) filters.sortBy = 'timestamp';
 		if (!filters?.order?.length) filters.order = 'desc';
-		if (!filters?.type?.length) filters.type = 'ranked';
 
 		if (!filters.mapType) filters.mapType = null;
 
@@ -108,21 +112,23 @@
 	if (!page || isNaN(page) || page <= 0) page = 1;
 
 	let currentPage = page;
+	let previousPage = page > 1 ? page - 1 : page;
+	let currentType = type;
 	let currentFilters = buildFiltersFromLocation(location);
 	let boxEl = null;
 
 	const typeFilterOptions = [
-		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
-		{key: 'ost', label: 'OST', iconFa: 'fa fa-compact-disc', color: 'var(--beatleader-primary)'},
-		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', color: 'var(--beatleader-primary)'},
-		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', color: 'var(--beatleader-primary)'},
-		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', color: 'var(--beatleader-primary)'},
+		{key: 'all', label: 'All maps', iconFa: 'fa fa-music', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'ost', label: 'OST', iconFa: 'fa fa-compact-disc', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'nominated', label: 'Nominated', iconFa: 'fa fa-rocket', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'qualified', label: 'Qualified', iconFa: 'fa fa-check', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'ranked', label: 'Ranked', iconFa: 'fa fa-cubes', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
 	];
 
 	const baseMytypeFilterOptions = [
-		{key: '', label: 'All maps', iconFa: 'fa fa-music', color: 'var(--beatleader-primary)'},
-		{key: 'played', label: 'Played', iconFa: 'fa fa-user', color: 'var(--beatleader-primary)'},
-		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-times', color: 'var(--beatleader-primary)'},
+		{key: '', label: 'All maps', iconFa: 'fa fa-music', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'played', label: 'Played', iconFa: 'fa fa-user', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
+		{key: 'unplayed', label: 'Not played', iconFa: 'fa fa-times', cls: 'maps-type-button', color: 'var(--beatleader-primary)'},
 	];
 
 	let mytypeFilterOptions = baseMytypeFilterOptions;
@@ -195,34 +201,128 @@
 		})
 	);
 
-	const leaderboardsStore = createLeaderboardsStore(page, currentFilters);
+	let numOfMaps = 0;
+	let itemsPerPage = 12;
+	let isLoading = false;
+	let loadingPage = null;
+
+	let mapsList = [];
+	let previousPageMaps = [];
+	let nextPageMaps = [];
+	let cache = {};
+
+	function resetCache(resetPages = true) {
+		if (resetPages) {
+			previousPage = 1;
+			currentPage = 1;
+		}
+		cache = {};
+		mapsList = [];
+		previousPageMaps = [];
+		nextPageMaps = [];
+	}
+
+	function fetchMaps(page = 1, type = 'ranked', filters = {}, priority = PRIORITY.FG_LOW, options = {}) {
+		if (cache[page]) {
+			mapsList = cache[page];
+			return;
+		}
+
+		let result = [];
+		for (let i = 0; i < itemsPerPage; i++) {
+			result.push({
+				index: page * itemsPerPage + i,
+				name: 'Loading...',
+				artist: 'Unknown Artist',
+				hash: '00000000000000000000000000000000',
+				cover: 'https://via.placeholder.com/150',
+				placeholder: true,
+			});
+		}
+
+		mapsList = result;
+		fetchJson(
+			substituteVarsUrl(BL_API_MAPS_URL, {page, count: itemsPerPage, type, ...filters}, true, true),
+			{...options, credentials: 'include'},
+			priority
+		).then(document => {
+			const response = document.body;
+
+			let newMaps = response.data;
+			for (let i = 0; i < newMaps.length; i++) {
+				newMaps[i].index = page * itemsPerPage + i;
+			}
+
+			cache[page] = newMaps;
+			console.log(page + '  ' + currentPage);
+
+			[mapsList, previousPageMaps, nextPageMaps].forEach(mapsArray => {
+				for (let i = 0; i < mapsArray.length; i++) {
+					const element = mapsArray[i];
+					const fetchedMap = newMaps.find(m => m.index == element.index);
+					if (fetchedMap) {
+						mapsArray[i] = fetchedMap;
+					}
+				}
+
+				while (
+					mapsArray == mapsList &&
+					mapsArray.length > newMaps.length &&
+					(!newMaps.length || newMaps[newMaps.length - 1].index == mapsArray[newMaps.length - 1].index)
+				) {
+					mapsArray.pop();
+				}
+			});
+
+			mapsList = mapsList;
+			previousPageMaps = previousPageMaps;
+			nextPageMaps = nextPageMaps;
+			numOfMaps = response.metadata.total;
+		});
+	}
+
+	const placeholderMaps = page => {
+		let result = [];
+		for (let i = 0; i < itemsPerPage; i++) {
+			result.push({
+				index: page * itemsPerPage + i,
+				name: 'Loading...',
+				artist: 'Unknown Artist',
+				hash: '00000000000000000000000000000000',
+				cover: 'https://via.placeholder.com/150',
+				placeholder: true,
+			});
+		}
+		return result;
+	};
 
 	function changePageAndFilters(newPage, newFilters, replace, setUrl = true) {
 		currentFilters = newFilters;
 
-		sortValue = currentFilters.sortBy;
-		orderValue = currentFilters.order;
-		dateRangeValue = currentFilters.date_range;
-
 		sortValues = sortValues1.map(v => {
 			let result = {...v};
-			if (result.value == 'timestamp') {
-				switch (currentFilters.type) {
+			if (result.id == currentFilters.sortBy) {
+				result.iconFa = `fa fa-long-arrow-alt-${currentFilters.order === 'asc' ? 'up' : 'down'}`;
+				sortValue = result;
+			}
+
+			if (result.id == 'timestamp') {
+				switch (currentType) {
 					case 'ranked':
-						result.name = 'Rank date';
+						result.label = 'Rank date';
 						result.title = 'Sort by the date map become ranked';
 						break;
 					case 'qualified':
-						result.name = 'Qualification date';
+						result.label = 'Qualification date';
 						result.title = 'Sort by the map qualification date';
 						break;
 					case 'nominated':
-						result.name = 'Nomination date';
+						result.label = 'Nomination date';
 						result.title = 'Sort by the map nomination date';
 						break;
 
 					default:
-						result.name = 'Upload date';
+						result.label = 'Upload date';
 						result.title = 'Sort by the map upload date';
 						break;
 				}
@@ -231,28 +331,44 @@
 			return result;
 		});
 
-		switch (currentFilters.type) {
-			case 'ranked':
-				dateRangeOptions = [...dateRangeOptions1, {value: 'ranked', name: 'Map ranking', icon: 'fa-star'}];
-				break;
-			case 'qualified':
-				dateRangeOptions = [...dateRangeOptions1, {value: 'qualification', name: 'Map qualification', icon: 'fa-vote-yea'}];
-				break;
-			case 'nominated':
-				dateRangeOptions = [...dateRangeOptions1, {value: 'nomination', name: 'Map nomination', icon: 'fa-cheak-circle'}];
-				break;
-			default:
-				dateRangeOptions = dateRangeOptions1;
-		}
-
 		newPage = parseInt(newPage, 10);
 		if (isNaN(newPage)) newPage = 1;
+
+		if (newPage < previousPage) {
+			nextPageMaps = [...mapsList, ...nextPageMaps].slice(0, 10);
+
+			previousPageMaps = [];
+		} else if (newPage > previousPage) {
+			previousPageMaps = [...previousPageMaps, ...(mapsList?.length ? mapsList : [])].slice(-10);
+			nextPageMaps = [];
+		}
+
+		if (!previousPageMaps?.length) {
+			if (newPage > previousPage) {
+				scrolling = true;
+				previousPageMaps = (cache[previousPage] ?? placeholderMaps(previousPage)).slice(-2);
+
+				setTimeout(() => {
+					console.log('scrollToTop');
+
+					scrollToTop(180);
+					scrolling = false;
+				}, 200);
+			} else if (newPage == 1 && newPage < previousPage) {
+				setTimeout(() => {
+					console.log('scrollToTop');
+
+					scrollToTop();
+					scrolling = false;
+				}, 200);
+			}
+		}
 
 		currentPage = newPage;
 
 		if (setUrl) {
 			const query = buildSearchFromFiltersWithDefaults(currentFilters, params);
-			const url = `/leaderboards/${currentPage}${query.length ? '?' + query : ''}`;
+			const url = `/maps/${currentType}/${currentPage}${query.length ? '?' + query : ''}`;
 			if (replace) {
 				window.history.replaceState({}, '', url);
 			} else {
@@ -260,7 +376,7 @@
 			}
 		}
 
-		leaderboardsStore.fetch(currentPage, {...currentFilters});
+		fetchMaps(currentPage, currentType, {...currentFilters});
 	}
 
 	function navigateToCurrentPageAndFilters(replaceState) {
@@ -270,9 +386,13 @@
 	function onPageChanged(event) {
 		if (event.detail.initial || !Number.isFinite(event.detail.page)) return;
 
+		previousPage = currentPage;
 		currentPage = event.detail.page + 1;
 
+		resetCache(false);
 		navigateToCurrentPageAndFilters(true);
+
+		console.log('onPageChanged');
 	}
 
 	function onSearchChanged(e) {
@@ -281,7 +401,7 @@
 		if (search.length > 0 && search.length < 2) return;
 
 		currentFilters.search = search;
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -289,15 +409,15 @@
 	function onTypeChanged(event) {
 		if (!event?.detail) return;
 
-		currentFilters.type = event.detail.key ?? '';
-		currentPage = 1;
+		currentType = event.detail.key ?? '';
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
 
 	async function onCategoryModeChanged() {
 		await tick();
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -312,7 +432,7 @@
 
 		if (!currentFilters.mapType) currentFilters.mapType = null;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -328,7 +448,7 @@
 
 		if (!currentFilters.mapRequirements) currentFilters.mapRequirements = null;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -343,7 +463,7 @@
 
 		if (!currentFilters.songStatus) currentFilters.songStatus = null;
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -352,7 +472,7 @@
 		if (!event?.detail) return;
 
 		currentFilters.mytype = event.detail.key ?? '';
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -360,7 +480,7 @@
 	async function onModeChanged(event) {
 		await tick();
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -368,13 +488,13 @@
 	async function onDifficultyChanged(event) {
 		await tick();
 
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
 
 	function starsChanged() {
-		currentPage = 1;
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -472,11 +592,7 @@
 	function onMappersChange(event) {
 		currentFilters.mappers = event.detail.join(',');
 
-		navigateToCurrentPageAndFilters();
-	}
-
-	function onPlaylistIdsChange(event) {
-		currentFilters.playlistIds = event.detail.join(',');
+		resetCache();
 
 		navigateToCurrentPageAndFilters();
 	}
@@ -505,10 +621,6 @@
 
 	$: document.body.scrollIntoView({behavior: 'smooth'});
 
-	$: isLoading = leaderboardsStore.isLoading;
-	$: pending = leaderboardsStore.pending;
-	$: numOfMaps = $leaderboardsStore ? $leaderboardsStore?.metadata?.total : null;
-	$: itemsPerPage = $leaderboardsStore ? $leaderboardsStore?.metadata?.itemsPerPage : 12;
 	$: isRT =
 		$account.player &&
 		$account.player.playerInfo.role &&
@@ -523,44 +635,88 @@
 			? currentFilters.sortBy
 			: 'stars';
 
-	$: leaderboardsPage = ($leaderboardsStore?.data ?? []).map(m => {
-		return {
-			...m,
-			diffInfo: {diff: m?.difficulty?.difficultyName, type: m?.difficulty?.modeName},
-			stars: m?.difficulty?.stars ?? null,
-		};
-	});
-	$: metaDescription = currentFilters.type === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps';
-	$: hasRatingsByDefault = currentFilters.type === 'ranked' || currentFilters.type === 'nominated' || currentFilters.type === 'qualified';
+	$: metaDescription = currentType === 'ranked' ? 'List of Beat Saber ranked maps' : 'Search for leaderboards of Beat Saber maps';
+	$: hasRatingsByDefault = currentType === 'ranked' || currentType === 'nominated' || currentType === 'qualified';
 	$: starFiltersDisabled = !hasRatingsByDefault && !showAllRatings;
 	$: sliderLimits = hasRatingsByDefault ? Ranked_Const : Unranked_Const;
 
-	function boolflip(name) {
-		$configStore = produce($configStore, draft => {
-			draft.preferences[name] = !draft.preferences[name];
+	let topAnchor;
+	let bottomAnchor;
+
+	let scrollContainer;
+	let filtersContainer;
+	let scrolling = false;
+
+	function scrollToPage(page) {
+		previousPage = currentPage;
+		currentPage = page + 1;
+
+		navigateToCurrentPageAndFilters(true);
+	}
+
+	function handleIntersection(entries) {
+		if (scrolling) {
+			scrolling = false;
+			return;
+		}
+		if (!mapsList) return;
+		entries.forEach(entry => {
+			if (entry.isIntersecting) {
+				if (entry.target === topAnchor && currentPage > 1) {
+					console.log(entry);
+
+					scrollToPage(currentPage - 2);
+					scrolling = true;
+					scrollToBottom(150);
+				}
+				if (entry.target === bottomAnchor && currentPage < Math.ceil(numOfMaps / itemsPerPage)) {
+					scrollToPage(currentPage);
+					scrolling = true;
+					// scrollToTop();
+				}
+			}
 		});
 	}
 
-	let viewTypeOptions = [
-		{
-			type: 'maps-cards',
-			title: 'Cards view',
-			iconFa: 'fas fa-table-columns',
-		},
-		{
-			type: 'maps-table',
-			title: 'Table view',
-			iconFa: 'fas fa-table',
-		},
-	];
+	let isScrolling = false;
+	let scrollTimeout;
+	let isAutoScrolling = false;
 
-	function onViewTypeChanged(event) {
-		const newType = event?.detail?.type ?? null;
-		if (!newType) return;
+	function safeScrollTo(options) {
+		isAutoScrolling = true;
+		scrollContainer.scrollTo(options);
+		setTimeout(() => {
+			isAutoScrolling = false;
+		}, 100);
+	}
 
-		$configStore = produce($configStore, draft => {
-			draft.preferences.mapsViewType = newType;
-		});
+	function scrollToTop(offset = 0) {
+		if (scrollContainer) {
+			safeScrollTo({
+				top: offset,
+				behavior: 'smooth',
+			});
+		}
+	}
+
+	function scrollToBottom(offset = 0) {
+		if (scrollContainer) {
+			safeScrollTo({
+				top: scrollContainer.scrollHeight - offset,
+				behavior: 'smooth',
+			});
+		}
+	}
+
+	let observer;
+
+	function onScroll() {
+		if (isAutoScrolling) return;
+		isScrolling = true;
+		clearTimeout(scrollTimeout);
+		scrollTimeout = setTimeout(() => {
+			isScrolling = false;
+		}, 100);
 	}
 
 	const today = new Date(new Date().setHours(0, 0, 0, 0));
@@ -583,8 +739,26 @@
 
 	let isPlaylistOpen = false;
 
-	$: viewType = viewTypeOptions.find(vt => vt.type == $configStore?.preferences?.mapsViewType) ?? viewTypeOptions[0];
-	$: maps3D = $configStore?.preferences?.maps3D;
+	$: if (topAnchor && bottomAnchor && scrollContainer) {
+		if (observer) observer.disconnect();
+		observer = new IntersectionObserver(
+			entries => {
+				if (isScrolling && !isAutoScrolling) {
+					handleIntersection(entries);
+				}
+			},
+			{
+				threshold: 0.1,
+				rootMargin: '100px',
+			}
+		);
+		observer.observe(topAnchor);
+		observer.observe(bottomAnchor);
+		scrollContainer.addEventListener('scroll', onScroll);
+	}
+
+	$: displayMaps = mapsList ? [...previousPageMaps, ...mapsList, ...nextPageMaps] : [];
+	$: console.log(displayMaps);
 </script>
 
 <svelte:head>
@@ -593,37 +767,46 @@
 
 <section class="align-content">
 	<article class="page-content" transition:fade|global>
+		<section class="filter">
+			<TabSwitcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentType)} on:change={onTypeChanged} />
+			{#if $account.id}
+				<TabSwitcher
+					values={mytypeFilterOptions}
+					value={mytypeFilterOptions.find(o => o.key === currentFilters.mytype)}
+					on:change={onMyTypeChanged} />
+			{/if}
+		</section>
 		<ContentBox cls="maps-box" bind:box={boxEl}>
-			<h1 class="title is-5">
-				Maps
-
-				{#if $isLoading}<Spinner />{/if}
-			</h1>
-
-			<RankedTimer />
-
-			{#if leaderboardsPage?.length}
-				<div class="songs">
-					{#each leaderboardsPage as map, idx (map.id)}
-						<MapCard {map} {idx} {currentFilters} {starsKey} {maps3D} viewType={viewType.type} />
-					{/each}
+			<div class="sorting-options">
+				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
+				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
+			</div>
+			{#if displayMaps?.length}
+				<div class="songs-container">
+					<div class="songs-list">
+						<div class="songs" bind:this={scrollContainer}>
+							<div class="top-anchor" bind:this={topAnchor}></div>
+							{#each displayMaps as song, idx (song.index)}
+								<MapCard {idx} {song} {starsKey} />
+							{/each}
+							<div class="bottom-anchor" bind:this={bottomAnchor}></div>
+						</div>
+						<Svrollbar viewport={scrollContainer} />
+					</div>
 				</div>
-
-				<div class="pager-and-switch">
+				<div class="pager-container">
 					<Pager
 						totalItems={numOfMaps}
 						{itemsPerPage}
 						itemsPerPageValues={null}
 						currentPage={currentPage - 1}
-						loadingPage={$pending && $pending.page ? $pending.page - 1 : null}
+						{loadingPage}
 						mode={numOfMaps ? 'pages' : 'simple'}
 						on:page-changed={onPageChanged} />
-					<div class="table-switches">
-						<Switcher values={viewTypeOptions} value={viewType} on:change={onViewTypeChanged} />
-						<Switch value={maps3D} label="3D" fontSize={12} design="slider" on:click={() => boolflip('maps3D')} />
-					</div>
 				</div>
-			{:else if !$isLoading}
+			{:else if isLoading}
+				<Spinner />
+			{:else}
 				<p>No maps found.</p>
 			{/if}
 		</ContentBox>
@@ -631,13 +814,6 @@
 
 	<aside>
 		<ContentBox>
-			<h2 class="title is-5">Sorting</h2>
-
-			<div class="sorting-options">
-				<Select bind:value={sortValue} on:change={onSortChange} fontSize="0.8" options={sortValues} />
-				<Select bind:value={orderValue} on:change={onOrderChange} fontSize="0.8" options={orderValues} />
-			</div>
-
 			<h2 class="title is-5">Filters</h2>
 
 			<section class="filter">
@@ -661,19 +837,6 @@
 					playlistIds={(currentFilters.playlistIds?.length && currentFilters.playlistIds?.split(',')) ?? []}
 					on:change={e => onPlaylistIdsChange(e)} />
 			</section>
-
-			<section class="filter">
-				<Switcher values={typeFilterOptions} value={typeFilterOptions.find(o => o.key === currentFilters.type)} on:change={onTypeChanged} />
-			</section>
-
-			{#if $account.id}
-				<section class="filter">
-					<Switcher
-						values={mytypeFilterOptions}
-						value={mytypeFilterOptions.find(o => o.key === currentFilters.mytype)}
-						on:change={onMyTypeChanged} />
-				</section>
-			{/if}
 
 			<section class="filter">
 				<Switcher
@@ -951,7 +1114,6 @@
 						<Select
 							bind:value={currentFilters.difficulty}
 							on:change={onDifficultyChanged}
-							fontSize="0.8"
 							options={difficultyFilterOptions}
 							nullPlaceholder={difficultyNullPlaceholder}
 							nameSelector={x => x.label}
@@ -962,7 +1124,6 @@
 						<Select
 							bind:value={currentFilters.mode}
 							on:change={onModeChanged}
-							fontSize="0.8"
 							options={modeFilterOptions}
 							nullPlaceholder={modeNullPlaceholder}
 							nameSelector={x => x.label}
@@ -1046,11 +1207,32 @@
 	.align-content {
 		display: flex;
 		justify-content: flex-end !important;
+		position: fixed;
+		height: 100%;
 	}
 
 	.page-content {
-		max-width: 65em;
+		max-width: 75em;
 		width: 100%;
+		height: 100%;
+	}
+
+	.filter {
+		margin: 0 0.7em;
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.sorting-options {
+		display: flex;
+		gap: 0.5em;
+		justify-content: center;
+		position: relative;
+		backdrop-filter: blur(6px);
+		background-color: #00000094;
+		z-index: 6;
+		padding: 0.5em;
+		margin: -1em;
 	}
 
 	article {
@@ -1129,13 +1311,81 @@
 		color: var(--faded) !important;
 	}
 
+	.songs-container {
+		display: flex;
+		height: calc(100% + 2.7em);
+		margin-top: -2.7em;
+		margin-bottom: -3.8em;
+	}
+
+	.pager-container {
+		display: flex;
+		position: relative;
+		backdrop-filter: blur(6px);
+		background-color: #00000094;
+		z-index: 6;
+		margin: 0 -1em;
+		padding: 0.2em 1em;
+	}
+
+	:global(.pager-container .pagination) {
+		flex-grow: 1;
+	}
+
+	.switchers-container {
+		margin-left: 3.4em;
+		position: relative;
+		z-index: 10;
+	}
+
 	.songs {
 		display: flex;
 		flex-wrap: wrap;
 		column-gap: 2em;
 		row-gap: 0.8em;
 		justify-content: center;
-		overflow: visible;
+		position: relative;
+		margin-left: -1em;
+		margin-right: -1em;
+		height: 100%;
+		overflow: scroll;
+
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.songs::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
+	}
+
+	.maps-filters-container {
+		height: 100%;
+		overflow: scroll;
+
+		/* hide scrollbar */
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.maps-filters-container::-webkit-scrollbar {
+		/* hide scrollbar */
+		display: none;
+	}
+
+	.top-anchor {
+		width: 100%;
+		margin-top: 1em;
+		margin-bottom: 2em;
+		background-color: red;
+	}
+
+	.bottom-anchor {
+		width: 100%;
+		bottom: 0;
+		margin-bottom: 2em;
+		background-color: red;
 	}
 
 	.pager-and-switch {
@@ -1160,6 +1410,14 @@
 
 	:global(.maps-box) {
 		overflow: hidden;
+		height: 86.5%;
+		border-radius: 0 0 6px !important;
+	}
+
+	:global(.maps-filters-box) {
+		position: fixed;
+		height: 89%;
+		overflow: auto;
 	}
 
 	.playlist-buttons {
@@ -1193,22 +1451,61 @@
 		transform: translate(-7px, -2px);
 	}
 
-	.time-presets {
-		display: flex;
-		gap: 0.5em;
-		margin-top: 0.4em;
+	.dropdown-filter {
+		border: 1px solid var(--faded);
+		border-radius: 4px;
+		overflow: hidden;
 	}
 
-	:global(.time-presets .button) {
-		height: 2em;
-		padding: 0.4em;
+	.dropdown-filter.has-value {
+		border-color: rgba(255, 100, 150, 0.5);
 	}
 
-	.date-range-container {
+	.dropdown-header {
 		display: flex;
-		gap: 0.4em;
+		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 0.5em;
+		padding: 0.75rem 1rem;
+		background-color: var(--foreground);
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.dropdown-header:hover {
+		background-color: var(--background);
+	}
+
+	.header-content {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.dropdown-content {
+		padding: 1rem;
+		background-color: var(--foreground);
+	}
+
+	.dropdown-filter + .dropdown-filter {
+		margin-top: 1rem;
+	}
+
+	:global(.maps-type-button) {
+		margin-bottom: -0.5em !important;
+		height: 3.5em;
+		border-radius: 12px 12px 0 0 !important;
+		width: 7em;
+		flex-direction: column;
+		align-items: center !important;
+		justify-content: center !important;
+	}
+
+	:global(.maps-type-button span) {
+		font-weight: 900;
+	}
+
+	:global(.maps-type-button i) {
+		margin-right: 0 !important;
 	}
 
 	@media screen and (max-width: 1275px) {
@@ -1250,44 +1547,5 @@
 		.songinfo {
 			text-align: center;
 		}
-	}
-
-	.dropdown-filter {
-		border: 1px solid var(--faded);
-		border-radius: 4px;
-		overflow: hidden;
-	}
-
-	.dropdown-filter.has-value {
-		border-color: rgba(255, 100, 150, 0.5);
-	}
-
-	.dropdown-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 0.75rem 1rem;
-		background-color: var(--foreground);
-		cursor: pointer;
-		user-select: none;
-	}
-
-	.dropdown-header:hover {
-		background-color: var(--background);
-	}
-
-	.header-content {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.dropdown-content {
-		padding: 1rem;
-		background-color: var(--foreground);
-	}
-
-	.dropdown-filter + .dropdown-filter {
-		margin-top: 1rem;
 	}
 </style>

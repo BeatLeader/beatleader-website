@@ -1154,6 +1154,7 @@ export const songStatusesDescription = {
 		color: 'yellow',
 		textColor: 'yellow',
 	},
+
 	buildingBlocksAwarded: {
 		icon: 'buildingblocks-icon',
 		iconFile: '/assets/buildingblockslogo-background.webp',
@@ -1161,11 +1162,20 @@ export const songStatusesDescription = {
 		color: 'yellow',
 		textColor: 'yellow',
 	},
+	ost: {
+		title: 'Beat Saber base game original free maps!',
+		name: 'OST',
+		icon: 'beastsaber-icon',
+		iconFile: '/assets/beastsabericon.webp',
+		color: 'white',
+		textColor: 'white',
+	},
 	ranked: {
 		title: 'Ranked map, gives PP!',
 		name: 'Ranked',
 		icon: 'beastsaber-icon',
 		iconFile: '/assets/logo-small.png',
+		showIcon: true,
 		color: 'yellow',
 		textColor: 'white',
 	},
