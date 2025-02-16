@@ -25,6 +25,7 @@
 		justify-content: center;
 		gap: 0.5em;
 		padding: 0.5em;
+		border-radius: 8px;
 	}
 	.achievements-section {
 		display: flex;
