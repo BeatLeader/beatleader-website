@@ -951,6 +951,7 @@
 						<Select
 							bind:value={currentFilters.difficulty}
 							on:change={onDifficultyChanged}
+							fontSize="0.8"
 							options={difficultyFilterOptions}
 							nullPlaceholder={difficultyNullPlaceholder}
 							nameSelector={x => x.label}
@@ -961,6 +962,7 @@
 						<Select
 							bind:value={currentFilters.mode}
 							on:change={onModeChanged}
+							fontSize="0.8"
 							options={modeFilterOptions}
 							nullPlaceholder={modeNullPlaceholder}
 							nameSelector={x => x.label}
